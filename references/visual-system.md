@@ -113,7 +113,7 @@
 
 除非用户明确要求跳过 ImageGen，第二阶段逐页蓝图必须由 ImageGen 生成完整 16:9 bitmap 图片。蓝图不是 PPT 草稿、HTML 页面、SVG 线框、canvas 截图、Markdown 图示或本地脚本绘图。
 
-本规则只约束第二阶段逐页蓝图交付，不限制第三阶段 PPTX 还原工具。PptxGenJS、python-pptx、SVG、custom geometry、Pillow、matplotlib、HTML 或 canvas 可以用于第三阶段还原、QA、裁图、overlay、metadata 或 prompt 管理，但不得作为第二阶段逐页蓝图的最终图像生成器。
+本规则只约束第二阶段逐页蓝图交付，不限制第三阶段允许的 PPTX 还原辅助工具。PptxGenJS、SVG、custom geometry、Pillow、matplotlib、HTML 或 canvas 可以用于第三阶段 QA、裁图、overlay、metadata 或 prompt 管理，但不得作为第二阶段逐页蓝图的最终图像生成器。`python-pptx` 不得用于第三阶段正式 PPTX 生成。
 
 允许脚本做以下辅助工作：
 

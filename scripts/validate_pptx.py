@@ -204,7 +204,7 @@ STRICT_FAILURE_CODES = {
     "MANIFEST_PICTURES_ZERO_USED_AS_GOAL",
     "MANIFEST_GENERATION_ENGINE_MISSING",
     "MANIFEST_GENERATION_ENGINE_INCOMPLETE",
-    "MANIFEST_PYTHON_PPTX_FALLBACK_UNJUSTIFIED",
+    "MANIFEST_PYTHON_PPTX_FORBIDDEN",
     "MANIFEST_PAGE_EXECUTION_MISSING",
     "MANIFEST_PAGE_EXECUTION_INCOMPLETE",
     "MANIFEST_PAGE_EXECUTION_NOT_SINGLE_PAGE",
@@ -238,6 +238,7 @@ STRICT_FAILURE_CODES = {
     "VISUAL_PASS_WITHOUT_EVIDENCE",
     "VISUAL_QA_LOCAL_OVERLAY_MISSING",
     "VISUAL_QA_UNACCEPTED_HIGH_DIFFERENCE",
+    "INVALID_SHAPE_BOUNDS",
 }
 PLACEHOLDER_RE = re.compile(
     r"\b(?:TODO|TBD)\b|Lorem ipsum|Click to add|单击此处添加",
@@ -797,11 +798,11 @@ def validate_manifest_slide(
                         slide=slide_number,
                     )
                 )
-            if tool_name in PYTHON_PPTX_TOOL_NAMES and not generation_engine.get("fallback_reason"):
+            if tool_name in PYTHON_PPTX_TOOL_NAMES:
                 warnings.append(
                     issue(
-                        "MANIFEST_PYTHON_PPTX_FALLBACK_UNJUSTIFIED",
-                        "python-pptx fallback requires a concrete reason; it cannot be chosen to simplify blueprint reconstruction.",
+                        "MANIFEST_PYTHON_PPTX_FORBIDDEN",
+                        "python-pptx is forbidden for third-stage formal PPTX generation; fix PptxGenJS objects instead of switching engines.",
                         slide=slide_number,
                     )
                 )
@@ -1538,6 +1539,14 @@ def inspect_slide(
             continue
         bounds.append(box)
         x, y, cx, cy = box
+        if cx <= 0 or cy <= 0 or x < 0 or y < 0:
+            warnings.append(
+                issue(
+                    "INVALID_SHAPE_BOUNDS",
+                    "Element has non-positive dimensions or negative coordinates; PowerPoint may treat the PPTX as corrupted.",
+                    slide=slide_number,
+                )
+            )
         if x < 0 or y < 0 or x + cx > width or y + cy > height:
             warnings.append(
                 issue(

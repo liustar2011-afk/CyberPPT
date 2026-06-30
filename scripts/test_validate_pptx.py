@@ -431,7 +431,7 @@ class ValidatePptxTests(unittest.TestCase):
             any(item["code"] == "MANIFEST_PICTURES_ZERO_USED_AS_GOAL" for item in issues)
         )
 
-    def test_python_pptx_requires_fallback_reason_and_no_fidelity_reduction(self):
+    def test_python_pptx_is_forbidden_as_generation_engine(self):
         module = load_validator()
         metrics = {
             "pictures": 0,
@@ -474,8 +474,18 @@ class ValidatePptxTests(unittest.TestCase):
         }
         issues = module.validate_manifest_slide(manifest_entry, metrics, 1)
         codes = {item["code"] for item in issues}
-        self.assertIn("MANIFEST_PYTHON_PPTX_FALLBACK_UNJUSTIFIED", codes)
+        self.assertIn("MANIFEST_PYTHON_PPTX_FORBIDDEN", codes)
         self.assertIn("MANIFEST_GENERATION_ENGINE_INCOMPLETE", codes)
+
+    def test_non_positive_shape_dimensions_are_strict_failures(self):
+        module = load_validator()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "invalid-bounds.pptx"
+            make_pptx(path, cx=-1_000_000)
+            report = module.validate_pptx(path, strict=True)
+        self.assertTrue(
+            any(item["code"] == "INVALID_SHAPE_BOUNDS" for item in report["errors"])
+        )
 
     def test_native_only_complexity_scan_allows_empty_candidates_with_rationale(self):
         module = load_validator()

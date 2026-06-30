@@ -33,7 +33,9 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 - `slide_manifest.json` 是否覆盖全部页面，且 `expected_pictures`、`image_assets`、`text_objects`、`native_components`、`qa_expectations` 字段完整；
 - 当 `qa_expectations.visual_semantics_required = true` 时，manifest 是否包含完整 `blueprint_reconstruction_plan`，并覆盖蓝图路径、画布、背景色、表面系统、版式区域、页眉页脚、SO WHAT、主图语义、密度、锚点、原生重建对象和允许视觉资产；
 - `blueprint_reconstruction_plan.complex_visual_scan` 是否完整，是否记录复杂视觉候选、触发门、native-only 理由和 `pictures_zero_is_not_goal=true`；
-- `generation_engine` 是否完整，是否优先使用 PptxGenJS / pptx-generator；若使用 `python-pptx`，是否提供具体 fallback reason 且声明 `visual_fidelity_not_reduced=true`；
+- `generation_engine` 是否完整，是否使用 PptxGenJS / pptx-generator；若使用 `python-pptx`、HTML 转 PPT、截图转 PPT 或其他正式生成引擎，直接失败；
+- 完整页面 PPTX 是否能被 PowerPoint 打开并成功导出 PNG；ZIP/结构预检通过不能替代 PowerPoint 兼容通过；
+- slide XML 中是否存在零尺寸、负尺寸、负坐标、异常 ext/off、非法透明度或非法线宽对象；
 - `page_execution` 是否完整，是否记录单页 PPTX、蓝图图、PPT 渲染图、side-by-side、局部对照、用户确认和 `made_before_next_slide=true`；
 - 多页高保真交付是否声明 `final_merge`，且合并方式是否为导入已通过单页 PPTX，而不是重新生成页面；
 - manifest 中每个 `text_objects.role` 是否属于固定 Typography Scale（`C0`, `T1-T14`），`font_size_pt` 是否达到对应下限；
@@ -134,7 +136,9 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 - 任一视觉 QA 字段为 `true` 但没有对应 `evidence`，视为 Critical，不得交付确认。
 - `qa_expectations.visual_semantics_required = true` 但缺少完整 `blueprint_reconstruction_plan`，视为 Critical，不得生成或交付。
 - 缺少 `complex_visual_scan`、扫描不完整、或把 `pictures=0` 写成目标，视为 Critical，不得生成或交付。
-- 缺少 `generation_engine`、工具记录不完整、或 `python-pptx` fallback 无具体原因，视为 Critical，不得生成或交付。
+- 缺少 `generation_engine`、工具记录不完整，或使用 `python-pptx`、HTML 转 PPT、截图转 PPT、其他正式生成引擎，视为 Critical，不得生成或交付。
+- 完整页面 PPTX 无法被 PowerPoint 打开并导出 PNG，视为 Critical，不得进入 visual QA、manifest approved 状态或用户确认。
+- 任何正式页面存在零尺寸、负尺寸或负坐标对象，视为 Critical；必须定位并修复坏对象，不得切换到 `python-pptx`。
 - 缺少 `page_execution`、不是 `mode=single_page`、当前页未经用户确认、或未证明“确认后才进入下一页”，视为 Critical，不得生成下一页或交付。
 - 高保真多页终版使用一次性批量生成，或先批量生成完整 PPTX 再事后补写 manifest/visual QA/side-by-side，视为 Critical，不得交付。
 - 最终合并重新生成页面、重新排版、重新绘制图表、重新套用背景、使用单页渲染图作为整页背景，或缺少合并后回归验证，视为 Critical，不得交付。
@@ -276,7 +280,9 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 | 缺少 `blueprint_canvas_px`、`ppt_canvas_in`、`scale_x` 或 `scale_y` | 失败，无法证明 px 到 PPT 坐标换算 |
 | 缺少 `generation_engine` | 失败，必须记录 PPTX 生成工具 |
 | `generation_engine.visual_fidelity_not_reduced` 不是 `true` | 失败，不得以工具限制降低蓝图还原 |
-| `generation_engine.tool = python-pptx` 但缺少 `fallback_reason` | 失败，必须说明为什么不能用 PptxGenJS / pptx-generator |
+| `generation_engine.tool = python-pptx`、HTML 转 PPT、截图转 PPT 或其他正式生成引擎 | 失败，第三阶段正式 PPTX 必须使用 PptxGenJS / pptx-generator |
+| 完整页面 PPTX 无法被 PowerPoint 打开并导出 PNG | 失败，必须定位并修复坏对象或对象组 |
+| 正式页面包含零尺寸、负尺寸或负坐标对象 | 失败，必须修复对象尺寸/坐标 |
 | `page_execution` 缺失或不完整 | 失败，必须补单页执行和验收记录 |
 | `page_execution.mode` 不是 `single_page` | 失败，不能一次性批量生成终版 |
 | `page_execution.user_confirmed` 不是 `true` 或 `page_status` 不是 `approved` | 失败，当前页未经用户确认不得进入下一页或最终合并 |
