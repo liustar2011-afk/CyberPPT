@@ -109,6 +109,61 @@
 
 用户确认视觉方向后，必须为请求的全部页数，或已确认大纲所需的全部页数，生成逐页 ImageGen 蓝图。这个步骤必须发生在混合还原 PPTX 之前。
 
+### 逐页 ImageGen 蓝图真实性门
+
+除非用户明确要求跳过 ImageGen，第二阶段逐页蓝图必须由 ImageGen 生成完整 16:9 bitmap 图片。蓝图不是 PPT 草稿、HTML 页面、SVG 线框、canvas 截图、Markdown 图示或本地脚本绘图。
+
+本规则只约束第二阶段逐页蓝图交付，不限制第三阶段 PPTX 还原工具。PptxGenJS、python-pptx、SVG、custom geometry、Pillow、matplotlib、HTML 或 canvas 可以用于第三阶段还原、QA、裁图、overlay、metadata 或 prompt 管理，但不得作为第二阶段逐页蓝图的最终图像生成器。
+
+允许脚本做以下辅助工作：
+
+- 组织和批量生成 ImageGen prompt；
+- 保存、复制、重命名 ImageGen 输出图片；
+- 生成 metadata、manifest、QA 报告；
+- 生成对照图、contact sheet 或检查用 overlay。
+
+禁止脚本做以下替代：
+
+- 用 HTML/CSS/SVG/canvas/Pillow/matplotlib/PptxGenJS/python-pptx 直接绘制逐页蓝图；
+- 用 PowerPoint、网页截图、线框稿、结构草图或默认卡片页冒充 ImageGen 蓝图；
+- 为了后续测量方便，把蓝图降级成规整占位图或低保真 mockup。
+
+每页蓝图必须记录：
+
+- `imagegen_prompt`；
+- `imagegen_output_path`；
+- `imagegen_generation_id` 或等价生成记录；
+- `selected_style_id` 和 `selected_style_name`；
+- `effective_language`；
+- `density_target`；
+- `visual_quality_check`。
+
+如果用户明确跳过 ImageGen，必须记录：
+
+- `imagegen_skipped_by_user=true`；
+- 用户提供的模板、截图、品牌指南或视觉规范路径；
+- 替代依据为什么足以作为蓝图；
+- 不得声称该页是 ImageGen 蓝图。
+
+### 逐页蓝图质量门
+
+逐页蓝图必须延续已确认风格样张的视觉系统，并达到第一阶段确认的信息密度和组件计划。ImageGen 文字和数字仍视为不可靠占位；本门只检查视觉系统、密度和构图，不要求生成文字事实准确。
+
+以下情况视为逐页蓝图失败，必须重做：
+
+- 看起来像普通 PPT 原生卡片拼版、HTML dashboard、线框稿、低保真 mockup 或脚本绘图；
+- 大面积默认白卡片、默认圆角矩形、默认阴影或默认 KPI 卡片替代已选视觉系统；
+- 只增加卡片数量或文字数量，但缺少页面计划要求的主图、侧栏、注释、证据区、caveat、微图表、小表格、SO WHAT 或证据 ID；
+- 信息密度低于第一阶段确认的页面计划；
+- 风格样张中的色彩、材质、网格、图表语言、标题层级、注释系统或页脚体系没有延续到逐页蓝图；
+- 为方便第三阶段还原、测量或可编辑性，主动降低蓝图视觉复杂度、信息密度或审美完成度。
+
+### 测量元数据边界门
+
+`visual_element_inventory_targets` 和 `blueprint_measurement_targets` 只是第二阶段蓝图记录的 metadata，用于第三阶段还原准备。它们不得改变第二阶段蓝图的交付物性质。
+
+测量准备必须服务于 ImageGen 蓝图，而不是支配蓝图。不得因为需要后续测量，把蓝图做成结构草图、线框图、规整占位图、默认卡片页或脚本绘制图。
+
 蓝图规则：
 
 - 每一页使用一张完整 16:9 图片。
@@ -133,6 +188,10 @@
 
 每张蓝图还要记录：
 
+- `imagegen_prompt`；
+- `imagegen_output_path`；
+- `imagegen_generation_id` 或等价生成记录；
+- `selected_style_id` 和 `selected_style_name`；
 - 页码和页面角色；
 - 计划保留为复杂视觉资产的区域或元素；
 - 预留给可编辑文本的区域；
@@ -157,6 +216,11 @@
 
 以下情况视为逐页蓝图子阶段失败，不得进入 PPTX：
 
+- 除非用户明确跳过 ImageGen，否则不能证明图片来自 ImageGen；
+- 用 PptxGenJS、python-pptx、HTML、CSS、SVG、canvas、Pillow、matplotlib、PowerPoint 或任何本地绘图脚本直接绘制逐页蓝图；
+- 用 PowerPoint 页面、网页截图、线框稿、结构草图、默认卡片页、低保真 mockup 或便于测量的规整占位图冒充 ImageGen 蓝图；
+- 逐页蓝图看起来像普通 PPT 原生卡片拼版、HTML dashboard、线框稿、低保真 mockup 或脚本绘图；
+- 为方便第三阶段还原、测量或可编辑性，主动降低蓝图视觉复杂度、信息密度或审美完成度；
 - 未自动判定并记录 `target_language`；
 - 每页未记录本页 `effective_language`；
 - 用户未要求英文，且英文不是该页有效目标语言，却默认生成英文蓝图；
