@@ -206,6 +206,8 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 | 同组元素整体拉开、压缩或局部偏移导致组关系变化 | 失败，必须重排 |
 | `spatial_registration_check` 缺失 | 失败，不能交付确认 |
 | `checked_groups[].status` 不是明确的 `passed` | 失败，不允许 `passed_with_tolerance`、`mostly_passed` 等模糊状态 |
+| `anchor_points[]` 只写抽象锚点，没有 `blueprint_bbox_px`、`render_bbox_px`、`delta_px` 或 `tolerance_px` | 失败，不能证明 1:1 位置还原 |
+| 关键锚点 `delta_px` 超过 `tolerance_px` | 失败，必须返工 |
 | `spatial_registration_pass = false` | 失败，必须返工 |
 
 ## 视觉 QA 闸门
@@ -217,6 +219,9 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 | `blueprint_render_path` | 已批准蓝图图路径，必须能打开 |
 | `ppt_render_path` | 当前 PPT 渲染图路径，必须能打开 |
 | `side_by_side_comparison_path` | 蓝图与 PPT 渲染图的并排对照图路径，必须能打开 |
+| `local_overlay_artifacts` | 关键区域的局部 overlay / bbox 对照图，必须能打开或可追溯 |
+| `measurement_evidence_path` | 蓝图测量表或坐标换算检查文件 |
+| `spatial_numeric_check_path` | 数值锚点检查文件 |
 | `visual_differences` | 逐项差异记录；没有差异也必须写空数组 |
 | `evidence` | 每个为 `true` 的视觉字段对应的证据；可为存在的文件路径或结构化检查记录对象 |
 | `surface_system_match` | 是否匹配蓝图页面表面系统 |
@@ -237,6 +242,8 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 任一关键字段为 `false` 时，`deliverable_allowed` 必须为 `false`。结构 QA 通过、PPTX 可打开、`pictures=0` 或文字可编辑，均不能覆盖视觉 QA 失败。`editable_information_layer_pass=true` 不能覆盖 `visual_semantics_preserved=false`；`visual_semantics_preserved=true` 也不能覆盖 `editable_information_layer_pass=false`。`label_collision_pass=true` 不能覆盖 `spatial_registration_pass=false`。
 
 `visual_qa_gate.json` 不是自我声明。`deliverable_allowed=true` 前必须有蓝图图、PPT 渲染图、side-by-side 对照图和差异记录。每个写成 `true` 的字段都必须能追溯到证据；没有证据就不能写 `true`，也不能交付确认。
+
+`deliverable_allowed=true` 前还必须有关键区域局部 overlay / bbox 对照、蓝图测量表证据和数值锚点检查。`visual_differences` 中存在 High/Critical 且未被用户明确接受的差异时，不得交付确认。
 
 ## manifest 判定门
 
@@ -259,6 +266,14 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 | `blueprint_reconstruction_plan` 缺少蓝图路径、画布、背景色、表面系统、版式区域、页眉页脚、SO WHAT、主图语义、密度、锚点、原生重建目标或允许视觉资产 | 失败，必须补齐拆解记录 |
 | `blueprint_reconstruction_plan.complex_visual_scan` 缺失或不完整 | 失败，必须先扫描复杂视觉候选和触发门 |
 | `complex_visual_scan.pictures_zero_is_not_goal` 不是 `true` | 失败，必须重申 `pictures=0` 非目标原则并重做资产准入判断 |
+| `visual_semantics_required = true` 但缺少 `visual_element_inventory` | 失败，必须登记全部可见视觉元素或元素组 |
+| `visual_element_inventory[]` 缺少 `priority` 或 `measurement_mode` | 失败，必须按 P0/P1/P2 分层测量 |
+| P0 元素不是 `individual_bbox` 或缺少 bbox / 容差 / `must_reproduce=true` | 失败，标题、主图、SO WHAT、页脚、关键数字、核心面板和用户指出区域必须逐项测量 |
+| P1 元素不是逐项测量或组内子锚点测量 | 失败，普通卡片、图标、标签、箭头、表格和分隔线必须有可验证位置 |
+| P2 元素不是装饰组测量或组内子锚点测量 | 失败，微小装饰不能跳过登记 |
+| P0/P1 被降级为 P2 | 失败，不能把关键语义元素伪装成装饰 |
+| 缺少 `blueprint_measurement_table` | 失败，必须先测量蓝图再生成 PPTX |
+| 缺少 `blueprint_canvas_px`、`ppt_canvas_in`、`scale_x` 或 `scale_y` | 失败，无法证明 px 到 PPT 坐标换算 |
 | 缺少 `generation_engine` | 失败，必须记录 PPTX 生成工具 |
 | `generation_engine.visual_fidelity_not_reduced` 不是 `true` | 失败，不得以工具限制降低蓝图还原 |
 | `generation_engine.tool = python-pptx` 但缺少 `fallback_reason` | 失败，必须说明为什么不能用 PptxGenJS / pptx-generator |
@@ -278,6 +293,8 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 | 核心曲线采样点少于最小要求 | 失败，必须改用 path/freeform/custom geometry 或增加采样 |
 | `label_collision_check_required = true` 但缺少标签避让结果 | 失败，必须补 visual QA 或 manifest 记录 |
 | `spatial_registration_required = true` 但缺少空间锚点结果 | 失败，必须补 manifest 或 visual QA 记录 |
+| 空间锚点缺少数值 bbox / delta / tolerance | 失败，抽象锚点不能证明 1:1 |
+| 空间锚点 delta 超出 tolerance | 失败，必须返工 |
 | `container_overflow_check_required = true` 但缺少容器边界结果 | 失败，必须补 manifest 或 visual QA 记录 |
 | `continuous_text_flow_check_required = true` 但缺少连续文本流结果 | 失败，必须补 manifest 或 visual QA 记录 |
 | `table_semantic_typography_required = true` 但缺少 `table_text_objects` | 失败，必须按语义角色登记表格文字 |
@@ -285,6 +302,8 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 | 表格正文语义登记为 `T11` | 失败，必须改为 `T7/T10` 并调整表格布局 |
 | `visual_qa_gate.json` 缺失或 `deliverable_allowed=false` | 失败，不得交付确认 |
 | `deliverable_allowed=true` 但缺少蓝图图、PPT 渲染图、side-by-side 对照图或差异记录 | 失败，不得交付确认 |
+| `deliverable_allowed=true` 但缺少局部 overlay、测量证据或数值锚点证据 | 失败，不得交付确认 |
+| High/Critical 视觉差异未被用户接受 | 失败，不得交付确认 |
 | 视觉字段为 `true` 但没有字段级 `evidence` | 失败，不得交付确认 |
 
 ## 严重程度

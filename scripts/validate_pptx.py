@@ -115,6 +115,50 @@ TABLE_PROSE_SEMANTIC_ROLES = {
     "table_bullet",
 }
 TABLE_PROSE_ALLOWED_ROLES = {"T7", "T10"}
+VISUAL_ELEMENT_PRIORITIES = {"P0", "P1", "P2"}
+VISUAL_ELEMENT_MEASUREMENT_MODES = {
+    "individual_bbox",
+    "group_with_child_anchors",
+    "decoration_group",
+}
+VISUAL_ELEMENT_P0_ROLES = {
+    "title",
+    "subtitle",
+    "main_chart",
+    "main_visual",
+    "main_flow",
+    "main_matrix",
+    "so_what",
+    "footer",
+    "source",
+    "page_number",
+    "key_number",
+    "core_panel",
+    "user_specified",
+}
+VISUAL_ELEMENT_P0_ROLE_KEYWORDS = (
+    "title",
+    "main_",
+    "so_what",
+    "footer",
+    "source",
+    "page",
+    "key",
+    "core_panel",
+    "user",
+)
+NUMERIC_BBOX_FIELDS = ("x", "y", "w", "h")
+COORDINATE_MAPPING_FIELDS = ("blueprint_canvas_px", "ppt_canvas_in", "scale_x", "scale_y")
+DECORATION_GROUP_REQUIRED_ANY_FIELDS = (("density", "count", "quantity"),)
+DECORATION_GROUP_REQUIRED_FIELDS = (
+    "group_bbox_px",
+    "color",
+    "spacing_px",
+    "alignment",
+    "repeat_direction",
+    "opacity",
+    "reproduction_strategy",
+)
 STRICT_FAILURE_CODES = {
     "FULL_SLIDE_BACKGROUND_RISK",
     "PICTURES_NOT_ALLOWED",
@@ -165,6 +209,16 @@ STRICT_FAILURE_CODES = {
     "MANIFEST_PAGE_EXECUTION_INCOMPLETE",
     "MANIFEST_PAGE_EXECUTION_NOT_SINGLE_PAGE",
     "MANIFEST_PAGE_APPROVAL_MISSING",
+    "MANIFEST_VISUAL_ELEMENT_INVENTORY_MISSING",
+    "MANIFEST_VISUAL_ELEMENT_INVENTORY_INCOMPLETE",
+    "MANIFEST_VISUAL_ELEMENT_PRIORITY_INVALID",
+    "MANIFEST_VISUAL_ELEMENT_PRIORITY_DOWNGRADED",
+    "MANIFEST_BLUEPRINT_MEASUREMENT_MISSING",
+    "MANIFEST_COORDINATE_MAPPING_MISSING",
+    "MANIFEST_KEY_REGION_MEASUREMENT_MISSING",
+    "MANIFEST_DECORATION_GROUP_MEASUREMENT_MISSING",
+    "MANIFEST_SPATIAL_NUMERIC_ANCHOR_MISSING",
+    "MANIFEST_SPATIAL_ANCHOR_DELTA_FAILED",
     "MANIFEST_BATCH_FINAL_DELIVERY_FORBIDDEN",
     "MANIFEST_FINAL_MERGE_MISSING",
     "MANIFEST_FINAL_MERGE_REGENERATED_PAGES",
@@ -182,6 +236,8 @@ STRICT_FAILURE_CODES = {
     "PPT_RENDER_MISSING",
     "SIDE_BY_SIDE_COMPARISON_MISSING",
     "VISUAL_PASS_WITHOUT_EVIDENCE",
+    "VISUAL_QA_LOCAL_OVERLAY_MISSING",
+    "VISUAL_QA_UNACCEPTED_HIGH_DIFFERENCE",
 }
 PLACEHOLDER_RE = re.compile(
     r"\b(?:TODO|TBD)\b|Lorem ipsum|Click to add|单击此处添加",
@@ -405,6 +461,87 @@ def manifest_ref_exists(value: Any, manifest_dir: Path | None = None) -> bool:
     return False
 
 
+def is_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def has_numeric_bbox(value: Any) -> bool:
+    if not isinstance(value, dict):
+        return False
+    return all(is_number(value.get(field)) for field in NUMERIC_BBOX_FIELDS)
+
+
+def has_numeric_size(value: Any) -> bool:
+    if not isinstance(value, dict):
+        return False
+    return is_number(value.get("w")) and is_number(value.get("h"))
+
+
+def has_numeric_delta(value: Any) -> bool:
+    if not isinstance(value, dict):
+        return False
+    return all(is_number(value.get(field)) for field in ("x", "y"))
+
+
+def get_blueprint_measurement_table(entry: dict[str, Any], reconstruction_plan: dict[str, Any]) -> Any:
+    table = reconstruction_plan.get("blueprint_measurement_table")
+    if table is not None:
+        return table
+    return entry.get("blueprint_measurement_table")
+
+
+def role_requires_p0(role: Any) -> bool:
+    if not isinstance(role, str):
+        return False
+    normalized = role.strip().lower()
+    return normalized in VISUAL_ELEMENT_P0_ROLES or any(
+        keyword in normalized for keyword in VISUAL_ELEMENT_P0_ROLE_KEYWORDS
+    )
+
+
+def has_individual_measurement(item: dict[str, Any]) -> bool:
+    return (
+        item.get("measurement_mode") == "individual_bbox"
+        and has_numeric_bbox(item.get("blueprint_bbox_px"))
+        and has_numeric_bbox(item.get("ppt_target_bbox_in"))
+        and is_number(item.get("tolerance_px"))
+        and item.get("must_reproduce") is True
+    )
+
+
+def has_group_child_measurement(item: dict[str, Any]) -> bool:
+    child_anchors = item.get("child_anchors", item.get("anchor_points"))
+    return (
+        item.get("measurement_mode") == "group_with_child_anchors"
+        and has_numeric_bbox(item.get("group_bbox_px", item.get("blueprint_bbox_px")))
+        and isinstance(child_anchors, list)
+        and bool(child_anchors)
+    )
+
+
+def has_decoration_group_measurement(item: dict[str, Any]) -> bool:
+    if item.get("measurement_mode") != "decoration_group":
+        return False
+    if not has_numeric_bbox(item.get("group_bbox_px")):
+        return False
+    if not all(item.get(field) not in (None, "", [], {}) for field in DECORATION_GROUP_REQUIRED_FIELDS[1:]):
+        return False
+    return any(
+        item.get(field) not in (None, "", [], {})
+        for field in DECORATION_GROUP_REQUIRED_ANY_FIELDS[0]
+    )
+
+
+def delta_exceeds_tolerance(delta: dict[str, Any], tolerance: Any) -> bool:
+    if not is_number(tolerance):
+        return True
+    for field in ("x", "y", "w", "h"):
+        value = delta.get(field)
+        if is_number(value) and abs(float(value)) > float(tolerance):
+            return True
+    return False
+
+
 def validate_manifest_slide(
     entry: dict[str, Any] | None,
     metrics: dict[str, Any],
@@ -525,6 +662,119 @@ def validate_manifest_slide(
                         issue(
                             "MANIFEST_VISUAL_COMPLEXITY_SCAN_INCOMPLETE",
                             "native-only reconstruction requires a rationale when no complex visual candidates or gates are found.",
+                            slide=slide_number,
+                        )
+                    )
+            visual_element_inventory = entry.get(
+                "visual_element_inventory",
+                reconstruction_plan.get("visual_element_inventory"),
+            )
+            if not isinstance(visual_element_inventory, list) or not visual_element_inventory:
+                warnings.append(
+                    issue(
+                        "MANIFEST_VISUAL_ELEMENT_INVENTORY_MISSING",
+                        "visual_semantics_required=true requires visual_element_inventory covering every visible visual element or element group.",
+                        slide=slide_number,
+                    )
+                )
+            else:
+                for element_index, element in enumerate(visual_element_inventory, start=1):
+                    if not isinstance(element, dict):
+                        warnings.append(
+                            issue(
+                                "MANIFEST_VISUAL_ELEMENT_INVENTORY_INCOMPLETE",
+                                f"visual_element_inventory[{element_index}] must be an object.",
+                                slide=slide_number,
+                            )
+                        )
+                        continue
+                    priority = element.get("priority")
+                    measurement_mode = element.get("measurement_mode")
+                    role = element.get("role")
+                    if priority not in VISUAL_ELEMENT_PRIORITIES or measurement_mode not in VISUAL_ELEMENT_MEASUREMENT_MODES:
+                        warnings.append(
+                            issue(
+                                "MANIFEST_VISUAL_ELEMENT_PRIORITY_INVALID",
+                                f"visual_element_inventory[{element_index}] must include priority P0/P1/P2 and a valid measurement_mode.",
+                                slide=slide_number,
+                            )
+                        )
+                        continue
+                    if priority == "P2" and role_requires_p0(role):
+                        warnings.append(
+                            issue(
+                                "MANIFEST_VISUAL_ELEMENT_PRIORITY_DOWNGRADED",
+                                f"visual_element_inventory[{element_index}] marks a P0 role as P2.",
+                                slide=slide_number,
+                            )
+                        )
+                    if priority == "P0":
+                        if measurement_mode != "individual_bbox":
+                            warnings.append(
+                                issue(
+                                    "MANIFEST_VISUAL_ELEMENT_PRIORITY_DOWNGRADED",
+                                    f"visual_element_inventory[{element_index}] is P0 but is not individually measured.",
+                                    slide=slide_number,
+                                )
+                            )
+                        if not has_individual_measurement(element):
+                            warnings.append(
+                                issue(
+                                    "MANIFEST_KEY_REGION_MEASUREMENT_MISSING",
+                                    f"visual_element_inventory[{element_index}] P0 elements require blueprint_bbox_px, ppt_target_bbox_in, tolerance_px, and must_reproduce=true.",
+                                    slide=slide_number,
+                                )
+                            )
+                    elif priority == "P1":
+                        if measurement_mode not in {"individual_bbox", "group_with_child_anchors"}:
+                            warnings.append(
+                                issue(
+                                    "MANIFEST_VISUAL_ELEMENT_PRIORITY_DOWNGRADED",
+                                    f"visual_element_inventory[{element_index}] is P1 but uses an invalid low-detail measurement mode.",
+                                    slide=slide_number,
+                                )
+                            )
+                        if not (has_individual_measurement(element) or has_group_child_measurement(element)):
+                            warnings.append(
+                                issue(
+                                    "MANIFEST_KEY_REGION_MEASUREMENT_MISSING",
+                                    f"visual_element_inventory[{element_index}] P1 elements require individual bbox measurement or group child anchors.",
+                                    slide=slide_number,
+                                )
+                            )
+                    elif priority == "P2":
+                        if not (has_decoration_group_measurement(element) or has_group_child_measurement(element)):
+                            warnings.append(
+                                issue(
+                                    "MANIFEST_DECORATION_GROUP_MEASUREMENT_MISSING",
+                                    f"visual_element_inventory[{element_index}] P2 elements require decoration-group measurement or group child anchors.",
+                                    slide=slide_number,
+                                )
+                            )
+
+            measurement_table = get_blueprint_measurement_table(entry, reconstruction_plan)
+            if not isinstance(measurement_table, dict):
+                warnings.append(
+                    issue(
+                        "MANIFEST_BLUEPRINT_MEASUREMENT_MISSING",
+                        "visual_semantics_required=true requires blueprint_measurement_table before PPTX generation.",
+                        slide=slide_number,
+                    )
+                )
+            else:
+                missing_mapping = []
+                for field in COORDINATE_MAPPING_FIELDS:
+                    field_value = measurement_table.get(field)
+                    if field in {"blueprint_canvas_px", "ppt_canvas_in"}:
+                        if not has_numeric_size(field_value):
+                            missing_mapping.append(field)
+                    elif not is_number(field_value):
+                        missing_mapping.append(field)
+                if missing_mapping:
+                    warnings.append(
+                        issue(
+                            "MANIFEST_COORDINATE_MAPPING_MISSING",
+                            f"blueprint_measurement_table is missing coordinate mapping fields: {', '.join(missing_mapping)}.",
                             slide=slide_number,
                         )
                     )
@@ -898,6 +1148,46 @@ def validate_manifest_slide(
                             )
                         )
                         continue
+                    for anchor_index, anchor_point in enumerate(anchor_points, start=1):
+                        if not isinstance(anchor_point, dict):
+                            warnings.append(
+                                issue(
+                                    "MANIFEST_SPATIAL_NUMERIC_ANCHOR_MISSING",
+                                    f"spatial_registration_check.checked_groups[{group_index}].anchor_points[{anchor_index}] must be an object with numeric bbox and delta evidence.",
+                                    slide=slide_number,
+                                )
+                            )
+                            continue
+                        if anchor_point.get("status") != "passed":
+                            warnings.append(
+                                issue(
+                                    "MANIFEST_SPATIAL_REGISTRATION_FAILED",
+                                    f"spatial_registration_check.checked_groups[{group_index}].anchor_points[{anchor_index}] status must be exactly 'passed'.",
+                                    slide=slide_number,
+                                )
+                            )
+                        if (
+                            not has_numeric_bbox(anchor_point.get("blueprint_bbox_px"))
+                            or not has_numeric_bbox(anchor_point.get("render_bbox_px"))
+                            or not has_numeric_delta(anchor_point.get("delta_px"))
+                            or not is_number(anchor_point.get("tolerance_px"))
+                        ):
+                            warnings.append(
+                                issue(
+                                    "MANIFEST_SPATIAL_NUMERIC_ANCHOR_MISSING",
+                                    f"spatial_registration_check.checked_groups[{group_index}].anchor_points[{anchor_index}] must include blueprint_bbox_px, render_bbox_px, delta_px, and tolerance_px.",
+                                    slide=slide_number,
+                                )
+                            )
+                            continue
+                        if delta_exceeds_tolerance(anchor_point["delta_px"], anchor_point["tolerance_px"]):
+                            warnings.append(
+                                issue(
+                                    "MANIFEST_SPATIAL_ANCHOR_DELTA_FAILED",
+                                    f"spatial_registration_check.checked_groups[{group_index}].anchor_points[{anchor_index}] delta_px exceeds tolerance_px.",
+                                    slide=slide_number,
+                                )
+                            )
                     has_text_anchor = any(
                         isinstance(anchor, dict)
                         and isinstance(anchor.get("anchor"), str)
@@ -1152,6 +1442,44 @@ def validate_visual_qa(
                     issue(
                         "VISUAL_QA_EVIDENCE_MISSING",
                         "deliverable_allowed=true requires visual_differences to be recorded as a list, even when empty.",
+                        slide=slide_number,
+                    )
+                )
+            else:
+                for difference_index, difference in enumerate(visual_differences, start=1):
+                    if not isinstance(difference, dict):
+                        continue
+                    severity = str(difference.get("severity", "")).strip().lower()
+                    if severity in {"high", "critical"} and difference.get("accepted_by_user") is not True:
+                        warnings.append(
+                            issue(
+                                "VISUAL_QA_UNACCEPTED_HIGH_DIFFERENCE",
+                                f"visual_differences[{difference_index}] is High/Critical and has not been explicitly accepted by the user.",
+                                slide=slide_number,
+                            )
+                        )
+            local_overlays = entry.get("local_overlay_artifacts")
+            if not isinstance(local_overlays, list) or not local_overlays:
+                warnings.append(
+                    issue(
+                        "VISUAL_QA_LOCAL_OVERLAY_MISSING",
+                        "deliverable_allowed=true requires local_overlay_artifacts for key-region overlay or bbox comparison.",
+                        slide=slide_number,
+                    )
+                )
+            if entry.get("measurement_evidence_path") in (None, "", [], {}):
+                warnings.append(
+                    issue(
+                        "VISUAL_QA_LOCAL_OVERLAY_MISSING",
+                        "deliverable_allowed=true requires measurement_evidence_path for blueprint measurement evidence.",
+                        slide=slide_number,
+                    )
+                )
+            if entry.get("spatial_numeric_check_path") in (None, "", [], {}):
+                warnings.append(
+                    issue(
+                        "VISUAL_QA_LOCAL_OVERLAY_MISSING",
+                        "deliverable_allowed=true requires spatial_numeric_check_path for numeric anchor evidence.",
                         slide=slide_number,
                     )
                 )

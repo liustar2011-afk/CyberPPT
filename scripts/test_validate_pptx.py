@@ -668,6 +668,467 @@ class ValidatePptxTests(unittest.TestCase):
         self.assertIn("MANIFEST_MERGE_REGRESSION_MISSING", codes)
         self.assertIn("MANIFEST_MERGE_REGRESSION_FAILED", codes)
 
+    def test_visual_semantics_requires_visual_element_inventory(self):
+        module = load_validator()
+        metrics = {
+            "pictures": 0,
+            "max_picture_area_ratio": 0,
+            "native_text_shapes": 1,
+        }
+        manifest_entry = {
+            "slide": 1,
+            "expected_pictures": 0,
+            "image_assets": [],
+            "blueprint_reconstruction_plan": {
+                "blueprint_path": "blueprints/slide-01.png",
+                "canvas_size": "16:9",
+                "background_color_sample": "#F3F4EF",
+                "surface_system": "flat editorial page",
+                "layout_regions": ["title", "main_chart", "so_what"],
+                "header_footer_system": "source footer",
+                "so_what_region": "bottom band",
+                "main_chart_semantics": "line chart",
+                "density_targets": "dense consulting page",
+                "anchor_targets": ["title baseline", "chart origin"],
+                "native_rebuild_targets": ["title", "chart", "so_what"],
+                "allowed_visual_assets": [],
+                "complex_visual_scan": {
+                    "completed": True,
+                    "complex_visual_candidates": ["line chart labels"],
+                    "triggered_gates": ["spatial_registration"],
+                    "pictures_zero_is_not_goal": True,
+                },
+            },
+            "qa_expectations": {
+                "visual_semantics_required": True,
+            },
+        }
+        issues = module.validate_manifest_slide(manifest_entry, metrics, 1)
+        self.assertTrue(
+            any(item["code"] == "MANIFEST_VISUAL_ELEMENT_INVENTORY_MISSING" for item in issues)
+        )
+
+    def test_visual_element_requires_priority(self):
+        module = load_validator()
+        metrics = {
+            "pictures": 0,
+            "max_picture_area_ratio": 0,
+            "native_text_shapes": 1,
+        }
+        manifest_entry = {
+            "slide": 1,
+            "expected_pictures": 0,
+            "image_assets": [],
+            "visual_element_inventory": [
+                {
+                    "id": "title_block",
+                    "role": "title",
+                    "measurement_mode": "individual_bbox",
+                    "must_reproduce": True,
+                    "blueprint_bbox_px": {"x": 90, "y": 64, "w": 800, "h": 72},
+                    "ppt_target_bbox_in": {"x": 0.63, "y": 0.44, "w": 5.56, "h": 0.5},
+                    "tolerance_px": 3,
+                }
+            ],
+            "blueprint_reconstruction_plan": {
+                "blueprint_path": "blueprints/slide-01.png",
+                "canvas_size": "16:9",
+                "background_color_sample": "#F3F4EF",
+                "surface_system": "flat editorial page",
+                "layout_regions": ["title", "main_chart", "so_what"],
+                "header_footer_system": "source footer",
+                "so_what_region": "bottom band",
+                "main_chart_semantics": "line chart",
+                "density_targets": "dense consulting page",
+                "anchor_targets": ["title baseline", "chart origin"],
+                "native_rebuild_targets": ["title", "chart", "so_what"],
+                "allowed_visual_assets": [],
+                "complex_visual_scan": {
+                    "completed": True,
+                    "complex_visual_candidates": ["line chart labels"],
+                    "triggered_gates": ["spatial_registration"],
+                    "pictures_zero_is_not_goal": True,
+                },
+                "blueprint_measurement_table": {
+                    "blueprint_canvas_px": {"w": 1920, "h": 1080},
+                    "ppt_canvas_in": {"w": 13.333, "h": 7.5},
+                    "scale_x": 0.006944,
+                    "scale_y": 0.006944,
+                    "regions": [],
+                },
+            },
+            "qa_expectations": {
+                "visual_semantics_required": True,
+            },
+        }
+        issues = module.validate_manifest_slide(manifest_entry, metrics, 1)
+        self.assertTrue(
+            any(item["code"] == "MANIFEST_VISUAL_ELEMENT_PRIORITY_INVALID" for item in issues)
+        )
+
+    def test_p0_requires_individual_measurement(self):
+        module = load_validator()
+        metrics = {
+            "pictures": 0,
+            "max_picture_area_ratio": 0,
+            "native_text_shapes": 1,
+        }
+        manifest_entry = {
+            "slide": 1,
+            "expected_pictures": 0,
+            "image_assets": [],
+            "visual_element_inventory": [
+                {
+                    "id": "main_chart",
+                    "priority": "P0",
+                    "role": "main_chart",
+                    "measurement_mode": "decoration_group",
+                    "must_reproduce": True,
+                }
+            ],
+            "blueprint_reconstruction_plan": {
+                "blueprint_path": "blueprints/slide-01.png",
+                "canvas_size": "16:9",
+                "background_color_sample": "#F3F4EF",
+                "surface_system": "flat editorial page",
+                "layout_regions": ["title", "main_chart", "so_what"],
+                "header_footer_system": "source footer",
+                "so_what_region": "bottom band",
+                "main_chart_semantics": "line chart",
+                "density_targets": "dense consulting page",
+                "anchor_targets": ["title baseline", "chart origin"],
+                "native_rebuild_targets": ["title", "chart", "so_what"],
+                "allowed_visual_assets": [],
+                "complex_visual_scan": {
+                    "completed": True,
+                    "complex_visual_candidates": ["line chart labels"],
+                    "triggered_gates": ["spatial_registration"],
+                    "pictures_zero_is_not_goal": True,
+                },
+                "blueprint_measurement_table": {
+                    "blueprint_canvas_px": {"w": 1920, "h": 1080},
+                    "ppt_canvas_in": {"w": 13.333, "h": 7.5},
+                    "scale_x": 0.006944,
+                    "scale_y": 0.006944,
+                    "regions": [],
+                },
+            },
+            "qa_expectations": {
+                "visual_semantics_required": True,
+            },
+        }
+        issues = module.validate_manifest_slide(manifest_entry, metrics, 1)
+        codes = {item["code"] for item in issues}
+        self.assertIn("MANIFEST_KEY_REGION_MEASUREMENT_MISSING", codes)
+        self.assertIn("MANIFEST_VISUAL_ELEMENT_PRIORITY_DOWNGRADED", codes)
+
+    def test_p2_requires_decoration_group_measurement(self):
+        module = load_validator()
+        metrics = {
+            "pictures": 0,
+            "max_picture_area_ratio": 0,
+            "native_text_shapes": 1,
+        }
+        manifest_entry = {
+            "slide": 1,
+            "expected_pictures": 0,
+            "image_assets": [],
+            "visual_element_inventory": [
+                {
+                    "id": "background_dot_pattern",
+                    "priority": "P2",
+                    "role": "micro_decoration",
+                    "measurement_mode": "decoration_group",
+                    "must_reproduce": True,
+                    "group_bbox_px": {"x": 80, "y": 140, "w": 1760, "h": 820},
+                    "color": "#D8DAD2",
+                    "spacing_px": 12,
+                }
+            ],
+            "blueprint_reconstruction_plan": {
+                "blueprint_path": "blueprints/slide-01.png",
+                "canvas_size": "16:9",
+                "background_color_sample": "#F3F4EF",
+                "surface_system": "flat editorial page",
+                "layout_regions": ["title", "main_chart", "so_what"],
+                "header_footer_system": "source footer",
+                "so_what_region": "bottom band",
+                "main_chart_semantics": "line chart",
+                "density_targets": "dense consulting page",
+                "anchor_targets": ["title baseline", "chart origin"],
+                "native_rebuild_targets": ["title", "chart", "so_what"],
+                "allowed_visual_assets": [],
+                "complex_visual_scan": {
+                    "completed": True,
+                    "complex_visual_candidates": ["line chart labels"],
+                    "triggered_gates": ["spatial_registration"],
+                    "pictures_zero_is_not_goal": True,
+                },
+                "blueprint_measurement_table": {
+                    "blueprint_canvas_px": {"w": 1920, "h": 1080},
+                    "ppt_canvas_in": {"w": 13.333, "h": 7.5},
+                    "scale_x": 0.006944,
+                    "scale_y": 0.006944,
+                    "regions": [],
+                },
+            },
+            "qa_expectations": {
+                "visual_semantics_required": True,
+            },
+        }
+        issues = module.validate_manifest_slide(manifest_entry, metrics, 1)
+        self.assertTrue(
+            any(item["code"] == "MANIFEST_DECORATION_GROUP_MEASUREMENT_MISSING" for item in issues)
+        )
+
+    def test_blueprint_measurement_requires_coordinate_mapping(self):
+        module = load_validator()
+        metrics = {
+            "pictures": 0,
+            "max_picture_area_ratio": 0,
+            "native_text_shapes": 1,
+        }
+        manifest_entry = {
+            "slide": 1,
+            "expected_pictures": 0,
+            "image_assets": [],
+            "visual_element_inventory": [
+                {
+                    "id": "title_block",
+                    "priority": "P0",
+                    "role": "title",
+                    "measurement_mode": "individual_bbox",
+                    "must_reproduce": True,
+                    "blueprint_bbox_px": {"x": 90, "y": 64, "w": 800, "h": 72},
+                    "ppt_target_bbox_in": {"x": 0.63, "y": 0.44, "w": 5.56, "h": 0.5},
+                    "tolerance_px": 3,
+                }
+            ],
+            "blueprint_reconstruction_plan": {
+                "blueprint_path": "blueprints/slide-01.png",
+                "canvas_size": "16:9",
+                "background_color_sample": "#F3F4EF",
+                "surface_system": "flat editorial page",
+                "layout_regions": ["title", "main_chart", "so_what"],
+                "header_footer_system": "source footer",
+                "so_what_region": "bottom band",
+                "main_chart_semantics": "line chart",
+                "density_targets": "dense consulting page",
+                "anchor_targets": ["title baseline", "chart origin"],
+                "native_rebuild_targets": ["title", "chart", "so_what"],
+                "allowed_visual_assets": [],
+                "complex_visual_scan": {
+                    "completed": True,
+                    "complex_visual_candidates": ["line chart labels"],
+                    "triggered_gates": ["spatial_registration"],
+                    "pictures_zero_is_not_goal": True,
+                },
+                "blueprint_measurement_table": {
+                    "regions": [],
+                },
+            },
+            "qa_expectations": {
+                "visual_semantics_required": True,
+            },
+        }
+        issues = module.validate_manifest_slide(manifest_entry, metrics, 1)
+        self.assertTrue(
+            any(item["code"] == "MANIFEST_COORDINATE_MAPPING_MISSING" for item in issues)
+        )
+
+    def test_spatial_registration_requires_numeric_bbox_delta_tolerance(self):
+        module = load_validator()
+        metrics = {
+            "pictures": 0,
+            "max_picture_area_ratio": 0,
+            "native_text_shapes": 1,
+        }
+        manifest_entry = {
+            "slide": 1,
+            "expected_pictures": 0,
+            "image_assets": [],
+            "qa_expectations": {
+                "spatial_registration_required": True,
+            },
+            "spatial_registration_check": {
+                "passed": True,
+                "checked_groups": [
+                    {
+                        "id": "flow_node",
+                        "status": "passed",
+                        "anchor_points": [
+                            {"item": "node_label", "anchor": "text_baseline_center"}
+                        ],
+                    }
+                ],
+            },
+        }
+        issues = module.validate_manifest_slide(manifest_entry, metrics, 1)
+        self.assertTrue(
+            any(item["code"] == "MANIFEST_SPATIAL_NUMERIC_ANCHOR_MISSING" for item in issues)
+        )
+
+    def test_spatial_anchor_delta_over_tolerance_is_strict_failure(self):
+        module = load_validator()
+        metrics = {
+            "pictures": 0,
+            "max_picture_area_ratio": 0,
+            "native_text_shapes": 1,
+        }
+        manifest_entry = {
+            "slide": 1,
+            "expected_pictures": 0,
+            "image_assets": [],
+            "qa_expectations": {
+                "spatial_registration_required": True,
+            },
+            "spatial_registration_check": {
+                "passed": True,
+                "checked_groups": [
+                    {
+                        "id": "flow_node",
+                        "status": "passed",
+                        "anchor_points": [
+                            {
+                                "item": "node_label",
+                                "anchor": "text_baseline_center",
+                                "blueprint_bbox_px": {"x": 100, "y": 100, "w": 120, "h": 28},
+                                "render_bbox_px": {"x": 118, "y": 100, "w": 120, "h": 28},
+                                "delta_px": {"x": 18, "y": 0, "w": 0, "h": 0},
+                                "tolerance_px": 6,
+                                "status": "passed",
+                            }
+                        ],
+                    }
+                ],
+            },
+        }
+        issues = module.validate_manifest_slide(manifest_entry, metrics, 1)
+        self.assertTrue(
+            any(item["code"] == "MANIFEST_SPATIAL_ANCHOR_DELTA_FAILED" for item in issues)
+        )
+
+    def test_visual_qa_requires_local_overlay_for_deliverable(self):
+        module = load_validator()
+        manifest = {
+            "slides": [
+                {
+                    "slide": 1,
+                    "qa_expectations": {"visual_qa_required": True},
+                }
+            ]
+        }
+        visual_qa = {
+            "slides": [
+                {
+                    "slide": 1,
+                    "surface_system_match": True,
+                    "main_chart_semantics_match": True,
+                    "visual_semantics_preserved": True,
+                    "editable_information_layer_pass": True,
+                    "spatial_registration_pass": True,
+                    "curve_fidelity_pass": True,
+                    "label_collision_pass": True,
+                    "text_overflow_pass": True,
+                    "container_overflow_pass": True,
+                    "continuous_text_flow_pass": True,
+                    "table_semantic_typography_pass": True,
+                    "table_density_pass": True,
+                    "blueprint_background_not_used": True,
+                    "deliverable_allowed": True,
+                    "blueprint_render_path": "blueprints/slide-01.png",
+                    "ppt_render_path": "renders/slide-01.png",
+                    "side_by_side_comparison_path": "qa/slide-01-side-by-side.png",
+                    "visual_differences": [],
+                    "evidence": {
+                        "surface_system_match": {"checked": True},
+                        "main_chart_semantics_match": {"checked": True},
+                        "visual_semantics_preserved": {"checked": True},
+                        "editable_information_layer_pass": {"checked": True},
+                        "spatial_registration_pass": {"checked": True},
+                        "curve_fidelity_pass": {"checked": True},
+                        "label_collision_pass": {"checked": True},
+                        "text_overflow_pass": {"checked": True},
+                        "container_overflow_pass": {"checked": True},
+                        "continuous_text_flow_pass": {"checked": True},
+                        "table_semantic_typography_pass": {"checked": True},
+                        "table_density_pass": {"checked": True},
+                        "blueprint_background_not_used": {"checked": True},
+                    },
+                }
+            ]
+        }
+        issues = module.validate_visual_qa(visual_qa, manifest)
+        self.assertTrue(
+            any(item["code"] == "VISUAL_QA_LOCAL_OVERLAY_MISSING" for item in issues)
+        )
+
+    def test_high_or_critical_visual_difference_blocks_delivery(self):
+        module = load_validator()
+        manifest = {
+            "slides": [
+                {
+                    "slide": 1,
+                    "qa_expectations": {"visual_qa_required": True},
+                }
+            ]
+        }
+        visual_qa = {
+            "slides": [
+                {
+                    "slide": 1,
+                    "surface_system_match": True,
+                    "main_chart_semantics_match": True,
+                    "visual_semantics_preserved": True,
+                    "editable_information_layer_pass": True,
+                    "spatial_registration_pass": True,
+                    "curve_fidelity_pass": True,
+                    "label_collision_pass": True,
+                    "text_overflow_pass": True,
+                    "container_overflow_pass": True,
+                    "continuous_text_flow_pass": True,
+                    "table_semantic_typography_pass": True,
+                    "table_density_pass": True,
+                    "blueprint_background_not_used": True,
+                    "deliverable_allowed": True,
+                    "blueprint_render_path": "blueprints/slide-01.png",
+                    "ppt_render_path": "renders/slide-01.png",
+                    "side_by_side_comparison_path": "qa/slide-01-side-by-side.png",
+                    "local_overlay_artifacts": ["qa/slide-01-title-overlay.png"],
+                    "measurement_evidence_path": "qa/slide-01-blueprint-measurement.json",
+                    "spatial_numeric_check_path": "qa/slide-01-spatial-numeric-check.json",
+                    "visual_differences": [
+                        {
+                            "region": "main_chart_area",
+                            "severity": "High",
+                            "description": "main chart shifted by 22px",
+                            "accepted_by_user": False,
+                            "requires_rework": True,
+                        }
+                    ],
+                    "evidence": {
+                        "surface_system_match": {"checked": True},
+                        "main_chart_semantics_match": {"checked": True},
+                        "visual_semantics_preserved": {"checked": True},
+                        "editable_information_layer_pass": {"checked": True},
+                        "spatial_registration_pass": {"checked": True},
+                        "curve_fidelity_pass": {"checked": True},
+                        "label_collision_pass": {"checked": True},
+                        "text_overflow_pass": {"checked": True},
+                        "container_overflow_pass": {"checked": True},
+                        "continuous_text_flow_pass": {"checked": True},
+                        "table_semantic_typography_pass": {"checked": True},
+                        "table_density_pass": {"checked": True},
+                        "blueprint_background_not_used": {"checked": True},
+                    },
+                }
+            ]
+        }
+        issues = module.validate_visual_qa(visual_qa, manifest)
+        self.assertTrue(
+            any(item["code"] == "VISUAL_QA_UNACCEPTED_HIGH_DIFFERENCE" for item in issues)
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
