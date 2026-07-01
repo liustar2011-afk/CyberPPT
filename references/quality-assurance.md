@@ -31,6 +31,8 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 - 每页文本形状数量和信息单元数量；
 - 图片资产说明，并解释每张图片为什么需要保留为图片、是否牺牲可编辑性；
 - `slide_manifest.json` 是否覆盖全部页面，且 `expected_pictures`、`image_assets`、`text_objects`、`native_components`、`qa_expectations` 字段完整；
+- 每页是否存在冻结的 `slide_content_lock`、`blueprint_component_signature` 和 `visual_element_registry`，且 manifest 中记录路径、SHA-256 和 `locked=true`；
+- `visual_element_registry` 是否覆盖全部可见元素，且每个 P0/P1/P2 元素都有蓝图 bbox、PPT 目标 bbox、渲染 bbox、delta、tolerance 和 registration status；
 - 当 `qa_expectations.visual_semantics_required = true` 时，manifest 是否包含完整 `blueprint_reconstruction_plan`，并覆盖蓝图路径、画布、背景色、表面系统、版式区域、页眉页脚、SO WHAT、主图语义、密度、锚点、原生重建对象和允许视觉资产；
 - `blueprint_reconstruction_plan.complex_visual_scan` 是否完整，是否记录复杂视觉候选、触发门、native-only 理由和 `pictures_zero_is_not_goal=true`；
 - `generation_engine` 是否完整，是否使用 PptxGenJS / pptx-generator；若使用 `python-pptx`、HTML 转 PPT、截图转 PPT 或其他正式生成引擎，直接失败；
@@ -49,6 +51,7 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 - manifest 或 `visual_qa_gate.json` 是否包含表格密度检查；表格不得因字号过小、行高/列宽失衡或内容压缩出现大面积空白和阅读重心塌陷；
 - 是否提供 `visual_qa_gate.json`，且覆盖全部交付页面；
 - `visual_qa_gate.json` 中 `deliverable_allowed=true` 的页面是否提供 `blueprint_render_path`、`ppt_render_path`、`side_by_side_comparison_path` 和 `visual_differences`；
+- `visual_differences=[]` 是否由外部 diff 证据支撑，包括 `component_signature_check_path`、`visual_element_registry_path`、`bbox_delta_report_path`、`overlay_comparison_path`、`pixel_diff_report_path` 和 `local_crop_comparisons[]`；
 - `visual_qa_gate.json` 中每个为 `true` 的视觉字段是否有 `evidence`；证据可以是存在的文件路径，也可以是结构化检查记录对象，不得只留空字符串或口头声明；
 - 有图表但缺少解读或含义块的页面。
 
@@ -226,6 +229,12 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 | `local_overlay_artifacts` | 关键区域的局部 overlay / bbox 对照图，必须能打开或可追溯 |
 | `measurement_evidence_path` | 蓝图测量表或坐标换算检查文件 |
 | `spatial_numeric_check_path` | 数值锚点检查文件 |
+| `component_signature_check_path` | 冻结组件签名检查结果 |
+| `visual_element_registry_path` | 全可见元素 registry |
+| `bbox_delta_report_path` | 渲染后 bbox / delta 反测报告 |
+| `overlay_comparison_path` | 蓝图与渲染 overlay 对照图 |
+| `pixel_diff_report_path` | 像素差异报告 |
+| `local_crop_comparisons[]` | 关键区域局部裁图对照 |
 | `visual_differences` | 逐项差异记录；没有差异也必须写空数组 |
 | `evidence` | 每个为 `true` 的视觉字段对应的证据；可为存在的文件路径或结构化检查记录对象 |
 | `surface_system_match` | 是否匹配蓝图页面表面系统 |
@@ -249,6 +258,30 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 
 `deliverable_allowed=true` 前还必须有关键区域局部 overlay / bbox 对照、蓝图测量表证据和数值锚点检查。`visual_differences` 中存在 High/Critical 且未被用户明确接受的差异时，不得交付确认。
 
+### visual QA 外部证据门
+
+`visual_differences=[]` 不能由 AI 自己声明。只有在以下脚本或等价外部工具证据全部存在且通过时，才允许为空数组：
+
+- `component_signature_check_path`；
+- `visual_element_registry_path`；
+- `bbox_delta_report_path`；
+- `overlay_comparison_path`；
+- `pixel_diff_report_path`；
+- `local_crop_comparisons[]`。
+
+推荐工具链：
+
+1. `scripts/build_content_lock.py` 生成 `slide_content_lock`；
+2. `scripts/build_component_signature.py` 冻结组件签名；
+3. `scripts/measure_blueprint.py` 生成 `visual_element_registry`；
+4. `scripts/export_ppt_render.ps1` 用 PowerPoint 导出 PNG；
+5. `scripts/compare_render.py` 生成 bbox / pixel diff 和 overlay；
+6. `scripts/build_visual_qa_gate.py` 根据外部证据生成 `visual_qa_gate.json`；
+7. `scripts/build_rework_report.py` 输出返工清单；
+8. 全部页面通过后，用 `scripts/merge_verified_pages.py` 合并已通过单页，并用 `scripts/compare_merged_render.py` 做合并后回归验证。
+
+如果这些证据缺失，`deliverable_allowed` 必须为 `false`。不得先由 AI 手写 `visual_qa_gate.json`，再把缺失证据解释为“已人工检查”。
+
 ## manifest 判定门
 
 逐页确认前必须同时检查 manifest 和 PPTX。以下是硬判定，不允许解释性绕过：
@@ -267,6 +300,12 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 | 简单图表/表格/SO WHAT 未登记为 `native_components` | 失败，必须补登记并原生重建 |
 | `dual_gate_required` 或 `visual_semantics_required` 缺失/不为 true | 失败，必须在 manifest 中声明并执行双硬门槛 |
 | `visual_semantics_required = true` 但缺少 `blueprint_reconstruction_plan` | 失败，必须先拆解蓝图再生成 PPTX |
+| `visual_semantics_required = true` 但缺少 `slide_content_lock` | 失败，必须回到第二阶段锁定真实内容 |
+| `visual_semantics_required = true` 但缺少 `blueprint_component_signature` | 失败，必须回到第二阶段冻结组件签名 |
+| `visual_semantics_required = true` 但缺少 `visual_element_registry` | 失败，必须登记全部可见元素 |
+| 任一 P0/P1/P2 registry 元素缺少 `render_bbox_px` 或 `delta_px` | 失败，必须基于 PowerPoint 渲染图反测 |
+| 任一 P0/P1/P2 registry 元素超出容差 | 失败，必须返工 |
+| 只登记区域大框，没有登记组件内部子元素 | 失败，容器 bbox 不能替代子元素测量 |
 | `blueprint_reconstruction_plan` 缺少蓝图路径、画布、背景色、表面系统、版式区域、页眉页脚、SO WHAT、主图语义、密度、锚点、原生重建目标或允许视觉资产 | 失败，必须补齐拆解记录 |
 | `blueprint_reconstruction_plan.complex_visual_scan` 缺失或不完整 | 失败，必须先扫描复杂视觉候选和触发门 |
 | `complex_visual_scan.pictures_zero_is_not_goal` 不是 `true` | 失败，必须重申 `pictures=0` 非目标原则并重做资产准入判断 |
@@ -309,6 +348,7 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 | `visual_qa_gate.json` 缺失或 `deliverable_allowed=false` | 失败，不得交付确认 |
 | `deliverable_allowed=true` 但缺少蓝图图、PPT 渲染图、side-by-side 对照图或差异记录 | 失败，不得交付确认 |
 | `deliverable_allowed=true` 但缺少局部 overlay、测量证据或数值锚点证据 | 失败，不得交付确认 |
+| `visual_differences=[]` 但缺少外部 diff 证据 | 失败，不得交付确认 |
 | High/Critical 视觉差异未被用户接受 | 失败，不得交付确认 |
 | 视觉字段为 `true` 但没有字段级 `evidence` | 失败，不得交付确认 |
 

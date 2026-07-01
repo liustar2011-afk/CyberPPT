@@ -158,6 +158,42 @@
 - 风格样张中的色彩、材质、网格、图表语言、标题层级、注释系统或页脚体系没有延续到逐页蓝图；
 - 为方便第三阶段还原、测量或可编辑性，主动降低蓝图视觉复杂度、信息密度或审美完成度。
 
+### slide_content_lock 门
+
+逐页 ImageGen 蓝图生成前，必须先建立 `slide_content_lock`。该锁定文件必须来自第一阶段证据表、逐页大纲和用户确认内容，不得由 ImageGen 或第三阶段重新解释生成。
+
+`slide_content_lock` 至少包含：
+
+- 页面标题、副标题和语境说明；
+- 每个图表的真实指标名、期间、单位和数值；
+- 表格行列结构、真实行列标签和核心单元格内容；
+- KPI、同比、CAGR、占比、差值等关键数值；
+- 注释、caveat、来源口径和证据 ID；
+- 右侧解读栏、管理启示或结论短句；
+- SO WHAT 的真实分区、标题和要点；
+- 不允许缺失的组件清单。
+
+可以使用 `scripts/build_content_lock.py` 从已确认的逐页大纲/证据 JSON 生成锁定文件。蓝图画面可以出现文字渲染误差，但内容结构必须以 `slide_content_lock` 为准。第三阶段不得因为蓝图文字不清、数字变形或局部模糊而删减区域、降低信息密度或重组内容。
+
+### blueprint_component_signature 冻结门
+
+每页蓝图确认后，必须生成并冻结 `blueprint_component_signature`。该签名记录已批准蓝图的组件类型、组件结构、子组件、优先级、蓝图 hash 和对应 `slide_content_lock` hash。第三阶段只能读取，不得新建、重写或放宽组件签名。
+
+组件签名必须记录：
+
+- `slide_number`；
+- `blueprint_path` 和 `blueprint_sha256`；
+- `content_lock_path` 和 `content_lock_sha256`；
+- `components[]`，每个组件包含 `id`、`type`、`priority`、`required_subcomponents`、`content_lock_refs` 和 `must_preserve_type=true`。
+
+可以使用 `scripts/build_component_signature.py` 生成签名。如果第三阶段发现签名缺失或不完整，必须回到第二阶段补签名并重新确认，不得在第三阶段临时补写。
+
+### visual_element_registry 门
+
+每页蓝图确认后，必须建立 `visual_element_registry`，登记蓝图中的全部可见元素。所有文本、数字、图标、线条、箭头、面板、表格线、图表元素、SO WHAT 元素、装饰线、点阵和纹理都必须登记。
+
+每个元素至少包含 `element_id`、`priority`、`element_type`、`source_component_id`、`blueprint_bbox_px` 和 `tolerance_px`。可以使用 `scripts/measure_blueprint.py` 结合人工/AI 标注生成 registry。完全自动识别任意 ImageGen 蓝图的所有元素并不可靠；因此缺少人工/AI 标注时，脚本必须显式失败，而不是自动声称覆盖完整。
+
 ### 测量元数据边界门
 
 `visual_element_inventory_targets` 和 `blueprint_measurement_targets` 只是第二阶段蓝图记录的 metadata，用于第三阶段还原准备。它们不得改变第二阶段蓝图的交付物性质。
@@ -172,7 +208,7 @@
 - 使用已确认大纲作为内容结构，但生成文字、数字、引用、图表值、Logo 和标签都视为不可靠占位。
 - 蓝图定义构图、层级、密度和视觉元素语言。最终 PPT 的文本、数据、表格值、图表值和来源说明必须从证据表重建。
 - 蓝图不是最终 PPT 图片资产。除非用户明确要求静态图交付，第三阶段不得把整页蓝图或大面积蓝图截图作为页面背景。
-- 蓝图中的折线图、柱状图、坐标轴、标签、表格、对比条、流程箭头、页眉页脚和 SO WHAT 只定义视觉关系，第三阶段默认必须原生重建。
+- 蓝图中的折线图、柱状图、坐标轴、标签、表格、对比条、流程箭头、页眉页脚和 SO WHAT 只定义视觉关系，第三阶段默认必须原生重建；真实文本和数据必须来自 `slide_content_lock`。
 - 除非用户明确要求，否则咨询报告封面蓝图保持低密度。
 - 生成逐页蓝图前，必须自动判定默认 `target_language`，不得为语言选择单独增加确认步骤。
 - 默认 `target_language` 判定优先级：用户明确指定的全局交付语言 > 源材料主要语言 > 当前对话语言。

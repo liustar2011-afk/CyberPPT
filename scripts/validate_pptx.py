@@ -116,6 +116,11 @@ TABLE_PROSE_SEMANTIC_ROLES = {
 }
 TABLE_PROSE_ALLOWED_ROLES = {"T7", "T10"}
 VISUAL_ELEMENT_PRIORITIES = {"P0", "P1", "P2"}
+VISUAL_ELEMENT_TOLERANCE_MAX = {
+    "P0": 6,
+    "P1": 8,
+    "P2": 12,
+}
 VISUAL_ELEMENT_MEASUREMENT_MODES = {
     "individual_bbox",
     "group_with_child_anchors",
@@ -210,9 +215,24 @@ STRICT_FAILURE_CODES = {
     "MANIFEST_PAGE_EXECUTION_NOT_SINGLE_PAGE",
     "MANIFEST_PAGE_APPROVAL_MISSING",
     "MANIFEST_VISUAL_ELEMENT_INVENTORY_MISSING",
+    "VISUAL_ELEMENT_REGISTRY_MISSING",
     "MANIFEST_VISUAL_ELEMENT_INVENTORY_INCOMPLETE",
     "MANIFEST_VISUAL_ELEMENT_PRIORITY_INVALID",
     "MANIFEST_VISUAL_ELEMENT_PRIORITY_DOWNGRADED",
+    "CONTENT_LOCK_MISSING",
+    "CONTENT_LOCK_HASH_MISMATCH",
+    "COMPONENT_SIGNATURE_MISSING",
+    "COMPONENT_SIGNATURE_HASH_MISMATCH",
+    "COMPONENT_SIGNATURE_INCOMPLETE",
+    "P0_ELEMENT_MISSING",
+    "P1_ELEMENT_MISSING",
+    "P2_ELEMENT_MISSING",
+    "RENDER_BBOX_MISSING",
+    "P0_RENDER_DELTA_EXCEEDED",
+    "P1_RENDER_DELTA_EXCEEDED",
+    "P2_RENDER_DELTA_EXCEEDED",
+    "ONLY_REGION_BBOX_NO_CHILDREN",
+    "SPATIAL_PASS_WITHOUT_RENDER_MEASUREMENT",
     "MANIFEST_BLUEPRINT_MEASUREMENT_MISSING",
     "MANIFEST_COORDINATE_MAPPING_MISSING",
     "MANIFEST_KEY_REGION_MEASUREMENT_MISSING",
@@ -238,6 +258,8 @@ STRICT_FAILURE_CODES = {
     "VISUAL_PASS_WITHOUT_EVIDENCE",
     "VISUAL_QA_LOCAL_OVERLAY_MISSING",
     "VISUAL_QA_UNACCEPTED_HIGH_DIFFERENCE",
+    "VISUAL_DIFFERENCES_EMPTY_WITHOUT_EXTERNAL_EVIDENCE",
+    "DELIVERABLE_ALLOWED_WITHOUT_DIFF_EVIDENCE",
     "INVALID_SHAPE_BOUNDS",
 }
 PLACEHOLDER_RE = re.compile(
@@ -245,6 +267,7 @@ PLACEHOLDER_RE = re.compile(
     re.IGNORECASE,
 )
 SLIDE_RE = re.compile(r"ppt/slides/slide(\d+)\.xml$")
+SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 
 
 def issue(code: str, message: str, *, slide: int | None = None) -> dict[str, Any]:
@@ -484,6 +507,21 @@ def has_numeric_delta(value: Any) -> bool:
     return all(is_number(value.get(field)) for field in ("x", "y"))
 
 
+def has_valid_sha256(value: Any) -> bool:
+    return isinstance(value, str) and bool(SHA256_RE.fullmatch(value.strip()))
+
+
+def lock_record_is_valid(value: Any) -> bool:
+    if not isinstance(value, dict):
+        return False
+    return (
+        value.get("locked") is True
+        and isinstance(value.get("path"), str)
+        and bool(value.get("path").strip())
+        and has_valid_sha256(value.get("sha256"))
+    )
+
+
 def get_blueprint_measurement_table(entry: dict[str, Any], reconstruction_plan: dict[str, Any]) -> Any:
     table = reconstruction_plan.get("blueprint_measurement_table")
     if table is not None:
@@ -577,6 +615,65 @@ def validate_manifest_slide(
             )
         )
     else:
+        content_lock = entry.get("slide_content_lock")
+        if not lock_record_is_valid(content_lock):
+            warnings.append(
+                issue(
+                    "CONTENT_LOCK_MISSING",
+                    "visual_semantics_required=true requires a frozen slide_content_lock with path, sha256, and locked=true.",
+                    slide=slide_number,
+                )
+            )
+
+        component_signature = entry.get("blueprint_component_signature")
+        if not lock_record_is_valid(component_signature):
+            warnings.append(
+                issue(
+                    "COMPONENT_SIGNATURE_MISSING",
+                    "visual_semantics_required=true requires a frozen blueprint_component_signature with path, sha256, and locked=true.",
+                    slide=slide_number,
+                )
+            )
+        elif not isinstance(component_signature.get("components"), list) or not component_signature.get("components"):
+            warnings.append(
+                issue(
+                    "COMPONENT_SIGNATURE_INCOMPLETE",
+                    "blueprint_component_signature must include a non-empty components array.",
+                    slide=slide_number,
+                )
+            )
+        else:
+            for component_index, component in enumerate(component_signature.get("components", []), start=1):
+                if not isinstance(component, dict):
+                    warnings.append(
+                        issue(
+                            "COMPONENT_SIGNATURE_INCOMPLETE",
+                            f"blueprint_component_signature.components[{component_index}] must be an object.",
+                            slide=slide_number,
+                        )
+                    )
+                    continue
+                missing_component_fields = []
+                for field in ("id", "type", "priority", "required_subcomponents"):
+                    value = component.get(field)
+                    if field == "required_subcomponents":
+                        if not isinstance(value, list) or not value:
+                            missing_component_fields.append(field)
+                    elif value in (None, "", [], {}):
+                        missing_component_fields.append(field)
+                if component.get("priority") not in VISUAL_ELEMENT_PRIORITIES:
+                    missing_component_fields.append("priority")
+                if component.get("must_preserve_type") is not True:
+                    missing_component_fields.append("must_preserve_type")
+                if missing_component_fields:
+                    warnings.append(
+                        issue(
+                            "COMPONENT_SIGNATURE_INCOMPLETE",
+                            f"blueprint_component_signature.components[{component_index}] is missing: {', '.join(sorted(set(missing_component_fields)))}.",
+                            slide=slide_number,
+                        )
+                    )
+
         reconstruction_plan = entry.get("blueprint_reconstruction_plan")
         if not isinstance(reconstruction_plan, dict):
             warnings.append(
@@ -670,6 +767,18 @@ def validate_manifest_slide(
                 "visual_element_inventory",
                 reconstruction_plan.get("visual_element_inventory"),
             )
+            visual_element_registry = entry.get(
+                "visual_element_registry",
+                reconstruction_plan.get("visual_element_registry", visual_element_inventory),
+            )
+            if not isinstance(visual_element_registry, list) or not visual_element_registry:
+                warnings.append(
+                    issue(
+                        "VISUAL_ELEMENT_REGISTRY_MISSING",
+                        "visual_semantics_required=true requires visual_element_registry covering every visible element with blueprint, PPT target, render bbox, delta, and tolerance.",
+                        slide=slide_number,
+                    )
+                )
             if not isinstance(visual_element_inventory, list) or not visual_element_inventory:
                 warnings.append(
                     issue(
@@ -752,6 +861,90 @@ def validate_manifest_slide(
                                     slide=slide_number,
                                 )
                             )
+
+            if isinstance(visual_element_registry, list) and visual_element_registry:
+                for element_index, element in enumerate(visual_element_registry, start=1):
+                    if not isinstance(element, dict):
+                        warnings.append(
+                            issue(
+                                "MANIFEST_VISUAL_ELEMENT_INVENTORY_INCOMPLETE",
+                                f"visual_element_registry[{element_index}] must be an object.",
+                                slide=slide_number,
+                            )
+                        )
+                        continue
+                    priority = element.get("priority")
+                    missing_fields = [
+                        field
+                        for field in ("element_id", "element_type", "source_component_id", "registration_status")
+                        if element.get(field) in (None, "", [], {})
+                    ]
+                    if priority not in VISUAL_ELEMENT_PRIORITIES:
+                        missing_fields.append("priority")
+                    if not has_numeric_bbox(element.get("blueprint_bbox_px")):
+                        missing_fields.append("blueprint_bbox_px")
+                    if not has_numeric_bbox(element.get("ppt_target_bbox_in")):
+                        missing_fields.append("ppt_target_bbox_in")
+                    if not has_numeric_delta(element.get("delta_px")):
+                        missing_fields.append("delta_px")
+                    if not is_number(element.get("tolerance_px")):
+                        missing_fields.append("tolerance_px")
+                    if missing_fields:
+                        warnings.append(
+                            issue(
+                                "MANIFEST_VISUAL_ELEMENT_INVENTORY_INCOMPLETE",
+                                f"visual_element_registry[{element_index}] is missing: {', '.join(sorted(set(missing_fields)))}.",
+                                slide=slide_number,
+                            )
+                        )
+                    if priority in VISUAL_ELEMENT_PRIORITIES and not has_numeric_bbox(element.get("render_bbox_px")):
+                        warnings.append(
+                            issue(
+                                "RENDER_BBOX_MISSING",
+                                f"visual_element_registry[{element_index}] must include render_bbox_px for post-render measurement; all P0/P1/P2 elements require render feedback.",
+                                slide=slide_number,
+                            )
+                        )
+                    if element.get("registration_status") != "passed":
+                        warnings.append(
+                            issue(
+                                "SPATIAL_PASS_WITHOUT_RENDER_MEASUREMENT",
+                                f"visual_element_registry[{element_index}] registration_status must be exactly 'passed' only after render measurement.",
+                                slide=slide_number,
+                            )
+                        )
+                    if priority in VISUAL_ELEMENT_PRIORITIES:
+                        tolerance = element.get("tolerance_px")
+                        max_tolerance = VISUAL_ELEMENT_TOLERANCE_MAX[priority]
+                        if not is_number(tolerance) or float(tolerance) > max_tolerance:
+                            warnings.append(
+                                issue(
+                                    f"{priority}_RENDER_DELTA_EXCEEDED",
+                                    f"visual_element_registry[{element_index}] tolerance exceeds {priority} maximum of {max_tolerance}px.",
+                                    slide=slide_number,
+                                )
+                            )
+                        delta = element.get("delta_px")
+                        if isinstance(delta, dict) and delta_exceeds_tolerance(delta, tolerance):
+                            warnings.append(
+                                issue(
+                                    f"{priority}_RENDER_DELTA_EXCEEDED",
+                                    f"visual_element_registry[{element_index}] delta_px exceeds tolerance_px.",
+                                    slide=slide_number,
+                                )
+                            )
+                    if (
+                        isinstance(element.get("children_expected"), list)
+                        and element.get("children_expected")
+                        and not isinstance(element.get("children_measured"), list)
+                    ):
+                        warnings.append(
+                            issue(
+                                "ONLY_REGION_BBOX_NO_CHILDREN",
+                                f"visual_element_registry[{element_index}] declares child elements but lacks children_measured; container bbox cannot replace child measurement.",
+                                slide=slide_number,
+                            )
+                        )
 
             measurement_table = get_blueprint_measurement_table(entry, reconstruction_plan)
             if not isinstance(measurement_table, dict):
@@ -1459,6 +1652,50 @@ def validate_visual_qa(
                                 slide=slide_number,
                             )
                         )
+                if not visual_differences:
+                    external_evidence_fields = (
+                        "component_signature_check_path",
+                        "visual_element_registry_path",
+                        "bbox_delta_report_path",
+                        "overlay_comparison_path",
+                        "pixel_diff_report_path",
+                    )
+                    missing_external_evidence = [
+                        field
+                        for field in external_evidence_fields
+                        if entry.get(field) in (None, "", [], {})
+                    ]
+                    local_crops = entry.get("local_crop_comparisons")
+                    if not isinstance(local_crops, list) or not local_crops:
+                        missing_external_evidence.append("local_crop_comparisons")
+                    if missing_external_evidence:
+                        warnings.append(
+                            issue(
+                                "VISUAL_DIFFERENCES_EMPTY_WITHOUT_EXTERNAL_EVIDENCE",
+                                f"visual_differences=[] requires external diff evidence: {', '.join(missing_external_evidence)}.",
+                                slide=slide_number,
+                            )
+                        )
+                    else:
+                        for field in external_evidence_fields:
+                            if not manifest_ref_exists(entry.get(field), visual_qa_dir):
+                                warnings.append(
+                                    issue(
+                                        "DELIVERABLE_ALLOWED_WITHOUT_DIFF_EVIDENCE",
+                                        f"deliverable_allowed=true declares {field}, but the file was not found.",
+                                        slide=slide_number,
+                                    )
+                                )
+                        for crop_index, crop in enumerate(local_crops, start=1):
+                            crop_path = crop.get("path") if isinstance(crop, dict) else crop
+                            if not manifest_ref_exists(crop_path, visual_qa_dir):
+                                warnings.append(
+                                    issue(
+                                        "DELIVERABLE_ALLOWED_WITHOUT_DIFF_EVIDENCE",
+                                        f"local_crop_comparisons[{crop_index}] file was not found.",
+                                        slide=slide_number,
+                                    )
+                                )
             local_overlays = entry.get("local_overlay_artifacts")
             if not isinstance(local_overlays, list) or not local_overlays:
                 warnings.append(

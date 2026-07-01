@@ -87,6 +87,80 @@ SVG path、PPT custom geometry 和高密度 freeform 是几何敏感视觉的优
 
 最终完整 PPTX 必须由已经逐页验收通过的单页 PPTX 合并得到。合并阶段不得重新运行页面生成脚本重建页面、不得重新排版、不得重新绘制图表、不得重新套用背景、不得将单页渲染图作为整页背景、不得用截图替代已通过的原生对象页面。合并阶段只能导入已验收通过的单页 PPTX 页面，并尽量保留原页面 XML、主题、背景、形状、文本、图表、SVG/custom geometry 和关系文件。合并后导出 PNG 只是 QA 渲染，不是重新制作页面。
 
+## 第三阶段第一执行原则：蓝图坐标优先
+
+第三阶段的第一执行原则是蓝图坐标优先：先量蓝图，再换算 PPT 坐标，再生成 PPTX，再用 PowerPoint 渲染图反测。不得先凭 PPT 排版经验、内容重组习惯或工具默认布局生成页面，再事后补测量、补 QA 或解释差异。
+
+该原则的执行顺序是：
+
+1. 读取已批准蓝图、`slide_content_lock`、`blueprint_component_signature` 和 `visual_element_registry`；
+2. 从蓝图中确认每个可见元素的 `blueprint_bbox_px`；
+3. 使用 `blueprint_canvas_px`、`ppt_canvas_in`、`scale_x` 和 `scale_y` 换算 `ppt_target_bbox_in`；
+4. 按换算坐标生成单页 PPTX；
+5. 用 PowerPoint 导出 PNG；
+6. 反测 `render_bbox_px`，计算 `delta_px`；
+7. 超出容差时返工当前页，不得进入用户确认或下一页。
+
+不得用“语义一致”“结构类似”“内容正确”“可编辑性更好”“strict QA 已通过”替代蓝图坐标对齐。蓝图坐标优先不得覆盖真实内容锁定和主要信息可编辑性：真实文本与数据仍必须来自 `slide_content_lock`，主要标题、正文、关键数字、图表标签、来源、页脚和 SO WHAT 仍必须可编辑，不得把整页蓝图或大面积蓝图截图作为背景。
+
+## 锁定文件只读执行门
+
+第三阶段不是重新设计页面，也不是重新解读源材料。每页正式 PPTX 必须同时匹配：
+
+1. 已批准蓝图的视觉布局；
+2. `slide_content_lock` 的真实数据、真实文案和组件内容；
+3. `blueprint_component_signature` 的组件类型、组件结构和必需子组件；
+4. `visual_element_registry` 的全部可见元素坐标与容差。
+
+第三阶段不得新建、重写、放宽或替代第二阶段冻结的 `slide_content_lock`、`blueprint_component_signature` 或 `visual_element_registry`。如果这些文件缺失、hash 不匹配或内容不完整，必须返回第二阶段补齐并重新确认，不得在第三阶段临时补写。
+
+不得改变已批准蓝图中的组件类型、组件结构和信息组织方式。失败示例包括但不限于：多步骤分解图改成简单对比图、多年份矩阵改成单年列表、图标解释栈改成纯编号文本、SO WHAT 图标分区改成纯文字栏、注释/caveat/证据 ID/sparkline/结论带缺失。
+
+## 全可见元素空间注册门
+
+第三阶段必须对蓝图中的所有可见元素建立并执行 `visual_element_registry`。所有可见元素包括但不限于：
+
+- 标题、副标题、页码、页眉、页脚；
+- 所有文本框、数字、标签、图例、轴标签、注释、来源；
+- 图表条、点、线、曲线、箭头、连接线、刻度、网格线；
+- 图标、徽章、编号圆、分隔线、背景面板、卡片、色块；
+- SO WHAT 区域内的每个图标、标题、说明、分隔符；
+- 装饰线、点阵、纹理、重复刻度和其他可见装饰元素。
+
+不得把任何可见元素以“装饰”“不重要”“P2”“视觉近似”“信息不关键”为由跳过登记。未登记的可见元素默认视为遗漏，不得交付确认。
+
+P0/P1/P2 只用于设定容差和失败等级，不用于决定是否测量：
+
+- P0 默认容差 3px，最大 6px；超差即 Critical；
+- P1 默认容差 4px，最大 8px；超差即 High，正式交付不得存在；
+- P2 默认容差 6px，最大 12px；超差即 Medium，若造成视觉重影、密度下降、节奏破坏或用户可见错位，升级为 High/Critical。
+
+每个元素必须包含 `element_id`、`priority`、`element_type`、`source_component_id`、`blueprint_bbox_px`、`ppt_target_bbox_in`、`render_bbox_px`、`delta_px`、`tolerance_px` 和 `registration_status`。
+
+## 禁止大框替代子元素测量
+
+不得只登记容器、面板、主图表区或 SO WHAT 区域的大 bbox 来替代内部元素测量。
+
+- 表格必须登记表头、行列线、关键单元格、数字、标签；
+- 图表必须登记条、点、线、轴、图例、标签、注释；
+- 图标解释区必须登记图标、编号、标题、说明、连接线；
+- SO WHAT 必须登记每个分区、图标、标题、正文、分隔线。
+
+容器 bbox 只能作为额外检查，不能替代子元素 bbox。
+
+## 渲染后全元素反测门
+
+PPTX 生成后，必须使用 PowerPoint 导出当前页 PNG，并用 `scripts/compare_render.py` 或等价工具基于 `visual_element_registry` 对所有登记元素进行反测。
+
+`spatial_registration_pass=true` 只有在以下条件同时满足时才允许：
+
+- `visual_element_registry` 覆盖蓝图所有可见元素；
+- 每个元素都有 `blueprint_bbox_px`、`render_bbox_px`、`delta_px` 和 `tolerance_px`；
+- 所有元素 delta 在对应 priority 容差内；
+- 局部 overlay 没有明显重影、错位、漂移、压线或密度塌陷。
+
+不得只凭 PPT 生成坐标、人工描述、side-by-side 截图或“看起来接近”判定通过。
+
 ## 从蓝图到 PPT 的制作
 
 以确认后的 ImageGen 蓝图作为构图、层级、密度和视觉语言参考。已批准蓝图是第三阶段的视觉验收基准，不是灵感图、风格参考或内容结构参考。第三阶段的完成条件是“逐页蓝图对照通过 + PPTX 结构通过”，不是“生成 PPTX + strict QA”。
@@ -169,6 +243,9 @@ SVG path、PPT custom geometry 和高密度 freeform 是几何敏感视觉的优
 | `slide` | 页码，必须与 PPTX 页序一致 |
 | `role` | 页面角色，如 Cover / Situation / Complication / Resolution / Summary |
 | `layout_reference` | 对应蓝图路径，仅作为参考路径，不代表可作为图片入稿 |
+| `slide_content_lock` | 第二阶段冻结的真实内容锁定文件路径、SHA-256 和 `locked=true` |
+| `blueprint_component_signature` | 第二阶段冻结的组件签名文件路径、SHA-256、组件结构和 `locked=true` |
+| `visual_element_registry` | 第二阶段建立并在第三阶段反测更新的全可见元素 registry |
 | `generation_engine` | PPTX 生成工具记录；必须为 PptxGenJS / pptx-generator，禁止 `python-pptx`、HTML 转 PPT、截图转 PPT 或其他正式生成引擎 |
 | `page_execution` | 单页执行和验收记录；必须证明该页单独制作、渲染、对照并经用户确认后才进入下一页 |
 | `blueprint_reconstruction_plan` | 按蓝图拆解出的视觉还原计划；缺失不得生成该页 |
@@ -192,6 +269,7 @@ SVG path、PPT custom geometry 和高密度 freeform 是几何敏感视觉的优
 - 简单折线、柱状、坐标轴、图例、数据标签、KPI、表格、对比条、流程箭头、SO WHAT、页眉页脚不得登记为图片资产；必须登记为 `native_components`。
 - `qa_expectations.dual_gate_required`、`qa_expectations.visual_semantics_required` 和 `qa_expectations.all_key_text_editable` 必须同时为 `true`；缺任一项都不能生成或交付。
 - `qa_expectations.visual_semantics_required = true` 时，必须存在完整 `blueprint_reconstruction_plan`；缺失或字段不完整不得生成或交付。
+- `qa_expectations.visual_semantics_required = true` 时，必须存在冻结的 `slide_content_lock`、`blueprint_component_signature` 和 `visual_element_registry`。缺失、未锁定、hash 缺失或组件/元素不完整，不得生成或交付。
 - 触发曲线/异形视觉精确追踪门的组件，必须在 `image_assets` 或 `native_components` 中登记 `trace_required: true`、`trace_method`、`trace_reference_crop`、`trace_debug_artifact` 和重绘资产路径。
 - 触发曲线/异形视觉精确追踪门的组件，还必须登记 `geometry_analysis` 和 `rendered_crop_comparison`；只登记 SVG 资产但没有几何拆解和渲染局部对照，视为追踪流程未完成。
 - 包含中心图、流程图、架构图、生态图、矩阵图或路径图的组件，必须登记标签避让检查结果；若存在允许的文字覆盖，必须在 `allowed_text_overlaps` 中逐项声明。

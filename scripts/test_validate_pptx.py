@@ -1139,6 +1139,213 @@ class ValidatePptxTests(unittest.TestCase):
             any(item["code"] == "VISUAL_QA_UNACCEPTED_HIGH_DIFFERENCE" for item in issues)
         )
 
+    def test_visual_semantics_requires_frozen_content_lock_and_component_signature(self):
+        module = load_validator()
+        metrics = {
+            "pictures": 0,
+            "max_picture_area_ratio": 0,
+            "native_text_shapes": 1,
+        }
+        manifest_entry = {
+            "slide": 1,
+            "expected_pictures": 0,
+            "image_assets": [],
+            "visual_element_registry": [
+                {
+                    "element_id": "title",
+                    "priority": "P0",
+                    "element_type": "text",
+                    "source_component_id": "title_block",
+                    "blueprint_bbox_px": {"x": 100, "y": 60, "w": 600, "h": 48},
+                    "ppt_target_bbox_in": {"x": 0.69, "y": 0.42, "w": 4.17, "h": 0.33},
+                    "render_bbox_px": {"x": 102, "y": 60, "w": 600, "h": 48},
+                    "delta_px": {"x": 2, "y": 0, "w": 0, "h": 0},
+                    "tolerance_px": 3,
+                    "registration_status": "passed",
+                }
+            ],
+            "blueprint_reconstruction_plan": {
+                "blueprint_path": "blueprints/slide-01.png",
+                "canvas_size": "16:9",
+                "background_color_sample": "#F3F4EF",
+                "surface_system": "flat editorial page",
+                "layout_regions": ["title", "main_chart", "so_what"],
+                "header_footer_system": "source footer",
+                "so_what_region": "bottom band",
+                "main_chart_semantics": "line chart",
+                "density_targets": "dense consulting page",
+                "anchor_targets": ["title baseline", "chart origin"],
+                "native_rebuild_targets": ["title", "chart", "so_what"],
+                "allowed_visual_assets": [],
+                "complex_visual_scan": {
+                    "completed": True,
+                    "complex_visual_candidates": [],
+                    "triggered_gates": [],
+                    "native_only_rationale": "simple page",
+                    "pictures_zero_is_not_goal": True,
+                },
+                "blueprint_measurement_table": {
+                    "blueprint_canvas_px": {"w": 1920, "h": 1080},
+                    "ppt_canvas_in": {"w": 13.333, "h": 7.5},
+                    "scale_x": 0.006944,
+                    "scale_y": 0.006944,
+                    "regions": [],
+                },
+            },
+            "qa_expectations": {
+                "visual_semantics_required": True,
+                "all_key_text_editable": True,
+                "dual_gate_required": True,
+                "visual_qa_required": True,
+            },
+        }
+        issues = module.validate_manifest_slide(manifest_entry, metrics, 1)
+        codes = {item["code"] for item in issues}
+        self.assertIn("CONTENT_LOCK_MISSING", codes)
+        self.assertIn("COMPONENT_SIGNATURE_MISSING", codes)
+
+    def test_visual_element_registry_requires_render_measurement_for_all_priorities(self):
+        module = load_validator()
+        metrics = {
+            "pictures": 0,
+            "max_picture_area_ratio": 0,
+            "native_text_shapes": 1,
+        }
+        manifest_entry = {
+            "slide": 1,
+            "expected_pictures": 0,
+            "image_assets": [],
+            "slide_content_lock": {
+                "path": "qa/slide-01-content-lock.json",
+                "sha256": "a" * 64,
+                "locked": True,
+            },
+            "blueprint_component_signature": {
+                "path": "qa/slide-01-component-signature.json",
+                "sha256": "b" * 64,
+                "locked": True,
+                "components": [
+                    {
+                        "id": "so_what_band",
+                        "type": "four_item_icon_band",
+                        "priority": "P0",
+                        "required_subcomponents": ["icon_01", "title_01"],
+                        "must_preserve_type": True,
+                    }
+                ],
+            },
+            "visual_element_registry": [
+                {
+                    "element_id": "decorative_rule",
+                    "priority": "P2",
+                    "element_type": "line",
+                    "source_component_id": "so_what_band",
+                    "blueprint_bbox_px": {"x": 100, "y": 900, "w": 900, "h": 2},
+                    "ppt_target_bbox_in": {"x": 0.69, "y": 6.25, "w": 6.25, "h": 0.01},
+                    "delta_px": {"x": 0, "y": 0, "w": 0, "h": 0},
+                    "tolerance_px": 6,
+                    "registration_status": "passed",
+                }
+            ],
+            "blueprint_reconstruction_plan": {
+                "blueprint_path": "blueprints/slide-01.png",
+                "canvas_size": "16:9",
+                "background_color_sample": "#F3F4EF",
+                "surface_system": "flat editorial page",
+                "layout_regions": ["title", "main_chart", "so_what"],
+                "header_footer_system": "source footer",
+                "so_what_region": "bottom band",
+                "main_chart_semantics": "line chart",
+                "density_targets": "dense consulting page",
+                "anchor_targets": ["title baseline", "chart origin"],
+                "native_rebuild_targets": ["title", "chart", "so_what"],
+                "allowed_visual_assets": [],
+                "complex_visual_scan": {
+                    "completed": True,
+                    "complex_visual_candidates": [],
+                    "triggered_gates": [],
+                    "native_only_rationale": "simple page",
+                    "pictures_zero_is_not_goal": True,
+                },
+                "blueprint_measurement_table": {
+                    "blueprint_canvas_px": {"w": 1920, "h": 1080},
+                    "ppt_canvas_in": {"w": 13.333, "h": 7.5},
+                    "scale_x": 0.006944,
+                    "scale_y": 0.006944,
+                    "regions": [],
+                },
+            },
+            "qa_expectations": {
+                "visual_semantics_required": True,
+                "all_key_text_editable": True,
+                "dual_gate_required": True,
+                "visual_qa_required": True,
+            },
+        }
+        issues = module.validate_manifest_slide(manifest_entry, metrics, 1)
+        self.assertTrue(any(item["code"] == "RENDER_BBOX_MISSING" for item in issues))
+
+    def test_visual_qa_empty_differences_requires_external_diff_evidence(self):
+        module = load_validator()
+        manifest = {
+            "slides": [
+                {
+                    "slide": 1,
+                    "qa_expectations": {"visual_qa_required": True},
+                }
+            ]
+        }
+        visual_qa = {
+            "slides": [
+                {
+                    "slide": 1,
+                    "surface_system_match": True,
+                    "main_chart_semantics_match": True,
+                    "visual_semantics_preserved": True,
+                    "editable_information_layer_pass": True,
+                    "spatial_registration_pass": True,
+                    "curve_fidelity_pass": True,
+                    "label_collision_pass": True,
+                    "text_overflow_pass": True,
+                    "container_overflow_pass": True,
+                    "continuous_text_flow_pass": True,
+                    "table_semantic_typography_pass": True,
+                    "table_density_pass": True,
+                    "blueprint_background_not_used": True,
+                    "deliverable_allowed": True,
+                    "blueprint_render_path": "blueprints/slide-01.png",
+                    "ppt_render_path": "renders/slide-01.png",
+                    "side_by_side_comparison_path": "qa/slide-01-side-by-side.png",
+                    "local_overlay_artifacts": ["qa/slide-01-title-overlay.png"],
+                    "measurement_evidence_path": "qa/slide-01-blueprint-measurement.json",
+                    "spatial_numeric_check_path": "qa/slide-01-spatial-numeric-check.json",
+                    "visual_differences": [],
+                    "evidence": {
+                        "surface_system_match": {"checked": True},
+                        "main_chart_semantics_match": {"checked": True},
+                        "visual_semantics_preserved": {"checked": True},
+                        "editable_information_layer_pass": {"checked": True},
+                        "spatial_registration_pass": {"checked": True},
+                        "curve_fidelity_pass": {"checked": True},
+                        "label_collision_pass": {"checked": True},
+                        "text_overflow_pass": {"checked": True},
+                        "container_overflow_pass": {"checked": True},
+                        "continuous_text_flow_pass": {"checked": True},
+                        "table_semantic_typography_pass": {"checked": True},
+                        "table_density_pass": {"checked": True},
+                        "blueprint_background_not_used": {"checked": True},
+                    },
+                }
+            ]
+        }
+        issues = module.validate_visual_qa(visual_qa, manifest)
+        self.assertTrue(
+            any(
+                item["code"] == "VISUAL_DIFFERENCES_EMPTY_WITHOUT_EXTERNAL_EVIDENCE"
+                for item in issues
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
