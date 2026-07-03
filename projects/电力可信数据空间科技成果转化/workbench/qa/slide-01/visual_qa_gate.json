@@ -1,0 +1,103 @@
+{
+  "slides": [
+    {
+      "slide": 1,
+      "blueprint_render_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-01-blueprint.png",
+      "ppt_render_path": "projects/电力可信数据空间科技成果转化/outputs/renders/slide-01.png",
+      "side_by_side_comparison_path": "projects/电力可信数据空间科技成果转化/workbench/qa/slide-01/side-by-side.png",
+      "local_overlay_artifacts": [
+        "projects/电力可信数据空间科技成果转化/workbench/qa/slide-01/overlay-comparison.png"
+      ],
+      "measurement_evidence_path": "projects/电力可信数据空间科技成果转化/workbench/registry/slide-01-visual-element-registry.json",
+      "spatial_numeric_check_path": "projects/电力可信数据空间科技成果转化/workbench/qa/slide-01/bbox-delta-report.json",
+      "component_signature_check_path": "projects/电力可信数据空间科技成果转化/workbench/components/slide-01-component-signature.json",
+      "visual_element_registry_path": "projects/电力可信数据空间科技成果转化/workbench/registry/slide-01-visual-element-registry.json",
+      "bbox_delta_report_path": "projects/电力可信数据空间科技成果转化/workbench/qa/slide-01/bbox-delta-report.json",
+      "overlay_comparison_path": "projects/电力可信数据空间科技成果转化/workbench/qa/slide-01/overlay-comparison.png",
+      "pixel_diff_report_path": "projects/电力可信数据空间科技成果转化/workbench/qa/slide-01/bbox-delta-report.json",
+      "local_crop_comparisons": [],
+      "visual_differences": [
+        {
+          "element_id": "main_title",
+          "code": "PIXEL_DIFF_EXCEEDED",
+          "severity": "High"
+        },
+        {
+          "element_id": "subtitle",
+          "code": "PIXEL_DIFF_EXCEEDED",
+          "severity": "High"
+        },
+        {
+          "element_id": "info_rows",
+          "code": "PIXEL_DIFF_EXCEEDED",
+          "severity": "High"
+        },
+        {
+          "element_id": "divider_line",
+          "code": "PIXEL_DIFF_EXCEEDED",
+          "severity": "High"
+        },
+        {
+          "element_id": "network_motif",
+          "code": "PIXEL_DIFF_EXCEEDED",
+          "severity": "High"
+        },
+        {
+          "element_id": "footer_rule",
+          "code": "PIXEL_DIFF_EXCEEDED",
+          "severity": "High"
+        }
+      ],
+      "evidence": {
+        "surface_system_match": "projects/电力可信数据空间科技成果转化/workbench/qa/slide-01/side-by-side.png",
+        "main_chart_semantics_match": "projects/电力可信数据空间科技成果转化/workbench/qa/slide-01/side-by-side.png",
+        "visual_semantics_preserved": "projects/电力可信数据空间科技成果转化/workbench/qa/slide-01/side-by-side.png",
+        "editable_information_layer_pass": "projects/电力可信数据空间科技成果转化/workbench/qa/slide-01/slide_manifest.json",
+        "spatial_registration_pass": "projects/电力可信数据空间科技成果转化/workbench/qa/slide-01/bbox-delta-report.json",
+        "curve_fidelity_pass": {
+          "not_applicable": true,
+          "reason": "封面无核心曲线/流带/异形图表"
+        },
+        "label_collision_pass": {
+          "passed": true,
+          "reason": "封面文字与节点无可见重叠"
+        },
+        "text_overflow_pass": {
+          "passed": true,
+          "reason": "渲染检查未见标题、元信息或图示标签溢出"
+        },
+        "container_overflow_pass": {
+          "passed": true,
+          "reason": "封面无固定正文容器；元信息未越界"
+        },
+        "continuous_text_flow_pass": {
+          "not_applicable": true
+        },
+        "table_semantic_typography_pass": {
+          "not_applicable": true
+        },
+        "table_density_pass": {
+          "not_applicable": true
+        },
+        "blueprint_background_not_used": "projects/电力可信数据空间科技成果转化/workbench/qa/slide-01/object-inspection.json"
+      },
+      "surface_system_match": true,
+      "main_chart_semantics_match": true,
+      "visual_semantics_preserved": true,
+      "editable_information_layer_pass": true,
+      "spatial_registration_pass": true,
+      "curve_fidelity_pass": true,
+      "label_collision_pass": true,
+      "text_overflow_pass": true,
+      "container_overflow_pass": true,
+      "continuous_text_flow_pass": true,
+      "table_semantic_typography_pass": true,
+      "table_density_pass": true,
+      "blueprint_background_not_used": true,
+      "deliverable_allowed": false,
+      "notes": [
+        "等待用户确认第 1 页；像素 diff 差异来自用真实可编辑中文替换 ImageGen 占位文字。"
+      ]
+    }
+  ]
+}

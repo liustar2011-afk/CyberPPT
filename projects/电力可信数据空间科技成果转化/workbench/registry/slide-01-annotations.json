@@ -1,0 +1,52 @@
+{
+  "elements": [
+    {
+      "element_id": "main_title",
+      "priority": "P0",
+      "element_type": "text",
+      "source_component_id": "cover_title_block",
+      "blueprint_bbox_px": {"x": 32, "y": 154, "w": 560, "h": 150},
+      "tolerance_px": 6
+    },
+    {
+      "element_id": "subtitle",
+      "priority": "P0",
+      "element_type": "text",
+      "source_component_id": "cover_title_block",
+      "blueprint_bbox_px": {"x": 34, "y": 328, "w": 220, "h": 34},
+      "tolerance_px": 6
+    },
+    {
+      "element_id": "info_rows",
+      "priority": "P1",
+      "element_type": "text_group",
+      "source_component_id": "cover_title_block",
+      "blueprint_bbox_px": {"x": 34, "y": 430, "w": 420, "h": 138},
+      "tolerance_px": 8
+    },
+    {
+      "element_id": "divider_line",
+      "priority": "P1",
+      "element_type": "line",
+      "source_component_id": "cover_surface_system",
+      "blueprint_bbox_px": {"x": 32, "y": 380, "w": 432, "h": 3},
+      "tolerance_px": 8
+    },
+    {
+      "element_id": "network_motif",
+      "priority": "P1",
+      "element_type": "diagram_group",
+      "source_component_id": "cover_network_motif",
+      "blueprint_bbox_px": {"x": 760, "y": 138, "w": 650, "h": 520},
+      "tolerance_px": 8
+    },
+    {
+      "element_id": "footer_rule",
+      "priority": "P2",
+      "element_type": "decoration_group",
+      "source_component_id": "cover_surface_system",
+      "blueprint_bbox_px": {"x": 0, "y": 884, "w": 1672, "h": 40},
+      "tolerance_px": 12
+    }
+  ]
+}

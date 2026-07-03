@@ -1,0 +1,59 @@
+{
+  "schema": "cyberppt.blueprint_component_signature.v1",
+  "slide": 1,
+  "locked": true,
+  "blueprint_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-01-blueprint.png",
+  "blueprint_sha256": "85e81136beb08cee1b04ffacbba6d052407d532fed1f06ca5b019e7bf62c529c",
+  "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-01-content-lock.json",
+  "content_lock_sha256": "199b7c42784130991e8b806eaaeec343e07cd8dc5919dd66db92b0c5319f79b4",
+  "component_annotation_path": "projects/电力可信数据空间科技成果转化/workbench/components/slide-01-components.json",
+  "component_annotation_sha256": "eb1a5399f927492a4faacfe24e5046f36f36660285a07f14d8d798096889e662",
+  "components": [
+    {
+      "id": "cover_title_block",
+      "type": "editable-text-block",
+      "priority": "P0",
+      "required_subcomponents": [
+        "main_title",
+        "subtitle",
+        "info_rows"
+      ],
+      "content_lock_refs": [
+        "title",
+        "subtitle",
+        "components"
+      ],
+      "must_preserve_type": true
+    },
+    {
+      "id": "cover_network_motif",
+      "type": "native-shape-diagram",
+      "priority": "P1",
+      "required_subcomponents": [
+        "central_cube",
+        "node_ring",
+        "connector_lines",
+        "icon_nodes"
+      ],
+      "content_lock_refs": [
+        "chart_plan"
+      ],
+      "must_preserve_type": true
+    },
+    {
+      "id": "cover_surface_system",
+      "type": "native-background-and-lines",
+      "priority": "P1",
+      "required_subcomponents": [
+        "ivory_background",
+        "thin_blue_rules",
+        "subtle_grid_dots"
+      ],
+      "content_lock_refs": [
+        "selected_style"
+      ],
+      "must_preserve_type": true
+    }
+  ],
+  "validation_failures": []
+}

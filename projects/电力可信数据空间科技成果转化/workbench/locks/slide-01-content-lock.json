@@ -1,0 +1,27 @@
+{
+  "schema": "cyberppt.slide_content_lock.v1",
+  "slide": 1,
+  "source_outline": "projects/电力可信数据空间科技成果转化/workbench/outline-confirmed.json",
+  "source_outline_sha256": "74e1651880846915ad53c73c5e41b188904f60db50d0cfe65e168781f8d655ac",
+  "locked": true,
+  "missing_fields": [
+    "charts",
+    "tables",
+    "kpis",
+    "annotations",
+    "so_what",
+    "required_components"
+  ],
+  "title": "电力行业科技成果转化可信数据空间场景建设方案汇报",
+  "subtitle": "内部立项汇报",
+  "charts": [],
+  "tables": [],
+  "kpis": [],
+  "annotations": [],
+  "caveats": [],
+  "so_what": [],
+  "evidence_ids": [
+    "E01"
+  ],
+  "required_components": []
+}

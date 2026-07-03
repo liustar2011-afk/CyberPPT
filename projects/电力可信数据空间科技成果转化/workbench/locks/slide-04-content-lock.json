@@ -1,0 +1,30 @@
+{
+  "schema": "cyberppt.slide_content_lock.v1",
+  "slide": 4,
+  "source_outline": "projects/电力可信数据空间科技成果转化/workbench/outline-confirmed.json",
+  "source_outline_sha256": "74e1651880846915ad53c73c5e41b188904f60db50d0cfe65e168781f8d655ac",
+  "locked": true,
+  "missing_fields": [
+    "charts",
+    "tables",
+    "kpis",
+    "annotations",
+    "so_what",
+    "required_components"
+  ],
+  "title": "项目建设可行性",
+  "subtitle": "政策授权、技术路径、行业资源和市场需求具备同步支撑",
+  "charts": [],
+  "tables": [],
+  "kpis": [],
+  "annotations": [],
+  "caveats": [],
+  "so_what": [],
+  "evidence_ids": [
+    "E04",
+    "E05",
+    "E06",
+    "E07"
+  ],
+  "required_components": []
+}

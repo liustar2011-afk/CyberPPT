@@ -1,0 +1,118 @@
+{
+  "schema": "cyberppt.visual_element_registry.v1",
+  "blueprint_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-02-blueprint.png",
+  "blueprint_sha256": "03eb3a9a907eca08cda184dbd137e1d6880d98f745a62f491d196e73f02cb6b3",
+  "blueprint_canvas_px": {
+    "w": 1672,
+    "h": 941
+  },
+  "ppt_canvas_in": {
+    "w": 13.333,
+    "h": 7.5
+  },
+  "scale_x": 0.007974282296650717,
+  "scale_y": 0.007970244420828906,
+  "elements": [
+    {
+      "element_id": "title_header",
+      "priority": "P0",
+      "element_type": "text_group",
+      "source_component_id": "title_header",
+      "blueprint_bbox_px": {
+        "x": 0,
+        "y": 0,
+        "w": 1672,
+        "h": 98
+      },
+      "tolerance_px": 6,
+      "ppt_target_bbox_in": {
+        "x": 0.0,
+        "y": 0.0,
+        "w": 13.333,
+        "h": 0.7811
+      }
+    },
+    {
+      "element_id": "timeline_matrix",
+      "priority": "P0",
+      "element_type": "matrix",
+      "source_component_id": "background_timeline_matrix",
+      "blueprint_bbox_px": {
+        "x": 42,
+        "y": 126,
+        "w": 1195,
+        "h": 620
+      },
+      "tolerance_px": 6,
+      "ppt_target_bbox_in": {
+        "x": 0.3349,
+        "y": 1.0043,
+        "w": 9.5293,
+        "h": 4.9416
+      }
+    },
+    {
+      "element_id": "policy_panel",
+      "priority": "P1",
+      "element_type": "panel",
+      "source_component_id": "policy_basis_panel",
+      "blueprint_bbox_px": {
+        "x": 1294,
+        "y": 126,
+        "w": 330,
+        "h": 594
+      },
+      "tolerance_px": 8,
+      "ppt_target_bbox_in": {
+        "x": 10.3187,
+        "y": 1.0043,
+        "w": 2.6315,
+        "h": 4.7343
+      }
+    },
+    {
+      "element_id": "so_what_band",
+      "priority": "P0",
+      "element_type": "conclusion_band",
+      "source_component_id": "so_what_band",
+      "blueprint_bbox_px": {
+        "x": 43,
+        "y": 765,
+        "w": 1576,
+        "h": 105
+      },
+      "tolerance_px": 6,
+      "ppt_target_bbox_in": {
+        "x": 0.3429,
+        "y": 6.0972,
+        "w": 12.5675,
+        "h": 0.8369
+      }
+    },
+    {
+      "element_id": "footer",
+      "priority": "P2",
+      "element_type": "decoration_group",
+      "source_component_id": "title_header",
+      "blueprint_bbox_px": {
+        "x": 43,
+        "y": 905,
+        "w": 1576,
+        "h": 28
+      },
+      "tolerance_px": 12,
+      "ppt_target_bbox_in": {
+        "x": 0.3429,
+        "y": 7.2131,
+        "w": 12.5675,
+        "h": 0.2232
+      }
+    }
+  ],
+  "element_count": 5,
+  "coverage_check": {
+    "manual_annotations_required": true,
+    "passed": true,
+    "failures": []
+  }
+}

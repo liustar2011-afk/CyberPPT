@@ -1,0 +1,485 @@
+{
+  "schema": "cyberppt.stage2_blueprint_manifest.v1",
+  "project": "电力行业科技成果转化可信数据空间场景建设方案汇报",
+  "selected_style": {
+    "id": "04",
+    "name": "象牙白 + 深蓝强调",
+    "background": "#F7F6F0",
+    "title": "#101820",
+    "body": "#303030",
+    "secondary": "#6F7275",
+    "line": "#C9CDD1",
+    "accent": "#12355B"
+  },
+  "canvas": "16:9",
+  "target_language": "中文",
+  "slides": [
+    {
+      "slide": 1,
+      "title": "电力行业科技成果转化可信数据空间场景建设方案汇报",
+      "role": "封面",
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "target_language": "中文",
+      "language_source": "source_material_and_conversation",
+      "effective_language": "中文",
+      "imagegen_output_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-01-blueprint.png",
+      "imagegen_generation_id": "019f1dcc-607f-7f42-acc9-6d9b54cbba8f",
+      "blueprint_sha256": "85e81136beb08cee1b04ffacbba6d052407d532fed1f06ca5b019e7bf62c529c",
+      "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-01-content-lock.json",
+      "content_lock_sha256": "199b7c42784130991e8b806eaaeec343e07cd8dc5919dd66db92b0c5319f79b4",
+      "density_target": "formal low-density cover",
+      "native_labels_required": true,
+      "blueprint_text_is_placeholder": true,
+      "expected_pictures": 0,
+      "pictures_zero_is_not_goal": true,
+      "native_components": [
+        "主标题",
+        "副标题",
+        "汇报单位",
+        "汇报人",
+        "日期"
+      ],
+      "evidence_ids": [
+        "E01"
+      ],
+      "chart_plan": "正式封面，无图表",
+      "visual_quality_check": {
+        "style_locked": true,
+        "matches_internal_briefing_tone": true,
+        "known_issues": [
+          "ImageGen small text may be distorted; final PPT must use slide_content_lock text"
+        ]
+      }
+    },
+    {
+      "slide": 2,
+      "title": "项目建设背景",
+      "role": "背景",
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "target_language": "中文",
+      "language_source": "source_material_and_conversation",
+      "effective_language": "中文",
+      "imagegen_output_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-02-blueprint.png",
+      "imagegen_generation_id": "019f1dcc-607f-7f42-acc9-6d9b54cbba8f",
+      "blueprint_sha256": "03eb3a9a907eca08cda184dbd137e1d6880d98f745a62f491d196e73f02cb6b3",
+      "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-02-content-lock.json",
+      "content_lock_sha256": "acb457758fff8d6bfb0d59820b6f89b6b5ebb2b59de1483b318837098a277bc6",
+      "density_target": "internal high-density briefing page",
+      "native_labels_required": true,
+      "blueprint_text_is_placeholder": true,
+      "expected_pictures": 0,
+      "pictures_zero_is_not_goal": true,
+      "native_components": [
+        "背景说明",
+        "政策依据",
+        "职能基础",
+        "SO WHAT"
+      ],
+      "evidence_ids": [
+        "E01",
+        "E04"
+      ],
+      "chart_plan": "政策时间线 + 中电联职能承接关系",
+      "visual_quality_check": {
+        "style_locked": true,
+        "matches_internal_briefing_tone": true,
+        "known_issues": [
+          "ImageGen small text may be distorted; final PPT must use slide_content_lock text"
+        ]
+      }
+    },
+    {
+      "slide": 3,
+      "title": "项目建设必要性",
+      "role": "必要性",
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "target_language": "中文",
+      "language_source": "source_material_and_conversation",
+      "effective_language": "中文",
+      "imagegen_output_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-03-blueprint.png",
+      "imagegen_generation_id": "019f1dcc-607f-7f42-acc9-6d9b54cbba8f",
+      "blueprint_sha256": "19866fd70f874be8ba7ef7f1227a4113f4ed200a7c2fb414f334486fce5c1d66",
+      "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-03-content-lock.json",
+      "content_lock_sha256": "607530d0d794163835fd97cb29f31e440e063030595c1368575e1ece952e1c67",
+      "density_target": "internal high-density briefing page",
+      "native_labels_required": true,
+      "blueprint_text_is_placeholder": true,
+      "expected_pictures": 0,
+      "pictures_zero_is_not_goal": true,
+      "native_components": [
+        "转化率关键数字",
+        "六大痛点",
+        "痛点归因",
+        "SO WHAT"
+      ],
+      "evidence_ids": [
+        "E02",
+        "E03"
+      ],
+      "chart_plan": "转化率漏斗 + 六大痛点矩阵",
+      "visual_quality_check": {
+        "style_locked": true,
+        "matches_internal_briefing_tone": true,
+        "known_issues": [
+          "ImageGen small text may be distorted; final PPT must use slide_content_lock text"
+        ]
+      }
+    },
+    {
+      "slide": 4,
+      "title": "项目建设可行性",
+      "role": "可行性",
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "target_language": "中文",
+      "language_source": "source_material_and_conversation",
+      "effective_language": "中文",
+      "imagegen_output_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-04-blueprint.png",
+      "imagegen_generation_id": "019f1dcc-607f-7f42-acc9-6d9b54cbba8f",
+      "blueprint_sha256": "7a3cf0c408c0d01f4536841ddba36d0ab321e4feb5e1a0f749b2961ec78c8be7",
+      "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-04-content-lock.json",
+      "content_lock_sha256": "08a3448c0fd76820d92ab5d4f5874924752c9e542b3dcbf220a95c52f40c7611",
+      "density_target": "internal high-density briefing page",
+      "native_labels_required": true,
+      "blueprint_text_is_placeholder": true,
+      "expected_pictures": 0,
+      "pictures_zero_is_not_goal": true,
+      "native_components": [
+        "政策可行性",
+        "技术可行性",
+        "资源可行性",
+        "市场可行性",
+        "caveat"
+      ],
+      "evidence_ids": [
+        "E04",
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "chart_plan": "四象限可行性矩阵",
+      "visual_quality_check": {
+        "style_locked": true,
+        "matches_internal_briefing_tone": true,
+        "known_issues": [
+          "ImageGen small text may be distorted; final PPT must use slide_content_lock text"
+        ]
+      }
+    },
+    {
+      "slide": 5,
+      "title": "总体思路与建设目标",
+      "role": "目标",
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "target_language": "中文",
+      "language_source": "source_material_and_conversation",
+      "effective_language": "中文",
+      "imagegen_output_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-05-blueprint.png",
+      "imagegen_generation_id": "019f1dcc-607f-7f42-acc9-6d9b54cbba8f",
+      "blueprint_sha256": "130eb1fef53ef3a7d854099175786bb06dda29bf52918808170207a9ab440968",
+      "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-05-content-lock.json",
+      "content_lock_sha256": "90a5be16b8a0de33f4d70bbab97f56aa8f565d1bbf6ff1b660e062ed1ae66d58",
+      "density_target": "internal high-density briefing page",
+      "native_labels_required": true,
+      "blueprint_text_is_placeholder": true,
+      "expected_pictures": 0,
+      "pictures_zero_is_not_goal": true,
+      "native_components": [
+        "总体思路",
+        "基本原则",
+        "短期目标",
+        "中期目标",
+        "长期目标"
+      ],
+      "evidence_ids": [
+        "E08",
+        "E09",
+        "E10",
+        "E11"
+      ],
+      "chart_plan": "1+2+6+N 总体框架 + 短中长期目标条",
+      "visual_quality_check": {
+        "style_locked": true,
+        "matches_internal_briefing_tone": true,
+        "known_issues": [
+          "ImageGen small text may be distorted; final PPT must use slide_content_lock text"
+        ]
+      }
+    },
+    {
+      "slide": 6,
+      "title": "总体架构设计",
+      "role": "架构",
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "target_language": "中文",
+      "language_source": "source_material_and_conversation",
+      "effective_language": "中文",
+      "imagegen_output_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-06-blueprint.png",
+      "imagegen_generation_id": "019f1dcc-607f-7f42-acc9-6d9b54cbba8f",
+      "blueprint_sha256": "8dd8ef3f3ea3b033027bd73dbf434a12501d4ecbff4e45639604a37be83d4910",
+      "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-06-content-lock.json",
+      "content_lock_sha256": "a48d45c1bab0f21c6384ed86ee33435cc41a0d91939dd185fd65b9919f0f4ee7",
+      "density_target": "internal high-density briefing page",
+      "native_labels_required": true,
+      "blueprint_text_is_placeholder": true,
+      "expected_pictures": 0,
+      "pictures_zero_is_not_goal": true,
+      "native_components": [
+        "1 个底座",
+        "2 套体系",
+        "6 大场景",
+        "N 个生态节点",
+        "关系说明"
+      ],
+      "evidence_ids": [
+        "E08"
+      ],
+      "chart_plan": "总体架构分层图",
+      "visual_quality_check": {
+        "style_locked": true,
+        "matches_internal_briefing_tone": true,
+        "known_issues": [
+          "ImageGen small text may be distorted; final PPT must use slide_content_lock text"
+        ]
+      }
+    },
+    {
+      "slide": 7,
+      "title": "分层技术架构",
+      "role": "技术",
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "target_language": "中文",
+      "language_source": "source_material_and_conversation",
+      "effective_language": "中文",
+      "imagegen_output_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-07-blueprint.png",
+      "imagegen_generation_id": "019f1dcc-607f-7f42-acc9-6d9b54cbba8f",
+      "blueprint_sha256": "15098a518eec9fca8d98b3652fe132d78caf60cfc6df9ef719910731e302c685",
+      "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-07-content-lock.json",
+      "content_lock_sha256": "8682ffc074d0bdd7f686f95662c4fe85df371c0a4262d7734f3be8d3ea07a46d",
+      "density_target": "internal high-density briefing page",
+      "native_labels_required": true,
+      "blueprint_text_is_placeholder": true,
+      "expected_pictures": 0,
+      "pictures_zero_is_not_goal": true,
+      "native_components": [
+        "用户层",
+        "场景应用层",
+        "核心能力层",
+        "底座层",
+        "基础设施层",
+        "8 大模块"
+      ],
+      "evidence_ids": [
+        "E12"
+      ],
+      "chart_plan": "五层技术架构 + 8 大底座模块",
+      "visual_quality_check": {
+        "style_locked": true,
+        "matches_internal_briefing_tone": true,
+        "known_issues": [
+          "ImageGen small text may be distorted; final PPT must use slide_content_lock text"
+        ]
+      }
+    },
+    {
+      "slide": 8,
+      "title": "核心应用场景",
+      "role": "场景",
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "target_language": "中文",
+      "language_source": "source_material_and_conversation",
+      "effective_language": "中文",
+      "imagegen_output_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-08-blueprint.png",
+      "imagegen_generation_id": "019f1dcc-607f-7f42-acc9-6d9b54cbba8f",
+      "blueprint_sha256": "85625b2beaa302bf7cab025751f482325eeff0562fadd4d6a59184234d4c1238",
+      "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-08-content-lock.json",
+      "content_lock_sha256": "e38ffea59c0c29b25332dd83bbdcd4912384eeaa8cec8182e2d3847e09526407",
+      "density_target": "internal high-density briefing page",
+      "native_labels_required": true,
+      "blueprint_text_is_placeholder": true,
+      "expected_pictures": 0,
+      "pictures_zero_is_not_goal": true,
+      "native_components": [
+        "六大场景",
+        "每场景目标",
+        "对应痛点",
+        "闭环关系"
+      ],
+      "evidence_ids": [
+        "E13"
+      ],
+      "chart_plan": "六场景闭环图",
+      "visual_quality_check": {
+        "style_locked": true,
+        "matches_internal_briefing_tone": true,
+        "known_issues": [
+          "ImageGen small text may be distorted; final PPT must use slide_content_lock text"
+        ]
+      }
+    },
+    {
+      "slide": 9,
+      "title": "运营方案",
+      "role": "运营",
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "target_language": "中文",
+      "language_source": "source_material_and_conversation",
+      "effective_language": "中文",
+      "imagegen_output_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-09-blueprint.png",
+      "imagegen_generation_id": "019f1dcc-607f-7f42-acc9-6d9b54cbba8f",
+      "blueprint_sha256": "e24d733d56e1c6cc1900f38001ece3aef34dc3dd76d1693887a08cf1c3ab829f",
+      "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-09-content-lock.json",
+      "content_lock_sha256": "4dd26d29fa1e650315486161683ff26d00fefbe680918d077cd25835a3efaf7a",
+      "density_target": "internal high-density briefing page",
+      "native_labels_required": true,
+      "blueprint_text_is_placeholder": true,
+      "expected_pictures": 0,
+      "pictures_zero_is_not_goal": true,
+      "native_components": [
+        "运营主体",
+        "公益服务",
+        "市场化增值服务",
+        "收入来源",
+        "生态运营"
+      ],
+      "evidence_ids": [
+        "E14",
+        "E15"
+      ],
+      "chart_plan": "运营主体关系图 + 收入来源结构",
+      "visual_quality_check": {
+        "style_locked": true,
+        "matches_internal_briefing_tone": true,
+        "known_issues": [
+          "ImageGen small text may be distorted; final PPT must use slide_content_lock text"
+        ]
+      }
+    },
+    {
+      "slide": 10,
+      "title": "实施路径与阶段安排",
+      "role": "实施",
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "target_language": "中文",
+      "language_source": "source_material_and_conversation",
+      "effective_language": "中文",
+      "imagegen_output_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-10-blueprint.png",
+      "imagegen_generation_id": "019f1dcc-607f-7f42-acc9-6d9b54cbba8f",
+      "blueprint_sha256": "b254d7bbb1e495eea6e10cc54d34b90beeaac024f006e684b0e8241edcb9737a",
+      "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-10-content-lock.json",
+      "content_lock_sha256": "46e3b8b785f4b90cae128f01fb7ebff55c591b6bb749d224b0e88505a49054b6",
+      "density_target": "internal high-density briefing page",
+      "native_labels_required": true,
+      "blueprint_text_is_placeholder": true,
+      "expected_pictures": 0,
+      "pictures_zero_is_not_goal": true,
+      "native_components": [
+        "筹备阶段",
+        "底座与试点",
+        "全场景推广",
+        "生态深化",
+        "里程碑 KPI"
+      ],
+      "evidence_ids": [
+        "E09",
+        "E10",
+        "E11",
+        "E16"
+      ],
+      "chart_plan": "四阶段路线图 + 关键里程碑",
+      "visual_quality_check": {
+        "style_locked": true,
+        "matches_internal_briefing_tone": true,
+        "known_issues": [
+          "ImageGen small text may be distorted; final PPT must use slide_content_lock text"
+        ]
+      }
+    },
+    {
+      "slide": 11,
+      "title": "投入产出与效益分析",
+      "role": "投入产出",
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "target_language": "中文",
+      "language_source": "source_material_and_conversation",
+      "effective_language": "中文",
+      "imagegen_output_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-11-blueprint.png",
+      "imagegen_generation_id": "019f1dcc-607f-7f42-acc9-6d9b54cbba8f",
+      "blueprint_sha256": "7c9c4efc66800b745f92e49892cec902dcbec6931e4abaa1e1bcd2fbf267df62",
+      "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-11-content-lock.json",
+      "content_lock_sha256": "d2934485c709947f2715c6d14d61306f259cd5bd6a00e4dc2d7c0e78a0d01616",
+      "density_target": "internal high-density briefing page",
+      "native_labels_required": true,
+      "blueprint_text_is_placeholder": true,
+      "expected_pictures": 0,
+      "pictures_zero_is_not_goal": true,
+      "native_components": [
+        "投入结构",
+        "资金来源",
+        "收入预测",
+        "盈亏平衡",
+        "经济与社会效益"
+      ],
+      "evidence_ids": [
+        "E17",
+        "E18",
+        "E19"
+      ],
+      "chart_plan": "投入堆叠条 + 收入曲线 + 利润节点",
+      "visual_quality_check": {
+        "style_locked": true,
+        "matches_internal_briefing_tone": true,
+        "known_issues": [
+          "ImageGen small text may be distorted; final PPT must use slide_content_lock text"
+        ]
+      }
+    },
+    {
+      "slide": 12,
+      "title": "风险评估与保障措施",
+      "role": "风险保障",
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "target_language": "中文",
+      "language_source": "source_material_and_conversation",
+      "effective_language": "中文",
+      "imagegen_output_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-12-blueprint.png",
+      "imagegen_generation_id": "019f1dcc-607f-7f42-acc9-6d9b54cbba8f",
+      "blueprint_sha256": "4df28c26ae4dcf4b45b88f925a41f2e62e58af14e2af6cfc976d99e519a530db",
+      "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-12-content-lock.json",
+      "content_lock_sha256": "8249698a9cf4e140dab193f617e86636896f5493e0d44ddf3fd97d2c9f335db7",
+      "density_target": "internal high-density briefing page",
+      "native_labels_required": true,
+      "blueprint_text_is_placeholder": true,
+      "expected_pictures": 0,
+      "pictures_zero_is_not_goal": true,
+      "native_components": [
+        "六类风险",
+        "应对措施",
+        "六项保障",
+        "下一步工作"
+      ],
+      "evidence_ids": [
+        "E20"
+      ],
+      "chart_plan": "风险矩阵 + 保障机制对照表",
+      "visual_quality_check": {
+        "style_locked": true,
+        "matches_internal_briefing_tone": true,
+        "known_issues": [
+          "ImageGen small text may be distorted; final PPT must use slide_content_lock text"
+        ]
+      }
+    }
+  ]
+}

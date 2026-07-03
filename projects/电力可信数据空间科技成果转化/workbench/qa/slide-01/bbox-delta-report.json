@@ -1,0 +1,198 @@
+{
+  "schema": "cyberppt.render_compare.v1",
+  "blueprint_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-01-blueprint.png",
+  "render_path": "projects/电力可信数据空间科技成果转化/outputs/renders/slide-01.png",
+  "registry_path": "projects/电力可信数据空间科技成果转化/workbench/registry/slide-01-visual-element-registry.json",
+  "elements_checked": 6,
+  "passed": false,
+  "results": [
+    {
+      "element_id": "main_title",
+      "priority": "P0",
+      "blueprint_bbox_px": {
+        "x": 32,
+        "y": 154,
+        "w": 560,
+        "h": 150
+      },
+      "render_bbox_px": {
+        "x": 32,
+        "y": 154,
+        "w": 560,
+        "h": 150
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "tolerance_px": 6,
+      "pixel_mean_abs_diff": 60.383,
+      "pixel_mean_abs_tolerance": 18.0,
+      "status": "failed"
+    },
+    {
+      "element_id": "subtitle",
+      "priority": "P0",
+      "blueprint_bbox_px": {
+        "x": 34,
+        "y": 328,
+        "w": 220,
+        "h": 34
+      },
+      "render_bbox_px": {
+        "x": 34,
+        "y": 328,
+        "w": 220,
+        "h": 34
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "tolerance_px": 6,
+      "pixel_mean_abs_diff": 94.674,
+      "pixel_mean_abs_tolerance": 18.0,
+      "status": "failed"
+    },
+    {
+      "element_id": "info_rows",
+      "priority": "P1",
+      "blueprint_bbox_px": {
+        "x": 34,
+        "y": 430,
+        "w": 420,
+        "h": 138
+      },
+      "render_bbox_px": {
+        "x": 34,
+        "y": 430,
+        "w": 420,
+        "h": 138
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "tolerance_px": 8,
+      "pixel_mean_abs_diff": 28.88,
+      "pixel_mean_abs_tolerance": 18.0,
+      "status": "failed"
+    },
+    {
+      "element_id": "divider_line",
+      "priority": "P1",
+      "blueprint_bbox_px": {
+        "x": 32,
+        "y": 380,
+        "w": 432,
+        "h": 3
+      },
+      "render_bbox_px": {
+        "x": 32,
+        "y": 380,
+        "w": 432,
+        "h": 3
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "tolerance_px": 8,
+      "pixel_mean_abs_diff": 127.108,
+      "pixel_mean_abs_tolerance": 18.0,
+      "status": "failed"
+    },
+    {
+      "element_id": "network_motif",
+      "priority": "P1",
+      "blueprint_bbox_px": {
+        "x": 760,
+        "y": 138,
+        "w": 650,
+        "h": 520
+      },
+      "render_bbox_px": {
+        "x": 760,
+        "y": 138,
+        "w": 650,
+        "h": 520
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "tolerance_px": 10,
+      "pixel_mean_abs_diff": 21.28,
+      "pixel_mean_abs_tolerance": 18.0,
+      "status": "failed"
+    },
+    {
+      "element_id": "footer_rule",
+      "priority": "P2",
+      "blueprint_bbox_px": {
+        "x": 0,
+        "y": 884,
+        "w": 1672,
+        "h": 40
+      },
+      "render_bbox_px": {
+        "x": 0,
+        "y": 884,
+        "w": 1672,
+        "h": 40
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "tolerance_px": 12,
+      "pixel_mean_abs_diff": 131.009,
+      "pixel_mean_abs_tolerance": 18.0,
+      "status": "failed"
+    }
+  ],
+  "failures": [
+    {
+      "element_id": "main_title",
+      "code": "PIXEL_DIFF_EXCEEDED",
+      "severity": "High"
+    },
+    {
+      "element_id": "subtitle",
+      "code": "PIXEL_DIFF_EXCEEDED",
+      "severity": "High"
+    },
+    {
+      "element_id": "info_rows",
+      "code": "PIXEL_DIFF_EXCEEDED",
+      "severity": "High"
+    },
+    {
+      "element_id": "divider_line",
+      "code": "PIXEL_DIFF_EXCEEDED",
+      "severity": "High"
+    },
+    {
+      "element_id": "network_motif",
+      "code": "PIXEL_DIFF_EXCEEDED",
+      "severity": "High"
+    },
+    {
+      "element_id": "footer_rule",
+      "code": "PIXEL_DIFF_EXCEEDED",
+      "severity": "High"
+    }
+  ]
+}

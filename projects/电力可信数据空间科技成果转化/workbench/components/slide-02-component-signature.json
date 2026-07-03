@@ -1,0 +1,72 @@
+{
+  "schema": "cyberppt.blueprint_component_signature.v1",
+  "slide": 2,
+  "locked": true,
+  "blueprint_path": "projects/电力可信数据空间科技成果转化/workbench/blueprints/slide-02-blueprint.png",
+  "blueprint_sha256": "03eb3a9a907eca08cda184dbd137e1d6880d98f745a62f491d196e73f02cb6b3",
+  "content_lock_path": "projects/电力可信数据空间科技成果转化/workbench/locks/slide-02-content-lock.json",
+  "content_lock_sha256": "acb457758fff8d6bfb0d59820b6f89b6b5ebb2b59de1483b318837098a277bc6",
+  "component_annotation_path": "projects/电力可信数据空间科技成果转化/workbench/components/slide-02-components.json",
+  "component_annotation_sha256": "df718d555790bb654388d9c9d0373ddea757f0820970bc82c51bf80dc4dd79cf",
+  "components": [
+    {
+      "id": "title_header",
+      "type": "editable-text-header",
+      "priority": "P0",
+      "required_subcomponents": [
+        "page_number",
+        "title",
+        "subtitle",
+        "top_rule"
+      ],
+      "content_lock_refs": [
+        "title",
+        "subtitle"
+      ],
+      "must_preserve_type": true
+    },
+    {
+      "id": "background_timeline_matrix",
+      "type": "native-timeline-matrix",
+      "priority": "P0",
+      "required_subcomponents": [
+        "time_axis",
+        "three_tracks",
+        "four_periods",
+        "evidence_bullets"
+      ],
+      "content_lock_refs": [
+        "evidence_ids"
+      ],
+      "must_preserve_type": true
+    },
+    {
+      "id": "policy_basis_panel",
+      "type": "native-evidence-panel",
+      "priority": "P1",
+      "required_subcomponents": [
+        "policy_cards",
+        "caveat_note"
+      ],
+      "content_lock_refs": [
+        "E04"
+      ],
+      "must_preserve_type": true
+    },
+    {
+      "id": "so_what_band",
+      "type": "native-conclusion-band",
+      "priority": "P0",
+      "required_subcomponents": [
+        "so_what_label",
+        "three_implications",
+        "conclusion_box"
+      ],
+      "content_lock_refs": [
+        "subtitle"
+      ],
+      "must_preserve_type": true
+    }
+  ],
+  "validation_failures": []
+}
