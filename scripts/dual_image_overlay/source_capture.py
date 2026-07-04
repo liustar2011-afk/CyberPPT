@@ -6,6 +6,12 @@ import re
 from pathlib import Path
 from typing import Any
 
+if __package__ in {None, ""}:
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    __package__ = "scripts.dual_image_overlay"
+
 from .layout_rule_miner import load_ocr_boxes, load_svg_texts, mine_layout_rules
 
 
@@ -331,6 +337,67 @@ def build_source_capture(
             "source_to_render_delta_required_before_final_approval": True,
         },
         "pages": pages,
+    }
+
+
+def expected_texts_from_source_capture(source_capture: dict[str, Any]) -> list[str]:
+    expected: list[str] = []
+    for page in source_capture.get("pages", []):
+        if not isinstance(page, dict):
+            continue
+        for item in page.get("text_objects", []):
+            if isinstance(item, dict):
+                text = str(item.get("rendered_text") or item.get("text") or "").strip()
+                if text:
+                    expected.append(text)
+    return expected
+
+
+def build_source_capture_gate(source_capture: dict[str, Any]) -> dict[str, Any]:
+    pages = [page for page in source_capture.get("pages", []) if isinstance(page, dict)]
+    gap_counts: dict[str, int] = {}
+    blocking_gaps: list[dict[str, Any]] = []
+    visual_element_count = 0
+    p0_element_count = 0
+    text_object_count = 0
+
+    for page in pages:
+        visual_inventory = [
+            item for item in page.get("visual_element_inventory", []) if isinstance(item, dict)
+        ]
+        visual_element_count += len(visual_inventory)
+        p0_element_count += sum(1 for item in visual_inventory if item.get("priority") == "P0")
+        text_object_count += len([item for item in page.get("text_objects", []) if isinstance(item, dict)])
+        page_number = page.get("page_number")
+        for gap in page.get("capture_gaps", []):
+            if not isinstance(gap, dict):
+                continue
+            code = str(gap.get("code") or "unknown_gap")
+            gap_counts[code] = gap_counts.get(code, 0) + 1
+            blocking_gaps.append(
+                {
+                    "page_number": page_number,
+                    "code": code,
+                    "message": gap.get("message"),
+                }
+            )
+
+    return {
+        "schema": "cyberppt.dual_image.source_capture_gate.v1",
+        "valid": bool(pages and visual_element_count and text_object_count and not blocking_gaps),
+        "page_count": len(pages),
+        "text_object_count": text_object_count,
+        "visual_element_count": visual_element_count,
+        "p0_element_count": p0_element_count,
+        "gap_counts": gap_counts,
+        "blocking_gaps": blocking_gaps,
+        "checks": {
+            "source_capture_available": bool(pages),
+            "source_text_objects_available": bool(text_object_count),
+            "visual_element_inventory_available": bool(visual_element_count),
+            "p0_inventory_available": bool(p0_element_count),
+            "capture_gaps_resolved": not blocking_gaps,
+        },
     }
 
 

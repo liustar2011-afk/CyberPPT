@@ -5,10 +5,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from cyberppt.commands.script_runner import script_path
 from scripts.dual_image_overlay.source_capture import build_source_capture
 
 
 class DualImageOverlaySourceCaptureTests(unittest.TestCase):
+    def test_source_capture_is_exposed_as_cyberppt_script_alias(self) -> None:
+        self.assertEqual("source_capture.py", script_path("source-capture").name)
+
     def test_builds_unified_capture_from_existing_rebuild_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             project_dir = Path(tmp)

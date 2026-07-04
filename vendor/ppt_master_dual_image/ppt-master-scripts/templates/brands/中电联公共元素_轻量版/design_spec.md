@@ -26,12 +26,10 @@ primary_color: ""
 | Element | Source File | Geometry / Rule | Lock Scope |
 |---|---|---|---|
 | Top red divider | `./master_elements.svg` | y=82, h=7, fill `#8B0000` | Public chrome only |
-| Top-right CEC logo | `./logo.png` via `./master_elements.svg` | x=1060, y=16, w=189, h=63 | Public chrome only |
-| Footer blue bar | `./master_elements.svg` | y=696, h=24, fill `#003366` | Public chrome only |
-| Footer organization name | `./master_elements.svg` | x=40, y=711.5, font 9, fill `#FFFFFF`, text `中国电力企业联合会` | Public chrome only |
-| Dynamic page number | `./master_elements.svg` | x=1240, y=712, font 10, fill `#FFFFFF`, exported as page-number field when supported | Public chrome only |
+| Top-right CEC logo | `./logo.png` via `./master_elements.svg` | x=1050, y=13, w=210, h=70 | Public chrome only |
+| Dynamic page number | `./master_elements.svg` | x=1240, y=712, font 10, fill `#666666`, exported as page-number field when supported | Public chrome only |
 
-The red divider, blue footer, white footer text, and logo colors are fixed only for the public chrome layer. They are not a content palette and must not be copied into `spec_lock.md colors` as `primary`, `accent`, `bg`, `surface`, `text`, or chart colors.
+The red divider, gray page number, and logo colors are fixed only for the public chrome layer. They are not a content palette and must not be copied into `spec_lock.md colors` as `primary`, `accent`, `bg`, `surface`, `text`, or chart colors.
 
 ## III. Cover Base
 
@@ -60,7 +58,6 @@ These two page templates are borrowed from `templates/brands/中电联公司_现
 | Region | Geometry | Rule |
 |---|---|---|
 | Top-right logo region | x=1048, y=10, w=220, h=76 | Normal text and content graphics must not enter this region. |
-| Footer region | x=0, y=696, w=1280, h=24 | Normal text and content graphics must not enter the footer bar. |
 | Body content region | x=58, y=122, w=1164, h=554 | Recommended body area when no layout path supplies a stricter structure. |
 | Cover title region | x=260, y=150, w=760, h=186 | Recommended title and subtitle area on `cover_bg.jpg`. |
 | Cover metadata region | x=360, y=430, w=560, h=220 | Recommended date, organization, version, or report-type area on `cover_bg.jpg`. |
@@ -70,7 +67,7 @@ These two page templates are borrowed from `templates/brands/中电联公司_现
 | File | Purpose | Usage |
 |---|---|---|
 | `./logo.png` | CEC logo lockup | Inject through the master chrome or place only in explicitly branded moments. |
-| `./master_elements.svg` | Public page chrome | Red divider, top-right logo, footer bar, organization name, page number. |
+| `./master_elements.svg` | Public page chrome | Red divider, top-right logo, gray page number. |
 | `./cover_bg.jpg` | Public cover base | Optional full-bleed cover background for formal CEC-facing decks; not a content style source. |
 | `./01_cover.svg` | Public cover template | Optional cover-page SVG skeleton with placeholders. |
 | `./04_ending.svg` | Public ending template | Optional closing-page SVG skeleton. |
@@ -96,4 +93,4 @@ When this brand is copied into `<project_path>/templates/`, Strategist must trea
 - Do not treat this brand as a color, typography, icon, or voice truth source.
 - Generate the content palette and typography through the normal visual-style-driven confirmations.
 - When using `cover_bg.jpg`, place project text inside the declared cover regions and do not infer body-page colors from the cover image.
-- Keep public chrome visually separate from body content; do not redraw the logo, organization name, footer, or page number inside ordinary page SVGs when the master layer is available.
+- Keep public chrome visually separate from body content; do not redraw the logo or page number inside ordinary page SVGs when the master layer is available.

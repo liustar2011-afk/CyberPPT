@@ -8,7 +8,7 @@ import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable
 
 
 PAGE_HEADING_RE = re.compile(
@@ -45,6 +45,13 @@ class PageBlock:
     text: str
 
 
+def _collapse_text(value: Any) -> str:
+    text = str(value or "").strip()
+    text = re.sub(r"[ \t]+\n", "\n", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text
+
+
 def parse_page_blocks(script_path: Path) -> dict[int, PageBlock]:
     text = script_path.read_text(encoding="utf-8")
     matches = list(PAGE_HEADING_RE.finditer(text))
@@ -60,6 +67,65 @@ def parse_page_blocks(script_path: Path) -> dict[int, PageBlock]:
     return pages
 
 
+def _section_lines_from_lock(section: dict[str, Any]) -> list[str]:
+    heading = _collapse_text(section.get("heading"))
+    text = _collapse_text(section.get("text"))
+    lines: list[str] = []
+    if heading:
+        lines.append(heading)
+    if text:
+        lines.extend(line.strip() for line in text.splitlines() if line.strip())
+    return lines
+
+
+def page_block_from_content_lock(lock_path: Path) -> PageBlock:
+    payload = json.loads(lock_path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"content lock root must be an object: {lock_path}")
+    page_number = int(payload.get("slide") or 0)
+    if page_number <= 0:
+        raise ValueError(f"content lock slide must be positive: {lock_path}")
+    title = _collapse_text(payload.get("title"))
+    if not title:
+        raise ValueError(f"content lock title is required: {lock_path}")
+
+    text_lines: list[str] = []
+    subtitle = _collapse_text(payload.get("subtitle"))
+    if subtitle and subtitle != title:
+        text_lines.append(f"页面角色：{subtitle}")
+    sections = payload.get("content_sections")
+    if isinstance(sections, list):
+        for raw_section in sections:
+            if isinstance(raw_section, dict):
+                text_lines.extend(_section_lines_from_lock(raw_section))
+    annotations = payload.get("annotations")
+    if isinstance(annotations, list):
+        for annotation in annotations:
+            cleaned = _collapse_text(annotation)
+            if cleaned and cleaned != "无":
+                text_lines.append(f"关系：{cleaned}")
+    components = payload.get("required_components")
+    if isinstance(components, list):
+        for component in components:
+            cleaned = _collapse_text(component)
+            if cleaned:
+                text_lines.append(f"组件：{cleaned}")
+
+    return PageBlock(page_number=page_number, title=title, text="\n".join(text_lines))
+
+
+def parse_content_locks(lock_dir: Path) -> dict[int, PageBlock]:
+    if not lock_dir.is_dir():
+        raise ValueError(f"content lock directory not found: {lock_dir}")
+    pages: dict[int, PageBlock] = {}
+    for lock_path in sorted(lock_dir.glob("slide-*-content-lock.json")):
+        page = page_block_from_content_lock(lock_path)
+        pages[page.page_number] = page
+    if not pages:
+        raise ValueError(f"no slide content locks found in: {lock_dir}")
+    return pages
+
+
 def _drop_line(line: str) -> bool:
     stripped = line.strip()
     if not stripped:
@@ -70,7 +136,9 @@ def _drop_line(line: str) -> bool:
         "——" in stripped or "标签" in stripped or "下方" in stripped or "主体" in stripped or "（" in stripped
     ):
         return True
-    return any(pattern.search(stripped) for pattern in DISALLOWED_LINE_PATTERNS)
+    if any(pattern.search(stripped) for pattern in DISALLOWED_LINE_PATTERNS):
+        return True
+    return stripped.startswith(("【", "目标语言", "用途"))
 
 
 def _clean_line(line: str) -> str:
@@ -123,9 +191,9 @@ def layout_density_directives(page: PageBlock) -> list[str]:
             continue
         if any(pattern.search(stripped) for pattern in DISALLOWED_LINE_PATTERNS):
             continue
-        if not COMPONENT_LINE_RE.match(stripped):
+        if not COMPONENT_LINE_RE.match(stripped) and not stripped.startswith(("组件：", "关系：")):
             continue
-        cleaned = _clean_structure_directive(stripped)
+        cleaned = _clean_structure_directive(stripped.removeprefix("组件：").removeprefix("关系："))
         if not cleaned:
             continue
         key = re.sub(r"\s+", "", cleaned)
@@ -190,24 +258,22 @@ def style_contract(style_lock_path: Path | None) -> str:
 def render_prompt(page: PageBlock, *, style_lock_path: Path | None = None) -> str:
     body = "\n".join(f"- {line}" for line in visible_deliverable_lines(page))
     layout_directives = "\n".join(f"- {line}" for line in layout_density_directives(page))
-    return f"""## 第{page.page_number}页：{page.title}
+    return f"""## 第{page.page_number}页：{template_title(page)}
 
 【内容锁定】
-标题：{template_title(page)}
-副标题：
 {body}
 
 【构图指令】
 生成一张面向最终客户交付的 PPT 正文内容区成稿图，不是蓝图、草稿、过程说明页、复刻中间产物或调试预览图。
 
-只生成正文内容区画面。不要生成页面标题、副标题、Logo、页脚、页码、母版红线、公共元素、临时占位元素或任何完整 PPT 外框；这些由 PPT 模板/母版和可编辑文字层生成。
+只生成正文内容区画面。不要生成页面标题、副标题、Logo、页脚、页码、母版红线、公共元素、临时占位元素或任何完整 PPT 外框；这些由 PPT 模板/母版和可编辑文字层生成。上方 Markdown 页标题只供模板层提取，不属于图片内容。
 
 不得出现证据编号、来源编号、过程性注释、脚注、口径说明、参考来源、调试标记、占位符、乱码、水印，或任何面向制作过程而非最终受众的文字。
 
 {style_contract(style_lock_path)}
 
 【结构密度】
-必须保持高信息密度，不能把页面简化成少量留白卡片。保留原脚本组件数量、组件关系、网格/流程/卡片结构和底部 SO WHAT 区。所有正文内容都要进入画面，不得遗漏关键数字、判断句、清单项或行动链。
+必须保持高信息密度，不能把页面简化成少量留白卡片。保留原脚本组件数量、组件关系、网格/流程/卡片结构和底部 SO WHAT 区。下列正文内容要进入画面，但不包含页面标题、副标题、Logo、页脚、页码或公共模板元素；不得遗漏关键数字、判断句、清单项或行动链。
 {layout_directives}
 
 把正文内容组织为正式汇报页的信息图结构：一个清晰主判断区、若干业务要点/结构模块、一个醒目的 SO WHAT 或行动提示。所有文字承载区必须干净、留白充分、可被后续 PPT 文本层覆盖；图形关系、容器、图标和连接线应边界清楚，适合作为无字背景保留。
@@ -221,6 +287,8 @@ def assert_deliverable_prompt(prompt: str) -> None:
         r"caveat",
         r"标题占位条（",
         r"标题占位条",
+        r"(?m)^标题[:：]",
+        r"(?m)^副标题[:：]",
         r"仅供参考",
         r"核对内容",
         r"\[通用风格前缀\]",
@@ -232,10 +300,18 @@ def assert_deliverable_prompt(prompt: str) -> None:
 
 def compile_pages(script_path: Path, pages: Iterable[int], style_lock_path: Path | None = None) -> str:
     blocks = parse_page_blocks(script_path)
+    return compile_page_blocks(blocks, pages, style_lock_path=style_lock_path)
+
+
+def compile_page_blocks(
+    blocks: dict[int, PageBlock],
+    pages: Iterable[int],
+    style_lock_path: Path | None = None,
+) -> str:
     rendered: list[str] = []
     for page_number in pages:
         if page_number not in blocks:
-            raise ValueError(f"Page {page_number} not found in script: {script_path}")
+            raise ValueError(f"Page {page_number} not found")
         prompt = render_prompt(blocks[page_number], style_lock_path=style_lock_path)
         assert_deliverable_prompt(prompt)
         rendered.append(prompt)
@@ -263,22 +339,25 @@ def parse_pages(raw: str, available: set[int]) -> list[int]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Compile final-deliverable image prompts.")
-    parser.add_argument("--script", required=True, type=Path)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--script", type=Path)
+    source.add_argument("--content-lock-dir", type=Path)
     parser.add_argument("--pages", default="all")
     parser.add_argument("--style-lock", type=Path)
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--manifest", type=Path)
     args = parser.parse_args()
 
-    blocks = parse_page_blocks(args.script)
+    blocks = parse_page_blocks(args.script) if args.script else parse_content_locks(args.content_lock_dir)
     pages = parse_pages(args.pages, set(blocks))
-    output = compile_pages(args.script, pages, style_lock_path=args.style_lock)
+    output = compile_page_blocks(blocks, pages, style_lock_path=args.style_lock)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(output, encoding="utf-8")
     if args.manifest:
         payload = {
             "schema": "cyberppt.deliverable_image_prompt_manifest.v1",
-            "source_script": str(args.script),
+            "source_script": str(args.script) if args.script else None,
+            "content_lock_dir": str(args.content_lock_dir) if args.content_lock_dir else None,
             "style_lock": str(args.style_lock) if args.style_lock else None,
             "pages": pages,
             "output": str(args.out),

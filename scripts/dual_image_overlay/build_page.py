@@ -22,6 +22,7 @@ from .alignment import AlignmentTransform, estimate_alignment
 from .layout_qa import check_layout
 from .normalize import normalize_image
 from .semantic_plan import load_semantic_plan
+from .source_capture import build_source_capture, build_source_capture_gate, expected_texts_from_source_capture
 from .text_content_qa import build_text_content_qa
 
 
@@ -118,6 +119,131 @@ def _render_boxes(plan) -> list[dict]:
     return boxes
 
 
+def _xyxy_to_rect(box: list[float]) -> dict:
+    x1, y1, x2, y2 = [float(value) for value in box]
+    return {
+        "x": round(x1, 3),
+        "y": round(y1, 3),
+        "w": round(x2 - x1, 3),
+        "h": round(y2 - y1, 3),
+    }
+
+
+def _source_capture_text_mapping(page_number: int, boxes: list[dict]) -> dict:
+    mapped = []
+    for box in boxes:
+        rect = _xyxy_to_rect(list(box["bbox"]))
+        mapped.append(
+            {
+                "text": box["text"],
+                **rect,
+                "font_size": box["font_size"],
+                "font_family": box["font_family"],
+                "fill": box["fill"],
+                "font_weight": "700" if box.get("bold") else "400",
+                "align": box.get("align"),
+                "word_wrap": "\n" in str(box.get("text", "")),
+                "source": "semantic_plan",
+                "confidence": 1.0,
+            }
+        )
+    return {
+        "schema": "cyberppt.dual_image.ocr_text_mapping.v1",
+        "page_number": page_number,
+        "boxes": mapped,
+    }
+
+
+def _source_capture_containers(page_number: int, plan) -> dict:
+    containers = []
+    for container in plan.containers:
+        rect = _xyxy_to_rect(list(container.bbox))
+        safe = _xyxy_to_rect(list(container.text_safe_bbox))
+        containers.append(
+            {
+                "id": container.id,
+                "role": container.role,
+                **rect,
+                "text_safe_bbox": safe,
+            }
+        )
+    return {
+        "schema": "cyberppt.dual_image.semantic_containers.v1",
+        "page_number": page_number,
+        "containers": containers,
+    }
+
+
+def _source_capture_typography(page_number: int, boxes: list[dict]) -> dict:
+    return {
+        "schema": "cyberppt.dual_image.typography_decisions.v1",
+        "page_number": page_number,
+        "decisions": [
+            {
+                "text": box["text"],
+                "rendered_text": box["text"],
+                "role": box.get("role"),
+                "applied_px": box.get("font_size"),
+            }
+            for box in boxes
+        ],
+    }
+
+
+def _source_capture_pair_manifest(page_number: int, full: Path, background: Path) -> dict:
+    return {
+        "schema": "cyberppt.dual_image.page_image_pairs.v1",
+        "generation_contract": {
+            "slide_canvas": {"width": 1280, "height": 720},
+            "brand_body_region": {"x": 0, "y": 0, "width": 1280, "height": 720},
+        },
+        "pairs": [
+            {
+                "page_number": page_number,
+                "full": {
+                    "filename": full.name,
+                    "path": str(full),
+                    "status": "ready",
+                    "image_size": {"width": 1280, "height": 720},
+                },
+                "background": {
+                    "filename": background.name,
+                    "path": str(background),
+                    "status": "ready",
+                    "image_size": {"width": 1280, "height": 720},
+                },
+            }
+        ],
+    }
+
+
+def _write_source_capture_inputs(
+    out_dir: Path,
+    *,
+    page_number: int,
+    plan,
+    boxes: list[dict],
+    full_norm: Path,
+    background_norm: Path,
+) -> None:
+    _write_json(
+        out_dir / "analysis" / "ocr" / f"page_{page_number:03d}_text_mapping.json",
+        _source_capture_text_mapping(page_number, boxes),
+    )
+    _write_json(
+        out_dir / "analysis" / "semantic_containers" / f"page_{page_number:03d}_containers.json",
+        _source_capture_containers(page_number, plan),
+    )
+    _write_json(
+        out_dir / "analysis" / "typography" / f"page_{page_number:03d}_typography.json",
+        _source_capture_typography(page_number, boxes),
+    )
+    _write_json(
+        out_dir / "images" / "page_image_pairs.json",
+        _source_capture_pair_manifest(page_number, full_norm, background_norm),
+    )
+
+
 def _alignment_layout(plan) -> dict:
     return {
         "items": [
@@ -177,6 +303,18 @@ def build_page(args: argparse.Namespace) -> dict:
     boxes = _render_boxes(plan)
     if args.align_from_full:
         boxes = _apply_transform_to_boxes(boxes, transform)
+    _write_source_capture_inputs(
+        out_dir,
+        page_number=args.page_number,
+        plan=plan,
+        boxes=boxes,
+        full_norm=full_norm,
+        background_norm=background_norm,
+    )
+    source_capture = build_source_capture(out_dir)
+    _write_json(analysis / "source_capture.json", source_capture)
+    source_capture_gate = build_source_capture_gate(source_capture)
+    _write_json(analysis / "source_capture_gate.json", source_capture_gate)
     mapping = {
         "schema": "cyberppt.dual_image.text_mapping.v1",
         "delivery_mode": "dual_image_editable_overlay",
@@ -205,7 +343,7 @@ def build_page(args: argparse.Namespace) -> dict:
         check=True,
     )
 
-    expected = [item.display_text for item in plan.items]
+    expected = expected_texts_from_source_capture(source_capture)
     text_content_qa = build_text_content_qa(pptx_path, expected)
     _write_json(analysis / "text_content_qa.json", text_content_qa)
 
@@ -234,7 +372,12 @@ def build_page(args: argparse.Namespace) -> dict:
     human_visual_review_pass = False
     readiness = {
         "schema": "cyberppt.dual_image.production_readiness.v1",
-        "valid": bool(structural_valid and visual_preview["valid"] and human_visual_review_pass),
+        "valid": bool(
+            structural_valid
+            and source_capture_gate["valid"]
+            and visual_preview["valid"]
+            and human_visual_review_pass
+        ),
         "structural_valid": structural_valid,
         "checks": {
             "delivery_mode": "dual_image_editable_overlay",
@@ -246,10 +389,20 @@ def build_page(args: argparse.Namespace) -> dict:
             "layout_qa_pass": bool(layout_qa["valid"]),
             "visual_preview_generated": bool(visual_preview["valid"]),
             "human_visual_review_pass": human_visual_review_pass,
+            "source_capture_available": bool(source_capture["pages"]),
+            "source_capture_consumed": True,
+            "source_capture_gate_pass": bool(source_capture_gate["valid"]),
+            "source_capture_text_drives_qa": True,
+            "source_capture_gaps_resolved": bool(source_capture_gate["checks"]["capture_gaps_resolved"]),
         },
+        "source_capture_gate": source_capture_gate,
         "geometry_source": geometry_source,
         "alignment": transform.to_dict(),
-        "status": "visual_review_required" if structural_valid else "structural_rework_required",
+        "status": "source_capture_rework_required"
+        if structural_valid and not source_capture_gate["valid"]
+        else "ready_for_human_visual_review"
+        if structural_valid
+        else "structural_rework_required",
         "artifacts": {
             "normalized_full": str(full_norm),
             "normalized_background": str(background_norm),
@@ -259,6 +412,8 @@ def build_page(args: argparse.Namespace) -> dict:
             "layout_qa": str(analysis / "layout_qa.json"),
             "background_text_scan": str(analysis / "background_text_scan.json"),
             "visual_preview": str(analysis / "visual_preview.json"),
+            "source_capture": str(analysis / "source_capture.json"),
+            "source_capture_gate": str(analysis / "source_capture_gate.json"),
         },
     }
     _write_json(analysis / "production_readiness.json", readiness)
@@ -272,6 +427,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--semantic-plan", type=Path, required=True)
     parser.add_argument("--background-layout", type=Path)
     parser.add_argument("--out-dir", type=Path, required=True)
+    parser.add_argument("--page-number", type=int, default=1)
     parser.add_argument("--render-preview", action="store_true")
     parser.add_argument(
         "--align-from-full",

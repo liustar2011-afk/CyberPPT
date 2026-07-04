@@ -72,16 +72,42 @@ class DualImageOverlayBuildPageTests(unittest.TestCase):
             self.assertTrue((out_dir / "normalized/background-1280x720.png").is_file())
             self.assertTrue((out_dir / "exports/page.pptx").is_file())
             self.assertTrue((out_dir / "analysis/visual_preview.json").is_file())
+            self.assertTrue((out_dir / "analysis/source_capture.json").is_file())
+            self.assertTrue((out_dir / "analysis/source_capture_gate.json").is_file())
+            source_capture = json.loads((out_dir / "analysis/source_capture.json").read_text(encoding="utf-8"))
+            source_capture_gate = json.loads((out_dir / "analysis/source_capture_gate.json").read_text(encoding="utf-8"))
+            text_content_qa = json.loads((out_dir / "analysis/text_content_qa.json").read_text(encoding="utf-8"))
             readiness = json.loads(
                 (out_dir / "analysis/production_readiness.json").read_text(encoding="utf-8")
             )
+        self.assertEqual("cyberppt.dual_image.source_capture.v1", source_capture["schema"])
+        self.assertEqual([1], [page["page_number"] for page in source_capture["pages"]])
+        self.assertEqual(1, source_capture["inputs"]["ocr_text_mappings"])
+        self.assertEqual(["核心结论"], text_content_qa["expected_texts"])
+        self.assertEqual("cyberppt.dual_image.source_capture_gate.v1", source_capture_gate["schema"])
+        self.assertFalse(source_capture_gate["valid"])
+        self.assertIn("render_delta_not_measured", source_capture_gate["gap_counts"])
         self.assertFalse(readiness["valid"])
         self.assertTrue(readiness["structural_valid"])
-        self.assertEqual("visual_review_required", readiness["status"])
+        self.assertEqual("source_capture_rework_required", readiness["status"])
         self.assertTrue(readiness["checks"]["text_content_matches_lock"])
         self.assertTrue(readiness["checks"]["layout_qa_pass"])
         self.assertFalse(readiness["checks"]["visual_preview_generated"])
         self.assertFalse(readiness["checks"]["human_visual_review_pass"])
+        self.assertTrue(readiness["checks"]["source_capture_available"])
+        self.assertTrue(readiness["checks"]["source_capture_consumed"])
+        self.assertTrue(readiness["checks"]["source_capture_text_drives_qa"])
+        self.assertFalse(readiness["checks"]["source_capture_gate_pass"])
+        self.assertFalse(readiness["checks"]["source_capture_gaps_resolved"])
+        self.assertFalse(readiness["source_capture_gate"]["valid"])
+        self.assertEqual(
+            str((out_dir / "analysis/source_capture.json").resolve()),
+            readiness["artifacts"]["source_capture"],
+        )
+        self.assertEqual(
+            str((out_dir / "analysis/source_capture_gate.json").resolve()),
+            readiness["artifacts"]["source_capture_gate"],
+        )
         self.assertEqual("semantic_plan_containers", readiness["geometry_source"])
         self.assertEqual("semantic-container-geometry", readiness["alignment"]["model"])
 

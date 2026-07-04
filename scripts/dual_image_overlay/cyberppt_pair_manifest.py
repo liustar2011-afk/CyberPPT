@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Build CyberPPT-owned dual-image pair manifests.
 
-This is the CyberPPT side of the "script -> dual images -> editable PPT"
-pipeline. It compiles the repo's stage/ImageGen script into final-deliverable
-content-region prompts, writes a page_image_pairs.json compatible with the
-editable overlay rebuild step, and verifies that the expected image files exist.
+This is the CyberPPT side of the "approved body blueprint -> full/background
+images -> editable PPT" pipeline. It can promote approved blueprint PNGs to
+full images, compiles final-deliverable content-region prompts for repairs, writes
+a page_image_pairs.json compatible with the editable overlay rebuild step, and
+verifies that the expected image files exist.
 
 It intentionally does not import ppt-master's page_image_pair_batch.py or its
 style preset system.
@@ -19,7 +20,7 @@ import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -35,6 +36,13 @@ CANVAS = {"width": 1280, "height": 720}
 CONTENT_REGION = {"x": 32, "y": 98, "width": 1216, "height": 589}
 GENERATION_SIZE = {"width": 2432, "height": 1184}
 OUTPUT_VARIANTS = ["full", "background"]
+BLUEPRINT_PATTERNS = (
+    "slide-{page:03d}-blueprint.png",
+    "slide-{page:02d}-blueprint.png",
+    "slide-{page}-blueprint.png",
+    "page_{page:03d}_blueprint.png",
+    "page-{page:03d}-blueprint.png",
+)
 
 
 def _slug(text: str, fallback: str = "page") -> str:
@@ -164,8 +172,9 @@ def require_generated(manifest: dict[str, Any]) -> None:
                 missing.append(str(path))
     if missing:
         raise FileNotFoundError(
-            "CyberPPT image files are not generated yet. Generate full/background images with the "
-            "CyberPPT image workflow, then rerun with --resume.\nMissing:\n"
+            "CyberPPT image files are not generated yet. Promote approved blueprints to full images "
+            "with --promote-blueprints-from, generate no-text background images from each full image, "
+            "then rerun with --resume.\nMissing:\n"
             + "\n".join(missing)
         )
 
@@ -187,7 +196,40 @@ def _copy_existing_images(existing_manifest: Path, output_dir: Path, *, force: b
             shutil.copy2(source, target)
 
 
-def main() -> int:
+def _find_blueprint_image(blueprint_dir: Path, page_number: int) -> Path | None:
+    for pattern in BLUEPRINT_PATTERNS:
+        candidate = blueprint_dir / pattern.format(page=page_number)
+        if candidate.is_file():
+            return candidate
+    matches = sorted(blueprint_dir.glob(f"*{page_number:03d}*blueprint*.png"))
+    if not matches:
+        matches = sorted(blueprint_dir.glob(f"*{page_number}*blueprint*.png"))
+    return matches[0] if matches else None
+
+
+def _copy_full_images_from_blueprints(
+    *,
+    blueprint_dir: Path,
+    output_dir: Path,
+    script: Path,
+    pages_raw: str,
+    force: bool = False,
+) -> None:
+    source_pages = parse_page_blocks(script)
+    page_numbers = parse_pages(pages_raw, set(source_pages))
+    for page_number in page_numbers:
+        blueprint = _find_blueprint_image(blueprint_dir, page_number)
+        if blueprint is None:
+            continue
+        page = source_pages[page_number]
+        target = output_dir / f"{_page_stem(page_number, page.title)}_full.png"
+        if target.exists() and not force:
+            continue
+        output_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(blueprint, target)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Create CyberPPT dual-image pair manifests.")
     parser.add_argument("--script", required=True, type=Path)
     parser.add_argument("--pages", default="all")
@@ -198,10 +240,23 @@ def main() -> int:
     parser.add_argument("--force", action="store_true", help="Mark images pending and overwrite copied cache images.")
     parser.add_argument("--require-generated", action="store_true", help="Fail if full/background images are missing.")
     parser.add_argument("--copy-images-from", type=Path, help="Optional existing page_image_pairs.json to seed image files.")
-    args = parser.parse_args()
+    parser.add_argument(
+        "--promote-blueprints-from",
+        type=Path,
+        help="Optional approved blueprint image directory; matching blueprint PNGs are copied as full images.",
+    )
+    args = parser.parse_args(argv)
 
     if args.copy_images_from:
         _copy_existing_images(args.copy_images_from.resolve(), args.output_dir.resolve(), force=args.force)
+    if args.promote_blueprints_from:
+        _copy_full_images_from_blueprints(
+            blueprint_dir=args.promote_blueprints_from.resolve(),
+            output_dir=args.output_dir.resolve(),
+            script=args.script.resolve(),
+            pages_raw=args.pages,
+            force=args.force,
+        )
 
     manifest, manifest_path, compiled_script, page_numbers = build_manifest(
         script=args.script.resolve(),

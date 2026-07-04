@@ -7,6 +7,9 @@
     "test": "python3 -m unittest discover -s tests",
     "test:validate-pptx": "python3 scripts/test_validate_pptx.py",
     "validate": "python3 scripts/validate_pptx.py",
+    "body-blueprint-prompts": "python3 scripts/body_blueprint_prompt.py",
+    "source-capture": "python3 scripts/dual_image_overlay/source_capture.py",
+    "template-rebuild": "python3 scripts/dual_image_overlay/template_rebuild.py",
     "render:dual-image-overlay": "node scripts/dual_image_overlay/render_overlay.mjs"
   },
   "dependencies": {
