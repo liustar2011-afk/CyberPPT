@@ -1,7 +1,0 @@
-{
-  "purpose": "Text wrap similarity passes when SVG matches declared region.",
-  "layout_reference": false,
-  "svg_spacing": false,
-  "text_bearing_images": false,
-  "text_wrap_similarity": true
-}

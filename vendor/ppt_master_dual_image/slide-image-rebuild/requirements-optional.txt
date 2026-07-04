@@ -1,6 +1,0 @@
-# Optional dependencies. Install with:
-#   pip install -r requirements.txt -r requirements-optional.txt
-
-# TLS-impersonating HTTP client used by project_manager.py when importing
-# sources from URLs that block default Python/requests user agents.
-curl_cffi>=0.6
