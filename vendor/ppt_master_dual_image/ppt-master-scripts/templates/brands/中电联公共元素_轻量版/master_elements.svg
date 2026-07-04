@@ -8,15 +8,9 @@
   <!-- Top brand divider -->
   <rect x="0" y="94" width="1280" height="7" fill="#8B0000"/>
 
-  <!-- Footer blue bar -->
-  <rect x="0" y="696" width="1280" height="24" fill="#003366"/>
-
   <!-- Company logo (top-right) -->
-  <image x="1060" y="16" width="189" height="63" xlink:href="logo.png" preserveAspectRatio="xMidYMid meet"/>
-
-  <!-- Footer company name -->
-  <text x="40" y="711.5" font-family="Microsoft YaHei, Arial" font-size="9" fill="#FFFFFF">中国电力企业联合会</text>
+  <image x="1050" y="13" width="210" height="70" xlink:href="logo.png" preserveAspectRatio="xMidYMid meet"/>
 
   <!-- Auto page number placeholder -->
-  <text x="1240" y="712" text-anchor="end" font-family="Microsoft YaHei, Arial" font-size="10" font-weight="700" fill="#FFFFFF">{{PAGE_NUM}}</text>
+  <text x="1240" y="712" text-anchor="end" font-family="Microsoft YaHei, Arial" font-size="10" font-weight="700" fill="#666666">{{PAGE_NUM}}</text>
 </svg>

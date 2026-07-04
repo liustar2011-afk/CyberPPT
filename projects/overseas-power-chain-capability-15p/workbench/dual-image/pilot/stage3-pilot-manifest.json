@@ -1,0 +1,55 @@
+{
+  "schema": "cyberppt.stage3_pilot_manifest.v1",
+  "project": "overseas-power-chain-capability-15p",
+  "delivery_mode": "dual_image_editable_overlay",
+  "approved_blueprints": "workbench/approvals/stage2-blueprints-approved.md",
+  "pages": [
+    2,
+    3
+  ],
+  "status": "pilot_visual_review_required",
+  "created_at": "2026-07-04T22:48:24",
+  "page_results": [
+    {
+      "page": 2,
+      "status": "visual_review_required",
+      "structural_valid": true,
+      "checks": {
+        "delivery_mode": "dual_image_editable_overlay",
+        "background_snapshot_editable_text": true,
+        "background_has_no_text": true,
+        "background_image_declared": true,
+        "all_key_text_editable": true,
+        "text_content_matches_lock": true,
+        "layout_qa_pass": true,
+        "visual_preview_generated": true,
+        "human_visual_review_pass": false
+      },
+      "pptx": "outputs/pages/page-02/exports/page.pptx",
+      "render": "outputs/pages/page-02/exports/page-render.png",
+      "side_by_side": "outputs/pages/page-02/exports/side-by-side.png",
+      "readiness": "outputs/pages/page-02/analysis/production_readiness.json"
+    },
+    {
+      "page": 3,
+      "status": "visual_review_required",
+      "structural_valid": true,
+      "checks": {
+        "delivery_mode": "dual_image_editable_overlay",
+        "background_snapshot_editable_text": true,
+        "background_has_no_text": true,
+        "background_image_declared": true,
+        "all_key_text_editable": true,
+        "text_content_matches_lock": true,
+        "layout_qa_pass": true,
+        "visual_preview_generated": true,
+        "human_visual_review_pass": false
+      },
+      "pptx": "outputs/pages/page-03/exports/page.pptx",
+      "render": "outputs/pages/page-03/exports/page-render.png",
+      "side_by_side": "outputs/pages/page-03/exports/side-by-side.png",
+      "readiness": "outputs/pages/page-03/analysis/production_readiness.json"
+    }
+  ],
+  "next_gate": "User must visually review and approve page 02 and page 03 before continuing page-by-page Stage 3 production."
+}

@@ -11,6 +11,7 @@ from cyberppt.paths import SCRIPTS_DIR
 
 SCRIPT_ALIASES: dict[str, str] = {
     "build-visual-qa": "build_visual_qa_gate.py",
+    "body-blueprint-prompts": "body_blueprint_prompt.py",
     "compare-merged-render": "compare_merged_render.py",
     "compare-render": "compare_render.py",
     "component-signature": "build_component_signature.py",
@@ -19,6 +20,8 @@ SCRIPT_ALIASES: dict[str, str] = {
     "measure-blueprint": "measure_blueprint.py",
     "merge-pages": "merge_verified_pages.py",
     "rework-report": "build_rework_report.py",
+    "source-capture": "dual_image_overlay/source_capture.py",
+    "template-rebuild": "dual_image_overlay/template_rebuild.py",
     "validate": "validate_pptx.py",
 }
 

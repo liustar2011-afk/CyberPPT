@@ -1,0 +1,11 @@
+{
+  "schema": "cyberppt.script_approval.v1",
+  "slide": 13,
+  "kind": "imagegen",
+  "approved": true,
+  "approved_at": "2026-07-04T13:38:51+00:00",
+  "approved_artifacts": [
+    "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-13-imagegen-final.md"
+  ],
+  "note": "User confirmed prompt and approved ImageGen blueprint generation"
+}

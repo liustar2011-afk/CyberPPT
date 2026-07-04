@@ -22,30 +22,17 @@
       "fill": "#8B0000",
       "scope": "chrome-only"
     },
-    "footer_bar": {
-      "y": 696,
-      "height": 24,
-      "fill": "#003366",
-      "scope": "chrome-only"
-    },
     "logo": {
-      "x": 1060,
-      "y": 16,
-      "width": 189,
-      "height": 63
-    },
-    "footer_company_text": {
-      "x": 40,
-      "y": 711.5,
-      "font_size": 9,
-      "fill": "#FFFFFF",
-      "text": "中国电力企业联合会"
+      "x": 1050,
+      "y": 13,
+      "width": 210,
+      "height": 70
     },
     "footer_page_num": {
       "x": 1240,
       "y": 712,
       "font_size": 10,
-      "fill": "#FFFFFF"
+      "fill": "#666666"
     }
   },
   "page_protected_regions": [
@@ -59,17 +46,6 @@
       "padding": 0,
       "severity": "warning",
       "description": "Normal page text must not enter the master logo protection area."
-    },
-    {
-      "id": "footer_region",
-      "scope": "text",
-      "x": 0,
-      "y": 696,
-      "width": 1280,
-      "height": 24,
-      "padding": 0,
-      "severity": "warning",
-      "description": "Normal page text must not enter the master footer bar area."
     }
   ],
   "content_regions": {

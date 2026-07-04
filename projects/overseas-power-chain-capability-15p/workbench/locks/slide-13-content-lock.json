@@ -1,0 +1,55 @@
+{
+  "schema": "cyberppt.slide_content_lock.v1",
+  "slide": 13,
+  "source_outline": "workbench/storyline/confirmed_outline.json",
+  "source_outline_sha256": "62f0ac8ace2da867926292efe3282b1ea2654781f87a68467aa7825ff1ddf02b",
+  "locked": true,
+  "title": "场景四：行业监测、国际传播与联合推介推动评价结果在行业层面持续复用",
+  "subtitle": "三栏协同场景页",
+  "role": "三栏协同场景页",
+  "content_sections": [
+    {
+      "heading": "左栏｜行业监测与规则跟踪",
+      "text": "**监测对象**  \n区域市场数据  \n国别风险数据  \n国际规则数据  \n企业动态数据  \n项目机会数据  \n供应链风险数据  \n\n**成果形态**  \n月度海外电力市场动态  \n季度行业海外发展监测简报  \n国别风险卡  \n国际规则变化提示  \n项目机会清单  \n年度行业海外发展能力报告"
+    },
+    {
+      "heading": "中栏｜国际传播与联合推介",
+      "text": "**数据基础**  \n公开授权企业信息  \n公开项目案例  \n能力标签  \n技术装备信息  \n可持续发展材料  \n国际合作案例  \n双语术语库  \n\n**成果形态**  \n双语企业能力页  \n典型项目案例页  \n产业链能力标签  \n联合推介材料  \n展会论坛展示材料  \n海外业主沟通材料"
+    },
+    {
+      "heading": "右栏｜协同应用价值",
+      "text": "支撑行业公共服务成果形成  \n支撑产业链能力地图构建  \n支撑重点国别和重点区域观察  \n支撑企业联合出海和整体形象展示  \n推动评价结果由单一使用转向行业级复用"
+    }
+  ],
+  "layout_sketch": [
+    "左栏：行业监测与规则跟踪",
+    "中栏：国际传播与联合推介",
+    "右栏：协同应用价值"
+  ],
+  "position_notes": [
+    "左中右三栏并列",
+    "三栏宽度可按35% / 35% / 30%分配"
+  ],
+  "charts": [],
+  "tables": [],
+  "kpis": [],
+  "annotations": [
+    "左栏、中栏均可通过短箭头指向右栏“协同应用价值”。",
+    "不必画过多箭头，以汇聚关系为主。"
+  ],
+  "caveats": [],
+  "so_what": [],
+  "evidence_ids": [
+    "E14"
+  ],
+  "required_components": [
+    "三栏文本框3组",
+    "汇聚箭头2—3个",
+    "每栏小标题模块3个",
+    "",
+    "# 第四章｜运营机制与试点推进",
+    ""
+  ],
+  "visible_text_truth": "source script",
+  "date_text": null
+}

@@ -1,0 +1,305 @@
+{
+  "schema": "cyberppt.script_manifest.v1",
+  "entries": [
+    {
+      "slide": 1,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-01-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-01-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 2,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-02-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-02-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 3,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-03-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-03-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 4,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-04-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-04-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 5,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-05-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-05-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 6,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-06-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-06-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 7,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-07-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-07-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 8,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-08-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-08-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 9,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-09-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-09-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 10,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-10-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-10-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 11,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-11-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-11-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 12,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-12-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-12-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 13,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-13-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-13-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 14,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-14-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-14-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 15,
+      "kind": "imagegen",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen-draft-sources/slide-15-blueprint-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-15-imagegen-draft.md",
+      "saved_at": "2026-07-04T13:37:44+00:00",
+      "note": "Stage 2 page-level ImageGen blueprint prompt draft after style 01 selection",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 1,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-01-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-01-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:50+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 2,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-02-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-02-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:50+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 3,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-03-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-03-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:50+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 4,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-04-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-04-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:51+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 5,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-05-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-05-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:51+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 6,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-06-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-06-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:51+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 7,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-07-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-07-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:51+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 8,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-08-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-08-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:51+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 9,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-09-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-09-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:51+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 10,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-10-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-10-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:51+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 11,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-11-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-11-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:51+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 12,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-12-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-12-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:51+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 13,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-13-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-13-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:51+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 14,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-14-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-14-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:51+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 15,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-15-imagegen-draft.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/overseas-power-chain-capability-15p/workbench/prompts/imagegen/slide-15-imagegen-final.md",
+      "saved_at": "2026-07-04T13:38:52+00:00",
+      "note": "User confirmed Stage 2 blueprint prompt generation",
+      "requires_user_review_before_generation": true
+    }
+  ]
+}

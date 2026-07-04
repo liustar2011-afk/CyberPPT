@@ -1,0 +1,14 @@
+{
+  "schema": "cyberppt.blueprint_reconstruction_plan.v1",
+  "page": 3,
+  "delivery_mode": "dual_image_editable_overlay",
+  "approved_blueprint": "workbench/blueprints/generated/page-03-blueprint.png",
+  "background_notext": "workbench/dual-image/pilot/page-03-background-notext.png",
+  "semantic_plan": "workbench/dual-image/pilot/page-03-semantic-plan.json",
+  "strategy": "Use no-text generated background for visual structure and overlay all key business text as editable PPT text boxes.",
+  "qa_expectations": {
+    "dual_gate_required": true,
+    "visual_semantics_required": true,
+    "all_key_text_editable": true
+  }
+}

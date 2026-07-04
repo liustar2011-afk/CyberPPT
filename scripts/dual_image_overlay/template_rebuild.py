@@ -1,0 +1,180 @@
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    __package__ = "scripts.dual_image_overlay"
+
+from .source_capture import build_source_capture, build_source_capture_gate
+
+
+ROOT = Path(__file__).resolve().parents[2]
+VENDORED_REBUILD = (
+    ROOT
+    / "vendor"
+    / "ppt_master_dual_image"
+    / "ppt-master-scripts"
+    / "scripts"
+    / "script_imagegen_rebuild_template.py"
+)
+
+
+def _read_json(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"JSON root must be an object: {path}")
+    return payload
+
+
+def _write_json(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def resolve_project_path(manifest_path: Path, manifest: dict[str, Any]) -> Path:
+    raw = manifest.get("project_path")
+    if isinstance(raw, str) and raw.strip():
+        return Path(raw).expanduser().resolve()
+    return manifest_path.resolve().parents[2]
+
+
+def _latest_pptx(project_path: Path) -> str | None:
+    exports = sorted((project_path / "exports").glob("*.pptx"), key=lambda path: path.stat().st_mtime)
+    return str(exports[-1]) if exports else None
+
+
+def _template_gate(project_path: Path, *, export_requested: bool, exported_pptx: str | None) -> dict[str, Any]:
+    checks = {
+        "spec_lock_available": (project_path / "spec_lock.md").is_file(),
+        "brand_rules_available": (project_path / "templates" / "brand_rules.json").is_file(),
+        "master_chrome_available": (project_path / "templates" / "master_elements.svg").is_file(),
+        "svg_output_available": any((project_path / "svg_output").glob("*.svg")),
+        "pptx_exported": bool(exported_pptx) if export_requested else True,
+    }
+    return {
+        "schema": "cyberppt.dual_image.template_gate.v1",
+        "valid": all(checks.values()),
+        "checks": checks,
+        "export_requested": export_requested,
+        "exported_pptx": exported_pptx,
+    }
+
+
+def run_vendor_rebuild(
+    manifest_path: Path,
+    *,
+    ocr_backend: str,
+    force_ocr: bool,
+    timeout: int,
+    export: bool,
+) -> None:
+    command = [
+        sys.executable,
+        str(VENDORED_REBUILD),
+        "rebuild",
+        str(manifest_path),
+        "--ocr-backend",
+        ocr_backend,
+        "--timeout",
+        str(timeout),
+    ]
+    if force_ocr:
+        command.append("--force-ocr")
+    if export:
+        command.append("--export")
+    subprocess.run(command, cwd=ROOT, check=True)
+
+
+def build_template_rebuild_readiness(
+    manifest_path: Path,
+    *,
+    export_requested: bool,
+) -> dict[str, Any]:
+    manifest = _read_json(manifest_path)
+    project_path = resolve_project_path(manifest_path, manifest)
+    analysis_dir = project_path / "analysis"
+
+    source_capture = build_source_capture(project_path, pair_manifest_path=manifest_path)
+    _write_json(analysis_dir / "source_capture.json", source_capture)
+    source_capture_gate = build_source_capture_gate(source_capture)
+    _write_json(analysis_dir / "source_capture_gate.json", source_capture_gate)
+
+    exported_pptx = _latest_pptx(project_path)
+    template_gate = _template_gate(project_path, export_requested=export_requested, exported_pptx=exported_pptx)
+    _write_json(analysis_dir / "template_gate.json", template_gate)
+
+    valid = bool(template_gate["valid"] and source_capture_gate["valid"])
+    if not template_gate["valid"]:
+        status = "template_rebuild_required"
+    elif not source_capture_gate["valid"]:
+        status = "source_capture_rework_required"
+    else:
+        status = "ready_for_visual_qa"
+
+    readiness = {
+        "schema": "cyberppt.dual_image.template_rebuild_readiness.v1",
+        "valid": valid,
+        "status": status,
+        "project_path": str(project_path),
+        "pair_manifest": str(manifest_path),
+        "checks": {
+            "template_rebuild_consumed": True,
+            "template_gate_pass": bool(template_gate["valid"]),
+            "source_capture_consumed": True,
+            "source_capture_gate_pass": bool(source_capture_gate["valid"]),
+        },
+        "template_gate": template_gate,
+        "source_capture_gate": source_capture_gate,
+        "artifacts": {
+            "source_capture": str(analysis_dir / "source_capture.json"),
+            "source_capture_gate": str(analysis_dir / "source_capture_gate.json"),
+            "template_gate": str(analysis_dir / "template_gate.json"),
+            "exported_pptx": exported_pptx,
+        },
+    }
+    _write_json(analysis_dir / "template_rebuild_readiness.json", readiness)
+    return readiness
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Run the vendored dual-image template rebuild, then consume source_capture as a CyberPPT gate."
+    )
+    parser.add_argument("manifest", type=Path, help="page_image_pairs.json")
+    parser.add_argument("--ocr-backend", choices=("vision-json", "paddleocr-vl", "none"), default="vision-json")
+    parser.add_argument("--force-ocr", action="store_true")
+    parser.add_argument("--timeout", type=int, default=300)
+    parser.add_argument("--export", action="store_true", default=True)
+    parser.add_argument("--no-export", action="store_false", dest="export")
+    parser.add_argument(
+        "--skip-vendor-rebuild",
+        action="store_true",
+        help="Only consume existing template rebuild artifacts; intended for tests and resumed runs.",
+    )
+    return parser
+
+
+def main() -> int:
+    args = build_parser().parse_args()
+    manifest_path = args.manifest.expanduser().resolve()
+    if not args.skip_vendor_rebuild:
+        run_vendor_rebuild(
+            manifest_path,
+            ocr_backend=args.ocr_backend,
+            force_ocr=args.force_ocr,
+            timeout=args.timeout,
+            export=args.export,
+        )
+    readiness = build_template_rebuild_readiness(manifest_path, export_requested=args.export)
+    print(json.dumps(readiness, ensure_ascii=False, indent=2))
+    return 0 if readiness["valid"] else 3
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,50 @@
+{
+  "schema": "cyberppt.slide_content_lock.v1",
+  "slide": 2,
+  "source_outline": "workbench/storyline/confirmed_outline.json",
+  "source_outline_sha256": "62f0ac8ace2da867926292efe3282b1ea2654781f87a68467aa7825ff1ddf02b",
+  "locked": true,
+  "title": "目录",
+  "subtitle": "目录页 / 主线导入页",
+  "role": "目录页 / 主线导入页",
+  "content_sections": [
+    {
+      "heading": "左侧目录",
+      "text": "一、建设背景与定位  \n二、总体架构与评价模型  \n三、重点场景设计  \n四、运营机制与试点推进  \n五、风险保障与推进建议"
+    },
+    {
+      "heading": "右侧主链",
+      "text": "海外业务需求  \n↓  \n证据归集  \n↓  \n能力评价  \n↓  \n结果生成  \n↓  \n场景应用  \n↓  \n持续运营"
+    }
+  ],
+  "layout_sketch": [
+    "左侧：五章目录",
+    "右侧：纵向主链"
+  ],
+  "position_notes": [
+    "左侧60%区域：目录文本框",
+    "右侧40%区域：纵向主链图"
+  ],
+  "charts": [],
+  "tables": [],
+  "kpis": [],
+  "annotations": [
+    "右侧主链自上而下单向箭头。"
+  ],
+  "caveats": [],
+  "so_what": [],
+  "evidence_ids": [
+    "E03"
+  ],
+  "required_components": [
+    "目录编号5个",
+    "目录文本框5个",
+    "主链节点6个",
+    "纵向箭头1组",
+    "",
+    "# 第一章｜建设背景与定位",
+    ""
+  ],
+  "visible_text_truth": "source script",
+  "date_text": null
+}

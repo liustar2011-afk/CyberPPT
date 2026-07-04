@@ -10,6 +10,9 @@ class ScriptRunnerTests(unittest.TestCase):
         for alias in SCRIPT_ALIASES:
             self.assertTrue(script_path(alias).exists(), alias)
 
+    def test_body_blueprint_prompt_alias_is_registered(self) -> None:
+        self.assertEqual("body_blueprint_prompt.py", script_path("body-blueprint-prompts").name)
+
     def test_unknown_alias_raises_key_error(self) -> None:
         with self.assertRaises(KeyError):
             script_path("missing-command")

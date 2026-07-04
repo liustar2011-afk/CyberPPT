@@ -7,9 +7,11 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from scripts.dual_image_overlay.deliverable_prompt import (
+    compile_page_blocks,
     compile_pages,
     fit_template_title,
     layout_density_directives,
+    parse_content_locks,
     parse_page_blocks,
     template_title,
     visible_deliverable_lines,
@@ -61,7 +63,9 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
 
         self.assertIn("面向最终客户交付", prompt)
         self.assertIn("【内容锁定】", prompt)
-        self.assertIn("标题：建议由中电联牵头", prompt)
+        self.assertIn("## 第2页：建议由中电联牵头", prompt)
+        self.assertNotIn("\n标题：", prompt)
+        self.assertNotIn("\n副标题：", prompt)
         self.assertIn("【构图指令】", prompt)
         self.assertIn("【结构密度】", prompt)
         self.assertIn("七点结论清单", prompt)
@@ -184,6 +188,47 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertTrue(payload["policy"]["final_deliverable_only"])
         self.assertTrue(payload["policy"]["forbid_external_style_preset"])
         self.assertTrue(payload["policy"]["forbid_evidence_ids"])
+
+    def test_compile_from_content_locks_uses_clean_truth(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            locks = root / "locks"
+            locks.mkdir()
+            (locks / "slide-04-content-lock.json").write_text(
+                json.dumps(
+                    {
+                        "slide": 4,
+                        "title": "统一入口、统一证据、统一评价和统一结果应用体系",
+                        "subtitle": "建设定位页",
+                        "content_sections": [
+                            {
+                                "heading": "中心定位框",
+                                "text": "面向海外电力产业链企业发展能力评价场景\n以电力领域数据基础设施为底座",
+                            },
+                            {
+                                "heading": "右侧｜建设任务",
+                                "text": "1. 建设企业海外发展评价数据底座\n2. 建设企业发展能力评价指标模型",
+                            },
+                        ],
+                        "annotations": ["左右两侧信息通过短箭头指向中心定位框。"],
+                        "required_components": ["中心定位框1个", "左侧信息框3个"],
+                        "evidence_ids": ["E05"],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            blocks = parse_content_locks(locks)
+            prompt = compile_page_blocks(blocks, [4])
+
+        self.assertIn("## 第4页：统一入口、统一证据、统一评价和统一结果应用体系", prompt)
+        self.assertIn("中心定位框", prompt)
+        self.assertIn("左右两侧信息通过短箭头指向中心定位框", prompt)
+        self.assertIn("中心定位框1个", prompt)
+        self.assertNotIn("E05", prompt)
+        self.assertNotIn("【用途】", prompt)
+        self.assertNotIn("目标语言", prompt)
 
 
 if __name__ == "__main__":

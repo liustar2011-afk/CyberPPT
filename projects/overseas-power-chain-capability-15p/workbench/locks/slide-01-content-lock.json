@@ -1,0 +1,61 @@
+{
+  "schema": "cyberppt.slide_content_lock.v1",
+  "slide": 1,
+  "source_outline": "workbench/storyline/confirmed_outline.json",
+  "source_outline_sha256": "62f0ac8ace2da867926292efe3282b1ea2654781f87a68467aa7825ff1ddf02b",
+  "locked": true,
+  "title": "封面",
+  "subtitle": "封面页",
+  "role": "封面页",
+  "content_sections": [
+    {
+      "heading": "主标题",
+      "text": "面向海外电力产业链企业发展能力评价场景建设方案"
+    },
+    {
+      "heading": "副标题",
+      "text": "基于电力领域数据基础设施的应用场景建设汇报"
+    },
+    {
+      "heading": "单位与日期",
+      "text": "中国电力企业联合会  \n中电联（北京）数智科技有限公司  \n2026年7月"
+    },
+    {
+      "heading": "底部标签",
+      "text": "海外发展｜能力评价｜可信证据｜场景运营"
+    }
+  ],
+  "layout_sketch": [
+    "中上：主标题",
+    "中下：副标题",
+    "右下：汇报单位、日期",
+    "底部：4个关键词标签"
+  ],
+  "position_notes": [
+    "顶部中间：主标题大文本框",
+    "主标题下方：副标题文本框",
+    "右下角：单位与日期文本框",
+    "底部横向：4个标签并列排布"
+  ],
+  "charts": [],
+  "tables": [],
+  "kpis": [],
+  "annotations": [
+    "无"
+  ],
+  "caveats": [],
+  "so_what": [],
+  "evidence_ids": [
+    "E01"
+  ],
+  "required_components": [
+    "主标题文本框",
+    "副标题文本框",
+    "单位日期文本框",
+    "4个标签框",
+    "弱化底图：世界地图 / 网络节点 / 电力线路",
+    ""
+  ],
+  "visible_text_truth": "source script",
+  "date_text": "2026年7月"
+}

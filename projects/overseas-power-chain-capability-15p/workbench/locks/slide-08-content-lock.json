@@ -1,0 +1,61 @@
+{
+  "schema": "cyberppt.slide_content_lock.v1",
+  "slide": 8,
+  "source_outline": "workbench/storyline/confirmed_outline.json",
+  "source_outline_sha256": "62f0ac8ace2da867926292efe3282b1ea2654781f87a68467aa7825ff1ddf02b",
+  "locked": true,
+  "title": "九类能力维度与六类证据资源共同构成评价模型的核心支撑",
+  "subtitle": "评价模型页",
+  "role": "评价模型页",
+  "content_sections": [
+    {
+      "heading": "左侧｜六类证据资源",
+      "text": "企业主体数据  \n海外项目数据  \n技术装备数据  \n财务信用数据  \nE&S/HSE与合规数据  \n国别市场与风险数据"
+    },
+    {
+      "heading": "中部｜九类能力维度",
+      "text": "1. 主体治理与合规能力  \n2. 财务稳健与信用履约能力  \n3. 国际项目经验与交付能力  \n4. 技术装备与系统集成能力  \n5. E&S/ESG/HSE能力  \n6. 供应链责任能力  \n7. 属地化经营与伙伴协同能力  \n8. 国别适配与风险应对能力  \n9. 数据可信与证据管理能力"
+    },
+    {
+      "heading": "右侧上｜企业类型适配",
+      "text": "投资运营企业  \n规划设计企业  \nEPC总承包企业  \n装备制造企业  \n运维服务企业  \n平台集成企业  \n供应链服务企业"
+    },
+    {
+      "heading": "右侧下｜场景适配",
+      "text": "基础画像评价  \n投标预审评价  \n融资保险评价  \n供应链准入评价  \n国别适配评价  \n传播展示评价"
+    }
+  ],
+  "layout_sketch": [
+    "左侧：六类证据资源",
+    "中部：九宫格能力维度",
+    "右侧：企业类型适配 + 场景适配"
+  ],
+  "position_notes": [
+    "左侧20%：六类证据资源列表",
+    "中部50%：九宫格",
+    "右侧30%：上为企业类型，下为场景适配"
+  ],
+  "charts": [],
+  "tables": [],
+  "kpis": [],
+  "annotations": [
+    "左侧证据资源 → 中部九宫格。",
+    "中部九宫格 → 右侧企业类型/场景适配。"
+  ],
+  "caveats": [],
+  "so_what": [],
+  "evidence_ids": [
+    "E09"
+  ],
+  "required_components": [
+    "左侧资源列表1组",
+    "九宫格1组",
+    "右侧双层适配框2组",
+    "关系箭头若干",
+    "",
+    "# 第三章｜重点场景设计",
+    ""
+  ],
+  "visible_text_truth": "source script",
+  "date_text": null
+}
