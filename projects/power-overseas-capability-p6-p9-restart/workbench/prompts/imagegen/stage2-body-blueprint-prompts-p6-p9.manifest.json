@@ -1,0 +1,22 @@
+{
+  "schema": "cyberppt.body_blueprint_prompt_manifest.v1",
+  "source_script": "projects/power-overseas-capability-p6-p9-restart/workbench/scripts/final/script-final-p6-p9-normalized.md",
+  "pages": [
+    6,
+    7,
+    8,
+    9
+  ],
+  "style": {
+    "id": "style_04_ivory_deep_blue",
+    "name": "CyberPPT 04 象牙白 + 深蓝强调"
+  },
+  "style_file": "projects/power-overseas-capability-p6-p9-restart/workbench/visual-system/style-04-ivory-deep-blue.json",
+  "output": "projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/stage2-body-blueprint-prompts-p6-p9.md",
+  "policy": {
+    "body_region_only": true,
+    "enterprise_chrome_generated_by_template": true,
+    "title_subtitle_generated_by_template": true,
+    "blueprint_text_is_placeholder": true
+  }
+}

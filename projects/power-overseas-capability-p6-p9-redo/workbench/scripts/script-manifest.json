@@ -1,0 +1,45 @@
+{
+  "schema": "cyberppt.script_manifest.v1",
+  "entries": [
+    {
+      "slide": 6,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-redo/workbench/scripts/input_pages/page-06-script-final.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-redo/workbench/prompts/imagegen/slide-06-imagegen-final.md",
+      "saved_at": "2026-07-04T16:13:07+00:00",
+      "note": "重建项目：按用户要求重做P6-P9，来源为15页PPT脚本终稿版",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 7,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-redo/workbench/scripts/input_pages/page-07-script-final.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-redo/workbench/prompts/imagegen/slide-07-imagegen-final.md",
+      "saved_at": "2026-07-04T16:13:07+00:00",
+      "note": "重建项目：按用户要求重做P6-P9，来源为15页PPT脚本终稿版",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 8,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-redo/workbench/scripts/input_pages/page-08-script-final.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-redo/workbench/prompts/imagegen/slide-08-imagegen-final.md",
+      "saved_at": "2026-07-04T16:13:07+00:00",
+      "note": "重建项目：按用户要求重做P6-P9，来源为15页PPT脚本终稿版",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 9,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-redo/workbench/scripts/input_pages/page-09-script-final.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-redo/workbench/prompts/imagegen/slide-09-imagegen-final.md",
+      "saved_at": "2026-07-04T16:13:08+00:00",
+      "note": "重建项目：按用户要求重做P6-P9，来源为15页PPT脚本终稿版",
+      "requires_user_review_before_generation": true
+    }
+  ]
+}

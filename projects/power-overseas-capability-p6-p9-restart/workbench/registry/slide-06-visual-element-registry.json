@@ -1,0 +1,2773 @@
+{
+  "schema": "cyberppt.visual_element_registry.v1",
+  "blueprint_path": "projects/power-overseas-capability-p6-p9-restart/workbench/blueprints/slide-06-body-blueprint.png",
+  "blueprint_sha256": "782b0cef6735c2bcc35db4ce28041823ec8b4de23ff8bec151647788a6fd157e",
+  "blueprint_canvas_px": {
+    "w": 1672,
+    "h": 941
+  },
+  "ppt_canvas_in": {
+    "w": 13.333,
+    "h": 7.5
+  },
+  "scale_x": 0.007974282296650717,
+  "scale_y": 0.007970244420828906,
+  "elements": [
+    {
+      "element_id": "p6_source_panel_outer",
+      "priority": "P0",
+      "element_type": "container",
+      "source_component_id": "p6_data_sources",
+      "blueprint_bbox_px": {
+        "x": 55,
+        "y": 85,
+        "w": 275,
+        "h": 755
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 0.4386,
+        "y": 0.6775,
+        "w": 2.1929,
+        "h": 6.0175
+      }
+    },
+    {
+      "element_id": "p6_source_card_1_biz",
+      "priority": "P0",
+      "element_type": "source_card",
+      "source_component_id": "p6_data_sources",
+      "blueprint_bbox_px": {
+        "x": 70,
+        "y": 130,
+        "w": 245,
+        "h": 135
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 0.5582,
+        "y": 1.0361,
+        "w": 1.9537,
+        "h": 1.076
+      }
+    },
+    {
+      "element_id": "p6_source_icon_1_biz",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_data_sources",
+      "blueprint_bbox_px": {
+        "x": 80,
+        "y": 165,
+        "w": 58,
+        "h": 62
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 0.6379,
+        "y": 1.3151,
+        "w": 0.4625,
+        "h": 0.4942
+      }
+    },
+    {
+      "element_id": "p6_source_text_zone_1_biz",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_data_sources",
+      "blueprint_bbox_px": {
+        "x": 145,
+        "y": 175,
+        "w": 155,
+        "h": 65
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 1.1563,
+        "y": 1.3948,
+        "w": 1.236,
+        "h": 0.5181
+      }
+    },
+    {
+      "element_id": "p6_inbound_arrow_1_biz",
+      "priority": "P0",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_feedback",
+      "blueprint_bbox_px": {
+        "x": 335,
+        "y": 184,
+        "w": 95,
+        "h": 38
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 2.6714,
+        "y": 1.4665,
+        "w": 0.7576,
+        "h": 0.3029
+      }
+    },
+    {
+      "element_id": "p6_source_card_2_internal",
+      "priority": "P0",
+      "element_type": "source_card",
+      "source_component_id": "p6_data_sources",
+      "blueprint_bbox_px": {
+        "x": 70,
+        "y": 285,
+        "w": 245,
+        "h": 135
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 0.5582,
+        "y": 2.2715,
+        "w": 1.9537,
+        "h": 1.076
+      }
+    },
+    {
+      "element_id": "p6_source_icon_2_internal",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_data_sources",
+      "blueprint_bbox_px": {
+        "x": 80,
+        "y": 320,
+        "w": 58,
+        "h": 62
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 0.6379,
+        "y": 2.5505,
+        "w": 0.4625,
+        "h": 0.4942
+      }
+    },
+    {
+      "element_id": "p6_source_text_zone_2_internal",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_data_sources",
+      "blueprint_bbox_px": {
+        "x": 145,
+        "y": 330,
+        "w": 155,
+        "h": 65
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 1.1563,
+        "y": 2.6302,
+        "w": 1.236,
+        "h": 0.5181
+      }
+    },
+    {
+      "element_id": "p6_inbound_arrow_2_internal",
+      "priority": "P0",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_feedback",
+      "blueprint_bbox_px": {
+        "x": 335,
+        "y": 339,
+        "w": 95,
+        "h": 38
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 2.6714,
+        "y": 2.7019,
+        "w": 0.7576,
+        "h": 0.3029
+      }
+    },
+    {
+      "element_id": "p6_source_card_3_public",
+      "priority": "P0",
+      "element_type": "source_card",
+      "source_component_id": "p6_data_sources",
+      "blueprint_bbox_px": {
+        "x": 70,
+        "y": 440,
+        "w": 245,
+        "h": 135
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 0.5582,
+        "y": 3.5069,
+        "w": 1.9537,
+        "h": 1.076
+      }
+    },
+    {
+      "element_id": "p6_source_icon_3_public",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_data_sources",
+      "blueprint_bbox_px": {
+        "x": 80,
+        "y": 475,
+        "w": 58,
+        "h": 62
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 0.6379,
+        "y": 3.7859,
+        "w": 0.4625,
+        "h": 0.4942
+      }
+    },
+    {
+      "element_id": "p6_source_text_zone_3_public",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_data_sources",
+      "blueprint_bbox_px": {
+        "x": 145,
+        "y": 485,
+        "w": 155,
+        "h": 65
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 1.1563,
+        "y": 3.8656,
+        "w": 1.236,
+        "h": 0.5181
+      }
+    },
+    {
+      "element_id": "p6_inbound_arrow_3_public",
+      "priority": "P0",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_feedback",
+      "blueprint_bbox_px": {
+        "x": 335,
+        "y": 494,
+        "w": 95,
+        "h": 38
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 2.6714,
+        "y": 3.9373,
+        "w": 0.7576,
+        "h": 0.3029
+      }
+    },
+    {
+      "element_id": "p6_source_card_4_agency",
+      "priority": "P0",
+      "element_type": "source_card",
+      "source_component_id": "p6_data_sources",
+      "blueprint_bbox_px": {
+        "x": 70,
+        "y": 595,
+        "w": 245,
+        "h": 135
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 0.5582,
+        "y": 4.7423,
+        "w": 1.9537,
+        "h": 1.076
+      }
+    },
+    {
+      "element_id": "p6_source_icon_4_agency",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_data_sources",
+      "blueprint_bbox_px": {
+        "x": 80,
+        "y": 630,
+        "w": 58,
+        "h": 62
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 0.6379,
+        "y": 5.0213,
+        "w": 0.4625,
+        "h": 0.4942
+      }
+    },
+    {
+      "element_id": "p6_source_text_zone_4_agency",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_data_sources",
+      "blueprint_bbox_px": {
+        "x": 145,
+        "y": 640,
+        "w": 155,
+        "h": 65
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 1.1563,
+        "y": 5.101,
+        "w": 1.236,
+        "h": 0.5181
+      }
+    },
+    {
+      "element_id": "p6_inbound_arrow_4_agency",
+      "priority": "P0",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_feedback",
+      "blueprint_bbox_px": {
+        "x": 335,
+        "y": 649,
+        "w": 95,
+        "h": 38
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 2.6714,
+        "y": 5.1727,
+        "w": 0.7576,
+        "h": 0.3029
+      }
+    },
+    {
+      "element_id": "p6_core_outer_panel",
+      "priority": "P0",
+      "element_type": "main_architecture_panel",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 390,
+        "y": 85,
+        "w": 860,
+        "h": 640
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 3.11,
+        "y": 0.6775,
+        "w": 6.8579,
+        "h": 5.101
+      }
+    },
+    {
+      "element_id": "p6_core_header_band",
+      "priority": "P1",
+      "element_type": "header_band",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 390,
+        "y": 85,
+        "w": 860,
+        "h": 50
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 3.11,
+        "y": 0.6775,
+        "w": 6.8579,
+        "h": 0.3985
+      }
+    },
+    {
+      "element_id": "p6_core_grid",
+      "priority": "P0",
+      "element_type": "nine_cell_grid",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 425,
+        "y": 145,
+        "w": 785,
+        "h": 370
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 3.3891,
+        "y": 1.1557,
+        "w": 6.2598,
+        "h": 2.949
+      }
+    },
+    {
+      "element_id": "p6_core_cell_1_catalog",
+      "priority": "P0",
+      "element_type": "core_capability_cell",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 435,
+        "y": 145,
+        "w": 185,
+        "h": 115
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 3.4688,
+        "y": 1.1557,
+        "w": 1.4752,
+        "h": 0.9166
+      }
+    },
+    {
+      "element_id": "p6_core_icon_1_catalog",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 455,
+        "y": 165,
+        "w": 70,
+        "h": 70
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 3.6283,
+        "y": 1.3151,
+        "w": 0.5582,
+        "h": 0.5579
+      }
+    },
+    {
+      "element_id": "p6_core_label_1_catalog",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 520,
+        "y": 213,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 4.1466,
+        "y": 1.6977,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    },
+    {
+      "element_id": "p6_core_cell_2_identity",
+      "priority": "P0",
+      "element_type": "core_capability_cell",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 640,
+        "y": 145,
+        "w": 185,
+        "h": 115
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 5.1035,
+        "y": 1.1557,
+        "w": 1.4752,
+        "h": 0.9166
+      }
+    },
+    {
+      "element_id": "p6_core_icon_2_identity",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 660,
+        "y": 165,
+        "w": 70,
+        "h": 70
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 5.263,
+        "y": 1.3151,
+        "w": 0.5582,
+        "h": 0.5579
+      }
+    },
+    {
+      "element_id": "p6_core_label_2_identity",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 725,
+        "y": 213,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 5.7814,
+        "y": 1.6977,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    },
+    {
+      "element_id": "p6_core_cell_3_auth",
+      "priority": "P0",
+      "element_type": "core_capability_cell",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 855,
+        "y": 145,
+        "w": 185,
+        "h": 115
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 6.818,
+        "y": 1.1557,
+        "w": 1.4752,
+        "h": 0.9166
+      }
+    },
+    {
+      "element_id": "p6_core_icon_3_auth",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 875,
+        "y": 165,
+        "w": 70,
+        "h": 70
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 6.9775,
+        "y": 1.3151,
+        "w": 0.5582,
+        "h": 0.5579
+      }
+    },
+    {
+      "element_id": "p6_core_label_3_auth",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 940,
+        "y": 213,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 7.4958,
+        "y": 1.6977,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    },
+    {
+      "element_id": "p6_core_cell_4_rules",
+      "priority": "P0",
+      "element_type": "core_capability_cell",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 435,
+        "y": 285,
+        "w": 185,
+        "h": 115
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 3.4688,
+        "y": 2.2715,
+        "w": 1.4752,
+        "h": 0.9166
+      }
+    },
+    {
+      "element_id": "p6_core_icon_4_rules",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 455,
+        "y": 305,
+        "w": 70,
+        "h": 70
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 3.6283,
+        "y": 2.4309,
+        "w": 0.5582,
+        "h": 0.5579
+      }
+    },
+    {
+      "element_id": "p6_core_label_4_rules",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 520,
+        "y": 353,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 4.1466,
+        "y": 2.8135,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    },
+    {
+      "element_id": "p6_core_cell_5_evidence",
+      "priority": "P0",
+      "element_type": "core_capability_cell",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 640,
+        "y": 285,
+        "w": 185,
+        "h": 115
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 5.1035,
+        "y": 2.2715,
+        "w": 1.4752,
+        "h": 0.9166
+      }
+    },
+    {
+      "element_id": "p6_core_icon_5_evidence",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 660,
+        "y": 305,
+        "w": 70,
+        "h": 70
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 5.263,
+        "y": 2.4309,
+        "w": 0.5582,
+        "h": 0.5579
+      }
+    },
+    {
+      "element_id": "p6_core_label_5_evidence",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 725,
+        "y": 353,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 5.7814,
+        "y": 2.8135,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    },
+    {
+      "element_id": "p6_core_cell_6_evaluation",
+      "priority": "P0",
+      "element_type": "core_capability_cell",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 855,
+        "y": 285,
+        "w": 185,
+        "h": 115
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 6.818,
+        "y": 2.2715,
+        "w": 1.4752,
+        "h": 0.9166
+      }
+    },
+    {
+      "element_id": "p6_core_icon_6_evaluation",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 875,
+        "y": 305,
+        "w": 70,
+        "h": 70
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 6.9775,
+        "y": 2.4309,
+        "w": 0.5582,
+        "h": 0.5579
+      }
+    },
+    {
+      "element_id": "p6_core_label_6_evaluation",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 940,
+        "y": 353,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 7.4958,
+        "y": 2.8135,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    },
+    {
+      "element_id": "p6_core_cell_7_result",
+      "priority": "P0",
+      "element_type": "core_capability_cell",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 435,
+        "y": 425,
+        "w": 185,
+        "h": 115
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 3.4688,
+        "y": 3.3874,
+        "w": 1.4752,
+        "h": 0.9166
+      }
+    },
+    {
+      "element_id": "p6_core_icon_7_result",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 455,
+        "y": 445,
+        "w": 70,
+        "h": 70
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 3.6283,
+        "y": 3.5468,
+        "w": 0.5582,
+        "h": 0.5579
+      }
+    },
+    {
+      "element_id": "p6_core_label_7_result",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 520,
+        "y": 493,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 4.1466,
+        "y": 3.9293,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    },
+    {
+      "element_id": "p6_core_cell_8_version",
+      "priority": "P0",
+      "element_type": "core_capability_cell",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 640,
+        "y": 425,
+        "w": 185,
+        "h": 115
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 5.1035,
+        "y": 3.3874,
+        "w": 1.4752,
+        "h": 0.9166
+      }
+    },
+    {
+      "element_id": "p6_core_icon_8_version",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 660,
+        "y": 445,
+        "w": 70,
+        "h": 70
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 5.263,
+        "y": 3.5468,
+        "w": 0.5582,
+        "h": 0.5579
+      }
+    },
+    {
+      "element_id": "p6_core_label_8_version",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 725,
+        "y": 493,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 5.7814,
+        "y": 3.9293,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    },
+    {
+      "element_id": "p6_core_cell_9_audit",
+      "priority": "P0",
+      "element_type": "core_capability_cell",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 855,
+        "y": 425,
+        "w": 185,
+        "h": 115
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 6.818,
+        "y": 3.3874,
+        "w": 1.4752,
+        "h": 0.9166
+      }
+    },
+    {
+      "element_id": "p6_core_icon_9_audit",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 875,
+        "y": 445,
+        "w": 70,
+        "h": 70
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 6.9775,
+        "y": 3.5468,
+        "w": 0.5582,
+        "h": 0.5579
+      }
+    },
+    {
+      "element_id": "p6_core_label_9_audit",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_core_space",
+      "blueprint_bbox_px": {
+        "x": 940,
+        "y": 493,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 7.4958,
+        "y": 3.9293,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    },
+    {
+      "element_id": "p6_object_pool_outer",
+      "priority": "P0",
+      "element_type": "object_pool",
+      "source_component_id": "p6_object_pool",
+      "blueprint_bbox_px": {
+        "x": 420,
+        "y": 585,
+        "w": 810,
+        "h": 110
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 3.3492,
+        "y": 4.6626,
+        "w": 6.4592,
+        "h": 0.8767
+      }
+    },
+    {
+      "element_id": "p6_object_cell_1",
+      "priority": "P1",
+      "element_type": "object_pool_cell",
+      "source_component_id": "p6_object_pool",
+      "blueprint_bbox_px": {
+        "x": 440,
+        "y": 625,
+        "w": 115,
+        "h": 50
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 3.5087,
+        "y": 4.9814,
+        "w": 0.917,
+        "h": 0.3985
+      }
+    },
+    {
+      "element_id": "p6_object_icon_1",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_object_pool",
+      "blueprint_bbox_px": {
+        "x": 452,
+        "y": 635,
+        "w": 38,
+        "h": 38
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 3.6044,
+        "y": 5.0611,
+        "w": 0.303,
+        "h": 0.3029
+      }
+    },
+    {
+      "element_id": "p6_object_cell_2",
+      "priority": "P1",
+      "element_type": "object_pool_cell",
+      "source_component_id": "p6_object_pool",
+      "blueprint_bbox_px": {
+        "x": 565,
+        "y": 625,
+        "w": 115,
+        "h": 50
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 4.5055,
+        "y": 4.9814,
+        "w": 0.917,
+        "h": 0.3985
+      }
+    },
+    {
+      "element_id": "p6_object_icon_2",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_object_pool",
+      "blueprint_bbox_px": {
+        "x": 577,
+        "y": 635,
+        "w": 38,
+        "h": 38
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 4.6012,
+        "y": 5.0611,
+        "w": 0.303,
+        "h": 0.3029
+      }
+    },
+    {
+      "element_id": "p6_object_cell_3",
+      "priority": "P1",
+      "element_type": "object_pool_cell",
+      "source_component_id": "p6_object_pool",
+      "blueprint_bbox_px": {
+        "x": 690,
+        "y": 625,
+        "w": 115,
+        "h": 50
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 5.5023,
+        "y": 4.9814,
+        "w": 0.917,
+        "h": 0.3985
+      }
+    },
+    {
+      "element_id": "p6_object_icon_3",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_object_pool",
+      "blueprint_bbox_px": {
+        "x": 702,
+        "y": 635,
+        "w": 38,
+        "h": 38
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 5.5979,
+        "y": 5.0611,
+        "w": 0.303,
+        "h": 0.3029
+      }
+    },
+    {
+      "element_id": "p6_object_cell_4",
+      "priority": "P1",
+      "element_type": "object_pool_cell",
+      "source_component_id": "p6_object_pool",
+      "blueprint_bbox_px": {
+        "x": 815,
+        "y": 625,
+        "w": 115,
+        "h": 50
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 6.499,
+        "y": 4.9814,
+        "w": 0.917,
+        "h": 0.3985
+      }
+    },
+    {
+      "element_id": "p6_object_icon_4",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_object_pool",
+      "blueprint_bbox_px": {
+        "x": 827,
+        "y": 635,
+        "w": 38,
+        "h": 38
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 6.5947,
+        "y": 5.0611,
+        "w": 0.303,
+        "h": 0.3029
+      }
+    },
+    {
+      "element_id": "p6_object_cell_5",
+      "priority": "P1",
+      "element_type": "object_pool_cell",
+      "source_component_id": "p6_object_pool",
+      "blueprint_bbox_px": {
+        "x": 940,
+        "y": 625,
+        "w": 115,
+        "h": 50
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 7.4958,
+        "y": 4.9814,
+        "w": 0.917,
+        "h": 0.3985
+      }
+    },
+    {
+      "element_id": "p6_object_icon_5",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_object_pool",
+      "blueprint_bbox_px": {
+        "x": 952,
+        "y": 635,
+        "w": 38,
+        "h": 38
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 7.5915,
+        "y": 5.0611,
+        "w": 0.303,
+        "h": 0.3029
+      }
+    },
+    {
+      "element_id": "p6_object_cell_6",
+      "priority": "P1",
+      "element_type": "object_pool_cell",
+      "source_component_id": "p6_object_pool",
+      "blueprint_bbox_px": {
+        "x": 1065,
+        "y": 625,
+        "w": 115,
+        "h": 50
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 8.4926,
+        "y": 4.9814,
+        "w": 0.917,
+        "h": 0.3985
+      }
+    },
+    {
+      "element_id": "p6_object_icon_6",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_object_pool",
+      "blueprint_bbox_px": {
+        "x": 1077,
+        "y": 635,
+        "w": 38,
+        "h": 38
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 8.5883,
+        "y": 5.0611,
+        "w": 0.303,
+        "h": 0.3029
+      }
+    },
+    {
+      "element_id": "p6_core_to_object_arrow",
+      "priority": "P0",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_feedback",
+      "blueprint_bbox_px": {
+        "x": 760,
+        "y": 515,
+        "w": 55,
+        "h": 65
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 6.0605,
+        "y": 4.1047,
+        "w": 0.4386,
+        "h": 0.5181
+      }
+    },
+    {
+      "element_id": "p6_core_to_service_arrow",
+      "priority": "P0",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_feedback",
+      "blueprint_bbox_px": {
+        "x": 760,
+        "y": 725,
+        "w": 55,
+        "h": 65
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 6.0605,
+        "y": 5.7784,
+        "w": 0.4386,
+        "h": 0.5181
+      }
+    },
+    {
+      "element_id": "p6_app_outer_panel",
+      "priority": "P0",
+      "element_type": "application_panel",
+      "source_component_id": "p6_result_apps",
+      "blueprint_bbox_px": {
+        "x": 1320,
+        "y": 85,
+        "w": 290,
+        "h": 650
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 10.5261,
+        "y": 0.6775,
+        "w": 2.3125,
+        "h": 5.1807
+      }
+    },
+    {
+      "element_id": "p6_app_card_1",
+      "priority": "P0",
+      "element_type": "application_card",
+      "source_component_id": "p6_result_apps",
+      "blueprint_bbox_px": {
+        "x": 1340,
+        "y": 130,
+        "w": 250,
+        "h": 155
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 10.6855,
+        "y": 1.0361,
+        "w": 1.9936,
+        "h": 1.2354
+      }
+    },
+    {
+      "element_id": "p6_app_icon_1",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_result_apps",
+      "blueprint_bbox_px": {
+        "x": 1355,
+        "y": 160,
+        "w": 54,
+        "h": 54
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 10.8052,
+        "y": 1.2752,
+        "w": 0.4306,
+        "h": 0.4304
+      }
+    },
+    {
+      "element_id": "p6_app_text_zone_1",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_result_apps",
+      "blueprint_bbox_px": {
+        "x": 1420,
+        "y": 175,
+        "w": 145,
+        "h": 70
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 11.3235,
+        "y": 1.3948,
+        "w": 1.1563,
+        "h": 0.5579
+      }
+    },
+    {
+      "element_id": "p6_outbound_arrow_1",
+      "priority": "P0",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_feedback",
+      "blueprint_bbox_px": {
+        "x": 1245,
+        "y": 190,
+        "w": 85,
+        "h": 36
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 9.928,
+        "y": 1.5143,
+        "w": 0.6778,
+        "h": 0.2869
+      }
+    },
+    {
+      "element_id": "p6_app_card_2",
+      "priority": "P0",
+      "element_type": "application_card",
+      "source_component_id": "p6_result_apps",
+      "blueprint_bbox_px": {
+        "x": 1340,
+        "y": 315,
+        "w": 250,
+        "h": 155
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 10.6855,
+        "y": 2.5106,
+        "w": 1.9936,
+        "h": 1.2354
+      }
+    },
+    {
+      "element_id": "p6_app_icon_2",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_result_apps",
+      "blueprint_bbox_px": {
+        "x": 1355,
+        "y": 345,
+        "w": 54,
+        "h": 54
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 10.8052,
+        "y": 2.7497,
+        "w": 0.4306,
+        "h": 0.4304
+      }
+    },
+    {
+      "element_id": "p6_app_text_zone_2",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_result_apps",
+      "blueprint_bbox_px": {
+        "x": 1420,
+        "y": 360,
+        "w": 145,
+        "h": 70
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 11.3235,
+        "y": 2.8693,
+        "w": 1.1563,
+        "h": 0.5579
+      }
+    },
+    {
+      "element_id": "p6_outbound_arrow_2",
+      "priority": "P0",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_feedback",
+      "blueprint_bbox_px": {
+        "x": 1245,
+        "y": 375,
+        "w": 85,
+        "h": 36
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 9.928,
+        "y": 2.9888,
+        "w": 0.6778,
+        "h": 0.2869
+      }
+    },
+    {
+      "element_id": "p6_app_card_3",
+      "priority": "P0",
+      "element_type": "application_card",
+      "source_component_id": "p6_result_apps",
+      "blueprint_bbox_px": {
+        "x": 1340,
+        "y": 500,
+        "w": 250,
+        "h": 155
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 10.6855,
+        "y": 3.9851,
+        "w": 1.9936,
+        "h": 1.2354
+      }
+    },
+    {
+      "element_id": "p6_app_icon_3",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_result_apps",
+      "blueprint_bbox_px": {
+        "x": 1355,
+        "y": 530,
+        "w": 54,
+        "h": 54
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 10.8052,
+        "y": 4.2242,
+        "w": 0.4306,
+        "h": 0.4304
+      }
+    },
+    {
+      "element_id": "p6_app_text_zone_3",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_result_apps",
+      "blueprint_bbox_px": {
+        "x": 1420,
+        "y": 545,
+        "w": 145,
+        "h": 70
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 11.3235,
+        "y": 4.3438,
+        "w": 1.1563,
+        "h": 0.5579
+      }
+    },
+    {
+      "element_id": "p6_outbound_arrow_3",
+      "priority": "P0",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_feedback",
+      "blueprint_bbox_px": {
+        "x": 1245,
+        "y": 560,
+        "w": 85,
+        "h": 36
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 9.928,
+        "y": 4.4633,
+        "w": 0.6778,
+        "h": 0.2869
+      }
+    },
+    {
+      "element_id": "p6_feedback_dashed_loop",
+      "priority": "P1",
+      "element_type": "feedback_connector",
+      "source_component_id": "p6_feedback",
+      "blueprint_bbox_px": {
+        "x": 1250,
+        "y": 245,
+        "w": 95,
+        "h": 225
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 9.9679,
+        "y": 1.9527,
+        "w": 0.7576,
+        "h": 1.7933
+      }
+    },
+    {
+      "element_id": "p6_compliance_spine_outer",
+      "priority": "P0",
+      "element_type": "governance_spine",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1630,
+        "y": 85,
+        "w": 290,
+        "h": 750
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 12.9981,
+        "y": 0.6775,
+        "w": 2.3125,
+        "h": 5.9777
+      }
+    },
+    {
+      "element_id": "p6_compliance_step_1",
+      "priority": "P1",
+      "element_type": "governance_step",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1660,
+        "y": 145,
+        "w": 190,
+        "h": 90
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.2373,
+        "y": 1.1557,
+        "w": 1.5151,
+        "h": 0.7173
+      }
+    },
+    {
+      "element_id": "p6_compliance_icon_1",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1685,
+        "y": 165,
+        "w": 55,
+        "h": 50
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.4367,
+        "y": 1.3151,
+        "w": 0.4386,
+        "h": 0.3985
+      }
+    },
+    {
+      "element_id": "p6_compliance_step_2",
+      "priority": "P1",
+      "element_type": "governance_step",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1660,
+        "y": 270,
+        "w": 190,
+        "h": 90
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.2373,
+        "y": 2.152,
+        "w": 1.5151,
+        "h": 0.7173
+      }
+    },
+    {
+      "element_id": "p6_compliance_icon_2",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1685,
+        "y": 290,
+        "w": 55,
+        "h": 50
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.4367,
+        "y": 2.3114,
+        "w": 0.4386,
+        "h": 0.3985
+      }
+    },
+    {
+      "element_id": "p6_compliance_step_3",
+      "priority": "P1",
+      "element_type": "governance_step",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1660,
+        "y": 395,
+        "w": 190,
+        "h": 90
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.2373,
+        "y": 3.1482,
+        "w": 1.5151,
+        "h": 0.7173
+      }
+    },
+    {
+      "element_id": "p6_compliance_icon_3",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1685,
+        "y": 415,
+        "w": 55,
+        "h": 50
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.4367,
+        "y": 3.3077,
+        "w": 0.4386,
+        "h": 0.3985
+      }
+    },
+    {
+      "element_id": "p6_compliance_step_4",
+      "priority": "P1",
+      "element_type": "governance_step",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1660,
+        "y": 520,
+        "w": 190,
+        "h": 90
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.2373,
+        "y": 4.1445,
+        "w": 1.5151,
+        "h": 0.7173
+      }
+    },
+    {
+      "element_id": "p6_compliance_icon_4",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1685,
+        "y": 540,
+        "w": 55,
+        "h": 50
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.4367,
+        "y": 4.3039,
+        "w": 0.4386,
+        "h": 0.3985
+      }
+    },
+    {
+      "element_id": "p6_compliance_step_5",
+      "priority": "P1",
+      "element_type": "governance_step",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1660,
+        "y": 645,
+        "w": 190,
+        "h": 90
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.2373,
+        "y": 5.1408,
+        "w": 1.5151,
+        "h": 0.7173
+      }
+    },
+    {
+      "element_id": "p6_compliance_icon_5",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1685,
+        "y": 665,
+        "w": 55,
+        "h": 50
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.4367,
+        "y": 5.3002,
+        "w": 0.4386,
+        "h": 0.3985
+      }
+    },
+    {
+      "element_id": "p6_compliance_step_6",
+      "priority": "P1",
+      "element_type": "governance_step",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1660,
+        "y": 770,
+        "w": 190,
+        "h": 90
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.2373,
+        "y": 6.1371,
+        "w": 1.5151,
+        "h": 0.7173
+      }
+    },
+    {
+      "element_id": "p6_compliance_icon_6",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1685,
+        "y": 790,
+        "w": 55,
+        "h": 50
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.4367,
+        "y": 6.2965,
+        "w": 0.4386,
+        "h": 0.3985
+      }
+    },
+    {
+      "element_id": "p6_compliance_down_arrow_1",
+      "priority": "P1",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1745,
+        "y": 235,
+        "w": 25,
+        "h": 55
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.9151,
+        "y": 1.873,
+        "w": 0.1994,
+        "h": 0.4384
+      }
+    },
+    {
+      "element_id": "p6_compliance_down_arrow_2",
+      "priority": "P1",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1745,
+        "y": 360,
+        "w": 25,
+        "h": 55
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.9151,
+        "y": 2.8693,
+        "w": 0.1994,
+        "h": 0.4384
+      }
+    },
+    {
+      "element_id": "p6_compliance_down_arrow_3",
+      "priority": "P1",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1745,
+        "y": 485,
+        "w": 25,
+        "h": 55
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.9151,
+        "y": 3.8656,
+        "w": 0.1994,
+        "h": 0.4384
+      }
+    },
+    {
+      "element_id": "p6_compliance_down_arrow_4",
+      "priority": "P1",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1745,
+        "y": 610,
+        "w": 25,
+        "h": 55
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.9151,
+        "y": 4.8618,
+        "w": 0.1994,
+        "h": 0.4384
+      }
+    },
+    {
+      "element_id": "p6_compliance_down_arrow_5",
+      "priority": "P1",
+      "element_type": "flow_arrow",
+      "source_component_id": "p6_compliance_spine",
+      "blueprint_bbox_px": {
+        "x": 1745,
+        "y": 735,
+        "w": 25,
+        "h": 55
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 13.9151,
+        "y": 5.8581,
+        "w": 0.1994,
+        "h": 0.4384
+      }
+    },
+    {
+      "element_id": "p6_service_bar_outer",
+      "priority": "P0",
+      "element_type": "service_value_bar",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 20,
+        "y": 810,
+        "w": 1580,
+        "h": 105
+      },
+      "measurement_mode": "individual_bbox",
+      "must_reproduce": true,
+      "tolerance_px": 3,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 28,
+      "ppt_target_bbox_in": {
+        "x": 0.1595,
+        "y": 6.4559,
+        "w": 12.5994,
+        "h": 0.8369
+      }
+    },
+    {
+      "element_id": "p6_service_segment_1",
+      "priority": "P1",
+      "element_type": "service_segment",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 250,
+        "y": 822,
+        "w": 215,
+        "h": 80
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 1.9936,
+        "y": 6.5515,
+        "w": 1.7145,
+        "h": 0.6376
+      }
+    },
+    {
+      "element_id": "p6_service_icon_1",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 280,
+        "y": 845,
+        "w": 56,
+        "h": 48
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 2.2328,
+        "y": 6.7349,
+        "w": 0.4466,
+        "h": 0.3826
+      }
+    },
+    {
+      "element_id": "p6_service_label_1",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 345,
+        "y": 852,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 2.7511,
+        "y": 6.7906,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    },
+    {
+      "element_id": "p6_service_segment_2",
+      "priority": "P1",
+      "element_type": "service_segment",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 470,
+        "y": 822,
+        "w": 215,
+        "h": 80
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 3.7479,
+        "y": 6.5515,
+        "w": 1.7145,
+        "h": 0.6376
+      }
+    },
+    {
+      "element_id": "p6_service_icon_2",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 500,
+        "y": 845,
+        "w": 56,
+        "h": 48
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 3.9871,
+        "y": 6.7349,
+        "w": 0.4466,
+        "h": 0.3826
+      }
+    },
+    {
+      "element_id": "p6_service_label_2",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 565,
+        "y": 852,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 4.5055,
+        "y": 6.7906,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    },
+    {
+      "element_id": "p6_service_segment_3",
+      "priority": "P1",
+      "element_type": "service_segment",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 695,
+        "y": 822,
+        "w": 215,
+        "h": 80
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 5.5421,
+        "y": 6.5515,
+        "w": 1.7145,
+        "h": 0.6376
+      }
+    },
+    {
+      "element_id": "p6_service_icon_3",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 725,
+        "y": 845,
+        "w": 56,
+        "h": 48
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 5.7814,
+        "y": 6.7349,
+        "w": 0.4466,
+        "h": 0.3826
+      }
+    },
+    {
+      "element_id": "p6_service_label_3",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 790,
+        "y": 852,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 6.2997,
+        "y": 6.7906,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    },
+    {
+      "element_id": "p6_service_segment_4",
+      "priority": "P1",
+      "element_type": "service_segment",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 925,
+        "y": 822,
+        "w": 215,
+        "h": 80
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 7.3762,
+        "y": 6.5515,
+        "w": 1.7145,
+        "h": 0.6376
+      }
+    },
+    {
+      "element_id": "p6_service_icon_4",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 955,
+        "y": 845,
+        "w": 56,
+        "h": 48
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 7.6154,
+        "y": 6.7349,
+        "w": 0.4466,
+        "h": 0.3826
+      }
+    },
+    {
+      "element_id": "p6_service_label_4",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 1020,
+        "y": 852,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 8.1338,
+        "y": 6.7906,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    },
+    {
+      "element_id": "p6_service_segment_5",
+      "priority": "P1",
+      "element_type": "service_segment",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 1160,
+        "y": 822,
+        "w": 215,
+        "h": 80
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 9.2502,
+        "y": 6.5515,
+        "w": 1.7145,
+        "h": 0.6376
+      }
+    },
+    {
+      "element_id": "p6_service_icon_5",
+      "priority": "P2",
+      "element_type": "icon",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 1190,
+        "y": 845,
+        "w": 56,
+        "h": 48
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": false,
+      "tolerance_px": 6,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 9.4894,
+        "y": 6.7349,
+        "w": 0.4466,
+        "h": 0.3826
+      }
+    },
+    {
+      "element_id": "p6_service_label_5",
+      "priority": "P1",
+      "element_type": "text_zone",
+      "source_component_id": "p6_service_value",
+      "blueprint_bbox_px": {
+        "x": 1255,
+        "y": 852,
+        "w": 105,
+        "h": 32
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null,
+      "delta_px": null,
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "ppt_target_bbox_in": {
+        "x": 10.0077,
+        "y": 6.7906,
+        "w": 0.8373,
+        "h": 0.255
+      }
+    }
+  ],
+  "element_count": 110,
+  "coverage_check": {
+    "manual_annotations_required": true,
+    "passed": true,
+    "failures": []
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "cyberppt.slide_content_lock.v1",
+  "slide": 7,
+  "source_outline": "projects/power-overseas-capability-p6-p9-restart/workbench/locks/stage1_outline_p6_p9.json",
+  "source_outline_sha256": "7b2d4e05e6540861a25b8af65d2a46577322fb3b1bbe88f9c9a0c62e9b3cae66",
+  "locked": true,
+  "missing_fields": [],
+  "title": "能力评价场景按“企业入库—证据归集—能力评价—结果生成—场景调用—反馈更新”闭环运行",
+  "subtitle": "主链运行页",
+  "charts": [
+    "十节点闭环流程：企业入库、企业角色识别、授权取证、数据治理、证据入库、能力评价、专家复核、结果生成、场景调用、反馈更新"
+  ],
+  "tables": [],
+  "kpis": [],
+  "annotations": [
+    "1到10顺序单向箭头",
+    "节点10回流至节点4/5",
+    "下方6类触发因素用短箭头指向反馈更新"
+  ],
+  "caveats": [
+    "未提供触发阈值、责任分工和周期时间"
+  ],
+  "so_what": [
+    "能力评价不是一次性出证，而是随证据和场景反馈持续更新"
+  ],
+  "evidence_ids": [
+    "E7-01",
+    "E7-02",
+    "E7-03"
+  ],
+  "required_components": [
+    "主链节点10个",
+    "顺序箭头9个",
+    "回流箭头1个",
+    "触发因素标签6个"
+  ]
+}

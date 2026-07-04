@@ -1,0 +1,163 @@
+{
+  "schema": "cyberppt.visual_element_registry.v1",
+  "blueprint_path": "projects/power-overseas-capability-p6-p9-restart/workbench/blueprints/slide-09-body-blueprint.png",
+  "blueprint_sha256": "91efe0e6a3f89d6a2f5fc111dc0330bf92d0129b82446d877e929dc607a0a542",
+  "blueprint_canvas_px": {
+    "w": 1672,
+    "h": 941
+  },
+  "ppt_canvas_in": {
+    "w": 13.333,
+    "h": 7.5
+  },
+  "scale_x": 0.007974282296650717,
+  "scale_y": 0.007970244420828906,
+  "elements": [
+    {
+      "element_id": "p9_layer_stack",
+      "priority": "P0",
+      "element_type": "three_layer_scenario_system",
+      "source_component_id": "p9_layer",
+      "blueprint_bbox_px": {
+        "x": 115,
+        "y": 145,
+        "w": 690,
+        "h": 620
+      },
+      "measurement_mode": "group_bbox",
+      "must_reproduce": true,
+      "render_bbox_px": {
+        "x": 115,
+        "y": 145,
+        "w": 690,
+        "h": 620
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "tolerance_px": 3,
+      "ppt_target_bbox_in": {
+        "x": 0.917,
+        "y": 1.1557,
+        "w": 5.5023,
+        "h": 4.9416
+      }
+    },
+    {
+      "element_id": "p9_ladder",
+      "priority": "P0",
+      "element_type": "five_level_service_ladder",
+      "source_component_id": "p9",
+      "blueprint_bbox_px": {
+        "x": 870,
+        "y": 160,
+        "w": 585,
+        "h": 590
+      },
+      "measurement_mode": "group_bbox",
+      "must_reproduce": true,
+      "render_bbox_px": {
+        "x": 870,
+        "y": 160,
+        "w": 585,
+        "h": 590
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "tolerance_px": 3,
+      "ppt_target_bbox_in": {
+        "x": 6.9376,
+        "y": 1.2752,
+        "w": 4.665,
+        "h": 4.7024
+      }
+    },
+    {
+      "element_id": "p9_bridge",
+      "priority": "P1",
+      "element_type": "value_bridge",
+      "source_component_id": "p9",
+      "blueprint_bbox_px": {
+        "x": 720,
+        "y": 270,
+        "w": 270,
+        "h": 360
+      },
+      "measurement_mode": "group_bbox",
+      "must_reproduce": true,
+      "render_bbox_px": {
+        "x": 720,
+        "y": 270,
+        "w": 270,
+        "h": 360
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "tolerance_px": 4,
+      "ppt_target_bbox_in": {
+        "x": 5.7415,
+        "y": 2.152,
+        "w": 2.1531,
+        "h": 2.8693
+      }
+    },
+    {
+      "element_id": "p9_bottom_message",
+      "priority": "P1",
+      "element_type": "so_what_band",
+      "source_component_id": "p9_bottom",
+      "blueprint_bbox_px": {
+        "x": 165,
+        "y": 800,
+        "w": 1210,
+        "h": 80
+      },
+      "measurement_mode": "group_bbox",
+      "must_reproduce": true,
+      "render_bbox_px": {
+        "x": 165,
+        "y": 800,
+        "w": 1210,
+        "h": 80
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35,
+      "tolerance_px": 4,
+      "ppt_target_bbox_in": {
+        "x": 1.3158,
+        "y": 6.3762,
+        "w": 9.6489,
+        "h": 0.6376
+      }
+    }
+  ],
+  "element_count": 4,
+  "coverage_check": {
+    "manual_annotations_required": true,
+    "passed": true,
+    "failures": []
+  }
+}

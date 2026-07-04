@@ -1,0 +1,45 @@
+{
+  "schema": "cyberppt.stage2_visual_lock.v1",
+  "selected_style_id": "04",
+  "selected_style_name": "象牙白 + 深蓝强调",
+  "scope": {
+    "project": "projects/power-overseas-capability-p6-p9-restart",
+    "pages": [6, 7, 8, 9]
+  },
+  "palette": {
+    "background": "#F7F6F0",
+    "title": "#101820",
+    "body": "#303030",
+    "secondary": "#6F7275",
+    "divider": "#C9CDD1",
+    "accent": "#12355B"
+  },
+  "surface_system": {
+    "page_surface": "ivory continuous paper",
+    "panel_surface": "subtle off-white or cool-light-gray shifts",
+    "divider": "fine cool-gray lines",
+    "primary_anchor": "deep-blue bars, nodes, and active arrows",
+    "large_white_cards_allowed": false,
+    "heavy_shadow_allowed": false
+  },
+  "grid": {
+    "canvas": "16:9",
+    "columns": 12,
+    "body_region_only": true,
+    "template_chrome_in_blueprint": false
+  },
+  "typography": {
+    "scale": "CyberPPT fixed C0 plus T1-T14",
+    "target_language": "简体中文",
+    "language_source": "source_material",
+    "font_direction": "modern Chinese sans-serif"
+  },
+  "icon_library": "tabler-outline",
+  "header_footer_system": {
+    "page_badge_enabled": false,
+    "footer_enabled": false,
+    "confidentiality_statement": false
+  },
+  "approved": true,
+  "approval_note": "User selected style 04 in conversation."
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "cyberppt.blueprint_generation_plan.v1",
+  "style": "04 象牙白 + 深蓝强调",
+  "items": [
+    {
+      "slide": 6,
+      "title": "总体架构按照“数据底座—评价证据—评价模型—结果应用—运营保障”组织",
+      "prompt_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/per-page/slide-06-body-blueprint-prompt.txt",
+      "prompt_sha256": "99abc674b276a464d28aa72e0617eaa8499a3db5bb8182b350b6af7f040c8ab2",
+      "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/blueprints/slide-06-body-blueprint.png"
+    },
+    {
+      "slide": 7,
+      "title": "能力评价场景按“企业入库—证据归集—能力评价—结果生成—场景调用—反馈更新”闭环运行",
+      "prompt_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/per-page/slide-07-body-blueprint-prompt.txt",
+      "prompt_sha256": "464400e25b89e77dde03ee2a5c52c7fb76b8799a1e0c221bd70cb417776f29cd",
+      "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/blueprints/slide-07-body-blueprint.png"
+    },
+    {
+      "slide": 8,
+      "title": "九类能力维度与六类证据资源共同构成评价模型的核心支撑",
+      "prompt_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/per-page/slide-08-body-blueprint-prompt.txt",
+      "prompt_sha256": "ae99e19b18e984276d2b34456e6fe031c37c8de33ffeaca79a33e152e05981b9",
+      "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/blueprints/slide-08-body-blueprint.png"
+    },
+    {
+      "slide": 9,
+      "title": "首批重点场景按“基础评价—专项评价—协同应用”三层布局",
+      "prompt_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/per-page/slide-09-body-blueprint-prompt.txt",
+      "prompt_sha256": "85f74ee1468005d26382c7b4a49b70e75c3543a0ba47867d16920ae9342bfabb",
+      "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/blueprints/slide-09-body-blueprint.png"
+    }
+  ]
+}

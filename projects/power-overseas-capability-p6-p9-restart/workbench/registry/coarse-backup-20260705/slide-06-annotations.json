@@ -1,0 +1,202 @@
+{
+  "schema": "cyberppt.visual_element_annotations.v1",
+  "slide": 6,
+  "elements": [
+    {
+      "element_id": "p6_left_sources",
+      "priority": "P0",
+      "element_type": "source_stack",
+      "source_component_id": "p6_left",
+      "blueprint_bbox_px": {
+        "x": 60,
+        "y": 130,
+        "w": 300,
+        "h": 510
+      },
+      "measurement_mode": "group_bbox",
+      "must_reproduce": true,
+      "render_bbox_px": {
+        "x": 60,
+        "y": 130,
+        "w": 300,
+        "h": 510
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35
+    },
+    {
+      "element_id": "p6_core",
+      "priority": "P0",
+      "element_type": "architecture_core",
+      "source_component_id": "p6",
+      "blueprint_bbox_px": {
+        "x": 415,
+        "y": 125,
+        "w": 580,
+        "h": 480
+      },
+      "measurement_mode": "group_bbox",
+      "must_reproduce": true,
+      "render_bbox_px": {
+        "x": 415,
+        "y": 125,
+        "w": 580,
+        "h": 480
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35
+    },
+    {
+      "element_id": "p6_objects",
+      "priority": "P1",
+      "element_type": "object_pool",
+      "source_component_id": "p6",
+      "blueprint_bbox_px": {
+        "x": 430,
+        "y": 610,
+        "w": 545,
+        "h": 165
+      },
+      "measurement_mode": "group_bbox",
+      "must_reproduce": true,
+      "render_bbox_px": {
+        "x": 430,
+        "y": 610,
+        "w": 545,
+        "h": 165
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35
+    },
+    {
+      "element_id": "p6_apps",
+      "priority": "P0",
+      "element_type": "application_stack",
+      "source_component_id": "p6",
+      "blueprint_bbox_px": {
+        "x": 1045,
+        "y": 150,
+        "w": 285,
+        "h": 420
+      },
+      "measurement_mode": "group_bbox",
+      "must_reproduce": true,
+      "render_bbox_px": {
+        "x": 1045,
+        "y": 150,
+        "w": 285,
+        "h": 420
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35
+    },
+    {
+      "element_id": "p6_service_bar",
+      "priority": "P1",
+      "element_type": "service_value_bar",
+      "source_component_id": "p6_service",
+      "blueprint_bbox_px": {
+        "x": 190,
+        "y": 795,
+        "w": 1110,
+        "h": 88
+      },
+      "measurement_mode": "group_bbox",
+      "must_reproduce": true,
+      "render_bbox_px": {
+        "x": 190,
+        "y": 795,
+        "w": 1110,
+        "h": 88
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35
+    },
+    {
+      "element_id": "p6_compliance",
+      "priority": "P1",
+      "element_type": "governance_spine",
+      "source_component_id": "p6",
+      "blueprint_bbox_px": {
+        "x": 1355,
+        "y": 125,
+        "w": 130,
+        "h": 600
+      },
+      "measurement_mode": "group_bbox",
+      "must_reproduce": true,
+      "render_bbox_px": {
+        "x": 1355,
+        "y": 125,
+        "w": 130,
+        "h": 600
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35
+    },
+    {
+      "element_id": "p6_arrows",
+      "priority": "P1",
+      "element_type": "flow_arrows",
+      "source_component_id": "p6",
+      "blueprint_bbox_px": {
+        "x": 345,
+        "y": 195,
+        "w": 750,
+        "h": 455
+      },
+      "measurement_mode": "group_bbox",
+      "must_reproduce": true,
+      "render_bbox_px": {
+        "x": 345,
+        "y": 195,
+        "w": 750,
+        "h": 455
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "pending_render_measurement",
+      "pixel_mean_abs_tolerance": 35
+    }
+  ]
+}

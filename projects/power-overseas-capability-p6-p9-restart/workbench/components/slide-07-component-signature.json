@@ -1,0 +1,82 @@
+{
+  "schema": "cyberppt.blueprint_component_signature.v1",
+  "slide": 7,
+  "locked": true,
+  "blueprint_path": "projects/power-overseas-capability-p6-p9-restart/workbench/blueprints/slide-07-body-blueprint.png",
+  "blueprint_sha256": "95adc8f4dbf476693e5b8e2341680434307407da8bde7f38b269423ec9fde083",
+  "content_lock_path": "projects/power-overseas-capability-p6-p9-restart/workbench/locks/slide-07-content-lock.json",
+  "content_lock_sha256": "6a00c439b14f621430a5ae4d1a096374b501b0839411a1102c24348459c72642",
+  "component_annotation_path": "projects/power-overseas-capability-p6-p9-restart/workbench/components/slide-07-components.json",
+  "component_annotation_sha256": "b1b2c06758d061ec185977ce5e7f0bd6d99e2e6ff78cd678a537ccddaa9d4802",
+  "components": [
+    {
+      "id": "p7_trigger_band",
+      "type": "trigger_band",
+      "priority": "P0",
+      "must_preserve_type": true,
+      "required_subcomponents": [
+        "policy change",
+        "data update",
+        "market event triggers"
+      ],
+      "content_lock_refs": [
+        "required_components",
+        "charts",
+        "annotations",
+        "so_what"
+      ]
+    },
+    {
+      "id": "p7_closed_loop",
+      "type": "operating_loop",
+      "priority": "P0",
+      "must_preserve_type": true,
+      "required_subcomponents": [
+        "10 operating nodes",
+        "clockwise loop",
+        "feedback path"
+      ],
+      "content_lock_refs": [
+        "required_components",
+        "charts",
+        "annotations",
+        "so_what"
+      ]
+    },
+    {
+      "id": "p7_update_path",
+      "type": "update_path",
+      "priority": "P1",
+      "must_preserve_type": true,
+      "required_subcomponents": [
+        "model version update",
+        "threshold update",
+        "result release"
+      ],
+      "content_lock_refs": [
+        "required_components",
+        "charts",
+        "annotations",
+        "so_what"
+      ]
+    },
+    {
+      "id": "p7_governance",
+      "type": "governance_controls",
+      "priority": "P1",
+      "must_preserve_type": true,
+      "required_subcomponents": [
+        "quality review",
+        "exception handling",
+        "trace records"
+      ],
+      "content_lock_refs": [
+        "required_components",
+        "charts",
+        "annotations",
+        "so_what"
+      ]
+    }
+  ],
+  "validation_failures": []
+}

@@ -1,0 +1,103 @@
+{
+  "schema": "cyberppt.stage2_blueprint_manifest.v1",
+  "project": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart",
+  "pages": [
+    6,
+    7,
+    8,
+    9
+  ],
+  "status": "approved_for_stage3_single_page_production",
+  "items": [
+    {
+      "slide": 6,
+      "title": "总体架构按照“数据底座—评价证据—评价模型—结果应用—运营保障”组织",
+      "prompt_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/per-page/slide-06-body-blueprint-prompt.txt",
+      "prompt_sha256": "99abc674b276a464d28aa72e0617eaa8499a3db5bb8182b350b6af7f040c8ab2",
+      "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/blueprints/slide-06-body-blueprint.png",
+      "imagegen_tool": "built_in_image_gen",
+      "default_generated_source": "/Users/liuxing/.codex/generated_images/019f2de4-d39b-7c32-9525-141f2a016217/ig_03ba07106ebfc23b016a4934ef3d188191b13f20a8ca72e78c.png",
+      "output_exists": true,
+      "output_sha256": "782b0cef6735c2bcc35db4ce28041823ec8b4de23ff8bec151647788a6fd157e",
+      "output_size_px": [
+        1672,
+        941
+      ],
+      "aspect_ratio": 1.776833,
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "effective_language": "简体中文",
+      "density_target": "high",
+      "body_region_only_required": true,
+      "visual_quality_check": "pending_user_review"
+    },
+    {
+      "slide": 7,
+      "title": "能力评价场景按“企业入库—证据归集—能力评价—结果生成—场景调用—反馈更新”闭环运行",
+      "prompt_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/per-page/slide-07-body-blueprint-prompt.txt",
+      "prompt_sha256": "464400e25b89e77dde03ee2a5c52c7fb76b8799a1e0c221bd70cb417776f29cd",
+      "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/blueprints/slide-07-body-blueprint.png",
+      "imagegen_tool": "built_in_image_gen",
+      "default_generated_source": "/Users/liuxing/.codex/generated_images/019f2de4-d39b-7c32-9525-141f2a016217/ig_055234f1e08d8ac1016a493568643881918d1c6ec689925d61.png",
+      "output_exists": true,
+      "output_sha256": "95adc8f4dbf476693e5b8e2341680434307407da8bde7f38b269423ec9fde083",
+      "output_size_px": [
+        1672,
+        941
+      ],
+      "aspect_ratio": 1.776833,
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "effective_language": "简体中文",
+      "density_target": "high",
+      "body_region_only_required": true,
+      "visual_quality_check": "pending_user_review"
+    },
+    {
+      "slide": 8,
+      "title": "九类能力维度与六类证据资源共同构成评价模型的核心支撑",
+      "prompt_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/per-page/slide-08-body-blueprint-prompt.txt",
+      "prompt_sha256": "ae99e19b18e984276d2b34456e6fe031c37c8de33ffeaca79a33e152e05981b9",
+      "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/blueprints/slide-08-body-blueprint.png",
+      "imagegen_tool": "built_in_image_gen",
+      "default_generated_source": "/Users/liuxing/.codex/generated_images/019f2de4-d39b-7c32-9525-141f2a016217/ig_044d5b607fe3b701016a4935db0cd0819181e6f6675b03eb4a.png",
+      "output_exists": true,
+      "output_sha256": "44576180f1f4f2aee337b9dac788717dd063e40360bbc32490de0dd1e7b67427",
+      "output_size_px": [
+        1672,
+        941
+      ],
+      "aspect_ratio": 1.776833,
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "effective_language": "简体中文",
+      "density_target": "high",
+      "body_region_only_required": true,
+      "visual_quality_check": "pending_user_review"
+    },
+    {
+      "slide": 9,
+      "title": "首批重点场景按“基础评价—专项评价—协同应用”三层布局",
+      "prompt_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/per-page/slide-09-body-blueprint-prompt.txt",
+      "prompt_sha256": "85f74ee1468005d26382c7b4a49b70e75c3543a0ba47867d16920ae9342bfabb",
+      "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/blueprints/slide-09-body-blueprint.png",
+      "imagegen_tool": "built_in_image_gen",
+      "default_generated_source": "/Users/liuxing/.codex/generated_images/019f2de4-d39b-7c32-9525-141f2a016217/ig_02b19d44ca748efa016a49363ae5dc8191bdcb2d29aef677f8.png",
+      "output_exists": true,
+      "output_sha256": "91efe0e6a3f89d6a2f5fc111dc0330bf92d0129b82446d877e929dc607a0a542",
+      "output_size_px": [
+        1672,
+        941
+      ],
+      "aspect_ratio": 1.776833,
+      "selected_style_id": "04",
+      "selected_style_name": "象牙白 + 深蓝强调",
+      "effective_language": "简体中文",
+      "density_target": "high",
+      "body_region_only_required": true,
+      "visual_quality_check": "pending_user_review"
+    }
+  ],
+  "approved_at": "2026-07-05T00:00:00+08:00",
+  "approval_path": "workbench/approvals/stage2-blueprint-images.approved.md"
+}

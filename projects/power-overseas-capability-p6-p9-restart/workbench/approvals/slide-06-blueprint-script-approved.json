@@ -1,0 +1,11 @@
+{
+  "schema": "cyberppt.script_approval.v1",
+  "slide": 6,
+  "kind": "blueprint",
+  "approved": true,
+  "approved_at": "2026-07-04T16:27:42+00:00",
+  "approved_artifacts": [
+    "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/scripts/final/slide-06-blueprint-final.md"
+  ],
+  "note": "User confirmed blueprint prompt generation gate"
+}

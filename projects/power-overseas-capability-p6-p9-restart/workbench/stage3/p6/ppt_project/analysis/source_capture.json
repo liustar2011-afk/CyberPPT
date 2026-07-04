@@ -1,0 +1,5961 @@
+{
+  "schema": "cyberppt.dual_image.source_capture.v1",
+  "project": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project",
+  "inputs": {
+    "pair_manifest": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/images/page_image_pairs.json",
+    "candidate_layout_rules": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/analysis/candidate_layout_rules.json",
+    "visual_registry_dir": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/registry",
+    "visual_registry_elements": 110,
+    "ocr_text_mappings": 44,
+    "svg_text_objects": 45,
+    "container_pages": 1,
+    "typography_pages": 0
+  },
+  "capture_policy": {
+    "final_text_source": "script_truth_plus_ocr_locator",
+    "text_wrap_before_shrink": true,
+    "visual_delivery_mode": "dual_image_editable_overlay",
+    "source_to_render_delta_required_before_final_approval": true
+  },
+  "pages": [
+    {
+      "page_number": 6,
+      "source_images": {
+        "full": {
+          "path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/images/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织_full.png",
+          "filename": "page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织_full.png",
+          "status": "Generated",
+          "prompt": "【内容锁定】\n- ## 页面定位\n- 总体架构图\n- ## 版式草图\n- - 左侧：参与主体与数据来源\n- - 中部：能力评价场景核心空间\n- - 中下：评价对象池 / 证据对象池\n- - 右侧：结果应用方\n- - 底部：价值与运营逻辑\n- ## 框位置说明\n- - 左侧25%：数据来源纵向模块\n- - 中部40%：核心中枢大框\n- - 中下横向：对象池6项\n- - 右侧25%：结果应用纵向模块\n- - 底部横向：价值与运营逻辑5段\n- - 右侧边缘竖条：安全合规贯穿条\n- ## 框内文字终稿\n- ### 左侧｜参与主体与数据来源\n- **企业与业务数据**\n- 企业主体信息、海外业务布局、项目经验、装备产品、供货记录、属地化情况\n- **企业内部职能数据**\n- 财务信用、法务合规、E&S/HSE、人员资质、供应链管理\n- **外部公共数据**\n- 行政许可、行政处罚、公共信用、认证检测、行业公开信息\n- **外部专业机构数据**\n- 金融保险、法律合规、认证检测、国别研究、国际商协会\n- ### 中部｜能力评价场景核心空间\n- 目录管理\n- 身份认证\n- 授权控制\n- 规则调用\n- 证据管理\n- 能力评价\n- 结果生成\n- 版本留痕\n- 出证审计\n- ### 中下｜评价对象池 / 证据对象池\n- 企业主体类\n- 海外项目类\n- 技术装备类\n- 财务信用类\n- E&S/HSE与合规类\n- 国别市场与风险类\n- ### 右侧｜结果应用方\n- **企业应用**\n- 画像管理、投标预审、融资保险、供应链管理、国别进入、国际传播\n- **外部合作方应用**\n- 业主/总包方、采购方、金融保险机构、认证机构、专业机构\n- **行业组织应用**\n- 行业监测、能力地图、规则跟踪、年度报告、联合推介\n- ### 底部｜价值与运营逻辑\n- 基础评价服务｜专项评价服务｜监测订阅服务｜国际传播服务｜生态协同服务\n- ### 右侧竖条｜安全合规\n- 分类分级｜授权调用｜权限控制｜脱敏处理｜发布审核｜审计留痕\n- ## 箭头关系\n- - 左侧数据来源 → 中部核心空间\n- - 中下对象池 → 中部能力评价\n- - 中部核心空间 → 右侧结果应用方\n- - 中部核心空间 ↓ 底部价值与运营逻辑\n- - 右侧应用反馈 → 中部核心空间，表示结果应用反馈更新\n- ## 组件清单\n- - 左侧数据来源框4个\n- - 中部大框1个\n- - 中下对象池6个\n- - 右侧应用框3个\n- - 底部服务条5段\n- - 竖向安全合规条1个\n- - 主箭头与回流箭头若干\n- ---\n\n【构图指令】\n生成一张面向最终客户交付的 PPT 正文内容区成稿图，不是蓝图、草稿、过程说明页、复刻中间产物或调试预览图。\n\n只生成正文内容区画面。不要生成页面标题、副标题、Logo、页脚、页码、母版红线、公共元素、临时占位元素或任何完整 PPT 外框；这些由 PPT 模板/母版和可编辑文字层生成。上方 Markdown 页标题只供模板层提取，不属于图片内容。\n\n不得出现证据编号、来源编号、过程性注释、脚注、口径说明、参考来源、调试标记、占位符、乱码、水印，或任何面向制作过程而非最终受众的文字。\n\n沿用项目视觉锁定，不使用外部风格 preset。核心色板：#F7F6F0、#101820、#303030、#6F7275、#C9CDD1、#12355B。页面应是最终交付成稿：连续纸面、墨绿结论锚点、细线分隔、规则信息容器、低干扰图标和企业汇报质感。\n\n【结构密度】\n必须保持高信息密度，不能把页面简化成少量留白卡片。保留原脚本组件数量、组件关系、网格/流程/卡片结构和底部 SO WHAT 区。下列正文内容要进入画面，但不包含页面标题、副标题、Logo、页脚、页码或公共模板元素；不得遗漏关键数字、判断句、清单项或行动链。\n\n\n把正文内容组织为正式汇报页的信息图结构：一个清晰主判断区、若干业务要点/结构模块、一个醒目的 SO WHAT 或行动提示。所有文字承载区必须干净、留白充分、可被后续 PPT 文本层覆盖；图形关系、容器、图标和连接线应边界清楚，适合作为无字背景保留。",
+          "image_size": "2x-content-region"
+        },
+        "background": {
+          "path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/images/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织_background.png",
+          "filename": "page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织_background.png",
+          "status": "Generated",
+          "prompt": "请将输入图作为唯一视觉母版进行 image-to-image 编辑，只生成第【6】页正文内容区的无文字背景图。\n\n【核心任务】\n参照输入的 full 正文内容区图片，生成同一内容区、同一构图、同一图形关系的无文字底稿。不要重新文生图，不要更换构图，不要生成同主题新图。输出图必须可以直接作为 PPT 正文区底图，与 full 图形成同版式的图片版页面组合。\n\n必须严格保留：输入图的画布比例、整体版式、空间结构、配色、材质、图形关系、流程线、关系箭头、容器、底座、语义小图、背景装饰、阴影、留白、浅色文字承载面、模块标签条和所有非文字图形元素的位置与尺度。\n\n必须删除：所有可读文字、数字、页码、标题、副标题、标签、注释、标点、水印、伪文字、乱码和文字残影。删除后相应区域应恢复为完整的纯色/浅色/低纹理承载面或原本的底层材质。\n\n禁止：新增任何文字、数字、乱码、符号、水印；禁止生成完整 PPT 页面、页眉、页脚、中电联公共元素；禁止改变图形语义关系；禁止出现模糊补丁、涂抹块、局部重绘错位、重复元素或新装饰。\n",
+          "image_size": "2x-content-region"
+        }
+      },
+      "image_regions": {
+        "canvas": {
+          "width": 1280,
+          "height": 720
+        },
+        "generation_contract": {
+          "mode": "template-content-region",
+          "owner": "CyberPPT",
+          "slide_canvas": {
+            "width": 1280,
+            "height": 720
+          },
+          "content_region": {
+            "x": 20,
+            "y": 104,
+            "width": 1240,
+            "height": 592
+          },
+          "generation_size": {
+            "width": 2480,
+            "height": 1184
+          },
+          "rule": "Generate content-area images only; PPT title, subtitle and enterprise chrome are handled by template/export code."
+        }
+      },
+      "containers": [],
+      "text_objects": [
+        {
+          "id": "text_001",
+          "text": "企业与业务数据",
+          "rendered_text": "企业与业务数据",
+          "bbox": {
+            "x": 131.24,
+            "y": 207.8,
+            "w": 107.54,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_002",
+          "text": "企业主体信息、海外业务布局、项目经验、装备产品、供货记录、属地化情况",
+          "rendered_text": "企业主体信息、海外业务布局、项目经验、装备产品、供货记录、属地化情况",
+          "bbox": {
+            "x": 131.24,
+            "y": 222.59,
+            "w": 107.54,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 7.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "400",
+            "align": "left",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.9
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_003",
+          "text": "企业内部职能数据",
+          "rendered_text": "企业内部职能数据",
+          "bbox": {
+            "x": 131.24,
+            "y": 282.04,
+            "w": 107.54,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_004",
+          "text": "财务信用、法务合规、E&S/HSE、人员资质、供应链管理",
+          "rendered_text": "财务信用、法务合规、E&S/HSE、人员资质、供应链管理",
+          "bbox": {
+            "x": 131.24,
+            "y": 299.03,
+            "w": 107.54,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 7.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "400",
+            "align": "left",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.9
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_005",
+          "text": "外部公共数据",
+          "rendered_text": "外部公共数据",
+          "bbox": {
+            "x": 131.24,
+            "y": 356.28,
+            "w": 107.54,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_006",
+          "text": "行政许可、行政处罚、公共信用、认证检测、行业公开信息",
+          "rendered_text": "行政许可、行政处罚、公共信用、认证检测、行业公开信息",
+          "bbox": {
+            "x": 131.24,
+            "y": 373.26,
+            "w": 107.54,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 7.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "400",
+            "align": "left",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.9
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_007",
+          "text": "外部专业机构数据",
+          "rendered_text": "外部专业机构数据",
+          "bbox": {
+            "x": 131.24,
+            "y": 432.71,
+            "w": 107.54,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_008",
+          "text": "金融保险、法律合规、认证检测、国别研究、国际商协会",
+          "rendered_text": "金融保险、法律合规、认证检测、国别研究、国际商协会",
+          "bbox": {
+            "x": 131.24,
+            "y": 447.5,
+            "w": 107.54,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 7.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "400",
+            "align": "left",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.9
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_009",
+          "text": "中部：能力评价场景核心空间",
+          "rendered_text": "中部：能力评价场景核心空间",
+          "bbox": {
+            "x": 435.31,
+            "y": 163.77,
+            "w": 274.4,
+            "h": 13.84
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "400",
+            "align": "left",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_010",
+          "text": "目录管理",
+          "rendered_text": "目录管理",
+          "bbox": {
+            "x": 479.81,
+            "y": 251.84,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_011",
+          "text": "身份认证",
+          "rendered_text": "身份认证",
+          "bbox": {
+            "x": 602.18,
+            "y": 251.84,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_012",
+          "text": "授权控制",
+          "rendered_text": "授权控制",
+          "bbox": {
+            "x": 724.55,
+            "y": 251.84,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_013",
+          "text": "规则调用",
+          "rendered_text": "规则调用",
+          "bbox": {
+            "x": 479.81,
+            "y": 343.06,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_014",
+          "text": "证据管理",
+          "rendered_text": "证据管理",
+          "bbox": {
+            "x": 602.18,
+            "y": 343.06,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_015",
+          "text": "能力评价",
+          "rendered_text": "能力评价",
+          "bbox": {
+            "x": 724.55,
+            "y": 343.06,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_016",
+          "text": "结果生成",
+          "rendered_text": "结果生成",
+          "bbox": {
+            "x": 479.81,
+            "y": 432.71,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_017",
+          "text": "版本留痕",
+          "rendered_text": "版本留痕",
+          "bbox": {
+            "x": 602.18,
+            "y": 432.71,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_018",
+          "text": "出证审计",
+          "rendered_text": "出证审计",
+          "bbox": {
+            "x": 724.55,
+            "y": 432.71,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_019",
+          "text": "中下：评价对象池 / 证据对象池",
+          "rendered_text": "中下：评价对象池 / 证据对象池",
+          "bbox": {
+            "x": 453.85,
+            "y": 495.63,
+            "w": 266.99,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "400",
+            "align": "left",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_020",
+          "text": "企业主体类",
+          "rendered_text": "企业主体类",
+          "bbox": {
+            "x": 338.9,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_021",
+          "text": "海外项目类",
+          "rendered_text": "海外项目类",
+          "bbox": {
+            "x": 435.31,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_022",
+          "text": "技术装备类",
+          "rendered_text": "技术装备类",
+          "bbox": {
+            "x": 531.72,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_023",
+          "text": "财务信用类",
+          "rendered_text": "财务信用类",
+          "bbox": {
+            "x": 628.13,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_024",
+          "text": "E&S/HSE与合规类",
+          "rendered_text": "E&S/HSE与合规类",
+          "bbox": {
+            "x": 724.55,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 8.09,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "400",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_025",
+          "text": "国别市场与风险类",
+          "rendered_text": "国别市场与风险类",
+          "bbox": {
+            "x": 820.96,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 8.01,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_026",
+          "text": "企业应用",
+          "rendered_text": "企业应用",
+          "bbox": {
+            "x": 976.7,
+            "y": 222.59,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_027",
+          "text": "画像管理、投标预审、融资保险、供应链管理、国别进入、国际传播",
+          "rendered_text": "画像管理、投标预审、融资保险、供应链管理、国别进入、国际传播",
+          "bbox": {
+            "x": 976.7,
+            "y": 241.78,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 7.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "400",
+            "align": "left",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.9
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_028",
+          "text": "外部合作方应用",
+          "rendered_text": "外部合作方应用",
+          "bbox": {
+            "x": 976.7,
+            "y": 314.75,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_029",
+          "text": "业主/总包方、采购方、金融保险机构、认证机构、专业机构",
+          "rendered_text": "业主/总包方、采购方、金融保险机构、认证机构、专业机构",
+          "bbox": {
+            "x": 976.7,
+            "y": 343.06,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 7.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "400",
+            "align": "left",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.9
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_030",
+          "text": "行业组织应用",
+          "rendered_text": "行业组织应用",
+          "bbox": {
+            "x": 976.7,
+            "y": 409.12,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_031",
+          "text": "行业监测、能力地图、规则跟踪、年度报告、联合推介",
+          "rendered_text": "行业监测、能力地图、规则跟踪、年度报告、联合推介",
+          "bbox": {
+            "x": 976.7,
+            "y": 432.71,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 7.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "400",
+            "align": "left",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.9
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_032",
+          "text": "安全合规",
+          "rendered_text": "安全合规",
+          "bbox": {
+            "x": 1139.86,
+            "y": 198.37,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "ocr_unmatched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_033",
+          "text": "分类分级",
+          "rendered_text": "分类分级",
+          "bbox": {
+            "x": 1139.86,
+            "y": 232.97,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "ocr_unmatched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_034",
+          "text": "授权调用",
+          "rendered_text": "授权调用",
+          "bbox": {
+            "x": 1139.86,
+            "y": 299.03,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "ocr_unmatched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_035",
+          "text": "授权控制",
+          "rendered_text": "授权控制",
+          "bbox": {
+            "x": 1139.86,
+            "y": 365.08,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_036",
+          "text": "脱敏处理",
+          "rendered_text": "脱敏处理",
+          "bbox": {
+            "x": 1139.86,
+            "y": 432.71,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "ocr_unmatched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_037",
+          "text": "发布审核",
+          "rendered_text": "发布审核",
+          "bbox": {
+            "x": 1139.86,
+            "y": 495.63,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "ocr_unmatched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_038",
+          "text": "审计留痕",
+          "rendered_text": "审计留痕",
+          "bbox": {
+            "x": 1139.86,
+            "y": 563.26,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "ocr_unmatched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_039",
+          "text": "底部：价值与运营逻辑",
+          "rendered_text": "底部：价值与运营逻辑",
+          "bbox": {
+            "x": 205.41,
+            "y": 594.71,
+            "w": 155.74,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "400",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "script_matched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_040",
+          "text": "基础评价服务",
+          "rendered_text": "基础评价服务",
+          "bbox": {
+            "x": 264.74,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "ocr_unmatched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_041",
+          "text": "专项评价服务",
+          "rendered_text": "专项评价服务",
+          "bbox": {
+            "x": 442.73,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "ocr_unmatched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_042",
+          "text": "监测订阅服务",
+          "rendered_text": "监测订阅服务",
+          "bbox": {
+            "x": 620.72,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "ocr_unmatched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_043",
+          "text": "国际传播服务",
+          "rendered_text": "国际传播服务",
+          "bbox": {
+            "x": 798.71,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "ocr_unmatched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        },
+        {
+          "id": "text_044",
+          "text": "生态协同服务",
+          "rendered_text": "生态协同服务",
+          "bbox": {
+            "x": 976.7,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 10.0,
+            "applied_font_size_px": null,
+            "fill": "#0B1F3D",
+            "font_weight": "700",
+            "align": "center",
+            "word_wrap": true,
+            "typography_role": null
+          },
+          "source": {
+            "kind": "ocr_unmatched",
+            "confidence": 0.99
+          },
+          "layout": {
+            "line_count": 1,
+            "needs_wrapping": false
+          }
+        }
+      ],
+      "svg_text_objects": [
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "总体架构按照“数据底座—评价证据—评价模型—结果应用—运营保障”组织",
+          "compact_text": "总体架构按照“数据底座—评价证据—评价模型—结果应用—运营保障”组织",
+          "x": 20.0,
+          "y": 46.0,
+          "text_anchor": "start",
+          "font_size": 25.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "企业与业务数据",
+          "compact_text": "企业与业务数据",
+          "x": 185.01,
+          "y": 217.8,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "企业主体信息、海外业务布局项目经验、装备产品、供货记录属地化情况",
+          "compact_text": "企业主体信息、海外业务布局项目经验、装备产品、供货记录属地化情况",
+          "x": 131.24,
+          "y": 229.59,
+          "text_anchor": "start",
+          "font_size": 7.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "企业内部职能数据",
+          "compact_text": "企业内部职能数据",
+          "x": 185.01,
+          "y": 292.04,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "财务信用、法务合规、E&S/HSE人员资质、供应链管理",
+          "compact_text": "财务信用、法务合规、E&S/HSE人员资质、供应链管理",
+          "x": 131.24,
+          "y": 306.03,
+          "text_anchor": "start",
+          "font_size": 7.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "外部公共数据",
+          "compact_text": "外部公共数据",
+          "x": 185.01,
+          "y": 366.28,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "行政许可、行政处罚、公共信用认证检测、行业公开信息",
+          "compact_text": "行政许可、行政处罚、公共信用认证检测、行业公开信息",
+          "x": 131.24,
+          "y": 380.26,
+          "text_anchor": "start",
+          "font_size": 7.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "外部专业机构数据",
+          "compact_text": "外部专业机构数据",
+          "x": 185.01,
+          "y": 442.71,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "金融保险、法律合规、认证检测国别研究、国际商协会",
+          "compact_text": "金融保险、法律合规、认证检测国别研究、国际商协会",
+          "x": 131.24,
+          "y": 454.5,
+          "text_anchor": "start",
+          "font_size": 7.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "中部：能力评价场景核心空间",
+          "compact_text": "中部：能力评价场景核心空间",
+          "x": 435.31,
+          "y": 173.77,
+          "text_anchor": "start",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "目录管理",
+          "compact_text": "目录管理",
+          "x": 520.6,
+          "y": 261.84,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "身份认证",
+          "compact_text": "身份认证",
+          "x": 642.97,
+          "y": 261.84,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "授权控制",
+          "compact_text": "授权控制",
+          "x": 765.33,
+          "y": 261.84,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "规则调用",
+          "compact_text": "规则调用",
+          "x": 520.6,
+          "y": 353.06,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "证据管理",
+          "compact_text": "证据管理",
+          "x": 642.97,
+          "y": 353.06,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "能力评价",
+          "compact_text": "能力评价",
+          "x": 765.33,
+          "y": 353.06,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "结果生成",
+          "compact_text": "结果生成",
+          "x": 520.6,
+          "y": 442.71,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "版本留痕",
+          "compact_text": "版本留痕",
+          "x": 642.97,
+          "y": 442.71,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "出证审计",
+          "compact_text": "出证审计",
+          "x": 765.33,
+          "y": 442.71,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "中下：评价对象池 / 证据对象池",
+          "compact_text": "中下：评价对象池/证据对象池",
+          "x": 453.85,
+          "y": 505.63,
+          "text_anchor": "start",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "企业主体类",
+          "compact_text": "企业主体类",
+          "x": 372.27,
+          "y": 554.38,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "海外项目类",
+          "compact_text": "海外项目类",
+          "x": 468.68,
+          "y": 554.38,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "技术装备类",
+          "compact_text": "技术装备类",
+          "x": 565.1,
+          "y": 554.38,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "财务信用类",
+          "compact_text": "财务信用类",
+          "x": 661.51,
+          "y": 554.38,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "E&S/HSE与合规类",
+          "compact_text": "E&S/HSE与合规类",
+          "x": 757.92,
+          "y": 552.47,
+          "text_anchor": "middle",
+          "font_size": 8.09
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "国别市场与风险类",
+          "compact_text": "国别市场与风险类",
+          "x": 854.33,
+          "y": 552.39,
+          "text_anchor": "middle",
+          "font_size": 8.01
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "企业应用",
+          "compact_text": "企业应用",
+          "x": 1045.3,
+          "y": 232.59,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "画像管理、投标预审、融资保险供应链管理、国别进入、国际传播",
+          "compact_text": "画像管理、投标预审、融资保险供应链管理、国别进入、国际传播",
+          "x": 976.7,
+          "y": 248.78,
+          "text_anchor": "start",
+          "font_size": 7.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "外部合作方应用",
+          "compact_text": "外部合作方应用",
+          "x": 1045.3,
+          "y": 324.75,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "业主/总包方、采购方、金融保险机构认证机构、专业机构",
+          "compact_text": "业主/总包方、采购方、金融保险机构认证机构、专业机构",
+          "x": 976.7,
+          "y": 350.06,
+          "text_anchor": "start",
+          "font_size": 7.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "行业组织应用",
+          "compact_text": "行业组织应用",
+          "x": 1045.3,
+          "y": 419.12,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "行业监测、能力地图、规则跟踪年度报告、联合推介",
+          "compact_text": "行业监测、能力地图、规则跟踪年度报告、联合推介",
+          "x": 976.7,
+          "y": 439.71,
+          "text_anchor": "start",
+          "font_size": 7.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "安全合规",
+          "compact_text": "安全合规",
+          "x": 1176.94,
+          "y": 208.37,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "分类分级",
+          "compact_text": "分类分级",
+          "x": 1176.94,
+          "y": 242.97,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "授权调用",
+          "compact_text": "授权调用",
+          "x": 1176.94,
+          "y": 309.03,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "授权控制",
+          "compact_text": "授权控制",
+          "x": 1176.94,
+          "y": 375.08,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "脱敏处理",
+          "compact_text": "脱敏处理",
+          "x": 1176.94,
+          "y": 442.71,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "发布审核",
+          "compact_text": "发布审核",
+          "x": 1176.94,
+          "y": 505.63,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "审计留痕",
+          "compact_text": "审计留痕",
+          "x": 1176.94,
+          "y": 573.26,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "底部：价值与运营逻辑",
+          "compact_text": "底部：价值与运营逻辑",
+          "x": 283.28,
+          "y": 604.71,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "基础评价服务",
+          "compact_text": "基础评价服务",
+          "x": 312.94,
+          "y": 648.75,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "专项评价服务",
+          "compact_text": "专项评价服务",
+          "x": 490.93,
+          "y": 648.75,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "监测订阅服务",
+          "compact_text": "监测订阅服务",
+          "x": 668.92,
+          "y": 648.75,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "国际传播服务",
+          "compact_text": "国际传播服务",
+          "x": 846.91,
+          "y": 648.75,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        },
+        {
+          "page_number": 6,
+          "source_file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/svg_output/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织.svg",
+          "text": "生态协同服务",
+          "compact_text": "生态协同服务",
+          "x": 1024.9,
+          "y": 648.75,
+          "text_anchor": "middle",
+          "font_size": 10.0
+        }
+      ],
+      "typography_decisions": [],
+      "visual_element_inventory": [
+        {
+          "element_id": "text_001",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 131.24,
+            "y": 207.8,
+            "w": 107.54,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 131.24,
+            "y": 207.8,
+            "w": 107.54,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_002",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 131.24,
+            "y": 222.59,
+            "w": 107.54,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 131.24,
+            "y": 222.59,
+            "w": 107.54,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_003",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 131.24,
+            "y": 282.04,
+            "w": 107.54,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 131.24,
+            "y": 282.04,
+            "w": 107.54,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_004",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 131.24,
+            "y": 299.03,
+            "w": 107.54,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 131.24,
+            "y": 299.03,
+            "w": 107.54,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_005",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 131.24,
+            "y": 356.28,
+            "w": 107.54,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 131.24,
+            "y": 356.28,
+            "w": 107.54,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_006",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 131.24,
+            "y": 373.26,
+            "w": 107.54,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 131.24,
+            "y": 373.26,
+            "w": 107.54,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_007",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 131.24,
+            "y": 432.71,
+            "w": 107.54,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 131.24,
+            "y": 432.71,
+            "w": 107.54,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_008",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 131.24,
+            "y": 447.5,
+            "w": 107.54,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 131.24,
+            "y": 447.5,
+            "w": 107.54,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_009",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 435.31,
+            "y": 163.77,
+            "w": 274.4,
+            "h": 13.84
+          },
+          "ppt_target_bbox_px": {
+            "x": 435.31,
+            "y": 163.77,
+            "w": 274.4,
+            "h": 13.84
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_010",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 479.81,
+            "y": 251.84,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 479.81,
+            "y": 251.84,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_011",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 602.18,
+            "y": 251.84,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 602.18,
+            "y": 251.84,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_012",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 724.55,
+            "y": 251.84,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 724.55,
+            "y": 251.84,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_013",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 479.81,
+            "y": 343.06,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 479.81,
+            "y": 343.06,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_014",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 602.18,
+            "y": 343.06,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 602.18,
+            "y": 343.06,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_015",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 724.55,
+            "y": 343.06,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 724.55,
+            "y": 343.06,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_016",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 479.81,
+            "y": 432.71,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 479.81,
+            "y": 432.71,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_017",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 602.18,
+            "y": 432.71,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 602.18,
+            "y": 432.71,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_018",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 724.55,
+            "y": 432.71,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 724.55,
+            "y": 432.71,
+            "w": 81.58,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_019",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 453.85,
+            "y": 495.63,
+            "w": 266.99,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 453.85,
+            "y": 495.63,
+            "w": 266.99,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_020",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 338.9,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "ppt_target_bbox_px": {
+            "x": 338.9,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_021",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 435.31,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "ppt_target_bbox_px": {
+            "x": 435.31,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_022",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 531.72,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "ppt_target_bbox_px": {
+            "x": 531.72,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_023",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 628.13,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "ppt_target_bbox_px": {
+            "x": 628.13,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_024",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 724.55,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "ppt_target_bbox_px": {
+            "x": 724.55,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_025",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 820.96,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "ppt_target_bbox_px": {
+            "x": 820.96,
+            "y": 544.38,
+            "w": 66.75,
+            "h": 9.44
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_026",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 976.7,
+            "y": 222.59,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 976.7,
+            "y": 222.59,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_027",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 976.7,
+            "y": 241.78,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 976.7,
+            "y": 241.78,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_028",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 976.7,
+            "y": 314.75,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 976.7,
+            "y": 314.75,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_029",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 976.7,
+            "y": 343.06,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 976.7,
+            "y": 343.06,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_030",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 976.7,
+            "y": 409.12,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 976.7,
+            "y": 409.12,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_031",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 976.7,
+            "y": 432.71,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "ppt_target_bbox_px": {
+            "x": 976.7,
+            "y": 432.71,
+            "w": 137.2,
+            "h": 11.32
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_032",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 1139.86,
+            "y": 198.37,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 1139.86,
+            "y": 198.37,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_033",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 1139.86,
+            "y": 232.97,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 1139.86,
+            "y": 232.97,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_034",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 1139.86,
+            "y": 299.03,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 1139.86,
+            "y": 299.03,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_035",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 1139.86,
+            "y": 365.08,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 1139.86,
+            "y": 365.08,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_036",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 1139.86,
+            "y": 432.71,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 1139.86,
+            "y": 432.71,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_037",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 1139.86,
+            "y": 495.63,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 1139.86,
+            "y": 495.63,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_038",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 1139.86,
+            "y": 563.26,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 1139.86,
+            "y": 563.26,
+            "w": 74.16,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_039",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 205.41,
+            "y": 594.71,
+            "w": 155.74,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 205.41,
+            "y": 594.71,
+            "w": 155.74,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_040",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 264.74,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 264.74,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_041",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 442.73,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 442.73,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_042",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 620.72,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 620.72,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_043",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 798.71,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 798.71,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "text_044",
+          "element_type": "text",
+          "role": "text",
+          "priority": "P1",
+          "measurement_mode": "individual_bbox",
+          "blueprint_bbox_px": {
+            "x": 976.7,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "ppt_target_bbox_px": {
+            "x": 976.7,
+            "y": 638.75,
+            "w": 96.41,
+            "h": 10.07
+          },
+          "tolerance_px": 8,
+          "must_reproduce": true,
+          "registration_status": "pending_render_measurement",
+          "children_expected": []
+        },
+        {
+          "element_id": "p6_source_panel_outer",
+          "priority": "P0",
+          "element_type": "container",
+          "source_component_id": "p6_data_sources",
+          "blueprint_bbox_px": {
+            "x": 55,
+            "y": 85,
+            "w": 275,
+            "h": 755
+          },
+          "ppt_target_bbox_in": {
+            "x": 0.4386,
+            "y": 0.6775,
+            "w": 2.1929,
+            "h": 6.0175
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_source_card_1_biz",
+          "priority": "P0",
+          "element_type": "source_card",
+          "source_component_id": "p6_data_sources",
+          "blueprint_bbox_px": {
+            "x": 70,
+            "y": 130,
+            "w": 245,
+            "h": 135
+          },
+          "ppt_target_bbox_in": {
+            "x": 0.5582,
+            "y": 1.0361,
+            "w": 1.9537,
+            "h": 1.076
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_source_icon_1_biz",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_data_sources",
+          "blueprint_bbox_px": {
+            "x": 80,
+            "y": 165,
+            "w": 58,
+            "h": 62
+          },
+          "ppt_target_bbox_in": {
+            "x": 0.6379,
+            "y": 1.3151,
+            "w": 0.4625,
+            "h": 0.4942
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_source_text_zone_1_biz",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_data_sources",
+          "blueprint_bbox_px": {
+            "x": 145,
+            "y": 175,
+            "w": 155,
+            "h": 65
+          },
+          "ppt_target_bbox_in": {
+            "x": 1.1563,
+            "y": 1.3948,
+            "w": 1.236,
+            "h": 0.5181
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_inbound_arrow_1_biz",
+          "priority": "P0",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_feedback",
+          "blueprint_bbox_px": {
+            "x": 335,
+            "y": 184,
+            "w": 95,
+            "h": 38
+          },
+          "ppt_target_bbox_in": {
+            "x": 2.6714,
+            "y": 1.4665,
+            "w": 0.7576,
+            "h": 0.3029
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_source_card_2_internal",
+          "priority": "P0",
+          "element_type": "source_card",
+          "source_component_id": "p6_data_sources",
+          "blueprint_bbox_px": {
+            "x": 70,
+            "y": 285,
+            "w": 245,
+            "h": 135
+          },
+          "ppt_target_bbox_in": {
+            "x": 0.5582,
+            "y": 2.2715,
+            "w": 1.9537,
+            "h": 1.076
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_source_icon_2_internal",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_data_sources",
+          "blueprint_bbox_px": {
+            "x": 80,
+            "y": 320,
+            "w": 58,
+            "h": 62
+          },
+          "ppt_target_bbox_in": {
+            "x": 0.6379,
+            "y": 2.5505,
+            "w": 0.4625,
+            "h": 0.4942
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_source_text_zone_2_internal",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_data_sources",
+          "blueprint_bbox_px": {
+            "x": 145,
+            "y": 330,
+            "w": 155,
+            "h": 65
+          },
+          "ppt_target_bbox_in": {
+            "x": 1.1563,
+            "y": 2.6302,
+            "w": 1.236,
+            "h": 0.5181
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_inbound_arrow_2_internal",
+          "priority": "P0",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_feedback",
+          "blueprint_bbox_px": {
+            "x": 335,
+            "y": 339,
+            "w": 95,
+            "h": 38
+          },
+          "ppt_target_bbox_in": {
+            "x": 2.6714,
+            "y": 2.7019,
+            "w": 0.7576,
+            "h": 0.3029
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_source_card_3_public",
+          "priority": "P0",
+          "element_type": "source_card",
+          "source_component_id": "p6_data_sources",
+          "blueprint_bbox_px": {
+            "x": 70,
+            "y": 440,
+            "w": 245,
+            "h": 135
+          },
+          "ppt_target_bbox_in": {
+            "x": 0.5582,
+            "y": 3.5069,
+            "w": 1.9537,
+            "h": 1.076
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_source_icon_3_public",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_data_sources",
+          "blueprint_bbox_px": {
+            "x": 80,
+            "y": 475,
+            "w": 58,
+            "h": 62
+          },
+          "ppt_target_bbox_in": {
+            "x": 0.6379,
+            "y": 3.7859,
+            "w": 0.4625,
+            "h": 0.4942
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_source_text_zone_3_public",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_data_sources",
+          "blueprint_bbox_px": {
+            "x": 145,
+            "y": 485,
+            "w": 155,
+            "h": 65
+          },
+          "ppt_target_bbox_in": {
+            "x": 1.1563,
+            "y": 3.8656,
+            "w": 1.236,
+            "h": 0.5181
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_inbound_arrow_3_public",
+          "priority": "P0",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_feedback",
+          "blueprint_bbox_px": {
+            "x": 335,
+            "y": 494,
+            "w": 95,
+            "h": 38
+          },
+          "ppt_target_bbox_in": {
+            "x": 2.6714,
+            "y": 3.9373,
+            "w": 0.7576,
+            "h": 0.3029
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_source_card_4_agency",
+          "priority": "P0",
+          "element_type": "source_card",
+          "source_component_id": "p6_data_sources",
+          "blueprint_bbox_px": {
+            "x": 70,
+            "y": 595,
+            "w": 245,
+            "h": 135
+          },
+          "ppt_target_bbox_in": {
+            "x": 0.5582,
+            "y": 4.7423,
+            "w": 1.9537,
+            "h": 1.076
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_source_icon_4_agency",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_data_sources",
+          "blueprint_bbox_px": {
+            "x": 80,
+            "y": 630,
+            "w": 58,
+            "h": 62
+          },
+          "ppt_target_bbox_in": {
+            "x": 0.6379,
+            "y": 5.0213,
+            "w": 0.4625,
+            "h": 0.4942
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_source_text_zone_4_agency",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_data_sources",
+          "blueprint_bbox_px": {
+            "x": 145,
+            "y": 640,
+            "w": 155,
+            "h": 65
+          },
+          "ppt_target_bbox_in": {
+            "x": 1.1563,
+            "y": 5.101,
+            "w": 1.236,
+            "h": 0.5181
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_inbound_arrow_4_agency",
+          "priority": "P0",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_feedback",
+          "blueprint_bbox_px": {
+            "x": 335,
+            "y": 649,
+            "w": 95,
+            "h": 38
+          },
+          "ppt_target_bbox_in": {
+            "x": 2.6714,
+            "y": 5.1727,
+            "w": 0.7576,
+            "h": 0.3029
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_outer_panel",
+          "priority": "P0",
+          "element_type": "main_architecture_panel",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 390,
+            "y": 85,
+            "w": 860,
+            "h": 640
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.11,
+            "y": 0.6775,
+            "w": 6.8579,
+            "h": 5.101
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_header_band",
+          "priority": "P1",
+          "element_type": "header_band",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 390,
+            "y": 85,
+            "w": 860,
+            "h": 50
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.11,
+            "y": 0.6775,
+            "w": 6.8579,
+            "h": 0.3985
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_grid",
+          "priority": "P0",
+          "element_type": "nine_cell_grid",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 425,
+            "y": 145,
+            "w": 785,
+            "h": 370
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.3891,
+            "y": 1.1557,
+            "w": 6.2598,
+            "h": 2.949
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_cell_1_catalog",
+          "priority": "P0",
+          "element_type": "core_capability_cell",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 435,
+            "y": 145,
+            "w": 185,
+            "h": 115
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.4688,
+            "y": 1.1557,
+            "w": 1.4752,
+            "h": 0.9166
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_icon_1_catalog",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 455,
+            "y": 165,
+            "w": 70,
+            "h": 70
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.6283,
+            "y": 1.3151,
+            "w": 0.5582,
+            "h": 0.5579
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_label_1_catalog",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 520,
+            "y": 213,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 4.1466,
+            "y": 1.6977,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_cell_2_identity",
+          "priority": "P0",
+          "element_type": "core_capability_cell",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 640,
+            "y": 145,
+            "w": 185,
+            "h": 115
+          },
+          "ppt_target_bbox_in": {
+            "x": 5.1035,
+            "y": 1.1557,
+            "w": 1.4752,
+            "h": 0.9166
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_icon_2_identity",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 660,
+            "y": 165,
+            "w": 70,
+            "h": 70
+          },
+          "ppt_target_bbox_in": {
+            "x": 5.263,
+            "y": 1.3151,
+            "w": 0.5582,
+            "h": 0.5579
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_label_2_identity",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 725,
+            "y": 213,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 5.7814,
+            "y": 1.6977,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_cell_3_auth",
+          "priority": "P0",
+          "element_type": "core_capability_cell",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 855,
+            "y": 145,
+            "w": 185,
+            "h": 115
+          },
+          "ppt_target_bbox_in": {
+            "x": 6.818,
+            "y": 1.1557,
+            "w": 1.4752,
+            "h": 0.9166
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_icon_3_auth",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 875,
+            "y": 165,
+            "w": 70,
+            "h": 70
+          },
+          "ppt_target_bbox_in": {
+            "x": 6.9775,
+            "y": 1.3151,
+            "w": 0.5582,
+            "h": 0.5579
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_label_3_auth",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 940,
+            "y": 213,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 7.4958,
+            "y": 1.6977,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_cell_4_rules",
+          "priority": "P0",
+          "element_type": "core_capability_cell",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 435,
+            "y": 285,
+            "w": 185,
+            "h": 115
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.4688,
+            "y": 2.2715,
+            "w": 1.4752,
+            "h": 0.9166
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_icon_4_rules",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 455,
+            "y": 305,
+            "w": 70,
+            "h": 70
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.6283,
+            "y": 2.4309,
+            "w": 0.5582,
+            "h": 0.5579
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_label_4_rules",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 520,
+            "y": 353,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 4.1466,
+            "y": 2.8135,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_cell_5_evidence",
+          "priority": "P0",
+          "element_type": "core_capability_cell",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 640,
+            "y": 285,
+            "w": 185,
+            "h": 115
+          },
+          "ppt_target_bbox_in": {
+            "x": 5.1035,
+            "y": 2.2715,
+            "w": 1.4752,
+            "h": 0.9166
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_icon_5_evidence",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 660,
+            "y": 305,
+            "w": 70,
+            "h": 70
+          },
+          "ppt_target_bbox_in": {
+            "x": 5.263,
+            "y": 2.4309,
+            "w": 0.5582,
+            "h": 0.5579
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_label_5_evidence",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 725,
+            "y": 353,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 5.7814,
+            "y": 2.8135,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_cell_6_evaluation",
+          "priority": "P0",
+          "element_type": "core_capability_cell",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 855,
+            "y": 285,
+            "w": 185,
+            "h": 115
+          },
+          "ppt_target_bbox_in": {
+            "x": 6.818,
+            "y": 2.2715,
+            "w": 1.4752,
+            "h": 0.9166
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_icon_6_evaluation",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 875,
+            "y": 305,
+            "w": 70,
+            "h": 70
+          },
+          "ppt_target_bbox_in": {
+            "x": 6.9775,
+            "y": 2.4309,
+            "w": 0.5582,
+            "h": 0.5579
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_label_6_evaluation",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 940,
+            "y": 353,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 7.4958,
+            "y": 2.8135,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_cell_7_result",
+          "priority": "P0",
+          "element_type": "core_capability_cell",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 435,
+            "y": 425,
+            "w": 185,
+            "h": 115
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.4688,
+            "y": 3.3874,
+            "w": 1.4752,
+            "h": 0.9166
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_icon_7_result",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 455,
+            "y": 445,
+            "w": 70,
+            "h": 70
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.6283,
+            "y": 3.5468,
+            "w": 0.5582,
+            "h": 0.5579
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_label_7_result",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 520,
+            "y": 493,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 4.1466,
+            "y": 3.9293,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_cell_8_version",
+          "priority": "P0",
+          "element_type": "core_capability_cell",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 640,
+            "y": 425,
+            "w": 185,
+            "h": 115
+          },
+          "ppt_target_bbox_in": {
+            "x": 5.1035,
+            "y": 3.3874,
+            "w": 1.4752,
+            "h": 0.9166
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_icon_8_version",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 660,
+            "y": 445,
+            "w": 70,
+            "h": 70
+          },
+          "ppt_target_bbox_in": {
+            "x": 5.263,
+            "y": 3.5468,
+            "w": 0.5582,
+            "h": 0.5579
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_label_8_version",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 725,
+            "y": 493,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 5.7814,
+            "y": 3.9293,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_cell_9_audit",
+          "priority": "P0",
+          "element_type": "core_capability_cell",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 855,
+            "y": 425,
+            "w": 185,
+            "h": 115
+          },
+          "ppt_target_bbox_in": {
+            "x": 6.818,
+            "y": 3.3874,
+            "w": 1.4752,
+            "h": 0.9166
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_icon_9_audit",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 875,
+            "y": 445,
+            "w": 70,
+            "h": 70
+          },
+          "ppt_target_bbox_in": {
+            "x": 6.9775,
+            "y": 3.5468,
+            "w": 0.5582,
+            "h": 0.5579
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_label_9_audit",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_core_space",
+          "blueprint_bbox_px": {
+            "x": 940,
+            "y": 493,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 7.4958,
+            "y": 3.9293,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_object_pool_outer",
+          "priority": "P0",
+          "element_type": "object_pool",
+          "source_component_id": "p6_object_pool",
+          "blueprint_bbox_px": {
+            "x": 420,
+            "y": 585,
+            "w": 810,
+            "h": 110
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.3492,
+            "y": 4.6626,
+            "w": 6.4592,
+            "h": 0.8767
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_object_cell_1",
+          "priority": "P1",
+          "element_type": "object_pool_cell",
+          "source_component_id": "p6_object_pool",
+          "blueprint_bbox_px": {
+            "x": 440,
+            "y": 625,
+            "w": 115,
+            "h": 50
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.5087,
+            "y": 4.9814,
+            "w": 0.917,
+            "h": 0.3985
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_object_icon_1",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_object_pool",
+          "blueprint_bbox_px": {
+            "x": 452,
+            "y": 635,
+            "w": 38,
+            "h": 38
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.6044,
+            "y": 5.0611,
+            "w": 0.303,
+            "h": 0.3029
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_object_cell_2",
+          "priority": "P1",
+          "element_type": "object_pool_cell",
+          "source_component_id": "p6_object_pool",
+          "blueprint_bbox_px": {
+            "x": 565,
+            "y": 625,
+            "w": 115,
+            "h": 50
+          },
+          "ppt_target_bbox_in": {
+            "x": 4.5055,
+            "y": 4.9814,
+            "w": 0.917,
+            "h": 0.3985
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_object_icon_2",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_object_pool",
+          "blueprint_bbox_px": {
+            "x": 577,
+            "y": 635,
+            "w": 38,
+            "h": 38
+          },
+          "ppt_target_bbox_in": {
+            "x": 4.6012,
+            "y": 5.0611,
+            "w": 0.303,
+            "h": 0.3029
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_object_cell_3",
+          "priority": "P1",
+          "element_type": "object_pool_cell",
+          "source_component_id": "p6_object_pool",
+          "blueprint_bbox_px": {
+            "x": 690,
+            "y": 625,
+            "w": 115,
+            "h": 50
+          },
+          "ppt_target_bbox_in": {
+            "x": 5.5023,
+            "y": 4.9814,
+            "w": 0.917,
+            "h": 0.3985
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_object_icon_3",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_object_pool",
+          "blueprint_bbox_px": {
+            "x": 702,
+            "y": 635,
+            "w": 38,
+            "h": 38
+          },
+          "ppt_target_bbox_in": {
+            "x": 5.5979,
+            "y": 5.0611,
+            "w": 0.303,
+            "h": 0.3029
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_object_cell_4",
+          "priority": "P1",
+          "element_type": "object_pool_cell",
+          "source_component_id": "p6_object_pool",
+          "blueprint_bbox_px": {
+            "x": 815,
+            "y": 625,
+            "w": 115,
+            "h": 50
+          },
+          "ppt_target_bbox_in": {
+            "x": 6.499,
+            "y": 4.9814,
+            "w": 0.917,
+            "h": 0.3985
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_object_icon_4",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_object_pool",
+          "blueprint_bbox_px": {
+            "x": 827,
+            "y": 635,
+            "w": 38,
+            "h": 38
+          },
+          "ppt_target_bbox_in": {
+            "x": 6.5947,
+            "y": 5.0611,
+            "w": 0.303,
+            "h": 0.3029
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_object_cell_5",
+          "priority": "P1",
+          "element_type": "object_pool_cell",
+          "source_component_id": "p6_object_pool",
+          "blueprint_bbox_px": {
+            "x": 940,
+            "y": 625,
+            "w": 115,
+            "h": 50
+          },
+          "ppt_target_bbox_in": {
+            "x": 7.4958,
+            "y": 4.9814,
+            "w": 0.917,
+            "h": 0.3985
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_object_icon_5",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_object_pool",
+          "blueprint_bbox_px": {
+            "x": 952,
+            "y": 635,
+            "w": 38,
+            "h": 38
+          },
+          "ppt_target_bbox_in": {
+            "x": 7.5915,
+            "y": 5.0611,
+            "w": 0.303,
+            "h": 0.3029
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_object_cell_6",
+          "priority": "P1",
+          "element_type": "object_pool_cell",
+          "source_component_id": "p6_object_pool",
+          "blueprint_bbox_px": {
+            "x": 1065,
+            "y": 625,
+            "w": 115,
+            "h": 50
+          },
+          "ppt_target_bbox_in": {
+            "x": 8.4926,
+            "y": 4.9814,
+            "w": 0.917,
+            "h": 0.3985
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_object_icon_6",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_object_pool",
+          "blueprint_bbox_px": {
+            "x": 1077,
+            "y": 635,
+            "w": 38,
+            "h": 38
+          },
+          "ppt_target_bbox_in": {
+            "x": 8.5883,
+            "y": 5.0611,
+            "w": 0.303,
+            "h": 0.3029
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_to_object_arrow",
+          "priority": "P0",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_feedback",
+          "blueprint_bbox_px": {
+            "x": 760,
+            "y": 515,
+            "w": 55,
+            "h": 65
+          },
+          "ppt_target_bbox_in": {
+            "x": 6.0605,
+            "y": 4.1047,
+            "w": 0.4386,
+            "h": 0.5181
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_core_to_service_arrow",
+          "priority": "P0",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_feedback",
+          "blueprint_bbox_px": {
+            "x": 760,
+            "y": 725,
+            "w": 55,
+            "h": 65
+          },
+          "ppt_target_bbox_in": {
+            "x": 6.0605,
+            "y": 5.7784,
+            "w": 0.4386,
+            "h": 0.5181
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_app_outer_panel",
+          "priority": "P0",
+          "element_type": "application_panel",
+          "source_component_id": "p6_result_apps",
+          "blueprint_bbox_px": {
+            "x": 1320,
+            "y": 85,
+            "w": 290,
+            "h": 650
+          },
+          "ppt_target_bbox_in": {
+            "x": 10.5261,
+            "y": 0.6775,
+            "w": 2.3125,
+            "h": 5.1807
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_app_card_1",
+          "priority": "P0",
+          "element_type": "application_card",
+          "source_component_id": "p6_result_apps",
+          "blueprint_bbox_px": {
+            "x": 1340,
+            "y": 130,
+            "w": 250,
+            "h": 155
+          },
+          "ppt_target_bbox_in": {
+            "x": 10.6855,
+            "y": 1.0361,
+            "w": 1.9936,
+            "h": 1.2354
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_app_icon_1",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_result_apps",
+          "blueprint_bbox_px": {
+            "x": 1355,
+            "y": 160,
+            "w": 54,
+            "h": 54
+          },
+          "ppt_target_bbox_in": {
+            "x": 10.8052,
+            "y": 1.2752,
+            "w": 0.4306,
+            "h": 0.4304
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_app_text_zone_1",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_result_apps",
+          "blueprint_bbox_px": {
+            "x": 1420,
+            "y": 175,
+            "w": 145,
+            "h": 70
+          },
+          "ppt_target_bbox_in": {
+            "x": 11.3235,
+            "y": 1.3948,
+            "w": 1.1563,
+            "h": 0.5579
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_outbound_arrow_1",
+          "priority": "P0",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_feedback",
+          "blueprint_bbox_px": {
+            "x": 1245,
+            "y": 190,
+            "w": 85,
+            "h": 36
+          },
+          "ppt_target_bbox_in": {
+            "x": 9.928,
+            "y": 1.5143,
+            "w": 0.6778,
+            "h": 0.2869
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_app_card_2",
+          "priority": "P0",
+          "element_type": "application_card",
+          "source_component_id": "p6_result_apps",
+          "blueprint_bbox_px": {
+            "x": 1340,
+            "y": 315,
+            "w": 250,
+            "h": 155
+          },
+          "ppt_target_bbox_in": {
+            "x": 10.6855,
+            "y": 2.5106,
+            "w": 1.9936,
+            "h": 1.2354
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_app_icon_2",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_result_apps",
+          "blueprint_bbox_px": {
+            "x": 1355,
+            "y": 345,
+            "w": 54,
+            "h": 54
+          },
+          "ppt_target_bbox_in": {
+            "x": 10.8052,
+            "y": 2.7497,
+            "w": 0.4306,
+            "h": 0.4304
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_app_text_zone_2",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_result_apps",
+          "blueprint_bbox_px": {
+            "x": 1420,
+            "y": 360,
+            "w": 145,
+            "h": 70
+          },
+          "ppt_target_bbox_in": {
+            "x": 11.3235,
+            "y": 2.8693,
+            "w": 1.1563,
+            "h": 0.5579
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_outbound_arrow_2",
+          "priority": "P0",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_feedback",
+          "blueprint_bbox_px": {
+            "x": 1245,
+            "y": 375,
+            "w": 85,
+            "h": 36
+          },
+          "ppt_target_bbox_in": {
+            "x": 9.928,
+            "y": 2.9888,
+            "w": 0.6778,
+            "h": 0.2869
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_app_card_3",
+          "priority": "P0",
+          "element_type": "application_card",
+          "source_component_id": "p6_result_apps",
+          "blueprint_bbox_px": {
+            "x": 1340,
+            "y": 500,
+            "w": 250,
+            "h": 155
+          },
+          "ppt_target_bbox_in": {
+            "x": 10.6855,
+            "y": 3.9851,
+            "w": 1.9936,
+            "h": 1.2354
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_app_icon_3",
+          "priority": "P1",
+          "element_type": "icon",
+          "source_component_id": "p6_result_apps",
+          "blueprint_bbox_px": {
+            "x": 1355,
+            "y": 530,
+            "w": 54,
+            "h": 54
+          },
+          "ppt_target_bbox_in": {
+            "x": 10.8052,
+            "y": 4.2242,
+            "w": 0.4306,
+            "h": 0.4304
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_app_text_zone_3",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_result_apps",
+          "blueprint_bbox_px": {
+            "x": 1420,
+            "y": 545,
+            "w": 145,
+            "h": 70
+          },
+          "ppt_target_bbox_in": {
+            "x": 11.3235,
+            "y": 4.3438,
+            "w": 1.1563,
+            "h": 0.5579
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_outbound_arrow_3",
+          "priority": "P0",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_feedback",
+          "blueprint_bbox_px": {
+            "x": 1245,
+            "y": 560,
+            "w": 85,
+            "h": 36
+          },
+          "ppt_target_bbox_in": {
+            "x": 9.928,
+            "y": 4.4633,
+            "w": 0.6778,
+            "h": 0.2869
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_feedback_dashed_loop",
+          "priority": "P1",
+          "element_type": "feedback_connector",
+          "source_component_id": "p6_feedback",
+          "blueprint_bbox_px": {
+            "x": 1250,
+            "y": 245,
+            "w": 95,
+            "h": 225
+          },
+          "ppt_target_bbox_in": {
+            "x": 9.9679,
+            "y": 1.9527,
+            "w": 0.7576,
+            "h": 1.7933
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_spine_outer",
+          "priority": "P0",
+          "element_type": "governance_spine",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1630,
+            "y": 85,
+            "w": 290,
+            "h": 750
+          },
+          "ppt_target_bbox_in": {
+            "x": 12.9981,
+            "y": 0.6775,
+            "w": 2.3125,
+            "h": 5.9777
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_step_1",
+          "priority": "P1",
+          "element_type": "governance_step",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1660,
+            "y": 145,
+            "w": 190,
+            "h": 90
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.2373,
+            "y": 1.1557,
+            "w": 1.5151,
+            "h": 0.7173
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_icon_1",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1685,
+            "y": 165,
+            "w": 55,
+            "h": 50
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.4367,
+            "y": 1.3151,
+            "w": 0.4386,
+            "h": 0.3985
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_step_2",
+          "priority": "P1",
+          "element_type": "governance_step",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1660,
+            "y": 270,
+            "w": 190,
+            "h": 90
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.2373,
+            "y": 2.152,
+            "w": 1.5151,
+            "h": 0.7173
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_icon_2",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1685,
+            "y": 290,
+            "w": 55,
+            "h": 50
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.4367,
+            "y": 2.3114,
+            "w": 0.4386,
+            "h": 0.3985
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_step_3",
+          "priority": "P1",
+          "element_type": "governance_step",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1660,
+            "y": 395,
+            "w": 190,
+            "h": 90
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.2373,
+            "y": 3.1482,
+            "w": 1.5151,
+            "h": 0.7173
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_icon_3",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1685,
+            "y": 415,
+            "w": 55,
+            "h": 50
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.4367,
+            "y": 3.3077,
+            "w": 0.4386,
+            "h": 0.3985
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_step_4",
+          "priority": "P1",
+          "element_type": "governance_step",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1660,
+            "y": 520,
+            "w": 190,
+            "h": 90
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.2373,
+            "y": 4.1445,
+            "w": 1.5151,
+            "h": 0.7173
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_icon_4",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1685,
+            "y": 540,
+            "w": 55,
+            "h": 50
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.4367,
+            "y": 4.3039,
+            "w": 0.4386,
+            "h": 0.3985
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_step_5",
+          "priority": "P1",
+          "element_type": "governance_step",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1660,
+            "y": 645,
+            "w": 190,
+            "h": 90
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.2373,
+            "y": 5.1408,
+            "w": 1.5151,
+            "h": 0.7173
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_icon_5",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1685,
+            "y": 665,
+            "w": 55,
+            "h": 50
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.4367,
+            "y": 5.3002,
+            "w": 0.4386,
+            "h": 0.3985
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_step_6",
+          "priority": "P1",
+          "element_type": "governance_step",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1660,
+            "y": 770,
+            "w": 190,
+            "h": 90
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.2373,
+            "y": 6.1371,
+            "w": 1.5151,
+            "h": 0.7173
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_icon_6",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1685,
+            "y": 790,
+            "w": 55,
+            "h": 50
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.4367,
+            "y": 6.2965,
+            "w": 0.4386,
+            "h": 0.3985
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_down_arrow_1",
+          "priority": "P1",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1745,
+            "y": 235,
+            "w": 25,
+            "h": 55
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.9151,
+            "y": 1.873,
+            "w": 0.1994,
+            "h": 0.4384
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_down_arrow_2",
+          "priority": "P1",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1745,
+            "y": 360,
+            "w": 25,
+            "h": 55
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.9151,
+            "y": 2.8693,
+            "w": 0.1994,
+            "h": 0.4384
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_down_arrow_3",
+          "priority": "P1",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1745,
+            "y": 485,
+            "w": 25,
+            "h": 55
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.9151,
+            "y": 3.8656,
+            "w": 0.1994,
+            "h": 0.4384
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_down_arrow_4",
+          "priority": "P1",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1745,
+            "y": 610,
+            "w": 25,
+            "h": 55
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.9151,
+            "y": 4.8618,
+            "w": 0.1994,
+            "h": 0.4384
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_compliance_down_arrow_5",
+          "priority": "P1",
+          "element_type": "flow_arrow",
+          "source_component_id": "p6_compliance_spine",
+          "blueprint_bbox_px": {
+            "x": 1745,
+            "y": 735,
+            "w": 25,
+            "h": 55
+          },
+          "ppt_target_bbox_in": {
+            "x": 13.9151,
+            "y": 5.8581,
+            "w": 0.1994,
+            "h": 0.4384
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_bar_outer",
+          "priority": "P0",
+          "element_type": "service_value_bar",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 20,
+            "y": 810,
+            "w": 1580,
+            "h": 105
+          },
+          "ppt_target_bbox_in": {
+            "x": 0.1595,
+            "y": 6.4559,
+            "w": 12.5994,
+            "h": 0.8369
+          },
+          "tolerance_px": 3,
+          "measurement_mode": "individual_bbox",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 28,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_segment_1",
+          "priority": "P1",
+          "element_type": "service_segment",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 250,
+            "y": 822,
+            "w": 215,
+            "h": 80
+          },
+          "ppt_target_bbox_in": {
+            "x": 1.9936,
+            "y": 6.5515,
+            "w": 1.7145,
+            "h": 0.6376
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_icon_1",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 280,
+            "y": 845,
+            "w": 56,
+            "h": 48
+          },
+          "ppt_target_bbox_in": {
+            "x": 2.2328,
+            "y": 6.7349,
+            "w": 0.4466,
+            "h": 0.3826
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_label_1",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 345,
+            "y": 852,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 2.7511,
+            "y": 6.7906,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_segment_2",
+          "priority": "P1",
+          "element_type": "service_segment",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 470,
+            "y": 822,
+            "w": 215,
+            "h": 80
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.7479,
+            "y": 6.5515,
+            "w": 1.7145,
+            "h": 0.6376
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_icon_2",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 500,
+            "y": 845,
+            "w": 56,
+            "h": 48
+          },
+          "ppt_target_bbox_in": {
+            "x": 3.9871,
+            "y": 6.7349,
+            "w": 0.4466,
+            "h": 0.3826
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_label_2",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 565,
+            "y": 852,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 4.5055,
+            "y": 6.7906,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_segment_3",
+          "priority": "P1",
+          "element_type": "service_segment",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 695,
+            "y": 822,
+            "w": 215,
+            "h": 80
+          },
+          "ppt_target_bbox_in": {
+            "x": 5.5421,
+            "y": 6.5515,
+            "w": 1.7145,
+            "h": 0.6376
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_icon_3",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 725,
+            "y": 845,
+            "w": 56,
+            "h": 48
+          },
+          "ppt_target_bbox_in": {
+            "x": 5.7814,
+            "y": 6.7349,
+            "w": 0.4466,
+            "h": 0.3826
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_label_3",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 790,
+            "y": 852,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 6.2997,
+            "y": 6.7906,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_segment_4",
+          "priority": "P1",
+          "element_type": "service_segment",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 925,
+            "y": 822,
+            "w": 215,
+            "h": 80
+          },
+          "ppt_target_bbox_in": {
+            "x": 7.3762,
+            "y": 6.5515,
+            "w": 1.7145,
+            "h": 0.6376
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_icon_4",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 955,
+            "y": 845,
+            "w": 56,
+            "h": 48
+          },
+          "ppt_target_bbox_in": {
+            "x": 7.6154,
+            "y": 6.7349,
+            "w": 0.4466,
+            "h": 0.3826
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_label_4",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 1020,
+            "y": 852,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 8.1338,
+            "y": 6.7906,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_segment_5",
+          "priority": "P1",
+          "element_type": "service_segment",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 1160,
+            "y": 822,
+            "w": 215,
+            "h": 80
+          },
+          "ppt_target_bbox_in": {
+            "x": 9.2502,
+            "y": 6.5515,
+            "w": 1.7145,
+            "h": 0.6376
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_icon_5",
+          "priority": "P2",
+          "element_type": "icon",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 1190,
+            "y": 845,
+            "w": 56,
+            "h": 48
+          },
+          "ppt_target_bbox_in": {
+            "x": 9.4894,
+            "y": 6.7349,
+            "w": 0.4466,
+            "h": 0.3826
+          },
+          "tolerance_px": 6,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": false,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        },
+        {
+          "element_id": "p6_service_label_5",
+          "priority": "P1",
+          "element_type": "text_zone",
+          "source_component_id": "p6_service_value",
+          "blueprint_bbox_px": {
+            "x": 1255,
+            "y": 852,
+            "w": 105,
+            "h": 32
+          },
+          "ppt_target_bbox_in": {
+            "x": 10.0077,
+            "y": 6.7906,
+            "w": 0.8373,
+            "h": 0.255
+          },
+          "tolerance_px": 4,
+          "measurement_mode": "group_with_child_anchors",
+          "registration_status": "pending_render_measurement",
+          "render_bbox_px": null,
+          "delta_px": null,
+          "must_reproduce": true,
+          "pixel_mean_abs_tolerance": 35,
+          "source": {
+            "kind": "visual_element_registry"
+          }
+        }
+      ],
+      "layout_rules": {
+        "phrase_break_candidates": [],
+        "baseline_groups": [
+          {
+            "page_number": 6,
+            "candidate_y": 257.5,
+            "y_min": 257.5,
+            "y_max": 257.5,
+            "labels": [
+              "目录管理",
+              "身份认证",
+              "授权控制"
+            ],
+            "support": 3
+          },
+          {
+            "page_number": 6,
+            "candidate_y": 348.72,
+            "y_min": 348.72,
+            "y_max": 348.72,
+            "labels": [
+              "规则调用",
+              "证据管理",
+              "能力评价"
+            ],
+            "support": 3
+          },
+          {
+            "page_number": 6,
+            "candidate_y": 438.37,
+            "y_min": 437.74,
+            "y_max": 438.37,
+            "labels": [
+              "外部专业机构数据",
+              "结果生成",
+              "版本留痕",
+              "出证审计",
+              "脱敏处理"
+            ],
+            "support": 5
+          },
+          {
+            "page_number": 6,
+            "candidate_y": 643.78,
+            "y_min": 643.78,
+            "y_max": 643.78,
+            "labels": [
+              "基础评价服务",
+              "专项评价服务",
+              "监测订阅服务",
+              "国际传播服务",
+              "生态协同服务"
+            ],
+            "support": 5
+          }
+        ],
+        "alignment_issues": [],
+        "avoidance_policy": {
+          "text_should_wrap_before_shrink": true,
+          "reserve_non_text_visual_lanes": true,
+          "use_render_delta_feedback": true
+        }
+      },
+      "capture_gaps": [
+        {
+          "code": "render_delta_not_measured",
+          "message": "Source-to-render delta fields are placeholders until post-render measurement is attached."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "schema": "cyberppt.script_approval.v1",
+  "slide": 7,
+  "kind": "imagegen",
+  "approved": true,
+  "approved_at": "2026-07-04T16:13:07+00:00",
+  "approved_artifacts": [
+    "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-redo/workbench/prompts/imagegen/slide-07-imagegen-final.md"
+  ],
+  "note": "用户要求重建项目并重做第6-9页"
+}

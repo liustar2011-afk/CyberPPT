@@ -1,0 +1,35 @@
+{
+  "schema": "cyberppt.visual_element_registry_enhancement.v1",
+  "scope": "P6-P9",
+  "source": "approved body blueprint images",
+  "notes": [
+    "Strengthened from coarse region boxes to component/subelement bbox entries.",
+    "render_bbox_px and delta_px remain pending until Stage 3 render comparison."
+  ],
+  "slides": [
+    {
+      "slide": 6,
+      "element_count": 110,
+      "annotation_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/registry/slide-06-annotations.json",
+      "overlay_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/qa/visual-element-registry-enhanced/slide-06-registry-overlay.png"
+    },
+    {
+      "slide": 7,
+      "element_count": 52,
+      "annotation_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/registry/slide-07-annotations.json",
+      "overlay_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/qa/visual-element-registry-enhanced/slide-07-registry-overlay.png"
+    },
+    {
+      "slide": 8,
+      "element_count": 66,
+      "annotation_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/registry/slide-08-annotations.json",
+      "overlay_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/qa/visual-element-registry-enhanced/slide-08-registry-overlay.png"
+    },
+    {
+      "slide": 9,
+      "element_count": 34,
+      "annotation_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/registry/slide-09-annotations.json",
+      "overlay_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/qa/visual-element-registry-enhanced/slide-09-registry-overlay.png"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "pages": [
+    {
+      "page_number": 6,
+      "title": "总体架构按照“数据底座—评价证据—评价模型—结果应用—运营保障”组织",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/analysis/semantic_plan/page_006_semantic_plan.json",
+      "semantic_containers": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/analysis/semantic_containers/page_006_containers.json",
+      "image_size_check": {
+        "status": "matched",
+        "full_size": [
+          1672,
+          941
+        ],
+        "background_size": [
+          1672,
+          941
+        ],
+        "output_size": [
+          1672,
+          941
+        ],
+        "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6/ppt_project/images/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织_background.png"
+      },
+      "text_color_check": {
+        "white_text_boxes": 0,
+        "total_text_boxes": 44
+      }
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "cyberppt.slide_content_lock.v1",
+  "slide": 9,
+  "source_outline": "projects/power-overseas-capability-p6-p9-restart/workbench/locks/stage1_outline_p6_p9.json",
+  "source_outline_sha256": "7b2d4e05e6540861a25b8af65d2a46577322fb3b1bbe88f9c9a0c62e9b3cae66",
+  "locked": true,
+  "missing_fields": [],
+  "title": "首批重点场景按“基础评价—专项评价—协同应用”三层布局",
+  "subtitle": "场景总览页",
+  "charts": [
+    "三层场景布局和右侧五级服务供给路径阶梯"
+  ],
+  "tables": [],
+  "kpis": [],
+  "annotations": [
+    "三层由下向上递进",
+    "右侧服务阶梯与三层场景对位"
+  ],
+  "caveats": [
+    "未提供场景优先级、商业模式或试点顺序"
+  ],
+  "so_what": [
+    "用三层场景和五级服务路径把架构与模型转化为可供给的服务组合"
+  ],
+  "evidence_ids": [
+    "E9-01",
+    "E9-02",
+    "E9-03",
+    "E9-04",
+    "E9-05"
+  ],
+  "required_components": [
+    "分层框3层",
+    "每层内标签若干",
+    "右侧服务阶梯5级",
+    "递进箭头1组"
+  ]
+}

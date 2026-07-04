@@ -1,0 +1,69 @@
+{
+  "schema": "cyberppt.component_annotation.v1",
+  "slide": 9,
+  "components": [
+    {
+      "id": "p9_three_layer_system",
+      "type": "three_layer_scenario_system",
+      "priority": "P0",
+      "must_preserve_type": true,
+      "required_subcomponents": [
+        "basic evaluation layer",
+        "collaborative application layer",
+        "decision support layer"
+      ],
+      "content_lock_refs": [
+        "required_components",
+        "charts",
+        "annotations",
+        "so_what"
+      ]
+    },
+    {
+      "id": "p9_service_ladder",
+      "type": "five_level_service_ladder",
+      "priority": "P0",
+      "must_preserve_type": true,
+      "required_subcomponents": [
+        "five service levels",
+        "progression arrow"
+      ],
+      "content_lock_refs": [
+        "required_components",
+        "charts",
+        "annotations",
+        "so_what"
+      ]
+    },
+    {
+      "id": "p9_value_bridge",
+      "type": "value_bridge",
+      "priority": "P1",
+      "must_preserve_type": true,
+      "required_subcomponents": [
+        "cross-layer value connection"
+      ],
+      "content_lock_refs": [
+        "required_components",
+        "charts",
+        "annotations",
+        "so_what"
+      ]
+    },
+    {
+      "id": "p9_so_what",
+      "type": "so_what_band",
+      "priority": "P1",
+      "must_preserve_type": true,
+      "required_subcomponents": [
+        "scenario deepening conclusion"
+      ],
+      "content_lock_refs": [
+        "required_components",
+        "charts",
+        "annotations",
+        "so_what"
+      ]
+    }
+  ]
+}

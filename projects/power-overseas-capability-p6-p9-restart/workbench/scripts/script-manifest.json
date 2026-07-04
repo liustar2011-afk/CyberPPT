@@ -1,0 +1,85 @@
+{
+  "schema": "cyberppt.script_manifest.v1",
+  "entries": [
+    {
+      "slide": 6,
+      "kind": "blueprint",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/stage2-body-blueprint-prompts-p6-p9.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/scripts/drafts/slide-06-blueprint-draft.md",
+      "saved_at": "2026-07-04T16:25:29+00:00",
+      "note": "Stage 2 draft body blueprint prompts locked to style 04; pending user approval before ImageGen",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 7,
+      "kind": "blueprint",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/stage2-body-blueprint-prompts-p6-p9.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/scripts/drafts/slide-07-blueprint-draft.md",
+      "saved_at": "2026-07-04T16:25:29+00:00",
+      "note": "Stage 2 draft body blueprint prompts locked to style 04; pending user approval before ImageGen",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 8,
+      "kind": "blueprint",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/stage2-body-blueprint-prompts-p6-p9.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/scripts/drafts/slide-08-blueprint-draft.md",
+      "saved_at": "2026-07-04T16:25:29+00:00",
+      "note": "Stage 2 draft body blueprint prompts locked to style 04; pending user approval before ImageGen",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 9,
+      "kind": "blueprint",
+      "phase": "draft",
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/stage2-body-blueprint-prompts-p6-p9.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/scripts/drafts/slide-09-blueprint-draft.md",
+      "saved_at": "2026-07-04T16:25:29+00:00",
+      "note": "Stage 2 draft body blueprint prompts locked to style 04; pending user approval before ImageGen",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 6,
+      "kind": "blueprint",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/stage2-body-blueprint-prompts-p6-p9.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/scripts/final/slide-06-blueprint-final.md",
+      "saved_at": "2026-07-04T16:27:42+00:00",
+      "note": "User approved Stage 2 blueprint prompts; style 04 locked",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 7,
+      "kind": "blueprint",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/stage2-body-blueprint-prompts-p6-p9.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/scripts/final/slide-07-blueprint-final.md",
+      "saved_at": "2026-07-04T16:27:42+00:00",
+      "note": "User approved Stage 2 blueprint prompts; style 04 locked",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 8,
+      "kind": "blueprint",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/stage2-body-blueprint-prompts-p6-p9.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/scripts/final/slide-08-blueprint-final.md",
+      "saved_at": "2026-07-04T16:27:42+00:00",
+      "note": "User approved Stage 2 blueprint prompts; style 04 locked",
+      "requires_user_review_before_generation": true
+    },
+    {
+      "slide": 9,
+      "kind": "blueprint",
+      "phase": "final",
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/prompts/imagegen/stage2-body-blueprint-prompts-p6-p9.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p9-restart/workbench/scripts/final/slide-09-blueprint-final.md",
+      "saved_at": "2026-07-04T16:27:42+00:00",
+      "note": "User approved Stage 2 blueprint prompts; style 04 locked",
+      "requires_user_review_before_generation": true
+    }
+  ]
+}
