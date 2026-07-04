@@ -6,7 +6,11 @@ import unittest
 from pathlib import Path
 
 from cyberppt.commands.script_runner import script_path
-from scripts.dual_image_overlay.source_capture import build_source_capture
+from scripts.dual_image_overlay.source_capture import (
+    attach_render_delta_measurement,
+    build_source_capture,
+    build_source_capture_gate,
+)
 
 
 class DualImageOverlaySourceCaptureTests(unittest.TestCase):
@@ -40,11 +44,79 @@ class DualImageOverlaySourceCaptureTests(unittest.TestCase):
         inventory = page["visual_element_inventory"]
         self.assertTrue(any(item["element_id"] == "so_what_band" and item["element_type"] == "container" for item in inventory))
         self.assertTrue(any(item["element_id"] == "text_001" and item["priority"] == "P0" for item in inventory))
+        self.assertTrue(
+            any(gap["code"] == "non_text_visuals_not_individually_detected" for gap in page["capture_gaps"])
+        )
         self.assertTrue(any(gap["code"] == "render_delta_not_measured" for gap in page["capture_gaps"]))
 
         rules = page["layout_rules"]
         self.assertTrue(rules["avoidance_policy"]["text_should_wrap_before_shrink"])
         self.assertEqual(rules["baseline_groups"][0]["candidate_y"], 621.45)
+
+    def test_visual_registry_resolves_non_text_gap_but_keeps_render_delta_gap(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            _write_artifacts(project_dir)
+            registry_dir = project_dir / "registry"
+            _write_visual_registry(registry_dir, page_number=2)
+
+            capture = build_source_capture(project_dir, visual_registry_dir=registry_dir)
+            gate = build_source_capture_gate(capture)
+
+        page = capture["pages"][0]
+        inventory = page["visual_element_inventory"]
+        registry_element = next(item for item in inventory if item["element_id"] == "icon_rule_path")
+        self.assertEqual("visual_element_registry", registry_element["source"]["kind"])
+        self.assertEqual("source_icon_rule", registry_element["source_component_id"])
+        self.assertEqual({"x": 710, "y": 590, "w": 42, "h": 42}, registry_element["blueprint_bbox_px"])
+        self.assertEqual({"x": 7.1, "y": 5.9, "w": 0.42, "h": 0.42}, registry_element["ppt_target_bbox_in"])
+        self.assertIsNone(registry_element["render_bbox_px"])
+        self.assertIsNone(registry_element["delta_px"])
+        self.assertEqual("pending_render_measurement", registry_element["registration_status"])
+        self.assertNotIn("non_text_visuals_not_individually_detected", gate["gap_counts"])
+        self.assertIn("render_delta_not_measured", gate["gap_counts"])
+        self.assertFalse(gate["valid"])
+
+    def test_pair_manifest_scopes_visual_registry_pages(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            _write_artifacts(project_dir)
+            registry_dir = project_dir / "registry"
+            _write_visual_registry(registry_dir, page_number=2)
+            _write_visual_registry(registry_dir, page_number=3, element_id="icon_other_page")
+
+            capture = build_source_capture(
+                project_dir,
+                pair_manifest_path=project_dir / "images" / "page_image_pairs.json",
+                visual_registry_dir=registry_dir,
+            )
+
+        self.assertEqual([2], [page["page_number"] for page in capture["pages"]])
+        self.assertEqual(1, capture["inputs"]["visual_registry_elements"])
+        inventory = capture["pages"][0]["visual_element_inventory"]
+        self.assertTrue(any(item["element_id"] == "icon_rule_path" for item in inventory))
+        self.assertFalse(any(item["element_id"] == "icon_other_page" for item in inventory))
+
+    def test_render_delta_measurement_resolves_gate_gap_when_registry_is_present(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            _write_artifacts(project_dir)
+            registry_dir = project_dir / "registry"
+            _write_visual_registry(registry_dir, page_number=2)
+            capture = build_source_capture(project_dir, visual_registry_dir=registry_dir)
+
+            measured = attach_render_delta_measurement(
+                capture,
+                rendered_preview="/tmp/page-render.png",
+            )
+            gate = build_source_capture_gate(measured)
+
+        self.assertTrue(gate["valid"])
+        self.assertEqual({}, gate["gap_counts"])
+        self.assertTrue(gate["checks"]["capture_gaps_resolved"])
+        page = measured["pages"][0]
+        self.assertTrue(all(item["registration_status"] == "passed" for item in page["visual_element_inventory"]))
+        self.assertEqual([], page["capture_gaps"])
 
 
 def _write_artifacts(project_dir: Path) -> None:
@@ -156,6 +228,30 @@ def _box(text: str, x: float, y: float, w: float, h: float, source: str) -> dict
         "source": source,
         "confidence": 0.96,
     }
+
+
+def _write_visual_registry(registry_dir: Path, *, page_number: int, element_id: str = "icon_rule_path") -> None:
+    _write_json(
+        registry_dir / f"slide-{page_number:02d}-visual-element-registry.json",
+        {
+            "schema": "cyberppt.visual_element_registry.v1",
+            "elements": [
+                {
+                    "element_id": element_id,
+                    "priority": "P0",
+                    "element_type": "icon",
+                    "source_component_id": "source_icon_rule",
+                    "blueprint_bbox_px": {"x": 710, "y": 590, "w": 42, "h": 42},
+                    "ppt_target_bbox_in": {"x": 7.1, "y": 5.9, "w": 0.42, "h": 0.42},
+                    "tolerance_px": 3,
+                    "measurement_mode": "individual_bbox",
+                    "render_bbox_px": None,
+                    "delta_px": None,
+                    "registration_status": "pending_render_measurement",
+                }
+            ],
+        },
+    )
 
 
 def _write_json(path: Path, payload: dict[str, object]) -> None:

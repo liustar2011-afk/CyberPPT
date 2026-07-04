@@ -94,12 +94,17 @@ def build_template_rebuild_readiness(
     manifest_path: Path,
     *,
     export_requested: bool,
+    visual_registry_dir: Path | None = None,
 ) -> dict[str, Any]:
     manifest = _read_json(manifest_path)
     project_path = resolve_project_path(manifest_path, manifest)
     analysis_dir = project_path / "analysis"
 
-    source_capture = build_source_capture(project_path, pair_manifest_path=manifest_path)
+    source_capture = build_source_capture(
+        project_path,
+        pair_manifest_path=manifest_path,
+        visual_registry_dir=visual_registry_dir,
+    )
     _write_json(analysis_dir / "source_capture.json", source_capture)
     source_capture_gate = build_source_capture_gate(source_capture)
     _write_json(analysis_dir / "source_capture_gate.json", source_capture_gate)
@@ -122,6 +127,7 @@ def build_template_rebuild_readiness(
         "status": status,
         "project_path": str(project_path),
         "pair_manifest": str(manifest_path),
+        "visual_registry_dir": str(visual_registry_dir) if visual_registry_dir else None,
         "checks": {
             "template_rebuild_consumed": True,
             "template_gate_pass": bool(template_gate["valid"]),
@@ -149,6 +155,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--ocr-backend", choices=("vision-json", "paddleocr-vl", "none"), default="vision-json")
     parser.add_argument("--force-ocr", action="store_true")
     parser.add_argument("--timeout", type=int, default=300)
+    parser.add_argument("--visual-registry-dir", type=Path)
     parser.add_argument("--export", action="store_true", default=True)
     parser.add_argument("--no-export", action="store_false", dest="export")
     parser.add_argument(
@@ -170,7 +177,11 @@ def main() -> int:
             timeout=args.timeout,
             export=args.export,
         )
-    readiness = build_template_rebuild_readiness(manifest_path, export_requested=args.export)
+    readiness = build_template_rebuild_readiness(
+        manifest_path,
+        export_requested=args.export,
+        visual_registry_dir=args.visual_registry_dir.resolve() if args.visual_registry_dir else None,
+    )
     print(json.dumps(readiness, ensure_ascii=False, indent=2))
     return 0 if readiness["valid"] else 3
 
