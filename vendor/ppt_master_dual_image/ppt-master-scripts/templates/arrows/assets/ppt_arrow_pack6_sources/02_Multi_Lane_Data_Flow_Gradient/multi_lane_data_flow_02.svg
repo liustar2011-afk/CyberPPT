@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" role="img" aria-label="Multi Lane Data Flow 02">
+<title>Multi Lane Data Flow 02</title>
+<desc>3-lane data flow arrow</desc>
+<defs>
+<linearGradient id="flow1" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8FBFF"/>
+  <stop offset="42%" stop-color="#E8F0FA"/>
+  <stop offset="100%" stop-color="#CADAF0"/>
+</linearGradient>
+<linearGradient id="flow1_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00"/>
+</linearGradient>
+</defs>
+<path d="M 38.0 59.0 L 530.0 59.0 L 530.0 51.0 L 602.0 72.0 L 530.0 93.0 L 530.0 85.0 L 38.0 85.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.06" stroke-linejoin="round" /><path d="M 38.0 55.0 L 530.0 55.0 L 530.0 47.0 L 602.0 68.0 L 530.0 89.0 L 530.0 81.0 L 38.0 81.0 Z" fill="url(#flow1)" stroke="#9BB2D3" stroke-width="1.7" opacity="1" stroke-linejoin="round" /><path d="M 38.0 91.0 L 530.0 91.0 L 530.0 83.0 L 602.0 104.0 L 530.0 125.0 L 530.0 117.0 L 38.0 117.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.06" stroke-linejoin="round" /><path d="M 38.0 87.0 L 530.0 87.0 L 530.0 79.0 L 602.0 100.0 L 530.0 121.0 L 530.0 113.0 L 38.0 113.0 Z" fill="url(#flow1)" stroke="#9BB2D3" stroke-width="1.7" opacity="1" stroke-linejoin="round" /><path d="M 38.0 123.0 L 530.0 123.0 L 530.0 115.0 L 602.0 136.0 L 530.0 157.0 L 530.0 149.0 L 38.0 149.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.06" stroke-linejoin="round" /><path d="M 38.0 119.0 L 530.0 119.0 L 530.0 111.0 L 602.0 132.0 L 530.0 153.0 L 530.0 145.0 L 38.0 145.0 Z" fill="url(#flow1)" stroke="#9BB2D3" stroke-width="1.7" opacity="1" stroke-linejoin="round" />
+</svg>

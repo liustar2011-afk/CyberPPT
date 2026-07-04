@@ -1,0 +1,35 @@
+{
+  "schema": "cyberppt.dual_image.production_readiness.v1",
+  "valid": false,
+  "structural_valid": true,
+  "checks": {
+    "delivery_mode": "dual_image_editable_overlay",
+    "background_snapshot_editable_text": true,
+    "background_has_no_text": true,
+    "background_image_declared": true,
+    "all_key_text_editable": true,
+    "text_content_matches_lock": true,
+    "layout_qa_pass": true,
+    "visual_preview_generated": true,
+    "human_visual_review_pass": false
+  },
+  "geometry_source": "semantic_plan_containers",
+  "alignment": {
+    "scale": 1.0,
+    "dx": 0.0,
+    "dy": 0.0,
+    "score": 0.0,
+    "model": "semantic-container-geometry"
+  },
+  "status": "visual_review_required",
+  "artifacts": {
+    "normalized_full": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-regenerated/page-02/editable-ppt/normalized/full-1280x720.png",
+    "normalized_background": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-regenerated/page-02/editable-ppt/normalized/background-1280x720.png",
+    "pptx": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-regenerated/page-02/editable-ppt/exports/page.pptx",
+    "text_mapping": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-regenerated/page-02/editable-ppt/analysis/text_mapping.json",
+    "text_content_qa": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-regenerated/page-02/editable-ppt/analysis/text_content_qa.json",
+    "layout_qa": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-regenerated/page-02/editable-ppt/analysis/layout_qa.json",
+    "background_text_scan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-regenerated/page-02/editable-ppt/analysis/background_text_scan.json",
+    "visual_preview": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-regenerated/page-02/editable-ppt/analysis/visual_preview.json"
+  }
+}

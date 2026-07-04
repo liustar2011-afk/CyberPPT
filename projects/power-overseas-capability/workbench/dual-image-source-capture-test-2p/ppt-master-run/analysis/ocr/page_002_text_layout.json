@@ -1,0 +1,272 @@
+{
+  "image_size": {
+    "width": 1902,
+    "height": 900
+  },
+  "items": [
+    {
+      "text": "电力产业链企业出海能力证明体系建设已具备推进必要性",
+      "bbox": [
+        121.0,
+        75.0,
+        1373.0,
+        119.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "坚持场景牵引、证据支撑、分角色建模、分层产品化、数据化运营和边界清晰原则",
+      "bbox": [
+        122.0,
+        157.0,
+        1004.0,
+        189.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "1",
+      "bbox": [
+        98.0,
+        296.0,
+        114.0,
+        323.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "补齐企业能力可信表达短板",
+      "bbox": [
+        331.0,
+        297.0,
+        691.0,
+        329.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "2",
+      "bbox": [
+        1030.0,
+        296.0,
+        1045.0,
+        322.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "坚持分角色、分场景、分维度、重证据",
+      "bbox": [
+        1226.0,
+        296.0,
+        1659.0,
+        328.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "3",
+      "bbox": [
+        98.0,
+        424.0,
+        114.0,
+        451.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "监测是评价有效性的关键支撑",
+      "bbox": [
+        331.0,
+        424.0,
+        748.0,
+        457.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "4",
+      "bbox": [
+        1030.0,
+        424.0,
+        1046.0,
+        450.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "服务产品必须进入真实业务流程",
+      "bbox": [
+        1226.0,
+        424.0,
+        1600.0,
+        456.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "5",
+      "bbox": [
+        98.0,
+        552.0,
+        114.0,
+        579.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "数据基础设施应服务于场景化能力证明",
+      "bbox": [
+        331.0,
+        552.0,
+        811.0,
+        585.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "6",
+      "bbox": [
+        1029.0,
+        552.0,
+        1046.0,
+        578.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "组织实施采用五方协同模式",
+      "bbox": [
+        1226.0,
+        552.0,
+        1571.0,
+        584.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "7",
+      "bbox": [
+        98.0,
+        679.0,
+        114.0,
+        706.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "!",
+      "bbox": [
+        208.0,
+        664.0,
+        217.0,
+        701.0
+      ],
+      "confidence": 0.91,
+      "source": "vision-json"
+    },
+    {
+      "text": "风险边界必须前置控制",
+      "bbox": [
+        331.0,
+        680.0,
+        633.0,
+        713.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "建议",
+      "bbox": [
+        85.0,
+        800.0,
+        139.0,
+        832.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "按“规则先行—试点验证—常态运营—规模推广”路径",
+      "bbox": [
+        209.0,
+        779.0,
+        903.0,
+        814.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "启动首阶段工作",
+      "bbox": [
+        209.0,
+        824.0,
+        473.0,
+        859.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "规则先行",
+      "bbox": [
+        1018.0,
+        799.0,
+        1115.0,
+        829.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "试点验证",
+      "bbox": [
+        1229.0,
+        799.0,
+        1326.0,
+        829.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "常态运营",
+      "bbox": [
+        1440.0,
+        799.0,
+        1538.0,
+        829.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "规模推广",
+      "bbox": [
+        1650.0,
+        799.0,
+        1748.0,
+        829.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    }
+  ]
+}

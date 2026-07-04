@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/36_step_platform_forward_arrow.svg
+  License: custom pack permission; see assets/ppt_arrow_pack2_sources/LICENSE_CUSTOM_ASSET_USAGE.txt
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg">
+  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#AFC5E8" />
+    <stop offset="38%" stop-color="#DCE7F7" />
+    <stop offset="100%" stop-color="#FFFFFF" />
+  </linearGradient>
+  <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#EAF1FB" stop-opacity="0.85" />
+    <stop offset="100%" stop-color="#9FB9DF" stop-opacity="0.9" />
+  </linearGradient>
+</defs>
+
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack2_gradient_step_platform_forward_arrow" transform="translate(150.000 227.500) scale(0.816667)">
+    <polygon xmlns="http://www.w3.org/2000/svg" points="40,218 300,218 300,178 520,178 520,138 740,138 740,98 930,98 930,63 1160,158 930,253 930,218" fill="#506B8B" opacity="0.1" />
+
+    <polygon xmlns="http://www.w3.org/2000/svg" points="40,210 300,210 300,170 520,170 520,130 740,130 740,90 930,90 930,55 1160,150 930,245 930,210" fill="url(#g)" stroke="#8FAAD2" stroke-width="2.5" stroke-linejoin="round" opacity="1" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 50 212 L 295 212" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 305 172 L 515 172" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 525 132 L 735 132" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 745 92 L 925 92" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack2_gradient_step_platform_forward_arrow</text>
+</svg>

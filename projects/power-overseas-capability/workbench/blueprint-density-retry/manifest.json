@@ -1,0 +1,30 @@
+{
+  "schema": "cyberppt.blueprint_density_retry.v1",
+  "purpose": "Retry pages 2-5 as complete high-density 16:9 visual blueprints instead of clean body-region dual-image backgrounds.",
+  "style_reference": "/Volumes/DOC/CyberPPT/projects/电力可信数据空间科技成果转化/workbench/blueprints",
+  "prompt_artifact": "projects/power-overseas-capability/workbench/blueprint-density-retry/stage2-blueprint-prompts-p2-p5.md",
+  "contact_sheet": "projects/power-overseas-capability/workbench/blueprint-density-retry/blueprint-density-retry-contact-sheet.png",
+  "policy": {
+    "blueprint_text_is_placeholder": true,
+    "final_editable_ppt_text_source": "content-lock / script text",
+    "recommended_next_step": "Use these images as visual blueprints for editable PPT reconstruction, not as final raster body backgrounds."
+  },
+  "images": [
+    {
+      "slide": 2,
+      "path": "projects/power-overseas-capability/workbench/blueprint-density-retry/images/slide-02-blueprint-density-retry.png"
+    },
+    {
+      "slide": 3,
+      "path": "projects/power-overseas-capability/workbench/blueprint-density-retry/images/slide-03-blueprint-density-retry.png"
+    },
+    {
+      "slide": 4,
+      "path": "projects/power-overseas-capability/workbench/blueprint-density-retry/images/slide-04-blueprint-density-retry.png"
+    },
+    {
+      "slide": 5,
+      "path": "projects/power-overseas-capability/workbench/blueprint-density-retry/images/slide-05-blueprint-density-retry.png"
+    }
+  ]
+}

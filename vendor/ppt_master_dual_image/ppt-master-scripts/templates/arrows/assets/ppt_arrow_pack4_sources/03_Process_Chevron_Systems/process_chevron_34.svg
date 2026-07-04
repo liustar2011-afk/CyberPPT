@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="220" viewBox="0 0 800 220" role="img">
+  <title>process_chevron_34</title>
+  <rect width="100%" height="100%" fill="none"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C9D9F4"/>
+      <stop offset="58%" stop-color="#EEF5FF"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+    <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E8F1FF"/>
+      <stop offset="100%" stop-color="#B8CCE9"/>
+    </linearGradient>
+  </defs>
+  <polygon points="235.0,43.0 173.0,78.0 235.0,113.0 235.0,96.0 571.0,96.0 571.0,113.0 633.0,78.0 571.0,43.0 571.0,60.0 235.0,60.0" fill="#496A9E" opacity="0.08"/>
+  <polygon points="232.0,37.0 170.0,72.0 232.0,107.0 232.0,90.0 568.0,90.0 568.0,107.0 630.0,72.0 568.0,37.0 568.0,54.0 232.0,54.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="1.8" stroke-linejoin="round"/>
+  <polygon points="143.0,90.0 633.0,90.0 633.0,70.0 703.0,112.0 633.0,154.0 633.0,134.0 143.0,134.0 73.0,112.0" fill="#496A9E" opacity="0.08"/>
+  <polygon points="140.0,84.0 630.0,84.0 630.0,64.0 700.0,106.0 630.0,148.0 630.0,128.0 140.0,128.0 70.0,106.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="1.8" stroke-linejoin="round"/>
+</svg>

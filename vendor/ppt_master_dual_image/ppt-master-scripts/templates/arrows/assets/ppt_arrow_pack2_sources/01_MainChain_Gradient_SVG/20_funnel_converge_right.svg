@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-label="funnel converge right">
+<title>funnel converge right</title>
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#AFC5E8"/>
+    <stop offset="38%" stop-color="#DCE7F7"/>
+    <stop offset="100%" stop-color="#FFFFFF"/>
+  </linearGradient>
+  <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#EAF1FB" stop-opacity="0.85"/>
+    <stop offset="100%" stop-color="#9FB9DF" stop-opacity="0.9"/>
+  </linearGradient>
+</defs>
+<polygon points="45,78 525,78 700,128 890,128 890,96 1158,158 890,220 890,188 700,188 525,238 45,238 215,158" fill="#506B8B" opacity="0.1"/>
+<polygon points="45,70 525,70 700,120 890,120 890,88 1158,150 890,212 890,180 700,180 525,230 45,230 215,150" fill="url(#g)" stroke="#8FAAD2" stroke-width="2.5" stroke-linejoin="round" opacity="1"/>
+<path d="M 65 72 L 520 72" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+<path d="M 705 122 L 885 122" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+</svg>

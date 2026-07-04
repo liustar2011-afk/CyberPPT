@@ -1,0 +1,159 @@
+{
+  "schema": "cyberppt.dual_image.candidate_layout_rules.v1",
+  "project": "projects/power-overseas-capability/workbench/dual-image-final-deliverable-density/ppt-master-run",
+  "inputs": {
+    "ocr_boxes": 73,
+    "svg_texts": 77
+  },
+  "line_break": {
+    "phrase_breaks": [
+      {
+        "compact_text": "E&S/ESG/HSE与供应链责任",
+        "break_text": "E&S/ESG/HSE与\n供应链责任",
+        "support": 1
+      },
+      {
+        "compact_text": "主体治理与合规",
+        "break_text": "主体治理与\n合规",
+        "support": 1
+      },
+      {
+        "compact_text": "企业类型分类",
+        "break_text": "企业类型\n分类",
+        "support": 1
+      },
+      {
+        "compact_text": "国别适配与风险应对",
+        "break_text": "国别适配与\n风险应对",
+        "support": 1
+      },
+      {
+        "compact_text": "国际项目经验与交付",
+        "break_text": "国际项目经验\n与交付",
+        "support": 1
+      },
+      {
+        "compact_text": "属地化经营与伙伴协同",
+        "break_text": "属地化经营与\n伙伴协同",
+        "support": 1
+      },
+      {
+        "compact_text": "平台型和集成型企业",
+        "break_text": "平台型和\n集成型企业",
+        "support": 1
+      },
+      {
+        "compact_text": "技术装备与系统集成",
+        "break_text": "技术装备与\n系统集成",
+        "support": 1
+      },
+      {
+        "compact_text": "数据可信与证据管理",
+        "break_text": "数据可信与\n证据管理",
+        "support": 1
+      },
+      {
+        "compact_text": "行业特性",
+        "break_text": "行业\n特性",
+        "support": 1
+      },
+      {
+        "compact_text": "规划设计与咨询类",
+        "break_text": "规划设计与\n咨询类",
+        "support": 1
+      },
+      {
+        "compact_text": "财务稳健与信用履约",
+        "break_text": "财务稳健与\n信用履约",
+        "support": 1
+      },
+      {
+        "compact_text": "运维与技术服务类",
+        "break_text": "运维与技术\n服务类",
+        "support": 1
+      }
+    ]
+  },
+  "baseline_groups": [
+    {
+      "page_number": 2,
+      "candidate_y": 621.45,
+      "y_min": 621.45,
+      "y_max": 623.39,
+      "labels": [
+        "建议",
+        "规则先行",
+        "试点验证",
+        "常态运营",
+        "规模推广"
+      ],
+      "support": 5
+    },
+    {
+      "page_number": 3,
+      "candidate_y": 376.05,
+      "y_min": 376.05,
+      "y_max": 376.05,
+      "labels": [
+        "审查对象扩展",
+        "审查材料扩展为证据链",
+        "审查方式扩展为持续监测"
+      ],
+      "support": 3
+    },
+    {
+      "page_number": 4,
+      "candidate_y": 244.46,
+      "y_min": 234.0,
+      "y_max": 244.46,
+      "labels": [
+        "平台型和集成型企业",
+        "规划设计与咨询类",
+        "主体治理与合规",
+        "财务稳健与信用履约",
+        "国际项目经验与交付",
+        "技术装备与系统集成"
+      ],
+      "support": 6
+    },
+    {
+      "page_number": 4,
+      "candidate_y": 392.18,
+      "y_min": 380.45,
+      "y_max": 392.18,
+      "labels": [
+        "装备制造类",
+        "属地化经营与伙伴协同",
+        "国别适配与风险应对",
+        "数据可信与证据管理"
+      ],
+      "support": 4
+    },
+    {
+      "page_number": 4,
+      "candidate_y": 518.04,
+      "y_min": 518.04,
+      "y_max": 518.04,
+      "labels": [
+        "系统性",
+        "长周期属性",
+        "强合规属性",
+        "供应链联动属性",
+        "强属地化属性"
+      ],
+      "support": 5
+    }
+  ],
+  "alignment_issues": [
+    {
+      "page_number": 4,
+      "text": "E&S/ESG/HSE与\n供应链责任",
+      "observed_align": "left",
+      "suggested_text_anchor": "middle",
+      "suggested_x": 670.15,
+      "reason": "multiline label appears left-aligned inside a visual container",
+      "current_svg_x": 682.52,
+      "current_svg_anchor": "middle"
+    }
+  ]
+}

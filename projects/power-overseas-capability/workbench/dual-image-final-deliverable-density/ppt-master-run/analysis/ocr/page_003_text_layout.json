@@ -1,0 +1,195 @@
+{
+  "image_size": {
+    "width": 1808,
+    "height": 908
+  },
+  "items": [
+    {
+      "text": "2025年全球能源投资总额",
+      "bbox": [
+        286.0,
+        90.0,
+        711.0,
+        132.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "3.3",
+      "bbox": [
+        283.0,
+        143.0,
+        453.0,
+        245.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "万亿美元",
+      "bbox": [
+        472.0,
+        211.0,
+        599.0,
+        243.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "其中清洁能源相关投资约",
+      "bbox": [
+        1144.0,
+        78.0,
+        1552.0,
+        113.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "2.2",
+      "bbox": [
+        1139.0,
+        136.0,
+        1304.0,
+        221.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "万亿美元，",
+      "bbox": [
+        1318.0,
+        187.0,
+        1471.0,
+        220.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "约占全球能源投资三分之二",
+      "bbox": [
+        1142.0,
+        239.0,
+        1530.0,
+        271.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "1",
+      "bbox": [
+        91.0,
+        411.0,
+        110.0,
+        441.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "审查对象扩展",
+      "bbox": [
+        164.0,
+        415.0,
+        361.0,
+        449.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "从单一项目扩展到企业整体",
+      "bbox": [
+        80.0,
+        530.0,
+        454.0,
+        563.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "2",
+      "bbox": [
+        676.0,
+        411.0,
+        695.0,
+        441.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "审查材料扩展为证据链",
+      "bbox": [
+        751.0,
+        415.0,
+        1082.0,
+        449.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "从资质证书扩展为可核验证据",
+      "bbox": [
+        681.0,
+        530.0,
+        1081.0,
+        563.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "3",
+      "bbox": [
+        1271.0,
+        411.0,
+        1290.0,
+        441.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "审查方式扩展为持续监测",
+      "bbox": [
+        1348.0,
+        415.0,
+        1684.0,
+        449.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "从一次性审查扩展为动态跟踪",
+      "bbox": [
+        1282.0,
+        530.0,
+        1683.0,
+        563.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "这一趋势是建设行业化能力证明体系的根本动因",
+      "bbox": [
+        367.0,
+        719.0,
+        1683.0,
+        779.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    }
+  ]
+}

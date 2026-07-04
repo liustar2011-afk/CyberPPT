@@ -1,0 +1,10 @@
+{
+  "purpose": "Forbidden structural crop_candidates must fail validation and precrop.",
+  "rebuild2": false,
+  "layout_reference": true,
+  "precrop_layout_candidates": true,
+  "expect_invalid": {
+    "layout_reference": true,
+    "precrop_layout_candidates": true
+  }
+}

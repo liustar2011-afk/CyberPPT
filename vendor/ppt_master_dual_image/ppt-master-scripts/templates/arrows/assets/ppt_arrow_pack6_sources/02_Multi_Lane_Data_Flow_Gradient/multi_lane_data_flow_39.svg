@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" role="img" aria-label="Multi Lane Data Flow 39">
+<title>Multi Lane Data Flow 39</title>
+<desc>4-lane data flow arrow</desc>
+<defs>
+<linearGradient id="flow38" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FBFDFF"/>
+  <stop offset="42%" stop-color="#E5EFFB"/>
+  <stop offset="100%" stop-color="#BED3ED"/>
+</linearGradient>
+<linearGradient id="flow38_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00"/>
+</linearGradient>
+</defs>
+<path d="M 38.0 59.0 L 514.0 59.0 L 514.0 51.0 L 602.0 72.0 L 514.0 93.0 L 514.0 85.0 L 38.0 85.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.06" stroke-linejoin="round" /><path d="M 38.0 55.0 L 514.0 55.0 L 514.0 47.0 L 602.0 68.0 L 514.0 89.0 L 514.0 81.0 L 38.0 81.0 Z" fill="url(#flow38)" stroke="#88A8CC" stroke-width="1.7" opacity="1" stroke-linejoin="round" /><path d="M 38.0 91.0 L 514.0 91.0 L 514.0 83.0 L 602.0 104.0 L 514.0 125.0 L 514.0 117.0 L 38.0 117.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.06" stroke-linejoin="round" /><path d="M 38.0 87.0 L 514.0 87.0 L 514.0 79.0 L 602.0 100.0 L 514.0 121.0 L 514.0 113.0 L 38.0 113.0 Z" fill="url(#flow38)" stroke="#88A8CC" stroke-width="1.7" opacity="1" stroke-linejoin="round" /><path d="M 38.0 123.0 L 514.0 123.0 L 514.0 115.0 L 602.0 136.0 L 514.0 157.0 L 514.0 149.0 L 38.0 149.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.06" stroke-linejoin="round" /><path d="M 38.0 119.0 L 514.0 119.0 L 514.0 111.0 L 602.0 132.0 L 514.0 153.0 L 514.0 145.0 L 38.0 145.0 Z" fill="url(#flow38)" stroke="#88A8CC" stroke-width="1.7" opacity="1" stroke-linejoin="round" /><path d="M 38.0 155.0 L 514.0 155.0 L 514.0 147.0 L 602.0 168.0 L 514.0 189.0 L 514.0 181.0 L 38.0 181.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.06" stroke-linejoin="round" /><path d="M 38.0 151.0 L 514.0 151.0 L 514.0 143.0 L 602.0 164.0 L 514.0 185.0 L 514.0 177.0 L 38.0 177.0 Z" fill="url(#flow38)" stroke="#88A8CC" stroke-width="1.7" opacity="1" stroke-linejoin="round" />
+</svg>

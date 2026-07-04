@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" role="img" aria-label="Low Profile Perspective Arrow 01">
+<title>Low Profile Perspective Arrow 01</title>
+<desc>long horizontal main-channel arrow</desc>
+<defs>
+<linearGradient id="g0" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F9FCFF"/>
+  <stop offset="42%" stop-color="#DCE9F8"/>
+  <stop offset="100%" stop-color="#BFD4F1"/>
+</linearGradient>
+<linearGradient id="g0_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00"/>
+</linearGradient>
+</defs>
+<path d="M 32.0 95.0 L 548.0 95.0 L 548.0 62.0 L 608.0 97.0 L 548.0 135.0 L 548.0 117.0 L 32.0 117.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.1" stroke-linejoin="round" /><path d="M 32.0 88.0 L 548.0 88.0 L 548.0 55.0 L 608.0 90.0 L 548.0 128.0 L 548.0 110.0 L 32.0 110.0 Z" fill="url(#g0)" stroke="#8DA9CF" stroke-width="2" opacity="1" stroke-linejoin="round" /><path d="M 32.0 88.0 L 548.0 88.0 L 548.0 55.0 L 608.0 90.0 Z" fill="url(#g0_hl)" stroke="none" stroke-width="0" opacity="0.35" stroke-linejoin="round" />
+</svg>

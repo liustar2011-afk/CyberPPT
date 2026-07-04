@@ -1,0 +1,19 @@
+{
+  "page_number": 5,
+  "background_image": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-final-deliverable-density/ppt-master-run/images/page_005_现状问题_企业能力表达分散_失真_静态_background.png",
+  "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-final-deliverable-density/ppt-master-run/analysis/semantic_plan/page_005_semantic_plan.json",
+  "containers": [
+    {
+      "id": "foundation_base_1",
+      "role": "foundation_base",
+      "x": 69.87,
+      "y": 563.81,
+      "w": 1138.22,
+      "h": 93.57,
+      "background": "dark",
+      "fill": "#FFFFFF",
+      "align": "center",
+      "max_lines": 1
+    }
+  ]
+}

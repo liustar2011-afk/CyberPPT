@@ -1,0 +1,188 @@
+{
+  "schema": "cyberppt.dual_image.typography_contract.v1",
+  "source": "projects/power-overseas-capability/workbench/dual-image-final-deliverable-density/ppt-master-run/svg_output/page_003_环境变化_从_资质审查_转向_持续证据审查.svg",
+  "output": "projects/power-overseas-capability/workbench/dual-image-final-deliverable-density/ppt-master-run/svg_output/page_003_环境变化_从_资质审查_转向_持续证据审查.svg",
+  "rules": "/Volumes/DOC/CyberPPT/scripts/dual_image_overlay/default_layout_rules.json",
+  "decisions": [
+    {
+      "text": "全球能源转型叠加海外规则趋严，审查方式正从'资质审查'转向'持续证据审查'",
+      "rendered_text": "全球能源转型叠加海外规则趋严，审查方式正从'资质审查'转向'持续证据审查'",
+      "role": "T2",
+      "x": 32.0,
+      "y": 46.0,
+      "original_px": 27.46,
+      "target_px": 30.0,
+      "applied_px": 27.46
+    },
+    {
+      "text": "2025年全球能源投资总额",
+      "rendered_text": "2025年全球\n能源投资总额",
+      "role": "T6",
+      "x": 224.42,
+      "y": 172.06,
+      "original_px": 16.67,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "3.3",
+      "rendered_text": "3.3",
+      "role": "T13",
+      "x": 281.55,
+      "y": 236.64,
+      "original_px": 32.0,
+      "target_px": 32.0,
+      "applied_px": 32.0
+    },
+    {
+      "text": "万亿美元",
+      "rendered_text": "万亿美元",
+      "role": "T6",
+      "x": 398.14,
+      "y": 248.37,
+      "original_px": 16.67,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "其中清洁能源相关投资约",
+      "rendered_text": "其中清洁能\n源相关投资约",
+      "role": "T6",
+      "x": 922.62,
+      "y": 163.12,
+      "original_px": 16.67,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "2.2",
+      "rendered_text": "2.2",
+      "role": "T13",
+      "x": 855.81,
+      "y": 216.32,
+      "original_px": 32.0,
+      "target_px": 32.0,
+      "applied_px": 32.0
+    },
+    {
+      "text": "万亿美元，",
+      "rendered_text": "万亿美元，",
+      "role": "T6",
+      "x": 966.38,
+      "y": 226.47,
+      "original_px": 16.67,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "约占全球能源投资三分之二",
+      "rendered_text": "约占全球能源\n投资三分之二",
+      "role": "T6",
+      "x": 801.69,
+      "y": 266.12,
+      "original_px": 16.67,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "1",
+      "rendered_text": "1",
+      "role": "T4",
+      "x": 100.48,
+      "y": 379.65,
+      "original_px": 17.33,
+      "target_px": 17.33,
+      "applied_px": 17.33
+    },
+    {
+      "text": "审查对象扩展",
+      "rendered_text": "审查对象扩展",
+      "role": "T6",
+      "x": 198.7,
+      "y": 379.65,
+      "original_px": 16.67,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "从单一项目扩展到企业整体",
+      "rendered_text": "从单一项目扩展到企业整体",
+      "role": "T6",
+      "x": 207.72,
+      "y": 455.45,
+      "original_px": 16.67,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "2",
+      "rendered_text": "2",
+      "role": "T4",
+      "x": 494.01,
+      "y": 379.65,
+      "original_px": 17.33,
+      "target_px": 17.33,
+      "applied_px": 17.33
+    },
+    {
+      "text": "审查材料扩展为证据链",
+      "rendered_text": "审查材料扩\n展为证据链",
+      "role": "T6",
+      "x": 644.34,
+      "y": 379.65,
+      "original_px": 16.67,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "从资质证书扩展为可核验证据",
+      "rendered_text": "从资质证书扩展为可核验证据",
+      "role": "T6",
+      "x": 489.67,
+      "y": 455.45,
+      "original_px": 16.67,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "3",
+      "rendered_text": "3",
+      "role": "T4",
+      "x": 894.89,
+      "y": 379.65,
+      "original_px": 17.33,
+      "target_px": 17.33,
+      "applied_px": 17.33
+    },
+    {
+      "text": "审查方式扩展为持续监测",
+      "rendered_text": "审查方式扩\n展为持续监测",
+      "role": "T6",
+      "x": 1052.57,
+      "y": 379.65,
+      "original_px": 16.67,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "从一次性审查扩展为动态跟踪",
+      "rendered_text": "从一次性审查扩展为动态跟踪",
+      "role": "T6",
+      "x": 892.55,
+      "y": 455.45,
+      "original_px": 16.67,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "\"这一趋势是建设行业化能力证明体系的根本动因\"",
+      "rendered_text": "\"这一趋势是建设行业化能力证明体系的根本动因\"",
+      "role": "T8",
+      "x": 280.55,
+      "y": 587.38,
+      "original_px": 16.0,
+      "target_px": 16.0,
+      "applied_px": 16.0
+    }
+  ]
+}

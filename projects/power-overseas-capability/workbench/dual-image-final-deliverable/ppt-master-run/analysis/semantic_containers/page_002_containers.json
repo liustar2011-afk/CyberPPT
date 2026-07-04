@@ -1,0 +1,19 @@
+{
+  "page_number": 2,
+  "background_image": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-final-deliverable/ppt-master-run/images/page_002_核心结论_background.png",
+  "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-final-deliverable/ppt-master-run/analysis/semantic_plan/page_002_semantic_plan.json",
+  "containers": [
+    {
+      "id": "dark_band_1",
+      "role": "dark_band",
+      "x": 62.43,
+      "y": 120.21,
+      "w": 1151.75,
+      "h": 92.22,
+      "background": "dark",
+      "fill": "#FFFFFF",
+      "align": "center",
+      "max_lines": 1
+    }
+  ]
+}

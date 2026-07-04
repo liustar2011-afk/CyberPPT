@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack5_sources/03_Chevron_Process_Modules/chevron_process_049_6seg_gap_64.svg
+  License: custom pack permission; see assets/ppt_arrow_pack5_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg">
+    <linearGradient id="g_soft_blue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#BFD0EE" />
+      <stop offset="0.46" stop-color="#E6EEF9" />
+      <stop offset="1" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="g_edge_blue" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#DCE7F7" />
+      <stop offset="0.55" stop-color="#AFC5E9" />
+      <stop offset="1" stop-color="#E9F1FB" />
+    </linearGradient>
+    <linearGradient id="g_flat_blue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8FAFDD" />
+      <stop offset="1" stop-color="#C7D7F0" />
+    </linearGradient>
+    <marker id="arrow_head" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5.5 L0,11 Z" fill="#7E9FD1" />
+    </marker>
+    <marker id="arrow_head_light" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5.5 L0,11 Z" fill="#A3BADF" />
+    </marker>
+    
+  </defs>
+  
+  
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack5_chevron_process_049_6seg_gap_64" transform="translate(150.000 200.278) scale(1.361111)">
+    <rect xmlns="http://www.w3.org/2000/svg" x="44" y="154.0" width="632" height="12" rx="6" fill="#5A6F8F" opacity="0.07" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 36.0 78.0 L 81.3 78.0 L 137.3 110.0 L 81.3 142.0 L 36.0 142.0 L 76.3 110.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 44.0 83.0 L 73.3 83.0 L 113.3 110.0 L 57.3 103.0 L 72.4 103.0 Z" fill="#FFFFFF" opacity="0.25" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 145.3 78.0 L 190.7 78.0 L 246.7 110.0 L 190.7 142.0 L 145.3 142.0 L 185.7 110.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 153.3 83.0 L 182.7 83.0 L 222.7 110.0 L 166.7 103.0 L 181.7 103.0 Z" fill="#FFFFFF" opacity="0.25" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 254.7 78.0 L 300.0 78.0 L 356.0 110.0 L 300.0 142.0 L 254.7 142.0 L 295.0 110.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 262.7 83.0 L 292.0 83.0 L 332.0 110.0 L 276.0 103.0 L 291.1 103.0 Z" fill="#FFFFFF" opacity="0.25" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 364.0 78.0 L 409.3 78.0 L 465.3 110.0 L 409.3 142.0 L 364.0 142.0 L 404.3 110.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 372.0 83.0 L 401.3 83.0 L 441.3 110.0 L 385.3 103.0 L 400.4 103.0 Z" fill="#FFFFFF" opacity="0.25" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 473.3 78.0 L 518.7 78.0 L 574.7 110.0 L 518.7 142.0 L 473.3 142.0 L 513.7 110.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 481.3 83.0 L 510.7 83.0 L 550.7 110.0 L 494.7 103.0 L 509.7 103.0 Z" fill="#FFFFFF" opacity="0.25" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 582.7 78.0 L 628.0 78.0 L 684.0 110.0 L 628.0 142.0 L 582.7 142.0 L 623.0 110.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 590.7 83.0 L 620.0 83.0 L 660.0 110.0 L 604.0 103.0 L 619.1 103.0 Z" fill="#FFFFFF" opacity="0.25" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack5_chevron_process_049_6seg_gap_64</text>
+</svg>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!-- Dotted bus with upward tap arrows for architecture support rows. -->
+  <defs>
+    <marker id="upHead" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#123A73"/>
+    </marker>
+  </defs>
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <text x="64" y="70" font-family="Microsoft YaHei, Arial, sans-serif" font-size="30" font-weight="700" fill="#0F172A">Dotted Bus With Upward Taps</text>
+  <text x="64" y="102" font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" fill="#64748B">For lower-layer support lines feeding multiple upper capability cards.</text>
+  <line x1="95" y1="350" x2="1185" y2="350" stroke="#123A73" stroke-width="3" stroke-dasharray="8 8" stroke-linecap="round"/>
+  <g stroke="#123A73" stroke-width="3" stroke-dasharray="8 8" stroke-linecap="round">
+    <line x1="120" y1="350" x2="120" y2="260" marker-end="url(#upHead)"/>
+    <line x1="330" y1="350" x2="330" y2="260" marker-end="url(#upHead)"/>
+    <line x1="540" y1="350" x2="540" y2="260" marker-end="url(#upHead)"/>
+    <line x1="750" y1="350" x2="750" y2="260" marker-end="url(#upHead)"/>
+    <line x1="960" y1="350" x2="960" y2="260" marker-end="url(#upHead)"/>
+    <line x1="1170" y1="350" x2="1170" y2="260" marker-end="url(#upHead)"/>
+  </g>
+  <g font-family="Microsoft YaHei, Arial, sans-serif" font-size="15" font-weight="700" fill="#123A73" text-anchor="middle">
+    <text x="120" y="235">能力 1</text>
+    <text x="330" y="235">能力 2</text>
+    <text x="540" y="235">能力 3</text>
+    <text x="750" y="235">能力 4</text>
+    <text x="960" y="235">能力 5</text>
+    <text x="1170" y="235">能力 6</text>
+  </g>
+</svg>

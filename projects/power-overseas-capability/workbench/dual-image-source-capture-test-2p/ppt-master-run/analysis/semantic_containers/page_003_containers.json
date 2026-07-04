@@ -1,0 +1,19 @@
+{
+  "page_number": 3,
+  "background_image": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-source-capture-test-2p/ppt-master-run/images/page_003_环境变化_从_资质审查_转向_持续证据审查_background.png",
+  "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-source-capture-test-2p/ppt-master-run/analysis/semantic_plan/page_003_semantic_plan.json",
+  "containers": [
+    {
+      "id": "foundation_base_1",
+      "role": "foundation_base",
+      "x": 61.79,
+      "y": 543.11,
+      "w": 1150.33,
+      "h": 116.32,
+      "background": "dark",
+      "fill": "#FFFFFF",
+      "align": "center",
+      "max_lines": 1
+    }
+  ]
+}

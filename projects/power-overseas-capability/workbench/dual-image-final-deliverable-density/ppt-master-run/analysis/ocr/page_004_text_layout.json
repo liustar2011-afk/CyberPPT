@@ -1,0 +1,250 @@
+{
+  "image_size": {
+    "width": 2048,
+    "height": 1003
+  },
+  "items": [
+    {
+      "text": "投资运营类",
+      "bbox": [
+        373.0,
+        120.0,
+        508.0,
+        151.0
+      ],
+      "confidence": 0.94,
+      "source": "vision-json"
+    },
+    {
+      "text": "平台型和集成型企业",
+      "bbox": [
+        160.0,
+        199.0,
+        306.0,
+        261.0
+      ],
+      "confidence": 0.92,
+      "source": "vision-json"
+    },
+    {
+      "text": "规划设计与咨询类",
+      "bbox": [
+        576.0,
+        201.0,
+        708.0,
+        263.0
+      ],
+      "confidence": 0.92,
+      "source": "vision-json"
+    },
+    {
+      "text": "企业类型分类",
+      "bbox": [
+        371.0,
+        287.0,
+        506.0,
+        368.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "运维与技术服务类",
+      "bbox": [
+        164.0,
+        391.0,
+        307.0,
+        451.0
+      ],
+      "confidence": 0.92,
+      "source": "vision-json"
+    },
+    {
+      "text": "EPC总承包类",
+      "bbox": [
+        563.0,
+        408.0,
+        706.0,
+        434.0
+      ],
+      "confidence": 0.94,
+      "source": "vision-json"
+    },
+    {
+      "text": "装备制造类",
+      "bbox": [
+        373.0,
+        496.0,
+        507.0,
+        524.0
+      ],
+      "confidence": 0.94,
+      "source": "vision-json"
+    },
+    {
+      "text": "主体治理与合规",
+      "bbox": [
+        1037.0,
+        218.0,
+        1168.0,
+        282.0
+      ],
+      "confidence": 0.93,
+      "source": "vision-json"
+    },
+    {
+      "text": "财务稳健与信用履约",
+      "bbox": [
+        1291.0,
+        218.0,
+        1425.0,
+        282.0
+      ],
+      "confidence": 0.93,
+      "source": "vision-json"
+    },
+    {
+      "text": "国际项目经验与交付",
+      "bbox": [
+        1538.0,
+        218.0,
+        1671.0,
+        282.0
+      ],
+      "confidence": 0.93,
+      "source": "vision-json"
+    },
+    {
+      "text": "技术装备与系统集成",
+      "bbox": [
+        1816.0,
+        218.0,
+        1949.0,
+        282.0
+      ],
+      "confidence": 0.93,
+      "source": "vision-json"
+    },
+    {
+      "text": "E&S/ESG/HSE与供应链责任",
+      "bbox": [
+        992.0,
+        467.0,
+        1176.0,
+        529.0
+      ],
+      "confidence": 0.9,
+      "source": "vision-json"
+    },
+    {
+      "text": "属地化经营与伙伴协同",
+      "bbox": [
+        1278.0,
+        467.0,
+        1440.0,
+        529.0
+      ],
+      "confidence": 0.93,
+      "source": "vision-json"
+    },
+    {
+      "text": "国别适配与风险应对",
+      "bbox": [
+        1545.0,
+        467.0,
+        1677.0,
+        529.0
+      ],
+      "confidence": 0.93,
+      "source": "vision-json"
+    },
+    {
+      "text": "数据可信与证据管理",
+      "bbox": [
+        1814.0,
+        467.0,
+        1949.0,
+        529.0
+      ],
+      "confidence": 0.93,
+      "source": "vision-json"
+    },
+    {
+      "text": "行业特性",
+      "bbox": [
+        66.0,
+        670.0,
+        136.0,
+        744.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "系统性",
+      "bbox": [
+        349.0,
+        699.0,
+        432.0,
+        724.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "长周期属性",
+      "bbox": [
+        681.0,
+        699.0,
+        805.0,
+        724.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "强合规属性",
+      "bbox": [
+        1046.0,
+        699.0,
+        1171.0,
+        724.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "供应链联动属性",
+      "bbox": [
+        1404.0,
+        699.0,
+        1586.0,
+        724.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "强属地化属性",
+      "bbox": [
+        1787.0,
+        699.0,
+        1954.0,
+        724.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "多角色多场景特征决定评价体系必须分角色、分场景设计，不能用统一标准衡量所有企业",
+      "bbox": [
+        255.0,
+        878.0,
+        1897.0,
+        924.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    }
+  ]
+}

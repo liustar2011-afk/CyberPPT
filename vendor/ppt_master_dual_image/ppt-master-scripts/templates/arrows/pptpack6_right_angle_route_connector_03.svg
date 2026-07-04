@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack6_sources/06_Right_Angle_Connectors/right_angle_route_connector_03.svg
+  License: custom pack permission; see assets/ppt_arrow_pack6_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg" />
+
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack6_right_angle_route_connector_03" transform="translate(150.000 212.188) scale(1.531250)">
+    <desc xmlns="http://www.w3.org/2000/svg">right-angle up connector</desc>
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 70 135 L 300 135 L 300 45 L 570 45" fill="none" stroke="#60758A" stroke-width="10" opacity="0.08" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 4)" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M 70 135 L 300 135 L 300 45 L 570 45" fill="none" stroke="#91A9C7" stroke-width="8" opacity="0.7" stroke-linecap="round" stroke-linejoin="round" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M 587.2 45.0 L 560.1 53.2 L 560.1 36.8 Z" fill="#91A9C7" stroke="none" stroke-width="0" opacity="1" stroke-linejoin="round" />
+    <circle xmlns="http://www.w3.org/2000/svg" cx="300" cy="45" r="4" fill="#FFFFFF" stroke="#91A9C7" stroke-width="1" opacity="0.65" />
+    <circle xmlns="http://www.w3.org/2000/svg" cx="300" cy="135" r="4" fill="#FFFFFF" stroke="#91A9C7" stroke-width="1" opacity="0.65" />
+    <circle xmlns="http://www.w3.org/2000/svg" cx="250" cy="90" r="4" fill="#FFFFFF" stroke="#91A9C7" stroke-width="1" opacity="0.65" />
+    <circle xmlns="http://www.w3.org/2000/svg" cx="410" cy="55" r="4" fill="#FFFFFF" stroke="#91A9C7" stroke-width="1" opacity="0.65" />
+    <circle xmlns="http://www.w3.org/2000/svg" cx="410" cy="132" r="4" fill="#FFFFFF" stroke="#91A9C7" stroke-width="1" opacity="0.65" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack6_right_angle_route_connector_03</text>
+</svg>

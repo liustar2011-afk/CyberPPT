@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect x="0" y="0" width="1280" height="720" fill="#ffffff"/>
+  <rect x="64" y="64" width="1152" height="592" rx="16" fill="#f3f6fb" stroke="#2563eb" stroke-width="2"/>
+  <text x="96" y="160" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif" font-size="48" fill="#1e293b">Playwright 渲染测试</text>
+  <text x="96" y="240" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif" font-size="28" fill="#475569">slide-image-rebuild preview backend smoke</text>
+</svg>

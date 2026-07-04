@@ -1,0 +1,238 @@
+{
+  "schema": "cyberppt.dual_image.typography_contract.v1",
+  "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-final-deliverable-density/ppt-master-run/svg_output/page_004_电力产业链企业出海的多角色_多能力特征.svg",
+  "output": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-final-deliverable-density/ppt-master-run/svg_output/page_004_电力产业链企业出海的多角色_多能力特征.svg",
+  "rules": "/Volumes/DOC/CyberPPT/scripts/dual_image_overlay/default_layout_rules.json",
+  "decisions": [
+    {
+      "text": "电力产业链企业出海呈现多角色、多场景特征，八类核心能力成为通用需求",
+      "rendered_text": "电力产业链企业出海呈现多角色、多场景特征，八类核心能力成为通用需求",
+      "role": "T2",
+      "x": 32.0,
+      "y": 46.0,
+      "original_px": 25.0,
+      "target_px": 30.0,
+      "applied_px": 29.32
+    },
+    {
+      "text": "投资运营类",
+      "rendered_text": "投资运营类",
+      "role": "T6",
+      "x": 293.55,
+      "y": 179.76,
+      "original_px": 11.29,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "平台型和集成型企业",
+      "rendered_text": "平台型和\n集成型企业",
+      "role": "T6",
+      "x": 170.34,
+      "y": 224.7,
+      "original_px": 9.25,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "规划设计与咨询类",
+      "rendered_text": "规划设计与\n咨询类",
+      "role": "T6",
+      "x": 413.19,
+      "y": 224.85,
+      "original_px": 9.4,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "企业类型分类",
+      "rendered_text": "企业类型\n分类",
+      "role": "T6",
+      "x": 292.36,
+      "y": 279.36,
+      "original_px": 12.82,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "运维与技术服务类",
+      "rendered_text": "运维与技术\n服务类",
+      "role": "T6",
+      "x": 171.83,
+      "y": 342.79,
+      "original_px": 10.19,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "EPC总承包类",
+      "rendered_text": "EPC总承包类",
+      "role": "T6",
+      "x": 408.73,
+      "y": 346.95,
+      "original_px": 14.35,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "装备制造类",
+      "rendered_text": "装备制造类",
+      "role": "T6",
+      "x": 293.25,
+      "y": 387.52,
+      "original_px": 15.28,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "主体治理与合规",
+      "rendered_text": "主体治理与\n合规",
+      "role": "T6",
+      "x": 686.61,
+      "y": 236.69,
+      "original_px": 10.67,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "财务稳健与信用履约",
+      "rendered_text": "财务稳健与\n信用履约",
+      "role": "T6",
+      "x": 838.31,
+      "y": 234.51,
+      "original_px": 8.49,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "国际项目经验与交付",
+      "rendered_text": "国际项目经验\n与交付",
+      "role": "T6",
+      "x": 984.67,
+      "y": 234.44,
+      "original_px": 8.42,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "技术装备与系统集成",
+      "rendered_text": "技术装备与\n系统集成",
+      "role": "T6",
+      "x": 1149.73,
+      "y": 234.44,
+      "original_px": 8.42,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "E&S/ESG/HSE与供应链责任",
+      "rendered_text": "E&S/ESG/HSE\n与供应链责任",
+      "role": "T6",
+      "x": 682.52,
+      "y": 380.86,
+      "original_px": 8.62,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "属地化经营与伙伴协同",
+      "rendered_text": "属地化经营与\n伙伴协同",
+      "role": "T6",
+      "x": 838.91,
+      "y": 381.47,
+      "original_px": 9.23,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "国别适配与风险应对",
+      "rendered_text": "国别适配与风险\n应对",
+      "role": "T6",
+      "x": 988.53,
+      "y": 380.6,
+      "original_px": 8.36,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "数据可信与证据管理",
+      "rendered_text": "数据\n可信与证据管理",
+      "role": "T6",
+      "x": 1149.14,
+      "y": 380.79,
+      "original_px": 8.55,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "行业特性",
+      "rendered_text": "行业特性",
+      "role": "T6",
+      "x": 91.97,
+      "y": 520.0,
+      "original_px": 9.97,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "系统性",
+      "rendered_text": "系统性",
+      "role": "T6",
+      "x": 263.86,
+      "y": 520.0,
+      "original_px": 15.77,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "长周期属性",
+      "rendered_text": "长周期属性",
+      "role": "T6",
+      "x": 473.16,
+      "y": 520.0,
+      "original_px": 14.14,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "强合规属性",
+      "rendered_text": "强合规属性",
+      "role": "T6",
+      "x": 690.17,
+      "y": 520.0,
+      "original_px": 14.25,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "供应链联动属性",
+      "rendered_text": "供应链联动属性",
+      "role": "T6",
+      "x": 919.66,
+      "y": 520.0,
+      "original_px": 14.82,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "强属地化属性",
+      "rendered_text": "强属地化属性",
+      "role": "T6",
+      "x": 1142.61,
+      "y": 520.0,
+      "original_px": 15.86,
+      "target_px": 16.67,
+      "applied_px": 16.67
+    },
+    {
+      "text": "\"多角色多场景特征决定评价体系必须分角色、分场景设计，不能用统一标准衡量所有企业\"",
+      "rendered_text": "\"多角色多场景特征决定评价体系必须分角色、分场景设计，不能用统一标准衡量所有企业\"",
+      "role": "T8",
+      "x": 183.41,
+      "y": 630.35,
+      "original_px": 16.75,
+      "target_px": 16.0,
+      "applied_px": 16.0
+    }
+  ]
+}

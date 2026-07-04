@@ -1,0 +1,40 @@
+{
+  "profile": "chatgpt_precise_rebuild",
+  "scope": "chatgpt_actions_only",
+  "version": "1.0",
+  "activation": {
+    "manifest_execution_profile": "chatgpt_precise_rebuild",
+    "workflow_input": "chatgpt_precise_lock"
+  },
+  "canvas": {
+    "width_px": 1280,
+    "height_px": 720,
+    "px_per_inch": 96
+  },
+  "rebuild_policy": {
+    "mode": "vector-hifi",
+    "reference_image_is_layout_source": true,
+    "full_slide_reference_image_forbidden": true,
+    "preserve_single_page_structure": true,
+    "content_deletion_for_fit_forbidden": true,
+    "split_page_for_fit_forbidden": true
+  },
+  "text_policy": {
+    "global_shrink_forbidden": true,
+    "require_reference_measured_or_baseline_locked_font_source": true,
+    "minimum_font_pt": 6.4,
+    "minimum_body_font_pt": 7.0,
+    "allowed_font_sources": [
+      "reference-measured",
+      "baseline-locked",
+      "user-approved-exception"
+    ]
+  },
+  "qa_policy": {
+    "run_before_export": true,
+    "write_project_report": true,
+    "fail_on_full_slide_image": true,
+    "fail_on_unmarked_low_font": true,
+    "fail_on_shrink_marker": true
+  }
+}

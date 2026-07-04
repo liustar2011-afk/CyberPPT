@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-label="5-step tight chevron process">
+<title>5-step tight chevron process</title>
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#AFC5E8"/>
+    <stop offset="38%" stop-color="#DCE7F7"/>
+    <stop offset="100%" stop-color="#FFFFFF"/>
+  </linearGradient>
+  <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#EAF1FB" stop-opacity="0.85"/>
+    <stop offset="100%" stop-color="#9FB9DF" stop-opacity="0.9"/>
+  </linearGradient>
+</defs>
+<polygon points="40.0,88 212.3,88 274.3,158.0 212.3,228 40.0,228 84.64,158.0" fill="#506B8B" opacity="0.1"/>
+<polygon points="258.4,88 430.7,88 492.7,158.0 430.7,228 258.4,228 303.04,158.0" fill="#506B8B" opacity="0.1"/>
+<polygon points="476.8,88 649.1,88 711.1,158.0 649.1,228 476.8,228 521.44,158.0" fill="#506B8B" opacity="0.1"/>
+<polygon points="695.2,88 867.5,88 929.5,158.0 867.5,228 695.2,228 739.84,158.0" fill="#506B8B" opacity="0.1"/>
+<polygon points="913.6,88 1098.3,88 1160.3,158.0 1098.3,228 913.6,228 958.24,158.0" fill="#506B8B" opacity="0.1"/>
+<polygon points="40.0,80 212.3,80 274.3,150.0 212.3,220 40.0,220 84.64,150.0" fill="url(#g)" stroke="#8FAAD2" stroke-width="2.5" stroke-linejoin="round" opacity="1"/>
+<polygon points="258.4,80 430.7,80 492.7,150.0 430.7,220 258.4,220 303.04,150.0" fill="url(#g)" stroke="#8FAAD2" stroke-width="2.5" stroke-linejoin="round" opacity="1"/>
+<polygon points="476.8,80 649.1,80 711.1,150.0 649.1,220 476.8,220 521.44,150.0" fill="url(#g)" stroke="#8FAAD2" stroke-width="2.5" stroke-linejoin="round" opacity="1"/>
+<polygon points="695.2,80 867.5,80 929.5,150.0 867.5,220 695.2,220 739.84,150.0" fill="url(#g)" stroke="#8FAAD2" stroke-width="2.5" stroke-linejoin="round" opacity="1"/>
+<polygon points="913.6,80 1098.3,80 1160.3,150.0 1098.3,220 913.6,220 958.24,150.0" fill="url(#g)" stroke="#8FAAD2" stroke-width="2.5" stroke-linejoin="round" opacity="1"/>
+<path d="M 50.0 82 L 204.3 82" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+<path d="M 268.4 82 L 422.7 82" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+<path d="M 486.8 82 L 641.1 82" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+<path d="M 705.2 82 L 859.5 82" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+<path d="M 923.6 82 L 1090.3 82" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+</svg>

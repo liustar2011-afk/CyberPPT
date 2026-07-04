@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="220" viewBox="0 0 800 220" role="img">
+  <title>connector_route_04</title>
+  <rect width="100%" height="100%" fill="none"/>
+  <path d="M 80 136 L 710 136" fill="none" opacity="0.85" stroke="#6F8FBD" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <polygon points="720.0,136.0 704.0,144.8 704.0,127.2" fill="#6F8FBD" opacity="1"/>
+  <polygon points="80.0,136.0 96.0,127.2 96.0,144.8" fill="#6F8FBD" opacity="1"/>
+</svg>

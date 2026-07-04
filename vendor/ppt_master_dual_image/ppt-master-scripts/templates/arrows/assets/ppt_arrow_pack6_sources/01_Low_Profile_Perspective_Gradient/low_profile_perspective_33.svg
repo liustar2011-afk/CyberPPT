@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" role="img" aria-label="Low Profile Perspective Arrow 33">
+<title>Low Profile Perspective Arrow 33</title>
+<desc>perspective plate right arrow</desc>
+<defs>
+<linearGradient id="g32" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8FBFF"/>
+  <stop offset="42%" stop-color="#E8F0FA"/>
+  <stop offset="100%" stop-color="#CADAF0"/>
+</linearGradient>
+<linearGradient id="g32_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00"/>
+</linearGradient>
+</defs>
+<path d="M 44.0 119.0 L 150.0 99.0 L 538.0 99.0 L 596.0 112.0 L 538.0 135.0 L 150.0 135.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.1" stroke-linejoin="round" /><path d="M 44.0 112.0 L 150.0 92.0 L 538.0 92.0 L 596.0 105.0 L 538.0 128.0 L 150.0 128.0 Z" fill="url(#g32)" stroke="#9BB2D3" stroke-width="2" opacity="1" stroke-linejoin="round" /><path d="M 44.0 112.0 L 150.0 92.0 L 538.0 92.0 L 596.0 105.0 Z" fill="url(#g32_hl)" stroke="none" stroke-width="0" opacity="0.35" stroke-linejoin="round" />
+</svg>

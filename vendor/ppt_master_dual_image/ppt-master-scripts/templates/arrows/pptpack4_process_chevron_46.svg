@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_46.svg
+  License: custom pack permission; see assets/ppt_arrow_pack4_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg">
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C9D9F4" />
+      <stop offset="58%" stop-color="#EEF5FF" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E8F1FF" />
+      <stop offset="100%" stop-color="#B8CCE9" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack4_process_chevron_46" transform="translate(150.000 215.250) scale(1.225000)">
+    <rect xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" />
+  
+    <polygon xmlns="http://www.w3.org/2000/svg" points="262.0,31.0 512.0,31.0 512.0,75.0 417.0,75.0 417.0,89.0 387.0,95.0 357.0,89.0 357.0,75.0 262.0,75.0" fill="#496A9E" opacity="0.08" />
+  
+    <polygon xmlns="http://www.w3.org/2000/svg" points="260.0,26.0 510.0,26.0 510.0,70.0 415.0,70.0 415.0,84.0 385.0,90.0 355.0,84.0 355.0,70.0 260.0,70.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="1.6" stroke-linejoin="round" />
+  
+    <polygon xmlns="http://www.w3.org/2000/svg" points="262.0,87.0 327.0,87.0 387.0,107.0 447.0,87.0 512.0,87.0 512.0,131.0 420.0,131.0 387.0,151.0 354.0,131.0 262.0,131.0" fill="#496A9E" opacity="0.08" />
+  
+    <polygon xmlns="http://www.w3.org/2000/svg" points="260.0,82.0 325.0,82.0 385.0,102.0 445.0,82.0 510.0,82.0 510.0,126.0 418.0,126.0 385.0,146.0 352.0,126.0 260.0,126.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="1.6" stroke-linejoin="round" />
+  
+    <polygon xmlns="http://www.w3.org/2000/svg" points="322.0,147.0 482.0,147.0 482.0,191.0 537.0,191.0 402.0,223.0 267.0,191.0 322.0,191.0" fill="#496A9E" opacity="0.08" />
+  
+    <polygon xmlns="http://www.w3.org/2000/svg" points="320.0,142.0 480.0,142.0 480.0,186.0 535.0,186.0 400.0,218.0 265.0,186.0 320.0,186.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="1.6" stroke-linejoin="round" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack4_process_chevron_46</text>
+</svg>

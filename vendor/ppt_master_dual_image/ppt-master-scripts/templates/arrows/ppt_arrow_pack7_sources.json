@@ -1,0 +1,1477 @@
+{
+  "meta": {
+    "purpose": "PPT arrow asset pack 07 selected relationship arrows: orthogonal connector routes, hub exchange topology, and cycle feedback routes for connector-heavy architecture and process pages.",
+    "updated": "2026-07-02",
+    "license_policy": "Self-made PPT assets; see assets/ppt_arrow_pack7_sources/README.md and index.csv.",
+    "license_reference": "assets/ppt_arrow_pack7_sources/README.md",
+    "selection_policy": "Only connector and relationship-oriented categories from source pack 07 are imported; main-chain, chevron, flat primitive, and ghost backbone categories remain outside the runtime library."
+  },
+  "sources": [
+    {
+      "key": "pptpack7_orthogonal_connector_001",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_001.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_002",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_002.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_003",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_003.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_004",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_004.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_005",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_005.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_006",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_006.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_007",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_007.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_008",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_008.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_009",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_009.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_010",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_010.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_011",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_011.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_012",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_012.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_013",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_013.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_014",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_014.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_015",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_015.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_016",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_016.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_017",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_017.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_018",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_018.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_019",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_019.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_020",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_020.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_021",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_021.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_022",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_022.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_023",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_023.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_024",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_024.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_025",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_025.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_026",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_026.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_027",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_027.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_028",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_028.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_029",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_029.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_030",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_030.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_031",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_031.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_032",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_032.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_033",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_033.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_034",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_034.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_035",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_035.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_036",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_036.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_037",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_037.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_038",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_038.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_039",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_039.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_040",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_040.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_041",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_041.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_042",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_042.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_043",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_043.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_044",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_044.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_045",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_045.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_046",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_046.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_047",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_047.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_048",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_048.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_049",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_049.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_050",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_050.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_051",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_051.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_052",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_052.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_053",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_053.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_054",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_054.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_055",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_055.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_056",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_056.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_057",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_057.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_058",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_058.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_059",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_059.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_060",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_060.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_061",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_061.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_062",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_062.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_063",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_063.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_064",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_064.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_065",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_065.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_066",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_066.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_067",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_067.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_068",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_068.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_069",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_069.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_070",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_070.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_071",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_071.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_072",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_072.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_073",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_073.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_074",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_074.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_075",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_075.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_076",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_076.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_077",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_077.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_078",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_078.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_079",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_079.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_080",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_080.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_081",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_081.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_082",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_082.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_083",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_083.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_084",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_084.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_085",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_085.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_086",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_086.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_087",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_087.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_088",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_088.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_089",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_089.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_090",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_090.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_091",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_091.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_092",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_092.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_093",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_093.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_094",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_094.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_095",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_095.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_096",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_096.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_097",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_097.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_098",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_098.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_099",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_099.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_100",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_100.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_101",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_101.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_102",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_102.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_103",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_103.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_104",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_104.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_105",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_105.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_106",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_106.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_107",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_107.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_108",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_108.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_109",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_109.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_110",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_110.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_111",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_111.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_112",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_112.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_113",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_113.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_114",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_114.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_115",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_115.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_116",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_116.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_117",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_117.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_118",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_118.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_119",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_119.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_orthogonal_connector_120",
+      "local_source": "assets/ppt_arrow_pack7_sources/08_Orthogonal_Connector_Routes/orthogonal_connector_120.svg",
+      "summary": "Pick for orthogonal connector routes, branch lines, parallel routes, route turns, or return-style module connections; tags: connector, route, branch, arrow line. Skip for hub-spoke topology (use pptpack7_hub_exchange_topology_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_001",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_001.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_002",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_002.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_003",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_003.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_004",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_004.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_005",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_005.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_006",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_006.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_007",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_007.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_008",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_008.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_009",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_009.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_010",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_010.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_011",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_011.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_012",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_012.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_013",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_013.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_014",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_014.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_015",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_015.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_016",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_016.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_017",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_017.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_018",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_018.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_019",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_019.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_020",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_020.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_021",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_021.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_022",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_022.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_023",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_023.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_024",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_024.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_025",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_025.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_026",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_026.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_027",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_027.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_028",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_028.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_029",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_029.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_030",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_030.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_031",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_031.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_032",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_032.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_033",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_033.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_034",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_034.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_035",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_035.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_036",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_036.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_037",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_037.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_038",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_038.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_039",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_039.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_040",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_040.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_041",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_041.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_042",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_042.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_043",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_043.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_044",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_044.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_045",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_045.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_046",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_046.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_047",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_047.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_hub_exchange_topology_048",
+      "local_source": "assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_048.svg",
+      "summary": "Pick for hub exchange topology, node-spoke relationships, central routing, multi-direction exchange, or platform interaction maps; tags: hub, topology, exchange, spokes. Skip for plain orthogonal connector routes (use pptpack7_orthogonal_connector_001).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack7_cycle_feedback_001",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_001.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_002",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_002.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_003",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_003.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_004",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_004.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_005",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_005.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_006",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_006.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_007",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_007.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_008",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_008.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_009",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_009.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_010",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_010.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_011",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_011.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_012",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_012.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_013",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_013.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_014",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_014.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_015",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_015.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_016",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_016.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_017",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_017.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_018",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_018.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_019",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_019.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_020",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_020.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_021",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_021.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_022",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_022.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_023",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_023.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_024",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_024.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_025",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_025.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_026",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_026.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_027",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_027.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_028",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_028.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_029",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_029.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_030",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_030.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_031",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_031.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_032",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_032.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_033",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_033.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_034",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_034.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_035",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_035.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_036",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_036.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_037",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_037.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_038",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_038.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_039",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_039.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_040",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_040.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_041",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_041.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_042",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_042.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_043",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_043.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_044",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_044.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_045",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_045.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_046",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_046.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_047",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_047.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_048",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_048.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_049",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_049.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_050",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_050.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_051",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_051.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_052",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_052.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_053",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_053.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_054",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_054.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_055",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_055.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_056",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_056.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_057",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_057.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_058",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_058.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_059",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_059.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    },
+    {
+      "key": "pptpack7_cycle_feedback_060",
+      "local_source": "assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_060.svg",
+      "summary": "Pick for cycle feedback routes, closed-loop governance, circular process arrows, return loops, or iterative feedback mechanisms; tags: cycle, loop, feedback, closed-loop. Skip for straight/orthogonal module connectors (use pptpack7_orthogonal_connector_001).",
+      "layout": "vertical",
+      "scale_multiplier": 0.95
+    }
+  ],
+  "deferred": [
+    {
+      "category": "low_profile_reference_style_gradient",
+      "reason": "main-chain channel arrows; not part of the connector-focused import"
+    },
+    {
+      "category": "low_profile_reference_style_flat",
+      "reason": "flat main-chain variants; not part of the connector-focused import"
+    },
+    {
+      "category": "low_profile_reference_style_outline",
+      "reason": "outline main-chain variants; not part of the connector-focused import"
+    },
+    {
+      "category": "isometric_deck_channel_gradient",
+      "reason": "platform channel arrows; not part of the connector-focused import"
+    },
+    {
+      "category": "chevron_process_gradient",
+      "reason": "process chevrons; already covered by other packs and outside connector focus"
+    },
+    {
+      "category": "chevron_process_flat",
+      "reason": "flat process chevrons; outside connector focus"
+    },
+    {
+      "category": "split_merge_area_gradient",
+      "reason": "area arrows; useful but not connector-line focused"
+    },
+    {
+      "category": "panel_carrier_ghost_backbones",
+      "reason": "background backbone shapes; outside connector focus"
+    },
+    {
+      "category": "flat_editable_primitives",
+      "reason": "primitive block arrows; outside connector focus"
+    }
+  ]
+}

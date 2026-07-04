@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" role="img" aria-label="Milestone Chevron Timeline 25">
+<title>Milestone Chevron Timeline 25</title>
+<desc>milestone chevron timeline</desc>
+<defs>
+<linearGradient id="chev24" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8FBFF"/>
+  <stop offset="42%" stop-color="#E8F0FA"/>
+  <stop offset="100%" stop-color="#CADAF0"/>
+</linearGradient>
+<linearGradient id="chev24_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00"/>
+</linearGradient>
+</defs>
+<path d="M 34.0 62.0 L 186.7 62.0 L 220.7 92.0 L 186.7 122.0 L 34.0 122.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 34.0 58.0 L 186.7 58.0 L 220.7 88.0 L 186.7 118.0 L 34.0 118.0 Z" fill="url(#chev24)" stroke="#9BB2D3" stroke-width="1.5" opacity="1" stroke-linejoin="round" /><path d="M 226.7 62.0 L 379.3 62.0 L 413.3 92.0 L 379.3 122.0 L 226.7 122.0 L 260.7 92.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 226.7 58.0 L 379.3 58.0 L 413.3 88.0 L 379.3 118.0 L 226.7 118.0 L 260.7 88.0 Z" fill="url(#chev24)" stroke="#9BB2D3" stroke-width="1.5" opacity="1" stroke-linejoin="round" /><path d="M 419.3 62.0 L 572.0 62.0 L 606.0 92.0 L 572.0 122.0 L 419.3 122.0 L 453.3 92.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 419.3 58.0 L 572.0 58.0 L 606.0 88.0 L 572.0 118.0 L 419.3 118.0 L 453.3 88.0 Z" fill="url(#chev24)" stroke="#9BB2D3" stroke-width="1.5" opacity="1" stroke-linejoin="round" />
+</svg>

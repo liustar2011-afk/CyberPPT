@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" role="img" aria-label="Converge Diverge Block 19">
+<title>Converge Diverge Block 19</title>
+<desc>three-stream convergence block</desc>
+<defs>
+<linearGradient id="conv18" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FBFDFF"/>
+  <stop offset="42%" stop-color="#E5EFFB"/>
+  <stop offset="100%" stop-color="#BED3ED"/>
+</linearGradient>
+<linearGradient id="conv18_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00"/>
+</linearGradient>
+</defs>
+<path d="M 35.0 48.0 L 260.0 48.0 L 360.0 94.0 L 260.0 70.0 L 35.0 70.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 35.0 44.0 L 260.0 44.0 L 360.0 90.0 L 260.0 66.0 L 35.0 66.0 Z" fill="url(#conv18)" stroke="#88A8CC" stroke-width="1.3" opacity="1" stroke-linejoin="round" /><path d="M 35.0 82.0 L 260.0 82.0 L 360.0 94.0 L 260.0 104.0 L 35.0 104.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 35.0 78.0 L 260.0 78.0 L 360.0 90.0 L 260.0 100.0 L 35.0 100.0 Z" fill="url(#conv18)" stroke="#88A8CC" stroke-width="1.3" opacity="1" stroke-linejoin="round" /><path d="M 35.0 116.0 L 260.0 116.0 L 360.0 94.0 L 260.0 138.0 L 35.0 138.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 35.0 112.0 L 260.0 112.0 L 360.0 90.0 L 260.0 134.0 L 35.0 134.0 Z" fill="url(#conv18)" stroke="#88A8CC" stroke-width="1.3" opacity="1" stroke-linejoin="round" /><path d="M 352.0 60.0 L 525.0 60.0 L 605.0 95.0 L 525.0 130.0 L 352.0 130.0 L 402.0 95.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.07" stroke-linejoin="round" /><path d="M 352.0 55.0 L 525.0 55.0 L 605.0 90.0 L 525.0 125.0 L 352.0 125.0 L 402.0 90.0 Z" fill="url(#conv18)" stroke="#88A8CC" stroke-width="1.5" opacity="1" stroke-linejoin="round" />
+</svg>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!-- Bottom baseline with repeated filled upward arrows. -->
+  <defs>
+    <linearGradient id="liftGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#D8E6F7"/>
+      <stop offset="45%" stop-color="#1D4F91"/>
+      <stop offset="100%" stop-color="#082B5F"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <text x="64" y="70" font-family="Microsoft YaHei, Arial, sans-serif" font-size="30" font-weight="700" fill="#0F172A">Bottom Lift Arrow Row</text>
+  <line x1="40" y1="610" x2="1240" y2="610" stroke="#0B3B76" stroke-width="8"/>
+  <line x1="40" y1="625" x2="1240" y2="625" stroke="#D8E6F7" stroke-width="2"/>
+  <g fill="url(#liftGrad)" stroke="#D8E6F7" stroke-width="2">
+    <path d="M205,590 H245 V548 H275 L225,490 L175,548 H205 Z"/>
+    <path d="M425,590 H465 V548 H495 L445,490 L395,548 H425 Z"/>
+    <path d="M645,590 H685 V548 H715 L665,490 L615,548 H645 Z"/>
+    <path d="M865,590 H905 V548 H935 L885,490 L835,548 H865 Z"/>
+    <path d="M1085,590 H1125 V548 H1155 L1105,490 L1055,548 H1085 Z"/>
+  </g>
+  <text x="640" y="665" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700" fill="#123A73">foundation layer lift into upper systems</text>
+</svg>
+

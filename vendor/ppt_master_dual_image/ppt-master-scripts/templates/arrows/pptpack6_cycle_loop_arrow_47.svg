@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack6_sources/05_Cycle_And_Loop_Arrows/cycle_loop_arrow_47.svg
+  License: custom pack permission; see assets/ppt_arrow_pack6_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg" />
+
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack6_cycle_loop_arrow_47" transform="translate(150.000 212.188) scale(1.531250)">
+    <desc xmlns="http://www.w3.org/2000/svg">compact cycle loop arrow</desc>
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 420 52 A 78 78 0 1 1 239 83" fill="none" stroke="#9BB2D3" stroke-width="20" opacity="0.42" stroke-linecap="round" stroke-linejoin="round" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M 232.8 66.1 L 250.6 89.8 L 234.5 95.7 Z" fill="#9BB2D3" stroke="none" stroke-width="0" opacity="1" stroke-linejoin="round" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M 220 128 A 78 78 0 0 1 395 52" fill="none" stroke="#9BB2D3" stroke-width="15" opacity="0.25" stroke-linecap="round" stroke-linejoin="round" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M 410.0 46.5 L 388.9 62.4 L 383.7 48.0 Z" fill="#9BB2D3" stroke="none" stroke-width="0" opacity="1" stroke-linejoin="round" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack6_cycle_loop_arrow_47</text>
+</svg>

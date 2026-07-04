@@ -1,0 +1,140 @@
+{
+  "image_size": {
+    "width": 2048,
+    "height": 1011
+  },
+  "items": [
+    {
+      "text": "2025年全球能源投资总额",
+      "bbox": [
+        211.0,
+        199.0,
+        593.0,
+        232.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "3.3万亿美元",
+      "bbox": [
+        211.0,
+        276.0,
+        597.0,
+        345.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "清洁能源相关投资约",
+      "bbox": [
+        755.0,
+        191.0,
+        1091.0,
+        227.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "2.2万亿美元",
+      "bbox": [
+        734.0,
+        254.0,
+        1094.0,
+        316.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "约占全球能源投资三分之二",
+      "bbox": [
+        735.0,
+        356.0,
+        1082.0,
+        385.0
+      ],
+      "confidence": 0.94,
+      "source": "vision-json"
+    },
+    {
+      "text": "审查对象扩展",
+      "bbox": [
+        230.0,
+        598.0,
+        457.0,
+        632.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "从单一项目扩展到企业整体",
+      "bbox": [
+        171.0,
+        657.0,
+        512.0,
+        686.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "审查材料扩展为证据链",
+      "bbox": [
+        834.0,
+        598.0,
+        1200.0,
+        632.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "从资质证书扩展为可核验证据",
+      "bbox": [
+        829.0,
+        657.0,
+        1209.0,
+        686.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "审查方式扩展为持续监测",
+      "bbox": [
+        1506.0,
+        598.0,
+        1903.0,
+        632.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "从一次性审查扩展为动态跟踪",
+      "bbox": [
+        1513.0,
+        657.0,
+        1895.0,
+        686.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "这一趋势是建设行业化能力证明体系的根本动因",
+      "bbox": [
+        511.0,
+        838.0,
+        1608.0,
+        891.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    }
+  ]
+}

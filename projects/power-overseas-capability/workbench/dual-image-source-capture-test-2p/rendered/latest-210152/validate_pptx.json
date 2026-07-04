@@ -1,0 +1,69 @@
+{
+  "file": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-source-capture-test-2p/ppt-master-run/exports/ppt-master-run_20260704_210152.pptx",
+  "summary": {
+    "slide_count": 2,
+    "width_emu": 12192000,
+    "height_emu": 6858000,
+    "aspect_ratio": 1.7778,
+    "native_text_shapes": 54,
+    "native_graphic_shapes": 54,
+    "pictures": 2,
+    "charts": 0,
+    "tables": 0
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 1
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 1
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 2
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 2
+    }
+  ],
+  "slides": [
+    {
+      "slide": 1,
+      "native_text_shapes": 31,
+      "native_graphic_shapes": 31,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 32,
+      "coverage_ratio": 0.8803,
+      "picture_area_ratio": 0.7772,
+      "max_picture_area_ratio": 0.7772,
+      "min_font_size_pt": 9.5,
+      "max_font_size_pt": 22.5,
+      "text_characters": 285
+    },
+    {
+      "slide": 2,
+      "native_text_shapes": 23,
+      "native_graphic_shapes": 23,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 24,
+      "coverage_ratio": 0.8774,
+      "picture_area_ratio": 0.7772,
+      "max_picture_area_ratio": 0.7772,
+      "min_font_size_pt": 12.0,
+      "max_font_size_pt": 24.0,
+      "text_characters": 201
+    }
+  ]
+}

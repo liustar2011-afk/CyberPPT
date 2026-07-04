@@ -1,0 +1,56 @@
+{
+  "pages": [
+    {
+      "page_number": 2,
+      "title": "核心结论",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-source-capture-test-2p/ppt-master-run/analysis/semantic_plan/page_002_semantic_plan.json",
+      "semantic_containers": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-source-capture-test-2p/ppt-master-run/analysis/semantic_containers/page_002_containers.json",
+      "image_size_check": {
+        "status": "matched",
+        "full_size": [
+          1799,
+          874
+        ],
+        "background_size": [
+          1799,
+          874
+        ],
+        "output_size": [
+          1799,
+          874
+        ],
+        "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-source-capture-test-2p/ppt-master-run/images/page_002_核心结论_background.png"
+      },
+      "text_color_check": {
+        "white_text_boxes": 12,
+        "total_text_boxes": 23
+      }
+    },
+    {
+      "page_number": 3,
+      "title": "环境变化：从\"资质审查\"转向\"持续证据审查\"",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-source-capture-test-2p/ppt-master-run/analysis/semantic_plan/page_003_semantic_plan.json",
+      "semantic_containers": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-source-capture-test-2p/ppt-master-run/analysis/semantic_containers/page_003_containers.json",
+      "image_size_check": {
+        "status": "matched",
+        "full_size": [
+          1796,
+          876
+        ],
+        "background_size": [
+          1796,
+          876
+        ],
+        "output_size": [
+          1796,
+          876
+        ],
+        "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability/workbench/dual-image-source-capture-test-2p/ppt-master-run/images/page_003_环境变化_从_资质审查_转向_持续证据审查_background.png"
+      },
+      "text_color_check": {
+        "white_text_boxes": 4,
+        "total_text_boxes": 17
+      }
+    }
+  ]
+}

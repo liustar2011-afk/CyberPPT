@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack6_sources/04_Converge_Diverge_Blocks/converge_diverge_block_35.svg
+  License: custom pack permission; see assets/ppt_arrow_pack6_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg">
+<linearGradient id="conv34" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F7FBFF" />
+  <stop offset="42%" stop-color="#E2ECF8" />
+  <stop offset="100%" stop-color="#C8D8ED" />
+</linearGradient>
+<linearGradient id="conv34_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70" />
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00" />
+</linearGradient>
+</defs>
+
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack6_converge_diverge_block_35" transform="translate(150.000 212.188) scale(1.531250)">
+    <desc xmlns="http://www.w3.org/2000/svg">wide funnel channel arrow</desc>
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 35.0 51.0 L 210.0 51.0 L 360.0 81.0 L 525.0 81.0 L 605.0 95.0 L 525.0 109.0 L 360.0 109.0 L 210.0 139.0 L 35.0 139.0 L 148.0 95.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.07" stroke-linejoin="round" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M 35.0 46.0 L 210.0 46.0 L 360.0 76.0 L 525.0 76.0 L 605.0 90.0 L 525.0 104.0 L 360.0 104.0 L 210.0 134.0 L 35.0 134.0 L 148.0 90.0 Z" fill="url(#conv34)" stroke="#91A9C7" stroke-width="1.5" opacity="1" stroke-linejoin="round" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack6_converge_diverge_block_35</text>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="220" viewBox="0 0 800 220" role="img">
+  <title>gradient_mainchain_06</title>
+  <rect width="100%" height="100%" fill="none"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C9D9F4"/>
+      <stop offset="58%" stop-color="#EEF5FF"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+    <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E8F1FF"/>
+      <stop offset="100%" stop-color="#B8CCE9"/>
+    </linearGradient>
+  </defs>
+  <polygon points="124.0,94.0 416.2,38.0 623.0,94.0 623.0,55.0 729.0,120.0 623.0,185.0 623.0,146.0 416.2,128.0 124.0,146.0 44.0,120.0" fill="#496A9E" opacity="0.12"/>
+  <polygon points="120.0,86.0 412.2,30.0 619.0,86.0 619.0,47.0 725.0,112.0 619.0,177.0 619.0,138.0 412.2,120.0 120.0,138.0 40.0,112.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="128.0,92.0 412.2,38.0 611.0,92.0 611.0,104.0 412.2,50.0 128.0,104.0" fill="#FFFFFF" opacity="0.36"/>
+</svg>

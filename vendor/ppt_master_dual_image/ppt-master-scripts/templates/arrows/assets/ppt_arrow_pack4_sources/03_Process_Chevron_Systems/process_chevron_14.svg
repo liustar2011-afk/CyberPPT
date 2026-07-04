@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="220" viewBox="0 0 800 220" role="img">
+  <title>process_chevron_14</title>
+  <rect width="100%" height="100%" fill="none"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C9D9F4"/>
+      <stop offset="58%" stop-color="#EEF5FF"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+    <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E8F1FF"/>
+      <stop offset="100%" stop-color="#B8CCE9"/>
+    </linearGradient>
+  </defs>
+  <polygon points="48.0,89.0 119.0,89.0 166.0,120.0 119.0,151.0 48.0,151.0" fill="#496A9E" opacity="0.1"/>
+  <polygon points="195.2,89.0 245.0,89.0 292.0,120.0 245.0,151.0 195.2,151.0 221.0,120.0" fill="#496A9E" opacity="0.1"/>
+  <polygon points="321.1,89.0 371.0,89.0 418.0,120.0 371.0,151.0 321.1,151.0 347.0,120.0" fill="#496A9E" opacity="0.1"/>
+  <polygon points="447.1,89.0 497.0,89.0 544.0,120.0 497.0,151.0 447.1,151.0 473.0,120.0" fill="#496A9E" opacity="0.1"/>
+  <polygon points="573.1,89.0 623.0,89.0 670.0,120.0 623.0,151.0 573.1,151.0 599.0,120.0" fill="#496A9E" opacity="0.1"/>
+  <polygon points="45.0,82.0 116.0,82.0 163.0,113.0 116.0,144.0 45.0,144.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="192.2,82.0 242.0,82.0 289.0,113.0 242.0,144.0 192.2,144.0 218.0,113.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="318.1,82.0 368.0,82.0 415.0,113.0 368.0,144.0 318.1,144.0 344.0,113.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="444.1,82.0 494.0,82.0 541.0,113.0 494.0,144.0 444.1,144.0 470.0,113.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="570.1,82.0 620.0,82.0 667.0,113.0 620.0,144.0 570.1,144.0 596.0,113.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="2" stroke-linejoin="round"/>
+</svg>

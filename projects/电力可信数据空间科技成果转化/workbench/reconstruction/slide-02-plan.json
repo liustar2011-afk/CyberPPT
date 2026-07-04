@@ -5,6 +5,23 @@
   "canvas_size": "16:9, 13.333 x 7.5 inch",
   "background_color_sample": "#F7F6F0",
   "surface_system": "warm ivory continuous surface, deep-blue page badge, thin dividers, subtle matrix panels",
+  "blueprint_layout_context": {
+    "source": "projects/电力可信数据空间科技成果转化/workbench/reconstruction/blueprint-layout-context.json",
+    "learning_source": "projects/电力可信数据空间科技成果转化/workbench/blueprints/blueprint-image-learning.json",
+    "safe_body_zone_in": {
+      "x": 0.267,
+      "y": 0.875,
+      "w": 12.779,
+      "h": 5.419
+    },
+    "so_what_band_in": {
+      "x": 0.267,
+      "y": 6.44,
+      "w": 12.795,
+      "h": 0.514
+    },
+    "final_text_source": "content-lock"
+  },
   "layout_regions": ["title_header", "main_timeline_matrix", "right_policy_panel", "bottom_so_what", "footer"],
   "header_footer_system": "left page badge, title and subtitle on top, source footer",
   "so_what_region": "bottom horizontal band with three implications and final conclusion box",

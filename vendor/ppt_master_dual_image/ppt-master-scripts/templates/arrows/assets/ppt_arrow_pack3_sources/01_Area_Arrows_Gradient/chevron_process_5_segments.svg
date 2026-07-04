@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="260" viewBox="0 0 960 260" fill="none">
+<defs>
+<linearGradient id="fillMain" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#BFD3F3"/>
+  <stop offset="52%" stop-color="#EEF4FF"/>
+  <stop offset="100%" stop-color="#FFFFFF"/>
+</linearGradient>
+<linearGradient id="fillTop" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.05"/>
+  <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.55"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.05"/>
+</linearGradient>
+</defs>
+<polygon points="60.0,83.0 163.4,83.0 218.4,135.0 163.4,187.0 60.0,187.0 115.0,135.0" fill="#000000" opacity="0.1"/>
+<polygon points="60.0,78.0 163.4,78.0 218.4,130.0 163.4,182.0 60.0,182.0 115.0,130.0" fill="url(#fillMain)" stroke="#8AA8D5" stroke-width="1.2" opacity="1" stroke-linejoin="round"/>
+<polygon points="230.4,83.0 333.8,83.0 388.8,135.0 333.8,187.0 230.4,187.0 285.4,135.0" fill="#000000" opacity="0.1"/>
+<polygon points="230.4,78.0 333.8,78.0 388.8,130.0 333.8,182.0 230.4,182.0 285.4,130.0" fill="url(#fillMain)" stroke="#8AA8D5" stroke-width="1.2" opacity="1" stroke-linejoin="round"/>
+<polygon points="400.8,83.0 504.2,83.0 559.2,135.0 504.2,187.0 400.8,187.0 455.8,135.0" fill="#000000" opacity="0.1"/>
+<polygon points="400.8,78.0 504.2,78.0 559.2,130.0 504.2,182.0 400.8,182.0 455.8,130.0" fill="url(#fillMain)" stroke="#8AA8D5" stroke-width="1.2" opacity="1" stroke-linejoin="round"/>
+<polygon points="571.2,83.0 674.6,83.0 729.6,135.0 674.6,187.0 571.2,187.0 626.2,135.0" fill="#000000" opacity="0.1"/>
+<polygon points="571.2,78.0 674.6,78.0 729.6,130.0 674.6,182.0 571.2,182.0 626.2,130.0" fill="url(#fillMain)" stroke="#8AA8D5" stroke-width="1.2" opacity="1" stroke-linejoin="round"/>
+<polygon points="741.6,83.0 845.0,83.0 900.0,135.0 845.0,187.0 741.6,187.0 796.6,135.0" fill="#000000" opacity="0.1"/>
+<polygon points="741.6,78.0 845.0,78.0 900.0,130.0 845.0,182.0 741.6,182.0 796.6,130.0" fill="url(#fillMain)" stroke="#8AA8D5" stroke-width="1.2" opacity="1" stroke-linejoin="round"/>
+
+</svg>

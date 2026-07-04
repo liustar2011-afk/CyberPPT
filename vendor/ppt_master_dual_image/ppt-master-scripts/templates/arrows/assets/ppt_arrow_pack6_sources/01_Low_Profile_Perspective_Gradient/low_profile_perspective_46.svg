@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" role="img" aria-label="Low Profile Perspective Arrow 46">
+<title>Low Profile Perspective Arrow 46</title>
+<desc>center-ridge platform backbone</desc>
+<defs>
+<linearGradient id="g45" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FBFDFF"/>
+  <stop offset="42%" stop-color="#E5EFFB"/>
+  <stop offset="100%" stop-color="#BED3ED"/>
+</linearGradient>
+<linearGradient id="g45_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00"/>
+</linearGradient>
+</defs>
+<path d="M 38.0 112.0 L 235.0 112.0 L 320.0 49.0 L 405.0 112.0 L 602.0 112.0 L 522.0 137.0 L 118.0 137.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.1" stroke-linejoin="round" /><path d="M 38.0 105.0 L 235.0 105.0 L 320.0 42.0 L 405.0 105.0 L 602.0 105.0 L 522.0 130.0 L 118.0 130.0 Z" fill="url(#g45)" stroke="#88A8CC" stroke-width="2" opacity="1" stroke-linejoin="round" />
+</svg>

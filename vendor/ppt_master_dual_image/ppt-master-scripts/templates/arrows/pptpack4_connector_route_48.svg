@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_48.svg
+  License: custom pack permission; see assets/ppt_arrow_pack4_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack4_connector_route_48" transform="translate(150.000 215.250) scale(1.225000)">
+    <rect xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 130 55 L 650 55 Q 685 55 685 90 L 685 120 Q 685 155 650 155 L 130 155" fill="none" opacity="0.8" stroke="#6F8FBD" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  
+    <polygon xmlns="http://www.w3.org/2000/svg" points="130.0,155.0 146.0,146.2 146.0,163.8" fill="#6F8FBD" opacity="1" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack4_connector_route_48</text>
+</svg>

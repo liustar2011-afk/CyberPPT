@@ -1,0 +1,1136 @@
+{
+  "image_size": {
+    "width": 1280,
+    "height": 720
+  },
+  "title": "知识产权全生命周期五阶段",
+  "notes": "# 知识产权全生命周期保护\n\n本页展示知识产权数据从权利人侧产生，到研发、申请、授权、使用、维权五阶段的全生命周期保护路径。技术支撑方通过数据授权、受控接入、可信计算、成果输出、调用计量和审计留痕形成加工链条，输出固化的权属证据和侵权鉴定报告，并与司法鉴定机构、律师事务所、代理机构、法院等第三方服务方形成在线服务闭环。右侧可信机制强调数据可信、授权可信、结果可信和价值可信，面向用户方提供全周期保护服务。",
+  "items": [
+    {
+      "display_text": "数据来源方",
+      "source_text": "数据来源方",
+      "bbox": [
+        22,
+        14,
+        128,
+        38
+      ],
+      "font_size": 15,
+      "font_weight": "700",
+      "fill": "#ffffff",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "actor_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "知识产权权利人",
+      "source_text": "知识产权权利人",
+      "bbox": [
+        28,
+        158,
+        133,
+        181
+      ],
+      "font_size": 14,
+      "font_weight": "700",
+      "fill": "#078b8b",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "actor_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "专利、软著、集成电路\n布图设计、技术秘密等\n知识产权数据，覆盖\n研发、申请、授权、使用、\n维权五阶段",
+      "source_text": "专利、软著、集成电路布图设计、技术秘密等知识产权数据，覆盖研发、申请、授权、使用、维权五阶段",
+      "bbox": [
+        18,
+        185,
+        142,
+        294
+      ],
+      "font_size": 10.5,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "actor_summary",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "用户方",
+      "source_text": "用户方",
+      "bbox": [
+        1170,
+        14,
+        1260,
+        38
+      ],
+      "font_size": 15,
+      "font_weight": "700",
+      "fill": "#ffffff",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "actor_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "知识产权权利人",
+      "source_text": "知识产权权利人",
+      "bbox": [
+        1131,
+        158,
+        1254,
+        181
+      ],
+      "font_size": 14,
+      "font_weight": "700",
+      "fill": "#078b8b",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "actor_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "接受全周期保护服务的\n受益者，获得权属证据与\n侵权监测等全流程服务，\n高效保障合法权益",
+      "source_text": "接受全周期保护服务的受益者，获得权属证据与侵权监测等全流程服务，高效保障合法权益",
+      "bbox": [
+        1124,
+        190,
+        1260,
+        272
+      ],
+      "font_size": 10.8,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "actor_summary",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "知识产权全生命周期五阶段",
+      "source_text": "知识产权全生命周期五阶段",
+      "bbox": [
+        542,
+        20,
+        792,
+        46
+      ],
+      "font_size": 15.5,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "title",
+      "container_fit": false
+    },
+    {
+      "display_text": "1",
+      "source_text": "1",
+      "bbox": [
+        219,
+        73,
+        241,
+        97
+      ],
+      "font_size": 14,
+      "font_weight": "700",
+      "fill": "#ffffff",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "index",
+      "container_fit": false
+    },
+    {
+      "display_text": "研发",
+      "source_text": "研发",
+      "bbox": [
+        255,
+        75,
+        312,
+        99
+      ],
+      "font_size": 13,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "stage_label",
+      "container_fit": false
+    },
+    {
+      "display_text": "· 研发过程产生的\n  创新成果\n· 实验数据、设计\n  文档等",
+      "source_text": "研发过程产生的创新成果；实验数据、设计文档等",
+      "bbox": [
+        254,
+        117,
+        346,
+        193
+      ],
+      "font_size": 9.5,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "stage_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "2",
+      "source_text": "2",
+      "bbox": [
+        396,
+        73,
+        418,
+        97
+      ],
+      "font_size": 14,
+      "font_weight": "700",
+      "fill": "#ffffff",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "index",
+      "container_fit": false
+    },
+    {
+      "display_text": "申请",
+      "source_text": "申请",
+      "bbox": [
+        430,
+        75,
+        488,
+        99
+      ],
+      "font_size": 13,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "stage_label",
+      "container_fit": false
+    },
+    {
+      "display_text": "· 专利申请、软著登\n  记、布图设计登记\n  等申请材料\n· 提交与受理信息",
+      "source_text": "专利申请、软著登记、布图设计登记等申请材料；提交与受理信息",
+      "bbox": [
+        426,
+        117,
+        517,
+        198
+      ],
+      "font_size": 9.2,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "stage_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "3",
+      "source_text": "3",
+      "bbox": [
+        574,
+        73,
+        596,
+        97
+      ],
+      "font_size": 14,
+      "font_weight": "700",
+      "fill": "#ffffff",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "index",
+      "container_fit": false
+    },
+    {
+      "display_text": "授权",
+      "source_text": "授权",
+      "bbox": [
+        609,
+        75,
+        667,
+        99
+      ],
+      "font_size": 13,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "stage_label",
+      "container_fit": false
+    },
+    {
+      "display_text": "· 专利授权、软著登\n  记证书、布图设计\n  登记证书等\n· 授权公告信息",
+      "source_text": "专利授权、软著登记证书、布图设计登记证书等；授权公告信息",
+      "bbox": [
+        608,
+        117,
+        701,
+        198
+      ],
+      "font_size": 9.2,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "stage_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "4",
+      "source_text": "4",
+      "bbox": [
+        764,
+        73,
+        786,
+        97
+      ],
+      "font_size": 14,
+      "font_weight": "700",
+      "fill": "#ffffff",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "index",
+      "container_fit": false
+    },
+    {
+      "display_text": "使用",
+      "source_text": "使用",
+      "bbox": [
+        801,
+        75,
+        858,
+        99
+      ],
+      "font_size": 13,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "stage_label",
+      "container_fit": false
+    },
+    {
+      "display_text": "· 许可、转让、实施\n  及产品应用信息\n· 使用范围与场景\n  数据",
+      "source_text": "许可、转让、实施及产品应用信息；使用范围与场景数据",
+      "bbox": [
+        794,
+        117,
+        891,
+        198
+      ],
+      "font_size": 9.2,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "stage_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "5",
+      "source_text": "5",
+      "bbox": [
+        944,
+        73,
+        966,
+        97
+      ],
+      "font_size": 14,
+      "font_weight": "700",
+      "fill": "#ffffff",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "index",
+      "container_fit": false
+    },
+    {
+      "display_text": "维权",
+      "source_text": "维权",
+      "bbox": [
+        980,
+        75,
+        1038,
+        99
+      ],
+      "font_size": 13,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "stage_label",
+      "container_fit": false
+    },
+    {
+      "display_text": "· 侵权监测与证据\n  收集\n· 行政维权、司法\n  诉讼等",
+      "source_text": "侵权监测与证据收集；行政维权、司法诉讼等",
+      "bbox": [
+        977,
+        117,
+        1070,
+        198
+      ],
+      "font_size": 9.4,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "stage_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "技术支撑方：提供全网侵权监测技术，自动抓取侵权证据",
+      "source_text": "技术支撑方：提供全网侵权监测技术，自动抓取侵权证据",
+      "bbox": [
+        416,
+        250,
+        864,
+        273
+      ],
+      "font_size": 12.5,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "section_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "加工链条（对照九环节标注覆盖情况，本场景覆盖最完整）",
+      "source_text": "加工链条（对照九环节标注覆盖情况，本场景覆盖最完整）",
+      "bbox": [
+        404,
+        286,
+        875,
+        309
+      ],
+      "font_size": 12,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "section_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "数据授权",
+      "source_text": "数据授权",
+      "bbox": [
+        225,
+        333,
+        284,
+        355
+      ],
+      "font_size": 11,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "chain_label",
+      "container_fit": false
+    },
+    {
+      "display_text": "授权范围、使用\n期限、访问权限\n精细化管控",
+      "source_text": "授权范围、使用期限、访问权限精细化管控",
+      "bbox": [
+        197,
+        374,
+        294,
+        437
+      ],
+      "font_size": 9.3,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "chain_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "受控接入",
+      "source_text": "受控接入",
+      "bbox": [
+        349,
+        333,
+        408,
+        355
+      ],
+      "font_size": 11,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "chain_label",
+      "container_fit": false
+    },
+    {
+      "display_text": "“可用不可见、\n用途可控可计量”",
+      "source_text": "可用不可见、用途可控可计量",
+      "bbox": [
+        319,
+        375,
+        417,
+        425
+      ],
+      "font_size": 9.4,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "chain_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "可信计算",
+      "source_text": "可信计算",
+      "bbox": [
+        481,
+        333,
+        539,
+        355
+      ],
+      "font_size": 11,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "chain_label",
+      "container_fit": false
+    },
+    {
+      "display_text": "全网侵权监测\n技术手段",
+      "source_text": "全网侵权监测技术手段",
+      "bbox": [
+        454,
+        379,
+        546,
+        422
+      ],
+      "font_size": 9.6,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "chain_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "成果输出",
+      "source_text": "成果输出",
+      "bbox": [
+        617,
+        333,
+        675,
+        355
+      ],
+      "font_size": 11,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "chain_label",
+      "container_fit": false
+    },
+    {
+      "display_text": "固化权属证据、\n侵权鉴定报告",
+      "source_text": "固化权属证据、侵权鉴定报告",
+      "bbox": [
+        591,
+        378,
+        684,
+        422
+      ],
+      "font_size": 9.6,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "chain_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "调用计量",
+      "source_text": "调用计量",
+      "bbox": [
+        745,
+        333,
+        803,
+        355
+      ],
+      "font_size": 11,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "chain_label",
+      "container_fit": false
+    },
+    {
+      "display_text": "使用计量\n杜绝超范围使用",
+      "source_text": "使用计量；杜绝超范围使用",
+      "bbox": [
+        717,
+        379,
+        815,
+        422
+      ],
+      "font_size": 9.6,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "chain_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "审计留痕",
+      "source_text": "审计留痕",
+      "bbox": [
+        859,
+        333,
+        919,
+        355
+      ],
+      "font_size": 11,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "chain_label",
+      "container_fit": false
+    },
+    {
+      "display_text": "全生命周期\n数据上链存证",
+      "source_text": "全生命周期数据上链存证",
+      "bbox": [
+        836,
+        379,
+        933,
+        422
+      ],
+      "font_size": 9.6,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "chain_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "目录发布\n主体认证\n收益结算\n非本场景原文\n展开重点",
+      "source_text": "目录发布；主体认证；收益结算；非本场景原文展开重点",
+      "bbox": [
+        979,
+        324,
+        1046,
+        444
+      ],
+      "font_size": 10,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "chain_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "技术支撑方\n与底座加工",
+      "source_text": "技术支撑方与底座加工",
+      "bbox": [
+        28,
+        354,
+        133,
+        402
+      ],
+      "font_size": 15,
+      "font_weight": "700",
+      "fill": "#0b3f8f",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "left_stage_label",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "服务产品",
+      "source_text": "服务产品",
+      "bbox": [
+        69,
+        506,
+        150,
+        530
+      ],
+      "font_size": 14.5,
+      "font_weight": "700",
+      "fill": "#078b8b",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "left_stage_label",
+      "container_fit": false
+    },
+    {
+      "display_text": "固化的权属证据",
+      "source_text": "固化的权属证据",
+      "bbox": [
+        347,
+        497,
+        473,
+        519
+      ],
+      "font_size": 13,
+      "font_weight": "700",
+      "fill": "#078b8b",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "product_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "可独立用于权属举证",
+      "source_text": "可独立用于权属举证",
+      "bbox": [
+        347,
+        525,
+        472,
+        544
+      ],
+      "font_size": 9.6,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "product_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "侵权鉴定报告",
+      "source_text": "侵权鉴定报告",
+      "bbox": [
+        713,
+        497,
+        831,
+        519
+      ],
+      "font_size": 13,
+      "font_weight": "700",
+      "fill": "#078b8b",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "product_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "对接司法鉴定机构出具，为维权提供完整证据链",
+      "source_text": "对接司法鉴定机构出具，为维权提供完整证据链",
+      "bbox": [
+        713,
+        525,
+        954,
+        544
+      ],
+      "font_size": 9.6,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "product_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "空间运营方",
+      "source_text": "空间运营方",
+      "bbox": [
+        87,
+        599,
+        199,
+        623
+      ],
+      "font_size": 14.5,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "left_stage_label",
+      "container_fit": false
+    },
+    {
+      "display_text": "中电联统筹知识产权保护规则，对接国家知识产权局\n实现数据互通，不承担底层监测技术研发",
+      "source_text": "中电联统筹知识产权保护规则，对接国家知识产权局实现数据互通，不承担底层监测技术研发",
+      "bbox": [
+        88,
+        642,
+        334,
+        685
+      ],
+      "font_size": 9.8,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "actor_summary",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "第三方服务方",
+      "source_text": "第三方服务方",
+      "bbox": [
+        465,
+        598,
+        590,
+        622
+      ],
+      "font_size": 14,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "section_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "司法鉴定机构",
+      "source_text": "司法鉴定机构",
+      "bbox": [
+        462,
+        634,
+        558,
+        654
+      ],
+      "font_size": 12,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "service_item",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "侵权鉴定",
+      "source_text": "侵权鉴定",
+      "bbox": [
+        484,
+        671,
+        548,
+        690
+      ],
+      "font_size": 10,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "service_item",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "律师事务所 / 知识产权代理机构",
+      "source_text": "律师事务所 / 知识产权代理机构",
+      "bbox": [
+        642,
+        634,
+        855,
+        654
+      ],
+      "font_size": 12,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "service_item",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "侵权投诉、行政维权、司法诉讼等全流程在线服务",
+      "source_text": "侵权投诉、行政维权、司法诉讼等全流程在线服务",
+      "bbox": [
+        596,
+        671,
+        900,
+        690
+      ],
+      "font_size": 10,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "service_item",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "法院",
+      "source_text": "法院",
+      "bbox": [
+        979,
+        634,
+        1038,
+        654
+      ],
+      "font_size": 12,
+      "font_weight": "700",
+      "fill": "#0b5fd6",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "service_item",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "司法诉讼在线服务",
+      "source_text": "司法诉讼在线服务",
+      "bbox": [
+        942,
+        671,
+        1078,
+        690
+      ],
+      "font_size": 10,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "service_item",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "可信机制贯穿全程",
+      "source_text": "可信机制贯穿全程",
+      "bbox": [
+        1130,
+        343,
+        1261,
+        366
+      ],
+      "font_size": 13.5,
+      "font_weight": "700",
+      "fill": "#f07b00",
+      "align": "center",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "section_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "数据可信",
+      "source_text": "数据可信",
+      "bbox": [
+        1131,
+        412,
+        1193,
+        430
+      ],
+      "font_size": 11.2,
+      "font_weight": "700",
+      "fill": "#f07b00",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "trust_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "全生命周期存证固化权属证据",
+      "source_text": "全生命周期存证固化权属证据",
+      "bbox": [
+        1132,
+        436,
+        1248,
+        452
+      ],
+      "font_size": 7.8,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "trust_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "授权可信",
+      "source_text": "授权可信",
+      "bbox": [
+        1131,
+        489,
+        1193,
+        507
+      ],
+      "font_size": 11.2,
+      "font_weight": "700",
+      "fill": "#f07b00",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "trust_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "授权范围 / 期限 / 计量精细化管控，\n“可用不可见、用途可控可计量”",
+      "source_text": "授权范围 / 期限 / 计量精细化管控，“可用不可见、用途可控可计量”",
+      "bbox": [
+        1132,
+        512,
+        1260,
+        544
+      ],
+      "font_size": 7.6,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "trust_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "结果可信",
+      "source_text": "结果可信",
+      "bbox": [
+        1131,
+        566,
+        1193,
+        584
+      ],
+      "font_size": 11.2,
+      "font_weight": "700",
+      "fill": "#f07b00",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "trust_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "侵权证据自动抓取上链固化，\n对接司法鉴定出具报告",
+      "source_text": "侵权证据自动抓取上链固化，对接司法鉴定出具报告",
+      "bbox": [
+        1132,
+        589,
+        1260,
+        621
+      ],
+      "font_size": 7.8,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "trust_body",
+      "container_fit": false,
+      "word_wrap": true
+    },
+    {
+      "display_text": "价值可信",
+      "source_text": "价值可信",
+      "bbox": [
+        1131,
+        645,
+        1193,
+        663
+      ],
+      "font_size": 11.2,
+      "font_weight": "700",
+      "fill": "#f07b00",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "trust_title",
+      "container_fit": false
+    },
+    {
+      "display_text": "杜绝超范围使用与盗版侵权，降低\n维权成本、提升维权效率",
+      "source_text": "杜绝超范围使用与盗版侵权，降低维权成本、提升维权效率",
+      "bbox": [
+        1132,
+        667,
+        1260,
+        699
+      ],
+      "font_size": 7.8,
+      "font_weight": "400",
+      "fill": "#111827",
+      "align": "left",
+      "v_align": "middle",
+      "lock_bbox": true,
+      "role": "trust_body",
+      "container_fit": false,
+      "word_wrap": true
+    }
+  ]
+}

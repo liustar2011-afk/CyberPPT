@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="220" viewBox="0 0 800 220" role="img">
+  <title>gradient_mainchain_30</title>
+  <rect width="100%" height="100%" fill="none"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C9D9F4"/>
+      <stop offset="58%" stop-color="#EEF5FF"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+    <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E8F1FF"/>
+      <stop offset="100%" stop-color="#B8CCE9"/>
+    </linearGradient>
+  </defs>
+  <polygon points="53.0,95.0 363.0,95.0 363.0,143.0 53.0,143.0" fill="#496A9E" opacity="0.1"/>
+  <polygon points="353.0,99.5 581.0,61.5 581.0,77.5 641.0,81.0 581.0,84.5 581.0,100.5 353.0,138.5" fill="#496A9E" opacity="0.1"/>
+  <polygon points="353.0,99.5 581.0,137.5 581.0,121.5 641.0,157.0 581.0,192.5 581.0,176.5 353.0,138.5" fill="#496A9E" opacity="0.1"/>
+  <polygon points="50.0,88.0 360.0,88.0 360.0,136.0 50.0,136.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="350.0,92.5 578.0,54.5 578.0,70.5 638.0,74.0 578.0,77.5 578.0,93.5 350.0,131.5" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="350.0,92.5 578.0,130.5 578.0,114.5 638.0,150.0 578.0,185.5 578.0,169.5 350.0,131.5" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="2" stroke-linejoin="round"/>
+</svg>

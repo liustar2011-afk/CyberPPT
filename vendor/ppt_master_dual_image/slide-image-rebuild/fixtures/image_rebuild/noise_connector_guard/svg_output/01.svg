@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#F4FAFF"/>
+  <g id="zone-intake" data-zone-id="zone_intake">
+    <rect x="100" y="220" width="250" height="180" rx="16" fill="#FFFFFF" stroke="#A9D2F2"/>
+    <text x="130" y="270" font-family="Microsoft YaHei" font-size="28" fill="#073A7C">Input</text>
+  </g>
+  <g id="ambient-streams">
+    <path d="M350 270 C450 250, 520 265, 600 320" fill="none" stroke="#38BFD9" stroke-width="8" stroke-opacity="0.22"/>
+    <path d="M350 330 C460 330, 520 330, 600 330" fill="none" stroke="#38BFD9" stroke-width="7" stroke-opacity="0.30"/>
+    <path d="M350 390 C450 410, 520 385, 600 340" fill="none" stroke="#38BFD9" stroke-width="8" stroke-opacity="0.22"/>
+  </g>
+  <polygon data-chain-connector="intake-&gt;hub" data-primitive="horizontal_arrow_connector" points="602,330 574,316 576,344" fill="#38BFD9" fill-opacity="0.68"/>
+  <g id="zone-hub" data-zone-id="zone_hub">
+    <circle cx="720" cy="330" r="86" fill="#E7F5FF" stroke="#5FB2E6" stroke-width="3"/>
+    <text x="676" y="338" font-family="Microsoft YaHei" font-size="28" fill="#073A7C">Hub</text>
+  </g>
+</svg>

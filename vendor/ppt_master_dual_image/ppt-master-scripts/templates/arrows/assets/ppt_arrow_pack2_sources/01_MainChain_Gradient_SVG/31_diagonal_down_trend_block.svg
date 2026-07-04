@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="650" height="420" viewBox="0 0 650 420" role="img" aria-label="diagonal down trend block">
+<title>diagonal down trend block</title>
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#AFC5E8"/>
+    <stop offset="38%" stop-color="#DCE7F7"/>
+    <stop offset="100%" stop-color="#FFFFFF"/>
+  </linearGradient>
+  <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#EAF1FB" stop-opacity="0.85"/>
+    <stop offset="100%" stop-color="#9FB9DF" stop-opacity="0.9"/>
+  </linearGradient>
+</defs>
+<polygon points="50,128 400,238 380,293 610,318 545,88 515,143 165,33" fill="#506B8B" opacity="0.1"/>
+<polygon points="50,120 400,230 380,285 610,310 545,80 515,135 165,25" fill="url(#g)" stroke="#8FAAD2" stroke-width="2.5" stroke-linejoin="round" opacity="1"/>
+<path d="M 70 120 L 395 222" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+</svg>

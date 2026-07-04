@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/29_vertical_chevron_stack_down.svg
+  License: custom pack permission; see assets/ppt_arrow_pack2_sources/LICENSE_CUSTOM_ASSET_USAGE.txt
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg">
+  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#AFC5E8" />
+    <stop offset="38%" stop-color="#DCE7F7" />
+    <stop offset="100%" stop-color="#FFFFFF" />
+  </linearGradient>
+  <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#EAF1FB" stop-opacity="0.85" />
+    <stop offset="100%" stop-color="#9FB9DF" stop-opacity="0.9" />
+  </linearGradient>
+</defs>
+
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack2_gradient_vertical_chevron_stack_down" transform="translate(520.556 135.000) scale(0.796296)">
+    <polygon xmlns="http://www.w3.org/2000/svg" points="55,28 245,28 245,78 270,78 150,183 30,78 55,78" fill="#506B8B" opacity="0.1" />
+
+    <polygon xmlns="http://www.w3.org/2000/svg" points="55,183 245,183 245,233 270,233 150,338 30,233 55,233" fill="#506B8B" opacity="0.1" />
+
+    <polygon xmlns="http://www.w3.org/2000/svg" points="55,338 245,338 245,388 270,388 150,493 30,388 55,388" fill="#506B8B" opacity="0.1" />
+
+    <polygon xmlns="http://www.w3.org/2000/svg" points="55,20 245,20 245,70 270,70 150,175 30,70 55,70" fill="url(#g)" stroke="#8FAAD2" stroke-width="2.5" stroke-linejoin="round" opacity="1" />
+
+    <polygon xmlns="http://www.w3.org/2000/svg" points="55,175 245,175 245,225 270,225 150,330 30,225 55,225" fill="url(#g)" stroke="#8FAAD2" stroke-width="2.5" stroke-linejoin="round" opacity="1" />
+
+    <polygon xmlns="http://www.w3.org/2000/svg" points="55,330 245,330 245,380 270,380 150,485 30,380 55,380" fill="url(#g)" stroke="#8FAAD2" stroke-width="2.5" stroke-linejoin="round" opacity="1" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 58 22 L 242 22" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 58 177 L 242 177" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 58 332 L 242 332" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack2_gradient_vertical_chevron_stack_down</text>
+</svg>

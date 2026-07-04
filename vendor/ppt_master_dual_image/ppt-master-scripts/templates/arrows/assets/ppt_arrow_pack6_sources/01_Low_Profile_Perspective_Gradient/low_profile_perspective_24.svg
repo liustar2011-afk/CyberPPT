@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" role="img" aria-label="Low Profile Perspective Arrow 24">
+<title>Low Profile Perspective Arrow 24</title>
+<desc>bilateral low-profile channel</desc>
+<defs>
+<linearGradient id="g23" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FAFCFF"/>
+  <stop offset="42%" stop-color="#E1EAF6"/>
+  <stop offset="100%" stop-color="#C4D5EB"/>
+</linearGradient>
+<linearGradient id="g23_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00"/>
+</linearGradient>
+</defs>
+<path d="M 32.0 117.0 L 270.0 97.0 L 320.0 115.0 L 370.0 97.0 L 608.0 117.0 L 370.0 139.0 L 320.0 121.0 L 270.0 139.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.1" stroke-linejoin="round" /><path d="M 32.0 110.0 L 270.0 90.0 L 320.0 108.0 L 370.0 90.0 L 608.0 110.0 L 370.0 132.0 L 320.0 114.0 L 270.0 132.0 Z" fill="url(#g23)" stroke="#92AAC8" stroke-width="2" opacity="1" stroke-linejoin="round" />
+</svg>
