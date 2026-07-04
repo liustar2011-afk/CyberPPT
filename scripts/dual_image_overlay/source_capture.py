@@ -140,6 +140,27 @@ def _load_svg_text_by_page(project_dir: Path) -> dict[int, list[dict[str, Any]]]
     return by_page
 
 
+def _page_number_from_visual_registry_name(name: str) -> int | None:
+    match = re.search(r"slide-(\d+)-visual-element-registry\.json$", name)
+    return int(match.group(1)) if match else None
+
+
+def _load_visual_registry_elements(registry_dir: Path | None) -> dict[int, list[dict[str, Any]]]:
+    by_page: dict[int, list[dict[str, Any]]] = {}
+    if registry_dir is None or not registry_dir.exists():
+        return by_page
+    for path in sorted(registry_dir.glob("slide-*-visual-element-registry.json")):
+        page_number = _page_number_from_visual_registry_name(path.name)
+        if not isinstance(page_number, int):
+            continue
+        data = _read_json(path)
+        elements = data.get("elements", [])
+        if not isinstance(elements, list):
+            continue
+        by_page[page_number] = [_visual_registry_element(item) for item in elements if isinstance(item, dict)]
+    return by_page
+
+
 def _text_objects(boxes: list[dict[str, Any]], typography: list[dict[str, Any]]) -> list[dict[str, Any]]:
     role_by_text = {str(item.get("text", "")): item for item in typography}
     objects: list[dict[str, Any]] = []
@@ -227,6 +248,32 @@ def _text_elements(text_objects: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return elements
 
 
+def _visual_registry_element(element: dict[str, Any]) -> dict[str, Any]:
+    allowed_fields = (
+        "element_id",
+        "priority",
+        "element_type",
+        "source_component_id",
+        "blueprint_bbox_px",
+        "ppt_target_bbox_in",
+        "tolerance_px",
+        "measurement_mode",
+        "registration_status",
+        "render_bbox_px",
+        "delta_px",
+        "must_reproduce",
+        "pixel_mean_abs_tolerance",
+    )
+    captured = {field: element.get(field) for field in allowed_fields if field in element}
+    captured.setdefault("element_id", str(element.get("id") or "visual_registry_element"))
+    captured.setdefault("priority", "P1")
+    captured.setdefault("element_type", "visual")
+    captured.setdefault("measurement_mode", "individual_bbox")
+    captured.setdefault("registration_status", "pending_render_measurement")
+    captured["source"] = {"kind": "visual_element_registry"}
+    return captured
+
+
 def _layout_rules_for_page(page_number: int, candidate_rules: dict[str, Any]) -> dict[str, Any]:
     baseline_groups = [
         item for item in candidate_rules.get("baseline_groups", []) if item.get("page_number") == page_number
@@ -251,7 +298,14 @@ def _capture_gaps(page: dict[str, Any]) -> list[dict[str, str]]:
     gaps: list[dict[str, str]] = []
     if not page["visual_element_inventory"]:
         gaps.append({"code": "visual_inventory_empty", "message": "No visual elements were captured for this page."})
-    if not any(item["element_type"] != "text" for item in page["visual_element_inventory"]):
+    registry_non_text = [
+        item
+        for item in page["visual_element_inventory"]
+        if item.get("element_type") != "text"
+        and isinstance(item.get("source"), dict)
+        and item["source"].get("kind") == "visual_element_registry"
+    ]
+    if not registry_non_text:
         gaps.append(
             {
                 "code": "non_text_visuals_not_individually_detected",
@@ -313,6 +367,7 @@ def build_source_capture(
     *,
     pair_manifest_path: Path | None = None,
     candidate_rules_path: Path | None = None,
+    visual_registry_dir: Path | None = None,
 ) -> dict[str, Any]:
     pair_manifest = _maybe_read_json(pair_manifest_path) if pair_manifest_path else _maybe_read_json(project_dir / "images" / "page_image_pairs.json")
     candidate_rules = (
@@ -327,12 +382,20 @@ def build_source_capture(
     containers_by_page = _load_containers(project_dir)
     typography_by_page = _load_typography(project_dir)
     svg_texts_by_page = _load_svg_text_by_page(project_dir)
+    visual_registry_by_page = _load_visual_registry_elements(visual_registry_dir)
     source_images_by_page = _image_pairs_by_page(pair_manifest)
+    if source_images_by_page:
+        visual_registry_by_page = {
+            page_number: elements
+            for page_number, elements in visual_registry_by_page.items()
+            if page_number in source_images_by_page
+        }
     page_numbers = sorted(
         set(text_mappings)
         | set(containers_by_page)
         | set(typography_by_page)
         | set(svg_texts_by_page)
+        | set(visual_registry_by_page)
         | set(source_images_by_page)
     )
 
@@ -353,6 +416,7 @@ def build_source_capture(
             "visual_element_inventory": [
                 *_container_elements(containers_by_page.get(page_number, [])),
                 *_text_elements(text_objects),
+                *visual_registry_by_page.get(page_number, []),
             ],
             "layout_rules": _layout_rules_for_page(page_number, candidate_rules),
         }
@@ -365,6 +429,8 @@ def build_source_capture(
         "inputs": {
             "pair_manifest": str(pair_manifest_path or project_dir / "images" / "page_image_pairs.json"),
             "candidate_layout_rules": str(candidate_rules_path or project_dir / "analysis" / "candidate_layout_rules.json"),
+            "visual_registry_dir": str(visual_registry_dir) if visual_registry_dir else None,
+            "visual_registry_elements": sum(len(items) for items in visual_registry_by_page.values()),
             "ocr_text_mappings": sum(len(items) for items in text_mappings.values()),
             "svg_text_objects": sum(len(items) for items in svg_texts_by_page.values()),
             "container_pages": len(containers_by_page),
@@ -446,12 +512,14 @@ def main() -> int:
     parser.add_argument("project_dir", type=Path)
     parser.add_argument("--pair-manifest", type=Path)
     parser.add_argument("--candidate-rules", type=Path)
+    parser.add_argument("--visual-registry-dir", type=Path)
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
     report = build_source_capture(
         args.project_dir.resolve(),
         pair_manifest_path=args.pair_manifest.resolve() if args.pair_manifest else None,
         candidate_rules_path=args.candidate_rules.resolve() if args.candidate_rules else None,
+        visual_registry_dir=args.visual_registry_dir.resolve() if args.visual_registry_dir else None,
     )
     if args.out:
         _write_json(args.out.resolve(), report)

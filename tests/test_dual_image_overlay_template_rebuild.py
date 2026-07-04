@@ -52,6 +52,42 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertEqual([2], [page["page_number"] for page in source_capture["pages"]])
         self.assertTrue(template_gate["valid"])
 
+    def test_template_rebuild_passes_visual_registry_dir_to_source_capture(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            project = root / "template-project"
+            registry_dir = root / "registry"
+            _write_template_project(project)
+            _write_visual_registry(registry_dir, page_number=2)
+            manifest = _write_pair_manifest(root, project)
+
+            result = subprocess.run(
+                [
+                    "python3",
+                    str(ROOT / "scripts/dual_image_overlay/template_rebuild.py"),
+                    str(manifest),
+                    "--skip-rebuild",
+                    "--no-export",
+                    "--visual-registry-dir",
+                    str(registry_dir),
+                ],
+                cwd=ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(3, result.returncode, result.stdout + result.stderr)
+            readiness = json.loads((project / "analysis/template_rebuild_readiness.json").read_text(encoding="utf-8"))
+            source_capture = json.loads((project / "analysis/source_capture.json").read_text(encoding="utf-8"))
+            source_capture_gate = json.loads((project / "analysis/source_capture_gate.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(str(registry_dir.resolve()), readiness["visual_registry_dir"])
+        self.assertEqual(str(registry_dir.resolve()), source_capture["inputs"]["visual_registry_dir"])
+        self.assertEqual(1, source_capture["inputs"]["visual_registry_elements"])
+        self.assertNotIn("non_text_visuals_not_individually_detected", source_capture_gate["gap_counts"])
+        self.assertIn("render_delta_not_measured", source_capture_gate["gap_counts"])
+
 
 def _write_template_project(project: Path) -> None:
     (project / "templates").mkdir(parents=True)
@@ -155,6 +191,36 @@ def _write_pair_manifest(root: Path, project: Path) -> Path:
     path = root / "page_image_pairs.json"
     path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return path
+
+
+def _write_visual_registry(registry_dir: Path, *, page_number: int) -> None:
+    registry_dir.mkdir(parents=True)
+    (registry_dir / f"slide-{page_number:02d}-visual-element-registry.json").write_text(
+        json.dumps(
+            {
+                "schema": "cyberppt.visual_element_registry.v1",
+                "elements": [
+                    {
+                        "element_id": "shape_title_marker",
+                        "priority": "P1",
+                        "element_type": "shape",
+                        "source_component_id": "title_marker",
+                        "blueprint_bbox_px": {"x": 88, "y": 74, "w": 12, "h": 58},
+                        "ppt_target_bbox_in": {"x": 0.88, "y": 0.74, "w": 0.12, "h": 0.58},
+                        "tolerance_px": 4,
+                        "measurement_mode": "individual_bbox",
+                        "render_bbox_px": None,
+                        "delta_px": None,
+                        "registration_status": "pending_render_measurement",
+                    }
+                ],
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
 
 if __name__ == "__main__":
