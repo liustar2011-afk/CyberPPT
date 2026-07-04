@@ -83,6 +83,26 @@ git pull
 python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manifest.json --visual-qa path/to/visual_qa_gate.json --strict --json-out path/to/report.json
 ```
 
+## 本地工程入口
+
+仓库同时提供 Python CLI、npm scripts 和 Makefile。`SKILL.md` 仍是工作流契约；CLI 只负责项目初始化、脚本确认门和仓库脚本的稳定入口。
+
+```bash
+python3 -m cyberppt doctor
+python3 -m cyberppt init projects/example
+python3 -m cyberppt stage-script projects/example --slide 1 --kind imagegen --phase draft --source prompt.md
+python3 -m cyberppt approve-script projects/example --slide 1 --kind imagegen
+python3 -m cyberppt script-status projects/example --slide 1 --kind imagegen
+```
+
+常用开发检查：
+
+```bash
+make doctor
+make test
+make test-validate-pptx
+```
+
 ## 许可
 
 MIT。详见 [LICENSE](LICENSE)。
