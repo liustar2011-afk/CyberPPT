@@ -1,0 +1,143 @@
+{
+  "schema": "cyberppt.blueprint_manifest.v1",
+  "project": "power-overseas-capability",
+  "created_at": "2026-07-04",
+  "generator": "codex.image_gen.built_in",
+  "prompt_artifact": "workbench/prompts/imagegen/stage2-imagegen-prompts.md",
+  "prompt_sha256": "1e625ce0c0e943042c3d07b9fc9b9d05b151d31c875f5e97074b73fa973242d4",
+  "approval_artifact": "workbench/approvals/stage2-imagegen-prompts.approved.md",
+  "source_generation_dir": "/Users/liuxing/.codex/generated_images/019f2aa7-65f7-7d20-a33e-b3754ac498d0",
+  "notes": [
+    "Blueprint images are visual references for composition, density, and visual hierarchy only.",
+    "Final PPT text, numbers, labels, caveats, and evidence IDs must be rebuilt from locked content sources as editable PowerPoint objects.",
+    "No page-number badge, independent footer, source footer, or confidentiality statement is approved for this project."
+  ],
+  "pages": [
+    {
+      "page": 1,
+      "title": "封面",
+      "path": "workbench/blueprints/page-01-cover.png",
+      "sha256": "b85e12c7710e1a14a4d00cca5612fdbcf5ade090518794bc85e7e7647fa17549",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 2,
+      "title": "核心结论",
+      "path": "workbench/blueprints/page-02-executive-summary.png",
+      "sha256": "a31589c9c5cd323d9e6972b1e1b7b6a3fba7f615f473118c8d8a903f2c27dc55",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 3,
+      "title": "环境变化",
+      "path": "workbench/blueprints/page-03-environment-shift.png",
+      "sha256": "f1584d7cf106ecca7602e81384d3c3293a399519dc4e6471621549740e82bc98",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 4,
+      "title": "多角色多能力特征",
+      "path": "workbench/blueprints/page-04-roles-capabilities.png",
+      "sha256": "4e922e8915e5b71dc9ecb6ee19251adb5b952d8cb81af9e3f6c91358a8c186c9",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 5,
+      "title": "现状问题",
+      "path": "workbench/blueprints/page-05-current-problems.png",
+      "sha256": "5aca4a3bc4f6e7aa05401e4d2628fd78264723f6382f0bd157cf507557aa2943",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 6,
+      "title": "国际同类服务对标",
+      "path": "workbench/blueprints/page-06-benchmark-matrix.png",
+      "sha256": "ee5989b9ca4a294c921c72770a4657e5146fedbf017cc04b8e63b7293d8a40c1",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 7,
+      "title": "六位一体总体框架",
+      "path": "workbench/blueprints/page-07-six-in-one-framework.png",
+      "sha256": "5f187867dfef4de3329f42aff193dc82c985a62546df6336dd6c92b7ed9a7467",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 8,
+      "title": "中电联牵头适配性",
+      "path": "workbench/blueprints/page-08-organizational-fit.png",
+      "sha256": "2425e490a98f3c38f36c6d7f76babee1130871b8715fc994639a5d919187dcc9",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 9,
+      "title": "评价体系设计",
+      "path": "workbench/blueprints/page-09-evaluation-framework.png",
+      "sha256": "3ccd5adbbb147ec9827c9660fdf7ee392b11a48b993b9198a1dab3e78271ccb7",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 10,
+      "title": "角色差异模块",
+      "path": "workbench/blueprints/page-10-role-difference-table.png",
+      "sha256": "be19a99e945820f4ded9648f7b915e06e829009c2d78b70063bd4b15551e4c76",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 11,
+      "title": "场景与服务产品矩阵",
+      "path": "workbench/blueprints/page-11-scenario-product-matrix.png",
+      "sha256": "a0bef6da571a5e390f1fb3b70980f7d5b0fbf4205d6dcece647313531b7d5e67",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 12,
+      "title": "数据支撑体系",
+      "path": "workbench/blueprints/page-12-data-support-system.png",
+      "sha256": "1187b1fff5ce780bab0ccd9a84fce3856a92577b3c17c3fbb380c8d4d3a78e57",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 13,
+      "title": "行业监测与预警联动",
+      "path": "workbench/blueprints/page-13-monitoring-warning-system.png",
+      "sha256": "7c4dec9c7a546e449be8a92bbdca24fbba117c8007c838ba4189d7ce50fc5622",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 14,
+      "title": "组织实施机制",
+      "path": "workbench/blueprints/page-14-organization-implementation.png",
+      "sha256": "fea97004795b54f7ff5453af5b2949478f407f7e189f3c90b530875331bbe909",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 15,
+      "title": "试点路径与时间线",
+      "path": "workbench/blueprints/page-15-pilot-roadmap.png",
+      "sha256": "75da3eaec98262802ddcf34f81bf28f6e3dafdea31eb8f9241f02011a48d97ca",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 16,
+      "title": "风险边界与控制机制",
+      "path": "workbench/blueprints/page-16-risk-boundary-control.png",
+      "sha256": "6482e8f23c3a38d566b4333a72885064127c3bbcc1e3eecfdeba6549b0df377d",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 17,
+      "title": "推进建议",
+      "path": "workbench/blueprints/page-17-action-recommendations.png",
+      "sha256": "f713572f508b259013ef75aa2675177828ee945dc2b3aac99f230655a38e0ba1",
+      "dimensions_px": [1672, 941]
+    },
+    {
+      "page": 18,
+      "title": "总结与下一步",
+      "path": "workbench/blueprints/page-18-summary-next-step.png",
+      "sha256": "4084bc7b4aebfefcf2836061036760a921bdde5ac3a8dc0eb5b4181e42789568",
+      "dimensions_px": [1672, 941]
+    }
+  ]
+}

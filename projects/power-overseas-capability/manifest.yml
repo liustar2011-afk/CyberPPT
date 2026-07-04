@@ -20,5 +20,5 @@ gates:
   imagegen_script_plaintext: required
   page_generation_after_user_approval: required
 status:
-  stage: initialized
-  notes: "Place source files in source/ and start with the CyberPPT analysis phase."
+  stage: stage2_blueprints_generated
+  notes: "Stage 2 ImageGen prompts were approved and 18 bitmap blueprints were generated under workbench/blueprints/. Use blueprint-manifest.json for page-to-file mapping and hashes."
