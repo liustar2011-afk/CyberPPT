@@ -15,13 +15,12 @@ from .source_capture import build_source_capture, build_source_capture_gate
 
 
 ROOT = Path(__file__).resolve().parents[2]
-VENDORED_REBUILD = (
+REBUILD_ENGINE = (
     ROOT
-    / "vendor"
-    / "ppt_master_dual_image"
-    / "ppt-master-scripts"
     / "scripts"
-    / "script_imagegen_rebuild_template.py"
+    / "dual_image_overlay"
+    / "rebuild_engine"
+    / "editable_overlay_rebuild.py"
 )
 
 
@@ -76,7 +75,7 @@ def run_vendor_rebuild(
 ) -> None:
     command = [
         sys.executable,
-        str(VENDORED_REBUILD),
+        str(REBUILD_ENGINE),
         "rebuild",
         str(manifest_path),
         "--ocr-backend",
@@ -153,7 +152,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--export", action="store_true", default=True)
     parser.add_argument("--no-export", action="store_false", dest="export")
     parser.add_argument(
-        "--skip-vendor-rebuild",
+        "--skip-rebuild",
         action="store_true",
         help="Only consume existing template rebuild artifacts; intended for tests and resumed runs.",
     )
@@ -163,7 +162,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = build_parser().parse_args()
     manifest_path = args.manifest.expanduser().resolve()
-    if not args.skip_vendor_rebuild:
+    if not args.skip_rebuild:
         run_vendor_rebuild(
             manifest_path,
             ocr_backend=args.ocr_backend,

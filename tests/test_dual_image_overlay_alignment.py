@@ -10,7 +10,7 @@ from scripts.dual_image_overlay.alignment import AlignmentTransform, estimate_al
 
 
 class DualImageOverlayAlignmentTests(unittest.TestCase):
-    def test_alignment_transform_maps_bbox_like_ppt_master(self) -> None:
+    def test_alignment_transform_maps_bbox_consistently(self) -> None:
         transform = AlignmentTransform(scale=1.01, dx=8, dy=-4)
         mapped = transform.map_bbox([100, 100, 200, 160])
         self.assertEqual([102.6, 93.4, 203.6, 154.0], [round(v, 1) for v in mapped])

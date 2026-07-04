@@ -1,7 +1,0 @@
-{
-  "purpose": "Icon style gate passes with unified stroke width.",
-  "layout_reference": false,
-  "svg_spacing": false,
-  "icon_contract": true,
-  "icon_contract_style_check": true
-}

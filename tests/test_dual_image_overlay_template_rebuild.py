@@ -28,7 +28,7 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
                     "python3",
                     str(ROOT / "scripts/dual_image_overlay/template_rebuild.py"),
                     str(manifest),
-                    "--skip-vendor-rebuild",
+                    "--skip-rebuild",
                     "--no-export",
                 ],
                 cwd=ROOT,

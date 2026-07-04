@@ -22,7 +22,12 @@ from .alignment import AlignmentTransform, estimate_alignment
 from .layout_qa import check_layout
 from .normalize import normalize_image
 from .semantic_plan import load_semantic_plan
-from .source_capture import build_source_capture, build_source_capture_gate, expected_texts_from_source_capture
+from .source_capture import (
+    attach_render_delta_measurement,
+    build_source_capture,
+    build_source_capture_gate,
+    expected_texts_from_source_capture,
+)
 from .text_content_qa import build_text_content_qa
 
 
@@ -366,6 +371,13 @@ def build_page(args: argparse.Namespace) -> dict:
                 "side_by_side": str(side_by_side),
             },
         }
+        source_capture = attach_render_delta_measurement(
+            source_capture,
+            rendered_preview=str(rendered_png),
+        )
+        _write_json(analysis / "source_capture.json", source_capture)
+        source_capture_gate = build_source_capture_gate(source_capture)
+        _write_json(analysis / "source_capture_gate.json", source_capture_gate)
     _write_json(analysis / "visual_preview.json", visual_preview)
 
     structural_valid = bool(layout_qa["valid"] and text_content_qa["valid"] and background_scan["valid"])

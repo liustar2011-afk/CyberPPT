@@ -7,8 +7,8 @@ full images, compiles final-deliverable content-region prompts for repairs, writ
 a page_image_pairs.json compatible with the editable overlay rebuild step, and
 verifies that the expected image files exist.
 
-It intentionally does not import ppt-master's page_image_pair_batch.py or its
-style preset system.
+It intentionally does not import any legacy image-pair batch generator or
+external style preset system.
 """
 
 from __future__ import annotations
@@ -33,8 +33,8 @@ from scripts.dual_image_overlay.deliverable_prompt import (
 
 
 CANVAS = {"width": 1280, "height": 720}
-CONTENT_REGION = {"x": 32, "y": 98, "width": 1216, "height": 589}
-GENERATION_SIZE = {"width": 2432, "height": 1184}
+CONTENT_REGION = {"x": 20, "y": 104, "width": 1240, "height": 592}
+GENERATION_SIZE = {"width": 2480, "height": 1184}
 OUTPUT_VARIANTS = ["full", "background"]
 BLUEPRINT_PATTERNS = (
     "slide-{page:03d}-blueprint.png",

@@ -96,7 +96,7 @@ def estimate_alignment(
 ) -> AlignmentTransform:
     """Estimate a small uniform scale + translation from full image to background.
 
-    This is ported from ppt-master's dual_image_rebuild_pptx.py. It is a
+    This is ported from a legacy dual-image geometry helper. It is a
     fallback for diagnostic layouts; production plans should prefer explicit
     semantic containers and use identity geometry.
     """

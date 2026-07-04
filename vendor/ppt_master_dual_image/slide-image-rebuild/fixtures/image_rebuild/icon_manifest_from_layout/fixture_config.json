@@ -1,6 +1,0 @@
-{
-  "purpose": "Build icon_manifest.json from layout_reference icon slots.",
-  "layout_reference": false,
-  "build_icon_manifest": true,
-  "expected_icon_manifest_icons": 2
-}
