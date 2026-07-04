@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" role="img" aria-label="Low Profile Perspective Arrow 44">
+<title>Low Profile Perspective Arrow 44</title>
+<desc>low-profile roof bridge arrow</desc>
+<defs>
+<linearGradient id="g43" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F7FBFF"/>
+  <stop offset="42%" stop-color="#E2ECF8"/>
+  <stop offset="100%" stop-color="#C8D8ED"/>
+</linearGradient>
+<linearGradient id="g43_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00"/>
+</linearGradient>
+</defs>
+<path d="M 38.0 115.0 L 107.0 109.0 L 320.0 39.0 L 533.0 109.0 L 602.0 115.0 L 520.0 117.0 L 520.0 141.0 L 120.0 141.0 L 120.0 117.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.1" stroke-linejoin="round" /><path d="M 38.0 108.0 L 107.0 102.0 L 320.0 32.0 L 533.0 102.0 L 602.0 108.0 L 520.0 110.0 L 520.0 134.0 L 120.0 134.0 L 120.0 110.0 Z" fill="url(#g43)" stroke="#91A9C7" stroke-width="2" opacity="1" stroke-linejoin="round" />
+</svg>

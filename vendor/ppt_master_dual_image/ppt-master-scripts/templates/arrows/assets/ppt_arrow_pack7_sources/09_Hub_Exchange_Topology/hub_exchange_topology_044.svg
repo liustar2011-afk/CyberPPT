@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="520" viewBox="0 0 1000 520" fill="none">
+<title>hub exchange arrows</title>
+<desc>Self-made PPT-friendly SVG arrow asset. Basic paths only; no third-party artwork.</desc>
+
+<defs>
+  <linearGradient id="gMain" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#B9D0EE"/>
+    <stop offset="0.52" stop-color="#EAF2FB"/>
+    <stop offset="1" stop-color="#FFFFFF"/>
+  </linearGradient>
+  <linearGradient id="gTop" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#DCE8F8" stop-opacity="0.95"/>
+    <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.12"/>
+  </linearGradient>
+  <linearGradient id="gSide" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#9FBFE6" stop-opacity="0.50"/>
+    <stop offset="1" stop-color="#5F86B7" stop-opacity="0.15"/>
+  </linearGradient>
+  <marker id="arrowHead" markerWidth="16" markerHeight="12" refX="15" refY="6" orient="auto" markerUnits="strokeWidth">
+    <path d="M 0 0 L 16 6 L 0 12 z" fill="#8FB0DB"/>
+  </marker>
+</defs>
+
+<circle cx="505.0" cy="268.0" r="70" fill="#5A6E88" opacity="0.10"/>
+<circle cx="500.0" cy="260.0" r="66" fill="url(#gMain)" stroke="#8DAED8" stroke-width="2"/>
+<path d="M 710.0 260.0 L 578.0 260.0" fill="none" stroke="#8EAED8" stroke-width="14" stroke-linecap="round" opacity="0.83"/>
+<path d="M 578.0 260.0 L 624.8 241.8 L 624.8 278.2 Z" fill="#8EAED8" opacity="0.88"/>
+<path d="M 500.0 338.0 L 500.0 500.0" fill="none" stroke="#A2BBDE" stroke-width="14" stroke-linecap="round" opacity="0.83"/>
+<path d="M 500.0 500.0 L 481.8 453.2 L 518.2 453.2 Z" fill="#A2BBDE" opacity="0.88"/>
+<path d="M 230.0 260.0 L 422.0 260.0" fill="none" stroke="#7EA1D0" stroke-width="14" stroke-linecap="round" opacity="0.83"/>
+<path d="M 422.0 260.0 L 375.2 278.2 L 375.2 241.8 Z" fill="#7EA1D0" opacity="0.88"/>
+<path d="M 500.0 182.0 L 500.0 50.0" fill="none" stroke="#8EAED8" stroke-width="14" stroke-linecap="round" opacity="0.83"/>
+<path d="M 500.0 50.0 L 518.2 96.8 L 481.8 96.8 Z" fill="#8EAED8" opacity="0.88"/>
+<path d="M 380.0 467.8 L 461.0 327.5" fill="none" stroke="#A2BBDE" stroke-width="14" stroke-linecap="round" opacity="0.83"/>
+<path d="M 461.0 327.5 L 453.4 377.2 L 421.8 359.0 Z" fill="#A2BBDE" opacity="0.88"/>
+<path d="M 461.0 192.5 L 365.0 26.2" fill="none" stroke="#7EA1D0" stroke-width="14" stroke-linecap="round" opacity="0.83"/>
+<path d="M 365.0 26.2 L 404.2 57.6 L 372.6 75.8 Z" fill="#7EA1D0" opacity="0.88"/>
+
+</svg>

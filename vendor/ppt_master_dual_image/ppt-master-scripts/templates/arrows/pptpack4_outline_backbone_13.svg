@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_13.svg
+  License: custom pack permission; see assets/ppt_arrow_pack4_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack4_outline_backbone_13" transform="translate(150.000 215.250) scale(1.225000)">
+    <rect xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" />
+  
+    <polygon xmlns="http://www.w3.org/2000/svg" points="125.0,78.0 671.0,78.0 671.0,60.0 751.0,110.0 671.0,160.0 671.0,142.0 125.0,142.0 55.0,110.0" fill="none" opacity="0.9" stroke="#7292C4" stroke-width="2.2" stroke-linejoin="round" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 80 92 L 650 92" fill="none" opacity="0.8" stroke="#DCE6F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack4_outline_backbone_13</text>
+</svg>

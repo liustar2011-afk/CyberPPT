@@ -1,0 +1,8 @@
+{
+  "purpose": "SVG completeness passes when zone and connector markers are present.",
+  "reuse_project": "noise_connector_guard",
+  "layout_reference": false,
+  "svg_spacing": false,
+  "svg_rebuild_completeness": true,
+  "svg_rebuild_completeness_strict": true
+}

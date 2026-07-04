@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack3_sources/01_Area_Arrows_Gradient/double_notched_ribbon_arrow.svg
+  License: custom pack permission; see assets/ppt_arrow_pack3_sources/LICENSE_SELF_MADE_NOTICE.txt
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg">
+<linearGradient id="fillMain" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#BFD3F3" />
+  <stop offset="52%" stop-color="#EEF4FF" />
+  <stop offset="100%" stop-color="#FFFFFF" />
+</linearGradient>
+<linearGradient id="fillTop" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.05" />
+  <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.55" />
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.05" />
+</linearGradient>
+</defs>
+
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack3_gradient_double_notched_ribbon_arrow" transform="translate(150.000 217.292) scale(1.020833)">
+    <polygon xmlns="http://www.w3.org/2000/svg" points="80.0,137.0 160.0,83.0 800.0,83.0 880.0,137.0 800.0,191.0 160.0,191.0" fill="#000000" opacity="0.14" />
+
+    <polygon xmlns="http://www.w3.org/2000/svg" points="80.0,130.0 160.0,76.0 800.0,76.0 880.0,130.0 800.0,184.0 160.0,184.0" fill="url(#fillMain)" stroke="#8AA8D5" stroke-width="1.3" opacity="1" stroke-linejoin="round" />
+
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack3_gradient_double_notched_ribbon_arrow</text>
+</svg>

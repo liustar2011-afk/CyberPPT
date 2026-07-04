@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" role="img" aria-label="Milestone Chevron Timeline 07">
+<title>Milestone Chevron Timeline 07</title>
+<desc>milestone chevron timeline</desc>
+<defs>
+<linearGradient id="chev6" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F8FBFF"/>
+  <stop offset="42%" stop-color="#E8F0FA"/>
+  <stop offset="100%" stop-color="#CADAF0"/>
+</linearGradient>
+<linearGradient id="chev6_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00"/>
+</linearGradient>
+</defs>
+<path d="M 34.0 66.0 L 115.0 66.0 L 142.0 96.0 L 115.0 126.0 L 34.0 126.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 34.0 62.0 L 115.0 62.0 L 142.0 92.0 L 115.0 122.0 L 34.0 122.0 Z" fill="url(#chev6)" stroke="#9BB2D3" stroke-width="1.5" opacity="1" stroke-linejoin="round" /><path d="M 150.0 66.0 L 231.0 66.0 L 258.0 96.0 L 231.0 126.0 L 150.0 126.0 L 177.0 96.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 150.0 62.0 L 231.0 62.0 L 258.0 92.0 L 231.0 122.0 L 150.0 122.0 L 177.0 92.0 Z" fill="url(#chev6)" stroke="#9BB2D3" stroke-width="1.5" opacity="1" stroke-linejoin="round" /><path d="M 266.0 66.0 L 347.0 66.0 L 374.0 96.0 L 347.0 126.0 L 266.0 126.0 L 293.0 96.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 266.0 62.0 L 347.0 62.0 L 374.0 92.0 L 347.0 122.0 L 266.0 122.0 L 293.0 92.0 Z" fill="url(#chev6)" stroke="#9BB2D3" stroke-width="1.5" opacity="1" stroke-linejoin="round" /><path d="M 382.0 66.0 L 463.0 66.0 L 490.0 96.0 L 463.0 126.0 L 382.0 126.0 L 409.0 96.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 382.0 62.0 L 463.0 62.0 L 490.0 92.0 L 463.0 122.0 L 382.0 122.0 L 409.0 92.0 Z" fill="url(#chev6)" stroke="#9BB2D3" stroke-width="1.5" opacity="1" stroke-linejoin="round" /><path d="M 498.0 66.0 L 579.0 66.0 L 606.0 96.0 L 579.0 126.0 L 498.0 126.0 L 525.0 96.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 498.0 62.0 L 579.0 62.0 L 606.0 92.0 L 579.0 122.0 L 498.0 122.0 L 525.0 92.0 Z" fill="url(#chev6)" stroke="#9BB2D3" stroke-width="1.5" opacity="1" stroke-linejoin="round" />
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="260" viewBox="0 0 960 260" fill="none">
+<defs>
+<linearGradient id="fillMain" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#BFD3F3"/>
+  <stop offset="52%" stop-color="#EEF4FF"/>
+  <stop offset="100%" stop-color="#FFFFFF"/>
+</linearGradient>
+<linearGradient id="fillTop" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.05"/>
+  <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.55"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.05"/>
+</linearGradient>
+</defs>
+<polygon points="60.0,110.0 360.0,110.0 360.0,85.0 455.0,135.0 360.0,185.0 360.0,160.0 60.0,160.0" fill="#000000" opacity="0.1"/>
+<polygon points="60.0,105.0 360.0,105.0 360.0,80.0 455.0,130.0 360.0,180.0 360.0,155.0 60.0,155.0" fill="url(#fillMain)" stroke="#8AA8D5" stroke-width="1.2" opacity="1" stroke-linejoin="round"/>
+<polygon points="900.0,110.0 600.0,110.0 600.0,85.0 505.0,135.0 600.0,185.0 600.0,160.0 900.0,160.0" fill="#000000" opacity="0.1"/>
+<polygon points="900.0,105.0 600.0,105.0 600.0,80.0 505.0,130.0 600.0,180.0 600.0,155.0 900.0,155.0" fill="url(#fillMain)" stroke="#8AA8D5" stroke-width="1.2" opacity="1" stroke-linejoin="round"/>
+<polygon points="480.0,60.0 550.0,135.0 480.0,210.0 410.0,135.0" fill="#000000" opacity="0.1"/>
+<polygon points="480.0,55.0 550.0,130.0 480.0,205.0 410.0,130.0" fill="url(#fillMain)" stroke="#8AA8D5" stroke-width="1.2" opacity="1" stroke-linejoin="round"/>
+
+</svg>

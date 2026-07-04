@@ -1,0 +1,10 @@
+# Core dependencies for slide-image-rebuild scripts.
+Pillow>=10.0
+cairosvg>=2.7
+cairocffi>=1.6
+python-pptx>=1.0
+PyYAML>=6.0
+
+# Optional (see requirements-optional.txt): curl_cffi enables TLS-impersonating
+# HTTP fetches in project_manager.py import-sources (URL sources). The code
+# falls back gracefully when it's absent.

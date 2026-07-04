@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack7_sources/10_Cycle_Feedback_Routes/cycle_feedback_004.svg
+  License: custom pack permission; see assets/ppt_arrow_pack7_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg">
+  <linearGradient id="gMain" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#B9D0EE" />
+    <stop offset="0.52" stop-color="#EAF2FB" />
+    <stop offset="1" stop-color="#FFFFFF" />
+  </linearGradient>
+  <linearGradient id="gTop" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#DCE8F8" stop-opacity="0.95" />
+    <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.12" />
+  </linearGradient>
+  <linearGradient id="gSide" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#9FBFE6" stop-opacity="0.50" />
+    <stop offset="1" stop-color="#5F86B7" stop-opacity="0.15" />
+  </linearGradient>
+  <marker id="arrowHead" markerWidth="16" markerHeight="12" refX="15" refY="6" orient="auto" markerUnits="strokeWidth">
+    <path d="M 0 0 L 16 6 L 0 12 z" fill="#8FB0DB" />
+  </marker>
+</defs>
+
+
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack7_cycle_feedback_004" transform="translate(435.750 145.750) scale(0.567361)">
+    <desc xmlns="http://www.w3.org/2000/svg">Self-made PPT-friendly SVG arrow asset. Basic paths only; no third-party artwork.</desc>
+
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 103.9 314.9 A 260.0 260.0 0 1 0 103.9 405.1" fill="none" stroke="#DDEAF8" stroke-width="27" stroke-linecap="round" opacity="0.8" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 103.9 314.9 A 260.0 260.0 0 1 0 103.9 405.1" fill="none" stroke="#A9BFDC" stroke-width="18" stroke-linecap="round" opacity="0.88" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 103.9 405.1 L 73.7 359.5 L 116.8 351.9 Z" fill="#A9BFDC" opacity="0.88" />
+
+    <circle xmlns="http://www.w3.org/2000/svg" cx="360.0" cy="360.0" r="28.8" fill="url(#gMain)" stroke="#8EAED8" stroke-width="2" opacity="0.82" />
+
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack7_cycle_feedback_004</text>
+</svg>

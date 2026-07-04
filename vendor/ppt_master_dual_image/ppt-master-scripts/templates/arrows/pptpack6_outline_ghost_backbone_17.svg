@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack6_sources/08_Outline_Ghost_Backbones/outline_ghost_backbone_17.svg
+  License: custom pack permission; see assets/ppt_arrow_pack6_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg" />
+
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack6_outline_ghost_backbone_17" transform="translate(217.600 231.200) scale(1.320000)">
+    <desc xmlns="http://www.w3.org/2000/svg">outline ghost backbone for low-interference PPT background</desc>
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 30.0 64.0 L 510.0 64.0 L 510.0 42.0 L 612.0 90.0 L 510.0 138.0 L 510.0 116.0 L 30.0 116.0 Z" fill="#FFFFFF" stroke="#92AAC8" stroke-width="3.4" opacity="0.5399999999999999" stroke-linejoin="round" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M 30.0 64.0 L 510.0 64.0 L 510.0 42.0 L 612.0 90.0 L 510.0 138.0 L 510.0 116.0 L 30.0 116.0 Z" fill="#EAF1FA" stroke="none" stroke-width="0" opacity="0.16" stroke-linejoin="round" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack6_outline_ghost_backbone_17</text>
+</svg>

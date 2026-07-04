@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="220" viewBox="0 0 720 220" role="img" aria-label="Chevron process 031 4 segments stepped">
+  <title>Chevron process 031 4 segments stepped</title>
+  <defs>
+    <linearGradient id="g_soft_blue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#BFD0EE"/>
+      <stop offset="0.46" stop-color="#E6EEF9"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+    <linearGradient id="g_edge_blue" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#DCE7F7"/>
+      <stop offset="0.55" stop-color="#AFC5E9"/>
+      <stop offset="1" stop-color="#E9F1FB"/>
+    </linearGradient>
+    <linearGradient id="g_flat_blue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8FAFDD"/>
+      <stop offset="1" stop-color="#C7D7F0"/>
+    </linearGradient>
+    <marker id="arrow_head" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5.5 L0,11 Z" fill="#7E9FD1"/>
+    </marker>
+    <marker id="arrow_head_light" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5.5 L0,11 Z" fill="#A3BADF"/>
+    </marker>
+    
+  </defs>
+  
+  <rect x="44" y="154.0" width="632" height="12" rx="6" fill="#5A6F8F" opacity="0.07"/>
+  <path d="M 36.0 73.0 L 143.5 73.0 L 199.5 105.0 L 143.5 137.0 L 36.0 137.0 L 76.3 105.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  <path d="M 44.0 78.0 L 135.5 78.0 L 175.5 105.0 L 119.5 98.0 L 72.4 98.0 Z" fill="#FFFFFF" opacity="0.25"/>
+  <path d="M 197.5 83.0 L 305.0 83.0 L 361.0 115.0 L 305.0 147.0 L 197.5 147.0 L 237.8 115.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  <path d="M 205.5 88.0 L 297.0 88.0 L 337.0 115.0 L 281.0 108.0 L 233.9 108.0 Z" fill="#FFFFFF" opacity="0.25"/>
+  <path d="M 359.0 73.0 L 466.5 73.0 L 522.5 105.0 L 466.5 137.0 L 359.0 137.0 L 399.3 105.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  <path d="M 367.0 78.0 L 458.5 78.0 L 498.5 105.0 L 442.5 98.0 L 395.4 98.0 Z" fill="#FFFFFF" opacity="0.25"/>
+  <path d="M 520.5 83.0 L 628.0 83.0 L 684.0 115.0 L 628.0 147.0 L 520.5 147.0 L 560.8 115.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  <path d="M 528.5 88.0 L 620.0 88.0 L 660.0 115.0 L 604.0 108.0 L 556.9 108.0 Z" fill="#FFFFFF" opacity="0.25"/>
+</svg>

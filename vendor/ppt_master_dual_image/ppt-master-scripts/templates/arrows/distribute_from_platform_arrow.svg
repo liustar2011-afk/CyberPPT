@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!-- One platform distributes capabilities outward to several services. -->
+  <defs>
+    <marker id="head" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#2563EB"/>
+    </marker>
+  </defs>
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="160" y="270" width="270" height="130" rx="18" fill="#EFF6FF" stroke="#93C5FD" stroke-width="2"/>
+  <text x="295" y="345" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" font-weight="800" fill="#123A73">基础平台</text>
+  <g fill="#FFFFFF" stroke="#D7E3F4" stroke-width="2">
+    <rect x="880" y="130" width="220" height="70" rx="12"/>
+    <rect x="880" y="285" width="220" height="70" rx="12"/>
+    <rect x="880" y="440" width="220" height="70" rx="12"/>
+  </g>
+  <g stroke="#2563EB" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M430,320 C650,320 700,165 880,165" marker-end="url(#head)"/>
+    <path d="M430,335 H880" marker-end="url(#head)"/>
+    <path d="M430,350 C650,350 700,475 880,475" marker-end="url(#head)"/>
+  </g>
+  <g font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" font-weight="700" fill="#334155" text-anchor="middle">
+    <text x="990" y="173">服务 A</text>
+    <text x="990" y="328">服务 B</text>
+    <text x="990" y="483">服务 C</text>
+  </g>
+</svg>

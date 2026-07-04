@@ -1,0 +1,3 @@
+Custom PPT arrow SVGs in this folder were generated for this package and do not include third-party artwork.
+You may use, modify, recolor, and include them in your own PPT materials.
+Recommended use: insert SVG into PowerPoint, then recolor or convert to shapes if needed.

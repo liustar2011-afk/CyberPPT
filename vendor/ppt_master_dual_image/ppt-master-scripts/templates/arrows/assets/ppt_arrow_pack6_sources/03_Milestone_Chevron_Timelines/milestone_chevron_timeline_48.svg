@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" role="img" aria-label="Milestone Chevron Timeline 48">
+<title>Milestone Chevron Timeline 48</title>
+<desc>staggered chevron process</desc>
+<defs>
+<linearGradient id="chev47" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F7FBFF"/>
+  <stop offset="42%" stop-color="#E2ECF8"/>
+  <stop offset="100%" stop-color="#C8D8ED"/>
+</linearGradient>
+<linearGradient id="chev47_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00"/>
+</linearGradient>
+</defs>
+<path d="M 34.0 66.0 L 100.7 66.0 L 122.7 96.0 L 100.7 126.0 L 34.0 126.0 L 56.0 96.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.05" stroke-linejoin="round" /><path d="M 34.0 62.0 L 100.7 62.0 L 122.7 92.0 L 100.7 122.0 L 34.0 122.0 L 56.0 92.0 Z" fill="url(#chev47)" stroke="#91A9C7" stroke-width="1.3" opacity="1" stroke-linejoin="round" /><path d="M 130.7 82.0 L 197.3 82.0 L 219.3 112.0 L 197.3 142.0 L 130.7 142.0 L 152.7 112.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.05" stroke-linejoin="round" /><path d="M 130.7 78.0 L 197.3 78.0 L 219.3 108.0 L 197.3 138.0 L 130.7 138.0 L 152.7 108.0 Z" fill="url(#chev47)" stroke="#91A9C7" stroke-width="1.3" opacity="1" stroke-linejoin="round" /><path d="M 227.3 66.0 L 294.0 66.0 L 316.0 96.0 L 294.0 126.0 L 227.3 126.0 L 249.3 96.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.05" stroke-linejoin="round" /><path d="M 227.3 62.0 L 294.0 62.0 L 316.0 92.0 L 294.0 122.0 L 227.3 122.0 L 249.3 92.0 Z" fill="url(#chev47)" stroke="#91A9C7" stroke-width="1.3" opacity="1" stroke-linejoin="round" /><path d="M 324.0 82.0 L 390.7 82.0 L 412.7 112.0 L 390.7 142.0 L 324.0 142.0 L 346.0 112.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.05" stroke-linejoin="round" /><path d="M 324.0 78.0 L 390.7 78.0 L 412.7 108.0 L 390.7 138.0 L 324.0 138.0 L 346.0 108.0 Z" fill="url(#chev47)" stroke="#91A9C7" stroke-width="1.3" opacity="1" stroke-linejoin="round" /><path d="M 420.7 66.0 L 487.3 66.0 L 509.3 96.0 L 487.3 126.0 L 420.7 126.0 L 442.7 96.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.05" stroke-linejoin="round" /><path d="M 420.7 62.0 L 487.3 62.0 L 509.3 92.0 L 487.3 122.0 L 420.7 122.0 L 442.7 92.0 Z" fill="url(#chev47)" stroke="#91A9C7" stroke-width="1.3" opacity="1" stroke-linejoin="round" /><path d="M 517.3 82.0 L 584.0 82.0 L 606.0 112.0 L 584.0 142.0 L 517.3 142.0 L 539.3 112.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.05" stroke-linejoin="round" /><path d="M 517.3 78.0 L 584.0 78.0 L 606.0 108.0 L 584.0 138.0 L 517.3 138.0 L 539.3 108.0 Z" fill="url(#chev47)" stroke="#91A9C7" stroke-width="1.3" opacity="1" stroke-linejoin="round" />
+</svg>

@@ -1,0 +1,8 @@
+{
+  "purpose": "Smoke-test Cairo preview rendering (backend meta + non-blank PNG).",
+  "render_backend_smoke": true,
+  "render_backend_smoke_backend": "cairo",
+  "render_backend_smoke_page": "01",
+  "expected_render_backend": "cairo",
+  "cleanup_render_outputs": true
+}

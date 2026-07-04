@@ -136,6 +136,108 @@ class ValidatePptxTests(unittest.TestCase):
         self.assertEqual(1, report["summary"]["pictures"])
         self.assertEqual(0, report["summary"]["native_text_shapes"])
 
+    def test_dual_image_overlay_manifest_allows_declared_background_snapshot(self):
+        module = load_validator()
+        entry = {
+            "slide": 1,
+            "delivery_mode": "dual_image_editable_overlay",
+            "expected_pictures": 1,
+            "image_assets": [
+                {
+                    "role": "no_text_background",
+                    "covers_full_slide": True,
+                    "background_image_declared": True,
+                    "background_has_no_text": True,
+                    "editable_text_overlay": True,
+                }
+            ],
+            "qa_expectations": {
+                "background_snapshot_editable_text": True,
+                "background_has_no_text": True,
+                "all_key_text_editable": True,
+                "text_content_matches_lock": True,
+                "container_overflow_pass": True,
+                "layout_qa_error_count": 0,
+                "visual_semantics_preserved": True,
+                "background_image_declared": True,
+            },
+            "generation_engine": {
+                "tool": "pptxgenjs",
+                "visual_fidelity_not_reduced": True,
+            },
+        }
+        self.assertTrue(module.is_dual_image_overlay_entry(entry))
+        self.assertTrue(module.dual_image_background_exception_allowed(entry))
+
+    def test_dual_image_overlay_requires_no_text_background(self):
+        module = load_validator()
+        entry = {
+            "slide": 1,
+            "delivery_mode": "dual_image_editable_overlay",
+            "image_assets": [],
+            "qa_expectations": {
+                "background_snapshot_editable_text": True,
+                "background_has_no_text": False,
+                "all_key_text_editable": True,
+                "text_content_matches_lock": True,
+                "container_overflow_pass": True,
+                "layout_qa_error_count": 0,
+                "visual_semantics_preserved": True,
+                "background_image_declared": True,
+            },
+        }
+        self.assertTrue(module.is_dual_image_overlay_entry(entry))
+        self.assertFalse(module.dual_image_background_exception_allowed(entry))
+
+    def test_dual_image_overlay_manifest_downgrades_full_slide_background_warning(self):
+        module = load_validator()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            path = root / "overlay.pptx"
+            manifest = root / "slide_manifest.json"
+            make_pptx(path, full_slide_picture=True)
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "slides": [
+                            {
+                                "slide": 1,
+                                "delivery_mode": "dual_image_editable_overlay",
+                                "expected_pictures": 1,
+                                "image_assets": [
+                                    {
+                                        "role": "no_text_background",
+                                        "covers_full_slide": True,
+                                        "background_image_declared": True,
+                                        "background_has_no_text": True,
+                                        "editable_text_overlay": True,
+                                    }
+                                ],
+                                "qa_expectations": {
+                                    "background_snapshot_editable_text": True,
+                                    "background_has_no_text": True,
+                                    "all_key_text_editable": True,
+                                    "text_content_matches_lock": True,
+                                    "container_overflow_pass": True,
+                                    "layout_qa_error_count": 0,
+                                    "visual_semantics_preserved": True,
+                                    "background_image_declared": True,
+                                },
+                            }
+                        ]
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            report = module.validate_pptx(path, manifest_path=manifest)
+        self.assertFalse(
+            any(item["code"] == "FULL_SLIDE_BACKGROUND_RISK" for item in report["warnings"])
+        )
+        self.assertTrue(
+            any(item["code"] == "DECLARED_DUAL_IMAGE_BACKGROUND" for item in report["warnings"])
+        )
+
     def test_cli_writes_json_report(self):
         load_validator()
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -1,0 +1,15 @@
+{
+  "valid": false,
+  "errors": [
+    {
+      "level": "error",
+      "code": "missing_text_region_map",
+      "message": "text_region_map.json is required. Create it in Step 2.5, even when no text regions are detected.",
+      "path": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/manifest_modes_guard/text_region_map.json"
+    }
+  ],
+  "warnings": [],
+  "text_regions": 0,
+  "image_crops": 0,
+  "rebuild_mode": "vector-hifi"
+}

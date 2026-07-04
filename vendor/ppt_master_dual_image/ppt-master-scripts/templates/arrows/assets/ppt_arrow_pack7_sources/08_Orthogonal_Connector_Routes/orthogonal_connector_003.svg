@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520" fill="none">
+<title>orthogonal connector route</title>
+<desc>Self-made PPT-friendly SVG arrow asset. Basic paths only; no third-party artwork.</desc>
+
+<defs>
+  <linearGradient id="gMain" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#B9D0EE"/>
+    <stop offset="0.52" stop-color="#EAF2FB"/>
+    <stop offset="1" stop-color="#FFFFFF"/>
+  </linearGradient>
+  <linearGradient id="gTop" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#DCE8F8" stop-opacity="0.95"/>
+    <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.12"/>
+  </linearGradient>
+  <linearGradient id="gSide" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#9FBFE6" stop-opacity="0.50"/>
+    <stop offset="1" stop-color="#5F86B7" stop-opacity="0.15"/>
+  </linearGradient>
+  <marker id="arrowHead" markerWidth="16" markerHeight="12" refX="15" refY="6" orient="auto" markerUnits="strokeWidth">
+    <path d="M 0 0 L 16 6 L 0 12 z" fill="#8FB0DB"/>
+  </marker>
+</defs>
+
+<path d="M 84.0 408.0 L 354.0 408.0 L 354.0 178.0 L 684.0 178.0 L 684.0 308.0 L 1024.0 308.0" fill="none" stroke="#53657C" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.12"/>
+<path d="M 80.0 400.0 L 350.0 400.0 L 350.0 170.0 L 680.0 170.0 L 680.0 300.0 L 1020.0 300.0" fill="none" stroke="#DDEAF8" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" opacity="0.78"/>
+<path d="M 80.0 400.0 L 350.0 400.0 L 350.0 170.0 L 680.0 170.0 L 680.0 300.0 L 1020.0 300.0" fill="none" stroke="#9BB8DD" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.88"/>
+<path d="M 1020.0 300.0 L 963.6 323.0 L 963.6 277.0 Z" fill="#9BB8DD" opacity="0.92"/>
+
+</svg>

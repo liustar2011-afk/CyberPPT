@@ -1,0 +1,10 @@
+{
+  "workflow": "slide-image-rebuild",
+  "version": "1.0",
+  "pages": [
+    {
+      "page_id": "P01",
+      "regions": []
+    }
+  ]
+}

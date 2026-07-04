@@ -1,0 +1,72 @@
+{
+  "schema": "cyberppt.vendor_snapshot.v1",
+  "name": "ppt_master_dual_image",
+  "source_repo": "/Volumes/DOC/ppt-master",
+  "purpose": "Source parity and regression reference for CyberPPT dual_image_editable_overlay mode",
+  "formal_runtime": false,
+  "source_snapshot": {
+    "ppt_master": {
+      "branch": "main",
+      "commit": "c26ca68dcc1149570a92ec55b30b5a3fdb9c06c3",
+      "status_entries": 6
+    },
+    "slide_image_rebuild": {
+      "branch": "master",
+      "commit": "02a28ba3883943c3e907ac9db1f646017bdf65c9",
+      "status_entries": 0
+    }
+  },
+  "copied_roots": [
+    {
+      "source": "/Volumes/DOC/ppt-master/slide-image-rebuild",
+      "target": "vendor/ppt_master_dual_image/slide-image-rebuild"
+    },
+    {
+      "source": "/Volumes/DOC/ppt-master/skills/ppt-master/scripts",
+      "target": "vendor/ppt_master_dual_image/ppt-master-scripts/scripts"
+    },
+    {
+      "source": "/Volumes/DOC/ppt-master/skills/ppt-master/templates",
+      "target": "vendor/ppt_master_dual_image/ppt-master-scripts/templates"
+    },
+    {
+      "source": "/Volumes/DOC/ppt-master/skills/ppt-master/workflows/script-imagegen-to-ppt.md",
+      "target": "vendor/ppt_master_dual_image/ppt-master-scripts/workflows/script-imagegen-to-ppt.md"
+    },
+    {
+      "source": "/Volumes/DOC/ppt-master/tests",
+      "target": "vendor/ppt_master_dual_image/ppt-master-scripts/tests"
+    }
+  ],
+  "required_files": [
+    "slide-image-rebuild/workflows/dual-image-rebuild-ppt.md",
+    "slide-image-rebuild/scripts/dual_image_rebuild_pptx.py",
+    "slide-image-rebuild/scripts/dual_image_similarity_report.py",
+    "slide-image-rebuild/scripts/project_manager.py",
+    "slide-image-rebuild/scripts/image_to_editable_pptx_lib.py",
+    "slide-image-rebuild/scripts/svg_to_pptx/pptx_notes.py",
+    "slide-image-rebuild/fixtures/dual_image_rebuild/page012/full.png",
+    "slide-image-rebuild/fixtures/dual_image_rebuild/page012/background.png",
+    "slide-image-rebuild/fixtures/dual_image_rebuild/page012/semantic_plan.json",
+    "ppt-master-scripts/scripts/page_image_pair_batch.py",
+    "ppt-master-scripts/scripts/script_imagegen_rebuild_template.py",
+    "ppt-master-scripts/scripts/script_text_overlay.py",
+    "ppt-master-scripts/scripts/ocr_text_locator.py",
+    "ppt-master-scripts/scripts/image_prompt_styles.py",
+    "ppt-master-scripts/scripts/template_image_ppt_export.py",
+    "ppt-master-scripts/templates/image_styles/象牙白深蓝强调.json",
+    "ppt-master-scripts/workflows/script-imagegen-to-ppt.md"
+  ],
+  "excluded_patterns": [
+    ".git/",
+    ".DS_Store",
+    "__pycache__/",
+    ".pytest_cache/",
+    ".venv/",
+    "projects/",
+    "exports/",
+    "qa_pdf/",
+    ".uuid.LCK",
+    ".uuid.TMP-*"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "ivory_deep_blue",
+  "name": "象牙白 + 深蓝强调",
+  "background": "#F7F6F0",
+  "accent": "#12355B",
+  "title": "#101820",
+  "body": "#303030",
+  "secondary": "#6F7275",
+  "divider": "#C9CDD1",
+  "risk": "#8B1E1E",
+  "prompt_contract": "视觉风格使用象牙白 + 深蓝强调：背景 #F7F6F0，强调色 #12355B，标题 #101820，正文 #303030，次级文字 #6F7275，分隔线 #C9CDD1。正式内部汇报风格，象牙白连续纸面、深蓝页内强调、紧凑矩阵、细线分隔、右侧栏、编号 chips 和底部 SO WHAT 条。"
+}

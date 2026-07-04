@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-label="chevron flag right">
+<title>chevron flag right</title>
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#AFC5E8"/>
+    <stop offset="38%" stop-color="#DCE7F7"/>
+    <stop offset="100%" stop-color="#FFFFFF"/>
+  </linearGradient>
+  <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#EAF1FB" stop-opacity="0.85"/>
+    <stop offset="100%" stop-color="#9FB9DF" stop-opacity="0.9"/>
+  </linearGradient>
+</defs>
+<polygon points="90,88 980,88 1130,158 980,228 90,228 210,158" fill="#506B8B" opacity="0.1"/>
+<polygon points="90,80 980,80 1130,150 980,220 90,220 210,150" fill="url(#g)" stroke="#8FAAD2" stroke-width="2.5" stroke-linejoin="round" opacity="1"/>
+<path d="M 110 82 L 975 82" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+</svg>

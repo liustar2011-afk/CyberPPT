@@ -23,6 +23,7 @@ VISUAL_TRUE_FIELDS = [
     "table_semantic_typography_pass",
     "table_density_pass",
     "blueprint_background_not_used",
+    "background_snapshot_declared_and_no_text",
 ]
 
 
@@ -42,6 +43,7 @@ def main() -> int:
     parser.add_argument("--overlay-comparison", required=True)
     parser.add_argument("--pixel-diff-report", required=True)
     parser.add_argument("--local-crop", action="append", default=[])
+    parser.add_argument("--delivery-mode", default="native_rebuild")
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
 
@@ -79,7 +81,15 @@ def main() -> int:
         "deliverable_allowed": passed,
     }
     for field in VISUAL_TRUE_FIELDS:
+        if field in {"blueprint_background_not_used", "background_snapshot_declared_and_no_text"}:
+            continue
         entry[field] = passed
+    if args.delivery_mode == "dual_image_editable_overlay":
+        entry["blueprint_background_not_used"] = False
+        entry["background_snapshot_declared_and_no_text"] = passed
+    else:
+        entry["blueprint_background_not_used"] = passed
+        entry["background_snapshot_declared_and_no_text"] = False
 
     payload = {"slides": [entry]}
     output = Path(args.out)

@@ -104,6 +104,16 @@ VISUAL_QA_REQUIRED_FIELDS = (
     "blueprint_background_not_used",
     "deliverable_allowed",
 )
+DUAL_IMAGE_OVERLAY_MODE = "dual_image_editable_overlay"
+DUAL_IMAGE_REQUIRED_QA = (
+    "background_snapshot_editable_text",
+    "background_has_no_text",
+    "all_key_text_editable",
+    "text_content_matches_lock",
+    "container_overflow_pass",
+    "visual_semantics_preserved",
+    "background_image_declared",
+)
 TABLE_PROSE_SEMANTIC_ROLES = {
     "table_body",
     "table_action",
@@ -370,6 +380,66 @@ def find_visual_qa_slide(visual_qa: dict[str, Any], slide_number: int) -> dict[s
         if isinstance(entry, dict) and entry.get("slide") == slide_number:
             return entry
     return None
+
+
+def is_dual_image_overlay_entry(entry: dict[str, Any]) -> bool:
+    return str(entry.get("delivery_mode") or "") == DUAL_IMAGE_OVERLAY_MODE
+
+
+def dual_image_background_exception_allowed(entry: dict[str, Any]) -> bool:
+    if not is_dual_image_overlay_entry(entry):
+        return False
+    qa = entry.get("qa_expectations")
+    if not isinstance(qa, dict):
+        return False
+    if any(qa.get(field) is not True for field in DUAL_IMAGE_REQUIRED_QA):
+        return False
+    if int(qa.get("layout_qa_error_count", 0) or 0) != 0:
+        return False
+
+    image_assets = entry.get("image_assets")
+    if not isinstance(image_assets, list) or len(image_assets) != 1:
+        return False
+    asset = image_assets[0]
+    if not isinstance(asset, dict):
+        return False
+    return (
+        asset.get("role") == "no_text_background"
+        and asset.get("covers_full_slide") is True
+        and asset.get("background_image_declared") is True
+        and asset.get("background_has_no_text") is True
+        and asset.get("editable_text_overlay") is True
+    )
+
+
+def visual_qa_required_fields_for_manifest(entry: dict[str, Any]) -> tuple[str, ...]:
+    if is_dual_image_overlay_entry(entry):
+        return (*VISUAL_QA_REQUIRED_FIELDS, "background_snapshot_declared_and_no_text")
+    return VISUAL_QA_REQUIRED_FIELDS
+
+
+def apply_manifest_slide_warning_exceptions(
+    warnings: list[dict[str, Any]],
+    entry: dict[str, Any] | None,
+    slide_number: int,
+) -> list[dict[str, Any]]:
+    adjusted: list[dict[str, Any]] = []
+    for warning in warnings:
+        if (
+            entry is not None
+            and warning.get("code") == "FULL_SLIDE_BACKGROUND_RISK"
+            and dual_image_background_exception_allowed(entry)
+        ):
+            adjusted.append(
+                issue(
+                    "DECLARED_DUAL_IMAGE_BACKGROUND",
+                    "Full-slide no-text background is allowed for dual_image_editable_overlay mode.",
+                    slide=slide_number,
+                )
+            )
+        else:
+            adjusted.append(warning)
+    return adjusted
 
 
 def manifest_requires_visual_qa(manifest: dict[str, Any] | None) -> bool:
@@ -1564,7 +1634,8 @@ def validate_visual_qa(
                 )
             )
             continue
-        for field in VISUAL_QA_REQUIRED_FIELDS:
+        required_fields = visual_qa_required_fields_for_manifest(manifest_entry)
+        for field in required_fields:
             if field not in entry:
                 warnings.append(
                     issue(
@@ -1585,7 +1656,7 @@ def validate_visual_qa(
 
         failed_fields = [
             field
-            for field in VISUAL_QA_REQUIRED_FIELDS
+            for field in required_fields
             if field != "deliverable_allowed" and entry.get(field) is False
         ]
         if failed_fields:
@@ -1725,7 +1796,7 @@ def validate_visual_qa(
         evidence = entry.get("evidence")
         if not isinstance(evidence, dict):
             evidence = {}
-        for field in VISUAL_QA_REQUIRED_FIELDS:
+        for field in required_fields:
             if field == "deliverable_allowed" or entry.get(field) is not True:
                 continue
             field_evidence = evidence.get(field)
@@ -2042,9 +2113,16 @@ def validate_pptx(
                     continue
                 metrics, warnings = inspect_slide(slide_root, slide_number, width, height)
                 report["slides"].append(metrics)
-                report["warnings"].extend(warnings)
+                manifest_entry = None
                 if manifest is not None:
                     manifest_entry = find_manifest_slide(manifest, slide_number)
+                    warnings = apply_manifest_slide_warning_exceptions(
+                        warnings,
+                        manifest_entry,
+                        slide_number,
+                    )
+                report["warnings"].extend(warnings)
+                if manifest is not None:
                     manifest_dir = Path(manifest_path).parent if manifest_path is not None else None
                     report["warnings"].extend(
                         validate_manifest_slide(manifest_entry, metrics, slide_number, manifest_dir)

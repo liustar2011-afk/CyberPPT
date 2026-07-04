@@ -1,0 +1,114 @@
+{
+  "schema": "cyberppt.dual_image.layout_rules.v1",
+  "line_break": {
+    "phrase_breaks": {
+      "国际项目经验与交付": "国际项目经验\n与交付",
+      "主体治理与合规": "主体治理与\n合规",
+      "财务稳健与信用履约": "财务稳健与\n信用履约",
+      "规划设计与咨询类": "规划设计与\n咨询类",
+      "运维与技术服务类": "运维与技术\n服务类",
+      "企业类型分类": "企业类型\n分类",
+      "平台型和集成型企业": "平台型和\n集成型企业",
+      "E&S/ESG/HSE与供应链责任": "E&S/ESG/HSE\n与供应链责任",
+      "\"建议按'规则先行—试点验证—常态运营—规模推广'路径启动首阶段工作\"": "\"建议按'规则先行—试点验证—常态运营—规模推广'路径\n启动首阶段工作\""
+    },
+    "break_before": ["可信", "企业", "服务类", "咨询类", "分类", "系统", "合规", "履约", "交付", "管理", "应对", "责任", "集成"],
+    "break_after": ["与", "和"]
+  },
+  "wrap_rules": [
+    {
+      "id": "so_what_main_sentence_wrap",
+      "match": {
+        "y_min": 560,
+        "y_max": 680,
+        "x_max": 680,
+        "text_contains_any": ["建议按", "首阶段工作"]
+      },
+      "max_lines": 2
+    }
+  ],
+  "available_width_rules": [
+    {
+      "id": "so_what_main_sentence_left_lane",
+      "match": {
+        "y_min": 560,
+        "y_max": 680,
+        "x_max": 680,
+        "text_contains_any": ["建议按", "首阶段工作"]
+      },
+      "width": 520
+    }
+  ],
+  "alignment_rules": [
+    {
+      "id": "p4_esg_supply_chain_center_in_cell",
+      "match": {
+        "x_min": 600,
+        "x_max": 650,
+        "y_min": 350,
+        "y_max": 410,
+        "text_contains_any": ["E&S/ESG/HSE", "供应链责任"]
+      },
+      "set": {
+        "x": "682.52",
+        "text-anchor": "middle"
+      }
+    },
+    {
+      "id": "p4_industry_feature_row_visual_centerline",
+      "match": {
+        "y_min": 500,
+        "y_max": 540,
+        "text_equals_any": ["行业特性", "系统性", "长周期属性", "强合规属性", "供应链联动属性", "强属地化属性"]
+      },
+      "set": {
+        "y": "520.00",
+        "text-anchor": "middle"
+      }
+    }
+  ],
+  "line_height_rules": [
+    {
+      "id": "centered_container_multiline_tight",
+      "match": {
+        "text_anchor": "middle",
+        "y_min": 160,
+        "y_max": 430,
+        "x_max": 460
+      },
+      "ratio": 1.08
+    },
+    {
+      "id": "centered_grid_multiline_tight",
+      "match": {
+        "text_anchor": "middle",
+        "y_min": 160,
+        "y_max": 430,
+        "x_min": 560
+      },
+      "ratio": 1.08
+    }
+  ],
+  "baseline_offset_rules": [
+    {
+      "id": "hexagon_multiline_visual_center_offset",
+      "match": {
+        "text_anchor": "middle",
+        "y_min": 160,
+        "y_max": 430,
+        "x_max": 460
+      },
+      "em": 0.48
+    },
+    {
+      "id": "grid_multiline_visual_center_offset",
+      "match": {
+        "text_anchor": "middle",
+        "y_min": 160,
+        "y_max": 430,
+        "x_min": 560
+      },
+      "em": 0.34
+    }
+  ]
+}

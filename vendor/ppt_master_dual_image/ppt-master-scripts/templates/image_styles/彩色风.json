@@ -1,0 +1,62 @@
+{
+  "type": "content-region PowerPoint image",
+  "style_name": "彩色风",
+  "source_visual_system": "bright white royal-blue red-accent text-separated photographic colorful business visual",
+  "best_for": "图文分离式脚本生图转PPT、底图不编辑但文字可编辑的正式汇报页、科技成果转化、可信数据空间、能源数字化、产业平台和业务场景表达",
+  "visual_direction": "bright white formal Chinese corporate briefing page with clean editable-text reservation areas, saturated royal-blue structure, controlled red emphasis, colorful semantic objects, photographic business-scene illustration areas, light 2.5D or micro-3D depth, pale blue-gray sectioning, and no dark dashboard, cyberpunk, poster-heavy composition, noisy full-photo background, or text over complex imagery",
+  "canvas": {
+    "scope": "PowerPoint text-separated visual background image",
+    "background": "use #FFFFFF as the main page field, with #F7FAFF, #F2F6FF, or #EEF4FF for pale local panels; allow clean pale structural background plates, subtle grid fields, soft platform bases, and shallow spatial layers, but keep all text reservation areas pure white or near-white",
+    "composition": "clear PPT infographic composition with explicit clean text areas and independent visual areas; use side visual panels, half-width photo-like scene carriers, top or right photographic illustration zones, light 2.5D platform diagrams, flow bands, layered blocks, or scenario panels",
+    "density": "medium information density with richer visual rhythm than strict source-image mode; keep enough whitespace for later editable PPT text overlay"
+  },
+  "color_palette": {
+    "background": "#FFFFFF main field; #F7FAFF, #F2F6FF, and #EEF4FF for pale local panels",
+    "title": "#002880, #002070, or #003B8F for title-level bars, hierarchy anchors, and key rules",
+    "text_primary": "#111827, #1F2937, or #002880 for all visible source-derived text",
+    "text_secondary": "#334155, #475569, or #64748B for secondary text only, still crisp and readable",
+    "line": "#B8C7E6, #C7D4EE, or #D6E0F2 for 1px borders, dividers, grid lines, and timeline rules",
+    "primary": "#002880, #002070, #003B8F, or #1D4ED8 for structure, connectors, and hierarchy",
+    "accent_red": "#D00000, #D80000, or #E00000 for risk points, responsibility boundaries, current nodes, warnings, contrast labels, and key conclusions",
+    "semantic_colors": "#16A34A energy green, #0891B2 data cyan, #2563EB technology blue, #7C3AED governance purple, #F97316 industry orange, #EAB308 safety yellow",
+    "neutral": "#FFFFFF, #F7FAFF, #F2F6FF, #EEF4FF, and #F8FAFC for cards, text plates, photo carriers, and clean local panels",
+    "rule": "overall color ratio should feel like 60-70% white or near-white, 15-25% royal blue structure, 10-15% pale blue-gray sectioning, 3-5% red emphasis, and 5-10% other semantic colors; use at most 2-3 auxiliary semantic colors per page"
+  },
+  "typography": {
+    "title": "clear bold modern Chinese sans-serif, formal and restrained, close to Microsoft YaHei / PingFang SC",
+    "body": "high-readability modern Chinese sans-serif, regular-medium weight or stronger, primarily left-aligned, with stable line height and short phrase-based body copy",
+    "labels": "compact Chinese labels and evidence tags must remain dark, crisp, horizontally readable, and placed only on clean white or near-white text plates",
+    "text_quality": "Chinese text must look like vector text in a high-resolution Office / PowerPoint screenshot; the image may be richer, but all visible text must stay exact, dark, sharp, and separate from photographic or complex visual areas"
+  },
+  "font_rules": [
+    "按 4K 级 Office 截图视觉精度理解画面，16:9 构图下所有文字、图标、线条和边框都必须高清锐利；这是清晰度目标，不是实际输出尺寸要求。",
+    "文字必须呈现真实 PowerPoint 可编辑文本的视觉效果，像矢量文字而不是插画化文字、海报字、渲染字或图片贴字；字形端正稳定，笔画清晰均匀，边缘锐利，横平竖直，基线整齐。",
+    "正文文字使用 100% 不透明实色填充，优先 #111827、#1F2937、#002880 或同等深色；禁止浅灰正文、半透明文字、渐变文字、发光文字、描边文字、阴影文字、带质感纹理的文字和伪文字。",
+    "文字预留区必须保持纯白、近白或极浅干净底色；不得把文字压在照片纹理、复杂背景、人物面部、设备细节、光斑、渐变、数据流、微立体对象或彩色插图上。",
+    "页面文字应短语化、分组化、层级清楚，避免密集小字、长段落和过小字号；如信息密度较高，优先扩大文本承载区、拆分层级或减少装饰。"
+  ],
+  "layout_patterns": [
+    "left text area plus right photographic business-scene visual panel",
+    "top clean title / middle text-separated cards / bottom light 2.5D scenario strip",
+    "central royal-blue process axis plus side photographic illustration carrier",
+    "platform architecture with clean text plates and colorful semantic objects",
+    "timeline with one photographic scene anchor and colored semantic nodes",
+    "risk / responsibility comparison with red key boundary and blue-white text panels",
+    "data-space scenario panel with light 2.5D platform base and clean overlay text zones"
+  ],
+  "layout_usage_rule": "Use this style when the downstream PPT only requires image/text separation. The image may be a richer visual background or scene carrier, while final editable PPT text will be placed separately. Keep text zones clean and separable; do not optimize for full vector redraw of every visual element.",
+  "visual_elements": {
+    "allowed": "pure-white page field, royal-blue section bars, pale blue-gray panels, crisp white text plates, soft platform bases, subtle grids, light data-flow lines, low-noise photographic business-scene panels, office scenes, data centers, energy equipment, industrial parks, urban infrastructure, digital platform screens, light 2.5D geometric objects, micro-3D semantic illustrations, colorful but controlled data objects, clean cards, thin dividers, regular arrows, and a few auxiliary icons",
+    "avoid": "full-page complex photo background, text on photos, dark cinematic photography, heavy depth of field, strong lens flare, high grain, dirty paper texture, cyberpunk neon, technology dashboard, advertising poster composition, over-saturated rainbow palette, red-blue clutter, fake seals, random stock logos, pseudo-text, watermarks, page numbers, and unrelated numbers"
+  },
+  "rendering_constraints": [
+    "Generate as a PPT text-separated visual background source, not as a strict vector-redraw source image. The visual can be richer, more photographic, more colorful, and more dimensional, but it must preserve clean areas for later editable PPT text overlay.",
+    "Use a bright white page base with saturated royal-blue structure and controlled red emphasis; add low-saturation semantic colors mainly inside visual carriers, micro-3D objects, data flows, equipment, platform nodes, and scenario illustrations.",
+    "Photographic-feeling visuals are allowed: use bright commercial photography feeling, real scene texture, natural light, slight depth of field, realistic materials, and soft spatial layers for business, energy, data center, office, industrial park, or digital platform scenes.",
+    "Photo-like content must stay inside independent image areas, side panels, half-width regions, rounded-rectangle carriers, or background visual zones; it must not intrude into clean text reservation areas.",
+    "Allow light 2.5D and micro-3D geometry, soft shadows, shallow platform depth, and colorful semantic objects; prohibit strong perspective, complex 3D render scenes, hard reflections, glassmorphism, cinematic lighting, and poster-style visual impact.",
+    "Every page should include either one main semantic visual/photo-like carrier or one to two smaller visual carriers, but avoid icon arrays and avoid making each process node a separate icon.",
+    "Keep all visible text dark, crisp, horizontal, and on pure-white or near-white text plates. Do not generate pseudo-text, pseudo-English, watermarks, logos, page numbers, dates, random labels, or unrelated digits.",
+    "The final image should feel like a clean, colorful, high-quality corporate PPT background with editable text zones, not a flat card pile, not a gray fog page, and not an advertising poster."
+  ]
+}

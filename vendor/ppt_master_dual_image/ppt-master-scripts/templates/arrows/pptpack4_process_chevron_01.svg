@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_01.svg
+  License: custom pack permission; see assets/ppt_arrow_pack4_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg">
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C9D9F4" />
+      <stop offset="58%" stop-color="#EEF5FF" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E8F1FF" />
+      <stop offset="100%" stop-color="#B8CCE9" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack4_process_chevron_01" transform="translate(150.000 215.250) scale(1.225000)">
+    <rect xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" />
+  
+    <polygon xmlns="http://www.w3.org/2000/svg" points="66.9,89.0 124.0,89.0 166.0,116.0 124.0,143.0 66.9,143.0 90.0,116.0" fill="#496A9E" opacity="0.1" />
+  
+    <polygon xmlns="http://www.w3.org/2000/svg" points="184.9,89.0 242.0,89.0 284.0,116.0 242.0,143.0 184.9,143.0 208.0,116.0" fill="#496A9E" opacity="0.1" />
+  
+    <polygon xmlns="http://www.w3.org/2000/svg" points="63.9,82.0 121.0,82.0 163.0,109.0 121.0,136.0 63.9,136.0 87.0,109.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="2" stroke-linejoin="round" />
+  
+    <polygon xmlns="http://www.w3.org/2000/svg" points="181.9,82.0 239.0,82.0 281.0,109.0 239.0,136.0 181.9,136.0 205.0,109.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="2" stroke-linejoin="round" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack4_process_chevron_01</text>
+</svg>

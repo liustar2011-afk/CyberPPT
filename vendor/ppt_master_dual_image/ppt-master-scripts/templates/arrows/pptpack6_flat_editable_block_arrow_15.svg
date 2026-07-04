@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack6_sources/07_Flat_Editable_Block_Arrows/flat_editable_block_arrow_15.svg
+  License: custom pack permission; see assets/ppt_arrow_pack6_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg" />
+
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack6_flat_editable_block_arrow_15" transform="translate(150.000 212.188) scale(1.531250)">
+    <desc xmlns="http://www.w3.org/2000/svg">flat editable block arrow for PPT</desc>
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 40.0 78.0 L 230.0 78.0 L 290.0 48.0 L 360.0 90.0 L 290.0 132.0 L 230.0 102.0 L 40.0 102.0 Z" fill="#E2ECF8" stroke="#9BB2D3" stroke-width="1.8" opacity="0.92" stroke-linejoin="round" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack6_flat_editable_block_arrow_15</text>
+</svg>

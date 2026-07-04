@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="220" viewBox="0 0 800 220" role="img">
+  <title>process_chevron_20</title>
+  <rect width="100%" height="100%" fill="none"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C9D9F4"/>
+      <stop offset="58%" stop-color="#EEF5FF"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+    <linearGradient id="gSide" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E8F1FF"/>
+      <stop offset="100%" stop-color="#B8CCE9"/>
+    </linearGradient>
+  </defs>
+  <polygon points="73.0,81.0 175.0,81.0 213.0,102.0 175.0,123.0 73.0,123.0" fill="#496A9E" opacity="0.08"/>
+  <polygon points="70.0,75.0 172.0,75.0 210.0,96.0 172.0,117.0 70.0,117.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="1.7" stroke-linejoin="round"/>
+  <polygon points="236.1,81.0 321.0,81.0 359.0,102.0 321.0,123.0 236.1,123.0 257.0,102.0" fill="#496A9E" opacity="0.08"/>
+  <polygon points="233.1,75.0 318.0,75.0 356.0,96.0 318.0,117.0 233.1,117.0 254.0,96.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="1.7" stroke-linejoin="round"/>
+  <polygon points="382.1,81.0 467.0,81.0 505.0,102.0 467.0,123.0 382.1,123.0 403.0,102.0" fill="#496A9E" opacity="0.08"/>
+  <polygon points="379.1,75.0 464.0,75.0 502.0,96.0 464.0,117.0 379.1,117.0 400.0,96.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="1.7" stroke-linejoin="round"/>
+  <polygon points="109.0,122.0 211.0,122.0 249.0,143.0 211.0,164.0 109.0,164.0" fill="#496A9E" opacity="0.08"/>
+  <polygon points="106.0,116.0 208.0,116.0 246.0,137.0 208.0,158.0 106.0,158.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="1.7" stroke-linejoin="round"/>
+  <polygon points="272.1,122.0 357.0,122.0 395.0,143.0 357.0,164.0 272.1,164.0 293.0,143.0" fill="#496A9E" opacity="0.08"/>
+  <polygon points="269.1,116.0 354.0,116.0 392.0,137.0 354.0,158.0 269.1,158.0 290.0,137.0" fill="url(#g)" opacity="1" stroke="#9BB4D9" stroke-width="1.7" stroke-linejoin="round"/>
+</svg>

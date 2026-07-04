@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!-- Layered architecture connectors with both vertical taps and divider bands. -->
+  <defs>
+    <marker id="head" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#123A73"/>
+    </marker>
+  </defs>
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <g fill="#F8FAFC" stroke="#D7E3F4" stroke-width="2">
+    <rect x="70" y="110" width="1140" height="110" rx="12"/>
+    <rect x="70" y="285" width="1140" height="110" rx="12"/>
+    <rect x="70" y="460" width="1140" height="110" rx="12"/>
+  </g>
+  <g stroke="#D7E3F4" stroke-width="2">
+    <line x1="70" y1="252" x2="1210" y2="252"/>
+    <line x1="70" y1="427" x2="1210" y2="427"/>
+  </g>
+  <g stroke="#123A73" stroke-width="3" stroke-dasharray="7 7">
+    <line x1="250" y1="285" x2="250" y2="220" marker-end="url(#head)"/>
+    <line x1="520" y1="285" x2="520" y2="220" marker-end="url(#head)"/>
+    <line x1="790" y1="285" x2="790" y2="220" marker-end="url(#head)"/>
+    <line x1="1060" y1="285" x2="1060" y2="220" marker-end="url(#head)"/>
+    <line x1="385" y1="460" x2="385" y2="395" marker-end="url(#head)"/>
+    <line x1="655" y1="460" x2="655" y2="395" marker-end="url(#head)"/>
+    <line x1="925" y1="460" x2="925" y2="395" marker-end="url(#head)"/>
+  </g>
+  <g font-family="Microsoft YaHei, Arial, sans-serif" font-size="18" font-weight="800" fill="#123A73">
+    <text x="95" y="175">应用能力层</text>
+    <text x="95" y="350">平台支撑层</text>
+    <text x="95" y="525">基础保障层</text>
+  </g>
+</svg>

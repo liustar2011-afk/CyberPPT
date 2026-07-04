@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" role="img" aria-label="Milestone Chevron Timeline 26">
+<title>Milestone Chevron Timeline 26</title>
+<desc>milestone chevron timeline</desc>
+<defs>
+<linearGradient id="chev25" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FBFDFF"/>
+  <stop offset="42%" stop-color="#E5EFFB"/>
+  <stop offset="100%" stop-color="#BED3ED"/>
+</linearGradient>
+<linearGradient id="chev25_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70"/>
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00"/>
+</linearGradient>
+</defs>
+<path d="M 34.0 62.0 L 138.5 62.0 L 172.5 92.0 L 138.5 122.0 L 34.0 122.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 34.0 58.0 L 138.5 58.0 L 172.5 88.0 L 138.5 118.0 L 34.0 118.0 Z" fill="url(#chev25)" stroke="#88A8CC" stroke-width="1.5" opacity="1" stroke-linejoin="round" /><circle cx="103.2" cy="88.0" r="6" fill="#FFFFFF" opacity="0.65" stroke="#88A8CC" stroke-width="1"/><path d="M 178.5 62.0 L 283.0 62.0 L 317.0 92.0 L 283.0 122.0 L 178.5 122.0 L 212.5 92.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 178.5 58.0 L 283.0 58.0 L 317.0 88.0 L 283.0 118.0 L 178.5 118.0 L 212.5 88.0 Z" fill="url(#chev25)" stroke="#88A8CC" stroke-width="1.5" opacity="1" stroke-linejoin="round" /><circle cx="247.8" cy="88.0" r="6" fill="#FFFFFF" opacity="0.65" stroke="#88A8CC" stroke-width="1"/><path d="M 323.0 62.0 L 427.5 62.0 L 461.5 92.0 L 427.5 122.0 L 323.0 122.0 L 357.0 92.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 323.0 58.0 L 427.5 58.0 L 461.5 88.0 L 427.5 118.0 L 323.0 118.0 L 357.0 88.0 Z" fill="url(#chev25)" stroke="#88A8CC" stroke-width="1.5" opacity="1" stroke-linejoin="round" /><circle cx="392.2" cy="88.0" r="6" fill="#FFFFFF" opacity="0.65" stroke="#88A8CC" stroke-width="1"/><path d="M 467.5 62.0 L 572.0 62.0 L 606.0 92.0 L 572.0 122.0 L 467.5 122.0 L 501.5 92.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" /><path d="M 467.5 58.0 L 572.0 58.0 L 606.0 88.0 L 572.0 118.0 L 467.5 118.0 L 501.5 88.0 Z" fill="url(#chev25)" stroke="#88A8CC" stroke-width="1.5" opacity="1" stroke-linejoin="round" /><circle cx="536.8" cy="88.0" r="6" fill="#FFFFFF" opacity="0.65" stroke="#88A8CC" stroke-width="1"/>
+</svg>

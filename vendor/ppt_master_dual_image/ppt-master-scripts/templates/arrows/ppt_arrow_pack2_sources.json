@@ -1,0 +1,374 @@
+{
+  "meta": {
+    "purpose": "PPT arrow asset pack 02 gradient main-chain arrows for page-level process, flow, convergence, split, bridge, vertical, trend, and return relations.",
+    "updated": "2026-07-02",
+    "license_policy": "Custom generated PPT assets; see assets/ppt_arrow_pack2_sources/LICENSE_CUSTOM_ASSET_USAGE.txt.",
+    "license_reference": "assets/ppt_arrow_pack2_sources/LICENSE_CUSTOM_ASSET_USAGE.txt"
+  },
+  "sources": [
+    {
+      "key": "pptpack2_gradient_low_profile_reference_arrow",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/01_low_profile_reference_arrow.svg",
+      "summary": "Pick for a low-profile reference arrow spanning several blocks with minimal visual weight. Skip for stronger bridge arrows (use pptpack2_gradient_bridge_arc_path).",
+      "layout": "low_profile"
+    },
+    {
+      "key": "pptpack2_gradient_long_block_right_arrow",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/02_long_block_right_arrow.svg",
+      "summary": "Pick for a long rightward block arrow showing main chain movement, migration, or target push. Skip for chevron-tail emphasis (use pptpack2_gradient_chevron_flag_right).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_long_block_left_arrow",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/03_long_block_left_arrow.svg",
+      "summary": "Pick for a long leftward block arrow showing return, reverse flow, or backtracking. Skip for U-turn return flows (use pptpack2_gradient_return_u_turn_band).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_double_ended_bar_arrow",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/04_double_ended_bar_arrow.svg",
+      "summary": "Pick for a wide bidirectional bar showing mutual exchange or two-sided relation. Skip for crossing exchange (use pptpack2_gradient_cross_exchange_band).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_slim_process_spine_arrow",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/05_slim_process_spine_arrow.svg",
+      "summary": "Pick for a slim rightward process spine when the arrow should guide a sequence without dominating. Skip for wide banner arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_wide_banner_cut_left_arrow",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/06_wide_banner_cut_left_arrow.svg",
+      "summary": "Pick for a wide banner arrow with a cut tail, suitable for strong section headers or left-cut process ribbons. Skip for neutral slim paths (use pptpack2_gradient_slim_process_spine_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_chevron_flag_right",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/07_chevron_flag_right.svg",
+      "summary": "Pick for a strong rightward chevron-flag arrow that reads as a main path or push. Skip for multi-step chains (use pptpack2_gradient_4_step_tight_chevron).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_chevron_flag_left",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/08_chevron_flag_left.svg",
+      "summary": "Pick for a leftward chevron-flag arrow indicating return, rollback, or reverse flow. Skip for bidirectional exchange (use pptpack2_gradient_double_ended_bar_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_2_step_tight_chevron",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/10_2_step_tight_chevron.svg",
+      "summary": "Pick for a compact two-step chevron process. Skip for three or more steps (use pptpack2_gradient_3_step_tight_chevron).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_3_step_tight_chevron",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/11_3_step_tight_chevron.svg",
+      "summary": "Pick for a compact three-step chevron process. Skip for four-step chains (use pptpack2_gradient_4_step_tight_chevron).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_4_step_tight_chevron",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/12_4_step_tight_chevron.svg",
+      "summary": "Pick for a compact four-step chevron process. Skip for five-step chains (use pptpack2_gradient_5_step_tight_chevron).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_5_step_tight_chevron",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/13_5_step_tight_chevron.svg",
+      "summary": "Pick for a compact five-step chevron process. Skip for six-step chains (use pptpack2_gradient_6_step_tight_chevron).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_6_step_tight_chevron",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/14_6_step_tight_chevron.svg",
+      "summary": "Pick for a compact six-step chevron process when many small phases must fit. Skip for larger stage blocks (use pptpack_gradient_process_chevron_4_steps).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_overlap_chain_4",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/15_overlap_chain_4.svg",
+      "summary": "Pick for a four-stage overlapping chain where stages should feel continuous and interlocked. Skip for separated chevrons (use pptpack2_gradient_4_step_tight_chevron).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_center_rise_path",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/16_center_rise_path.svg",
+      "summary": "Pick for a horizontal channel with a central rise, showing uplift or emergence from a main path. Skip for vertical standalone growth (use pptpack2_gradient_vertical_up_flow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_center_drop_path",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/17_center_drop_path.svg",
+      "summary": "Pick for a horizontal channel with a central drop, showing handoff, landing, or downstream delivery. Skip for vertical standalone down flow (use pptpack2_gradient_vertical_down_flow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_bridge_arc_path",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/18_bridge_arc_path.svg",
+      "summary": "Pick for a soft bridge arc spanning a foundation or cross-layer relation. Skip for low-profile reference arrows (use pptpack2_gradient_low_profile_reference_arrow).",
+      "layout": "low_profile"
+    },
+    {
+      "key": "pptpack2_gradient_platform_peak_arrow",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/19_platform_peak_arrow.svg",
+      "summary": "Pick for a platform peak or central capability rising from a baseline. Skip for center-rise channels with broader path continuity (use pptpack2_gradient_center_rise_path).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_funnel_converge_right",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/20_funnel_converge_right.svg",
+      "summary": "Pick for left-side inputs narrowing into a rightward outcome. Skip for three-stream convergence (use pptpack2_gradient_three_streams_converge).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_funnel_converge_left",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/21_funnel_converge_left.svg",
+      "summary": "Pick for right-side inputs narrowing into a leftward outcome or reverse consolidation. Skip for plain leftward movement (use pptpack2_gradient_long_block_left_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_three_streams_converge",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/22_three_streams_converge.svg",
+      "summary": "Pick for three streams converging into one rightward output. Skip for only two inputs (use pptpack2_gradient_funnel_converge_right).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_split_to_three_streams",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/23_split_to_three_streams.svg",
+      "summary": "Pick for one path splitting into three downstream outputs. Skip for two-way branching (use pptpack2_gradient_diverging_fork_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_bidirectional_exchange_band",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/24_bidirectional_exchange_band.svg",
+      "summary": "Pick for a central bidirectional exchange band between two sides. Skip for crossed interaction (use pptpack2_gradient_cross_exchange_band).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_cross_exchange_band",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/25_cross_exchange_band.svg",
+      "summary": "Pick for crossing two-way exchange, mutual transformation, or crossing dependencies. Skip for simple bidirectional relation (use pptpack2_gradient_bidirectional_exchange_band).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_vertical_up_flow",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/26_vertical_up_flow.svg",
+      "summary": "Pick for a strong vertical upward flow or lift. Skip for stacked chevron up progression (use pptpack2_gradient_vertical_chevron_stack_up).",
+      "layout": "vertical"
+    },
+    {
+      "key": "pptpack2_gradient_vertical_down_flow",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/27_vertical_down_flow.svg",
+      "summary": "Pick for a strong vertical downward flow or deployment. Skip for stacked chevron down progression (use pptpack2_gradient_vertical_chevron_stack_down).",
+      "layout": "vertical"
+    },
+    {
+      "key": "pptpack2_gradient_vertical_chevron_stack_up",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/28_vertical_chevron_stack_up.svg",
+      "summary": "Pick for a vertical stack of upward chevrons showing staged uplift. Skip for one large upward arrow (use pptpack2_gradient_vertical_up_flow).",
+      "layout": "vertical"
+    },
+    {
+      "key": "pptpack2_gradient_vertical_chevron_stack_down",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/29_vertical_chevron_stack_down.svg",
+      "summary": "Pick for a vertical stack of downward chevrons showing staged rollout or drill-down. Skip for one large downward arrow (use pptpack2_gradient_vertical_down_flow).",
+      "layout": "vertical"
+    },
+    {
+      "key": "pptpack2_gradient_diagonal_up_trend_block",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/30_diagonal_up_trend_block.svg",
+      "summary": "Pick for diagonal upward trend or breakthrough movement. Skip for vertical growth (use pptpack2_gradient_vertical_up_flow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_diagonal_down_trend_block",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/31_diagonal_down_trend_block.svg",
+      "summary": "Pick for diagonal downward trend, decline, or controlled reduction. Skip for vertical deployment (use pptpack2_gradient_vertical_down_flow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_right_then_up_channel",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/32_right_then_up_channel.svg",
+      "summary": "Pick for rightward flow that turns upward into escalation, uplift, or target capability. Skip for pure up arrows (use pptpack2_gradient_vertical_up_flow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_right_then_down_channel",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/33_right_then_down_channel.svg",
+      "summary": "Pick for rightward flow that turns downward into landing, implementation, or delivery. Skip for pure down arrows (use pptpack2_gradient_vertical_down_flow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_return_u_turn_band",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/34_return_u_turn_band.svg",
+      "summary": "Pick for a wide U-turn return band showing loop-back, correction, or iterative return. Skip for connector feedback routes (use pptpack4_connector_route_41).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_gradient_layered_shadow_reference_arrow",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/35_layered_shadow_reference_arrow.svg",
+      "summary": "Pick for a layered low-profile arrow with subtle shadow, useful as a reference or supporting bridge. Skip for stronger main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "low_profile"
+    },
+    {
+      "key": "pptpack2_gradient_step_platform_forward_arrow",
+      "local_source": "assets/ppt_arrow_pack2_sources/01_MainChain_Gradient_SVG/36_step_platform_forward_arrow.svg",
+      "summary": "Pick for a stepped platform arrow showing maturity climb, staged advance, or platform progression. Skip for flat chevron chains (use pptpack2_gradient_4_step_tight_chevron).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_straight_right_line",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/01_straight_right_line.svg",
+      "summary": "Pick for simple straight connector lines between nodes; tags: connector, line, route, straight, right, line. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_straight_left_line",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/02_straight_left_line.svg",
+      "summary": "Pick for simple straight connector lines between nodes; tags: connector, line, route, straight, left, line. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_double_straight_line",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/03_double_straight_line.svg",
+      "summary": "Pick for simple straight connector lines between nodes; tags: connector, line, route, double, straight, line. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_elbow_right_down",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/04_elbow_right_down.svg",
+      "summary": "Pick for orthogonal elbow connector routes between boxes or architecture layers; tags: connector, line, route, elbow, right, down. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_elbow_right_up",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/05_elbow_right_up.svg",
+      "summary": "Pick for orthogonal elbow connector routes between boxes or architecture layers; tags: connector, line, route, elbow, right, up. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_elbow_down_right",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/06_elbow_down_right.svg",
+      "summary": "Pick for orthogonal elbow connector routes between boxes or architecture layers; tags: connector, line, route, elbow, down, right. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_elbow_up_right",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/07_elbow_up_right.svg",
+      "summary": "Pick for orthogonal elbow connector routes between boxes or architecture layers; tags: connector, line, route, elbow, up, right. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_soft_curve_right",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/08_soft_curve_right.svg",
+      "summary": "Pick for curved connector lines between nodes or layers; tags: connector, line, route, soft, curve, right. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_soft_curve_down",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/09_soft_curve_down.svg",
+      "summary": "Pick for curved connector lines between nodes or layers; tags: connector, line, route, soft, curve, down. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_soft_curve_up",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/10_soft_curve_up.svg",
+      "summary": "Pick for curved connector lines between nodes or layers; tags: connector, line, route, soft, curve, up. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_s_curve_right",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/11_s_curve_right.svg",
+      "summary": "Pick for curved connector lines between nodes or layers; tags: connector, line, route, s, curve, right. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_s_curve_left",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/12_s_curve_left.svg",
+      "summary": "Pick for curved connector lines between nodes or layers; tags: connector, line, route, s, curve, left. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_arc_up_right",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/13_arc_up_right.svg",
+      "summary": "Pick for curved connector lines between nodes or layers; tags: connector, line, route, arc, up, right. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_arc_down_right",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/14_arc_down_right.svg",
+      "summary": "Pick for curved connector lines between nodes or layers; tags: connector, line, route, arc, down, right. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_loop_clockwise",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/15_loop_clockwise.svg",
+      "summary": "Pick for split, merge, return, loop-back, or branching connector logic; tags: connector, line, route, loop, clockwise. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_loop_counterclockwise",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/16_loop_counterclockwise.svg",
+      "summary": "Pick for split, merge, return, loop-back, or branching connector logic; tags: connector, line, route, loop, counterclockwise. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_return_left",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/17_return_left.svg",
+      "summary": "Pick for split, merge, return, loop-back, or branching connector logic; tags: connector, line, route, return, left. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_return_right",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/18_return_right.svg",
+      "summary": "Pick for split, merge, return, loop-back, or branching connector logic; tags: connector, line, route, return, right. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_split_line_two",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/19_split_line_two.svg",
+      "summary": "Pick for split, merge, return, loop-back, or branching connector logic; tags: connector, line, route, split, line, two. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_merge_line_two",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/20_merge_line_two.svg",
+      "summary": "Pick for split, merge, return, loop-back, or branching connector logic; tags: connector, line, route, merge, line, two. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_split_line_three",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/21_split_line_three.svg",
+      "summary": "Pick for split, merge, return, loop-back, or branching connector logic; tags: connector, line, route, split, line, three. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_merge_line_three",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/22_merge_line_three.svg",
+      "summary": "Pick for split, merge, return, loop-back, or branching connector logic; tags: connector, line, route, merge, line, three. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_dashed_process_right",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/23_dashed_process_right.svg",
+      "summary": "Pick for simple straight connector lines between nodes; tags: connector, line, route, dashed, process, right. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack2_connector_bidirectional_curve",
+      "local_source": "assets/ppt_arrow_pack2_sources/03_Connector_Line_SVG/24_bidirectional_curve.svg",
+      "summary": "Pick for curved connector lines between nodes or layers; tags: connector, line, route, bidirectional, curve. Skip for wide filled main-chain arrows (use pptpack2_gradient_long_block_right_arrow).",
+      "layout": "wide"
+    }
+  ],
+  "deferred": [
+    {
+      "folder": "02_MainChain_Flat_SVG",
+      "reason": "flat duplicates gradient shapes; keep outside runtime index unless editable-flat variants are explicitly needed"
+    },
+    {
+      "folder": "04_Outline_Block_SVG",
+      "reason": "outline variants are lower-impact placeholders and duplicate main-chain structure"
+    }
+  ]
+}

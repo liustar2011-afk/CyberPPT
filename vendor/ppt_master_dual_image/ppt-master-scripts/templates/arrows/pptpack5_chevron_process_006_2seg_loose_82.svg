@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack5_sources/03_Chevron_Process_Modules/chevron_process_006_2seg_loose_82.svg
+  License: custom pack permission; see assets/ppt_arrow_pack5_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg">
+    <linearGradient id="g_soft_blue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#BFD0EE" />
+      <stop offset="0.46" stop-color="#E6EEF9" />
+      <stop offset="1" stop-color="#FFFFFF" />
+    </linearGradient>
+    <linearGradient id="g_edge_blue" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#DCE7F7" />
+      <stop offset="0.55" stop-color="#AFC5E9" />
+      <stop offset="1" stop-color="#E9F1FB" />
+    </linearGradient>
+    <linearGradient id="g_flat_blue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8FAFDD" />
+      <stop offset="1" stop-color="#C7D7F0" />
+    </linearGradient>
+    <marker id="arrow_head" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5.5 L0,11 Z" fill="#7E9FD1" />
+    </marker>
+    <marker id="arrow_head_light" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5.5 L0,11 Z" fill="#A3BADF" />
+    </marker>
+    
+  </defs>
+  
+  
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack5_chevron_process_006_2seg_loose_82" transform="translate(150.000 200.278) scale(1.361111)">
+    <rect xmlns="http://www.w3.org/2000/svg" x="44" y="163.0" width="632" height="12" rx="6" fill="#5A6F8F" opacity="0.07" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 36.0 69.0 L 300.0 69.0 L 356.0 110.0 L 300.0 151.0 L 36.0 151.0 L 76.3 110.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 44.0 74.0 L 292.0 74.0 L 332.0 110.0 L 276.0 94.0 L 72.4 94.0 Z" fill="#FFFFFF" opacity="0.25" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 364.0 69.0 L 628.0 69.0 L 684.0 110.0 L 628.0 151.0 L 364.0 151.0 L 404.3 110.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  
+    <path xmlns="http://www.w3.org/2000/svg" d="M 372.0 74.0 L 620.0 74.0 L 660.0 110.0 L 604.0 94.0 L 400.4 94.0 Z" fill="#FFFFFF" opacity="0.25" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack5_chevron_process_006_2seg_loose_82</text>
+</svg>

@@ -1,0 +1,11 @@
+{
+  "name": "cyberppt",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render:dual-image-overlay": "node scripts/dual_image_overlay/render_overlay.mjs"
+  },
+  "dependencies": {
+    "pptxgenjs": "4.0.1"
+  }
+}

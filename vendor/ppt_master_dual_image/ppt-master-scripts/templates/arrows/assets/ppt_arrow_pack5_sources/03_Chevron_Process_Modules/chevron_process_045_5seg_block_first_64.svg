@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="220" viewBox="0 0 720 220" role="img" aria-label="Chevron process 045 5 segments block_first">
+  <title>Chevron process 045 5 segments block_first</title>
+  <defs>
+    <linearGradient id="g_soft_blue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#BFD0EE"/>
+      <stop offset="0.46" stop-color="#E6EEF9"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+    <linearGradient id="g_edge_blue" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#DCE7F7"/>
+      <stop offset="0.55" stop-color="#AFC5E9"/>
+      <stop offset="1" stop-color="#E9F1FB"/>
+    </linearGradient>
+    <linearGradient id="g_flat_blue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8FAFDD"/>
+      <stop offset="1" stop-color="#C7D7F0"/>
+    </linearGradient>
+    <marker id="arrow_head" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5.5 L0,11 Z" fill="#7E9FD1"/>
+    </marker>
+    <marker id="arrow_head_light" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5.5 L0,11 Z" fill="#A3BADF"/>
+    </marker>
+    
+  </defs>
+  
+  <rect x="44" y="154.0" width="632" height="12" rx="6" fill="#5A6F8F" opacity="0.07"/>
+  <path d="M 36.0 78.0 L 111.2 78.0 L 167.2 110.0 L 111.2 142.0 L 36.0 142.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  <path d="M 44.0 83.0 L 103.2 83.0 L 143.2 110.0 L 87.2 103.0 L 72.4 103.0 Z" fill="#FFFFFF" opacity="0.25"/>
+  <path d="M 165.2 78.0 L 240.4 78.0 L 296.4 110.0 L 240.4 142.0 L 165.2 142.0 L 205.5 110.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  <path d="M 173.2 83.0 L 232.4 83.0 L 272.4 110.0 L 216.4 103.0 L 201.6 103.0 Z" fill="#FFFFFF" opacity="0.25"/>
+  <path d="M 294.4 78.0 L 369.6 78.0 L 425.6 110.0 L 369.6 142.0 L 294.4 142.0 L 334.7 110.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  <path d="M 302.4 83.0 L 361.6 83.0 L 401.6 110.0 L 345.6 103.0 L 330.8 103.0 Z" fill="#FFFFFF" opacity="0.25"/>
+  <path d="M 423.6 78.0 L 498.8 78.0 L 554.8 110.0 L 498.8 142.0 L 423.6 142.0 L 463.9 110.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  <path d="M 431.6 83.0 L 490.8 83.0 L 530.8 110.0 L 474.8 103.0 L 460.0 103.0 Z" fill="#FFFFFF" opacity="0.25"/>
+  <path d="M 552.8 78.0 L 628.0 78.0 L 684.0 110.0 L 628.0 142.0 L 552.8 142.0 L 593.1 110.0 Z" fill="url(#g_soft_blue)" fill-opacity="1" stroke="#8CAADA" stroke-width="1.1" vector-effect="non-scaling-stroke" />
+  <path d="M 560.8 83.0 L 620.0 83.0 L 660.0 110.0 L 604.0 103.0 L 589.2 103.0 Z" fill="#FFFFFF" opacity="0.25"/>
+</svg>

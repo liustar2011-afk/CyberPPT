@@ -1,0 +1,157 @@
+{
+  "type": "GPT image prompt style preset for corporate PowerPoint-style infographic generation",
+  "style_name": "深蓝风",
+  "source_visual_system": "deep-blue and bright-blue Chinese corporate PowerPoint infographic visual language",
+  "best_for": "职场汇报、半年总结、年度规划、目标拆解、战略规划、品牌投放策略、工作复盘、重点工作汇报、季度计划等脚本生图页面；适合生成采用深蓝职场汇报风格的逻辑框架图、数据图表图、思维模型图和信息排版图",
+  "visual_direction": "generate a clean, high-resolution Chinese corporate PowerPoint-style infographic image, dominated by white canvas, deep-blue hierarchy, bright-blue emphasis, light-gray content zones, crisp geometric logic diagrams, dense but organized business text blocks, and no photography, no poster illustration, no cinematic rendering, no decorative 3D scene, no dashboard neon, and no soft AI-art atmosphere",
+  "canvas": {
+    "scope": "full PowerPoint-style business infographic page, not a photo and not a marketing poster",
+    "format": "16:9 landscape business slide composition; the generated image should adopt the visual language of a polished corporate PPT infographic",
+    "background": "large clean white #FFFFFF page field with optional very light gray page outside margin #E9E9E9 or #F0F0F0; content modules use white #FFFFFF, light gray #F5F6F8, or very pale blue #EEF5FF panels",
+    "composition": "formal report page with top title band, thin horizontal blue rule, logo placeholder area if needed, and a clear body area organized by grids, axes, cards, arrows, rings, pyramids, timelines, matrices, or process bands",
+    "density": "medium-high information density, suitable for workplace reporting; many text modules are allowed, but every group must remain aligned, spaced, readable, and visually separated"
+  },
+  "color_palette": {
+    "background": "#FFFFFF as the main slide field; #F5F6F8, #F3F6FA, #EEF5FF, and #EAF2FF for local module backgrounds",
+    "primary_deep_blue": "#002B75, #003B8F, #073B91, #0A3478, or #082A66 for title text, section bars, main arrows, large blocks, central nodes, and key hierarchy anchors",
+    "accent_bright_blue": "#168CF2, #1E9BFF, #2094F3, or #2AA7FF for current-step markers, secondary nodes, progress lines, selected cards, emphasis tabs, and alternating process blocks",
+    "text_primary": "#0B1F3A, #111827, #1F2937, or #002B75 for all readable Chinese text",
+    "text_secondary": "#334155, #475569, or #4B5563 for supporting text only; never make body text pale or translucent",
+    "line_and_border": "#C7D4E8, #D5DFEE, #B9C9E6, or #E1E7F0 for thin dividers, dashed guides, card borders, vertical separators, and subtle grid lines",
+    "neutral": "#FFFFFF, #F8FAFC, #F5F6F8, #EEF2F7, and #E9EEF6 for cards, table cells, chips, and background plates",
+    "rule": "overall color ratio should feel like 65-75% white or very light gray, 15-25% deep blue structure, 5-10% bright blue emphasis, and only tiny neutral gray details; avoid red, orange, purple, green, rainbow gradients, gold, black backgrounds, neon, and heavy shadows unless the page script explicitly requests a warning or status color"
+  },
+  "typography": {
+    "title": "bold modern Chinese sans-serif, close to Microsoft YaHei or PingFang SC, dark blue, large but report-like, not poster-like",
+    "section_heading": "semibold Chinese sans-serif, deep blue or white text on deep-blue bars, concise and strongly hierarchical",
+    "body": "modern Chinese sans-serif, regular-medium to semibold, dark, crisp, horizontally aligned, suitable for formal business infographic text",
+    "labels": "small labels, month markers, numbered circles, axis labels, and chip text must remain crisp, dark or white-on-blue, and precisely centered",
+    "text_quality": "all text should look crisp and typeset like a polished PPT infographic: sharp strokes, stable glyphs, straight baselines, natural spacing, no fake characters, no pseudo-English, no warped text, no soft blurry AI lettering"
+  },
+  "font_rules": [
+    "生成图必须采用正式PPT信息图的视觉语言：文字、线条、边框、图表和几何形状都要清晰锐利，不能像插画、海报、摄影图或网页页面。",
+    "中文文字采用接近微软雅黑 / 苹方的现代无衬线风格，字形端正、笔画均匀、横平竖直、基线整齐、字距自然、行距稳定。",
+    "正文必须使用深色实色填充，优先 #0B1F3A、#111827、#1F2937、#002B75；禁止浅灰正文、半透明文字、渐变文字、描边文字、发光文字、阴影文字、纹理文字和伪文字。",
+    "标题可用深蓝加粗，但不得过度海报化；模块标题要短、稳、清楚，正文尽量短句化、条目化、业务化。",
+    "所有文字必须放在纯白、近白、浅灰或深蓝实色承载面上；不得把文字压在照片、纹理、复杂渐变、阴影、高光、装饰图形、箭头或圆环线条上。",
+    "文本框必须有充分内边距，文字不得贴边、溢出、压线、压图标、压箭头、压边框或与其他元素重叠。",
+    "页面可以保留较高信息密度，但应通过分组、编号、对齐、留白、分割线和色块层级来组织，不得通过缩小到不可读字号来塞内容。",
+    "不得生成随机 logo、水印、品牌名、页码、日期、无关数字、乱码、英文占位词或看不懂的微小文字；只有脚本明确给出的文字才应出现在页面中。"
+  ],
+  "layout_patterns": [
+    "half-year summary timeline with left KPI panel and six monthly milestone cards",
+    "work review split into upper review row and lower planning row with numbered columns",
+    "goal achievement path with left explanation blocks and right pyramid / cone hierarchy diagram",
+    "key work report with concentric circles or target rings on the left and numbered progress bars on the right",
+    "brand strategy decomposition with horizontal stage bands, chevron arrows, and bottom quantified expectation row",
+    "four-core strategic layout with central circle, quadrant relationship ring, and four side explanation cards",
+    "annual goal execution strategy with central triangle, side evidence boxes, and top conclusion band",
+    "promotion strategy with 3D-like flat ribbon arrow chain, side summary panels, and four thematic modules",
+    "sales activation key strategy with left execution notes, central arc timeline, and right segmented semicircle model",
+    "quarterly work plan with staggered deep-blue and bright-blue step cards plus adjacent bullet columns"
+  ],
+  "layout_usage_rule": "Choose the layout pattern according to the page script's logic relation. If the script is chronological, use a timeline or quarterly steps. If it is strategy decomposition, use a ring, quadrant, pyramid, triangle, or chevron framework. If it is work review, use review/planning split rows and numbered columns. Keep the page looking like a polished corporate PPT infographic, not like a decorative poster.",
+  "layout_blueprints": [
+    {
+      "name": "半年总结时间轴",
+      "sections": [
+        {
+          "position": "top",
+          "count": 1,
+          "labels": ["页标题", "细蓝横线", "右上角标识占位"]
+        },
+        {
+          "position": "left",
+          "count": 1,
+          "labels": ["KPI柱状图", "年度目标", "完成额", "小结"]
+        },
+        {
+          "position": "center horizontal axis",
+          "count": 6,
+          "labels": ["1月", "2月", "3月", "4月", "5月", "6月"]
+        },
+        {
+          "position": "above and below axis",
+          "count": 6,
+          "labels": ["月度复盘卡片", "月度行动卡片"]
+        }
+      ]
+    },
+    {
+      "name": "目标达成路径",
+      "sections": [
+        {
+          "position": "left column",
+          "count": 3,
+          "labels": ["问题解释框", "资源机制框", "拆解方法框"]
+        },
+        {
+          "position": "right visual",
+          "count": 1,
+          "labels": ["三层蓝色金字塔或上升锥形模型"]
+        },
+        {
+          "position": "right side annotations",
+          "count": 3,
+          "labels": ["目标拆解", "执行推进", "复盘优化"]
+        }
+      ]
+    },
+    {
+      "name": "四项核心布局",
+      "sections": [
+        {
+          "position": "center",
+          "count": 1,
+          "labels": ["中心战略主题圆"]
+        },
+        {
+          "position": "around center",
+          "count": 4,
+          "labels": ["洞察定位", "规划创新", "团队赋能", "营收增长"]
+        },
+        {
+          "position": "four sides",
+          "count": 4,
+          "labels": ["外部说明卡片"]
+        }
+      ]
+    },
+    {
+      "name": "阶段策略拆解",
+      "sections": [
+        {
+          "position": "left rail",
+          "count": 4,
+          "labels": ["核心阶段", "明确方向", "主要策略", "预期效果数据化"]
+        },
+        {
+          "position": "main grid",
+          "count": 5,
+          "labels": ["阶段列", "箭头链", "行动格", "结果格"]
+        },
+        {
+          "position": "bottom",
+          "count": 3,
+          "labels": ["预期效果分栏"]
+        }
+      ]
+    }
+  ],
+  "visual_elements": {
+    "allowed": "white slide canvas, deep-blue title text, thin blue header rule, deep-blue and bright-blue blocks, timeline axes, circular month nodes, KPI bar charts, concentric circles, target rings, dashed guide lines, numbered dots, chevron arrows, ribbon arrows, segmented semicircles, pyramid/cone diagrams, central strategic circles, quadrant rings, light-gray cards, table-like grids, left-side vertical rails, small simple line icons, and subtle flat shadows only when they improve separation",
+    "avoid": "photographic scenes, people, office photos, product photos, cinematic lighting, dark dashboard, cyberpunk neon, full-page gradient backgrounds, glassmorphism, large 3D render objects, decorative blobs, random abstract illustration, poster composition, magazine layout, playful icons, cartoon elements, heavy shadows, strong reflections, muddy gray fog, paper texture, fake watermarks, random logos, and unreadable microtext"
+  },
+  "rendering_constraints": [
+    "The generated image must use the visual style of a polished corporate PowerPoint infographic, with crisp Office-like geometric shapes and business text.",
+    "Use white background, deep-blue structural hierarchy, bright-blue highlights, and light-gray content modules as the dominant visual system.",
+    "Build the page around logic visualization: timeline, framework, matrix, circular relationship, pyramid, target ring, strategy chain, or step roadmap. Do not use decorative scene illustration as the main expression.",
+    "Every module must have a clear business role: title, summary, KPI, phase, action, strategy, risk, result, or next step. Avoid purely decorative shapes.",
+    "Keep exact Chinese text readable and business-report-like. If the model cannot reliably render dense text, reduce the visible text amount and preserve clear text placeholders rather than inventing pseudo-text.",
+    "All lines and borders should be clean 1px-2px style, mostly horizontal or vertical, with stable alignment and consistent spacing.",
+    "Use flat or very lightly dimensional PPT geometry only. Slight shadows, ribbon overlaps, and layered arrows are allowed, but the page must not become 3D-rendered.",
+    "The page should feel advanced because of logic clarity, alignment, hierarchy, and framework design, not because of lighting effects, texture, photography, or decoration.",
+    "Do not include the sample source watermark or any specific vendor logo unless explicitly requested by the script.",
+    "The output should be immediately usable as a GPT-generated image in this deep-blue corporate logic-visualization style."
+  ]
+}

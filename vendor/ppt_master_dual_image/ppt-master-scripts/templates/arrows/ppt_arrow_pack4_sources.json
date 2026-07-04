@@ -1,0 +1,1096 @@
+{
+  "meta": {
+    "purpose": "PPT arrow asset pack 04 perspective main-chain, process chevron, connector route, and outline backbone arrows for architecture, process, convergence, split, feedback, and platform-channel pages.",
+    "updated": "2026-07-02",
+    "license_policy": "Self-made PPT assets; see assets/ppt_arrow_pack4_sources/README.md and index.csv.",
+    "license_reference": "assets/ppt_arrow_pack4_sources/README.md"
+  },
+  "sources": [
+    {
+      "key": "pptpack4_gradient_mainchain_01",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_01.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: ridge, main chain, horizontal, right. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_02",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_02.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: ridge, main chain, horizontal, right. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_03",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_03.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: ridge, main chain, horizontal, right. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_04",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_04.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: ridge, main chain, horizontal, right. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_05",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_05.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: ridge, main chain, horizontal, right. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_06",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_06.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: ridge, main chain, horizontal, right. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_07",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_07.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: ridge, main chain, horizontal, right. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_08",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_08.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: ridge, main chain, horizontal, right. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_09",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_09.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: block arrow, right, ppt safe. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_10",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_10.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: block arrow, right, ppt safe. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_11",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_11.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: block arrow, left, ppt safe. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_12",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_12.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: block arrow, left, ppt safe. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_13",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_13.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: double ended, bidirectional, ppt safe. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_14",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_14.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: double ended, bidirectional, ppt safe. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_15",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_15.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, upward, central peak, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_16",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_16.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, upward, central peak, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_17",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_17.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, upward, central peak, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_18",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_18.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, upward, central peak, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_19",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_19.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, upward, central peak, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_20",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_20.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, upward, central peak, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_21",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_21.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, upward, central peak, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_22",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_22.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, upward, central peak, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_23",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_23.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, downward, central drop, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_24",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_24.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, downward, central drop, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_25",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_25.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, downward, central drop, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_26",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_26.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, downward, central drop, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_27",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_27.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, downward, central drop, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_28",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_28.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: platform, downward, central drop, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_29",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_29.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: diverge, split, fork, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_30",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_30.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: diverge, split, fork, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_31",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_31.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: diverge, split, fork, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_32",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_32.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: diverge, split, fork, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_33",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_33.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: converge, merge, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_34",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_34.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: converge, merge, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_35",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_35.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: converge, merge, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_gradient_mainchain_36",
+      "local_source": "assets/ppt_arrow_pack4_sources/01_Perspective_MainChain_Gradient/gradient_mainchain_36.svg",
+      "summary": "Pick for a perspective gradient main-chain arrow for architecture backbones, platform channels, convergence, or split flows; tags: converge, merge, architecture. Skip for flat recolorable variants (use pptpack4_outline_backbone_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_01",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_01.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_02",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_02.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_03",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_03.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_04",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_04.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_05",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_05.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_06",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_06.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_07",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_07.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_08",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_08.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_09",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_09.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_10",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_10.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_11",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_11.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_12",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_12.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_13",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_13.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_14",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_14.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_15",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_15.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_16",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_16.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: chevron process, segmented, horizontal. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_17",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_17.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: stacked chevrons, two layers, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_18",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_18.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: stacked chevrons, two layers, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_19",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_19.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: stacked chevrons, two layers, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_20",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_20.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: stacked chevrons, two layers, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_21",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_21.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: stacked chevrons, two layers, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_22",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_22.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: stacked chevrons, two layers, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_23",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_23.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: stacked chevrons, two layers, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_24",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_24.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: stacked chevrons, two layers, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_25",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_25.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: station arrows, milestone, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_26",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_26.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: station arrows, milestone, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_27",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_27.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: station arrows, milestone, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_28",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_28.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: station arrows, milestone, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_29",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_29.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: station arrows, milestone, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_30",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_30.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: station arrows, milestone, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_31",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_31.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: station arrows, milestone, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_32",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_32.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: station arrows, milestone, process. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_33",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_33.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: cross flow, process system, architecture. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_34",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_34.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: cross flow, process system, architecture. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_35",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_35.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: cross flow, process system, architecture. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_36",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_36.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: cross flow, process system, architecture. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_37",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_37.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: cross flow, process system, architecture. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_38",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_38.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: cross flow, process system, architecture. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_39",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_39.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: cross flow, process system, architecture. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_40",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_40.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: cross flow, process system, architecture. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_41",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_41.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: vertical process, downstream, steps. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_42",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_42.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: vertical process, downstream, steps. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_43",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_43.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: vertical process, downstream, steps. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_44",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_44.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: vertical process, downstream, steps. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_45",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_45.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: vertical process, downstream, steps. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_46",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_46.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: vertical process, downstream, steps. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_47",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_47.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: vertical process, downstream, steps. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_process_chevron_48",
+      "local_source": "assets/ppt_arrow_pack4_sources/03_Process_Chevron_Systems/process_chevron_48.svg",
+      "summary": "Pick for a segmented chevron/process system arrow for business stages, milestones, cross-flow, or vertical step processes; tags: vertical process, downstream, steps. Skip for single main-chain arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_01",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_01.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: straight, right, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_02",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_02.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: straight, bidirectional, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_03",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_03.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: straight, right, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_04",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_04.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: straight, bidirectional, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_05",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_05.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: straight, right, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_06",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_06.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: straight, bidirectional, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_07",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_07.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: straight, right, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_08",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_08.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: straight, bidirectional, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_09",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_09.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: elbow, orthogonal, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_10",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_10.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: elbow, orthogonal, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_11",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_11.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: elbow, orthogonal, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_12",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_12.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: elbow, orthogonal, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_13",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_13.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: elbow, orthogonal, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_14",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_14.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: elbow, orthogonal, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_15",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_15.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: elbow, orthogonal, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_16",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_16.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: elbow, orthogonal, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_17",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_17.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: curve, s-curve, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_18",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_18.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: curve, s-curve, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_19",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_19.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: curve, s-curve, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_20",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_20.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: curve, s-curve, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_21",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_21.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: curve, s-curve, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_22",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_22.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: curve, s-curve, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_23",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_23.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: curve, s-curve, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_24",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_24.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: curve, s-curve, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_25",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_25.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: fork, diverge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_26",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_26.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: fork, diverge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_27",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_27.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: fork, diverge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_28",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_28.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: fork, diverge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_29",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_29.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: fork, diverge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_30",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_30.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: fork, diverge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_31",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_31.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: fork, diverge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_32",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_32.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: fork, diverge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_33",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_33.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: merge, converge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_34",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_34.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: merge, converge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_35",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_35.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: merge, converge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_36",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_36.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: merge, converge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_37",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_37.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: merge, converge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_38",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_38.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: merge, converge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_39",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_39.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: merge, converge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_40",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_40.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: merge, converge, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_41",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_41.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: feedback, loop, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_42",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_42.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: feedback, loop, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_43",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_43.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: feedback, loop, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_44",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_44.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: feedback, loop, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_45",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_45.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: feedback, loop, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_46",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_46.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: feedback, loop, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_47",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_47.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: feedback, loop, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_48",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_48.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: feedback, loop, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_49",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_49.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: parallel, dashed, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_50",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_50.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: parallel, dashed, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_51",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_51.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: parallel, dashed, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_52",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_52.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: parallel, dashed, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_53",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_53.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: parallel, dashed, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_54",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_54.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: parallel, dashed, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_55",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_55.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: parallel, dashed, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_connector_route_56",
+      "local_source": "assets/ppt_arrow_pack4_sources/04_Connector_Routes/connector_route_56.svg",
+      "summary": "Pick for a thin connector route between existing nodes, including straight, elbow, curve, fork, merge, feedback, or parallel links; tags: parallel, dashed, connector. Skip for large page-level structural arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_01",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_01.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, ridge, background backbone. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_02",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_02.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, ridge, background backbone. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_03",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_03.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, ridge, background backbone. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_04",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_04.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, ridge, background backbone. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_05",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_05.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, ridge, background backbone. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_06",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_06.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, ridge, background backbone. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_07",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_07.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, ridge, background backbone. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_08",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_08.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, ridge, background backbone. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_09",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_09.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, ridge, background backbone. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_10",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_10.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, ridge, background backbone. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_11",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_11.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, block arrow, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_12",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_12.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, block arrow, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_13",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_13.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, block arrow, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_14",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_14.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, block arrow, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_15",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_15.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, block arrow, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_16",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_16.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, block arrow, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_17",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_17.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, block arrow, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_18",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_18.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, block arrow, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_19",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_19.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, platform, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_20",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_20.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, platform, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_21",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_21.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, platform, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_22",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_22.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, platform, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_23",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_23.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, platform, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_24",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_24.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, platform, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_25",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_25.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, platform, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_26",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_26.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, platform, background. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_27",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_27.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, segmented, chevron. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_28",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_28.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, segmented, chevron. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_29",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_29.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, segmented, chevron. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_30",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_30.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, segmented, chevron. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_31",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_31.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, segmented, chevron. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_32",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_32.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, segmented, chevron. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_33",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_33.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, segmented, chevron. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_34",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_34.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, segmented, chevron. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_35",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_35.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, split merge, architecture. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_36",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_36.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, split merge, architecture. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_37",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_37.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, split merge, architecture. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_38",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_38.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, split merge, architecture. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_39",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_39.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, split merge, architecture. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    },
+    {
+      "key": "pptpack4_outline_backbone_40",
+      "local_source": "assets/ppt_arrow_pack4_sources/05_Outline_Backbone_Banners/outline_backbone_40.svg",
+      "summary": "Pick for a low-interference outline backbone/banner arrow behind cards or layer diagrams; tags: outline, split merge, architecture. Skip for foreground gradient emphasis arrows (use pptpack4_gradient_mainchain_01).",
+      "layout": "wide"
+    }
+  ],
+  "deferred": [
+    {
+      "source_directory": "/Volumes/DOC/ppt_arrow_asset_pack_04/02_Perspective_MainChain_Flat",
+      "reason": "Flat variants duplicate the imported perspective gradient main-chain arrows; keep outside runtime library until a recolorable flat-shape workflow is explicitly needed."
+    }
+  ]
+}

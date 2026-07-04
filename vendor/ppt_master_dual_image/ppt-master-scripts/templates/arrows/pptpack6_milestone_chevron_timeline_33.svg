@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack6_sources/03_Milestone_Chevron_Timelines/milestone_chevron_timeline_33.svg
+  License: custom pack permission; see assets/ppt_arrow_pack6_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg">
+<linearGradient id="chev32" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#F7FBFF" />
+  <stop offset="42%" stop-color="#D9E8F5" />
+  <stop offset="100%" stop-color="#C6D8EC" />
+</linearGradient>
+<linearGradient id="chev32_hl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.70" />
+  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.00" />
+</linearGradient>
+</defs>
+
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack6_milestone_chevron_timeline_33" transform="translate(150.000 212.188) scale(1.531250)">
+    <desc xmlns="http://www.w3.org/2000/svg">milestone chevron timeline</desc>
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 34.0 66.0 L 181.3 66.0 L 219.3 95.0 L 181.3 124.0 L 34.0 124.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M 34.0 62.0 L 181.3 62.0 L 219.3 91.0 L 181.3 120.0 L 34.0 120.0 Z" fill="url(#chev32)" stroke="#8FAACA" stroke-width="1.5" opacity="1" stroke-linejoin="round" />
+    <line xmlns="http://www.w3.org/2000/svg" x1="223.3" y1="52" x2="223.3" y2="130" stroke="#8FAACA" stroke-width="1" opacity="0.35" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M 227.3 66.0 L 374.7 66.0 L 412.7 95.0 L 374.7 124.0 L 227.3 124.0 L 265.3 95.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M 227.3 62.0 L 374.7 62.0 L 412.7 91.0 L 374.7 120.0 L 227.3 120.0 L 265.3 91.0 Z" fill="url(#chev32)" stroke="#8FAACA" stroke-width="1.5" opacity="1" stroke-linejoin="round" />
+    <line xmlns="http://www.w3.org/2000/svg" x1="416.7" y1="52" x2="416.7" y2="130" stroke="#8FAACA" stroke-width="1" opacity="0.35" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M 420.7 66.0 L 568.0 66.0 L 606.0 95.0 L 568.0 124.0 L 420.7 124.0 L 458.7 95.0 Z" fill="#60758A" stroke="none" stroke-width="0" opacity="0.055" stroke-linejoin="round" />
+    <path xmlns="http://www.w3.org/2000/svg" d="M 420.7 62.0 L 568.0 62.0 L 606.0 91.0 L 568.0 120.0 L 420.7 120.0 L 458.7 91.0 Z" fill="url(#chev32)" stroke="#8FAACA" stroke-width="1.5" opacity="1" stroke-linejoin="round" />
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack6_milestone_chevron_timeline_33</text>
+</svg>

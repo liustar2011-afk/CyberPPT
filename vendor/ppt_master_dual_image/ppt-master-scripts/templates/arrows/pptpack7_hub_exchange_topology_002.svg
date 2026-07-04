@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <!--
+  PPT Arrow Pack Template
+  Source: assets/ppt_arrow_pack7_sources/09_Hub_Exchange_Topology/hub_exchange_topology_002.svg
+  License: custom pack permission; see assets/ppt_arrow_pack7_sources/README.md
+  Regenerate with: python3 skills/ppt-master/scripts/import_ppt_arrow_pack_assets.py
+  -->
+  <defs xmlns="http://www.w3.org/2000/svg">
+  <linearGradient id="gMain" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#B9D0EE" />
+    <stop offset="0.52" stop-color="#EAF2FB" />
+    <stop offset="1" stop-color="#FFFFFF" />
+  </linearGradient>
+  <linearGradient id="gTop" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#DCE8F8" stop-opacity="0.95" />
+    <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.12" />
+  </linearGradient>
+  <linearGradient id="gSide" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#9FBFE6" stop-opacity="0.50" />
+    <stop offset="1" stop-color="#5F86B7" stop-opacity="0.15" />
+  </linearGradient>
+  <marker id="arrowHead" markerWidth="16" markerHeight="12" refX="15" refY="6" orient="auto" markerUnits="strokeWidth">
+    <path d="M 0 0 L 16 6 L 0 12 z" fill="#8FB0DB" />
+  </marker>
+</defs>
+
+
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="96" y="106" width="1088" height="488" rx="28" fill="#F8FAFC" stroke="#D9E5F5" stroke-width="2"/>
+  <g id="pptpack7_hub_exchange_topology_002" transform="translate(226.538 135.000) scale(0.826923)">
+    <desc xmlns="http://www.w3.org/2000/svg">Self-made PPT-friendly SVG arrow asset. Basic paths only; no third-party artwork.</desc>
+
+
+    <circle xmlns="http://www.w3.org/2000/svg" cx="505.0" cy="268.0" r="46" fill="#5A6E88" opacity="0.10" />
+
+    <circle xmlns="http://www.w3.org/2000/svg" cx="500.0" cy="260.0" r="42" fill="url(#gMain)" stroke="#8DAED8" stroke-width="2" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 710.0 260.0 L 554.0 260.0" fill="none" stroke="#8EAED8" stroke-width="10" stroke-linecap="round" opacity="0.83" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 554.0 260.0 L 592.0 245.0 L 592.0 275.0 Z" fill="#8EAED8" opacity="0.88" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 500.0 314.0 L 500.0 500.0" fill="none" stroke="#A2BBDE" stroke-width="10" stroke-linecap="round" opacity="0.83" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 500.0 500.0 L 485.0 462.0 L 515.0 462.0 Z" fill="#A2BBDE" opacity="0.88" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 230.0 260.0 L 446.0 260.0" fill="none" stroke="#7EA1D0" stroke-width="10" stroke-linecap="round" opacity="0.83" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 446.0 260.0 L 408.0 275.0 L 408.0 245.0 Z" fill="#7EA1D0" opacity="0.88" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 500.0 206.0 L 500.0 50.0" fill="none" stroke="#8EAED8" stroke-width="10" stroke-linecap="round" opacity="0.83" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 500.0 50.0 L 515.0 88.0 L 485.0 88.0 Z" fill="#8EAED8" opacity="0.88" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 707.8 380.0 L 546.8 287.0" fill="none" stroke="#A2BBDE" stroke-width="10" stroke-linecap="round" opacity="0.83" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 546.8 287.0 L 587.2 293.0 L 572.2 319.0 Z" fill="#A2BBDE" opacity="0.88" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 546.8 233.0 L 733.8 125.0" fill="none" stroke="#7EA1D0" stroke-width="10" stroke-linecap="round" opacity="0.83" />
+
+    <path xmlns="http://www.w3.org/2000/svg" d="M 733.8 125.0 L 708.4 157.0 L 693.4 131.0 Z" fill="#7EA1D0" opacity="0.88" />
+
+
+  </g>
+  <text x="640" y="650" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="17" font-weight="700" fill="#123A73">pptpack7_hub_exchange_topology_002</text>
+</svg>
