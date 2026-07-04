@@ -75,6 +75,10 @@ def _clean_line(line: str) -> str:
     line = line.strip()
     line = MODULE_PREFIX_RE.sub("", line)
     line = re.sub(r"^[-*•·]\s*", "", line)
+    line = re.sub(r"^\*\*(.*?)\*\*$", r"\1", line)
+    line = re.sub(r"^\*(.*?)\*$", r"\1", line)
+    line = line.replace("**", "")
+    line = line.strip("* ")
     if line.startswith("标题：") or line.startswith("标题:"):
         line = re.split(r"[:：]", line, 1)[-1].strip()
     if line.startswith("副标题：") or line.startswith("副标题:"):
@@ -546,14 +550,53 @@ def render_overlay_svg(
         anchor = {"center": "middle", "right": "end"}.get(box.align, "start")
         text_x = box.x + (box.w / 2 if box.align == "center" else box.w if box.align == "right" else 0)
         text_y = box.y + box.font_size
+        lines = _wrap_svg_text(box.text, box.w, box.font_size) if box.word_wrap else [box.text]
+        line_height = box.font_size * 1.18
         parts.append(
             f'<text x="{text_x:.2f}" y="{text_y:.2f}" text-anchor="{anchor}" '
             f'font-family="{html.escape(box.font_family)}, Arial, sans-serif" '
             f'font-size="{box.font_size:.2f}" font-weight="{html.escape(box.font_weight)}" '
-            f'fill="{html.escape(box.fill)}">{html.escape(box.text)}</text>'
+            f'fill="{html.escape(box.fill)}">'
+            + "".join(
+                f'<tspan x="{text_x:.2f}" dy="{0 if index == 0 else line_height:.2f}">{html.escape(line)}</tspan>'
+                for index, line in enumerate(lines)
+            )
+            + "</text>"
         )
     parts.append("</svg>\n")
     return "\n".join(parts)
+
+
+def _wrap_svg_text(text: str, width: float, font_size: float) -> list[str]:
+    if not text:
+        return [""]
+    normalized = text.strip()
+    if _text_estimated_width(normalized, font_size) <= width:
+        return [normalized]
+
+    chunks = re.split(r"([/／|｜、，,；;])", normalized)
+    tokens: list[str] = []
+    for index in range(0, len(chunks), 2):
+        token = chunks[index]
+        if index + 1 < len(chunks):
+            token += chunks[index + 1]
+        if token:
+            tokens.append(token)
+    if len(tokens) <= 1:
+        tokens = list(normalized)
+
+    lines: list[str] = []
+    current = ""
+    for token in tokens:
+        candidate = current + token
+        if current and _text_estimated_width(candidate, font_size) > width:
+            lines.append(current.rstrip("/／|｜、，,；;"))
+            current = token.lstrip("/／|｜、，,；;")
+        else:
+            current = candidate
+    if current:
+        lines.append(current.rstrip("/／|｜、，,；;"))
+    return lines or [normalized]
 
 
 def boxes_to_json(boxes: list[OverlayTextBox]) -> list[dict[str, Any]]:
