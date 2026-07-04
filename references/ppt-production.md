@@ -192,7 +192,7 @@ PPTX 生成后，必须使用 PowerPoint 导出当前页 PNG，并用 `scripts/c
 | `background_color_sample` | 页面背景色采样值 |
 | `surface_system` | 连续纸面、面板色阶、分隔线、栏头、阴影和留白系统 |
 | `layout_regions` | 标题、主图、侧栏、证据块、SO WHAT、页脚等区域及比例 |
-| `header_footer_system` | 页眉、页码、来源、页脚位置和样式 |
+| `header_footer_system` | 页眉、页码、来源、页脚位置和样式；默认 `page_badge_enabled=false`、`footer_enabled=false`（见 `SKILL.md`"默认页面结构策略"），来源/证据ID改为内容区内联小字；仅用户明确要求时才启用页码徽章/页脚并记录样式 |
 | `so_what_region` | SO WHAT / 结论条位置、尺寸、底色和文字层级 |
 | `main_chart_semantics` | 主图表视觉语义，不得降级为默认图表 |
 | `density_targets` | 信息区数量、文本密度、表格/图例/注释密度和留白节奏 |
@@ -316,7 +316,7 @@ PPTX 生成后，必须使用 PowerPoint 导出当前页 PNG，并用 `scripts/c
 
 `visual_element_inventory` 必须使用 `priority`：
 
-- `P0`：标题、主图、SO WHAT、页脚、关键数字、核心面板、用户指出区域。必须 `measurement_mode=individual_bbox`，并提供 `blueprint_bbox_px`、`ppt_target_bbox_in`、`tolerance_px` 和 `must_reproduce=true`。
+- `P0`：标题、主图、SO WHAT、关键数字、核心面板、用户指出区域，以及页脚（仅当该页 `footer_enabled=true` 时才纳入，默认关闭时此项 `not_applicable`，不计入失败）。必须 `measurement_mode=individual_bbox`，并提供 `blueprint_bbox_px`、`ppt_target_bbox_in`、`tolerance_px` 和 `must_reproduce=true`。
 - `P1`：普通卡片、图标、标签、箭头、表格、分隔线。必须 `measurement_mode=individual_bbox` 或 `group_with_child_anchors`。
 - `P2`：装饰线、点阵、纹理、重复刻度、背景纹样。可以 `measurement_mode=decoration_group`，但必须记录整体 bbox、颜色、数量或密度、间距、对齐方式、重复方向、透明度和还原策略。
 
@@ -620,10 +620,12 @@ PPTX 生成后，必须使用 PowerPoint 导出当前页 PNG，并用 `scripts/c
 
 全篇固定 15 个文字层级：`C0` 为封面/章节幕专用，`T1-T14` 为内容页层级。制作每页前先给所有文字对象标注层级，再按层级设置字号、字重和颜色。
 
+默认页面结构策略（见 `SKILL.md`）：`T1`（页码/章节徽章）和 `T14` 中的页脚/小页码部分默认不启用（`page_badge_enabled=false`、`footer_enabled=false`）；`T14` 中的注释/caveat/来源仍必须使用，只是改为内容区内联小字而非独立页脚条。仅当用户明确要求启用页码徽章或页脚时，才按下表样式使用 `T1` 和 `T14` 的页脚/页码部分。
+
 | 层级 | 名称 | 典型位置 | 字号范围 |
 |---|---|---|---|
 | C0 | 封面/章节幕标题 | 封面主标题、章节幕标题 | 32-44pt |
-| T1 | 页码/章节徽章 | 左上角页码徽章、章节编号徽章 | 14-18pt |
+| T1 | 页码/章节徽章（默认不启用，见上） | 左上角页码徽章、章节编号徽章 | 14-18pt |
 | T2 | 页面主标题/结论标题 | 每页顶部结论句 | 22-28pt |
 | T3 | 页面副标题/语境说明 | 主标题下方 subtitle/kicker | 10-12pt |
 | T4 | 模块标题/图表标题/信息区标题 | 图表标题、右侧面板标题、信息区标题 | 11-14pt |
@@ -636,7 +638,7 @@ PPTX 生成后，必须使用 PowerPoint 导出当前页 PNG，并用 `scripts/c
 | T11 | 图表轴/图例/刻度/微图标签 | 坐标轴、图例、刻度、微型图标签 | 7.5-9pt |
 | T12 | 图表数据标签/直接标注 | 折线点值、柱形标签、百分比标注 | 8.5-11pt |
 | T13 | 关键 KPI/大数字 | 4.2%、CAGR、关键指标大号数字 | 18-28pt |
-| T14 | 注释/口径/来源/页脚 | 注释、caveat、来源、页脚、小页码 | 6.5-8pt |
+| T14 | 注释/口径/来源/页脚 | 注释、caveat、来源必须保留（默认改为内容区内联小字）；页脚条、小页码默认不启用 | 6.5-8pt |
 
 ## 文件处理
 

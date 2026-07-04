@@ -33,7 +33,7 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 - `slide_manifest.json` 是否覆盖全部页面，且 `expected_pictures`、`image_assets`、`text_objects`、`native_components`、`qa_expectations` 字段完整；
 - 每页是否存在冻结的 `slide_content_lock`、`blueprint_component_signature` 和 `visual_element_registry`，且 manifest 中记录路径、SHA-256 和 `locked=true`；
 - `visual_element_registry` 是否覆盖全部可见元素，且每个 P0/P1/P2 元素都有蓝图 bbox、PPT 目标 bbox、渲染 bbox、delta、tolerance 和 registration status；
-- 当 `qa_expectations.visual_semantics_required = true` 时，manifest 是否包含完整 `blueprint_reconstruction_plan`，并覆盖蓝图路径、画布、背景色、表面系统、版式区域、页眉页脚、SO WHAT、主图语义、密度、锚点、原生重建对象和允许视觉资产；
+- 当 `qa_expectations.visual_semantics_required = true` 时，manifest 是否包含完整 `blueprint_reconstruction_plan`，并覆盖蓝图路径、画布、背景色、表面系统、版式区域、页眉（页脚仅当 `footer_enabled=true` 时要求覆盖，默认关闭时该子项 `not_applicable`）、SO WHAT、主图语义、密度、锚点、原生重建对象和允许视觉资产；
 - `blueprint_reconstruction_plan.complex_visual_scan` 是否完整，是否记录复杂视觉候选、触发门、native-only 理由和 `pictures_zero_is_not_goal=true`；
 - `generation_engine` 是否完整，是否使用 PptxGenJS / pptx-generator；若使用 `python-pptx`、HTML 转 PPT、截图转 PPT 或其他正式生成引擎，直接失败；
 - 完整页面 PPTX 是否能被 PowerPoint 打开并成功导出 PNG；ZIP/结构预检通过不能替代 PowerPoint 兼容通过；
@@ -67,13 +67,13 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 - 异常右侧或底部空白；
 - 裁切、溢出和文本换行；
 - 最小可读字号；
-- 文字是否留在归属容器内；容器包括卡片、面板、表格单元格、结论条、SO WHAT、图表区、页脚和注释框；
+- 文字是否留在归属容器内；容器包括卡片、面板、表格单元格、结论条、SO WHAT、图表区和注释框，以及页脚（仅当该页 `footer_enabled=true` 时适用；默认关闭时跳过页脚容器检查，见 `SKILL.md`"默认页面结构策略"）；
 - 拆分文本、富文本高亮或跨区域连续句是否存在异常空格、断句、基线错位或漂移；
 - 表格正文、行动项、风险项、解释句和建议句是否按正文语义可读，而不是被压成微标签；
 - 表格密度是否匹配蓝图；是否出现单元格大面积空白、阅读重心塌陷或布局显空；
 - 标签、图例、箭头和形状重叠；
 - 图表标签遮挡数据；
-- 边距、标题位置和页脚不一致；
+- 边距、标题位置不一致；页脚不一致仅当该页启用页脚时检查；
 - 对比度弱或强调色滥用；
 - 页面之间信息密度差异；
 - 偏离已批准视觉方向；
@@ -309,12 +309,12 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 | 任一 P0/P1/P2 registry 元素缺少 `render_bbox_px` 或 `delta_px` | 失败，必须基于 PowerPoint 渲染图反测 |
 | 任一 P0/P1/P2 registry 元素超出容差 | 失败，必须返工 |
 | 只登记区域大框，没有登记组件内部子元素 | 失败，容器 bbox 不能替代子元素测量 |
-| `blueprint_reconstruction_plan` 缺少蓝图路径、画布、背景色、表面系统、版式区域、页眉页脚、SO WHAT、主图语义、密度、锚点、原生重建目标或允许视觉资产 | 失败，必须补齐拆解记录 |
+| `blueprint_reconstruction_plan` 缺少蓝图路径、画布、背景色、表面系统、版式区域、页眉、SO WHAT、主图语义、密度、锚点、原生重建目标或允许视觉资产 | 失败，必须补齐拆解记录；页脚字段仅当 `footer_enabled=true` 时要求，默认关闭时不计入此项失败 |
 | `blueprint_reconstruction_plan.complex_visual_scan` 缺失或不完整 | 失败，必须先扫描复杂视觉候选和触发门 |
 | `complex_visual_scan.pictures_zero_is_not_goal` 不是 `true` | 失败，必须重申 `pictures=0` 非目标原则并重做资产准入判断 |
 | `visual_semantics_required = true` 但缺少 `visual_element_inventory` | 失败，必须登记全部可见视觉元素或元素组 |
 | `visual_element_inventory[]` 缺少 `priority` 或 `measurement_mode` | 失败，必须按 P0/P1/P2 分层测量 |
-| P0 元素不是 `individual_bbox` 或缺少 bbox / 容差 / `must_reproduce=true` | 失败，标题、主图、SO WHAT、页脚、关键数字、核心面板和用户指出区域必须逐项测量 |
+| P0 元素不是 `individual_bbox` 或缺少 bbox / 容差 / `must_reproduce=true` | 失败，标题、主图、SO WHAT、关键数字、核心面板和用户指出区域必须逐项测量；页脚仅当 `footer_enabled=true` 时纳入 P0 |
 | P1 元素不是逐项测量或组内子锚点测量 | 失败，普通卡片、图标、标签、箭头、表格和分隔线必须有可验证位置 |
 | P2 元素不是装饰组测量或组内子锚点测量 | 失败，微小装饰不能跳过登记 |
 | P0/P1 被降级为 P2 | 失败，不能把关键语义元素伪装成装饰 |
