@@ -45,7 +45,6 @@ build/
 # Project-specific working directories
 deck/
 *-deck/
-docs/superpowers/
 output/
 outputs/
 preview/

@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cyberppt"
+version = "0.1.0"
+description = "CyberPPT project tooling for evidence-based, editable consulting PowerPoint workflows."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "CyberPPT maintainers" }]
+keywords = ["pptx", "codex-skill", "consulting", "powerpoint", "qa"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Office/Business :: Office Suites",
+]
+
+[project.scripts]
+cyberppt = "cyberppt.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["cyberppt*"]

@@ -3,6 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "doctor": "python3 -m cyberppt doctor",
+    "test": "python3 -m unittest discover -s tests",
+    "test:validate-pptx": "python3 scripts/test_validate_pptx.py",
+    "validate": "python3 scripts/validate_pptx.py",
     "render:dual-image-overlay": "node scripts/dual_image_overlay/render_overlay.mjs"
   },
   "dependencies": {
