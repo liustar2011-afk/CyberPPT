@@ -7,7 +7,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 from cyberppt.commands.script_runner import script_path
 
@@ -243,6 +243,44 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertEqual(str(registry_dir.resolve()), readiness["visual_registry_dir"])
         self.assertEqual(str(registry_dir.resolve()), source_capture["inputs"]["visual_registry_dir"])
         self.assertEqual(1, source_capture["inputs"]["visual_registry_elements"])
+        self.assertNotIn("non_text_visuals_not_individually_detected", source_capture_gate["gap_counts"])
+        self.assertIn("render_delta_not_measured", source_capture_gate["gap_counts"])
+
+    def test_template_rebuild_generates_draft_visual_registry_from_source_capture(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            project = root / "template-project"
+            _write_template_project(project)
+            manifest = _write_pair_manifest(root, project, with_visual_line=True)
+
+            result = subprocess.run(
+                [
+                    "python3",
+                    str(ROOT / "scripts/dual_image_overlay/template_rebuild.py"),
+                    str(manifest),
+                    "--skip-rebuild",
+                    "--no-export",
+                ],
+                cwd=ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(3, result.returncode, result.stdout + result.stderr)
+            readiness = json.loads((project / "analysis/template_rebuild_readiness.json").read_text(encoding="utf-8"))
+            source_capture = json.loads((project / "analysis/source_capture.json").read_text(encoding="utf-8"))
+            source_capture_gate = json.loads((project / "analysis/source_capture_gate.json").read_text(encoding="utf-8"))
+            registry_dir = project / "analysis/visual_registry"
+            self.assertTrue((registry_dir / "page_002_visual_element_registry.json").is_file())
+
+        registry_dir = project / "analysis/visual_registry"
+        self.assertTrue(readiness["draft_visual_registry_generated"])
+        self.assertTrue(readiness["checks"]["draft_visual_registry_generated"])
+        self.assertEqual(str(registry_dir.resolve()), readiness["visual_registry_dir"])
+        self.assertEqual(str(registry_dir.resolve()), readiness["artifacts"]["draft_visual_registry"])
+        self.assertEqual(str(registry_dir.resolve()), source_capture["inputs"]["visual_registry_dir"])
+        self.assertGreater(source_capture["inputs"]["visual_registry_elements"], 0)
         self.assertNotIn("non_text_visuals_not_individually_detected", source_capture_gate["gap_counts"])
         self.assertIn("render_delta_not_measured", source_capture_gate["gap_counts"])
 
@@ -616,13 +654,25 @@ def _write_template_project(project: Path) -> None:
     )
 
 
-def _write_pair_manifest(root: Path, project: Path, *, rebuild_mode: str = "template_body_region") -> Path:
+def _write_pair_manifest(
+    root: Path,
+    project: Path,
+    *,
+    rebuild_mode: str = "template_body_region",
+    with_visual_line: bool = False,
+) -> Path:
     image_dir = root / "images"
     image_dir.mkdir()
     full = image_dir / "page_002_full.png"
     background = image_dir / "page_002_background.png"
-    full.write_bytes(b"fake-full")
-    background.write_bytes(b"fake-background")
+    if with_visual_line:
+        Image.new("RGB", (1280, 720), "#ffffff").save(full)
+        background_image = Image.new("RGB", (1280, 720), "#ffffff")
+        ImageDraw.Draw(background_image).line((100, 120, 700, 120), fill="#123B66", width=8)
+        background_image.save(background)
+    else:
+        full.write_bytes(b"fake-full")
+        background.write_bytes(b"fake-background")
     manifest = {
         "mode": "cyberppt-dual-image-pair",
         "rebuild_mode": rebuild_mode,

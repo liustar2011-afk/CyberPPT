@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,7 +19,9 @@ class DualImageOverlayBuildPageTests(unittest.TestCase):
             full = tmp_path / "full.png"
             background = tmp_path / "background.png"
             Image.new("RGB", (1672, 941), "#F2F3EF").save(full)
-            Image.new("RGB", (1672, 941), "#F2F3EF").save(background)
+            background_image = Image.new("RGB", (1672, 941), "#F2F3EF")
+            ImageDraw.Draw(background_image).line((120, 120, 720, 120), fill="#123B66", width=10)
+            background_image.save(background)
             semantic = tmp_path / "semantic_plan.json"
             semantic.write_text(
                 json.dumps(
@@ -74,6 +76,7 @@ class DualImageOverlayBuildPageTests(unittest.TestCase):
             self.assertTrue((out_dir / "analysis/visual_preview.json").is_file())
             self.assertTrue((out_dir / "analysis/source_capture.json").is_file())
             self.assertTrue((out_dir / "analysis/source_capture_gate.json").is_file())
+            self.assertTrue((out_dir / "analysis/visual_registry/page_001_visual_element_registry.json").is_file())
             self.assertTrue((out_dir / "analysis/page_quality_report.json").is_file())
             self.assertTrue((out_dir / "analysis/container_workspace/page_001_container_workspace.json").is_file())
             self.assertTrue((out_dir / "analysis/workspace_assignment/page_001_workspace_assignment.json").is_file())
@@ -86,6 +89,7 @@ class DualImageOverlayBuildPageTests(unittest.TestCase):
             )
         self.assertEqual("cyberppt.dual_image.source_capture.v1", source_capture["schema"])
         self.assertEqual([1], [page["page_number"] for page in source_capture["pages"]])
+        self.assertEqual(1, source_capture["inputs"]["visual_registry_elements"])
         self.assertEqual(1, source_capture["inputs"]["ocr_text_mappings"])
         self.assertEqual(["核心结论"], text_content_qa["expected_texts"])
         self.assertEqual("cyberppt.dual_image.source_capture_gate.v1", source_capture_gate["schema"])
@@ -102,6 +106,7 @@ class DualImageOverlayBuildPageTests(unittest.TestCase):
         self.assertTrue(readiness["checks"]["source_capture_consumed"])
         self.assertTrue(readiness["checks"]["source_capture_text_drives_qa"])
         self.assertFalse(readiness["checks"]["source_capture_gate_pass"])
+        self.assertTrue(readiness["checks"]["draft_visual_registry_generated"])
         self.assertFalse(readiness["checks"]["source_capture_gaps_resolved"])
         self.assertFalse(readiness["checks"]["page_quality_report_pass"])
         self.assertFalse(readiness["source_capture_gate"]["valid"])
@@ -119,6 +124,10 @@ class DualImageOverlayBuildPageTests(unittest.TestCase):
         self.assertEqual(
             str((out_dir / "analysis/source_capture_gate.json").resolve()),
             readiness["artifacts"]["source_capture_gate"],
+        )
+        self.assertEqual(
+            str((out_dir / "analysis/visual_registry").resolve()),
+            readiness["artifacts"]["draft_visual_registry"],
         )
         self.assertEqual(
             str((out_dir / "analysis/page_quality_report.json").resolve()),
