@@ -210,6 +210,15 @@
       "kind": "office_render_required",
       "artifact": "rendered_preview",
       "evidence_required": true
+    },
+    {
+      "id": "template.visual_qa_gate_pass",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template-stage visual QA gate must pass using render comparison and spatial registration evidence.",
+      "kind": "report_valid",
+      "report": "visual_qa_gate",
+      "evidence_required": true
     }
   ]
 }

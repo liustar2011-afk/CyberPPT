@@ -91,7 +91,12 @@ def main() -> int:
         entry["blueprint_background_not_used"] = passed
         entry["background_snapshot_declared_and_no_text"] = False
 
-    payload = {"slides": [entry]}
+    payload = {
+        "schema": "cyberppt.visual_qa_gate.v1",
+        "valid": passed,
+        "deliverable_allowed": passed,
+        "slides": [entry],
+    }
     output = Path(args.out)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

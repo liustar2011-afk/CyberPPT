@@ -40,6 +40,10 @@ class DualImageOverlaySourceCaptureTests(unittest.TestCase):
         self.assertEqual(text_objects[0]["rendered_text"], "建议按规则先行路径\n启动首阶段工作")
         self.assertTrue(text_objects[0]["layout"]["needs_wrapping"])
         self.assertEqual(text_objects[1]["source"]["kind"], "script_matched")
+        self.assertEqual(text_objects[0]["style"]["font_size_px"], 14)
+        self.assertEqual(text_objects[0]["style"]["font_size_pt"], 10.5)
+        self.assertEqual(text_objects[0]["style"]["applied_font_size_px"], 16)
+        self.assertEqual(text_objects[0]["style"]["applied_font_size_pt"], 12.0)
 
         inventory = page["visual_element_inventory"]
         self.assertTrue(any(item["element_id"] == "so_what_band" and item["element_type"] == "container" for item in inventory))
@@ -103,6 +107,33 @@ class DualImageOverlaySourceCaptureTests(unittest.TestCase):
         gaps = {gap["code"] for gap in capture["pages"][0]["capture_gaps"]}
         self.assertNotIn("semantic_plan_gate_failed", gaps)
         self.assertNotIn("non_text_visuals_not_individually_detected", gaps)
+
+    def test_missing_semantic_plan_does_not_block_dual_image_source_capture(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            _write_artifacts(project_dir)
+            (project_dir / "analysis/scene_graph_gate").mkdir(parents=True, exist_ok=True)
+            _write_json(
+                project_dir / "analysis/scene_graph_gate/page_002_scene_graph_gate.json",
+                {"schema": "cyberppt.page_scene_graph_gate.v1", "valid": True, "blocking_count": 0},
+            )
+            (project_dir / "analysis/semantic_plan_gate").mkdir(parents=True, exist_ok=True)
+            _write_json(
+                project_dir / "analysis/semantic_plan_gate/page_002_semantic_plan_gate.json",
+                {
+                    "schema": "cyberppt.dual_image.semantic_plan_gate.v1",
+                    "valid": False,
+                    "issues": [{"code": "missing_semantic_plan"}],
+                },
+            )
+
+            capture = build_source_capture(project_dir)
+            gate = build_source_capture_gate(capture)
+
+        gaps = {gap["code"] for gap in capture["pages"][0]["capture_gaps"]}
+        self.assertNotIn("semantic_plan_gate_failed", gaps)
+        self.assertNotIn("semantic_plan_gate_failed", gate["gap_counts"])
+        self.assertIn("non_text_visuals_not_individually_detected", gate["gap_counts"])
 
     def test_source_capture_exposes_semantic_layout_container_relations(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

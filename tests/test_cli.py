@@ -3,8 +3,10 @@ from __future__ import annotations
 import io
 import subprocess
 import sys
+import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
+from pathlib import Path
 from unittest.mock import patch
 
 from cyberppt.cli import build_parser, main
@@ -36,6 +38,30 @@ class CliTests(unittest.TestCase):
         self.assertIn("script-status", help_text)
         self.assertIn("rebuild-dual-image", help_text)
         self.assertIn("final-script-pages", help_text)
+
+    def test_final_script_pages_requires_explicit_style_choice(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            script = root / "script-final.md"
+            script.write_text("## 第3页：测试页\n组件A：内容\n", encoding="utf-8")
+            buffer = io.StringIO()
+
+            with redirect_stderr(buffer):
+                code = main(
+                    [
+                        "final-script-pages",
+                        str(project),
+                        "--script",
+                        str(script),
+                        "--pages",
+                        "3",
+                    ]
+                )
+
+        self.assertEqual(2, code)
+        self.assertIn("请选择一个 CyberPPT 默认视觉风格", buffer.getvalue())
+        self.assertIn("4. 象牙白 + 深蓝强调", buffer.getvalue())
 
     def test_rebuild_dual_image_routes_to_template_rebuild(self) -> None:
         with patch("cyberppt.cli.run_script", return_value=3) as run_script:

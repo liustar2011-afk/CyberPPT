@@ -168,6 +168,13 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
         self.assertFalse(report["valid"])
         self.assertIn("ocr_geometry_truth_forbidden", {issue["code"] for issue in report["issues"]})
 
+    def test_missing_semantic_plan_can_be_skipped_when_optional(self) -> None:
+        report = validate_explicit_semantic_plan(None, required=False)
+
+        self.assertTrue(report["valid"], report)
+        self.assertEqual("skipped_optional", report["status"])
+        self.assertEqual([], report["issues"])
+
     def test_accepts_script_and_capture_grounded_semantic_plan(self) -> None:
         report = validate_explicit_semantic_plan(_ability_plan())
 

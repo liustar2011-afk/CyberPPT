@@ -40,6 +40,9 @@ class OverlayTextBox:
     confidence: float = 1.0
 
 
+MIN_EXPORT_FONT_SIZE_PX = 12.0
+
+
 @dataclass
 class SemanticContainer:
     id: str
@@ -461,7 +464,7 @@ def _font_size_from_box(height: float, text: str = "", source: str = "") -> floa
         line_count = max(1, len(str(text).splitlines()))
         if line_count > 1:
             return max(6.5, min(14.0, (height / line_count) * 0.82))
-    return max(6.5, min(28.0, height * 0.62))
+    return max(MIN_EXPORT_FONT_SIZE_PX, min(28.0, height * 0.62))
 
 
 def _weight_for_text(text: str, height: float) -> str:
@@ -708,7 +711,7 @@ def _fit_font_size_to_box(
 
 def _fit_all_boxes(boxes: list[OverlayTextBox]) -> None:
     for box in boxes:
-        minimum = 6.5 if box.source.startswith("manual_source_faithful") else 7.0
+        minimum = 6.5 if box.source.startswith("manual_source_faithful") else MIN_EXPORT_FONT_SIZE_PX
         box.font_size = round(
             _fit_font_size_to_box(
                 box.text,
@@ -720,6 +723,91 @@ def _fit_all_boxes(boxes: list[OverlayTextBox]) -> None:
             ),
             2,
         )
+
+
+def _repeated_body_text_candidates(boxes: list[OverlayTextBox], body_region: dict[str, float]) -> list[OverlayTextBox]:
+    body_y = float(body_region["y"])
+    body_h = float(body_region["height"])
+    middle_top = body_y + body_h * 0.24
+    middle_bottom = body_y + body_h * 0.82
+    return [
+        box
+        for box in boxes
+        if not box.source.startswith("manual_source_faithful")
+        and box.word_wrap
+        and box.align == "left"
+        and box.fill.strip().upper() != "#FFFFFF"
+        and len(normalize_text(box.text)) >= 10
+        and middle_top <= box.y + box.h / 2 <= middle_bottom
+    ]
+
+
+def _group_repeated_body_columns(boxes: list[OverlayTextBox]) -> list[list[OverlayTextBox]]:
+    column_threshold = 42.0
+    columns: list[list[OverlayTextBox]] = []
+    for box in sorted(boxes, key=lambda item: item.x):
+        for column in columns:
+            column_x = _median([item.x for item in column])
+            if abs(box.x - column_x) <= column_threshold:
+                column.append(box)
+                break
+        else:
+            columns.append([box])
+    return [sorted(column, key=lambda item: item.y + item.h / 2) for column in columns]
+
+
+def _snap_repeated_column_body_rows(boxes: list[OverlayTextBox], body_region: dict[str, float]) -> None:
+    columns = _group_repeated_body_columns(_repeated_body_text_candidates(boxes, body_region))
+    columns = [column for column in columns if len(column) >= 2]
+    if len(columns) < 3:
+        return
+
+    row_count = max(len(column) for column in columns)
+    for row_index in range(row_count):
+        row = [column[row_index] for column in columns if row_index < len(column)]
+        if len(row) < 3:
+            continue
+        centers = [box.y + box.h / 2 for box in row]
+        if max(centers) - min(centers) > 48.0:
+            continue
+        target_y = round(_median([box.y for box in row]), 2)
+        target_size = round(max(box.font_size for box in row), 2)
+        for box in row:
+            box.y = target_y
+            box.font_size = target_size
+
+
+def _relax_repeated_body_text_lanes(boxes: list[OverlayTextBox], body_region: dict[str, float]) -> None:
+    body_right = float(body_region["x"]) + float(body_region["width"])
+    candidates = _repeated_body_text_candidates(boxes, body_region)
+    if len(candidates) < 3:
+        return
+
+    column_threshold = 42.0
+    columns = _group_repeated_body_columns(candidates)
+    if len(columns) < 2:
+        return
+
+    column_lefts = [_median([box.x for box in column]) for column in columns]
+    pitches = [
+        right - left
+        for left, right in zip(column_lefts, column_lefts[1:])
+        if right - left > column_threshold
+    ]
+    if not pitches:
+        return
+
+    base_lane_width = min(220.0, max(170.0, _median(pitches) * 0.68))
+    for index, column in enumerate(columns):
+        column_x = column_lefts[index]
+        next_x = column_lefts[index + 1] if index + 1 < len(column_lefts) else body_right
+        max_lane_width = max(1.0, next_x - column_x - 24.0)
+        target_width = min(base_lane_width, max_lane_width)
+        for box in column:
+            line_count = _estimated_line_count(box.text, box.w * 0.96, box.font_size, word_wrap=True)
+            if line_count <= 1:
+                continue
+            box.w = round(max(box.w, target_width), 2)
 
 
 BODY_TEXT_ROLES = {"body", "bullet", "list_item", "stage_body", "trust_body", "service_item", "summary"}
@@ -1105,10 +1193,14 @@ def _semantic_issue(
     }
 
 
-def validate_explicit_semantic_plan(plan: dict[str, Any] | None) -> dict[str, Any]:
+def validate_explicit_semantic_plan(plan: dict[str, Any] | None, *, required: bool = True) -> dict[str, Any]:
     """Validate the production semantic-container contract for dual-image rebuilds."""
     issues: list[dict[str, Any]] = []
     if not plan:
+        if not required:
+            report = _semantic_validation_report(issues)
+            report["status"] = "skipped_optional"
+            return report
         issues.append(
             _semantic_issue(
                 "error",
@@ -2178,7 +2270,7 @@ def _apply_container_layout(box: OverlayTextBox, container: SemanticContainer) -
     box.w = max(1.0, container.w - pad_x * 2)
     box.h = max(box.h, container.h - pad_y * 2)
     preferred_size = max(box.font_size, 16.0 if container.role == "foundation_base" else box.font_size)
-    box.font_size = round(_fit_font_size(box.text, box.w, preferred_size, minimum=8.5), 2)
+    box.font_size = round(_fit_font_size(box.text, box.w, preferred_size, minimum=MIN_EXPORT_FONT_SIZE_PX), 2)
     box.y = round(container.y + (container.h - box.font_size) / 2, 2)
     box.fill = container.fill
     box.align = container.align
@@ -2193,6 +2285,8 @@ def _apply_semantic_overlay_layout(
 ) -> None:
     free_boxes = [box for box in boxes if not box.source.startswith("manual_source_faithful")]
     _snap_same_row_boxes(free_boxes)
+    _relax_repeated_body_text_lanes(free_boxes, body_region)
+    _snap_repeated_column_body_rows(free_boxes, body_region)
     containers = containers or []
     for box in boxes:
         if box.source.startswith("manual_source_faithful"):
@@ -2206,9 +2300,40 @@ def _apply_semantic_overlay_layout(
             box.align = "center"
             box.font_size = max(box.font_size, 16.0)
             box.font_weight = "700"
-        elif len(box.text) <= 12 and box.w < 260:
+        elif re.fullmatch(r"\d{1,2}", box.text.strip()) or (
+            len(box.text) <= 16 and box.fill.strip().upper() == "#FFFFFF"
+        ):
             box.align = "center"
     _fit_all_boxes(boxes)
+
+
+def _is_tail_duplicate_fragment(
+    *,
+    text: str,
+    source: str,
+    item_bbox: tuple[float, float, float, float],
+    previous_boxes: list[OverlayTextBox],
+    sx: float,
+    sy: float,
+    body_region: dict[str, float],
+) -> bool:
+    if source != "ocr_unmatched":
+        return False
+    text_key = normalize_text(text)
+    if len(text_key) < 2:
+        return False
+    x1, y1, _x2, _y2 = item_bbox
+    page_x = float(body_region["x"]) + x1 * sx
+    page_y = float(body_region["y"]) + y1 * sy
+    for previous in reversed(previous_boxes[-6:]):
+        previous_key = normalize_text(previous.text)
+        if not previous_key or previous_key == text_key or not previous_key.endswith(text_key):
+            continue
+        same_column = abs(previous.x - page_x) <= 10.0
+        just_below = 0.0 <= page_y - previous.y <= 38.0
+        if same_column and just_below:
+            return True
+    return False
 
 
 def build_overlay_boxes(
@@ -2269,12 +2394,23 @@ def build_overlay_boxes(
                     continue
                 if 110.0 <= y1 <= 460.0:
                     continue
+            if _is_tail_duplicate_fragment(
+                text=corrected,
+                source=source,
+                item_bbox=(x1, y1, x2, y2),
+                previous_boxes=boxes,
+                sx=sx,
+                sy=sy,
+                body_region=body_region,
+            ):
+                continue
             x = float(body_region["x"]) + x1 * sx
             y = float(body_region["y"]) + y1 * sy
             w = max(1.0, (x2 - x1) * sx)
             h = max(1.0, (y2 - y1) * sy)
             font_size = _font_size_from_box(h, corrected, source)
             text_fill = _fill_for_background(background, (x1, y1, x2, y2), image_width, image_height, fill)
+            align = "center" if re.fullmatch(r"\d{1,2}", corrected.strip()) or text_fill.strip().upper() == "#FFFFFF" else "left"
             boxes.append(
                 OverlayTextBox(
                     text=corrected,
@@ -2286,7 +2422,7 @@ def build_overlay_boxes(
                     font_family=font_family,
                     fill=text_fill,
                     font_weight=_weight_for_text(corrected, h),
-                    align="center" if len(corrected) <= 12 and w < 260 else "left",
+                    align=align,
                     word_wrap=True,
                     source=source,
                     confidence=float(item.get("confidence", 1.0)),

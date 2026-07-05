@@ -19,6 +19,15 @@ CANVAS = {"width": 1280, "height": 720}
 TEXT_REQUIRES_PRIORITY = {"T2": "P0", "T4": "P0", "T6": "P0", "T8": "P0", "T13": "P0"}
 
 
+def _px_to_pt(value: Any) -> float | None:
+    try:
+        if value is None:
+            return None
+        return round(float(value) * 0.75, 2)
+    except (TypeError, ValueError):
+        return None
+
+
 def _read_json(path: Path) -> dict[str, Any]:
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
@@ -215,6 +224,8 @@ def _text_objects(boxes: list[dict[str, Any]], typography: list[dict[str, Any]])
         type_decision = role_by_text.get(text, {})
         rendered_text = str(type_decision.get("rendered_text") or text)
         role = str(type_decision.get("role") or box.get("semantic_role") or "")
+        font_size_px = box.get("font_size")
+        applied_font_size_px = type_decision.get("applied_px")
         objects.append(
             {
                 "id": f"text_{index:03d}",
@@ -224,8 +235,10 @@ def _text_objects(boxes: list[dict[str, Any]], typography: list[dict[str, Any]])
                 "bbox": _box_to_bbox(box),
                 "style": {
                     "font_family": box.get("font_family"),
-                    "font_size_px": box.get("font_size"),
-                    "applied_font_size_px": type_decision.get("applied_px"),
+                    "font_size_px": font_size_px,
+                    "font_size_pt": _px_to_pt(font_size_px),
+                    "applied_font_size_px": applied_font_size_px,
+                    "applied_font_size_pt": _px_to_pt(applied_font_size_px),
                     "fill": box.get("fill"),
                     "font_weight": box.get("font_weight"),
                     "align": box.get("align"),
@@ -399,12 +412,22 @@ def _has_dual_image_editable_evidence(page: dict[str, Any]) -> bool:
     )
 
 
+def _semantic_plan_is_only_missing(semantic_gate: Any) -> bool:
+    if not isinstance(semantic_gate, dict) or semantic_gate.get("valid") is not False:
+        return False
+    issues = semantic_gate.get("issues")
+    if not isinstance(issues, list) or not issues:
+        return False
+    return all(isinstance(issue, dict) and issue.get("code") == "missing_semantic_plan" for issue in issues)
+
+
 def _capture_gaps(page: dict[str, Any]) -> list[dict[str, str]]:
     gaps: list[dict[str, str]] = []
     semantic_gate = page.get("semantic_plan_gate")
     if (
         isinstance(semantic_gate, dict)
         and semantic_gate.get("valid") is False
+        and not _semantic_plan_is_only_missing(semantic_gate)
         and not _has_dual_image_editable_evidence(page)
     ):
         gaps.append(

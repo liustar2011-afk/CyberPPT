@@ -1,0 +1,41 @@
+{
+  "schema": "cyberppt.dual_image.postflight_quality_rules.v1",
+  "rules": [
+    {
+      "id": "postflight.source_capture_gate_pass",
+      "stage": "postflight",
+      "severity": "error",
+      "description": "Template rebuild must consume source_capture and pass its gate.",
+      "kind": "report_valid",
+      "report": "source_capture_gate",
+      "evidence_required": true
+    },
+    {
+      "id": "postflight.visual_reference_available",
+      "stage": "postflight",
+      "severity": "error",
+      "description": "Template QA must keep a visual reference for post-template comparison.",
+      "kind": "artifact_exists",
+      "artifact": "visual_reference",
+      "evidence_required": true
+    },
+    {
+      "id": "postflight.office_render_required",
+      "stage": "postflight",
+      "severity": "error",
+      "description": "Final template-stage QA must include an Office/WPS render evidence artifact.",
+      "kind": "office_render_required",
+      "artifact": "rendered_preview",
+      "evidence_required": true
+    },
+    {
+      "id": "postflight.visual_qa_gate_pass",
+      "stage": "postflight",
+      "severity": "error",
+      "description": "Template-stage visual QA gate must pass using render comparison and spatial registration evidence.",
+      "kind": "report_valid",
+      "report": "visual_qa_gate",
+      "evidence_required": true
+    }
+  ]
+}

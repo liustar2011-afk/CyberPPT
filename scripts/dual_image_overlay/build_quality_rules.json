@@ -1,0 +1,14 @@
+{
+  "schema": "cyberppt.dual_image.build_quality_rules.v1",
+  "rules": [
+    {
+      "id": "build.template_gate_pass",
+      "stage": "build",
+      "severity": "error",
+      "description": "Template rebuild must consume required template files and export state.",
+      "kind": "report_valid",
+      "report": "template_gate",
+      "evidence_required": true
+    }
+  ]
+}
