@@ -30,6 +30,7 @@ from script_text_overlay import (
     extract_semantic_plan,
     extract_script_truth_sections,
     infer_semantic_containers,
+    normalize_semantic_plan_to_context,
     reconcile_semantic_plan_with_script_truth,
     render_overlay_svg,
     resolve_overlay_coordinate_context,
@@ -363,6 +364,12 @@ def rebuild_from_manifest(
         if explicit_semantic is not None:
             explicit_path, explicit_plan = explicit_semantic
             explicit_plan = reconcile_semantic_plan_with_script_truth(explicit_plan, source_script, page_number)
+            coordinate_context = resolve_overlay_coordinate_context(
+                explicit_plan,
+                visual_registry=visual_registry,
+                background_image=prepared_background,
+            )
+            explicit_plan = normalize_semantic_plan_to_context(explicit_plan, coordinate_context)
             semantic_plan_path.write_text(
                 json.dumps(explicit_plan, ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
