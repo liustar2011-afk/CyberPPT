@@ -1,0 +1,5 @@
+{
+  "purpose": "geometry_locks pass when SVG matches declared export hard constraints.",
+  "layout_reference": false,
+  "geometry_locks": true
+}

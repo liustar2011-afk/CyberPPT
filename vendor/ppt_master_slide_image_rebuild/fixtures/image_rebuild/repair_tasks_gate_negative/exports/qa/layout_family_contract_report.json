@@ -1,0 +1,13 @@
+{
+  "workflow": "slide-image-rebuild",
+  "valid": false,
+  "pages": [
+    {
+      "page_id": "01",
+      "layout_family": "process_swimlane",
+      "errors": [
+        "Required layout-family connector `stage_1 -> stage_2` is missing from the rebuilt page."
+      ]
+    }
+  ]
+}

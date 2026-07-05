@@ -544,9 +544,9 @@
       "element_type": "icon",
       "source_component_id": "p6_core_space",
       "blueprint_bbox_px": {
-        "x": 455,
+        "x": 340,
         "y": 165,
-        "w": 70,
+        "w": 90,
         "h": 70
       },
       "measurement_mode": "group_with_child_anchors",
@@ -619,9 +619,9 @@
       "element_type": "icon",
       "source_component_id": "p6_core_space",
       "blueprint_bbox_px": {
-        "x": 660,
+        "x": 633,
         "y": 165,
-        "w": 70,
+        "w": 65,
         "h": 70
       },
       "measurement_mode": "group_with_child_anchors",
@@ -694,9 +694,9 @@
       "element_type": "icon",
       "source_component_id": "p6_core_space",
       "blueprint_bbox_px": {
-        "x": 875,
+        "x": 899,
         "y": 165,
-        "w": 70,
+        "w": 58,
         "h": 70
       },
       "measurement_mode": "group_with_child_anchors",
@@ -844,9 +844,9 @@
       "element_type": "icon",
       "source_component_id": "p6_core_space",
       "blueprint_bbox_px": {
-        "x": 660,
+        "x": 633,
         "y": 305,
-        "w": 70,
+        "w": 60,
         "h": 70
       },
       "measurement_mode": "group_with_child_anchors",
@@ -1069,9 +1069,9 @@
       "element_type": "icon",
       "source_component_id": "p6_core_space",
       "blueprint_bbox_px": {
-        "x": 660,
+        "x": 630,
         "y": 445,
-        "w": 70,
+        "w": 66,
         "h": 70
       },
       "measurement_mode": "group_with_child_anchors",
@@ -1564,340 +1564,15 @@
       }
     },
     {
-      "element_id": "p6_app_outer_panel",
-      "priority": "P0",
-      "element_type": "application_panel",
-      "source_component_id": "p6_result_apps",
-      "blueprint_bbox_px": {
-        "x": 1320,
-        "y": 85,
-        "w": 290,
-        "h": 650
-      },
-      "measurement_mode": "individual_bbox",
-      "must_reproduce": true,
-      "tolerance_px": 3,
-      "render_bbox_px": null,
-      "delta_px": null,
-      "registration_status": "pending_render_measurement",
-      "pixel_mean_abs_tolerance": 28,
-      "ppt_target_bbox_in": {
-        "x": 10.5261,
-        "y": 0.6775,
-        "w": 2.3125,
-        "h": 5.1807
-      }
-    },
-    {
-      "element_id": "p6_app_card_1",
-      "priority": "P0",
-      "element_type": "application_card",
-      "source_component_id": "p6_result_apps",
-      "blueprint_bbox_px": {
-        "x": 1340,
-        "y": 130,
-        "w": 250,
-        "h": 155
-      },
-      "measurement_mode": "individual_bbox",
-      "must_reproduce": true,
-      "tolerance_px": 3,
-      "render_bbox_px": null,
-      "delta_px": null,
-      "registration_status": "pending_render_measurement",
-      "pixel_mean_abs_tolerance": 28,
-      "ppt_target_bbox_in": {
-        "x": 10.6855,
-        "y": 1.0361,
-        "w": 1.9936,
-        "h": 1.2354
-      }
-    },
-    {
-      "element_id": "p6_app_icon_1",
-      "priority": "P1",
-      "element_type": "icon",
-      "source_component_id": "p6_result_apps",
-      "blueprint_bbox_px": {
-        "x": 1355,
-        "y": 160,
-        "w": 54,
-        "h": 54
-      },
-      "measurement_mode": "group_with_child_anchors",
-      "must_reproduce": true,
-      "tolerance_px": 4,
-      "render_bbox_px": null,
-      "delta_px": null,
-      "registration_status": "pending_render_measurement",
-      "pixel_mean_abs_tolerance": 35,
-      "ppt_target_bbox_in": {
-        "x": 10.8052,
-        "y": 1.2752,
-        "w": 0.4306,
-        "h": 0.4304
-      }
-    },
-    {
-      "element_id": "p6_app_text_zone_1",
-      "priority": "P1",
-      "element_type": "text_zone",
-      "source_component_id": "p6_result_apps",
-      "blueprint_bbox_px": {
-        "x": 1420,
-        "y": 175,
-        "w": 145,
-        "h": 70
-      },
-      "measurement_mode": "group_with_child_anchors",
-      "must_reproduce": true,
-      "tolerance_px": 4,
-      "render_bbox_px": null,
-      "delta_px": null,
-      "registration_status": "pending_render_measurement",
-      "pixel_mean_abs_tolerance": 35,
-      "ppt_target_bbox_in": {
-        "x": 11.3235,
-        "y": 1.3948,
-        "w": 1.1563,
-        "h": 0.5579
-      }
-    },
-    {
-      "element_id": "p6_outbound_arrow_1",
-      "priority": "P0",
-      "element_type": "flow_arrow",
-      "source_component_id": "p6_feedback",
-      "blueprint_bbox_px": {
-        "x": 1245,
-        "y": 190,
-        "w": 85,
-        "h": 36
-      },
-      "measurement_mode": "individual_bbox",
-      "must_reproduce": true,
-      "tolerance_px": 3,
-      "render_bbox_px": null,
-      "delta_px": null,
-      "registration_status": "pending_render_measurement",
-      "pixel_mean_abs_tolerance": 28,
-      "ppt_target_bbox_in": {
-        "x": 9.928,
-        "y": 1.5143,
-        "w": 0.6778,
-        "h": 0.2869
-      }
-    },
-    {
-      "element_id": "p6_app_card_2",
-      "priority": "P0",
-      "element_type": "application_card",
-      "source_component_id": "p6_result_apps",
-      "blueprint_bbox_px": {
-        "x": 1340,
-        "y": 315,
-        "w": 250,
-        "h": 155
-      },
-      "measurement_mode": "individual_bbox",
-      "must_reproduce": true,
-      "tolerance_px": 3,
-      "render_bbox_px": null,
-      "delta_px": null,
-      "registration_status": "pending_render_measurement",
-      "pixel_mean_abs_tolerance": 28,
-      "ppt_target_bbox_in": {
-        "x": 10.6855,
-        "y": 2.5106,
-        "w": 1.9936,
-        "h": 1.2354
-      }
-    },
-    {
-      "element_id": "p6_app_icon_2",
-      "priority": "P1",
-      "element_type": "icon",
-      "source_component_id": "p6_result_apps",
-      "blueprint_bbox_px": {
-        "x": 1355,
-        "y": 345,
-        "w": 54,
-        "h": 54
-      },
-      "measurement_mode": "group_with_child_anchors",
-      "must_reproduce": true,
-      "tolerance_px": 4,
-      "render_bbox_px": null,
-      "delta_px": null,
-      "registration_status": "pending_render_measurement",
-      "pixel_mean_abs_tolerance": 35,
-      "ppt_target_bbox_in": {
-        "x": 10.8052,
-        "y": 2.7497,
-        "w": 0.4306,
-        "h": 0.4304
-      }
-    },
-    {
-      "element_id": "p6_app_text_zone_2",
-      "priority": "P1",
-      "element_type": "text_zone",
-      "source_component_id": "p6_result_apps",
-      "blueprint_bbox_px": {
-        "x": 1420,
-        "y": 360,
-        "w": 145,
-        "h": 70
-      },
-      "measurement_mode": "group_with_child_anchors",
-      "must_reproduce": true,
-      "tolerance_px": 4,
-      "render_bbox_px": null,
-      "delta_px": null,
-      "registration_status": "pending_render_measurement",
-      "pixel_mean_abs_tolerance": 35,
-      "ppt_target_bbox_in": {
-        "x": 11.3235,
-        "y": 2.8693,
-        "w": 1.1563,
-        "h": 0.5579
-      }
-    },
-    {
-      "element_id": "p6_outbound_arrow_2",
-      "priority": "P0",
-      "element_type": "flow_arrow",
-      "source_component_id": "p6_feedback",
-      "blueprint_bbox_px": {
-        "x": 1245,
-        "y": 375,
-        "w": 85,
-        "h": 36
-      },
-      "measurement_mode": "individual_bbox",
-      "must_reproduce": true,
-      "tolerance_px": 3,
-      "render_bbox_px": null,
-      "delta_px": null,
-      "registration_status": "pending_render_measurement",
-      "pixel_mean_abs_tolerance": 28,
-      "ppt_target_bbox_in": {
-        "x": 9.928,
-        "y": 2.9888,
-        "w": 0.6778,
-        "h": 0.2869
-      }
-    },
-    {
-      "element_id": "p6_app_card_3",
-      "priority": "P0",
-      "element_type": "application_card",
-      "source_component_id": "p6_result_apps",
-      "blueprint_bbox_px": {
-        "x": 1340,
-        "y": 500,
-        "w": 250,
-        "h": 155
-      },
-      "measurement_mode": "individual_bbox",
-      "must_reproduce": true,
-      "tolerance_px": 3,
-      "render_bbox_px": null,
-      "delta_px": null,
-      "registration_status": "pending_render_measurement",
-      "pixel_mean_abs_tolerance": 28,
-      "ppt_target_bbox_in": {
-        "x": 10.6855,
-        "y": 3.9851,
-        "w": 1.9936,
-        "h": 1.2354
-      }
-    },
-    {
-      "element_id": "p6_app_icon_3",
-      "priority": "P1",
-      "element_type": "icon",
-      "source_component_id": "p6_result_apps",
-      "blueprint_bbox_px": {
-        "x": 1355,
-        "y": 530,
-        "w": 54,
-        "h": 54
-      },
-      "measurement_mode": "group_with_child_anchors",
-      "must_reproduce": true,
-      "tolerance_px": 4,
-      "render_bbox_px": null,
-      "delta_px": null,
-      "registration_status": "pending_render_measurement",
-      "pixel_mean_abs_tolerance": 35,
-      "ppt_target_bbox_in": {
-        "x": 10.8052,
-        "y": 4.2242,
-        "w": 0.4306,
-        "h": 0.4304
-      }
-    },
-    {
-      "element_id": "p6_app_text_zone_3",
-      "priority": "P1",
-      "element_type": "text_zone",
-      "source_component_id": "p6_result_apps",
-      "blueprint_bbox_px": {
-        "x": 1420,
-        "y": 545,
-        "w": 145,
-        "h": 70
-      },
-      "measurement_mode": "group_with_child_anchors",
-      "must_reproduce": true,
-      "tolerance_px": 4,
-      "render_bbox_px": null,
-      "delta_px": null,
-      "registration_status": "pending_render_measurement",
-      "pixel_mean_abs_tolerance": 35,
-      "ppt_target_bbox_in": {
-        "x": 11.3235,
-        "y": 4.3438,
-        "w": 1.1563,
-        "h": 0.5579
-      }
-    },
-    {
-      "element_id": "p6_outbound_arrow_3",
-      "priority": "P0",
-      "element_type": "flow_arrow",
-      "source_component_id": "p6_feedback",
-      "blueprint_bbox_px": {
-        "x": 1245,
-        "y": 560,
-        "w": 85,
-        "h": 36
-      },
-      "measurement_mode": "individual_bbox",
-      "must_reproduce": true,
-      "tolerance_px": 3,
-      "render_bbox_px": null,
-      "delta_px": null,
-      "registration_status": "pending_render_measurement",
-      "pixel_mean_abs_tolerance": 28,
-      "ppt_target_bbox_in": {
-        "x": 9.928,
-        "y": 4.4633,
-        "w": 0.6778,
-        "h": 0.2869
-      }
-    },
-    {
       "element_id": "p6_feedback_dashed_loop",
       "priority": "P1",
       "element_type": "feedback_connector",
       "source_component_id": "p6_feedback",
       "blueprint_bbox_px": {
-        "x": 1250,
-        "y": 245,
-        "w": 95,
-        "h": 225
+        "x": 1150,
+        "y": 230,
+        "w": 65,
+        "h": 250
       },
       "measurement_mode": "group_with_child_anchors",
       "must_reproduce": true,
@@ -1919,9 +1594,9 @@
       "element_type": "governance_spine",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1630,
+        "x": 1450,
         "y": 85,
-        "w": 290,
+        "w": 210,
         "h": 750
       },
       "measurement_mode": "individual_bbox",
@@ -1944,7 +1619,7 @@
       "element_type": "governance_step",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1660,
+        "x": 1480,
         "y": 145,
         "w": 190,
         "h": 90
@@ -1969,7 +1644,7 @@
       "element_type": "icon",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1685,
+        "x": 1505,
         "y": 165,
         "w": 55,
         "h": 50
@@ -1994,7 +1669,7 @@
       "element_type": "governance_step",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1660,
+        "x": 1480,
         "y": 270,
         "w": 190,
         "h": 90
@@ -2019,7 +1694,7 @@
       "element_type": "icon",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1685,
+        "x": 1505,
         "y": 290,
         "w": 55,
         "h": 50
@@ -2044,7 +1719,7 @@
       "element_type": "governance_step",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1660,
+        "x": 1480,
         "y": 395,
         "w": 190,
         "h": 90
@@ -2069,7 +1744,7 @@
       "element_type": "icon",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1685,
+        "x": 1505,
         "y": 415,
         "w": 55,
         "h": 50
@@ -2094,7 +1769,7 @@
       "element_type": "governance_step",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1660,
+        "x": 1480,
         "y": 520,
         "w": 190,
         "h": 90
@@ -2119,7 +1794,7 @@
       "element_type": "icon",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1685,
+        "x": 1505,
         "y": 540,
         "w": 55,
         "h": 50
@@ -2144,7 +1819,7 @@
       "element_type": "governance_step",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1660,
+        "x": 1480,
         "y": 645,
         "w": 190,
         "h": 90
@@ -2169,7 +1844,7 @@
       "element_type": "icon",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1685,
+        "x": 1505,
         "y": 665,
         "w": 55,
         "h": 50
@@ -2194,7 +1869,7 @@
       "element_type": "governance_step",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1660,
+        "x": 1480,
         "y": 770,
         "w": 190,
         "h": 90
@@ -2219,7 +1894,7 @@
       "element_type": "icon",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1685,
+        "x": 1505,
         "y": 790,
         "w": 55,
         "h": 50
@@ -2244,7 +1919,7 @@
       "element_type": "flow_arrow",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1745,
+        "x": 1565,
         "y": 235,
         "w": 25,
         "h": 55
@@ -2269,7 +1944,7 @@
       "element_type": "flow_arrow",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1745,
+        "x": 1565,
         "y": 360,
         "w": 25,
         "h": 55
@@ -2294,7 +1969,7 @@
       "element_type": "flow_arrow",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1745,
+        "x": 1565,
         "y": 485,
         "w": 25,
         "h": 55
@@ -2319,7 +1994,7 @@
       "element_type": "flow_arrow",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1745,
+        "x": 1565,
         "y": 610,
         "w": 25,
         "h": 55
@@ -2344,7 +2019,7 @@
       "element_type": "flow_arrow",
       "source_component_id": "p6_compliance_spine",
       "blueprint_bbox_px": {
-        "x": 1745,
+        "x": 1565,
         "y": 735,
         "w": 25,
         "h": 55
@@ -2644,9 +2319,9 @@
       "element_type": "icon",
       "source_component_id": "p6_service_value",
       "blueprint_bbox_px": {
-        "x": 955,
+        "x": 985,
         "y": 845,
-        "w": 56,
+        "w": 54,
         "h": 48
       },
       "measurement_mode": "group_with_child_anchors",
@@ -2669,7 +2344,7 @@
       "element_type": "text_zone",
       "source_component_id": "p6_service_value",
       "blueprint_bbox_px": {
-        "x": 1020,
+        "x": 1045,
         "y": 852,
         "w": 105,
         "h": 32
@@ -2719,9 +2394,9 @@
       "element_type": "icon",
       "source_component_id": "p6_service_value",
       "blueprint_bbox_px": {
-        "x": 1190,
+        "x": 1218,
         "y": 845,
-        "w": 56,
+        "w": 58,
         "h": 48
       },
       "measurement_mode": "group_with_child_anchors",
@@ -2744,7 +2419,7 @@
       "element_type": "text_zone",
       "source_component_id": "p6_service_value",
       "blueprint_bbox_px": {
-        "x": 1255,
+        "x": 1282,
         "y": 852,
         "w": 105,
         "h": 32
@@ -2762,9 +2437,57 @@
         "w": 0.8373,
         "h": 0.255
       }
+    },
+    {
+      "element_id": "p6_application_icon_1_enterprise",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_application_panel",
+      "blueprint_bbox_px": {
+        "x": 1225,
+        "y": 128,
+        "w": 50,
+        "h": 52
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null
+    },
+    {
+      "element_id": "p6_application_icon_2_partner",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_application_panel",
+      "blueprint_bbox_px": {
+        "x": 1220,
+        "y": 302,
+        "w": 60,
+        "h": 53
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null
+    },
+    {
+      "element_id": "p6_application_icon_3_industry",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "p6_application_panel",
+      "blueprint_bbox_px": {
+        "x": 1210,
+        "y": 553,
+        "w": 75,
+        "h": 62
+      },
+      "measurement_mode": "group_with_child_anchors",
+      "must_reproduce": true,
+      "tolerance_px": 4,
+      "render_bbox_px": null
     }
   ],
-  "element_count": 110,
+  "element_count": 100,
   "coverage_check": {
     "manual_annotations_required": true,
     "passed": true,

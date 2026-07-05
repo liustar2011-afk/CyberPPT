@@ -1,0 +1,17 @@
+{
+  "schema": "cyberppt.dual_image.source_capture_gate.v1",
+  "valid": true,
+  "page_count": 1,
+  "text_object_count": 1,
+  "visual_element_count": 5,
+  "p0_element_count": 1,
+  "gap_counts": {},
+  "blocking_gaps": [],
+  "checks": {
+    "source_capture_available": true,
+    "source_text_objects_available": true,
+    "visual_element_inventory_available": true,
+    "p0_inventory_available": true,
+    "capture_gaps_resolved": true
+  }
+}

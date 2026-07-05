@@ -1,0 +1,13 @@
+{
+  "schema": "cyberppt.stage3.page_rework_report.v1",
+  "slide": 6,
+  "status": "failed_user_review",
+  "failed_render": "projects/power-overseas-capability-p6-p9-restart/workbench/stage3/p6-native/rendered/libreoffice/slide-1.png",
+  "user_feedback": "文本丢失很多",
+  "diagnosis": [
+    "native reconstruction v1 compressed multiple locked text fields into short labels",
+    "content lock was not fully preserved in visible text layer"
+  ],
+  "required_fix": "Rebuild P6 native full-text version from slide-06-content-lock.json with no summarization or abbreviation of required visible text.",
+  "deliverable_allowed": false
+}

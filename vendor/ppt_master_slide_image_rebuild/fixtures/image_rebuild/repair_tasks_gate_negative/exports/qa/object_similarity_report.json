@@ -1,0 +1,20 @@
+{
+  "workflow": "slide-image-rebuild",
+  "valid": false,
+  "pages": [
+    {
+      "page_id": "01",
+      "failures": [
+        {
+          "id": "zone_title",
+          "type": "zone",
+          "issue_code": "ZONE_MEAN_DIFF_HIGH",
+          "message": "Object `zone_title` mean diff 72.0 exceeds 70.0.",
+          "reference_bbox_px": [72, 48, 1136, 96],
+          "tier": "blocking",
+          "action": "Adjust SVG geometry/colors inside the declared zone bbox to match the reference."
+        }
+      ]
+    }
+  ]
+}

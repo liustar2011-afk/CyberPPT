@@ -1,0 +1,51 @@
+{
+  "schema": "cyberppt.visual_element_registry.v1",
+  "blueprint_canvas_px": {
+    "w": 1280,
+    "h": 720
+  },
+  "elements": [
+    {
+      "element_id": "registry_application_card_1",
+      "priority": "P1",
+      "element_type": "application_card",
+      "source_component_id": "application_1",
+      "blueprint_bbox_px": {
+        "x": 720,
+        "y": 180,
+        "w": 400,
+        "h": 250
+      },
+      "measurement_mode": "individual_bbox",
+      "registration_status": "pending_render_measurement"
+    },
+    {
+      "element_id": "registry_application_icon_1",
+      "priority": "P1",
+      "element_type": "icon",
+      "source_component_id": "application_1",
+      "blueprint_bbox_px": {
+        "x": 760,
+        "y": 250,
+        "w": 76,
+        "h": 76
+      },
+      "measurement_mode": "individual_bbox",
+      "registration_status": "pending_render_measurement"
+    },
+    {
+      "element_id": "registry_application_text_zone_1",
+      "priority": "P0",
+      "element_type": "text_zone",
+      "source_component_id": "application_1",
+      "blueprint_bbox_px": {
+        "x": 870,
+        "y": 220,
+        "w": 215,
+        "h": 170
+      },
+      "measurement_mode": "individual_bbox",
+      "registration_status": "pending_render_measurement"
+    }
+  ]
+}

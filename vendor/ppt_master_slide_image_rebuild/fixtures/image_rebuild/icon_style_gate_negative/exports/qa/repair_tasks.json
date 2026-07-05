@@ -1,0 +1,94 @@
+{
+  "workflow": "slide-image-rebuild",
+  "version": "1.0",
+  "generated_at": "2026-06-07T15:14:28Z",
+  "project": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/icon_style_gate_negative",
+  "status": "open",
+  "valid": false,
+  "task_count": 4,
+  "blocking_open_count": 4,
+  "tasks": [
+    {
+      "id": "repair-001",
+      "page_id": "01",
+      "region_id": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/icon_style_gate_negative/svg_output/01.svg",
+      "issue_type": "icon_style_mismatch",
+      "severity": "blocking",
+      "status": "open",
+      "source_check": "verify_icon_contract",
+      "source_report": "exports/qa/icon_contract_report.json",
+      "message": "Page 01 icon icon_heavy max stroke width 4.50px exceeds 2.50px.",
+      "bbox_px": null,
+      "suggested_action": "Rebuild the icon using the three-tier icon strategy and unified stroke metrics.",
+      "metadata": {
+        "code": "icon_stroke_too_heavy",
+        "metrics": {}
+      },
+      "resolved_at": null
+    },
+    {
+      "id": "repair-002",
+      "page_id": "01",
+      "region_id": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/icon_style_gate_negative/svg_output/01.svg",
+      "issue_type": "icon_style_mismatch",
+      "severity": "blocking",
+      "status": "open",
+      "source_check": "verify_icon_contract",
+      "source_report": "exports/qa/icon_contract_report.json",
+      "message": "Page 01 icon icon_heavy stroke width [4.5] does not match manifest stroke_width_px 2.",
+      "bbox_px": null,
+      "suggested_action": "Rebuild the icon using the three-tier icon strategy and unified stroke metrics.",
+      "metadata": {
+        "code": "icon_stroke_mismatch",
+        "metrics": {}
+      },
+      "resolved_at": null
+    },
+    {
+      "id": "repair-003",
+      "page_id": "01",
+      "region_id": "icon_heavy",
+      "issue_type": "icon_style_mismatch",
+      "severity": "blocking",
+      "status": "open",
+      "source_check": "verify_icon_contract",
+      "source_report": "exports/qa/icon_contract_report.json",
+      "message": "Page 01 icon icon_heavy max stroke width 4.50px exceeds 2.50px.",
+      "bbox_px": null,
+      "suggested_action": "Rebuild the icon using the three-tier icon strategy and unified stroke metrics.",
+      "metadata": {
+        "code": "icon_stroke_too_heavy",
+        "metrics": {
+          "stroke_widths_px": [
+            4.5
+          ],
+          "max_stroke_width_px": 4.5
+        }
+      },
+      "resolved_at": null
+    },
+    {
+      "id": "repair-004",
+      "page_id": "01",
+      "region_id": "icon_heavy",
+      "issue_type": "icon_style_mismatch",
+      "severity": "blocking",
+      "status": "open",
+      "source_check": "verify_icon_contract",
+      "source_report": "exports/qa/icon_contract_report.json",
+      "message": "Page 01 icon icon_heavy stroke width [4.5] does not match manifest stroke_width_px 2.",
+      "bbox_px": null,
+      "suggested_action": "Rebuild the icon using the three-tier icon strategy and unified stroke metrics.",
+      "metadata": {
+        "code": "icon_stroke_mismatch",
+        "metrics": {
+          "stroke_widths_px": [
+            4.5
+          ],
+          "expected_stroke_width_px": 2.0
+        }
+      },
+      "resolved_at": null
+    }
+  ]
+}

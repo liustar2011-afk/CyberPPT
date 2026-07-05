@@ -1,0 +1,7 @@
+{
+  "valid": false,
+  "errors": [
+    "slide_image_rebuild_manifest.json is required."
+  ],
+  "warnings": []
+}

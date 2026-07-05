@@ -1,0 +1,29 @@
+{
+  "schema": "cyberppt.page_layout_plan.v1",
+  "page": 1,
+  "source_scene_graph": "page_scene_graph.json",
+  "items": [
+    {
+      "index": 0,
+      "node_id": "text_application_1",
+      "text": "企业应用\n• 画像管理\n• 投标预审\n• 融资保险\n• 风险预警",
+      "semantic_role": "application_card_text",
+      "binding_type": "container_text",
+      "target_id": "application_1",
+      "bbox": [
+        870.0,
+        220.0,
+        1085.0,
+        390.0
+      ],
+      "font_size": 16.0,
+      "font_weight": "400",
+      "align": "left",
+      "word_wrap": true,
+      "layout_intents": [
+        "avoid_reserved_zone",
+        "honor_text_zone"
+      ]
+    }
+  ]
+}

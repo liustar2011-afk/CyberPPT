@@ -1,0 +1,7 @@
+{
+  "purpose": "aggregate_repair_tasks --enforce fails when blocking QA failures remain.",
+  "repair_tasks": true,
+  "expect_invalid": {
+    "repair_tasks": true
+  }
+}
