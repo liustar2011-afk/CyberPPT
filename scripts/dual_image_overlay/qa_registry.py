@@ -152,27 +152,36 @@ def _iter_text_objects(source_capture: Any) -> list[dict[str, Any]]:
 
 
 def _text_font_size(item: dict[str, Any]) -> float | None:
-    candidates = [
-        item.get("font_size"),
+    pt_candidates = [
         item.get("font_size_pt"),
         item.get("applied_pt"),
-        item.get("font_size_px"),
-        item.get("applied_font_size_px"),
     ]
     style = item.get("style") if isinstance(item.get("style"), dict) else {}
-    candidates.extend(
+    pt_candidates.extend(
         [
-            style.get("font_size"),
             style.get("font_size_pt"),
             style.get("applied_pt"),
-            style.get("font_size_px"),
-            style.get("applied_font_size_px"),
+            style.get("applied_font_size_pt"),
         ]
     )
-    for value in candidates:
+    for value in pt_candidates:
         try:
             if value is not None:
                 return float(value)
+        except (TypeError, ValueError):
+            continue
+    px_candidates = [
+        item.get("font_size_px"),
+        item.get("applied_font_size_px"),
+        style.get("font_size_px"),
+        style.get("applied_font_size_px"),
+        item.get("font_size"),
+        style.get("font_size"),
+    ]
+    for value in px_candidates:
+        try:
+            if value is not None:
+                return round(float(value) * 0.75, 2)
         except (TypeError, ValueError):
             continue
     return None

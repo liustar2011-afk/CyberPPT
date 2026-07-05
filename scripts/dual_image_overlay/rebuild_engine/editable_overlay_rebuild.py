@@ -449,7 +449,7 @@ def rebuild_from_manifest(
                 semantic_containers=containers,
                 semantic_plan=semantic_plan,
             )
-            semantic_gate = validate_explicit_semantic_plan(None)
+            semantic_gate = validate_explicit_semantic_plan(None, required=False)
             semantic_layout_plan = {"schema": "cyberppt.dual_image.semantic_layout_plan.v1", "items": []}
             semantic_source = "script_derived_fallback"
             visual_registry_source = str(visual_registry_entry[0]) if visual_registry_entry is not None else None

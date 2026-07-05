@@ -17,10 +17,15 @@ from .rebuild_modes import visual_reference_for_mode as _visual_reference_for_mo
 from .container_workspace import build_container_workspace, write_container_workspace
 from .qa_registry import write_page_quality_report
 from .source_capture import attach_render_delta_measurement, build_source_capture, build_source_capture_gate
+from .structure_inference import infer_structure_containers
 from .workspace_assignment import build_workspace_assignment, write_workspace_assignment
 
 
 ROOT = Path(__file__).resolve().parents[2]
+DUAL_IMAGE_DIR = Path(__file__).resolve().parent
+PREFLIGHT_RULES = DUAL_IMAGE_DIR / "preflight_quality_rules.json"
+BUILD_RULES = DUAL_IMAGE_DIR / "build_quality_rules.json"
+POSTFLIGHT_RULES = DUAL_IMAGE_DIR / "postflight_quality_rules.json"
 REBUILD_ENGINE = (
     ROOT
     / "scripts"
@@ -76,6 +81,19 @@ def _load_scene_graph_gates(project_path: Path) -> list[dict[str, Any]]:
     return [_read_json(path) for path in gate_paths]
 
 
+def _load_visual_qa_gate(project_path: Path) -> dict[str, Any] | None:
+    path = project_path / "analysis" / "visual_qa_gate.json"
+    return _read_json(path) if path.exists() else None
+
+
+def _quality_rules(path: Path) -> list[dict[str, Any]]:
+    payload = _read_json(path)
+    rules = payload.get("rules", [])
+    if not isinstance(rules, list):
+        raise ValueError(f"Quality rules must be a list: {path}")
+    return [rule for rule in rules if isinstance(rule, dict)]
+
+
 def _scene_graph_visual_elements(value: Any) -> list[dict[str, Any]]:
     elements: list[dict[str, Any]] = []
     if isinstance(value, dict):
@@ -98,15 +116,28 @@ def _build_template_container_workspaces(
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     workspace_dir = project_path / "analysis" / "container_workspace"
     assignment_dir = project_path / "analysis" / "workspace_assignment"
+    structure_dir = project_path / "analysis" / "structure_inference"
     pages: list[dict[str, Any]] = []
     assignment_pages: list[dict[str, Any]] = []
+    structure_pages: list[dict[str, Any]] = []
     for page in source_capture.get("pages", []):
         if not isinstance(page, dict):
             continue
         page_number = page.get("page_number")
         containers = [item for item in page.get("containers", []) if isinstance(item, dict)]
         text_items = [item for item in page.get("text_objects", []) if isinstance(item, dict)]
-        if len(containers) == 1:
+        inferred = infer_structure_containers(
+            page_number=page_number if isinstance(page_number, int) else None,
+            text_items=text_items,
+            canvas=(page.get("image_regions") or {}).get("canvas") if isinstance(page.get("image_regions"), dict) else None,
+        )
+        structure_pages.append(inferred)
+        if isinstance(page_number, int):
+            _write_json(structure_dir / f"page_{page_number:03d}_structure_inference.json", inferred)
+        if inferred.get("valid") and int(inferred.get("container_count", 0) or 0) > len(containers):
+            containers = [item for item in inferred.get("containers", []) if isinstance(item, dict)]
+            text_items = [item for item in inferred.get("text_items", []) if isinstance(item, dict)]
+        elif len(containers) == 1:
             fallback_container_id = containers[0].get("id")
             text_items = [
                 {**item, "container_id": item.get("container_id") or fallback_container_id}
@@ -164,6 +195,16 @@ def _build_template_container_workspaces(
         "pages": assignment_pages,
     }
     write_workspace_assignment(assignment_dir / "workspace_assignment_index.json", assignment_aggregate)
+    _write_json(
+        structure_dir / "structure_inference_index.json",
+        {
+            "schema": "cyberppt.dual_image.structure_inference_set.v1",
+            "valid": bool(structure_pages) and all(page.get("valid") for page in structure_pages),
+            "page_count": len(structure_pages),
+            "container_count": sum(int(page.get("container_count", 0) or 0) for page in structure_pages),
+            "pages": structure_pages,
+        },
+    )
     return aggregate, assignment_aggregate
 
 
@@ -248,59 +289,96 @@ def build_template_rebuild_readiness(
     _write_json(analysis_dir / "template_gate.json", template_gate)
     scene_graph_gates = _load_scene_graph_gates(project_path)
     scene_graph_valid = bool(scene_graph_gates) and all(gate.get("valid") for gate in scene_graph_gates)
+    visual_qa_gate = _load_visual_qa_gate(project_path)
+    visual_qa_gate_valid = bool(visual_qa_gate and visual_qa_gate.get("valid"))
     page_number = None
     pairs = manifest.get("pairs")
     if isinstance(pairs, list) and pairs and isinstance(pairs[0], dict) and isinstance(pairs[0].get("page_number"), int):
         page_number = int(pairs[0]["page_number"])
+    quality_artifacts = {
+        "pair_manifest": str(manifest_path),
+        "source_capture": str(analysis_dir / "source_capture.json"),
+        "source_capture_gate": str(analysis_dir / "source_capture_gate.json"),
+        "template_gate": str(analysis_dir / "template_gate.json"),
+        "scene_graph_gates": str(analysis_dir / "scene_graph_gate"),
+        "container_workspace": str(analysis_dir / "container_workspace"),
+        "workspace_assignment": str(analysis_dir / "workspace_assignment"),
+        "visual_reference": visual_reference,
+        "rendered_preview": str(rendered_preview) if rendered_preview else None,
+        "exported_pptx": exported_pptx,
+        "visual_qa_gate": str(analysis_dir / "visual_qa_gate.json"),
+    }
+    quality_reports = {
+        "pair_manifest": manifest,
+        "source_capture": source_capture,
+        "source_capture_gate": source_capture_gate,
+        "template_gate": template_gate,
+        "scene_graph_gates": scene_graph_gates,
+        "container_workspace": container_workspace,
+        "workspace_assignment": workspace_assignment,
+        "visual_qa_gate": visual_qa_gate,
+    }
+    quality_extra = {
+        "rebuild_mode": rebuild_mode,
+        "visual_reference_mode": visual_reference_mode,
+        "export_requested": export_requested,
+    }
+    preflight_gate = write_page_quality_report(
+        analysis_dir / "preflight_gate.json",
+        stage="preflight",
+        page_number=page_number,
+        project_path=project_path,
+        artifacts=quality_artifacts,
+        reports=quality_reports,
+        extra=quality_extra,
+        rules=_quality_rules(PREFLIGHT_RULES),
+    )
+    build_gate = write_page_quality_report(
+        analysis_dir / "build_gate.json",
+        stage="build",
+        page_number=page_number,
+        project_path=project_path,
+        artifacts=quality_artifacts,
+        reports=quality_reports,
+        extra=quality_extra,
+        rules=_quality_rules(BUILD_RULES),
+    )
+    postflight_gate = write_page_quality_report(
+        analysis_dir / "postflight_gate.json",
+        stage="postflight",
+        page_number=page_number,
+        project_path=project_path,
+        artifacts=quality_artifacts,
+        reports=quality_reports,
+        extra=quality_extra,
+        rules=_quality_rules(POSTFLIGHT_RULES),
+    )
     page_quality_report = write_page_quality_report(
         analysis_dir / "page_quality_report.json",
         stage="template",
         page_number=page_number,
         project_path=project_path,
-        artifacts={
-            "pair_manifest": str(manifest_path),
-            "source_capture": str(analysis_dir / "source_capture.json"),
-            "source_capture_gate": str(analysis_dir / "source_capture_gate.json"),
-            "template_gate": str(analysis_dir / "template_gate.json"),
-            "scene_graph_gates": str(analysis_dir / "scene_graph_gate"),
-            "container_workspace": str(analysis_dir / "container_workspace"),
-            "workspace_assignment": str(analysis_dir / "workspace_assignment"),
-            "visual_reference": visual_reference,
-            "rendered_preview": str(rendered_preview) if rendered_preview else None,
-            "exported_pptx": exported_pptx,
-        },
-        reports={
-            "pair_manifest": manifest,
-            "source_capture": source_capture,
-            "source_capture_gate": source_capture_gate,
-            "template_gate": template_gate,
-            "scene_graph_gates": scene_graph_gates,
-            "container_workspace": container_workspace,
-            "workspace_assignment": workspace_assignment,
-        },
-        extra={
-            "rebuild_mode": rebuild_mode,
-            "visual_reference_mode": visual_reference_mode,
-            "export_requested": export_requested,
-        },
+        artifacts=quality_artifacts,
+        reports=quality_reports,
+        extra=quality_extra,
     )
 
     valid = bool(
-        template_gate["valid"]
-        and source_capture_gate["valid"]
-        and scene_graph_valid
+        preflight_gate["valid"]
+        and build_gate["valid"]
+        and postflight_gate["valid"]
         and page_quality_report["valid"]
     )
-    if not template_gate["valid"]:
-        status = "template_rebuild_required"
-    elif not scene_graph_valid:
-        status = "scene_graph_rework_required"
-    elif not source_capture_gate["valid"]:
-        status = "source_capture_rework_required"
+    if not preflight_gate["valid"]:
+        status = "preflight_rework_required"
+    elif not build_gate["valid"]:
+        status = "build_rework_required"
+    elif not postflight_gate["valid"]:
+        status = "postflight_rework_required"
     elif not page_quality_report["valid"]:
         status = "page_quality_rework_required"
     else:
-        status = "ready_for_visual_qa"
+        status = "ready_for_delivery"
 
     readiness = {
         "schema": "cyberppt.dual_image.template_rebuild_readiness.v1",
@@ -315,25 +393,36 @@ def build_template_rebuild_readiness(
         "rendered_preview": str(rendered_preview) if rendered_preview else None,
         "checks": {
             "template_rebuild_consumed": True,
+            "preflight_gate_pass": bool(preflight_gate["valid"]),
+            "build_gate_pass": bool(build_gate["valid"]),
+            "postflight_gate_pass": bool(postflight_gate["valid"]),
             "template_gate_pass": bool(template_gate["valid"]),
             "source_capture_consumed": True,
             "source_capture_gate_pass": bool(source_capture_gate["valid"]),
             "scene_graph_gate_pass": scene_graph_valid,
             "scene_graph_gate_pages": len(scene_graph_gates),
+            "visual_qa_gate_pass": visual_qa_gate_valid,
             "page_quality_report_pass": bool(page_quality_report["valid"]),
         },
         "template_gate": template_gate,
+        "preflight_gate": preflight_gate,
+        "build_gate": build_gate,
+        "postflight_gate": postflight_gate,
         "source_capture_gate": source_capture_gate,
         "scene_graph_gates": scene_graph_gates,
         "artifacts": {
             "source_capture": str(analysis_dir / "source_capture.json"),
             "source_capture_gate": str(analysis_dir / "source_capture_gate.json"),
             "template_gate": str(analysis_dir / "template_gate.json"),
+            "preflight_gate": str(analysis_dir / "preflight_gate.json"),
+            "build_gate": str(analysis_dir / "build_gate.json"),
+            "postflight_gate": str(analysis_dir / "postflight_gate.json"),
             "scene_graph_gate_dir": str(analysis_dir / "scene_graph_gate"),
             "container_workspace": str(analysis_dir / "container_workspace" / "container_workspace_index.json"),
             "workspace_assignment": str(analysis_dir / "workspace_assignment" / "workspace_assignment_index.json"),
             "exported_pptx": exported_pptx,
             "visual_reference": visual_reference,
+            "visual_qa_gate": str(analysis_dir / "visual_qa_gate.json"),
             "page_quality_report": str(analysis_dir / "page_quality_report.json"),
         },
         "page_quality_report": page_quality_report,

@@ -134,6 +134,44 @@ def test_min_font_size_rule_blocks_template_text_below_floor(tmp_path: Path) -> 
     assert report["blocking_errors"][0]["observed"]["below_minimum"][0]["font_size"] == 8.5
 
 
+def test_min_font_size_rule_converts_svg_px_to_exported_pt(tmp_path: Path) -> None:
+    report = build_page_quality_report(
+        stage="template",
+        page_number=6,
+        project_path=tmp_path,
+        artifacts={"source_capture": str(tmp_path / "source_capture.json")},
+        reports={
+            "source_capture": {
+                "pages": [
+                    {
+                        "page_number": 6,
+                        "text_objects": [
+                            {
+                                "text": "项目履约：业绩、合同、质量安全",
+                                "style": {"font_size_px": 9.72, "typography_role": "body"},
+                            }
+                        ],
+                    }
+                ]
+            }
+        },
+        rules=[
+            {
+                "id": "template.min_font_after_template",
+                "stage": "template",
+                "severity": "error",
+                "kind": "min_font_size",
+                "report": "source_capture",
+                "minimum_pt": 9,
+                "evidence_required": False,
+            }
+        ],
+    )
+
+    assert report["valid"] is False
+    assert report["blocking_errors"][0]["observed"]["below_minimum"][0]["font_size"] == 7.29
+
+
 def test_semantic_peer_style_rule_blocks_mixed_weight_peers(tmp_path: Path) -> None:
     report = build_page_quality_report(
         stage="template",

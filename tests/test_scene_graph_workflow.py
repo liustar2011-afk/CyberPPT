@@ -71,9 +71,13 @@ def test_template_readiness_requires_scene_graph_gate(tmp_path: Path):
     readiness = build_template_rebuild_readiness(manifest, export_requested=False)
 
     assert readiness["valid"] is False
-    assert readiness["status"] == "scene_graph_rework_required"
+    assert readiness["status"] == "preflight_rework_required"
     assert readiness["checks"]["scene_graph_gate_pass"] is False
     assert readiness["checks"]["scene_graph_gate_pages"] == 0
+    assert readiness["checks"]["preflight_gate_pass"] is False
+    assert "preflight.scene_graph_gate_pass" in [
+        item["id"] for item in readiness["preflight_gate"]["blocking_errors"]
+    ]
 
 
 def test_template_readiness_reports_scene_graph_gate_pass(tmp_path: Path):
@@ -86,6 +90,19 @@ def test_template_readiness_reports_scene_graph_gate_pass(tmp_path: Path):
 
     assert readiness["checks"]["scene_graph_gate_pass"] is True
     assert readiness["checks"]["scene_graph_gate_pages"] == 1
+
+
+def test_template_readiness_reports_visual_qa_gate_pass(tmp_path: Path):
+    project = tmp_path / "project"
+    _write_minimal_project(project)
+    _write_scene_graph_gate(project, page_number=6, valid=True)
+    _write_visual_qa_gate(project, valid=True)
+    manifest = _write_pair_manifest(tmp_path, project)
+
+    readiness = build_template_rebuild_readiness(manifest, export_requested=False)
+
+    assert readiness["checks"]["visual_qa_gate_pass"] is True
+    assert readiness["artifacts"]["visual_qa_gate"] == str(project / "analysis" / "visual_qa_gate.json")
 
 
 def test_strict_scene_graph_blocks_export_on_unbound_text(tmp_path: Path):
@@ -186,6 +203,25 @@ def _write_scene_graph_gate(project: Path, *, page_number: int, valid: bool) -> 
                 "valid": valid,
                 "blocking_count": 0 if valid else 1,
                 "issues": [],
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def _write_visual_qa_gate(project: Path, *, valid: bool) -> None:
+    path = project / "analysis" / "visual_qa_gate.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(
+            {
+                "schema": "cyberppt.visual_qa_gate.v1",
+                "valid": valid,
+                "deliverable_allowed": valid,
+                "visual_differences": [] if valid else [{"requires_rework": True}],
             },
             ensure_ascii=False,
             indent=2,

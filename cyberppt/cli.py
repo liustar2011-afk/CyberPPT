@@ -198,11 +198,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         choices=range(1, 9),
         metavar="1-8",
-        help="CyberPPT default visual style id selected from references/visual-system.md.",
+        help="Required unless --style-lock or --style-name is provided; user-selected CyberPPT default visual style id.",
     )
     final_script_pages_parser.add_argument(
         "--style-name",
-        help="CyberPPT default visual style name or slug selected from the repository style library.",
+        help="Required unless --style-lock or --style-id is provided; user-selected CyberPPT default style name or slug.",
     )
     final_script_pages_parser.add_argument("--output-dir", help="Optional output directory for page_image_pairs.json.")
     final_script_pages_parser.add_argument(

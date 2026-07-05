@@ -105,6 +105,50 @@ def _cluster_by_y(boxes: list[dict[str, Any]], tolerance: float = 12.0) -> list[
     return clusters
 
 
+def _cluster_by_x(boxes: list[dict[str, Any]], tolerance: float = 48.0) -> list[list[dict[str, Any]]]:
+    clusters: list[list[dict[str, Any]]] = []
+    for box in sorted(boxes, key=lambda item: _number(item.get("x"))):
+        center_x = _number(box.get("x"))
+        for cluster in clusters:
+            cluster_x = median(_number(item.get("x")) for item in cluster)
+            if abs(center_x - cluster_x) <= tolerance:
+                cluster.append(box)
+                break
+        else:
+            clusters.append([box])
+    return [sorted(cluster, key=lambda item: _number(item.get("y")) + _number(item.get("h")) / 2) for cluster in clusters]
+
+
+def _mine_repeated_column_body_groups(page_number: int | None, page_boxes: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    body_boxes = [
+        box
+        for box in page_boxes
+        if str(box.get("align", "")).lower() == "left"
+        and _number(box.get("w")) >= 40
+        and _number(box.get("h")) >= 10
+        and len(compact_text(str(box.get("text", "")))) >= 8
+    ]
+    candidates: list[dict[str, Any]] = []
+    for row in _cluster_by_y(body_boxes, tolerance=48.0):
+        column_count = len(_cluster_by_x(row))
+        if len(row) < 3 or column_count < 3:
+            continue
+        centers = [_number(item.get("y")) + _number(item.get("h")) / 2 for item in row]
+        labels = [str(item.get("text", "")) for item in sorted(row, key=lambda item: _number(item.get("x")))]
+        candidates.append(
+            {
+                "page_number": page_number,
+                "candidate_y": round(float(median(centers)), 2),
+                "y_min": round(min(centers), 2),
+                "y_max": round(max(centers), 2),
+                "labels": labels,
+                "support": len(row),
+                "source": "repeated_column_body_rows",
+            }
+        )
+    return candidates
+
+
 def mine_baseline_groups(boxes: list[dict[str, Any]]) -> list[dict[str, Any]]:
     candidates: list[dict[str, Any]] = []
     boxes_by_page: dict[int | None, list[dict[str, Any]]] = defaultdict(list)
@@ -134,6 +178,7 @@ def mine_baseline_groups(boxes: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     "support": len(cluster),
                 }
             )
+        candidates.extend(_mine_repeated_column_body_groups(page_number, page_boxes))
     return candidates
 
 

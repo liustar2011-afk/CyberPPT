@@ -1,0 +1,89 @@
+{
+  "schema": "cyberppt.dual_image.preflight_quality_rules.v1",
+  "rules": [
+    {
+      "id": "preflight.dual_image_required",
+      "stage": "preflight",
+      "severity": "error",
+      "description": "Template rebuild must be driven by a CyberPPT dual-image pair manifest with full and background images for every page.",
+      "kind": "dual_image_pair_required",
+      "report": "pair_manifest",
+      "evidence_required": true
+    },
+    {
+      "id": "preflight.source_capture_required",
+      "stage": "preflight",
+      "severity": "error",
+      "description": "Template rebuild must produce source_capture pages from the dual-image inputs.",
+      "kind": "source_capture_required",
+      "report": "source_capture",
+      "evidence_required": true
+    },
+    {
+      "id": "preflight.scene_graph_gate_pass",
+      "stage": "preflight",
+      "severity": "error",
+      "description": "Template rebuild must have at least one valid scene graph gate.",
+      "kind": "all_reports_valid",
+      "report": "scene_graph_gates",
+      "require_non_empty": true,
+      "evidence_required": true
+    },
+    {
+      "id": "preflight.body_region_declared",
+      "stage": "preflight",
+      "severity": "error",
+      "description": "Template/body content region coordinates must be declared before template assembly QA.",
+      "kind": "template_region_declared",
+      "report": "pair_manifest",
+      "evidence_required": true
+    },
+    {
+      "id": "preflight.min_font_after_template",
+      "stage": "preflight",
+      "severity": "error",
+      "description": "Template-stage editable text must not fall below the configured minimum font size.",
+      "kind": "min_font_size",
+      "report": "source_capture",
+      "minimum_pt": 9,
+      "evidence_required": true
+    },
+    {
+      "id": "preflight.semantic_weight_consistency",
+      "stage": "preflight",
+      "severity": "error",
+      "description": "Peer text with the same semantic role must use consistent font weight.",
+      "kind": "semantic_peer_style",
+      "report": "source_capture",
+      "style_field": "font_weight",
+      "evidence_required": true
+    },
+    {
+      "id": "preflight.container_workspace_pass",
+      "stage": "preflight",
+      "severity": "error",
+      "description": "Template stage must derive container workspaces before final QA.",
+      "kind": "container_workspace_required",
+      "report": "container_workspace",
+      "evidence_required": true
+    },
+    {
+      "id": "preflight.occupied_zone_avoidance_pass",
+      "stage": "preflight",
+      "severity": "error",
+      "description": "Template work slots must avoid detected scene graph and visual registry non-writable zones.",
+      "kind": "occupied_zone_avoidance",
+      "report": "container_workspace",
+      "evidence_required": true
+    },
+    {
+      "id": "preflight.workspace_assignment_pass",
+      "stage": "preflight",
+      "severity": "error",
+      "description": "Template text must have a workspace assignment with every assigned text inside its slot.",
+      "kind": "workspace_assignment_required",
+      "report": "workspace_assignment",
+      "evidence_required": true
+    }
+  ]
+}
