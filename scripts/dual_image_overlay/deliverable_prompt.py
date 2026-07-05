@@ -251,12 +251,20 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
     prompt_contract = _collapse_text(style.get("prompt_contract"))
     density_rule = _collapse_text(style.get("density_rule"))
     sample = _collapse_text(style.get("sample"))
+    scope_rule = _collapse_text(
+        style.get("scope_rule")
+        or "风格只约束色彩、材质、线条、图标克制度和视觉语气；风格中提到的矩阵、右侧栏、SO WHAT、摘要条等仅作为可选视觉语言，不得覆盖【内容锁定】中的版式、组件数量、箭头关系和框内文字。"
+    )
     parts = [
         "沿用项目视觉锁定，不使用外部风格 preset。",
+        scope_rule,
         prompt_contract,
     ]
     if density_rule:
-        parts.append(f"信息密度规则：{density_rule}")
+        parts.append(
+            "信息密度规则：在不改变【内容锁定】结构、组件数量、箭头关系和文字清单的前提下，"
+            f"{density_rule}"
+        )
     if sample:
         parts.append(f"确认样张：{sample}")
     return "".join(parts)
@@ -283,6 +291,7 @@ def style_contract(style_lock_path: Path | None) -> str:
         "沿用项目视觉锁定，不使用外部风格 preset。"
         f"核心色板：{color_text}。"
         "页面应严格沿用该视觉锁定文件中的风格名称、色板、图表语言、信息密度规则和禁用项。"
+        "风格只约束视觉表达，不得覆盖【内容锁定】中的版式、组件数量、箭头关系和框内文字。"
     )
 
 
@@ -304,10 +313,10 @@ def render_prompt(page: PageBlock, *, style_lock_path: Path | None = None) -> st
 {style_contract(style_lock_path)}
 
 【结构密度】
-必须保持高信息密度，不能把页面简化成少量留白卡片。保留原脚本组件数量、组件关系、网格/流程/卡片结构和底部 SO WHAT 区。下列正文内容要进入画面，但不包含页面标题、副标题、Logo、页脚、页码或公共模板元素；不得遗漏关键数字、判断句、清单项或行动链。
+必须保持高信息密度，不能把页面简化成少量留白卡片。保留原脚本组件数量、组件关系、网格/流程/卡片结构；如果原脚本包含底部 SO WHAT 区则保留，否则不得为了套用风格强行新增。下列正文内容必须完整、可读地进入画面，但不包含页面标题、副标题、Logo、页脚、页码或公共模板元素；不得遗漏关键数字、判断句、清单项或行动链。
 {layout_directives}
 
-把正文内容组织为正式汇报页的信息图结构：一个清晰主判断区、若干业务要点/结构模块、一个醒目的 SO WHAT 或行动提示。所有文字承载区必须干净、留白充分、可被后续 PPT 文本层覆盖；图形关系、容器、图标和连接线应边界清楚，适合作为无字背景保留。
+把正文内容组织为正式汇报页的信息图结构，严格服从【内容锁定】中的页面定位、版式草图、框位置说明、框内文字、箭头关系和组件清单。不得把原脚本指定的页面类型改成通用结论页或通用卡片页；不得合并模块、抽象成少量图标、只保留栏目标题、删减清单项、近义替换框内文字、改写业务术语或生成不可读伪文字；图形关系、容器、图标和连接线应边界清楚，文字应清晰可读。
 """.strip() + "\n"
 
 
