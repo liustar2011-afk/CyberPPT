@@ -226,6 +226,156 @@ def _split_script_items(lines: Any) -> list[str]:
     return unique
 
 
+def _flow_nodes_from_script_sections(sections: dict[str, list[dict[str, Any]]]) -> list[dict[str, str]]:
+    groups = sections.get("主链节点")
+    if not isinstance(groups, list):
+        return []
+    nodes: list[dict[str, str]] = []
+    current: dict[str, str] | None = None
+    for group in groups:
+        if not isinstance(group, dict):
+            continue
+        lines = group.get("lines")
+        if not isinstance(lines, list):
+            continue
+        for raw in lines:
+            line = _clean_line(str(raw))
+            if not line:
+                continue
+            match = re.match(r"^(\d+)\.\s*(.+)$", line)
+            if match:
+                current = {"number": match.group(1), "title": match.group(2).strip(), "body": ""}
+                nodes.append(current)
+            elif current is not None and not current["body"]:
+                current["body"] = line
+    return [node for node in nodes if node.get("number") and node.get("title") and node.get("body")]
+
+
+def _build_main_flow_overlay_boxes(
+    *,
+    script_path: Path,
+    page_number: int,
+    ocr_layout: dict[str, Any],
+    body_region: dict[str, float],
+    font_family: str,
+    fill: str,
+    background: Image.Image | None,
+) -> list[OverlayTextBox]:
+    try:
+        nodes = _flow_nodes_from_script_sections(extract_script_truth_sections(script_path, page_number))
+    except ValueError:
+        return []
+    if len(nodes) != 10:
+        return []
+
+    items = [item for item in ocr_layout.get("items", []) if isinstance(item, dict)]
+    image_size = ocr_layout.get("image_size") or {}
+    image_width = float(image_size.get("width") or 1)
+    image_height = float(image_size.get("height") or 1)
+    sx = float(body_region["width"]) / image_width
+    sy = float(body_region["height"]) / image_height
+
+    number_centers: list[tuple[int, float, float]] = []
+    for item in items:
+        text = str(item.get("text") or "").strip()
+        if not re.fullmatch(r"\d{1,2}", text):
+            continue
+        number = int(text)
+        if not 1 <= number <= 10:
+            continue
+        x1, y1, x2, y2 = [float(value) for value in item.get("bbox", [])]
+        number_centers.append((number, (x1 + x2) / 2, (y1 + y2) / 2))
+    number_centers.sort(key=lambda item: item[0])
+    if len(number_centers) < 10:
+        return []
+
+    centers = [center for _, center, _ in number_centers[:10]]
+    first_gap = centers[1] - centers[0]
+    last_gap = centers[-1] - centers[-2]
+    boundaries = [max(18.0, centers[0] - first_gap / 2)]
+    boundaries.extend((centers[index] + centers[index + 1]) / 2 for index in range(9))
+    boundaries.append(min(image_width - 18.0, centers[-1] + last_gap / 2))
+
+    flow_top = min(item[2] for item in number_centers[:10])
+    title_top = max(flow_top + 120.0, 246.0)
+    title_h = 34.0
+    body_top = title_top + title_h + 10.0
+    body_bottom = min(image_height - 150.0, max(body_top + 150.0, 520.0))
+
+    boxes: list[OverlayTextBox] = []
+
+    def slide_box(x1: float, y1: float, x2: float, y2: float) -> tuple[float, float, float, float]:
+        return (
+            float(body_region["x"]) + x1 * sx,
+            float(body_region["y"]) + y1 * sy,
+            max(1.0, (x2 - x1) * sx),
+            max(1.0, (y2 - y1) * sy),
+        )
+
+    for index, node in enumerate(nodes):
+        left = boundaries[index] + 8.0
+        right = boundaries[index + 1] - 8.0
+        center = centers[index]
+        num_x, num_y, num_w, num_h = slide_box(center - 13.0, flow_top - 8.0, center + 13.0, flow_top + 24.0)
+        boxes.append(
+            OverlayTextBox(
+                text=node["number"],
+                x=num_x,
+                y=num_y,
+                w=num_w,
+                h=num_h,
+                font_size=13.0,
+                font_family=font_family,
+                fill="#FFFFFF",
+                font_weight="700",
+                align="center",
+                word_wrap=False,
+                source="script_main_flow_fallback",
+                confidence=1.0,
+            )
+        )
+
+        title_x, title_y, title_w, title_box_h = slide_box(left, title_top, right, title_top + title_h)
+        boxes.append(
+            OverlayTextBox(
+                text=f'{node["number"]}. {node["title"]}',
+                x=title_x,
+                y=title_y,
+                w=title_w,
+                h=title_box_h,
+                font_size=10.5,
+                font_family=font_family,
+                fill=fill,
+                font_weight="700",
+                align="center",
+                word_wrap=True,
+                source="script_main_flow_fallback",
+                confidence=1.0,
+            )
+        )
+
+        body_x, body_y, body_w, body_h = slide_box(left, body_top, right, body_bottom)
+        text_fill = _fill_for_background(background, (left, body_top, right, body_bottom), image_width, image_height, fill)
+        boxes.append(
+            OverlayTextBox(
+                text=node["body"],
+                x=body_x,
+                y=body_y,
+                w=body_w,
+                h=body_h,
+                font_size=10.5,
+                font_family=font_family,
+                fill=text_fill,
+                font_weight="400",
+                align="left",
+                word_wrap=True,
+                source="script_main_flow_fallback",
+                confidence=1.0,
+            )
+        )
+    return boxes
+
+
 def match_script_text(ocr_text: str, script_lines: list[str], threshold: float = 0.66) -> tuple[str, str]:
     """Return corrected text and source label."""
     ocr_key = normalize_text(ocr_text)
@@ -543,7 +693,7 @@ def _fit_font_size_to_box(
     minimum: float,
     word_wrap: bool,
 ) -> float:
-    size = _fit_font_size(text, width * 0.96, preferred, minimum=minimum)
+    size = preferred if word_wrap else _fit_font_size(text, width * 0.96, preferred, minimum=minimum)
     while size > minimum:
         line_count = _estimated_line_count(text, width * 0.96, size, word_wrap=word_wrap)
         estimated_height = line_count * size * 1.18
@@ -2089,6 +2239,17 @@ def build_overlay_boxes(
         else []
     )
     try:
+        flow_boxes = _build_main_flow_overlay_boxes(
+            script_path=script_path,
+            page_number=page_number,
+            ocr_layout=ocr_layout,
+            body_region=body_region,
+            font_family=font_family,
+            fill=fill,
+            background=background,
+        )
+        flow_text_keys = {normalize_text(box.text) for box in flow_boxes}
+        boxes.extend(flow_boxes)
         for item in ocr_layout.get("items", []):
             text = str(item.get("text") or "").strip()
             if not text:
@@ -2099,6 +2260,15 @@ def build_overlay_boxes(
                 corrected, source = text, item_source
             else:
                 corrected, source = match_script_text(text, script_lines)
+            if flow_boxes:
+                corrected_key = normalize_text(corrected)
+                text_key = normalize_text(text)
+                if corrected_key in flow_text_keys or text_key in flow_text_keys:
+                    continue
+                if re.fullmatch(r"\d{1,2}", text.strip()) and 1 <= int(text.strip()) <= 10:
+                    continue
+                if 110.0 <= y1 <= 460.0:
+                    continue
             x = float(body_region["x"]) + x1 * sx
             y = float(body_region["y"]) + y1 * sy
             w = max(1.0, (x2 - x1) * sx)

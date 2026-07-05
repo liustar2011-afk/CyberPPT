@@ -282,6 +282,7 @@ def run_final_script_pages(
 
     rebuild_status: dict[str, Any] | None = None
     if run_rebuild:
+        require_generated(manifest)
         effective_rebuild_args = list(rebuild_args or [])
         if semantic_plan_dir is not None:
             effective_rebuild_args.extend(["--semantic-plan-dir", str(semantic_plan_dir)])

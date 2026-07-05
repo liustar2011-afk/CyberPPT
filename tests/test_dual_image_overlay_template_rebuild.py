@@ -22,6 +22,7 @@ from scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild import (
     _editable_boxes_from_scene_graph_or_recognition,
     _prepare_page_images,
 )
+from scripts.dual_image_overlay.rebuild_engine.script_text_overlay import build_overlay_boxes  # noqa: E402
 
 
 class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
@@ -192,6 +193,62 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
 
         self.assertEqual(recognized, boxes)
         self.assertEqual("ocr_script_recognition", source)
+
+    def test_main_flow_script_fallback_uses_card_space_not_ocr_text_bbox(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            script = root / "script.md"
+            script.write_text(
+                "\n".join(
+                    [
+                        "## 第7页：主链运行页",
+                        "### 主链节点",
+                        "1. 企业入库",
+                        "明确企业类型、业务范围、目标区域、应用需求",
+                        "2. 企业角色识别",
+                        "投资运营、规划设计、EPC总包、装备制造、运维服务、供应链服务",
+                        "3. 授权取证",
+                        "基础评价授权 / 专项评价授权 / 对外传播授权",
+                        "4. 数据治理",
+                        "清洗、校验、去重、分类、口径统一、版本管理",
+                        "5. 证据入库",
+                        "按证据类型、能力维度、适用场景、授权边界组织入库",
+                        "6. 能力评价",
+                        "按评价模型、证据等级、场景适配规则形成评价结论",
+                        "7. 专家复核",
+                        "对重大结论、关键证据、风险提示、争议事项进行复核",
+                        "8. 结果生成",
+                        "画像报告、能力评价结果、证明材料、专题报告、风险提示",
+                        "9. 场景调用",
+                        "投标、融资、供应链、国别进入、行业监测、国际传播",
+                        "10. 反馈更新",
+                        "使用反馈、异议处理、补证修正、规则修订",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            ocr_items = []
+            for index, center in enumerate([92, 220, 348, 476, 596, 716, 836, 964, 1084, 1202], start=1):
+                ocr_items.append({"text": str(index), "bbox": [center - 8, 121, center + 8, 144], "confidence": 0.98})
+                title = "企业入库" if index == 1 else f"节点{index}"
+                ocr_items.append({"text": title, "bbox": [center - 35, 258, center + 35, 276], "confidence": 0.99})
+                body = "明确企业类型、\n业务范围、\n目标区域、\n应用需求" if index == 1 else f"节点{index}说明"
+                ocr_items.append({"text": body, "bbox": [center - 38, 300, center + 38, 411], "confidence": 0.98})
+            layout = {"image_size": {"width": 1280, "height": 720}, "items": ocr_items}
+
+            boxes = build_overlay_boxes(
+                script,
+                7,
+                layout,
+                {"x": 20, "y": 104, "width": 1240, "height": 592},
+            )
+
+        body = next(box for box in boxes if box.text.startswith("明确企业类型"))
+        self.assertEqual("script_main_flow_fallback", body.source)
+        self.assertGreater(body.w, 95)
+        self.assertGreater(body.h, 110)
+        self.assertGreaterEqual(body.font_size, 9.5)
 
     def test_template_body_region_uses_template_normalized_visual_reference(self) -> None:
         with TemporaryDirectory() as directory:
