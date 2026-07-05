@@ -35,6 +35,7 @@ class CliTests(unittest.TestCase):
         self.assertIn("approve-script", help_text)
         self.assertIn("script-status", help_text)
         self.assertIn("rebuild-dual-image", help_text)
+        self.assertIn("final-script-pages", help_text)
 
     def test_rebuild_dual_image_routes_to_template_rebuild(self) -> None:
         with patch("cyberppt.cli.run_script", return_value=3) as run_script:

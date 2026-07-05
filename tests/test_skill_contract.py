@@ -28,6 +28,14 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("脚本锁定 -> 正文区 ImageGen full 图 -> no-text background -> dual_image_editable_overlay -> template_rebuild -> 渲染 QA -> 交付", text)
         self.assertIn("未经 `template_rebuild` 套入模板内容区的 overlay PPTX 只能作为中间产物", text)
 
+    def test_ppt_generation_must_not_bypass_dual_image_stage(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("生成 PPT 必须经过双图环节", text)
+        self.assertIn("不得绕过 `正文区 ImageGen full 图 -> no-text background -> dual_image_editable_overlay`", text)
+        self.assertIn("不得从脚本、Markdown、大纲、SVG、HTML、PptxGenJS、python-pptx、PowerPoint 或其他本地绘图方式直接手画成最终 PPT", text)
+        self.assertIn("`native_rebuild` 只是在双图 overlay 之后对特定背景对象做对象级可编辑增强", text)
+
     def test_manual_stop_points_are_allowed_but_must_record_state(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
