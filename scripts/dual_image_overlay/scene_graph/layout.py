@@ -43,6 +43,25 @@ def _font_size_for(text: str, bbox: BBox) -> float:
     return round(max(7.0, min(16.0, height / lines * 0.78)), 2)
 
 
+def _style_number(style: dict[str, object], key: str) -> float | None:
+    value = style.get(key)
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _font_weight_for(text: TextNode) -> str:
+    style = text.style
+    if style.get("font_weight") is not None:
+        return str(style["font_weight"])
+    if style.get("bold") is True:
+        return "700"
+    return "700" if text.semantic_role.endswith("title") else "400"
+
+
 def build_layout_plan_from_scene_graph(graph: PageSceneGraph) -> dict:
     nodes = _node_by_id(graph)
     items: list[dict[str, object]] = []
@@ -53,6 +72,8 @@ def build_layout_plan_from_scene_graph(graph: PageSceneGraph) -> dict:
         else:
             bbox = _bbox_for_container_text(graph, text, nodes)
         intents = [intent.type for intent in graph.layout_intents if intent.node_id == text.node_id]
+        style = text.style
+        font_size = _style_number(style, "font_size") or _font_size_for(text.text, bbox)
         items.append(
             {
                 "index": index,
@@ -62,10 +83,12 @@ def build_layout_plan_from_scene_graph(graph: PageSceneGraph) -> dict:
                 "binding_type": binding_type,
                 "target_id": text.binding.target_id if text.binding else None,
                 "bbox": bbox.as_list(),
-                "font_size": _font_size_for(text.text, bbox),
-                "font_weight": "700" if text.semantic_role.endswith("title") else "400",
-                "align": "left",
-                "word_wrap": True,
+                "font_size": round(font_size, 2),
+                "font_family": str(style.get("font_family") or "Microsoft YaHei"),
+                "fill": str(style.get("fill") or "#0B1F3D"),
+                "font_weight": _font_weight_for(text),
+                "align": str(style.get("align") or "left"),
+                "word_wrap": bool(style.get("word_wrap", True)),
                 "layout_intents": intents,
             }
         )

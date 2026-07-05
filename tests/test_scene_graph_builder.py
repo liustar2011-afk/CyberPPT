@@ -79,3 +79,82 @@ def test_builds_edge_label_binding_without_container():
     assert graph.text_nodes[0].binding.type == "edge_label"
     assert graph.text_nodes[0].binding.target_id == "arrow_1"
     assert any(intent.type == "label_on_arrow" for intent in graph.layout_intents)
+
+
+def test_consumes_semantic_layout_neighbors_and_text_style():
+    graph = build_page_scene_graph(
+        page_number=6,
+        script_sections={
+            "右侧｜结果应用方": [{"title": "企业应用", "lines": ["画像管理、投标预审"]}]
+        },
+        semantic_plan={
+            "image_size": {"width": 1280, "height": 720},
+            "containers": [
+                {
+                    "id": "application_1",
+                    "role": "application_card",
+                    "bbox": [700, 160, 1040, 360],
+                    "text_safe_bbox": [820, 190, 1010, 330],
+                }
+            ],
+            "items": [
+                {
+                    "display_text": "企业应用\n• 画像管理\n• 投标预审",
+                    "container_id": "application_1",
+                    "font_size": 18,
+                    "fill": "#123456",
+                    "font_family": "Microsoft YaHei",
+                    "font_weight": "700",
+                    "align": "left",
+                    "word_wrap": True,
+                }
+            ],
+        },
+        visual_registry={
+            "blueprint_canvas_px": {"w": 1280, "h": 720},
+            "elements": [
+                {
+                    "element_id": "app_icon_1",
+                    "element_type": "icon",
+                    "blueprint_bbox_px": {"x": 730, "y": 210, "w": 70, "h": 70},
+                },
+                {
+                    "element_id": "app_text_zone_1",
+                    "element_type": "text_zone",
+                    "blueprint_bbox_px": {"x": 820, "y": 190, "w": 190, "h": 140},
+                },
+            ],
+        },
+        image_size={"width": 1280, "height": 720},
+        semantic_layout_plan={
+            "container_relations": [
+                {
+                    "container_id": "application_1",
+                    "element_id": "app_icon_1",
+                    "element_type": "icon",
+                    "relation": "contained_or_component_matched",
+                }
+            ],
+            "text_neighbors": [
+                {
+                    "text": "企业应用",
+                    "container_id": "application_1",
+                    "nearest": {
+                        "left": {"element_id": "app_icon_1", "element_type": "icon", "distance": 12},
+                        "overlapping": [
+                            {"element_id": "app_text_zone_1", "element_type": "text_zone", "overlap_area": 2600}
+                        ],
+                    },
+                }
+            ],
+        },
+    )
+
+    text = graph.text_nodes[0]
+    assert text.style["font_size"] == 18
+    assert text.style["fill"] == "#123456"
+    assert text.binding.safe_bbox.as_list() == [820.0, 190.0, 1010.0, 330.0]
+    assert any(rel.type == "contains" and rel.source_id == "application_1" and rel.target_id == "app_icon_1" for rel in graph.relations)
+    assert any(intent.type == "neighbor_context" and intent.target_id == "app_icon_1" for intent in graph.layout_intents)
+    assert any(intent.type == "avoid_reserved_zone" and intent.target_id == "app_icon_1" for intent in graph.layout_intents)
+    assert any(intent.type == "honor_text_zone" and intent.target_id == "app_text_zone_1" for intent in graph.layout_intents)

@@ -55,3 +55,40 @@ def test_layout_places_edge_label_above_arrow():
 
     assert item["bbox"] == [500.0, 274.0, 620.0, 296.0]
     assert item["binding_type"] == "edge_label"
+
+
+def test_layout_uses_text_node_style_from_capture():
+    graph = PageSceneGraph(
+        page=6,
+        coordinate_context={"coordinate_space": {"width": 1280, "height": 720}},
+        truth_sources={},
+        visual_nodes=[
+            VisualNode("application_1", "container", "application_card", BBox(700, 160, 1040, 360), {"kind": "semantic_plan"})
+        ],
+        text_nodes=[
+            TextNode(
+                "text_1",
+                "企业应用\n• 画像管理",
+                {"kind": "script"},
+                "application_card_text",
+                TextBinding("container_text", target_id="application_1", safe_bbox=BBox(820, 190, 1010, 330)),
+                style={
+                    "font_size": 18,
+                    "font_family": "Microsoft YaHei",
+                    "fill": "#123456",
+                    "font_weight": "700",
+                    "align": "left",
+                    "word_wrap": True,
+                },
+            )
+        ],
+    )
+
+    plan = build_layout_plan_from_scene_graph(graph)
+    item = plan["items"][0]
+
+    assert item["bbox"] == [820.0, 190.0, 1010.0, 330.0]
+    assert item["font_size"] == 18.0
+    assert item["font_family"] == "Microsoft YaHei"
+    assert item["fill"] == "#123456"
+    assert item["font_weight"] == "700"
