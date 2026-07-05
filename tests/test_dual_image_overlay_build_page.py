@@ -76,6 +76,7 @@ class DualImageOverlayBuildPageTests(unittest.TestCase):
             self.assertTrue((out_dir / "analysis/source_capture_gate.json").is_file())
             self.assertTrue((out_dir / "analysis/page_quality_report.json").is_file())
             self.assertTrue((out_dir / "analysis/container_workspace/page_001_container_workspace.json").is_file())
+            self.assertTrue((out_dir / "analysis/workspace_assignment/page_001_workspace_assignment.json").is_file())
             source_capture = json.loads((out_dir / "analysis/source_capture.json").read_text(encoding="utf-8"))
             source_capture_gate = json.loads((out_dir / "analysis/source_capture_gate.json").read_text(encoding="utf-8"))
             text_content_qa = json.loads((out_dir / "analysis/text_content_qa.json").read_text(encoding="utf-8"))
@@ -126,6 +127,10 @@ class DualImageOverlayBuildPageTests(unittest.TestCase):
         self.assertEqual(
             str((out_dir / "analysis/container_workspace/page_001_container_workspace.json").resolve()),
             readiness["artifacts"]["container_workspace"],
+        )
+        self.assertEqual(
+            str((out_dir / "analysis/workspace_assignment/page_001_workspace_assignment.json").resolve()),
+            readiness["artifacts"]["workspace_assignment"],
         )
         self.assertEqual("semantic_plan_containers", readiness["geometry_source"])
         self.assertEqual("semantic-container-geometry", readiness["alignment"]["model"])

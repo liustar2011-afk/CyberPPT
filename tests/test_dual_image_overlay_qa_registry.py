@@ -203,3 +203,95 @@ def test_container_workspace_rule_requires_slots(tmp_path: Path) -> None:
     assert report["valid"] is False
     assert report["blocking_errors"][0]["id"] == "template.container_workspace_pass"
     assert report["blocking_errors"][0]["observed"]["slot_count"] == 0
+
+
+def test_workspace_assignment_rule_requires_assigned_slot(tmp_path: Path) -> None:
+    evidence = tmp_path / "workspace_assignment_index.json"
+    evidence.write_text('{"valid": false}\n', encoding="utf-8")
+
+    report = build_page_quality_report(
+        stage="template",
+        page_number=6,
+        project_path=tmp_path,
+        artifacts={"workspace_assignment": str(evidence)},
+        reports={
+            "workspace_assignment": {
+                "schema": "cyberppt.dual_image.workspace_assignment.v1",
+                "valid": False,
+                "assignment_count": 1,
+                "error_count": 1,
+                "assignments": [
+                    {
+                        "text_index": 0,
+                        "text": "证书审核",
+                        "assigned_slot": None,
+                        "inside_slot": False,
+                    }
+                ],
+            }
+        },
+        rules=[
+            {
+                "id": "template.workspace_assignment_pass",
+                "stage": "template",
+                "severity": "error",
+                "kind": "workspace_assignment_required",
+                "report": "workspace_assignment",
+                "evidence_required": True,
+            }
+        ],
+    )
+
+    assert report["valid"] is False
+    assert report["blocking_errors"][0]["id"] == "template.workspace_assignment_pass"
+    assert report["blocking_errors"][0]["observed"]["assignment_count"] == 1
+
+
+def test_occupied_zone_avoidance_rule_blocks_intersecting_slots(tmp_path: Path) -> None:
+    evidence = tmp_path / "container_workspace_index.json"
+    evidence.write_text('{"valid": true}\n', encoding="utf-8")
+
+    report = build_page_quality_report(
+        stage="template",
+        page_number=6,
+        project_path=tmp_path,
+        artifacts={"container_workspace": str(evidence)},
+        reports={
+            "container_workspace": {
+                "schema": "cyberppt.dual_image.container_workspace.v1",
+                "valid": True,
+                "containers": [
+                    {
+                        "id": "card",
+                        "occupied_zones": [
+                            {
+                                "id": "icon",
+                                "source": "scene_graph",
+                                "bbox": {"x": 10, "y": 10, "w": 20, "h": 20},
+                            }
+                        ],
+                        "work_slots": [
+                            {
+                                "id": "card_body_slot",
+                                "bbox": {"x": 15, "y": 15, "w": 50, "h": 20},
+                            }
+                        ],
+                    }
+                ],
+            }
+        },
+        rules=[
+            {
+                "id": "template.occupied_zone_avoidance_pass",
+                "stage": "template",
+                "severity": "error",
+                "kind": "occupied_zone_avoidance",
+                "report": "container_workspace",
+                "evidence_required": True,
+            }
+        ],
+    )
+
+    assert report["valid"] is False
+    assert report["blocking_errors"][0]["id"] == "template.occupied_zone_avoidance_pass"
+    assert report["blocking_errors"][0]["observed"]["failure_count"] == 1

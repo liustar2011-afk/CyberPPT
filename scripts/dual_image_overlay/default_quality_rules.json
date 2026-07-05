@@ -47,6 +47,24 @@
       "evidence_required": true
     },
     {
+      "id": "overlay.occupied_zone_avoidance_pass",
+      "stage": "overlay",
+      "severity": "error",
+      "description": "Overlay work slots must avoid detected icons, numbers, arrows and other non-writable visual zones.",
+      "kind": "occupied_zone_avoidance",
+      "report": "container_workspace",
+      "evidence_required": true
+    },
+    {
+      "id": "overlay.workspace_assignment_pass",
+      "stage": "overlay",
+      "severity": "error",
+      "description": "Overlay text must be assigned to container work slots before Office text box fitting.",
+      "kind": "workspace_assignment_required",
+      "report": "workspace_assignment",
+      "evidence_required": true
+    },
+    {
       "id": "overlay.background_has_no_text",
       "stage": "overlay",
       "severity": "error",
@@ -155,6 +173,24 @@
       "description": "Template stage must derive container workspaces before final QA.",
       "kind": "container_workspace_required",
       "report": "container_workspace",
+      "evidence_required": true
+    },
+    {
+      "id": "template.occupied_zone_avoidance_pass",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template work slots must avoid detected scene graph and visual registry non-writable zones.",
+      "kind": "occupied_zone_avoidance",
+      "report": "container_workspace",
+      "evidence_required": true
+    },
+    {
+      "id": "template.workspace_assignment_pass",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template text must have a workspace assignment with every assigned text inside its slot.",
+      "kind": "workspace_assignment_required",
+      "report": "workspace_assignment",
       "evidence_required": true
     },
     {
