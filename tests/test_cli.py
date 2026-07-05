@@ -70,6 +70,31 @@ class CliTests(unittest.TestCase):
         self.assertEqual(3, code)
         run_script.assert_called_once_with("template-rebuild", ["page_image_pairs.json", "--no-export"])
 
+    def test_final_script_pages_rejects_blueprint_only_with_production_build(self) -> None:
+        buffer = io.StringIO()
+        with (
+            patch("cyberppt.cli.run_final_script_pages") as run_final_script_pages,
+            redirect_stderr(buffer),
+        ):
+            code = main(
+                [
+                    "final-script-pages",
+                    "/tmp/project",
+                    "--script",
+                    "/tmp/script.md",
+                    "--pages",
+                    "1",
+                    "--style-id",
+                    "4",
+                    "--blueprint-only",
+                    "--production-build",
+                ]
+            )
+
+        self.assertEqual(2, code)
+        run_final_script_pages.assert_not_called()
+        self.assertIn("--blueprint-only cannot be combined with --production-build", buffer.getvalue())
+
     def test_script_help_is_forwarded_to_underlying_script(self) -> None:
         completed = subprocess.run(
             [sys.executable, "-m", "cyberppt", "validate", "--help"],

@@ -91,6 +91,9 @@ def _rebuild_dual_image_command(args: argparse.Namespace) -> int:
 
 
 def _final_script_pages_command(args: argparse.Namespace) -> int:
+    if args.blueprint_only and args.production_build:
+        print("--blueprint-only cannot be combined with --production-build", file=sys.stderr)
+        return 2
     try:
         summary = run_final_script_pages(
             project=Path(args.project),
@@ -104,6 +107,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             require_images=args.require_images,
             run_rebuild=args.run_rebuild,
             rebuild_args=args.rebuild_arg or [],
+            production_build=args.production_build,
         )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -218,6 +222,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--run-rebuild",
         action="store_true",
         help="After manifest creation and image verification, run template-rebuild.",
+    )
+    final_script_pages_parser.add_argument(
+        "--production-build",
+        action="store_true",
+        help="Run Stage 02 as a production PPTX build with all required tool gates.",
+    )
+    final_script_pages_parser.add_argument(
+        "--blueprint-only",
+        action="store_true",
+        help="Only create image prompts and page_image_pairs.json; never report production_ready.",
     )
     final_script_pages_parser.add_argument(
         "--rebuild-arg",

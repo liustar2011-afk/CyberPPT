@@ -619,6 +619,45 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
         self.assertEqual("分类分级", by_container["governance_1"])
         self.assertEqual("script_truth_reconciled", reconciled["inputs"]["text_truth"])
 
+    def test_reconcile_uses_container_alias_for_governance_ids(self) -> None:
+        with TemporaryDirectory() as directory:
+            script = Path(directory) / "script.md"
+            script.write_text(
+                "\n".join(
+                    [
+                        "## 第6页：总体架构",
+                        "### 右侧竖条：安全合规",
+                        "- 分类分级",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            plan = {
+                "schema": "cyberppt.explicit_semantic_plan.v1",
+                "page_number": 6,
+                "image_size": {"width": 1280, "height": 720},
+                "inputs": {"script_truth": str(script), "geometry_truth": "semantic_containers"},
+                "geometry_truth": "semantic_containers",
+                "text_truth": "script_truth",
+                "containers": [
+                    {
+                        "id": "safety_1",
+                        "role": "governance_step",
+                        "bbox": [1174, 160, 1260, 199],
+                        "text_safe_bbox": [1182, 166, 1252, 193],
+                        "aliases": ["governance_1"],
+                    }
+                ],
+                "items": [],
+            }
+
+            reconciled = reconcile_semantic_plan_with_script_truth(plan, script, 6)
+
+        self.assertEqual("safety_1", reconciled["items"][0]["container_id"])
+        report = validate_explicit_semantic_plan(reconciled)
+        self.assertTrue(report["valid"], report)
+
     def test_semantic_layout_qa_flags_reserved_zone_overlap(self) -> None:
         layout = {
             "schema": "cyberppt.dual_image.semantic_layout_plan.v1",

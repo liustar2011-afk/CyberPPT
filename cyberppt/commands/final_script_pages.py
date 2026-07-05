@@ -12,6 +12,7 @@ from typing import Any
 
 from scripts.dual_image_overlay.cyberppt_pair_manifest import build_manifest, require_generated
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, parse_pages, template_title
+from scripts.dual_image_overlay.production_readiness import build_production_readiness
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
@@ -226,6 +227,105 @@ def _template_rebuild_artifacts(project: Path) -> dict[str, str | None]:
     return {key: str(path) if path.exists() else None for key, path in artifacts.items()}
 
 
+def _artifact_if_file(path: Path | str | None) -> str | None:
+    if path is None:
+        return None
+    candidate = Path(path)
+    return str(candidate.resolve()) if candidate.is_file() else None
+
+
+def _artifact_if_dir_has_files(path: Path | str | None, pattern: str = "*.json") -> str | None:
+    if path is None:
+        return None
+    candidate = Path(path)
+    return str(candidate.resolve()) if candidate.is_dir() and any(candidate.glob(pattern)) else None
+
+
+def _first_artifact_file(*paths: Path | str | None) -> str | None:
+    for path in paths:
+        artifact = _artifact_if_file(path)
+        if artifact:
+            return artifact
+    return None
+
+
+def _first_artifact_dir(*paths: Path | str | None, pattern: str = "*.json") -> str | None:
+    for path in paths:
+        artifact = _artifact_if_dir_has_files(path, pattern)
+        if artifact:
+            return artifact
+    return None
+
+
+def _first_matching_file(directory: Path, pattern: str) -> str | None:
+    matches = sorted(directory.glob(pattern)) if directory.is_dir() else []
+    return str(matches[0].resolve()) if matches else None
+
+
+def _stage02_production_artifacts(project: Path) -> dict[str, str | None]:
+    analysis = project / "analysis"
+    readiness_path = analysis / "template_rebuild_readiness.json"
+    readiness = _read_json(readiness_path) if readiness_path.is_file() else {}
+    readiness_artifacts = readiness.get("artifacts")
+    if not isinstance(readiness_artifacts, dict):
+        readiness_artifacts = {}
+    latest_export = None
+    exports = sorted((project / "exports").glob("*.pptx"), key=lambda path: path.stat().st_mtime)
+    if exports:
+        latest_export = str(exports[-1])
+
+    semantic_plan_dir = readiness_artifacts.get("semantic_plan_dir") or analysis / "semantic_plan"
+    scene_graph_dir = readiness_artifacts.get("scene_graph_gate_dir") or analysis / "scene_graph_gate"
+    visual_registry_dir = (
+        readiness_artifacts.get("measured_visual_registry")
+        or readiness_artifacts.get("draft_visual_registry")
+        or analysis / "visual_registry"
+    )
+    return {
+        "source_capture": _first_artifact_file(
+            readiness_artifacts.get("source_capture"),
+            analysis / "source_capture.json",
+        ),
+        "semantic_binding": _first_artifact_file(
+            readiness_artifacts.get("semantic_binding"),
+            analysis / "semantic_binding" / "semantic_binding_index.json",
+        ),
+        "semantic_plan": _first_artifact_dir(semantic_plan_dir, pattern="*.json"),
+        "scene_graph": _first_artifact_dir(scene_graph_dir, pattern="*.json"),
+        "visual_registry": _first_artifact_dir(visual_registry_dir, pattern="*.json"),
+        "container_workspace": _first_artifact_file(
+            readiness_artifacts.get("container_workspace"),
+            analysis / "container_workspace" / "container_workspace_index.json",
+        ),
+        "workspace_assignment": _first_artifact_file(
+            readiness_artifacts.get("workspace_assignment"),
+            analysis / "workspace_assignment" / "workspace_assignment_index.json",
+        ),
+        "office_textbox_fit": _first_artifact_file(analysis / "office_textbox_fit.json"),
+        "editable_pptx": _first_artifact_file(readiness_artifacts.get("exported_pptx"), latest_export),
+        "render_compare": _first_artifact_file(
+            readiness_artifacts.get("render_compare"),
+            _first_matching_file(analysis, "page_*_render_compare.json"),
+        ),
+        "qa_registry": _first_artifact_file(
+            readiness_artifacts.get("page_quality_report"),
+            analysis / "page_quality_report.json",
+        ),
+    }
+
+
+def _stage02_production_reports(artifacts: dict[str, str | None]) -> dict[str, dict[str, Any]]:
+    reports: dict[str, dict[str, Any]] = {}
+    for name, artifact in artifacts.items():
+        if not artifact or not artifact.endswith(".json"):
+            continue
+        try:
+            reports[name] = _read_json(Path(artifact))
+        except (OSError, json.JSONDecodeError, ValueError):
+            continue
+    return reports
+
+
 def run_final_script_pages(
     *,
     project: Path,
@@ -239,6 +339,7 @@ def run_final_script_pages(
     require_images: bool = False,
     run_rebuild: bool = False,
     rebuild_args: list[str] | None = None,
+    production_build: bool = False,
 ) -> dict[str, Any]:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
@@ -308,14 +409,27 @@ def run_final_script_pages(
         f"python3 -m cyberppt final-script-pages {project} --script {script} "
         f"--pages {pages_raw} --style-lock {style_lock}"
     )
+    production_readiness = None
+    tool_consumption: dict[str, Any] = {}
+    stage_name = "02-production-build" if production_build else "02-blueprint-dual-image"
+    status = "ready_for_image_generation" if not require_images else "image_assets_verified"
+    if production_build:
+        production_artifacts = _stage02_production_artifacts(project)
+        production_readiness = build_production_readiness(
+            stage=stage_name,
+            artifacts=production_artifacts,
+            reports=_stage02_production_reports(production_artifacts),
+        )
+        tool_consumption = production_readiness["tool_consumption"]
+        status = production_readiness["status"]
     run_summary = {
         "schema": "cyberppt.final_script_pages_run.v1",
         "created_at": _utc_now(),
         "project": str(project),
         "source_script": str(script),
         "pages": page_numbers,
-        "stage": "02-blueprint-dual-image",
-        "status": "ready_for_image_generation" if not require_images else "image_assets_verified",
+        "stage": stage_name,
+        "status": status,
         "artifacts": {
             "compiled_deliverable_prompt": str(compiled_script),
             "page_image_pairs": str(manifest_path),
@@ -331,6 +445,8 @@ def run_final_script_pages(
         ],
         "resume_command": resume_command,
         "rebuild": rebuild_status,
+        "tool_consumption": tool_consumption,
+        "production_readiness": production_readiness,
     }
     summary_path = target_dir / f"{slug}_final_script_pages_run.json"
     _write_json(summary_path, run_summary)
