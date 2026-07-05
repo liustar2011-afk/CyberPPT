@@ -77,6 +77,96 @@ class DualImageOverlaySourceCaptureTests(unittest.TestCase):
         self.assertIn("render_delta_not_measured", gate["gap_counts"])
         self.assertFalse(gate["valid"])
 
+    def test_source_capture_exposes_semantic_layout_container_relations(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            _write_artifacts(project_dir)
+            layout_dir = project_dir / "analysis" / "semantic_layout_plan"
+            layout_dir.mkdir(parents=True, exist_ok=True)
+            _write_json(
+                layout_dir / "page_002_layout_plan.json",
+                {
+                    "schema": "cyberppt.dual_image.semantic_layout_plan.v1",
+                    "container_relations": [
+                        {
+                            "container_id": "ability_2",
+                            "container_role": "ability_card",
+                            "element_id": "icon_identity",
+                            "element_type": "icon",
+                            "relation": "contained_or_component_matched",
+                            "bbox": [660, 165, 730, 235],
+                        }
+                    ],
+                    "text_neighbors": [
+                        {
+                            "text": "身份认证",
+                            "container_id": "ability_2",
+                            "nearest": {
+                                "left": {
+                                    "element_id": "icon_identity",
+                                    "element_type": "icon",
+                                    "distance": 4,
+                                }
+                            },
+                        }
+                    ],
+                    "items": [],
+                },
+            )
+
+            capture = build_source_capture(project_dir)
+
+        page = capture["pages"][0]
+        self.assertEqual(
+            [
+                {
+                    "container_id": "ability_2",
+                    "container_role": "ability_card",
+                    "element_id": "icon_identity",
+                    "element_type": "icon",
+                    "relation": "contained_or_component_matched",
+                    "bbox": [660, 165, 730, 235],
+                }
+            ],
+            page["semantic_relationships"],
+        )
+        self.assertEqual("身份认证", page["text_neighbor_relationships"][0]["text"])
+        self.assertEqual("icon_identity", page["text_neighbor_relationships"][0]["nearest"]["left"]["element_id"])
+
+    def test_source_capture_includes_scene_graph_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            (project_dir / "analysis" / "scene_graph").mkdir(parents=True)
+            (project_dir / "analysis" / "scene_graph_gate").mkdir(parents=True)
+            (project_dir / "analysis" / "page_layout_plan").mkdir(parents=True)
+            (project_dir / "analysis" / "render_qa").mkdir(parents=True)
+            _write_json(
+                project_dir / "analysis" / "scene_graph" / "page_006_scene_graph.json",
+                {"schema": "cyberppt.page_scene_graph.v1", "page": 6, "text_nodes": []},
+            )
+            _write_json(
+                project_dir / "analysis" / "scene_graph_gate" / "page_006_scene_graph_gate.json",
+                {"schema": "cyberppt.page_scene_graph_gate.v1", "valid": True, "blocking_count": 0},
+            )
+            _write_json(
+                project_dir / "analysis" / "page_layout_plan" / "page_006_layout_plan.json",
+                {"schema": "cyberppt.page_layout_plan.v1", "page": 6, "items": []},
+            )
+            _write_json(
+                project_dir / "analysis" / "render_qa" / "page_006_render_qa.json",
+                {"schema": "cyberppt.scene_graph.render_qa.v1", "valid": True, "blocking_count": 0},
+            )
+
+            capture = build_source_capture(project_dir)
+
+        page = capture["pages"][0]
+        self.assertEqual("cyberppt.page_scene_graph.v1", page["scene_graph"]["schema"])
+        self.assertTrue(page["scene_graph_gate"]["valid"])
+        self.assertEqual("cyberppt.page_layout_plan.v1", page["page_layout_plan"]["schema"])
+        self.assertEqual("cyberppt.scene_graph.render_qa.v1", page["render_qa"]["schema"])
+        self.assertEqual(1, capture["inputs"]["scene_graph_pages"])
+        self.assertEqual(1, capture["inputs"]["render_qa_pages"])
+
     def test_pair_manifest_scopes_visual_registry_pages(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             project_dir = Path(tmp)
