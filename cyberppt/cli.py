@@ -84,6 +84,10 @@ def _script_status_command(args: argparse.Namespace) -> int:
     return 0 if status.ready_to_generate else 3
 
 
+def _rebuild_dual_image_command(args: argparse.Namespace) -> int:
+    return run_script("template-rebuild", args.rebuild_args)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cyberppt", description="CyberPPT product tooling.")
     parser.add_argument("--version", action="version", version=f"cyberppt {__version__}")
@@ -148,6 +152,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     script_status_parser.add_argument("--json", action="store_true", help="Print machine-readable status.")
     script_status_parser.set_defaults(func=_script_status_command)
+
+    rebuild_dual_image_parser = subparsers.add_parser(
+        "rebuild-dual-image",
+        add_help=False,
+        help="Run the dual-image rebuild flow from a page_image_pairs.json manifest.",
+    )
+    rebuild_dual_image_parser.add_argument("rebuild_args", nargs=argparse.REMAINDER)
+    rebuild_dual_image_parser.set_defaults(func=_rebuild_dual_image_command)
 
     for alias in sorted(SCRIPT_ALIASES):
         command = subparsers.add_parser(alias, add_help=False, help=f"Run scripts/{SCRIPT_ALIASES[alias]}.")

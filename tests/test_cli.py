@@ -5,6 +5,7 @@ import subprocess
 import sys
 import unittest
 from contextlib import redirect_stdout
+from unittest.mock import patch
 
 from cyberppt.cli import build_parser, main
 from cyberppt.commands.script_runner import SCRIPT_ALIASES
@@ -33,6 +34,14 @@ class CliTests(unittest.TestCase):
         self.assertIn("stage-script", help_text)
         self.assertIn("approve-script", help_text)
         self.assertIn("script-status", help_text)
+        self.assertIn("rebuild-dual-image", help_text)
+
+    def test_rebuild_dual_image_routes_to_template_rebuild(self) -> None:
+        with patch("cyberppt.cli.run_script", return_value=3) as run_script:
+            code = main(["rebuild-dual-image", "page_image_pairs.json", "--no-export"])
+
+        self.assertEqual(3, code)
+        run_script.assert_called_once_with("template-rebuild", ["page_image_pairs.json", "--no-export"])
 
     def test_script_help_is_forwarded_to_underlying_script(self) -> None:
         completed = subprocess.run(
