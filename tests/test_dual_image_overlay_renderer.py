@@ -76,6 +76,50 @@ class DualImageOverlayRendererTest(unittest.TestCase):
                 self.assertTrue(any(name.startswith("ppt/media/") for name in names))
             self.assertEqual(_pptx_texts(output), ["核心结论"])
 
+    def test_renderer_can_disable_text_wrapping_for_office_fidelity(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            background = tmp_path / "background.png"
+            Image.new("RGB", (1280, 720), "#FFFFFF").save(background)
+            output = tmp_path / "overlay.pptx"
+            job = tmp_path / "job.json"
+            job.write_text(
+                json.dumps(
+                    {
+                        "canvas": {"width": 1280, "height": 720},
+                        "slide": {"width_in": 13.333, "height_in": 7.5},
+                        "background": str(background),
+                        "output_pptx": str(output),
+                        "boxes": [
+                            {
+                                "text": "企业/业务数据",
+                                "bbox": [80, 40, 148, 56],
+                                "font_size": 8,
+                                "font_family": "Arial",
+                                "fill": "#111111",
+                                "wrap": False,
+                            }
+                        ],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            subprocess.run(
+                [
+                    "node",
+                    str(ROOT / "scripts" / "dual_image_overlay" / "render_overlay.mjs"),
+                    str(job),
+                ],
+                cwd=ROOT,
+                check=True,
+            )
+
+            with zipfile.ZipFile(output) as package:
+                slide_xml = package.read("ppt/slides/slide1.xml").decode("utf-8")
+            self.assertIn('wrap="none"', slide_xml)
+
 
 if __name__ == "__main__":
     unittest.main()

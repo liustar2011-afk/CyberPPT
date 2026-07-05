@@ -2,13 +2,21 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 
 PROJECT_DIRS = [
     "source",
     "workbench",
+    "workbench/stages",
+    "workbench/stages/01-analysis",
+    "workbench/stages/02-blueprint-dual-image",
+    "workbench/stages/03-overlay",
+    "workbench/stages/04-template-rebuild",
+    "workbench/stages/05-qa-delivery",
     "workbench/locks",
+    "workbench/locks/template_text",
     "workbench/blueprints",
     "workbench/prompts",
     "workbench/prompts/imagegen",
@@ -31,7 +39,15 @@ schema: cyberppt.project.v1
 directories:
   source: source
   workbench: workbench
+  stages: workbench/stages
+  stage_analysis: workbench/stages/01-analysis
+  stage_blueprint_dual_image: workbench/stages/02-blueprint-dual-image
+  stage_overlay: workbench/stages/03-overlay
+  stage_template_rebuild: workbench/stages/04-template-rebuild
+  stage_qa_delivery: workbench/stages/05-qa-delivery
+  artifact_ledger: workbench/artifact-ledger.json
   locks: workbench/locks
+  template_text_locks: workbench/locks/template_text
   blueprints: workbench/blueprints
   prompts: workbench/prompts
   imagegen_prompts: workbench/prompts/imagegen
@@ -52,11 +68,23 @@ status:
 """
 
 
+def _artifact_ledger() -> str:
+    return json.dumps(
+        {
+            "schema": "cyberppt.artifact_ledger.v1",
+            "artifacts": [],
+        },
+        ensure_ascii=False,
+        indent=2,
+    ) + "\n"
+
+
 def init_project(path: Path, force: bool = False) -> list[Path]:
     root = path.expanduser().resolve()
     created: list[Path] = []
     manifest = root / "manifest.yml"
     readme = root / "README.md"
+    ledger = root / "workbench" / "artifact-ledger.json"
     protected = [manifest, readme]
     if not force:
         existing = [item for item in protected if item.exists()]
@@ -75,6 +103,7 @@ def init_project(path: Path, force: bool = False) -> list[Path]:
 
     project_name = root.name
     manifest.write_text(_project_manifest(project_name), encoding="utf-8")
+    ledger.write_text(_artifact_ledger(), encoding="utf-8")
     readme.write_text(
         f"""# {project_name}
 
@@ -86,9 +115,11 @@ CyberPPT project workspace.
 2. Use `$cyber-ppt` to complete evidence analysis, storyline, and page planning.
 3. Before any ImageGen or PPTX generation, save the current slide script or prompt in `workbench/scripts/drafts/` or `workbench/prompts/imagegen/`.
 4. Stop for user review. Do not generate images or PPTX until an approval record exists in `workbench/approvals/`.
-5. Store final scripts in `workbench/scripts/final/`, QA reports in `workbench/qa/`, renders in `outputs/renders/`, and delivery files in `delivery/`.
+5. Store title/subtitle truth for template assembly in `workbench/locks/template_text/`; if dual images are supplied mid-pipeline, create this lock before template rebuild.
+6. Store stage outputs under `workbench/stages/` and register every durable artifact in `workbench/artifact-ledger.json`.
+7. Store final scripts in `workbench/scripts/final/`, QA reports in `workbench/qa/`, renders in `outputs/renders/`, and delivery files in `delivery/`.
 """,
         encoding="utf-8",
     )
-    created.extend([manifest, readme])
+    created.extend([manifest, ledger, readme])
     return created

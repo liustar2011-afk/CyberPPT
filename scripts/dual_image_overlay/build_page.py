@@ -21,7 +21,9 @@ from .background_text_scan import scan_background_text
 from .alignment import AlignmentTransform, estimate_alignment
 from .layout_qa import check_layout
 from .normalize import normalize_image
+from .office_textbox_fit import apply_office_textbox_fit
 from .semantic_plan import load_semantic_plan
+from .semantic_typography_qa import apply_semantic_typography_qa
 from .source_capture import (
     attach_render_delta_measurement,
     build_source_capture,
@@ -308,6 +310,16 @@ def build_page(args: argparse.Namespace) -> dict:
     boxes = _render_boxes(plan)
     if args.align_from_full:
         boxes = _apply_transform_to_boxes(boxes, transform)
+    boxes, semantic_typography_qa = apply_semantic_typography_qa(
+        boxes,
+        report_path=analysis / "semantic_typography_qa.json",
+    )
+    boxes, office_textbox_fit = apply_office_textbox_fit(
+        boxes,
+        canvas={"width": 1280, "height": 720},
+        background_image=background_norm,
+        report_path=analysis / "office_textbox_fit.json",
+    )
     _write_source_capture_inputs(
         out_dir,
         page_number=args.page_number,
@@ -328,6 +340,8 @@ def build_page(args: argparse.Namespace) -> dict:
         "semantic_plan": str(args.semantic_plan.resolve()),
         "geometry_source": geometry_source,
         "alignment": transform.to_dict(),
+        "semantic_typography_qa": str(analysis / "semantic_typography_qa.json"),
+        "office_textbox_fit": str(analysis / "office_textbox_fit.json"),
         "boxes": boxes,
     }
     _write_json(analysis / "text_mapping.json", mapping)
@@ -422,11 +436,13 @@ def build_page(args: argparse.Namespace) -> dict:
             "text_mapping": str(analysis / "text_mapping.json"),
             "text_content_qa": str(analysis / "text_content_qa.json"),
             "layout_qa": str(analysis / "layout_qa.json"),
+            "semantic_typography_qa": str(analysis / "semantic_typography_qa.json"),
             "background_text_scan": str(analysis / "background_text_scan.json"),
             "visual_preview": str(analysis / "visual_preview.json"),
             "source_capture": str(analysis / "source_capture.json"),
             "source_capture_gate": str(analysis / "source_capture_gate.json"),
         },
+        "semantic_typography_qa": semantic_typography_qa,
     }
     _write_json(analysis / "production_readiness.json", readiness)
     return readiness
