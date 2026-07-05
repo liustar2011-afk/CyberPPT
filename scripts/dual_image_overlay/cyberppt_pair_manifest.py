@@ -35,7 +35,7 @@ from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 CANVAS = {"width": 1280, "height": 720}
 CONTENT_REGION = {"x": 20, "y": 104, "width": 1240, "height": 592}
-GENERATION_SIZE = {"width": 2480, "height": 1184}
+GENERATION_SIZE = {"width": 1280, "height": 720}
 OUTPUT_VARIANTS = ["full", "background"]
 FULL_GENERATION_METHOD = "text_to_image_generate_full"
 BACKGROUND_GENERATION_METHOD = "image_to_image_edit_from_full"
@@ -121,7 +121,7 @@ def build_manifest(
             "operation": "generate",
             "output_role": "full_textual_visual_reference",
             "aspect_ratio": "content-region",
-            "image_size": "2x-content-region",
+            "image_size": "1280x720",
             "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
         }
         background = {
@@ -135,7 +135,7 @@ def build_manifest(
             "requires_input_image": True,
             "forbidden_generation_method": "text_to_image_generate_background",
             "aspect_ratio": "content-region",
-            "image_size": "2x-content-region",
+            "image_size": "1280x720",
             "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
         }
         _mark_status(full, force_pending=force_pending)
