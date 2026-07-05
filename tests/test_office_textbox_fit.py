@@ -239,3 +239,39 @@ def test_office_textbox_fit_places_isolated_label_inside_clear_horizontal_band(t
     assert label["bbox"][1] > 448.0
     assert label["bbox"][3] < 465.0
     assert report["isolated_label_adjusted_count"] == 1
+
+
+def test_office_textbox_fit_consumes_workspace_assignment_slot() -> None:
+    boxes = [
+        {
+            "text": "证书审核",
+            "role": "ability_title",
+            "bbox": [10.0, 10.0, 80.0, 30.0],
+            "font_size": 9.0,
+            "align": "left",
+        }
+    ]
+    assignment = {
+        "assignments": [
+            {
+                "text_index": 0,
+                "assigned_slot": "ability_9_title_slot",
+                "slot_bbox": {"x": 100.0, "y": 120.0, "w": 160.0, "h": 32.0},
+            }
+        ]
+    }
+
+    fitted, report = apply_office_textbox_fit(
+        boxes,
+        canvas={"width": 1280, "height": 720},
+        workspace_assignment=assignment,
+    )
+
+    x1, y1, x2, y2 = fitted[0]["bbox"]
+    assert x1 >= 100.0
+    assert y1 >= 120.0
+    assert x2 <= 260.0
+    assert y2 <= 152.0
+    assert fitted[0]["workspace_assignment"]["assigned_slot"] == "ability_9_title_slot"
+    assert report["checks"]["workspace_assignment_consumed"] is True
+    assert report["workspace_assignment_consumed_count"] == 1

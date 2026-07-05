@@ -281,6 +281,121 @@ def _check_container_workspace_required(workspace: Any) -> tuple[bool, dict[str,
     }
 
 
+def _check_workspace_assignment_required(assignment: Any) -> tuple[bool, dict[str, Any]]:
+    if not isinstance(assignment, dict):
+        return False, {"reason": "workspace_assignment_missing"}
+    pages = assignment.get("pages")
+    if isinstance(pages, list):
+        page_reports = [page for page in pages if isinstance(page, dict)]
+        failures = [
+            {
+                "page_number": page.get("page_number"),
+                "valid": page.get("valid"),
+                "assignment_count": page.get("assignment_count"),
+                "error_count": page.get("error_count"),
+                "issues": page.get("issues", []),
+            }
+            for page in page_reports
+            if not page.get("valid") or int(page.get("assignment_count", 0) or 0) <= 0
+        ]
+        return bool(page_reports) and not failures, {
+            "page_count": len(page_reports),
+            "assignment_count": sum(int(page.get("assignment_count", 0) or 0) for page in page_reports),
+            "failures": failures,
+        }
+    assignments = [item for item in assignment.get("assignments", []) if isinstance(item, dict)]
+    failures = [
+        {
+            "text_index": item.get("text_index"),
+            "text": item.get("text"),
+            "assigned_slot": item.get("assigned_slot"),
+            "inside_slot": item.get("inside_slot"),
+        }
+        for item in assignments
+        if not item.get("assigned_slot") or item.get("inside_slot") is not True
+    ]
+    error_count = int(assignment.get("error_count", 0) or 0)
+    passed = bool(assignment.get("valid")) and bool(assignments) and not failures and error_count == 0
+    return passed, {
+        "assignment_count": len(assignments),
+        "error_count": error_count,
+        "failures": failures,
+        "issues": assignment.get("issues", []),
+    }
+
+
+def _rect_xyxy(value: Any) -> tuple[float, float, float, float] | None:
+    if not isinstance(value, dict):
+        return None
+    try:
+        x = float(value.get("x", 0.0) or 0.0)
+        y = float(value.get("y", 0.0) or 0.0)
+        w = float(value.get("w", value.get("width", 0.0)) or 0.0)
+        h = float(value.get("h", value.get("height", 0.0)) or 0.0)
+    except (TypeError, ValueError):
+        return None
+    return x, y, x + w, y + h
+
+
+def _rects_intersect(a: Any, b: Any) -> bool:
+    axy = _rect_xyxy(a)
+    bxy = _rect_xyxy(b)
+    if axy is None or bxy is None:
+        return False
+    ax1, ay1, ax2, ay2 = axy
+    bx1, by1, bx2, by2 = bxy
+    return min(ax2, bx2) > max(ax1, bx1) and min(ay2, by2) > max(ay1, by1)
+
+
+def _workspace_occupied_slot_failures(workspace: dict[str, Any]) -> list[dict[str, Any]]:
+    failures: list[dict[str, Any]] = []
+    containers = workspace.get("containers", [])
+    if not isinstance(containers, list):
+        return failures
+    for container in containers:
+        if not isinstance(container, dict):
+            continue
+        container_id = container.get("id")
+        zones = [item for item in container.get("occupied_zones", []) if isinstance(item, dict)]
+        slots = [item for item in container.get("work_slots", []) if isinstance(item, dict)]
+        for slot in slots:
+            slot_bbox = slot.get("bbox")
+            for zone in zones:
+                if _rects_intersect(slot_bbox, zone.get("bbox")):
+                    failures.append(
+                        {
+                            "container_id": container_id,
+                            "slot_id": slot.get("id"),
+                            "occupied_zone": zone.get("id"),
+                            "source": zone.get("source"),
+                        }
+                    )
+    return failures
+
+
+def _check_occupied_zone_avoidance(workspace: Any) -> tuple[bool, dict[str, Any]]:
+    if not isinstance(workspace, dict):
+        return False, {"reason": "container_workspace_missing"}
+    pages = workspace.get("pages")
+    if isinstance(pages, list):
+        page_reports = [page for page in pages if isinstance(page, dict)]
+        failures = []
+        for page in page_reports:
+            page_failures = _workspace_occupied_slot_failures(page)
+            if page_failures:
+                failures.append({"page_number": page.get("page_number"), "failures": page_failures})
+        return bool(page_reports) and not failures, {
+            "page_count": len(page_reports),
+            "failures": failures,
+        }
+    failures = _workspace_occupied_slot_failures(workspace)
+    return not failures, {
+        "failure_count": len(failures),
+        "failures": failures,
+        "issues": workspace.get("issues", []),
+    }
+
+
 def _evidence_for_rule(rule: dict[str, Any], artifacts: dict[str, Any]) -> dict[str, Any]:
     evidence: dict[str, Any] = {}
     report_key = rule.get("report")
@@ -351,6 +466,12 @@ def _evaluate_rule(
     elif kind == "container_workspace_required":
         observed = reports.get(report_key)
         passed, observed = _check_container_workspace_required(observed)
+    elif kind == "workspace_assignment_required":
+        observed = reports.get(report_key)
+        passed, observed = _check_workspace_assignment_required(observed)
+    elif kind == "occupied_zone_avoidance":
+        observed = reports.get(report_key)
+        passed, observed = _check_occupied_zone_avoidance(observed)
     else:
         observed = {"error": f"Unsupported rule kind: {kind}"}
         passed = False
@@ -390,6 +511,7 @@ def _summarize_observed(observed: Any) -> Any:
             "reason",
             "pair_count",
             "page_count",
+            "failure_count",
             "failures",
             "content_region",
             "canvas",
@@ -406,6 +528,7 @@ def _summarize_observed(observed: Any) -> Any:
             "slot_count",
             "container_count",
             "issues",
+            "assignment_count",
         ):
             if key in observed:
                 summary[key] = observed[key]

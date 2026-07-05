@@ -79,6 +79,9 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
             container_workspace = json.loads(
                 (project / "analysis/container_workspace/container_workspace_index.json").read_text(encoding="utf-8")
             )
+            workspace_assignment = json.loads(
+                (project / "analysis/workspace_assignment/workspace_assignment_index.json").read_text(encoding="utf-8")
+            )
 
         self.assertEqual("cyberppt.dual_image.template_rebuild_readiness.v1", readiness["schema"])
         self.assertTrue(readiness["checks"]["template_rebuild_consumed"])
@@ -98,6 +101,9 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertEqual("cyberppt.dual_image.container_workspace_set.v1", container_workspace["schema"])
         self.assertTrue(container_workspace["valid"])
         self.assertEqual(1, container_workspace["slot_count"])
+        self.assertEqual("cyberppt.dual_image.workspace_assignment_set.v1", workspace_assignment["schema"])
+        self.assertTrue(workspace_assignment["valid"])
+        self.assertEqual(1, workspace_assignment["assignment_count"])
         self.assertIn(
             "template.scene_graph_gate_pass",
             [item["id"] for item in page_quality["blocking_errors"]],
@@ -109,6 +115,10 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertEqual(
             str((project / "analysis/container_workspace/container_workspace_index.json").resolve()),
             readiness["artifacts"]["container_workspace"],
+        )
+        self.assertEqual(
+            str((project / "analysis/workspace_assignment/workspace_assignment_index.json").resolve()),
+            readiness["artifacts"]["workspace_assignment"],
         )
 
     def test_template_rebuild_passes_visual_registry_dir_to_source_capture(self) -> None:

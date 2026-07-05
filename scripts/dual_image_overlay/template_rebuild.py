@@ -17,6 +17,7 @@ from .rebuild_modes import visual_reference_for_mode as _visual_reference_for_mo
 from .container_workspace import build_container_workspace, write_container_workspace
 from .qa_registry import write_page_quality_report
 from .source_capture import attach_render_delta_measurement, build_source_capture, build_source_capture_gate
+from .workspace_assignment import build_workspace_assignment, write_workspace_assignment
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -75,12 +76,30 @@ def _load_scene_graph_gates(project_path: Path) -> list[dict[str, Any]]:
     return [_read_json(path) for path in gate_paths]
 
 
+def _scene_graph_visual_elements(value: Any) -> list[dict[str, Any]]:
+    elements: list[dict[str, Any]] = []
+    if isinstance(value, dict):
+        if any(key in value for key in ("bbox", "blueprint_bbox_px", "render_bbox_px", "ppt_target_bbox_px")):
+            element = {key: item for key, item in value.items() if key in {"id", "element_id", "element_type", "type", "kind", "role", "bbox", "blueprint_bbox_px", "render_bbox_px", "ppt_target_bbox_px"}}
+            element.setdefault("element_type", value.get("element_type") or value.get("type") or value.get("kind") or value.get("role") or "visual")
+            element.setdefault("source", {"kind": "scene_graph"})
+            elements.append(element)
+        for child in value.values():
+            elements.extend(_scene_graph_visual_elements(child))
+    elif isinstance(value, list):
+        for child in value:
+            elements.extend(_scene_graph_visual_elements(child))
+    return elements
+
+
 def _build_template_container_workspaces(
     project_path: Path,
     source_capture: dict[str, Any],
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], dict[str, Any]]:
     workspace_dir = project_path / "analysis" / "container_workspace"
+    assignment_dir = project_path / "analysis" / "workspace_assignment"
     pages: list[dict[str, Any]] = []
+    assignment_pages: list[dict[str, Any]] = []
     for page in source_capture.get("pages", []):
         if not isinstance(page, dict):
             continue
@@ -93,18 +112,35 @@ def _build_template_container_workspaces(
                 {**item, "container_id": item.get("container_id") or fallback_container_id}
                 for item in text_items
             ]
+        visual_elements = [
+            item for item in page.get("visual_element_inventory", []) if isinstance(item, dict)
+        ]
+        visual_elements.extend(_scene_graph_visual_elements(page.get("scene_graph")))
         workspace = build_container_workspace(
             page_number=page_number if isinstance(page_number, int) else None,
             containers=containers,
             text_items=text_items,
             stage="template",
+            visual_elements=visual_elements,
         )
         if isinstance(page_number, int):
             write_container_workspace(
                 workspace_dir / f"page_{page_number:03d}_container_workspace.json",
                 workspace,
             )
+        assignment = build_workspace_assignment(
+            page_number=page_number if isinstance(page_number, int) else None,
+            workspace=workspace,
+            text_items=text_items,
+            stage="template",
+        )
+        if isinstance(page_number, int):
+            write_workspace_assignment(
+                assignment_dir / f"page_{page_number:03d}_workspace_assignment.json",
+                assignment,
+            )
         pages.append(workspace)
+        assignment_pages.append(assignment)
     error_count = sum(int(page.get("error_count", 0) or 0) for page in pages)
     aggregate = {
         "schema": "cyberppt.dual_image.container_workspace_set.v1",
@@ -117,7 +153,18 @@ def _build_template_container_workspaces(
         "pages": pages,
     }
     write_container_workspace(workspace_dir / "container_workspace_index.json", aggregate)
-    return aggregate
+    assignment_error_count = sum(int(page.get("error_count", 0) or 0) for page in assignment_pages)
+    assignment_aggregate = {
+        "schema": "cyberppt.dual_image.workspace_assignment_set.v1",
+        "stage": "template",
+        "valid": bool(assignment_pages) and all(page.get("valid") for page in assignment_pages),
+        "page_count": len(assignment_pages),
+        "assignment_count": sum(int(page.get("assignment_count", 0) or 0) for page in assignment_pages),
+        "error_count": assignment_error_count,
+        "pages": assignment_pages,
+    }
+    write_workspace_assignment(assignment_dir / "workspace_assignment_index.json", assignment_aggregate)
+    return aggregate, assignment_aggregate
 
 
 def run_vendor_rebuild(
@@ -194,7 +241,7 @@ def build_template_rebuild_readiness(
     _write_json(analysis_dir / "source_capture.json", source_capture)
     source_capture_gate = build_source_capture_gate(source_capture)
     _write_json(analysis_dir / "source_capture_gate.json", source_capture_gate)
-    container_workspace = _build_template_container_workspaces(project_path, source_capture)
+    container_workspace, workspace_assignment = _build_template_container_workspaces(project_path, source_capture)
 
     exported_pptx = _latest_pptx(project_path)
     template_gate = _template_gate(project_path, export_requested=export_requested, exported_pptx=exported_pptx)
@@ -217,6 +264,7 @@ def build_template_rebuild_readiness(
             "template_gate": str(analysis_dir / "template_gate.json"),
             "scene_graph_gates": str(analysis_dir / "scene_graph_gate"),
             "container_workspace": str(analysis_dir / "container_workspace"),
+            "workspace_assignment": str(analysis_dir / "workspace_assignment"),
             "visual_reference": visual_reference,
             "rendered_preview": str(rendered_preview) if rendered_preview else None,
             "exported_pptx": exported_pptx,
@@ -228,6 +276,7 @@ def build_template_rebuild_readiness(
             "template_gate": template_gate,
             "scene_graph_gates": scene_graph_gates,
             "container_workspace": container_workspace,
+            "workspace_assignment": workspace_assignment,
         },
         extra={
             "rebuild_mode": rebuild_mode,
@@ -282,6 +331,7 @@ def build_template_rebuild_readiness(
             "template_gate": str(analysis_dir / "template_gate.json"),
             "scene_graph_gate_dir": str(analysis_dir / "scene_graph_gate"),
             "container_workspace": str(analysis_dir / "container_workspace" / "container_workspace_index.json"),
+            "workspace_assignment": str(analysis_dir / "workspace_assignment" / "workspace_assignment_index.json"),
             "exported_pptx": exported_pptx,
             "visual_reference": visual_reference,
             "page_quality_report": str(analysis_dir / "page_quality_report.json"),

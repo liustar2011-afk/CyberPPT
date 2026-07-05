@@ -77,6 +77,38 @@ def _set_bbox(box: dict[str, Any], bbox: list[float]) -> None:
     box["bbox"] = [round(float(value), 3) for value in bbox]
 
 
+def _assignment_by_index(workspace_assignment: dict[str, Any] | None) -> dict[int, dict[str, Any]]:
+    if not isinstance(workspace_assignment, dict):
+        return {}
+    result: dict[int, dict[str, Any]] = {}
+    for item in workspace_assignment.get("assignments", []):
+        if not isinstance(item, dict):
+            continue
+        try:
+            result[int(item["text_index"])] = item
+        except (KeyError, TypeError, ValueError):
+            continue
+    return result
+
+
+def _slot_bounds(assignment: dict[str, Any] | None, *, width: float, height: float) -> tuple[float, float, float, float]:
+    if not isinstance(assignment, dict):
+        return 0.0, 0.0, width, height
+    slot = assignment.get("slot_bbox")
+    if not isinstance(slot, dict):
+        return 0.0, 0.0, width, height
+    try:
+        x = float(slot.get("x", 0.0) or 0.0)
+        y = float(slot.get("y", 0.0) or 0.0)
+        w = float(slot.get("w", slot.get("width", 0.0)) or 0.0)
+        h = float(slot.get("h", slot.get("height", 0.0)) or 0.0)
+    except (TypeError, ValueError):
+        return 0.0, 0.0, width, height
+    if w <= 0 or h <= 0:
+        return 0.0, 0.0, width, height
+    return max(0.0, x), max(0.0, y), min(width, x + w), min(height, y + h)
+
+
 def _nearest_bullet_for_detail(boxes: list[dict[str, Any]], old_detail: list[float]) -> dict[str, Any] | None:
     old_center = (old_detail[1] + old_detail[3]) / 2.0
     candidates = [
@@ -307,6 +339,7 @@ def apply_office_textbox_fit(
     min_font_size: float = 9.0,
     headroom: float = 0.86,
     background_image: Path | None = None,
+    workspace_assignment: dict[str, Any] | None = None,
     report_path: Path | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Expand transparent text boxes and compact related text groups for Office."""
@@ -314,8 +347,10 @@ def apply_office_textbox_fit(
     height = float((canvas or {}).get("height") or 720.0)
     fitted = [copy.deepcopy(box) for box in boxes]
     adjustments: list[dict[str, Any]] = []
+    assignment_adjustments: list[dict[str, Any]] = []
     skipped = 0
     below_minimum = 0
+    assignment_map = _assignment_by_index(workspace_assignment)
 
     for index, box in enumerate(fitted):
         text = str(box.get("text") or "")
@@ -325,6 +360,11 @@ def apply_office_textbox_fit(
             continue
 
         x1, y1, x2, y2 = _bbox(box)
+        slot_x1, slot_y1, slot_x2, slot_y2 = _slot_bounds(assignment_map.get(index), width=width, height=height)
+        x1 = min(max(x1, slot_x1), max(slot_x1, slot_x2 - 1.0))
+        x2 = min(max(x2, x1 + 1.0), slot_x2)
+        y1 = min(max(y1, slot_y1), max(slot_y1, slot_y2 - 1.0))
+        y2 = min(max(y2, y1 + 1.0), slot_y2)
         current_width = max(1.0, x2 - x1)
         current_height = max(1.0, y2 - y1)
         original_font_size = float(box.get("font_size") or 0.0)
@@ -334,12 +374,12 @@ def apply_office_textbox_fit(
         align = str(box.get("align") or "left")
         if required_width > current_width:
             if align == "center":
-                new_x1, new_x2 = _expand_interval_around_center(x1, x2, required_width, 0.0, width)
-            elif x1 + required_width <= width:
+                new_x1, new_x2 = _expand_interval_around_center(x1, x2, required_width, slot_x1, slot_x2)
+            elif x1 + required_width <= slot_x2:
                 new_x2 = x1 + required_width
             else:
-                new_x1 = max(0.0, width - required_width)
-                new_x2 = width
+                new_x1 = max(slot_x1, slot_x2 - required_width)
+                new_x2 = slot_x2
 
         available = max(1.0, new_x2 - new_x1)
         if available + 0.01 < required_width:
@@ -348,7 +388,7 @@ def apply_office_textbox_fit(
                 below_minimum += 1
 
         required_height = max(current_height, target_font * 1.6)
-        new_y1, new_y2 = _expand_interval_around_center(y1, y2, required_height, 0.0, height)
+        new_y1, new_y2 = _expand_interval_around_center(y1, y2, required_height, slot_y1, slot_y2)
         changed = (
             round(original_font_size, 3) != round(target_font, 3)
             or round(new_x1, 3) != round(x1, 3)
@@ -359,6 +399,20 @@ def apply_office_textbox_fit(
         box["font_size"] = round(target_font, 2)
         box["bbox"] = [round(new_x1, 3), round(new_y1, 3), round(new_x2, 3), round(new_y2, 3)]
         box["wrap"] = False
+        if index in assignment_map:
+            box["workspace_assignment"] = {
+                "assigned_slot": assignment_map[index].get("assigned_slot"),
+                "slot_bbox": assignment_map[index].get("slot_bbox"),
+            }
+            assignment_adjustments.append(
+                {
+                    "index": index,
+                    "text": text,
+                    "assigned_slot": assignment_map[index].get("assigned_slot"),
+                    "to_bbox": box["bbox"],
+                    "code": "constrained_to_workspace_slot",
+                }
+            )
         if changed:
             box["office_textbox_fit"] = {
                 "min_font_size": min_font_size,
@@ -396,12 +450,15 @@ def apply_office_textbox_fit(
             "textbox_expanded_before_font_reduction": True,
             "generic_title_detail_spacing_compacted": True,
             "isolated_label_clear_band_fit": bool(background_image),
+            "workspace_assignment_consumed": bool(assignment_map),
             "minimum_font_size_pt": min_font_size,
         },
         "adjustments": adjustments,
         "generic_title_detail_adjustments": generic_group_adjustments,
         "isolated_label_adjustments": isolated_label_adjustments,
+        "workspace_assignment_adjustments": assignment_adjustments,
         "expanded_count": len(adjustments),
+        "workspace_assignment_consumed_count": len(assignment_adjustments),
         "generic_title_detail_compacted_count": len({item["text"] for item in generic_group_adjustments if item.get("text")}),
         "isolated_label_adjusted_count": len(isolated_label_adjustments),
         "skipped_count": skipped,

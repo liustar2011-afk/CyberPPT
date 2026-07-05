@@ -33,6 +33,7 @@ from .source_capture import (
     expected_texts_from_source_capture,
 )
 from .text_content_qa import build_text_content_qa
+from .workspace_assignment import build_workspace_assignment, write_workspace_assignment
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -318,20 +319,32 @@ def build_page(args: argparse.Namespace) -> dict:
         boxes,
         report_path=analysis / "semantic_typography_qa.json",
     )
-    boxes, office_textbox_fit = apply_office_textbox_fit(
-        boxes,
-        canvas={"width": 1280, "height": 720},
-        background_image=background_norm,
-        report_path=analysis / "office_textbox_fit.json",
-    )
     container_workspace = build_container_workspace(
         page_number=args.page_number,
         containers=list(plan.containers),
         text_items=boxes,
         stage="overlay",
+        background_image=background_norm,
     )
     container_workspace_path = analysis / "container_workspace" / f"page_{args.page_number:03d}_container_workspace.json"
     write_container_workspace(container_workspace_path, container_workspace)
+    workspace_assignment = build_workspace_assignment(
+        page_number=args.page_number,
+        workspace=container_workspace,
+        text_items=boxes,
+        stage="overlay",
+    )
+    workspace_assignment_path = (
+        analysis / "workspace_assignment" / f"page_{args.page_number:03d}_workspace_assignment.json"
+    )
+    write_workspace_assignment(workspace_assignment_path, workspace_assignment)
+    boxes, office_textbox_fit = apply_office_textbox_fit(
+        boxes,
+        canvas={"width": 1280, "height": 720},
+        background_image=background_norm,
+        workspace_assignment=workspace_assignment,
+        report_path=analysis / "office_textbox_fit.json",
+    )
     _write_source_capture_inputs(
         out_dir,
         page_number=args.page_number,
@@ -412,6 +425,7 @@ def build_page(args: argparse.Namespace) -> dict:
         "semantic_typography_qa": str(analysis / "semantic_typography_qa.json"),
         "office_textbox_fit": str(analysis / "office_textbox_fit.json"),
         "container_workspace": str(container_workspace_path),
+        "workspace_assignment": str(workspace_assignment_path),
         "background_text_scan": str(analysis / "background_text_scan.json"),
         "source_capture_gate": str(analysis / "source_capture_gate.json"),
         "visual_preview": str(analysis / "visual_preview.json"),
@@ -429,6 +443,7 @@ def build_page(args: argparse.Namespace) -> dict:
             "semantic_typography_qa": semantic_typography_qa,
             "office_textbox_fit": office_textbox_fit,
             "container_workspace": container_workspace,
+            "workspace_assignment": workspace_assignment,
             "background_text_scan": background_scan,
             "source_capture_gate": source_capture_gate,
             "visual_preview": visual_preview,
@@ -484,6 +499,7 @@ def build_page(args: argparse.Namespace) -> dict:
             "layout_qa": str(analysis / "layout_qa.json"),
             "semantic_typography_qa": str(analysis / "semantic_typography_qa.json"),
             "container_workspace": str(container_workspace_path),
+            "workspace_assignment": str(workspace_assignment_path),
             "background_text_scan": str(analysis / "background_text_scan.json"),
             "visual_preview": str(analysis / "visual_preview.json"),
             "source_capture": str(analysis / "source_capture.json"),
