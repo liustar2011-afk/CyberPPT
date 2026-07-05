@@ -74,9 +74,11 @@ class DualImageOverlayBuildPageTests(unittest.TestCase):
             self.assertTrue((out_dir / "analysis/visual_preview.json").is_file())
             self.assertTrue((out_dir / "analysis/source_capture.json").is_file())
             self.assertTrue((out_dir / "analysis/source_capture_gate.json").is_file())
+            self.assertTrue((out_dir / "analysis/page_quality_report.json").is_file())
             source_capture = json.loads((out_dir / "analysis/source_capture.json").read_text(encoding="utf-8"))
             source_capture_gate = json.loads((out_dir / "analysis/source_capture_gate.json").read_text(encoding="utf-8"))
             text_content_qa = json.loads((out_dir / "analysis/text_content_qa.json").read_text(encoding="utf-8"))
+            page_quality = json.loads((out_dir / "analysis/page_quality_report.json").read_text(encoding="utf-8"))
             readiness = json.loads(
                 (out_dir / "analysis/production_readiness.json").read_text(encoding="utf-8")
             )
@@ -99,7 +101,15 @@ class DualImageOverlayBuildPageTests(unittest.TestCase):
         self.assertTrue(readiness["checks"]["source_capture_text_drives_qa"])
         self.assertFalse(readiness["checks"]["source_capture_gate_pass"])
         self.assertFalse(readiness["checks"]["source_capture_gaps_resolved"])
+        self.assertFalse(readiness["checks"]["page_quality_report_pass"])
         self.assertFalse(readiness["source_capture_gate"]["valid"])
+        self.assertEqual("cyberppt.dual_image.page_quality_report.v1", page_quality["schema"])
+        self.assertEqual("overlay", page_quality["stage"])
+        self.assertFalse(page_quality["valid"])
+        self.assertIn(
+            "overlay.source_capture_gate_pass",
+            [item["id"] for item in page_quality["blocking_errors"]],
+        )
         self.assertEqual(
             str((out_dir / "analysis/source_capture.json").resolve()),
             readiness["artifacts"]["source_capture"],
@@ -107,6 +117,10 @@ class DualImageOverlayBuildPageTests(unittest.TestCase):
         self.assertEqual(
             str((out_dir / "analysis/source_capture_gate.json").resolve()),
             readiness["artifacts"]["source_capture_gate"],
+        )
+        self.assertEqual(
+            str((out_dir / "analysis/page_quality_report.json").resolve()),
+            readiness["artifacts"]["page_quality_report"],
         )
         self.assertEqual("semantic_plan_containers", readiness["geometry_source"])
         self.assertEqual("semantic-container-geometry", readiness["alignment"]["model"])

@@ -97,7 +97,10 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             script=Path(args.script),
             pages_raw=args.pages,
             style_lock=Path(args.style_lock) if args.style_lock else None,
+            style_id=args.style_id,
+            style_name=args.style_name,
             output_dir=Path(args.output_dir) if args.output_dir else None,
+            semantic_plan_dir=Path(args.semantic_plan_dir) if args.semantic_plan_dir else None,
             require_images=args.require_images,
             run_rebuild=args.run_rebuild,
             rebuild_args=args.rebuild_arg or [],
@@ -190,7 +193,22 @@ def build_parser() -> argparse.ArgumentParser:
     final_script_pages_parser.add_argument("--script", required=True, help="Final markdown script containing page headings.")
     final_script_pages_parser.add_argument("--pages", required=True, help="Page range, e.g. 7-8 or 7,8.")
     final_script_pages_parser.add_argument("--style-lock", help="Optional project visual lock file.")
+    final_script_pages_parser.add_argument(
+        "--style-id",
+        type=int,
+        choices=range(1, 9),
+        metavar="1-8",
+        help="CyberPPT default visual style id selected from references/visual-system.md.",
+    )
+    final_script_pages_parser.add_argument(
+        "--style-name",
+        help="CyberPPT default visual style name or slug selected from the repository style library.",
+    )
     final_script_pages_parser.add_argument("--output-dir", help="Optional output directory for page_image_pairs.json.")
+    final_script_pages_parser.add_argument(
+        "--semantic-plan-dir",
+        help="Explicit semantic plan directory for dual-image editable rebuild.",
+    )
     final_script_pages_parser.add_argument(
         "--require-images",
         action="store_true",

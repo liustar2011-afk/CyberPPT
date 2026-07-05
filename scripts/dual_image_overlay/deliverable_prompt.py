@@ -6,9 +6,15 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from scripts.dual_image_overlay.style_library import default_style_choices, load_style_lock
 
 
 PAGE_HEADING_RE = re.compile(
@@ -238,20 +244,45 @@ def _extract_hex_colors(text: str) -> list[str]:
     return colors
 
 
+def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
+    style = payload.get("style")
+    if not isinstance(style, dict):
+        return None
+    prompt_contract = _collapse_text(style.get("prompt_contract"))
+    density_rule = _collapse_text(style.get("density_rule"))
+    sample = _collapse_text(style.get("sample"))
+    parts = [
+        "沿用项目视觉锁定，不使用外部风格 preset。",
+        prompt_contract,
+    ]
+    if density_rule:
+        parts.append(f"信息密度规则：{density_rule}")
+    if sample:
+        parts.append(f"确认样张：{sample}")
+    return "".join(parts)
+
+
 def style_contract(style_lock_path: Path | None) -> str:
     if style_lock_path is None:
-        return (
-            "采用正式咨询汇报成稿风格：浅灰白连续纸面、墨绿强调、细线分隔、"
-            "规则几何容器、克制图标、清晰留白。"
+        raise ValueError(
+            "missing visual style lock. 直接上传脚本转换前必须先选择 CyberPPT 默认 8 种风格之一，"
+            "或传入 --style-lock。可用选项：\n" + default_style_choices()
         )
+    try:
+        payload = load_style_lock(style_lock_path)
+    except json.JSONDecodeError:
+        payload = {}
+    if payload:
+        contract = _style_contract_from_payload(payload)
+        if contract:
+            return contract
     text = style_lock_path.read_text(encoding="utf-8")
     colors = _extract_hex_colors(text)
-    color_text = "、".join(colors[:8]) if colors else "#F2F3EF、#1F5B4D、#333333、#D7D9D3"
+    color_text = "、".join(colors[:8]) if colors else "以该视觉锁定文件为准"
     return (
         "沿用项目视觉锁定，不使用外部风格 preset。"
         f"核心色板：{color_text}。"
-        "页面应是最终交付成稿：连续纸面、墨绿结论锚点、细线分隔、规则信息容器、"
-        "低干扰图标和企业汇报质感。"
+        "页面应严格沿用该视觉锁定文件中的风格名称、色板、图表语言、信息密度规则和禁用项。"
     )
 
 

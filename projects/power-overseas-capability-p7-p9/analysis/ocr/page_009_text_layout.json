@@ -1,0 +1,338 @@
+{
+  "image_size": {
+    "width": 1280,
+    "height": 720
+  },
+  "items": [
+    {
+      "text": "协同应用层",
+      "bbox": [
+        80.0,
+        142.0,
+        202.0,
+        166.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "推动结果进入业务",
+      "bbox": [
+        74.0,
+        180.0,
+        210.0,
+        199.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "流程和行业公共服务",
+      "bbox": [
+        67.0,
+        206.0,
+        218.0,
+        225.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "行业监测与",
+      "bbox": [
+        295.0,
+        162.0,
+        380.0,
+        180.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "规则跟踪",
+      "bbox": [
+        306.0,
+        184.0,
+        369.0,
+        201.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "国际传播与",
+      "bbox": [
+        438.0,
+        162.0,
+        524.0,
+        180.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "联合推介",
+      "bbox": [
+        449.0,
+        184.0,
+        512.0,
+        201.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "产业链",
+      "bbox": [
+        599.0,
+        162.0,
+        652.0,
+        180.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "能力地图",
+      "bbox": [
+        592.0,
+        184.0,
+        656.0,
+        201.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "外部专业",
+      "bbox": [
+        737.0,
+        162.0,
+        802.0,
+        180.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "协同",
+      "bbox": [
+        753.0,
+        184.0,
+        786.0,
+        201.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "专项评价层",
+      "bbox": [
+        81.0,
+        374.0,
+        201.0,
+        398.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "先形成可交付、可复核、",
+      "bbox": [
+        55.0,
+        413.0,
+        223.0,
+        432.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "可转化的专项评价产品",
+      "bbox": [
+        65.0,
+        438.0,
+        215.0,
+        456.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "投标预审评价",
+      "bbox": [
+        319.0,
+        418.0,
+        383.0,
+        436.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "融资保险评价",
+      "bbox": [
+        463.0,
+        418.0,
+        548.0,
+        436.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "供应链准入评价",
+      "bbox": [
+        598.0,
+        418.0,
+        692.0,
+        436.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "国别适配评价",
+      "bbox": [
+        727.0,
+        418.0,
+        812.0,
+        436.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "基础评价层",
+      "bbox": [
+        81.0,
+        602.0,
+        201.0,
+        628.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "先形成统一入口和",
+      "bbox": [
+        73.0,
+        641.0,
+        208.0,
+        660.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "基础评价结果",
+      "bbox": [
+        89.0,
+        665.0,
+        194.0,
+        683.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "企业能力画像",
+      "bbox": [
+        298.0,
+        639.0,
+        394.0,
+        657.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "企业入库与",
+      "bbox": [
+        475.0,
+        628.0,
+        558.0,
+        646.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "证据目录",
+      "bbox": [
+        489.0,
+        652.0,
+        553.0,
+        669.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "统一评价入口",
+      "bbox": [
+        645.0,
+        639.0,
+        740.0,
+        657.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "公共服务",
+      "bbox": [
+        1046.0,
+        153.0,
+        1137.0,
+        177.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "会员服务",
+      "bbox": [
+        1046.0,
+        285.0,
+        1137.0,
+        310.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "专项服务",
+      "bbox": [
+        1046.0,
+        417.0,
+        1137.0,
+        442.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "订阅服务",
+      "bbox": [
+        1046.0,
+        549.0,
+        1137.0,
+        574.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "生态协同",
+      "bbox": [
+        1046.0,
+        675.0,
+        1137.0,
+        697.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    }
+  ]
+}

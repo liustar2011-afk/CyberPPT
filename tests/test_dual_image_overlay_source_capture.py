@@ -77,6 +77,33 @@ class DualImageOverlaySourceCaptureTests(unittest.TestCase):
         self.assertIn("render_delta_not_measured", gate["gap_counts"])
         self.assertFalse(gate["valid"])
 
+    def test_dual_image_editable_evidence_satisfies_missing_explicit_semantic_plan_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            _write_artifacts(project_dir)
+            registry_dir = project_dir / "registry"
+            _write_visual_registry(registry_dir, page_number=2)
+            (project_dir / "analysis/scene_graph_gate").mkdir(parents=True, exist_ok=True)
+            _write_json(
+                project_dir / "analysis/scene_graph_gate/page_002_scene_graph_gate.json",
+                {"schema": "cyberppt.page_scene_graph_gate.v1", "valid": True, "blocking_count": 0},
+            )
+            (project_dir / "analysis/semantic_plan_gate").mkdir(parents=True, exist_ok=True)
+            _write_json(
+                project_dir / "analysis/semantic_plan_gate/page_002_semantic_plan_gate.json",
+                {
+                    "schema": "cyberppt.dual_image.semantic_plan_gate.v1",
+                    "valid": False,
+                    "issues": [{"code": "missing_semantic_plan"}],
+                },
+            )
+
+            capture = build_source_capture(project_dir, visual_registry_dir=registry_dir)
+
+        gaps = {gap["code"] for gap in capture["pages"][0]["capture_gaps"]}
+        self.assertNotIn("semantic_plan_gate_failed", gaps)
+        self.assertNotIn("non_text_visuals_not_individually_detected", gaps)
+
     def test_source_capture_exposes_semantic_layout_container_relations(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             project_dir = Path(tmp)

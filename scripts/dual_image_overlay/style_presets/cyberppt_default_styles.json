@@ -1,0 +1,143 @@
+{
+  "schema": "cyberppt.default_visual_styles.v1",
+  "source_reference": "references/visual-system.md",
+  "sample_dir": "assets/palette-samples",
+  "styles": [
+    {
+      "id": 1,
+      "slug": "classic_deep_red_consulting",
+      "name": "经典深红咨询风",
+      "colors": {
+        "background": "#F3F4EF",
+        "title": "#111111",
+        "body": "#111111",
+        "secondary": "#555555",
+        "divider": "#D6D6D2",
+        "accent": "#8B1E1E"
+      },
+      "scenario": "战略、竞品分析、行业研究、商业计划",
+      "sample": "assets/palette-samples/palette-01.png",
+      "prompt_contract": "视觉风格使用经典深红咨询风：背景 #F3F4EF，标题/正文 #111111，次级文字 #555555，线条 #D6D6D2，强调色 #8B1E1E。适合战略、竞品分析、行业研究、商业计划；采用高密度咨询页结构、深红结论锚点、细线分隔、稳健矩阵、关键数字卡片和底部 SO WHAT 条。",
+      "density_rule": "与其他默认样张保持可比的信息密度；优先使用矩阵、证据链、关键数字卡片、分栏和 SO WHAT 条，不得退化为少量留白卡片。"
+    },
+    {
+      "id": 2,
+      "slug": "cool_gray_burgundy",
+      "name": "冷灰 + 勃艮第红",
+      "colors": {
+        "background": "#F5F5F2",
+        "title": "#000000",
+        "body": "#151515",
+        "secondary": "#6B6B6B",
+        "divider": "#D9D9D6",
+        "accent": "#7A1F2B"
+      },
+      "scenario": "财务、投研、咨询、风险分析",
+      "sample": "assets/palette-samples/palette-02.png",
+      "prompt_contract": "视觉风格使用冷灰 + 勃艮第红：背景 #F5F5F2，标题 #000000，正文 #151515，次级文字 #6B6B6B，线条 #D9D9D6，强调色 #7A1F2B。适合财务、投研、咨询、风险分析；采用冷静分析页结构、勃艮第红风险锚点、表格/瀑布/矩阵语言和严谨注释层。",
+      "density_rule": "保持投研/风险分析所需的信息密度；优先保留表格、指标、风险分层、注释和判断链。"
+    },
+    {
+      "id": 3,
+      "slug": "warm_ivory_dark_wine",
+      "name": "暖象牙白 + 暗酒红",
+      "colors": {
+        "background": "#F4F1EA",
+        "title": "#121212",
+        "body": "#2B2B2B",
+        "secondary": "#77736C",
+        "divider": "#D8D3CA",
+        "accent": "#8A1538"
+      },
+      "scenario": "品牌战略、消费品、电商、用户研究",
+      "sample": "assets/palette-samples/palette-03.png",
+      "prompt_contract": "视觉风格使用暖象牙白 + 暗酒红：背景 #F4F1EA，标题 #121212，正文 #2B2B2B，次级文字 #77736C，线条 #D8D3CA，强调色 #8A1538。适合品牌战略、消费品、电商、用户研究；采用温和但专业的研究页结构、用户洞察模块、对比矩阵和暗酒红重点标记。",
+      "density_rule": "保持品牌/用户研究的多模块信息密度；允许洞察卡、旅程轴、对比矩阵和小型数据注释并存。"
+    },
+    {
+      "id": 4,
+      "slug": "ivory_deep_blue",
+      "name": "象牙白 + 深蓝强调",
+      "colors": {
+        "background": "#F7F6F0",
+        "title": "#101820",
+        "body": "#303030",
+        "secondary": "#6F7275",
+        "divider": "#C9CDD1",
+        "accent": "#12355B"
+      },
+      "scenario": "科技、SaaS、B2B、企业数字化、AI Agent 报告",
+      "sample": "assets/palette-samples/palette-04.png",
+      "prompt_contract": "视觉风格使用象牙白 + 深蓝强调：背景 #F7F6F0，标题 #101820，正文 #303030，次级文字 #6F7275，线条 #C9CDD1，强调色 #12355B。适合科技、SaaS、B2B、企业数字化、AI Agent 报告；采用正式内部汇报结构、深蓝页内强调、紧凑矩阵、细线分隔、右侧栏、编号 chips 和底部 SO WHAT 条。",
+      "density_rule": "保持高密度企业数字化汇报页；优先使用紧凑矩阵、右侧栏、编号 chips、流程轴和底部 SO WHAT 条。"
+    },
+    {
+      "id": 5,
+      "slug": "gray_green",
+      "name": "浅灰白 + 墨绿",
+      "colors": {
+        "background": "#F2F3EF",
+        "title": "#111111",
+        "body": "#333333",
+        "secondary": "#666666",
+        "divider": "#D7D9D3",
+        "accent": "#1F5B4D"
+      },
+      "scenario": "可持续、海外市场、增长战略、长期趋势",
+      "sample": "assets/palette-samples/palette-05.png",
+      "prompt_contract": "视觉风格使用浅灰白 + 墨绿：背景 #F2F3EF，标题 #111111，正文 #333333，次级文字 #666666，线条 #D7D9D3，强调色 #1F5B4D。适合可持续、海外市场、增长战略、长期趋势；采用正式央企咨询汇报正文内容区、浅灰白连续纸面、墨绿结论锚点、规则信息容器、细线分隔和克制图标。",
+      "density_rule": "保持长期趋势/海外市场页的信息密度；优先使用规则信息容器、趋势轴、关键数字卡、分栏和低干扰图标。"
+    },
+    {
+      "id": 6,
+      "slug": "paper_beige_copper_brown",
+      "name": "纸张米色 + 铜棕",
+      "colors": {
+        "background": "#F4F0E8",
+        "title": "#161616",
+        "body": "#2F2F2F",
+        "secondary": "#76716A",
+        "divider": "#D8D5CE",
+        "accent": "#9A5A2E"
+      },
+      "scenario": "消费、零售、奢侈品、商业模式分析",
+      "sample": "assets/palette-samples/palette-06.png",
+      "prompt_contract": "视觉风格使用纸张米色 + 铜棕：背景 #F4F0E8，标题 #161616，正文 #2F2F2F，次级文字 #76716A，线条 #D8D5CE，强调色 #9A5A2E。适合消费、零售、奢侈品、商业模式分析；采用纸张质感的商业分析页、铜棕强调、商业模式画布、分层卡片和小型指标区。",
+      "density_rule": "保持商业模式分析所需的多区块信息密度；优先使用画布、分层卡片、流程链和小型指标区。"
+    },
+    {
+      "id": 7,
+      "slug": "clean_light_gray_black_gold",
+      "name": "纯净浅灰 + 黑金",
+      "colors": {
+        "background": "#F6F6F4",
+        "title": "#000000",
+        "body": "#252525",
+        "secondary": "#707070",
+        "divider": "#DADADA",
+        "accent": "#A87932"
+      },
+      "scenario": "高管汇报、融资材料、年度战略、董事会材料",
+      "sample": "assets/palette-samples/palette-07.png",
+      "prompt_contract": "视觉风格使用纯净浅灰 + 黑金：背景 #F6F6F4，标题 #000000，正文 #252525，次级文字 #707070，线条 #DADADA，强调色 #A87932。适合高管汇报、融资材料、年度战略、董事会材料；采用高管汇报页结构、黑金关键判断、克制分隔线、重点数字和董事会级摘要条。",
+      "density_rule": "保持高管材料的决策信息密度；优先保留关键判断、指标、风险/机会对照和摘要条，避免空泛大字页。"
+    },
+    {
+      "id": 8,
+      "slug": "cool_white_gray_deep_purple",
+      "name": "冷白灰 + 深紫",
+      "colors": {
+        "background": "#F4F5F6",
+        "title": "#111111",
+        "body": "#303030",
+        "secondary": "#6D7175",
+        "divider": "#C8CCD0",
+        "accent": "#4B2E83"
+      },
+      "scenario": "AI、技术趋势、产品战略、创新研究",
+      "sample": "assets/palette-samples/palette-08.png",
+      "prompt_contract": "视觉风格使用冷白灰 + 深紫：背景 #F4F5F6，标题 #111111，正文 #303030，次级文字 #6D7175，线条 #C8CCD0，强调色 #4B2E83。适合 AI、技术趋势、产品战略、创新研究；采用创新研究页结构、深紫技术强调、能力地图、系统分层、流程/反馈环和微图表。",
+      "density_rule": "保持创新/技术趋势页的信息密度；优先使用系统分层、能力地图、反馈环、微图表和关键判断区。"
+    }
+  ]
+}

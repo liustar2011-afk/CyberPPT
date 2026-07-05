@@ -1,0 +1,324 @@
+{
+  "slides": [
+    {
+      "slide": 8,
+      "blueprint_render_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/images/normalized/page_008_九类能力维度与六类证据资源共同构成评价模型的核心支撑_full_1280x720.png",
+      "ppt_render_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/outputs/renders/20260705_154534/page-2.png",
+      "side_by_side_comparison_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/side_by_side.png",
+      "component_signature_check_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/component_signature.json",
+      "visual_element_registry_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/visual_element_registry.json",
+      "bbox_delta_report_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+      "overlay_comparison_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/overlay_comparison.png",
+      "pixel_diff_report_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+      "local_crop_comparisons": [
+        {
+          "path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/overlay_comparison.png"
+        }
+      ],
+      "local_overlay_artifacts": [
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/overlay_comparison.png"
+      ],
+      "measurement_evidence_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/visual_element_registry.json",
+      "spatial_numeric_check_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+      "visual_differences": [
+        {
+          "element_id": "p8_dual_image_background",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_001",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_002",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_003",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_004",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_005",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_006",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_007",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_008",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_009",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_010",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_017",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_018",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_021",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_027",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_029",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_030",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_031",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_032",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_033",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_034",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_035",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_036",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_037",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_038",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_039",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_040",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_041",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_042",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_043",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_044",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_045",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_046",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_047",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_049",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_050",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_051",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        },
+        {
+          "element_id": "p8_text_052",
+          "severity": "High",
+          "description": "PIXEL_DIFF_EXCEEDED",
+          "accepted_by_user": false,
+          "requires_rework": true
+        }
+      ],
+      "evidence": {
+        "surface_system_match": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+        "main_chart_semantics_match": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+        "visual_semantics_preserved": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+        "editable_information_layer_pass": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+        "spatial_registration_pass": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+        "curve_fidelity_pass": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+        "label_collision_pass": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+        "text_overflow_pass": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+        "container_overflow_pass": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+        "continuous_text_flow_pass": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+        "table_semantic_typography_pass": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+        "table_density_pass": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+        "blueprint_background_not_used": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json",
+        "background_snapshot_declared_and_no_text": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/workbench/stages/05-qa-delivery/20260705_154534_full_chain/page_008/render_compare.json"
+      },
+      "deliverable_allowed": false,
+      "surface_system_match": false,
+      "main_chart_semantics_match": false,
+      "visual_semantics_preserved": false,
+      "editable_information_layer_pass": false,
+      "spatial_registration_pass": false,
+      "curve_fidelity_pass": false,
+      "label_collision_pass": false,
+      "text_overflow_pass": false,
+      "container_overflow_pass": false,
+      "continuous_text_flow_pass": false,
+      "table_semantic_typography_pass": false,
+      "table_density_pass": false,
+      "blueprint_background_not_used": false,
+      "background_snapshot_declared_and_no_text": false
+    }
+  ]
+}
