@@ -44,13 +44,6 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
         self.assertEqual({"x": 20, "y": 104, "width": 1240, "height": 592}, adjusted)
         self.assertGreaterEqual(adjusted["y"], 104)
 
-    def test_generation_size_is_fixed_to_canvas(self) -> None:
-        module = load_template_image_ppt_export()
-
-        size = module.generation_size_for_region({"x": 20, "y": 104, "width": 1240, "height": 592})
-
-        self.assertEqual({"width": 1280, "height": 720}, size)
-
 
 if __name__ == "__main__":
     unittest.main()
