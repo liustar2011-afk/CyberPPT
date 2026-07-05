@@ -13,6 +13,7 @@ from typing import Any
 
 from PIL import Image
 
+from scripts.dual_image_overlay.rebuild_modes import resolve_rebuild_mode
 from scripts.dual_image_overlay.scene_graph.builder import build_page_scene_graph
 from scripts.dual_image_overlay.scene_graph.gate import build_scene_graph_gate
 from scripts.dual_image_overlay.scene_graph.layout import build_layout_plan_from_scene_graph
@@ -329,6 +330,7 @@ def rebuild_from_manifest(
     """Create overlay SVG pages from generated full/background image pairs."""
     manifest_path = manifest_path.resolve()
     manifest = load_pair_manifest(manifest_path)
+    rebuild_mode = resolve_rebuild_mode(manifest)
     project_path = resolve_project_path(manifest_path, manifest)
     source_script = Path(str(manifest.get("source_script", ""))).expanduser().resolve()
     if not source_script.is_file():
@@ -529,6 +531,7 @@ def rebuild_from_manifest(
             {
                 "page_number": page_number,
                 "title": title_for_name,
+                "rebuild_mode": rebuild_mode,
                 "semantic_plan": str(semantic_plan_path),
                 "semantic_plan_gate": str(semantic_gate_path),
                 "semantic_layout_plan": str(semantic_layout_path),

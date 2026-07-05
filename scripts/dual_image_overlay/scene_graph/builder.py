@@ -194,15 +194,86 @@ def _source_capture_style_by_text(source_capture_page: Mapping[str, Any] | None)
     return {key: {k: v for k, v in value.items() if v is not None} for key, value in result.items()}
 
 
+def _semantic_layout_item_key(text: str, target_id: str | None) -> tuple[str, str]:
+    return (_normalize_text(text), str(target_id or ""))
+
+
+def _semantic_layout_items_by_key(semantic_layout_plan: Mapping[str, Any] | None) -> dict[tuple[str, str], Mapping[str, Any]]:
+    result: dict[tuple[str, str], Mapping[str, Any]] = {}
+    if not semantic_layout_plan:
+        return result
+    items = semantic_layout_plan.get("items", [])
+    if not isinstance(items, list):
+        return result
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        text = str(item.get("text") or item.get("display_text") or "").strip()
+        target_id = item.get("container_id") or item.get("target_id")
+        if text and target_id:
+            result[_semantic_layout_item_key(text, str(target_id))] = item
+    return result
+
+
+def _semantic_layout_text_candidates(text: str) -> list[str]:
+    candidates = [text]
+    candidates.extend(line.strip() for line in text.splitlines() if line.strip())
+    result: list[str] = []
+    seen: set[str] = set()
+    for candidate in candidates:
+        key = _normalize_text(candidate)
+        if key and key not in seen:
+            seen.add(key)
+            result.append(candidate)
+    return result
+
+
+def _semantic_layout_item_for_text(
+    text: str,
+    target_id: str | None,
+    semantic_layout_items: Mapping[tuple[str, str], Mapping[str, Any]],
+) -> Mapping[str, Any] | None:
+    for candidate in _semantic_layout_text_candidates(text):
+        item = semantic_layout_items.get(_semantic_layout_item_key(candidate, target_id))
+        if item:
+            return item
+    return None
+
+
+def _merge_semantic_layout_style(
+    style: dict[str, Any],
+    text: str,
+    target_id: str | None,
+    semantic_layout_items: Mapping[tuple[str, str], Mapping[str, Any]],
+) -> dict[str, Any]:
+    item = _semantic_layout_item_for_text(text, target_id, semantic_layout_items)
+    if not item:
+        return style
+    merged = dict(style)
+    bbox = item.get("bbox")
+    if isinstance(bbox, list) and len(bbox) == 4:
+        try:
+            merged["layout_bbox"] = [float(value) for value in bbox]
+        except (TypeError, ValueError):
+            pass
+        else:
+            merged["layout_source"] = "semantic_layout_plan"
+    if item.get("layout_strategy"):
+        merged["layout_strategy"] = item.get("layout_strategy")
+    return merged
+
+
 def _text_nodes(
     script_sections: Mapping[str, list[dict[str, Any]]],
     semantic_plan: Mapping[str, Any],
     context: Mapping[str, Any],
     *,
+    semantic_layout_plan: Mapping[str, Any] | None = None,
     source_capture_page: Mapping[str, Any] | None = None,
 ) -> list[TextNode]:
     nodes: list[TextNode] = []
     source_capture_style = _source_capture_style_by_text(source_capture_page)
+    semantic_layout_items = _semantic_layout_items_by_key(semantic_layout_plan)
     semantic_items = [item for item in semantic_plan.get("items", []) if isinstance(item, dict)] if isinstance(semantic_plan.get("items"), list) else []
     for index, text in enumerate(_build_application_text(script_sections), start=1):
         target_id = f"application_{index}"
@@ -216,6 +287,7 @@ def _text_nodes(
             {},
         )
         style = {**_style_from_item(matching_item), **source_capture_style.get(_normalize_text(text), {})}
+        style = _merge_semantic_layout_style(style, text, target_id, semantic_layout_items)
         nodes.append(
             TextNode(
                 node_id=f"text_application_{index}",
@@ -239,18 +311,21 @@ def _text_nodes(
         role = str(item.get("role") or "body")
         style = {**_style_from_item(item), **source_capture_style.get(_normalize_text(text), {})}
         if role == "arrow_label" and item.get("target_id"):
+            target_id = str(item["target_id"])
+            style = _merge_semantic_layout_style(style, text, target_id, semantic_layout_items)
             nodes.append(
                 TextNode(
                     node_id=f"text_semantic_{index}",
                     text=text,
                     truth_source={"kind": "script"},
                     semantic_role=role,
-                    binding=TextBinding(type="edge_label", target_id=str(item["target_id"]), placement="above"),
+                    binding=TextBinding(type="edge_label", target_id=target_id, placement="above"),
                     style=style,
                 )
             )
         elif item.get("container_id") and not any(_normalize_text(text) == _normalize_text(existing.text) for existing in nodes):
             target_id = str(item["container_id"])
+            style = _merge_semantic_layout_style(style, text, target_id, semantic_layout_items)
             nodes.append(
                 TextNode(
                     node_id=f"text_semantic_{index}",
@@ -446,7 +521,13 @@ def build_page_scene_graph(
     visual_nodes = _semantic_container_nodes(semantic_plan, context)
     existing_ids = {node.node_id for node in visual_nodes}
     visual_nodes.extend(node for node in _visual_nodes(visual_registry, context) if node.node_id not in existing_ids)
-    text_nodes = _text_nodes(script_sections, semantic_plan, context, source_capture_page=source_capture_page)
+    text_nodes = _text_nodes(
+        script_sections,
+        semantic_plan,
+        context,
+        semantic_layout_plan=semantic_layout_plan,
+        source_capture_page=source_capture_page,
+    )
     relations = _dedupe_relations([*_relations(visual_nodes), *_semantic_layout_relations(semantic_layout_plan, visual_nodes)])
     layout_intents = _dedupe_intents([*_layout_intents(text_nodes, visual_nodes, relations), *_neighbor_layout_intents(semantic_layout_plan, text_nodes, visual_nodes)])
     return PageSceneGraph(

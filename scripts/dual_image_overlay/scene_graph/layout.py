@@ -53,6 +53,17 @@ def _style_number(style: dict[str, object], key: str) -> float | None:
         return None
 
 
+def _style_bbox(style: dict[str, object], key: str) -> BBox | None:
+    value = style.get(key)
+    if not isinstance(value, list) or len(value) != 4:
+        return None
+    try:
+        x1, y1, x2, y2 = [float(item) for item in value]
+    except (TypeError, ValueError):
+        return None
+    return BBox(x1, y1, x2, y2)
+
+
 def _font_weight_for(text: TextNode) -> str:
     style = text.style
     if style.get("font_weight") is not None:
@@ -67,12 +78,15 @@ def build_layout_plan_from_scene_graph(graph: PageSceneGraph) -> dict:
     items: list[dict[str, object]] = []
     for index, text in enumerate(graph.text_nodes):
         binding_type = text.binding.type if text.binding else "missing"
-        if binding_type == "edge_label":
+        style = text.style
+        explicit_bbox = _style_bbox(style, "layout_bbox")
+        if explicit_bbox is not None:
+            bbox = explicit_bbox
+        elif binding_type == "edge_label":
             bbox = _bbox_for_edge_label(text, nodes)
         else:
             bbox = _bbox_for_container_text(graph, text, nodes)
         intents = [intent.type for intent in graph.layout_intents if intent.node_id == text.node_id]
-        style = text.style
         font_size = _style_number(style, "font_size") or _font_size_for(text.text, bbox)
         items.append(
             {
@@ -90,6 +104,8 @@ def build_layout_plan_from_scene_graph(graph: PageSceneGraph) -> dict:
                 "align": str(style.get("align") or "left"),
                 "word_wrap": bool(style.get("word_wrap", True)),
                 "layout_intents": intents,
+                "layout_strategy": style.get("layout_strategy"),
+                "layout_source": style.get("layout_source") or "scene_graph_fallback",
             }
         )
     return {
