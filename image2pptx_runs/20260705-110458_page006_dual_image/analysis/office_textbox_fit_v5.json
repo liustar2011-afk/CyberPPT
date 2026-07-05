@@ -1,0 +1,2598 @@
+{
+  "schema": "cyberppt.dual_image.office_textbox_fit.v1",
+  "valid": false,
+  "checks": {
+    "textbox_expanded_before_font_reduction": true,
+    "minimum_font_size_pt": 9.0
+  },
+  "adjustments": [
+    {
+      "index": 1,
+      "text": "（多源汇聚）",
+      "from_bbox": [
+        59.0,
+        36.0,
+        128.0,
+        52.0
+      ],
+      "to_bbox": [
+        1182.35,
+        36.0,
+        142.325,
+        52.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 1.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 2,
+      "text": "企业/业务数据",
+      "from_bbox": [
+        69.0,
+        77.0,
+        137.0,
+        93.0
+      ],
+      "to_bbox": [
+        49.618,
+        77.0,
+        156.382,
+        93.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 3,
+      "text": "经营管理数据",
+      "from_bbox": [
+        80.0,
+        99.0,
+        145.0,
+        111.0
+      ],
+      "to_bbox": [
+        80.0,
+        99.0,
+        163.7,
+        111.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 5,
+      "text": "项目执行数据",
+      "from_bbox": [
+        80.0,
+        118.0,
+        144.0,
+        130.0
+      ],
+      "to_bbox": [
+        80.0,
+        118.0,
+        163.7,
+        130.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 7,
+      "text": "合同订单数据",
+      "from_bbox": [
+        80.0,
+        137.0,
+        144.0,
+        149.0
+      ],
+      "to_bbox": [
+        80.0,
+        137.0,
+        163.7,
+        149.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 9,
+      "text": "绩效与指标数据",
+      "from_bbox": [
+        80.0,
+        153.0,
+        154.0,
+        166.0
+      ],
+      "to_bbox": [
+        80.0,
+        153.0,
+        177.65,
+        166.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 12,
+      "text": "内部职能数据",
+      "from_bbox": [
+        69.0,
+        203.0,
+        137.0,
+        219.0
+      ],
+      "to_bbox": [
+        1182.35,
+        203.0,
+        151.825,
+        219.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 1.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 13,
+      "text": "人力资源数据",
+      "from_bbox": [
+        80.0,
+        227.0,
+        145.0,
+        240.0
+      ],
+      "to_bbox": [
+        80.0,
+        227.0,
+        163.7,
+        240.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 15,
+      "text": "财务管理数据",
+      "from_bbox": [
+        80.0,
+        244.0,
+        145.0,
+        257.0
+      ],
+      "to_bbox": [
+        80.0,
+        244.0,
+        163.7,
+        257.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 17,
+      "text": "法务合规数据",
+      "from_bbox": [
+        80.0,
+        262.0,
+        145.0,
+        275.0
+      ],
+      "to_bbox": [
+        80.0,
+        262.0,
+        163.7,
+        275.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 19,
+      "text": "采购供应链数据",
+      "from_bbox": [
+        80.0,
+        278.0,
+        154.0,
+        291.0
+      ],
+      "to_bbox": [
+        80.0,
+        278.0,
+        177.65,
+        291.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 22,
+      "text": "外部公共数据",
+      "from_bbox": [
+        69.0,
+        331.0,
+        137.0,
+        347.0
+      ],
+      "to_bbox": [
+        1182.35,
+        331.0,
+        151.825,
+        347.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 1.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 23,
+      "text": "工商税务数据",
+      "from_bbox": [
+        80.0,
+        355.0,
+        145.0,
+        368.0
+      ],
+      "to_bbox": [
+        80.0,
+        355.0,
+        163.7,
+        368.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 25,
+      "text": "信用/司法数据",
+      "from_bbox": [
+        80.0,
+        372.0,
+        147.0,
+        385.0
+      ],
+      "to_bbox": [
+        80.0,
+        372.0,
+        171.512,
+        385.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 27,
+      "text": "进出口与海关数据",
+      "from_bbox": [
+        80.0,
+        389.0,
+        163.0,
+        402.0
+      ],
+      "to_bbox": [
+        80.0,
+        389.0,
+        191.6,
+        402.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 29,
+      "text": "宏观经济数据",
+      "from_bbox": [
+        80.0,
+        406.0,
+        145.0,
+        419.0
+      ],
+      "to_bbox": [
+        80.0,
+        406.0,
+        163.7,
+        419.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 32,
+      "text": "外部专业机构数据",
+      "from_bbox": [
+        62.0,
+        459.0,
+        144.0,
+        476.0
+      ],
+      "to_bbox": [
+        37.9,
+        459.0,
+        168.1,
+        476.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 33,
+      "text": "评级评估数据",
+      "from_bbox": [
+        80.0,
+        483.0,
+        145.0,
+        496.0
+      ],
+      "to_bbox": [
+        80.0,
+        483.0,
+        163.7,
+        496.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 35,
+      "text": "行业基准数据",
+      "from_bbox": [
+        80.0,
+        500.0,
+        145.0,
+        513.0
+      ],
+      "to_bbox": [
+        80.0,
+        500.0,
+        163.7,
+        513.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 37,
+      "text": "ESG/HSE评估数据",
+      "from_bbox": [
+        80.0,
+        517.0,
+        165.0,
+        530.0
+      ],
+      "to_bbox": [
+        80.0,
+        517.0,
+        190.484,
+        530.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 39,
+      "text": "风险情报数据",
+      "from_bbox": [
+        80.0,
+        535.0,
+        145.0,
+        548.0
+      ],
+      "to_bbox": [
+        80.0,
+        535.0,
+        163.7,
+        548.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 44,
+      "text": "目录管理",
+      "from_bbox": [
+        337.0,
+        76.0,
+        396.0,
+        92.0
+      ],
+      "to_bbox": [
+        333.95,
+        76.0,
+        399.05,
+        92.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 45,
+      "text": "指标/能力目录",
+      "from_bbox": [
+        347.0,
+        106.0,
+        421.0,
+        119.0
+      ],
+      "to_bbox": [
+        347.0,
+        106.0,
+        438.512,
+        119.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 47,
+      "text": "评估维度管理",
+      "from_bbox": [
+        347.0,
+        126.0,
+        421.0,
+        139.0
+      ],
+      "to_bbox": [
+        347.0,
+        126.0,
+        430.7,
+        139.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 49,
+      "text": "分类与标签管理",
+      "from_bbox": [
+        347.0,
+        146.0,
+        430.0,
+        159.0
+      ],
+      "to_bbox": [
+        347.0,
+        146.0,
+        444.65,
+        159.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 51,
+      "text": "目录版本管理",
+      "from_bbox": [
+        347.0,
+        165.0,
+        421.0,
+        178.0
+      ],
+      "to_bbox": [
+        347.0,
+        165.0,
+        430.7,
+        178.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 54,
+      "text": "身份认证",
+      "from_bbox": [
+        535.0,
+        76.0,
+        594.0,
+        92.0
+      ],
+      "to_bbox": [
+        1214.9,
+        76.0,
+        597.05,
+        92.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 1.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 55,
+      "text": "主体身份管理",
+      "from_bbox": [
+        550.0,
+        106.0,
+        614.0,
+        119.0
+      ],
+      "to_bbox": [
+        550.0,
+        106.0,
+        633.7,
+        119.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 57,
+      "text": "人员身份管理",
+      "from_bbox": [
+        550.0,
+        126.0,
+        614.0,
+        139.0
+      ],
+      "to_bbox": [
+        550.0,
+        126.0,
+        633.7,
+        139.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 59,
+      "text": "可信身份校验",
+      "from_bbox": [
+        550.0,
+        146.0,
+        614.0,
+        159.0
+      ],
+      "to_bbox": [
+        550.0,
+        146.0,
+        633.7,
+        159.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 61,
+      "text": "认证策略配置",
+      "from_bbox": [
+        550.0,
+        165.0,
+        614.0,
+        178.0
+      ],
+      "to_bbox": [
+        550.0,
+        165.0,
+        633.7,
+        178.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 64,
+      "text": "授权控制",
+      "from_bbox": [
+        738.0,
+        76.0,
+        797.0,
+        92.0
+      ],
+      "to_bbox": [
+        1214.9,
+        76.0,
+        800.05,
+        92.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 1.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 65,
+      "text": "数据资源授权",
+      "from_bbox": [
+        752.0,
+        106.0,
+        816.0,
+        119.0
+      ],
+      "to_bbox": [
+        752.0,
+        106.0,
+        835.7,
+        119.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 67,
+      "text": "能力访问授权",
+      "from_bbox": [
+        752.0,
+        126.0,
+        816.0,
+        139.0
+      ],
+      "to_bbox": [
+        752.0,
+        126.0,
+        835.7,
+        139.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 69,
+      "text": "角色权限管理",
+      "from_bbox": [
+        752.0,
+        146.0,
+        816.0,
+        159.0
+      ],
+      "to_bbox": [
+        752.0,
+        146.0,
+        835.7,
+        159.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 71,
+      "text": "授权策略管理",
+      "from_bbox": [
+        752.0,
+        165.0,
+        816.0,
+        178.0
+      ],
+      "to_bbox": [
+        752.0,
+        165.0,
+        835.7,
+        178.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 74,
+      "text": "规则调用",
+      "from_bbox": [
+        337.0,
+        205.0,
+        396.0,
+        221.0
+      ],
+      "to_bbox": [
+        333.95,
+        205.0,
+        399.05,
+        221.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 75,
+      "text": "评估规则引擎",
+      "from_bbox": [
+        347.0,
+        235.0,
+        421.0,
+        248.0
+      ],
+      "to_bbox": [
+        347.0,
+        235.0,
+        430.7,
+        248.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 77,
+      "text": "评分算法管理",
+      "from_bbox": [
+        347.0,
+        254.0,
+        421.0,
+        267.0
+      ],
+      "to_bbox": [
+        347.0,
+        254.0,
+        430.7,
+        267.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 79,
+      "text": "规则版本管理",
+      "from_bbox": [
+        347.0,
+        274.0,
+        421.0,
+        287.0
+      ],
+      "to_bbox": [
+        347.0,
+        274.0,
+        430.7,
+        287.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 81,
+      "text": "规则执行日志",
+      "from_bbox": [
+        347.0,
+        293.0,
+        421.0,
+        306.0
+      ],
+      "to_bbox": [
+        347.0,
+        293.0,
+        430.7,
+        306.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 84,
+      "text": "证据管理",
+      "from_bbox": [
+        535.0,
+        205.0,
+        594.0,
+        221.0
+      ],
+      "to_bbox": [
+        1214.9,
+        205.0,
+        597.05,
+        221.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 1.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 85,
+      "text": "证据采集接入",
+      "from_bbox": [
+        550.0,
+        235.0,
+        624.0,
+        248.0
+      ],
+      "to_bbox": [
+        550.0,
+        235.0,
+        633.7,
+        248.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 87,
+      "text": "证据标准化",
+      "from_bbox": [
+        550.0,
+        254.0,
+        614.0,
+        267.0
+      ],
+      "to_bbox": [
+        550.0,
+        254.0,
+        619.75,
+        267.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 89,
+      "text": "证据质量校验",
+      "from_bbox": [
+        550.0,
+        274.0,
+        624.0,
+        287.0
+      ],
+      "to_bbox": [
+        550.0,
+        274.0,
+        633.7,
+        287.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 91,
+      "text": "证据关联映射",
+      "from_bbox": [
+        550.0,
+        293.0,
+        624.0,
+        306.0
+      ],
+      "to_bbox": [
+        550.0,
+        293.0,
+        633.7,
+        306.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 94,
+      "text": "能力评估",
+      "from_bbox": [
+        738.0,
+        205.0,
+        797.0,
+        221.0
+      ],
+      "to_bbox": [
+        1214.9,
+        205.0,
+        800.05,
+        221.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 1.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 95,
+      "text": "能力评分计算",
+      "from_bbox": [
+        752.0,
+        235.0,
+        816.0,
+        248.0
+      ],
+      "to_bbox": [
+        752.0,
+        235.0,
+        835.7,
+        248.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 97,
+      "text": "维度权重配置",
+      "from_bbox": [
+        752.0,
+        254.0,
+        826.0,
+        267.0
+      ],
+      "to_bbox": [
+        752.0,
+        254.0,
+        835.7,
+        267.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 99,
+      "text": "评估结果校验",
+      "from_bbox": [
+        752.0,
+        274.0,
+        826.0,
+        287.0
+      ],
+      "to_bbox": [
+        752.0,
+        274.0,
+        835.7,
+        287.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 101,
+      "text": "敏感项校验",
+      "from_bbox": [
+        752.0,
+        293.0,
+        816.0,
+        306.0
+      ],
+      "to_bbox": [
+        752.0,
+        293.0,
+        821.75,
+        306.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 104,
+      "text": "结果生成",
+      "from_bbox": [
+        337.0,
+        335.0,
+        396.0,
+        351.0
+      ],
+      "to_bbox": [
+        333.95,
+        335.0,
+        399.05,
+        351.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 105,
+      "text": "评估报告生成",
+      "from_bbox": [
+        347.0,
+        365.0,
+        421.0,
+        378.0
+      ],
+      "to_bbox": [
+        347.0,
+        365.0,
+        430.7,
+        378.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 107,
+      "text": "结果可视化",
+      "from_bbox": [
+        347.0,
+        384.0,
+        411.0,
+        397.0
+      ],
+      "to_bbox": [
+        347.0,
+        384.0,
+        416.75,
+        397.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 109,
+      "text": "结论与建议",
+      "from_bbox": [
+        347.0,
+        404.0,
+        411.0,
+        417.0
+      ],
+      "to_bbox": [
+        347.0,
+        404.0,
+        416.75,
+        417.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 111,
+      "text": "结果导出共享",
+      "from_bbox": [
+        347.0,
+        423.0,
+        421.0,
+        436.0
+      ],
+      "to_bbox": [
+        347.0,
+        423.0,
+        430.7,
+        436.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 114,
+      "text": "版本溯源",
+      "from_bbox": [
+        535.0,
+        335.0,
+        594.0,
+        351.0
+      ],
+      "to_bbox": [
+        1214.9,
+        335.0,
+        597.05,
+        351.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 1.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 115,
+      "text": "版本记录管理",
+      "from_bbox": [
+        550.0,
+        365.0,
+        624.0,
+        378.0
+      ],
+      "to_bbox": [
+        550.0,
+        365.0,
+        633.7,
+        378.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 117,
+      "text": "变更影响追踪",
+      "from_bbox": [
+        550.0,
+        384.0,
+        624.0,
+        397.0
+      ],
+      "to_bbox": [
+        550.0,
+        384.0,
+        633.7,
+        397.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 119,
+      "text": "溯源链路管理",
+      "from_bbox": [
+        550.0,
+        404.0,
+        624.0,
+        417.0
+      ],
+      "to_bbox": [
+        550.0,
+        404.0,
+        633.7,
+        417.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 121,
+      "text": "回溯与对比",
+      "from_bbox": [
+        550.0,
+        423.0,
+        614.0,
+        436.0
+      ],
+      "to_bbox": [
+        550.0,
+        423.0,
+        619.75,
+        436.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 124,
+      "text": "证书审核",
+      "from_bbox": [
+        738.0,
+        335.0,
+        797.0,
+        351.0
+      ],
+      "to_bbox": [
+        1214.9,
+        335.0,
+        800.05,
+        351.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 1.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 125,
+      "text": "结果合规审核",
+      "from_bbox": [
+        752.0,
+        365.0,
+        826.0,
+        378.0
+      ],
+      "to_bbox": [
+        752.0,
+        365.0,
+        835.7,
+        378.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 127,
+      "text": "证书签发管理",
+      "from_bbox": [
+        752.0,
+        384.0,
+        826.0,
+        397.0
+      ],
+      "to_bbox": [
+        752.0,
+        384.0,
+        835.7,
+        397.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 129,
+      "text": "证书状态管理",
+      "from_bbox": [
+        752.0,
+        404.0,
+        826.0,
+        417.0
+      ],
+      "to_bbox": [
+        752.0,
+        404.0,
+        835.7,
+        417.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 131,
+      "text": "撤销与更新",
+      "from_bbox": [
+        752.0,
+        423.0,
+        816.0,
+        436.0
+      ],
+      "to_bbox": [
+        752.0,
+        423.0,
+        821.75,
+        436.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 133,
+      "text": "反馈迭代",
+      "from_bbox": [
+        903.0,
+        259.0,
+        929.0,
+        293.0
+      ],
+      "to_bbox": [
+        1214.9,
+        259.0,
+        948.55,
+        293.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 1.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 134,
+      "text": "证据支撑",
+      "from_bbox": [
+        571.0,
+        455.0,
+        631.0,
+        470.0
+      ],
+      "to_bbox": [
+        571.0,
+        455.0,
+        636.1,
+        470.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 135,
+      "text": "对象/证据池（评估对象与关键证据沉淀）",
+      "from_bbox": [
+        424.0,
+        476.0,
+        710.0,
+        493.0
+      ],
+      "to_bbox": [
+        415.968,
+        476.0,
+        718.032,
+        493.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 136,
+      "text": "企业主体",
+      "from_bbox": [
+        305.0,
+        525.0,
+        355.0,
+        540.0
+      ],
+      "to_bbox": [
+        305.0,
+        525.0,
+        370.1,
+        540.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 137,
+      "text": "海外项目",
+      "from_bbox": [
+        402.0,
+        525.0,
+        454.0,
+        540.0
+      ],
+      "to_bbox": [
+        402.0,
+        525.0,
+        467.1,
+        540.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 138,
+      "text": "技术设备",
+      "from_bbox": [
+        503.0,
+        525.0,
+        554.0,
+        540.0
+      ],
+      "to_bbox": [
+        503.0,
+        525.0,
+        568.1,
+        540.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 139,
+      "text": "财务信用",
+      "from_bbox": [
+        606.0,
+        525.0,
+        657.0,
+        540.0
+      ],
+      "to_bbox": [
+        606.0,
+        525.0,
+        671.1,
+        540.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 140,
+      "text": "E&S/HSE",
+      "from_bbox": [
+        707.0,
+        514.0,
+        757.0,
+        529.0
+      ],
+      "to_bbox": [
+        707.0,
+        514.0,
+        770.798,
+        529.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 141,
+      "text": "合规",
+      "from_bbox": [
+        721.0,
+        529.0,
+        747.0,
+        544.0
+      ],
+      "to_bbox": [
+        721.0,
+        529.0,
+        753.55,
+        544.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 142,
+      "text": "国别市场",
+      "from_bbox": [
+        811.0,
+        514.0,
+        862.0,
+        529.0
+      ],
+      "to_bbox": [
+        811.0,
+        514.0,
+        876.1,
+        529.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 143,
+      "text": "与风险",
+      "from_bbox": [
+        824.0,
+        529.0,
+        862.0,
+        544.0
+      ],
+      "to_bbox": [
+        824.0,
+        529.0,
+        872.825,
+        544.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 145,
+      "text": "（多场景赋能）",
+      "from_bbox": [
+        997.0,
+        36.0,
+        1066.0,
+        52.0
+      ],
+      "to_bbox": [
+        974.538,
+        36.0,
+        1088.463,
+        52.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 146,
+      "text": "企业应用",
+      "from_bbox": [
+        998.0,
+        77.0,
+        1050.0,
+        92.0
+      ],
+      "to_bbox": [
+        998.0,
+        77.0,
+        1063.1,
+        92.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 147,
+      "text": "战略决策支持",
+      "from_bbox": [
+        1012.0,
+        105.0,
+        1085.0,
+        118.0
+      ],
+      "to_bbox": [
+        1012.0,
+        105.0,
+        1095.7,
+        118.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 149,
+      "text": "投资立项评估",
+      "from_bbox": [
+        1012.0,
+        124.0,
+        1085.0,
+        137.0
+      ],
+      "to_bbox": [
+        1012.0,
+        124.0,
+        1095.7,
+        137.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 151,
+      "text": "项目投标支持",
+      "from_bbox": [
+        1012.0,
+        144.0,
+        1085.0,
+        157.0
+      ],
+      "to_bbox": [
+        1012.0,
+        144.0,
+        1095.7,
+        157.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 153,
+      "text": "绩效考核应用",
+      "from_bbox": [
+        1012.0,
+        163.0,
+        1085.0,
+        176.0
+      ],
+      "to_bbox": [
+        1012.0,
+        163.0,
+        1095.7,
+        176.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 155,
+      "text": "风险预警控制",
+      "from_bbox": [
+        1012.0,
+        182.0,
+        1085.0,
+        195.0
+      ],
+      "to_bbox": [
+        1012.0,
+        182.0,
+        1095.7,
+        195.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 157,
+      "text": "外部合作伙伴应用",
+      "from_bbox": [
+        995.0,
+        249.0,
+        1080.0,
+        265.0
+      ],
+      "to_bbox": [
+        1149.8,
+        249.0,
+        1102.6,
+        265.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 1.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 158,
+      "text": "金融机构授信",
+      "from_bbox": [
+        1012.0,
+        279.0,
+        1085.0,
+        292.0
+      ],
+      "to_bbox": [
+        1012.0,
+        279.0,
+        1095.7,
+        292.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 160,
+      "text": "供应商准入评估",
+      "from_bbox": [
+        1012.0,
+        299.0,
+        1094.0,
+        312.0
+      ],
+      "to_bbox": [
+        1012.0,
+        299.0,
+        1109.65,
+        312.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 162,
+      "text": "合作伙伴尽调",
+      "from_bbox": [
+        1012.0,
+        318.0,
+        1085.0,
+        331.0
+      ],
+      "to_bbox": [
+        1012.0,
+        318.0,
+        1095.7,
+        331.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 164,
+      "text": "保险承保参考",
+      "from_bbox": [
+        1012.0,
+        337.0,
+        1085.0,
+        350.0
+      ],
+      "to_bbox": [
+        1012.0,
+        337.0,
+        1095.7,
+        350.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 166,
+      "text": "法律合规尽职",
+      "from_bbox": [
+        1012.0,
+        357.0,
+        1085.0,
+        370.0
+      ],
+      "to_bbox": [
+        1012.0,
+        357.0,
+        1095.7,
+        370.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 168,
+      "text": "行业组织应用",
+      "from_bbox": [
+        998.0,
+        419.0,
+        1066.0,
+        435.0
+      ],
+      "to_bbox": [
+        983.175,
+        419.0,
+        1080.825,
+        435.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 169,
+      "text": "行业能力对标",
+      "from_bbox": [
+        1012.0,
+        448.0,
+        1085.0,
+        461.0
+      ],
+      "to_bbox": [
+        1012.0,
+        448.0,
+        1095.7,
+        461.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 171,
+      "text": "标准制定参考",
+      "from_bbox": [
+        1012.0,
+        468.0,
+        1085.0,
+        481.0
+      ],
+      "to_bbox": [
+        1012.0,
+        468.0,
+        1095.7,
+        481.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 173,
+      "text": "行业洞察分析",
+      "from_bbox": [
+        1012.0,
+        487.0,
+        1085.0,
+        500.0
+      ],
+      "to_bbox": [
+        1012.0,
+        487.0,
+        1095.7,
+        500.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 175,
+      "text": "政策研究支持",
+      "from_bbox": [
+        1012.0,
+        506.0,
+        1085.0,
+        519.0
+      ],
+      "to_bbox": [
+        1012.0,
+        506.0,
+        1095.7,
+        519.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 177,
+      "text": "公共服务支撑",
+      "from_bbox": [
+        1012.0,
+        526.0,
+        1085.0,
+        539.0
+      ],
+      "to_bbox": [
+        1012.0,
+        526.0,
+        1095.7,
+        539.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 180,
+      "text": "（安全合规）",
+      "from_bbox": [
+        1171.0,
+        36.0,
+        1239.0,
+        52.0
+      ],
+      "to_bbox": [
+        1156.175,
+        36.0,
+        1253.825,
+        52.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 182,
+      "text": "分类分级",
+      "from_bbox": [
+        1197.0,
+        89.0,
+        1248.0,
+        104.0
+      ],
+      "to_bbox": [
+        1197.0,
+        89.0,
+        1262.1,
+        104.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 183,
+      "text": "数据与能力",
+      "from_bbox": [
+        1194.0,
+        118.0,
+        1254.0,
+        132.0
+      ],
+      "to_bbox": [
+        1194.0,
+        118.0,
+        1263.75,
+        132.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 185,
+      "text": "分类分级管理",
+      "from_bbox": [
+        1194.0,
+        134.0,
+        1263.0,
+        148.0
+      ],
+      "to_bbox": [
+        1194.0,
+        134.0,
+        1277.7,
+        148.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 188,
+      "text": "授权管理",
+      "from_bbox": [
+        1197.0,
+        196.0,
+        1248.0,
+        211.0
+      ],
+      "to_bbox": [
+        1197.0,
+        196.0,
+        1262.1,
+        211.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 189,
+      "text": "访问主体与",
+      "from_bbox": [
+        1195.0,
+        225.0,
+        1254.0,
+        239.0
+      ],
+      "to_bbox": [
+        1195.0,
+        225.0,
+        1264.75,
+        239.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 191,
+      "text": "范围授权管理",
+      "from_bbox": [
+        1194.0,
+        240.0,
+        1263.0,
+        254.0
+      ],
+      "to_bbox": [
+        1194.0,
+        240.0,
+        1277.7,
+        254.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 194,
+      "text": "权限控制",
+      "from_bbox": [
+        1197.0,
+        303.0,
+        1248.0,
+        318.0
+      ],
+      "to_bbox": [
+        1197.0,
+        303.0,
+        1262.1,
+        318.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 195,
+      "text": "细粒度权限",
+      "from_bbox": [
+        1194.0,
+        332.0,
+        1254.0,
+        346.0
+      ],
+      "to_bbox": [
+        1194.0,
+        332.0,
+        1263.75,
+        346.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 197,
+      "text": "与策略控制",
+      "from_bbox": [
+        1194.0,
+        347.0,
+        1254.0,
+        361.0
+      ],
+      "to_bbox": [
+        1194.0,
+        347.0,
+        1263.75,
+        361.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 200,
+      "text": "数据脱敏",
+      "from_bbox": [
+        1197.0,
+        410.0,
+        1248.0,
+        425.0
+      ],
+      "to_bbox": [
+        1197.0,
+        410.0,
+        1262.1,
+        425.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 201,
+      "text": "敏感数据识别",
+      "from_bbox": [
+        1194.0,
+        439.0,
+        1263.0,
+        453.0
+      ],
+      "to_bbox": [
+        1194.0,
+        439.0,
+        1277.7,
+        453.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 203,
+      "text": "与脱敏处理",
+      "from_bbox": [
+        1194.0,
+        454.0,
+        1254.0,
+        468.0
+      ],
+      "to_bbox": [
+        1194.0,
+        454.0,
+        1263.75,
+        468.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 206,
+      "text": "发布审核",
+      "from_bbox": [
+        1197.0,
+        516.0,
+        1248.0,
+        531.0
+      ],
+      "to_bbox": [
+        1197.0,
+        516.0,
+        1262.1,
+        531.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 207,
+      "text": "对外发布前",
+      "from_bbox": [
+        1194.0,
+        545.0,
+        1254.0,
+        559.0
+      ],
+      "to_bbox": [
+        1194.0,
+        545.0,
+        1263.75,
+        559.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 209,
+      "text": "合规审核",
+      "from_bbox": [
+        1194.0,
+        560.0,
+        1245.0,
+        574.0
+      ],
+      "to_bbox": [
+        1194.0,
+        560.0,
+        1249.8,
+        574.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 212,
+      "text": "审计追踪",
+      "from_bbox": [
+        1197.0,
+        623.0,
+        1248.0,
+        638.0
+      ],
+      "to_bbox": [
+        1197.0,
+        623.0,
+        1262.1,
+        638.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 213,
+      "text": "全链路操作",
+      "from_bbox": [
+        1194.0,
+        652.0,
+        1254.0,
+        666.0
+      ],
+      "to_bbox": [
+        1194.0,
+        652.0,
+        1263.75,
+        666.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 215,
+      "text": "日志留存审计",
+      "from_bbox": [
+        1194.0,
+        667.0,
+        1263.0,
+        681.0
+      ],
+      "to_bbox": [
+        1194.0,
+        667.0,
+        1277.7,
+        681.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 218,
+      "text": "（能力输出与服务支撑）",
+      "from_bbox": [
+        18.0,
+        660.0,
+        149.0,
+        679.0
+      ],
+      "to_bbox": [
+        0.0,
+        660.0,
+        179.025,
+        679.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 219,
+      "text": "基础评估服务",
+      "from_bbox": [
+        246.0,
+        621.0,
+        321.0,
+        637.0
+      ],
+      "to_bbox": [
+        1182.35,
+        621.0,
+        332.325,
+        637.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 1.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 220,
+      "text": "标准化评估服务",
+      "from_bbox": [
+        256.0,
+        649.0,
+        340.0,
+        662.0
+      ],
+      "to_bbox": [
+        256.0,
+        649.0,
+        353.65,
+        662.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 222,
+      "text": "快速评估工具",
+      "from_bbox": [
+        256.0,
+        668.0,
+        330.0,
+        681.0
+      ],
+      "to_bbox": [
+        256.0,
+        668.0,
+        339.7,
+        681.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 224,
+      "text": "评估模板中心",
+      "from_bbox": [
+        256.0,
+        686.0,
+        330.0,
+        699.0
+      ],
+      "to_bbox": [
+        256.0,
+        686.0,
+        339.7,
+        699.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 226,
+      "text": "专项评估服务",
+      "from_bbox": [
+        428.0,
+        621.0,
+        503.0,
+        637.0
+      ],
+      "to_bbox": [
+        416.675,
+        621.0,
+        514.325,
+        637.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 227,
+      "text": "专项能力评估",
+      "from_bbox": [
+        437.0,
+        649.0,
+        512.0,
+        662.0
+      ],
+      "to_bbox": [
+        437.0,
+        649.0,
+        520.7,
+        662.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 229,
+      "text": "行业场景评估",
+      "from_bbox": [
+        437.0,
+        668.0,
+        512.0,
+        681.0
+      ],
+      "to_bbox": [
+        437.0,
+        668.0,
+        520.7,
+        681.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 231,
+      "text": "定制化评估服务",
+      "from_bbox": [
+        437.0,
+        686.0,
+        521.0,
+        699.0
+      ],
+      "to_bbox": [
+        437.0,
+        686.0,
+        534.65,
+        699.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 233,
+      "text": "监测订阅服务",
+      "from_bbox": [
+        616.0,
+        621.0,
+        691.0,
+        637.0
+      ],
+      "to_bbox": [
+        604.675,
+        621.0,
+        702.325,
+        637.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 234,
+      "text": "能力动态监测",
+      "from_bbox": [
+        624.0,
+        649.0,
+        699.0,
+        662.0
+      ],
+      "to_bbox": [
+        624.0,
+        649.0,
+        707.7,
+        662.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 236,
+      "text": "风险预警订阅",
+      "from_bbox": [
+        624.0,
+        668.0,
+        699.0,
+        681.0
+      ],
+      "to_bbox": [
+        624.0,
+        668.0,
+        707.7,
+        681.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 238,
+      "text": "指标变化推送",
+      "from_bbox": [
+        624.0,
+        686.0,
+        699.0,
+        699.0
+      ],
+      "to_bbox": [
+        624.0,
+        686.0,
+        707.7,
+        699.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 240,
+      "text": "国际交流服务",
+      "from_bbox": [
+        806.0,
+        621.0,
+        881.0,
+        637.0
+      ],
+      "to_bbox": [
+        794.675,
+        621.0,
+        892.325,
+        637.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 241,
+      "text": "国际标准对接",
+      "from_bbox": [
+        814.0,
+        649.0,
+        889.0,
+        662.0
+      ],
+      "to_bbox": [
+        814.0,
+        649.0,
+        897.7,
+        662.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 243,
+      "text": "跨境互认支持",
+      "from_bbox": [
+        814.0,
+        668.0,
+        889.0,
+        681.0
+      ],
+      "to_bbox": [
+        814.0,
+        668.0,
+        897.7,
+        681.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 245,
+      "text": "国别信息服务",
+      "from_bbox": [
+        814.0,
+        686.0,
+        889.0,
+        699.0
+      ],
+      "to_bbox": [
+        814.0,
+        686.0,
+        897.7,
+        699.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 247,
+      "text": "生态协作服务",
+      "from_bbox": [
+        996.0,
+        621.0,
+        1071.0,
+        637.0
+      ],
+      "to_bbox": [
+        984.675,
+        621.0,
+        1082.325,
+        637.0
+      ],
+      "from_font_size": 10.5,
+      "to_font_size": 10.5,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 248,
+      "text": "合作生态对接",
+      "from_bbox": [
+        1004.0,
+        649.0,
+        1079.0,
+        662.0
+      ],
+      "to_bbox": [
+        1004.0,
+        649.0,
+        1087.7,
+        662.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 250,
+      "text": "能力开放共享",
+      "from_bbox": [
+        1004.0,
+        668.0,
+        1079.0,
+        681.0
+      ],
+      "to_bbox": [
+        1004.0,
+        668.0,
+        1087.7,
+        681.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    },
+    {
+      "index": 252,
+      "text": "生态共建共赢",
+      "from_bbox": [
+        1004.0,
+        686.0,
+        1079.0,
+        699.0
+      ],
+      "to_bbox": [
+        1004.0,
+        686.0,
+        1087.7,
+        699.0
+      ],
+      "from_font_size": 9.0,
+      "to_font_size": 9.0,
+      "code": "textbox_expanded_before_font_reduction"
+    }
+  ],
+  "expanded_count": 136,
+  "skipped_count": 109,
+  "below_minimum_count": 12,
+  "error_count": 12
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="720" viewBox="0 0 1280 720" data-brand-template="04_ending">
+  <image x="0" y="0" width="1280" height="720" xlink:href="cover_bg.jpg" preserveAspectRatio="xMidYMid slice"/>
+  <text x="640" y="280" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="64" font-weight="700" fill="#C00000">感谢聆听</text>
+  <circle cx="640" cy="390" r="5" fill="#C00000"/>
+  <text x="640" y="480" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="56" font-weight="700" fill="#FFFFFF">THANK YOU</text>
+  <text x="640" y="600" text-anchor="middle" font-family="Microsoft YaHei, Arial, sans-serif" font-size="24" fill="#FFFFFF" fill-opacity="0.85">中国电力企业联合会</text>
+</svg>

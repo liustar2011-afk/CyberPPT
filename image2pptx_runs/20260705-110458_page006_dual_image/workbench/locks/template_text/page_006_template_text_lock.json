@@ -1,0 +1,17 @@
+{
+  "schema": "cyberppt.template_text_lock.v1",
+  "page": 6,
+  "title": "总体架构",
+  "subtitle": "",
+  "section": null,
+  "template_variant": "CEC chrome-only body page",
+  "page_badge_enabled": false,
+  "footer_enabled": false,
+  "source": "user_request: 标题为“总体架构”",
+  "approved": true,
+  "depends_on": [
+    "image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v12_clear_band_labels.pptx",
+    "image2pptx_runs/20260705-110458_page006_dual_image/qa/render_v12/page_006_render_v12-1.png"
+  ],
+  "resume_command": "rerun template assembly from v12 overlay with this template_text_lock"
+}

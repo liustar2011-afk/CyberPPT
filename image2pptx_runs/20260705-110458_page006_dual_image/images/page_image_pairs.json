@@ -1,0 +1,51 @@
+{
+  "mode": "cyberppt-dual-image-pair",
+  "rebuild_mode": "full_slide",
+  "output_variants": [
+    "full",
+    "background"
+  ],
+  "generation_contract": {
+    "mode": "full-slide",
+    "rebuild_mode": "full_slide",
+    "owner": "CyberPPT",
+    "slide_canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "brand_body_region": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720
+    },
+    "rule": "Use complete full/background slide images; output uses the no-text background as the visible image layer and editable text boxes above it."
+  },
+  "project_path": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/project",
+  "source_script": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/source_script.md",
+  "output_dir": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/images",
+  "pairs": [
+    {
+      "page_number": 6,
+      "title": "总体架构按照“数据底座-评价证据-评价模型-结果应用-运营保障”组织",
+      "full": {
+        "filename": "page_006_full.png",
+        "path": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/images/page_006_full.png",
+        "status": "Generated",
+        "image_size": {
+          "width": 1672,
+          "height": 941
+        }
+      },
+      "background": {
+        "filename": "page_006_background.png",
+        "path": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/images/page_006_background.png",
+        "status": "Generated",
+        "image_size": {
+          "width": 1672,
+          "height": 941
+        }
+      }
+    }
+  ]
+}

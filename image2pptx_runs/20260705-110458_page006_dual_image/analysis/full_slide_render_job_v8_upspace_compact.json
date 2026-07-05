@@ -1,0 +1,6577 @@
+{
+  "canvas": {
+    "width": 1280,
+    "height": 720
+  },
+  "slide": {
+    "width_in": 13.333333,
+    "height_in": 7.5
+  },
+  "background": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/project/images/normalized/page_006_background_1280x720.png",
+  "output_pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v8_upspace_compact.pptx",
+  "shapes": [
+    {
+      "type": "ellipse",
+      "bbox": [
+        290.5,
+        72.0,
+        310.5,
+        92.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        489.5,
+        72.0,
+        509.5,
+        92.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        688.5,
+        72.0,
+        708.5,
+        92.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        290.5,
+        202.0,
+        310.5,
+        222.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        489.5,
+        202.0,
+        509.5,
+        222.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        688.5,
+        202.0,
+        708.5,
+        222.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        290.5,
+        332.0,
+        310.5,
+        352.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        489.5,
+        332.0,
+        509.5,
+        352.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        688.5,
+        332.0,
+        708.5,
+        352.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        1159.0,
+        77.5,
+        1177.0,
+        95.5
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        1159.0,
+        184.5,
+        1177.0,
+        202.5
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        1159.0,
+        290.5,
+        1177.0,
+        308.5
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        1159.0,
+        397.5,
+        1177.0,
+        415.5
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        1159.0,
+        503.5,
+        1177.0,
+        521.5
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        1159.0,
+        610.5,
+        1177.0,
+        628.5
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    }
+  ],
+  "boxes": [
+    {
+      "text": "数据基础",
+      "bbox": [
+        58.0,
+        18.0,
+        127.0,
+        37.0
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "（多源汇聚）",
+      "bbox": [
+        44.675,
+        35.6,
+        142.325,
+        52.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.96,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          59.0,
+          36.0,
+          128.0,
+          52.0
+        ]
+      }
+    },
+    {
+      "text": "企业/业务数据",
+      "bbox": [
+        49.618,
+        76.6,
+        156.382,
+        93.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 106.764,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          69.0,
+          77.0,
+          137.0,
+          93.0
+        ]
+      }
+    },
+    {
+      "text": "经营管理数据",
+      "bbox": [
+        80.0,
+        97.8,
+        163.7,
+        112.2
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          99.0,
+          145.0,
+          111.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        98.5,
+        75.0,
+        111.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "项目执行数据",
+      "bbox": [
+        80.0,
+        116.8,
+        163.7,
+        131.2
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          118.0,
+          144.0,
+          130.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        99.25,
+        75.0,
+        111.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "合同订单数据",
+      "bbox": [
+        80.0,
+        135.8,
+        163.7,
+        150.2
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          137.0,
+          144.0,
+          149.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        114.65,
+        75.0,
+        127.15
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "绩效与指标数据",
+      "bbox": [
+        80.0,
+        152.3,
+        177.65,
+        166.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          153.0,
+          154.0,
+          166.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        152.5,
+        75.0,
+        166.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "……",
+      "bbox": [
+        80.0,
+        166.3,
+        108.0,
+        180.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.9,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 27.9,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          169.0,
+          108.0,
+          178.0
+        ]
+      }
+    },
+    {
+      "text": "内部职能数据",
+      "bbox": [
+        54.175,
+        202.6,
+        151.825,
+        219.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          69.0,
+          203.0,
+          137.0,
+          219.0
+        ]
+      }
+    },
+    {
+      "text": "人力资源数据",
+      "bbox": [
+        80.0,
+        226.3,
+        163.7,
+        240.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          227.0,
+          145.0,
+          240.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        205.75,
+        75.0,
+        219.25
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "财务管理数据",
+      "bbox": [
+        80.0,
+        243.3,
+        163.7,
+        257.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          244.0,
+          145.0,
+          257.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        243.5,
+        75.0,
+        257.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "法务合规数据",
+      "bbox": [
+        80.0,
+        261.3,
+        163.7,
+        275.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          262.0,
+          145.0,
+          275.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        261.5,
+        75.0,
+        275.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "采购供应链数据",
+      "bbox": [
+        80.0,
+        277.3,
+        177.65,
+        291.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          278.0,
+          154.0,
+          291.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        277.5,
+        75.0,
+        291.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "……",
+      "bbox": [
+        80.0,
+        293.3,
+        108.0,
+        307.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.9,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 27.9,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          296.0,
+          108.0,
+          305.0
+        ]
+      }
+    },
+    {
+      "text": "外部公共数据",
+      "bbox": [
+        54.175,
+        330.6,
+        151.825,
+        347.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          69.0,
+          331.0,
+          137.0,
+          347.0
+        ]
+      }
+    },
+    {
+      "text": "工商税务数据",
+      "bbox": [
+        80.0,
+        354.3,
+        163.7,
+        368.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          355.0,
+          145.0,
+          368.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        354.5,
+        75.0,
+        368.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "信用/司法数据",
+      "bbox": [
+        80.0,
+        371.3,
+        171.512,
+        385.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 91.512,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          372.0,
+          147.0,
+          385.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        371.5,
+        75.0,
+        385.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "进出口与海关数据",
+      "bbox": [
+        80.0,
+        388.3,
+        191.6,
+        402.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 111.6,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          389.0,
+          163.0,
+          402.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        388.5,
+        75.0,
+        402.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "宏观经济数据",
+      "bbox": [
+        80.0,
+        405.3,
+        163.7,
+        419.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          406.0,
+          145.0,
+          419.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        405.5,
+        75.0,
+        419.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "……",
+      "bbox": [
+        80.0,
+        421.3,
+        108.0,
+        435.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.9,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 27.9,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          424.0,
+          108.0,
+          433.0
+        ]
+      }
+    },
+    {
+      "text": "外部专业机构数据",
+      "bbox": [
+        37.9,
+        459.0,
+        168.1,
+        476.0
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 130.2,
+        "required_height_px": 17.0,
+        "original_bbox": [
+          62.0,
+          459.0,
+          144.0,
+          476.0
+        ]
+      }
+    },
+    {
+      "text": "评级评估数据",
+      "bbox": [
+        80.0,
+        482.3,
+        163.7,
+        496.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          483.0,
+          145.0,
+          496.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        482.5,
+        75.0,
+        496.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "行业基准数据",
+      "bbox": [
+        80.0,
+        499.3,
+        163.7,
+        513.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          500.0,
+          145.0,
+          513.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        499.5,
+        75.0,
+        513.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "ESG/HSE评估数据",
+      "bbox": [
+        80.0,
+        516.3,
+        190.484,
+        530.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 110.484,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          517.0,
+          165.0,
+          530.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        516.5,
+        75.0,
+        530.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "风险情报数据",
+      "bbox": [
+        80.0,
+        534.3,
+        163.7,
+        548.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          535.0,
+          145.0,
+          548.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        71.0,
+        534.5,
+        75.0,
+        548.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "……",
+      "bbox": [
+        80.0,
+        549.3,
+        108.0,
+        563.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.9,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 27.9,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          80.0,
+          552.0,
+          108.0,
+          561.0
+        ]
+      }
+    },
+    {
+      "text": "核心能力评估空间（评估模型与能力引擎）",
+      "bbox": [
+        389.0,
+        18.0,
+        746.0,
+        38.0
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "1",
+      "bbox": [
+        290.5,
+        73.0,
+        310.5,
+        94.0
+      ],
+      "font_size": 7.2,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "目录管理",
+      "bbox": [
+        333.95,
+        75.6,
+        399.05,
+        92.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          337.0,
+          76.0,
+          396.0,
+          92.0
+        ]
+      }
+    },
+    {
+      "text": "指标/能力目录",
+      "bbox": [
+        347.0,
+        104.6,
+        438.512,
+        119.0
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 91.512,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          347.0,
+          106.0,
+          421.0,
+          119.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        338.0,
+        105.05,
+        342.0,
+        118.55
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "评估维度管理",
+      "bbox": [
+        347.0,
+        120.0,
+        430.7,
+        134.4
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          347.0,
+          126.0,
+          421.0,
+          139.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        338.0,
+        120.45,
+        342.0,
+        133.95
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "分类与标签管理",
+      "bbox": [
+        347.0,
+        135.4,
+        444.65,
+        149.8
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          347.0,
+          146.0,
+          430.0,
+          159.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        338.0,
+        135.85,
+        342.0,
+        149.35
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "目录版本管理",
+      "bbox": [
+        347.0,
+        150.8,
+        430.7,
+        165.2
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          347.0,
+          165.0,
+          421.0,
+          178.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        338.0,
+        151.25,
+        342.0,
+        164.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "2",
+      "bbox": [
+        489.5,
+        73.0,
+        509.5,
+        94.0
+      ],
+      "font_size": 7.2,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "身份认证",
+      "bbox": [
+        531.95,
+        75.6,
+        597.05,
+        92.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          535.0,
+          76.0,
+          594.0,
+          92.0
+        ]
+      }
+    },
+    {
+      "text": "主体身份管理",
+      "bbox": [
+        550.0,
+        104.6,
+        633.7,
+        119.0
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          550.0,
+          106.0,
+          614.0,
+          119.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        541.0,
+        105.05,
+        545.0,
+        118.55
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "人员身份管理",
+      "bbox": [
+        550.0,
+        120.0,
+        633.7,
+        134.4
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          550.0,
+          126.0,
+          614.0,
+          139.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        541.0,
+        120.45,
+        545.0,
+        133.95
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "可信身份校验",
+      "bbox": [
+        550.0,
+        135.4,
+        633.7,
+        149.8
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          550.0,
+          146.0,
+          614.0,
+          159.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        541.0,
+        135.85,
+        545.0,
+        149.35
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "认证策略配置",
+      "bbox": [
+        550.0,
+        150.8,
+        633.7,
+        165.2
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          550.0,
+          165.0,
+          614.0,
+          178.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        541.0,
+        151.25,
+        545.0,
+        164.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "3",
+      "bbox": [
+        688.5,
+        73.0,
+        708.5,
+        94.0
+      ],
+      "font_size": 7.2,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "授权控制",
+      "bbox": [
+        734.95,
+        75.6,
+        800.05,
+        92.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          738.0,
+          76.0,
+          797.0,
+          92.0
+        ]
+      }
+    },
+    {
+      "text": "数据资源授权",
+      "bbox": [
+        752.0,
+        104.6,
+        835.7,
+        119.0
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          752.0,
+          106.0,
+          816.0,
+          119.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        743.0,
+        105.05,
+        747.0,
+        118.55
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "能力访问授权",
+      "bbox": [
+        752.0,
+        120.0,
+        835.7,
+        134.4
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          752.0,
+          126.0,
+          816.0,
+          139.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        743.0,
+        120.45,
+        747.0,
+        133.95
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "角色权限管理",
+      "bbox": [
+        752.0,
+        135.4,
+        835.7,
+        149.8
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          752.0,
+          146.0,
+          816.0,
+          159.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        743.0,
+        135.85,
+        747.0,
+        149.35
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "授权策略管理",
+      "bbox": [
+        752.0,
+        150.8,
+        835.7,
+        165.2
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          752.0,
+          165.0,
+          816.0,
+          178.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        743.0,
+        151.25,
+        747.0,
+        164.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "4",
+      "bbox": [
+        290.5,
+        203.0,
+        310.5,
+        224.0
+      ],
+      "font_size": 7.2,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "规则调用",
+      "bbox": [
+        333.95,
+        204.6,
+        399.05,
+        221.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          337.0,
+          205.0,
+          396.0,
+          221.0
+        ]
+      }
+    },
+    {
+      "text": "评估规则引擎",
+      "bbox": [
+        347.0,
+        233.6,
+        430.7,
+        248.0
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          347.0,
+          235.0,
+          421.0,
+          248.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        338.0,
+        234.05,
+        342.0,
+        247.55
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "评分算法管理",
+      "bbox": [
+        347.0,
+        249.0,
+        430.7,
+        263.4
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          347.0,
+          254.0,
+          421.0,
+          267.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        338.0,
+        249.45,
+        342.0,
+        262.95
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "规则版本管理",
+      "bbox": [
+        347.0,
+        264.4,
+        430.7,
+        278.8
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          347.0,
+          274.0,
+          421.0,
+          287.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        338.0,
+        264.85,
+        342.0,
+        278.35
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "规则执行日志",
+      "bbox": [
+        347.0,
+        279.8,
+        430.7,
+        294.2
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          347.0,
+          293.0,
+          421.0,
+          306.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        338.0,
+        280.25,
+        342.0,
+        293.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "5",
+      "bbox": [
+        489.5,
+        203.0,
+        509.5,
+        224.0
+      ],
+      "font_size": 7.2,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "证据管理",
+      "bbox": [
+        531.95,
+        204.6,
+        597.05,
+        221.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          535.0,
+          205.0,
+          594.0,
+          221.0
+        ]
+      }
+    },
+    {
+      "text": "证据采集接入",
+      "bbox": [
+        550.0,
+        233.6,
+        633.7,
+        248.0
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          550.0,
+          235.0,
+          624.0,
+          248.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        541.0,
+        234.05,
+        545.0,
+        247.55
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "证据标准化",
+      "bbox": [
+        550.0,
+        249.0,
+        619.75,
+        263.4
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 69.75,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          550.0,
+          254.0,
+          614.0,
+          267.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        541.0,
+        249.45,
+        545.0,
+        262.95
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "证据质量校验",
+      "bbox": [
+        550.0,
+        264.4,
+        633.7,
+        278.8
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          550.0,
+          274.0,
+          624.0,
+          287.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        541.0,
+        264.85,
+        545.0,
+        278.35
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "证据关联映射",
+      "bbox": [
+        550.0,
+        279.8,
+        633.7,
+        294.2
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          550.0,
+          293.0,
+          624.0,
+          306.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        541.0,
+        280.25,
+        545.0,
+        293.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "6",
+      "bbox": [
+        688.5,
+        203.0,
+        708.5,
+        224.0
+      ],
+      "font_size": 7.2,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "能力评估",
+      "bbox": [
+        734.95,
+        204.6,
+        800.05,
+        221.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          738.0,
+          205.0,
+          797.0,
+          221.0
+        ]
+      }
+    },
+    {
+      "text": "能力评分计算",
+      "bbox": [
+        752.0,
+        233.6,
+        835.7,
+        248.0
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          752.0,
+          235.0,
+          816.0,
+          248.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        743.0,
+        234.05,
+        747.0,
+        247.55
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "维度权重配置",
+      "bbox": [
+        752.0,
+        249.0,
+        835.7,
+        263.4
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          752.0,
+          254.0,
+          826.0,
+          267.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        743.0,
+        249.45,
+        747.0,
+        262.95
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "评估结果校验",
+      "bbox": [
+        752.0,
+        264.4,
+        835.7,
+        278.8
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          752.0,
+          274.0,
+          826.0,
+          287.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        743.0,
+        264.85,
+        747.0,
+        278.35
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "敏感项校验",
+      "bbox": [
+        752.0,
+        279.8,
+        821.75,
+        294.2
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 69.75,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          752.0,
+          293.0,
+          816.0,
+          306.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        743.0,
+        280.25,
+        747.0,
+        293.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "7",
+      "bbox": [
+        290.5,
+        333.0,
+        310.5,
+        354.0
+      ],
+      "font_size": 7.2,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "结果生成",
+      "bbox": [
+        333.95,
+        334.6,
+        399.05,
+        351.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          337.0,
+          335.0,
+          396.0,
+          351.0
+        ]
+      }
+    },
+    {
+      "text": "评估报告生成",
+      "bbox": [
+        347.0,
+        363.6,
+        430.7,
+        378.0
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          347.0,
+          365.0,
+          421.0,
+          378.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        338.0,
+        364.05,
+        342.0,
+        377.55
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "结果可视化",
+      "bbox": [
+        347.0,
+        379.0,
+        416.75,
+        393.4
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 69.75,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          347.0,
+          384.0,
+          411.0,
+          397.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        338.0,
+        379.45,
+        342.0,
+        392.95
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "结论与建议",
+      "bbox": [
+        347.0,
+        394.4,
+        416.75,
+        408.8
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 69.75,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          347.0,
+          404.0,
+          411.0,
+          417.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        338.0,
+        394.85,
+        342.0,
+        408.35
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "结果导出共享",
+      "bbox": [
+        347.0,
+        409.8,
+        430.7,
+        424.2
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          347.0,
+          423.0,
+          421.0,
+          436.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        338.0,
+        410.25,
+        342.0,
+        423.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "8",
+      "bbox": [
+        489.5,
+        333.0,
+        509.5,
+        354.0
+      ],
+      "font_size": 7.2,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "版本溯源",
+      "bbox": [
+        531.95,
+        334.6,
+        597.05,
+        351.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          535.0,
+          335.0,
+          594.0,
+          351.0
+        ]
+      }
+    },
+    {
+      "text": "版本记录管理",
+      "bbox": [
+        550.0,
+        363.6,
+        633.7,
+        378.0
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          550.0,
+          365.0,
+          624.0,
+          378.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        541.0,
+        364.05,
+        545.0,
+        377.55
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "变更影响追踪",
+      "bbox": [
+        550.0,
+        379.0,
+        633.7,
+        393.4
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          550.0,
+          384.0,
+          624.0,
+          397.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        541.0,
+        379.45,
+        545.0,
+        392.95
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "溯源链路管理",
+      "bbox": [
+        550.0,
+        394.4,
+        633.7,
+        408.8
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          550.0,
+          404.0,
+          624.0,
+          417.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        541.0,
+        394.85,
+        545.0,
+        408.35
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "回溯与对比",
+      "bbox": [
+        550.0,
+        409.8,
+        619.75,
+        424.2
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 69.75,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          550.0,
+          423.0,
+          614.0,
+          436.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        541.0,
+        410.25,
+        545.0,
+        423.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "9",
+      "bbox": [
+        688.5,
+        333.0,
+        708.5,
+        354.0
+      ],
+      "font_size": 7.2,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "证书审核",
+      "bbox": [
+        734.95,
+        334.6,
+        800.05,
+        351.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          738.0,
+          335.0,
+          797.0,
+          351.0
+        ]
+      }
+    },
+    {
+      "text": "结果合规审核",
+      "bbox": [
+        752.0,
+        363.6,
+        835.7,
+        378.0
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          752.0,
+          365.0,
+          826.0,
+          378.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        743.0,
+        364.05,
+        747.0,
+        377.55
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "证书签发管理",
+      "bbox": [
+        752.0,
+        379.0,
+        835.7,
+        393.4
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          752.0,
+          384.0,
+          826.0,
+          397.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        743.0,
+        379.45,
+        747.0,
+        392.95
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "证书状态管理",
+      "bbox": [
+        752.0,
+        394.4,
+        835.7,
+        408.8
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          752.0,
+          404.0,
+          826.0,
+          417.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        743.0,
+        394.85,
+        747.0,
+        408.35
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "撤销与更新",
+      "bbox": [
+        752.0,
+        409.8,
+        821.75,
+        424.2
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 69.75,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          752.0,
+          423.0,
+          816.0,
+          436.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        743.0,
+        410.25,
+        747.0,
+        423.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "反馈迭代",
+      "bbox": [
+        883.45,
+        259.0,
+        948.55,
+        293.0
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.93,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 34.0,
+        "original_bbox": [
+          903.0,
+          259.0,
+          929.0,
+          293.0
+        ]
+      }
+    },
+    {
+      "text": "证据支撑",
+      "bbox": [
+        571.0,
+        454.1,
+        636.1,
+        470.9
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.97,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          571.0,
+          455.0,
+          631.0,
+          470.0
+        ]
+      }
+    },
+    {
+      "text": "对象/证据池（评估对象与关键证据沉淀）",
+      "bbox": [
+        415.968,
+        476.0,
+        718.032,
+        493.0
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 302.064,
+        "required_height_px": 17.0,
+        "original_bbox": [
+          424.0,
+          476.0,
+          710.0,
+          493.0
+        ]
+      }
+    },
+    {
+      "text": "企业主体",
+      "bbox": [
+        305.0,
+        524.1,
+        370.1,
+        540.9
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          305.0,
+          525.0,
+          355.0,
+          540.0
+        ]
+      }
+    },
+    {
+      "text": "海外项目",
+      "bbox": [
+        402.0,
+        524.1,
+        467.1,
+        540.9
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          402.0,
+          525.0,
+          454.0,
+          540.0
+        ]
+      }
+    },
+    {
+      "text": "技术设备",
+      "bbox": [
+        503.0,
+        524.1,
+        568.1,
+        540.9
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          503.0,
+          525.0,
+          554.0,
+          540.0
+        ]
+      }
+    },
+    {
+      "text": "财务信用",
+      "bbox": [
+        606.0,
+        524.1,
+        671.1,
+        540.9
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          606.0,
+          525.0,
+          657.0,
+          540.0
+        ]
+      }
+    },
+    {
+      "text": "E&S/HSE",
+      "bbox": [
+        707.0,
+        513.1,
+        770.798,
+        529.9
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.96,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 63.798,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          707.0,
+          514.0,
+          757.0,
+          529.0
+        ]
+      }
+    },
+    {
+      "text": "合规",
+      "bbox": [
+        721.0,
+        528.1,
+        753.55,
+        544.9
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 32.55,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          721.0,
+          529.0,
+          747.0,
+          544.0
+        ]
+      }
+    },
+    {
+      "text": "国别市场",
+      "bbox": [
+        811.0,
+        513.1,
+        876.1,
+        529.9
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          811.0,
+          514.0,
+          862.0,
+          529.0
+        ]
+      }
+    },
+    {
+      "text": "与风险",
+      "bbox": [
+        824.0,
+        528.1,
+        872.825,
+        544.9
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 48.825,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          824.0,
+          529.0,
+          862.0,
+          544.0
+        ]
+      }
+    },
+    {
+      "text": "结果应用",
+      "bbox": [
+        998.0,
+        18.0,
+        1066.0,
+        37.0
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "（多场景赋能）",
+      "bbox": [
+        974.538,
+        35.6,
+        1088.463,
+        52.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.96,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 113.925,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          997.0,
+          36.0,
+          1066.0,
+          52.0
+        ]
+      }
+    },
+    {
+      "text": "企业应用",
+      "bbox": [
+        998.0,
+        76.1,
+        1063.1,
+        92.9
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          998.0,
+          77.0,
+          1050.0,
+          92.0
+        ]
+      }
+    },
+    {
+      "text": "战略决策支持",
+      "bbox": [
+        1012.0,
+        104.3,
+        1095.7,
+        118.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          105.0,
+          1085.0,
+          118.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        104.5,
+        1007.0,
+        118.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "投资立项评估",
+      "bbox": [
+        1012.0,
+        123.3,
+        1095.7,
+        137.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          124.0,
+          1085.0,
+          137.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        123.5,
+        1007.0,
+        137.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "项目投标支持",
+      "bbox": [
+        1012.0,
+        143.3,
+        1095.7,
+        157.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          144.0,
+          1085.0,
+          157.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        143.5,
+        1007.0,
+        157.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "绩效考核应用",
+      "bbox": [
+        1012.0,
+        162.3,
+        1095.7,
+        176.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          163.0,
+          1085.0,
+          176.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        162.5,
+        1007.0,
+        176.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "风险预警控制",
+      "bbox": [
+        1012.0,
+        181.3,
+        1095.7,
+        195.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          182.0,
+          1085.0,
+          195.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        181.5,
+        1007.0,
+        195.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "外部合作伙伴应用",
+      "bbox": [
+        972.4,
+        248.6,
+        1102.6,
+        265.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 130.2,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          995.0,
+          249.0,
+          1080.0,
+          265.0
+        ]
+      }
+    },
+    {
+      "text": "金融机构授信",
+      "bbox": [
+        1012.0,
+        278.3,
+        1095.7,
+        292.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          279.0,
+          1085.0,
+          292.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        278.5,
+        1007.0,
+        292.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "供应商准入评估",
+      "bbox": [
+        1012.0,
+        298.3,
+        1109.65,
+        312.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          299.0,
+          1094.0,
+          312.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        298.5,
+        1007.0,
+        312.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "合作伙伴尽调",
+      "bbox": [
+        1012.0,
+        317.3,
+        1095.7,
+        331.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          318.0,
+          1085.0,
+          331.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        317.5,
+        1007.0,
+        331.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "保险承保参考",
+      "bbox": [
+        1012.0,
+        336.3,
+        1095.7,
+        350.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          337.0,
+          1085.0,
+          350.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        336.5,
+        1007.0,
+        350.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "法律合规尽职",
+      "bbox": [
+        1012.0,
+        356.3,
+        1095.7,
+        370.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          357.0,
+          1085.0,
+          370.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        356.5,
+        1007.0,
+        370.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "行业组织应用",
+      "bbox": [
+        983.175,
+        418.6,
+        1080.825,
+        435.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          998.0,
+          419.0,
+          1066.0,
+          435.0
+        ]
+      }
+    },
+    {
+      "text": "行业能力对标",
+      "bbox": [
+        1012.0,
+        447.3,
+        1095.7,
+        461.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          448.0,
+          1085.0,
+          461.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        447.5,
+        1007.0,
+        461.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "标准制定参考",
+      "bbox": [
+        1012.0,
+        467.3,
+        1095.7,
+        481.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          468.0,
+          1085.0,
+          481.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        467.5,
+        1007.0,
+        481.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "行业洞察分析",
+      "bbox": [
+        1012.0,
+        486.3,
+        1095.7,
+        500.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          487.0,
+          1085.0,
+          500.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        486.5,
+        1007.0,
+        500.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "政策研究支持",
+      "bbox": [
+        1012.0,
+        505.3,
+        1095.7,
+        519.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          506.0,
+          1085.0,
+          519.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        505.5,
+        1007.0,
+        519.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "公共服务支撑",
+      "bbox": [
+        1012.0,
+        525.3,
+        1095.7,
+        539.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1012.0,
+          526.0,
+          1085.0,
+          539.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1003.0,
+        525.5,
+        1007.0,
+        539.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "运营保障",
+      "bbox": [
+        1171.0,
+        18.0,
+        1238.0,
+        37.0
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "（安全合规）",
+      "bbox": [
+        1156.175,
+        35.6,
+        1253.825,
+        52.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.96,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          1171.0,
+          36.0,
+          1239.0,
+          52.0
+        ]
+      }
+    },
+    {
+      "text": "1",
+      "bbox": [
+        1159.0,
+        78.5,
+        1177.0,
+        97.5
+      ],
+      "font_size": 6.8,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "分类分级",
+      "bbox": [
+        1197.0,
+        76.5,
+        1262.1,
+        93.3
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          1197.0,
+          89.0,
+          1248.0,
+          104.0
+        ]
+      }
+    },
+    {
+      "text": "数据与能力",
+      "bbox": [
+        1194.0,
+        98.3,
+        1263.75,
+        112.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 69.75,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1194.0,
+          118.0,
+          1254.0,
+          132.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1188.0,
+        117.5,
+        1192.0,
+        132.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "分类分级管理",
+      "bbox": [
+        1194.0,
+        113.7,
+        1277.7,
+        128.1
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1194.0,
+          134.0,
+          1263.0,
+          148.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1188.0,
+        133.5,
+        1192.0,
+        148.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "2",
+      "bbox": [
+        1159.0,
+        185.5,
+        1177.0,
+        204.5
+      ],
+      "font_size": 6.8,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "授权管理",
+      "bbox": [
+        1197.0,
+        183.5,
+        1262.1,
+        200.3
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          1197.0,
+          196.0,
+          1248.0,
+          211.0
+        ]
+      }
+    },
+    {
+      "text": "访问主体与",
+      "bbox": [
+        1195.0,
+        205.3,
+        1264.75,
+        219.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 69.75,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1195.0,
+          225.0,
+          1254.0,
+          239.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1189.0,
+        224.5,
+        1193.0,
+        239.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "范围授权管理",
+      "bbox": [
+        1194.0,
+        220.7,
+        1277.7,
+        235.1
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1194.0,
+          240.0,
+          1263.0,
+          254.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1188.0,
+        220.65,
+        1192.0,
+        235.15
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "3",
+      "bbox": [
+        1159.0,
+        291.5,
+        1177.0,
+        310.5
+      ],
+      "font_size": 6.8,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "权限控制",
+      "bbox": [
+        1197.0,
+        289.5,
+        1262.1,
+        306.3
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          1197.0,
+          303.0,
+          1248.0,
+          318.0
+        ]
+      }
+    },
+    {
+      "text": "细粒度权限",
+      "bbox": [
+        1194.0,
+        311.3,
+        1263.75,
+        325.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 69.75,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1194.0,
+          332.0,
+          1254.0,
+          346.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1188.0,
+        311.25,
+        1192.0,
+        325.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "与策略控制",
+      "bbox": [
+        1194.0,
+        326.7,
+        1263.75,
+        341.1
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 69.75,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1194.0,
+          347.0,
+          1254.0,
+          361.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1188.0,
+        326.65,
+        1192.0,
+        341.15
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "4",
+      "bbox": [
+        1159.0,
+        398.5,
+        1177.0,
+        417.5
+      ],
+      "font_size": 6.8,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "数据脱敏",
+      "bbox": [
+        1197.0,
+        396.5,
+        1262.1,
+        413.3
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          1197.0,
+          410.0,
+          1248.0,
+          425.0
+        ]
+      }
+    },
+    {
+      "text": "敏感数据识别",
+      "bbox": [
+        1194.0,
+        418.3,
+        1277.7,
+        432.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1194.0,
+          439.0,
+          1263.0,
+          453.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1188.0,
+        418.25,
+        1192.0,
+        432.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "与脱敏处理",
+      "bbox": [
+        1194.0,
+        433.7,
+        1263.75,
+        448.1
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 69.75,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1194.0,
+          454.0,
+          1254.0,
+          468.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1188.0,
+        433.65,
+        1192.0,
+        448.15
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "5",
+      "bbox": [
+        1159.0,
+        504.5,
+        1177.0,
+        523.5
+      ],
+      "font_size": 6.8,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "发布审核",
+      "bbox": [
+        1197.0,
+        502.5,
+        1262.1,
+        519.3
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          1197.0,
+          516.0,
+          1248.0,
+          531.0
+        ]
+      }
+    },
+    {
+      "text": "对外发布前",
+      "bbox": [
+        1194.0,
+        524.3,
+        1263.75,
+        538.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 69.75,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1194.0,
+          545.0,
+          1254.0,
+          559.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1188.0,
+        524.25,
+        1192.0,
+        538.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "合规审核",
+      "bbox": [
+        1194.0,
+        539.7,
+        1249.8,
+        554.1
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 55.8,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1194.0,
+          560.0,
+          1245.0,
+          574.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1188.0,
+        539.65,
+        1192.0,
+        554.15
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "6",
+      "bbox": [
+        1159.0,
+        611.5,
+        1177.0,
+        630.5
+      ],
+      "font_size": 6.8,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "审计追踪",
+      "bbox": [
+        1197.0,
+        609.5,
+        1262.1,
+        626.3
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 65.1,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          1197.0,
+          623.0,
+          1248.0,
+          638.0
+        ]
+      }
+    },
+    {
+      "text": "全链路操作",
+      "bbox": [
+        1194.0,
+        631.3,
+        1263.75,
+        645.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 69.75,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1194.0,
+          652.0,
+          1254.0,
+          666.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1188.0,
+        631.25,
+        1192.0,
+        645.75
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "日志留存审计",
+      "bbox": [
+        1194.0,
+        646.7,
+        1277.7,
+        661.1
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1194.0,
+          667.0,
+          1263.0,
+          681.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1188.0,
+        646.65,
+        1192.0,
+        661.15
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "服务价值层",
+      "bbox": [
+        41.0,
+        631.0,
+        126.0,
+        652.0
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "（能力输出与服务支撑）",
+      "bbox": [
+        0.0,
+        660.0,
+        179.025,
+        679.0
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 179.025,
+        "required_height_px": 19.0,
+        "original_bbox": [
+          18.0,
+          660.0,
+          149.0,
+          679.0
+        ]
+      }
+    },
+    {
+      "text": "基础评估服务",
+      "bbox": [
+        234.675,
+        620.6,
+        332.325,
+        637.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          246.0,
+          621.0,
+          321.0,
+          637.0
+        ]
+      }
+    },
+    {
+      "text": "标准化评估服务",
+      "bbox": [
+        256.0,
+        648.3,
+        353.65,
+        662.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          256.0,
+          649.0,
+          340.0,
+          662.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        247.0,
+        648.5,
+        251.0,
+        662.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "快速评估工具",
+      "bbox": [
+        256.0,
+        667.3,
+        339.7,
+        681.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          256.0,
+          668.0,
+          330.0,
+          681.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        247.0,
+        667.5,
+        251.0,
+        681.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "评估模板中心",
+      "bbox": [
+        256.0,
+        685.3,
+        339.7,
+        699.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          256.0,
+          686.0,
+          330.0,
+          699.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        247.0,
+        685.5,
+        251.0,
+        699.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "专项评估服务",
+      "bbox": [
+        416.675,
+        620.6,
+        514.325,
+        637.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          428.0,
+          621.0,
+          503.0,
+          637.0
+        ]
+      }
+    },
+    {
+      "text": "专项能力评估",
+      "bbox": [
+        437.0,
+        648.3,
+        520.7,
+        662.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          437.0,
+          649.0,
+          512.0,
+          662.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        428.0,
+        648.5,
+        432.0,
+        662.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "行业场景评估",
+      "bbox": [
+        437.0,
+        667.3,
+        520.7,
+        681.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          437.0,
+          668.0,
+          512.0,
+          681.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        428.0,
+        667.5,
+        432.0,
+        681.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "定制化评估服务",
+      "bbox": [
+        437.0,
+        685.3,
+        534.65,
+        699.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          437.0,
+          686.0,
+          521.0,
+          699.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        428.0,
+        685.5,
+        432.0,
+        699.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "监测订阅服务",
+      "bbox": [
+        604.675,
+        620.6,
+        702.325,
+        637.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          616.0,
+          621.0,
+          691.0,
+          637.0
+        ]
+      }
+    },
+    {
+      "text": "能力动态监测",
+      "bbox": [
+        624.0,
+        648.3,
+        707.7,
+        662.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          624.0,
+          649.0,
+          699.0,
+          662.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        615.0,
+        648.5,
+        619.0,
+        662.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "风险预警订阅",
+      "bbox": [
+        624.0,
+        667.3,
+        707.7,
+        681.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          624.0,
+          668.0,
+          699.0,
+          681.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        615.0,
+        667.5,
+        619.0,
+        681.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "指标变化推送",
+      "bbox": [
+        624.0,
+        685.3,
+        707.7,
+        699.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          624.0,
+          686.0,
+          699.0,
+          699.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        615.0,
+        685.5,
+        619.0,
+        699.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "国际交流服务",
+      "bbox": [
+        794.675,
+        620.6,
+        892.325,
+        637.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          806.0,
+          621.0,
+          881.0,
+          637.0
+        ]
+      }
+    },
+    {
+      "text": "国际标准对接",
+      "bbox": [
+        814.0,
+        648.3,
+        897.7,
+        662.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          814.0,
+          649.0,
+          889.0,
+          662.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        805.0,
+        648.5,
+        809.0,
+        662.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "跨境互认支持",
+      "bbox": [
+        814.0,
+        667.3,
+        897.7,
+        681.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          814.0,
+          668.0,
+          889.0,
+          681.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        805.0,
+        667.5,
+        809.0,
+        681.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "国别信息服务",
+      "bbox": [
+        814.0,
+        685.3,
+        897.7,
+        699.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          814.0,
+          686.0,
+          889.0,
+          699.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        805.0,
+        685.5,
+        809.0,
+        699.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "生态协作服务",
+      "bbox": [
+        984.675,
+        620.6,
+        1082.325,
+        637.4
+      ],
+      "font_size": 10.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract",
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 97.65,
+        "required_height_px": 16.8,
+        "original_bbox": [
+          996.0,
+          621.0,
+          1071.0,
+          637.0
+        ]
+      }
+    },
+    {
+      "text": "合作生态对接",
+      "bbox": [
+        1004.0,
+        648.3,
+        1087.7,
+        662.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1004.0,
+          649.0,
+          1079.0,
+          662.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        995.0,
+        648.5,
+        999.0,
+        662.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "能力开放共享",
+      "bbox": [
+        1004.0,
+        667.3,
+        1087.7,
+        681.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1004.0,
+          668.0,
+          1079.0,
+          681.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        995.0,
+        667.5,
+        999.0,
+        681.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    },
+    {
+      "text": "生态共建共赢",
+      "bbox": [
+        1004.0,
+        685.3,
+        1087.7,
+        699.7
+      ],
+      "font_size": 9.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "vision-json",
+      "confidence": 0.94,
+      "office_textbox_fit": {
+        "min_font_size": 9.0,
+        "required_width_px": 83.7,
+        "required_height_px": 14.4,
+        "original_bbox": [
+          1004.0,
+          686.0,
+          1079.0,
+          699.0
+        ]
+      }
+    },
+    {
+      "text": "•",
+      "bbox": [
+        995.0,
+        685.5,
+        999.0,
+        699.0
+      ],
+      "font_size": 7.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "wrap": false,
+      "source": "generated_bullet"
+    }
+  ]
+}
