@@ -19,6 +19,7 @@ if __package__ in {None, ""}:
 
 from .background_text_scan import scan_background_text
 from .alignment import AlignmentTransform, estimate_alignment
+from .container_workspace import build_container_workspace, write_container_workspace
 from .layout_qa import check_layout
 from .normalize import normalize_image
 from .office_textbox_fit import apply_office_textbox_fit
@@ -150,6 +151,8 @@ def _source_capture_text_mapping(page_number: int, boxes: list[dict]) -> dict:
                 "fill": box["fill"],
                 "font_weight": "700" if box.get("bold") else "400",
                 "align": box.get("align"),
+                "container_id": box.get("container_id"),
+                "role": box.get("role"),
                 "word_wrap": "\n" in str(box.get("text", "")),
                 "source": "semantic_plan",
                 "confidence": 1.0,
@@ -321,6 +324,14 @@ def build_page(args: argparse.Namespace) -> dict:
         background_image=background_norm,
         report_path=analysis / "office_textbox_fit.json",
     )
+    container_workspace = build_container_workspace(
+        page_number=args.page_number,
+        containers=list(plan.containers),
+        text_items=boxes,
+        stage="overlay",
+    )
+    container_workspace_path = analysis / "container_workspace" / f"page_{args.page_number:03d}_container_workspace.json"
+    write_container_workspace(container_workspace_path, container_workspace)
     _write_source_capture_inputs(
         out_dir,
         page_number=args.page_number,
@@ -400,6 +411,7 @@ def build_page(args: argparse.Namespace) -> dict:
         "text_content_qa": str(analysis / "text_content_qa.json"),
         "semantic_typography_qa": str(analysis / "semantic_typography_qa.json"),
         "office_textbox_fit": str(analysis / "office_textbox_fit.json"),
+        "container_workspace": str(container_workspace_path),
         "background_text_scan": str(analysis / "background_text_scan.json"),
         "source_capture_gate": str(analysis / "source_capture_gate.json"),
         "visual_preview": str(analysis / "visual_preview.json"),
@@ -416,6 +428,7 @@ def build_page(args: argparse.Namespace) -> dict:
             "text_content_qa": text_content_qa,
             "semantic_typography_qa": semantic_typography_qa,
             "office_textbox_fit": office_textbox_fit,
+            "container_workspace": container_workspace,
             "background_text_scan": background_scan,
             "source_capture_gate": source_capture_gate,
             "visual_preview": visual_preview,
@@ -470,6 +483,7 @@ def build_page(args: argparse.Namespace) -> dict:
             "text_content_qa": str(analysis / "text_content_qa.json"),
             "layout_qa": str(analysis / "layout_qa.json"),
             "semantic_typography_qa": str(analysis / "semantic_typography_qa.json"),
+            "container_workspace": str(container_workspace_path),
             "background_text_scan": str(analysis / "background_text_scan.json"),
             "visual_preview": str(analysis / "visual_preview.json"),
             "source_capture": str(analysis / "source_capture.json"),

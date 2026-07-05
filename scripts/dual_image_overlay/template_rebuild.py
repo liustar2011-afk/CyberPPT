@@ -14,6 +14,7 @@ if __package__ in {None, ""}:
 
 from .rebuild_modes import resolve_rebuild_mode as _resolve_rebuild_mode
 from .rebuild_modes import visual_reference_for_mode as _visual_reference_for_mode
+from .container_workspace import build_container_workspace, write_container_workspace
 from .qa_registry import write_page_quality_report
 from .source_capture import attach_render_delta_measurement, build_source_capture, build_source_capture_gate
 
@@ -72,6 +73,51 @@ def _template_gate(project_path: Path, *, export_requested: bool, exported_pptx:
 def _load_scene_graph_gates(project_path: Path) -> list[dict[str, Any]]:
     gate_paths = sorted((project_path / "analysis" / "scene_graph_gate").glob("page_*_scene_graph_gate.json"))
     return [_read_json(path) for path in gate_paths]
+
+
+def _build_template_container_workspaces(
+    project_path: Path,
+    source_capture: dict[str, Any],
+) -> dict[str, Any]:
+    workspace_dir = project_path / "analysis" / "container_workspace"
+    pages: list[dict[str, Any]] = []
+    for page in source_capture.get("pages", []):
+        if not isinstance(page, dict):
+            continue
+        page_number = page.get("page_number")
+        containers = [item for item in page.get("containers", []) if isinstance(item, dict)]
+        text_items = [item for item in page.get("text_objects", []) if isinstance(item, dict)]
+        if len(containers) == 1:
+            fallback_container_id = containers[0].get("id")
+            text_items = [
+                {**item, "container_id": item.get("container_id") or fallback_container_id}
+                for item in text_items
+            ]
+        workspace = build_container_workspace(
+            page_number=page_number if isinstance(page_number, int) else None,
+            containers=containers,
+            text_items=text_items,
+            stage="template",
+        )
+        if isinstance(page_number, int):
+            write_container_workspace(
+                workspace_dir / f"page_{page_number:03d}_container_workspace.json",
+                workspace,
+            )
+        pages.append(workspace)
+    error_count = sum(int(page.get("error_count", 0) or 0) for page in pages)
+    aggregate = {
+        "schema": "cyberppt.dual_image.container_workspace_set.v1",
+        "stage": "template",
+        "valid": bool(pages) and all(page.get("valid") for page in pages),
+        "page_count": len(pages),
+        "container_count": sum(int(page.get("container_count", 0) or 0) for page in pages),
+        "slot_count": sum(int(page.get("slot_count", 0) or 0) for page in pages),
+        "error_count": error_count,
+        "pages": pages,
+    }
+    write_container_workspace(workspace_dir / "container_workspace_index.json", aggregate)
+    return aggregate
 
 
 def run_vendor_rebuild(
@@ -148,6 +194,7 @@ def build_template_rebuild_readiness(
     _write_json(analysis_dir / "source_capture.json", source_capture)
     source_capture_gate = build_source_capture_gate(source_capture)
     _write_json(analysis_dir / "source_capture_gate.json", source_capture_gate)
+    container_workspace = _build_template_container_workspaces(project_path, source_capture)
 
     exported_pptx = _latest_pptx(project_path)
     template_gate = _template_gate(project_path, export_requested=export_requested, exported_pptx=exported_pptx)
@@ -169,6 +216,7 @@ def build_template_rebuild_readiness(
             "source_capture_gate": str(analysis_dir / "source_capture_gate.json"),
             "template_gate": str(analysis_dir / "template_gate.json"),
             "scene_graph_gates": str(analysis_dir / "scene_graph_gate"),
+            "container_workspace": str(analysis_dir / "container_workspace"),
             "visual_reference": visual_reference,
             "rendered_preview": str(rendered_preview) if rendered_preview else None,
             "exported_pptx": exported_pptx,
@@ -179,6 +227,7 @@ def build_template_rebuild_readiness(
             "source_capture_gate": source_capture_gate,
             "template_gate": template_gate,
             "scene_graph_gates": scene_graph_gates,
+            "container_workspace": container_workspace,
         },
         extra={
             "rebuild_mode": rebuild_mode,
@@ -232,6 +281,7 @@ def build_template_rebuild_readiness(
             "source_capture_gate": str(analysis_dir / "source_capture_gate.json"),
             "template_gate": str(analysis_dir / "template_gate.json"),
             "scene_graph_gate_dir": str(analysis_dir / "scene_graph_gate"),
+            "container_workspace": str(analysis_dir / "container_workspace" / "container_workspace_index.json"),
             "exported_pptx": exported_pptx,
             "visual_reference": visual_reference,
             "page_quality_report": str(analysis_dir / "page_quality_report.json"),

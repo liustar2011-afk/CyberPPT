@@ -220,6 +220,7 @@ def _text_objects(boxes: list[dict[str, Any]], typography: list[dict[str, Any]])
                 "id": f"text_{index:03d}",
                 "text": text,
                 "rendered_text": rendered_text,
+                "container_id": box.get("container_id"),
                 "bbox": _box_to_bbox(box),
                 "style": {
                     "font_family": box.get("font_family"),
@@ -229,7 +230,7 @@ def _text_objects(boxes: list[dict[str, Any]], typography: list[dict[str, Any]])
                     "font_weight": box.get("font_weight"),
                     "align": box.get("align"),
                     "word_wrap": bool(box.get("word_wrap", False)),
-                    "typography_role": role or None,
+                    "typography_role": role or box.get("role") or None,
                 },
                 "source": {
                     "kind": box.get("source", "unknown"),

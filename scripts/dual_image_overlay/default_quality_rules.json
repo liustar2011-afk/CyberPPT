@@ -38,6 +38,15 @@
       "evidence_required": true
     },
     {
+      "id": "overlay.container_workspace_pass",
+      "stage": "overlay",
+      "severity": "error",
+      "description": "Overlay stage must derive container workspaces with at least one usable text slot per container.",
+      "kind": "container_workspace_required",
+      "report": "container_workspace",
+      "evidence_required": true
+    },
+    {
       "id": "overlay.background_has_no_text",
       "stage": "overlay",
       "severity": "error",
@@ -137,6 +146,15 @@
       "kind": "semantic_peer_style",
       "report": "source_capture",
       "style_field": "font_weight",
+      "evidence_required": true
+    },
+    {
+      "id": "template.container_workspace_pass",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template stage must derive container workspaces before final QA.",
+      "kind": "container_workspace_required",
+      "report": "container_workspace",
       "evidence_required": true
     },
     {

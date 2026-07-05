@@ -246,6 +246,41 @@ def _check_office_render(value: Any) -> tuple[bool, dict[str, Any]]:
     return exists, {"render_path": value, "exists": exists, "accepted_sources": ["office", "wps", "explicit_render_artifact"]}
 
 
+def _check_container_workspace_required(workspace: Any) -> tuple[bool, dict[str, Any]]:
+    if not isinstance(workspace, dict):
+        return False, {"reason": "container_workspace_missing"}
+    pages = workspace.get("pages")
+    if isinstance(pages, list):
+        page_reports = [page for page in pages if isinstance(page, dict)]
+        failures = [
+            {
+                "page_number": page.get("page_number"),
+                "valid": page.get("valid"),
+                "container_count": page.get("container_count"),
+                "slot_count": page.get("slot_count"),
+                "error_count": page.get("error_count"),
+            }
+            for page in page_reports
+            if not page.get("valid") or int(page.get("slot_count", 0) or 0) <= 0
+        ]
+        return bool(page_reports) and not failures, {
+            "page_count": len(page_reports),
+            "container_count": sum(int(page.get("container_count", 0) or 0) for page in page_reports),
+            "slot_count": sum(int(page.get("slot_count", 0) or 0) for page in page_reports),
+            "failures": failures,
+        }
+    container_count = int(workspace.get("container_count", 0) or 0)
+    slot_count = int(workspace.get("slot_count", 0) or 0)
+    error_count = int(workspace.get("error_count", 0) or 0)
+    passed = bool(workspace.get("valid")) and container_count > 0 and slot_count > 0 and error_count == 0
+    return passed, {
+        "container_count": container_count,
+        "slot_count": slot_count,
+        "error_count": error_count,
+        "issues": workspace.get("issues", []),
+    }
+
+
 def _evidence_for_rule(rule: dict[str, Any], artifacts: dict[str, Any]) -> dict[str, Any]:
     evidence: dict[str, Any] = {}
     report_key = rule.get("report")
@@ -313,6 +348,9 @@ def _evaluate_rule(
     elif kind == "office_render_required":
         observed = artifacts.get(artifact_key)
         passed, observed = _check_office_render(observed)
+    elif kind == "container_workspace_required":
+        observed = reports.get(report_key)
+        passed, observed = _check_container_workspace_required(observed)
     else:
         observed = {"error": f"Unsupported rule kind: {kind}"}
         passed = False
@@ -365,6 +403,9 @@ def _summarize_observed(observed: Any) -> Any:
             "render_path",
             "exists",
             "accepted_sources",
+            "slot_count",
+            "container_count",
+            "issues",
         ):
             if key in observed:
                 summary[key] = observed[key]

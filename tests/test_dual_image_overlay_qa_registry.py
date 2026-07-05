@@ -168,3 +168,38 @@ def test_semantic_peer_style_rule_blocks_mixed_weight_peers(tmp_path: Path) -> N
 
     assert report["valid"] is False
     assert "service_title" in report["blocking_errors"][0]["observed"]["inconsistent"]
+
+
+def test_container_workspace_rule_requires_slots(tmp_path: Path) -> None:
+    evidence = tmp_path / "container_workspace_index.json"
+    evidence.write_text('{"valid": false}\n', encoding="utf-8")
+
+    report = build_page_quality_report(
+        stage="template",
+        page_number=6,
+        project_path=tmp_path,
+        artifacts={"container_workspace": str(evidence)},
+        reports={
+            "container_workspace": {
+                "schema": "cyberppt.dual_image.container_workspace.v1",
+                "valid": False,
+                "container_count": 1,
+                "slot_count": 0,
+                "error_count": 1,
+            }
+        },
+        rules=[
+            {
+                "id": "template.container_workspace_pass",
+                "stage": "template",
+                "severity": "error",
+                "kind": "container_workspace_required",
+                "report": "container_workspace",
+                "evidence_required": True,
+            }
+        ],
+    )
+
+    assert report["valid"] is False
+    assert report["blocking_errors"][0]["id"] == "template.container_workspace_pass"
+    assert report["blocking_errors"][0]["observed"]["slot_count"] == 0
