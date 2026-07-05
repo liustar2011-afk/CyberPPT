@@ -10,6 +10,7 @@ from scripts.dual_image_overlay.source_capture import (
     attach_render_delta_measurement,
     build_source_capture,
     build_source_capture_gate,
+    discover_visual_registry_dir,
 )
 
 
@@ -47,6 +48,9 @@ class DualImageOverlaySourceCaptureTests(unittest.TestCase):
 
         inventory = page["visual_element_inventory"]
         self.assertTrue(any(item["element_id"] == "so_what_band" and item["element_type"] == "container" for item in inventory))
+        container_element = next(item for item in inventory if item["element_id"] == "so_what_band")
+        self.assertEqual({"x": 70.0, "y": 594.0, "w": 1140.0, "h": 58.0}, container_element["text_safe_bbox_px"])
+        self.assertEqual("safe_area", container_element["safe_bbox_source"])
         self.assertTrue(any(item["element_id"] == "text_001" and item["priority"] == "P0" for item in inventory))
         self.assertTrue(
             any(gap["code"] == "non_text_visuals_not_individually_detected" for gap in page["capture_gaps"])
@@ -55,6 +59,7 @@ class DualImageOverlaySourceCaptureTests(unittest.TestCase):
 
         rules = page["layout_rules"]
         self.assertTrue(rules["avoidance_policy"]["text_should_wrap_before_shrink"])
+        self.assertEqual("build_time_workspace_input", rules["actionability"]["avoidance_policy"])
         self.assertEqual(rules["baseline_groups"][0]["candidate_y"], 621.45)
 
     def test_visual_registry_resolves_non_text_gap_but_keeps_render_delta_gap(self) -> None:
@@ -79,6 +84,7 @@ class DualImageOverlaySourceCaptureTests(unittest.TestCase):
         self.assertEqual("pending_render_measurement", registry_element["registration_status"])
         self.assertNotIn("non_text_visuals_not_individually_detected", gate["gap_counts"])
         self.assertIn("render_delta_not_measured", gate["gap_counts"])
+        self.assertFalse(gate["checks"]["render_delta_measured"])
         self.assertFalse(gate["valid"])
 
     def test_dual_image_editable_evidence_satisfies_missing_explicit_semantic_plan_gate(self) -> None:
@@ -225,6 +231,123 @@ class DualImageOverlaySourceCaptureTests(unittest.TestCase):
         self.assertEqual(1, capture["inputs"]["scene_graph_pages"])
         self.assertEqual(1, capture["inputs"]["render_qa_pages"])
 
+    def test_scene_graph_visual_nodes_fill_non_text_visual_inventory(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            _write_artifacts(project_dir)
+            (project_dir / "analysis" / "scene_graph").mkdir(parents=True)
+            (project_dir / "analysis" / "scene_graph_gate").mkdir(parents=True)
+            _write_json(
+                project_dir / "analysis" / "scene_graph" / "page_002_scene_graph.json",
+                {
+                    "schema": "cyberppt.page_scene_graph.v1",
+                    "page": 2,
+                    "visual_nodes": [
+                        {
+                            "node_id": "icon_scene_graph",
+                            "node_type": "icon",
+                            "semantic_role": "condition_icon",
+                            "bbox": [700, 580, 742, 622],
+                            "source": {"kind": "scene_graph"},
+                            "confidence": 0.91,
+                        }
+                    ],
+                },
+            )
+            _write_json(
+                project_dir / "analysis" / "scene_graph_gate" / "page_002_scene_graph_gate.json",
+                {"schema": "cyberppt.page_scene_graph_gate.v1", "valid": True, "blocking_count": 0},
+            )
+
+            capture = build_source_capture(project_dir)
+            gate = build_source_capture_gate(capture)
+
+        inventory = capture["pages"][0]["visual_element_inventory"]
+        element = next(item for item in inventory if item["element_id"] == "icon_scene_graph")
+        self.assertEqual("icon", element["element_type"])
+        self.assertEqual({"x": 700.0, "y": 580.0, "w": 42.0, "h": 42.0}, element["blueprint_bbox_px"])
+        self.assertEqual("scene_graph", element["source"]["kind"])
+        self.assertNotIn("non_text_visuals_not_individually_detected", gate["gap_counts"])
+        self.assertIn("render_delta_not_measured", gate["gap_counts"])
+
+    def test_semantic_layout_visual_relations_fill_non_text_visual_inventory(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            _write_artifacts(project_dir)
+            layout_dir = project_dir / "analysis" / "semantic_layout_plan"
+            layout_dir.mkdir(parents=True, exist_ok=True)
+            _write_json(
+                layout_dir / "page_002_layout_plan.json",
+                {
+                    "schema": "cyberppt.dual_image.semantic_layout_plan.v1",
+                    "container_relations": [
+                        {
+                            "container_id": "so_what_band",
+                            "element_id": "bottom_rule_line",
+                            "element_type": "line",
+                            "relation": "contained_or_component_matched",
+                            "bbox": [90, 646, 1190, 648],
+                        }
+                    ],
+                    "items": [],
+                },
+            )
+
+            capture = build_source_capture(project_dir)
+            gate = build_source_capture_gate(capture)
+
+        inventory = capture["pages"][0]["visual_element_inventory"]
+        element = next(item for item in inventory if item["element_id"] == "bottom_rule_line")
+        self.assertEqual("line", element["element_type"])
+        self.assertEqual({"x": 90.0, "y": 646.0, "w": 1100.0, "h": 2.0}, element["blueprint_bbox_px"])
+        self.assertEqual("semantic_layout_plan", element["source"]["kind"])
+        self.assertNotIn("non_text_visuals_not_individually_detected", gate["gap_counts"])
+        self.assertIn("render_delta_not_measured", gate["gap_counts"])
+
+    def test_background_image_components_fill_non_text_visual_inventory(self) -> None:
+        from PIL import Image, ImageDraw
+
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            _write_artifacts(project_dir)
+            full = project_dir / "images" / "page_002_full.png"
+            background = project_dir / "images" / "page_002_background.png"
+            image = Image.new("RGB", (1280, 720), "white")
+            draw = ImageDraw.Draw(image)
+            draw.rectangle((100, 100, 1180, 106), fill=(0, 45, 85))
+            image.save(background)
+            image.save(full)
+            _write_json(
+                project_dir / "images" / "page_image_pairs.json",
+                {
+                    "generation_contract": {
+                        "slide_canvas": {"width": 1280, "height": 720},
+                        "brand_body_region": {"x": 58, "y": 122, "width": 1164, "height": 554},
+                    },
+                    "pairs": [
+                        {
+                            "page_number": 2,
+                            "full": {"filename": full.name, "path": str(full), "status": "ready"},
+                            "background": {"filename": background.name, "path": str(background), "status": "ready"},
+                        }
+                    ],
+                },
+            )
+
+            capture = build_source_capture(project_dir)
+            gate = build_source_capture_gate(capture)
+
+        inventory = capture["pages"][0]["visual_element_inventory"]
+        background_elements = [
+            item
+            for item in inventory
+            if isinstance(item.get("source"), dict) and item["source"].get("kind") == "background_visual_component"
+        ]
+        self.assertTrue(background_elements)
+        self.assertEqual("line", background_elements[0]["element_type"])
+        self.assertNotIn("non_text_visuals_not_individually_detected", gate["gap_counts"])
+        self.assertIn("render_delta_not_measured", gate["gap_counts"])
+
     def test_pair_manifest_scopes_visual_registry_pages(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             project_dir = Path(tmp)
@@ -245,6 +368,38 @@ class DualImageOverlaySourceCaptureTests(unittest.TestCase):
         self.assertTrue(any(item["element_id"] == "icon_rule_path" for item in inventory))
         self.assertFalse(any(item["element_id"] == "icon_other_page" for item in inventory))
 
+    def test_source_capture_discovers_page_named_visual_registry(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            _write_artifacts(project_dir)
+            registry_dir = project_dir / "analysis" / "visual_registry"
+            _write_json(
+                registry_dir / "page_002_visual_element_registry.json",
+                {
+                    "schema": "cyberppt.visual_element_registry.v1",
+                    "elements": [
+                        {
+                            "element_id": "icon_page_named",
+                            "priority": "P0",
+                            "element_type": "icon",
+                            "blueprint_bbox_px": {"x": 10, "y": 20, "w": 30, "h": 40},
+                            "ppt_target_bbox_in": {"x": 0.1, "y": 0.2, "w": 0.3, "h": 0.4},
+                            "tolerance_px": 3,
+                            "measurement_mode": "individual_bbox",
+                        }
+                    ],
+                },
+            )
+
+            discovered = discover_visual_registry_dir(project_dir)
+            capture = build_source_capture(project_dir)
+
+        self.assertEqual(registry_dir, discovered)
+        self.assertEqual(str(registry_dir), capture["inputs"]["visual_registry_dir"])
+        self.assertEqual(1, capture["inputs"]["visual_registry_elements"])
+        inventory = capture["pages"][0]["visual_element_inventory"]
+        self.assertTrue(any(item["element_id"] == "icon_page_named" for item in inventory))
+
     def test_render_delta_measurement_resolves_gate_gap_when_registry_is_present(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             project_dir = Path(tmp)
@@ -261,6 +416,9 @@ class DualImageOverlaySourceCaptureTests(unittest.TestCase):
 
         self.assertTrue(gate["valid"])
         self.assertEqual({}, gate["gap_counts"])
+        self.assertTrue(gate["checks"]["render_delta_measured"])
+        self.assertEqual(gate["visual_element_count"], gate["render_measured_count"])
+        self.assertEqual("measured", gate["render_delta_measurement"]["status"])
         self.assertTrue(gate["checks"]["capture_gaps_resolved"])
         page = measured["pages"][0]
         self.assertTrue(all(item["registration_status"] == "passed" for item in page["visual_element_inventory"]))
@@ -316,6 +474,7 @@ def _write_artifacts(project_dir: Path) -> None:
                     "y": 582,
                     "w": 1164,
                     "h": 91,
+                    "safe_area": {"x": 70, "y": 594, "w": 1140, "h": 58},
                     "background": "dark",
                     "fill": "#FFFFFF",
                 }

@@ -2212,7 +2212,7 @@ def build_overlay_boxes_from_semantic_plan(
     background = Image.open(background_image).convert("RGB") if background_image else None
     sx = float(body_region["width"]) / image_width
     sy = float(body_region["height"]) / image_height
-    boxes: list[OverlayTextBox] = []
+    text_boxes: list[OverlayTextBox] = []
     try:
         for item in layout_plan["items"]:
             x1, y1, x2, y2 = [float(v) for v in item["bbox"]]
@@ -2223,7 +2223,7 @@ def build_overlay_boxes_from_semantic_plan(
             fill = str(item.get("fill") or "#0B1F3D")
             fill = _fill_for_background(background, (x1, y1, x2, y2), image_width, image_height, fill)
             font_size = float(item.get("font_size") or _font_size_from_box(h))
-            boxes.append(
+            text_boxes.append(
                 OverlayTextBox(
                     text=str(item["text"]),
                     x=x,
@@ -2243,14 +2243,14 @@ def build_overlay_boxes_from_semantic_plan(
     finally:
         if background is not None:
             background.close()
-    _fit_all_boxes(boxes)
-    return boxes, layout_plan, gate
+    _fit_all_boxes(text_boxes)
+    return text_boxes, layout_plan, gate
 
 
-def _container_for_box(box: OverlayTextBox, containers: list[SemanticContainer]) -> SemanticContainer | None:
-    center_x = box.x + box.w / 2
-    center_y = box.y + box.h / 2
-    text_key = normalize_text(box.text)
+def _container_for_box(text_box: OverlayTextBox, containers: list[SemanticContainer]) -> SemanticContainer | None:
+    center_x = text_box.x + text_box.w / 2
+    center_y = text_box.y + text_box.h / 2
+    text_key = normalize_text(text_box.text)
     containing = [
         container
         for container in containers
@@ -2263,48 +2263,48 @@ def _container_for_box(box: OverlayTextBox, containers: list[SemanticContainer])
     return None
 
 
-def _apply_container_layout(box: OverlayTextBox, container: SemanticContainer) -> None:
+def _apply_container_layout(text_box: OverlayTextBox, container: SemanticContainer) -> None:
     pad_x = 0.0 if container.role == "foundation_base" else min(20.0, max(4.0, container.w * 0.06))
     pad_y = min(8.0, max(2.0, container.h * 0.12))
-    box.x = container.x + pad_x
-    box.w = max(1.0, container.w - pad_x * 2)
-    box.h = max(box.h, container.h - pad_y * 2)
-    preferred_size = max(box.font_size, 16.0 if container.role == "foundation_base" else box.font_size)
-    box.font_size = round(_fit_font_size(box.text, box.w, preferred_size, minimum=MIN_EXPORT_FONT_SIZE_PX), 2)
-    box.y = round(container.y + (container.h - box.font_size) / 2, 2)
-    box.fill = container.fill
-    box.align = container.align
+    text_box.x = container.x + pad_x
+    text_box.w = max(1.0, container.w - pad_x * 2)
+    text_box.h = max(text_box.h, container.h - pad_y * 2)
+    preferred_size = max(text_box.font_size, 16.0 if container.role == "foundation_base" else text_box.font_size)
+    text_box.font_size = round(_fit_font_size(text_box.text, text_box.w, preferred_size, minimum=MIN_EXPORT_FONT_SIZE_PX), 2)
+    text_box.y = round(container.y + (container.h - text_box.font_size) / 2, 2)
+    text_box.fill = container.fill
+    text_box.align = container.align
     if container.background == "dark":
-        box.font_weight = "700" if container.role == "foundation_base" else box.font_weight
+        text_box.font_weight = "700" if container.role == "foundation_base" else text_box.font_weight
 
 
 def _apply_semantic_overlay_layout(
-    boxes: list[OverlayTextBox],
+    text_boxes: list[OverlayTextBox],
     body_region: dict[str, float],
     containers: list[SemanticContainer] | None = None,
 ) -> None:
-    free_boxes = [box for box in boxes if not box.source.startswith("manual_source_faithful")]
+    free_boxes = [text_box for text_box in text_boxes if not text_box.source.startswith("manual_source_faithful")]
     _snap_same_row_boxes(free_boxes)
     _relax_repeated_body_text_lanes(free_boxes, body_region)
     _snap_repeated_column_body_rows(free_boxes, body_region)
     containers = containers or []
-    for box in boxes:
-        if box.source.startswith("manual_source_faithful"):
+    for text_box in text_boxes:
+        if text_box.source.startswith("manual_source_faithful"):
             continue
-        container = _container_for_box(box, containers)
+        container = _container_for_box(text_box, containers)
         if container is not None:
-            _apply_container_layout(box, container)
-        elif _is_dark_base_title(box, body_region):
-            box.x = float(body_region["x"])
-            box.w = float(body_region["width"])
-            box.align = "center"
-            box.font_size = max(box.font_size, 16.0)
-            box.font_weight = "700"
-        elif re.fullmatch(r"\d{1,2}", box.text.strip()) or (
-            len(box.text) <= 16 and box.fill.strip().upper() == "#FFFFFF"
+            _apply_container_layout(text_box, container)
+        elif _is_dark_base_title(text_box, body_region):
+            text_box.x = float(body_region["x"])
+            text_box.w = float(body_region["width"])
+            text_box.align = "center"
+            text_box.font_size = max(text_box.font_size, 16.0)
+            text_box.font_weight = "700"
+        elif re.fullmatch(r"\d{1,2}", text_box.text.strip()) or (
+            len(text_box.text) <= 16 and text_box.fill.strip().upper() == "#FFFFFF"
         ):
-            box.align = "center"
-    _fit_all_boxes(boxes)
+            text_box.align = "center"
+    _fit_all_boxes(text_boxes)
 
 
 def _is_tail_duplicate_fragment(
@@ -2354,7 +2354,7 @@ def build_overlay_boxes(
     image_height = float(image_size.get("height") or 1)
     sx = float(body_region["width"]) / image_width
     sy = float(body_region["height"]) / image_height
-    boxes: list[OverlayTextBox] = []
+    text_boxes: list[OverlayTextBox] = []
     background = Image.open(background_image).convert("RGB") if background_image else None
     containers = (
         semantic_containers
@@ -2374,7 +2374,7 @@ def build_overlay_boxes(
             background=background,
         )
         flow_text_keys = {normalize_text(box.text) for box in flow_boxes}
-        boxes.extend(flow_boxes)
+        text_boxes.extend(flow_boxes)
         for item in ocr_layout.get("items", []):
             text = str(item.get("text") or "").strip()
             if not text:
@@ -2398,7 +2398,7 @@ def build_overlay_boxes(
                 text=corrected,
                 source=source,
                 item_bbox=(x1, y1, x2, y2),
-                previous_boxes=boxes,
+                previous_boxes=text_boxes,
                 sx=sx,
                 sy=sy,
                 body_region=body_region,
@@ -2411,7 +2411,7 @@ def build_overlay_boxes(
             font_size = _font_size_from_box(h, corrected, source)
             text_fill = _fill_for_background(background, (x1, y1, x2, y2), image_width, image_height, fill)
             align = "center" if re.fullmatch(r"\d{1,2}", corrected.strip()) or text_fill.strip().upper() == "#FFFFFF" else "left"
-            boxes.append(
+            text_boxes.append(
                 OverlayTextBox(
                     text=corrected,
                     x=x,
@@ -2431,8 +2431,8 @@ def build_overlay_boxes(
     finally:
         if background is not None:
             background.close()
-    _apply_semantic_overlay_layout(boxes, body_region, containers)
-    return boxes
+    _apply_semantic_overlay_layout(text_boxes, body_region, containers)
+    return text_boxes
 
 
 def render_overlay_svg(
@@ -2521,8 +2521,12 @@ def _wrap_svg_text(text: str, width: float, font_size: float) -> list[str]:
     return lines or [normalized]
 
 
+def text_boxes_to_json(text_boxes: list[OverlayTextBox]) -> list[dict[str, Any]]:
+    return [asdict(text_box) for text_box in text_boxes]
+
+
 def boxes_to_json(boxes: list[OverlayTextBox]) -> list[dict[str, Any]]:
-    return [asdict(box) for box in boxes]
+    return text_boxes_to_json(boxes)
 
 
 def containers_to_json(containers: list[SemanticContainer]) -> list[dict[str, Any]]:
@@ -2548,11 +2552,11 @@ def main(argv: list[str] | None = None) -> int:
     try:
         layout = json.loads(args.ocr_layout.read_text(encoding="utf-8"))
         body_region = json.loads(args.body_region)
-        boxes = build_overlay_boxes(args.script, args.page, layout, body_region)
+        text_boxes = build_overlay_boxes(args.script, args.page, layout, body_region)
     except Exception as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
-    payload = json.dumps(boxes_to_json(boxes), ensure_ascii=False, indent=2) + "\n"
+    payload = json.dumps(text_boxes_to_json(text_boxes), ensure_ascii=False, indent=2) + "\n"
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(payload, encoding="utf-8")

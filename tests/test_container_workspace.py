@@ -45,6 +45,35 @@ def test_container_workspace_builds_title_and_body_slots() -> None:
     ]
 
 
+def test_container_workspace_accepts_safe_area_alias_as_text_safe_bbox() -> None:
+    workspace = build_container_workspace(
+        page_number=6,
+        stage="overlay",
+        containers=[
+            {
+                "id": "ability_10",
+                "role": "ability_card",
+                "bbox": [800, 420, 1040, 560],
+                "safe_area": {"x": 900, "y": 438, "w": 120, "h": 102},
+            }
+        ],
+        text_items=[
+            {
+                "text": "证书状态管理",
+                "role": "body",
+                "container_id": "ability_10",
+                "bbox": [900, 472, 1020, 500],
+            },
+        ],
+    )
+
+    container = workspace["containers"][0]
+    assert workspace["valid"] is True
+    assert container["container_bbox"] == {"x": 800.0, "y": 420.0, "w": 240.0, "h": 140.0}
+    assert container["text_safe_bbox"] == {"x": 900.0, "y": 438.0, "w": 120.0, "h": 102.0}
+    assert container["work_slots"][0]["bbox"] == container["text_safe_bbox"]
+
+
 def test_container_workspace_fails_when_container_has_no_work_slot() -> None:
     workspace = build_container_workspace(
         page_number=6,

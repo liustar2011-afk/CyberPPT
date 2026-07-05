@@ -24,11 +24,23 @@ def load_image(path: Path):
 def crop_mean_abs_diff(a, b) -> float:
     try:
         import numpy as np
-    except ImportError as exc:
-        raise SystemExit("numpy is required for compare_render.py") from exc
-    arr_a = np.asarray(a, dtype="int16")
-    arr_b = np.asarray(b.resize(a.size), dtype="int16")
-    return float(np.mean(np.abs(arr_a - arr_b)))
+    except ImportError:
+        resized_b = b.resize(a.size)
+        pixels_a = list(a.getdata())
+        pixels_b = list(resized_b.getdata())
+        if not pixels_a:
+            return 0.0
+        total = 0.0
+        channels = 0
+        for value_a, value_b in zip(pixels_a, pixels_b):
+            for channel_a, channel_b in zip(value_a, value_b):
+                total += abs(float(channel_a) - float(channel_b))
+                channels += 1
+        return total / max(1, channels)
+    else:
+        arr_a = np.asarray(a, dtype="int16")
+        arr_b = np.asarray(b.resize(a.size), dtype="int16")
+        return float(np.mean(np.abs(arr_a - arr_b)))
 
 
 def bbox_tuple(bbox: dict[str, Any]) -> tuple[int, int, int, int]:
@@ -39,6 +51,28 @@ def bbox_tuple(bbox: dict[str, Any]) -> tuple[int, int, int, int]:
     return (x, y, x + w, y + h)
 
 
+def measured_registry(registry: dict[str, Any], results: list[dict[str, Any]]) -> dict[str, Any]:
+    by_id = {str(item.get("element_id")): item for item in results if isinstance(item, dict)}
+    updated = json.loads(json.dumps(registry, ensure_ascii=False))
+    elements = updated.get("elements", updated.get("visual_element_registry", []))
+    if not isinstance(elements, list):
+        return updated
+    for element in elements:
+        if not isinstance(element, dict):
+            continue
+        result = by_id.get(str(element.get("element_id")))
+        if not result:
+            continue
+        element["render_bbox_px"] = result.get("render_bbox_px")
+        element["delta_px"] = result.get("delta_px")
+        element["pixel_mean_abs_diff"] = result.get("pixel_mean_abs_diff")
+        element["pixel_mean_abs_tolerance"] = result.get("pixel_mean_abs_tolerance")
+        element["registration_status"] = "passed" if result.get("status") == "passed" else "failed"
+    updated["measurement_status"] = "passed" if all(item.get("status") == "passed" for item in results) and results else "failed"
+    updated["measurement_model"] = "compare_render_crop_mean_abs_diff_v1"
+    return updated
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Compare blueprint/render crops using a visual element registry.")
     parser.add_argument("--blueprint", required=True)
@@ -46,6 +80,7 @@ def main() -> int:
     parser.add_argument("--registry", required=True)
     parser.add_argument("--out", required=True, help="Output bbox/pixel diff report JSON.")
     parser.add_argument("--overlay-out", help="Optional overlay PNG.")
+    parser.add_argument("--measured-registry-out", help="Optional registry JSON with render measurement fields populated.")
     args = parser.parse_args()
 
     blueprint_path = Path(args.blueprint)
@@ -107,6 +142,11 @@ def main() -> int:
     output = Path(args.out)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if args.measured_registry_out:
+        measured = measured_registry(registry, results)
+        measured_path = Path(args.measured_registry_out)
+        measured_path.parent.mkdir(parents=True, exist_ok=True)
+        measured_path.write_text(json.dumps(measured, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"path": str(output), "passed": report["passed"], "failures": len(failures)}, indent=2))
     return 0 if report["passed"] else 1
 

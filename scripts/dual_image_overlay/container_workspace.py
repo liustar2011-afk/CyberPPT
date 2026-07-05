@@ -138,11 +138,12 @@ def _safe_rect(container: Any) -> dict[str, float]:
     if hasattr(container, "text_safe_bbox"):
         return _rect_from_xyxy(_bbox_xyxy(list(container.text_safe_bbox)))
     if isinstance(container, dict):
-        raw = container.get("text_safe_bbox")
-        if isinstance(raw, list):
-            return _rect_from_xyxy(_bbox_xyxy(raw))
-        if isinstance(raw, dict):
-            return _text_rect(raw)
+        for key in ("text_safe_bbox", "safe_bbox", "safe_area"):
+            raw = container.get(key)
+            if isinstance(raw, list):
+                return _rect_from_xyxy(_bbox_xyxy(raw))
+            if isinstance(raw, dict):
+                return _text_rect(raw)
     return _container_rect(container)
 
 

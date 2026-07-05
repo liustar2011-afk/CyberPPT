@@ -16,7 +16,12 @@ from .rebuild_modes import resolve_rebuild_mode as _resolve_rebuild_mode
 from .rebuild_modes import visual_reference_for_mode as _visual_reference_for_mode
 from .container_workspace import build_container_workspace, write_container_workspace
 from .qa_registry import write_page_quality_report
-from .source_capture import attach_render_delta_measurement, build_source_capture, build_source_capture_gate
+from .source_capture import (
+    attach_render_delta_measurement,
+    build_source_capture,
+    build_source_capture_gate,
+    discover_visual_registry_dir,
+)
 from .structure_inference import infer_structure_containers
 from .workspace_assignment import build_workspace_assignment, write_workspace_assignment
 
@@ -267,11 +272,12 @@ def build_template_rebuild_readiness(
         rebuild_mode,
         manifest_path=manifest_path,
     )
+    resolved_visual_registry_dir = discover_visual_registry_dir(project_path, visual_registry_dir)
 
     source_capture = build_source_capture(
         project_path,
         pair_manifest_path=manifest_path,
-        visual_registry_dir=visual_registry_dir,
+        visual_registry_dir=resolved_visual_registry_dir,
     )
     if rendered_preview is not None:
         source_capture = attach_render_delta_measurement(
@@ -388,7 +394,7 @@ def build_template_rebuild_readiness(
         "pair_manifest": str(manifest_path),
         "rebuild_mode": rebuild_mode,
         "visual_reference_mode": visual_reference_mode,
-        "visual_registry_dir": str(visual_registry_dir) if visual_registry_dir else None,
+        "visual_registry_dir": str(resolved_visual_registry_dir) if resolved_visual_registry_dir else None,
         "semantic_plan_dir": str(semantic_plan_dir) if semantic_plan_dir else None,
         "rendered_preview": str(rendered_preview) if rendered_preview else None,
         "checks": {
@@ -458,6 +464,12 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = build_parser().parse_args()
     manifest_path = args.manifest.expanduser().resolve()
+    manifest = _read_json(manifest_path)
+    project_path = resolve_project_path(manifest_path, manifest)
+    visual_registry_dir = discover_visual_registry_dir(
+        project_path,
+        args.visual_registry_dir.resolve() if args.visual_registry_dir else None,
+    )
     if not args.skip_rebuild:
         run_vendor_rebuild(
             manifest_path,
@@ -468,12 +480,12 @@ def main() -> int:
             visible_image_variant=args.visible_image_variant,
             editable_text_visibility=args.editable_text_visibility,
             semantic_plan_dir=args.semantic_plan_dir.resolve() if args.semantic_plan_dir else None,
-            visual_registry_dir=args.visual_registry_dir.resolve() if args.visual_registry_dir else None,
+            visual_registry_dir=visual_registry_dir,
         )
     readiness = build_template_rebuild_readiness(
         manifest_path,
         export_requested=args.export,
-        visual_registry_dir=args.visual_registry_dir.resolve() if args.visual_registry_dir else None,
+        visual_registry_dir=visual_registry_dir,
         semantic_plan_dir=args.semantic_plan_dir.resolve() if args.semantic_plan_dir else None,
         rendered_preview=args.rendered_preview.resolve() if args.rendered_preview else None,
         measurement_model=args.measurement_model,
