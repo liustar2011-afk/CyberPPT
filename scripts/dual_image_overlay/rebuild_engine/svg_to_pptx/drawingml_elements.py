@@ -31,6 +31,9 @@ from .drawingml_paths import (
     normalize_path_commands, path_commands_to_drawingml,
 )
 
+_MIN_EXPORTED_FONT_SIZE_PT = 6.5
+_MIN_EXPORTED_FONT_SIZE_HPT = int(_MIN_EXPORTED_FONT_SIZE_PT * 100)
+
 
 def _resolve_external_image(svg_dir: Path, href: str) -> Path:
     """Resolve a non-data-URI image href to a file on disk.
@@ -1241,7 +1244,7 @@ def _build_run_xml(
     fill = run.get('fill', '000000')
     fill_raw = run.get('fill_raw', '')
     fw = run.get('font_weight', '400')
-    fs_px = run.get('font_size', 16)
+    fs_px = max(float(run.get('font_size', 16) or 16), _MIN_EXPORTED_FONT_SIZE_PT)
     fstyle = run.get('font_style', '')
     ff = run.get('font_family', '')
     letter_spacing_px = float(run.get('letter_spacing', 0.0) or 0.0)
@@ -1253,7 +1256,7 @@ def _build_run_xml(
     # rounded to **one decimal place of pt** (the nearest 10 hundredths). No 0.5pt
     # / integer snapping — whatever the px works out to is the size, e.g.
     # 18px -> 13.5pt, 24px -> 18.0pt, 42px -> 31.5pt.
-    sz = int(round(fs_px * FONT_PX_TO_HUNDREDTHS_PT / 10.0)) * 10
+    sz = max(int(round(fs_px * FONT_PX_TO_HUNDREDTHS_PT / 10.0)) * 10, _MIN_EXPORTED_FONT_SIZE_HPT)
     b_attr = ' b="1"' if fw in ('bold', '600', '700', '800', '900') else ''
     i_attr = ' i="1"' if fstyle == 'italic' else ''
     u_attr = ' u="sng"' if 'underline' in text_dec else ''
