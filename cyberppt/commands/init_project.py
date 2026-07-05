@@ -24,6 +24,9 @@ PROJECT_DIRS = [
     "workbench/scripts/drafts",
     "workbench/scripts/final",
     "workbench/approvals",
+    "workbench/runs",
+    "workbench/archive",
+    "workbench/tmp",
     "workbench/qa",
     "outputs",
     "outputs/pages",
@@ -55,6 +58,9 @@ directories:
   script_drafts: workbench/scripts/drafts
   final_scripts: workbench/scripts/final
   approvals: workbench/approvals
+  runs: workbench/runs
+  archive: workbench/archive
+  tmp: workbench/tmp
   qa: workbench/qa
   outputs: outputs
   delivery: delivery
@@ -117,7 +123,9 @@ CyberPPT project workspace.
 4. Stop for user review. Do not generate images or PPTX until an approval record exists in `workbench/approvals/`.
 5. Store title/subtitle truth for template assembly in `workbench/locks/template_text/`; if dual images are supplied mid-pipeline, create this lock before template rebuild.
 6. Store stage outputs under `workbench/stages/` and register every durable artifact in `workbench/artifact-ledger.json`.
-7. Store final scripts in `workbench/scripts/final/`, QA reports in `workbench/qa/`, renders in `outputs/renders/`, and delivery files in `delivery/`.
+7. Store page-specific attempts and resumable intermediate runs in `workbench/runs/`; use `workbench/tmp/` only for disposable scratch files.
+8. Store final scripts in `workbench/scripts/final/`, QA reports in `workbench/qa/`, renders in `outputs/renders/`, and delivery files in `delivery/`.
+9. Do not write new generated images or pair manifests to the repository root `images/`; keep them inside this project workspace.
 """,
         encoding="utf-8",
     )

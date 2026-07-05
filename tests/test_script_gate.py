@@ -27,6 +27,9 @@ class ScriptGateTests(unittest.TestCase):
             self.assertTrue((project / "workbench/stages/03-overlay").is_dir())
             self.assertTrue((project / "workbench/stages/04-template-rebuild").is_dir())
             self.assertTrue((project / "workbench/stages/05-qa-delivery").is_dir())
+            self.assertTrue((project / "workbench/runs").is_dir())
+            self.assertTrue((project / "workbench/archive").is_dir())
+            self.assertTrue((project / "workbench/tmp").is_dir())
             self.assertTrue((project / "workbench/locks/template_text").is_dir())
 
     def test_stage_script_saves_draft_and_manifest_without_approval(self) -> None:

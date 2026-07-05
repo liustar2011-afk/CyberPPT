@@ -87,6 +87,8 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 
 仓库同时提供 Python CLI、npm scripts 和 Makefile。`SKILL.md` 仍是工作流契约；CLI 只负责项目初始化、脚本确认门和仓库脚本的稳定入口。
 
+目录归整规则见 [docs/repository-layout.md](docs/repository-layout.md)。正式项目优先放在 `projects/<project-name>/`，临时运行可放在 `image2pptx_runs/`；根目录 `images/` 只作为历史 scratch 位置，不再作为新流程默认输出目标。
+
 ```bash
 python3 -m cyberppt doctor
 python3 -m cyberppt init projects/example
