@@ -16,6 +16,7 @@ from .rebuild_modes import resolve_rebuild_mode as _resolve_rebuild_mode
 from .rebuild_modes import visual_reference_for_mode as _visual_reference_for_mode
 from .container_workspace import build_container_workspace, write_container_workspace
 from .qa_registry import write_page_quality_report
+from .render_compare_flow import attach_render_compare_measurement, run_render_compare_for_page
 from .source_capture import (
     attach_render_delta_measurement,
     build_source_capture,
@@ -24,6 +25,7 @@ from .source_capture import (
 )
 from .structure_inference import infer_structure_containers
 from .workspace_assignment import build_workspace_assignment, write_workspace_assignment
+from scripts.visual_registry_from_source_capture import build_registries, write_registries
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -213,6 +215,36 @@ def _build_template_container_workspaces(
     return aggregate, assignment_aggregate
 
 
+def _write_draft_visual_registry_if_needed(
+    project_path: Path,
+    source_capture: dict[str, Any],
+    resolved_visual_registry_dir: Path | None,
+) -> tuple[Path | None, bool]:
+    if resolved_visual_registry_dir is not None and source_capture.get("inputs", {}).get("visual_registry_elements", 0):
+        return resolved_visual_registry_dir, False
+    registries = build_registries(source_capture)
+    if not any(int(registry.get("element_count", 0) or 0) for registry in registries):
+        return resolved_visual_registry_dir, False
+    out_dir = project_path / "analysis" / "visual_registry"
+    write_registries(registries, out_dir)
+    return out_dir, True
+
+
+def _first_pair_blueprint(manifest: dict[str, Any]) -> tuple[int | None, Path | None]:
+    pairs = manifest.get("pairs")
+    if not isinstance(pairs, list) or not pairs or not isinstance(pairs[0], dict):
+        return None, None
+    pair = pairs[0]
+    page_number = pair.get("page_number")
+    full = pair.get("full")
+    if not isinstance(full, dict):
+        return page_number if isinstance(page_number, int) else None, None
+    path = full.get("path")
+    if not isinstance(path, str) or not path:
+        return page_number if isinstance(page_number, int) else None, None
+    return page_number if isinstance(page_number, int) else None, Path(path)
+
+
 def run_vendor_rebuild(
     manifest_path: Path,
     *,
@@ -279,12 +311,56 @@ def build_template_rebuild_readiness(
         pair_manifest_path=manifest_path,
         visual_registry_dir=resolved_visual_registry_dir,
     )
-    if rendered_preview is not None:
-        source_capture = attach_render_delta_measurement(
-            source_capture,
-            rendered_preview=str(rendered_preview),
-            measurement_model=measurement_model,
+    resolved_visual_registry_dir, draft_visual_registry_generated = _write_draft_visual_registry_if_needed(
+        project_path,
+        source_capture,
+        resolved_visual_registry_dir,
+    )
+    if draft_visual_registry_generated:
+        source_capture = build_source_capture(
+            project_path,
+            pair_manifest_path=manifest_path,
+            visual_registry_dir=resolved_visual_registry_dir,
         )
+    render_compare = {
+        "available": False,
+        "skipped": True,
+        "reason": "rendered_preview_not_provided",
+    }
+    if rendered_preview is not None:
+        compare_page_number, blueprint = _first_pair_blueprint(manifest)
+        if compare_page_number is not None and blueprint is not None:
+            render_compare = run_render_compare_for_page(
+                blueprint=blueprint,
+                rendered=rendered_preview,
+                registry_dir=resolved_visual_registry_dir,
+                page_number=compare_page_number,
+                analysis_dir=analysis_dir,
+            )
+        else:
+            render_compare = {
+                "available": False,
+                "skipped": True,
+                "reason": "manifest_blueprint_missing",
+            }
+        measured_registry_dir = render_compare.get("measured_registry_dir")
+        if isinstance(measured_registry_dir, str) and measured_registry_dir:
+            source_capture = build_source_capture(
+                project_path,
+                pair_manifest_path=manifest_path,
+                visual_registry_dir=Path(measured_registry_dir),
+            )
+            source_capture = attach_render_compare_measurement(
+                source_capture,
+                rendered_preview=str(rendered_preview),
+                render_compare=render_compare,
+            )
+        else:
+            source_capture = attach_render_delta_measurement(
+                source_capture,
+                rendered_preview=str(rendered_preview),
+                measurement_model=measurement_model,
+            )
     _write_json(analysis_dir / "source_capture.json", source_capture)
     source_capture_gate = build_source_capture_gate(source_capture)
     _write_json(analysis_dir / "source_capture_gate.json", source_capture_gate)
@@ -310,6 +386,11 @@ def build_template_rebuild_readiness(
         "container_workspace": str(analysis_dir / "container_workspace"),
         "workspace_assignment": str(analysis_dir / "workspace_assignment"),
         "visual_reference": visual_reference,
+        "draft_visual_registry": str(resolved_visual_registry_dir)
+        if draft_visual_registry_generated and resolved_visual_registry_dir
+        else None,
+        "render_compare": render_compare.get("report_path"),
+        "measured_visual_registry": render_compare.get("measured_registry_dir"),
         "rendered_preview": str(rendered_preview) if rendered_preview else None,
         "exported_pptx": exported_pptx,
         "visual_qa_gate": str(analysis_dir / "visual_qa_gate.json"),
@@ -323,6 +404,7 @@ def build_template_rebuild_readiness(
         "container_workspace": container_workspace,
         "workspace_assignment": workspace_assignment,
         "visual_qa_gate": visual_qa_gate,
+        "render_compare": render_compare,
     }
     quality_extra = {
         "rebuild_mode": rebuild_mode,
@@ -395,8 +477,10 @@ def build_template_rebuild_readiness(
         "rebuild_mode": rebuild_mode,
         "visual_reference_mode": visual_reference_mode,
         "visual_registry_dir": str(resolved_visual_registry_dir) if resolved_visual_registry_dir else None,
+        "draft_visual_registry_generated": draft_visual_registry_generated,
         "semantic_plan_dir": str(semantic_plan_dir) if semantic_plan_dir else None,
         "rendered_preview": str(rendered_preview) if rendered_preview else None,
+        "render_compare": render_compare,
         "checks": {
             "template_rebuild_consumed": True,
             "preflight_gate_pass": bool(preflight_gate["valid"]),
@@ -405,6 +489,8 @@ def build_template_rebuild_readiness(
             "template_gate_pass": bool(template_gate["valid"]),
             "source_capture_consumed": True,
             "source_capture_gate_pass": bool(source_capture_gate["valid"]),
+            "draft_visual_registry_generated": draft_visual_registry_generated,
+            "render_compare_consumed": bool(render_compare.get("available")),
             "scene_graph_gate_pass": scene_graph_valid,
             "scene_graph_gate_pages": len(scene_graph_gates),
             "visual_qa_gate_pass": visual_qa_gate_valid,
@@ -428,6 +514,11 @@ def build_template_rebuild_readiness(
             "workspace_assignment": str(analysis_dir / "workspace_assignment" / "workspace_assignment_index.json"),
             "exported_pptx": exported_pptx,
             "visual_reference": visual_reference,
+            "draft_visual_registry": str(resolved_visual_registry_dir)
+            if draft_visual_registry_generated and resolved_visual_registry_dir
+            else None,
+            "render_compare": render_compare.get("report_path"),
+            "measured_visual_registry": render_compare.get("measured_registry_dir"),
             "visual_qa_gate": str(analysis_dir / "visual_qa_gate.json"),
             "page_quality_report": str(analysis_dir / "page_quality_report.json"),
         },

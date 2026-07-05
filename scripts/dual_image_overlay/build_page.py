@@ -24,6 +24,7 @@ from .layout_qa import check_layout
 from .normalize import normalize_image
 from .office_textbox_fit import apply_office_textbox_fit
 from .qa_registry import write_page_quality_report
+from .render_compare_flow import attach_render_compare_measurement, run_render_compare_for_page
 from .semantic_plan import load_semantic_plan
 from .semantic_typography_qa import apply_semantic_typography_qa
 from .source_capture import (
@@ -34,6 +35,7 @@ from .source_capture import (
 )
 from .text_content_qa import build_text_content_qa
 from .workspace_assignment import build_workspace_assignment, write_workspace_assignment
+from scripts.visual_registry_from_source_capture import build_registries, write_registries
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -256,6 +258,18 @@ def _write_source_capture_inputs(
     )
 
 
+def _write_draft_visual_registry_if_needed(out_dir: Path, source_capture: dict) -> tuple[Path | None, bool]:
+    if source_capture.get("inputs", {}).get("visual_registry_elements", 0):
+        registry_dir = source_capture.get("inputs", {}).get("visual_registry_dir")
+        return Path(registry_dir) if isinstance(registry_dir, str) and registry_dir else None, False
+    registries = build_registries(source_capture)
+    if not any(int(registry.get("element_count", 0) or 0) for registry in registries):
+        return None, False
+    registry_dir = out_dir / "analysis" / "visual_registry"
+    write_registries(registries, registry_dir)
+    return registry_dir, True
+
+
 def _alignment_layout(plan) -> dict:
     return {
         "items": [
@@ -354,6 +368,12 @@ def build_page(args: argparse.Namespace) -> dict:
         background_norm=background_norm,
     )
     source_capture = build_source_capture(out_dir)
+    draft_visual_registry_dir, draft_visual_registry_generated = _write_draft_visual_registry_if_needed(
+        out_dir,
+        source_capture,
+    )
+    if draft_visual_registry_generated:
+        source_capture = build_source_capture(out_dir, visual_registry_dir=draft_visual_registry_dir)
     _write_json(analysis / "source_capture.json", source_capture)
     source_capture_gate = build_source_capture_gate(source_capture)
     _write_json(analysis / "source_capture_gate.json", source_capture_gate)
@@ -397,10 +417,27 @@ def build_page(args: argparse.Namespace) -> dict:
         "reason": "render_preview_not_requested",
         "artifacts": {},
     }
+    render_compare = {
+        "available": False,
+        "skipped": True,
+        "reason": "render_preview_not_requested",
+    }
     if args.render_preview:
         rendered_png = _render_pptx_preview(pptx_path, exports)
         side_by_side = exports / "side-by-side.png"
         _build_side_by_side(full_norm, rendered_png, side_by_side)
+        registry_dir_for_compare = draft_visual_registry_dir
+        if registry_dir_for_compare is None:
+            raw_registry_dir = source_capture.get("inputs", {}).get("visual_registry_dir")
+            if isinstance(raw_registry_dir, str) and raw_registry_dir:
+                registry_dir_for_compare = Path(raw_registry_dir)
+        render_compare = run_render_compare_for_page(
+            blueprint=full_norm,
+            rendered=rendered_png,
+            registry_dir=registry_dir_for_compare,
+            page_number=args.page_number,
+            analysis_dir=analysis,
+        )
         visual_preview = {
             "valid": True,
             "skipped": False,
@@ -408,12 +445,23 @@ def build_page(args: argparse.Namespace) -> dict:
             "artifacts": {
                 "ppt_render": str(rendered_png),
                 "side_by_side": str(side_by_side),
+                "render_compare": render_compare.get("report_path"),
+                "measured_visual_registry": render_compare.get("measured_registry_dir"),
             },
         }
-        source_capture = attach_render_delta_measurement(
-            source_capture,
-            rendered_preview=str(rendered_png),
-        )
+        measured_registry_dir = render_compare.get("measured_registry_dir")
+        if isinstance(measured_registry_dir, str) and measured_registry_dir:
+            source_capture = build_source_capture(out_dir, visual_registry_dir=Path(measured_registry_dir))
+            source_capture = attach_render_compare_measurement(
+                source_capture,
+                rendered_preview=str(rendered_png),
+                render_compare=render_compare,
+            )
+        else:
+            source_capture = attach_render_delta_measurement(
+                source_capture,
+                rendered_preview=str(rendered_png),
+            )
         _write_json(analysis / "source_capture.json", source_capture)
         source_capture_gate = build_source_capture_gate(source_capture)
         _write_json(analysis / "source_capture_gate.json", source_capture_gate)
@@ -428,6 +476,11 @@ def build_page(args: argparse.Namespace) -> dict:
         "workspace_assignment": str(workspace_assignment_path),
         "background_text_scan": str(analysis / "background_text_scan.json"),
         "source_capture_gate": str(analysis / "source_capture_gate.json"),
+        "draft_visual_registry": str(draft_visual_registry_dir)
+        if draft_visual_registry_generated and draft_visual_registry_dir
+        else None,
+        "render_compare": render_compare.get("report_path"),
+        "measured_visual_registry": render_compare.get("measured_registry_dir"),
         "visual_preview": str(analysis / "visual_preview.json"),
         "pptx": str(pptx_path),
     }
@@ -446,6 +499,7 @@ def build_page(args: argparse.Namespace) -> dict:
             "workspace_assignment": workspace_assignment,
             "background_text_scan": background_scan,
             "source_capture_gate": source_capture_gate,
+            "render_compare": render_compare,
             "visual_preview": visual_preview,
         },
         extra={
@@ -478,6 +532,8 @@ def build_page(args: argparse.Namespace) -> dict:
             "source_capture_available": bool(source_capture["pages"]),
             "source_capture_consumed": True,
             "source_capture_gate_pass": bool(source_capture_gate["valid"]),
+            "draft_visual_registry_generated": draft_visual_registry_generated,
+            "render_compare_consumed": bool(render_compare.get("available")),
             "source_capture_text_drives_qa": True,
             "source_capture_gaps_resolved": bool(source_capture_gate["checks"]["capture_gaps_resolved"]),
             "page_quality_report_pass": bool(page_quality_report["valid"]),
@@ -504,6 +560,11 @@ def build_page(args: argparse.Namespace) -> dict:
             "visual_preview": str(analysis / "visual_preview.json"),
             "source_capture": str(analysis / "source_capture.json"),
             "source_capture_gate": str(analysis / "source_capture_gate.json"),
+            "draft_visual_registry": str(draft_visual_registry_dir)
+            if draft_visual_registry_generated and draft_visual_registry_dir
+            else None,
+            "render_compare": render_compare.get("report_path"),
+            "measured_visual_registry": render_compare.get("measured_registry_dir"),
             "page_quality_report": str(analysis / "page_quality_report.json"),
         },
         "semantic_typography_qa": semantic_typography_qa,

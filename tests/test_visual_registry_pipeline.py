@@ -6,6 +6,7 @@ from pathlib import Path
 
 from PIL import Image
 
+from scripts.dual_image_overlay.render_compare_flow import run_render_compare_for_page
 from scripts.visual_registry_from_source_capture import build_registries, write_registries
 
 
@@ -111,3 +112,49 @@ def test_compare_render_can_write_measured_registry(tmp_path: Path) -> None:
     assert element["registration_status"] == "passed"
     assert element["render_bbox_px"] == {"x": 10, "y": 10, "w": 20, "h": 20}
     assert element["delta_px"] == {"x": 0, "y": 0, "w": 0, "h": 0}
+
+
+def test_render_compare_flow_writes_measured_registry_for_source_capture_consumption(tmp_path: Path) -> None:
+    blueprint = tmp_path / "blueprint.png"
+    render = tmp_path / "render.png"
+    Image.new("RGB", (100, 100), "white").save(blueprint)
+    Image.new("RGB", (100, 100), "white").save(render)
+    registry_dir = tmp_path / "visual_registry"
+    registry_dir.mkdir()
+    (registry_dir / "page_003_visual_element_registry.json").write_text(
+        json.dumps(
+            {
+                "schema": "cyberppt.visual_element_registry.v1",
+                "elements": [
+                    {
+                        "element_id": "shape_1",
+                        "priority": "P0",
+                        "element_type": "shape",
+                        "blueprint_bbox_px": {"x": 10, "y": 10, "w": 20, "h": 20},
+                        "tolerance_px": 3,
+                        "measurement_mode": "individual_bbox",
+                    }
+                ],
+            },
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = run_render_compare_for_page(
+        blueprint=blueprint,
+        rendered=render,
+        registry_dir=registry_dir,
+        page_number=3,
+        analysis_dir=tmp_path / "analysis",
+    )
+
+    assert result["available"] is True
+    assert result["passed"] is True
+    assert Path(result["report_path"]).is_file()
+    measured_path = Path(result["measured_registry_path"])
+    assert measured_path.is_file()
+    measured = json.loads(measured_path.read_text(encoding="utf-8"))
+    assert measured["measurement_status"] == "passed"
+    assert measured["elements"][0]["registration_status"] == "passed"
