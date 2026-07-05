@@ -1,8 +1,0 @@
-{
-  "schema": "cyberppt.complex_visual_scan.v1",
-  "page": 2,
-  "complex_visual_asset_required": true,
-  "allowed_background_asset": "no-text content-area background only",
-  "editable_text_layer_required": true,
-  "primary_text_in_background_allowed": false
-}

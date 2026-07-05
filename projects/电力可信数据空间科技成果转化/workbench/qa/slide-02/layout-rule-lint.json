@@ -1,8 +1,0 @@
-{
-  "schema": "cyberppt.blueprint_layout_lint.v1",
-  "plan": "projects/电力可信数据空间科技成果转化/workbench/reconstruction/slide-02-plan.json",
-  "context": "/Volumes/DOC/CyberPPT/projects/电力可信数据空间科技成果转化/workbench/reconstruction/blueprint-layout-context.json",
-  "valid": true,
-  "issues": [],
-  "error_count": 0
-}

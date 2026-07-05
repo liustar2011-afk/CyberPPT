@@ -1,9 +1,0 @@
-{
-  "schema": "cyberppt.stage3.page_rework_report.v1",
-  "slide": 6,
-  "status": "failed_user_review",
-  "failed_reason": "native redraw changed the approved source/blueprint visual structure",
-  "user_feedback": "你这张图哪来的，像是重画的",
-  "decision": "Abandon native redraw route for P6. Return to approved blueprint/no-text background route and rebuild editable text layer against original source layout.",
-  "deliverable_allowed": false
-}
