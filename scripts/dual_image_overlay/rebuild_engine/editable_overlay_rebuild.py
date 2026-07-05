@@ -30,7 +30,7 @@ from script_text_overlay import (
     extract_semantic_plan,
     extract_script_truth_sections,
     infer_semantic_containers,
-    normalize_semantic_plan_to_context,
+    normalize_semantic_plan_to_canvas,
     reconcile_semantic_plan_with_script_truth,
     render_overlay_svg,
     resolve_overlay_coordinate_context,
@@ -87,37 +87,45 @@ def _copy_image_to_project(image_path: Path, project_path: Path) -> str:
     return "../images/" + target.name
 
 
-def _prepare_background_image(
+def _normalized_image_name(source: Path, suffix: str) -> str:
+    stem = source.stem
+    if stem.endswith("_full"):
+        stem = stem[: -len("_full")]
+    if stem.endswith("_background"):
+        stem = stem[: -len("_background")]
+    return f"{stem}_{suffix}_1280x720.png"
+
+
+def _resize_to_canvas(source: Path, target: Path) -> list[int]:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with Image.open(source) as image:
+        source_size = list(image.size)
+        image.convert("RGB").resize(CANVAS_SIZE, Image.Resampling.LANCZOS).save(target)
+    return source_size
+
+
+def _prepare_page_images(
     *,
     full_image: Path,
     background_image: Path,
     project_path: Path,
-) -> tuple[Path, dict[str, Any]]:
-    images_dir = project_path / "images"
-    images_dir.mkdir(parents=True, exist_ok=True)
-    target = images_dir / background_image.name
-    with Image.open(full_image) as full, Image.open(background_image) as background:
-        full_size = full.size
-        background_size = background.size
-        if full_size == background_size:
-            if background_image.resolve() != target.resolve():
-                shutil.copy2(background_image, target)
-            return target, {
-                "status": "matched",
-                "full_size": list(full_size),
-                "background_size": list(background_size),
-                "output_size": list(full_size),
-                "output_path": str(target),
-            }
-        normalized = background.convert("RGB").resize(full_size, Image.Resampling.LANCZOS)
-        normalized.save(target)
-        return target, {
-            "status": "normalized",
-            "full_size": list(full_size),
-            "background_size": list(background_size),
-            "output_size": list(full_size),
-            "output_path": str(target),
-        }
+) -> tuple[Path, Path, dict[str, Any]]:
+    normalized_dir = project_path / "images" / "normalized"
+    prepared_full = normalized_dir / _normalized_image_name(full_image, "full")
+    prepared_background = normalized_dir / _normalized_image_name(background_image, "background")
+    full_size = _resize_to_canvas(full_image, prepared_full)
+    background_size = _resize_to_canvas(background_image, prepared_background)
+    return prepared_full, prepared_background, {
+        "status": "normalized_1280x720",
+        "source_full_size": full_size,
+        "source_background_size": background_size,
+        "full_size": list(CANVAS_SIZE),
+        "background_size": list(CANVAS_SIZE),
+        "output_size": list(CANVAS_SIZE),
+        "full_output_path": str(prepared_full),
+        "background_output_path": str(prepared_background),
+        "output_path": str(prepared_background),
+    }
 
 
 def _write_rebuild_quality(project_path: Path, pages: list[dict[str, Any]]) -> None:
@@ -232,6 +240,13 @@ def _image_size_for_scene_graph(image_size_check: dict[str, Any]) -> dict[str, f
     return {"width": float(CANVAS_SIZE[0]), "height": float(CANVAS_SIZE[1])}
 
 
+def _source_full_size(image_size_check: dict[str, Any]) -> dict[str, float]:
+    source_size = image_size_check.get("source_full_size")
+    if isinstance(source_size, list) and len(source_size) == 2:
+        return {"width": float(source_size[0]), "height": float(source_size[1])}
+    return {"width": float(CANVAS_SIZE[0]), "height": float(CANVAS_SIZE[1])}
+
+
 def _write_scene_graph_artifacts(
     *,
     project_path: Path,
@@ -340,14 +355,16 @@ def rebuild_from_manifest(
         page_number = int(pair["page_number"])
         if "background" not in pair:
             raise ValueError(f"Page {page_number} has no background variant. Run with --dual-image first.")
-        full_image = _require_image(pair["full"], "full")
-        background_image = _require_image(pair["background"], "background")
-        visible_image = full_image if visible_image_variant == "full" else background_image
-        prepared_background, image_size_check = _prepare_background_image(
-            full_image=full_image,
-            background_image=visible_image,
+        source_full_image = _require_image(pair["full"], "full")
+        source_background_image = _require_image(pair["background"], "background")
+        normalized_full, normalized_background, image_size_check = _prepare_page_images(
+            full_image=source_full_image,
+            background_image=source_background_image,
             project_path=project_path,
         )
+        full_image = normalized_full
+        background_image = normalized_background
+        prepared_background = full_image if visible_image_variant == "full" else background_image
         layout_path, layout = _layout_for_page(
             full_image=full_image,
             ocr_dir=ocr_dir,
@@ -364,12 +381,10 @@ def rebuild_from_manifest(
         if explicit_semantic is not None:
             explicit_path, explicit_plan = explicit_semantic
             explicit_plan = reconcile_semantic_plan_with_script_truth(explicit_plan, source_script, page_number)
-            coordinate_context = resolve_overlay_coordinate_context(
+            explicit_plan = normalize_semantic_plan_to_canvas(
                 explicit_plan,
-                visual_registry=visual_registry,
-                background_image=prepared_background,
+                input_space=_source_full_size(image_size_check),
             )
-            explicit_plan = normalize_semantic_plan_to_context(explicit_plan, coordinate_context)
             semantic_plan_path.write_text(
                 json.dumps(explicit_plan, ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",

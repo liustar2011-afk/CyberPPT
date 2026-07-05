@@ -924,6 +924,14 @@ def normalize_semantic_plan_to_context(plan: dict[str, Any], coordinate_context:
     return normalized
 
 
+def normalize_semantic_plan_to_canvas(plan: dict[str, Any], input_space: dict[str, Any]) -> dict[str, Any]:
+    coordinate_context = {
+        "semantic_input_space": _size_dict(float(input_space["width"]), float(input_space["height"])),
+        "coordinate_space": _size_dict(1280, 720),
+    }
+    return normalize_semantic_plan_to_context(plan, coordinate_context)
+
+
 def _normalize_semantic_plan_to_context(plan: dict[str, Any], coordinate_context: dict[str, Any]) -> dict[str, Any]:
     return normalize_semantic_plan_to_context(plan, coordinate_context)
 

@@ -6,10 +6,17 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from PIL import Image
+
 from cyberppt.commands.script_runner import script_path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+REBUILD_ENGINE_DIR = ROOT / "scripts" / "dual_image_overlay" / "rebuild_engine"
+if str(REBUILD_ENGINE_DIR) not in __import__("sys").path:
+    __import__("sys").path.insert(0, str(REBUILD_ENGINE_DIR))
+
+from scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild import _prepare_page_images  # noqa: E402
 
 
 class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
@@ -89,6 +96,34 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertEqual(1, source_capture["inputs"]["visual_registry_elements"])
         self.assertNotIn("non_text_visuals_not_individually_detected", source_capture_gate["gap_counts"])
         self.assertIn("render_delta_not_measured", source_capture_gate["gap_counts"])
+
+    def test_rebuild_ingress_normalizes_full_and_background_to_1280_canvas(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            project = root / "template-project"
+            source_dir = root / "source"
+            source_dir.mkdir()
+            full = source_dir / "page_006_full.png"
+            background = source_dir / "page_006_background.png"
+            Image.new("RGB", (1672, 941), "#ffffff").save(full)
+            Image.new("RGB", (1672, 941), "#f8fafc").save(background)
+
+            prepared_full, prepared_background, image_size_check = _prepare_page_images(
+                full_image=full,
+                background_image=background,
+                project_path=project,
+            )
+
+            with Image.open(prepared_full) as full_image, Image.open(prepared_background) as background_image:
+                self.assertEqual((1280, 720), full_image.size)
+                self.assertEqual((1280, 720), background_image.size)
+
+        self.assertEqual([1672, 941], image_size_check["source_full_size"])
+        self.assertEqual([1672, 941], image_size_check["source_background_size"])
+        self.assertEqual([1280, 720], image_size_check["output_size"])
+        self.assertEqual("normalized_1280x720", image_size_check["status"])
+        self.assertIn("/normalized/", str(prepared_full))
+        self.assertIn("/normalized/", str(prepared_background))
 
 
 def _write_template_project(project: Path) -> None:
