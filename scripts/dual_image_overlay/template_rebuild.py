@@ -11,6 +11,8 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
     __package__ = "scripts.dual_image_overlay"
 
+from .rebuild_modes import resolve_rebuild_mode as _resolve_rebuild_mode
+from .rebuild_modes import visual_reference_for_mode as _visual_reference_for_mode
 from .source_capture import attach_render_delta_measurement, build_source_capture, build_source_capture_gate
 
 
@@ -119,6 +121,13 @@ def build_template_rebuild_readiness(
     manifest = _read_json(manifest_path)
     project_path = resolve_project_path(manifest_path, manifest)
     analysis_dir = project_path / "analysis"
+    rebuild_mode = _resolve_rebuild_mode(manifest)
+    visual_reference_mode, visual_reference = _visual_reference_for_mode(
+        project_path,
+        manifest,
+        rebuild_mode,
+        manifest_path=manifest_path,
+    )
 
     source_capture = build_source_capture(
         project_path,
@@ -157,6 +166,8 @@ def build_template_rebuild_readiness(
         "status": status,
         "project_path": str(project_path),
         "pair_manifest": str(manifest_path),
+        "rebuild_mode": rebuild_mode,
+        "visual_reference_mode": visual_reference_mode,
         "visual_registry_dir": str(visual_registry_dir) if visual_registry_dir else None,
         "semantic_plan_dir": str(semantic_plan_dir) if semantic_plan_dir else None,
         "rendered_preview": str(rendered_preview) if rendered_preview else None,
@@ -177,6 +188,7 @@ def build_template_rebuild_readiness(
             "template_gate": str(analysis_dir / "template_gate.json"),
             "scene_graph_gate_dir": str(analysis_dir / "scene_graph_gate"),
             "exported_pptx": exported_pptx,
+            "visual_reference": visual_reference,
         },
     }
     _write_json(analysis_dir / "template_rebuild_readiness.json", readiness)

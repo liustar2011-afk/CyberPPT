@@ -92,3 +92,64 @@ def test_layout_uses_text_node_style_from_capture():
     assert item["font_family"] == "Microsoft YaHei"
     assert item["fill"] == "#123456"
     assert item["font_weight"] == "700"
+
+
+def test_scene_graph_layout_preserves_semantic_item_bbox():
+    graph = PageSceneGraph(
+        page=6,
+        coordinate_context={"coordinate_space": {"width": 1280, "height": 720}},
+        truth_sources={},
+        visual_nodes=[
+            VisualNode("ability_1", "container", "ability_card", BBox(300, 100, 520, 260), {"kind": "semantic_plan"})
+        ],
+        text_nodes=[
+            TextNode(
+                "text_1",
+                "1",
+                {"kind": "script"},
+                "index",
+                TextBinding("container_text", target_id="ability_1", safe_bbox=BBox(330, 120, 500, 240)),
+                style={
+                    "layout_bbox": [332.0, 122.0, 348.0, 138.0],
+                    "layout_strategy": "ability_card_slots",
+                    "layout_source": "semantic_layout_plan",
+                    "font_size": 13,
+                },
+            ),
+            TextNode(
+                "text_2",
+                "目录管理",
+                {"kind": "script"},
+                "ability_title",
+                TextBinding("container_text", target_id="ability_1", safe_bbox=BBox(330, 120, 500, 240)),
+                style={
+                    "layout_bbox": [380.0, 121.0, 450.0, 140.0],
+                    "layout_strategy": "ability_card_slots",
+                    "layout_source": "semantic_layout_plan",
+                    "font_size": 15,
+                },
+            ),
+            TextNode(
+                "text_3",
+                "• 指标/能力目录",
+                {"kind": "script"},
+                "body",
+                TextBinding("container_text", target_id="ability_1", safe_bbox=BBox(330, 120, 500, 240)),
+                style={
+                    "layout_bbox": [380.0, 146.0, 470.0, 156.0],
+                    "layout_strategy": "ability_card_slots",
+                    "layout_source": "semantic_layout_plan",
+                    "font_size": 11,
+                },
+            ),
+        ],
+    )
+
+    plan = build_layout_plan_from_scene_graph(graph)
+    by_text = {item["text"]: item for item in plan["items"]}
+
+    assert by_text["1"]["bbox"] == [332.0, 122.0, 348.0, 138.0]
+    assert by_text["目录管理"]["bbox"] == [380.0, 121.0, 450.0, 140.0]
+    assert by_text["• 指标/能力目录"]["bbox"] == [380.0, 146.0, 470.0, 156.0]
+    assert by_text["目录管理"]["layout_strategy"] == "ability_card_slots"
+    assert by_text["目录管理"]["layout_source"] == "semantic_layout_plan"

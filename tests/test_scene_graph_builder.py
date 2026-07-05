@@ -158,3 +158,59 @@ def test_consumes_semantic_layout_neighbors_and_text_style():
     assert any(intent.type == "neighbor_context" and intent.target_id == "app_icon_1" for intent in graph.layout_intents)
     assert any(intent.type == "avoid_reserved_zone" and intent.target_id == "app_icon_1" for intent in graph.layout_intents)
     assert any(intent.type == "honor_text_zone" and intent.target_id == "app_text_zone_1" for intent in graph.layout_intents)
+
+
+def test_builder_attaches_semantic_layout_item_bbox_to_text_node():
+    graph = build_page_scene_graph(
+        page_number=6,
+        script_sections={},
+        semantic_plan={
+            "image_size": {"width": 1280, "height": 720},
+            "containers": [{"id": "ability_1", "role": "ability_card", "bbox": [300, 100, 520, 260]}],
+            "items": [{"display_text": "目录管理", "role": "ability_title", "container_id": "ability_1"}],
+        },
+        visual_registry={"blueprint_canvas_px": {"w": 1280, "h": 720}, "elements": []},
+        image_size={"width": 1280, "height": 720},
+        semantic_layout_plan={
+            "schema": "cyberppt.dual_image.semantic_layout_plan.v1",
+            "items": [
+                {
+                    "text": "目录管理",
+                    "container_id": "ability_1",
+                    "bbox": [380.0, 121.0, 450.0, 140.0],
+                    "layout_strategy": "ability_card_slots",
+                }
+            ],
+        },
+    )
+
+    assert graph.text_nodes[0].style["layout_bbox"] == [380.0, 121.0, 450.0, 140.0]
+    assert graph.text_nodes[0].style["layout_strategy"] == "ability_card_slots"
+    assert graph.text_nodes[0].style["layout_source"] == "semantic_layout_plan"
+
+
+def test_builder_attaches_semantic_layout_item_bbox_to_multiline_child_text():
+    graph = build_page_scene_graph(
+        page_number=6,
+        script_sections={"右侧｜结果应用方": [{"title": "目录管理", "lines": ["指标/能力目录", "评估维度管理"]}]},
+        semantic_plan={
+            "image_size": {"width": 1280, "height": 720},
+            "containers": [{"id": "application_1", "role": "ability_card", "bbox": [300, 100, 520, 260]}],
+            "items": [],
+        },
+        visual_registry={"blueprint_canvas_px": {"w": 1280, "h": 720}, "elements": []},
+        image_size={"width": 1280, "height": 720},
+        semantic_layout_plan={
+            "items": [
+                {
+                    "text": "目录管理",
+                    "container_id": "application_1",
+                    "bbox": [380.0, 121.0, 450.0, 140.0],
+                    "layout_strategy": "ability_card_slots",
+                }
+            ],
+        },
+    )
+
+    assert graph.text_nodes[0].text.startswith("目录管理")
+    assert graph.text_nodes[0].style["layout_bbox"] == [380.0, 121.0, 450.0, 140.0]

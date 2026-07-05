@@ -22,6 +22,8 @@
 - Modify `scripts/dual_image_overlay/scene_graph/layout.py`
   - Resolve bbox from `TextNode.style["layout_bbox"]` before container fallback.
   - Emit `layout_strategy` and `layout_source` in page layout items.
+- Add `scripts/dual_image_overlay/rebuild_modes.py`
+  - Keep rebuild-mode parsing and visual-reference selection shared across the CLI readiness gate and rebuild engine.
 - Modify `scripts/dual_image_overlay/template_rebuild.py`
   - Add rebuild-mode resolution helpers.
   - Add `visual_reference_mode` and `visual_reference` metadata to readiness.
@@ -178,7 +180,7 @@ Expected: PASS.
 
 - [ ] **Step 5: Add semantic layout item evidence in builder**
 
-In `scripts/dual_image_overlay/scene_graph/builder.py`, add helpers near `_text_by_capture_key()`:
+In `scripts/dual_image_overlay/scene_graph/builder.py`, add helpers near `_text_by_capture_key()`. Matching must not be limited to exact full-text equality: when the scene graph node contains multiline text, try the full text first, then first/child lines within the same `container_id` or `target_id`.
 
 ```python
 def _semantic_layout_item_key(text: str, target_id: str | None) -> tuple[str, str]:
@@ -202,13 +204,19 @@ def _semantic_layout_items_by_key(semantic_layout_plan: Mapping[str, Any] | None
     return result
 
 
+def _semantic_layout_text_candidates(text: str) -> list[str]:
+    candidates = [text]
+    candidates.extend(line.strip() for line in text.splitlines() if line.strip())
+    ...
+
+
 def _merge_semantic_layout_style(
     style: dict[str, Any],
     text: str,
     target_id: str | None,
     semantic_layout_items: Mapping[tuple[str, str], Mapping[str, Any]],
 ) -> dict[str, Any]:
-    item = semantic_layout_items.get(_semantic_layout_item_key(text, target_id))
+    item = _semantic_layout_item_for_text(text, target_id, semantic_layout_items)
     if not item:
         return style
     merged = dict(style)
@@ -388,13 +396,13 @@ Expected: FAIL because `rebuild_mode`, `visual_reference_mode`, and `artifacts.v
 
 - [ ] **Step 3: Implement mode helpers**
 
-In `scripts/dual_image_overlay/template_rebuild.py`, add near `_latest_pptx()`:
+Add `scripts/dual_image_overlay/rebuild_modes.py` and import it from both `template_rebuild.py` and `rebuild_engine/editable_overlay_rebuild.py` instead of duplicating mode parsing.
 
 ```python
 VALID_REBUILD_MODES = {"full_slide", "template_body_region"}
 
 
-def _resolve_rebuild_mode(manifest: dict[str, Any]) -> str:
+def resolve_rebuild_mode(manifest: dict[str, Any]) -> str:
     raw = manifest.get("rebuild_mode")
     if not raw:
         contract = manifest.get("generation_contract")
@@ -406,7 +414,7 @@ def _resolve_rebuild_mode(manifest: dict[str, Any]) -> str:
     return mode
 
 
-def _first_full_image(manifest: dict[str, Any]) -> str | None:
+def first_full_image(manifest: dict[str, Any], *, manifest_path: Path | None = None) -> str | None:
     pairs = manifest.get("pairs")
     if not isinstance(pairs, list) or not pairs:
         return None
@@ -417,7 +425,13 @@ def _first_full_image(manifest: dict[str, Any]) -> str | None:
     return str(Path(path).expanduser().resolve()) if isinstance(path, str) and path else None
 
 
-def _visual_reference_for_mode(project_path: Path, manifest: dict[str, Any], rebuild_mode: str) -> tuple[str, str | None]:
+def visual_reference_for_mode(
+    project_path: Path,
+    manifest: dict[str, Any],
+    rebuild_mode: str,
+    *,
+    manifest_path: Path | None = None,
+) -> tuple[str, str | None]:
     if rebuild_mode == "full_slide":
         return "raw_full_image", _first_full_image(manifest)
     reference = project_path / "qa" / "visual-reference" / "template-normalized-reference.png"
@@ -428,11 +442,16 @@ The `template-normalized-reference.png` may not exist when `--skip-rebuild` is u
 
 - [ ] **Step 4: Wire mode into readiness**
 
-In `build_template_rebuild_readiness()`, after `manifest = _read_json(manifest_path)`, add:
+In `template_rebuild.py`, re-export/import `resolve_rebuild_mode` as `_resolve_rebuild_mode` for tests and call the shared helper. In `build_template_rebuild_readiness()`, after `manifest = _read_json(manifest_path)`, add:
 
 ```python
 rebuild_mode = _resolve_rebuild_mode(manifest)
-visual_reference_mode, visual_reference = _visual_reference_for_mode(project_path, manifest, rebuild_mode)
+visual_reference_mode, visual_reference = _visual_reference_for_mode(
+    project_path,
+    manifest,
+    rebuild_mode,
+    manifest_path=manifest_path,
+)
 ```
 
 Add these fields to the readiness object:
@@ -475,19 +494,7 @@ background_image = normalized_background
 prepared_background = full_image if visible_image_variant == "full" else background_image
 ```
 
-Then add:
-
-```python
-def _resolve_rebuild_mode(manifest: dict[str, Any]) -> str:
-    contract = manifest.get("generation_contract")
-    raw = manifest.get("rebuild_mode")
-    if not raw and isinstance(contract, dict):
-        raw = contract.get("rebuild_mode")
-    mode = str(raw or "template_body_region")
-    if mode not in {"full_slide", "template_body_region"}:
-        raise ValueError(f"Unsupported rebuild_mode: {mode}")
-    return mode
-```
+Then import and call `resolve_rebuild_mode()` from `scripts.dual_image_overlay.rebuild_modes`.
 
 In `rebuild_from_manifest()`, after `manifest = load_pair_manifest(manifest_path)`, add:
 
@@ -557,10 +564,10 @@ Expected: all selected tests pass.
 Run:
 
 ```bash
-PYTHONPATH=. python3 scripts/dual_image_overlay/template_rebuild.py projects/dual-image-page006-rebuild-20260705-101012/images/page_image_pairs.json --ocr-backend none --semantic-plan-dir projects/dual-image-page006-rebuild-20260705-101012/semantic_plan --visual-registry-dir projects/dual-image-page006-rebuild-20260705-101012/registry --export
+PYTHONPATH=. python3 scripts/dual_image_overlay/template_rebuild.py projects/dual-image-page006-rebuild-20260705-101012/images/page_image_pairs.json --ocr-backend none --semantic-plan-dir projects/dual-image-page006-rebuild-20260705-101012/semantic_plan --visual-registry-dir projects/dual-image-page006-rebuild-20260705-101012/registry --no-export
 ```
 
-Expected: rebuild reaches export or a later strict gate. If a later gate blocks, still verify ingress with:
+Expected: rebuild reaches readiness or a later strict gate. Verify ingress and layout independently with:
 
 ```bash
 python3 - <<'PY'

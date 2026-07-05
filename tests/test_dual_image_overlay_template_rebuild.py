@@ -125,6 +125,72 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertIn("/normalized/", str(prepared_full))
         self.assertIn("/normalized/", str(prepared_background))
 
+    def test_template_body_region_uses_template_normalized_visual_reference(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            project = root / "template-project"
+            _write_template_project(project)
+            manifest = _write_pair_manifest(root, project, rebuild_mode="template_body_region")
+
+            result = subprocess.run(
+                [
+                    "python3",
+                    str(ROOT / "scripts/dual_image_overlay/template_rebuild.py"),
+                    str(manifest),
+                    "--skip-rebuild",
+                    "--no-export",
+                ],
+                cwd=ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(3, result.returncode, result.stdout + result.stderr)
+            readiness = json.loads((project / "analysis/template_rebuild_readiness.json").read_text(encoding="utf-8"))
+
+        self.assertEqual("template_body_region", readiness["rebuild_mode"])
+        self.assertEqual("template_normalized_reference", readiness["visual_reference_mode"])
+        self.assertTrue(str(readiness["artifacts"]["visual_reference"]).endswith("template-normalized-reference.png"))
+
+    def test_full_slide_uses_raw_full_visual_reference(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            project = root / "template-project"
+            _write_template_project(project)
+            manifest = _write_pair_manifest(root, project, rebuild_mode="full_slide")
+
+            result = subprocess.run(
+                [
+                    "python3",
+                    str(ROOT / "scripts/dual_image_overlay/template_rebuild.py"),
+                    str(manifest),
+                    "--skip-rebuild",
+                    "--no-export",
+                ],
+                cwd=ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(3, result.returncode, result.stdout + result.stderr)
+            readiness = json.loads((project / "analysis/template_rebuild_readiness.json").read_text(encoding="utf-8"))
+
+        self.assertEqual("full_slide", readiness["rebuild_mode"])
+        self.assertEqual("raw_full_image", readiness["visual_reference_mode"])
+        self.assertTrue(str(readiness["artifacts"]["visual_reference"]).endswith("page_002_full.png"))
+
+    def test_rebuild_mode_defaults_to_template_body_region(self) -> None:
+        from scripts.dual_image_overlay.template_rebuild import _resolve_rebuild_mode
+
+        self.assertEqual("template_body_region", _resolve_rebuild_mode({}))
+        self.assertEqual("full_slide", _resolve_rebuild_mode({"rebuild_mode": "full_slide"}))
+        self.assertEqual(
+            "template_body_region",
+            _resolve_rebuild_mode({"generation_contract": {"rebuild_mode": "template_body_region"}}),
+        )
+
 
 def _write_template_project(project: Path) -> None:
     (project / "templates").mkdir(parents=True)
@@ -201,7 +267,7 @@ def _write_template_project(project: Path) -> None:
     )
 
 
-def _write_pair_manifest(root: Path, project: Path) -> Path:
+def _write_pair_manifest(root: Path, project: Path, *, rebuild_mode: str = "template_body_region") -> Path:
     image_dir = root / "images"
     image_dir.mkdir()
     full = image_dir / "page_002_full.png"
@@ -210,10 +276,12 @@ def _write_pair_manifest(root: Path, project: Path) -> Path:
     background.write_bytes(b"fake-background")
     manifest = {
         "mode": "cyberppt-dual-image-pair",
+        "rebuild_mode": rebuild_mode,
         "project_path": str(project),
         "source_script": str(root / "script.md"),
         "generation_contract": {
             "mode": "template-content-region",
+            "rebuild_mode": rebuild_mode,
             "rule": "Generate content-area images only; PPT title, subtitle and enterprise chrome are handled by template/export code.",
         },
         "pairs": [
