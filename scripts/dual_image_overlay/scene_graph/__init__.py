@@ -1,3 +1,4 @@
+from .builder import build_page_scene_graph
 from .coordinate import COORDINATE_CONTEXT_SCHEMA, normalize_bbox, resolve_coordinate_context
 from .schema import (
     BINDING_TYPES,
@@ -29,6 +30,7 @@ __all__ = [
     "SCHEMA",
     "TEXT_TRUTH_AUTHORITIES",
     "BBox",
+    "build_page_scene_graph",
     "CoordinateContext",
     "GateIssue",
     "LayoutIntent",
