@@ -1,0 +1,63 @@
+<h2>双图转可编辑 PPT：整体流程诊断</h2>
+<p class="subtitle">目标不是修某一处文本，而是建立从源图/脚本/证据链到可编辑 PPT 的一致性闭环。</p>
+
+<div class="section">
+  <h3>当前断点</h3>
+  <div class="mockup">
+    <div class="mockup-header">现状：多个真相源并列，但没有统一仲裁层</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:start">
+        <div class="placeholder">源图 full / background<br>提供版式与可视关系</div>
+        <div class="placeholder">脚本 / 内容锁 / 证据链<br>提供最终文本 truth</div>
+        <div class="placeholder">visual_element_registry<br>提供图标、容器、text_zone</div>
+      </div>
+      <div style="text-align:center;margin:14px 0;color:#6b7280">↓ 缺统一的 normalized scene graph / relation contract</div>
+      <div class="placeholder" style="border-color:#b91c1c;color:#7f1d1d">
+        局部规则直接进入 layout：坐标空间漂移、文本 truth 被污染、容器安全区与图标避让不能联动校验
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>应有主线</h3>
+  <div class="mockup">
+    <div class="mockup-header">建议：先合成 Scene Graph，再布局和 QA</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center">
+        <div class="placeholder">1<br>Normalize<br>统一坐标系</div>
+        <div class="placeholder">2<br>Capture<br>源图元素/关系</div>
+        <div class="placeholder">3<br>Bind<br>文本 truth 绑定容器</div>
+        <div class="placeholder">4<br>Layout<br>容器安全区排版</div>
+        <div class="placeholder">5<br>Gate<br>内容/坐标/视觉 QA</div>
+      </div>
+      <div style="margin-top:14px" class="placeholder">
+        输出：每页一个 page_scene_graph.json，所有下游只消费它，不再各自猜坐标、猜文本、猜容器。
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>最小修补</h3>
+      <p>继续在现有 overlay 里补规则。快，但仍会点状失控。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>中间层重构</h3>
+      <p>新增 page_scene_graph 作为统一契约，保留现有导出器。推荐。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>整体迁移 ppt-master</h3>
+      <p>把 ppt-master 的双图重建流程作为主流程替换现有实现。上限高，但迁移风险和回归面最大。</p>
+    </div>
+  </div>
+</div>

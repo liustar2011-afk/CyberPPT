@@ -1,0 +1,15 @@
+{
+  "valid": false,
+  "errors": [
+    {
+      "level": "error",
+      "code": "structure_crop_forbidden",
+      "message": "Image crop `P01_card_body_crop` is marked as `card_body`; main structure must be rebuilt as editable vectors, not cropped.",
+      "path": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/crop_policy_guard/image_crops_manifest.json"
+    }
+  ],
+  "warnings": [],
+  "text_regions": 0,
+  "image_crops": 1,
+  "rebuild_mode": "vector-hifi"
+}

@@ -1,0 +1,10 @@
+{
+  "purpose": "Guard that vector-hifi rejects raster crops carrying card/body structure.",
+  "layout_reference": false,
+  "expect_invalid": {
+    "text_bearing_images": true
+  },
+  "expected_error_codes": [
+    "structure_crop_forbidden"
+  ]
+}

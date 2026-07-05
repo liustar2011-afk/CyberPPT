@@ -1,0 +1,8 @@
+{
+  "version": "1.0",
+  "fingerprint": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stamped_at": "2026-06-08T09:05:50Z",
+  "stamped_by": "skills/ppt-master/scripts/run_slide_image_rebuild_strict.py",
+  "stage_reached": "svg",
+  "artifact_paths": []
+}

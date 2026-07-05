@@ -1,0 +1,168 @@
+{
+  "version": "1.0",
+  "workflow": "slide-image-rebuild",
+  "check": "strict_run",
+  "run_id": "20260608T082901Z",
+  "generated_at": "2026-06-08T08:29:01Z",
+  "completed_at": "2026-06-08T08:29:01Z",
+  "status": "failed",
+  "valid": false,
+  "project": "slide-image-rebuild/fixtures/image_rebuild/geometry_locks_validator",
+  "runner": {
+    "script": "skills/ppt-master/scripts/run_slide_image_rebuild_strict.py",
+    "stage_requested": "mapped",
+    "stage_reached": "bootstrap",
+    "stop_on_error": true,
+    "dry_run": false,
+    "skip_export": true
+  },
+  "resolved": {
+    "rebuild_mode": "vector-hifi",
+    "export_mode": "hifi",
+    "precise_lock": false,
+    "render_enabled": false,
+    "page_count": 1,
+    "pages": [
+      "01"
+    ]
+  },
+  "summary": {
+    "steps_total": 2,
+    "steps_passed": 0,
+    "steps_failed": 1,
+    "steps_skipped": 1,
+    "failed_step_id": "0.2.manifest_exists",
+    "first_blocking_error_code": "tool_error"
+  },
+  "blocking_errors": [
+    {
+      "step_id": "0.2.manifest_exists",
+      "stage": "bootstrap",
+      "code": "tool_error",
+      "message": "slide_image_rebuild_manifest.json is required.",
+      "path": "",
+      "page_id": null,
+      "stdout_json_ref": "exports/qa/captures/0_2_manifest_exists.stdout.json"
+    },
+    {
+      "step_id": "agent_summary",
+      "stage": "package",
+      "code": "summary_inconsistent",
+      "message": "failed_step_id mismatch: report=None summary='0.2.manifest_exists'",
+      "path": "exports/qa/strict_run_summary.json",
+      "page_id": null,
+      "stdout_json_ref": null
+    }
+  ],
+  "warnings": [],
+  "artifacts": {
+    "strict_run_report": "exports/qa/strict_run_report.json",
+    "strict_run_summary": "exports/qa/strict_run_summary.json"
+  },
+  "stages": [
+    {
+      "stage": "bootstrap",
+      "stage_index": 0,
+      "status": "failed",
+      "valid": false,
+      "steps_total": 2,
+      "steps_passed": 0,
+      "steps_failed": 1,
+      "steps_skipped": 1,
+      "failed_step_ids": [
+        "0.2.manifest_exists"
+      ],
+      "step_ids": [
+        "0.1.check_cairo_backend",
+        "0.2.manifest_exists"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "0.1.check_cairo_backend",
+      "stage": "bootstrap",
+      "stage_index": 0,
+      "seq": 1,
+      "gate": "conditional",
+      "status": "skipped",
+      "tool": {
+        "name": "check_cairo_backend",
+        "script": "skills/ppt-master/scripts/check_cairo_backend.py"
+      },
+      "invocation": {
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/check_cairo_backend.py"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T08:29:01Z",
+        "finished_at": "2026-06-08T08:29:01Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "condition_not_met"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "0.2.manifest_exists",
+      "stage": "bootstrap",
+      "stage_index": 0,
+      "seq": 2,
+      "gate": "hard",
+      "status": "failed",
+      "tool": {
+        "name": "inline",
+        "script": null
+      },
+      "invocation": {
+        "argv": []
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T08:29:01Z",
+        "finished_at": "2026-06-08T08:29:01Z"
+      },
+      "result": {
+        "exit_code": 1,
+        "valid": false,
+        "skipped": false,
+        "stdout_json": {
+          "parsed": true,
+          "path": null,
+          "inline": true,
+          "ref": "exports/qa/captures/0_2_manifest_exists.stdout.json"
+        }
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [
+        {
+          "level": "error",
+          "code": "tool_error",
+          "message": "slide_image_rebuild_manifest.json is required.",
+          "source": "tool_payload.errors[0]"
+        }
+      ],
+      "warnings": []
+    }
+  ]
+}

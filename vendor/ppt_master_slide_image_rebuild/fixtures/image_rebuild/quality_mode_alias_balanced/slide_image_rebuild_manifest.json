@@ -1,0 +1,12 @@
+{
+  "workflow": "slide-image-rebuild",
+  "format": "ppt169",
+  "rebuild_quality_mode": "balanced",
+  "pages": [
+    {
+      "page_id": "P01",
+      "reference_image": "images/reference_pages/P01.png",
+      "page_dir": "."
+    }
+  ]
+}

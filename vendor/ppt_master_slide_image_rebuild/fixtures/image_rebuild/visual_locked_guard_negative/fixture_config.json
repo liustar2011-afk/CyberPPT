@@ -1,0 +1,12 @@
+{
+  "purpose": "visual_locked must fail slide-image-rebuild intake (v2 default + missing acceptance).",
+  "layout_reference": false,
+  "manifest_stage": "intake",
+  "expect_invalid": {
+    "slide_image_rebuild_manifest": true
+  },
+  "expected_error_codes": [
+    "snapshot_missing_user_acceptance",
+    "visual_locked_incompatible_with_slide_image_rebuild_v2"
+  ]
+}

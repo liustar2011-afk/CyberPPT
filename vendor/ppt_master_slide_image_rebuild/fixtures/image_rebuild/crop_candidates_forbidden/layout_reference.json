@@ -1,0 +1,198 @@
+{
+  "version": "1.0",
+  "workflow": "slide-image-rebuild",
+  "source_reference": {
+    "purpose": "layout_only",
+    "content_trust": "untrusted_for_final_text",
+    "copy_text_from_reference": false
+  },
+  "canvas": {
+    "aspect": "16:9",
+    "width_px": 1280,
+    "height_px": 720,
+    "safe_margin_px": 48
+  },
+  "page_role": "process_flow",
+  "layout_type": "left_intake_center_hub_right_output",
+  "visual_structure": {
+    "summary": "Minimal process-flow fixture with ambient data stream decoration and a functional arrowhead."
+  },
+  "main_chain": {
+    "direction": "left_to_right",
+    "relationship_style": "ambient_stream_plus_short_arrow",
+    "nodes": [
+      {
+        "id": "intake",
+        "label": "Input"
+      },
+      {
+        "id": "hub",
+        "label": "Hub"
+      }
+    ],
+    "connectors": [
+      {
+        "from": "intake",
+        "to": "hub",
+        "type": "short_arrowhead",
+        "notes": "Only the arrowhead carries data-chain-connector; low-opacity streams are decorative."
+      }
+    ]
+  },
+  "zones": [
+    {
+      "id": "zone_intake",
+      "role": "content_panel",
+      "position_hint": "left",
+      "editable": true,
+      "x_ratio": 0.08,
+      "y_ratio": 0.28,
+      "w_ratio": 0.2,
+      "h_ratio": 0.28
+    },
+    {
+      "id": "zone_hub",
+      "role": "central_node",
+      "position_hint": "center",
+      "editable": true,
+      "x_ratio": 0.43,
+      "y_ratio": 0.34,
+      "w_ratio": 0.16,
+      "h_ratio": 0.2
+    }
+  ],
+  "style_reference": {
+    "palette": "blue_cyan_energy",
+    "tone": "clean technical"
+  },
+  "editability_policy": {
+    "never_flatten_full_slide": true,
+    "text": "editable",
+    "cards": "editable",
+    "connectors": "editable"
+  },
+  "visual_layering": {
+    "content_layer": [
+      "zone_intake_text",
+      "zone_hub_text"
+    ],
+    "structure_layer": [
+      "panel_boxes",
+      "functional_arrowhead"
+    ],
+    "semantic_icon_layer": [
+      "simple_status_icon"
+    ],
+    "decorative_layer": [
+      "soft_data_streams"
+    ],
+    "noise_layer": [
+      "ambient_light_dots"
+    ]
+  },
+  "decorative_noise": [
+    {
+      "id": "soft_data_streams",
+      "bbox_px": [
+        250,
+        230,
+        430,
+        180
+      ],
+      "bbox_ratio": [
+        0.1953,
+        0.3194,
+        0.3359,
+        0.25
+      ],
+      "type": "ambient_stream_lines",
+      "layer": "decorative_layer",
+      "treatment": "preserve_as_low_opacity_vector",
+      "semantic_weight": "ambient",
+      "reason": "Background flow ambience only; it must not carry data-chain-connector."
+    },
+    {
+      "id": "ambient_light_dots",
+      "bbox_px": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "bbox_ratio": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "type": "repeated_light_dots",
+      "layer": "noise_layer",
+      "treatment": "ignore",
+      "semantic_weight": "none",
+      "reason": "Decorative particles add recognition noise and no editable meaning."
+    }
+  ],
+  "layout_grammar": {
+    "page_type_hint": "process",
+    "primary_axis": "left_to_right",
+    "reading_order": [
+      "zone_intake",
+      "zone_hub"
+    ],
+    "alignment_system": "centerline",
+    "repetition_pattern": "single_stream",
+    "composition_type": "process_flow"
+  },
+  "page_type_classifier": {
+    "page_type_hint": "process",
+    "confidence": 0.9,
+    "reason": "Fixture is a minimal left-to-right process flow.",
+    "signals": {
+      "main_chain": true,
+      "ambient_streams": true
+    },
+    "needs_review": []
+  },
+  "confidence": {
+    "layout_type": 0.95,
+    "main_chain": 0.95,
+    "text_regions": 0.9,
+    "crop_candidates": 0.9
+  },
+  "needs_review": [],
+  "icon_reconstruction": {
+    "policy": "semantic_vector_first",
+    "preferred_libraries": [],
+    "level_rules": {},
+    "icons": []
+  },
+  "render_notes": {
+    "text_density": "medium",
+    "title_style": "short_judgment",
+    "body_style": "formal_business_phrases",
+    "avoid": [
+      "pixel_copy"
+    ]
+  },
+  "crop_candidates": [
+    {
+      "id": "functional_connector",
+      "type": "connector",
+      "bbox_px": [
+        400,
+        300,
+        120,
+        40
+      ],
+      "recommended_treatment": "local_clean_crop",
+      "editability_intent": "asset",
+      "needs_review": false,
+      "reason": "should not be cropped",
+      "precrop": {
+        "enabled": true,
+        "file": "",
+        "source_image": "images/reference_pages/P01.png"
+      }
+    }
+  ]
+}

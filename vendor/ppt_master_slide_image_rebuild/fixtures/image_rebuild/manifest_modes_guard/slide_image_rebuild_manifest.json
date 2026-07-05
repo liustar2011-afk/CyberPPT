@@ -1,0 +1,15 @@
+{
+  "workflow": "slide-image-rebuild",
+  "format": "ppt169",
+  "rebuild_mode": "vector-hifi",
+  "pptx_export_mode": "hifi",
+  "pages": [
+    {
+      "page_id": "P01",
+      "reference_image": "images/reference_pages/P01.png",
+      "page_dir": "pages/P01",
+      "content_source": "image_text_draft",
+      "notes_style": "formal_briefing"
+    }
+  ]
+}

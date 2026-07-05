@@ -1,0 +1,90 @@
+{
+  "workflow": "slide-image-rebuild",
+  "version": "1.0",
+  "mode": "vector-hifi",
+  "requested_mode": "auto",
+  "valid": false,
+  "errors": [
+    {
+      "level": "error",
+      "code": "text_fit_error",
+      "message": "No SVG files found",
+      "path": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/manifest_modes_guard"
+    },
+    {
+      "level": "error",
+      "code": "text_fit_invalid",
+      "message": "text_fit did not pass.",
+      "path": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/manifest_modes_guard"
+    },
+    {
+      "level": "error",
+      "code": "svg_spacing_error",
+      "message": "No SVG files found",
+      "path": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/manifest_modes_guard"
+    },
+    {
+      "level": "error",
+      "code": "svg_spacing_invalid",
+      "message": "svg_spacing did not pass.",
+      "path": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/manifest_modes_guard"
+    },
+    {
+      "level": "error",
+      "code": "missing_text_region_map",
+      "message": "text_region_map.json is required. Create it in Step 2.5, even when no text regions are detected.",
+      "path": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/manifest_modes_guard/text_region_map.json"
+    },
+    {
+      "level": "error",
+      "code": "text_bearing_images_invalid",
+      "message": "text_bearing_images did not pass.",
+      "path": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/manifest_modes_guard"
+    },
+    {
+      "level": "error",
+      "code": "missing_exported_pptx",
+      "message": "No exported PPTX found in exports/.",
+      "path": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/manifest_modes_guard/exports"
+    }
+  ],
+  "warnings": [],
+  "tools": {
+    "text_fit": {
+      "valid": false,
+      "errors": [
+        "No SVG files found"
+      ],
+      "returncode": 1
+    },
+    "svg_spacing": {
+      "valid": false,
+      "errors": [
+        "No SVG files found"
+      ],
+      "returncode": 1
+    },
+    "text_bearing_images": {
+      "valid": false,
+      "errors": [
+        {
+          "level": "error",
+          "code": "missing_text_region_map",
+          "message": "text_region_map.json is required. Create it in Step 2.5, even when no text regions are detected.",
+          "path": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/manifest_modes_guard/text_region_map.json"
+        }
+      ],
+      "warnings": [],
+      "text_regions": 0,
+      "image_crops": 0,
+      "rebuild_mode": "vector-hifi",
+      "returncode": 1
+    }
+  },
+  "layout_reference": {},
+  "visual_noise_policy": {},
+  "editable_pptx": {},
+  "compat_report": {},
+  "wps_font_counts": {},
+  "exported_pptx": ""
+}

@@ -26,3 +26,6 @@ cyberppt = "cyberppt.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["cyberppt*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "scripts"]
