@@ -9,6 +9,8 @@ from PIL import Image
 
 
 SKIP_ROLES = {"bullet_marker", "index"}
+DEFAULT_MIN_FONT_SIZE_PT = 9.0
+ABSOLUTE_MIN_FONT_SIZE_PT = 6.5
 
 
 def _bbox(box: dict[str, Any]) -> list[float]:
@@ -47,6 +49,56 @@ def _required_width_px(text: str, font_size_pt: float, *, headroom: float) -> fl
     # Office uses point sizes; 1pt is roughly 1.333px at the 96dpi coordinate
     # basis used by the rebuild pipeline. Headroom absorbs CJK metric variance.
     return _text_units(text) * font_size_pt * 1.333 / headroom
+
+
+def _required_multiline_width_px(text: str, font_size_pt: float, *, headroom: float) -> float:
+    return max(_required_width_px(line, font_size_pt, headroom=headroom) for line in str(text).splitlines() or [""])
+
+
+def _wrap_text_to_width(text: str, font_size_pt: float, width: float, *, headroom: float) -> str:
+    width = max(1.0, width)
+    lines: list[str] = []
+    for paragraph in str(text).splitlines() or [str(text)]:
+        current = ""
+        for char in paragraph:
+            candidate = current + char
+            if current and _required_width_px(candidate, font_size_pt, headroom=headroom) > width:
+                lines.append(current)
+                current = char.lstrip()
+            else:
+                current = candidate
+        lines.append(current)
+    return "\n".join(line for line in lines if line)
+
+
+def _estimated_multiline_height(text: str, font_size_pt: float) -> float:
+    line_count = max(1, len(str(text).splitlines()))
+    return line_count * font_size_pt * 1.6
+
+
+def _fit_wrapped_text(
+    text: str,
+    *,
+    available_width: float,
+    available_height: float,
+    preferred_font_size: float,
+    preferred_min_font_size: float,
+    absolute_min_font_size: float,
+    headroom: float,
+) -> tuple[str, float]:
+    font_size = max(preferred_font_size, preferred_min_font_size)
+    wrapped = _wrap_text_to_width(text, font_size, available_width, headroom=headroom)
+    while font_size > absolute_min_font_size:
+        required_width = _required_multiline_width_px(wrapped, font_size, headroom=headroom)
+        required_height = _estimated_multiline_height(wrapped, font_size)
+        if required_width <= available_width + 0.01 and required_height <= available_height + 0.01:
+            return wrapped, font_size
+        next_size = max(absolute_min_font_size, font_size - 0.5)
+        if next_size == font_size:
+            break
+        font_size = next_size
+        wrapped = _wrap_text_to_width(text, font_size, available_width, headroom=headroom)
+    return wrapped, font_size
 
 
 def _is_vertical_or_tall(box: dict[str, Any]) -> bool:
@@ -336,8 +388,10 @@ def apply_office_textbox_fit(
     boxes: list[dict[str, Any]],
     *,
     canvas: dict[str, float] | None = None,
-    min_font_size: float = 9.0,
+    min_font_size: float = DEFAULT_MIN_FONT_SIZE_PT,
+    absolute_min_font_size: float = ABSOLUTE_MIN_FONT_SIZE_PT,
     headroom: float = 0.86,
+    allow_wrap: bool = True,
     background_image: Path | None = None,
     workspace_assignment: dict[str, Any] | None = None,
     report_path: Path | None = None,
@@ -350,6 +404,8 @@ def apply_office_textbox_fit(
     assignment_adjustments: list[dict[str, Any]] = []
     skipped = 0
     below_minimum = 0
+    below_preferred_minimum = 0
+    unfit_count = 0
     assignment_map = _assignment_by_index(workspace_assignment)
 
     for index, box in enumerate(fitted):
@@ -369,7 +425,9 @@ def apply_office_textbox_fit(
         current_height = max(1.0, y2 - y1)
         original_font_size = float(box.get("font_size") or 0.0)
         target_font = max(original_font_size, min_font_size)
-        required_width = _required_width_px(text, target_font, headroom=headroom)
+        rendered_text = text
+        wrapped_for_fit = False
+        required_width = _required_multiline_width_px(rendered_text, target_font, headroom=headroom)
         new_x1, new_x2 = x1, x2
         align = str(box.get("align") or "left")
         if required_width > current_width:
@@ -383,22 +441,65 @@ def apply_office_textbox_fit(
 
         available = max(1.0, new_x2 - new_x1)
         if available + 0.01 < required_width:
-            target_font = max(1.0, available * headroom / (_text_units(text) * 1.333))
+            if allow_wrap:
+                slot_height = max(1.0, slot_y2 - slot_y1)
+                rendered_text, target_font = _fit_wrapped_text(
+                    text,
+                    available_width=available,
+                    available_height=slot_height,
+                    preferred_font_size=target_font,
+                    preferred_min_font_size=min_font_size,
+                    absolute_min_font_size=absolute_min_font_size,
+                    headroom=headroom,
+                )
+                wrapped_for_fit = rendered_text != text
+                required_width = _required_multiline_width_px(rendered_text, target_font, headroom=headroom)
+            if available + 0.01 < required_width:
+                target_font = max(absolute_min_font_size, available * headroom / (_text_units(rendered_text) * 1.333))
             if target_font < min_font_size:
+                below_preferred_minimum += 1
+            if target_font < absolute_min_font_size:
                 below_minimum += 1
 
-        required_height = max(current_height, target_font * 1.6)
+        required_height = max(current_height, _estimated_multiline_height(rendered_text, target_font))
         new_y1, new_y2 = _expand_interval_around_center(y1, y2, required_height, slot_y1, slot_y2)
+        available_height = max(1.0, new_y2 - new_y1)
+        if allow_wrap and wrapped_for_fit and _estimated_multiline_height(rendered_text, target_font) > available_height + 0.01:
+            rendered_text, target_font = _fit_wrapped_text(
+                text,
+                available_width=available,
+                available_height=available_height,
+                preferred_font_size=target_font,
+                preferred_min_font_size=min_font_size,
+                absolute_min_font_size=absolute_min_font_size,
+                headroom=headroom,
+            )
+            required_height = max(current_height, _estimated_multiline_height(rendered_text, target_font))
+            new_y1, new_y2 = _expand_interval_around_center(y1, y2, required_height, slot_y1, slot_y2)
+            if target_font < min_font_size:
+                below_preferred_minimum += 1
+            if target_font < absolute_min_font_size:
+                below_minimum += 1
         changed = (
             round(original_font_size, 3) != round(target_font, 3)
+            or rendered_text != text
             or round(new_x1, 3) != round(x1, 3)
             or round(new_x2, 3) != round(x2, 3)
             or round(new_y1, 3) != round(y1, 3)
             or round(new_y2, 3) != round(y2, 3)
         )
+        box["text"] = rendered_text
         box["font_size"] = round(target_font, 2)
         box["bbox"] = [round(new_x1, 3), round(new_y1, 3), round(new_x2, 3), round(new_y2, 3)]
-        box["wrap"] = False
+        box["wrap"] = wrapped_for_fit
+        final_width = max(1.0, new_x2 - new_x1)
+        final_height = max(1.0, new_y2 - new_y1)
+        final_fits = (
+            _required_multiline_width_px(rendered_text, target_font, headroom=headroom) <= final_width + 0.01
+            and _estimated_multiline_height(rendered_text, target_font) <= final_height + 0.01
+        )
+        if not final_fits:
+            unfit_count += 1
         if index in assignment_map:
             box["workspace_assignment"] = {
                 "assigned_slot": assignment_map[index].get("assigned_slot"),
@@ -416,19 +517,23 @@ def apply_office_textbox_fit(
         if changed:
             box["office_textbox_fit"] = {
                 "min_font_size": min_font_size,
+                "absolute_min_font_size": absolute_min_font_size,
                 "required_width_px": round(required_width, 3),
                 "required_height_px": round(required_height, 3),
                 "original_bbox": [x1, y1, x2, y2],
+                "wrapped_for_fit": wrapped_for_fit,
+                "fits_after_adjustment": final_fits,
             }
             adjustments.append(
                 {
                     "index": index,
-                    "text": text,
+                    "text": rendered_text,
+                    "original_text": text,
                     "from_bbox": [x1, y1, x2, y2],
                     "to_bbox": box["bbox"],
                     "from_font_size": original_font_size,
                     "to_font_size": round(target_font, 2),
-                    "code": "textbox_expanded_before_font_reduction",
+                    "code": "textbox_wrapped_and_fitted" if wrapped_for_fit else "textbox_expanded_before_font_reduction",
                 }
             )
 
@@ -445,13 +550,15 @@ def apply_office_textbox_fit(
     )
     report = {
         "schema": "cyberppt.dual_image.office_textbox_fit.v1",
-        "valid": below_minimum == 0,
+        "valid": below_minimum == 0 and unfit_count == 0,
         "checks": {
             "textbox_expanded_before_font_reduction": True,
             "generic_title_detail_spacing_compacted": True,
             "isolated_label_clear_band_fit": bool(background_image),
             "workspace_assignment_consumed": bool(assignment_map),
             "minimum_font_size_pt": min_font_size,
+            "absolute_minimum_font_size_pt": absolute_min_font_size,
+            "wrap_before_below_minimum": allow_wrap,
         },
         "adjustments": adjustments,
         "generic_title_detail_adjustments": generic_group_adjustments,
@@ -463,7 +570,9 @@ def apply_office_textbox_fit(
         "isolated_label_adjusted_count": len(isolated_label_adjustments),
         "skipped_count": skipped,
         "below_minimum_count": below_minimum,
-        "error_count": below_minimum,
+        "below_preferred_minimum_count": below_preferred_minimum,
+        "unfit_count": unfit_count,
+        "error_count": below_minimum + unfit_count,
     }
     if report_path is not None:
         report_path.parent.mkdir(parents=True, exist_ok=True)

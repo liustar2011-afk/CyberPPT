@@ -24,6 +24,8 @@ VISUAL_OCCUPIED_TYPES = {
 SLOT_PADDING_PX = 4.0
 MIN_SLOT_W = 18.0
 MIN_SLOT_H = 12.0
+BACKGROUND_PANEL_INTERSECTION_RATIO = 0.70
+TEXT_PROVES_WRITABLE_OVERLAP_RATIO = 0.55
 
 
 def _bbox_xyxy(values: Any) -> list[float]:
@@ -70,6 +72,46 @@ def _intersection_area(a: dict[str, float], b: dict[str, float]) -> float:
     ax1, ay1, ax2, ay2 = _xyxy_from_rect(a)
     bx1, by1, bx2, by2 = _xyxy_from_rect(b)
     return max(0.0, min(ax2, bx2) - max(ax1, bx1)) * max(0.0, min(ay2, by2) - max(ay1, by1))
+
+
+def _is_background_panel_zone(rect: dict[str, float], safe: dict[str, float], item: dict[str, Any]) -> bool:
+    source = item.get("source") if isinstance(item.get("source"), dict) else {}
+    inventory_source = source.get("inventory_source")
+    kind = _visual_kind(item).lower()
+    safe_area = _rect_area(safe)
+    if safe_area <= 0:
+        return False
+    if inventory_source != "background_visual_component" or kind not in {"shape", "visual"}:
+        return False
+    return _intersection_area(rect, safe) / safe_area >= BACKGROUND_PANEL_INTERSECTION_RATIO
+
+
+def _source_text_proves_writable(
+    *,
+    rect: dict[str, float],
+    container_id: str,
+    text_items: list[dict[str, Any]],
+    item: dict[str, Any],
+) -> bool:
+    kind = _visual_kind(item).lower()
+    if kind not in {"shape", "visual", "decoration"}:
+        return False
+    rect_area = _rect_area(rect)
+    if rect_area <= 0:
+        return False
+    for text_item in text_items:
+        if str(text_item.get("container_id") or "") != container_id:
+            continue
+        if _role(text_item) in {"index", "icon_label", "bullet_marker"}:
+            continue
+        text_rect = _text_rect(text_item)
+        text_area = _rect_area(text_rect)
+        if text_area <= 0:
+            continue
+        overlap_ratio = _intersection_area(rect, text_rect) / min(rect_area, text_area)
+        if overlap_ratio >= TEXT_PROVES_WRITABLE_OVERLAP_RATIO:
+            return True
+    return False
 
 
 def _contains_point(rect: dict[str, float], x: float, y: float) -> bool:
@@ -212,6 +254,7 @@ def _visual_occupied_zones(
     *,
     container_id: str,
     safe: dict[str, float],
+    text_items: list[dict[str, Any]],
     visual_elements: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     zones: list[dict[str, Any]] = []
@@ -224,6 +267,15 @@ def _visual_occupied_zones(
             continue
         rect = _element_rect(item)
         if rect is None or not _intersects(rect, safe):
+            continue
+        if _is_background_panel_zone(rect, safe, item):
+            continue
+        if _source_text_proves_writable(
+            rect=rect,
+            container_id=container_id,
+            text_items=text_items,
+            item=item,
+        ):
             continue
         zones.append(
             {
@@ -428,6 +480,7 @@ def build_container_workspace(
             *_visual_occupied_zones(
                 container_id=container_id,
                 safe=safe,
+                text_items=text_items,
                 visual_elements=visual_elements or [],
             ),
             *_background_occupied_zones(
