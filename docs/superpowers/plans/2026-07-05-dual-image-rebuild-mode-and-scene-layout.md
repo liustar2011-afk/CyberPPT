@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make dual-image rebuild mode explicit, make QA reference metadata mode-aware, and preserve semantic layout item slots through scene graph layout.
+**Goal:** Make dual-image rebuild mode explicit, make QA reference metadata mode-aware, and preserve semantic layout item slots through scene graph layout while preserving the ingress `1280×720` coordinate contract.
 
-**Architecture:** Keep the existing rebuild pipeline intact. Add small mode/reference helpers in `template_rebuild.py`, pass semantic layout item bbox evidence into scene graph text node styles in `scene_graph/builder.py`, and make `scene_graph/layout.py` prefer that explicit item bbox over coarse container safe areas.
+**Architecture:** Keep the existing rebuild pipeline intact after its normalized-image ingress. `editable_overlay_rebuild.py` must continue to generate `images/normalized/*_1280x720.png` as the first processing step, and all later semantic, scene graph, layout, and QA work must consume only `1280×720` coordinates. Add small mode/reference helpers in `template_rebuild.py`, pass semantic layout item bbox evidence into scene graph text node styles in `scene_graph/builder.py`, and make `scene_graph/layout.py` prefer that explicit item bbox over coarse container safe areas.
 
 **Tech Stack:** Python 3, pytest/unittest, existing CyberPPT dual-image overlay modules, JSON artifacts.
 
@@ -12,6 +12,10 @@
 
 ## File Structure
 
+- Preserve `scripts/dual_image_overlay/rebuild_engine/editable_overlay_rebuild.py`
+  - Keep `_prepare_page_images()` as the first per-page processing step.
+  - Keep normalized full/background files under `ppt_project/images/normalized/`.
+  - Do not reintroduce source-size, registry-size, or stale semantic-plan-size coordinates into downstream layout.
 - Modify `scripts/dual_image_overlay/scene_graph/builder.py`
   - Add semantic layout item lookup keyed by normalized text and container target.
   - Attach `layout_bbox`, `layout_strategy`, and `layout_source` into matching `TextNode.style`.
@@ -24,10 +28,23 @@
   - Distinguish `visual_qa_setup_required` when mode/reference evidence is inconsistent.
 - Modify `scripts/dual_image_overlay/rebuild_engine/editable_overlay_rebuild.py`
   - Propagate `rebuild_mode` into `rebuild_quality.json`.
+  - Preserve existing ingress normalization behavior while adding mode metadata.
 - Modify `tests/test_scene_graph_layout.py`
   - Add failing test for preserving semantic item bboxes.
 - Modify `tests/test_dual_image_overlay_template_rebuild.py`
   - Add failing tests for `template_body_region` and `full_slide` visual reference metadata.
+
+## Already Completed Prerequisite
+
+Commit `fe10af44 fix: normalize dual image inputs at rebuild ingress` completed the coordinate prerequisite after this plan was first drafted.
+
+Do not redo or weaken this prerequisite. Treat it as a hard contract:
+
+- Raw full/background images may have any source resolution.
+- The first rebuild step creates normalized intermediates at exactly `1280×720`.
+- `semantic_plan.image_size`, scene graph `image_size`, and scene graph `semantic_input_space` must be `1280×720` after ingress.
+- Source dimensions such as `1672×941` may only appear as provenance fields like `source_full_size` or `coordinate_normalization.input_space`.
+- Stale semantic metadata such as `1920×941` must not drive any downstream bbox math.
 
 ## Task 1: Preserve Semantic Layout Item Bboxes
 
@@ -35,6 +52,8 @@
 - Modify: `tests/test_scene_graph_layout.py`
 - Modify: `scripts/dual_image_overlay/scene_graph/builder.py`
 - Modify: `scripts/dual_image_overlay/scene_graph/layout.py`
+
+**Coordinate precondition:** All test bboxes in this task are already in normalized `1280×720` space. Do not add source-resolution scaling to these tests or implementation code.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -276,6 +295,8 @@ git commit -m "fix: preserve semantic layout slots in scene graph"
 - Modify: `scripts/dual_image_overlay/template_rebuild.py`
 - Modify: `scripts/dual_image_overlay/rebuild_engine/editable_overlay_rebuild.py`
 
+**Coordinate precondition:** Do not replace `_prepare_page_images()` or route QA/reference generation back to raw source images for layout. Raw source image paths may be referenced only as `full_slide` visual QA references or provenance, not as downstream coordinate truth.
+
 - [ ] **Step 1: Write failing tests for visual reference mode**
 
 Append these tests to `DualImageOverlayTemplateRebuildTests` in `tests/test_dual_image_overlay_template_rebuild.py`:
@@ -439,7 +460,22 @@ Expected: PASS.
 
 - [ ] **Step 6: Propagate rebuild mode into rebuild quality**
 
-In `scripts/dual_image_overlay/rebuild_engine/editable_overlay_rebuild.py`, add:
+In `scripts/dual_image_overlay/rebuild_engine/editable_overlay_rebuild.py`, add mode propagation without changing the normalized-image ingress. Keep this flow intact:
+
+```python
+source_full_image = _require_image(pair["full"], "full")
+source_background_image = _require_image(pair["background"], "background")
+normalized_full, normalized_background, image_size_check = _prepare_page_images(
+    full_image=source_full_image,
+    background_image=source_background_image,
+    project_path=project_path,
+)
+full_image = normalized_full
+background_image = normalized_background
+prepared_background = full_image if visible_image_variant == "full" else background_image
+```
+
+Then add:
 
 ```python
 def _resolve_rebuild_mode(manifest: dict[str, Any]) -> str:
@@ -516,7 +552,7 @@ PYTHONPATH=scripts/dual_image_overlay/rebuild_engine:. pytest -q tests/test_scen
 
 Expected: all selected tests pass.
 
-- [ ] **Step 2: Re-run page 006 rebuild with existing project inputs**
+- [ ] **Step 2: Re-run page 006 rebuild with existing project inputs and verify normalized ingress**
 
 Run:
 
@@ -524,7 +560,29 @@ Run:
 PYTHONPATH=. python3 scripts/dual_image_overlay/template_rebuild.py projects/dual-image-page006-rebuild-20260705-101012/images/page_image_pairs.json --ocr-backend none --semantic-plan-dir projects/dual-image-page006-rebuild-20260705-101012/semantic_plan --visual-registry-dir projects/dual-image-page006-rebuild-20260705-101012/registry --export
 ```
 
-Expected: rebuild completes. If readiness remains nonzero because render preview is not attached, continue to Step 3.
+Expected: rebuild reaches export or a later strict gate. If a later gate blocks, still verify ingress with:
+
+```bash
+python3 - <<'PY'
+import json
+from pathlib import Path
+from PIL import Image
+project = Path("projects/dual-image-page006-rebuild-20260705-101012/ppt_project")
+for path in sorted((project / "images/normalized").glob("*.png")):
+    with Image.open(path) as image:
+        print(path, image.size)
+        assert image.size == (1280, 720)
+semantic = json.loads((project / "analysis/semantic_plan/page_006_semantic_plan.json").read_text())
+assert semantic["image_size"] == {"width": 1280.0, "height": 720.0}
+graph_path = project / "analysis/scene_graph/page_006_scene_graph.json"
+if graph_path.exists():
+    context = json.loads(graph_path.read_text())["coordinate_context"]
+    assert context["semantic_input_space"] == {"width": 1280.0, "height": 720.0}
+    assert context["image_size"] == {"width": 1280.0, "height": 720.0}
+PY
+```
+
+If readiness remains nonzero only because render preview is not attached, continue to Step 3. If it fails because `scene_graph_gate` reports unbound registry text zones, treat that as a separate strict-binding task, not a coordinate normalization failure.
 
 - [ ] **Step 3: Attach render preview if needed**
 
