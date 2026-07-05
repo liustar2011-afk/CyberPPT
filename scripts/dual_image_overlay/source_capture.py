@@ -6,6 +6,11 @@ import re
 from pathlib import Path
 from typing import Any
 
+try:
+    from PIL import Image
+except ImportError:  # pragma: no cover - Pillow is available in the bundled runtime.
+    Image = None  # type: ignore[assignment]
+
 if __package__ in {None, ""}:
     import sys
 
@@ -17,6 +22,20 @@ from .layout_rule_miner import load_ocr_boxes, load_svg_texts, mine_layout_rules
 
 CANVAS = {"width": 1280, "height": 720}
 TEXT_REQUIRES_PRIORITY = {"T2": "P0", "T4": "P0", "T6": "P0", "T8": "P0", "T13": "P0"}
+NON_TEXT_VISUAL_EXCLUDED_TYPES = {"container", "text", "text_box", "text_object", "text_zone", "label_zone"}
+NON_TEXT_VISUAL_P0_TYPES = {
+    "arrow",
+    "badge",
+    "connector",
+    "divider",
+    "flow_arrow",
+    "icon",
+    "line",
+    "separator",
+    "shape",
+    "visual",
+}
+BACKGROUND_COMPONENT_MAX_COUNT = 80
 
 
 def _px_to_pt(value: Any) -> float | None:
@@ -61,6 +80,32 @@ def _box_to_bbox(box: dict[str, Any]) -> dict[str, float]:
 def _rect_from_xyxy(values: list[float]) -> dict[str, float]:
     x1, y1, x2, y2 = [float(value) for value in values]
     return {"x": round(x1, 2), "y": round(y1, 2), "w": round(x2 - x1, 2), "h": round(y2 - y1, 2)}
+
+
+def _rect_area(rect: dict[str, float]) -> float:
+    return max(0.0, float(rect.get("w", 0.0))) * max(0.0, float(rect.get("h", 0.0)))
+
+
+def _rect_from_any(value: Any) -> dict[str, float] | None:
+    if isinstance(value, list) and len(value) == 4:
+        try:
+            rect = _rect_from_xyxy([float(item) for item in value])
+        except (TypeError, ValueError):
+            return None
+        return rect if _rect_area(rect) > 0 else None
+    if not isinstance(value, dict):
+        return None
+    if isinstance(value.get("bbox"), (dict, list)):
+        return _rect_from_any(value["bbox"])
+    try:
+        x = float(value.get("x", 0.0) or 0.0)
+        y = float(value.get("y", 0.0) or 0.0)
+        w = float(value.get("w", value.get("width", 0.0)) or 0.0)
+        h = float(value.get("h", value.get("height", 0.0)) or 0.0)
+    except (TypeError, ValueError):
+        return None
+    rect = {"x": round(x, 2), "y": round(y, 2), "w": round(w, 2), "h": round(h, 2)}
+    return rect if _rect_area(rect) > 0 else None
 
 
 def _image_pairs_by_page(pair_manifest: dict[str, Any] | None) -> dict[int, dict[str, Any]]:
@@ -196,16 +241,57 @@ def _load_svg_text_by_page(project_dir: Path) -> dict[int, list[dict[str, Any]]]
 
 
 def _page_number_from_visual_registry_name(name: str) -> int | None:
-    match = re.search(r"slide-(\d+)-visual-element-registry\.json$", name)
+    match = re.search(r"(?:slide-(\d+)-visual-element-registry|page_(\d+)_visual_element_registry)\.json$", name)
+    if not match:
+        return None
+    value = match.group(1) or match.group(2)
+    return int(value) if value else None
+
+
+def _page_number_from_visual_registry_path(path: Path) -> int | None:
+    page_number = _page_number_from_visual_registry_name(path.name)
+    if page_number is not None:
+        return page_number
+    match = re.search(r"page[_-](\d+)$", path.parent.name)
     return int(match.group(1)) if match else None
+
+
+def discover_visual_registry_dir(project_dir: Path, explicit: Path | None = None) -> Path | None:
+    if explicit is not None:
+        return explicit if explicit.exists() else explicit
+    candidates = [
+        project_dir / "analysis" / "visual_registry",
+        project_dir / "visual_registry",
+    ]
+    workbench = project_dir / "workbench" / "stages"
+    if workbench.exists():
+        candidates.extend(sorted(workbench.glob("**/visual_registry"), reverse=True))
+        candidates.extend(sorted((path.parent for path in workbench.glob("**/visual_element_registry.json")), reverse=True))
+    for candidate in candidates:
+        if candidate.exists() and list(_iter_visual_registry_paths(candidate)):
+            return candidate
+    return None
+
+
+def _iter_visual_registry_paths(registry_dir: Path) -> list[Path]:
+    paths: list[Path] = []
+    for pattern in (
+        "slide-*-visual-element-registry.json",
+        "page_*_visual_element_registry.json",
+        "visual_element_registry.json",
+        "page_*/visual_element_registry.json",
+        "page-*/visual_element_registry.json",
+    ):
+        paths.extend(path for path in registry_dir.glob(pattern) if path.is_file())
+    return sorted(set(paths))
 
 
 def _load_visual_registry_elements(registry_dir: Path | None) -> dict[int, list[dict[str, Any]]]:
     by_page: dict[int, list[dict[str, Any]]] = {}
     if registry_dir is None or not registry_dir.exists():
         return by_page
-    for path in sorted(registry_dir.glob("slide-*-visual-element-registry.json")):
-        page_number = _page_number_from_visual_registry_name(path.name)
+    for path in _iter_visual_registry_paths(registry_dir):
+        page_number = _page_number_from_visual_registry_path(path)
         if not isinstance(page_number, int):
             continue
         data = _read_json(path)
@@ -216,38 +302,38 @@ def _load_visual_registry_elements(registry_dir: Path | None) -> dict[int, list[
     return by_page
 
 
-def _text_objects(boxes: list[dict[str, Any]], typography: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _text_objects(ocr_boxes: list[dict[str, Any]], typography: list[dict[str, Any]]) -> list[dict[str, Any]]:
     role_by_text = {str(item.get("text", "")): item for item in typography}
     objects: list[dict[str, Any]] = []
-    for index, box in enumerate(boxes, start=1):
-        text = str(box.get("text", ""))
+    for index, ocr_box in enumerate(ocr_boxes, start=1):
+        text = str(ocr_box.get("text", ""))
         type_decision = role_by_text.get(text, {})
         rendered_text = str(type_decision.get("rendered_text") or text)
-        role = str(type_decision.get("role") or box.get("semantic_role") or "")
-        font_size_px = box.get("font_size")
+        role = str(type_decision.get("role") or ocr_box.get("semantic_role") or "")
+        font_size_px = ocr_box.get("font_size")
         applied_font_size_px = type_decision.get("applied_px")
         objects.append(
             {
                 "id": f"text_{index:03d}",
                 "text": text,
                 "rendered_text": rendered_text,
-                "container_id": box.get("container_id"),
-                "bbox": _box_to_bbox(box),
+                "container_id": ocr_box.get("container_id"),
+                "bbox": _box_to_bbox(ocr_box),
                 "style": {
-                    "font_family": box.get("font_family"),
+                    "font_family": ocr_box.get("font_family"),
                     "font_size_px": font_size_px,
                     "font_size_pt": _px_to_pt(font_size_px),
                     "applied_font_size_px": applied_font_size_px,
                     "applied_font_size_pt": _px_to_pt(applied_font_size_px),
-                    "fill": box.get("fill"),
-                    "font_weight": box.get("font_weight"),
-                    "align": box.get("align"),
-                    "word_wrap": bool(box.get("word_wrap", False)),
-                    "typography_role": role or box.get("role") or None,
+                    "fill": ocr_box.get("fill"),
+                    "font_weight": ocr_box.get("font_weight"),
+                    "align": ocr_box.get("align"),
+                    "word_wrap": bool(ocr_box.get("word_wrap", False)),
+                    "typography_role": role or ocr_box.get("role") or None,
                 },
                 "source": {
-                    "kind": box.get("source", "unknown"),
-                    "confidence": box.get("confidence"),
+                    "kind": ocr_box.get("source", "unknown"),
+                    "confidence": ocr_box.get("confidence"),
                 },
                 "layout": {
                     "line_count": len(rendered_text.splitlines()) if rendered_text else 0,
@@ -258,9 +344,18 @@ def _text_objects(boxes: list[dict[str, Any]], typography: list[dict[str, Any]])
     return objects
 
 
+def _container_safe_rect(container: dict[str, Any]) -> tuple[dict[str, float], str]:
+    for key in ("text_safe_bbox_px", "text_safe_bbox", "safe_bbox", "safe_area"):
+        rect = _rect_from_any(container.get(key))
+        if rect is not None:
+            return rect, key
+    return _box_to_bbox(container), "container_bbox"
+
+
 def _container_elements(containers: list[dict[str, Any]]) -> list[dict[str, Any]]:
     elements: list[dict[str, Any]] = []
     for index, container in enumerate(containers, start=1):
+        safe_rect, safe_source = _container_safe_rect(container)
         elements.append(
             {
                 "element_id": str(container.get("id") or f"container_{index:03d}"),
@@ -269,14 +364,8 @@ def _container_elements(containers: list[dict[str, Any]]) -> list[dict[str, Any]
                 "priority": "P1",
                 "measurement_mode": "group_with_child_anchors",
                 "blueprint_bbox_px": _box_to_bbox(container),
-                "text_safe_bbox_px": _box_to_bbox(
-                    {
-                        "x": container.get("x"),
-                        "y": container.get("y"),
-                        "w": container.get("w"),
-                        "h": container.get("h"),
-                    }
-                ),
+                "text_safe_bbox_px": safe_rect,
+                "safe_bbox_source": safe_source,
                 "must_reproduce": True,
                 "registration_status": "pending_render_measurement",
             }
@@ -334,6 +423,200 @@ def _visual_registry_element(element: dict[str, Any]) -> dict[str, Any]:
     return captured
 
 
+def _non_text_visual_type(value: Any) -> str:
+    text = str(value or "visual").strip() or "visual"
+    return text
+
+
+def _visual_priority(element_type: str) -> str:
+    return "P0" if element_type.lower() in NON_TEXT_VISUAL_P0_TYPES else "P1"
+
+
+def _scene_graph_visual_elements(scene_graph: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if not isinstance(scene_graph, dict):
+        return []
+    nodes = scene_graph.get("visual_nodes")
+    if not isinstance(nodes, list):
+        return []
+    elements: list[dict[str, Any]] = []
+    for index, node in enumerate(nodes, start=1):
+        if not isinstance(node, dict):
+            continue
+        element_type = _non_text_visual_type(
+            node.get("element_type") or node.get("node_type") or node.get("type") or node.get("semantic_role")
+        )
+        if element_type.lower() in NON_TEXT_VISUAL_EXCLUDED_TYPES:
+            continue
+        rect = _rect_from_any(
+            node.get("blueprint_bbox_px")
+            or node.get("bbox")
+            or node.get("render_bbox_px")
+            or node.get("ppt_target_bbox_px")
+        )
+        if rect is None:
+            continue
+        source = node.get("source") if isinstance(node.get("source"), dict) else {}
+        elements.append(
+            {
+                "element_id": str(node.get("element_id") or node.get("node_id") or f"scene_graph_visual_{index:03d}"),
+                "element_type": element_type,
+                "role": node.get("semantic_role") or element_type,
+                "priority": _visual_priority(element_type),
+                "measurement_mode": "individual_bbox",
+                "blueprint_bbox_px": rect,
+                "ppt_target_bbox_px": rect,
+                "tolerance_px": 4 if _visual_priority(element_type) == "P0" else 8,
+                "must_reproduce": True,
+                "registration_status": "pending_render_measurement",
+                "source_component_id": node.get("component_id"),
+                "confidence": node.get("confidence"),
+                "source": {"kind": "scene_graph", **source},
+            }
+        )
+    return elements
+
+
+def _semantic_relationship_visual_elements(relations: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    elements: list[dict[str, Any]] = []
+    for index, relation in enumerate(relations, start=1):
+        element_type = _non_text_visual_type(relation.get("element_type"))
+        if element_type.lower() in NON_TEXT_VISUAL_EXCLUDED_TYPES:
+            continue
+        rect = _rect_from_any(relation.get("bbox"))
+        if rect is None:
+            continue
+        elements.append(
+            {
+                "element_id": str(relation.get("element_id") or f"semantic_layout_visual_{index:03d}"),
+                "element_type": element_type,
+                "role": relation.get("relation") or element_type,
+                "priority": _visual_priority(element_type),
+                "measurement_mode": "individual_bbox",
+                "blueprint_bbox_px": rect,
+                "ppt_target_bbox_px": rect,
+                "tolerance_px": 4 if _visual_priority(element_type) == "P0" else 8,
+                "must_reproduce": True,
+                "registration_status": "pending_render_measurement",
+                "source_component_id": relation.get("source_component_id"),
+                "source": {"kind": "semantic_layout_plan"},
+            }
+        )
+    return elements
+
+
+def _dedupe_visual_inventory(elements: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    result: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for element in elements:
+        element_id = str(element.get("element_id") or element.get("id") or "")
+        if not element_id or element_id in seen:
+            continue
+        seen.add(element_id)
+        result.append(element)
+    return result
+
+
+def _resolve_source_image_path(item: dict[str, Any]) -> Path | None:
+    raw = item.get("path")
+    if not isinstance(raw, str) or not raw.strip():
+        return None
+    path = Path(raw)
+    return path if path.exists() else None
+
+
+def _background_visual_elements(source_images: dict[str, Any]) -> list[dict[str, Any]]:
+    if Image is None:
+        return []
+    background = source_images.get("background") if isinstance(source_images.get("background"), dict) else {}
+    path = _resolve_source_image_path(background)
+    if path is None:
+        return []
+    try:
+        with Image.open(path) as opened:
+            image = opened.convert("RGB")
+    except OSError:
+        return []
+    target_w = min(640, image.width)
+    target_h = max(1, round(image.height * (target_w / image.width)))
+    sample = image.resize((target_w, target_h))
+    flattened = getattr(sample, "get_flattened_data", sample.getdata)
+    pixels = list(flattened())
+    width, height = sample.size
+    mask = bytearray(width * height)
+    for index, (r, g, b) in enumerate(pixels):
+        luma = (0.299 * r) + (0.587 * g) + (0.114 * b)
+        spread = max(r, g, b) - min(r, g, b)
+        if luma < 232 and (spread > 12 or luma < 190):
+            mask[index] = 1
+
+    visited = bytearray(width * height)
+    components: list[dict[str, float]] = []
+    for start in range(width * height):
+        if not mask[start] or visited[start]:
+            continue
+        stack = [start]
+        visited[start] = 1
+        count = 0
+        min_x = width
+        min_y = height
+        max_x = 0
+        max_y = 0
+        while stack:
+            current = stack.pop()
+            y, x = divmod(current, width)
+            count += 1
+            min_x = min(min_x, x)
+            min_y = min(min_y, y)
+            max_x = max(max_x, x)
+            max_y = max(max_y, y)
+            for neighbor in (current - 1, current + 1, current - width, current + width):
+                if neighbor < 0 or neighbor >= width * height or visited[neighbor] or not mask[neighbor]:
+                    continue
+                ny, nx = divmod(neighbor, width)
+                if abs(nx - x) + abs(ny - y) != 1:
+                    continue
+                visited[neighbor] = 1
+                stack.append(neighbor)
+        if count < 8:
+            continue
+        rect = {
+            "x": round(min_x / width * CANVAS["width"], 2),
+            "y": round(min_y / height * CANVAS["height"], 2),
+            "w": round((max_x - min_x + 1) / width * CANVAS["width"], 2),
+            "h": round((max_y - min_y + 1) / height * CANVAS["height"], 2),
+        }
+        area = _rect_area(rect)
+        if area < 20.0 or area > CANVAS["width"] * CANVAS["height"] * 0.35:
+            continue
+        components.append(rect)
+
+    components.sort(key=_rect_area, reverse=True)
+    elements: list[dict[str, Any]] = []
+    for index, rect in enumerate(components[:BACKGROUND_COMPONENT_MAX_COUNT], start=1):
+        aspect = rect["w"] / rect["h"] if rect["h"] else 0
+        element_type = "line" if aspect >= 8 or aspect <= 0.125 else "shape"
+        elements.append(
+            {
+                "element_id": f"background_visual_{index:03d}",
+                "element_type": element_type,
+                "role": "background_visual_component",
+                "priority": _visual_priority(element_type),
+                "measurement_mode": "individual_bbox",
+                "blueprint_bbox_px": rect,
+                "ppt_target_bbox_px": rect,
+                "tolerance_px": 6 if _visual_priority(element_type) == "P0" else 10,
+                "must_reproduce": True,
+                "registration_status": "pending_render_measurement",
+                "source": {
+                    "kind": "background_visual_component",
+                    "image": str(path),
+                    "detector": "threshold_connected_components_v1",
+                },
+            }
+        )
+    return elements
+
+
 def _layout_rules_for_page(page_number: int, candidate_rules: dict[str, Any]) -> dict[str, Any]:
     baseline_groups = [
         item for item in candidate_rules.get("baseline_groups", []) if item.get("page_number") == page_number
@@ -350,6 +633,13 @@ def _layout_rules_for_page(page_number: int, candidate_rules: dict[str, Any]) ->
             "text_should_wrap_before_shrink": True,
             "reserve_non_text_visual_lanes": True,
             "use_render_delta_feedback": True,
+        },
+        "actionability": {
+            "phrase_break_candidates": "build_time_text_fit_input",
+            "baseline_groups": "qa_alignment_observation",
+            "alignment_issues": "qa_alignment_observation",
+            "avoidance_policy": "build_time_workspace_input",
+            "render_delta_feedback": "post_render_gate_input",
         },
     }
 
@@ -397,18 +687,17 @@ def _has_dual_image_editable_evidence(page: dict[str, Any]) -> bool:
     text_objects = [item for item in page.get("text_objects", []) if isinstance(item, dict)]
     scene_graph_gate = page.get("scene_graph_gate") if isinstance(page.get("scene_graph_gate"), dict) else {}
     visual_inventory = [item for item in page.get("visual_element_inventory", []) if isinstance(item, dict)]
-    registry_non_text = [
+    non_text_visuals = [
         item
         for item in visual_inventory
-        if item.get("element_type") != "text"
-        and isinstance(item.get("source"), dict)
-        and item["source"].get("kind") == "visual_element_registry"
+        if str(item.get("element_type") or "").lower() not in NON_TEXT_VISUAL_EXCLUDED_TYPES
+        and _rect_from_any(item.get("blueprint_bbox_px") or item.get("bbox")) is not None
     ]
     return bool(
         has_dual_images
         and text_objects
         and scene_graph_gate.get("valid") is True
-        and registry_non_text
+        and non_text_visuals
     )
 
 
@@ -438,18 +727,17 @@ def _capture_gaps(page: dict[str, Any]) -> list[dict[str, str]]:
         )
     if not page["visual_element_inventory"]:
         gaps.append({"code": "visual_inventory_empty", "message": "No visual elements were captured for this page."})
-    registry_non_text = [
+    non_text_visuals = [
         item
         for item in page["visual_element_inventory"]
-        if item.get("element_type") != "text"
-        and isinstance(item.get("source"), dict)
-        and item["source"].get("kind") == "visual_element_registry"
+        if str(item.get("element_type") or "").lower() not in NON_TEXT_VISUAL_EXCLUDED_TYPES
+        and _rect_from_any(item.get("blueprint_bbox_px") or item.get("bbox")) is not None
     ]
-    if not registry_non_text:
+    if not non_text_visuals:
         gaps.append(
             {
                 "code": "non_text_visuals_not_individually_detected",
-                "message": "Current capture has text and coarse containers, but no icon/arrow/shape object detector yet.",
+                "message": "Current capture has text and coarse containers, but no icon/arrow/shape visual elements with bbox.",
             }
         )
     if not any(item.get("registration_status") == "passed" for item in page["visual_element_inventory"]):
@@ -528,7 +816,8 @@ def build_source_capture(
     page_layout_by_page = _load_page_layout_plans(project_dir)
     render_qa_by_page = _load_render_qa_reports(project_dir)
     svg_texts_by_page = _load_svg_text_by_page(project_dir)
-    visual_registry_by_page = _load_visual_registry_elements(visual_registry_dir)
+    resolved_visual_registry_dir = discover_visual_registry_dir(project_dir, visual_registry_dir)
+    visual_registry_by_page = _load_visual_registry_elements(resolved_visual_registry_dir)
     source_images_by_page = _image_pairs_by_page(pair_manifest)
     if source_images_by_page:
         visual_registry_by_page = {
@@ -554,9 +843,11 @@ def build_source_capture(
     pages: list[dict[str, Any]] = []
     for page_number in page_numbers:
         text_objects = _text_objects(text_mappings.get(page_number, []), typography_by_page.get(page_number, []))
+        semantic_relationships = _semantic_relationships(semantic_layout_by_page.get(page_number))
+        source_images = source_images_by_page.get(page_number, {})
         page = {
             "page_number": page_number,
-            "source_images": source_images_by_page.get(page_number, {}),
+            "source_images": source_images,
             "image_regions": {
                 "canvas": CANVAS,
                 "generation_contract": _generation_contract(pair_manifest),
@@ -568,16 +859,19 @@ def build_source_capture(
             "scene_graph_gate": scene_graph_gates_by_page.get(page_number),
             "page_layout_plan": page_layout_by_page.get(page_number),
             "render_qa": render_qa_by_page.get(page_number),
-            "semantic_relationships": _semantic_relationships(semantic_layout_by_page.get(page_number)),
+            "semantic_relationships": semantic_relationships,
             "text_neighbor_relationships": _text_neighbor_relationships(semantic_layout_by_page.get(page_number)),
             "text_objects": text_objects,
             "svg_text_objects": svg_texts_by_page.get(page_number, []),
             "typography_decisions": typography_by_page.get(page_number, []),
-            "visual_element_inventory": [
+            "visual_element_inventory": _dedupe_visual_inventory([
                 *_container_elements(containers_by_page.get(page_number, [])),
                 *_text_elements(text_objects),
                 *visual_registry_by_page.get(page_number, []),
-            ],
+                *_semantic_relationship_visual_elements(semantic_relationships),
+                *_scene_graph_visual_elements(scene_graphs_by_page.get(page_number)),
+                *_background_visual_elements(source_images),
+            ]),
             "layout_rules": _layout_rules_for_page(page_number, candidate_rules),
         }
         page["capture_gaps"] = _capture_gaps(page)
@@ -589,7 +883,7 @@ def build_source_capture(
         "inputs": {
             "pair_manifest": str(pair_manifest_path or project_dir / "images" / "page_image_pairs.json"),
             "candidate_layout_rules": str(candidate_rules_path or project_dir / "analysis" / "candidate_layout_rules.json"),
-            "visual_registry_dir": str(visual_registry_dir) if visual_registry_dir else None,
+            "visual_registry_dir": str(resolved_visual_registry_dir) if resolved_visual_registry_dir else None,
             "visual_registry_elements": sum(len(items) for items in visual_registry_by_page.values()),
             "ocr_text_mappings": sum(len(items) for items in text_mappings.values()),
             "svg_text_objects": sum(len(items) for items in svg_texts_by_page.values()),
@@ -634,6 +928,7 @@ def build_source_capture_gate(source_capture: dict[str, Any]) -> dict[str, Any]:
     visual_element_count = 0
     p0_element_count = 0
     text_object_count = 0
+    render_measured_count = 0
 
     for page in pages:
         visual_inventory = [
@@ -641,6 +936,7 @@ def build_source_capture_gate(source_capture: dict[str, Any]) -> dict[str, Any]:
         ]
         visual_element_count += len(visual_inventory)
         p0_element_count += sum(1 for item in visual_inventory if item.get("priority") == "P0")
+        render_measured_count += sum(1 for item in visual_inventory if item.get("registration_status") == "passed")
         text_object_count += len([item for item in page.get("text_objects", []) if isinstance(item, dict)])
         page_number = page.get("page_number")
         for gap in page.get("capture_gaps", []):
@@ -663,6 +959,8 @@ def build_source_capture_gate(source_capture: dict[str, Any]) -> dict[str, Any]:
         "text_object_count": text_object_count,
         "visual_element_count": visual_element_count,
         "p0_element_count": p0_element_count,
+        "render_measured_count": render_measured_count,
+        "render_delta_measurement": source_capture.get("render_delta_measurement"),
         "gap_counts": gap_counts,
         "blocking_gaps": blocking_gaps,
         "checks": {
@@ -670,6 +968,7 @@ def build_source_capture_gate(source_capture: dict[str, Any]) -> dict[str, Any]:
             "source_text_objects_available": bool(text_object_count),
             "visual_element_inventory_available": bool(visual_element_count),
             "p0_inventory_available": bool(p0_element_count),
+            "render_delta_measured": bool(render_measured_count and render_measured_count == visual_element_count),
             "capture_gaps_resolved": not blocking_gaps,
         },
     }
