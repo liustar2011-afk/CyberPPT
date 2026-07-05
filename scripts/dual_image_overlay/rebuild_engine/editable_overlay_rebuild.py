@@ -20,6 +20,7 @@ from scripts.dual_image_overlay.scene_graph.schema import scene_graph_to_dict
 
 from ocr_text_locator import load_layout, locate_text
 from script_text_overlay import (
+    OverlayTextBox,
     SemanticContainer,
     build_overlay_boxes_from_semantic_plan,
     boxes_to_json,
@@ -259,6 +260,43 @@ def _write_scene_graph_artifacts(
     return paths
 
 
+def _overlay_boxes_from_scene_graph_layout(
+    page_layout_plan: dict[str, Any],
+    body_region: dict[str, float],
+    *,
+    font_family: str = "Microsoft YaHei",
+    fill: str = "#0B1F3D",
+) -> list[OverlayTextBox]:
+    sx = float(body_region["width"]) / float(CANVAS_SIZE[0])
+    sy = float(body_region["height"]) / float(CANVAS_SIZE[1])
+    boxes: list[OverlayTextBox] = []
+    for index, item in enumerate(page_layout_plan.get("items", [])):
+        if not isinstance(item, dict):
+            continue
+        bbox = item.get("bbox")
+        if not isinstance(bbox, list) or len(bbox) != 4:
+            raise ValueError(f"page_layout_plan.items[{index}].bbox must contain four numbers.")
+        x1, y1, x2, y2 = [float(value) for value in bbox]
+        boxes.append(
+            OverlayTextBox(
+                text=str(item.get("text") or ""),
+                x=round(float(body_region["x"]) + x1 * sx, 2),
+                y=round(float(body_region["y"]) + y1 * sy, 2),
+                w=round(max(1.0, (x2 - x1) * sx), 2),
+                h=round(max(1.0, (y2 - y1) * sy), 2),
+                font_size=round(float(item.get("font_size") or 12) * sy, 2),
+                font_family=font_family,
+                fill=str(item.get("fill") or fill),
+                font_weight=str(item.get("font_weight") or "400"),
+                align=str(item.get("align") or "left"),
+                word_wrap=bool(item.get("word_wrap", True)),
+                source="scene_graph_layout",
+                confidence=1.0,
+            )
+        )
+    return boxes
+
+
 def rebuild_from_manifest(
     manifest_path: Path,
     *,
@@ -382,6 +420,8 @@ def rebuild_from_manifest(
             visual_registry=visual_registry,
             image_size_check=image_size_check,
         )
+        page_layout_plan = json.loads(scene_graph_paths["layout"].read_text(encoding="utf-8"))
+        boxes = _overlay_boxes_from_scene_graph_layout(page_layout_plan, body)
         semantic_gate_path = semantic_gate_dir / f"page_{page_number:03d}_semantic_plan_gate.json"
         semantic_gate_path.write_text(
             json.dumps(semantic_gate, ensure_ascii=False, indent=2) + "\n",
@@ -420,8 +460,9 @@ def rebuild_from_manifest(
                     "scene_graph_gate": str(scene_graph_paths["gate"]),
                     "page_layout_plan": str(scene_graph_paths["layout"]),
                     "semantic_source": semantic_source,
+                    "editable_text_layout_source": "scene_graph_layout",
                     "visual_registry_source": visual_registry_source,
-                    "geometry_truth": "semantic_plan" if explicit_semantic is not None else "ocr_fallback",
+                    "geometry_truth": "scene_graph_layout",
                     "boxes": boxes_to_json(boxes),
                 },
                 ensure_ascii=False,
@@ -470,6 +511,7 @@ def rebuild_from_manifest(
                 "scene_graph_gate": str(scene_graph_paths["gate"]),
                 "page_layout_plan": str(scene_graph_paths["layout"]),
                 "semantic_source": semantic_source,
+                "editable_text_layout_source": "scene_graph_layout",
                 "visual_registry_source": visual_registry_source,
                 "semantic_containers": str(containers_path),
                 "image_size_check": image_size_check,
