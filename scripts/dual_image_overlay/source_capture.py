@@ -115,6 +115,52 @@ def _load_containers(project_dir: Path) -> dict[int, list[dict[str, Any]]]:
     return by_page
 
 
+def _load_semantic_plan_gates(project_dir: Path) -> dict[int, dict[str, Any]]:
+    by_page: dict[int, dict[str, Any]] = {}
+    for path in sorted((project_dir / "analysis" / "semantic_plan_gate").glob("page_*_semantic_plan_gate.json")):
+        page_number = _page_number_from_name(path.name)
+        if not isinstance(page_number, int):
+            continue
+        by_page[page_number] = _read_json(path)
+    return by_page
+
+
+def _load_semantic_layout_plans(project_dir: Path) -> dict[int, dict[str, Any]]:
+    by_page: dict[int, dict[str, Any]] = {}
+    for path in sorted((project_dir / "analysis" / "semantic_layout_plan").glob("page_*_layout_plan.json")):
+        page_number = _page_number_from_name(path.name)
+        if not isinstance(page_number, int):
+            continue
+        by_page[page_number] = _read_json(path)
+    return by_page
+
+
+def _load_page_artifacts(project_dir: Path, subdir: str, pattern: str) -> dict[int, dict[str, Any]]:
+    by_page: dict[int, dict[str, Any]] = {}
+    for path in sorted((project_dir / "analysis" / subdir).glob(pattern)):
+        page_number = _page_number_from_name(path.name)
+        if not isinstance(page_number, int):
+            continue
+        by_page[page_number] = _read_json(path)
+    return by_page
+
+
+def _load_scene_graphs(project_dir: Path) -> dict[int, dict[str, Any]]:
+    return _load_page_artifacts(project_dir, "scene_graph", "page_*_scene_graph.json")
+
+
+def _load_scene_graph_gates(project_dir: Path) -> dict[int, dict[str, Any]]:
+    return _load_page_artifacts(project_dir, "scene_graph_gate", "page_*_scene_graph_gate.json")
+
+
+def _load_page_layout_plans(project_dir: Path) -> dict[int, dict[str, Any]]:
+    return _load_page_artifacts(project_dir, "page_layout_plan", "page_*_layout_plan.json")
+
+
+def _load_render_qa_reports(project_dir: Path) -> dict[int, dict[str, Any]]:
+    return _load_page_artifacts(project_dir, "render_qa", "page_*_render_qa.json")
+
+
 def _load_typography(project_dir: Path) -> dict[int, list[dict[str, Any]]]:
     by_page: dict[int, list[dict[str, Any]]] = {}
     paths = sorted((project_dir / "analysis" / "typography").glob("page_*_cyberppt_typography.json"))
@@ -294,8 +340,53 @@ def _layout_rules_for_page(page_number: int, candidate_rules: dict[str, Any]) ->
     }
 
 
+def _semantic_relationships(semantic_layout_plan: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if not isinstance(semantic_layout_plan, dict):
+        return []
+    relations = semantic_layout_plan.get("container_relations")
+    if not isinstance(relations, list):
+        return []
+    cleaned: list[dict[str, Any]] = []
+    for relation in relations:
+        if not isinstance(relation, dict):
+            continue
+        cleaned.append(
+            {
+                key: relation.get(key)
+                for key in (
+                    "container_id",
+                    "container_role",
+                    "element_id",
+                    "element_type",
+                    "source_component_id",
+                    "relation",
+                    "bbox",
+                )
+                if key in relation
+            }
+        )
+    return cleaned
+
+
+def _text_neighbor_relationships(semantic_layout_plan: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if not isinstance(semantic_layout_plan, dict):
+        return []
+    neighbors = semantic_layout_plan.get("text_neighbors")
+    if not isinstance(neighbors, list):
+        return []
+    return [item for item in neighbors if isinstance(item, dict)]
+
+
 def _capture_gaps(page: dict[str, Any]) -> list[dict[str, str]]:
     gaps: list[dict[str, str]] = []
+    semantic_gate = page.get("semantic_plan_gate")
+    if isinstance(semantic_gate, dict) and semantic_gate.get("valid") is False:
+        gaps.append(
+            {
+                "code": "semantic_plan_gate_failed",
+                "message": "Explicit semantic container plan is invalid; OCR/text layout must not be treated as production geometry.",
+            }
+        )
     if not page["visual_element_inventory"]:
         gaps.append({"code": "visual_inventory_empty", "message": "No visual elements were captured for this page."})
     registry_non_text = [
@@ -381,6 +472,12 @@ def build_source_capture(
     text_mappings = _load_text_mappings(project_dir)
     containers_by_page = _load_containers(project_dir)
     typography_by_page = _load_typography(project_dir)
+    semantic_gates_by_page = _load_semantic_plan_gates(project_dir)
+    semantic_layout_by_page = _load_semantic_layout_plans(project_dir)
+    scene_graphs_by_page = _load_scene_graphs(project_dir)
+    scene_graph_gates_by_page = _load_scene_graph_gates(project_dir)
+    page_layout_by_page = _load_page_layout_plans(project_dir)
+    render_qa_by_page = _load_render_qa_reports(project_dir)
     svg_texts_by_page = _load_svg_text_by_page(project_dir)
     visual_registry_by_page = _load_visual_registry_elements(visual_registry_dir)
     source_images_by_page = _image_pairs_by_page(pair_manifest)
@@ -394,6 +491,12 @@ def build_source_capture(
         set(text_mappings)
         | set(containers_by_page)
         | set(typography_by_page)
+        | set(semantic_gates_by_page)
+        | set(semantic_layout_by_page)
+        | set(scene_graphs_by_page)
+        | set(scene_graph_gates_by_page)
+        | set(page_layout_by_page)
+        | set(render_qa_by_page)
         | set(svg_texts_by_page)
         | set(visual_registry_by_page)
         | set(source_images_by_page)
@@ -410,6 +513,14 @@ def build_source_capture(
                 "generation_contract": _generation_contract(pair_manifest),
             },
             "containers": containers_by_page.get(page_number, []),
+            "semantic_plan_gate": semantic_gates_by_page.get(page_number),
+            "semantic_layout_plan": semantic_layout_by_page.get(page_number),
+            "scene_graph": scene_graphs_by_page.get(page_number),
+            "scene_graph_gate": scene_graph_gates_by_page.get(page_number),
+            "page_layout_plan": page_layout_by_page.get(page_number),
+            "render_qa": render_qa_by_page.get(page_number),
+            "semantic_relationships": _semantic_relationships(semantic_layout_by_page.get(page_number)),
+            "text_neighbor_relationships": _text_neighbor_relationships(semantic_layout_by_page.get(page_number)),
             "text_objects": text_objects,
             "svg_text_objects": svg_texts_by_page.get(page_number, []),
             "typography_decisions": typography_by_page.get(page_number, []),
@@ -435,9 +546,17 @@ def build_source_capture(
             "svg_text_objects": sum(len(items) for items in svg_texts_by_page.values()),
             "container_pages": len(containers_by_page),
             "typography_pages": len(typography_by_page),
+            "semantic_plan_gate_pages": len(semantic_gates_by_page),
+            "semantic_layout_plan_pages": len(semantic_layout_by_page),
+            "scene_graph_pages": len(scene_graphs_by_page),
+            "scene_graph_gate_pages": len(scene_graph_gates_by_page),
+            "page_layout_plan_pages": len(page_layout_by_page),
+            "render_qa_pages": len(render_qa_by_page),
         },
         "capture_policy": {
             "final_text_source": "script_truth_plus_ocr_locator",
+            "ocr_role": "locator_evidence_only",
+            "production_geometry_truth": "semantic_plan_containers_when_available",
             "text_wrap_before_shrink": True,
             "visual_delivery_mode": "dual_image_editable_overlay",
             "source_to_render_delta_required_before_final_approval": True,
