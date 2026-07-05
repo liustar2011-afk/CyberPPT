@@ -79,12 +79,14 @@ class BBox:
 @dataclass(frozen=True)
 class CoordinateContext:
     normalized_canvas: dict[str, float] = field(default_factory=lambda: dict(NORMALIZED_CANVAS))
-    coordinate_space: str = "normalized_canvas"
+    coordinate_space: Any = "normalized_canvas"
     source: dict[str, Any] | None = None
+    details: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return _clean_dict(
             {
+                **dict(self.details),
                 "normalized_canvas": dict(self.normalized_canvas),
                 "coordinate_space": self.coordinate_space,
                 "source": self.source,
@@ -96,10 +98,16 @@ class CoordinateContext:
         if isinstance(value, cls):
             return value
         payload = _as_dict(value)
+        details = {
+            key: payload[key]
+            for key in payload
+            if key not in {"normalized_canvas", "coordinate_space", "source"}
+        }
         return cls(
             normalized_canvas=dict(payload.get("normalized_canvas", NORMALIZED_CANVAS)),
             coordinate_space=payload.get("coordinate_space", "normalized_canvas"),
             source=payload.get("source"),
+            details=details,
         )
 
 

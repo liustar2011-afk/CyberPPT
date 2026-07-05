@@ -149,6 +149,26 @@ def test_text_binding_safe_bbox_round_trips_as_list():
     assert restored.text_nodes[0].binding.safe_bbox.as_list() == [120.0, 100.0, 260.0, 150.0]
 
 
+def test_coordinate_context_preserves_scene_graph_details():
+    graph = PageSceneGraph(
+        page=6,
+        coordinate_context={
+            "coordinate_space": {"width": 1280, "height": 720},
+            "semantic_input_space": {"width": 1920, "height": 941},
+            "visual_registry_input_space": {"width": 1920, "height": 941},
+            "warnings": [{"code": "semantic_coordinate_space_uses_plan_extent"}],
+        },
+    )
+
+    payload = scene_graph_to_dict(graph)
+    restored = scene_graph_from_dict(payload)
+    restored_context = restored.coordinate_context.to_dict()
+
+    assert payload["coordinate_context"]["semantic_input_space"] == {"width": 1920, "height": 941}
+    assert restored_context["visual_registry_input_space"] == {"width": 1920, "height": 941}
+    assert restored_context["warnings"] == [{"code": "semantic_coordinate_space_uses_plan_extent"}]
+
+
 def test_text_node_bbox_preferred_round_trips():
     graph = PageSceneGraph(
         page=6,
