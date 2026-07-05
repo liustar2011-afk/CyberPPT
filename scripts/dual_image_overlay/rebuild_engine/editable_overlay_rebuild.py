@@ -237,6 +237,7 @@ def _write_scene_graph_artifacts(
     page_number: int,
     source_script: Path,
     semantic_plan_payload: dict[str, Any],
+    semantic_layout_plan: dict[str, Any] | None,
     visual_registry: dict[str, Any] | None,
     image_size_check: dict[str, Any],
 ) -> dict[str, Path]:
@@ -249,6 +250,7 @@ def _write_scene_graph_artifacts(
         semantic_plan=semantic_plan_payload,
         visual_registry=visual_registry or {"blueprint_canvas_px": {"w": CANVAS_SIZE[0], "h": CANVAS_SIZE[1]}, "elements": []},
         image_size=_image_size_for_scene_graph(image_size_check),
+        semantic_layout_plan=semantic_layout_plan,
     )
     graph_gate = build_scene_graph_gate(graph)
     paths["graph"].write_text(json.dumps(scene_graph_to_dict(graph), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -417,6 +419,7 @@ def rebuild_from_manifest(
             page_number=page_number,
             source_script=source_script,
             semantic_plan_payload=scene_graph_semantic_plan,
+            semantic_layout_plan=semantic_layout_plan,
             visual_registry=visual_registry,
             image_size_check=image_size_check,
         )
