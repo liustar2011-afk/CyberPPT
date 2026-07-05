@@ -154,7 +154,18 @@ def reconcile_semantic_plan_with_script_truth(plan: dict[str, Any], script_path:
     sections = extract_script_truth_sections(script_path, page_number)
     corrections: list[dict[str, Any]] = []
 
+    def resolve_container_id(requested_id: str) -> str:
+        for container in reconciled.get("containers", []):
+            if not isinstance(container, dict):
+                continue
+            container_id = str(container.get("id") or "")
+            aliases = [str(item) for item in container.get("aliases", []) if item]
+            if container_id == requested_id or requested_id in aliases:
+                return container_id
+        return requested_id
+
     def replace_item_text(container_id: str, text: str, *, role: str = "body") -> None:
+        container_id = resolve_container_id(container_id)
         for item in reconciled.get("items", []):
             if not isinstance(item, dict) or str(item.get("container_id") or "") != container_id:
                 continue

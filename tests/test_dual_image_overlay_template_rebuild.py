@@ -284,6 +284,31 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertNotIn("non_text_visuals_not_individually_detected", source_capture_gate["gap_counts"])
         self.assertIn("render_delta_not_measured", source_capture_gate["gap_counts"])
 
+    def test_template_rebuild_generates_semantic_binding_when_explicit_plan_missing(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            project = root / "template-project"
+            _write_template_project(project)
+            _write_scene_graph_gate(project, page_number=2, valid=True)
+            manifest = _write_pair_manifest(root, project)
+
+            result = subprocess.run(
+                [
+                    "python3",
+                    str(ROOT / "scripts/dual_image_overlay/template_rebuild.py"),
+                    str(manifest),
+                    "--skip-rebuild",
+                    "--no-export",
+                ],
+                cwd=ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(3, result.returncode, result.stdout + result.stderr)
+            self.assertTrue((project / "analysis/semantic_binding/page_002_semantic_binding.json").is_file())
+
     def test_rebuild_ingress_normalizes_full_and_background_to_1280_canvas(self) -> None:
         with TemporaryDirectory() as directory:
             root = Path(directory)

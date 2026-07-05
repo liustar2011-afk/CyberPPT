@@ -17,6 +17,7 @@ from .rebuild_modes import visual_reference_for_mode as _visual_reference_for_mo
 from .container_workspace import build_container_workspace, write_container_workspace
 from .qa_registry import write_page_quality_report
 from .render_compare_flow import attach_render_compare_measurement, run_render_compare_for_page
+from .semantic_binding import build_semantic_binding, semantic_binding_to_plan
 from .source_capture import (
     attach_render_delta_measurement,
     build_source_capture,
@@ -215,6 +216,63 @@ def _build_template_container_workspaces(
     return aggregate, assignment_aggregate
 
 
+def _build_template_semantic_bindings(
+    project_path: Path,
+    source_capture: dict[str, Any],
+) -> dict[str, Any]:
+    binding_dir = project_path / "analysis" / "semantic_binding"
+    plan_dir = project_path / "analysis" / "semantic_plan"
+    binding_dir.mkdir(parents=True, exist_ok=True)
+    plan_dir.mkdir(parents=True, exist_ok=True)
+
+    pages: list[dict[str, Any]] = []
+    for page in source_capture.get("pages", []):
+        if not isinstance(page, dict):
+            continue
+        page_number = page.get("page_number")
+        if not isinstance(page_number, int):
+            continue
+        text_items = [item for item in page.get("text_objects", []) if isinstance(item, dict)]
+        binding = build_semantic_binding(
+            page_number=page_number,
+            script_sections={},
+            ocr_items=text_items,
+            scene_graph=page.get("scene_graph") if isinstance(page.get("scene_graph"), dict) else None,
+            source_capture_page=page,
+            visual_registry=None,
+        )
+        plan = semantic_binding_to_plan(binding)
+        binding_path = binding_dir / f"page_{page_number:03d}_semantic_binding.json"
+        plan_path = plan_dir / f"page_{page_number:03d}_semantic_plan.json"
+        _write_json(binding_path, binding)
+        _write_json(plan_path, plan)
+        pages.append(
+            {
+                "page_number": page_number,
+                "valid": bool(binding.get("containers")) and bool(binding.get("items")),
+                "container_count": len(binding.get("containers", [])),
+                "item_count": len(binding.get("items", [])),
+                "unassigned_text_count": len(binding.get("unassigned_text", [])),
+                "semantic_binding": str(binding_path),
+                "semantic_plan": str(plan_path),
+            }
+        )
+
+    index = {
+        "schema": "cyberppt.dual_image.semantic_binding_set.v1",
+        "valid": bool(pages) and all(page.get("valid") for page in pages),
+        "page_count": len(pages),
+        "container_count": sum(int(page.get("container_count", 0) or 0) for page in pages),
+        "item_count": sum(int(page.get("item_count", 0) or 0) for page in pages),
+        "unassigned_text_count": sum(int(page.get("unassigned_text_count", 0) or 0) for page in pages),
+        "binding_dir": str(binding_dir),
+        "semantic_plan_dir": str(plan_dir),
+        "pages": pages,
+    }
+    _write_json(binding_dir / "semantic_binding_index.json", index)
+    return index
+
+
 def _write_draft_visual_registry_if_needed(
     project_path: Path,
     source_capture: dict[str, Any],
@@ -322,6 +380,7 @@ def build_template_rebuild_readiness(
             pair_manifest_path=manifest_path,
             visual_registry_dir=resolved_visual_registry_dir,
         )
+    semantic_binding = _build_template_semantic_bindings(project_path, source_capture)
     render_compare = {
         "available": False,
         "skipped": True,
@@ -383,6 +442,8 @@ def build_template_rebuild_readiness(
         "source_capture_gate": str(analysis_dir / "source_capture_gate.json"),
         "template_gate": str(analysis_dir / "template_gate.json"),
         "scene_graph_gates": str(analysis_dir / "scene_graph_gate"),
+        "semantic_binding": str(analysis_dir / "semantic_binding"),
+        "semantic_plan": str(analysis_dir / "semantic_plan"),
         "container_workspace": str(analysis_dir / "container_workspace"),
         "workspace_assignment": str(analysis_dir / "workspace_assignment"),
         "visual_reference": visual_reference,
@@ -401,6 +462,7 @@ def build_template_rebuild_readiness(
         "source_capture_gate": source_capture_gate,
         "template_gate": template_gate,
         "scene_graph_gates": scene_graph_gates,
+        "semantic_binding": semantic_binding,
         "container_workspace": container_workspace,
         "workspace_assignment": workspace_assignment,
         "visual_qa_gate": visual_qa_gate,
@@ -493,6 +555,8 @@ def build_template_rebuild_readiness(
             "render_compare_consumed": bool(render_compare.get("available")),
             "scene_graph_gate_pass": scene_graph_valid,
             "scene_graph_gate_pages": len(scene_graph_gates),
+            "semantic_binding_pass": bool(semantic_binding.get("valid")),
+            "semantic_binding_pages": int(semantic_binding.get("page_count", 0) or 0),
             "visual_qa_gate_pass": visual_qa_gate_valid,
             "page_quality_report_pass": bool(page_quality_report["valid"]),
         },
@@ -510,6 +574,8 @@ def build_template_rebuild_readiness(
             "build_gate": str(analysis_dir / "build_gate.json"),
             "postflight_gate": str(analysis_dir / "postflight_gate.json"),
             "scene_graph_gate_dir": str(analysis_dir / "scene_graph_gate"),
+            "semantic_binding": str(analysis_dir / "semantic_binding" / "semantic_binding_index.json"),
+            "semantic_plan_dir": str(analysis_dir / "semantic_plan"),
             "container_workspace": str(analysis_dir / "container_workspace" / "container_workspace_index.json"),
             "workspace_assignment": str(analysis_dir / "workspace_assignment" / "workspace_assignment_index.json"),
             "exported_pptx": exported_pptx,
