@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+  <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+    <path d="M2,2 L10,6 L2,10 Z" fill="#1F5B4D"/>
+  </marker>
+  <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+    <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#9DA8A2" flood-opacity="0.24"/>
+  </filter>
+</defs>
+<rect width="1280" height="720" fill="#F5F6F2"/><path d="M0 0 H1280 V720 H0 Z" fill="#F7F8F4"/><path d="M0 0 H1280 V112 H0 Z" fill="#ECF1EB"/><path d="M28 114 C220 82, 410 132, 610 102 S1010 66, 1252 116" fill="none" stroke="#D9E2DC" stroke-width="2"/><text x="48" y="58" font-family="Arial Unicode MS" font-size="30" font-weight="700" fill="#1F5B4D">评价模型核心支撑</text>
+<text x="48" y="91" font-family="Arial Unicode MS" font-size="17" fill="#68746F">六类证据资源进入九类能力维度，并按企业类型与应用场景适配输出</text>
+<rect x="42" y="134" width="244" height="452" rx="18" fill="#FFFFFF" stroke="#D1DCD5" stroke-width="2"/>
+<rect x="66" y="202" width="196" height="38" rx="12" fill="#EFF6F1" stroke="#BBD2C5" stroke-width="2"/>
+<rect x="66" y="259" width="196" height="38" rx="12" fill="#EFF6F1" stroke="#BBD2C5" stroke-width="2"/>
+<rect x="66" y="316" width="196" height="38" rx="12" fill="#EFF6F1" stroke="#BBD2C5" stroke-width="2"/>
+<rect x="66" y="373" width="196" height="38" rx="12" fill="#EFF6F1" stroke="#BBD2C5" stroke-width="2"/>
+<rect x="66" y="430" width="196" height="38" rx="12" fill="#EFF6F1" stroke="#BBD2C5" stroke-width="2"/>
+<rect x="66" y="487" width="196" height="38" rx="12" fill="#EFF6F1" stroke="#BBD2C5" stroke-width="2"/>
+<line x1="292" y1="360" x2="372" y2="360" stroke="#1F5B4D" stroke-width="4" marker-end="url(#arrow)"/>
+<rect x="374" y="134" width="520" height="452" rx="18" fill="#FFFFFF" stroke="#D1DCD5" stroke-width="2"/>
+<rect x="410" y="214" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="432" cy="236" r="14" fill="#1F5B4D"/>
+<text x="432" y="241" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">1</text>
+<rect x="568" y="214" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="590" cy="236" r="14" fill="#1F5B4D"/>
+<text x="590" y="241" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">2</text>
+<rect x="726" y="214" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="748" cy="236" r="14" fill="#1F5B4D"/>
+<text x="748" y="241" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">3</text>
+<rect x="410" y="319" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="432" cy="341" r="14" fill="#1F5B4D"/>
+<text x="432" y="346" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">4</text>
+<rect x="568" y="319" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="590" cy="341" r="14" fill="#1F5B4D"/>
+<text x="590" y="346" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">5</text>
+<rect x="726" y="319" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="748" cy="341" r="14" fill="#1F5B4D"/>
+<text x="748" y="346" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">6</text>
+<rect x="410" y="424" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="432" cy="446" r="14" fill="#1F5B4D"/>
+<text x="432" y="451" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">7</text>
+<rect x="568" y="424" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="590" cy="446" r="14" fill="#1F5B4D"/>
+<text x="590" y="451" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">8</text>
+<rect x="726" y="424" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="748" cy="446" r="14" fill="#1F5B4D"/>
+<text x="748" y="451" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">9</text>
+<line x1="902" y1="360" x2="970" y2="360" stroke="#1F5B4D" stroke-width="4" marker-end="url(#arrow)"/>
+<rect x="972" y="134" width="260" height="208" rx="18" fill="#FFFFFF" stroke="#D1DCD5" stroke-width="2"/>
+<rect x="994" y="197" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="1104" y="197" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="994" y="228" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="1104" y="228" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="994" y="259" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="1104" y="259" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="994" y="290" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="972" y="378" width="260" height="208" rx="18" fill="#FFFFFF" stroke="#D1DCD5" stroke-width="2"/>
+<rect x="994" y="441" width="104" height="28" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="1104" y="441" width="104" height="28" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="994" y="475" width="104" height="28" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="1104" y="475" width="104" height="28" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="994" y="509" width="104" height="28" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="1104" y="509" width="104" height="28" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="46" y="612" width="1188" height="64" rx="18" fill="#FFFFFF" stroke="#D8E1DB" stroke-width="2"/><text x="164" y="179" font-family="Arial Unicode MS" font-size="21" font-weight="700" fill="#1F5B4D" text-anchor="middle">六类证据资源</text>
+<text x="164" y="227" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#23312D" text-anchor="middle">企业主体数据</text>
+<text x="164" y="284" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#23312D" text-anchor="middle">海外项目数据</text>
+<text x="164" y="341" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#23312D" text-anchor="middle">技术装备数据</text>
+<text x="164" y="398" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#23312D" text-anchor="middle">财务信用数据</text>
+<text x="164" y="455" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#23312D" text-anchor="middle">E&amp;S/HSE与合规数据</text>
+<text x="164" y="512" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#23312D" text-anchor="middle">国别市场与风险数据</text>
+<text x="633" y="180" font-family="Arial Unicode MS" font-size="22" font-weight="700" fill="#1F5B4D" text-anchor="middle">九类能力维度</text>
+<text x="452" y="249" font-family="Arial Unicode MS" font-size="13" font-weight="700" fill="#23312D" text-anchor="start">主体治理与合规能力</text>
+<text x="610" y="249" font-family="Arial Unicode MS" font-size="13" font-weight="700" fill="#23312D" text-anchor="start">财务稳健与信用履约能力</text>
+<text x="768" y="249" font-family="Arial Unicode MS" font-size="13" font-weight="700" fill="#23312D" text-anchor="start">国际项目经验与交付能力</text>
+<text x="452" y="354" font-family="Arial Unicode MS" font-size="13" font-weight="700" fill="#23312D" text-anchor="start">技术装备与系统集成能力</text>
+<text x="610" y="354" font-family="Arial Unicode MS" font-size="13" font-weight="700" fill="#23312D" text-anchor="start">E&amp;S/ESG</text>
+<text x="610" y="370" font-family="Arial Unicode MS" font-size="13" font-weight="700" fill="#23312D" text-anchor="start">HSE能力</text>
+<text x="768" y="354" font-family="Arial Unicode MS" font-size="13" font-weight="700" fill="#23312D" text-anchor="start">供应链责任能力</text>
+<text x="452" y="459" font-family="Arial Unicode MS" font-size="13" font-weight="700" fill="#23312D" text-anchor="start">属地化经营与伙伴协同能力</text>
+<text x="610" y="459" font-family="Arial Unicode MS" font-size="13" font-weight="700" fill="#23312D" text-anchor="start">国别适配与风险应对能力</text>
+<text x="768" y="459" font-family="Arial Unicode MS" font-size="13" font-weight="700" fill="#23312D" text-anchor="start">数据可信与证据管理能力</text>
+<text x="1102" y="178" font-family="Arial Unicode MS" font-size="20" font-weight="700" fill="#1F5B4D" text-anchor="middle">企业类型适配</text>
+<text x="1048" y="218" font-family="Arial Unicode MS" font-size="12" font-weight="400" fill="#23312D" text-anchor="middle">投资运营企业</text>
+<text x="1152" y="218" font-family="Arial Unicode MS" font-size="12" font-weight="400" fill="#23312D" text-anchor="middle">规划设计企业</text>
+<text x="1048" y="249" font-family="Arial Unicode MS" font-size="12" font-weight="400" fill="#23312D" text-anchor="middle">EPC总承包企业</text>
+<text x="1152" y="249" font-family="Arial Unicode MS" font-size="12" font-weight="400" fill="#23312D" text-anchor="middle">装备制造企业</text>
+<text x="1048" y="280" font-family="Arial Unicode MS" font-size="12" font-weight="400" fill="#23312D" text-anchor="middle">运维服务企业</text>
+<text x="1152" y="280" font-family="Arial Unicode MS" font-size="12" font-weight="400" fill="#23312D" text-anchor="middle">平台集成企业</text>
+<text x="1048" y="311" font-family="Arial Unicode MS" font-size="12" font-weight="400" fill="#23312D" text-anchor="middle">供应链服务企业</text>
+<text x="1102" y="422" font-family="Arial Unicode MS" font-size="20" font-weight="700" fill="#1F5B4D" text-anchor="middle">场景适配</text>
+<text x="1048" y="462" font-family="Arial Unicode MS" font-size="12" font-weight="400" fill="#23312D" text-anchor="middle">基础画像评价</text>
+<text x="1152" y="462" font-family="Arial Unicode MS" font-size="12" font-weight="400" fill="#23312D" text-anchor="middle">投标预审评价</text>
+<text x="1048" y="496" font-family="Arial Unicode MS" font-size="12" font-weight="400" fill="#23312D" text-anchor="middle">融资保险评价</text>
+<text x="1152" y="496" font-family="Arial Unicode MS" font-size="12" font-weight="400" fill="#23312D" text-anchor="middle">供应链准入评价</text>
+<text x="1048" y="530" font-family="Arial Unicode MS" font-size="12" font-weight="400" fill="#23312D" text-anchor="middle">国别适配评价</text>
+<text x="1152" y="530" font-family="Arial Unicode MS" font-size="12" font-weight="400" fill="#23312D" text-anchor="middle">传播展示评价</text>
+<text x="637" y="642" font-family="Arial Unicode MS" font-size="18" font-weight="700" fill="#23312D" text-anchor="middle">评价模型不是单一打分表，而是“证据资源 × 能力维度 × 企业类型 × 应用场景”的组合支撑体系。</text></svg>

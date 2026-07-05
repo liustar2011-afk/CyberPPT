@@ -93,6 +93,7 @@ python3 -m cyberppt init projects/example
 python3 -m cyberppt stage-script projects/example --slide 1 --kind imagegen --phase draft --source prompt.md
 python3 -m cyberppt approve-script projects/example --slide 1 --kind imagegen
 python3 -m cyberppt script-status projects/example --slide 1 --kind imagegen
+python3 -m cyberppt final-script-pages projects/example --script workbench/scripts/final/script-final.md --pages 7-8
 ```
 
 常用开发检查：

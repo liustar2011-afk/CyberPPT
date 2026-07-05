@@ -19,6 +19,7 @@ SCRIPT_ALIASES: dict[str, str] = {
     "lock-content": "build_content_lock.py",
     "measure-blueprint": "measure_blueprint.py",
     "merge-pages": "merge_verified_pages.py",
+    "pair-manifest": "dual_image_overlay/cyberppt_pair_manifest.py",
     "rework-report": "build_rework_report.py",
     "source-capture": "dual_image_overlay/source_capture.py",
     "template-rebuild": "dual_image_overlay/template_rebuild.py",

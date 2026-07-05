@@ -1,0 +1,20 @@
+{
+  "schema": "cyberppt.deliverable_image_prompt_manifest.v1",
+  "source_script": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-145635_pages007_008_dual_image/workbench/locks/slide_content/pages_007_008_deliverable_prompt_source.md",
+  "content_lock_dir": null,
+  "style_lock": null,
+  "pages": [
+    7,
+    8
+  ],
+  "output": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-145635_pages007_008_dual_image/workbench/stages/02-blueprint-dual-image/pages_007_008_deliverable_prompts.md",
+  "policy": {
+    "final_deliverable_only": true,
+    "content_region_only": true,
+    "template_title_subtitle": true,
+    "forbid_evidence_ids": true,
+    "forbid_caveats_and_notes": true,
+    "forbid_title_placeholder_bar": true,
+    "forbid_external_style_preset": true
+  }
+}

@@ -1,0 +1,1130 @@
+{
+  "schema": "cyberppt.dual_image.semantic_layout_plan.v1",
+  "layout_policy": "semantic_container_safe_bbox_first",
+  "ppt_master_core_policy": "container_role_and_text_role_first",
+  "coordinate_context": {
+    "schema": "cyberppt.dual_image.coordinate_context.v1",
+    "coordinate_space": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "coordinate_space_source": "normalized_1280x720",
+    "source_coordinate_space": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "semantic_input_space": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "visual_registry_input_space": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "semantic_plan_image_size": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "visual_registry_canvas": null,
+    "semantic_bbox_extent": {
+      "width": 1202.0,
+      "height": 615.0
+    },
+    "visual_registry_bbox_extent": null,
+    "background_image_actual": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "warnings": []
+  },
+  "truth_policy": {
+    "geometry_truth": "semantic_plan.containers[].text_safe_bbox",
+    "text_truth": "semantic_plan.items[].display_text",
+    "ocr_role": "locator_evidence_only"
+  },
+  "container_relations": [],
+  "text_neighbors": [
+    {
+      "text": "1  企业入库\n企业类型 / 业务范围 / 目标区域 / 应用需求",
+      "role": "body",
+      "container_id": "p7_node_1",
+      "bbox": [
+        64.0,
+        100.0,
+        162.0,
+        182.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "2  角色识别\n投资运营 / 规划设计 / EPC / 装备制造 / 运维等",
+      "role": "body",
+      "container_id": "p7_node_2",
+      "bbox": [
+        196.0,
+        100.0,
+        294.0,
+        182.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "3  授权取证\n基础评价 / 专项评价 / 对外传播授权",
+      "role": "body",
+      "container_id": "p7_node_3",
+      "bbox": [
+        328.0,
+        100.0,
+        426.0,
+        182.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "4  数据治理\n清洗 / 校验 / 去重 / 口径统一 / 版本管理",
+      "role": "body",
+      "container_id": "p7_node_4",
+      "bbox": [
+        460.0,
+        100.0,
+        558.0,
+        182.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "5  证据入库\n按证据类型 / 能力维度 / 场景 / 授权边界入库",
+      "role": "body",
+      "container_id": "p7_node_5",
+      "bbox": [
+        592.0,
+        100.0,
+        690.0,
+        182.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "6  能力评价\n评价模型 / 证据等级 / 场景适配规则",
+      "role": "body",
+      "container_id": "p7_node_6",
+      "bbox": [
+        592.0,
+        262.0,
+        690.0,
+        344.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "7  专家复核\n重大结论 / 关键证据 / 风险提示 / 争议事项",
+      "role": "body",
+      "container_id": "p7_node_7",
+      "bbox": [
+        460.0,
+        262.0,
+        558.0,
+        344.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "8  结果生成\n画像报告 / 评价结果 / 证明材料 / 专题报告",
+      "role": "body",
+      "container_id": "p7_node_8",
+      "bbox": [
+        328.0,
+        262.0,
+        426.0,
+        344.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "9  场景调用\n投标 / 融资 / 供应链 / 国别进入 / 监测传播",
+      "role": "body",
+      "container_id": "p7_node_9",
+      "bbox": [
+        196.0,
+        262.0,
+        294.0,
+        344.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "10  反馈更新\n使用反馈 / 异议处理 / 补证修正 / 规则修订",
+      "role": "body",
+      "container_id": "p7_node_10",
+      "bbox": [
+        64.0,
+        262.0,
+        162.0,
+        344.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "回流至数据治理 / 证据入库",
+      "role": "arrow_label",
+      "container_id": "p7_feedback_label",
+      "bbox": [
+        925.0,
+        290.0,
+        1190.0,
+        322.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "项目新增/完工",
+      "role": "body",
+      "container_id": "p7_trigger_1",
+      "bbox": [
+        62.0,
+        464.0,
+        212.0,
+        487.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "证书到期/更新",
+      "role": "body",
+      "container_id": "p7_trigger_2",
+      "bbox": [
+        260.0,
+        464.0,
+        410.0,
+        487.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "行政处罚/信用修复",
+      "role": "body",
+      "container_id": "p7_trigger_3",
+      "bbox": [
+        458.0,
+        464.0,
+        608.0,
+        487.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "国别规则变化",
+      "role": "body",
+      "container_id": "p7_trigger_4",
+      "bbox": [
+        656.0,
+        464.0,
+        806.0,
+        487.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "风险事件变化",
+      "role": "body",
+      "container_id": "p7_trigger_5",
+      "bbox": [
+        854.0,
+        464.0,
+        1004.0,
+        487.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "企业补证",
+      "role": "body",
+      "container_id": "p7_trigger_6",
+      "bbox": [
+        1052.0,
+        464.0,
+        1202.0,
+        487.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    },
+    {
+      "text": "核心逻辑：以授权取证和证据入库为基础，用模型评价形成结果，再通过场景调用和反馈更新形成可持续运营闭环。",
+      "role": "body",
+      "container_id": "p7_sowhat",
+      "bbox": [
+        92.0,
+        580.0,
+        1188.0,
+        615.0
+      ],
+      "nearest": {
+        "left": null,
+        "right": null,
+        "above": null,
+        "below": null,
+        "overlapping": []
+      }
+    }
+  ],
+  "items": [
+    {
+      "index": 0,
+      "text": "1  企业入库\n企业类型 / 业务范围 / 目标区域 / 应用需求",
+      "source_text": "1  企业入库\n企业类型 / 业务范围 / 目标区域 / 应用需求",
+      "role": "body",
+      "container_id": "p7_node_1",
+      "container_role": "process_node",
+      "bbox": [
+        64.0,
+        100.0,
+        162.0,
+        182.0
+      ],
+      "container_safe_bbox": [
+        64.0,
+        100.0,
+        162.0,
+        182.0
+      ],
+      "font_size": 11.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_node_1:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 1,
+      "text": "2  角色识别\n投资运营 / 规划设计 / EPC / 装备制造 / 运维等",
+      "source_text": "2  角色识别\n投资运营 / 规划设计 / EPC / 装备制造 / 运维等",
+      "role": "body",
+      "container_id": "p7_node_2",
+      "container_role": "process_node",
+      "bbox": [
+        196.0,
+        100.0,
+        294.0,
+        182.0
+      ],
+      "container_safe_bbox": [
+        196.0,
+        100.0,
+        294.0,
+        182.0
+      ],
+      "font_size": 11.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_node_2:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 2,
+      "text": "3  授权取证\n基础评价 / 专项评价 / 对外传播授权",
+      "source_text": "3  授权取证\n基础评价 / 专项评价 / 对外传播授权",
+      "role": "body",
+      "container_id": "p7_node_3",
+      "container_role": "process_node",
+      "bbox": [
+        328.0,
+        100.0,
+        426.0,
+        182.0
+      ],
+      "container_safe_bbox": [
+        328.0,
+        100.0,
+        426.0,
+        182.0
+      ],
+      "font_size": 11.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_node_3:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 3,
+      "text": "4  数据治理\n清洗 / 校验 / 去重 / 口径统一 / 版本管理",
+      "source_text": "4  数据治理\n清洗 / 校验 / 去重 / 口径统一 / 版本管理",
+      "role": "body",
+      "container_id": "p7_node_4",
+      "container_role": "process_node",
+      "bbox": [
+        460.0,
+        100.0,
+        558.0,
+        182.0
+      ],
+      "container_safe_bbox": [
+        460.0,
+        100.0,
+        558.0,
+        182.0
+      ],
+      "font_size": 11.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_node_4:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 4,
+      "text": "5  证据入库\n按证据类型 / 能力维度 / 场景 / 授权边界入库",
+      "source_text": "5  证据入库\n按证据类型 / 能力维度 / 场景 / 授权边界入库",
+      "role": "body",
+      "container_id": "p7_node_5",
+      "container_role": "process_node",
+      "bbox": [
+        592.0,
+        100.0,
+        690.0,
+        182.0
+      ],
+      "container_safe_bbox": [
+        592.0,
+        100.0,
+        690.0,
+        182.0
+      ],
+      "font_size": 10.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_node_5:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 5,
+      "text": "6  能力评价\n评价模型 / 证据等级 / 场景适配规则",
+      "source_text": "6  能力评价\n评价模型 / 证据等级 / 场景适配规则",
+      "role": "body",
+      "container_id": "p7_node_6",
+      "container_role": "process_node",
+      "bbox": [
+        592.0,
+        262.0,
+        690.0,
+        344.0
+      ],
+      "container_safe_bbox": [
+        592.0,
+        262.0,
+        690.0,
+        344.0
+      ],
+      "font_size": 11.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_node_6:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 6,
+      "text": "7  专家复核\n重大结论 / 关键证据 / 风险提示 / 争议事项",
+      "source_text": "7  专家复核\n重大结论 / 关键证据 / 风险提示 / 争议事项",
+      "role": "body",
+      "container_id": "p7_node_7",
+      "container_role": "process_node",
+      "bbox": [
+        460.0,
+        262.0,
+        558.0,
+        344.0
+      ],
+      "container_safe_bbox": [
+        460.0,
+        262.0,
+        558.0,
+        344.0
+      ],
+      "font_size": 11.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_node_7:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 7,
+      "text": "8  结果生成\n画像报告 / 评价结果 / 证明材料 / 专题报告",
+      "source_text": "8  结果生成\n画像报告 / 评价结果 / 证明材料 / 专题报告",
+      "role": "body",
+      "container_id": "p7_node_8",
+      "container_role": "process_node",
+      "bbox": [
+        328.0,
+        262.0,
+        426.0,
+        344.0
+      ],
+      "container_safe_bbox": [
+        328.0,
+        262.0,
+        426.0,
+        344.0
+      ],
+      "font_size": 11.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_node_8:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 8,
+      "text": "9  场景调用\n投标 / 融资 / 供应链 / 国别进入 / 监测传播",
+      "source_text": "9  场景调用\n投标 / 融资 / 供应链 / 国别进入 / 监测传播",
+      "role": "body",
+      "container_id": "p7_node_9",
+      "container_role": "process_node",
+      "bbox": [
+        196.0,
+        262.0,
+        294.0,
+        344.0
+      ],
+      "container_safe_bbox": [
+        196.0,
+        262.0,
+        294.0,
+        344.0
+      ],
+      "font_size": 10.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_node_9:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 9,
+      "text": "10  反馈更新\n使用反馈 / 异议处理 / 补证修正 / 规则修订",
+      "source_text": "10  反馈更新\n使用反馈 / 异议处理 / 补证修正 / 规则修订",
+      "role": "body",
+      "container_id": "p7_node_10",
+      "container_role": "process_node",
+      "bbox": [
+        64.0,
+        262.0,
+        162.0,
+        344.0
+      ],
+      "container_safe_bbox": [
+        64.0,
+        262.0,
+        162.0,
+        344.0
+      ],
+      "font_size": 11.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_node_10:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 10,
+      "text": "回流至数据治理 / 证据入库",
+      "source_text": "回流至数据治理 / 证据入库",
+      "role": "arrow_label",
+      "container_id": "p7_feedback_label",
+      "container_role": "edge_label",
+      "bbox": [
+        925.0,
+        290.0,
+        1190.0,
+        322.0
+      ],
+      "container_safe_bbox": [
+        925.0,
+        290.0,
+        1190.0,
+        322.0
+      ],
+      "font_size": 15.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_feedback_label:arrow_label",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 11,
+      "text": "项目新增/完工",
+      "source_text": "项目新增/完工",
+      "role": "body",
+      "container_id": "p7_trigger_1",
+      "container_role": "trigger_tag",
+      "bbox": [
+        62.0,
+        464.0,
+        212.0,
+        487.0
+      ],
+      "container_safe_bbox": [
+        62.0,
+        464.0,
+        212.0,
+        487.0
+      ],
+      "font_size": 14.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_trigger_1:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 12,
+      "text": "证书到期/更新",
+      "source_text": "证书到期/更新",
+      "role": "body",
+      "container_id": "p7_trigger_2",
+      "container_role": "trigger_tag",
+      "bbox": [
+        260.0,
+        464.0,
+        410.0,
+        487.0
+      ],
+      "container_safe_bbox": [
+        260.0,
+        464.0,
+        410.0,
+        487.0
+      ],
+      "font_size": 14.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_trigger_2:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 13,
+      "text": "行政处罚/信用修复",
+      "source_text": "行政处罚/信用修复",
+      "role": "body",
+      "container_id": "p7_trigger_3",
+      "container_role": "trigger_tag",
+      "bbox": [
+        458.0,
+        464.0,
+        608.0,
+        487.0
+      ],
+      "container_safe_bbox": [
+        458.0,
+        464.0,
+        608.0,
+        487.0
+      ],
+      "font_size": 14.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_trigger_3:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 14,
+      "text": "国别规则变化",
+      "source_text": "国别规则变化",
+      "role": "body",
+      "container_id": "p7_trigger_4",
+      "container_role": "trigger_tag",
+      "bbox": [
+        656.0,
+        464.0,
+        806.0,
+        487.0
+      ],
+      "container_safe_bbox": [
+        656.0,
+        464.0,
+        806.0,
+        487.0
+      ],
+      "font_size": 14.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_trigger_4:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 15,
+      "text": "风险事件变化",
+      "source_text": "风险事件变化",
+      "role": "body",
+      "container_id": "p7_trigger_5",
+      "container_role": "trigger_tag",
+      "bbox": [
+        854.0,
+        464.0,
+        1004.0,
+        487.0
+      ],
+      "container_safe_bbox": [
+        854.0,
+        464.0,
+        1004.0,
+        487.0
+      ],
+      "font_size": 14.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_trigger_5:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 16,
+      "text": "企业补证",
+      "source_text": "企业补证",
+      "role": "body",
+      "container_id": "p7_trigger_6",
+      "container_role": "trigger_tag",
+      "bbox": [
+        1052.0,
+        464.0,
+        1202.0,
+        487.0
+      ],
+      "container_safe_bbox": [
+        1052.0,
+        464.0,
+        1202.0,
+        487.0
+      ],
+      "font_size": 14.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_trigger_6:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    },
+    {
+      "index": 17,
+      "text": "核心逻辑：以授权取证和证据入库为基础，用模型评价形成结果，再通过场景调用和反馈更新形成可持续运营闭环。",
+      "source_text": "核心逻辑：以授权取证和证据入库为基础，用模型评价形成结果，再通过场景调用和反馈更新形成可持续运营闭环。",
+      "role": "body",
+      "container_id": "p7_sowhat",
+      "container_role": "so_what_band",
+      "bbox": [
+        92.0,
+        580.0,
+        1188.0,
+        615.0
+      ],
+      "container_safe_bbox": [
+        92.0,
+        580.0,
+        1188.0,
+        615.0
+      ],
+      "font_size": 18.0,
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true,
+      "layout_strategy": "container_safe_bbox",
+      "reserved_zones": [],
+      "text_zone_source": null,
+      "layout_hints": {
+        "applied_rules": [],
+        "reserved_zone_drivers": []
+      },
+      "v_align": "top",
+      "group_id": "p7_sowhat:body",
+      "group_align": "left",
+      "layout_rationale": "semantic_plan_text_safe_bbox",
+      "semantic_compression_level": "note_backed_summary",
+      "fit_order": [
+        "nudge_into_container",
+        "shrink_font"
+      ],
+      "ppt_master_layout_strategy": "plain_text"
+    }
+  ]
+}

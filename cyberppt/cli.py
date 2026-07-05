@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
 from cyberppt import __version__
+from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script, status_as_json
 from cyberppt.commands.script_runner import SCRIPT_ALIASES, run_script
@@ -88,6 +90,25 @@ def _rebuild_dual_image_command(args: argparse.Namespace) -> int:
     return run_script("template-rebuild", args.rebuild_args)
 
 
+def _final_script_pages_command(args: argparse.Namespace) -> int:
+    try:
+        summary = run_final_script_pages(
+            project=Path(args.project),
+            script=Path(args.script),
+            pages_raw=args.pages,
+            style_lock=Path(args.style_lock) if args.style_lock else None,
+            output_dir=Path(args.output_dir) if args.output_dir else None,
+            require_images=args.require_images,
+            run_rebuild=args.run_rebuild,
+            rebuild_args=args.rebuild_arg or [],
+        )
+    except (FileNotFoundError, RuntimeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cyberppt", description="CyberPPT product tooling.")
     parser.add_argument("--version", action="version", version=f"cyberppt {__version__}")
@@ -160,6 +181,32 @@ def build_parser() -> argparse.ArgumentParser:
     )
     rebuild_dual_image_parser.add_argument("rebuild_args", nargs=argparse.REMAINDER)
     rebuild_dual_image_parser.set_defaults(func=_rebuild_dual_image_command)
+
+    final_script_pages_parser = subparsers.add_parser(
+        "final-script-pages",
+        help="Compile selected pages from a final script into traceable ImageGen and dual-image inputs.",
+    )
+    final_script_pages_parser.add_argument("project", help="CyberPPT project directory.")
+    final_script_pages_parser.add_argument("--script", required=True, help="Final markdown script containing page headings.")
+    final_script_pages_parser.add_argument("--pages", required=True, help="Page range, e.g. 7-8 or 7,8.")
+    final_script_pages_parser.add_argument("--style-lock", help="Optional project visual lock file.")
+    final_script_pages_parser.add_argument("--output-dir", help="Optional output directory for page_image_pairs.json.")
+    final_script_pages_parser.add_argument(
+        "--require-images",
+        action="store_true",
+        help="Fail unless expected full/background image files already exist.",
+    )
+    final_script_pages_parser.add_argument(
+        "--run-rebuild",
+        action="store_true",
+        help="After manifest creation and image verification, run template-rebuild.",
+    )
+    final_script_pages_parser.add_argument(
+        "--rebuild-arg",
+        action="append",
+        help="Additional argument to pass to template-rebuild; repeat for multiple args.",
+    )
+    final_script_pages_parser.set_defaults(func=_final_script_pages_command)
 
     for alias in sorted(SCRIPT_ALIASES):
         command = subparsers.add_parser(alias, add_help=False, help=f"Run scripts/{SCRIPT_ALIASES[alias]}.")
