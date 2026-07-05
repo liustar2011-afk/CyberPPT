@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild import (
+    _overlay_boxes_from_scene_graph_layout,
     _scene_graph_artifact_paths,
     _scene_graph_gate_blocks_export,
 )
@@ -31,6 +32,35 @@ def test_scene_graph_gate_blocks_export(tmp_path: Path):
     )
 
     assert _scene_graph_gate_blocks_export(gate_path) is True
+
+
+def test_scene_graph_layout_replaces_legacy_overlay_boxes():
+    boxes = _overlay_boxes_from_scene_graph_layout(
+        {
+            "schema": "cyberppt.page_layout_plan.v1",
+            "items": [
+                {
+                    "node_id": "text_1",
+                    "text": "企业应用",
+                    "bbox": [640, 180, 960, 360],
+                    "font_size": 16,
+                    "font_weight": "700",
+                    "align": "left",
+                    "word_wrap": True,
+                }
+            ],
+        },
+        {"x": 58, "y": 100, "width": 1164, "height": 554},
+    )
+
+    assert len(boxes) == 1
+    assert boxes[0].source == "scene_graph_layout"
+    assert boxes[0].text == "企业应用"
+    assert boxes[0].x == 640.0
+    assert boxes[0].y == 238.5
+    assert boxes[0].w == 291.0
+    assert boxes[0].h == 138.5
+    assert boxes[0].font_size == 12.31
 
 
 def test_template_readiness_requires_scene_graph_gate(tmp_path: Path):
