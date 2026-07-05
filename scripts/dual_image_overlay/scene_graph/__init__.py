@@ -1,3 +1,4 @@
+from .coordinate import COORDINATE_CONTEXT_SCHEMA, normalize_bbox, resolve_coordinate_context
 from .schema import (
     BINDING_TYPES,
     BLOCKING_ISSUE_CODES,
@@ -22,6 +23,7 @@ from .schema import (
 __all__ = [
     "BINDING_TYPES",
     "BLOCKING_ISSUE_CODES",
+    "COORDINATE_CONTEXT_SCHEMA",
     "LOCATOR_ONLY_AUTHORITIES",
     "NORMALIZED_CANVAS",
     "SCHEMA",
@@ -36,6 +38,8 @@ __all__ = [
     "TextNode",
     "TruthSource",
     "VisualNode",
+    "normalize_bbox",
+    "resolve_coordinate_context",
     "scene_graph_from_dict",
     "scene_graph_to_dict",
 ]
