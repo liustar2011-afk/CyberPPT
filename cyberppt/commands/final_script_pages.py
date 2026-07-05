@@ -12,6 +12,7 @@ from typing import Any
 
 from scripts.dual_image_overlay.cyberppt_pair_manifest import build_manifest, require_generated
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, parse_pages, template_title
+from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
 STAGE_DIR = "workbench/stages/02-blueprint-dual-image"
@@ -97,6 +98,7 @@ def _template_text_lock(
                 "resume_command": (
                     "python3 -m cyberppt final-script-pages "
                     f"{project} --script {script} --pages {pages_raw}"
+                    + (f" --style-lock {style_lock}" if style_lock else "")
                 ),
             }
         )
@@ -152,13 +154,88 @@ def _append_ledger(project: Path, records: list[dict[str, Any]]) -> Path:
     return ledger_path
 
 
+def _template_rebuild_failure_message(project: Path, returncode: int) -> str:
+    readiness_path = project / "analysis" / "template_rebuild_readiness.json"
+    source_gate_path = project / "analysis" / "source_capture_gate.json"
+    page_quality_path = project / "analysis" / "page_quality_report.json"
+    lines = [
+        f"template rebuild quality gate failed with exit code {returncode}.",
+        "Stop delivery progression; generated PPTX, if any, is an intermediate artifact only.",
+    ]
+    if readiness_path.is_file():
+        readiness = _read_json(readiness_path)
+        lines.append(f"readiness: {readiness_path}")
+        lines.append(f"status: {readiness.get('status')}")
+        lines.append(f"valid: {readiness.get('valid')}")
+        checks = readiness.get("checks")
+        if isinstance(checks, dict):
+            failed = [key for key, value in checks.items() if value is False]
+            if failed:
+                lines.append("failed_checks: " + ", ".join(failed))
+        artifacts = readiness.get("artifacts")
+        if isinstance(artifacts, dict) and artifacts.get("exported_pptx"):
+            lines.append(f"intermediate_pptx: {artifacts['exported_pptx']}")
+    else:
+        lines.append(f"readiness: missing ({readiness_path})")
+
+    if source_gate_path.is_file():
+        source_gate = _read_json(source_gate_path)
+        gap_counts = source_gate.get("gap_counts")
+        if isinstance(gap_counts, dict) and gap_counts:
+            lines.append("blocking_gap_counts: " + ", ".join(f"{key}={value}" for key, value in gap_counts.items()))
+        blocking = source_gate.get("blocking_gaps")
+        if isinstance(blocking, list) and blocking:
+            lines.append("blocking_gaps:")
+            for gap in blocking[:12]:
+                if not isinstance(gap, dict):
+                    continue
+                page = gap.get("page_number")
+                code = gap.get("code")
+                message = gap.get("message")
+                lines.append(f"- page {page}: {code} - {message}")
+            if len(blocking) > 12:
+                lines.append(f"- ... {len(blocking) - 12} more")
+    else:
+        lines.append(f"source_capture_gate: missing ({source_gate_path})")
+
+    if page_quality_path.is_file():
+        page_quality = _read_json(page_quality_path)
+        lines.append(f"page_quality_report: {page_quality_path}")
+        lines.append(f"page_quality_valid: {page_quality.get('valid')}")
+        blocking = page_quality.get("blocking_errors")
+        if isinstance(blocking, list) and blocking:
+            lines.append("page_quality_blocking_errors:")
+            for item in blocking[:12]:
+                if isinstance(item, dict):
+                    lines.append(f"- {item.get('id')}: {item.get('description')}")
+            if len(blocking) > 12:
+                lines.append(f"- ... {len(blocking) - 12} more")
+    else:
+        lines.append(f"page_quality_report: missing ({page_quality_path})")
+    return "\n".join(lines)
+
+
+def _template_rebuild_artifacts(project: Path) -> dict[str, str | None]:
+    artifacts = {
+        "template_rebuild_readiness": project / "analysis" / "template_rebuild_readiness.json",
+        "source_capture": project / "analysis" / "source_capture.json",
+        "source_capture_gate": project / "analysis" / "source_capture_gate.json",
+        "template_gate": project / "analysis" / "template_gate.json",
+        "page_quality_report": project / "analysis" / "page_quality_report.json",
+    }
+    return {key: str(path) if path.exists() else None for key, path in artifacts.items()}
+
+
 def run_final_script_pages(
     *,
     project: Path,
     script: Path,
     pages_raw: str,
     style_lock: Path | None = None,
+    style_id: int | None = None,
+    style_name: str | None = None,
     output_dir: Path | None = None,
+    semantic_plan_dir: Path | None = None,
     require_images: bool = False,
     run_rebuild: bool = False,
     rebuild_args: list[str] | None = None,
@@ -166,9 +243,19 @@ def run_final_script_pages(
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
     style_lock = style_lock.expanduser().resolve() if style_lock else None
+    semantic_plan_dir = semantic_plan_dir.expanduser().resolve() if semantic_plan_dir else None
     if not script.is_file():
         raise FileNotFoundError(f"final script not found: {script}")
     _ensure_project_dirs(project)
+    if style_lock is not None and (style_id is not None or style_name):
+        raise ValueError("--style-lock cannot be combined with --style-id or --style-name")
+    if style_lock is None:
+        style_lock = write_project_style_lock(
+            project=project,
+            style_id=style_id,
+            style_name=style_name,
+            source_script=script,
+        )
 
     blocks = parse_page_blocks(script)
     pages = parse_pages(pages_raw, set(blocks))
@@ -195,24 +282,31 @@ def run_final_script_pages(
 
     rebuild_status: dict[str, Any] | None = None
     if run_rebuild:
+        effective_rebuild_args = list(rebuild_args or [])
+        if semantic_plan_dir is not None:
+            effective_rebuild_args.extend(["--semantic-plan-dir", str(semantic_plan_dir)])
         command = [
             sys.executable,
             "-m",
             "cyberppt",
             "template-rebuild",
             str(manifest_path),
-            *(rebuild_args or []),
+            *effective_rebuild_args,
         ]
         completed = subprocess.run(command, check=False)
         rebuild_status = {
             "command": command,
             "returncode": completed.returncode,
             "status": "completed" if completed.returncode == 0 else "failed",
+            "artifacts": _template_rebuild_artifacts(project),
         }
         if completed.returncode != 0:
-            raise RuntimeError(f"template rebuild failed with exit code {completed.returncode}")
+            raise RuntimeError(_template_rebuild_failure_message(project, completed.returncode))
 
-    resume_command = f"python3 -m cyberppt final-script-pages {project} --script {script} --pages {pages_raw}"
+    resume_command = (
+        f"python3 -m cyberppt final-script-pages {project} --script {script} "
+        f"--pages {pages_raw} --style-lock {style_lock}"
+    )
     run_summary = {
         "schema": "cyberppt.final_script_pages_run.v1",
         "created_at": _utc_now(),
@@ -225,7 +319,9 @@ def run_final_script_pages(
             "compiled_deliverable_prompt": str(compiled_script),
             "page_image_pairs": str(manifest_path),
             "template_text_lock": str(lock_path),
+            "visual_style_lock": str(style_lock),
             "output_dir": str(target_dir),
+            "semantic_plan_dir": str(semantic_plan_dir) if semantic_plan_dir else None,
         },
         "next_steps": [
             "Generate each full image from the pair manifest full.prompt.",
@@ -247,7 +343,7 @@ def run_final_script_pages(
                 page=page_label,
                 path=compiled_script,
                 status="ready_for_image_generation",
-                depends_on=[script],
+                depends_on=[script, style_lock],
                 resume_command=resume_command,
             ),
             _artifact_record(
@@ -269,9 +365,17 @@ def run_final_script_pages(
             _artifact_record(
                 stage="02-blueprint-dual-image",
                 page=page_label,
+                path=style_lock,
+                status="approved",
+                depends_on=[script],
+                resume_command=resume_command,
+            ),
+            _artifact_record(
+                stage="02-blueprint-dual-image",
+                page=page_label,
                 path=summary_path,
                 status="ready_for_image_generation",
-                depends_on=[compiled_script, manifest_path, lock_path],
+                depends_on=[compiled_script, manifest_path, lock_path, style_lock],
                 resume_command=resume_command,
             ),
         ],

@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.dual_image_overlay.cyberppt_pair_manifest import main
+from scripts.dual_image_overlay.cyberppt_pair_manifest import main, require_generated
 
 
 class CyberpptPairManifestTests(unittest.TestCase):
@@ -34,6 +34,10 @@ class CyberpptPairManifestTests(unittest.TestCase):
                     "2",
                     "--output-dir",
                     str(output_dir),
+                    "--project-path",
+                    str(root / "project"),
+                    "--style-id",
+                    "4",
                     "--promote-blueprints-from",
                     str(blueprint_dir),
                 ]
@@ -48,6 +52,64 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertEqual("Generated", full_status)
         self.assertEqual(b"approved-blueprint", full_bytes)
         self.assertEqual("Pending", background_status)
+
+    def test_background_manifest_requires_edit_from_corresponding_full(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            script = root / "script.md"
+            output_dir = root / "images"
+            script.write_text(
+                """## 第3页：双图派生约束
+本页结论标题为“先生成全图，再由全图派生无文字底图”
+""",
+                encoding="utf-8",
+            )
+
+            code = main(
+                [
+                    "--script",
+                    str(script),
+                    "--pages",
+                    "3",
+                    "--output-dir",
+                    str(output_dir),
+                    "--project-path",
+                    str(root / "project"),
+                    "--style-id",
+                    "5",
+                ]
+            )
+            manifest = json.loads((output_dir / "page_image_pairs.json").read_text(encoding="utf-8"))
+            pair = manifest["pairs"][0]
+            style_lock_exists = Path(manifest["style_lock"]).is_file()
+
+        self.assertEqual(code, 0)
+        self.assertTrue(style_lock_exists)
+        self.assertEqual("text_to_image_generate_full", pair["full"]["generation_method"])
+        self.assertEqual("image_to_image_edit_from_full", pair["background"]["generation_method"])
+        self.assertEqual(pair["full"]["path"], pair["background"]["depends_on_full_path"])
+        self.assertEqual("full", pair["background"]["input_variant"])
+        self.assertTrue(pair["background"]["requires_input_image"])
+
+    def test_require_generated_rejects_background_without_full_derivation_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            full = root / "page_full.png"
+            background = root / "page_background.png"
+            full.write_bytes(b"full")
+            background.write_bytes(b"background")
+            manifest = {
+                "pairs": [
+                    {
+                        "page_number": 1,
+                        "full": {"path": str(full), "status": "Generated"},
+                        "background": {"path": str(background), "status": "Generated"},
+                    }
+                ]
+            }
+
+            with self.assertRaisesRegex(ValueError, "image_to_image_edit_from_full"):
+                require_generated(manifest)
 
 
 if __name__ == "__main__":

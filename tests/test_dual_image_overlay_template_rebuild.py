@@ -5,6 +5,7 @@ import subprocess
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from PIL import Image
 
@@ -16,12 +17,37 @@ REBUILD_ENGINE_DIR = ROOT / "scripts" / "dual_image_overlay" / "rebuild_engine"
 if str(REBUILD_ENGINE_DIR) not in __import__("sys").path:
     __import__("sys").path.insert(0, str(REBUILD_ENGINE_DIR))
 
-from scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild import _prepare_page_images  # noqa: E402
+from scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild import (  # noqa: E402
+    OverlayTextBox,
+    _editable_boxes_from_scene_graph_or_recognition,
+    _prepare_page_images,
+)
 
 
 class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
     def test_template_rebuild_is_exposed_as_cyberppt_script_alias(self) -> None:
         self.assertEqual("template_rebuild.py", script_path("template-rebuild").name)
+
+    def test_vendor_rebuild_subprocess_receives_repo_pythonpath(self) -> None:
+        from scripts.dual_image_overlay.template_rebuild import run_vendor_rebuild
+
+        with TemporaryDirectory() as directory:
+            manifest = Path(directory) / "page_image_pairs.json"
+            manifest.write_text('{"pairs": []}\n', encoding="utf-8")
+
+            with patch("scripts.dual_image_overlay.template_rebuild.subprocess.run") as run:
+                run_vendor_rebuild(
+                    manifest,
+                    ocr_backend="none",
+                    force_ocr=False,
+                    timeout=10,
+                    export=False,
+                )
+
+            kwargs = run.call_args.kwargs
+
+        self.assertEqual(ROOT, kwargs["cwd"])
+        self.assertIn(str(ROOT), kwargs["env"]["PYTHONPATH"].split(":"))
 
     def test_template_rebuild_consumes_template_project_and_source_capture(self) -> None:
         with TemporaryDirectory() as directory:
@@ -48,6 +74,7 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
             readiness = json.loads((project / "analysis/template_rebuild_readiness.json").read_text(encoding="utf-8"))
             source_capture = json.loads((project / "analysis/source_capture.json").read_text(encoding="utf-8"))
             template_gate = json.loads((project / "analysis/template_gate.json").read_text(encoding="utf-8"))
+            page_quality = json.loads((project / "analysis/page_quality_report.json").read_text(encoding="utf-8"))
 
         self.assertEqual("cyberppt.dual_image.template_rebuild_readiness.v1", readiness["schema"])
         self.assertTrue(readiness["checks"]["template_rebuild_consumed"])
@@ -56,10 +83,22 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertFalse(readiness["checks"]["source_capture_gate_pass"])
         self.assertFalse(readiness["checks"]["scene_graph_gate_pass"])
         self.assertEqual(0, readiness["checks"]["scene_graph_gate_pages"])
+        self.assertFalse(readiness["checks"]["page_quality_report_pass"])
         self.assertEqual("scene_graph_rework_required", readiness["status"])
         self.assertEqual("cyberppt.dual_image.source_capture.v1", source_capture["schema"])
         self.assertEqual([2], [page["page_number"] for page in source_capture["pages"]])
         self.assertTrue(template_gate["valid"])
+        self.assertEqual("cyberppt.dual_image.page_quality_report.v1", page_quality["schema"])
+        self.assertEqual("template", page_quality["stage"])
+        self.assertFalse(page_quality["valid"])
+        self.assertIn(
+            "template.scene_graph_gate_pass",
+            [item["id"] for item in page_quality["blocking_errors"]],
+        )
+        self.assertEqual(
+            str((project / "analysis/page_quality_report.json").resolve()),
+            readiness["artifacts"]["page_quality_report"],
+        )
 
     def test_template_rebuild_passes_visual_registry_dir_to_source_capture(self) -> None:
         with TemporaryDirectory() as directory:
@@ -124,6 +163,35 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertEqual("normalized_1280x720", image_size_check["status"])
         self.assertIn("/normalized/", str(prepared_full))
         self.assertIn("/normalized/", str(prepared_background))
+
+    def test_svg_background_href_points_to_normalized_image_dir(self) -> None:
+        from scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild import _background_href_for_svg
+
+        href = _background_href_for_svg(Path("/tmp/project/images/normalized/page_002_background_1280x720.png"))
+
+        self.assertEqual("../images/normalized/page_002_background_1280x720.png", href)
+
+    def test_empty_scene_graph_layout_keeps_dual_image_recognition_boxes(self) -> None:
+        recognized = [
+            OverlayTextBox(
+                text="企业入库",
+                x=100,
+                y=120,
+                w=160,
+                h=32,
+                font_size=18,
+                source="script_matched",
+            )
+        ]
+
+        boxes, source = _editable_boxes_from_scene_graph_or_recognition(
+            {"schema": "cyberppt.page_layout_plan.v1", "items": []},
+            {"x": 58, "y": 100, "width": 1164, "height": 554},
+            recognized,
+        )
+
+        self.assertEqual(recognized, boxes)
+        self.assertEqual("ocr_script_recognition", source)
 
     def test_template_body_region_uses_template_normalized_visual_reference(self) -> None:
         with TemporaryDirectory() as directory:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -13,6 +14,7 @@ if __package__ in {None, ""}:
 
 from .rebuild_modes import resolve_rebuild_mode as _resolve_rebuild_mode
 from .rebuild_modes import visual_reference_for_mode as _visual_reference_for_mode
+from .qa_registry import write_page_quality_report
 from .source_capture import attach_render_delta_measurement, build_source_capture, build_source_capture_gate
 
 
@@ -106,7 +108,10 @@ def run_vendor_rebuild(
         command.append("--force-ocr")
     if export:
         command.append("--export")
-    subprocess.run(command, cwd=ROOT, check=True)
+    env = os.environ.copy()
+    existing_pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = str(ROOT) if not existing_pythonpath else f"{ROOT}{os.pathsep}{existing_pythonpath}"
+    subprocess.run(command, cwd=ROOT, check=True, env=env)
 
 
 def build_template_rebuild_readiness(
@@ -149,14 +154,50 @@ def build_template_rebuild_readiness(
     _write_json(analysis_dir / "template_gate.json", template_gate)
     scene_graph_gates = _load_scene_graph_gates(project_path)
     scene_graph_valid = bool(scene_graph_gates) and all(gate.get("valid") for gate in scene_graph_gates)
+    page_number = None
+    pairs = manifest.get("pairs")
+    if isinstance(pairs, list) and pairs and isinstance(pairs[0], dict) and isinstance(pairs[0].get("page_number"), int):
+        page_number = int(pairs[0]["page_number"])
+    page_quality_report = write_page_quality_report(
+        analysis_dir / "page_quality_report.json",
+        stage="template",
+        page_number=page_number,
+        project_path=project_path,
+        artifacts={
+            "source_capture": str(analysis_dir / "source_capture.json"),
+            "source_capture_gate": str(analysis_dir / "source_capture_gate.json"),
+            "template_gate": str(analysis_dir / "template_gate.json"),
+            "scene_graph_gates": str(analysis_dir / "scene_graph_gate"),
+            "visual_reference": visual_reference,
+            "rendered_preview": str(rendered_preview) if rendered_preview else None,
+            "exported_pptx": exported_pptx,
+        },
+        reports={
+            "source_capture_gate": source_capture_gate,
+            "template_gate": template_gate,
+            "scene_graph_gates": scene_graph_gates,
+        },
+        extra={
+            "rebuild_mode": rebuild_mode,
+            "visual_reference_mode": visual_reference_mode,
+            "export_requested": export_requested,
+        },
+    )
 
-    valid = bool(template_gate["valid"] and source_capture_gate["valid"] and scene_graph_valid)
+    valid = bool(
+        template_gate["valid"]
+        and source_capture_gate["valid"]
+        and scene_graph_valid
+        and page_quality_report["valid"]
+    )
     if not template_gate["valid"]:
         status = "template_rebuild_required"
     elif not scene_graph_valid:
         status = "scene_graph_rework_required"
     elif not source_capture_gate["valid"]:
         status = "source_capture_rework_required"
+    elif not page_quality_report["valid"]:
+        status = "page_quality_rework_required"
     else:
         status = "ready_for_visual_qa"
 
@@ -178,6 +219,7 @@ def build_template_rebuild_readiness(
             "source_capture_gate_pass": bool(source_capture_gate["valid"]),
             "scene_graph_gate_pass": scene_graph_valid,
             "scene_graph_gate_pages": len(scene_graph_gates),
+            "page_quality_report_pass": bool(page_quality_report["valid"]),
         },
         "template_gate": template_gate,
         "source_capture_gate": source_capture_gate,
@@ -189,7 +231,9 @@ def build_template_rebuild_readiness(
             "scene_graph_gate_dir": str(analysis_dir / "scene_graph_gate"),
             "exported_pptx": exported_pptx,
             "visual_reference": visual_reference,
+            "page_quality_report": str(analysis_dir / "page_quality_report.json"),
         },
+        "page_quality_report": page_quality_report,
     }
     _write_json(analysis_dir / "template_rebuild_readiness.json", readiness)
     return readiness

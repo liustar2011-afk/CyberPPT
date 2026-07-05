@@ -16,6 +16,7 @@ from scripts.dual_image_overlay.deliverable_prompt import (
     template_title,
     visible_deliverable_lines,
 )
+from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -162,6 +163,7 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
             script = root / "script.md"
             out = root / "out.md"
             manifest = root / "manifest.json"
+            style_lock = write_project_style_lock(project=root / "project", style_id=4, source_script=script)
             script.write_text("## P2 核心结论\n组件A：最终内容\n", encoding="utf-8")
 
             result = subprocess.run(
@@ -172,6 +174,8 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
                     str(script),
                     "--pages",
                     "2",
+                    "--style-lock",
+                    str(style_lock),
                     "--out",
                     str(out),
                     "--manifest",
@@ -189,11 +193,20 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertTrue(payload["policy"]["forbid_external_style_preset"])
         self.assertTrue(payload["policy"]["forbid_evidence_ids"])
 
+    def test_compile_requires_style_lock(self) -> None:
+        with TemporaryDirectory() as directory:
+            script = Path(directory) / "script.md"
+            script.write_text("## P2 核心结论\n组件A：最终内容\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "missing visual style lock"):
+                compile_pages(script, [2])
+
     def test_compile_from_content_locks_uses_clean_truth(self) -> None:
         with TemporaryDirectory() as directory:
             root = Path(directory)
             locks = root / "locks"
             locks.mkdir()
+            style_lock = write_project_style_lock(project=root / "project", style_id=5)
             (locks / "slide-04-content-lock.json").write_text(
                 json.dumps(
                     {
@@ -220,7 +233,7 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
             )
 
             blocks = parse_content_locks(locks)
-            prompt = compile_page_blocks(blocks, [4])
+            prompt = compile_page_blocks(blocks, [4], style_lock_path=style_lock)
 
         self.assertIn("## 第4页：统一入口、统一证据、统一评价和统一结果应用体系", prompt)
         self.assertIn("中心定位框", prompt)

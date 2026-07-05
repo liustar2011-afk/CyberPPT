@@ -22,6 +22,7 @@ from .alignment import AlignmentTransform, estimate_alignment
 from .layout_qa import check_layout
 from .normalize import normalize_image
 from .office_textbox_fit import apply_office_textbox_fit
+from .qa_registry import write_page_quality_report
 from .semantic_plan import load_semantic_plan
 from .semantic_typography_qa import apply_semantic_typography_qa
 from .source_capture import (
@@ -394,6 +395,37 @@ def build_page(args: argparse.Namespace) -> dict:
         _write_json(analysis / "source_capture_gate.json", source_capture_gate)
     _write_json(analysis / "visual_preview.json", visual_preview)
 
+    qa_artifacts = {
+        "layout_qa": str(analysis / "layout_qa.json"),
+        "text_content_qa": str(analysis / "text_content_qa.json"),
+        "semantic_typography_qa": str(analysis / "semantic_typography_qa.json"),
+        "office_textbox_fit": str(analysis / "office_textbox_fit.json"),
+        "background_text_scan": str(analysis / "background_text_scan.json"),
+        "source_capture_gate": str(analysis / "source_capture_gate.json"),
+        "visual_preview": str(analysis / "visual_preview.json"),
+        "pptx": str(pptx_path),
+    }
+    page_quality_report = write_page_quality_report(
+        analysis / "page_quality_report.json",
+        stage="overlay",
+        page_number=args.page_number,
+        project_path=out_dir,
+        artifacts=qa_artifacts,
+        reports={
+            "layout_qa": layout_qa,
+            "text_content_qa": text_content_qa,
+            "semantic_typography_qa": semantic_typography_qa,
+            "office_textbox_fit": office_textbox_fit,
+            "background_text_scan": background_scan,
+            "source_capture_gate": source_capture_gate,
+            "visual_preview": visual_preview,
+        },
+        extra={
+            "geometry_source": geometry_source,
+            "alignment": transform.to_dict(),
+        },
+    )
+
     structural_valid = bool(layout_qa["valid"] and text_content_qa["valid"] and background_scan["valid"])
     human_visual_review_pass = False
     readiness = {
@@ -420,6 +452,7 @@ def build_page(args: argparse.Namespace) -> dict:
             "source_capture_gate_pass": bool(source_capture_gate["valid"]),
             "source_capture_text_drives_qa": True,
             "source_capture_gaps_resolved": bool(source_capture_gate["checks"]["capture_gaps_resolved"]),
+            "page_quality_report_pass": bool(page_quality_report["valid"]),
         },
         "source_capture_gate": source_capture_gate,
         "geometry_source": geometry_source,
@@ -441,8 +474,10 @@ def build_page(args: argparse.Namespace) -> dict:
             "visual_preview": str(analysis / "visual_preview.json"),
             "source_capture": str(analysis / "source_capture.json"),
             "source_capture_gate": str(analysis / "source_capture_gate.json"),
+            "page_quality_report": str(analysis / "page_quality_report.json"),
         },
         "semantic_typography_qa": semantic_typography_qa,
+        "page_quality_report": page_quality_report,
     }
     _write_json(analysis / "production_readiness.json", readiness)
     return readiness

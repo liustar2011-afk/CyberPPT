@@ -377,14 +377,39 @@ def _text_neighbor_relationships(semantic_layout_plan: dict[str, Any] | None) ->
     return [item for item in neighbors if isinstance(item, dict)]
 
 
+def _has_dual_image_editable_evidence(page: dict[str, Any]) -> bool:
+    source_images = page.get("source_images") if isinstance(page.get("source_images"), dict) else {}
+    has_dual_images = bool(source_images.get("full") and source_images.get("background"))
+    text_objects = [item for item in page.get("text_objects", []) if isinstance(item, dict)]
+    scene_graph_gate = page.get("scene_graph_gate") if isinstance(page.get("scene_graph_gate"), dict) else {}
+    visual_inventory = [item for item in page.get("visual_element_inventory", []) if isinstance(item, dict)]
+    registry_non_text = [
+        item
+        for item in visual_inventory
+        if item.get("element_type") != "text"
+        and isinstance(item.get("source"), dict)
+        and item["source"].get("kind") == "visual_element_registry"
+    ]
+    return bool(
+        has_dual_images
+        and text_objects
+        and scene_graph_gate.get("valid") is True
+        and registry_non_text
+    )
+
+
 def _capture_gaps(page: dict[str, Any]) -> list[dict[str, str]]:
     gaps: list[dict[str, str]] = []
     semantic_gate = page.get("semantic_plan_gate")
-    if isinstance(semantic_gate, dict) and semantic_gate.get("valid") is False:
+    if (
+        isinstance(semantic_gate, dict)
+        and semantic_gate.get("valid") is False
+        and not _has_dual_image_editable_evidence(page)
+    ):
         gaps.append(
             {
                 "code": "semantic_plan_gate_failed",
-                "message": "Explicit semantic container plan is invalid; OCR/text layout must not be treated as production geometry.",
+                "message": "Explicit semantic container plan is invalid and dual-image editable evidence is incomplete.",
             }
         )
     if not page["visual_element_inventory"]:

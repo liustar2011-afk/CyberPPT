@@ -129,6 +129,10 @@ def _prepare_page_images(
     }
 
 
+def _background_href_for_svg(prepared_background: Path) -> str:
+    return "../images/normalized/" + prepared_background.name
+
+
 def _write_rebuild_quality(project_path: Path, pages: list[dict[str, Any]]) -> None:
     quality_path = project_path / "analysis" / "rebuild_quality.json"
     quality_path.parent.mkdir(parents=True, exist_ok=True)
@@ -316,6 +320,17 @@ def _overlay_boxes_from_scene_graph_layout(
     return boxes
 
 
+def _editable_boxes_from_scene_graph_or_recognition(
+    page_layout_plan: dict[str, Any],
+    body_region: dict[str, float],
+    recognized_boxes: list[OverlayTextBox],
+) -> tuple[list[OverlayTextBox], str]:
+    items = page_layout_plan.get("items")
+    if isinstance(items, list) and items:
+        return _overlay_boxes_from_scene_graph_layout(page_layout_plan, body_region), "scene_graph_layout"
+    return recognized_boxes, "ocr_script_recognition"
+
+
 def rebuild_from_manifest(
     manifest_path: Path,
     *,
@@ -448,7 +463,11 @@ def rebuild_from_manifest(
             image_size_check=image_size_check,
         )
         page_layout_plan = json.loads(scene_graph_paths["layout"].read_text(encoding="utf-8"))
-        boxes = _overlay_boxes_from_scene_graph_layout(page_layout_plan, body)
+        boxes, editable_text_layout_source = _editable_boxes_from_scene_graph_or_recognition(
+            page_layout_plan,
+            body,
+            boxes,
+        )
         semantic_gate_path = semantic_gate_dir / f"page_{page_number:03d}_semantic_plan_gate.json"
         semantic_gate_path.write_text(
             json.dumps(semantic_gate, ensure_ascii=False, indent=2) + "\n",
@@ -487,9 +506,9 @@ def rebuild_from_manifest(
                     "scene_graph_gate": str(scene_graph_paths["gate"]),
                     "page_layout_plan": str(scene_graph_paths["layout"]),
                     "semantic_source": semantic_source,
-                    "editable_text_layout_source": "scene_graph_layout",
+                    "editable_text_layout_source": editable_text_layout_source,
                     "visual_registry_source": visual_registry_source,
-                    "geometry_truth": "scene_graph_layout",
+                    "geometry_truth": editable_text_layout_source,
                     "boxes": boxes_to_json(boxes),
                 },
                 ensure_ascii=False,
@@ -512,7 +531,7 @@ def rebuild_from_manifest(
             notes_text = ""
             title_for_name = slide_title
 
-        background_href = "../images/" + prepared_background.name
+        background_href = _background_href_for_svg(prepared_background)
         text_opacity = 0.0 if editable_text_visibility == "hidden" else 1.0
         svg = render_overlay_svg(
             background_href=background_href,
@@ -539,7 +558,7 @@ def rebuild_from_manifest(
                 "scene_graph_gate": str(scene_graph_paths["gate"]),
                 "page_layout_plan": str(scene_graph_paths["layout"]),
                 "semantic_source": semantic_source,
-                "editable_text_layout_source": "scene_graph_layout",
+                "editable_text_layout_source": editable_text_layout_source,
                 "visual_registry_source": visual_registry_source,
                 "semantic_containers": str(containers_path),
                 "image_size_check": image_size_check,
