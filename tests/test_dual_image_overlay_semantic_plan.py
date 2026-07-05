@@ -25,6 +25,7 @@ from script_text_overlay import (  # noqa: E402
     enrich_semantic_plan_with_visual_registry,
     _load_vendored_ppt_master_core,
     normalize_semantic_plan_to_context,
+    normalize_semantic_plan_to_canvas,
     reconcile_semantic_plan_with_script_truth,
     resolve_overlay_coordinate_context,
     validate_explicit_semantic_plan,
@@ -291,6 +292,44 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
         self.assertEqual({"width": 1280.0, "height": 720.0}, normalized["image_size"])
         self.assertEqual([492.25, 113.24, 629.28, 196.64], normalized["containers"][0]["bbox"])
         self.assertEqual([535.89, 137.73, 627.75, 160.68], normalized["items"][0]["bbox"])
+        self.assertEqual(
+            {
+                "input_space": {"width": 1672.0, "height": 941.0},
+                "coordinate_space": {"width": 1280.0, "height": 720.0},
+                "method": "scale_xyxy_to_normalized_canvas",
+            },
+            normalized["coordinate_normalization"],
+        )
+
+    def test_explicit_semantic_plan_normalization_uses_source_image_size_over_stale_plan_size(self) -> None:
+        plan = {
+            "image_size": {"width": 1920, "height": 941},
+            "inputs": {"script_truth": "script.md", "visual_element_registry": "registry.json"},
+            "containers": [
+                {
+                    "id": "ability_2",
+                    "role": "ability_card",
+                    "bbox": [643, 148, 822, 257],
+                    "text_safe_bbox": [647, 152, 818, 253],
+                }
+            ],
+            "items": [
+                {
+                    "display_text": "身份认证",
+                    "role": "ability_title",
+                    "container_id": "ability_2",
+                    "bbox": [700, 180, 820, 210],
+                }
+            ],
+        }
+
+        normalized = normalize_semantic_plan_to_canvas(
+            plan,
+            input_space={"width": 1672, "height": 941},
+        )
+
+        self.assertEqual({"width": 1280.0, "height": 720.0}, normalized["image_size"])
+        self.assertEqual([492.25, 113.24, 629.28, 196.64], normalized["containers"][0]["bbox"])
         self.assertEqual(
             {
                 "input_space": {"width": 1672.0, "height": 941.0},
