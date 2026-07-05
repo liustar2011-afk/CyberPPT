@@ -35,7 +35,7 @@ CANVAS_SIZE = (1280, 720)
 CONTENT_REGION_TOP_INSET = -18
 CONTENT_REGION_BOTTOM_INSET = -20
 CONTENT_REGION_SIDE_OUTSET = 38
-IMAGE_GENERATION_SCALE = 1
+IMAGE_GENERATION_SCALE = 2
 
 
 def sanitize_name(value: str) -> str:
@@ -368,7 +368,14 @@ def round_up_16(value: int) -> int:
 
 
 def generation_size_for_region(region: dict[str, int]) -> dict[str, int]:
-    return {"width": CANVAS_SIZE[0], "height": CANVAS_SIZE[1]}
+    width = round_up_16(region["width"] * IMAGE_GENERATION_SCALE)
+    height = round_up_16(region["height"] * IMAGE_GENERATION_SCALE)
+    while width * height < 655_360:
+        if width / max(1, height) < region["width"] / max(1, region["height"]):
+            width += 16
+        else:
+            height += 16
+    return {"width": width, "height": height}
 
 
 def parse_generation_size(size: str) -> tuple[int, int]:
@@ -455,7 +462,6 @@ def build_manifest(
             "source_path": image_style.get("source_path", ""),
         },
         "image_generation_scale": IMAGE_GENERATION_SCALE,
-        "generation_size_rule": "fixed-1280x720",
         "generation_size": generation_size,
         "tasks": tasks,
     }
