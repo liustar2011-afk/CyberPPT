@@ -621,6 +621,19 @@ def _declared_plan_size(plan: dict[str, Any]) -> dict[str, float] | None:
     return _size_dict(width, height)
 
 
+def _normalization_coordinate_space(plan: dict[str, Any]) -> dict[str, float] | None:
+    normalization = plan.get("coordinate_normalization") if isinstance(plan.get("coordinate_normalization"), dict) else {}
+    coordinate_space = normalization.get("coordinate_space") if isinstance(normalization.get("coordinate_space"), dict) else {}
+    try:
+        width = float(coordinate_space.get("width") or 0)
+        height = float(coordinate_space.get("height") or 0)
+    except (TypeError, ValueError):
+        return None
+    if width <= 0 or height <= 0:
+        return None
+    return _size_dict(width, height)
+
+
 def _registry_canvas_size(visual_registry: dict[str, Any] | None) -> dict[str, float] | None:
     if not visual_registry:
         return None
@@ -688,6 +701,7 @@ def _registry_extent_size(visual_registry: dict[str, Any] | None) -> dict[str, f
 
 def _choose_semantic_input_space(
     *,
+    plan: dict[str, Any],
     plan_size: dict[str, float] | None,
     actual_size: dict[str, float] | None,
     registry_size: dict[str, float] | None,
@@ -696,6 +710,9 @@ def _choose_semantic_input_space(
     warnings: list[dict[str, Any]],
 ) -> dict[str, float]:
     fallback = actual_size or registry_size or plan_size or _size_dict(1280, 720)
+    normalized_space = _normalization_coordinate_space(plan)
+    if plan_size and normalized_space and _sizes_close(plan_size, normalized_space):
+        return plan_size
     if plan_size and registry_size and registry_extent and (
         float(registry_extent["width"]) > float(registry_size["width"]) + 2.0
         or float(registry_extent["height"]) > float(registry_size["height"]) + 2.0
@@ -812,6 +829,7 @@ def resolve_overlay_coordinate_context(
     warnings: list[dict[str, Any]] = []
 
     semantic_input_space = _choose_semantic_input_space(
+        plan=plan,
         plan_size=plan_size,
         actual_size=actual_size,
         registry_size=registry_size,
@@ -875,7 +893,7 @@ def _normalize_bbox_to_context(
     return _scale_xyxy_between(bbox, input_space, target)
 
 
-def _normalize_semantic_plan_to_context(plan: dict[str, Any], coordinate_context: dict[str, Any]) -> dict[str, Any]:
+def normalize_semantic_plan_to_context(plan: dict[str, Any], coordinate_context: dict[str, Any]) -> dict[str, Any]:
     normalized = json.loads(json.dumps(plan, ensure_ascii=False))
     input_space = coordinate_context.get("semantic_input_space")
     if not isinstance(input_space, dict):
@@ -904,6 +922,10 @@ def _normalize_semantic_plan_to_context(plan: dict[str, Any], coordinate_context
         "method": "scale_xyxy_to_normalized_canvas",
     }
     return normalized
+
+
+def _normalize_semantic_plan_to_context(plan: dict[str, Any], coordinate_context: dict[str, Any]) -> dict[str, Any]:
+    return normalize_semantic_plan_to_context(plan, coordinate_context)
 
 
 def _semantic_issue(

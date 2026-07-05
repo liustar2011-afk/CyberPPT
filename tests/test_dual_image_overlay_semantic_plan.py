@@ -24,6 +24,7 @@ from script_text_overlay import (  # noqa: E402
     build_semantic_layout_qa_report,
     enrich_semantic_plan_with_visual_registry,
     _load_vendored_ppt_master_core,
+    normalize_semantic_plan_to_context,
     reconcile_semantic_plan_with_script_truth,
     resolve_overlay_coordinate_context,
     validate_explicit_semantic_plan,
@@ -244,6 +245,109 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
         self.assertTrue(gate["valid"])
         self.assertGreater(by_text["身份认证"].x, 560)
         self.assertLess(by_text["身份认证"].x, 590)
+
+    def test_explicit_semantic_plan_is_normalized_to_1280_canvas_before_persistence(self) -> None:
+        plan = {
+            "image_size": {"width": 1920, "height": 941},
+            "inputs": {"script_truth": "script.md", "visual_element_registry": "registry.json"},
+            "containers": [
+                {
+                    "id": "ability_2",
+                    "role": "ability_card",
+                    "bbox": [643, 148, 822, 257],
+                    "text_safe_bbox": [647, 152, 818, 253],
+                }
+            ],
+            "items": [
+                {
+                    "display_text": "身份认证",
+                    "role": "ability_title",
+                    "container_id": "ability_2",
+                    "bbox": [700, 180, 820, 210],
+                }
+            ],
+        }
+        registry = {
+            "blueprint_canvas_px": {"w": 1672, "h": 941},
+            "elements": [
+                {
+                    "element_id": "p6_core_icon_2_identity",
+                    "element_type": "icon",
+                    "blueprint_bbox_px": {"x": 660, "y": 165, "w": 70, "h": 70},
+                }
+            ],
+        }
+        with TemporaryDirectory() as tmpdir:
+            background = Path(tmpdir) / "background.png"
+            Image.new("RGB", (1672, 941), "white").save(background)
+
+            context = resolve_overlay_coordinate_context(
+                plan,
+                visual_registry=registry,
+                background_image=background,
+            )
+            normalized = normalize_semantic_plan_to_context(plan, context)
+
+        self.assertEqual({"width": 1280.0, "height": 720.0}, normalized["image_size"])
+        self.assertEqual([492.25, 113.24, 629.28, 196.64], normalized["containers"][0]["bbox"])
+        self.assertEqual([535.89, 137.73, 627.75, 160.68], normalized["items"][0]["bbox"])
+        self.assertEqual(
+            {
+                "input_space": {"width": 1672.0, "height": 941.0},
+                "coordinate_space": {"width": 1280.0, "height": 720.0},
+                "method": "scale_xyxy_to_normalized_canvas",
+            },
+            normalized["coordinate_normalization"],
+        )
+
+    def test_normalized_semantic_plan_keeps_1280_input_space_on_reentry(self) -> None:
+        plan = {
+            "image_size": {"width": 1280, "height": 720},
+            "inputs": {"script_truth": "script.md", "visual_element_registry": "registry.json"},
+            "containers": [
+                {
+                    "id": "ability_2",
+                    "role": "ability_card",
+                    "bbox": [492.25, 113.24, 629.28, 196.64],
+                    "text_safe_bbox": [495.31, 116.3, 626.22, 193.58],
+                }
+            ],
+            "items": [
+                {
+                    "display_text": "身份认证",
+                    "role": "ability_title",
+                    "container_id": "ability_2",
+                    "bbox": [535.89, 137.73, 627.75, 160.68],
+                }
+            ],
+            "coordinate_normalization": {
+                "input_space": {"width": 1672.0, "height": 941.0},
+                "coordinate_space": {"width": 1280.0, "height": 720.0},
+                "method": "scale_xyxy_to_normalized_canvas",
+            },
+        }
+        registry = {
+            "blueprint_canvas_px": {"w": 1672, "h": 941},
+            "elements": [
+                {
+                    "element_id": "p6_core_icon_2_identity",
+                    "element_type": "icon",
+                    "blueprint_bbox_px": {"x": 660, "y": 165, "w": 70, "h": 70},
+                }
+            ],
+        }
+        with TemporaryDirectory() as tmpdir:
+            background = Path(tmpdir) / "background.png"
+            Image.new("RGB", (1672, 941), "white").save(background)
+
+            context = resolve_overlay_coordinate_context(
+                plan,
+                visual_registry=registry,
+                background_image=background,
+            )
+
+        self.assertEqual({"width": 1280.0, "height": 720.0}, context["semantic_input_space"])
+        self.assertEqual({"width": 1672.0, "height": 941.0}, context["visual_registry_input_space"])
 
     def test_visual_registry_creates_icon_aware_text_safe_area(self) -> None:
         plan = {
