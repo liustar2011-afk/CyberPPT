@@ -164,6 +164,7 @@ def build_template_rebuild_readiness(
         page_number=page_number,
         project_path=project_path,
         artifacts={
+            "pair_manifest": str(manifest_path),
             "source_capture": str(analysis_dir / "source_capture.json"),
             "source_capture_gate": str(analysis_dir / "source_capture_gate.json"),
             "template_gate": str(analysis_dir / "template_gate.json"),
@@ -173,6 +174,8 @@ def build_template_rebuild_readiness(
             "exported_pptx": exported_pptx,
         },
         reports={
+            "pair_manifest": manifest,
+            "source_capture": source_capture,
             "source_capture_gate": source_capture_gate,
             "template_gate": template_gate,
             "scene_graph_gates": scene_graph_gates,

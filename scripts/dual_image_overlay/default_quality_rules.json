@@ -65,6 +65,24 @@
       "evidence_required": true
     },
     {
+      "id": "template.dual_image_required",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template rebuild must be driven by a CyberPPT dual-image pair manifest with full and background images for every page.",
+      "kind": "dual_image_pair_required",
+      "report": "pair_manifest",
+      "evidence_required": true
+    },
+    {
+      "id": "template.source_capture_required",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template rebuild must produce source_capture pages from the dual-image inputs.",
+      "kind": "source_capture_required",
+      "report": "source_capture",
+      "evidence_required": true
+    },
+    {
       "id": "template.template_gate_pass",
       "stage": "template",
       "severity": "error",
@@ -93,6 +111,35 @@
       "evidence_required": true
     },
     {
+      "id": "template.body_region_declared",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template/body content region coordinates must be declared before template assembly QA.",
+      "kind": "template_region_declared",
+      "report": "pair_manifest",
+      "evidence_required": true
+    },
+    {
+      "id": "template.min_font_after_template",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template-stage editable text must not fall below the configured minimum font size.",
+      "kind": "min_font_size",
+      "report": "source_capture",
+      "minimum_pt": 9,
+      "evidence_required": true
+    },
+    {
+      "id": "template.semantic_weight_consistency",
+      "stage": "template",
+      "severity": "error",
+      "description": "Peer text with the same semantic role must use consistent font weight.",
+      "kind": "semantic_peer_style",
+      "report": "source_capture",
+      "style_field": "font_weight",
+      "evidence_required": true
+    },
+    {
       "id": "template.visual_reference_available",
       "stage": "template",
       "severity": "error",
@@ -102,11 +149,11 @@
       "evidence_required": true
     },
     {
-      "id": "template.rendered_preview_available",
+      "id": "template.office_render_required",
       "stage": "template",
-      "severity": "warning",
-      "description": "Template-stage render preview should be attached when available.",
-      "kind": "artifact_exists",
+      "severity": "error",
+      "description": "Final template-stage QA must include an Office/WPS render evidence artifact.",
+      "kind": "office_render_required",
       "artifact": "rendered_preview",
       "evidence_required": true
     }
