@@ -8,6 +8,7 @@ from typing import Any
 SCHEMA = "cyberppt.dual_image.workspace_assignment.v1"
 SET_SCHEMA = "cyberppt.dual_image.workspace_assignment_set.v1"
 SKIP_ROLES = {"index", "icon_label", "bullet_marker"}
+GEOMETRY_EPSILON = 1e-3
 
 
 def _role(item: dict[str, Any]) -> str:
@@ -48,7 +49,12 @@ def _xyxy(rect: dict[str, Any]) -> tuple[float, float, float, float]:
 def _inside(inner: dict[str, Any], outer: dict[str, Any]) -> bool:
     ix1, iy1, ix2, iy2 = _xyxy(inner)
     ox1, oy1, ox2, oy2 = _xyxy(outer)
-    return ix1 >= ox1 and iy1 >= oy1 and ix2 <= ox2 and iy2 <= oy2
+    return (
+        ix1 >= ox1 - GEOMETRY_EPSILON
+        and iy1 >= oy1 - GEOMETRY_EPSILON
+        and ix2 <= ox2 + GEOMETRY_EPSILON
+        and iy2 <= oy2 + GEOMETRY_EPSILON
+    )
 
 
 def _intersection_area(a: dict[str, Any], b: dict[str, Any]) -> float:
@@ -83,6 +89,31 @@ def _slots_by_container(workspace: dict[str, Any]) -> dict[str, list[dict[str, A
     return result
 
 
+def _page_understanding_bindings(page_understanding: dict[str, Any] | None) -> dict[str, str]:
+    if not isinstance(page_understanding, dict):
+        return {}
+    bindings = page_understanding.get("container_text_bindings")
+    if not isinstance(bindings, list):
+        return {}
+    result: dict[str, str] = {}
+    for binding in bindings:
+        if not isinstance(binding, dict):
+            continue
+        text_id = str(binding.get("text_block_id") or "").strip()
+        container_id = str(binding.get("container_id") or "").strip()
+        if text_id and container_id:
+            result[text_id] = container_id
+    return result
+
+
+def _text_id(item: dict[str, Any]) -> str:
+    for key in ("id", "text_block_id", "text_id"):
+        value = item.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return ""
+
+
 def _choose_slot(text_rect: dict[str, float], role: str, slots: list[dict[str, Any]]) -> dict[str, Any] | None:
     if not slots:
         return None
@@ -101,15 +132,30 @@ def build_workspace_assignment(
     workspace: dict[str, Any],
     text_items: list[dict[str, Any]],
     stage: str,
+    page_understanding: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     slots_by_container = _slots_by_container(workspace)
+    page_understanding_binding_by_text = _page_understanding_bindings(page_understanding)
     assignments: list[dict[str, Any]] = []
     issues: list[dict[str, Any]] = []
     for index, item in enumerate(text_items):
         role = _role(item)
         if role in SKIP_ROLES:
             continue
-        container_id = str(item.get("container_id") or "")
+        item_text_id = _text_id(item)
+        bound_container_id = page_understanding_binding_by_text.get(item_text_id)
+        page_understanding_container_id = bound_container_id if slots_by_container.get(bound_container_id or "") else None
+        if bound_container_id and page_understanding_container_id is None:
+            issues.append(
+                {
+                    "severity": "warning",
+                    "code": "page_understanding_binding_missing_slot",
+                    "text_index": index,
+                    "text_id": item_text_id,
+                    "container_id": bound_container_id,
+                }
+            )
+        container_id = page_understanding_container_id or str(item.get("container_id") or "")
         text_rect = _rect(item)
         slot = _choose_slot(text_rect, role, slots_by_container.get(container_id, []))
         if slot is None:
@@ -151,6 +197,9 @@ def build_workspace_assignment(
                 "inside_slot": inside,
             }
         )
+        if page_understanding_container_id:
+            assignments[-1]["text_id"] = item_text_id
+            assignments[-1]["source"] = "page_understanding"
     error_count = len([issue for issue in issues if issue["severity"] == "error"])
     return {
         "schema": SCHEMA,

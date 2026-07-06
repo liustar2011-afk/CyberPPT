@@ -275,3 +275,193 @@ def test_office_textbox_fit_consumes_workspace_assignment_slot() -> None:
     assert fitted[0]["workspace_assignment"]["assigned_slot"] == "ability_9_title_slot"
     assert report["checks"]["workspace_assignment_consumed"] is True
     assert report["workspace_assignment_consumed_count"] == 1
+
+
+def test_office_textbox_fit_applies_page_understanding_block_scale() -> None:
+    fitted, report = apply_office_textbox_fit(
+        [
+            {
+                "id": "stage_6_flow",
+                "text": "融资申请→风控审核\n→放款→还款\n全流程线上化",
+                "bbox": [630.0, 464.0, 709.0, 506.0],
+                "font_size": 8.5,
+            }
+        ],
+        workspace_assignment={
+            "assignments": [
+                {
+                    "text_index": 0,
+                    "text_id": "stage_6_flow",
+                    "assigned_slot": "stage_6_slot",
+                    "slot_bbox": {"x": 630.0, "y": 464.0, "w": 79.0, "h": 42.0},
+                }
+            ],
+        },
+        page_understanding={
+            "text_blocks": [
+                {
+                    "id": "stage_6_flow",
+                    "final_text": "融资申请→风控审核\n→放款→还款\n全流程线上化",
+                    "style": {"font_size": 8.5, "line_height": 1.36},
+                    "block_fit": {
+                        "mode": "uniform_block_scale",
+                        "scale": 0.82,
+                        "fitted_style": {"font_size": 6.97, "line_height": 1.36},
+                    },
+                }
+            ]
+        },
+    )
+
+    assert fitted[0]["font_size"] == 6.97
+    assert fitted[0]["text"] == "融资申请→风控审核\n→放款→还款\n全流程线上化"
+    assert fitted[0]["wrap"] is False
+    assert fitted[0]["page_understanding_fit"]["scale"] == 0.82
+    assert report["checks"]["page_understanding_fit_consumed"] is True
+
+
+def test_office_textbox_fit_clamps_malformed_page_understanding_fit_below_absolute_minimum() -> None:
+    fitted, report = apply_office_textbox_fit(
+        [
+            {
+                "id": "stage_6_flow",
+                "text": "融资申请→风控审核",
+                "bbox": [630.0, 464.0, 709.0, 486.0],
+                "font_size": 8.5,
+            }
+        ],
+        page_understanding={
+            "text_blocks": [
+                {
+                    "id": "stage_6_flow",
+                    "final_text": "融资申请→风控审核",
+                    "block_fit": {
+                        "mode": "uniform_block_scale",
+                        "scale": 0.2,
+                        "fitted_style": {"font_size": 2.0, "line_height": 1.36},
+                    },
+                }
+            ]
+        },
+    )
+
+    assert fitted[0]["font_size"] == 6.5
+    assert report["checks"]["page_understanding_fit_consumed"] is True
+    assert report["page_understanding_fit_warnings"][0]["code"] == "page_understanding_fit_below_absolute_minimum"
+    assert report["below_minimum_count"] == 0
+    assert report["valid"] is True
+
+
+def test_office_textbox_fit_page_understanding_terminal_fit_skips_isolated_label_post_pass(tmp_path) -> None:
+    background = Image.new("RGB", (1280, 720), "white")
+    draw = ImageDraw.Draw(background)
+    draw.line([(350, 448), (930, 448)], fill=(10, 59, 117), width=2)
+    draw.line([(350, 465), (930, 465)], fill=(10, 59, 117), width=2)
+    background_path = tmp_path / "background.png"
+    background.save(background_path)
+
+    fitted, report = apply_office_textbox_fit(
+        [
+            {
+                "id": "relationship_label",
+                "text": "关系标签",
+                "bbox": [571.0, 454.1, 636.1, 470.9],
+                "font_size": 12.0,
+                "semantic_role": "parallel_title",
+                "align": "left",
+                "wrap": False,
+            }
+        ],
+        canvas={"width": 1280, "height": 720},
+        background_image=background_path,
+        page_understanding={
+            "text_blocks": [
+                {
+                    "id": "relationship_label",
+                    "final_text": "关系标签",
+                    "block_fit": {
+                        "mode": "uniform_block_scale",
+                        "scale": 1.0,
+                        "fitted_style": {"font_size": 12.0, "line_height": 1.36},
+                    },
+                }
+            ]
+        },
+    )
+
+    assert fitted[0]["font_size"] == 12.0
+    assert fitted[0]["font_size"] >= 6.5
+    assert fitted[0]["bbox"] == [571.0, 454.1, 636.1, 470.9]
+    assert fitted[0]["wrap"] is False
+    assert report["checks"]["page_understanding_fit_consumed"] is True
+    assert report["isolated_label_adjusted_count"] == 0
+
+
+def test_office_textbox_fit_wraps_text_inside_workspace_slot_before_shrinking() -> None:
+    boxes = [
+        {
+            "text": "履约节点自动触发合同条款代码化执行",
+            "role": "body",
+            "bbox": [200.0, 200.0, 270.0, 214.0],
+            "font_size": 9.0,
+            "align": "left",
+        }
+    ]
+    assignment = {
+        "assignments": [
+            {
+                "text_index": 0,
+                "assigned_slot": "process_node_body_slot",
+                "slot_bbox": {"x": 200.0, "y": 200.0, "w": 74.0, "h": 46.0},
+            }
+        ]
+    }
+
+    fitted, report = apply_office_textbox_fit(
+        boxes,
+        canvas={"width": 1280, "height": 720},
+        workspace_assignment=assignment,
+    )
+
+    box = fitted[0]
+    assert "\n" in box["text"]
+    assert box["wrap"] is True
+    assert box["bbox"][0] >= 200.0
+    assert box["bbox"][2] <= 274.0
+    assert box["font_size"] >= 6.5
+    assert report["adjustments"][0]["code"] == "textbox_wrapped_and_fitted"
+    assert report["below_minimum_count"] == 0
+
+
+def test_office_textbox_fit_allows_font_below_nine_when_container_requires_it() -> None:
+    boxes = [
+        {
+            "text": "产生自动结算记录调解司法对接服务作为运营流程产出而非独立产品",
+            "role": "body",
+            "bbox": [810.0, 500.0, 900.0, 514.0],
+            "font_size": 9.0,
+            "align": "left",
+        }
+    ]
+    assignment = {
+        "assignments": [
+            {
+                "text_index": 0,
+                "assigned_slot": "compact_body_slot",
+                "slot_bbox": {"x": 810.0, "y": 500.0, "w": 90.0, "h": 46.0},
+            }
+        ]
+    }
+
+    fitted, report = apply_office_textbox_fit(
+        boxes,
+        canvas={"width": 1280, "height": 720},
+        workspace_assignment=assignment,
+    )
+
+    assert fitted[0]["font_size"] < 9.0
+    assert fitted[0]["font_size"] >= 6.5
+    assert fitted[0]["bbox"][3] <= 546.0
+    assert report["valid"] is True
+    assert report["below_preferred_minimum_count"] >= 1
+    assert report["below_minimum_count"] == 0

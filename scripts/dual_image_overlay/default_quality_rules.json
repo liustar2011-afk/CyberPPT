@@ -128,6 +128,15 @@
       "evidence_required": true
     },
     {
+      "id": "template.page_understanding_consumed",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template rebuild must consume page_understanding artifacts for dual-image editable overlay pages.",
+      "kind": "page_understanding_consumed",
+      "report": "source_capture_gate",
+      "evidence_required": true
+    },
+    {
       "id": "template.scene_graph_gate_pass",
       "stage": "template",
       "severity": "error",

@@ -143,6 +143,60 @@ def _assignment_by_index(workspace_assignment: dict[str, Any] | None) -> dict[in
     return result
 
 
+def _page_understanding_fit_by_text_id(page_understanding: dict[str, Any] | None) -> dict[str, dict[str, Any]]:
+    if not isinstance(page_understanding, dict):
+        return {}
+    result: dict[str, dict[str, Any]] = {}
+
+    root_fit = page_understanding.get("block_fit")
+    if isinstance(root_fit, dict):
+        for text_id, fit in root_fit.items():
+            if isinstance(text_id, str) and isinstance(fit, dict):
+                result[text_id] = fit
+
+    text_blocks = page_understanding.get("text_blocks")
+    if isinstance(text_blocks, list):
+        for block in text_blocks:
+            if not isinstance(block, dict):
+                continue
+            text_id = str(block.get("id") or block.get("text_block_id") or "").strip()
+            if not text_id:
+                continue
+            fit = block.get("block_fit")
+            if not isinstance(fit, dict):
+                fit = block.get("fit")
+            if isinstance(fit, dict) and isinstance(fit.get("block_fit"), dict):
+                fit = fit["block_fit"]
+            if isinstance(fit, dict):
+                result[text_id] = fit
+    return result
+
+
+def _page_understanding_text_id(
+    *,
+    box: dict[str, Any],
+    assignment: dict[str, Any] | None,
+) -> str:
+    for source in (box, assignment or {}):
+        for key in ("id", "text_block_id", "text_id"):
+            value = source.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+    return ""
+
+
+def _page_understanding_fitted_font_size(fit: dict[str, Any] | None) -> float | None:
+    if not isinstance(fit, dict):
+        return None
+    fitted_style = fit.get("fitted_style")
+    raw = fitted_style.get("font_size") if isinstance(fitted_style, dict) else fit.get("font_size")
+    try:
+        font_size = float(raw)
+    except (TypeError, ValueError):
+        return None
+    return font_size if font_size > 0 else None
+
+
 def _slot_bounds(assignment: dict[str, Any] | None, *, width: float, height: float) -> tuple[float, float, float, float]:
     if not isinstance(assignment, dict):
         return 0.0, 0.0, width, height
@@ -190,14 +244,21 @@ def _candidate_title_for_detail(title_box: list[float], detail_box: list[float])
     return vertical_gap, horizontal_gap
 
 
+def _has_terminal_page_understanding_fit(box: dict[str, Any]) -> bool:
+    fit = box.get("page_understanding_fit")
+    return isinstance(fit, dict) and fit.get("code") == "page_understanding_uniform_block_fit"
+
+
 def _assign_details_to_nearest_titles(boxes: list[dict[str, Any]]) -> dict[int, list[int]]:
     title_indices = [
         idx
         for idx, box in enumerate(boxes)
-        if _role(box) == "parallel_title"
+        if _role(box) == "parallel_title" and not _has_terminal_page_understanding_fit(box)
     ]
     groups: dict[int, list[int]] = {idx: [] for idx in title_indices}
     for detail_idx, detail in enumerate(boxes):
+        if _has_terminal_page_understanding_fit(detail):
+            continue
         if _role(detail) != "body":
             continue
         detail_box = _bbox(detail)
@@ -216,7 +277,11 @@ def _assign_details_to_nearest_titles(boxes: list[dict[str, Any]]) -> dict[int, 
 
 def _compact_generic_title_detail_groups(boxes: list[dict[str, Any]], groups: dict[int, list[int]]) -> list[dict[str, Any]]:
     adjustments: list[dict[str, Any]] = []
-    title_indices = [idx for idx, box in enumerate(boxes) if _role(box) == "parallel_title"]
+    title_indices = [
+        idx
+        for idx, box in enumerate(boxes)
+        if _role(box) == "parallel_title" and not _has_terminal_page_understanding_fit(box)
+    ]
     for title_idx in title_indices:
         detail_indices = groups.get(title_idx, [])
         if len(detail_indices) < 2:
@@ -245,6 +310,8 @@ def _compact_generic_title_detail_groups(boxes: list[dict[str, Any]], groups: di
         first_y = title_box[3] + max(2.0, title_h * 0.28)
         for detail_idx in detail_indices:
             detail = boxes[detail_idx]
+            if _has_terminal_page_understanding_fit(detail):
+                continue
             old_detail = _bbox(detail)
             _set_y(detail, first_y, first_y + detail_h)
             adjustments.append({"text": detail.get("text"), "from_bbox": old_detail, "to_bbox": _bbox(detail)})
@@ -337,6 +404,8 @@ def _fit_isolated_labels_to_clear_bands(
         return []
     adjustments: list[dict[str, Any]] = []
     for idx, box in enumerate(boxes):
+        if _has_terminal_page_understanding_fit(box):
+            continue
         old_box = _bbox(box)
         label_h = max(1.0, old_box[3] - old_box[1])
         if (
@@ -394,6 +463,7 @@ def apply_office_textbox_fit(
     allow_wrap: bool = True,
     background_image: Path | None = None,
     workspace_assignment: dict[str, Any] | None = None,
+    page_understanding: dict[str, Any] | None = None,
     report_path: Path | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Expand transparent text boxes and compact related text groups for Office."""
@@ -407,6 +477,9 @@ def apply_office_textbox_fit(
     below_preferred_minimum = 0
     unfit_count = 0
     assignment_map = _assignment_by_index(workspace_assignment)
+    page_understanding_fit_map = _page_understanding_fit_by_text_id(page_understanding)
+    page_understanding_adjustments: list[dict[str, Any]] = []
+    page_understanding_warnings: list[dict[str, Any]] = []
 
     for index, box in enumerate(fitted):
         text = str(box.get("text") or "")
@@ -424,6 +497,58 @@ def apply_office_textbox_fit(
         current_width = max(1.0, x2 - x1)
         current_height = max(1.0, y2 - y1)
         original_font_size = float(box.get("font_size") or 0.0)
+        page_understanding_text_id = _page_understanding_text_id(box=box, assignment=assignment_map.get(index))
+        page_understanding_fit = page_understanding_fit_map.get(page_understanding_text_id)
+        page_understanding_font_size = _page_understanding_fitted_font_size(page_understanding_fit)
+        if page_understanding_fit is not None and page_understanding_font_size is not None:
+            target_font = page_understanding_font_size
+            if target_font < absolute_min_font_size:
+                page_understanding_warnings.append(
+                    {
+                        "index": index,
+                        "text_block_id": page_understanding_text_id,
+                        "code": "page_understanding_fit_below_absolute_minimum",
+                        "from_font_size": round(target_font, 2),
+                        "to_font_size": round(absolute_min_font_size, 2),
+                    }
+                )
+                target_font = absolute_min_font_size
+            if target_font < min_font_size:
+                below_preferred_minimum += 1
+            box["text"] = text
+            box["font_size"] = round(target_font, 2)
+            box["bbox"] = [round(x1, 3), round(y1, 3), round(x2, 3), round(y2, 3)]
+            box["wrap"] = False
+            box["page_understanding_fit"] = {
+                "text_block_id": page_understanding_text_id,
+                "scale": page_understanding_fit.get("scale"),
+                "mode": page_understanding_fit.get("mode"),
+                "code": "page_understanding_uniform_block_fit",
+            }
+            page_understanding_adjustments.append(
+                {
+                    "index": index,
+                    "text_block_id": page_understanding_text_id,
+                    "to_font_size": round(target_font, 2),
+                    "scale": page_understanding_fit.get("scale"),
+                    "code": "page_understanding_uniform_block_fit",
+                }
+            )
+            if index in assignment_map:
+                box["workspace_assignment"] = {
+                    "assigned_slot": assignment_map[index].get("assigned_slot"),
+                    "slot_bbox": assignment_map[index].get("slot_bbox"),
+                }
+                assignment_adjustments.append(
+                    {
+                        "index": index,
+                        "text": text,
+                        "assigned_slot": assignment_map[index].get("assigned_slot"),
+                        "to_bbox": box["bbox"],
+                        "code": "constrained_to_workspace_slot",
+                    }
+                )
+            continue
         target_font = max(original_font_size, min_font_size)
         rendered_text = text
         wrapped_for_fit = False
@@ -548,18 +673,22 @@ def apply_office_textbox_fit(
         min_font_size=min_font_size,
         canvas_height=height,
     )
+    checks = {
+        "textbox_expanded_before_font_reduction": True,
+        "generic_title_detail_spacing_compacted": True,
+        "isolated_label_clear_band_fit": bool(background_image),
+        "workspace_assignment_consumed": bool(assignment_map),
+        "minimum_font_size_pt": min_font_size,
+        "absolute_minimum_font_size_pt": absolute_min_font_size,
+        "wrap_before_below_minimum": allow_wrap,
+    }
+    if page_understanding is not None:
+        checks["page_understanding_fit_consumed"] = bool(page_understanding_adjustments)
+
     report = {
         "schema": "cyberppt.dual_image.office_textbox_fit.v1",
         "valid": below_minimum == 0 and unfit_count == 0,
-        "checks": {
-            "textbox_expanded_before_font_reduction": True,
-            "generic_title_detail_spacing_compacted": True,
-            "isolated_label_clear_band_fit": bool(background_image),
-            "workspace_assignment_consumed": bool(assignment_map),
-            "minimum_font_size_pt": min_font_size,
-            "absolute_minimum_font_size_pt": absolute_min_font_size,
-            "wrap_before_below_minimum": allow_wrap,
-        },
+        "checks": checks,
         "adjustments": adjustments,
         "generic_title_detail_adjustments": generic_group_adjustments,
         "isolated_label_adjustments": isolated_label_adjustments,
@@ -574,6 +703,10 @@ def apply_office_textbox_fit(
         "unfit_count": unfit_count,
         "error_count": below_minimum + unfit_count,
     }
+    if page_understanding is not None:
+        report["page_understanding_fit_adjustments"] = page_understanding_adjustments
+        report["page_understanding_fit_consumed_count"] = len(page_understanding_adjustments)
+        report["page_understanding_fit_warnings"] = page_understanding_warnings
     if report_path is not None:
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

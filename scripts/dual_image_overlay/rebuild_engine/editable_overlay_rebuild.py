@@ -5,54 +5,104 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
+SCRIPTS_DIR = Path(__file__).resolve().parent
+REPO_ROOT = Path(__file__).resolve().parents[3]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+
 from PIL import Image
 
 from scripts.dual_image_overlay.rebuild_modes import resolve_rebuild_mode
+from scripts.dual_image_overlay.block_fit import fit_text_block_to_container
+from scripts.dual_image_overlay.page_understanding import (
+    build_implicit_text_containers,
+    build_page_understanding,
+    write_page_understanding,
+)
 from scripts.dual_image_overlay.scene_graph.builder import build_page_scene_graph
 from scripts.dual_image_overlay.scene_graph.gate import build_scene_graph_gate
 from scripts.dual_image_overlay.scene_graph.layout import build_layout_plan_from_scene_graph
 from scripts.dual_image_overlay.scene_graph.schema import scene_graph_to_dict
+from scripts.dual_image_overlay.text_block_group import build_text_block_group
+from scripts.dual_image_overlay.text_truth import verify_text_blocks_against_script
 
-from ocr_text_locator import load_layout, locate_text
-from script_text_overlay import (
-    OverlayTextBox,
-    SemanticContainer,
-    build_overlay_boxes_from_semantic_plan,
-    boxes_to_json,
-    build_overlay_boxes,
-    build_semantic_layout_plan,
-    containers_to_json,
-    extract_semantic_plan,
-    extract_script_truth_sections,
-    infer_semantic_containers,
-    normalize_semantic_plan_to_canvas,
-    reconcile_semantic_plan_with_script_truth,
-    render_overlay_svg,
-    resolve_overlay_coordinate_context,
-    semantic_plan_to_json,
-    validate_explicit_semantic_plan,
-)
-from template_image_ppt_export import (
-    CANVAS_SIZE,
-    copy_brand,
-    extract_content,
-    inset_content_region,
-    load_brand_rules,
-    page_notes_text,
-    page_stem,
-    parse_page_blocks,
-    scale_region,
-    write_spec_lock,
-)
-
-
-SCRIPTS_DIR = Path(__file__).resolve().parent
+if __package__:
+    from .ocr_text_locator import load_layout, locate_text
+    from .script_text_overlay import (
+        OverlayTextBox,
+        SemanticContainer,
+        build_overlay_boxes_from_semantic_plan,
+        boxes_to_json,
+        build_overlay_boxes,
+        build_semantic_layout_plan,
+        containers_to_json,
+        extract_script_truth_lines,
+        extract_semantic_plan,
+        extract_script_truth_sections,
+        _fit_all_boxes,
+        infer_semantic_containers,
+        normalize_semantic_plan_to_canvas,
+        reconcile_semantic_plan_with_script_truth,
+        render_overlay_svg,
+        resolve_overlay_coordinate_context,
+        semantic_plan_to_json,
+        validate_explicit_semantic_plan,
+    )
+    from .template_image_ppt_export import (
+        CANVAS_SIZE,
+        copy_brand,
+        extract_content,
+        inset_content_region,
+        load_brand_rules,
+        page_notes_text,
+        page_stem,
+        parse_page_blocks,
+        scale_region,
+        write_spec_lock,
+    )
+else:
+    from ocr_text_locator import load_layout, locate_text
+    from script_text_overlay import (
+        OverlayTextBox,
+        SemanticContainer,
+        build_overlay_boxes_from_semantic_plan,
+        boxes_to_json,
+        build_overlay_boxes,
+        build_semantic_layout_plan,
+        containers_to_json,
+        extract_script_truth_lines,
+        extract_semantic_plan,
+        extract_script_truth_sections,
+        _fit_all_boxes,
+        infer_semantic_containers,
+        normalize_semantic_plan_to_canvas,
+        reconcile_semantic_plan_with_script_truth,
+        render_overlay_svg,
+        resolve_overlay_coordinate_context,
+        semantic_plan_to_json,
+        validate_explicit_semantic_plan,
+    )
+    from template_image_ppt_export import (
+        CANVAS_SIZE,
+        copy_brand,
+        extract_content,
+        inset_content_region,
+        load_brand_rules,
+        page_notes_text,
+        page_stem,
+        parse_page_blocks,
+        scale_region,
+        write_spec_lock,
+    )
 
 
 def load_pair_manifest(path: Path) -> dict[str, Any]:
@@ -317,6 +367,7 @@ def _overlay_boxes_from_scene_graph_layout(
                 confidence=1.0,
             )
         )
+    _fit_all_boxes(boxes)
     return boxes
 
 
@@ -328,7 +379,254 @@ def _editable_boxes_from_scene_graph_or_recognition(
     items = page_layout_plan.get("items")
     if isinstance(items, list) and items:
         return _overlay_boxes_from_scene_graph_layout(page_layout_plan, body_region), "scene_graph_layout"
+    _fit_all_boxes(recognized_boxes)
     return recognized_boxes, "ocr_script_recognition"
+
+
+def _overlay_box_style(box: OverlayTextBox) -> dict[str, Any]:
+    return {
+        "font_size": box.font_size,
+        "font_family": box.font_family,
+        "font_weight": box.font_weight,
+        "fill": box.fill,
+        "align": box.align,
+    }
+
+
+def _bbox_overlap_area(a: list[float], b: list[float]) -> float:
+    x1 = max(a[0], b[0])
+    y1 = max(a[1], b[1])
+    x2 = min(a[2], b[2])
+    y2 = min(a[3], b[3])
+    return max(0.0, x2 - x1) * max(0.0, y2 - y1)
+
+
+def _nearest_overlay_box_style(bbox: list[float], boxes: list[OverlayTextBox]) -> dict[str, Any]:
+    if not boxes:
+        return {
+            "font_size": 12.0,
+            "font_family": "Microsoft YaHei",
+            "font_weight": "400",
+            "fill": "#0B1F3D",
+            "align": "left",
+        }
+
+    cx = (bbox[0] + bbox[2]) / 2.0
+    cy = (bbox[1] + bbox[3]) / 2.0
+    best_box = min(
+        boxes,
+        key=lambda box: (
+            -_bbox_overlap_area(bbox, [box.x, box.y, box.x + box.w, box.y + box.h]),
+            ((box.x + box.w / 2.0) - cx) ** 2 + ((box.y + box.h / 2.0) - cy) ** 2,
+        ),
+    )
+    return _overlay_box_style(best_box)
+
+
+def _scale_layout_bbox_to_canvas(bbox: Any, layout: dict[str, Any]) -> list[float] | None:
+    if not isinstance(bbox, list) or len(bbox) != 4:
+        return None
+    try:
+        x1, y1, x2, y2 = [float(value) for value in bbox]
+    except (TypeError, ValueError):
+        return None
+    if x2 <= x1 or y2 <= y1:
+        return None
+
+    image_size = layout.get("image_size") if isinstance(layout.get("image_size"), dict) else {}
+    try:
+        width = float(image_size.get("width") or CANVAS_SIZE[0])
+        height = float(image_size.get("height") or CANVAS_SIZE[1])
+    except (TypeError, ValueError):
+        width = float(CANVAS_SIZE[0])
+        height = float(CANVAS_SIZE[1])
+    if width <= 0 or height <= 0:
+        width = float(CANVAS_SIZE[0])
+        height = float(CANVAS_SIZE[1])
+
+    sx = float(CANVAS_SIZE[0]) / width
+    sy = float(CANVAS_SIZE[1]) / height
+    return [round(x1 * sx, 2), round(y1 * sy, 2), round(x2 * sx, 2), round(y2 * sy, 2)]
+
+
+def _page_understanding_text_blocks_from_layout(
+    layout: dict[str, Any],
+    boxes: list[OverlayTextBox],
+    body_region: dict[str, Any],
+) -> list[dict[str, Any]]:
+    del body_region
+    if boxes:
+        return _page_understanding_text_blocks_from_boxes_with_layout_evidence(boxes, layout)
+
+    blocks: list[dict[str, Any]] = []
+    items = layout.get("items") if isinstance(layout.get("items"), list) else []
+    for index, item in enumerate(items, start=1):
+        if not isinstance(item, dict):
+            continue
+        raw_text = str(item.get("text") or "").strip()
+        bbox = _scale_layout_bbox_to_canvas(item.get("bbox"), layout)
+        if not raw_text or bbox is None:
+            continue
+        block: dict[str, Any] = {
+            "id": f"ocr_item_{index:03d}",
+            "ocr_text": raw_text,
+            "text": raw_text,
+            "bbox": bbox,
+            "style": _nearest_overlay_box_style(bbox, boxes),
+            "source": str(item.get("source") or "ocr_layout"),
+        }
+        if item.get("confidence") is not None:
+            block["confidence"] = item.get("confidence")
+        blocks.append(block)
+    return blocks
+
+
+def _layout_text_evidence_for_box(box: OverlayTextBox, layout: dict[str, Any]) -> tuple[str, list[list[float]], Any | None]:
+    items = layout.get("items") if isinstance(layout.get("items"), list) else []
+    box_bbox = [box.x, box.y, box.x + box.w, box.y + box.h]
+    evidence: list[tuple[list[float], str, Any | None]] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        raw_text = str(item.get("text") or "").strip()
+        bbox = _scale_layout_bbox_to_canvas(item.get("bbox"), layout)
+        if not raw_text or bbox is None:
+            continue
+        if _bbox_overlap_area(bbox, box_bbox) <= 0:
+            continue
+        evidence.append((bbox, raw_text, item.get("confidence")))
+
+    if not evidence:
+        return box.text, [], None
+
+    evidence.sort(key=lambda entry: (entry[0][1], entry[0][0]))
+    text = "\n".join(entry[1] for entry in evidence)
+    line_boxes = [entry[0] for entry in evidence]
+    confidences = [entry[2] for entry in evidence if isinstance(entry[2], (int, float))]
+    confidence = round(sum(float(value) for value in confidences) / len(confidences), 3) if confidences else None
+    return text, line_boxes, confidence
+
+
+def _same_text_evidence_scope(left: str, right: str) -> bool:
+    left_key = re.sub(r"[\s,，。:：;；、（）()【】\[\]\"'“”‘’]+", "", str(left or "")).lower()
+    right_key = re.sub(r"[\s,，。:：;；、（）()【】\[\]\"'“”‘’]+", "", str(right or "")).lower()
+    if not left_key or not right_key:
+        return False
+    if left_key in right_key or right_key in left_key:
+        return min(len(left_key), len(right_key)) / max(len(left_key), len(right_key)) >= 0.75
+    matches = sum(1 for a, b in zip(left_key, right_key) if a == b)
+    return len(left_key) == len(right_key) and matches / max(1, len(left_key)) >= 0.75
+
+
+def _page_understanding_text_blocks_from_boxes_with_layout_evidence(
+    boxes: list[OverlayTextBox],
+    layout: dict[str, Any],
+) -> list[dict[str, Any]]:
+    blocks: list[dict[str, Any]] = []
+    for index, box in enumerate(boxes, start=1):
+        evidence_text, line_boxes, confidence = _layout_text_evidence_for_box(box, layout)
+        ocr_text = evidence_text if _same_text_evidence_scope(evidence_text, box.text) else box.text
+        block: dict[str, Any] = {
+            "id": f"overlay_box_{index:03d}",
+            "ocr_text": ocr_text,
+            "text": box.text,
+            "bbox": [box.x, box.y, box.x + box.w, box.y + box.h],
+            "line_boxes": line_boxes,
+            "style": _overlay_box_style(box),
+            "source": "overlay_export_context",
+        }
+        if confidence is not None:
+            block["confidence"] = confidence
+        blocks.append(block)
+    return blocks
+
+
+def _page_understanding_text_blocks_from_boxes(boxes: list[OverlayTextBox]) -> list[dict[str, Any]]:
+    blocks: list[dict[str, Any]] = []
+    for index, box in enumerate(boxes, start=1):
+        blocks.append(
+            {
+                "id": f"overlay_box_{index:03d}",
+                "ocr_text": box.text,
+                "text": box.text,
+                "bbox": [box.x, box.y, box.x + box.w, box.y + box.h],
+                "style": _overlay_box_style(box),
+                "source": "overlay_export_context",
+            }
+        )
+    return blocks
+
+
+def _write_page_understanding_artifact(
+    *,
+    project_path: Path,
+    page_number: int,
+    full_image: Path,
+    background_image: Path,
+    source_script: Path,
+    boxes: list[OverlayTextBox],
+    layout: dict[str, Any],
+    body_region: dict[str, Any],
+    containers: list[SemanticContainer],
+    visual_registry: dict[str, Any] | None,
+) -> Path:
+    text_blocks = _page_understanding_text_blocks_from_layout(layout, boxes, body_region)
+    if not text_blocks:
+        text_blocks = _page_understanding_text_blocks_from_boxes(boxes)
+    try:
+        script_truth_lines = extract_script_truth_lines(source_script, page_number)
+    except ValueError:
+        script_truth_lines = []
+    verified_blocks = verify_text_blocks_against_script(text_blocks, script_truth_lines)
+    explicit_containers = containers_to_json(containers)
+    visual_elements = visual_registry.get("elements", []) if isinstance(visual_registry, dict) else []
+    implicit_containers = build_implicit_text_containers(
+        verified_blocks,
+        explicit_containers,
+        visual_elements,
+        canvas={"width": float(CANVAS_SIZE[0]), "height": float(CANVAS_SIZE[1])},
+    )
+    payload = build_page_understanding(
+        page_number=page_number,
+        full_image=full_image,
+        background_image=background_image,
+        registration={"valid": True, "transform": "identity", "source": "normalized_1280x720"},
+        text_blocks=verified_blocks,
+        explicit_containers=explicit_containers,
+        implicit_containers=implicit_containers,
+        visual_elements=visual_elements,
+        canvas={"width": float(CANVAS_SIZE[0]), "height": float(CANVAS_SIZE[1])},
+    )
+    payload["inputs"] = {
+        "full_image": str(full_image.resolve()),
+        "background_image": str(background_image.resolve()),
+    }
+
+    containers_by_id = {
+        str(container.get("id")): container
+        for container in payload.get("containers", [])
+        if isinstance(container, dict) and container.get("id")
+    }
+    binding_by_text_id = {
+        str(binding.get("text_block_id")): binding
+        for binding in payload.get("container_text_bindings", [])
+        if isinstance(binding, dict) and binding.get("text_block_id")
+    }
+    for text_block in payload.get("text_blocks", []):
+        if not isinstance(text_block, dict):
+            continue
+        binding = binding_by_text_id.get(str(text_block.get("id") or ""))
+        container = containers_by_id.get(str(binding.get("container_id") or "")) if isinstance(binding, dict) else None
+        if not isinstance(container, dict):
+            continue
+        fit = fit_text_block_to_container(text_block, container)
+        text_block["fit"] = fit
+        text_block["text_block_group"] = build_text_block_group(text_block, fit=fit)
+
+    page_understanding_dir = project_path / "analysis" / "page_understanding"
+    page_understanding_path = page_understanding_dir / f"page_{page_number:03d}_page_understanding.json"
+    write_page_understanding(page_understanding_path, payload)
+    return page_understanding_path
 
 
 def rebuild_from_manifest(
@@ -468,6 +766,18 @@ def rebuild_from_manifest(
             body,
             boxes,
         )
+        page_understanding_path = _write_page_understanding_artifact(
+            project_path=project_path,
+            page_number=page_number,
+            full_image=full_image,
+            background_image=background_image,
+            source_script=source_script,
+            boxes=boxes,
+            layout=layout,
+            body_region=body,
+            containers=containers,
+            visual_registry=visual_registry,
+        )
         semantic_gate_path = semantic_gate_dir / f"page_{page_number:03d}_semantic_plan_gate.json"
         semantic_gate_path.write_text(
             json.dumps(semantic_gate, ensure_ascii=False, indent=2) + "\n",
@@ -505,6 +815,7 @@ def rebuild_from_manifest(
                     "scene_graph": str(scene_graph_paths["graph"]),
                     "scene_graph_gate": str(scene_graph_paths["gate"]),
                     "page_layout_plan": str(scene_graph_paths["layout"]),
+                    "page_understanding": str(page_understanding_path.resolve()),
                     "semantic_source": semantic_source,
                     "editable_text_layout_source": editable_text_layout_source,
                     "visual_registry_source": visual_registry_source,

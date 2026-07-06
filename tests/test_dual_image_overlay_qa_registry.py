@@ -172,6 +172,49 @@ def test_min_font_size_rule_converts_svg_px_to_exported_pt(tmp_path: Path) -> No
     assert report["blocking_errors"][0]["observed"]["below_minimum"][0]["font_size"] == 7.29
 
 
+def test_min_font_size_rule_allows_container_fit_below_preferred_floor(tmp_path: Path) -> None:
+    report = build_page_quality_report(
+        stage="template",
+        page_number=6,
+        project_path=tmp_path,
+        artifacts={"source_capture": str(tmp_path / "source_capture.json")},
+        reports={
+            "source_capture": {
+                "pages": [
+                    {
+                        "page_number": 6,
+                        "text_objects": [
+                            {
+                                "text": "投融匹配推荐清单、",
+                                "bbox": {"x": 470, "y": 448, "w": 72, "h": 11},
+                                "style": {"font_size_px": 7.5, "typography_role": "body", "word_wrap": True},
+                                "layout": {"line_count": 1, "needs_wrapping": False},
+                            }
+                        ],
+                    }
+                ]
+            }
+        },
+        rules=[
+            {
+                "id": "template.min_font_after_template",
+                "stage": "template",
+                "severity": "error",
+                "kind": "min_font_size",
+                "report": "source_capture",
+                "minimum_pt": 9,
+                "absolute_minimum_pt": 4.5,
+                "evidence_required": False,
+            }
+        ],
+    )
+
+    assert report["valid"] is True
+    observed = report["checks"][0]["observed"]
+    assert observed["below_minimum"] == []
+    assert observed["fitted_below_minimum"][0]["font_size"] == 5.62
+
+
 def test_semantic_peer_style_rule_blocks_mixed_weight_peers(tmp_path: Path) -> None:
     report = build_page_quality_report(
         stage="template",
@@ -206,6 +249,42 @@ def test_semantic_peer_style_rule_blocks_mixed_weight_peers(tmp_path: Path) -> N
 
     assert report["valid"] is False
     assert "service_title" in report["blocking_errors"][0]["observed"]["inconsistent"]
+
+
+def test_semantic_peer_style_rule_ignores_unclassified_text_role(tmp_path: Path) -> None:
+    report = build_page_quality_report(
+        stage="template",
+        page_number=6,
+        project_path=tmp_path,
+        artifacts={"source_capture": str(tmp_path / "source_capture.json")},
+        reports={
+            "source_capture": {
+                "pages": [
+                    {
+                        "page_number": 6,
+                        "text_objects": [
+                            {"text": "模块标题", "style": {"font_weight": "700"}},
+                            {"text": "正文内容", "style": {"font_weight": "400"}},
+                        ],
+                    }
+                ]
+            }
+        },
+        rules=[
+            {
+                "id": "template.semantic_weight_consistency",
+                "stage": "template",
+                "severity": "error",
+                "kind": "semantic_peer_style",
+                "report": "source_capture",
+                "style_field": "font_weight",
+                "evidence_required": False,
+            }
+        ],
+    )
+
+    assert report["valid"] is True
+    assert report["checks"][0]["observed"]["groups"] == {}
 
 
 def test_container_workspace_rule_requires_slots(tmp_path: Path) -> None:
@@ -333,3 +412,178 @@ def test_occupied_zone_avoidance_rule_blocks_intersecting_slots(tmp_path: Path) 
     assert report["valid"] is False
     assert report["blocking_errors"][0]["id"] == "template.occupied_zone_avoidance_pass"
     assert report["blocking_errors"][0]["observed"]["failure_count"] == 1
+
+
+def test_page_understanding_consumed_rule_blocks_path_count_only_evidence(tmp_path: Path) -> None:
+    evidence = tmp_path / "source_capture_gate.json"
+    evidence.write_text('{"valid": true}\n', encoding="utf-8")
+
+    report = build_page_quality_report(
+        stage="template",
+        page_number=6,
+        project_path=tmp_path,
+        artifacts={"source_capture_gate": str(evidence)},
+        reports={
+            "source_capture_gate": {
+                "schema": "cyberppt.dual_image.source_capture_gate.v1",
+                "valid": True,
+                "page_understanding": {
+                    "available": True,
+                    "count": 1,
+                    "paths": ["/tmp/page_006_page_understanding.json"],
+                    "consumed_count": 0,
+                    "consumed": False,
+                    "script_truth_verified": False,
+                    "fit_review_queue_clear": False,
+                },
+                "checks": {
+                    "page_understanding_available": True,
+                    "page_understanding_consumed": False,
+                    "script_truth_verified": False,
+                    "fit_review_queue_clear": False,
+                },
+            }
+        },
+        rules=[
+            {
+                "id": "template.page_understanding_consumed",
+                "stage": "template",
+                "severity": "error",
+                "kind": "page_understanding_consumed",
+                "report": "source_capture_gate",
+                "evidence_required": True,
+            }
+        ],
+    )
+
+    assert report["valid"] is False
+    assert report["blocking_errors"][0]["id"] == "template.page_understanding_consumed"
+    assert report["blocking_errors"][0]["observed"]["available"] is True
+    assert report["blocking_errors"][0]["observed"]["consumed"] is False
+
+
+def test_page_understanding_consumed_rule_malformed_count_fails_closed(tmp_path: Path) -> None:
+    evidence = tmp_path / "source_capture_gate.json"
+    evidence.write_text('{"valid": true}\n', encoding="utf-8")
+
+    report = build_page_quality_report(
+        stage="template",
+        page_number=6,
+        project_path=tmp_path,
+        artifacts={"source_capture_gate": str(evidence)},
+        reports={
+            "source_capture_gate": {
+                "schema": "cyberppt.dual_image.source_capture_gate.v1",
+                "valid": True,
+                "page_understanding": {
+                    "available": True,
+                    "count": "bad-count",
+                    "paths": ["/tmp/page_006_page_understanding.json"],
+                    "consumed_count": 1,
+                    "consumed": True,
+                    "script_truth_verified": True,
+                    "fit_review_queue_clear": True,
+                },
+            }
+        },
+        rules=[
+            {
+                "id": "template.page_understanding_consumed",
+                "stage": "template",
+                "severity": "error",
+                "kind": "page_understanding_consumed",
+                "report": "source_capture_gate",
+                "evidence_required": True,
+            }
+        ],
+    )
+
+    assert report["valid"] is False
+    assert report["blocking_errors"][0]["observed"]["reason"] == "invalid_page_understanding_count"
+
+
+def test_page_understanding_consumed_rule_float_count_fails_closed(tmp_path: Path) -> None:
+    evidence = tmp_path / "source_capture_gate.json"
+    evidence.write_text('{"valid": true}\n', encoding="utf-8")
+
+    report = build_page_quality_report(
+        stage="template",
+        page_number=6,
+        project_path=tmp_path,
+        artifacts={"source_capture_gate": str(evidence)},
+        reports={
+            "source_capture_gate": {
+                "schema": "cyberppt.dual_image.source_capture_gate.v1",
+                "valid": True,
+                "page_understanding": {
+                    "available": True,
+                    "count": 1.9,
+                    "paths": ["/tmp/page_006_page_understanding.json"],
+                    "consumed_count": 2,
+                    "consumed": True,
+                    "script_truth_verified": True,
+                    "fit_review_queue_clear": True,
+                },
+            }
+        },
+        rules=[
+            {
+                "id": "template.page_understanding_consumed",
+                "stage": "template",
+                "severity": "error",
+                "kind": "page_understanding_consumed",
+                "report": "source_capture_gate",
+                "evidence_required": True,
+            }
+        ],
+    )
+
+    assert report["valid"] is False
+    assert report["blocking_errors"][0]["observed"]["count"] == 0
+    assert report["blocking_errors"][0]["observed"]["reason"] == "invalid_page_understanding_count"
+
+
+def test_page_understanding_consumed_rule_passes_gate_summary_evidence(tmp_path: Path) -> None:
+    evidence = tmp_path / "source_capture_gate.json"
+    evidence.write_text('{"valid": true}\n', encoding="utf-8")
+
+    report = build_page_quality_report(
+        stage="template",
+        page_number=6,
+        project_path=tmp_path,
+        artifacts={"source_capture_gate": str(evidence)},
+        reports={
+            "source_capture_gate": {
+                "schema": "cyberppt.dual_image.source_capture_gate.v1",
+                "valid": True,
+                "page_understanding": {
+                    "available": True,
+                    "count": 1,
+                    "paths": ["/tmp/page_006_page_understanding.json"],
+                    "consumed_count": 1,
+                    "consumed": True,
+                    "script_truth_verified": True,
+                    "fit_review_queue_clear": True,
+                },
+                "checks": {
+                    "page_understanding_available": True,
+                    "page_understanding_consumed": True,
+                    "script_truth_verified": True,
+                    "fit_review_queue_clear": True,
+                },
+            }
+        },
+        rules=[
+            {
+                "id": "template.page_understanding_consumed",
+                "stage": "template",
+                "severity": "error",
+                "kind": "page_understanding_consumed",
+                "report": "source_capture_gate",
+                "evidence_required": True,
+            }
+        ],
+    )
+
+    assert report["valid"] is True
+    assert report["checks"][0]["observed"]["consumed_count"] == 1

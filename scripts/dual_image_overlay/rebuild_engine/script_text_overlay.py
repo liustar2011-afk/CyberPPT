@@ -16,7 +16,10 @@ from typing import Any
 
 from PIL import Image, ImageStat
 
-from template_image_ppt_export import extract_content, image_visible_text, page_role, parse_page_blocks
+if __package__:
+    from .template_image_ppt_export import extract_content, image_visible_text, page_role, parse_page_blocks
+else:
+    from template_image_ppt_export import extract_content, image_visible_text, page_role, parse_page_blocks
 
 
 MODULE_PREFIX_RE = re.compile(r"^模块[一二三四五六七八九十百千万0-9]+[:：]\s*")
@@ -38,9 +41,12 @@ class OverlayTextBox:
     word_wrap: bool = False
     source: str = "script_matched"
     confidence: float = 1.0
+    metadata: dict[str, Any] | None = None
 
 
 MIN_EXPORT_FONT_SIZE_PX = 12.0
+ABSOLUTE_MIN_EXPORT_FONT_SIZE_PX = 6.5
+MULTILINE_LINE_HEIGHT_FACTOR = 1.36
 
 
 @dataclass
@@ -710,7 +716,7 @@ def _fit_font_size_to_box(
     size = preferred if word_wrap else _fit_font_size(text, width * 0.96, preferred, minimum=minimum)
     while size > minimum:
         line_count = _estimated_line_count(text, width * 0.96, size, word_wrap=word_wrap)
-        estimated_height = line_count * size * 1.18
+        estimated_height = size * 0.92 if line_count <= 1 else line_count * size * MULTILINE_LINE_HEIGHT_FACTOR
         if estimated_height <= height * 0.96:
             break
         next_size = max(minimum, size - 0.5)
@@ -722,18 +728,136 @@ def _fit_font_size_to_box(
 
 def _fit_all_boxes(boxes: list[OverlayTextBox]) -> None:
     for box in boxes:
-        minimum = 6.5 if box.source.startswith("manual_source_faithful") else MIN_EXPORT_FONT_SIZE_PX
+        manual_source = box.source.startswith("manual_source_faithful")
+        minimum = 6.5 if manual_source else ABSOLUTE_MIN_EXPORT_FONT_SIZE_PX
+        preferred = box.font_size if manual_source else max(box.font_size, MIN_EXPORT_FONT_SIZE_PX)
         box.font_size = round(
             _fit_font_size_to_box(
                 box.text,
                 box.w,
                 box.h,
-                box.font_size,
+                preferred,
                 minimum=minimum,
                 word_wrap=box.word_wrap,
             ),
             2,
         )
+
+
+def _bbox_from_page_understanding(raw: Any) -> tuple[float, float, float, float] | None:
+    if isinstance(raw, dict):
+        if "bbox" in raw:
+            return _bbox_from_page_understanding(raw.get("bbox"))
+        try:
+            x = float(raw["x"])
+            y = float(raw["y"])
+            w = float(raw.get("w", raw.get("width")))
+            h = float(raw.get("h", raw.get("height")))
+        except (KeyError, TypeError, ValueError):
+            return None
+        if w <= 0 or h <= 0:
+            return None
+        return x, y, w, h
+    if isinstance(raw, (list, tuple)) and len(raw) == 4:
+        try:
+            x1, y1, x2, y2 = [float(value) for value in raw]
+        except (TypeError, ValueError):
+            return None
+        if x2 <= x1 or y2 <= y1:
+            return None
+        return x1, y1, x2 - x1, y2 - y1
+    return None
+
+
+def _font_size_from_page_understanding_block(text_block: dict[str, Any]) -> float:
+    fit = text_block.get("fit") if isinstance(text_block.get("fit"), dict) else {}
+    fitted_style = fit.get("fitted_style") if isinstance(fit.get("fitted_style"), dict) else {}
+    style = text_block.get("style") if isinstance(text_block.get("style"), dict) else {}
+    for raw in (fitted_style.get("font_size"), style.get("font_size")):
+        try:
+            font_size = float(raw)
+        except (TypeError, ValueError):
+            continue
+        if font_size > 0:
+            return font_size
+    return 12.0
+
+
+def overlay_boxes_from_page_understanding(
+    payload: dict[str, Any],
+    *,
+    font_family: str,
+    fill: str,
+) -> list[OverlayTextBox]:
+    containers_by_id = {
+        str(container.get("id")): container
+        for container in payload.get("containers", [])
+        if isinstance(container, dict) and container.get("id")
+    }
+    binding_by_text_id = {
+        str(binding.get("text_block_id")): binding
+        for binding in payload.get("container_text_bindings", [])
+        if isinstance(binding, dict) and binding.get("text_block_id")
+    }
+
+    boxes: list[OverlayTextBox] = []
+    for text_block in payload.get("text_blocks", []):
+        if not isinstance(text_block, dict):
+            continue
+        text = str(text_block.get("final_text") or "").strip()
+        if not text:
+            continue
+
+        text_block_id = str(text_block.get("id") or "")
+        binding = binding_by_text_id.get(text_block_id, {})
+        container = containers_by_id.get(str(binding.get("container_id") or ""), {})
+        bbox = None
+        if isinstance(container, dict):
+            bbox = _bbox_from_page_understanding(container.get("text_safe_bbox"))
+        if bbox is None:
+            bbox = _bbox_from_page_understanding(text_block.get("bbox"))
+        if bbox is None:
+            continue
+        x, y, w, h = bbox
+
+        style = text_block.get("style") if isinstance(text_block.get("style"), dict) else {}
+        truth = text_block.get("truth") if isinstance(text_block.get("truth"), dict) else {}
+        source = (
+            "page_understanding_script_verified"
+            if truth.get("status") == "script_verified"
+            else "page_understanding_review_required"
+        )
+        metadata = {
+            "page_understanding": {
+                "text_block_id": text_block_id,
+                "container_id": binding.get("container_id") if isinstance(binding, dict) else None,
+                "truth": truth,
+            }
+        }
+        if isinstance(text_block.get("fit"), dict):
+            metadata["page_understanding"]["fit"] = text_block["fit"]
+        if isinstance(text_block.get("text_block_group"), dict):
+            metadata["page_understanding"]["text_block_group"] = text_block["text_block_group"]
+
+        boxes.append(
+            OverlayTextBox(
+                text=text,
+                x=round(x, 2),
+                y=round(y, 2),
+                w=round(w, 2),
+                h=round(h, 2),
+                font_size=round(_font_size_from_page_understanding_block(text_block), 2),
+                font_family=font_family,
+                fill=str(style.get("fill") or fill),
+                font_weight=str(style.get("font_weight") or "400"),
+                align=str(style.get("align") or "left"),
+                word_wrap=True,
+                source=source,
+                confidence=float(binding.get("confidence") or 1.0) if isinstance(binding, dict) else 1.0,
+                metadata=metadata,
+            )
+        )
+    return boxes
 
 
 def _repeated_body_text_candidates(boxes: list[OverlayTextBox], body_region: dict[str, float]) -> list[OverlayTextBox]:
@@ -745,6 +869,7 @@ def _repeated_body_text_candidates(boxes: list[OverlayTextBox], body_region: dic
         box
         for box in boxes
         if not box.source.startswith("manual_source_faithful")
+        and box.source != "ocr_unmatched_merged"
         and box.word_wrap
         and box.align == "left"
         and box.fill.strip().upper() != "#FFFFFF"
@@ -2347,6 +2472,99 @@ def _is_tail_duplicate_fragment(
     return False
 
 
+def _is_stack_merge_candidate(box: OverlayTextBox) -> bool:
+    if box.source != "ocr_unmatched":
+        return False
+    text = str(box.text).strip()
+    if not text:
+        return False
+    return "→" in text or text.startswith(("->", "→")) or text.endswith(("->", "→"))
+
+
+def _can_merge_stacked_ocr_fragment(previous: OverlayTextBox, current: OverlayTextBox) -> bool:
+    if not (_is_stack_merge_candidate(previous) or _is_stack_merge_candidate(current)):
+        return False
+    previous_center = previous.x + previous.w / 2
+    current_center = current.x + current.w / 2
+    center_tolerance = max(18.0, min(previous.w, current.w) * 0.35)
+    if abs(previous_center - current_center) > center_tolerance:
+        return False
+    vertical_gap = current.y - (previous.y + previous.h)
+    max_gap = max(4.0, min(previous.h, current.h) * 0.75)
+    if vertical_gap < -2.0 or vertical_gap > max_gap:
+        return False
+    overlap_left = max(previous.x, current.x)
+    overlap_right = min(previous.x + previous.w, current.x + current.w)
+    min_width = max(1.0, min(previous.w, current.w))
+    horizontal_overlap = max(0.0, overlap_right - overlap_left) / min_width
+    return horizontal_overlap >= 0.35 or abs(previous_center - current_center) <= 10.0
+
+
+def _merge_stacked_ocr_line_fragments(boxes: list[OverlayTextBox]) -> list[OverlayTextBox]:
+    ordered = sorted(enumerate(boxes), key=lambda item: (item[1].y, item[1].x))
+    consumed: set[int] = set()
+    merged: list[OverlayTextBox] = []
+    merge_groups: list[tuple[int, list[int], OverlayTextBox]] = []
+
+    for original_index, box in ordered:
+        if original_index in consumed:
+            continue
+        group_indices = [original_index]
+        group_boxes = [box]
+        consumed.add(original_index)
+        last = box
+        for next_index, candidate in ordered:
+            if next_index in consumed:
+                continue
+            if candidate.y < last.y:
+                continue
+            if _can_merge_stacked_ocr_fragment(last, candidate):
+                group_indices.append(next_index)
+                group_boxes.append(candidate)
+                consumed.add(next_index)
+                last = candidate
+
+        if len(group_boxes) < 2:
+            merged.append(box)
+            continue
+
+        left = min(item.x for item in group_boxes)
+        top = min(item.y for item in group_boxes)
+        right = max(item.x + item.w for item in group_boxes)
+        bottom = max(item.y + item.h for item in group_boxes)
+        text = "\n".join(str(item.text).strip() for item in group_boxes if str(item.text).strip())
+        confidence = min(item.confidence for item in group_boxes)
+        font_size = max(item.font_size for item in group_boxes)
+        font_weight = "700" if any(item.font_weight == "700" for item in group_boxes) else box.font_weight
+        merge_groups.append(
+            (
+                min(group_indices),
+                group_indices,
+                OverlayTextBox(
+                    text=text,
+                    x=round(left, 2),
+                    y=round(top, 2),
+                    w=round(max(1.0, right - left), 2),
+                    h=round(max(1.0, bottom - top), 2),
+                    font_size=font_size,
+                    font_family=box.font_family,
+                    fill=box.fill,
+                    font_weight=font_weight,
+                    align=box.align,
+                    word_wrap=True,
+                    source="ocr_unmatched_merged",
+                    confidence=confidence,
+                ),
+            )
+        )
+
+    grouped_indices = {index for _first, indices, _box in merge_groups for index in indices}
+    untouched = [(index, box) for index, box in enumerate(boxes) if index not in grouped_indices]
+    merged_items = [(first, box) for first, _indices, box in merge_groups]
+    merged_items.extend(untouched)
+    return [box for _index, box in sorted(merged_items, key=lambda item: item[0])]
+
+
 def build_overlay_boxes(
     script_path: Path,
     page_number: int,
@@ -2442,6 +2660,7 @@ def build_overlay_boxes(
     finally:
         if background is not None:
             background.close()
+    text_boxes = _merge_stacked_ocr_line_fragments(text_boxes)
     _apply_semantic_overlay_layout(text_boxes, body_region, containers)
     return text_boxes
 
@@ -2475,7 +2694,7 @@ def render_overlay_svg(
         anchor = {"center": "middle", "right": "end"}.get(box.align, "start")
         text_x = box.x + (box.w / 2 if box.align == "center" else box.w if box.align == "right" else 0)
         lines = _wrap_svg_text(box.text, box.w, box.font_size) if box.word_wrap else str(box.text).splitlines() or [box.text]
-        line_height = box.font_size * 1.18
+        line_height = box.font_size * MULTILINE_LINE_HEIGHT_FACTOR
         total_height = box.font_size + (len(lines) - 1) * line_height
         text_y = box.y + max(box.font_size, (box.h - total_height) / 2 + box.font_size * 0.88)
         parts.append(
@@ -2533,7 +2752,13 @@ def _wrap_svg_text(text: str, width: float, font_size: float) -> list[str]:
 
 
 def text_boxes_to_json(text_boxes: list[OverlayTextBox]) -> list[dict[str, Any]]:
-    return [asdict(text_box) for text_box in text_boxes]
+    payload: list[dict[str, Any]] = []
+    for text_box in text_boxes:
+        item = asdict(text_box)
+        if item.get("metadata") is None:
+            item.pop("metadata", None)
+        payload.append(item)
+    return payload
 
 
 def boxes_to_json(boxes: list[OverlayTextBox]) -> list[dict[str, Any]]:

@@ -36,6 +36,11 @@ NON_TEXT_VISUAL_P0_TYPES = {
     "visual",
 }
 BACKGROUND_COMPONENT_MAX_COUNT = 80
+NON_BLOCKING_TEXT_TRUTH_REASONS = {
+    "script_truth_match_ambiguous",
+    "script_truth_containment_ambiguous",
+    "script_truth_match_below_threshold",
+}
 
 
 def _px_to_pt(value: Any) -> float | None:
@@ -45,6 +50,55 @@ def _px_to_pt(value: Any) -> float | None:
         return round(float(value) * 0.75, 2)
     except (TypeError, ValueError):
         return None
+
+
+def _safe_non_negative_int(value: Any, reason: str) -> tuple[int, str | None]:
+    if isinstance(value, bool):
+        return 0, reason
+    if isinstance(value, int):
+        return (value, None) if value >= 0 else (0, reason)
+    if isinstance(value, str) and value.isascii() and value.isdecimal():
+        return int(value), None
+    return 0, reason
+
+
+def _normalize_business_text(value: Any) -> str:
+    return re.sub(r"[\s,，。:：;；、（）()【】\[\]\"'“”‘’]+", "", str(value or "")).lower()
+
+
+def _is_non_blocking_text_truth_evidence(block: dict[str, Any]) -> bool:
+    truth = block.get("truth") if isinstance(block.get("truth"), dict) else {}
+    final_key = _normalize_business_text(block.get("final_text") or block.get("text") or block.get("ocr_text"))
+    ocr_key = _normalize_business_text(block.get("ocr_text") or block.get("text") or block.get("final_text"))
+    if not final_key or final_key != ocr_key:
+        return False
+    if len(final_key) <= 2:
+        return True
+    reason = str(truth.get("reason") or "")
+    if reason not in NON_BLOCKING_TEXT_TRUTH_REASONS:
+        return False
+    matched_key = _normalize_business_text(truth.get("matched_text"))
+    return bool(matched_key)
+
+
+def _page_understanding_truth_summary(text_blocks: list[dict[str, Any]]) -> dict[str, Any]:
+    script_verified = []
+    evidence_only = []
+    review_required = []
+    for block in text_blocks:
+        truth = block.get("truth") if isinstance(block.get("truth"), dict) else {}
+        if truth.get("status") == "script_verified":
+            script_verified.append(block)
+        elif _is_non_blocking_text_truth_evidence(block):
+            evidence_only.append(block)
+        else:
+            review_required.append(block)
+    return {
+        "script_verified_count": len(script_verified),
+        "evidence_only_count": len(evidence_only),
+        "review_required_count": len(review_required),
+        "script_truth_verified": bool(text_blocks) and not review_required,
+    }
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -213,6 +267,50 @@ def _load_page_layout_plans(project_dir: Path) -> dict[int, dict[str, Any]]:
 
 def _load_render_qa_reports(project_dir: Path) -> dict[int, dict[str, Any]]:
     return _load_page_artifacts(project_dir, "render_qa", "page_*_render_qa.json")
+
+
+def discover_page_understanding(analysis_dir: Path) -> dict[str, Any]:
+    root = analysis_dir / "page_understanding"
+    paths = sorted(str(path.resolve()) for path in root.glob("page_*_page_understanding.json")) if root.is_dir() else []
+    return {"available": bool(paths), "count": len(paths), "paths": paths}
+
+
+def _load_page_understanding_artifacts(project_dir: Path) -> dict[int, dict[str, Any]]:
+    by_page: dict[int, dict[str, Any]] = {}
+    root = project_dir / "analysis" / "page_understanding"
+    if not root.is_dir():
+        return by_page
+    for path in sorted(root.glob("page_*_page_understanding.json")):
+        page_number = _page_number_from_name(path.name)
+        if not isinstance(page_number, int):
+            continue
+        summary: dict[str, Any] = {"path": str(path.resolve()), "available": True}
+        try:
+            data = _read_json(path)
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            summary.update({"valid": False, "error": str(exc)})
+            by_page[page_number] = summary
+            continue
+        text_blocks = [item for item in data.get("text_blocks", []) if isinstance(item, dict)]
+        review_items = [item for item in data.get("review_items", []) if isinstance(item, dict)]
+        truth_summary = _page_understanding_truth_summary(text_blocks)
+        summary.update(
+            {
+                "schema": data.get("schema"),
+                "valid": bool(data.get("valid")),
+                "text_block_count": len(text_blocks),
+                "script_truth_verified_count": truth_summary["script_verified_count"],
+                "script_truth_evidence_only_count": truth_summary["evidence_only_count"],
+                "script_truth_review_required_count": truth_summary["review_required_count"],
+                "script_truth_verified": truth_summary["script_truth_verified"],
+                "review_item_count": len(review_items),
+                "fit_review_queue_clear": not any(
+                    str(item.get("reason") or item.get("code") or "").startswith("fit_") for item in review_items
+                ),
+            }
+        )
+        by_page[page_number] = summary
+    return by_page
 
 
 def _load_typography(project_dir: Path) -> dict[int, list[dict[str, Any]]]:
@@ -815,6 +913,8 @@ def build_source_capture(
     scene_graph_gates_by_page = _load_scene_graph_gates(project_dir)
     page_layout_by_page = _load_page_layout_plans(project_dir)
     render_qa_by_page = _load_render_qa_reports(project_dir)
+    page_understanding_discovery = discover_page_understanding(project_dir / "analysis")
+    page_understanding_by_page = _load_page_understanding_artifacts(project_dir)
     svg_texts_by_page = _load_svg_text_by_page(project_dir)
     resolved_visual_registry_dir = discover_visual_registry_dir(project_dir, visual_registry_dir)
     visual_registry_by_page = _load_visual_registry_elements(resolved_visual_registry_dir)
@@ -835,6 +935,7 @@ def build_source_capture(
         | set(scene_graph_gates_by_page)
         | set(page_layout_by_page)
         | set(render_qa_by_page)
+        | set(page_understanding_by_page)
         | set(svg_texts_by_page)
         | set(visual_registry_by_page)
         | set(source_images_by_page)
@@ -859,6 +960,7 @@ def build_source_capture(
             "scene_graph_gate": scene_graph_gates_by_page.get(page_number),
             "page_layout_plan": page_layout_by_page.get(page_number),
             "render_qa": render_qa_by_page.get(page_number),
+            "page_understanding": page_understanding_by_page.get(page_number),
             "semantic_relationships": semantic_relationships,
             "text_neighbor_relationships": _text_neighbor_relationships(semantic_layout_by_page.get(page_number)),
             "text_objects": text_objects,
@@ -895,6 +997,9 @@ def build_source_capture(
             "scene_graph_gate_pages": len(scene_graph_gates_by_page),
             "page_layout_plan_pages": len(page_layout_by_page),
             "render_qa_pages": len(render_qa_by_page),
+            "page_understanding_available": page_understanding_discovery["available"],
+            "page_understanding_count": page_understanding_discovery["count"],
+            "page_understanding_paths": page_understanding_discovery["paths"],
         },
         "capture_policy": {
             "final_text_source": "script_truth_plus_ocr_locator",
@@ -929,6 +1034,9 @@ def build_source_capture_gate(source_capture: dict[str, Any]) -> dict[str, Any]:
     p0_element_count = 0
     text_object_count = 0
     render_measured_count = 0
+    page_understanding_pages = 0
+    page_understanding_script_verified = True
+    page_understanding_fit_review_clear = True
 
     for page in pages:
         visual_inventory = [
@@ -938,6 +1046,15 @@ def build_source_capture_gate(source_capture: dict[str, Any]) -> dict[str, Any]:
         p0_element_count += sum(1 for item in visual_inventory if item.get("priority") == "P0")
         render_measured_count += sum(1 for item in visual_inventory if item.get("registration_status") == "passed")
         text_object_count += len([item for item in page.get("text_objects", []) if isinstance(item, dict)])
+        page_understanding = page.get("page_understanding") if isinstance(page.get("page_understanding"), dict) else None
+        if page_understanding is not None:
+            page_understanding_pages += 1
+            page_understanding_script_verified = (
+                page_understanding_script_verified and page_understanding.get("script_truth_verified") is True
+            )
+            page_understanding_fit_review_clear = (
+                page_understanding_fit_review_clear and page_understanding.get("fit_review_queue_clear") is True
+            )
         page_number = page.get("page_number")
         for gap in page.get("capture_gaps", []):
             if not isinstance(gap, dict):
@@ -952,6 +1069,27 @@ def build_source_capture_gate(source_capture: dict[str, Any]) -> dict[str, Any]:
                 }
             )
 
+    inputs = source_capture.get("inputs") if isinstance(source_capture.get("inputs"), dict) else {}
+    page_understanding_available = bool(inputs.get("page_understanding_available"))
+    page_understanding_count, page_understanding_count_reason = _safe_non_negative_int(
+        inputs.get("page_understanding_count", 0),
+        "invalid_page_understanding_count",
+    )
+    if page_understanding_count_reason is not None:
+        gap_counts[page_understanding_count_reason] = gap_counts.get(page_understanding_count_reason, 0) + 1
+        blocking_gaps.append(
+            {
+                "page_number": None,
+                "code": page_understanding_count_reason,
+                "message": "Malformed page_understanding_count in source_capture inputs.",
+            }
+        )
+    page_understanding_consumed = bool(
+        page_understanding_available
+        and page_understanding_count > 0
+        and page_understanding_pages >= page_understanding_count
+    )
+
     return {
         "schema": "cyberppt.dual_image.source_capture_gate.v1",
         "valid": bool(pages and visual_element_count and text_object_count and not blocking_gaps),
@@ -961,6 +1099,16 @@ def build_source_capture_gate(source_capture: dict[str, Any]) -> dict[str, Any]:
         "p0_element_count": p0_element_count,
         "render_measured_count": render_measured_count,
         "render_delta_measurement": source_capture.get("render_delta_measurement"),
+        "page_understanding": {
+            "available": page_understanding_available,
+            "count": page_understanding_count,
+            "consumed_count": page_understanding_pages,
+            "paths": inputs.get("page_understanding_paths", []),
+            "consumed": page_understanding_consumed,
+            "script_truth_verified": bool(page_understanding_pages) and page_understanding_script_verified,
+            "fit_review_queue_clear": bool(page_understanding_pages) and page_understanding_fit_review_clear,
+            "reason": page_understanding_count_reason,
+        },
         "gap_counts": gap_counts,
         "blocking_gaps": blocking_gaps,
         "checks": {
@@ -970,6 +1118,10 @@ def build_source_capture_gate(source_capture: dict[str, Any]) -> dict[str, Any]:
             "p0_inventory_available": bool(p0_element_count),
             "render_delta_measured": bool(render_measured_count and render_measured_count == visual_element_count),
             "capture_gaps_resolved": not blocking_gaps,
+            "page_understanding_available": page_understanding_available,
+            "page_understanding_consumed": page_understanding_consumed,
+            "script_truth_verified": bool(page_understanding_pages) and page_understanding_script_verified,
+            "fit_review_queue_clear": bool(page_understanding_pages) and page_understanding_fit_review_clear,
         },
     }
 

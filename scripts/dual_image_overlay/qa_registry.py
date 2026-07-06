@@ -113,6 +113,98 @@ def _check_source_capture_required(source_capture: Any) -> tuple[bool, dict[str,
     return bool(pages) and not page_failures, {"page_count": len(pages), "failures": page_failures}
 
 
+def _safe_non_negative_int(value: Any, *, reason: str) -> tuple[int, str | None]:
+    if isinstance(value, bool):
+        return 0, reason
+    if isinstance(value, int):
+        return (value, None) if value >= 0 else (0, reason)
+    if isinstance(value, str) and value.isascii() and value.isdecimal():
+        return int(value), None
+    return 0, reason
+
+
+def _check_page_understanding_consumed(source_capture_evidence: Any) -> tuple[bool, dict[str, Any]]:
+    if not isinstance(source_capture_evidence, dict):
+        return False, {"reason": "source_capture_evidence_missing"}
+    page_understanding = (
+        source_capture_evidence.get("page_understanding")
+        if isinstance(source_capture_evidence.get("page_understanding"), dict)
+        else {}
+    )
+    checks = source_capture_evidence.get("checks") if isinstance(source_capture_evidence.get("checks"), dict) else {}
+
+    available = bool(page_understanding.get("available") or checks.get("page_understanding_available"))
+    consumed = bool(page_understanding.get("consumed") or checks.get("page_understanding_consumed"))
+    script_truth_verified = bool(
+        page_understanding.get("script_truth_verified") or checks.get("script_truth_verified")
+    )
+    fit_review_queue_clear = bool(
+        page_understanding.get("fit_review_queue_clear") or checks.get("fit_review_queue_clear")
+    )
+    consumed_count, consumed_count_reason = _safe_non_negative_int(
+        page_understanding.get("consumed_count", 0),
+        reason="invalid_page_understanding_consumed_count",
+    )
+    count, count_reason = _safe_non_negative_int(
+        page_understanding.get("count", 0),
+        reason="invalid_page_understanding_count",
+    )
+    reason = count_reason or consumed_count_reason
+
+    if not page_understanding:
+        inputs = source_capture_evidence.get("inputs") if isinstance(source_capture_evidence.get("inputs"), dict) else {}
+        pages = [page for page in source_capture_evidence.get("pages", []) if isinstance(page, dict)]
+        summaries = [
+            page.get("page_understanding")
+            for page in pages
+            if isinstance(page.get("page_understanding"), dict)
+        ]
+        paths = inputs.get("page_understanding_paths", [])
+        count, count_reason = _safe_non_negative_int(
+            inputs.get("page_understanding_count", 0),
+            reason="invalid_page_understanding_count",
+        )
+        reason = count_reason
+        available = bool(inputs.get("page_understanding_available") or count > 0 or paths)
+        consumed_count = len(summaries)
+        consumed = bool(available and count > 0 and consumed_count >= count)
+        script_truth_verified = bool(summaries) and all(
+            summary.get("script_truth_verified") is True for summary in summaries
+        )
+        fit_review_queue_clear = bool(summaries) and all(
+            summary.get("fit_review_queue_clear") is True for summary in summaries
+        )
+
+    not_applicable = not available and count == 0 and consumed_count == 0
+    passed = bool(
+        reason is None
+        and (
+            not_applicable
+            or (
+                available
+                and consumed
+                and script_truth_verified
+                and fit_review_queue_clear
+                and consumed_count > 0
+                and (count == 0 or consumed_count >= count)
+            )
+        )
+    )
+    observed = {
+        "available": available,
+        "not_applicable": not_applicable,
+        "count": count,
+        "consumed": consumed,
+        "consumed_count": consumed_count,
+        "script_truth_verified": script_truth_verified,
+        "fit_review_queue_clear": fit_review_queue_clear,
+        "paths": page_understanding.get("paths", []),
+    }
+    if reason is not None:
+        observed["reason"] = reason
+    return passed, observed
+
+
 def _check_template_region_declared(manifest: Any) -> tuple[bool, dict[str, Any]]:
     if not isinstance(manifest, dict):
         return False, {"reason": "pair_manifest_missing"}
@@ -187,9 +279,30 @@ def _text_font_size(item: dict[str, Any]) -> float | None:
     return None
 
 
-def _check_min_font_size(source_capture: Any, minimum: float) -> tuple[bool, dict[str, Any]]:
+def _positive_bbox(item: dict[str, Any]) -> bool:
+    bbox = item.get("bbox") if isinstance(item.get("bbox"), dict) else {}
+    try:
+        return float(bbox.get("w", 0) or 0) > 0 and float(bbox.get("h", 0) or 0) > 0
+    except (TypeError, ValueError):
+        return False
+
+
+def _fit_allowed_below_minimum(item: dict[str, Any], size: float, absolute_minimum: float) -> bool:
+    style = item.get("style") if isinstance(item.get("style"), dict) else {}
+    if size < absolute_minimum:
+        return False
+    if not _positive_bbox(item):
+        return False
+    if bool(style.get("word_wrap")):
+        return True
+    layout = item.get("layout") if isinstance(item.get("layout"), dict) else {}
+    return bool(layout.get("needs_wrapping")) or int(layout.get("line_count") or 0) > 1
+
+
+def _check_min_font_size(source_capture: Any, minimum: float, *, absolute_minimum: float = 4.5) -> tuple[bool, dict[str, Any]]:
     text_objects = _iter_text_objects(source_capture)
     below: list[dict[str, Any]] = []
+    fitted_below: list[dict[str, Any]] = []
     missing = 0
     for item in text_objects:
         size = _text_font_size(item)
@@ -197,18 +310,22 @@ def _check_min_font_size(source_capture: Any, minimum: float) -> tuple[bool, dic
             missing += 1
             continue
         if size < minimum:
-            below.append(
-                {
-                    "page_number": item.get("page_number"),
-                    "text": item.get("rendered_text") or item.get("text"),
-                    "font_size": size,
-                    "minimum": minimum,
-                }
-            )
+            record = {
+                "page_number": item.get("page_number"),
+                "text": item.get("rendered_text") or item.get("text"),
+                "font_size": size,
+                "minimum": minimum,
+            }
+            if _fit_allowed_below_minimum(item, size, absolute_minimum):
+                fitted_below.append(record)
+            else:
+                below.append(record)
     return bool(text_objects) and not below and missing == 0, {
         "minimum": minimum,
+        "absolute_minimum": absolute_minimum,
         "text_object_count": len(text_objects),
         "below_minimum": below,
+        "fitted_below_minimum": fitted_below,
         "missing_font_size_count": missing,
     }
 
@@ -234,10 +351,17 @@ def _role_value(item: dict[str, Any]) -> str:
     return "text"
 
 
+def _explicit_role_value(item: dict[str, Any]) -> str | None:
+    role = _role_value(item)
+    return None if role == "text" else role
+
+
 def _check_semantic_peer_style(source_capture: Any, field: str) -> tuple[bool, dict[str, Any]]:
     groups: dict[str, set[str]] = {}
     for item in _iter_text_objects(source_capture):
-        role = _role_value(item)
+        role = _explicit_role_value(item)
+        if role is None:
+            continue
         value = _style_value(item, field)
         if value is None:
             continue
@@ -458,13 +582,17 @@ def _evaluate_rule(
     elif kind == "source_capture_required":
         observed = reports.get(report_key)
         passed, observed = _check_source_capture_required(observed)
+    elif kind == "page_understanding_consumed":
+        observed = reports.get(report_key)
+        passed, observed = _check_page_understanding_consumed(observed)
     elif kind == "template_region_declared":
         observed = reports.get(report_key)
         passed, observed = _check_template_region_declared(observed)
     elif kind == "min_font_size":
         observed = reports.get(report_key)
         minimum = float(rule.get("minimum_pt", 9.0) or 9.0)
-        passed, observed = _check_min_font_size(observed, minimum)
+        absolute_minimum = float(rule.get("absolute_minimum_pt", 4.5) or 4.5)
+        passed, observed = _check_min_font_size(observed, minimum, absolute_minimum=absolute_minimum)
     elif kind == "semantic_peer_style":
         observed = reports.get(report_key)
         field = str(rule.get("style_field") or "font_weight")
@@ -525,8 +653,10 @@ def _summarize_observed(observed: Any) -> Any:
             "content_region",
             "canvas",
             "minimum",
+            "absolute_minimum",
             "text_object_count",
             "below_minimum",
+            "fitted_below_minimum",
             "missing_font_size_count",
             "field",
             "groups",
@@ -538,6 +668,14 @@ def _summarize_observed(observed: Any) -> Any:
             "container_count",
             "issues",
             "assignment_count",
+            "available",
+            "not_applicable",
+            "count",
+            "consumed",
+            "consumed_count",
+            "script_truth_verified",
+            "fit_review_queue_clear",
+            "paths",
         ):
             if key in observed:
                 summary[key] = observed[key]

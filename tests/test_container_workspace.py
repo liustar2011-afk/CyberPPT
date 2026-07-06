@@ -74,6 +74,32 @@ def test_container_workspace_accepts_safe_area_alias_as_text_safe_bbox() -> None
     assert container["work_slots"][0]["bbox"] == container["text_safe_bbox"]
 
 
+def test_container_workspace_prefers_page_understanding_text_safe_regions() -> None:
+    workspace = build_container_workspace(
+        page_number=13,
+        stage="template",
+        containers=[],
+        text_items=[],
+        visual_elements=[],
+        page_understanding={
+            "containers": [
+                {
+                    "id": "stage_6_card",
+                    "kind": "explicit_container",
+                    "bbox": [624.0, 420.0, 714.0, 530.0],
+                    "text_safe_bbox": [630.0, 464.0, 709.0, 506.0],
+                }
+            ]
+        },
+    )
+
+    container = workspace["containers"][0]
+    assert workspace["slot_count"] == 1
+    assert container["id"] == "stage_6_card"
+    assert container["work_slots"][0]["bbox"] == {"x": 630.0, "y": 464.0, "w": 79.0, "h": 42.0}
+    assert container["work_slots"][0]["source"] == "page_understanding"
+
+
 def test_container_workspace_fails_when_container_has_no_work_slot() -> None:
     workspace = build_container_workspace(
         page_number=6,
@@ -136,6 +162,105 @@ def test_container_workspace_subtracts_visual_registry_occupied_zone() -> None:
     assert container["occupied_zones"][0]["element_id"] == "service_icon"
     assert body_slot["bbox"]["x"] > 142
     assert body_slot["slot_adjustments"][0]["code"] == "subtract_occupied_zone"
+
+
+def test_container_workspace_does_not_subtract_background_panel_as_text_obstacle() -> None:
+    workspace = build_container_workspace(
+        page_number=11,
+        stage="template",
+        containers=[
+            {
+                "id": "service_product",
+                "role": "service_card",
+                "bbox": [620, 205, 808, 560],
+                "text_safe_bbox": [622, 388, 792, 556],
+            }
+        ],
+        text_items=[
+            {
+                "text": "公证合同：对接公证处实现合同公证，具备法定证据效力，可独立用于举证维权",
+                "role": "body",
+                "container_id": "service_product",
+                "bbox": [631, 471, 790, 538],
+            },
+        ],
+        visual_elements=[
+            {
+                "element_id": "background_panel",
+                "element_type": "shape",
+                "blueprint_bbox_px": [620, 106, 1266, 544],
+                "source": {
+                    "kind": "source_capture_inventory",
+                    "inventory_source": "background_visual_component",
+                },
+            },
+            {
+                "element_id": "certificate_art",
+                "element_type": "shape",
+                "blueprint_bbox_px": [638, 193, 764, 384],
+                "source": {
+                    "kind": "source_capture_inventory",
+                    "inventory_source": "background_visual_component",
+                },
+            },
+        ],
+    )
+
+    container = workspace["containers"][0]
+    body_slot = container["work_slots"][0]
+    assert workspace["valid"] is True
+    assert body_slot["bbox"]["w"] == 170.0
+    assert all(zone["element_id"] != "background_panel" for zone in container["occupied_zones"])
+
+
+def test_container_workspace_treats_source_text_overlap_as_writable_container() -> None:
+    workspace = build_container_workspace(
+        page_number=11,
+        stage="template",
+        containers=[
+            {
+                "id": "service_product",
+                "role": "service_card",
+                "bbox": [620, 205, 808, 560],
+                "text_safe_bbox": [622, 388, 792, 556],
+            }
+        ],
+        text_items=[
+            {
+                "text": "公证合同：对接公证处实现合同公证，具备法定证据效力，可独立用于举证维权",
+                "role": "body",
+                "container_id": "service_product",
+                "bbox": [631, 471, 790, 538],
+            },
+        ],
+        visual_elements=[
+            {
+                "element_id": "text_surface",
+                "element_type": "shape",
+                "blueprint_bbox_px": [626, 460, 794, 546],
+                "source": {
+                    "kind": "source_capture_inventory",
+                    "inventory_source": "background_visual_component",
+                },
+            },
+            {
+                "element_id": "side_icon",
+                "element_type": "icon",
+                "blueprint_bbox_px": [622, 410, 646, 442],
+                "source": {
+                    "kind": "source_capture_inventory",
+                    "inventory_source": "background_visual_component",
+                },
+            },
+        ],
+    )
+
+    container = workspace["containers"][0]
+    body_slot = container["work_slots"][0]
+    assert workspace["valid"] is True
+    assert body_slot["bbox"]["w"] >= 140.0
+    assert all(zone["element_id"] != "text_surface" for zone in container["occupied_zones"])
+    assert any(zone["element_id"] == "side_icon" for zone in container["occupied_zones"])
 
 
 def test_container_workspace_subtracts_background_dark_region(tmp_path: Path) -> None:
