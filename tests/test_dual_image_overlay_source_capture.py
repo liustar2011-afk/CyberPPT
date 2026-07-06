@@ -10,6 +10,7 @@ from scripts.dual_image_overlay.source_capture import (
     attach_render_delta_measurement,
     build_source_capture,
     build_source_capture_gate,
+    discover_page_understanding,
     discover_visual_registry_dir,
 )
 
@@ -230,6 +231,209 @@ class DualImageOverlaySourceCaptureTests(unittest.TestCase):
         self.assertEqual("cyberppt.scene_graph.render_qa.v1", page["render_qa"]["schema"])
         self.assertEqual(1, capture["inputs"]["scene_graph_pages"])
         self.assertEqual(1, capture["inputs"]["render_qa_pages"])
+
+    def test_source_capture_records_page_understanding_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            _write_artifacts(project_dir)
+            page_understanding_dir = project_dir / "analysis" / "page_understanding"
+            _write_json(
+                page_understanding_dir / "page_002_page_understanding.json",
+                {
+                    "schema": "cyberppt.dual_image.page_understanding.v1",
+                    "valid": True,
+                    "text_blocks": [
+                        {
+                            "id": "text_block_001",
+                            "final_text": "规则先行",
+                            "truth": {"status": "script_verified", "similarity": 1.0},
+                        }
+                    ],
+                    "review_items": [],
+                },
+            )
+
+            discovered = discover_page_understanding(project_dir / "analysis")
+            capture = build_source_capture(project_dir)
+            gate = build_source_capture_gate(capture)
+
+        self.assertTrue(discovered["available"])
+        self.assertEqual(1, discovered["count"])
+        self.assertTrue(discovered["paths"][0].endswith("page_002_page_understanding.json"))
+        self.assertTrue(capture["inputs"]["page_understanding_available"])
+        self.assertEqual(1, capture["inputs"]["page_understanding_count"])
+        self.assertEqual(discovered["paths"], capture["inputs"]["page_understanding_paths"])
+        self.assertEqual(
+            discovered["paths"][0],
+            capture["pages"][0]["page_understanding"]["path"],
+        )
+        self.assertTrue(gate["checks"]["page_understanding_available"])
+        self.assertTrue(gate["checks"]["page_understanding_consumed"])
+        self.assertTrue(gate["checks"]["script_truth_verified"])
+        self.assertTrue(gate["checks"]["fit_review_queue_clear"])
+
+    def test_source_capture_gate_malformed_page_understanding_count_fails_closed(self) -> None:
+        gate = build_source_capture_gate(
+            {
+                "inputs": {
+                    "page_understanding_available": True,
+                    "page_understanding_count": "bad",
+                    "page_understanding_paths": ["/tmp/page_002_page_understanding.json"],
+                },
+                "pages": [
+                    {
+                        "page_number": 2,
+                        "text_objects": [{"id": "text_001"}],
+                        "visual_element_inventory": [
+                            {
+                                "element_id": "visual_001",
+                                "priority": "P0",
+                                "registration_status": "passed",
+                            }
+                        ],
+                        "page_understanding": {
+                            "script_truth_verified": True,
+                            "fit_review_queue_clear": True,
+                        },
+                        "capture_gaps": [],
+                    }
+                ],
+                "render_delta_measurement": {"status": "measured"},
+            }
+        )
+
+        self.assertFalse(gate["valid"])
+        self.assertEqual(0, gate["page_understanding"]["count"])
+        self.assertFalse(gate["page_understanding"]["consumed"])
+        self.assertEqual("invalid_page_understanding_count", gate["page_understanding"]["reason"])
+        self.assertEqual(1, gate["gap_counts"]["invalid_page_understanding_count"])
+        self.assertIn(
+            {
+                "page_number": None,
+                "code": "invalid_page_understanding_count",
+                "message": "Malformed page_understanding_count in source_capture inputs.",
+            },
+            gate["blocking_gaps"],
+        )
+
+    def test_source_capture_gate_float_page_understanding_count_fails_closed(self) -> None:
+        gate = build_source_capture_gate(
+            {
+                "inputs": {
+                    "page_understanding_available": True,
+                    "page_understanding_count": 1.9,
+                    "page_understanding_paths": ["/tmp/page_002_page_understanding.json"],
+                },
+                "pages": [
+                    {
+                        "page_number": 2,
+                        "text_objects": [{"id": "text_001"}],
+                        "visual_element_inventory": [
+                            {
+                                "element_id": "visual_001",
+                                "priority": "P0",
+                                "registration_status": "passed",
+                            }
+                        ],
+                        "page_understanding": {
+                            "script_truth_verified": True,
+                            "fit_review_queue_clear": True,
+                        },
+                        "capture_gaps": [],
+                    }
+                ],
+                "render_delta_measurement": {"status": "measured"},
+            }
+        )
+
+        self.assertFalse(gate["valid"])
+        self.assertEqual(0, gate["page_understanding"]["count"])
+        self.assertFalse(gate["page_understanding"]["consumed"])
+        self.assertEqual("invalid_page_understanding_count", gate["page_understanding"]["reason"])
+        self.assertEqual(1, gate["gap_counts"]["invalid_page_understanding_count"])
+
+    def test_page_understanding_does_not_require_every_ocr_fragment_to_uniquely_match_script(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            _write_artifacts(project_dir)
+            page_understanding_dir = project_dir / "analysis" / "page_understanding"
+            _write_json(
+                page_understanding_dir / "page_002_page_understanding.json",
+                {
+                    "schema": "cyberppt.dual_image.page_understanding.v1",
+                    "valid": True,
+                    "text_blocks": [
+                        {
+                            "id": "module_label",
+                            "ocr_text": "模块一：数据来源方",
+                            "final_text": "模块一：数据来源方",
+                            "truth": {
+                                "status": "review_required",
+                                "reason": "script_truth_match_ambiguous",
+                                "matched_text": "数据来源方：此处与融资需求方主体重复",
+                                "similarity": 0.94,
+                            },
+                        },
+                        {
+                            "id": "short_index",
+                            "ocr_text": "01",
+                            "final_text": "01",
+                            "truth": {
+                                "status": "review_required",
+                                "reason": "script_truth_match_below_threshold",
+                                "matched_text": "",
+                                "similarity": 0.0,
+                            },
+                        },
+                    ],
+                    "review_items": [],
+                },
+            )
+
+            capture = build_source_capture(project_dir)
+            gate = build_source_capture_gate(capture)
+
+        page_understanding = capture["pages"][0]["page_understanding"]
+        self.assertEqual(0, page_understanding["script_truth_verified_count"])
+        self.assertEqual(2, page_understanding["script_truth_evidence_only_count"])
+        self.assertEqual(0, page_understanding["script_truth_review_required_count"])
+        self.assertTrue(page_understanding["script_truth_verified"])
+        self.assertTrue(gate["checks"]["script_truth_verified"])
+
+    def test_page_understanding_blocks_when_final_text_needs_truth_review(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project_dir = Path(tmp)
+            _write_artifacts(project_dir)
+            page_understanding_dir = project_dir / "analysis" / "page_understanding"
+            _write_json(
+                page_understanding_dir / "page_002_page_understanding.json",
+                {
+                    "schema": "cyberppt.dual_image.page_understanding.v1",
+                    "valid": True,
+                    "text_blocks": [
+                        {
+                            "id": "corrected_but_unverified",
+                            "ocr_text": "风控审孩",
+                            "final_text": "风控审核",
+                            "truth": {
+                                "status": "review_required",
+                                "reason": "script_truth_match_below_threshold",
+                                "matched_text": "风控审核",
+                                "similarity": 0.5,
+                            },
+                        }
+                    ],
+                    "review_items": [],
+                },
+            )
+
+            capture = build_source_capture(project_dir)
+            gate = build_source_capture_gate(capture)
+
+        page_understanding = capture["pages"][0]["page_understanding"]
+        self.assertEqual(1, page_understanding["script_truth_review_required_count"])
+        self.assertFalse(page_understanding["script_truth_verified"])
+        self.assertFalse(gate["checks"]["script_truth_verified"])
 
     def test_scene_graph_visual_nodes_fill_non_text_visual_inventory(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

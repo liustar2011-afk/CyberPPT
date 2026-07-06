@@ -97,9 +97,34 @@ def _cluster_columns(items: list[dict[str, Any]], *, canvas: dict[str, float]) -
             columns.append([item])
         else:
             columns[-1].append(item)
-    if len(columns) <= 1 and len(centers) >= 3:
+    if len(columns) <= 1 and len(centers) >= 3 and _union(items, padding=0, canvas=canvas)["w"] >= float(canvas["width"]) * 0.2:
         return [[item] for item in sorted(items, key=_center_x)]
     return columns
+
+
+def _split_stacked_column(column: list[dict[str, Any]], *, canvas: dict[str, float]) -> list[list[dict[str, Any]]]:
+    row_groups = sorted(_cluster_rows(column), key=lambda row: min(_rect(item)["y"] for item in row))
+    if len(row_groups) <= 1:
+        return [column]
+    heights = [max(1.0, _rect(item)["h"]) for item in column if _area(_rect(item)) > 0]
+    gap_threshold = max(54.0, median(heights or [12.0]) * 4.5)
+    groups: list[list[dict[str, Any]]] = []
+    current: list[dict[str, Any]] = []
+    current_bottom = 0.0
+    for row in row_groups:
+        row_box = _union(row, padding=0, canvas=canvas)
+        row_top = row_box["y"]
+        row_bottom = row_box["y"] + row_box["h"]
+        if current and row_top - current_bottom > gap_threshold:
+            groups.append(current)
+            current = []
+        current.extend(row)
+        current_bottom = max(current_bottom, row_bottom)
+    if current:
+        groups.append(current)
+    if len(groups) > 1 and any(len(group) < 2 for group in groups):
+        return [column]
+    return [group for group in groups if group]
 
 
 def _inside(rect: dict[str, float], container: dict[str, float]) -> bool:
@@ -156,21 +181,36 @@ def infer_structure_containers(
     bottom_items = [item for row in bottom_rows for item in row]
     reserved = {id(item) for item in top_items + bottom_items}
     middle_items = [item for item in valid_items if id(item) not in reserved]
-    columns = [column for column in _cluster_columns(middle_items, canvas=canvas_px) if column]
+    columns = [
+        group
+        for column in _cluster_columns(middle_items, canvas=canvas_px)
+        for group in _split_stacked_column(column, canvas=canvas_px)
+        if group
+    ]
 
     containers: list[dict[str, Any]] = []
+    inferred_container_by_item: dict[int, str] = {}
+
+    def append_container(container_id: str, role: str, items: list[dict[str, Any]]) -> None:
+        containers.append(_container(container_id, role, items, canvas_px))
+        for member in items:
+            inferred_container_by_item[id(member)] = container_id
+
     if top_items:
-        containers.append(_container("inferred_row_band_top", "row_band", top_items, canvas_px))
+        append_container("inferred_row_band_top", "row_band", top_items)
     for index, column in enumerate(columns, start=1):
         if len(column) >= 2:
-            containers.append(_container(f"inferred_panel_{index:02d}", "repeated_panel", column, canvas_px))
+            append_container(f"inferred_panel_{index:02d}", "repeated_panel", column)
     if bottom_items:
-        containers.append(_container("inferred_row_band_bottom", "row_band", bottom_items, canvas_px))
+        append_container("inferred_row_band_bottom", "row_band", bottom_items)
 
     assigned_items = []
     for item in text_items:
         updated = dict(item)
-        if containers and not updated.get("container_id"):
+        inferred_container_id = inferred_container_by_item.get(id(item))
+        if inferred_container_id:
+            updated["container_id"] = inferred_container_id
+        elif containers:
             updated["container_id"] = _nearest_container_id(_rect(item), containers)
         assigned_items.append(updated)
 

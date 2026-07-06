@@ -20,17 +20,59 @@ if str(REBUILD_ENGINE_DIR) not in __import__("sys").path:
 from scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild import (  # noqa: E402
     OverlayTextBox,
     _editable_boxes_from_scene_graph_or_recognition,
+    _overlay_boxes_from_scene_graph_layout,
     _prepare_page_images,
+    _write_page_understanding_artifact,
 )
 from scripts.dual_image_overlay.rebuild_engine.script_text_overlay import (  # noqa: E402
+    MULTILINE_LINE_HEIGHT_FACTOR,
+    OverlayTextBox as ScriptOverlayTextBox,
+    _estimated_line_count,
+    _fit_all_boxes,
     _wrap_svg_text,
     build_overlay_boxes,
+    boxes_to_json,
+    overlay_boxes_from_page_understanding,
 )
 
 
 class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
     def test_template_rebuild_is_exposed_as_cyberppt_script_alias(self) -> None:
         self.assertEqual("template_rebuild.py", script_path("template-rebuild").name)
+
+    def test_editable_overlay_rebuild_supports_module_help_execution(self) -> None:
+        result = subprocess.run(
+            [
+                "python3",
+                "-m",
+                "scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild",
+                "--help",
+            ],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertIn("usage:", result.stdout)
+
+    def test_script_text_overlay_supports_module_help_execution(self) -> None:
+        result = subprocess.run(
+            [
+                "python3",
+                "-m",
+                "scripts.dual_image_overlay.rebuild_engine.script_text_overlay",
+                "--help",
+            ],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertIn("usage:", result.stdout)
 
     def test_vendor_rebuild_subprocess_receives_repo_pythonpath(self) -> None:
         from scripts.dual_image_overlay.template_rebuild import run_vendor_rebuild
@@ -344,6 +386,29 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
 
         self.assertEqual("../images/normalized/page_002_background_1280x720.png", href)
 
+    def test_editable_overlay_rebuild_help_works_from_repo_root_and_script_dir(self) -> None:
+        script = REBUILD_ENGINE_DIR / "editable_overlay_rebuild.py"
+
+        from_root = subprocess.run(
+            ["python3", str(script), "--help"],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        from_script_dir = subprocess.run(
+            ["python3", "editable_overlay_rebuild.py", "--help"],
+            cwd=REBUILD_ENGINE_DIR,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(0, from_root.returncode, from_root.stdout + from_root.stderr)
+        self.assertIn("Rebuild CyberPPT full/background image pairs", from_root.stdout)
+        self.assertEqual(0, from_script_dir.returncode, from_script_dir.stdout + from_script_dir.stderr)
+        self.assertIn("Rebuild CyberPPT full/background image pairs", from_script_dir.stdout)
+
     def test_empty_scene_graph_layout_keeps_dual_image_recognition_boxes(self) -> None:
         recognized = [
             OverlayTextBox(
@@ -496,6 +561,301 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         project_box = next(box for box in boxes if box.text.startswith("项目履约"))
         self.assertGreaterEqual(project_box.w, 190.0)
         self.assertEqual([project_box.text], _wrap_svg_text(project_box.text, project_box.w, project_box.font_size))
+
+    def test_overlay_boxes_merge_stacked_arrow_flow_fragments(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            script = root / "script.md"
+            script.write_text(
+                "\n".join(
+                    [
+                        "## 第13页：科技金融赋能服务",
+                        "### 投后链路",
+                        "融资申请→风控审核→放款→还款，全流程线上化",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            layout = {
+                "image_size": {"width": 1280, "height": 720},
+                "items": [
+                    {"text": "融资申请→风控审核", "bbox": [630, 449, 708, 460], "confidence": 0.94},
+                    {"text": "→放款→还款", "bbox": [643, 464, 704, 475], "confidence": 0.94},
+                    {"text": "全流程线上化", "bbox": [646, 480, 708, 491], "confidence": 0.95},
+                ],
+            }
+
+            boxes = build_overlay_boxes(
+                script,
+                13,
+                layout,
+                {"x": 0, "y": 0, "width": 1280, "height": 720},
+            )
+
+        texts = [box.text for box in boxes]
+        self.assertIn("融资申请→风控审核\n→放款→还款\n全流程线上化", texts)
+        self.assertNotIn("融资申请→风控审核", texts)
+        self.assertNotIn("→放款→还款", texts)
+        self.assertNotIn("全流程线上化", texts)
+        merged = next(box for box in boxes if box.text.startswith("融资申请"))
+        self.assertEqual("ocr_unmatched_merged", merged.source)
+        self.assertGreaterEqual(merged.h, 40.0)
+
+    def test_template_rebuild_page_understanding_merges_ocr_fragments_with_script_truth(self) -> None:
+        from scripts.dual_image_overlay.page_understanding import build_page_understanding
+        from scripts.dual_image_overlay.text_truth import verify_text_blocks_against_script
+
+        verified = verify_text_blocks_against_script(
+            [
+                {
+                    "id": "stage_6_flow",
+                    "ocr_text": "融资申请→风控审孩\n→放款→还款\n全流程线上化",
+                    "bbox": [630.0, 464.0, 709.0, 506.0],
+                    "line_boxes": [
+                        [630.0, 464.0, 708.0, 475.0],
+                        [643.0, 480.0, 704.0, 491.0],
+                        [646.0, 496.0, 708.0, 506.0],
+                    ],
+                    "style": {"font_size": 8.5, "font_weight": "700"},
+                }
+            ],
+            ["融资申请→风控审核→放款→还款，全流程线上化"],
+        )
+        payload = build_page_understanding(
+            page_number=13,
+            full_image=None,
+            background_image=None,
+            registration={"valid": True, "transform": "identity"},
+            text_blocks=verified,
+            explicit_containers=[
+                {"id": "stage_6_card", "bbox": [624.0, 420.0, 714.0, 530.0], "source": "background_image"}
+            ],
+            implicit_containers=[],
+            visual_elements=[],
+        )
+
+        self.assertEqual("融资申请→风控审核\n→放款→还款，\n全流程线上化", payload["text_blocks"][0]["final_text"])
+        self.assertEqual("script_verified", payload["text_blocks"][0]["truth"]["status"])
+        self.assertEqual("stage_6_card", payload["container_text_bindings"][0]["container_id"])
+
+        boxes = overlay_boxes_from_page_understanding(payload, font_family="Microsoft YaHei", fill="#0B1F3D")
+
+        self.assertEqual(1, len(boxes))
+        self.assertEqual("page_understanding_script_verified", boxes[0].source)
+        self.assertEqual((624.0, 420.0, 90.0, 110.0), (boxes[0].x, boxes[0].y, boxes[0].w, boxes[0].h))
+        self.assertEqual("stage_6_flow", boxes[0].metadata["page_understanding"]["text_block_id"])
+        self.assertEqual("stage_6_card", boxes[0].metadata["page_understanding"]["container_id"])
+
+    def test_page_understanding_artifact_preserves_raw_ocr_text_before_script_truth(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            project = root / "project"
+            full_image = root / "full.png"
+            background_image = root / "background.png"
+            source_script = root / "script.md"
+            Image.new("RGB", (1280, 720), "#ffffff").save(full_image)
+            Image.new("RGB", (1280, 720), "#ffffff").save(background_image)
+            source_script.write_text(
+                "## 第13页：测试页\n\n融资申请→风控审核→放款→还款，全流程线上化\n",
+                encoding="utf-8",
+            )
+            layout = {
+                "image_size": {"width": 640, "height": 360},
+                "items": [
+                    {
+                        "text": "融资申请→风控审孩→放款→还款，全流程线上化",
+                        "bbox": [315, 224.5, 354.5, 253],
+                        "confidence": 0.91,
+                        "source": "vision-json",
+                    }
+                ],
+            }
+            boxes = [
+                OverlayTextBox(
+                    text="融资申请→风控审核→放款→还款，全流程线上化",
+                    x=630,
+                    y=449,
+                    w=79,
+                    h=57,
+                    font_size=8.5,
+                    font_weight="700",
+                    source="scene_graph_layout",
+                )
+            ]
+
+            path = _write_page_understanding_artifact(
+                project_path=project,
+                page_number=13,
+                full_image=full_image,
+                background_image=background_image,
+                source_script=source_script,
+                boxes=boxes,
+                layout=layout,
+                body_region={"x": 0, "y": 0, "width": 1280, "height": 720},
+                containers=[],
+                visual_registry=None,
+            )
+            payload = json.loads(path.read_text(encoding="utf-8"))
+
+        text_block = payload["text_blocks"][0]
+        self.assertEqual("融资申请→风控审孩→放款→还款，全流程线上化", text_block["ocr_text"])
+        self.assertEqual("融资申请→风控审核→放款→还款，全流程线上化", text_block["final_text"])
+        self.assertEqual("script_verified", text_block["truth"]["status"])
+        self.assertEqual([630.0, 449.0, 709.0, 506.0], text_block["bbox"])
+        self.assertEqual("overlay_export_context", text_block["source"])
+        self.assertEqual("700", text_block["style"]["font_weight"])
+
+    def test_pages_12_13_fixture_consumes_page_understanding_without_fragment_unique_match_gate(self) -> None:
+        manifest = (
+            ROOT
+            / "projects/power-trusted-data-space-p12-p13/workbench/stages/02-blueprint-dual-image/pages_012_013/page_image_pairs.json"
+        )
+        if not manifest.exists():
+            self.skipTest("pages 12/13 fixture is not present")
+
+        result = subprocess.run(
+            [
+                "python3",
+                "-m",
+                "cyberppt",
+                "template-rebuild",
+                str(manifest),
+                "--export",
+            ],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertIn(result.returncode, {0, 3}, result.stdout + result.stderr)
+        project = ROOT / "projects/power-trusted-data-space-p12-p13"
+        source_gate = json.loads((project / "analysis/source_capture_gate.json").read_text(encoding="utf-8"))
+        page_013 = json.loads(
+            (project / "analysis/page_understanding/page_013_page_understanding.json").read_text(encoding="utf-8")
+        )
+        mapping = json.loads((project / "analysis/ocr/page_013_text_mapping.json").read_text(encoding="utf-8"))
+
+        self.assertTrue(source_gate["checks"]["page_understanding_available"])
+        self.assertTrue(source_gate["checks"]["page_understanding_consumed"])
+        self.assertTrue(source_gate["checks"]["script_truth_verified"])
+        self.assertTrue(source_gate["checks"]["fit_review_queue_clear"])
+        self.assertGreater(
+            next(page for page in json.loads((project / "analysis/source_capture.json").read_text(encoding="utf-8"))["pages"] if page["page_number"] == 13)[
+                "page_understanding"
+            ]["script_truth_evidence_only_count"],
+            0,
+        )
+        flow_blocks = [
+            block
+            for block in page_013["text_blocks"]
+            if str(block.get("final_text", "")).startswith("融资申请→风控审核")
+        ]
+        self.assertEqual(1, len(flow_blocks))
+        self.assertIn("→放款→还款", flow_blocks[0]["final_text"])
+        self.assertIn("全流程线上化", flow_blocks[0]["final_text"])
+        self.assertEqual("auto_pass", flow_blocks[0]["fit"]["status"])
+        self.assertFalse(flow_blocks[0]["fit"]["review_required"])
+        self.assertEqual("move_and_scale_as_group", flow_blocks[0]["text_block_group"]["edit_behavior"])
+        self.assertEqual(str((project / "analysis/page_understanding/page_013_page_understanding.json").resolve()), mapping["page_understanding"])
+
+    def test_boxes_to_json_omits_absent_metadata_and_preserves_present_metadata(self) -> None:
+        legacy_box = ScriptOverlayTextBox(
+            text="核心结论",
+            x=100,
+            y=120,
+            w=160,
+            h=32,
+            font_size=18,
+        )
+        metadata_box = ScriptOverlayTextBox(
+            text="融资申请",
+            x=200,
+            y=220,
+            w=120,
+            h=28,
+            font_size=14,
+            metadata={"page_understanding": {"text_block_id": "ocr_item_001"}},
+        )
+
+        payload = boxes_to_json([legacy_box, metadata_box])
+
+        self.assertNotIn("metadata", payload[0])
+        self.assertEqual({"page_understanding": {"text_block_id": "ocr_item_001"}}, payload[1]["metadata"])
+
+    def test_overlay_box_fit_can_shrink_below_preferred_minimum_for_crowded_slot(self) -> None:
+        box = ScriptOverlayTextBox(
+            text="投融匹配推荐清单（决策服务类）：为优质项目匹配适配金融机构",
+            x=700,
+            y=280,
+            w=92,
+            h=28,
+            font_size=12.0,
+            word_wrap=True,
+            source="semantic_plan",
+        )
+
+        _fit_all_boxes([box])
+
+        self.assertLess(box.font_size, 12.0)
+        self.assertGreaterEqual(box.font_size, 6.5)
+        line_count = _estimated_line_count(box.text, box.w * 0.96, box.font_size, word_wrap=True)
+        self.assertLessEqual(line_count * box.font_size * MULTILINE_LINE_HEIGHT_FACTOR, box.h * 0.96)
+
+    def test_overlay_box_fit_restores_preferred_font_when_workspace_allows_it(self) -> None:
+        box = ScriptOverlayTextBox(
+            text="获得可信风控依据的",
+            x=1122,
+            y=498,
+            w=125,
+            h=24,
+            font_size=9.0,
+            word_wrap=True,
+            source="ocr_unmatched",
+        )
+
+        _fit_all_boxes([box])
+
+        self.assertGreaterEqual(box.font_size, 11.5)
+
+    def test_scene_graph_overlay_restores_preferred_font_when_workspace_allows_it(self) -> None:
+        boxes = _overlay_boxes_from_scene_graph_layout(
+            {
+                "items": [
+                    {
+                        "text": "获得可信风控依据的",
+                        "bbox": [1102, 480, 1230, 506],
+                        "font_size": 9.0,
+                        "word_wrap": True,
+                    }
+                ]
+            },
+            {"x": 0, "y": 0, "width": 1280, "height": 720},
+        )
+
+        self.assertGreaterEqual(boxes[0].font_size, 11.5)
+
+    def test_recognition_overlay_restores_preferred_font_when_workspace_allows_it(self) -> None:
+        box = OverlayTextBox(
+            text="获得可信风控依据的",
+            x=1122,
+            y=498,
+            w=125,
+            h=24,
+            font_size=9.0,
+            word_wrap=True,
+            source="ocr_unmatched",
+        )
+
+        boxes, source = _editable_boxes_from_scene_graph_or_recognition(
+            {"items": []},
+            {"x": 0, "y": 0, "width": 1280, "height": 720},
+            [box],
+        )
+
+        self.assertEqual(source, "ocr_script_recognition")
+        self.assertGreaterEqual(boxes[0].font_size, 11.5)
 
     def test_overlay_boxes_align_same_rank_body_rows_across_columns(self) -> None:
         with TemporaryDirectory() as directory:

@@ -460,6 +460,44 @@ def _refine_slots_against_zones(
     return refined
 
 
+def _page_understanding_workspace_containers(page_understanding: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if not isinstance(page_understanding, dict):
+        return []
+    containers = page_understanding.get("containers")
+    if not isinstance(containers, list):
+        return []
+
+    workspace_containers: list[dict[str, Any]] = []
+    for index, container in enumerate(containers, start=1):
+        if not isinstance(container, dict):
+            continue
+        container_id = _container_id(container, index)
+        bbox = _container_rect(container)
+        safe = _safe_rect(container)
+        if _rect_area(safe) <= 0:
+            continue
+        slot = {
+            "id": f"{container_id}_body_slot",
+            "bbox": safe,
+            "preferred_roles": ["body", "bullet", "description", "title", "ability_title"],
+            "capacity": {"area": round(_rect_area(safe), 3), "source": "page_understanding_text_safe_bbox"},
+            "source": "page_understanding",
+        }
+        workspace_containers.append(
+            {
+                "id": container_id,
+                "role": _container_role(container),
+                "container_bbox": bbox,
+                "text_safe_bbox": safe,
+                "occupied_zones": [],
+                "work_slots": [slot],
+                "slot_count": 1,
+                "source": "page_understanding",
+            }
+        )
+    return workspace_containers
+
+
 def build_container_workspace(
     *,
     page_number: int | None,
@@ -468,53 +506,59 @@ def build_container_workspace(
     stage: str,
     visual_elements: list[dict[str, Any]] | None = None,
     background_image: Path | None = None,
+    page_understanding: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     workspace_containers = []
     issues: list[dict[str, Any]] = []
-    for index, container in enumerate(containers, start=1):
-        container_id = _container_id(container, index)
-        bbox = _container_rect(container)
-        safe = _safe_rect(container)
-        occupied_zones = [
-            *_text_occupied_zones(container_id, text_items),
-            *_visual_occupied_zones(
+
+    page_understanding_containers = _page_understanding_workspace_containers(page_understanding)
+    if page_understanding_containers:
+        workspace_containers.extend(page_understanding_containers)
+    else:
+        for index, container in enumerate(containers, start=1):
+            container_id = _container_id(container, index)
+            bbox = _container_rect(container)
+            safe = _safe_rect(container)
+            occupied_zones = [
+                *_text_occupied_zones(container_id, text_items),
+                *_visual_occupied_zones(
+                    container_id=container_id,
+                    safe=safe,
+                    text_items=text_items,
+                    visual_elements=visual_elements or [],
+                ),
+                *_background_occupied_zones(
+                    container_id=container_id,
+                    safe=safe,
+                    background_image=background_image,
+                ),
+            ]
+            slots = _slots_for_container(container_id=container_id, safe=safe, text_items=text_items)
+            slots = _refine_slots_against_zones(
                 container_id=container_id,
-                safe=safe,
-                text_items=text_items,
-                visual_elements=visual_elements or [],
-            ),
-            *_background_occupied_zones(
-                container_id=container_id,
-                safe=safe,
-                background_image=background_image,
-            ),
-        ]
-        slots = _slots_for_container(container_id=container_id, safe=safe, text_items=text_items)
-        slots = _refine_slots_against_zones(
-            container_id=container_id,
-            slots=slots,
-            occupied_zones=occupied_zones,
-            issues=issues,
-        )
-        if not slots:
-            issues.append(
+                slots=slots,
+                occupied_zones=occupied_zones,
+                issues=issues,
+            )
+            if not slots:
+                issues.append(
+                    {
+                        "severity": "error",
+                        "code": "container_has_no_work_slots",
+                        "container_id": container_id,
+                    }
+                )
+            workspace_containers.append(
                 {
-                    "severity": "error",
-                    "code": "container_has_no_work_slots",
-                    "container_id": container_id,
+                    "id": container_id,
+                    "role": _container_role(container),
+                    "container_bbox": bbox,
+                    "text_safe_bbox": safe,
+                    "occupied_zones": occupied_zones,
+                    "work_slots": slots,
+                    "slot_count": len(slots),
                 }
             )
-        workspace_containers.append(
-            {
-                "id": container_id,
-                "role": _container_role(container),
-                "container_bbox": bbox,
-                "text_safe_bbox": safe,
-                "occupied_zones": occupied_zones,
-                "work_slots": slots,
-                "slot_count": len(slots),
-            }
-        )
     error_count = len([issue for issue in issues if issue["severity"] == "error"])
     return {
         "schema": SCHEMA,
