@@ -13,7 +13,7 @@
 - Do not treat OCR text as final content truth; OCR and image-derived text are locator/style evidence only.
 - Do not bypass `dual_image_editable_overlay`, `template_rebuild`, or current production readiness gates.
 - Do not add a new OCR dependency in this revision.
-- Normalize all production coordinates to `1280x720`.
+- Normalize all production coordinates to `1672x941`.
 - Existing `page_scene_graph.json` remains the layout-facing contract; `page_understanding.json` feeds it instead of replacing it.
 - Prefer reusable rules over page-specific fixes.
 - Keep 9pt as preferred text size floor, but allow fit policies to go below 9pt down to the existing absolute floor when container evidence requires it.
@@ -99,7 +99,7 @@ def test_page_understanding_builds_normalized_contract() -> None:
 
     assert result["schema"] == "cyberppt.dual_image.page_understanding.v1"
     assert result["page_number"] == 11
-    assert result["coordinate_context"]["normalized_canvas"] == {"width": 1280.0, "height": 720.0}
+    assert result["coordinate_context"]["normalized_canvas"] == {"width": 1672.0, "height": 941.0}
     assert result["containers"][0]["id"] == "operator_card"
     assert result["text_evidence"][0]["truth_role"] == "locator_and_style_evidence"
     assert result["valid"] is True
@@ -129,7 +129,7 @@ from typing import Any
 
 
 SCHEMA = "cyberppt.dual_image.page_understanding.v1"
-DEFAULT_CANVAS = {"width": 1280.0, "height": 720.0}
+DEFAULT_CANVAS = {"width": 1672.0, "height": 941.0}
 
 
 def _bbox_xyxy(value: Any) -> list[float] | None:
@@ -213,8 +213,8 @@ def build_page_understanding(
     canvas: dict[str, float] | None = None,
 ) -> dict[str, Any]:
     normalized_canvas = {
-        "width": float((canvas or DEFAULT_CANVAS).get("width", 1280.0)),
-        "height": float((canvas or DEFAULT_CANVAS).get("height", 720.0)),
+        "width": float((canvas or DEFAULT_CANVAS).get("width", 1672.0)),
+        "height": float((canvas or DEFAULT_CANVAS).get("height", 941.0)),
     }
     container_payloads = [payload for item in containers if (payload := _container_payload(item))]
     text_payloads = [payload for index, item in enumerate(text_items, start=1) if (payload := _text_payload(item, index))]
@@ -676,7 +676,7 @@ def test_office_textbox_fit_consumes_page_understanding_fit_policy() -> None:
 
     fitted, report = apply_office_textbox_fit(
         boxes,
-        canvas={"width": 1280, "height": 720},
+        canvas={"width": 1672, "height": 941},
         workspace_assignment=assignment,
         page_understanding=page_understanding,
     )

@@ -31,7 +31,7 @@ IMAGEGEN_NON_VISIBLE_SECTION_RE = re.compile(
     r"\n(?:保真约束[:：]|【(?:保真约束|构图指令|构图接口)】)"
 )
 COMPOSITION_SECTION_RE = re.compile(r"【(?:构图指令|构图接口)】(?P<body>.*)$", re.S)
-CANVAS_SIZE = (1280, 720)
+CANVAS_SIZE = (1672, 941)
 CONTENT_REGION_TOP_INSET = -18
 CONTENT_REGION_BOTTOM_INSET = -20
 CONTENT_REGION_SIDE_OUTSET = 38
@@ -592,8 +592,8 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
             target_image = project_path / "images" / image_path.name
             shutil.copy2(image_path, target_image)
             svg = [
-                f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="720" viewBox="0 0 1280 720">',
-                '<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>',
+                f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_SIZE[0]}" height="{CANVAS_SIZE[1]}" viewBox="0 0 {CANVAS_SIZE[0]} {CANVAS_SIZE[1]}">',
+                f'<rect x="0" y="0" width="{CANVAS_SIZE[0]}" height="{CANVAS_SIZE[1]}" fill="#FFFFFF"/>',
             ]
             svg.append(svg_text(header["x"], header["y"] + 30, task["slide_title"], 25, 700))
             if task.get("subtitle"):

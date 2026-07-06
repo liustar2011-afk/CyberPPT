@@ -11,6 +11,8 @@ from PIL import Image
 SKIP_ROLES = {"bullet_marker", "index"}
 DEFAULT_MIN_FONT_SIZE_PT = 9.0
 ABSOLUTE_MIN_FONT_SIZE_PT = 6.5
+DEFAULT_CANVAS_WIDTH = 1672.0
+DEFAULT_CANVAS_HEIGHT = 941.0
 
 
 def _bbox(box: dict[str, Any]) -> list[float]:
@@ -467,8 +469,8 @@ def apply_office_textbox_fit(
     report_path: Path | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Expand transparent text boxes and compact related text groups for Office."""
-    width = float((canvas or {}).get("width") or 1280.0)
-    height = float((canvas or {}).get("height") or 720.0)
+    width = float((canvas or {}).get("width") or DEFAULT_CANVAS_WIDTH)
+    height = float((canvas or {}).get("height") or DEFAULT_CANVAS_HEIGHT)
     fitted = [copy.deepcopy(box) for box in boxes]
     adjustments: list[dict[str, Any]] = []
     assignment_adjustments: list[dict[str, Any]] = []

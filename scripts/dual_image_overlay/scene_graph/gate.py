@@ -8,6 +8,8 @@ from .schema import BINDING_TYPES, LOCATOR_ONLY_AUTHORITIES, GateIssue, PageScen
 GATE_SCHEMA = "cyberppt.page_scene_graph_gate.v1"
 TEXT_ZONE_TYPES = {"text_zone", "label_zone", "text_safe_zone"}
 TARGET_REQUIRED_BINDINGS = {"container_text", "edge_label", "anchor_label", "legend_label"}
+DEFAULT_CANVAS_WIDTH = 1672.0
+DEFAULT_CANVAS_HEIGHT = 941.0
 
 
 def _coordinate_context_dict(graph: PageSceneGraph) -> dict[str, Any]:
@@ -39,8 +41,8 @@ def build_scene_graph_gate(graph: PageSceneGraph) -> dict[str, Any]:
     coordinate_space = context.get("coordinate_space")
     if not isinstance(coordinate_space, dict):
         coordinate_space = context.get("normalized_canvas") or {}
-    canvas_width = float(coordinate_space.get("width") or 1280.0)
-    canvas_height = float(coordinate_space.get("height") or 720.0)
+    canvas_width = float(coordinate_space.get("width") or DEFAULT_CANVAS_WIDTH)
+    canvas_height = float(coordinate_space.get("height") or DEFAULT_CANVAS_HEIGHT)
     visual_ids = {node.node_id for node in graph.visual_nodes}
 
     for warning in context.get("warnings", []):
@@ -50,7 +52,7 @@ def build_scene_graph_gate(graph: PageSceneGraph) -> dict[str, Any]:
                     "coordinate_space_unresolved",
                     None,
                     {"warning": warning},
-                    "Record a transform that maps this source coordinate space into 1280x720.",
+                    "Record a transform that maps this source coordinate space into 1672x941.",
                 )
             )
 
@@ -62,7 +64,7 @@ def build_scene_graph_gate(graph: PageSceneGraph) -> dict[str, Any]:
                     "coordinate_space_unresolved",
                     node.node_id,
                     {"bbox": bbox, "coordinate_space": coordinate_space},
-                    "Normalize every visual node bbox to the 1280x720 scene graph coordinate space.",
+                    "Normalize every visual node bbox to the 1672x941 scene graph coordinate space.",
                 )
             )
 
@@ -113,7 +115,7 @@ def build_scene_graph_gate(graph: PageSceneGraph) -> dict[str, Any]:
                         "coordinate_space_unresolved",
                         text.node_id,
                         {"bbox_preferred": bbox, "coordinate_space": coordinate_space},
-                        "Normalize preferred text bbox to the 1280x720 scene graph coordinate space.",
+                        "Normalize preferred text bbox to the 1672x941 scene graph coordinate space.",
                     )
                 )
 

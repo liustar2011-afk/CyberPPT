@@ -5,7 +5,7 @@ from typing import Any
 
 
 SCHEMA = "cyberppt.dual_image.structure_inference.v1"
-DEFAULT_CANVAS = {"width": 1280.0, "height": 720.0}
+DEFAULT_CANVAS = {"width": 1672.0, "height": 941.0}
 
 
 def _rect(item: dict[str, Any]) -> dict[str, float]:

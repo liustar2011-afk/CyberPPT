@@ -4,6 +4,8 @@ from typing import Any
 
 
 RENDER_QA_SCHEMA = "cyberppt.scene_graph.render_qa.v1"
+DEFAULT_CANVAS_WIDTH = 1672.0
+DEFAULT_CANVAS_HEIGHT = 941.0
 
 
 def _inside_canvas(bbox: list[float], width: float, height: float) -> bool:
@@ -11,8 +13,8 @@ def _inside_canvas(bbox: list[float], width: float, height: float) -> bool:
 
 
 def build_render_qa(layout_plan: dict[str, Any], rendered_image_size: dict[str, Any]) -> dict[str, Any]:
-    width = float(rendered_image_size.get("width") or 1280)
-    height = float(rendered_image_size.get("height") or 720)
+    width = float(rendered_image_size.get("width") or DEFAULT_CANVAS_WIDTH)
+    height = float(rendered_image_size.get("height") or DEFAULT_CANVAS_HEIGHT)
     issues: list[dict[str, Any]] = []
     for item in layout_plan.get("items", []):
         if not isinstance(item, dict):
