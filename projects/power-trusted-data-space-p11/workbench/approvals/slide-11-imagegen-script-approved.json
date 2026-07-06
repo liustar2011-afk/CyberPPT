@@ -1,0 +1,11 @@
+{
+  "schema": "cyberppt.script_approval.v1",
+  "slide": 11,
+  "kind": "imagegen",
+  "approved": true,
+  "approved_at": "2026-07-05T15:45:43+00:00",
+  "approved_artifacts": [
+    "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/prompts/imagegen/slide-11-imagegen-final.md"
+  ],
+  "note": "Approved by user request: 跑仓库主流程，做第11页ppt."
+}

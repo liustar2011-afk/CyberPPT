@@ -1,0 +1,31 @@
+{
+  "schema": "cyberppt.visual_style_lock.v1",
+  "created_at": "2026-07-05T15:34:20+00:00",
+  "style_source": "/Volumes/DOC/CyberPPT/scripts/dual_image_overlay/style_presets/cyberppt_default_styles.json",
+  "source_reference": "references/visual-system.md",
+  "source_script": "/Volumes/DOC/ppt脚本示例/ppt脚本规则库/0629/script-imagegen.md",
+  "style": {
+    "id": 3,
+    "slug": "warm_ivory_dark_wine",
+    "name": "暖象牙白 + 暗酒红",
+    "colors": {
+      "background": "#F4F1EA",
+      "title": "#121212",
+      "body": "#2B2B2B",
+      "secondary": "#77736C",
+      "divider": "#D8D3CA",
+      "accent": "#8A1538"
+    },
+    "scenario": "品牌战略、消费品、电商、用户研究",
+    "sample": "assets/palette-samples/palette-03.png",
+    "scope_rule": "本风格只约束色彩、材质、线条、图标克制度和视觉语气；其中提到的洞察卡、旅程轴、对比矩阵、小型数据注释等仅为可选视觉语言，不得覆盖原脚本的页面定位、版式草图、组件数量、箭头关系和框内文字。",
+    "prompt_contract": "视觉风格使用暖象牙白 + 暗酒红：背景 #F4F1EA，标题 #121212，正文 #2B2B2B，次级文字 #77736C，线条 #D8D3CA，强调色 #8A1538。适合品牌战略、消费品、电商、用户研究；采用温和但专业的研究页结构、用户洞察模块、对比矩阵和暗酒红重点标记。",
+    "density_rule": "保持品牌/用户研究的多模块信息密度；在不改变原脚本结构的前提下，允许洞察卡、旅程轴、对比矩阵和小型数据注释并存。"
+  },
+  "policy": {
+    "selected_from_default_8": true,
+    "prompt_must_use_style_lock": true,
+    "do_not_substitute_external_preset": true,
+    "samples_are_required_for_user_confirmation": true
+  }
+}

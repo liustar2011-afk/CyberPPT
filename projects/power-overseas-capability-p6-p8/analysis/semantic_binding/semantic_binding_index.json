@@ -1,0 +1,39 @@
+{
+  "schema": "cyberppt.dual_image.semantic_binding_set.v1",
+  "valid": false,
+  "page_count": 3,
+  "container_count": 41,
+  "item_count": 22,
+  "unassigned_text_count": 99,
+  "binding_dir": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_binding",
+  "semantic_plan_dir": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_plan",
+  "pages": [
+    {
+      "page_number": 6,
+      "valid": true,
+      "container_count": 40,
+      "item_count": 20,
+      "unassigned_text_count": 14,
+      "semantic_binding": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_binding/page_006_semantic_binding.json",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_plan/page_006_semantic_plan.json"
+    },
+    {
+      "page_number": 7,
+      "valid": false,
+      "container_count": 0,
+      "item_count": 0,
+      "unassigned_text_count": 36,
+      "semantic_binding": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_binding/page_007_semantic_binding.json",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_plan/page_007_semantic_plan.json"
+    },
+    {
+      "page_number": 8,
+      "valid": true,
+      "container_count": 1,
+      "item_count": 2,
+      "unassigned_text_count": 49,
+      "semantic_binding": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_binding/page_008_semantic_binding.json",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_plan/page_008_semantic_plan.json"
+    }
+  ]
+}

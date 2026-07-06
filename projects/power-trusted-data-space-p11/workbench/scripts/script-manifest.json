@@ -1,0 +1,15 @@
+{
+  "schema": "cyberppt.script_manifest.v1",
+  "entries": [
+    {
+      "slide": 11,
+      "kind": "imagegen",
+      "phase": "final",
+      "source": "/Volumes/DOC/ppt脚本示例/ppt脚本规则库/0629/script-imagegen.md",
+      "saved_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/prompts/imagegen/slide-11-imagegen-final.md",
+      "saved_at": "2026-07-05T15:45:37+00:00",
+      "note": "User requested running repository main flow for page 11 on 2026-07-05.",
+      "requires_user_review_before_generation": true
+    }
+  ]
+}

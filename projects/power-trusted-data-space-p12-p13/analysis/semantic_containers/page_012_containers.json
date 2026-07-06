@@ -1,0 +1,19 @@
+{
+  "page_number": 12,
+  "background_image": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/images/normalized/page_012_场景五_知识产权全周期保护_background_1672x941.png",
+  "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan/page_012_semantic_plan.json",
+  "containers": [
+    {
+      "id": "dark_band_1",
+      "role": "dark_band",
+      "x": 30.38,
+      "y": 170.06,
+      "w": 1219.23,
+      "h": 36.49,
+      "background": "dark",
+      "fill": "#FFFFFF",
+      "align": "center",
+      "max_lines": 1
+    }
+  ]
+}

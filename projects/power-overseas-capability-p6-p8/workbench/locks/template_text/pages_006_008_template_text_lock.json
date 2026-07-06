@@ -1,0 +1,62 @@
+{
+  "schema": "cyberppt.template_text_lock.v1",
+  "created_at": "2026-07-05T13:24:26+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/visual_style_lock.json",
+  "pages": [
+    6,
+    7,
+    8
+  ],
+  "records": [
+    {
+      "page": 6,
+      "title": "总体架构按照“数据底座—评价证据—评价模型—结果应用—运营保障”组织",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md",
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/stages/02-blueprint-dual-image/pages_006_008/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8 --script /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md --pages 6-8 --style-lock /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 7,
+      "title": "能力评价场景按“企业入库—证据归集—能力评价—结果生成—场景调用—反馈更新”闭环运行",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md",
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/stages/02-blueprint-dual-image/pages_006_008/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8 --script /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md --pages 6-8 --style-lock /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 8,
+      "title": "九类能力维度与六类证据资源共同构成评价模型的核心支撑",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md",
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/stages/02-blueprint-dual-image/pages_006_008/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8 --script /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md --pages 6-8 --style-lock /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/visual_style_lock.json"
+    }
+  ]
+}

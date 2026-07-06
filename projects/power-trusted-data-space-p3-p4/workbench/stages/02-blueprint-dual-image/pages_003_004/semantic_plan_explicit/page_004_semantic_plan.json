@@ -1,0 +1,223 @@
+{
+  "schema": "cyberppt.explicit_semantic_plan.v1",
+  "page_number": 4,
+  "image_size": {
+    "width": 1280,
+    "height": 720
+  },
+  "inputs": {
+    "script_truth": "/Volumes/DOC/ppt脚本示例/ppt脚本规则库/0629/script-imagegen.md",
+    "geometry_truth": "manual_project_semantic_plan",
+    "text_truth": "script_content_lock"
+  },
+  "geometry_truth": "manual_project_semantic_plan",
+  "text_truth": "script_content_lock",
+  "containers": [
+    {
+      "id": "p4_head",
+      "role": "headline",
+      "bbox": [
+        55,
+        120,
+        1225,
+        175
+      ],
+      "text_safe_bbox": [
+        65,
+        128,
+        1215,
+        167
+      ]
+    },
+    {
+      "id": "p4_policy",
+      "role": "matrix_cell",
+      "bbox": [
+        65,
+        205,
+        615,
+        370
+      ],
+      "text_safe_bbox": [
+        75,
+        213,
+        605,
+        362
+      ]
+    },
+    {
+      "id": "p4_tech",
+      "role": "matrix_cell",
+      "bbox": [
+        665,
+        205,
+        1215,
+        370
+      ],
+      "text_safe_bbox": [
+        675,
+        213,
+        1205,
+        362
+      ]
+    },
+    {
+      "id": "p4_resource",
+      "role": "matrix_cell",
+      "bbox": [
+        65,
+        410,
+        615,
+        585
+      ],
+      "text_safe_bbox": [
+        75,
+        418,
+        605,
+        577
+      ]
+    },
+    {
+      "id": "p4_market",
+      "role": "matrix_cell",
+      "bbox": [
+        665,
+        410,
+        1215,
+        585
+      ],
+      "text_safe_bbox": [
+        675,
+        418,
+        1205,
+        577
+      ]
+    },
+    {
+      "id": "p4_conclusion",
+      "role": "so_what",
+      "bbox": [
+        90,
+        615,
+        1190,
+        690
+      ],
+      "text_safe_bbox": [
+        100,
+        623,
+        1180,
+        682
+      ]
+    }
+  ],
+  "items": [
+    {
+      "container_id": "p4_head",
+      "display_text": "四维可行性基础已具备\n政策授权充分，技术成熟可循，资源统筹有力，市场需求旺盛",
+      "source_text": "四维可行性基础已具备\n政策授权充分，技术成熟可循，资源统筹有力，市场需求旺盛",
+      "role": "page_claim",
+      "bbox": [
+        75,
+        128,
+        1205,
+        168
+      ],
+      "font_size": 20,
+      "font_family": "Microsoft YaHei",
+      "fill": "#121212",
+      "bold": true,
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "container_id": "p4_policy",
+      "display_text": "政策可行性\n国办函〔1988〕80号明确授权中电联履行成果转化法定职能\n《促进科技成果转化法》《数据二十条》《新型电力系统行动方案》提供顶层与行业政策支撑\n已发布《可信数据空间技术架构》《可信数据空间使用控制技术要求》系列标准",
+      "source_text": "政策可行性\n国办函〔1988〕80号明确授权中电联履行成果转化法定职能\n《促进科技成果转化法》《数据二十条》《新型电力系统行动方案》提供顶层与行业政策支撑\n已发布《可信数据空间技术架构》《可信数据空间使用控制技术要求》系列标准",
+      "role": "module_body",
+      "bbox": [
+        85,
+        218,
+        595,
+        355
+      ],
+      "font_size": 12.2,
+      "font_family": "Microsoft YaHei",
+      "fill": "#1F2933",
+      "bold": false,
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "container_id": "p4_tech",
+      "display_text": "技术可行性\n隐私计算、区块链、联邦学习、可信执行环境（TEE）、国密加密等核心技术已规模化应用\n国网山西电力、南方电网已有企业级可信数据空间实践经验",
+      "source_text": "技术可行性\n隐私计算、区块链、联邦学习、可信执行环境（TEE）、国密加密等核心技术已规模化应用\n国网山西电力、南方电网已有企业级可信数据空间实践经验",
+      "role": "module_body",
+      "bbox": [
+        685,
+        225,
+        1195,
+        345
+      ],
+      "font_size": 12.8,
+      "font_family": "Microsoft YaHei",
+      "fill": "#1F2933",
+      "bold": false,
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "container_id": "p4_resource",
+      "display_text": "资源可行性\n中电联覆盖发电、电网、设备制造、科研院所等全产业链会员\n掌握成果鉴定、创新奖评选、首台套评定等核心法定职能资源\n已成功申报电力领域数据基础设施先行先试项目，具备先发资质",
+      "source_text": "资源可行性\n中电联覆盖发电、电网、设备制造、科研院所等全产业链会员\n掌握成果鉴定、创新奖评选、首台套评定等核心法定职能资源\n已成功申报电力领域数据基础设施先行先试项目，具备先发资质",
+      "role": "module_body",
+      "bbox": [
+        85,
+        425,
+        595,
+        570
+      ],
+      "font_size": 12.2,
+      "font_family": "Microsoft YaHei",
+      "fill": "#1F2933",
+      "bold": false,
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "container_id": "p4_market",
+      "display_text": "市场可行性\n行业年研发投入超千亿元，年新增专利成果超10万项\n电力创新奖每年评选优质成果超300项，市场规模超千亿元\n“公益+市场化”双轨模式具备清晰投入产出闭环",
+      "source_text": "市场可行性\n行业年研发投入超千亿元，年新增专利成果超10万项\n电力创新奖每年评选优质成果超300项，市场规模超千亿元\n“公益+市场化”双轨模式具备清晰投入产出闭环",
+      "role": "module_body",
+      "bbox": [
+        685,
+        425,
+        1195,
+        570
+      ],
+      "font_size": 12.2,
+      "font_family": "Microsoft YaHei",
+      "fill": "#1F2933",
+      "bold": false,
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "container_id": "p4_conclusion",
+      "display_text": "四个维度共同汇聚，支撑可信数据空间科技成果转化场景建设具备可执行基础",
+      "source_text": "四个维度共同汇聚，支撑可信数据空间科技成果转化场景建设具备可执行基础",
+      "role": "logic_chain",
+      "bbox": [
+        110,
+        635,
+        1170,
+        670
+      ],
+      "font_size": 16,
+      "font_family": "Microsoft YaHei",
+      "fill": "#8A1538",
+      "bold": true,
+      "align": "center",
+      "word_wrap": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "cyberppt.dual_image.semantic_binding_set.v1",
+  "valid": false,
+  "page_count": 1,
+  "container_count": 0,
+  "item_count": 0,
+  "unassigned_text_count": 59,
+  "binding_dir": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/analysis/semantic_binding",
+  "semantic_plan_dir": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/analysis/semantic_plan",
+  "pages": [
+    {
+      "page_number": 11,
+      "valid": false,
+      "container_count": 0,
+      "item_count": 0,
+      "unassigned_text_count": 59,
+      "semantic_binding": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/analysis/semantic_binding/page_011_semantic_binding.json",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/analysis/semantic_plan/page_011_semantic_plan.json"
+    }
+  ]
+}
