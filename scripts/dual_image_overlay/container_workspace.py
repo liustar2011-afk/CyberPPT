@@ -26,6 +26,8 @@ MIN_SLOT_W = 18.0
 MIN_SLOT_H = 12.0
 BACKGROUND_PANEL_INTERSECTION_RATIO = 0.70
 TEXT_PROVES_WRITABLE_OVERLAP_RATIO = 0.55
+DEFAULT_CANVAS_WIDTH = 1672.0
+DEFAULT_CANVAS_HEIGHT = 941.0
 
 
 def _bbox_xyxy(values: Any) -> list[float]:
@@ -302,8 +304,8 @@ def _background_occupied_zones(
     except OSError:
         return []
     width, height = image.size
-    sx = width / 1280.0
-    sy = height / 720.0
+    sx = width / DEFAULT_CANVAS_WIDTH
+    sy = height / DEFAULT_CANVAS_HEIGHT
     x1, y1, x2, y2 = _xyxy_from_rect(safe)
     px1 = max(0, min(width, int(round(x1 * sx))))
     py1 = max(0, min(height, int(round(y1 * sy))))

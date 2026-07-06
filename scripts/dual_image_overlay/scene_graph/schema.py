@@ -5,7 +5,7 @@ from typing import Any, Mapping
 
 
 SCHEMA = "cyberppt.page_scene_graph.v1"
-NORMALIZED_CANVAS = {"width": 1280.0, "height": 720.0}
+NORMALIZED_CANVAS = {"width": 1672.0, "height": 941.0}
 TEXT_TRUTH_AUTHORITIES = {"script", "content_lock", "manual_override"}
 LOCATOR_ONLY_AUTHORITIES = {"ocr", "text_layout"}
 BINDING_TYPES = {

@@ -233,6 +233,7 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
                             _capture_text("bottom 3", 714, 620, 162, 31),
                             _capture_text("bottom 4", 969, 620, 162, 31),
                         ],
+                        "image_regions": {"canvas": {"width": 1280, "height": 720}},
                         "visual_element_inventory": [],
                     }
                 ]
@@ -351,7 +352,7 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
             self.assertEqual(3, result.returncode, result.stdout + result.stderr)
             self.assertTrue((project / "analysis/semantic_binding/page_002_semantic_binding.json").is_file())
 
-    def test_rebuild_ingress_normalizes_full_and_background_to_1280_canvas(self) -> None:
+    def test_rebuild_ingress_normalizes_full_and_background_to_1672_canvas(self) -> None:
         with TemporaryDirectory() as directory:
             root = Path(directory)
             project = root / "template-project"
@@ -369,22 +370,22 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
             )
 
             with Image.open(prepared_full) as full_image, Image.open(prepared_background) as background_image:
-                self.assertEqual((1280, 720), full_image.size)
-                self.assertEqual((1280, 720), background_image.size)
+                self.assertEqual((1672, 941), full_image.size)
+                self.assertEqual((1672, 941), background_image.size)
 
         self.assertEqual([1672, 941], image_size_check["source_full_size"])
         self.assertEqual([1672, 941], image_size_check["source_background_size"])
-        self.assertEqual([1280, 720], image_size_check["output_size"])
-        self.assertEqual("normalized_1280x720", image_size_check["status"])
+        self.assertEqual([1672, 941], image_size_check["output_size"])
+        self.assertEqual("normalized_1672x941", image_size_check["status"])
         self.assertIn("/normalized/", str(prepared_full))
         self.assertIn("/normalized/", str(prepared_background))
 
     def test_svg_background_href_points_to_normalized_image_dir(self) -> None:
         from scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild import _background_href_for_svg
 
-        href = _background_href_for_svg(Path("/tmp/project/images/normalized/page_002_background_1280x720.png"))
+        href = _background_href_for_svg(Path("/tmp/project/images/normalized/page_002_background_1672x941.png"))
 
-        self.assertEqual("../images/normalized/page_002_background_1280x720.png", href)
+        self.assertEqual("../images/normalized/page_002_background_1672x941.png", href)
 
     def test_editable_overlay_rebuild_help_works_from_repo_root_and_script_dir(self) -> None:
         script = REBUILD_ENGINE_DIR / "editable_overlay_rebuild.py"
@@ -654,18 +655,18 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
             full_image = root / "full.png"
             background_image = root / "background.png"
             source_script = root / "script.md"
-            Image.new("RGB", (1280, 720), "#ffffff").save(full_image)
-            Image.new("RGB", (1280, 720), "#ffffff").save(background_image)
+            Image.new("RGB", (1672, 941), "#ffffff").save(full_image)
+            Image.new("RGB", (1672, 941), "#ffffff").save(background_image)
             source_script.write_text(
                 "## 第13页：测试页\n\n融资申请→风控审核→放款→还款，全流程线上化\n",
                 encoding="utf-8",
             )
             layout = {
-                "image_size": {"width": 640, "height": 360},
+                "image_size": {"width": 1672, "height": 941},
                 "items": [
                     {
                         "text": "融资申请→风控审孩→放款→还款，全流程线上化",
-                        "bbox": [315, 224.5, 354.5, 253],
+                        "bbox": [823.0, 587.0, 926.0, 662.0],
                         "confidence": 0.91,
                         "source": "vision-json",
                     }
@@ -674,10 +675,10 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
             boxes = [
                 OverlayTextBox(
                     text="融资申请→风控审核→放款→还款，全流程线上化",
-                    x=630,
-                    y=449,
-                    w=79,
-                    h=57,
+                    x=823,
+                    y=587,
+                    w=103,
+                    h=75,
                     font_size=8.5,
                     font_weight="700",
                     source="scene_graph_layout",
@@ -692,7 +693,7 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
                 source_script=source_script,
                 boxes=boxes,
                 layout=layout,
-                body_region={"x": 0, "y": 0, "width": 1280, "height": 720},
+                body_region={"x": 0, "y": 0, "width": 1672, "height": 941},
                 containers=[],
                 visual_registry=None,
             )
@@ -702,7 +703,7 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertEqual("融资申请→风控审孩→放款→还款，全流程线上化", text_block["ocr_text"])
         self.assertEqual("融资申请→风控审核→放款→还款，全流程线上化", text_block["final_text"])
         self.assertEqual("script_verified", text_block["truth"]["status"])
-        self.assertEqual([630.0, 449.0, 709.0, 506.0], text_block["bbox"])
+        self.assertEqual([823.0, 587.0, 926.0, 662.0], text_block["bbox"])
         self.assertEqual("overlay_export_context", text_block["source"])
         self.assertEqual("700", text_block["style"]["font_weight"])
 
@@ -831,7 +832,7 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
                     }
                 ]
             },
-            {"x": 0, "y": 0, "width": 1280, "height": 720},
+            {"x": 0, "y": 0, "width": 1672, "height": 941},
         )
 
         self.assertGreaterEqual(boxes[0].font_size, 11.5)

@@ -21,7 +21,7 @@ from .background_text_scan import scan_background_text
 from .alignment import AlignmentTransform, estimate_alignment
 from .container_workspace import build_container_workspace, write_container_workspace
 from .layout_qa import check_layout
-from .normalize import normalize_image
+from .normalize import CANVAS, normalize_image
 from .office_textbox_fit import apply_office_textbox_fit
 from .qa_registry import write_page_quality_report
 from .render_compare_flow import attach_render_compare_measurement, run_render_compare_for_page
@@ -103,11 +103,11 @@ def _render_pptx_preview(pptx_path: Path, exports: Path) -> Path:
 def _build_side_by_side(reference: Path, rendered: Path, target: Path) -> None:
     target.parent.mkdir(parents=True, exist_ok=True)
     with Image.open(reference) as left_source, Image.open(rendered) as right_source:
-        left = left_source.convert("RGB").resize((1280, 720), Image.Resampling.LANCZOS)
-        right = right_source.convert("RGB").resize((1280, 720), Image.Resampling.LANCZOS)
-        canvas = Image.new("RGB", (2560, 720), "#FFFFFF")
+        left = left_source.convert("RGB").resize(CANVAS, Image.Resampling.LANCZOS)
+        right = right_source.convert("RGB").resize(CANVAS, Image.Resampling.LANCZOS)
+        canvas = Image.new("RGB", (CANVAS[0] * 2, CANVAS[1]), "#FFFFFF")
         canvas.paste(left, (0, 0))
-        canvas.paste(right, (1280, 0))
+        canvas.paste(right, (CANVAS[0], 0))
         canvas.save(target)
 
 
@@ -208,8 +208,8 @@ def _source_capture_pair_manifest(page_number: int, full: Path, background: Path
     return {
         "schema": "cyberppt.dual_image.page_image_pairs.v1",
         "generation_contract": {
-            "slide_canvas": {"width": 1280, "height": 720},
-            "brand_body_region": {"x": 0, "y": 0, "width": 1280, "height": 720},
+            "slide_canvas": {"width": CANVAS[0], "height": CANVAS[1]},
+            "brand_body_region": {"x": 0, "y": 0, "width": CANVAS[0], "height": CANVAS[1]},
         },
         "pairs": [
             {
@@ -218,13 +218,13 @@ def _source_capture_pair_manifest(page_number: int, full: Path, background: Path
                     "filename": full.name,
                     "path": str(full),
                     "status": "ready",
-                    "image_size": {"width": 1280, "height": 720},
+                    "image_size": {"width": CANVAS[0], "height": CANVAS[1]},
                 },
                 "background": {
                     "filename": background.name,
                     "path": str(background),
                     "status": "ready",
-                    "image_size": {"width": 1280, "height": 720},
+                    "image_size": {"width": CANVAS[0], "height": CANVAS[1]},
                 },
             }
         ],
@@ -299,8 +299,8 @@ def build_page(args: argparse.Namespace) -> dict:
     normalized = out_dir / "normalized"
     analysis = out_dir / "analysis"
     exports = out_dir / "exports"
-    full_norm = normalized / "full-1280x720.png"
-    background_norm = normalized / "background-1280x720.png"
+    full_norm = normalized / f"full-{CANVAS[0]}x{CANVAS[1]}.png"
+    background_norm = normalized / f"background-{CANVAS[0]}x{CANVAS[1]}.png"
 
     normalize_image(args.full.resolve(), full_norm)
     normalize_image(args.background.resolve(), background_norm)
@@ -354,7 +354,7 @@ def build_page(args: argparse.Namespace) -> dict:
     write_workspace_assignment(workspace_assignment_path, workspace_assignment)
     boxes, office_textbox_fit = apply_office_textbox_fit(
         boxes,
-        canvas={"width": 1280, "height": 720},
+        canvas={"width": CANVAS[0], "height": CANVAS[1]},
         background_image=background_norm,
         workspace_assignment=workspace_assignment,
         report_path=analysis / "office_textbox_fit.json",
@@ -380,7 +380,7 @@ def build_page(args: argparse.Namespace) -> dict:
     mapping = {
         "schema": "cyberppt.dual_image.text_mapping.v1",
         "delivery_mode": "dual_image_editable_overlay",
-        "canvas": {"width": 1280, "height": 720},
+        "canvas": {"width": CANVAS[0], "height": CANVAS[1]},
         "background": str(background_norm),
         "semantic_plan": str(args.semantic_plan.resolve()),
         "geometry_source": geometry_source,
@@ -393,7 +393,7 @@ def build_page(args: argparse.Namespace) -> dict:
 
     pptx_path = exports / "page.pptx"
     job = {
-        "canvas": {"width": 1280, "height": 720},
+        "canvas": {"width": CANVAS[0], "height": CANVAS[1]},
         "slide": {"width_in": 13.333, "height_in": 7.5},
         "background": str(background_norm),
         "output_pptx": str(pptx_path),

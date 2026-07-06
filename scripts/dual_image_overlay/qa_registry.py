@@ -7,6 +7,8 @@ from typing import Any
 
 RULES_PATH = Path(__file__).with_name("default_quality_rules.json")
 REPORT_SCHEMA = "cyberppt.dual_image.page_quality_report.v1"
+DEFAULT_CANVAS_WIDTH = 1672.0
+DEFAULT_CANVAS_HEIGHT = 941.0
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -213,8 +215,8 @@ def _check_template_region_declared(manifest: Any) -> tuple[bool, dict[str, Any]
         return False, {"reason": "generation_contract_missing"}
     content_region = _rect_from_mapping(contract.get("content_region") or contract.get("brand_body_region"))
     slide_canvas = contract.get("slide_canvas") if isinstance(contract.get("slide_canvas"), dict) else {}
-    canvas_width = float(slide_canvas.get("width", 1280) or 1280)
-    canvas_height = float(slide_canvas.get("height", 720) or 720)
+    canvas_width = float(slide_canvas.get("width", DEFAULT_CANVAS_WIDTH) or DEFAULT_CANVAS_WIDTH)
+    canvas_height = float(slide_canvas.get("height", DEFAULT_CANVAS_HEIGHT) or DEFAULT_CANVAS_HEIGHT)
     if content_region is None:
         return False, {"reason": "content_region_missing"}
     inside_canvas = (

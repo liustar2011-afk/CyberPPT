@@ -24,6 +24,7 @@ else:
 
 MODULE_PREFIX_RE = re.compile(r"^模块[一二三四五六七八九十百千万0-9]+[:：]\s*")
 MODULE_LINE_RE = re.compile(r"^(模块[一二三四五六七八九十百千万0-9]+)[:：]\s*(?P<title>.+)$")
+NORMALIZED_CANVAS_SIZE = (1672, 941)
 
 
 @dataclass
@@ -1083,7 +1084,7 @@ def _choose_semantic_input_space(
     registry_extent: dict[str, float] | None,
     warnings: list[dict[str, Any]],
 ) -> dict[str, float]:
-    fallback = actual_size or registry_size or plan_size or _size_dict(1280, 720)
+    fallback = actual_size or registry_size or plan_size or _size_dict(*NORMALIZED_CANVAS_SIZE)
     normalized_space = _normalization_coordinate_space(plan)
     if plan_size and normalized_space and _sizes_close(plan_size, normalized_space):
         return plan_size
@@ -1219,8 +1220,8 @@ def resolve_overlay_coordinate_context(
         warnings=warnings,
     )
     source_space = actual_size or semantic_input_space
-    coordinate_space = _size_dict(1280, 720)
-    source = "normalized_1280x720"
+    coordinate_space = _size_dict(*NORMALIZED_CANVAS_SIZE)
+    source = f"normalized_{NORMALIZED_CANVAS_SIZE[0]}x{NORMALIZED_CANVAS_SIZE[1]}"
 
     for name, size in (("semantic_plan_image_size", plan_size), ("visual_registry_canvas", registry_size)):
         if size and not _sizes_close(size, coordinate_space):
@@ -1301,7 +1302,7 @@ def normalize_semantic_plan_to_context(plan: dict[str, Any], coordinate_context:
 def normalize_semantic_plan_to_canvas(plan: dict[str, Any], input_space: dict[str, Any]) -> dict[str, Any]:
     coordinate_context = {
         "semantic_input_space": _size_dict(float(input_space["width"]), float(input_space["height"])),
-        "coordinate_space": _size_dict(1280, 720),
+        "coordinate_space": _size_dict(*NORMALIZED_CANVAS_SIZE),
     }
     return normalize_semantic_plan_to_context(plan, coordinate_context)
 
@@ -1636,7 +1637,10 @@ def _apply_ppt_master_core_layout(items: list[dict[str, Any]]) -> list[dict[str,
             }
         )
     try:
-        core_layout = {"image_size": {"width": 1280, "height": 720}, "items": core_items}
+        core_layout = {
+            "image_size": {"width": NORMALIZED_CANVAS_SIZE[0], "height": NORMALIZED_CANVAS_SIZE[1]},
+            "items": core_items,
+        }
         core_plan = ppt_master_core.build_layout_plan(core_layout)
         applied = ppt_master_core.apply_layout_plan(core_layout, core_plan)
     except Exception:
@@ -2343,8 +2347,8 @@ def build_overlay_boxes_from_semantic_plan(
             if isinstance(issue, dict)
         )
     resolved_space = coordinate_context.get("coordinate_space") if isinstance(coordinate_context.get("coordinate_space"), dict) else {}
-    image_width = float(resolved_space.get("width") or 1280)
-    image_height = float(resolved_space.get("height") or 720)
+    image_width = float(resolved_space.get("width") or NORMALIZED_CANVAS_SIZE[0])
+    image_height = float(resolved_space.get("height") or NORMALIZED_CANVAS_SIZE[1])
     background = Image.open(background_image).convert("RGB") if background_image else None
     sx = float(body_region["width"]) / image_width
     sy = float(body_region["height"]) / image_height

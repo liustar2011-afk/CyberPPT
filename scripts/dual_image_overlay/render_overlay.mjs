@@ -57,7 +57,7 @@ async function main() {
   }
 
   const job = readJob(jobPath);
-  const canvas = job.canvas || { width: 1280, height: 720 };
+  const canvas = job.canvas || { width: 1672, height: 941 };
   const slideSize = job.slide || { width_in: 13.333, height_in: 7.5 };
   requireFile(job.background, "background");
 

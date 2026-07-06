@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 
-CANVAS = {"width": 1280, "height": 720}
+CANVAS = {"width": 1672, "height": 941}
 
 
 def _rect(value: Any) -> list[float] | None:

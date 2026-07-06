@@ -18,7 +18,7 @@
 - A text block is a grouped editable object: all internal text lines must move together, scale together, and preserve their relative offsets.
 - If block-level scale falls below configured review thresholds, add a review item instead of silently accepting an unreadable result.
 - Explicit containers come from the no-text background image; implicit text containers come from full-image text evidence when no visible background container exists.
-- Normalize all production coordinates to `1280x720`.
+- Normalize all production coordinates to `1672x941`.
 - Existing `page_scene_graph.json` remains the layout-facing contract; `page_understanding.json` feeds it instead of replacing it.
 - Do not add a new OCR dependency in this revision; consume the existing OCR/layout artifacts already produced by the workflow.
 - Preserve current production readiness gates; add consumed-artifact evidence rather than bypassing gates.
@@ -114,7 +114,7 @@ def test_page_understanding_builds_business_truth_contract() -> None:
         ],
         implicit_containers=[],
         visual_elements=[],
-        canvas={"width": 1280.0, "height": 720.0},
+        canvas={"width": 1672.0, "height": 941.0},
     )
 
     assert payload["schema"] == "cyberppt.dual_image.page_understanding.v1"
@@ -151,7 +151,7 @@ from typing import Any
 
 
 SCHEMA = "cyberppt.dual_image.page_understanding.v1"
-DEFAULT_CANVAS = {"width": 1280.0, "height": 720.0}
+DEFAULT_CANVAS = {"width": 1672.0, "height": 941.0}
 
 
 def _hash_path(path: Path | None) -> str | None:
@@ -269,8 +269,8 @@ def build_page_understanding(
     canvas: dict[str, float] | None = None,
 ) -> dict[str, Any]:
     normalized_canvas = {
-        "width": float((canvas or DEFAULT_CANVAS).get("width", 1280.0)),
-        "height": float((canvas or DEFAULT_CANVAS).get("height", 720.0)),
+        "width": float((canvas or DEFAULT_CANVAS).get("width", 1672.0)),
+        "height": float((canvas or DEFAULT_CANVAS).get("height", 941.0)),
     }
     containers = [
         item

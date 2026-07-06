@@ -15,10 +15,10 @@ def test_uses_semantic_width_when_right_side_extends_past_image_width():
 
     normalized = normalize_bbox(BBox(1742, 160, 1842, 221), context["semantic_input_space"], context)
 
-    assert context["coordinate_space"] == {"width": 1280.0, "height": 720.0}
+    assert context["coordinate_space"] == {"width": 1672.0, "height": 941.0}
     assert context["semantic_input_space"] == {"width": 1920.0, "height": 941.0}
     assert context["visual_registry_input_space"] == {"width": 1920.0, "height": 941.0}
-    assert normalized.as_list() == [1161.333, 122.423, 1228.0, 169.097]
+    assert normalized.as_list() == [1516.992, 160.0, 1604.075, 221.0]
     assert any(warning["code"] == "semantic_coordinate_space_uses_plan_extent" for warning in context["warnings"])
 
 
@@ -34,7 +34,7 @@ def test_uses_actual_image_size_when_extents_do_not_exceed_image_width():
     normalized = normalize_bbox(BBox(647, 152, 818, 253), context["semantic_input_space"], context)
 
     assert context["semantic_input_space"] == {"width": 1672.0, "height": 941.0}
-    assert normalized.as_list() == [495.311, 116.302, 626.22, 193.581]
+    assert normalized.as_list() == [647.0, 152.0, 818.0, 253.0]
 
 
 def test_registry_extent_can_pull_semantic_space_to_plan_canvas():
@@ -56,4 +56,4 @@ def test_registry_extent_can_pull_semantic_space_to_plan_canvas():
 
 def test_normalize_bbox_rejects_missing_input_space():
     with pytest.raises(ValueError):
-        normalize_bbox(BBox(0, 0, 10, 10), {}, {"coordinate_space": {"width": 1280, "height": 720}})
+        normalize_bbox(BBox(0, 0, 10, 10), {}, {"coordinate_space": {"width": 1672, "height": 941}})

@@ -20,7 +20,7 @@ if __package__ in {None, ""}:
 from .layout_rule_miner import load_ocr_boxes, load_svg_texts, mine_layout_rules
 
 
-CANVAS = {"width": 1280, "height": 720}
+CANVAS = {"width": 1672, "height": 941}
 TEXT_REQUIRES_PRIORITY = {"T2": "P0", "T4": "P0", "T6": "P0", "T8": "P0", "T13": "P0"}
 NON_TEXT_VISUAL_EXCLUDED_TYPES = {"container", "text", "text_box", "text_object", "text_zone", "label_zone"}
 NON_TEXT_VISUAL_P0_TYPES = {

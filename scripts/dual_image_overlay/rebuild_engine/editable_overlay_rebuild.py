@@ -144,7 +144,7 @@ def _normalized_image_name(source: Path, suffix: str) -> str:
         stem = stem[: -len("_full")]
     if stem.endswith("_background"):
         stem = stem[: -len("_background")]
-    return f"{stem}_{suffix}_1280x720.png"
+    return f"{stem}_{suffix}_{CANVAS_SIZE[0]}x{CANVAS_SIZE[1]}.png"
 
 
 def _resize_to_canvas(source: Path, target: Path) -> list[int]:
@@ -167,7 +167,7 @@ def _prepare_page_images(
     full_size = _resize_to_canvas(full_image, prepared_full)
     background_size = _resize_to_canvas(background_image, prepared_background)
     return prepared_full, prepared_background, {
-        "status": "normalized_1280x720",
+        "status": f"normalized_{CANVAS_SIZE[0]}x{CANVAS_SIZE[1]}",
         "source_full_size": full_size,
         "source_background_size": background_size,
         "full_size": list(CANVAS_SIZE),
@@ -590,7 +590,7 @@ def _write_page_understanding_artifact(
         page_number=page_number,
         full_image=full_image,
         background_image=background_image,
-        registration={"valid": True, "transform": "identity", "source": "normalized_1280x720"},
+        registration={"valid": True, "transform": "identity", "source": f"normalized_{CANVAS_SIZE[0]}x{CANVAS_SIZE[1]}"},
         text_blocks=verified_blocks,
         explicit_containers=explicit_containers,
         implicit_containers=implicit_containers,

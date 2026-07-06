@@ -70,8 +70,8 @@ class DualImageOverlayBuildPageTests(unittest.TestCase):
                 text=True,
             )
             self.assertEqual(3, result.returncode, result.stdout + result.stderr)
-            self.assertTrue((out_dir / "normalized/full-1280x720.png").is_file())
-            self.assertTrue((out_dir / "normalized/background-1280x720.png").is_file())
+            self.assertTrue((out_dir / "normalized/full-1672x941.png").is_file())
+            self.assertTrue((out_dir / "normalized/background-1672x941.png").is_file())
             self.assertTrue((out_dir / "exports/page.pptx").is_file())
             self.assertTrue((out_dir / "analysis/visual_preview.json").is_file())
             self.assertTrue((out_dir / "analysis/source_capture.json").is_file())
