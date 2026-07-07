@@ -104,3 +104,13 @@ class CliTests(unittest.TestCase):
         )
         self.assertEqual(completed.returncode, 0)
         self.assertIn("Check PPTX structure", completed.stdout)
+
+    def test_image_ppt_help_is_forwarded_to_underlying_script(self) -> None:
+        completed = subprocess.run(
+            [sys.executable, "-m", "cyberppt", "image-ppt", "--help"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(completed.returncode, 0)
+        self.assertIn("Generate image-based PPT inside the CEC template", completed.stdout)

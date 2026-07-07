@@ -9,32 +9,30 @@ SKILL = ROOT / "SKILL.md"
 
 
 class SkillContractTests(unittest.TestCase):
-    def test_dual_image_overlay_is_default_third_stage_mode(self) -> None:
+    def test_full_image_ppt_is_default_stage02_production_mode(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
-        self.assertIn("第三阶段默认交付模式为 `dual_image_editable_overlay`", text)
-        self.assertIn("只有当用户明确要求图表、表格、箭头、图标或背景对象可编辑", text)
-        self.assertIn("升级到 `native_rebuild`", text)
+        self.assertIn("第二阶段生产路径为 `full_image_ppt`", text)
+        self.assertIn("只生成正文区 ImageGen full 图", text)
+        self.assertIn("不再生成 no-text background", text)
 
-    def test_dual_image_reference_is_required_when_default_mode_runs(self) -> None:
+    def test_ocr_overlay_and_template_rebuild_are_not_stage02_mainline(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
-        self.assertIn("`references/dual-image-editable-overlay.md`", text)
-        self.assertIn("启用或默认执行 `dual_image_editable_overlay`", text)
+        self.assertIn("第二阶段不得进入 OCR、overlay、semantic_plan、source_capture 或 `template_rebuild`", text)
+        self.assertIn("`template_image_ppt_export.py`", text)
 
-    def test_main_pipeline_names_script_dual_image_overlay_and_template_rebuild(self) -> None:
+    def test_main_pipeline_names_script_full_image_and_image_ppt_export(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
-        self.assertIn("脚本锁定 -> 正文区 ImageGen full 图 -> no-text background -> dual_image_editable_overlay -> template_rebuild -> 渲染 QA -> 交付", text)
-        self.assertIn("未经 `template_rebuild` 套入模板内容区的 overlay PPTX 只能作为中间产物", text)
+        self.assertIn("脚本锁定 -> 正文区 ImageGen full 图 -> template_image_ppt_export -> 渲染 QA -> 交付", text)
+        self.assertIn("正文区主要内容以 full 图承载", text)
 
-    def test_ppt_generation_must_not_bypass_dual_image_stage(self) -> None:
+    def test_ppt_generation_uses_full_image_stage02_not_dual_image_stage(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
-        self.assertIn("生成 PPT 必须经过双图环节", text)
-        self.assertIn("不得绕过 `正文区 ImageGen full 图 -> no-text background -> dual_image_editable_overlay`", text)
-        self.assertIn("不得从脚本、Markdown、大纲、SVG、HTML、PptxGenJS、python-pptx、PowerPoint 或其他本地绘图方式直接手画成最终 PPT", text)
-        self.assertIn("`native_rebuild` 只是在双图 overlay 之后对特定背景对象做对象级可编辑增强", text)
+        self.assertIn("正式第二阶段不得要求 full/background 双图资产", text)
+        self.assertIn("旧 `dual_image_editable_overlay`、OCR 和 `template_rebuild` 只可作为 legacy/advanced 路径", text)
 
     def test_manual_stop_points_are_allowed_but_must_record_state(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
@@ -43,11 +41,11 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("必须记录当前停点、已完成工件、未执行后续步骤和恢复命令", text)
         self.assertIn("不得把停点产物冒充最终交付物", text)
 
-    def test_template_rebuild_rework_loops_back_to_dual_image_stage(self) -> None:
+    def test_full_image_ppt_rework_loops_back_to_full_image_stage(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
-        self.assertIn("套模板后发现正文区问题，必须回到对应页的双图转换工件返工", text)
-        self.assertIn("重新生成正文区 overlay 后必须重新执行 `template_rebuild`", text)
+        self.assertIn("套模板后发现正文区问题，必须回到对应页的 full 图或脚本锁定返工", text)
+        self.assertIn("重新生成 full 图后必须重新执行 `template_image_ppt_export`", text)
 
     def test_each_stage_must_persist_traceable_artifacts(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
@@ -61,6 +59,6 @@ class SkillContractTests(unittest.TestCase):
         text = SKILL.read_text(encoding="utf-8-sig")
 
         self.assertIn("标题、副标题、Logo、页码、页脚和公共模板元素属于模板文字层", text)
-        self.assertIn("不得从 full 图、background 图或 OCR 猜测标题和副标题", text)
-        self.assertIn("中途接入双图时必须提供 `template_text_lock` 或等价标题层 metadata", text)
+        self.assertIn("不得从 full 图或 OCR 猜测标题和副标题", text)
+        self.assertIn("中途接入 full 图时必须提供 `template_text_lock` 或等价标题层 metadata", text)
         self.assertIn("缺少模板文字层 truth 时必须停在 `metadata_required`", text)

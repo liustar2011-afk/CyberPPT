@@ -31,11 +31,48 @@ IMAGEGEN_NON_VISIBLE_SECTION_RE = re.compile(
     r"\n(?:保真约束[:：]|【(?:保真约束|构图指令|构图接口)】)"
 )
 COMPOSITION_SECTION_RE = re.compile(r"【(?:构图指令|构图接口)】(?P<body>.*)$", re.S)
-CANVAS_SIZE = (1672, 941)
+CANVAS_SIZE = (1280, 720)
 CONTENT_REGION_TOP_INSET = -18
 CONTENT_REGION_BOTTOM_INSET = -20
 CONTENT_REGION_SIDE_OUTSET = 38
 IMAGE_GENERATION_SCALE = 2
+DEFAULT_STYLE_NAME = "cyberppt-full-image-default"
+DEFAULT_IMAGE_STYLE = {
+    "name": DEFAULT_STYLE_NAME,
+    "style_prompt": (
+        "咨询报告式信息图风格；清晰分区、克制配色、轻量图表语言、"
+        "高信息密度但保持可读；避免营销海报感、避免大段装饰性背景。"
+    ),
+}
+
+
+def load_image_style(name: str | None) -> dict:
+    """Return the self-contained default style used by the full-image PPT path."""
+    if name in {None, "", DEFAULT_STYLE_NAME}:
+        return dict(DEFAULT_IMAGE_STYLE)
+    candidate = Path(str(name)).expanduser()
+    if candidate.is_file():
+        if candidate.suffix.lower() == ".json":
+            data = json.loads(candidate.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                data.setdefault("name", candidate.stem)
+                return data
+        return {"name": candidate.stem, "style_prompt": candidate.read_text(encoding="utf-8").strip()}
+    return {"name": str(name), "style_prompt": str(name)}
+
+
+def style_name(style: dict | None) -> str:
+    if not style:
+        return DEFAULT_STYLE_NAME
+    return str(style.get("name") or DEFAULT_STYLE_NAME)
+
+
+def style_prompt_block(style: dict | None) -> str:
+    style = style or DEFAULT_IMAGE_STYLE
+    prompt = str(style.get("style_prompt") or style.get("prompt") or "").strip()
+    if not prompt:
+        prompt = DEFAULT_IMAGE_STYLE["style_prompt"]
+    return f"视觉风格：{style_name(style)}\n{prompt}"
 
 
 def sanitize_name(value: str) -> str:

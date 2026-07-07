@@ -191,7 +191,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     final_script_pages_parser = subparsers.add_parser(
         "final-script-pages",
-        help="Compile selected pages from a final script into traceable ImageGen and dual-image inputs.",
+        help="Compile selected pages from a final script into traceable full-image PPT inputs.",
     )
     final_script_pages_parser.add_argument("project", help="CyberPPT project directory.")
     final_script_pages_parser.add_argument("--script", required=True, help="Final markdown script containing page headings.")
@@ -211,32 +211,32 @@ def build_parser() -> argparse.ArgumentParser:
     final_script_pages_parser.add_argument("--output-dir", help="Optional output directory for page_image_pairs.json.")
     final_script_pages_parser.add_argument(
         "--semantic-plan-dir",
-        help="Explicit semantic plan directory for dual-image editable rebuild.",
+        help="Unsupported in the Stage 02 full-image path; kept only to fail closed for old commands.",
     )
     final_script_pages_parser.add_argument(
         "--require-images",
         action="store_true",
-        help="Fail unless expected full/background image files already exist.",
+        help="Fail unless expected full image files already exist.",
     )
     final_script_pages_parser.add_argument(
         "--run-rebuild",
         action="store_true",
-        help="After manifest creation and image verification, run template-rebuild.",
+        help="Unsupported in final-script-pages; Stage 02 now uses image-ppt instead of template-rebuild.",
     )
     final_script_pages_parser.add_argument(
         "--production-build",
         action="store_true",
-        help="Run Stage 02 as a production PPTX build with all required tool gates.",
+        help="Run Stage 02 as a full-image PPT build through image-ppt.",
     )
     final_script_pages_parser.add_argument(
         "--blueprint-only",
         action="store_true",
-        help="Only create image prompts and page_image_pairs.json; never report production_ready.",
+        help="Only create full-image prompts and page_image_pairs.json; never report production_ready.",
     )
     final_script_pages_parser.add_argument(
         "--rebuild-arg",
         action="append",
-        help="Additional argument to pass to template-rebuild; repeat for multiple args.",
+        help="Unsupported legacy option for old template-rebuild commands.",
     )
     final_script_pages_parser.set_defaults(func=_final_script_pages_command)
 
