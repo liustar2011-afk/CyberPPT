@@ -46,14 +46,15 @@ class CyberpptPairManifestTests(unittest.TestCase):
             pair = manifest["pairs"][0]
             full_status = pair["full"]["status"]
             full_bytes = Path(pair["full"]["path"]).read_bytes()
-            background_status = pair["background"]["status"]
 
         self.assertEqual(code, 0)
+        self.assertEqual("cyberppt-full-image-only", manifest["mode"])
+        self.assertEqual(["full"], manifest["output_variants"])
         self.assertEqual("Generated", full_status)
         self.assertEqual(b"approved-blueprint", full_bytes)
-        self.assertEqual("Pending", background_status)
+        self.assertNotIn("background", pair)
 
-    def test_background_manifest_requires_edit_from_corresponding_full(self) -> None:
+    def test_manifest_generates_full_images_only(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             script = root / "script.md"
@@ -85,35 +86,34 @@ class CyberpptPairManifestTests(unittest.TestCase):
 
         self.assertEqual(code, 0)
         self.assertTrue(style_lock_exists)
+        self.assertEqual("cyberppt-full-image-only", manifest["mode"])
+        self.assertEqual(["full"], manifest["output_variants"])
         self.assertEqual("text_to_image_generate_full", pair["full"]["generation_method"])
-        self.assertEqual("image_to_image_edit_from_full", pair["background"]["generation_method"])
         self.assertEqual({"width": 1672, "height": 941}, manifest["generation_contract"]["slide_canvas"])
         self.assertEqual({"width": 1672, "height": 941}, manifest["generation_contract"]["generation_size"])
+        self.assertEqual("full-image-only", manifest["generation_contract"]["mode"])
         self.assertEqual("1672x941", pair["full"]["canvas"])
-        self.assertEqual("1672x941", pair["background"]["canvas"])
-        self.assertEqual(pair["full"]["path"], pair["background"]["depends_on_full_path"])
-        self.assertEqual("full", pair["background"]["input_variant"])
-        self.assertTrue(pair["background"]["requires_input_image"])
+        self.assertNotIn("background", pair)
 
-    def test_require_generated_rejects_background_without_full_derivation_contract(self) -> None:
+    def test_require_generated_accepts_full_image_without_background(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             full = root / "page_full.png"
-            background = root / "page_background.png"
             full.write_bytes(b"full")
-            background.write_bytes(b"background")
             manifest = {
                 "pairs": [
                     {
                         "page_number": 1,
-                        "full": {"path": str(full), "status": "Generated"},
-                        "background": {"path": str(background), "status": "Generated"},
+                        "full": {
+                            "path": str(full),
+                            "status": "Generated",
+                            "generation_method": "text_to_image_generate_full",
+                        },
                     }
                 ]
             }
 
-            with self.assertRaisesRegex(ValueError, "image_to_image_edit_from_full"):
-                require_generated(manifest)
+            require_generated(manifest)
 
 
 if __name__ == "__main__":

@@ -326,6 +326,54 @@ def _stage02_production_reports(artifacts: dict[str, str | None]) -> dict[str, d
     return reports
 
 
+def _latest_pptx(directory: Path) -> str | None:
+    matches = sorted(directory.glob("*.pptx"), key=lambda path: path.stat().st_mtime) if directory.is_dir() else []
+    return str(matches[-1]) if matches else None
+
+
+def _image_ppt_artifacts(output_dir: Path, name: str) -> dict[str, str | None]:
+    project_dir = output_dir / f"{name}_template_image_project"
+    return {
+        "template_image_manifest": str(output_dir / "template_image_manifest.json"),
+        "template_image_prompts": str(output_dir / "template_image_prompts.md"),
+        "template_image_project": str(project_dir),
+        "exported_pptx": _latest_pptx(project_dir / "exports"),
+    }
+
+
+def _run_image_ppt_build(*, script: Path, pages_raw: str, output_dir: Path, name: str) -> dict[str, Any]:
+    command = [
+        sys.executable,
+        "-m",
+        "cyberppt",
+        "image-ppt",
+        "run",
+        "--script",
+        str(script),
+        "--pages",
+        pages_raw,
+        "--output-dir",
+        str(output_dir),
+        "--name",
+        name,
+    ]
+    completed = subprocess.run(command, check=False)
+    status = "completed" if completed.returncode == 0 else "failed"
+    artifacts = _image_ppt_artifacts(output_dir, name)
+    result = {
+        "command": command,
+        "returncode": completed.returncode,
+        "status": status,
+        "artifacts": artifacts,
+    }
+    if completed.returncode != 0:
+        raise RuntimeError(
+            f"image-ppt production build failed with exit code {completed.returncode}.\n"
+            f"command: {' '.join(command)}"
+        )
+    return result
+
+
 def run_final_script_pages(
     *,
     project: Path,
@@ -347,6 +395,10 @@ def run_final_script_pages(
     semantic_plan_dir = semantic_plan_dir.expanduser().resolve() if semantic_plan_dir else None
     if not script.is_file():
         raise FileNotFoundError(f"final script not found: {script}")
+    if run_rebuild:
+        raise ValueError("--run-rebuild is no longer supported by final-script-pages; use image-ppt for Stage 02 production builds.")
+    if semantic_plan_dir is not None:
+        raise ValueError("--semantic-plan-dir is no longer supported by final-script-pages; Stage 02 no longer enters OCR/overlay/template-rebuild.")
     _ensure_project_dirs(project)
     if style_lock is not None and (style_id is not None or style_name):
         raise ValueError("--style-lock cannot be combined with --style-id or --style-name")
@@ -381,30 +433,6 @@ def run_final_script_pages(
     if require_images:
         require_generated(manifest)
 
-    rebuild_status: dict[str, Any] | None = None
-    if run_rebuild:
-        require_generated(manifest)
-        effective_rebuild_args = list(rebuild_args or [])
-        if semantic_plan_dir is not None:
-            effective_rebuild_args.extend(["--semantic-plan-dir", str(semantic_plan_dir)])
-        command = [
-            sys.executable,
-            "-m",
-            "cyberppt",
-            "template-rebuild",
-            str(manifest_path),
-            *effective_rebuild_args,
-        ]
-        completed = subprocess.run(command, check=False)
-        rebuild_status = {
-            "command": command,
-            "returncode": completed.returncode,
-            "status": "completed" if completed.returncode == 0 else "failed",
-            "artifacts": _template_rebuild_artifacts(project),
-        }
-        if completed.returncode != 0:
-            raise RuntimeError(_template_rebuild_failure_message(project, completed.returncode))
-
     resume_command = (
         f"python3 -m cyberppt final-script-pages {project} --script {script} "
         f"--pages {pages_raw} --style-lock {style_lock}"
@@ -413,15 +441,17 @@ def run_final_script_pages(
     tool_consumption: dict[str, Any] = {}
     stage_name = "02-production-build" if production_build else "02-blueprint-dual-image"
     status = "ready_for_image_generation" if not require_images else "image_assets_verified"
+    image_ppt_build: dict[str, Any] | None = None
+    image_ppt_output_dir = target_dir / "image_ppt"
+    image_ppt_name = slug
     if production_build:
-        production_artifacts = _stage02_production_artifacts(project)
-        production_readiness = build_production_readiness(
-            stage=stage_name,
-            artifacts=production_artifacts,
-            reports=_stage02_production_reports(production_artifacts),
+        image_ppt_build = _run_image_ppt_build(
+            script=script,
+            pages_raw=pages_raw,
+            output_dir=image_ppt_output_dir,
+            name=image_ppt_name,
         )
-        tool_consumption = production_readiness["tool_consumption"]
-        status = production_readiness["status"]
+        status = "production_ready"
     run_summary = {
         "schema": "cyberppt.final_script_pages_run.v1",
         "created_at": _utc_now(),
@@ -436,15 +466,24 @@ def run_final_script_pages(
             "template_text_lock": str(lock_path),
             "visual_style_lock": str(style_lock),
             "output_dir": str(target_dir),
+            "image_ppt_output_dir": str(image_ppt_output_dir),
+            "template_image_manifest": (
+                image_ppt_build["artifacts"]["template_image_manifest"] if image_ppt_build else None
+            ),
+            "template_image_project": (
+                image_ppt_build["artifacts"]["template_image_project"] if image_ppt_build else None
+            ),
+            "exported_pptx": image_ppt_build["artifacts"]["exported_pptx"] if image_ppt_build else None,
             "semantic_plan_dir": str(semantic_plan_dir) if semantic_plan_dir else None,
         },
         "next_steps": [
             "Generate each full image from the pair manifest full.prompt.",
-            "Generate each no-text background from the corresponding background.prompt.",
-            "Rerun this command with --require-images --run-rebuild after image files exist.",
+            "Run python3 -m cyberppt image-ppt run to assemble the full images into a template PPTX.",
+            "Do not enter OCR, overlay, semantic-plan or template-rebuild from Stage 02.",
         ],
         "resume_command": resume_command,
-        "rebuild": rebuild_status,
+        "rebuild": None,
+        "image_ppt_build": image_ppt_build,
         "tool_consumption": tool_consumption,
         "production_readiness": production_readiness,
     }

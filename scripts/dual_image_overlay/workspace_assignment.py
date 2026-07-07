@@ -23,6 +23,19 @@ def _role(item: dict[str, Any]) -> str:
     return "body"
 
 
+def _font_size_pt(item: dict[str, Any]) -> float | None:
+    style = item.get("style") if isinstance(item.get("style"), dict) else {}
+    for source in (item, style):
+        for key in ("font_size_pt", "applied_font_size_pt", "font_size"):
+            value = source.get(key)
+            if value is not None:
+                try:
+                    return float(value)
+                except (TypeError, ValueError):
+                    continue
+    return None
+
+
 def _rect(item: dict[str, Any]) -> dict[str, float]:
     bbox = item.get("bbox")
     if isinstance(bbox, list) and len(bbox) == 4:
@@ -126,6 +139,54 @@ def _choose_slot(text_rect: dict[str, float], role: str, slots: list[dict[str, A
     return max(candidates, key=lambda slot: _intersection_area(text_rect, slot.get("bbox", {})))
 
 
+DEFAULT_SIBLING_GAP = 3.0
+
+
+def _resolve_sibling_overlaps(assignments: list[dict[str, Any]]) -> None:
+    """Push down sibling text boxes that OCR placed at colliding/identical y positions.
+
+    OCR bbox detection occasionally assigns two distinct adjacent lines within the
+    same work slot an identical or overlapping y-coordinate. `_clamp_to_slot` only
+    clamps each item independently against its slot, so a raw OCR collision like
+    this survives untouched and renders as overlapping text. This groups siblings
+    by (container_id, assigned_slot), and for any group with a vertical collision,
+    restacks the group in original reading order using the largest non-colliding
+    gap observed in that same group (or DEFAULT_SIBLING_GAP if none exists).
+    """
+    groups: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for assignment in assignments:
+        key = (str(assignment.get("container_id") or ""), str(assignment.get("assigned_slot") or ""))
+        groups.setdefault(key, []).append(assignment)
+
+    for group in groups.values():
+        if len(group) < 2:
+            continue
+        group.sort(key=lambda item: item["text_index"])
+
+        gaps: list[float] = []
+        collision = False
+        for previous, current in zip(group, group[1:]):
+            prev_bottom = previous["final_bbox"]["y"] + previous["final_bbox"]["h"]
+            gap = current["final_bbox"]["y"] - prev_bottom
+            if gap < GEOMETRY_EPSILON:
+                collision = True
+            else:
+                gaps.append(gap)
+        if not collision:
+            continue
+
+        typical_gap = sorted(gaps)[len(gaps) // 2] if gaps else DEFAULT_SIBLING_GAP
+        cursor = group[0]["final_bbox"]["y"]
+        for item in group:
+            bbox = item["final_bbox"]
+            if abs(bbox["y"] - cursor) > GEOMETRY_EPSILON:
+                item["final_bbox"] = {**bbox, "y": round(cursor, 3)}
+                item.setdefault("fit_actions", [])
+                if "resolve_sibling_overlap" not in item["fit_actions"]:
+                    item["fit_actions"].append("resolve_sibling_overlap")
+            cursor = item["final_bbox"]["y"] + item["final_bbox"]["h"] + typical_gap
+
+
 def build_workspace_assignment(
     *,
     page_number: int | None,
@@ -188,6 +249,7 @@ def build_workspace_assignment(
                 "text_index": index,
                 "text": item.get("text") or item.get("rendered_text"),
                 "role": role,
+                "font_size_pt": _font_size_pt(item),
                 "container_id": container_id,
                 "assigned_slot": slot.get("id"),
                 "slot_bbox": slot_bbox,
@@ -200,6 +262,7 @@ def build_workspace_assignment(
         if page_understanding_container_id:
             assignments[-1]["text_id"] = item_text_id
             assignments[-1]["source"] = "page_understanding"
+    _resolve_sibling_overlaps(assignments)
     error_count = len([issue for issue in issues if issue["severity"] == "error"])
     return {
         "schema": SCHEMA,

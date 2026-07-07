@@ -239,7 +239,7 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
                 ]
             }
 
-            workspace, assignment = _build_template_container_workspaces(project, source_capture)
+            workspace, assignment, layout_qa = _build_template_container_workspaces(project, source_capture)
             structure_inference = json.loads(
                 (project / "analysis/structure_inference/page_003_structure_inference.json").read_text(
                     encoding="utf-8"
@@ -252,6 +252,8 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertGreaterEqual(workspace["slot_count"], 6)
         self.assertTrue(assignment["valid"], assignment)
         self.assertEqual(18, assignment["assignment_count"])
+        self.assertTrue(layout_qa["valid"], layout_qa)
+        self.assertEqual(0, layout_qa["overlap_count"])
 
     def test_template_rebuild_passes_visual_registry_dir_to_source_capture(self) -> None:
         with TemporaryDirectory() as directory:
@@ -352,7 +354,12 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
             self.assertEqual(3, result.returncode, result.stdout + result.stderr)
             self.assertTrue((project / "analysis/semantic_binding/page_002_semantic_binding.json").is_file())
 
-    def test_rebuild_ingress_normalizes_full_and_background_to_1672_canvas(self) -> None:
+    def test_rebuild_ingress_normalizes_full_and_background_to_template_canvas(self) -> None:
+        # The template/slide physical canvas is fixed at 1280x720 (13.333x7.5in),
+        # independent of whatever higher resolution the source full/background
+        # images were generated at (e.g. 1672x941 for sharper ImageGen output).
+        # Conflating the two previously inflated the exported PPTX to a
+        # non-standard 17.42x9.80in slide.
         with TemporaryDirectory() as directory:
             root = Path(directory)
             project = root / "template-project"
@@ -370,13 +377,13 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
             )
 
             with Image.open(prepared_full) as full_image, Image.open(prepared_background) as background_image:
-                self.assertEqual((1672, 941), full_image.size)
-                self.assertEqual((1672, 941), background_image.size)
+                self.assertEqual((1280, 720), full_image.size)
+                self.assertEqual((1280, 720), background_image.size)
 
         self.assertEqual([1672, 941], image_size_check["source_full_size"])
         self.assertEqual([1672, 941], image_size_check["source_background_size"])
-        self.assertEqual([1672, 941], image_size_check["output_size"])
-        self.assertEqual("normalized_1672x941", image_size_check["status"])
+        self.assertEqual([1280, 720], image_size_check["output_size"])
+        self.assertEqual("normalized_1280x720", image_size_check["status"])
         self.assertIn("/normalized/", str(prepared_full))
         self.assertIn("/normalized/", str(prepared_background))
 
@@ -661,6 +668,11 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
                 "## 第13页：测试页\n\n融资申请→风控审核→放款→还款，全流程线上化\n",
                 encoding="utf-8",
             )
+            # OCR runs against the original, higher-resolution source image (here
+            # 1672x941, matching real ImageGen output), while the scene-graph
+            # layout `boxes` and `body_region` live in the fixed 1280x720 template
+            # canvas. `image_size` records the OCR's own coordinate space so bbox
+            # values can be rescaled into canvas space independently of it.
             layout = {
                 "image_size": {"width": 1672, "height": 941},
                 "items": [
@@ -675,10 +687,10 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
             boxes = [
                 OverlayTextBox(
                     text="融资申请→风控审核→放款→还款，全流程线上化",
-                    x=823,
-                    y=587,
-                    w=103,
-                    h=75,
+                    x=630.1,
+                    y=449.1,
+                    w=78.9,
+                    h=57.4,
                     font_size=8.5,
                     font_weight="700",
                     source="scene_graph_layout",
@@ -693,7 +705,7 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
                 source_script=source_script,
                 boxes=boxes,
                 layout=layout,
-                body_region={"x": 0, "y": 0, "width": 1672, "height": 941},
+                body_region={"x": 0, "y": 0, "width": 1280, "height": 720},
                 containers=[],
                 visual_registry=None,
             )
@@ -703,7 +715,7 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertEqual("融资申请→风控审孩→放款→还款，全流程线上化", text_block["ocr_text"])
         self.assertEqual("融资申请→风控审核→放款→还款，全流程线上化", text_block["final_text"])
         self.assertEqual("script_verified", text_block["truth"]["status"])
-        self.assertEqual([823.0, 587.0, 926.0, 662.0], text_block["bbox"])
+        self.assertEqual([630.1, 449.1, 709.0, 506.5], text_block["bbox"])
         self.assertEqual("overlay_export_context", text_block["source"])
         self.assertEqual("700", text_block["style"]["font_weight"])
 
@@ -1032,6 +1044,38 @@ def _write_template_project(project: Path) -> None:
     (project / "analysis/typography/page_002_typography.json").write_text(
         json.dumps(
             {"decisions": [{"text": "核心结论", "rendered_text": "核心结论", "role": "T2", "applied_px": 18}]},
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (project / "analysis/background_text_scan").mkdir(parents=True, exist_ok=True)
+    (project / "analysis/background_text_scan/background_text_scan_index.json").write_text(
+        json.dumps(
+            {
+                "schema": "cyberppt.dual_image.background_text_scan_set.v1",
+                "valid": True,
+                "page_count": 1,
+                "error_count": 0,
+                "pages": [{"page_number": 2, "valid": True, "error_count": 0, "issues": []}],
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (project / "analysis/semantic_typography_qa").mkdir(parents=True, exist_ok=True)
+    (project / "analysis/semantic_typography_qa/semantic_typography_qa_index.json").write_text(
+        json.dumps(
+            {
+                "schema": "cyberppt.dual_image.semantic_typography_qa_set.v1",
+                "valid": True,
+                "page_count": 1,
+                "correction_count": 0,
+                "pages": [{"page_number": 2, "valid": True, "correction_count": 0, "corrections": []}],
+            },
             ensure_ascii=False,
             indent=2,
         )

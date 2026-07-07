@@ -171,3 +171,50 @@ def test_workspace_assignment_allows_clamped_float_boundary_contact() -> None:
     assert assignment["valid"] is True
     assert assignment["issues"] == []
     assert assignment["assignments"][0]["inside_slot"] is True
+
+
+def test_workspace_assignment_resolves_ocr_sibling_bbox_collision() -> None:
+    # Reproduces a real OCR defect: two distinct adjacent lines in the same body
+    # slot get placed at an identical y coordinate by the vision OCR backend,
+    # which _clamp_to_slot (per-item, sibling-unaware) does not detect.
+    workspace = {
+        "containers": [
+            {
+                "id": "inferred_row_band_top",
+                "work_slots": [
+                    {
+                        "id": "inferred_row_band_top_body_slot",
+                        "bbox": {"x": 437.68, "y": 99.71, "w": 459.63, "h": 207.34},
+                        "preferred_roles": ["body"],
+                    }
+                ],
+            }
+        ]
+    }
+    text_items = [
+        {"text": "经营管理数据", "role": "body", "container_id": "inferred_row_band_top",
+         "bbox": {"x": 97.5, "y": 193.62, "w": 73.87, "h": 11.07}},
+        {"text": "项目执行数据", "role": "body", "container_id": "inferred_row_band_top",
+         "bbox": {"x": 97.5, "y": 208.38, "w": 73.87, "h": 11.07}},
+        {"text": "合同订单数据", "role": "body", "container_id": "inferred_row_band_top",
+         "bbox": {"x": 97.5, "y": 223.14, "w": 73.87, "h": 11.07}},
+        {"text": "绩效与指标数据", "role": "body", "container_id": "inferred_row_band_top",
+         "bbox": {"x": 97.5, "y": 223.14, "w": 87.19, "h": 11.07}},
+    ]
+
+    assignment = build_workspace_assignment(
+        page_number=6,
+        stage="overlay",
+        workspace=workspace,
+        text_items=text_items,
+    )
+
+    boxes = assignment["assignments"]
+    assert len(boxes) == 4
+    for previous, current in zip(boxes, boxes[1:]):
+        prev_bottom = previous["final_bbox"]["y"] + previous["final_bbox"]["h"]
+        assert current["final_bbox"]["y"] >= prev_bottom - 1e-6
+    assert "resolve_sibling_overlap" in boxes[3]["fit_actions"]
+    # Untouched, already-well-spaced siblings should not be needlessly moved.
+    assert boxes[0]["final_bbox"]["y"] == 193.62
+    assert boxes[1]["final_bbox"]["y"] == 208.38

@@ -9,6 +9,7 @@ import re
 import shutil
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -22,12 +23,15 @@ if str(SCRIPTS_DIR) not in sys.path:
 from PIL import Image
 
 from scripts.dual_image_overlay.rebuild_modes import resolve_rebuild_mode
+from scripts.dual_image_overlay.background_text_scan import scan_background_text
 from scripts.dual_image_overlay.block_fit import fit_text_block_to_container
 from scripts.dual_image_overlay.page_understanding import (
     build_implicit_text_containers,
     build_page_understanding,
     write_page_understanding,
 )
+from scripts.dual_image_overlay.semantic_typography_qa import apply_semantic_typography_qa
+from scripts.dual_image_overlay.text_content_qa import build_text_content_qa
 from scripts.dual_image_overlay.scene_graph.builder import build_page_scene_graph
 from scripts.dual_image_overlay.scene_graph.gate import build_scene_graph_gate
 from scripts.dual_image_overlay.scene_graph.layout import build_layout_plan_from_scene_graph
@@ -103,6 +107,11 @@ else:
         scale_region,
         write_spec_lock,
     )
+
+
+def _write_json(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def load_pair_manifest(path: Path) -> dict[str, Any]:
@@ -264,12 +273,88 @@ def _layout_for_page(
     ocr_backend: str,
     force_ocr: bool,
     timeout: int,
+    min_expected_items: int | None = None,
+    variant: str = "full",
 ) -> tuple[Path, dict[str, Any]]:
-    layout_path = ocr_dir / f"page_{page_number:03d}_text_layout.json"
+    suffix = "" if variant == "full" else f"_{variant}"
+    layout_path = ocr_dir / f"page_{page_number:03d}{suffix}_text_layout.json"
     if layout_path.is_file() and not force_ocr:
         return layout_path, load_layout(layout_path)
-    layout = locate_text(full_image, backend=ocr_backend, output_path=layout_path, timeout=timeout)
+    layout = locate_text(
+        full_image,
+        backend=ocr_backend,
+        output_path=layout_path,
+        timeout=timeout,
+        min_expected_items=min_expected_items,
+    )
     return layout_path, layout
+
+
+def _prefetch_page_ocr_layouts(
+    *,
+    manifest: dict[str, Any],
+    source_script: Path,
+    ocr_dir: Path,
+    ocr_backend: str,
+    force_ocr: bool,
+    timeout: int,
+    max_workers: int = 4,
+) -> None:
+    """Warm the OCR cache for every page/variant concurrently before the main loop.
+
+    The main per-page loop below is sequential (each page's local processing
+    depends on nothing from other pages, but is simplest to reason about run
+    one at a time). For a multi-page manifest, its two OCR network calls per
+    page were previously the dominant wall-clock cost, paid N-pages times in a
+    row. This fires every page's full+background OCR request concurrently
+    ahead of time; `_layout_for_page`'s existing cache check (`if
+    layout_path.is_file() and not force_ocr: return cached`) means the main
+    loop's own calls then just read the now-populated cache instead of
+    blocking on the network again.
+
+    This is a pure, best-effort optimization: it does not change what OCR is
+    called or how its result is used. If a page's prefetch fails or is still
+    in flight when the main loop reaches it, that page's own `_layout_for_page`
+    call falls back to doing the (slower, synchronous) OCR call itself,
+    exactly as it did before this function existed -- so a prefetch failure
+    degrades to today's baseline behavior, never worse.
+    """
+    indexed_tasks: list[tuple[int, Path, str, int | None]] = []
+    for pair in manifest.get("pairs", []):
+        page_number = int(pair["page_number"])
+        if "background" not in pair:
+            continue
+        try:
+            expected_lines = extract_script_truth_lines(source_script, page_number)
+        except ValueError:
+            expected_lines = []
+        min_expected_items = max(1, round(len(expected_lines) * 0.6)) if expected_lines else None
+        indexed_tasks.append((page_number, _require_image(pair["full"], "full"), "full", min_expected_items))
+        indexed_tasks.append((page_number, _require_image(pair["background"], "background"), "background", None))
+
+    if len(indexed_tasks) <= 1:
+        return  # Nothing to gain from a thread pool for a single request.
+
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        futures = [
+            pool.submit(
+                _layout_for_page,
+                full_image=image_path,
+                ocr_dir=ocr_dir,
+                page_number=page_number,
+                ocr_backend=ocr_backend,
+                force_ocr=force_ocr,
+                timeout=timeout,
+                min_expected_items=min_expected_items,
+                variant=variant,
+            )
+            for page_number, image_path, variant, min_expected_items in indexed_tasks
+        ]
+        for future in futures:
+            try:
+                future.result()
+            except Exception as exc:  # noqa: BLE001 - best-effort warm-up, main loop retries synchronously
+                print(f"OCR prefetch task failed (will retry synchronously in main loop): {exc}", file=sys.stderr)
 
 
 def _scene_graph_artifact_paths(project_path: Path, page_number: int) -> dict[str, Path]:
@@ -659,12 +744,18 @@ def rebuild_from_manifest(
     semantic_layout_dir = project_path / "analysis" / "semantic_layout_plan"
     semantic_gate_dir = project_path / "analysis" / "semantic_plan_gate"
     containers_dir = project_path / "analysis" / "semantic_containers"
+    background_scan_dir = project_path / "analysis" / "background_text_scan"
+    typography_qa_dir = project_path / "analysis" / "semantic_typography_qa"
     semantic_plan_dir.mkdir(parents=True, exist_ok=True)
     semantic_layout_dir.mkdir(parents=True, exist_ok=True)
     semantic_gate_dir.mkdir(parents=True, exist_ok=True)
     containers_dir.mkdir(parents=True, exist_ok=True)
+    background_scan_dir.mkdir(parents=True, exist_ok=True)
+    typography_qa_dir.mkdir(parents=True, exist_ok=True)
     svg_count = 0
     quality_pages: list[dict[str, Any]] = []
+    background_scan_pages: list[dict[str, Any]] = []
+    typography_qa_pages: list[dict[str, Any]] = []
 
     for pair in manifest.get("pairs", []):
         page_number = int(pair["page_number"])
@@ -680,14 +771,57 @@ def rebuild_from_manifest(
         full_image = normalized_full
         background_image = normalized_background
         prepared_background = full_image if visible_image_variant == "full" else background_image
-        layout_path, layout = _layout_for_page(
-            full_image=full_image,
-            ocr_dir=ocr_dir,
-            page_number=page_number,
-            ocr_backend=ocr_backend,
-            force_ocr=force_ocr,
-            timeout=timeout,
+        try:
+            expected_lines = extract_script_truth_lines(source_script, page_number)
+        except ValueError:
+            expected_lines = []
+        # Not every script truth line is a separate on-image OCR item (titles/
+        # subtitles usually come from the template layer, not the content
+        # region), so use a conservative fraction as the "looks under-detected,
+        # resample" floor rather than the full count.
+        min_expected_items = max(1, round(len(expected_lines) * 0.6)) if expected_lines else None
+        # The full-image and background-image OCR calls are independent
+        # network requests (each can take tens of seconds to minutes), so run
+        # them concurrently instead of waiting on one before starting the
+        # other. This alone roughly halves the OCR-bound portion of this
+        # loop's wall-clock time per page; it does not change what either
+        # call does or how its result is used below.
+        with ThreadPoolExecutor(max_workers=2) as ocr_pool:
+            full_future = ocr_pool.submit(
+                _layout_for_page,
+                full_image=source_full_image,
+                ocr_dir=ocr_dir,
+                page_number=page_number,
+                ocr_backend=ocr_backend,
+                force_ocr=force_ocr,
+                timeout=timeout,
+                min_expected_items=min_expected_items,
+            )
+            # SKILL.md's dual_image_editable_overlay contract requires a
+            # no-text scan of the background: it must never carry readable
+            # primary text (that would double-render once the editable text
+            # layer sits on top of it). OCR the background the same way as
+            # the full image and let `scan_background_text` flag any
+            # detected text as a defect.
+            background_future = ocr_pool.submit(
+                _layout_for_page,
+                full_image=source_background_image,
+                ocr_dir=ocr_dir,
+                page_number=page_number,
+                ocr_backend=ocr_backend,
+                force_ocr=force_ocr,
+                timeout=timeout,
+                variant="background",
+            )
+            layout_path, layout = full_future.result()
+            background_layout_path, background_layout = background_future.result()
+        background_scan_report = scan_background_text(background_layout_path)
+        background_scan_report["page_number"] = page_number
+        _write_json(
+            background_scan_dir / f"page_{page_number:03d}_background_text_scan.json",
+            background_scan_report,
         )
+        background_scan_pages.append(background_scan_report)
         explicit_semantic = _load_explicit_semantic_plan(explicit_semantic_dir, page_number)
         visual_registry_entry = _load_visual_registry(explicit_visual_registry_dir, page_number)
         visual_registry = visual_registry_entry[1] if visual_registry_entry is not None else None
@@ -766,6 +900,29 @@ def rebuild_from_manifest(
             body,
             boxes,
         )
+        # SKILL.md requires a semantic typography QA pass: parallel text at the
+        # same semantic role (title vs body) must share one bold/weight
+        # decision, not whatever OCR happened to observe on that one line.
+        # This is reported as an informational check for now (see
+        # `apply_semantic_typography_qa`'s docstring: it treats OCR-derived
+        # bold as an observation, not truth); it does not yet feed corrections
+        # back into `boxes`, since this pipeline's own `_fit_all_boxes` already
+        # owns font sizing and blindly overwriting `font_weight` here risked a
+        # second, uncoordinated adjustment system fighting the first one.
+        typography_input = [
+            {
+                "text": item.get("text"),
+                "bbox": [item["x"], item["y"], item["x"] + item["w"], item["y"] + item["h"]],
+                "bold": str(item.get("font_weight") or "").strip() in {"700", "bold", "Bold"},
+            }
+            for item in boxes_to_json(boxes)
+        ]
+        _, typography_qa_report = apply_semantic_typography_qa(
+            typography_input,
+            report_path=typography_qa_dir / f"page_{page_number:03d}_semantic_typography_qa.json",
+        )
+        typography_qa_report["page_number"] = page_number
+        typography_qa_pages.append(typography_qa_report)
         page_understanding_path = _write_page_understanding_artifact(
             project_path=project_path,
             page_number=page_number,
@@ -883,6 +1040,26 @@ def rebuild_from_manifest(
         )
 
     _write_rebuild_quality(project_path, quality_pages)
+    _write_json(
+        background_scan_dir / "background_text_scan_index.json",
+        {
+            "schema": "cyberppt.dual_image.background_text_scan_set.v1",
+            "valid": bool(background_scan_pages) and all(page["valid"] for page in background_scan_pages),
+            "page_count": len(background_scan_pages),
+            "error_count": sum(int(page.get("error_count", 0) or 0) for page in background_scan_pages),
+            "pages": background_scan_pages,
+        },
+    )
+    _write_json(
+        typography_qa_dir / "semantic_typography_qa_index.json",
+        {
+            "schema": "cyberppt.dual_image.semantic_typography_qa_set.v1",
+            "valid": bool(typography_qa_pages) and all(page["valid"] for page in typography_qa_pages),
+            "page_count": len(typography_qa_pages),
+            "correction_count": sum(int(page.get("correction_count", 0) or 0) for page in typography_qa_pages),
+            "pages": typography_qa_pages,
+        },
+    )
     return {"project_path": str(project_path), "slides": svg_count, "svg_dir": str(project_path / "svg_output")}
 
 

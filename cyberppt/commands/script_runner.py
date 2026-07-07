@@ -12,10 +12,12 @@ from cyberppt.paths import SCRIPTS_DIR
 SCRIPT_ALIASES: dict[str, str] = {
     "build-visual-qa": "build_visual_qa_gate.py",
     "body-blueprint-prompts": "body_blueprint_prompt.py",
+    "clean-stage": "dual_image_overlay/clean_stage.py",
     "compare-merged-render": "compare_merged_render.py",
     "compare-render": "compare_render.py",
     "component-signature": "build_component_signature.py",
     "inspect": "inspect_pptx_objects.py",
+    "image-ppt": "dual_image_overlay/rebuild_engine/template_image_ppt_export.py",
     "lock-content": "build_content_lock.py",
     "measure-blueprint": "measure_blueprint.py",
     "merge-pages": "merge_verified_pages.py",

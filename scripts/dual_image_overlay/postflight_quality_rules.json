@@ -45,6 +45,15 @@
       "kind": "report_valid",
       "report": "visual_qa_gate",
       "evidence_required": true
+    },
+    {
+      "id": "postflight.text_content_qa_pass",
+      "stage": "postflight",
+      "severity": "error",
+      "description": "The exported PPTX's actual editable text must match the expected content (script/workspace-assignment truth), not just what the render looks like (SKILL.md dual_image_editable_overlay contract).",
+      "kind": "report_valid",
+      "report": "text_content_qa",
+      "evidence_required": true
     }
   ]
 }

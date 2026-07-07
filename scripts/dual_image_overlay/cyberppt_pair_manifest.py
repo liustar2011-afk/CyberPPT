@@ -36,7 +36,7 @@ from scripts.dual_image_overlay.style_library import write_project_style_lock
 CANVAS = {"width": 1672, "height": 941}
 CONTENT_REGION = {"x": 26, "y": 136, "width": 1619, "height": 774}
 GENERATION_SIZE = {"width": 1672, "height": 941}
-OUTPUT_VARIANTS = ["full", "background"]
+OUTPUT_VARIANTS = ["full"]
 FULL_GENERATION_METHOD = "text_to_image_generate_full"
 BACKGROUND_GENERATION_METHOD = "image_to_image_edit_from_full"
 BLUEPRINT_PATTERNS = (
@@ -112,7 +112,6 @@ def build_manifest(
         page = compiled_pages[page_number]
         stem = _page_stem(page_number, page.title)
         full_path = output_dir / f"{stem}_full.png"
-        background_path = output_dir / f"{stem}_background.png"
         full = {
             "filename": full_path.name,
             "path": str(full_path),
@@ -124,42 +123,26 @@ def build_manifest(
             "image_size": "2x-content-region",
             "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
         }
-        background = {
-            "filename": background_path.name,
-            "path": str(background_path),
-            "prompt": _background_prompt(page_number),
-            "generation_method": BACKGROUND_GENERATION_METHOD,
-            "operation": "edit",
-            "input_variant": "full",
-            "depends_on_full_path": str(full_path),
-            "requires_input_image": True,
-            "forbidden_generation_method": "text_to_image_generate_background",
-            "aspect_ratio": "content-region",
-            "image_size": "2x-content-region",
-            "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
-        }
         _mark_status(full, force_pending=force_pending)
-        _mark_status(background, force_pending=force_pending)
         pairs.append(
             {
                 "page_number": page_number,
                 "title": page.title,
                 "page_script": page.text,
                 "full": full,
-                "background": background,
             }
         )
 
     manifest = {
-        "mode": "cyberppt-dual-image-pair",
+        "mode": "cyberppt-full-image-only",
         "output_variants": OUTPUT_VARIANTS,
         "generation_contract": {
-            "mode": "template-content-region",
+            "mode": "full-image-only",
             "owner": "CyberPPT",
             "slide_canvas": CANVAS,
             "content_region": CONTENT_REGION,
             "generation_size": GENERATION_SIZE,
-            "rule": "Generate content-area images only; PPT title, subtitle and enterprise chrome are handled by template/export code.",
+            "rule": "Generate full content-area images only; PPT title, subtitle and enterprise chrome are handled by template/export code. OCR, overlay, background derivation and template-rebuild are not part of Stage 02.",
         },
         "project_path": str(project_path.resolve()) if project_path else "",
         "source_script": str(compiled_script.resolve()),
@@ -180,29 +163,11 @@ def require_generated(manifest: dict[str, Any]) -> None:
     for pair in manifest.get("pairs", []):
         page_number = pair.get("page_number", "?")
         full_item = pair.get("full") or {}
-        background_item = pair.get("background") or {}
         full_path_value = str(full_item.get("path", ""))
-        background_path_value = str(background_item.get("path", ""))
         if full_item.get("generation_method") != FULL_GENERATION_METHOD:
             contract_errors.append(
                 f"page {page_number} full.generation_method must be {FULL_GENERATION_METHOD}"
             )
-        if background_item.get("generation_method") != BACKGROUND_GENERATION_METHOD:
-            contract_errors.append(
-                f"page {page_number} background.generation_method must be {BACKGROUND_GENERATION_METHOD}"
-            )
-        if background_item.get("operation") != "edit":
-            contract_errors.append(f"page {page_number} background.operation must be edit")
-        if background_item.get("input_variant") != "full":
-            contract_errors.append(f"page {page_number} background.input_variant must be full")
-        if background_item.get("requires_input_image") is not True:
-            contract_errors.append(f"page {page_number} background.requires_input_image must be true")
-        if str(background_item.get("depends_on_full_path", "")) != full_path_value:
-            contract_errors.append(
-                f"page {page_number} background.depends_on_full_path must match full.path"
-            )
-        if background_path_value and background_path_value == full_path_value:
-            contract_errors.append(f"page {page_number} full and background paths must be different files")
         for variant in OUTPUT_VARIANTS:
             item = pair.get(variant) or {}
             path = Path(str(item.get("path", "")))
@@ -210,16 +175,13 @@ def require_generated(manifest: dict[str, Any]) -> None:
                 missing.append(str(path))
     if contract_errors:
         raise ValueError(
-            "CyberPPT dual-image contract violation. Background images must be generated by "
-            f"{BACKGROUND_GENERATION_METHOD} from the corresponding full image; independent "
-            "text-to-image background generation is forbidden.\n"
+            "CyberPPT full-image contract violation. Stage 02 only accepts generated full images.\n"
             + "\n".join(contract_errors)
         )
     if missing:
         raise FileNotFoundError(
-            "CyberPPT image files are not generated yet. Promote approved blueprints to full images "
-            "with --promote-blueprints-from, generate no-text background images from each full image, "
-            "then rerun with --resume.\nMissing:\n"
+            "CyberPPT full image files are not generated yet. Generate each full image from the "
+            "manifest full.prompt, then rerun with --require-images.\nMissing:\n"
             + "\n".join(missing)
         )
 

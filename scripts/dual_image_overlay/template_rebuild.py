@@ -26,6 +26,8 @@ from .source_capture import (
 )
 from .structure_inference import infer_structure_containers
 from .workspace_assignment import build_workspace_assignment, write_workspace_assignment
+from .workspace_layout_qa import check_workspace_assignment_layout, write_workspace_layout_qa
+from scripts.dual_image_overlay.text_content_qa import build_text_content_qa
 from scripts.visual_registry_from_source_capture import build_registries, write_registries
 
 
@@ -94,6 +96,27 @@ def _load_visual_qa_gate(project_path: Path) -> dict[str, Any] | None:
     return _read_json(path) if path.exists() else None
 
 
+def _load_background_text_scan(project_path: Path) -> dict[str, Any] | None:
+    path = project_path / "analysis" / "background_text_scan" / "background_text_scan_index.json"
+    return _read_json(path) if path.exists() else None
+
+
+def _load_semantic_typography_qa(project_path: Path) -> dict[str, Any] | None:
+    path = project_path / "analysis" / "semantic_typography_qa" / "semantic_typography_qa_index.json"
+    return _read_json(path) if path.exists() else None
+
+
+def _expected_texts_from_workspace_assignment(workspace_assignment: dict[str, Any]) -> list[str]:
+    texts: list[str] = []
+    for page in workspace_assignment.get("pages", []):
+        if not isinstance(page, dict):
+            continue
+        for item in page.get("assignments", []):
+            if isinstance(item, dict) and isinstance(item.get("text"), str) and item["text"].strip():
+                texts.append(item["text"])
+    return texts
+
+
 def _quality_rules(path: Path) -> list[dict[str, Any]]:
     payload = _read_json(path)
     rules = payload.get("rules", [])
@@ -121,7 +144,7 @@ def _scene_graph_visual_elements(value: Any) -> list[dict[str, Any]]:
 def _build_template_container_workspaces(
     project_path: Path,
     source_capture: dict[str, Any],
-) -> tuple[dict[str, Any], dict[str, Any]]:
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     workspace_dir = project_path / "analysis" / "container_workspace"
     assignment_dir = project_path / "analysis" / "workspace_assignment"
     structure_dir = project_path / "analysis" / "structure_inference"
@@ -213,7 +236,9 @@ def _build_template_container_workspaces(
             "pages": structure_pages,
         },
     )
-    return aggregate, assignment_aggregate
+    workspace_layout_qa = check_workspace_assignment_layout(assignment_aggregate)
+    write_workspace_layout_qa(project_path / "analysis" / "workspace_layout_qa.json", workspace_layout_qa)
+    return aggregate, assignment_aggregate, workspace_layout_qa
 
 
 def _build_template_semantic_bindings(
@@ -423,7 +448,9 @@ def build_template_rebuild_readiness(
     _write_json(analysis_dir / "source_capture.json", source_capture)
     source_capture_gate = build_source_capture_gate(source_capture)
     _write_json(analysis_dir / "source_capture_gate.json", source_capture_gate)
-    container_workspace, workspace_assignment = _build_template_container_workspaces(project_path, source_capture)
+    container_workspace, workspace_assignment, workspace_layout_qa = _build_template_container_workspaces(
+        project_path, source_capture
+    )
 
     exported_pptx = _latest_pptx(project_path)
     template_gate = _template_gate(project_path, export_requested=export_requested, exported_pptx=exported_pptx)
@@ -432,6 +459,25 @@ def build_template_rebuild_readiness(
     scene_graph_valid = bool(scene_graph_gates) and all(gate.get("valid") for gate in scene_graph_gates)
     visual_qa_gate = _load_visual_qa_gate(project_path)
     visual_qa_gate_valid = bool(visual_qa_gate and visual_qa_gate.get("valid"))
+    background_text_scan = _load_background_text_scan(project_path)
+    semantic_typography_qa = _load_semantic_typography_qa(project_path)
+    # text_content_qa needs the actual exported artifact, so it can only run
+    # once a pptx exists; on a stop-before-export run it's reported as
+    # "not yet applicable" rather than a failure.
+    if exported_pptx:
+        text_content_qa = build_text_content_qa(
+            Path(exported_pptx),
+            _expected_texts_from_workspace_assignment(workspace_assignment),
+            order_sensitive=False,
+        )
+    else:
+        text_content_qa = {
+            "schema": "cyberppt.dual_image.text_content_qa.v1",
+            "valid": False,
+            "skipped": True,
+            "reason": "no_exported_pptx_yet",
+        }
+    _write_json(analysis_dir / "text_content_qa.json", text_content_qa)
     page_number = None
     pairs = manifest.get("pairs")
     if isinstance(pairs, list) and pairs and isinstance(pairs[0], dict) and isinstance(pairs[0].get("page_number"), int):
@@ -446,6 +492,10 @@ def build_template_rebuild_readiness(
         "semantic_plan": str(analysis_dir / "semantic_plan"),
         "container_workspace": str(analysis_dir / "container_workspace"),
         "workspace_assignment": str(analysis_dir / "workspace_assignment"),
+        "workspace_layout_qa": str(analysis_dir / "workspace_layout_qa.json"),
+        "background_text_scan": str(analysis_dir / "background_text_scan" / "background_text_scan_index.json"),
+        "semantic_typography_qa": str(analysis_dir / "semantic_typography_qa" / "semantic_typography_qa_index.json"),
+        "text_content_qa": str(analysis_dir / "text_content_qa.json"),
         "visual_reference": visual_reference,
         "draft_visual_registry": str(resolved_visual_registry_dir)
         if draft_visual_registry_generated and resolved_visual_registry_dir
@@ -465,6 +515,10 @@ def build_template_rebuild_readiness(
         "semantic_binding": semantic_binding,
         "container_workspace": container_workspace,
         "workspace_assignment": workspace_assignment,
+        "workspace_layout_qa": workspace_layout_qa,
+        "background_text_scan": background_text_scan,
+        "semantic_typography_qa": semantic_typography_qa,
+        "text_content_qa": text_content_qa,
         "visual_qa_gate": visual_qa_gate,
         "render_compare": render_compare,
     }
@@ -557,6 +611,11 @@ def build_template_rebuild_readiness(
             "scene_graph_gate_pages": len(scene_graph_gates),
             "semantic_binding_pass": bool(semantic_binding.get("valid")),
             "semantic_binding_pages": int(semantic_binding.get("page_count", 0) or 0),
+            "workspace_layout_qa_pass": bool(workspace_layout_qa.get("valid")),
+            "workspace_layout_qa_overlap_count": int(workspace_layout_qa.get("overlap_count", 0) or 0),
+            "background_text_scan_pass": bool(background_text_scan and background_text_scan.get("valid")),
+            "semantic_typography_qa_pass": bool(semantic_typography_qa and semantic_typography_qa.get("valid")),
+            "text_content_qa_pass": bool(text_content_qa.get("valid")),
             "visual_qa_gate_pass": visual_qa_gate_valid,
             "page_quality_report_pass": bool(page_quality_report["valid"]),
         },
