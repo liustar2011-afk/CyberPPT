@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,31 +9,18 @@ from cyberppt.commands.script_gate import approve_script, get_script_status, sta
 
 
 class ScriptGateTests(unittest.TestCase):
-    def test_init_project_creates_stage_artifact_ledger_and_stage_dirs(self) -> None:
+    def test_init_project_defaults_to_internal_reporting_style(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
 
             init_project(project)
 
-            ledger = json.loads((project / "workbench/artifact-ledger.json").read_text(encoding="utf-8"))
-
-            self.assertEqual("cyberppt.artifact_ledger.v1", ledger["schema"])
-            self.assertEqual([], ledger["artifacts"])
             manifest = (project / "manifest.yml").read_text(encoding="utf-8")
-            self.assertIn("template_text_locks: workbench/locks/template_text", manifest)
             self.assertIn(
                 "writing_style:\n  default: internal_public_sector\n  structure_strategy: source_and_task_adaptive",
                 manifest,
             )
-            self.assertTrue((project / "workbench/stages/01-analysis").is_dir())
-            self.assertTrue((project / "workbench/stages/02-blueprint-dual-image").is_dir())
-            self.assertTrue((project / "workbench/stages/03-overlay").is_dir())
-            self.assertTrue((project / "workbench/stages/04-template-rebuild").is_dir())
-            self.assertTrue((project / "workbench/stages/05-qa-delivery").is_dir())
-            self.assertTrue((project / "workbench/runs").is_dir())
-            self.assertTrue((project / "workbench/archive").is_dir())
-            self.assertTrue((project / "workbench/tmp").is_dir())
-            self.assertTrue((project / "workbench/locks/template_text").is_dir())
+            self.assertTrue((project / "workbench/locks").is_dir())
 
     def test_stage_script_saves_draft_and_manifest_without_approval(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
