@@ -9,6 +9,15 @@ SKILL = ROOT / "SKILL.md"
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_default_writing_style_uses_internal_reporting_and_adaptive_structure(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("`references/internal-reporting-style.md`", text)
+        self.assertIn("央企、政府及其直属单位内部汇报", text)
+        self.assertIn("`source_and_task_adaptive`", text)
+        self.assertIn("不得固定全篇或单页目录顺序", text)
+        self.assertIn("SCR、假设树、对标矩阵可作为分析工具", text)
+
     def test_full_image_ppt_is_default_stage02_production_mode(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
