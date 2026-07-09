@@ -28,6 +28,9 @@ def _project_manifest(name: str) -> str:
     return f"""name: {name}
 workflow: cyberppt
 schema: cyberppt.project.v1
+writing_style:
+  default: internal_public_sector
+  structure_strategy: source_and_task_adaptive
 directories:
   source: source
   workbench: workbench
@@ -83,7 +86,7 @@ CyberPPT project workspace.
 ## Flow
 
 1. Put source materials in `source/`.
-2. Use `$cyber-ppt` to complete evidence analysis, storyline, and page planning.
+2. Use `$cyber-ppt` to complete evidence analysis, material-type and reporting-task identification, adaptive storyline planning, and page planning. New projects default to the formal central-SOE/government internal-reporting writing style; do not impose a fixed chapter order.
 3. Before any ImageGen or PPTX generation, save the current slide script or prompt in `workbench/scripts/drafts/` or `workbench/prompts/imagegen/`.
 4. Stop for user review. Do not generate images or PPTX until an approval record exists in `workbench/approvals/`.
 5. Store final scripts in `workbench/scripts/final/`, QA reports in `workbench/qa/`, renders in `outputs/renders/`, and delivery files in `delivery/`.
