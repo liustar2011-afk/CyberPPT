@@ -6,9 +6,23 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "SKILL.md"
+SOURCE_ANALYSIS = ROOT / "references" / "source-analysis.md"
+STORYLINE = ROOT / "references" / "storyline.md"
+README = ROOT / "README.md"
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_stage_one_references_default_to_adaptive_internal_reporting(self) -> None:
+        source_text = SOURCE_ANALYSIS.read_text(encoding="utf-8-sig")
+        storyline_text = STORYLINE.read_text(encoding="utf-8-sig")
+        readme_text = README.read_text(encoding="utf-8-sig")
+
+        self.assertIn("材料类型与汇报任务识别", source_text)
+        self.assertIn("不得固定章节顺序", storyline_text)
+        self.assertIn("页面标题或页面要点", storyline_text)
+        self.assertIn("央企、政府内部汇报", readme_text)
+        self.assertNotIn("咨询风格的 PowerPoint", readme_text)
+
     def test_default_writing_style_uses_internal_reporting_and_adaptive_structure(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
