@@ -929,12 +929,16 @@
     "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan",
     "container_workspace": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
     "workspace_assignment": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/workspace_assignment",
+    "workspace_layout_qa": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/workspace_layout_qa.json",
+    "background_text_scan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/background_text_scan/background_text_scan_index.json",
+    "semantic_typography_qa": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_typography_qa/semantic_typography_qa_index.json",
+    "text_content_qa": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/text_content_qa.json",
     "visual_reference": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png",
     "draft_visual_registry": null,
     "render_compare": null,
     "measured_visual_registry": null,
     "rendered_preview": null,
-    "exported_pptx": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/exports/power-trusted-data-space-p12-p13_20260706_155119.pptx",
+    "exported_pptx": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/exports/power-trusted-data-space-p12-p13_20260710_063252.pptx",
     "visual_qa_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_qa_gate.json"
   },
   "extra": {

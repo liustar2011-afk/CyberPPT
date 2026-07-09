@@ -5,9 +5,9 @@
   "project_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13",
   "valid": false,
   "status": "rework_required",
-  "rule_count": 5,
+  "rule_count": 6,
   "passed_count": 1,
-  "blocking_error_count": 4,
+  "blocking_error_count": 5,
   "warning_count": 0,
   "checks": [
     {
@@ -124,6 +124,29 @@
         "report_path_exists": false
       },
       "observed": null
+    },
+    {
+      "id": "postflight.text_content_qa_pass",
+      "stage": "postflight",
+      "severity": "error",
+      "description": "The exported PPTX's actual editable text must match the expected content (script/workspace-assignment truth), not just what the render looks like (SKILL.md dual_image_editable_overlay contract).",
+      "kind": "report_valid",
+      "passed": false,
+      "blocking": true,
+      "evidence_required": true,
+      "evidence": {
+        "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/text_content_qa.json",
+        "report_path_exists": true
+      },
+      "observed": {
+        "schema": "cyberppt.dual_image.text_content_qa.v1",
+        "valid": false,
+        "error_count": 4,
+        "checks": {
+          "text_count_matches": false,
+          "pptx_text_matches_expected": false
+        }
+      }
     }
   ],
   "blocking_errors": [
@@ -214,6 +237,29 @@
         "report_path_exists": false
       },
       "observed": null
+    },
+    {
+      "id": "postflight.text_content_qa_pass",
+      "stage": "postflight",
+      "severity": "error",
+      "description": "The exported PPTX's actual editable text must match the expected content (script/workspace-assignment truth), not just what the render looks like (SKILL.md dual_image_editable_overlay contract).",
+      "kind": "report_valid",
+      "passed": false,
+      "blocking": true,
+      "evidence_required": true,
+      "evidence": {
+        "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/text_content_qa.json",
+        "report_path_exists": true
+      },
+      "observed": {
+        "schema": "cyberppt.dual_image.text_content_qa.v1",
+        "valid": false,
+        "error_count": 4,
+        "checks": {
+          "text_count_matches": false,
+          "pptx_text_matches_expected": false
+        }
+      }
     }
   ],
   "warnings": [],
@@ -227,12 +273,16 @@
     "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan",
     "container_workspace": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
     "workspace_assignment": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/workspace_assignment",
+    "workspace_layout_qa": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/workspace_layout_qa.json",
+    "background_text_scan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/background_text_scan/background_text_scan_index.json",
+    "semantic_typography_qa": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_typography_qa/semantic_typography_qa_index.json",
+    "text_content_qa": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/text_content_qa.json",
     "visual_reference": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png",
     "draft_visual_registry": null,
     "render_compare": null,
     "measured_visual_registry": null,
     "rendered_preview": null,
-    "exported_pptx": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/exports/power-trusted-data-space-p12-p13_20260706_155119.pptx",
+    "exported_pptx": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/exports/power-trusted-data-space-p12-p13_20260710_063252.pptx",
     "visual_qa_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_qa_gate.json"
   },
   "extra": {

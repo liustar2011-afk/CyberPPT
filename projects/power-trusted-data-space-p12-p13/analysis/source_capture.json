@@ -79,10 +79,10 @@
         {
           "id": "dark_band_1",
           "role": "dark_band",
-          "x": 30.38,
-          "y": 170.06,
-          "w": 1219.23,
-          "h": 36.49,
+          "x": 29.69,
+          "y": 170.6,
+          "w": 1220.62,
+          "h": 36.18,
           "background": "dark",
           "fill": "#FFFFFF",
           "align": "center",
@@ -107,16 +107,16 @@
         "coordinate_context": {
           "schema": "cyberppt.scene_graph.coordinate_context.v1",
           "semantic_input_space": {
-            "width": 1672.0,
-            "height": 941.0
+            "width": 1280.0,
+            "height": 720.0
           },
           "visual_registry_input_space": {
             "width": 1280.0,
             "height": 720.0
           },
           "image_size": {
-            "width": 1672.0,
-            "height": 941.0
+            "width": 1280.0,
+            "height": 720.0
           },
           "visual_registry_canvas": {
             "width": 1280.0,
@@ -3623,8 +3623,8 @@
         "schema": "cyberppt.dual_image.page_understanding.v1",
         "valid": true,
         "text_block_count": 92,
-        "script_truth_verified_count": 42,
-        "script_truth_evidence_only_count": 50,
+        "script_truth_verified_count": 43,
+        "script_truth_evidence_only_count": 49,
         "script_truth_review_required_count": 0,
         "script_truth_verified": true,
         "review_item_count": 0,
@@ -7519,16 +7519,16 @@
           "priority": "P1",
           "measurement_mode": "group_with_child_anchors",
           "blueprint_bbox_px": {
-            "x": 30.38,
-            "y": 170.06,
-            "w": 1219.23,
-            "h": 36.49
+            "x": 29.69,
+            "y": 170.6,
+            "w": 1220.62,
+            "h": 36.18
           },
           "text_safe_bbox_px": {
-            "x": 30.38,
-            "y": 170.06,
-            "w": 1219.23,
-            "h": 36.49
+            "x": 29.69,
+            "y": 170.6,
+            "w": 1220.62,
+            "h": 36.18
           },
           "safe_bbox_source": "container_bbox",
           "must_reproduce": true,
@@ -11799,10 +11799,10 @@
         {
           "id": "dark_band_1",
           "role": "dark_band",
-          "x": 27.42,
-          "y": 173.2,
-          "w": 1220.72,
-          "h": 35.86,
+          "x": 27.75,
+          "y": 173.07,
+          "w": 1220.62,
+          "h": 36.18,
           "background": "dark",
           "fill": "#FFFFFF",
           "align": "center",
@@ -11827,16 +11827,16 @@
         "coordinate_context": {
           "schema": "cyberppt.scene_graph.coordinate_context.v1",
           "semantic_input_space": {
-            "width": 1672.0,
-            "height": 941.0
+            "width": 1280.0,
+            "height": 720.0
           },
           "visual_registry_input_space": {
             "width": 1280.0,
             "height": 720.0
           },
           "image_size": {
-            "width": 1672.0,
-            "height": 941.0
+            "width": 1280.0,
+            "height": 720.0
           },
           "visual_registry_canvas": {
             "width": 1280.0,
@@ -18562,16 +18562,16 @@
           "priority": "P1",
           "measurement_mode": "group_with_child_anchors",
           "blueprint_bbox_px": {
-            "x": 27.42,
-            "y": 173.2,
-            "w": 1220.72,
-            "h": 35.86
+            "x": 27.75,
+            "y": 173.07,
+            "w": 1220.62,
+            "h": 36.18
           },
           "text_safe_bbox_px": {
-            "x": 27.42,
-            "y": 173.2,
-            "w": 1220.72,
-            "h": 35.86
+            "x": 27.75,
+            "y": 173.07,
+            "w": 1220.62,
+            "h": 36.18
           },
           "safe_bbox_source": "container_bbox",
           "must_reproduce": true,

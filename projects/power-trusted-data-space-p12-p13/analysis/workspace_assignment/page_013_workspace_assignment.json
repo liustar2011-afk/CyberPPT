@@ -10,6 +10,7 @@
       "text_index": 0,
       "text": "主判断：通过可信风控数据支撑与投融精准匹配，打通科技与金融壁垒，破解成果转化融资难与机构风控难",
       "role": "body",
+      "font_size_pt": 9.55,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -39,6 +40,7 @@
       "text_index": 1,
       "text": "模块一：数据来源方",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -55,12 +57,13 @@
       },
       "final_bbox": {
         "x": 276.0,
-        "y": 182.93,
+        "y": 158.91,
         "w": 134.66,
         "h": 13.98
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -68,6 +71,7 @@
       "text_index": 2,
       "text": "技术支撑方与底座加工",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -84,17 +88,20 @@
       },
       "final_bbox": {
         "x": 364.88,
-        "y": 182.93,
+        "y": 177.41,
         "w": 219.91,
         "h": 14.8
       },
-      "fit_actions": [],
+      "fit_actions": [
+        "resolve_sibling_overlap"
+      ],
       "inside_slot": true
     },
     {
       "text_index": 3,
       "text": "模块三：服务产品",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -111,12 +118,13 @@
       },
       "final_bbox": {
         "x": 639.88,
-        "y": 182.93,
+        "y": 196.73,
         "w": 120.12,
         "h": 14.8
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -124,6 +132,7 @@
       "text_index": 4,
       "text": "模块四：空间运营方",
       "role": "body",
+      "font_size_pt": 8.62,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -140,12 +149,13 @@
       },
       "final_bbox": {
         "x": 649.56,
-        "y": 182.93,
+        "y": 216.05,
         "w": 110.44,
         "h": 13.98
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -153,6 +163,7 @@
       "text_index": 5,
       "text": "模块五：用户方",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -169,12 +180,13 @@
       },
       "final_bbox": {
         "x": 658.28,
-        "y": 182.93,
+        "y": 234.55,
         "w": 101.72,
         "h": 13.98
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -182,6 +194,7 @@
       "text_index": 6,
       "text": "场景间复用：",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -198,12 +211,13 @@
       },
       "final_bbox": {
         "x": 276.0,
-        "y": 229.8,
+        "y": 253.05,
         "w": 68.78,
         "h": 12.33
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -211,6 +225,7 @@
       "text_index": 7,
       "text": "场景二产出的",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -227,12 +242,13 @@
       },
       "final_bbox": {
         "x": 276.0,
-        "y": 256.93,
+        "y": 269.9,
         "w": 80.41,
         "h": 10.69
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -240,6 +256,7 @@
       "text_index": 8,
       "text": "成果价值评估报告",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -256,12 +273,13 @@
       },
       "final_bbox": {
         "x": 276.0,
-        "y": 272.14,
+        "y": 285.11,
         "w": 93.0,
         "h": 10.69
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -269,6 +287,7 @@
       "text_index": 9,
       "text": "场景四产出的",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_01",
       "assigned_slot": "inferred_panel_01_body_slot",
       "slot_bbox": {
@@ -296,6 +315,7 @@
       "text_index": 10,
       "text": "转化全流程履约数据",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_01",
       "assigned_slot": "inferred_panel_01_body_slot",
       "slot_bbox": {
@@ -312,12 +332,13 @@
       },
       "final_bbox": {
         "x": 84.34,
-        "y": 327.23,
+        "y": 352.063,
         "w": 103.66,
         "h": 10.69
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -325,6 +346,7 @@
       "text_index": 11,
       "text": "融资需求方自有数据：",
       "role": "body",
+      "font_size_pt": 8.62,
       "container_id": "inferred_panel_01",
       "assigned_slot": "inferred_panel_01_body_slot",
       "slot_bbox": {
@@ -341,12 +363,13 @@
       },
       "final_bbox": {
         "x": 77.15,
-        "y": 369.323,
+        "y": 394.156,
         "w": 110.85,
         "h": 12.33
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -354,6 +377,7 @@
       "text_index": 12,
       "text": "企业经营数据",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_01",
       "assigned_slot": "inferred_panel_01_body_slot",
       "slot_bbox": {
@@ -370,12 +394,13 @@
       },
       "final_bbox": {
         "x": 85.88,
-        "y": 370.143,
+        "y": 437.889,
         "w": 82.34,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -383,6 +408,7 @@
       "text_index": 13,
       "text": "行业/第三方数据：",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_01",
       "assigned_slot": "inferred_panel_01_body_slot",
       "slot_bbox": {
@@ -399,12 +425,13 @@
       },
       "final_bbox": {
         "x": 77.15,
-        "y": 369.323,
+        "y": 480.802,
         "w": 106.56,
         "h": 12.33
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -412,6 +439,7 @@
       "text_index": 14,
       "text": "行业对标数据",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_01",
       "assigned_slot": "inferred_panel_01_body_slot",
       "slot_bbox": {
@@ -428,12 +456,13 @@
       },
       "final_bbox": {
         "x": 85.88,
-        "y": 369.323,
+        "y": 524.535,
         "w": 82.34,
         "h": 12.33
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -441,6 +470,7 @@
       "text_index": 15,
       "text": "均在获得主体授权前提下提供（数据授权边界）",
       "role": "body",
+      "font_size_pt": 5.62,
       "container_id": "inferred_panel_01",
       "assigned_slot": "inferred_panel_01_body_slot",
       "slot_bbox": {
@@ -457,12 +487,13 @@
       },
       "final_bbox": {
         "x": 77.15,
-        "y": 371.783,
+        "y": 568.268,
         "w": 110.85,
         "h": 9.87
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -470,6 +501,7 @@
       "text_index": 16,
       "text": "（数据授权边界）",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_01",
       "assigned_slot": "inferred_panel_01_body_slot",
       "slot_bbox": {
@@ -486,12 +518,13 @@
       },
       "final_bbox": {
         "x": 81.03,
-        "y": 371.783,
+        "y": 609.541,
         "w": 89.12,
         "h": 9.87
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -499,6 +532,7 @@
       "text_index": 17,
       "text": "AI",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -515,12 +549,13 @@
       },
       "final_bbox": {
         "x": 276.0,
-        "y": 242.96,
+        "y": 300.32,
         "w": 19.38,
         "h": 13.16
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -528,6 +563,7 @@
       "text_index": 18,
       "text": "技术支撑方：",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -544,17 +580,20 @@
       },
       "final_bbox": {
         "x": 303.84,
-        "y": 242.96,
+        "y": 318.0,
         "w": 83.31,
         "h": 12.33
       },
-      "fit_actions": [],
+      "fit_actions": [
+        "resolve_sibling_overlap"
+      ],
       "inside_slot": true
     },
     {
       "text_index": 19,
       "text": "技术支撑方：提供智能匹配模型技术，支撑投融资双方精准对接",
       "role": "body",
+      "font_size_pt": 6.75,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -571,17 +610,20 @@
       },
       "final_bbox": {
         "x": 387.16,
-        "y": 242.96,
+        "y": 334.85,
         "w": 275.12,
         "h": 12.33
       },
-      "fit_actions": [],
+      "fit_actions": [
+        "resolve_sibling_overlap"
+      ],
       "inside_slot": true
     },
     {
       "text_index": 20,
       "text": "加工链条",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_05",
       "assigned_slot": "inferred_panel_05_body_slot",
       "slot_bbox": {
@@ -611,6 +653,7 @@
       "text_index": 21,
       "text": "（对照九环节标注覆盖情况）",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_05",
       "assigned_slot": "inferred_panel_05_body_slot",
       "slot_bbox": {
@@ -627,12 +670,13 @@
       },
       "final_bbox": {
         "x": 356.0,
-        "y": 414.341,
+        "y": 451.8,
         "w": 114.0,
         "h": 9.87
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -640,6 +684,7 @@
       "text_index": 22,
       "text": "1",
       "role": "body",
+      "font_size_pt": 6.38,
       "container_id": "inferred_panel_02",
       "assigned_slot": "inferred_panel_02_body_slot",
       "slot_bbox": {
@@ -669,6 +714,7 @@
       "text_index": 23,
       "text": "目录发布",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_02",
       "assigned_slot": "inferred_panel_02_body_slot",
       "slot_bbox": {
@@ -685,12 +731,13 @@
       },
       "final_bbox": {
         "x": 274.0,
-        "y": 352.75,
+        "y": 358.6,
         "w": 46.0,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -698,6 +745,7 @@
       "text_index": 24,
       "text": "电力科技金融",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_03",
       "assigned_slot": "inferred_panel_03_body_slot",
       "slot_bbox": {
@@ -725,6 +773,7 @@
       "text_index": 25,
       "text": "服务专区上架",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_03",
       "assigned_slot": "inferred_panel_03_body_slot",
       "slot_bbox": {
@@ -741,17 +790,20 @@
       },
       "final_bbox": {
         "x": 236.03,
-        "y": 464.13,
+        "y": 464.14,
         "w": 67.81,
         "h": 10.69
       },
-      "fit_actions": [],
+      "fit_actions": [
+        "resolve_sibling_overlap"
+      ],
       "inside_slot": true
     },
     {
       "text_index": 26,
       "text": "多元化金融产品",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_03",
       "assigned_slot": "inferred_panel_03_body_slot",
       "slot_bbox": {
@@ -768,17 +820,20 @@
       },
       "final_bbox": {
         "x": 236.03,
-        "y": 479.76,
+        "y": 479.77,
         "w": 79.44,
         "h": 10.69
       },
-      "fit_actions": [],
+      "fit_actions": [
+        "resolve_sibling_overlap"
+      ],
       "inside_slot": true
     },
     {
       "text_index": 27,
       "text": "2",
       "role": "body",
+      "font_size_pt": 6.38,
       "container_id": "inferred_panel_02",
       "assigned_slot": "inferred_panel_02_body_slot",
       "slot_bbox": {
@@ -795,12 +850,13 @@
       },
       "final_bbox": {
         "x": 312.25,
-        "y": 347.38,
+        "y": 373.11,
         "w": 7.75,
         "h": 8.22
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -808,6 +864,7 @@
       "text_index": 28,
       "text": "数据授权",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_02",
       "assigned_slot": "inferred_panel_02_body_slot",
       "slot_bbox": {
@@ -824,12 +881,13 @@
       },
       "final_bbox": {
         "x": 274.0,
-        "y": 352.75,
+        "y": 384.33,
         "w": 46.0,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -837,6 +895,7 @@
       "text_index": 29,
       "text": "获得主体授权",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_03",
       "assigned_slot": "inferred_panel_03_body_slot",
       "slot_bbox": {
@@ -853,12 +912,13 @@
       },
       "final_bbox": {
         "x": 304.39,
-        "y": 448.51,
+        "y": 495.4,
         "w": 67.81,
         "h": 10.69
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -866,6 +926,7 @@
       "text_index": 30,
       "text": "前提下提供",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_03",
       "assigned_slot": "inferred_panel_03_body_slot",
       "slot_bbox": {
@@ -882,12 +943,13 @@
       },
       "final_bbox": {
         "x": 304.39,
-        "y": 464.13,
+        "y": 511.03,
         "w": 67.81,
         "h": 10.69
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -895,6 +957,7 @@
       "text_index": 31,
       "text": "风控数据",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_03",
       "assigned_slot": "inferred_panel_03_body_slot",
       "slot_bbox": {
@@ -911,17 +974,20 @@
       },
       "final_bbox": {
         "x": 324.19,
-        "y": 479.76,
+        "y": 526.66,
         "w": 47.47,
         "h": 10.69
       },
-      "fit_actions": [],
+      "fit_actions": [
+        "resolve_sibling_overlap"
+      ],
       "inside_slot": true
     },
     {
       "text_index": 32,
       "text": "3",
       "role": "body",
+      "font_size_pt": 6.38,
       "container_id": "inferred_panel_05",
       "assigned_slot": "inferred_panel_05_body_slot",
       "slot_bbox": {
@@ -938,12 +1004,13 @@
       },
       "final_bbox": {
         "x": 423.0,
-        "y": 414.341,
+        "y": 484.329,
         "w": 7.75,
         "h": 8.22
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -951,6 +1018,7 @@
       "text_index": 33,
       "text": "可信计算",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_05",
       "assigned_slot": "inferred_panel_05_body_slot",
       "slot_bbox": {
@@ -967,12 +1035,13 @@
       },
       "final_bbox": {
         "x": 399.75,
-        "y": 414.341,
+        "y": 515.208,
         "w": 52.31,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -980,6 +1049,7 @@
       "text_index": 34,
       "text": "智能匹配模型",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_05",
       "assigned_slot": "inferred_panel_05_body_slot",
       "slot_bbox": {
@@ -996,17 +1066,20 @@
       },
       "final_bbox": {
         "x": 394.91,
-        "y": 448.51,
+        "y": 549.377,
         "w": 67.81,
         "h": 10.69
       },
-      "fit_actions": [],
+      "fit_actions": [
+        "resolve_sibling_overlap"
+      ],
       "inside_slot": true
     },
     {
       "text_index": 35,
       "text": "匹配投融资双方",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_05",
       "assigned_slot": "inferred_panel_05_body_slot",
       "slot_bbox": {
@@ -1023,12 +1096,13 @@
       },
       "final_bbox": {
         "x": 390.56,
-        "y": 451.183,
+        "y": 582.726,
         "w": 79.44,
         "h": 10.69
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1036,6 +1110,7 @@
       "text_index": 36,
       "text": "4",
       "role": "body",
+      "font_size_pt": 6.38,
       "container_id": "inferred_panel_05",
       "assigned_slot": "inferred_panel_05_body_slot",
       "slot_bbox": {
@@ -1052,12 +1127,13 @@
       },
       "final_bbox": {
         "x": 462.25,
-        "y": 414.341,
+        "y": 616.075,
         "w": 7.75,
         "h": 8.22
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1065,6 +1141,7 @@
       "text_index": 37,
       "text": "成果输出",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_05",
       "assigned_slot": "inferred_panel_05_body_slot",
       "slot_bbox": {
@@ -1081,12 +1158,13 @@
       },
       "final_bbox": {
         "x": 418.66,
-        "y": 414.341,
+        "y": 646.954,
         "w": 51.34,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1094,6 +1172,7 @@
       "text_index": 38,
       "text": "投融匹配推荐清单、",
       "role": "body",
+      "font_size_pt": 5.62,
       "container_id": "inferred_panel_05",
       "assigned_slot": "inferred_panel_05_body_slot",
       "slot_bbox": {
@@ -1110,12 +1189,13 @@
       },
       "final_bbox": {
         "x": 397.34,
-        "y": 448.51,
+        "y": 681.123,
         "w": 72.66,
         "h": 10.69
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1123,6 +1203,7 @@
       "text_index": 39,
       "text": "投后管理报告",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_05",
       "assigned_slot": "inferred_panel_05_body_slot",
       "slot_bbox": {
@@ -1139,12 +1220,13 @@
       },
       "final_bbox": {
         "x": 402.19,
-        "y": 451.183,
+        "y": 714.472,
         "w": 67.81,
         "h": 10.69
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1152,6 +1234,7 @@
       "text_index": 40,
       "text": "5",
       "role": "body",
+      "font_size_pt": 6.38,
       "container_id": "inferred_panel_06",
       "assigned_slot": "inferred_panel_06_body_slot",
       "slot_bbox": {
@@ -1179,6 +1262,7 @@
       "text_index": 41,
       "text": "审计留痕",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_06",
       "assigned_slot": "inferred_panel_06_body_slot",
       "slot_bbox": {
@@ -1208,6 +1292,7 @@
       "text_index": 42,
       "text": "投后项目进度、",
       "role": "body",
+      "font_size_pt": 6.75,
       "container_id": "inferred_panel_07",
       "assigned_slot": "inferred_panel_07_body_slot",
       "slot_bbox": {
@@ -1237,6 +1322,7 @@
       "text_index": 43,
       "text": "经营数据、履约",
       "role": "body",
+      "font_size_pt": 6.75,
       "container_id": "inferred_panel_07",
       "assigned_slot": "inferred_panel_07_body_slot",
       "slot_bbox": {
@@ -1266,6 +1352,7 @@
       "text_index": 44,
       "text": "情况全程可视可溯",
       "role": "body",
+      "font_size_pt": 7.12,
       "container_id": "inferred_panel_07",
       "assigned_slot": "inferred_panel_07_body_slot",
       "slot_bbox": {
@@ -1295,6 +1382,7 @@
       "text_index": 45,
       "text": "6",
       "role": "body",
+      "font_size_pt": 6.38,
       "container_id": "inferred_panel_08",
       "assigned_slot": "inferred_panel_08_body_slot",
       "slot_bbox": {
@@ -1324,6 +1412,7 @@
       "text_index": 46,
       "text": "收益结算",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_08",
       "assigned_slot": "inferred_panel_08_body_slot",
       "slot_bbox": {
@@ -1340,12 +1429,13 @@
       },
       "final_bbox": {
         "x": 644.84,
-        "y": 414.341,
+        "y": 432.075,
         "w": 52.31,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1353,6 +1443,7 @@
       "text_index": 47,
       "text": "融资申请→风控审核\n→放款→还款\n全流程线上化",
       "role": "body",
+      "font_size_pt": 6.0,
       "container_id": "inferred_panel_08",
       "assigned_slot": "inferred_panel_08_body_slot",
       "slot_bbox": {
@@ -1369,12 +1460,13 @@
       },
       "final_bbox": {
         "x": 638.0,
-        "y": 435.365,
+        "y": 453.099,
         "w": 78.47,
         "h": 41.93
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1382,6 +1474,7 @@
       "text_index": 48,
       "text": "主体认证、受控接入、调用计量非本场景原文展开重点",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_05",
       "assigned_slot": "inferred_panel_05_body_slot",
       "slot_bbox": {
@@ -1398,12 +1491,13 @@
       },
       "final_bbox": {
         "x": 356.0,
-        "y": 449.543,
+        "y": 747.821,
         "w": 114.0,
         "h": 12.33
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1411,6 +1505,7 @@
       "text_index": 49,
       "text": "投融匹配推荐清单",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -1427,12 +1522,13 @@
       },
       "final_bbox": {
         "x": 668.94,
-        "y": 256.93,
+        "y": 351.7,
         "w": 91.06,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1440,6 +1536,7 @@
       "text_index": 50,
       "text": "（决策服务类）",
       "role": "body",
+      "font_size_pt": 7.88,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -1456,12 +1553,13 @@
       },
       "final_bbox": {
         "x": 683.47,
-        "y": 272.14,
+        "y": 367.73,
         "w": 76.53,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1469,6 +1567,7 @@
       "text_index": 51,
       "text": "为优质项目匹配适配",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_10",
       "assigned_slot": "inferred_panel_10_body_slot",
       "slot_bbox": {
@@ -1498,6 +1597,7 @@
       "text_index": 52,
       "text": "金融机构，为投资方",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_10",
       "assigned_slot": "inferred_panel_10_body_slot",
       "slot_bbox": {
@@ -1514,12 +1614,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 362.82,
+        "y": 378.03,
         "w": 93.97,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1527,6 +1628,7 @@
       "text_index": 53,
       "text": "推荐符合偏好的项目",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_10",
       "assigned_slot": "inferred_panel_10_body_slot",
       "slot_bbox": {
@@ -1543,12 +1645,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 362.82,
+        "y": 393.24,
         "w": 93.97,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1556,6 +1659,7 @@
       "text_index": 54,
       "text": "投后管理可视化报告",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_10",
       "assigned_slot": "inferred_panel_10_body_slot",
       "slot_bbox": {
@@ -1572,12 +1676,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 421.79,
+        "y": 408.45,
         "w": 94.94,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1585,6 +1690,7 @@
       "text_index": 55,
       "text": "（分析报告类）",
       "role": "body",
+      "font_size_pt": 7.88,
       "container_id": "inferred_panel_10",
       "assigned_slot": "inferred_panel_10_body_slot",
       "slot_bbox": {
@@ -1601,12 +1707,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 437.0,
+        "y": 423.66,
         "w": 77.5,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1614,6 +1721,7 @@
       "text_index": 56,
       "text": "项目转化进度、经营",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_10",
       "assigned_slot": "inferred_panel_10_body_slot",
       "slot_bbox": {
@@ -1630,12 +1738,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 450.363,
+        "y": 438.87,
         "w": 93.97,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1643,6 +1752,7 @@
       "text_index": 57,
       "text": "数据、履约情况全程",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_10",
       "assigned_slot": "inferred_panel_10_body_slot",
       "slot_bbox": {
@@ -1659,12 +1769,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 450.363,
+        "y": 454.08,
         "w": 93.97,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1672,6 +1783,7 @@
       "text_index": 58,
       "text": "可视可溯",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_10",
       "assigned_slot": "inferred_panel_10_body_slot",
       "slot_bbox": {
@@ -1688,12 +1800,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 451.183,
+        "y": 469.29,
         "w": 57.16,
         "h": 10.69
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1701,6 +1814,7 @@
       "text_index": 59,
       "text": "中电联搭建电力科技",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_11",
       "assigned_slot": "inferred_panel_11_body_slot",
       "slot_bbox": {
@@ -1730,6 +1844,7 @@
       "text_index": 60,
       "text": "金融服务专区，统筹",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_11",
       "assigned_slot": "inferred_panel_11_body_slot",
       "slot_bbox": {
@@ -1746,12 +1861,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 347.38,
+        "y": 332.58,
         "w": 96.88,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1759,6 +1875,7 @@
       "text_index": 61,
       "text": "知识产权质押融资、",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_11",
       "assigned_slot": "inferred_panel_11_body_slot",
       "slot_bbox": {
@@ -1775,12 +1892,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 369.58,
+        "y": 355.19,
         "w": 96.88,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1788,6 +1906,7 @@
       "text_index": 62,
       "text": "科技保险、信用贷款、",
       "role": "body",
+      "font_size_pt": 7.12,
       "container_id": "inferred_panel_11",
       "assigned_slot": "inferred_panel_11_body_slot",
       "slot_bbox": {
@@ -1804,12 +1923,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 385.2,
+        "y": 377.8,
         "w": 102.69,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1817,6 +1937,7 @@
       "text_index": 63,
       "text": "股权投资对接、供应链",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_11",
       "assigned_slot": "inferred_panel_11_body_slot",
       "slot_bbox": {
@@ -1833,12 +1954,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 407.81,
+        "y": 400.41,
         "w": 104.62,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1846,6 +1968,7 @@
       "text_index": 64,
       "text": "金融、并购重组等多元",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_11",
       "assigned_slot": "inferred_panel_11_body_slot",
       "slot_bbox": {
@@ -1862,12 +1985,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 437.0,
+        "y": 423.02,
         "w": 104.62,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1875,6 +1999,7 @@
       "text_index": 65,
       "text": "化金融产品规则，",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_11",
       "assigned_slot": "inferred_panel_11_body_slot",
       "slot_bbox": {
@@ -1891,12 +2016,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 448.51,
+        "y": 445.63,
         "w": 86.22,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1904,6 +2030,7 @@
       "text_index": 66,
       "text": "不承担智能匹配模型的",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_11",
       "assigned_slot": "inferred_panel_11_body_slot",
       "slot_bbox": {
@@ -1920,12 +2047,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 450.363,
+        "y": 468.24,
         "w": 109.538,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1933,6 +2061,7 @@
       "text_index": 67,
       "text": "技术研发",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_11",
       "assigned_slot": "inferred_panel_11_body_slot",
       "slot_bbox": {
@@ -1949,12 +2078,13 @@
       },
       "final_bbox": {
         "x": 996.5,
-        "y": 450.363,
+        "y": 490.85,
         "w": 49.41,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1962,6 +2092,7 @@
       "text_index": 68,
       "text": "融资需求方",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -1978,12 +2109,13 @@
       },
       "final_bbox": {
         "x": 696.06,
-        "y": 242.96,
+        "y": 383.76,
         "w": 63.94,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -1991,6 +2123,7 @@
       "text_index": 69,
       "text": "（决策转化项目方）",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_row_band_top",
       "assigned_slot": "inferred_row_band_top_body_slot",
       "slot_bbox": {
@@ -2007,12 +2140,13 @@
       },
       "final_bbox": {
         "x": 666.03,
-        "y": 256.93,
+        "y": 399.79,
         "w": 93.97,
         "h": 11.51
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -2020,6 +2154,7 @@
       "text_index": 70,
       "text": "获得融资对接服务的",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_12",
       "assigned_slot": "inferred_panel_12_body_slot",
       "slot_bbox": {
@@ -2049,6 +2184,7 @@
       "text_index": 71,
       "text": "受益者",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_12",
       "assigned_slot": "inferred_panel_12_body_slot",
       "slot_bbox": {
@@ -2078,6 +2214,7 @@
       "text_index": 72,
       "text": "金融机构",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_13",
       "assigned_slot": "inferred_panel_13_body_slot",
       "slot_bbox": {
@@ -2105,6 +2242,7 @@
       "text_index": 73,
       "text": "（银行/创投/保险/",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_13",
       "assigned_slot": "inferred_panel_13_body_slot",
       "slot_bbox": {
@@ -2132,6 +2270,7 @@
       "text_index": 74,
       "text": "担保/产业基金）",
       "role": "body",
+      "font_size_pt": 7.12,
       "container_id": "inferred_panel_13",
       "assigned_slot": "inferred_panel_13_body_slot",
       "slot_bbox": {
@@ -2159,6 +2298,7 @@
       "text_index": 75,
       "text": "获得可信风控依据的",
       "role": "body",
+      "font_size_pt": 8.25,
       "container_id": "inferred_panel_13",
       "assigned_slot": "inferred_panel_13_body_slot",
       "slot_bbox": {
@@ -2188,6 +2328,7 @@
       "text_index": 76,
       "text": "受益者",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_13",
       "assigned_slot": "inferred_panel_13_body_slot",
       "slot_bbox": {
@@ -2217,6 +2358,7 @@
       "text_index": 77,
       "text": "可信机制贯穿全程：",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_04",
       "assigned_slot": "inferred_panel_04_body_slot",
       "slot_bbox": {
@@ -2244,6 +2386,7 @@
       "text_index": 78,
       "text": "风控数据需获得主体授权方可提供（授权可信）",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_04",
       "assigned_slot": "inferred_panel_04_body_slot",
       "slot_bbox": {
@@ -2271,6 +2414,7 @@
       "text_index": 79,
       "text": "投后全程可视可溯：",
       "role": "body",
+      "font_size_pt": 9.0,
       "container_id": "inferred_panel_10",
       "assigned_slot": "inferred_panel_10_body_slot",
       "slot_bbox": {
@@ -2287,12 +2431,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 447.073,
+        "y": 483.68,
         "w": 109.538,
         "h": 14.8
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     },
@@ -2300,6 +2445,7 @@
       "text_index": 80,
       "text": "投后管理可视化报告（分析报告类）：项目转化进度、经营数据、履约情况全程可视可溯",
       "role": "body",
+      "font_size_pt": 7.5,
       "container_id": "inferred_panel_10",
       "assigned_slot": "inferred_panel_10_body_slot",
       "slot_bbox": {
@@ -2316,12 +2462,13 @@
       },
       "final_bbox": {
         "x": 978.462,
-        "y": 447.073,
+        "y": 502.18,
         "w": 109.538,
         "h": 14.8
       },
       "fit_actions": [
-        "assign_to_work_slot"
+        "assign_to_work_slot",
+        "resolve_sibling_overlap"
       ],
       "inside_slot": true
     }
