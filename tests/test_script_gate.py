@@ -22,6 +22,10 @@ class ScriptGateTests(unittest.TestCase):
             self.assertEqual([], ledger["artifacts"])
             manifest = (project / "manifest.yml").read_text(encoding="utf-8")
             self.assertIn("template_text_locks: workbench/locks/template_text", manifest)
+            self.assertIn(
+                "writing_style:\n  default: internal_public_sector\n  structure_strategy: source_and_task_adaptive",
+                manifest,
+            )
             self.assertTrue((project / "workbench/stages/01-analysis").is_dir())
             self.assertTrue((project / "workbench/stages/02-blueprint-dual-image").is_dir())
             self.assertTrue((project / "workbench/stages/03-overlay").is_dir())
