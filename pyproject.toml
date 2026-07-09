@@ -5,12 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "cyberppt"
 version = "0.1.0"
-description = "CyberPPT project tooling for evidence-based, editable consulting PowerPoint workflows."
+description = "CyberPPT project tooling for evidence-based, editable internal-reporting PowerPoint workflows."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "CyberPPT maintainers" }]
-keywords = ["pptx", "codex-skill", "consulting", "powerpoint", "qa"]
+keywords = ["pptx", "codex-skill", "internal-reporting", "powerpoint", "qa"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Environment :: Console",
