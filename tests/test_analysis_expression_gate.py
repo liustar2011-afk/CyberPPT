@@ -384,6 +384,27 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 
         self.assertIn("missing required heading: 汇报目的", errors)
 
+    def test_direction_allows_formal_business_heading_aliases(self) -> None:
+        text = """# 汇报方向策略
+## 方向一：领导审定型建设方案
+### 适用受众
+分管领导
+### 汇报目的
+审定建设方案
+### 内容重点
+工作基础和完善方向
+### 证据支撑
+源材料和证据链
+### 优势
+适合领导审定
+### 风险边界
+不将条件写成既定事实
+## 推荐策略
+领导审定型建设方案
+"""
+
+        self.assertEqual([], validate_analysis_artifact("reporting_direction", text))
+
     def test_structure_rejects_page_and_visual_fields_and_invalid_module_count(self) -> None:
         text = STRUCTURE + "## 模块五\n保障机制\n## 模块六\n风险闭环\n## 模块七\n附录\n页数：12\n页面标题：供需预测\n视觉形式：折线图\n"
 

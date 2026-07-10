@@ -26,6 +26,14 @@ REQUIRED_HEADINGS = {
     "business_script": ("非上屏：证据链", "来源位置", "非上屏：完整性校核"),
     "drawing_script": ("上屏文字", "组件关系", "信息密度", "禁止项", "非上屏：证据链"),
 }
+HEADING_ALIASES = {
+    "reporting_direction": {
+        "汇报对象": ("适用受众",),
+        "证据": ("证据支撑",),
+        "边界": ("风险边界",),
+        "推荐方向": ("推荐策略",),
+    },
+}
 
 _STRUCTURE_PAGE_COUNT_FIELDS = ("页数", "页码", "页面数量")
 _STRUCTURE_PAGE_TITLE_FIELDS = ("页面标题", "页标题")
@@ -150,6 +158,11 @@ def _section_text(text: str, heading: str) -> str:
 
 def _has_heading(text: str, heading: str) -> bool:
     return bool(re.search(rf"^#+\s*{re.escape(heading)}\s*$", text, re.MULTILINE))
+
+
+def _has_required_heading(gate: str, text: str, heading: str) -> bool:
+    aliases = HEADING_ALIASES.get(gate, {}).get(heading, ())
+    return any(_has_heading(text, candidate) for candidate in (heading, *aliases))
 
 
 def _all_section_texts(text: str, heading: str) -> list[str]:
@@ -343,7 +356,7 @@ def validate_analysis_artifact(gate: str, text: str) -> list[str]:
     errors = [
         f"missing required heading: {heading}"
         for heading in REQUIRED_HEADINGS[gate]
-        if not _has_heading(text, heading)
+        if not _has_required_heading(gate, text, heading)
     ]
 
     if gate == "report_structure":
