@@ -5,10 +5,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from cyberppt.commands.analysis_expression_gate import adopt_analysis_expression_contract
+
 
 PROJECT_DIRS = [
     "source",
     "workbench",
+    "workbench/analysis_expression",
     "workbench/stages",
     "workbench/stages/01-analysis",
     "workbench/stages/02-blueprint-dual-image",
@@ -45,6 +48,7 @@ writing_style:
 directories:
   source: source
   workbench: workbench
+  analysis_expression: workbench/analysis_expression
   stages: workbench/stages
   stage_analysis: workbench/stages/01-analysis
   stage_blueprint_dual_image: workbench/stages/02-blueprint-dual-image
@@ -68,6 +72,7 @@ directories:
   outputs: outputs
   delivery: delivery
 gates:
+  analysis_expression_contract: required
   script_review_before_generation: required
   imagegen_script_plaintext: required
   page_generation_after_user_approval: required
@@ -82,6 +87,7 @@ def _artifact_ledger() -> str:
         {
             "schema": "cyberppt.artifact_ledger.v1",
             "artifacts": [],
+            "analysis_expression_contracts": [],
         },
         ensure_ascii=False,
         indent=2,
@@ -113,6 +119,7 @@ def init_project(path: Path, force: bool = False) -> list[Path]:
     project_name = root.name
     manifest.write_text(_project_manifest(project_name), encoding="utf-8")
     ledger.write_text(_artifact_ledger(), encoding="utf-8")
+    adopt_analysis_expression_contract(root)
     readme.write_text(
         f"""# {project_name}
 
@@ -122,13 +129,14 @@ CyberPPT project workspace.
 
 1. Put source materials in `source/`.
 2. Use `$cyber-ppt` to complete evidence analysis, material-type and reporting-task identification, adaptive storyline planning, and page planning. New projects default to the formal central-SOE/government internal-reporting writing style; do not impose a fixed chapter order.
-3. Before any ImageGen or PPTX generation, save the current slide script or prompt in `workbench/scripts/drafts/` or `workbench/prompts/imagegen/`.
-4. Stop for user review. Do not generate images or PPTX until an approval record exists in `workbench/approvals/`.
-5. Store title/subtitle truth for template assembly in `workbench/locks/template_text/`; if dual images are supplied mid-pipeline, create this lock before template rebuild.
-6. Store stage outputs under `workbench/stages/` and register every durable artifact in `workbench/artifact-ledger.json`.
-7. Store page-specific attempts and resumable intermediate runs in `workbench/runs/`; use `workbench/tmp/` only for disposable scratch files.
-8. Store final scripts in `workbench/scripts/final/`, QA reports in `workbench/qa/`, renders in `outputs/renders/`, and delivery files in `delivery/`.
-9. Do not write new generated images or pair manifests to the repository root `images/`; keep them inside this project workspace.
+3. Complete the analysis-expression gates in order: reporting direction, report structure, page design, business script, and drawing script. The business-script and drawing-script approvals are required before ImageGen or PPTX generation.
+4. Before any ImageGen or PPTX generation, save the current slide script or prompt in `workbench/scripts/drafts/` or `workbench/prompts/imagegen/`.
+5. Stop for user review. Do not generate images or PPTX until an approval record exists in `workbench/approvals/`.
+6. Store title/subtitle truth for template assembly in `workbench/locks/template_text/`; if dual images are supplied mid-pipeline, create this lock before template rebuild.
+7. Store stage outputs under `workbench/stages/` and register every durable artifact in `workbench/artifact-ledger.json`.
+8. Store page-specific attempts and resumable intermediate runs in `workbench/runs/`; use `workbench/tmp/` only for disposable scratch files.
+9. Store final scripts in `workbench/scripts/final/`, QA reports in `workbench/qa/`, renders in `outputs/renders/`, and delivery files in `delivery/`.
+10. Do not write new generated images or pair manifests to the repository root `images/`; keep them inside this project workspace.
 """,
         encoding="utf-8",
     )
