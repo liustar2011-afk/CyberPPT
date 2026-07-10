@@ -23,7 +23,7 @@ REQUIRED_HEADINGS = {
     "reporting_direction": ("汇报对象", "汇报目的", "内容重点", "证据", "优势", "边界", "推荐方向"),
     "report_structure": ("模块一", "模块二", "模块三", "模块四"),
     "page_design": ("封面", "目录", "过渡页", "内容页", "封底"),
-    "business_script": ("非上屏：证据链", "来源位置", "完整性校核"),
+    "business_script": ("非上屏：证据链", "来源位置", "非上屏：完整性校核"),
     "drawing_script": ("上屏文字", "组件关系", "信息密度", "禁止项", "非上屏：证据链"),
 }
 
@@ -36,12 +36,34 @@ _DRAWING_GEOMETRY_PATTERN = re.compile(
     r"(?:\b[xy]\s*=|\b(?:width|height|left|top)\s*=|\b\d+(?:\.\d+)?px\b|坐标|像素|几何)",
     re.IGNORECASE,
 )
+_CONSULTING_DELIVERY_PATTERN = re.compile(r"\b(?:MBB|SO\s+WHAT|Caveat|Resolution)\b|核心判断", re.IGNORECASE)
+_NON_VISIBLE_HEADINGS = ("非上屏", "来源位置")
+_COMPLETENESS_CATEGORIES = ("事实", "数字", "分类", "边界", "请求事项")
+_NUMBER_PATTERN = re.compile(r"\d+(?:\.\d+)?(?:[%％]|万千瓦|亿千瓦时|万|亿|台|项|个|页|年|月|日)?")
 
 
 @dataclass(frozen=True)
 class AnalysisExpressionStatus:
     adopted: bool
     next_gate: str | None
+
+
+@dataclass(frozen=True)
+class InheritedUnits:
+    """Business-script units that a drawing script must carry without mutation."""
+
+    evidence_bindings: tuple[str, ...]
+    source_locations: tuple[str, ...]
+    completeness_units: tuple[str, ...]
+    density_units: tuple[str, ...]
+
+    def to_payload(self) -> dict[str, list[str]]:
+        return {
+            "evidence_bindings": list(self.evidence_bindings),
+            "source_locations": list(self.source_locations),
+            "completeness_units": list(self.completeness_units),
+            "density_units": list(self.density_units),
+        }
 
 
 def _contract_path(project: Path) -> Path:
@@ -122,6 +144,112 @@ def _has_heading(text: str, heading: str) -> bool:
     return bool(re.search(rf"^#+\s*{re.escape(heading)}\s*$", text, re.MULTILINE))
 
 
+def _all_section_texts(text: str, heading: str) -> list[str]:
+    matches = list(re.finditer(rf"^#+\s*{re.escape(heading)}\s*$", text, re.MULTILINE))
+    sections: list[str] = []
+    for match in matches:
+        following = re.search(r"^#+\s+", text[match.end() :], re.MULTILINE)
+        end = match.end() + following.start() if following else len(text)
+        sections.append(text[match.end() : end])
+    return sections
+
+
+def _section_items(text: str, heading: str) -> tuple[str, ...]:
+    items: list[str] = []
+    for section in _all_section_texts(text, heading):
+        for line in section.splitlines():
+            value = re.sub(r"^\s*(?:[-*+]\s+|\d+[.)]\s+)", "", line).strip()
+            if value:
+                items.append(value)
+    return tuple(dict.fromkeys(items))
+
+
+def _visible_text(text: str) -> str:
+    visible: list[str] = []
+    hidden = False
+    for line in text.splitlines():
+        heading = re.match(r"^#+\s*(.*?)\s*$", line)
+        if heading:
+            title = heading.group(1)
+            hidden = any(marker in title for marker in _NON_VISIBLE_HEADINGS)
+        if not hidden:
+            visible.append(line)
+    return "\n".join(visible)
+
+
+def _parse_inherited_units(text: str) -> InheritedUnits:
+    completeness = _section_items(text, "非上屏：完整性校核")
+    return InheritedUnits(
+        evidence_bindings=_section_items(text, "非上屏：证据链"),
+        source_locations=_section_items(text, "来源位置"),
+        completeness_units=completeness,
+        density_units=_section_items(text, "非上屏：信息密度") or _section_items(text, "信息密度"),
+    )
+
+
+def _required_completeness_categories(units: InheritedUnits) -> set[str]:
+    categories: set[str] = set()
+    for unit in units.completeness_units:
+        match = re.match(r"^([^：:]+)[：:]\s*.+$", unit)
+        if match:
+            categories.add(match.group(1).strip())
+    return categories
+
+
+def validate_business_script(text: str) -> list[str]:
+    """Validate formal visible language and required non-visible business units."""
+
+    errors: list[str] = []
+    if _CONSULTING_DELIVERY_PATTERN.search(_visible_text(text)):
+        errors.append("business_script must not contain consulting-delivery language in visible text")
+
+    units = _parse_inherited_units(text)
+    if not units.evidence_bindings:
+        errors.append("business_script requires at least one evidence binding")
+    if not units.source_locations:
+        errors.append("business_script requires at least one source location")
+    if not units.completeness_units:
+        errors.append("business_script requires at least one completeness unit")
+    missing_categories = set(_COMPLETENESS_CATEGORIES) - _required_completeness_categories(units)
+    if missing_categories:
+        errors.append("business_script completeness check is missing categories: " + ", ".join(sorted(missing_categories)))
+    if not units.density_units:
+        errors.append("business_script requires at least one high-density unit")
+    return errors
+
+
+def validate_drawing_script(text: str, business: str) -> list[str]:
+    """Validate that a drawing script is a non-geometric translation of business truth."""
+
+    errors: list[str] = []
+    if _DRAWING_GEOMETRY_PATTERN.search(text):
+        errors.append("drawing_script must not contain geometry keywords")
+
+    business_units = _parse_inherited_units(business)
+    drawing_units = _parse_inherited_units(text)
+    for label, required, actual in (
+        ("evidence binding", business_units.evidence_bindings, drawing_units.evidence_bindings),
+        ("source location", business_units.source_locations, drawing_units.source_locations),
+        ("completeness unit", business_units.completeness_units, drawing_units.completeness_units),
+        ("high-density unit", business_units.density_units, drawing_units.density_units),
+    ):
+        actual_values = set(actual)
+        for unit in required:
+            if unit not in actual_values:
+                category = unit.split("：", 1)[0].split(":", 1)[0]
+                if label == "completeness unit" and any(value.startswith(f"{category}：") or value.startswith(f"{category}:") for value in actual_values):
+                    errors.append(f"changed required completeness unit: {unit}")
+                else:
+                    errors.append(f"missing required {label}: {unit}")
+
+    business_numbers = set(_NUMBER_PATTERN.findall(business))
+    drawing_numbers = set(_NUMBER_PATTERN.findall(_visible_text(text)))
+    added_numbers = sorted(drawing_numbers - business_numbers)
+    if added_numbers:
+        errors.append("drawing_script changes required numbers: " + ", ".join(added_numbers))
+    return errors
+
+
 def validate_analysis_artifact(gate: str, text: str) -> list[str]:
     """Return semantic validation failures for one ordered analysis artifact."""
 
@@ -150,6 +278,9 @@ def validate_analysis_artifact(gate: str, text: str) -> list[str]:
 
     if gate == "drawing_script" and _DRAWING_GEOMETRY_PATTERN.search(text):
         errors.append("drawing_script must not contain geometry keywords")
+
+    if gate == "business_script":
+        errors.extend(validate_business_script(text))
 
     return errors
 
@@ -188,6 +319,17 @@ def stage_analysis_artifact(
         raise ValueError(f"{predecessor} approval is required before staging {gate}")
 
     errors = validate_analysis_artifact(gate, source)
+    business_source_sha256: str | None = None
+    inherited_units: InheritedUnits | None = None
+    if gate == "drawing_script":
+        business_approval = json.loads(_approval_path(root, "business_script").read_text(encoding="utf-8"))
+        business_artifact = Path(str(business_approval["artifact"]))
+        business = business_artifact.read_text(encoding="utf-8")
+        business_source_sha256 = hashlib.sha256(business.encode("utf-8")).hexdigest()
+        if business_source_sha256 != business_approval.get("source_sha256"):
+            raise ValueError("approved business script has changed; approve business_script again")
+        errors.extend(validate_drawing_script(source, business))
+        inherited_units = _parse_inherited_units(business)
     if errors:
         raise ValueError("; ".join(errors))
 
@@ -203,9 +345,7 @@ def stage_analysis_artifact(
     artifact.parent.mkdir(parents=True, exist_ok=True)
     artifact.write_text(source, encoding="utf-8")
     pending = _pending_path(root, gate)
-    _write_json(
-        pending,
-        {
+    pending_payload: dict[str, object] = {
             "schema": "cyberppt.analysis_expression.pending_confirmation.v1",
             "gate": gate,
             "status": "pending_confirmation",
@@ -214,8 +354,11 @@ def stage_analysis_artifact(
             "recommendation": recommendation,
             "options": normalized_options,
             "created_at": _utc_now(),
-        },
-    )
+    }
+    if business_source_sha256 is not None and inherited_units is not None:
+        pending_payload["business_source_sha256"] = business_source_sha256
+        pending_payload["inherited_units"] = inherited_units.to_payload()
+    _write_json(pending, pending_payload)
     approval = _approval_path(root, gate)
     if approval.exists():
         approval.unlink()
@@ -237,9 +380,7 @@ def approve_analysis_artifact(project: Path, gate: str, option_id: str, note: st
         raise ValueError(f"option_id is not available for {gate}: {option_id}")
 
     approval = _approval_path(root, gate)
-    _write_json(
-        approval,
-        {
+    approval_payload: dict[str, object] = {
             "schema": "cyberppt.analysis_expression.approval.v1",
             "gate": gate,
             "approved": True,
@@ -249,8 +390,11 @@ def approve_analysis_artifact(project: Path, gate: str, option_id: str, note: st
             "source_sha256": data["source_sha256"],
             "option_id": option_id,
             "note": note,
-        },
-    )
+    }
+    if gate == "drawing_script":
+        approval_payload["business_source_sha256"] = data["business_source_sha256"]
+        approval_payload["inherited_units"] = data["inherited_units"]
+    _write_json(approval, approval_payload)
     return approval
 
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import inspect
 import json
 import tempfile
@@ -14,6 +15,8 @@ from cyberppt.commands.analysis_expression_gate import (
     get_analysis_expression_status,
     stage_analysis_artifact,
     validate_analysis_artifact,
+    validate_business_script,
+    validate_drawing_script,
 )
 from cyberppt.commands.init_project import init_project
 
@@ -64,8 +67,109 @@ PAGE_DESIGN = """# 页面设计
 请审阅
 """
 
+BUSINESS_SCRIPT = """# 业务脚本
+## 第1页：供需预测分析
+### 业务内容
+2026年最大负荷预计为1000万千瓦，供需总体平衡。
+### 非上屏：证据链
+- E-01
+### 来源位置
+- 年度供需预测报告第3页
+### 非上屏：完整性校核
+- 事实：供需总体平衡
+- 数字：1000万千瓦
+- 分类：最大负荷预测
+- 边界：2026年
+- 请求事项：请审定预测结论
+### 非上屏：信息密度
+- 最少呈现3项供需指标
+"""
+
+DRAWING_SCRIPT = """# 绘制脚本
+## 第1页：供需预测分析
+### 上屏文字
+- 2026年最大负荷1000万千瓦
+- 供需总体平衡
+- 请审定预测结论
+### 组件关系
+指标卡与结论卡通过箭头关联。
+### 信息密度
+- 最少呈现3项供需指标
+### 禁止项
+- 不使用装饰性图标
+### 非上屏：证据链
+- E-01
+### 来源位置
+- 年度供需预测报告第3页
+### 非上屏：完整性校核
+- 事实：供需总体平衡
+- 数字：1000万千瓦
+- 分类：最大负荷预测
+- 边界：2026年
+- 请求事项：请审定预测结论
+"""
+
 
 class AnalysisExpressionGateTests(unittest.TestCase):
+    def _approve_all_through_business(self, project: Path) -> None:
+        stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS)
+        approve_analysis_artifact(project, "reporting_direction", "leadership_review")
+        stage_analysis_artifact(project, "report_structure", STRUCTURE, "four modules", OPTIONS)
+        approve_analysis_artifact(project, "report_structure", "leadership_review")
+        stage_analysis_artifact(project, "page_design", PAGE_DESIGN, "page design", OPTIONS)
+        approve_analysis_artifact(project, "page_design", "leadership_review")
+        stage_analysis_artifact(project, "business_script", BUSINESS_SCRIPT, "business script", OPTIONS)
+        approve_analysis_artifact(project, "business_script", "leadership_review")
+
+    def test_default_style_rejects_consulting_title(self) -> None:
+        errors = validate_business_script("## 第3页：核心判断\nSO WHAT\n### 非上屏：证据链\n- E-01\n")
+
+        self.assertIn("consulting-delivery language", " ".join(errors))
+
+    def test_formal_background_necessity_and_feasibility_terms_are_allowed(self) -> None:
+        errors = validate_business_script(
+            "## 第3页：工作背景、建设必要性与实施可行性\n"
+            "### 非上屏：证据链\n- E-01\n"
+        )
+
+        self.assertFalse(any("consulting-delivery language" in error for error in errors))
+
+    def test_drawing_cannot_omit_required_business_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+            self._approve_all_through_business(project)
+            incomplete_drawing = DRAWING_SCRIPT.replace("### 非上屏：证据链\n- E-01\n", "")
+
+            with self.assertRaisesRegex(ValueError, "missing required evidence binding"):
+                stage_analysis_artifact(project, "drawing_script", incomplete_drawing, "", [])
+
+    def test_drawing_rejects_changed_required_units_and_geometry(self) -> None:
+        changed = DRAWING_SCRIPT.replace("1000万千瓦", "1200万千瓦").replace("指标卡与结论卡", "x=10, 指标卡与结论卡")
+
+        errors = validate_drawing_script(changed, BUSINESS_SCRIPT)
+
+        self.assertIn("changed required completeness unit: 数字：1000万千瓦", errors)
+        self.assertIn("drawing_script must not contain geometry keywords", errors)
+
+    def test_drawing_preserves_all_inherited_units_in_approval_record(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+            self._approve_all_through_business(project)
+
+            stage_analysis_artifact(project, "drawing_script", DRAWING_SCRIPT, "drawing script", OPTIONS)
+            approval = approve_analysis_artifact(project, "drawing_script", "leadership_review")
+
+            data = json.loads(approval.read_text(encoding="utf-8"))
+            self.assertEqual(
+                data["business_source_sha256"],
+                hashlib.sha256(BUSINESS_SCRIPT.encode("utf-8")).hexdigest(),
+            )
+            self.assertEqual(["E-01"], data["inherited_units"]["evidence_bindings"])
+            self.assertEqual(["年度供需预测报告第3页"], data["inherited_units"]["source_locations"])
+            self.assertEqual(["最少呈现3项供需指标"], data["inherited_units"]["density_units"])
+
     def test_new_project_starts_at_reporting_direction(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
