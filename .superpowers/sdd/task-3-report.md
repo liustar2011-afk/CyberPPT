@@ -13,3 +13,10 @@
 - Translation: concise approved facts remain valid after removing only the approved compact modifiers `总体` and `基本`.
 - Regression coverage: rejects `供需总体平衡` changed to `供需偏紧`; rejects an omitted `1000万千瓦`; permits `供需平衡`.
 - Validation: `python3 -m unittest tests.test_analysis_expression_gate -v` (24 tests passed)
+
+## P1 Modifier-Normalization Follow-up
+
+- Status: complete
+- Scope: concise fact matching uses an explicit allowlist only: `供需总体平衡` may match `供需平衡`.
+- Regression coverage: `基本完成` must not match `完成`.
+- Validation: `python3 -m unittest tests.test_analysis_expression_gate -v` (25 tests passed)

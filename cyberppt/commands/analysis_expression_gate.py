@@ -40,7 +40,7 @@ _CONSULTING_DELIVERY_PATTERN = re.compile(r"\b(?:MBB|SO\s+WHAT|Caveat|Resolution
 _NON_VISIBLE_HEADINGS = ("非上屏", "来源位置")
 _COMPLETENESS_CATEGORIES = ("事实", "数字", "分类", "边界", "请求事项")
 _NUMBER_PATTERN = re.compile(r"\d+(?:\.\d+)?(?:[%％]|万千瓦|亿千瓦时|万|亿|台|项|个|页|年|月|日)?")
-_CONCISE_FACT_MODIFIERS = ("总体", "基本")
+_ALLOWED_CONCISE_FACTS = {"供需总体平衡": "供需平衡"}
 
 
 @dataclass(frozen=True)
@@ -216,10 +216,8 @@ def _fact_is_visible(fact: str, visible_text: str) -> bool:
     normalized_visible = _normalized_visible_value(visible_text)
     if normalized_fact in normalized_visible:
         return True
-    concise_fact = normalized_fact
-    for modifier in _CONCISE_FACT_MODIFIERS:
-        concise_fact = concise_fact.replace(modifier, "")
-    return bool(concise_fact) and concise_fact in normalized_visible
+    concise_fact = _ALLOWED_CONCISE_FACTS.get(normalized_fact)
+    return concise_fact is not None and concise_fact in normalized_visible
 
 
 def _drawing_visible_text(text: str) -> str:
