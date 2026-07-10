@@ -12,6 +12,13 @@ README = ROOT / "README.md"
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_readme_documents_analysis_expression_gate(self) -> None:
+        text = README.read_text(encoding="utf-8-sig")
+
+        self.assertIn("analysis-expression-status", text)
+        self.assertIn("business script", text)
+        self.assertIn("drawing script", text)
+
     def test_stage_one_references_default_to_adaptive_internal_reporting(self) -> None:
         source_text = SOURCE_ANALYSIS.read_text(encoding="utf-8-sig")
         storyline_text = STORYLINE.read_text(encoding="utf-8-sig")
