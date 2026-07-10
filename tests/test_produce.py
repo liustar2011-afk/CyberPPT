@@ -4,15 +4,25 @@ import io
 import json
 import tempfile
 import unittest
+from unittest.mock import Mock, patch
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 from cyberppt.cli import main
 from cyberppt.commands.analysis_expression_gate import approve_analysis_artifact, stage_analysis_artifact
-from cyberppt.commands.blueprint_gate import approve_blueprint_input, approve_visual_style, stage_blueprint_input, stage_visual_style_options
+from cyberppt.commands.blueprint_gate import (
+    approve_blueprint_image_review,
+    approve_blueprint_input,
+    approve_speaker_notes_review,
+    approve_visual_style,
+    stage_blueprint_image_review,
+    stage_blueprint_input,
+    stage_speaker_notes_review,
+    stage_visual_style_options,
+)
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
-from cyberppt.commands.produce import get_production_status, prepare_production
+from cyberppt.commands.produce import assemble_production, get_production_status, prepare_production
 
 
 OPTIONS = [
@@ -134,6 +144,24 @@ class ProduceTests(unittest.TestCase):
 
             self.assertEqual(2, code)
             self.assertIn("produce assemble", stderr.getvalue())
+
+    def test_assemble_rejects_zero_return_code_without_required_artifacts(self) -> None:
+        project, temporary_directory = _approved_project()
+        with temporary_directory:
+            prepared = prepare_production(project, "1")
+            pairs = Path(prepared["artifacts"]["page_image_pairs"])
+            manifest = json.loads(pairs.read_text(encoding="utf-8"))
+            for pair in manifest["pairs"]:
+                Path(pair["full"]["path"]).write_bytes(b"approved-image")
+            stage_blueprint_image_review(project, pairs)
+            approve_blueprint_image_review(project, "confirm_blueprint_images")
+            notes = Path(prepared["artifacts"]["speaker_notes_manifest"])
+            stage_speaker_notes_review(project, notes, "1")
+            approve_speaker_notes_review(project, "confirm_speaker_notes")
+
+            with patch("cyberppt.commands.produce.subprocess.run", return_value=Mock(returncode=0)):
+                with self.assertRaisesRegex(RuntimeError, "assembly_artifact_missing"):
+                    assemble_production(project, "1")
 
 
 if __name__ == "__main__":

@@ -4,17 +4,21 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from cyberppt.commands.analysis_expression_gate import assert_analysis_expression_ready
 from cyberppt.commands.blueprint_gate import (
+    assert_blueprint_image_review_ready,
     assert_blueprint_input_ready,
     assert_speaker_notes_review_ready,
     stage_speaker_notes_review,
 )
 from cyberppt.commands.final_script_pages import run_final_script_pages
+from cyberppt.commands.production_qa import validate_assembly_bundle
 
 
 STAGE_ROOT = Path("workbench/stages/02-blueprint-dual-image")
@@ -188,3 +192,80 @@ def get_production_status(project: Path, pages_raw: str) -> dict[str, Any]:
         next_command=f"stage-blueprint-image-review {root} --manifest {prepared['page_image_pairs']}",
     )
     return result
+
+
+def assemble_production(project: Path, pages_raw: str) -> dict[str, Any]:
+    """Assemble approved full images without regenerating or silently accepting missing output."""
+
+    root = _project(project)
+    status = get_production_status(root, pages_raw)
+    if status.get("next_gate") == "speaker_notes_approval_required":
+        assert_speaker_notes_review_ready(root, pages_raw)
+    prepare_path = _prepare_path(root, pages_raw)
+    if prepare_path is None:
+        raise ValueError(f"production inputs are not prepared; run produce prepare {root} --pages {pages_raw}")
+    prepared = _read_json(prepare_path)
+    script = Path(str(prepared["script"])).resolve()
+    page_manifest = Path(str(prepared["page_image_pairs"])).resolve()
+    template_text_lock = Path(str(prepared["template_text_lock"])).resolve()
+    notes_manifest = assert_speaker_notes_review_ready(root, pages_raw)
+    pairs = _read_json(page_manifest)
+    assert_blueprint_image_review_ready(root, pairs)
+    pages = [int(item["page_number"]) for item in pairs.get("pairs", []) if isinstance(item, dict) and "page_number" in item]
+    if not pages:
+        raise ValueError("prepared page image manifest contains no pages")
+    output_dir = prepare_path.parent / "image_ppt"
+    name = prepare_path.parent.name
+    command = [
+        sys.executable,
+        "-m",
+        "cyberppt",
+        "image-ppt",
+        "--project",
+        str(root),
+        "run",
+        "--project-production",
+        "--script",
+        str(script),
+        "--pages",
+        pages_raw,
+        "--template-text-lock",
+        str(template_text_lock),
+        "--page-image-manifest",
+        str(page_manifest),
+        "--speaker-notes-manifest",
+        str(notes_manifest),
+        "--output-dir",
+        str(output_dir),
+        "--name",
+        name,
+    ]
+    completed = subprocess.run(command, check=False)
+    if completed.returncode != 0:
+        raise RuntimeError(f"image-ppt assembly failed with exit code {completed.returncode}")
+    project_dir = output_dir / f"{name}_template_image_project"
+    exports = sorted((project_dir / "exports").glob("*.pptx"))
+    exported_pptx = exports[-1] if exports else output_dir / "missing.pptx"
+    approved_images = {
+        int(pair["page_number"]): str(Path(str(pair["full"]["path"])).resolve())
+        for pair in pairs.get("pairs", [])
+        if isinstance(pair, dict) and isinstance(pair.get("full"), dict) and "page_number" in pair
+    }
+    bundle = {
+        "project": str(root),
+        "exported_pptx": str(exported_pptx),
+        "template_image_manifest": str(output_dir / "template_image_manifest.json"),
+        "approved_images": approved_images,
+    }
+    report = validate_assembly_bundle(bundle, pages)
+    report["command"] = command
+    report_path = _write_json(output_dir / "assembly_report.json", report)
+    if not report["valid"]:
+        raise RuntimeError("assembly_artifact_missing: " + ", ".join(report["failures"]))
+    return {
+        "schema": "cyberppt.production_assemble_result.v1",
+        "status": "image_ppt_assembled",
+        "next_gate": "render_qa_required",
+        "next_command": f"produce verify {root} --pages {pages_raw}",
+        "artifacts": {**bundle, "assembly_report": str(report_path)},
+    }
