@@ -47,6 +47,7 @@ _ALLOWED_CONCISE_FACTS = {"供需总体平衡": "供需平衡"}
 class AnalysisExpressionStatus:
     adopted: bool
     next_gate: str | None
+    gates: dict[str, dict[str, object]]
 
 
 @dataclass(frozen=True)
@@ -447,7 +448,62 @@ def approve_analysis_artifact(project: Path, gate: str, option_id: str, note: st
 def get_analysis_expression_status(project: Path) -> AnalysisExpressionStatus:
     contract = _contract_path(project)
     if not contract.exists():
-        return AnalysisExpressionStatus(adopted=False, next_gate=None)
+        return AnalysisExpressionStatus(adopted=False, next_gate=None, gates={})
     root = project.expanduser().resolve()
     next_gate = next((gate for gate in GATE_ORDER if not _approval_exists(root, gate)), None)
-    return AnalysisExpressionStatus(adopted=True, next_gate=next_gate)
+    gates: dict[str, dict[str, object]] = {}
+    for gate in GATE_ORDER:
+        approval = _approval_path(root, gate)
+        pending = _pending_path(root, gate)
+        if _approval_exists(root, gate):
+            gates[gate] = {"status": "approved", "approval": str(approval)}
+        elif pending.exists():
+            data = json.loads(pending.read_text(encoding="utf-8"))
+            gates[gate] = {
+                "status": "pending_confirmation",
+                "pending_confirmation": str(pending),
+                "recommendation": data.get("recommendation"),
+                "options": data.get("options", []),
+            }
+        else:
+            gates[gate] = {"status": "not_staged"}
+    return AnalysisExpressionStatus(adopted=True, next_gate=next_gate, gates=gates)
+
+
+def analysis_expression_status_as_json(status: AnalysisExpressionStatus) -> str:
+    return json.dumps(
+        {
+            "adopted": status.adopted,
+            "next_gate": status.next_gate,
+            "gates": status.gates,
+            "next_command": f"stage-{status.next_gate.replace('_', '-')}" if status.next_gate else None,
+        },
+        ensure_ascii=False,
+        indent=2,
+    )
+
+
+def assert_analysis_expression_ready(project: Path) -> None:
+    """Reject generation when an adopted project's analysis contract is incomplete or stale."""
+
+    root = project.expanduser().resolve()
+    if not _contract_path(root).exists():
+        return
+
+    for gate in GATE_ORDER:
+        if not _approval_exists(root, gate):
+            raise ValueError(f"{gate} approval is required")
+
+    business_approval = json.loads(_approval_path(root, "business_script").read_text(encoding="utf-8"))
+    drawing_approval = json.loads(_approval_path(root, "drawing_script").read_text(encoding="utf-8"))
+    business = Path(str(business_approval["artifact"])).read_text(encoding="utf-8")
+    drawing = Path(str(drawing_approval["artifact"])).read_text(encoding="utf-8")
+    business_sha256 = hashlib.sha256(business.encode("utf-8")).hexdigest()
+    if business_sha256 != business_approval.get("source_sha256"):
+        raise ValueError("approved business script has changed; approve business_script again")
+    if drawing_approval.get("business_source_sha256") != business_sha256:
+        raise ValueError("drawing_script dependency hash is stale; stage and approve drawing_script again")
+
+    errors = validate_drawing_script(drawing, business)
+    if errors:
+        raise ValueError("drawing_script approval is invalid: " + "; ".join(errors))
