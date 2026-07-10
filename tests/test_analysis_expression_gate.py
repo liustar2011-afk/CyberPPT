@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import inspect
 import json
 import tempfile
 import unittest
 from pathlib import Path
 
+import cyberppt.commands.analysis_expression_gate as analysis_expression_gate
 from cyberppt.commands.analysis_expression_gate import (
     GATE_ORDER,
     adopt_analysis_expression_contract,
@@ -124,6 +126,55 @@ class AnalysisExpressionGateTests(unittest.TestCase):
             self.assertEqual("leadership_review", data["options"][0]["id"])
             self.assertTrue((project / "workbench/analysis_expression/reporting_direction.md").is_file())
 
+    def test_utc_timestamp_uses_timezone_utc_for_python_310_compatibility(self) -> None:
+        source = inspect.getsource(analysis_expression_gate._utc_now)
+
+        self.assertIn("timezone.utc", source)
+        self.assertNotIn("UTC", source)
+
+    def test_restaging_invalidates_pending_and_approval_records_for_successors(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+            stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS)
+            approve_analysis_artifact(project, "reporting_direction", "leadership_review")
+            stage_analysis_artifact(project, "report_structure", STRUCTURE, "four modules", OPTIONS)
+            approve_analysis_artifact(project, "report_structure", "leadership_review")
+
+            stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS)
+
+            root = project / "workbench/analysis_expression"
+            self.assertFalse((root / "report_structure.pending-confirmation.json").exists())
+            self.assertFalse((root / "report_structure.approved.json").exists())
+            self.assertEqual("reporting_direction", get_analysis_expression_status(project).next_gate)
+
+    def test_direction_requires_two_labeled_options_and_matching_recommendation(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+
+            with self.assertRaisesRegex(ValueError, "at least two"):
+                stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS[:1])
+            with self.assertRaisesRegex(ValueError, "non-empty label"):
+                stage_analysis_artifact(
+                    project,
+                    "reporting_direction",
+                    DIRECTION,
+                    "领导审定型",
+                    [{"id": "leadership_review", "label": "领导审定型"}, {"id": "execution_alignment", "label": ""}],
+                )
+            with self.assertRaisesRegex(ValueError, "recommendation"):
+                stage_analysis_artifact(project, "reporting_direction", DIRECTION, "不存在的方向", OPTIONS)
+
+    def test_direction_recommendation_may_use_option_id(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+
+            pending = stage_analysis_artifact(project, "reporting_direction", DIRECTION, "leadership_review", OPTIONS)
+
+            self.assertTrue(pending.exists())
+
     def test_approval_advances_to_the_next_gate(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
@@ -154,6 +205,20 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 
     def test_page_design_rejects_evidence_or_decisions_on_navigation_pages(self) -> None:
         text = PAGE_DESIGN.replace("章节导航", "章节导航\n证据：供需预测数据\n决策：审定方案")
+
+        errors = validate_analysis_artifact("page_design", text)
+
+        self.assertIn("navigation pages must not contain evidence or decisions", errors)
+
+    def test_page_design_requires_roles_as_markdown_sections(self) -> None:
+        text = PAGE_DESIGN.replace("## 目录", "目录")
+
+        errors = validate_analysis_artifact("page_design", text)
+
+        self.assertIn("missing required heading: 目录", errors)
+
+    def test_page_design_navigation_restrictions_are_section_scoped_and_reject_argument_terms(self) -> None:
+        text = PAGE_DESIGN.replace("章节导航", "章节导航\n论证：供需判断\n论据：预测数据")
 
         errors = validate_analysis_artifact("page_design", text)
 
