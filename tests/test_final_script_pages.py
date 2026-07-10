@@ -2,11 +2,8 @@ from __future__ import annotations
 
 import json
 import tempfile
-import time
 import unittest
-from hashlib import sha256
 from pathlib import Path
-from unittest.mock import Mock, patch
 
 from cyberppt.commands.analysis_expression_gate import approve_analysis_artifact, stage_analysis_artifact
 from cyberppt.commands.blueprint_gate import (
@@ -288,124 +285,21 @@ class FinalScriptPagesTests(unittest.TestCase):
 
             self.assertTrue(any(project.rglob("visual_style_lock.json")))
 
-    def test_production_build_uses_existing_approved_speaker_notes_manifest(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            project = root / "client-report"
-            init_project(project)
-            _approve_all_analysis_expression_gates(project)
-            script = root / "script-final.md"
-            script.write_text("## 第1页：测试\n组件A：内容\n", encoding="utf-8")
-            _approve_stage02_input(project, script)
-            speaker_notes_manifest = _approve_stage02_images(project, script, "1")
-            _approve_stage02_speaker_notes(project, speaker_notes_manifest, "1")
-            speaker_notes_payload = json.loads(speaker_notes_manifest.read_text(encoding="utf-8"))
-            approved_manifest_sha256 = sha256(speaker_notes_manifest.read_bytes()).hexdigest()
-            time.sleep(1.1)
-
-            with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
-                run.return_value = Mock(returncode=0)
-                summary = run_final_script_pages(
-                    project=project,
-                    script=script,
-                    pages_raw="1",
-                    production_build=True,
-                )
-
-            command = run.call_args.args[0]
-            speaker_notes_manifest_exists = Path(summary["artifacts"]["speaker_notes_manifest"]).is_file()
-            speaker_notes_prompt_exists = Path(summary["artifacts"]["speaker_notes_llm_prompt"]).is_file()
-            post_production_manifest_sha256 = sha256(speaker_notes_manifest.read_bytes()).hexdigest()
-
-        self.assertEqual("02-production-build", summary["stage"])
-        self.assertEqual("production_ready", summary["status"])
-        self.assertEqual("completed", summary["image_ppt_build"]["status"])
-        self.assertIn("-m", command)
-        self.assertIn("cyberppt", command)
-        self.assertIn("image-ppt", command)
-        self.assertIn("run", command)
-        self.assertIn("--script", command)
-        self.assertIn(str(script.resolve()), command)
-        self.assertIn("--pages", command)
-        self.assertIn("1", command)
-        self.assertIn(str(Path(summary["artifacts"]["image_ppt_output_dir"])), command)
-        self.assertIn("--speaker-notes-manifest", command)
-        self.assertEqual(
-            str(Path(summary["artifacts"]["speaker_notes_manifest"]).resolve()),
-            command[command.index("--speaker-notes-manifest") + 1],
-        )
-        self.assertTrue(speaker_notes_manifest_exists)
-        self.assertTrue(speaker_notes_prompt_exists)
-        self.assertEqual(approved_manifest_sha256, post_production_manifest_sha256)
-        self.assertEqual(speaker_notes_payload["business_script"], summary["speaker_notes_build"]["business_script"])
-        self.assertEqual(speaker_notes_payload["llm_prompt"], summary["speaker_notes_build"]["llm_prompt"])
-        self.assertEqual("approved", summary["speaker_notes_build"]["status"])
-        self.assertIsNone(summary["rebuild"])
-        self.assertEqual({}, summary["tool_consumption"])
-        self.assertIsNone(summary["production_readiness"])
-
-    def test_production_build_requires_confirmed_speaker_notes_before_image_ppt(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            project = root / "client-report"
-            init_project(project)
-            _approve_all_analysis_expression_gates(project)
-            script = root / "script-final.md"
-            script.write_text("## 第1页：测试\n组件A：内容\n", encoding="utf-8")
-            _approve_stage02_input(project, script)
-            speaker_notes_manifest = _approve_stage02_images(project, script, "1")
-
-            with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
-                run.return_value = Mock(returncode=0)
-                with self.assertRaisesRegex(ValueError, "speaker notes approval is required"):
-                    run_final_script_pages(
-                        project=project,
-                        script=script,
-                        pages_raw="1",
-                        production_build=True,
-                    )
-
-            run.assert_not_called()
-            _approve_stage02_speaker_notes(project, speaker_notes_manifest, "1")
-
-            with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
-                run.return_value = Mock(returncode=0)
-                summary = run_final_script_pages(
-                    project=project,
-                    script=script,
-                    pages_raw="1",
-                    production_build=True,
-                )
-
-            command = run.call_args.args[0]
-            self.assertEqual(
-                str(speaker_notes_manifest.resolve()),
-                command[command.index("--speaker-notes-manifest") + 1],
-            )
-            self.assertEqual("completed", summary["image_ppt_build"]["status"])
-
-    def test_non_adopted_production_requires_contract_before_notes_or_assembly(self) -> None:
+    def test_production_build_is_rejected_in_favor_of_produce_assemble(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "legacy-report"
             script = root / "script-final.md"
             script.write_text("## 第1页：测试\n组件A：内容\n", encoding="utf-8")
 
-            with (
-                patch("cyberppt.commands.final_script_pages._run_speaker_notes_build") as notes_build,
-                patch("cyberppt.commands.final_script_pages.subprocess.run") as image_ppt_run,
-            ):
-                with self.assertRaisesRegex(ValueError, "adopt-analysis-expression-contract"):
-                    run_final_script_pages(
-                        project=project,
-                        script=script,
-                        pages_raw="1",
-                        style_id=4,
-                        production_build=True,
-                    )
-
-            notes_build.assert_not_called()
-            image_ppt_run.assert_not_called()
+            with self.assertRaisesRegex(ValueError, "produce assemble"):
+                run_final_script_pages(
+                    project=project,
+                    script=script,
+                    pages_raw="1",
+                    style_id=4,
+                    production_build=True,
+                )
 
     def test_run_rebuild_is_no_longer_supported_by_final_script_pages(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -450,44 +344,6 @@ class FinalScriptPagesTests(unittest.TestCase):
                     style_id=5,
                     semantic_plan_dir=semantic_plan_dir,
                 )
-
-    def test_production_build_failure_reports_image_ppt_command(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            project = root / "client-report"
-            init_project(project)
-            _approve_all_analysis_expression_gates(project)
-            script = root / "script-final.md"
-            script.write_text(
-                """# 终稿脚本
-
-## 第1页：态势感知能力
-本页结论标题为“态势感知能力要从工具堆叠转向风险闭环”
-组件A（左侧主图）——三层能力链：
-数据接入、模型研判、处置反馈
-""",
-                encoding="utf-8",
-            )
-            _approve_stage02_input(project, script)
-            speaker_notes_manifest = _approve_stage02_images(project, script, "1")
-            _approve_stage02_speaker_notes(project, speaker_notes_manifest, "1")
-
-            with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
-                run.return_value = Mock(returncode=3)
-                with self.assertRaises(RuntimeError) as caught:
-                    run_final_script_pages(
-                        project=project,
-                        script=script,
-                        pages_raw="1",
-                        production_build=True,
-                    )
-
-        message = str(caught.exception)
-        self.assertIn("image-ppt production build failed with exit code 3", message)
-        self.assertIn("image-ppt", message)
-        self.assertNotIn("source_capture", message)
-        self.assertNotIn("semantic_plan", message)
-
 
 if __name__ == "__main__":
     unittest.main()

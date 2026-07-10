@@ -28,6 +28,7 @@ from cyberppt.commands.blueprint_gate import (
 )
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
+from cyberppt.commands.produce import get_production_status, prepare_production
 from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script, status_as_json
 from cyberppt.commands.script_runner import _STAGE_2_PLUS_GENERATION_ALIASES, SCRIPT_ALIASES, run_script
 from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
@@ -281,6 +282,29 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _produce_prepare_command(args: argparse.Namespace) -> int:
+    try:
+        result = prepare_production(Path(args.project), args.pages)
+    except (FileNotFoundError, RuntimeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
+
+
+def _produce_status_command(args: argparse.Namespace) -> int:
+    result = get_production_status(Path(args.project), args.pages)
+    if args.json:
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    else:
+        print(f"status: {result['status']}")
+        print(f"next_gate: {result.get('next_gate', 'none')}")
+        print(f"next_command: {result.get('next_command', '')}")
+        for failure in result.get("failures", []):
+            print(f"failure: {failure}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cyberppt", description="CyberPPT product tooling.")
     parser.add_argument("--version", action="version", version=f"cyberppt {__version__}")
@@ -512,6 +536,22 @@ def build_parser() -> argparse.ArgumentParser:
         help="Unsupported legacy option for old template-rebuild commands.",
     )
     final_script_pages_parser.set_defaults(func=_final_script_pages_command)
+
+    produce_parser = subparsers.add_parser("produce", help="Run the project-scoped production state machine.")
+    produce_subparsers = produce_parser.add_subparsers(dest="produce_command", required=True)
+    produce_prepare_parser = produce_subparsers.add_parser(
+        "prepare", help="Compile approved inputs and stage speaker notes for review."
+    )
+    produce_prepare_parser.add_argument("project", help="CyberPPT project directory.")
+    produce_prepare_parser.add_argument("--pages", required=True, help="Page range, e.g. 7-8 or 7,8.")
+    produce_prepare_parser.set_defaults(func=_produce_prepare_command)
+    produce_status_parser = produce_subparsers.add_parser(
+        "status", help="Show the next legal production transition."
+    )
+    produce_status_parser.add_argument("project", help="CyberPPT project directory.")
+    produce_status_parser.add_argument("--pages", required=True, help="Page range, e.g. 7-8 or 7,8.")
+    produce_status_parser.add_argument("--json", action="store_true", help="Emit machine-readable status.")
+    produce_status_parser.set_defaults(func=_produce_status_command)
 
     for alias in sorted(SCRIPT_ALIASES):
         help_text = f"Run scripts/{SCRIPT_ALIASES[alias]}."
