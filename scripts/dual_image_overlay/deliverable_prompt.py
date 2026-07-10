@@ -27,6 +27,7 @@ QUOTED_EVIDENCE_LABEL_RE = re.compile(r"标签[\"“']?\s*[（(]E\d+.*?[)）][\"
 COMPONENT_PREFIX_RE = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+[（(].*?[)）]\s*[—-]+")
 COMPONENT_PREFIX_SIMPLE_RE = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+[：:]\s*")
 COMPONENT_LINE_RE = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+")
+PAGE_TYPE_LINE_RE = re.compile(r"^页面类型\s*[:：]\s*(?P<page_type>.+?)\s*$")
 TITLE_REFERENCE_RE = re.compile(r"本页结论标题.*")
 TEMPLATE_TITLE_RE = re.compile(r"本页结论标题[^\"“”]*[\"“](?P<title>[^\"”]+)[\"”]")
 TEMPLATE_TITLE_MAX_CHARS = 42
@@ -138,6 +139,8 @@ def _drop_line(line: str) -> bool:
         return True
     if FENCE_RE.match(stripped):
         return True
+    if PAGE_TYPE_LINE_RE.match(stripped):
+        return True
     if re.match(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+", stripped) and (
         "——" in stripped or "标签" in stripped or "下方" in stripped or "主体" in stripped or "（" in stripped
     ):
@@ -178,6 +181,8 @@ def visible_deliverable_lines(page: PageBlock) -> list[str]:
 def _clean_structure_directive(line: str) -> str:
     line = line.strip()
     line = TITLE_REFERENCE_RE.sub("", line)
+    line = re.sub(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+", "", line)
+    line = re.sub(r"^[（(]([^）)]+)[）)]\s*[—-]*\s*", r"\1，", line)
     line = re.sub(r"，?\s*右下角小标签[\"“']?\s*[（(]E\d+.*?[)）][\"”']?", "", line)
     line = re.sub(r"，?\s*标签[\"“']?\s*[（(]E\d+.*?[)）][\"”']?", "", line)
     line = QUOTED_EVIDENCE_LABEL_RE.sub("", line)
@@ -207,6 +212,16 @@ def layout_density_directives(page: PageBlock) -> list[str]:
             directives.append(cleaned)
             seen.add(key)
     return directives
+
+
+def page_type_directive(page: PageBlock) -> str:
+    """Return a non-visible page-type instruction for ImageGen composition."""
+
+    for raw in page.text.splitlines():
+        match = PAGE_TYPE_LINE_RE.match(raw.strip())
+        if match:
+            return match.group("page_type").strip()
+    return "内容页"
 
 
 def template_title(page: PageBlock) -> str:
@@ -248,26 +263,20 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
     style = payload.get("style")
     if not isinstance(style, dict):
         return None
-    prompt_contract = _collapse_text(style.get("prompt_contract"))
-    density_rule = _collapse_text(style.get("density_rule"))
-    sample = _collapse_text(style.get("sample"))
-    scope_rule = _collapse_text(
-        style.get("scope_rule")
-        or "风格只约束色彩、材质、线条、图标克制度和视觉语气；风格中提到的矩阵、右侧栏、SO WHAT、摘要条等仅作为可选视觉语言，不得覆盖【内容锁定】中的版式、组件数量、箭头关系和框内文字。"
-    )
-    parts = [
-        "沿用项目视觉锁定，不使用外部风格 preset。",
-        scope_rule,
-        prompt_contract,
+    colors = style.get("colors") if isinstance(style.get("colors"), dict) else {}
+    color_values = [
+        ("背景", colors.get("background")),
+        ("标题", colors.get("title")),
+        ("正文", colors.get("body")),
+        ("强调", colors.get("accent")),
     ]
-    if density_rule:
-        parts.append(
-            "信息密度规则：在不改变【内容锁定】结构、组件数量、箭头关系和文字清单的前提下，"
-            f"{density_rule}"
-        )
-    if sample:
-        parts.append(f"确认样张：{sample}")
-    return "".join(parts)
+    color_text = "，".join(f"{label}{value}" for label, value in color_values if value)
+    style_name = _collapse_text(style.get("name")) or "项目视觉锁定"
+    return (
+        f"视觉锁定：{style_name}；{color_text or '按锁定色板执行'}。"
+        "采用正式内部汇报语气、清晰层级、克制图形和紧凑信息密度；"
+        "版式必须服从本页内容锁定和构图要求。"
+    )
 
 
 def style_contract(style_lock_path: Path | None) -> str:
@@ -288,35 +297,36 @@ def style_contract(style_lock_path: Path | None) -> str:
     colors = _extract_hex_colors(text)
     color_text = "、".join(colors[:8]) if colors else "以该视觉锁定文件为准"
     return (
-        "沿用项目视觉锁定，不使用外部风格 preset。"
-        f"核心色板：{color_text}。"
-        "页面应严格沿用该视觉锁定文件中的风格名称、色板、图表语言、信息密度规则和禁用项。"
-        "风格只约束视觉表达，不得覆盖【内容锁定】中的版式、组件数量、箭头关系和框内文字。"
+        f"视觉锁定：核心色板 {color_text}。"
+        "采用正式内部汇报语气、清晰层级、克制图形和紧凑信息密度；"
+        "版式必须服从本页内容锁定和构图要求。"
     )
 
 
 def render_prompt(page: PageBlock, *, style_lock_path: Path | None = None) -> str:
     body = "\n".join(f"- {line}" for line in visible_deliverable_lines(page))
     layout_directives = "\n".join(f"- {line}" for line in layout_density_directives(page))
+    page_type = page_type_directive(page)
     return f"""## 第{page.page_number}页：{template_title(page)}
+
+【页面类型】
+本页类型：{page_type}。此信息只用于构图，不得作为页面可见文字。
 
 【内容锁定】
 {body}
 
 【构图指令】
-生成一张面向最终客户交付的 PPT 正文内容区成稿图，不是蓝图、草稿、过程说明页、复刻中间产物或调试预览图。
-
-只生成正文内容区画面。不要生成页面标题、副标题、Logo、页脚、页码、母版红线、公共元素、临时占位元素或任何完整 PPT 外框；这些由 PPT 模板/母版和可编辑文字层生成。上方 Markdown 页标题只供模板层提取，不属于图片内容。
-
-不得出现证据编号、来源编号、过程性注释、脚注、口径说明、参考来源、调试标记、占位符、乱码、水印，或任何面向制作过程而非最终受众的文字。
+生成正式内部汇报的正文内容区成稿图。
+仅生成正文内容区；模板标题、页眉页脚、页码、Logo 和公共外框不绘制。
+不得出现证据编号、来源、脚注、制作注释、占位符、乱码或水印。
 
 {style_contract(style_lock_path)}
 
 【结构密度】
-必须保持高信息密度，不能把页面简化成少量留白卡片。保留原脚本组件数量、组件关系、网格/流程/卡片结构；如果原脚本包含底部 SO WHAT 区则保留，否则不得为了套用风格强行新增。下列正文内容必须完整、可读地进入画面，但不包含页面标题、副标题、Logo、页脚、页码或公共模板元素；不得遗漏关键数字、判断句、清单项或行动链。
+保持高信息密度，完整保留本页内容、关键数字、判断句、清单项和结构关系；不得擅自合并、删减或改写业务术语。
 {layout_directives}
 
-把正文内容组织为正式汇报页的信息图结构，严格服从【内容锁定】中的页面定位、版式草图、框位置说明、框内文字、箭头关系和组件清单。不得把原脚本指定的页面类型改成通用结论页或通用卡片页；不得合并模块、抽象成少量图标、只保留栏目标题、删减清单项、近义替换框内文字、改写业务术语或生成不可读伪文字；图形关系、容器、图标和连接线应边界清楚，文字应清晰可读。
+图形关系、容器和连接线边界清楚，文字清晰可读；页面类型不得改作通用内容页。
 """.strip() + "\n"
 
 
