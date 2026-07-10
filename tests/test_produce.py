@@ -203,6 +203,8 @@ class ProduceTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
+            stage_speaker_notes_review(project, manifest, "1")
+            approve_speaker_notes_review(project, "confirm_speaker_notes")
 
             with patch(
                 "cyberppt.commands.produce.render_and_compare",
@@ -212,6 +214,44 @@ class ProduceTests(unittest.TestCase):
 
             self.assertEqual("deliverable_ready", report["status"])
             self.assertTrue(Path(report["delivery_pptx"]).is_file())
+
+    def test_verify_requires_current_speaker_notes_approval(self) -> None:
+        project, temporary_directory = _approved_project()
+        with temporary_directory:
+            stage_dir = project / "workbench/stages/02-blueprint-dual-image/pages_001/image_ppt"
+            stage_dir.mkdir(parents=True)
+            approved = stage_dir / "approved.png"
+            exported = stage_dir / "assembled.pptx"
+            manifest = stage_dir / "template_image_manifest.json"
+            approved.write_bytes(b"approved-image")
+            exported.write_bytes(b"pptx")
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "speaker_notes_manifest": str(stage_dir / "speaker_notes_manifest.json"),
+                        "tasks": [{"page_number": 1, "image_path": str(approved), "notes_text": "approved notes"}],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            (stage_dir / "assembly_report.json").write_text(
+                json.dumps(
+                    {
+                        "valid": True,
+                        "artifacts": {"exported_pptx": str(exported), "template_image_manifest": str(manifest)},
+                        "approved_images": {"1": str(approved)},
+                        "artifacts_sha256": {
+                            "exported_pptx": _sha256_for_test(exported),
+                            "template_image_manifest": _sha256_for_test(manifest),
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "speaker notes approval is required"):
+                verify_production(project, "1")
 
     def test_verify_rejects_stale_assembly_hash(self) -> None:
         project, temporary_directory = _approved_project()
@@ -236,6 +276,56 @@ class ProduceTests(unittest.TestCase):
 
             with self.assertRaisesRegex(RuntimeError, "stale assembly"):
                 verify_production(project, "1")
+
+    def test_status_invalidates_deliverable_when_dependency_changes(self) -> None:
+        project, temporary_directory = _approved_project()
+        with temporary_directory:
+            prepared = prepare_production(project, "1")
+            image_ppt = Path(prepared["artifacts"]["production_prepare"]).parent / "image_ppt"
+            image_ppt.mkdir(parents=True)
+            approved = image_ppt / "approved.png"
+            exported = image_ppt / "assembled.pptx"
+            manifest = image_ppt / "template_image_manifest.json"
+            approved.write_bytes(b"approved-image")
+            exported.write_bytes(b"pptx")
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "speaker_notes_manifest": prepared["artifacts"]["speaker_notes_manifest"],
+                        "template_text_lock": prepared["artifacts"]["template_text_lock"],
+                        "tasks": [{"page_number": 1, "image_path": str(approved), "notes_text": "approved notes", "slide_title": "测试"}],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            approve_speaker_notes_review(project, "confirm_speaker_notes")
+            assembly = image_ppt / "assembly_report.json"
+            assembly.write_text(
+                json.dumps(
+                    {
+                        "valid": True,
+                        "artifacts": {"exported_pptx": str(exported), "template_image_manifest": str(manifest)},
+                        "approved_images": {"1": str(approved)},
+                        "artifacts_sha256": {
+                            "exported_pptx": _sha256_for_test(exported),
+                            "template_image_manifest": _sha256_for_test(manifest),
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with patch(
+                "cyberppt.commands.produce.render_and_compare",
+                return_value={"schema": "cyberppt.production_visual_report.v1", "passed": True, "slides": []},
+            ), patch("cyberppt.commands.produce.validate_pptx", return_value={"errors": [], "warnings": []}):
+                verify_production(project, "1")
+
+            visual_report = project / "workbench/stages/05-qa-delivery/pages_001_001/production_visual_report.json"
+            visual_report.write_text('{"passed": false}\n', encoding="utf-8")
+
+            self.assertNotEqual("deliverable_ready", get_production_status(project, "1")["status"])
 
 
 def _sha256_for_test(path: Path) -> str:

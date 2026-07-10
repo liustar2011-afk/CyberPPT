@@ -163,6 +163,10 @@ class ProductionQaTests(unittest.TestCase):
             Image.new("RGB", (100, 60), "#336699").save(approved)
             pptx = _write_full_image_pptx(root / "deck.pptx", approved)
             visual = _write_json(root / "production_visual_report.json", {"passed": True})
+            lock = _write_json(
+                root / "template_text_lock.json",
+                {"records": [{"page": 1, "title": "Native title", "approved": True}]},
+            )
             manifest = _write_json(
                 root / "full_image_delivery_manifest.json",
                 {
@@ -171,11 +175,13 @@ class ProductionQaTests(unittest.TestCase):
                     "body_content_editable": False,
                     "template_text_editable": True,
                     "speaker_notes_required": True,
+                    "template_text_lock": {"path": str(lock), "sha256": _sha256_for_test(lock)},
                     "production_visual_report": {"path": str(visual), "passed": True},
                     "slides": [
                         {
                             "slide": 1,
                             "delivery_mode": "full_image_ppt",
+                            "native_text_requirements": ["Native title"],
                             "image_assets": [{"role": "approved_full_image", "path": str(approved)}],
                         }
                     ],
@@ -193,6 +199,10 @@ class ProductionQaTests(unittest.TestCase):
             Image.new("RGB", (100, 60), "#336699").save(approved)
             pptx = _write_full_image_pptx(root / "deck.pptx", approved, notes=False)
             visual = _write_json(root / "production_visual_report.json", {"passed": True})
+            lock = _write_json(
+                root / "template_text_lock.json",
+                {"records": [{"page": 1, "title": "Native title", "approved": True}]},
+            )
             manifest = _write_json(
                 root / "full_image_delivery_manifest.json",
                 {
@@ -201,11 +211,13 @@ class ProductionQaTests(unittest.TestCase):
                     "body_content_editable": False,
                     "template_text_editable": True,
                     "speaker_notes_required": True,
+                    "template_text_lock": {"path": str(lock), "sha256": _sha256_for_test(lock)},
                     "production_visual_report": {"path": str(visual), "passed": True},
                     "slides": [
                         {
                             "slide": 1,
                             "delivery_mode": "full_image_ppt",
+                            "native_text_requirements": ["Native title"],
                             "image_assets": [{"role": "approved_full_image", "path": str(approved)}],
                         }
                     ],
@@ -215,6 +227,48 @@ class ProductionQaTests(unittest.TestCase):
             report = validate_pptx(pptx, manifest_path=manifest, strict=True)
 
         self.assertIn("FULL_IMAGE_SPEAKER_NOTES_MISSING", {item["code"] for item in report["errors"]})
+
+    def test_strict_validator_rejects_full_image_with_wrong_template_title(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            approved = root / "approved.png"
+            Image.new("RGB", (100, 60), "#336699").save(approved)
+            pptx = _write_full_image_pptx(root / "deck.pptx", approved)
+            visual = _write_json(root / "production_visual_report.json", {"passed": True})
+            lock = _write_json(
+                root / "template_text_lock.json",
+                {"records": [{"page": 1, "title": "Approved title", "approved": True}]},
+            )
+            manifest = _write_json(
+                root / "full_image_delivery_manifest.json",
+                {
+                    "schema": "cyberppt.full_image_delivery_manifest.v1",
+                    "delivery_mode": "full_image_ppt",
+                    "body_content_editable": False,
+                    "template_text_editable": True,
+                    "speaker_notes_required": True,
+                    "template_text_lock": {"path": str(lock), "sha256": _sha256_for_test(lock)},
+                    "production_visual_report": {"path": str(visual), "passed": True},
+                    "slides": [
+                        {
+                            "slide": 1,
+                            "delivery_mode": "full_image_ppt",
+                            "native_text_requirements": ["Approved title"],
+                            "image_assets": [{"role": "approved_full_image", "path": str(approved)}],
+                        }
+                    ],
+                },
+            )
+
+            report = validate_pptx(pptx, manifest_path=manifest, strict=True)
+
+        self.assertIn("FULL_IMAGE_NATIVE_TEMPLATE_TEXT_MISSING", {item["code"] for item in report["errors"]})
+
+
+def _sha256_for_test(path: Path) -> str:
+    import hashlib
+
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 if __name__ == "__main__":
