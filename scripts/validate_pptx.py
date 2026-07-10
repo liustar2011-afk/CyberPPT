@@ -105,6 +105,7 @@ VISUAL_QA_REQUIRED_FIELDS = (
     "deliverable_allowed",
 )
 DUAL_IMAGE_OVERLAY_MODE = "dual_image_editable_overlay"
+FULL_IMAGE_PPT_MODE = "full_image_ppt"
 DUAL_IMAGE_REQUIRED_QA = (
     "background_snapshot_editable_text",
     "background_has_no_text",
@@ -218,6 +219,15 @@ STRICT_FAILURE_CODES = {
     "MANIFEST_VISUAL_COMPLEXITY_SCAN_INCOMPLETE",
     "MANIFEST_PICTURES_ZERO_USED_AS_GOAL",
     "MANIFEST_GENERATION_ENGINE_MISSING",
+    "FULL_IMAGE_BODY_EDITABILITY_INVALID",
+    "FULL_IMAGE_TEMPLATE_TEXT_INVALID",
+    "FULL_IMAGE_SPEAKER_NOTES_INVALID",
+    "FULL_IMAGE_VISUAL_REPORT_MISSING",
+    "FULL_IMAGE_ASSET_MISSING",
+    "FULL_IMAGE_BODY_IMAGE_MISSING",
+    "FULL_IMAGE_NATIVE_TEMPLATE_TEXT_MISSING",
+    "FULL_IMAGE_SLIDE_COUNT_MISMATCH",
+    "FULL_IMAGE_SPEAKER_NOTES_MISSING",
     "MANIFEST_GENERATION_ENGINE_INCOMPLETE",
     "MANIFEST_PYTHON_PPTX_FORBIDDEN",
     "MANIFEST_PAGE_EXECUTION_MISSING",
@@ -386,6 +396,10 @@ def is_dual_image_overlay_entry(entry: dict[str, Any]) -> bool:
     return str(entry.get("delivery_mode") or "") == DUAL_IMAGE_OVERLAY_MODE
 
 
+def is_full_image_ppt_entry(entry: dict[str, Any]) -> bool:
+    return str(entry.get("delivery_mode") or "") == FULL_IMAGE_PPT_MODE
+
+
 def dual_image_background_exception_allowed(entry: dict[str, Any]) -> bool:
     if not is_dual_image_overlay_entry(entry):
         return False
@@ -427,6 +441,19 @@ def apply_manifest_slide_warning_exceptions(
     for warning in warnings:
         if (
             entry is not None
+            and is_full_image_ppt_entry(entry)
+            and warning.get("code") in {"FULL_SLIDE_BACKGROUND_RISK", "LARGE_IMAGE_ASSET", "HIGH_TOTAL_IMAGE_AREA"}
+        ):
+            adjusted.append(
+                issue(
+                    "DECLARED_FULL_IMAGE_BODY",
+                    "Large approved body image is allowed for full_image_ppt mode.",
+                    slide=slide_number,
+                )
+            )
+            continue
+        if (
+            entry is not None
             and warning.get("code") == "FULL_SLIDE_BACKGROUND_RISK"
             and dual_image_background_exception_allowed(entry)
         ):
@@ -452,6 +479,12 @@ def manifest_requires_visual_qa(manifest: dict[str, Any] | None) -> bool:
         if qa.get("visual_qa_required") is True:
             return True
     return False
+
+
+def manifest_is_full_image_delivery(manifest: dict[str, Any] | None) -> bool:
+    if manifest is None:
+        return False
+    return str(manifest.get("delivery_mode") or "").strip().lower() == FULL_IMAGE_PPT_MODE
 
 
 def manifest_has_visual_semantics(manifest: dict[str, Any] | None) -> bool:
@@ -485,6 +518,38 @@ def validate_manifest(manifest: dict[str, Any] | None) -> list[dict[str, Any]]:
     slides = [entry for entry in manifest.get("slides", []) if isinstance(entry, dict)]
     high_fidelity = manifest_is_high_fidelity(manifest)
     delivery_mode = str(manifest.get("delivery_mode", "")).strip().lower()
+
+    if delivery_mode == FULL_IMAGE_PPT_MODE:
+        if manifest.get("body_content_editable") is not False:
+            warnings.append(
+                issue(
+                    "FULL_IMAGE_BODY_EDITABILITY_INVALID",
+                    "full_image_ppt delivery must declare body_content_editable=false.",
+                )
+            )
+        if manifest.get("template_text_editable") is not True:
+            warnings.append(
+                issue(
+                    "FULL_IMAGE_TEMPLATE_TEXT_INVALID",
+                    "full_image_ppt delivery must declare template_text_editable=true.",
+                )
+            )
+        if manifest.get("speaker_notes_required") is not True:
+            warnings.append(
+                issue(
+                    "FULL_IMAGE_SPEAKER_NOTES_INVALID",
+                    "full_image_ppt delivery must declare speaker_notes_required=true.",
+                )
+            )
+        visual = manifest.get("production_visual_report")
+        if not isinstance(visual, dict) or visual.get("passed") is not True or not manifest_ref_exists(visual.get("path")):
+            warnings.append(
+                issue(
+                    "FULL_IMAGE_VISUAL_REPORT_MISSING",
+                    "full_image_ppt delivery requires a passed production visual report with an existing path.",
+                )
+            )
+        return warnings
 
     if high_fidelity and len(slides) > 1 and delivery_mode in {
         "batch_final_deck",
@@ -666,6 +731,44 @@ def validate_manifest_slide(
                 slide=slide_number,
             )
         ]
+
+    if entry.get("delivery_mode") == FULL_IMAGE_PPT_MODE:
+        image_assets = entry.get("image_assets")
+        if not isinstance(image_assets, list) or not image_assets:
+            warnings.append(
+                issue(
+                    "FULL_IMAGE_ASSET_MISSING",
+                    "full_image_ppt slide must declare the approved full-image asset.",
+                    slide=slide_number,
+                )
+            )
+        else:
+            for asset in image_assets:
+                if not isinstance(asset, dict) or asset.get("role") != "approved_full_image" or not manifest_ref_exists(asset.get("path"), manifest_dir):
+                    warnings.append(
+                        issue(
+                            "FULL_IMAGE_ASSET_MISSING",
+                            "full_image_ppt slide image_assets entries must include role=approved_full_image and an existing path.",
+                            slide=slide_number,
+                        )
+                    )
+        if metrics["pictures"] < 1:
+            warnings.append(
+                issue(
+                    "FULL_IMAGE_BODY_IMAGE_MISSING",
+                    "full_image_ppt slide must include at least one picture for the approved body image.",
+                    slide=slide_number,
+                )
+            )
+        if metrics["native_text_shapes"] < 1:
+            warnings.append(
+                issue(
+                    "FULL_IMAGE_NATIVE_TEMPLATE_TEXT_MISSING",
+                    "full_image_ppt slide must retain native title or template chrome text.",
+                    slide=slide_number,
+                )
+            )
+        return warnings
 
     qa = entry.get("qa_expectations") if isinstance(entry.get("qa_expectations"), dict) else {}
     if qa.get("dual_gate_required") is not True:
@@ -2098,6 +2201,27 @@ def validate_pptx(
             if not slide_names:
                 report["errors"].append(issue("NO_SLIDES", "No ppt/slides/slideN.xml parts found."))
                 return report
+            if manifest_is_full_image_delivery(manifest):
+                slide_entries = [entry for entry in manifest.get("slides", []) if isinstance(entry, dict)] if manifest else []
+                if len(slide_entries) != len(slide_names):
+                    report["warnings"].append(
+                        issue(
+                            "FULL_IMAGE_SLIDE_COUNT_MISMATCH",
+                            f"full_image_ppt manifest declares {len(slide_entries)} slide(s), but PPTX contains {len(slide_names)}.",
+                        )
+                    )
+                if manifest and manifest.get("speaker_notes_required") is True:
+                    notes_count = sum(
+                        name.startswith("ppt/notesSlides/notesSlide") and name.endswith(".xml")
+                        for name in names
+                    )
+                    if notes_count < len(slide_names):
+                        report["warnings"].append(
+                            issue(
+                                "FULL_IMAGE_SPEAKER_NOTES_MISSING",
+                                f"full_image_ppt requires speaker notes for every slide; found {notes_count} for {len(slide_names)} slide(s).",
+                            )
+                        )
 
             for slide_number, slide_name in enumerate(slide_names, start=1):
                 try:

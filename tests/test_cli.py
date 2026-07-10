@@ -41,6 +41,7 @@ class CliTests(unittest.TestCase):
         self.assertIn("script-status", help_text)
         self.assertIn("rebuild-dual-image", help_text)
         self.assertIn("final-script-pages", help_text)
+        self.assertIn("produce", help_text)
 
     def test_help_lists_analysis_expression_commands(self) -> None:
         help_text = build_parser().format_help()
@@ -98,6 +99,21 @@ class CliTests(unittest.TestCase):
         self.assertEqual(0, approve_code)
         self.assertIn(str(approval), output.getvalue())
         approve.assert_called_once_with(Path("/tmp/project"), "confirm_speaker_notes", "ready")
+
+    def test_produce_verify_routes_to_status_machine(self) -> None:
+        output = io.StringIO()
+        with (
+            patch(
+                "cyberppt.cli.verify_production",
+                return_value={"schema": "cyberppt.production_readiness.v1", "status": "deliverable_ready"},
+            ) as verify,
+            redirect_stdout(output),
+        ):
+            code = main(["produce", "verify", "/tmp/project", "--pages", "1"])
+
+        self.assertEqual(0, code)
+        self.assertEqual("deliverable_ready", json.loads(output.getvalue())["status"])
+        verify.assert_called_once_with(Path("/tmp/project"), "1")
 
     def test_production_alias_help_requires_explicit_project(self) -> None:
         parser = build_parser()
