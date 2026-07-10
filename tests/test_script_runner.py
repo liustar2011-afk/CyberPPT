@@ -24,6 +24,9 @@ class ScriptRunnerTests(unittest.TestCase):
 
         self.assertEqual("template_image_ppt_export.py", path.name)
 
+    def test_speaker_notes_alias_is_registered(self) -> None:
+        self.assertEqual("speaker_notes.py", script_path("speaker-notes").name)
+
     def test_unknown_alias_raises_key_error(self) -> None:
         with self.assertRaises(KeyError):
             script_path("missing-command")
@@ -35,7 +38,7 @@ class ScriptRunnerTests(unittest.TestCase):
             project = Path(temp) / "client-report"
             adopt_analysis_expression_contract(project)
 
-            for alias in ("body-blueprint-prompts", "image-ppt", "pair-manifest", "source-capture", "template-rebuild"):
+            for alias in ("body-blueprint-prompts", "image-ppt", "pair-manifest", "source-capture", "speaker-notes", "template-rebuild"):
                 with self.subTest(alias):
                     with patch("cyberppt.commands.script_runner.subprocess.run") as run:
                         with self.assertRaisesRegex(ValueError, "source_analysis approval is required"):

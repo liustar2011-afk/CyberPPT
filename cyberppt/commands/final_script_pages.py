@@ -15,6 +15,7 @@ from scripts.dual_image_overlay.cyberppt_pair_manifest import build_manifest, re
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, parse_pages, template_title
 from scripts.dual_image_overlay.production_readiness import build_production_readiness
 from scripts.dual_image_overlay.style_library import write_project_style_lock
+from scripts.speaker_notes import build_manifest as build_speaker_notes_manifest
 
 
 STAGE_DIR = "workbench/stages/02-blueprint-dual-image"
@@ -342,7 +343,50 @@ def _image_ppt_artifacts(output_dir: Path, name: str) -> dict[str, str | None]:
     }
 
 
-def _run_image_ppt_build(*, script: Path, pages_raw: str, output_dir: Path, name: str) -> dict[str, Any]:
+def _business_script_source(project: Path) -> Path | None:
+    candidates = (
+        project / "workbench" / "analysis_expression" / "business_script.md",
+        project / "workbench" / "stages" / "01-analysis" / "page_content_design_internal_reporting.md",
+    )
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def _run_speaker_notes_build(*, project: Path, pages_raw: str, output_dir: Path) -> dict[str, Any] | None:
+    business_script = _business_script_source(project)
+    if business_script is None:
+        return None
+    notes_dir = output_dir / "speaker_notes"
+    try:
+        manifest = build_speaker_notes_manifest(
+            business_script=business_script,
+            pages_raw=pages_raw,
+            output_dir=notes_dir,
+        )
+    except ValueError as exc:
+        if "Pages not found" in str(exc):
+            return None
+        raise
+    manifest_path = notes_dir / "speaker_notes_manifest.json"
+    _write_json(manifest_path, manifest)
+    return {
+        "business_script": str(business_script),
+        "speaker_notes_manifest": str(manifest_path),
+        "llm_prompt": manifest.get("llm_prompt"),
+        "status": "ready_for_review",
+    }
+
+
+def _run_image_ppt_build(
+    *,
+    script: Path,
+    pages_raw: str,
+    output_dir: Path,
+    name: str,
+    speaker_notes_manifest: Path | None = None,
+) -> dict[str, Any]:
     command = [
         sys.executable,
         "-m",
@@ -358,6 +402,8 @@ def _run_image_ppt_build(*, script: Path, pages_raw: str, output_dir: Path, name
         "--name",
         name,
     ]
+    if speaker_notes_manifest is not None:
+        command.extend(["--speaker-notes-manifest", str(speaker_notes_manifest)])
     completed = subprocess.run(command, check=False)
     status = "completed" if completed.returncode == 0 else "failed"
     artifacts = _image_ppt_artifacts(output_dir, name)
@@ -452,14 +498,19 @@ def run_final_script_pages(
     stage_name = "02-production-build" if production_build else "02-blueprint-dual-image"
     status = "ready_for_image_generation" if not require_images else "image_assets_verified"
     image_ppt_build: dict[str, Any] | None = None
+    speaker_notes_build: dict[str, Any] | None = None
     image_ppt_output_dir = target_dir / "image_ppt"
     image_ppt_name = slug
+    speaker_notes_build = _run_speaker_notes_build(project=project, pages_raw=pages_raw, output_dir=target_dir)
     if production_build:
         image_ppt_build = _run_image_ppt_build(
             script=script,
             pages_raw=pages_raw,
             output_dir=image_ppt_output_dir,
             name=image_ppt_name,
+            speaker_notes_manifest=Path(speaker_notes_build["speaker_notes_manifest"])
+            if speaker_notes_build and speaker_notes_build.get("speaker_notes_manifest")
+            else None,
         )
         status = "production_ready"
     run_summary = {
@@ -484,6 +535,10 @@ def run_final_script_pages(
                 image_ppt_build["artifacts"]["template_image_project"] if image_ppt_build else None
             ),
             "exported_pptx": image_ppt_build["artifacts"]["exported_pptx"] if image_ppt_build else None,
+            "speaker_notes_manifest": (
+                speaker_notes_build["speaker_notes_manifest"] if speaker_notes_build else None
+            ),
+            "speaker_notes_llm_prompt": speaker_notes_build["llm_prompt"] if speaker_notes_build else None,
             "semantic_plan_dir": str(semantic_plan_dir) if semantic_plan_dir else None,
         },
         "next_steps": [
@@ -493,6 +548,7 @@ def run_final_script_pages(
         ],
         "resume_command": resume_command,
         "rebuild": None,
+        "speaker_notes_build": speaker_notes_build,
         "image_ppt_build": image_ppt_build,
         "tool_consumption": tool_consumption,
         "production_readiness": production_readiness,
@@ -501,9 +557,7 @@ def run_final_script_pages(
     _write_json(summary_path, run_summary)
 
     page_label = f"{page_numbers[0]}-{page_numbers[-1]}" if len(page_numbers) > 1 else str(page_numbers[0])
-    _append_ledger(
-        project,
-        [
+    ledger_records = [
             _artifact_record(
                 stage="02-blueprint-dual-image",
                 page=page_label,
@@ -544,6 +598,17 @@ def run_final_script_pages(
                 depends_on=[compiled_script, manifest_path, lock_path, style_lock],
                 resume_command=resume_command,
             ),
-        ],
-    )
+        ]
+    if speaker_notes_build and speaker_notes_build.get("speaker_notes_manifest"):
+        ledger_records.append(
+            _artifact_record(
+                stage="02-blueprint-dual-image",
+                page=page_label,
+                path=Path(str(speaker_notes_build["speaker_notes_manifest"])),
+                status="ready_for_review",
+                depends_on=[Path(str(speaker_notes_build["business_script"]))],
+                resume_command=resume_command,
+            )
+        )
+    _append_ledger(project, ledger_records)
     return run_summary
