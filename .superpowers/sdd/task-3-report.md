@@ -20,3 +20,10 @@
 - Scope: concise fact matching uses an explicit allowlist only: `供需总体平衡` may match `供需平衡`.
 - Regression coverage: `基本完成` must not match `完成`.
 - Validation: `python3 -m unittest tests.test_analysis_expression_gate -v` (25 tests passed)
+
+## P1 Concise-Fact Boundary Follow-up
+
+- Status: complete
+- Scope: allowlisted concise facts must exactly match one extracted `上屏文字` line after normalization.
+- Regression coverage: `供需总体平衡` accepts standalone `供需平衡` and rejects `供需平衡偏紧`.
+- Validation: `python3 -m unittest tests.test_analysis_expression_gate -v` (26 tests passed)

@@ -211,13 +211,23 @@ def _normalized_visible_value(value: str) -> str:
     return re.sub(r"\s+|[，。、“”‘’：:；;、,.!?！？]", "", value)
 
 
+def _visible_text_units(text: str) -> tuple[str, ...]:
+    return tuple(
+        value
+        for line in text.splitlines()
+        if (value := re.sub(r"^\s*(?:[-*+]\s+|\d+[.)]\s+)", "", line).strip())
+    )
+
+
 def _fact_is_visible(fact: str, visible_text: str) -> bool:
     normalized_fact = _normalized_visible_value(fact)
     normalized_visible = _normalized_visible_value(visible_text)
     if normalized_fact in normalized_visible:
         return True
     concise_fact = _ALLOWED_CONCISE_FACTS.get(normalized_fact)
-    return concise_fact is not None and concise_fact in normalized_visible
+    return concise_fact is not None and any(
+        concise_fact == _normalized_visible_value(unit) for unit in _visible_text_units(visible_text)
+    )
 
 
 def _drawing_visible_text(text: str) -> str:
