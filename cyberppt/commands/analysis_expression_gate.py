@@ -191,10 +191,6 @@ def stage_analysis_artifact(
     if errors:
         raise ValueError("; ".join(errors))
 
-    artifact = _artifact_path(root, gate)
-    artifact.parent.mkdir(parents=True, exist_ok=True)
-    artifact.write_text(source, encoding="utf-8")
-    pending = _pending_path(root, gate)
     normalized_options = _normalize_options(options, require_labels=gate == "reporting_direction")
     if gate == "reporting_direction":
         if len(normalized_options) < 2:
@@ -202,6 +198,11 @@ def stage_analysis_artifact(
         option_values = {option["id"] for option in normalized_options} | {option["label"] for option in normalized_options}
         if recommendation not in option_values:
             raise ValueError("reporting_direction recommendation must match an option id or label")
+
+    artifact = _artifact_path(root, gate)
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    artifact.write_text(source, encoding="utf-8")
+    pending = _pending_path(root, gate)
     _write_json(
         pending,
         {

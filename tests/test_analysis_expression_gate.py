@@ -166,6 +166,24 @@ class AnalysisExpressionGateTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "recommendation"):
                 stage_analysis_artifact(project, "reporting_direction", DIRECTION, "不存在的方向", OPTIONS)
 
+    def test_invalid_direction_restage_preserves_existing_artifact_and_approval(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+            stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS)
+            approval = approve_analysis_artifact(project, "reporting_direction", "leadership_review")
+            artifact = project / "workbench/analysis_expression/reporting_direction.md"
+            original_artifact = artifact.read_text(encoding="utf-8")
+            original_approval = approval.read_text(encoding="utf-8")
+
+            replacement = DIRECTION.replace("分管领导", "新的汇报对象")
+            with self.assertRaisesRegex(ValueError, "recommendation"):
+                stage_analysis_artifact(project, "reporting_direction", replacement, "不存在的方向", OPTIONS)
+
+            self.assertEqual(original_artifact, artifact.read_text(encoding="utf-8"))
+            self.assertEqual(original_approval, approval.read_text(encoding="utf-8"))
+            self.assertEqual("report_structure", get_analysis_expression_status(project).next_gate)
+
     def test_direction_recommendation_may_use_option_id(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
