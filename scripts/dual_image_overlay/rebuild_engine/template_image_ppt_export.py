@@ -9,6 +9,7 @@ created by the PPT pipeline.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -29,6 +30,8 @@ except ImportError:
 
 SCRIPTS_DIR = Path(__file__).resolve().parent
 DEFAULT_BRAND_DIR = SCRIPTS_DIR / "templates" / "brands" / "中电联公共元素_轻量版"
+PROJECT_CONTRACT = Path("workbench/analysis_expression/contract.json")
+PROJECT_STAGE_ROOT = Path("workbench/stages/02-blueprint-dual-image")
 PAGE_HEADING_RE = re.compile(r"^##\s*第(?P<num>\d+)页[:：](?P<title>.+?)\s*$", re.M)
 MODULE_PREFIX_RE = re.compile(r"^模块[一二三四五六七八九十百千万0-9]+[:：]\s*")
 MODULE_MARKER_RE = re.compile(r"模块[一二三四五六七八九十百千万0-9]+[:：]?\s*")
@@ -667,6 +670,130 @@ def _assert_exact_page_set(label: str, actual: set[int], pages: list[int]) -> No
         )
 
 
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _require_exact_page_records(
+    label: str,
+    records: object,
+    pages: list[int],
+    *,
+    page_key: str,
+) -> list[dict]:
+    if len(pages) != len(set(pages)):
+        duplicates = sorted({page for page in pages if pages.count(page) > 1})
+        raise ValueError(f"duplicate requested page {duplicates[0]}")
+    if not isinstance(records, list):
+        raise ValueError(f"{label} must contain records[]")
+    expected = set(pages)
+    by_page: dict[int, dict] = {}
+    for record in records:
+        if not isinstance(record, dict) or page_key not in record:
+            raise ValueError(f"{label} record is missing {page_key}")
+        page_number = int(record[page_key])
+        if page_number in by_page:
+            raise ValueError(f"duplicate {label} record for page {page_number}")
+        by_page[page_number] = record
+    if len(records) != len(expected):
+        raise ValueError(
+            f"{label} record count mismatch: expected {len(expected)}, got {len(records)}"
+        )
+    _assert_exact_page_set(label, set(by_page), pages)
+    return [by_page[page_number] for page_number in pages]
+
+
+def _resolve_recorded_path(value: object, *, base: Path, label: str) -> Path:
+    if not value:
+        raise ValueError(f"{label} is required")
+    path = Path(str(value)).expanduser()
+    if not path.is_absolute():
+        path = base / path
+    return path.resolve()
+
+
+def _locate_project_root(*approved_inputs: Path) -> Path:
+    roots: set[Path] = set()
+    for approved_input in approved_inputs:
+        path = Path(approved_input).expanduser().resolve()
+        for candidate in (path.parent, *path.parents):
+            if (candidate / PROJECT_CONTRACT).is_file():
+                roots.add(candidate)
+                break
+        else:
+            raise ValueError(
+                "project production requires approved inputs under a project containing "
+                "workbench/analysis_expression/contract.json"
+            )
+    if len(roots) != 1:
+        raise ValueError("project production approved inputs must belong to the same project")
+    return roots.pop()
+
+
+def _read_json_object(path: Path, label: str) -> dict:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"{label} must be a JSON object: {path}")
+    return payload
+
+
+def _validate_blueprint_image_review(
+    project_root: Path,
+    page_image_manifest: Path,
+    pages: list[int],
+    approved_images: dict[int, Path],
+) -> None:
+    stage_root = project_root / PROJECT_STAGE_ROOT
+    approval_path = stage_root / "blueprint_image_review.approved.json"
+    if not approval_path.is_file():
+        raise ValueError("blueprint image review approval is required")
+    approval = _read_json_object(approval_path, "blueprint image review approval")
+    if approval.get("approved") is not True:
+        raise ValueError("blueprint image review approval is required")
+    review_path = _resolve_recorded_path(
+        approval.get("artifact"), base=approval_path.parent, label="blueprint image review approval artifact"
+    )
+    expected_review = stage_root / "blueprint_image_review.json"
+    if review_path != expected_review or not review_path.is_file():
+        raise ValueError("blueprint image review approval artifact mismatch")
+    review = _read_json_object(review_path, "blueprint image review")
+    reviewed_manifest = _resolve_recorded_path(
+        review.get("page_image_manifest"), base=review_path.parent, label="blueprint image review manifest"
+    )
+    if reviewed_manifest != page_image_manifest:
+        raise ValueError("approved page image manifest path mismatch")
+    if review.get("page_image_manifest_sha256") != _sha256(page_image_manifest):
+        raise ValueError("approved page image manifest has changed")
+    records = _require_exact_page_records(
+        "approved blueprint image review", review.get("images"), pages, page_key="page"
+    )
+    for record in records:
+        page_number = int(record["page"])
+        image_path = _resolve_recorded_path(
+            record.get("path"), base=review_path.parent, label=f"approved blueprint image path for page {page_number}"
+        )
+        if image_path != approved_images[page_number]:
+            raise ValueError(f"approved blueprint image path mismatch for page {page_number}")
+        if not image_path.is_file() or record.get("sha256") != _sha256(image_path):
+            raise ValueError(f"approved blueprint image hash mismatch for page {page_number}")
+
+
+def _validate_speaker_notes_review(project_root: Path, speaker_notes_manifest: Path) -> None:
+    approval_path = project_root / PROJECT_STAGE_ROOT / "speaker_notes_review.approved.json"
+    if not approval_path.is_file():
+        raise ValueError("speaker notes approval is required")
+    approval = _read_json_object(approval_path, "speaker notes review approval")
+    if approval.get("approved") is not True:
+        raise ValueError("speaker notes approval is required")
+    approved_manifest = _resolve_recorded_path(
+        approval.get("manifest"), base=approval_path.parent, label="speaker notes approval manifest"
+    )
+    if approved_manifest != speaker_notes_manifest:
+        raise ValueError("approved speaker notes manifest path mismatch")
+    if approval.get("manifest_sha256") != _sha256(speaker_notes_manifest):
+        raise ValueError("approved speaker notes manifest has changed")
+
+
 def load_template_text_lock(path: Path, pages: list[int]) -> dict[int, dict]:
     data = json.loads(path.read_text(encoding="utf-8"))
     records = data.get("records")
@@ -675,6 +802,9 @@ def load_template_text_lock(path: Path, pages: list[int]) -> dict[int, dict]:
     declared_pages = data.get("pages")
     if not isinstance(declared_pages, list):
         raise ValueError(f"template text lock must contain pages[]: {path}")
+    if len(declared_pages) != len(set(declared_pages)):
+        duplicates = sorted({int(page) for page in declared_pages if declared_pages.count(page) > 1})
+        raise ValueError(f"duplicate template text lock declared page {duplicates[0]}")
     _assert_exact_page_set("template text lock", {int(item) for item in declared_pages}, pages)
 
     by_page: dict[int, dict] = {}
@@ -694,22 +824,17 @@ def load_template_text_lock(path: Path, pages: list[int]) -> dict[int, dict]:
     return by_page
 
 
-def load_approved_full_images(path: Path, pages: list[int]) -> dict[int, Path]:
-    data = json.loads(path.read_text(encoding="utf-8"))
+def load_approved_full_images(
+    path: Path, pages: list[int], *, project_root: Path | None = None
+) -> dict[int, Path]:
+    path = Path(path).expanduser().resolve()
+    data = _read_json_object(path, "approved page image manifest")
     pairs = data.get("pairs")
-    if not isinstance(pairs, list):
-        raise ValueError(f"approved page image manifest must contain pairs[]: {path}")
-
-    pair_pages = {
-        int(item["page_number"])
-        for item in pairs
-        if isinstance(item, dict) and "page_number" in item
-    }
-    _assert_exact_page_set("approved page image manifest", pair_pages, pages)
+    pairs = _require_exact_page_records(
+        "approved page image manifest", pairs, pages, page_key="page_number"
+    )
     images: dict[int, Path] = {}
     for item in pairs:
-        if not isinstance(item, dict) or "page_number" not in item:
-            continue
         page_number = int(item["page_number"])
         full = item.get("full")
         raw_path = full.get("path") if isinstance(full, dict) else None
@@ -724,12 +849,29 @@ def load_approved_full_images(path: Path, pages: list[int]) -> dict[int, Path]:
                 f"approved full image is missing for page {page_number}: {image_path}"
             )
         images[page_number] = image_path
+    if project_root is not None:
+        _validate_blueprint_image_review(project_root, path, pages, images)
     return images
 
 
-def _load_approved_speaker_notes(path: Path, pages: list[int]) -> dict[int, dict]:
-    notes = load_speaker_notes(path)
-    _assert_exact_page_set("approved speaker notes manifest", set(notes), pages)
+def _load_approved_speaker_notes(
+    path: Path, pages: list[int], *, project_root: Path | None = None
+) -> dict[int, dict]:
+    path = Path(path).expanduser().resolve()
+    data = _read_json_object(path, "approved speaker notes manifest")
+    records = _require_exact_page_records(
+        "approved speaker notes", data.get("notes"), pages, page_key="page_number"
+    )
+    declared_pages = data.get("pages")
+    if not isinstance(declared_pages, list):
+        raise ValueError(f"approved speaker notes manifest must contain pages[]: {path}")
+    if len(declared_pages) != len(set(declared_pages)):
+        duplicates = sorted({int(page) for page in declared_pages if declared_pages.count(page) > 1})
+        raise ValueError(f"duplicate approved speaker notes declared page {duplicates[0]}")
+    _assert_exact_page_set("approved speaker notes manifest", {int(page) for page in declared_pages}, pages)
+    notes = {int(record["page_number"]): record for record in records}
+    if project_root is not None:
+        _validate_speaker_notes_review(project_root, path)
     return notes
 
 
@@ -771,8 +913,15 @@ def build_manifest(
         if speaker_notes_manifest is None:
             raise ValueError("approved speaker notes manifest is required")
         template_locks = load_template_text_lock(Path(template_text_lock), page_numbers)
-        approved_images = load_approved_full_images(Path(page_image_manifest), page_numbers)
-        speaker_notes = _load_approved_speaker_notes(Path(speaker_notes_manifest), page_numbers)
+        project_root = _locate_project_root(
+            Path(template_text_lock), Path(page_image_manifest), Path(speaker_notes_manifest)
+        )
+        approved_images = load_approved_full_images(
+            Path(page_image_manifest), page_numbers, project_root=project_root
+        )
+        speaker_notes = _load_approved_speaker_notes(
+            Path(speaker_notes_manifest), page_numbers, project_root=project_root
+        )
     else:
         speaker_notes = load_speaker_notes(speaker_notes_manifest)
 

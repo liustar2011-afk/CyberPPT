@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import unittest
 from pathlib import Path
@@ -720,62 +721,76 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertEqual("700", text_block["style"]["font_weight"])
 
     def test_pages_12_13_fixture_consumes_page_understanding_without_fragment_unique_match_gate(self) -> None:
-        project = ROOT / "projects/power-trusted-data-space-p12-p13"
-        manifest = (
-            project
+        source_project = ROOT / "projects/power-trusted-data-space-p12-p13"
+        source_manifest = (
+            source_project
             / "workbench/stages/02-blueprint-dual-image/pages_012_013/page_image_pairs.json"
         )
-        if not manifest.exists():
+        if not source_manifest.exists():
             self.skipTest("pages 12/13 fixture is not present")
-        if not (project / "workbench/analysis_expression/contract.json").is_file():
-            self.skipTest("pages 12/13 fixture does not have the required project contract")
 
-        result = subprocess.run(
-            [
-                "python3",
-                "-m",
-                "cyberppt",
-                "template-rebuild",
-                "--project",
-                str(project),
-                str(manifest),
-                "--export",
-            ],
-            cwd=ROOT,
-            check=False,
-            capture_output=True,
-            text=True,
-        )
+        with TemporaryDirectory() as directory:
+            project = Path(directory) / "pages-12-13"
+            shutil.copytree(source_project, project)
+            (project / "workbench/analysis_expression").mkdir(parents=True, exist_ok=True)
+            (project / "workbench/analysis_expression/contract.json").write_text(
+                '{"schema":"cyberppt.analysis_expression.contract.v1","adopted":true,"gates":{}}\n',
+                encoding="utf-8",
+            )
+            for artifact in project.rglob("*"):
+                if artifact.is_file() and artifact.suffix.lower() in {".json", ".md", ".txt"}:
+                    artifact.write_text(
+                        artifact.read_text(encoding="utf-8").replace(str(source_project), str(project)),
+                        encoding="utf-8",
+                    )
+            manifest = project / source_manifest.relative_to(source_project)
 
-        self.assertIn(result.returncode, {0, 3}, result.stdout + result.stderr)
-        source_gate = json.loads((project / "analysis/source_capture_gate.json").read_text(encoding="utf-8"))
-        page_013 = json.loads(
-            (project / "analysis/page_understanding/page_013_page_understanding.json").read_text(encoding="utf-8")
-        )
-        mapping = json.loads((project / "analysis/ocr/page_013_text_mapping.json").read_text(encoding="utf-8"))
+            result = subprocess.run(
+                [
+                    "python3",
+                    str(ROOT / "scripts/dual_image_overlay/template_rebuild.py"),
+                    str(manifest),
+                    "--export",
+                ],
+                cwd=ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
 
-        self.assertTrue(source_gate["checks"]["page_understanding_available"])
-        self.assertTrue(source_gate["checks"]["page_understanding_consumed"])
-        self.assertTrue(source_gate["checks"]["script_truth_verified"])
-        self.assertTrue(source_gate["checks"]["fit_review_queue_clear"])
-        self.assertGreater(
-            next(page for page in json.loads((project / "analysis/source_capture.json").read_text(encoding="utf-8"))["pages"] if page["page_number"] == 13)[
-                "page_understanding"
-            ]["script_truth_evidence_only_count"],
-            0,
-        )
-        flow_blocks = [
-            block
-            for block in page_013["text_blocks"]
-            if str(block.get("final_text", "")).startswith("融资申请→风控审核")
-        ]
-        self.assertEqual(1, len(flow_blocks))
-        self.assertIn("→放款→还款", flow_blocks[0]["final_text"])
-        self.assertIn("全流程线上化", flow_blocks[0]["final_text"])
-        self.assertEqual("auto_pass", flow_blocks[0]["fit"]["status"])
-        self.assertFalse(flow_blocks[0]["fit"]["review_required"])
-        self.assertEqual("move_and_scale_as_group", flow_blocks[0]["text_block_group"]["edit_behavior"])
-        self.assertEqual(str((project / "analysis/page_understanding/page_013_page_understanding.json").resolve()), mapping["page_understanding"])
+            self.assertIn(result.returncode, {0, 3}, result.stdout + result.stderr)
+            source_gate = json.loads((project / "analysis/source_capture_gate.json").read_text(encoding="utf-8"))
+            page_013 = json.loads(
+                (project / "analysis/page_understanding/page_013_page_understanding.json").read_text(encoding="utf-8")
+            )
+            mapping = json.loads((project / "analysis/ocr/page_013_text_mapping.json").read_text(encoding="utf-8"))
+
+            self.assertTrue(source_gate["checks"]["page_understanding_available"])
+            self.assertTrue(source_gate["checks"]["page_understanding_consumed"])
+            self.assertTrue(source_gate["checks"]["script_truth_verified"])
+            self.assertTrue(source_gate["checks"]["fit_review_queue_clear"])
+            self.assertGreater(
+                next(page for page in json.loads((project / "analysis/source_capture.json").read_text(encoding="utf-8"))["pages"] if page["page_number"] == 13)[
+                    "page_understanding"
+                ]["script_truth_evidence_only_count"],
+                0,
+            )
+            flow_blocks = [
+                block
+                for block in page_013["text_blocks"]
+                if str(block.get("final_text", "")).startswith("融资申请→风控审核")
+            ]
+            self.assertEqual(1, len(flow_blocks))
+            self.assertIn("→放款→还款", flow_blocks[0]["final_text"])
+            self.assertIn("全流程线上化", flow_blocks[0]["final_text"])
+            self.assertEqual("auto_pass", flow_blocks[0]["fit"]["status"])
+            self.assertFalse(flow_blocks[0]["fit"]["review_required"])
+            self.assertEqual("move_and_scale_as_group", flow_blocks[0]["text_block_group"]["edit_behavior"])
+            self.assertTrue(
+                str(mapping["page_understanding"]).endswith(
+                    "/analysis/page_understanding/page_013_page_understanding.json"
+                )
+            )
 
     def test_boxes_to_json_omits_absent_metadata_and_preserves_present_metadata(self) -> None:
         legacy_box = ScriptOverlayTextBox(

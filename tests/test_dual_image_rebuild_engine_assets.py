@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
 import sys
 import unittest
@@ -16,12 +18,26 @@ if str(ENGINE) not in sys.path:
 import template_image_ppt_export as exporter  # noqa: E402
 
 
+TINY_PNG = base64.b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAF/gL+fAS+wwAAAABJRU5ErkJggg=="
+)
+
+
 def _write_json(path: Path, payload: dict) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return path
 
 
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def _write_project_production_fixture(root: Path) -> dict[str, Path]:
+    _write_json(
+        root / "workbench/analysis_expression/contract.json",
+        {"schema": "cyberppt.analysis_expression.contract.v1"},
+    )
     script = root / "script-final.md"
     script.write_text(
         "## \u7b2c2\u9875\uff1aScript title\n"
@@ -32,7 +48,7 @@ def _write_project_production_fixture(root: Path) -> dict[str, Path]:
         encoding="utf-8",
     )
     full_image = root / "page_002_full.png"
-    full_image.write_bytes(b"approved-full-image")
+    full_image.write_bytes(TINY_PNG)
     template_lock = _write_json(
         root / "template_text_lock.json",
         {
@@ -83,12 +99,43 @@ def _write_project_production_fixture(root: Path) -> dict[str, Path]:
             ],
         },
     )
+    stage = root / "workbench/stages/02-blueprint-dual-image"
+    image_review = _write_json(
+        stage / "blueprint_image_review.json",
+        {
+            "schema": "cyberppt.blueprint_image_review.v1",
+            "page_image_manifest": str(pair_manifest.resolve()),
+            "page_image_manifest_sha256": _sha256(pair_manifest),
+            "images": [
+                {
+                    "page": 2,
+                    "path": str(full_image.resolve()),
+                    "sha256": _sha256(full_image),
+                }
+            ],
+        },
+    )
+    image_approval = _write_json(
+        stage / "blueprint_image_review.approved.json",
+        {"approved": True, "artifact": str(image_review.resolve())},
+    )
+    notes_approval = _write_json(
+        stage / "speaker_notes_review.approved.json",
+        {
+            "approved": True,
+            "manifest": str(notes_manifest.resolve()),
+            "manifest_sha256": _sha256(notes_manifest),
+        },
+    )
     return {
         "script": script,
         "full_image": full_image,
         "template_lock": template_lock,
         "pair_manifest": pair_manifest,
         "notes_manifest": notes_manifest,
+        "image_review": image_review,
+        "image_approval": image_approval,
+        "notes_approval": notes_approval,
         "output": root / "output",
     }
 
@@ -178,6 +225,131 @@ class DualImageRebuildEngineAssetsTest(unittest.TestCase):
             paths["full_image"].unlink()
 
             with self.assertRaisesRegex(FileNotFoundError, "approved full image is missing for page 2"):
+                _build_project_production_manifest(paths)
+
+    def test_project_production_rejects_unapproved_image_review(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            _write_json(
+                paths["image_approval"],
+                {"approved": False, "artifact": str(paths["image_review"].resolve())},
+            )
+
+            with self.assertRaisesRegex(ValueError, "blueprint image review approval is required"):
+                _build_project_production_manifest(paths)
+
+    def test_project_production_rejects_tampered_approved_image(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            paths["full_image"].write_bytes(TINY_PNG + b"tampered")
+
+            with self.assertRaisesRegex(ValueError, "approved blueprint image hash mismatch for page 2"):
+                _build_project_production_manifest(paths)
+
+    def test_project_production_rejects_tampered_page_image_manifest(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            payload = json.loads(paths["pair_manifest"].read_text(encoding="utf-8"))
+            payload["pairs"][0]["title"] = "Tampered title"
+            _write_json(paths["pair_manifest"], payload)
+
+            with self.assertRaisesRegex(ValueError, "approved page image manifest has changed"):
+                _build_project_production_manifest(paths)
+
+    def test_project_production_rejects_duplicate_page_image_records(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            payload = json.loads(paths["pair_manifest"].read_text(encoding="utf-8"))
+            payload["pairs"].append(dict(payload["pairs"][0]))
+            _write_json(paths["pair_manifest"], payload)
+
+            with self.assertRaisesRegex(ValueError, "duplicate approved page image manifest record for page 2"):
+                _build_project_production_manifest(paths)
+
+    def test_project_production_rejects_duplicate_requested_pages(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+
+            with self.assertRaisesRegex(ValueError, "duplicate requested page 2"):
+                _build_project_production_manifest(paths, selected_pages=[2, 2])
+
+    def test_project_production_rejects_duplicate_template_lock_declared_pages(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            payload = json.loads(paths["template_lock"].read_text(encoding="utf-8"))
+            payload["pages"] = [2, 2]
+            _write_json(paths["template_lock"], payload)
+
+            with self.assertRaisesRegex(ValueError, "duplicate template text lock declared page 2"):
+                _build_project_production_manifest(paths)
+
+    def test_project_production_rejects_duplicate_speaker_notes_declared_pages(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            payload = json.loads(paths["notes_manifest"].read_text(encoding="utf-8"))
+            payload["pages"] = [2, 2]
+            _write_json(paths["notes_manifest"], payload)
+            approval = json.loads(paths["notes_approval"].read_text(encoding="utf-8"))
+            approval["manifest_sha256"] = _sha256(paths["notes_manifest"])
+            _write_json(paths["notes_approval"], approval)
+
+            with self.assertRaisesRegex(ValueError, "duplicate approved speaker notes declared page 2"):
+                _build_project_production_manifest(paths)
+
+    def test_project_production_locates_project_from_every_approved_input(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            paths = _write_project_production_fixture(root / "project")
+            external_lock = _write_json(
+                root / "external" / "template_text_lock.json",
+                json.loads(paths["template_lock"].read_text(encoding="utf-8")),
+            )
+
+            with self.assertRaisesRegex(
+                ValueError,
+                "project production requires approved inputs under a project containing",
+            ):
+                _build_project_production_manifest(paths, template_text_lock=external_lock)
+
+    def test_project_production_rejects_duplicate_blueprint_review_images(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            payload = json.loads(paths["image_review"].read_text(encoding="utf-8"))
+            payload["images"].append(dict(payload["images"][0]))
+            _write_json(paths["image_review"], payload)
+
+            with self.assertRaisesRegex(ValueError, "duplicate approved blueprint image review record for page 2"):
+                _build_project_production_manifest(paths)
+
+    def test_project_production_rejects_tampered_speaker_notes_manifest(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            payload = json.loads(paths["notes_manifest"].read_text(encoding="utf-8"))
+            payload["notes"][0]["notes_text"] = "Tampered notes"
+            _write_json(paths["notes_manifest"], payload)
+
+            with self.assertRaisesRegex(ValueError, "approved speaker notes manifest has changed"):
+                _build_project_production_manifest(paths)
+
+    def test_project_production_rejects_unapproved_and_duplicate_speaker_notes(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            _write_json(
+                paths["notes_approval"],
+                {
+                    "approved": False,
+                    "manifest": str(paths["notes_manifest"].resolve()),
+                    "manifest_sha256": _sha256(paths["notes_manifest"]),
+                },
+            )
+            with self.assertRaisesRegex(ValueError, "speaker notes approval is required"):
+                _build_project_production_manifest(paths)
+
+            paths = _write_project_production_fixture(Path(directory) / "duplicate-notes")
+            payload = json.loads(paths["notes_manifest"].read_text(encoding="utf-8"))
+            payload["notes"].append(dict(payload["notes"][0]))
+            _write_json(paths["notes_manifest"], payload)
+            with self.assertRaisesRegex(ValueError, "duplicate approved speaker notes record for page 2"):
                 _build_project_production_manifest(paths)
 
     def test_project_production_run_skips_image_generation(self) -> None:
