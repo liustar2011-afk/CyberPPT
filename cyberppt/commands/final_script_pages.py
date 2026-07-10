@@ -505,14 +505,26 @@ def run_final_script_pages(
     speaker_notes_build: dict[str, Any] | None = None
     image_ppt_output_dir = target_dir / "image_ppt"
     image_ppt_name = slug
-    speaker_notes_build = _run_speaker_notes_build(project=project, pages_raw=pages_raw, output_dir=target_dir)
+    verified_speaker_notes_manifest: Path | None = None
+    if production_build and adopted_contract:
+        verified_speaker_notes_manifest = assert_speaker_notes_review_ready(project, pages_raw)
+        approved_notes_manifest = _read_json(verified_speaker_notes_manifest)
+        speaker_notes_build = {
+            "business_script": str(approved_notes_manifest.get("business_script", "")),
+            "speaker_notes_manifest": str(verified_speaker_notes_manifest),
+            "llm_prompt": approved_notes_manifest.get("llm_prompt"),
+            "status": "approved",
+        }
+    else:
+        speaker_notes_build = _run_speaker_notes_build(project=project, pages_raw=pages_raw, output_dir=target_dir)
     if production_build:
         if not speaker_notes_build or not speaker_notes_build.get("speaker_notes_manifest"):
             raise RuntimeError(
                 "image-ppt production build requires an approved business script speaker-notes manifest. "
                 "Confirm the business script/page content design before packaging the image PPT."
             )
-        verified_speaker_notes_manifest = assert_speaker_notes_review_ready(project, pages_raw)
+        if verified_speaker_notes_manifest is None:
+            verified_speaker_notes_manifest = assert_speaker_notes_review_ready(project, pages_raw)
         image_ppt_build = _run_image_ppt_build(
             script=script,
             pages_raw=pages_raw,

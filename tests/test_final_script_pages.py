@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import tempfile
+import time
 import unittest
+from hashlib import sha256
 from pathlib import Path
 from unittest.mock import Mock, patch
 
@@ -286,7 +288,7 @@ class FinalScriptPagesTests(unittest.TestCase):
 
             self.assertTrue(any(project.rglob("visual_style_lock.json")))
 
-    def test_production_build_runs_template_image_ppt_export(self) -> None:
+    def test_production_build_uses_existing_approved_speaker_notes_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "client-report"
@@ -298,14 +300,10 @@ class FinalScriptPagesTests(unittest.TestCase):
             speaker_notes_manifest = _approve_stage02_images(project, script, "1")
             _approve_stage02_speaker_notes(project, speaker_notes_manifest, "1")
             speaker_notes_payload = json.loads(speaker_notes_manifest.read_text(encoding="utf-8"))
+            approved_manifest_sha256 = sha256(speaker_notes_manifest.read_bytes()).hexdigest()
+            time.sleep(1.1)
 
-            with (
-                patch(
-                    "cyberppt.commands.final_script_pages.build_speaker_notes_manifest",
-                    return_value=speaker_notes_payload,
-                ),
-                patch("cyberppt.commands.final_script_pages.subprocess.run") as run,
-            ):
+            with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
                 run.return_value = Mock(returncode=0)
                 summary = run_final_script_pages(
                     project=project,
@@ -317,6 +315,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             command = run.call_args.args[0]
             speaker_notes_manifest_exists = Path(summary["artifacts"]["speaker_notes_manifest"]).is_file()
             speaker_notes_prompt_exists = Path(summary["artifacts"]["speaker_notes_llm_prompt"]).is_file()
+            post_production_manifest_sha256 = sha256(speaker_notes_manifest.read_bytes()).hexdigest()
 
         self.assertEqual("02-production-build", summary["stage"])
         self.assertEqual("production_ready", summary["status"])
@@ -337,7 +336,10 @@ class FinalScriptPagesTests(unittest.TestCase):
         )
         self.assertTrue(speaker_notes_manifest_exists)
         self.assertTrue(speaker_notes_prompt_exists)
-        self.assertEqual("ready_for_review", summary["speaker_notes_build"]["status"])
+        self.assertEqual(approved_manifest_sha256, post_production_manifest_sha256)
+        self.assertEqual(speaker_notes_payload["business_script"], summary["speaker_notes_build"]["business_script"])
+        self.assertEqual(speaker_notes_payload["llm_prompt"], summary["speaker_notes_build"]["llm_prompt"])
+        self.assertEqual("approved", summary["speaker_notes_build"]["status"])
         self.assertIsNone(summary["rebuild"])
         self.assertEqual({}, summary["tool_consumption"])
         self.assertIsNone(summary["production_readiness"])
@@ -352,15 +354,8 @@ class FinalScriptPagesTests(unittest.TestCase):
             script.write_text("## 第1页：测试\n组件A：内容\n", encoding="utf-8")
             _approve_stage02_input(project, script)
             speaker_notes_manifest = _approve_stage02_images(project, script, "1")
-            speaker_notes_payload = json.loads(speaker_notes_manifest.read_text(encoding="utf-8"))
 
-            with (
-                patch(
-                    "cyberppt.commands.final_script_pages.build_speaker_notes_manifest",
-                    return_value=speaker_notes_payload,
-                ),
-                patch("cyberppt.commands.final_script_pages.subprocess.run") as run,
-            ):
+            with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
                 run.return_value = Mock(returncode=0)
                 with self.assertRaisesRegex(ValueError, "speaker notes approval is required"):
                     run_final_script_pages(
@@ -373,13 +368,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             run.assert_not_called()
             _approve_stage02_speaker_notes(project, speaker_notes_manifest, "1")
 
-            with (
-                patch(
-                    "cyberppt.commands.final_script_pages.build_speaker_notes_manifest",
-                    return_value=speaker_notes_payload,
-                ),
-                patch("cyberppt.commands.final_script_pages.subprocess.run") as run,
-            ):
+            with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
                 run.return_value = Mock(returncode=0)
                 summary = run_final_script_pages(
                     project=project,
@@ -475,15 +464,8 @@ class FinalScriptPagesTests(unittest.TestCase):
             _approve_stage02_input(project, script)
             speaker_notes_manifest = _approve_stage02_images(project, script, "1")
             _approve_stage02_speaker_notes(project, speaker_notes_manifest, "1")
-            speaker_notes_payload = json.loads(speaker_notes_manifest.read_text(encoding="utf-8"))
 
-            with (
-                patch(
-                    "cyberppt.commands.final_script_pages.build_speaker_notes_manifest",
-                    return_value=speaker_notes_payload,
-                ),
-                patch("cyberppt.commands.final_script_pages.subprocess.run") as run,
-            ):
+            with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
                 run.return_value = Mock(returncode=3)
                 with self.assertRaises(RuntimeError) as caught:
                     run_final_script_pages(
