@@ -25,6 +25,7 @@ BULLET_RE = re.compile(r"^\s*[-*]\s+")
 NOTE_PROVENANCE_RE = re.compile(
     r"(证据链|来源位置|源材料|完整性校核|业务稿证据|重点对应|对应E\d+|\bE\d+\b|P\d+|T\d+)"
 )
+NOTE_FILLER_RE = re.compile(r"(围绕本章内容|本章内容开展汇报|作简要汇报|先对本章涉及)")
 
 
 @dataclass(frozen=True)
@@ -166,7 +167,7 @@ def sanitize_speech_note(text: str) -> str:
         stripped = sentence.strip()
         if not stripped:
             continue
-        if NOTE_PROVENANCE_RE.search(stripped):
+        if NOTE_PROVENANCE_RE.search(stripped) or NOTE_FILLER_RE.search(stripped):
             continue
         kept.append(stripped)
     return "".join(kept).strip()
@@ -209,7 +210,7 @@ def build_rule_note(page: NotePage, *, seconds: int) -> str:
         items = compress_items(visible_business_lines(page), 6)
         return f"本次汇报主要包括{join_items(items)}几个方面，重点说明工作基础、建设考虑、实施安排以及需请领导审定事项。"
     if role == "section":
-        return f"下面进入{heading}部分，先对本章涉及的背景、基础和需要说明的问题作简要汇报。"
+        return ""
     if role == "ending":
         return "以上汇报，请各位领导审阅。"
 

@@ -673,7 +673,7 @@ def build_manifest(
                 }
             )
         note_record = speaker_notes.get(number)
-        if note_record:
+        if note_record is not None:
             task["notes_text"] = str(note_record.get("notes_text") or "")
             task["notes_source"] = str(note_record.get("source") or "speaker_notes_manifest")
             task["notes_title"] = str(note_record.get("title") or notes_heading_for_task(task))
@@ -721,9 +721,7 @@ def load_speaker_notes(notes_manifest: Path | None) -> dict[int, dict]:
         if not isinstance(item, dict):
             continue
         page_number = int(item.get("page_number"))
-        notes_text = str(item.get("notes_text") or "").strip()
-        if notes_text:
-            by_page[page_number] = item
+        by_page[page_number] = item
     return by_page
 
 
@@ -868,7 +866,7 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
             svg_text_content = "\n".join(svg)
         (project_path / "svg_output" / f"{stem}.svg").write_text(svg_text_content, encoding="utf-8")
         notes_text = task.get("notes_text")
-        if not notes_text:
+        if notes_text is None:
             source_page = source_pages.get(int(task["page_number"]))
             notes_text = page_notes_text(source_page) if source_page else task.get("body_text", "")
         notes_heading = str(task.get("notes_title") or notes_heading_for_task(task))

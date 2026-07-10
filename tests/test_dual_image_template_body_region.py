@@ -181,6 +181,7 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
                         "template": "section",
                         "section_no": "第一章",
                         "section_title": "建设背景与基础",
+                        "notes_text": "",
                     },
                 ],
             }
@@ -188,13 +189,57 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
             project = module.write_project(manifest, output, "template_pages")
             agenda_svg = (project / "svg_output/page_002_目录.svg").read_text(encoding="utf-8")
             section_svg = (project / "svg_output/page_003_第一章_建设背景与基础.svg").read_text(encoding="utf-8")
+            section_notes = (project / "notes/page_003_第一章_建设背景与基础.md").read_text(encoding="utf-8")
             written_manifest = json.loads((project / "template_image_manifest.json").read_text(encoding="utf-8"))
 
         self.assertIn("建设背景与基础", agenda_svg)
         self.assertIn("第一章", section_svg)
         self.assertNotIn("<image", agenda_svg)
         self.assertNotIn("<image", section_svg)
+        self.assertNotIn("本页围绕", section_notes)
+        self.assertNotIn("汇报要点", section_notes)
         self.assertEqual("agenda", written_manifest["tasks"][0]["template"])
+
+    def test_empty_speaker_note_manifest_record_disables_fallback(self) -> None:
+        module = load_template_image_ppt_export()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            script = root / "script.md"
+            script.write_text(
+                "\n".join(
+                    [
+                        "## 第3页：第一章 建设背景与基础",
+                        "【内容锁定】",
+                        "- 第一章",
+                        "- 建设背景与基础",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            notes = root / "notes.json"
+            notes.write_text(
+                json.dumps(
+                    {
+                        "notes": [
+                            {
+                                "page_number": 3,
+                                "title": "建设背景与基础",
+                                "page_role": "section",
+                                "notes_text": "",
+                                "source": "business_rule_draft",
+                            }
+                        ]
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            pages = module.parse_page_blocks(script)
+
+            manifest = module.build_manifest(script, [3], pages, root, speaker_notes_manifest=notes)
+
+        self.assertEqual("", manifest["tasks"][0]["notes_text"])
+        self.assertEqual("business_rule_draft", manifest["tasks"][0]["notes_source"])
 
     def test_cover_template_and_notes_use_script_content_not_role_label(self) -> None:
         module = load_template_image_ppt_export()
