@@ -291,15 +291,19 @@ def get_production_status(project: Path, pages_raw: str) -> dict[str, Any]:
             if readiness_path.is_file():
                 readiness = _read_json(readiness_path)
                 delivery_pptx = Path(str(readiness.get("delivery_pptx", ""))).expanduser().resolve()
-                required_dependencies = _readiness_required_dependencies(
-                    assembly_path=assembly_path,
-                    assembly=assembly,
-                    template_manifest=template_manifest,
-                    notes_manifest=notes_manifest,
-                    approved_images=approved_images,
-                    readiness=readiness,
-                    delivery_pptx=delivery_pptx,
-                )
+                try:
+                    required_dependencies = _readiness_required_dependencies(
+                        assembly_path=assembly_path,
+                        assembly=assembly,
+                        template_manifest=template_manifest,
+                        notes_manifest=notes_manifest,
+                        approved_images=approved_images,
+                        readiness=readiness,
+                        delivery_pptx=delivery_pptx,
+                    )
+                except (OSError, RuntimeError, ValueError, json.JSONDecodeError) as exc:
+                    required_dependencies = None
+                    result["failures"].append(str(exc))
                 if (
                     readiness.get("status") == "deliverable_ready"
                     and delivery_pptx.is_file()
@@ -475,11 +479,11 @@ def _assert_current_speaker_notes(project: Path, pages_raw: str, template_manife
     return notes_manifest
 
 
-def _template_text_lock_record(template_manifest: Path) -> dict[str, Any] | None:
+def _template_text_lock_record(template_manifest: Path) -> dict[str, Any]:
     template = _read_json(template_manifest)
     raw_path = template.get("template_text_lock")
     if not raw_path:
-        return None
+        raise RuntimeError("template text lock is required")
     path = Path(str(raw_path)).expanduser().resolve()
     if not path.is_file():
         raise RuntimeError(f"template text lock is missing: {path}")
@@ -516,8 +520,7 @@ def _readiness_required_dependencies(
         *[path.expanduser().resolve() for path in approved_images.values()],
     ]
     template_text_lock = _template_text_lock_record(template_manifest)
-    if template_text_lock is not None:
-        required.append(Path(template_text_lock["path"]).expanduser().resolve())
+    required.append(Path(template_text_lock["path"]).expanduser().resolve())
     if any(not path.is_file() for path in required):
         return None
     return required
@@ -639,8 +642,7 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
         *approved_images.values(),
     ]
     template_text_lock = _template_text_lock_record(template_manifest)
-    if template_text_lock is not None:
-        dependencies.append(Path(template_text_lock["path"]))
+    dependencies.append(Path(template_text_lock["path"]))
     readiness = {
         "schema": "cyberppt.production_readiness.v1",
         "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
