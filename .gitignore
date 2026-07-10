@@ -43,6 +43,7 @@ build/
 !assets/icons/**/*.svg
 
 # Project-specific working directories
+canvas/
 deck/
 *-deck/
 image2pptx_runs/
