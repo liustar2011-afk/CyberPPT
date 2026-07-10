@@ -142,6 +142,25 @@ class FinalScriptPagesTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "请选择一个 CyberPPT 默认视觉风格"):
                 run_final_script_pages(project=project, script=script, pages_raw="7")
 
+    def test_rejects_post_approval_drawing_script_edit_before_creating_style_lock(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            _approve_all_analysis_expression_gates(project)
+            drawing_script = project / "workbench/analysis_expression/drawing_script.md"
+            drawing_script.write_text(
+                drawing_script.read_text(encoding="utf-8") + "\n<!-- post-approval edit -->\n",
+                encoding="utf-8",
+            )
+            script = root / "script-final.md"
+            script.write_text("## 第1页：测试\n正文\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "approved drawing_script has changed; approve drawing_script again"):
+                run_final_script_pages(project=project, script=script, pages_raw="1", style_id=4)
+
+            self.assertFalse(any(project.rglob("visual_style_lock.json")))
+
     def test_production_build_runs_template_image_ppt_export(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

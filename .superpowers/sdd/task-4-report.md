@@ -22,3 +22,9 @@ Result: 44 tests passed.
 - tests/test_cli.py
 - tests/test_final_script_pages.py
 - .superpowers/sdd/task-4-report.md
+
+## P1 Approval-Artifact Integrity Follow-up
+
+- Scope: generation readiness now compares the current SHA-256 of every approved gate artifact with its approval record before style-lock or output creation.
+- Regression coverage: an approved `drawing_script` modified after approval is rejected with a re-approval error, and no `visual_style_lock.json` is created.
+- Validation: `python3 -m unittest tests.test_analysis_expression_gate tests.test_final_script_pages -v` (35 tests passed)
