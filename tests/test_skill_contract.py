@@ -17,7 +17,7 @@ class SkillContractTests(unittest.TestCase):
 
         self.assertIn("analysis-expression-status", text)
         self.assertIn("business script", text)
-        self.assertIn("drawing script", text)
+        self.assertIn("蓝图输入", text)
 
     def test_stage_one_references_default_to_adaptive_internal_reporting(self) -> None:
         source_text = SOURCE_ANALYSIS.read_text(encoding="utf-8-sig")

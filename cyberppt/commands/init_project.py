@@ -129,7 +129,7 @@ CyberPPT project workspace.
 
 1. Put source materials in `source/`.
 2. Use `$cyber-ppt` to complete evidence analysis, material-type and reporting-task identification, adaptive storyline planning, and page planning. New projects default to the formal central-SOE/government internal-reporting writing style; do not impose a fixed chapter order.
-3. Complete the analysis-expression gates in order: reporting direction, report structure, page design, business script, and drawing script. The business-script and drawing-script approvals are required before ImageGen or PPTX generation.
+3. Complete the analysis-expression gates in order: source analysis, reporting direction, report structure, page design, and business script. Then confirm the visual style, blueprint input, generated images, and image-PPT assembly in sequence.
 4. Before any ImageGen or PPTX generation, save the current slide script or prompt in `workbench/scripts/drafts/` or `workbench/prompts/imagegen/`.
 5. Stop for user review. Do not generate images or PPTX until an approval record exists in `workbench/approvals/`.
 6. Store title/subtitle truth for template assembly in `workbench/locks/template_text/`; if dual images are supplied mid-pipeline, create this lock before template rebuild.

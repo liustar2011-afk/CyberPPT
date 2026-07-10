@@ -38,7 +38,7 @@ class ScriptRunnerTests(unittest.TestCase):
             for alias in ("body-blueprint-prompts", "image-ppt", "pair-manifest", "source-capture", "template-rebuild"):
                 with self.subTest(alias):
                     with patch("cyberppt.commands.script_runner.subprocess.run") as run:
-                        with self.assertRaisesRegex(ValueError, "reporting_direction approval is required"):
+                        with self.assertRaisesRegex(ValueError, "source_analysis approval is required"):
                             run_script(alias, ["--project-path", str(project)])
 
                     run.assert_not_called()
@@ -51,7 +51,7 @@ class ScriptRunnerTests(unittest.TestCase):
             adopt_analysis_expression_contract(project)
 
             with patch("cyberppt.commands.script_runner.subprocess.run") as run:
-                with self.assertRaisesRegex(ValueError, "reporting_direction approval is required"):
+                with self.assertRaisesRegex(ValueError, "source_analysis approval is required"):
                     run_script("pair-manifest", [f"--project-path={project}"])
 
             run.assert_not_called()

@@ -7,6 +7,14 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 from cyberppt.commands.analysis_expression_gate import approve_analysis_artifact, stage_analysis_artifact
+from cyberppt.commands.blueprint_gate import (
+    approve_blueprint_input,
+    approve_blueprint_image_review,
+    approve_visual_style,
+    stage_blueprint_input,
+    stage_blueprint_image_review,
+    stage_visual_style_options,
+)
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
 
@@ -19,6 +27,12 @@ OPTIONS = [
 
 def _approve_all_analysis_expression_gates(project: Path) -> None:
     artifacts = (
+        (
+            "source_analysis",
+            "## 输入盘点\n年度供需预测报告\n## 证据表\n| ID | 论点 | 来源位置 |\n|---|---|---|\n| E01 | 供需总体平衡 | 年度供需预测报告第3页 |\n"
+            "## 开放数据冲突\n无重大冲突\n## 内容脑暴\n领导审定型、执行对齐型\n## 页面物料池\n最大负荷、供需平衡\n",
+            "evidence complete",
+        ),
         (
             "reporting_direction",
             "## 汇报对象\n分管领导\n## 汇报目的\n审定工作安排\n## 内容重点\n供需研判\n"
@@ -37,25 +51,39 @@ def _approve_all_analysis_expression_gates(project: Path) -> None:
         ),
         (
             "business_script",
-            "## 第1页：供需预测分析\n### 业务内容\n2026年最大负荷预计为1000万千瓦，供需总体平衡。\n"
-            "### 非上屏：证据链\n- E-01\n### 来源位置\n- 年度供需预测报告第3页\n"
-            "### 非上屏：完整性校核\n- 事实：供需总体平衡\n- 数字：1000万千瓦\n- 分类：最大负荷预测\n"
-            "- 边界：2026年\n- 请求事项：请审定预测结论\n### 非上屏：信息密度\n- 最少呈现3项供需指标\n",
+            "## 第1页：章节过渡\n第一章\n### 非上屏：证据链\n- E-01\n"
+            "### 来源位置\n- 年度供需预测报告第3页\n### 非上屏：完整性校核\n- 本页不承载业务内容。\n",
             "business script",
-        ),
-        (
-            "drawing_script",
-            "## 第1页：供需预测分析\n### 上屏文字\n- 2026年最大负荷1000万千瓦\n- 供需总体平衡\n- 请审定预测结论\n"
-            "### 组件关系\n指标卡与结论卡通过箭头关联。\n### 信息密度\n- 最少呈现3项供需指标\n"
-            "### 禁止项\n- 避免装饰元素\n### 非上屏：证据链\n- E-01\n### 来源位置\n- 年度供需预测报告第3页\n"
-            "### 非上屏：完整性校核\n- 事实：供需总体平衡\n- 数字：1000万千瓦\n- 分类：最大负荷预测\n"
-            "- 边界：2026年\n- 请求事项：请审定预测结论\n",
-            "drawing script",
         ),
     )
     for gate, source, recommendation in artifacts:
         stage_analysis_artifact(project, gate, source, recommendation, OPTIONS)
         approve_analysis_artifact(project, gate, "leadership_review")
+
+
+def _approve_stage02_input(project: Path, script: Path) -> None:
+    stage_visual_style_options(project)
+    approve_visual_style(project, "style_4")
+    stage_blueprint_input(
+        project,
+        script.read_text(encoding="utf-8"),
+        "confirm_blueprint_input",
+        [
+            {"id": "confirm_blueprint_input", "label": "确认蓝图输入"},
+            {"id": "revise_blueprint_input", "label": "返回调整"},
+        ],
+    )
+    approve_blueprint_input(project, "confirm_blueprint_input")
+
+
+def _approve_stage02_images(project: Path, script: Path, pages: str) -> None:
+    summary = run_final_script_pages(project=project, script=script, pages_raw=pages)
+    manifest_path = Path(summary["artifacts"]["page_image_pairs"])
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    for pair in manifest["pairs"]:
+        Path(pair["full"]["path"]).write_bytes(b"png")
+    stage_blueprint_image_review(project, manifest_path)
+    approve_blueprint_image_review(project, "confirm_blueprint_images")
 
 
 class FinalScriptPagesTests(unittest.TestCase):
@@ -67,7 +95,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             script = root / "script-final.md"
             script.write_text("## 第1页：测试\n正文\n", encoding="utf-8")
 
-            with self.assertRaisesRegex(ValueError, "reporting_direction approval is required"):
+            with self.assertRaisesRegex(ValueError, "source_analysis approval is required"):
                 run_final_script_pages(project=project, script=script, pages_raw="1", style_id=4)
 
     def test_legacy_project_remains_compatible_until_adopted(self) -> None:
@@ -80,6 +108,34 @@ class FinalScriptPagesTests(unittest.TestCase):
             summary = run_final_script_pages(project=project, script=script, pages_raw="1", style_id=4)
 
         self.assertEqual([1], summary["pages"])
+
+    def test_image_review_stages_generated_images_without_ocr_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            manifest_path = root / "page_image_pairs.json"
+            image = root / "page_001_full.png"
+            image.write_bytes(b"png")
+            manifest_path.write_text(
+                json.dumps(
+                    {
+                        "pairs": [
+                            {
+                                "page_number": 1,
+                                "full": {
+                                    "path": str(image),
+                                    "prompt": "【内容锁定】\n- 供需预测\n\n【构图指令】\n正式内部汇报",
+                                },
+                            }
+                        ]
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            pending = stage_blueprint_image_review(project, manifest_path)
+            self.assertTrue(pending.is_file())
 
     def test_compiles_pages_7_8_from_final_script_with_traceable_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -103,8 +159,9 @@ class FinalScriptPagesTests(unittest.TestCase):
 """,
                 encoding="utf-8",
             )
+            _approve_stage02_input(project, script)
 
-            summary = run_final_script_pages(project=project, script=script, pages_raw="7-8", style_id=4)
+            summary = run_final_script_pages(project=project, script=script, pages_raw="7-8")
 
             manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
             lock = json.loads(Path(summary["artifacts"]["template_text_lock"]).read_text(encoding="utf-8"))
@@ -130,7 +187,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertIn(summary["artifacts"]["template_text_lock"], ledger_paths)
             self.assertIn(summary["artifacts"]["visual_style_lock"], ledger_paths)
 
-    def test_requires_default_style_selection_or_explicit_style_lock(self) -> None:
+    def test_requires_approved_visual_style_and_blueprint_input(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "client-report"
@@ -139,27 +196,25 @@ class FinalScriptPagesTests(unittest.TestCase):
             script = root / "script-final.md"
             script.write_text("## 第7页：态势感知能力\n组件A：内容\n", encoding="utf-8")
 
-            with self.assertRaisesRegex(ValueError, "请选择一个 CyberPPT 默认视觉风格"):
+            with self.assertRaisesRegex(ValueError, "visual style approval is required"):
                 run_final_script_pages(project=project, script=script, pages_raw="7")
 
-    def test_rejects_post_approval_drawing_script_edit_before_creating_style_lock(self) -> None:
+    def test_rejects_post_approval_blueprint_input_edit(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "client-report"
             init_project(project)
             _approve_all_analysis_expression_gates(project)
-            drawing_script = project / "workbench/analysis_expression/drawing_script.md"
-            drawing_script.write_text(
-                drawing_script.read_text(encoding="utf-8") + "\n<!-- post-approval edit -->\n",
-                encoding="utf-8",
-            )
             script = root / "script-final.md"
-            script.write_text("## 第1页：测试\n正文\n", encoding="utf-8")
+            script.write_text("## 第1页：测试\n组件A：内容\n", encoding="utf-8")
+            _approve_stage02_input(project, script)
+            _approve_stage02_images(project, script, "1")
+            script.write_text(script.read_text(encoding="utf-8") + "\n<!-- post-approval edit -->\n", encoding="utf-8")
 
-            with self.assertRaisesRegex(ValueError, "approved drawing_script has changed; approve drawing_script again"):
-                run_final_script_pages(project=project, script=script, pages_raw="1", style_id=4)
+            with self.assertRaisesRegex(ValueError, "script must match the approved blueprint input"):
+                run_final_script_pages(project=project, script=script, pages_raw="1")
 
-            self.assertFalse(any(project.rglob("visual_style_lock.json")))
+            self.assertTrue(any(project.rglob("visual_style_lock.json")))
 
     def test_production_build_runs_template_image_ppt_export(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -168,7 +223,9 @@ class FinalScriptPagesTests(unittest.TestCase):
             init_project(project)
             _approve_all_analysis_expression_gates(project)
             script = root / "script-final.md"
-            script.write_text("## 第1页：测试\n正文\n", encoding="utf-8")
+            script.write_text("## 第1页：测试\n组件A：内容\n", encoding="utf-8")
+            _approve_stage02_input(project, script)
+            _approve_stage02_images(project, script, "1")
 
             with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
                 run.return_value = Mock(returncode=0)
@@ -176,7 +233,6 @@ class FinalScriptPagesTests(unittest.TestCase):
                     project=project,
                     script=script,
                     pages_raw="1",
-                    style_id=4,
                     production_build=True,
                 )
 
@@ -214,7 +270,6 @@ class FinalScriptPagesTests(unittest.TestCase):
 """,
                 encoding="utf-8",
             )
-
             with self.assertRaisesRegex(ValueError, "--run-rebuild is no longer supported"):
                 run_final_script_pages(
                     project=project,
@@ -260,6 +315,8 @@ class FinalScriptPagesTests(unittest.TestCase):
 """,
                 encoding="utf-8",
             )
+            _approve_stage02_input(project, script)
+            _approve_stage02_images(project, script, "7")
 
             with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
                 run.return_value = Mock(returncode=3)
@@ -268,7 +325,6 @@ class FinalScriptPagesTests(unittest.TestCase):
                         project=project,
                         script=script,
                         pages_raw="7",
-                        style_id=5,
                         production_build=True,
                     )
 

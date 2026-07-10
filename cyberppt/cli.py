@@ -16,6 +16,14 @@ from cyberppt.commands.analysis_expression_gate import (
     get_analysis_expression_status,
     stage_analysis_artifact,
 )
+from cyberppt.commands.blueprint_gate import (
+    approve_blueprint_input,
+    approve_blueprint_image_review,
+    approve_visual_style,
+    stage_blueprint_input,
+    stage_blueprint_image_review,
+    stage_visual_style_options,
+)
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script, status_as_json
@@ -145,8 +153,6 @@ def _analysis_expression_status_command(args: argparse.Namespace) -> int:
             failures = gate_status.get("validation_failures", [])
             if failures:
                 print(f"  validation_failures: {json.dumps(failures, ensure_ascii=False)}")
-            if gate == "drawing_script":
-                print(f"  business_dependency_hash_state: {gate_status.get('business_dependency_hash_state', 'unavailable')}")
     return 0 if status.adopted and status.next_gate is None else 3
 
 
@@ -155,6 +161,75 @@ def _adopt_analysis_expression_contract_command(args: argparse.Namespace) -> int
     status = get_analysis_expression_status(Path(args.project))
     print(f"analysis_expression_contract: {contract}")
     print(f"next_gate: {status.next_gate or 'none'}")
+    return 0
+
+
+def _stage_visual_style_command(args: argparse.Namespace) -> int:
+    try:
+        pending = stage_visual_style_options(Path(args.project))
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"pending_confirmation: {pending}")
+    return 0
+
+
+def _approve_visual_style_command(args: argparse.Namespace) -> int:
+    try:
+        approval = approve_visual_style(Path(args.project), args.option_id, args.note)
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"approval_recorded: {approval}")
+    return 0
+
+
+def _stage_blueprint_input_command(args: argparse.Namespace) -> int:
+    try:
+        options = json.loads(args.options_json)
+        if not isinstance(options, list):
+            raise ValueError("--options-json must decode to a JSON array")
+        pending = stage_blueprint_input(
+            Path(args.project),
+            Path(args.source).read_text(encoding="utf-8"),
+            args.recommendation,
+            options,
+            args.question,
+        )
+    except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"pending_confirmation: {pending}")
+    return 0
+
+
+def _approve_blueprint_input_command(args: argparse.Namespace) -> int:
+    try:
+        approval = approve_blueprint_input(Path(args.project), args.option_id, args.note)
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"approval_recorded: {approval}")
+    return 0
+
+
+def _stage_blueprint_image_review_command(args: argparse.Namespace) -> int:
+    try:
+        pending = stage_blueprint_image_review(Path(args.project), Path(args.manifest))
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"pending_confirmation: {pending}")
+    return 0
+
+
+def _approve_blueprint_image_review_command(args: argparse.Namespace) -> int:
+    try:
+        approval = approve_blueprint_image_review(Path(args.project), args.option_id, args.note)
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"approval_recorded: {approval}")
     return 0
 
 
@@ -284,6 +359,59 @@ def build_parser() -> argparse.ArgumentParser:
     )
     adopt_analysis_parser.add_argument("project", help="CyberPPT project directory.")
     adopt_analysis_parser.set_defaults(func=_adopt_analysis_expression_contract_command)
+
+    stage_visual_style_parser = subparsers.add_parser(
+        "stage-visual-style",
+        help="Persist the selectable visual styles after business-script approval.",
+    )
+    stage_visual_style_parser.add_argument("project", help="CyberPPT project directory.")
+    stage_visual_style_parser.set_defaults(func=_stage_visual_style_command)
+
+    approve_visual_style_parser = subparsers.add_parser(
+        "approve-visual-style",
+        help="Record the selected visual style and write its locked prompt contract.",
+    )
+    approve_visual_style_parser.add_argument("project", help="CyberPPT project directory.")
+    approve_visual_style_parser.add_argument("--option-id", required=True, help="Selected style option id, e.g. style_4.")
+    approve_visual_style_parser.add_argument("--note", default="", help="Optional approval note.")
+    approve_visual_style_parser.set_defaults(func=_approve_visual_style_command)
+
+    stage_blueprint_input_parser = subparsers.add_parser(
+        "stage-blueprint-input",
+        help="Stage the reviewed, style-bound drawing input before image generation.",
+    )
+    stage_blueprint_input_parser.add_argument("project", help="CyberPPT project directory.")
+    stage_blueprint_input_parser.add_argument("--source", required=True, help="UTF-8 Markdown drawing input.")
+    stage_blueprint_input_parser.add_argument("--recommendation", required=True, help="Recommended confirmation option.")
+    stage_blueprint_input_parser.add_argument("--question", help="Question recorded in the pending confirmation.")
+    stage_blueprint_input_parser.add_argument("--options-json", required=True, help="JSON array of selectable confirmation options.")
+    stage_blueprint_input_parser.set_defaults(func=_stage_blueprint_input_command)
+
+    approve_blueprint_input_parser = subparsers.add_parser(
+        "approve-blueprint-input",
+        help="Record approval of drawing input before image generation.",
+    )
+    approve_blueprint_input_parser.add_argument("project", help="CyberPPT project directory.")
+    approve_blueprint_input_parser.add_argument("--option-id", required=True, help="Selected confirmation option id.")
+    approve_blueprint_input_parser.add_argument("--note", default="", help="Optional approval note.")
+    approve_blueprint_input_parser.set_defaults(func=_approve_blueprint_input_command)
+
+    stage_blueprint_image_review_parser = subparsers.add_parser(
+        "stage-blueprint-image-review",
+        help="Save generated full images as a separate review artifact before PPT assembly.",
+    )
+    stage_blueprint_image_review_parser.add_argument("project", help="CyberPPT project directory.")
+    stage_blueprint_image_review_parser.add_argument("--manifest", required=True, help="Generated page_image_pairs.json file.")
+    stage_blueprint_image_review_parser.set_defaults(func=_stage_blueprint_image_review_command)
+
+    approve_blueprint_image_review_parser = subparsers.add_parser(
+        "approve-blueprint-image-review",
+        help="Record approval of generated full images before image-PPT assembly.",
+    )
+    approve_blueprint_image_review_parser.add_argument("project", help="CyberPPT project directory.")
+    approve_blueprint_image_review_parser.add_argument("--option-id", required=True, help="Selected confirmation option id.")
+    approve_blueprint_image_review_parser.add_argument("--note", default="", help="Optional approval note.")
+    approve_blueprint_image_review_parser.set_defaults(func=_approve_blueprint_image_review_command)
 
     rebuild_dual_image_parser = subparsers.add_parser(
         "rebuild-dual-image",

@@ -12,21 +12,27 @@ from typing import Any
 
 
 GATE_ORDER = (
+    "source_analysis",
     "reporting_direction",
     "report_structure",
     "page_design",
     "business_script",
-    "drawing_script",
 )
 
 REQUIRED_HEADINGS = {
+    "source_analysis": ("输入盘点", "证据表", "开放数据冲突", "内容脑暴", "页面物料池"),
     "reporting_direction": ("汇报对象", "汇报目的", "内容重点", "证据", "优势", "边界", "推荐方向"),
     "report_structure": ("模块一", "模块二", "模块三", "模块四"),
-    "page_design": ("封面", "目录", "过渡页", "内容页", "封底"),
+    "page_design": (),
     "business_script": ("非上屏：证据链", "来源位置", "非上屏：完整性校核"),
     "drawing_script": (),
 }
 HEADING_ALIASES = {
+    "source_analysis": {
+        "证据表": ("MBB 证据表摘要",),
+        "开放数据冲突": ("开放数据冲突、缺失证据和 caveat",),
+        "内容脑暴": ("内容脑暴：3 条备选故事线",),
+    },
     "reporting_direction": {
         "汇报对象": ("适用受众",),
         "证据": ("证据支撑",),
@@ -62,6 +68,8 @@ _DRAWING_IMPLEMENTATION_PATTERN = re.compile(
 _DRAWING_COMPONENT_PATTERN = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+(?:[（(].*?[)）])?\s*(?:[—-]+|[:：])", re.MULTILINE)
 _CONSULTING_DELIVERY_PATTERN = re.compile(r"\b(?:MBB|SO\s+WHAT|Caveat|Resolution)\b|核心判断", re.IGNORECASE)
 _NON_VISIBLE_HEADINGS = ("非上屏", "来源位置")
+_DRAWING_PROVENANCE_PATTERN = re.compile(r"(?:\bE\d+\b|证据链|来源位置|源材料\s*P?\d+|完整性校核)")
+_EVIDENCE_ID_PATTERN = re.compile(r"(?<![A-Za-z0-9])E[- ]?(\d+)(?![A-Za-z0-9])", re.IGNORECASE)
 _COMPLETENESS_CATEGORIES = ("事实", "数字", "分类", "边界", "请求事项")
 _NUMBER_PATTERN = re.compile(r"\d+(?:\.\d+)?(?:[%％]|万千瓦|亿千瓦时|万|亿|台|项|个|页|年|月|日)?")
 _ALLOWED_CONCISE_FACTS = {"供需总体平衡": "供需平衡"}
@@ -280,6 +288,10 @@ def _normalized_visible_value(value: str) -> str:
     return re.sub(r"\s+|[，。、“”‘’：:；;、,.!?！？]", "", value)
 
 
+def _evidence_ids(text: str) -> set[str]:
+    return {f"E{int(value):02d}" for value in _EVIDENCE_ID_PATTERN.findall(text)}
+
+
 def _visible_text_units(text: str) -> tuple[str, ...]:
     return tuple(
         value
@@ -341,6 +353,17 @@ def validate_business_script(text: str) -> list[str]:
     return errors
 
 
+def validate_business_evidence_references(text: str, source_analysis: str) -> list[str]:
+    """Require business pages to cite the frozen source-analysis evidence registry."""
+
+    registered = _evidence_ids(source_analysis)
+    if not registered:
+        return ["source_analysis does not contain a usable evidence table"]
+    referenced = _evidence_ids(text)
+    unknown = sorted(referenced - registered)
+    return ["business_script references unknown evidence IDs: " + ", ".join(unknown)] if unknown else []
+
+
 def validate_drawing_script(text: str, business: str) -> list[str]:
     """Validate that a drawing script is a non-geometric translation of business truth."""
 
@@ -349,6 +372,8 @@ def validate_drawing_script(text: str, business: str) -> list[str]:
         errors.append("drawing_script must not contain geometry keywords")
     if _DRAWING_IMPLEMENTATION_PATTERN.search(text):
         errors.append("drawing_script must not contain implementation directives")
+    if _DRAWING_PROVENANCE_PATTERN.search(text):
+        errors.append("drawing_script must not contain evidence or source text")
 
     drawing_pages = dict(_content_pages(text))
     for page_number, business_page in _content_pages(business):
@@ -365,7 +390,7 @@ def validate_drawing_script(text: str, business: str) -> list[str]:
         business_numbers = set(re.findall(r"\d+(?:\.\d+)?", business_page))
         visible_text = _drawing_visible_text(drawing_page)
         for fact in _completeness_values(business_units, "事实"):
-            if re.search(r"不得|不可|不能|必须|不设置|不删除", fact):
+            if re.search(r"不得|不可|不能|必须|不设置|不删除|需保留|均需保留", fact):
                 continue
             if not _fact_is_visible(fact, visible_text):
                 errors.append(f"{error_prefix}missing required business fact in visible text: {fact}")
@@ -402,12 +427,8 @@ def validate_analysis_artifact(gate: str, text: str) -> list[str]:
         if any(re.search(rf"^\s*{re.escape(field)}\s*[:：]\s*\S", text, re.MULTILINE) for field in _STRUCTURE_VISUAL_FIELDS):
             errors.append("report_structure must not contain visual form fields")
 
-    if gate == "page_design":
-        navigation_text = "\n".join(
-            section for heading in _NAVIGATION_HEADINGS for section in _role_section_texts(text, heading)
-        )
-        if re.search(r"^\s*(?:证据|论据|决策|决定)\s*[:：]", navigation_text, re.MULTILINE):
-            errors.append("navigation pages must not contain evidence or decisions")
+    if gate == "source_analysis" and not _evidence_ids(text):
+        errors.append("source_analysis requires at least one evidence ID")
 
     if gate == "drawing_script" and _DRAWING_GEOMETRY_PATTERN.search(text):
         errors.append("drawing_script must not contain geometry keywords")
@@ -457,6 +478,15 @@ def stage_analysis_artifact(
     errors = validate_analysis_artifact(gate, source)
     business_source_sha256: str | None = None
     inherited_units: InheritedUnits | None = None
+    source_analysis_sha256: str | None = None
+    if gate == "business_script":
+        source_analysis_approval = json.loads(_approval_path(root, "source_analysis").read_text(encoding="utf-8"))
+        source_analysis_artifact = Path(str(source_analysis_approval["artifact"]))
+        source_analysis = source_analysis_artifact.read_text(encoding="utf-8")
+        source_analysis_sha256 = hashlib.sha256(source_analysis.encode("utf-8")).hexdigest()
+        if source_analysis_sha256 != source_analysis_approval.get("source_sha256"):
+            raise ValueError("approved source_analysis has changed; approve source_analysis again")
+        errors.extend(validate_business_evidence_references(source, source_analysis))
     if gate == "drawing_script":
         business_approval = json.loads(_approval_path(root, "business_script").read_text(encoding="utf-8"))
         business_artifact = Path(str(business_approval["artifact"]))
@@ -495,6 +525,8 @@ def stage_analysis_artifact(
     if business_source_sha256 is not None and inherited_units is not None:
         pending_payload["business_source_sha256"] = business_source_sha256
         pending_payload["inherited_units"] = inherited_units.to_payload()
+    if source_analysis_sha256 is not None:
+        pending_payload["source_analysis_sha256"] = source_analysis_sha256
     _write_json(pending, pending_payload)
     approval = _approval_path(root, gate)
     if approval.exists():
@@ -537,6 +569,8 @@ def approve_analysis_artifact(project: Path, gate: str, option_id: str, note: st
     if gate == "drawing_script":
         approval_payload["business_source_sha256"] = data["business_source_sha256"]
         approval_payload["inherited_units"] = data["inherited_units"]
+    if gate == "business_script":
+        approval_payload["source_analysis_sha256"] = data["source_analysis_sha256"]
     _write_json(approval, approval_payload)
     return approval
 
@@ -579,6 +613,23 @@ def _artifact_status(root: Path, gate: str, record: dict[str, object]) -> dict[s
                 )
                 if source:
                     failures.extend(validate_drawing_script(source, business))
+    if gate == "business_script":
+        source_analysis_approval = _approval_path(root, "source_analysis")
+        if not source_analysis_approval.exists():
+            status["source_analysis_dependency_hash_state"] = "unavailable"
+        else:
+            source_analysis_record = json.loads(source_analysis_approval.read_text(encoding="utf-8"))
+            source_analysis_artifact = Path(str(source_analysis_record.get("artifact", "")))
+            if not source_analysis_artifact.exists():
+                status["source_analysis_dependency_hash_state"] = "unavailable"
+            else:
+                source_analysis = source_analysis_artifact.read_text(encoding="utf-8")
+                source_analysis_hash = hashlib.sha256(source_analysis.encode("utf-8")).hexdigest()
+                status["source_analysis_dependency_hash_state"] = (
+                    "current" if source_analysis_hash == record.get("source_analysis_sha256") else "stale"
+                )
+                if source:
+                    failures.extend(validate_business_evidence_references(source, source_analysis))
     return status
 
 
@@ -587,7 +638,7 @@ def get_analysis_expression_status(project: Path) -> AnalysisExpressionStatus:
     if not contract.exists():
         return AnalysisExpressionStatus(adopted=False, next_gate=None, gates={})
     root = project.expanduser().resolve()
-    next_gate = next((gate for gate in GATE_ORDER if not _approval_exists(root, gate)), None)
+    next_gate: str | None = None
     gates: dict[str, dict[str, object]] = {}
     for gate in GATE_ORDER:
         approval = _approval_path(root, gate)
@@ -611,6 +662,16 @@ def get_analysis_expression_status(project: Path) -> AnalysisExpressionStatus:
             }
         else:
             gates[gate] = {"status": "not_staged", "validation_failures": [], "source_hash_state": "unavailable"}
+    for gate in GATE_ORDER:
+        gate_status = gates[gate]
+        if (
+            gate_status.get("status") != "approved"
+            or gate_status.get("source_hash_state") != "current"
+            or gate_status.get("validation_failures")
+            or gate_status.get("source_analysis_dependency_hash_state") == "stale"
+        ):
+            next_gate = gate
+            break
     return AnalysisExpressionStatus(adopted=True, next_gate=next_gate, gates=gates)
 
 
@@ -651,13 +712,11 @@ def assert_analysis_expression_ready(project: Path) -> None:
         artifacts[gate] = source
 
     business_approval = approvals["business_script"]
-    drawing_approval = approvals["drawing_script"]
     business = artifacts["business_script"]
-    drawing = artifacts["drawing_script"]
-    business_sha256 = hashlib.sha256(business.encode("utf-8")).hexdigest()
-    if drawing_approval.get("business_source_sha256") != business_sha256:
-        raise ValueError("drawing_script dependency hash is stale; stage and approve drawing_script again")
-
-    errors = validate_drawing_script(drawing, business)
-    if errors:
-        raise ValueError("drawing_script approval is invalid: " + "; ".join(errors))
+    source_analysis = artifacts["source_analysis"]
+    source_analysis_sha256 = hashlib.sha256(source_analysis.encode("utf-8")).hexdigest()
+    if business_approval.get("source_analysis_sha256") != source_analysis_sha256:
+        raise ValueError("business_script dependency hash is stale; stage and approve business_script again")
+    business_errors = validate_business_evidence_references(business, source_analysis)
+    if business_errors:
+        raise ValueError("business_script approval is invalid: " + "; ".join(business_errors))
