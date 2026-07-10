@@ -132,7 +132,32 @@ class SpeakerNotesTests(unittest.TestCase):
 
             manifest = build_manifest(business_script=business, pages_raw="3", output_dir=root / "notes", llm_output=llm)
 
-        self.assertEqual("下面进入建设背景与基础部分。", manifest["notes"][0]["notes_text"])
+        self.assertEqual("", manifest["notes"][0]["notes_text"])
+
+    def test_filters_page_design_meta_language_from_reviewed_llm_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            business = root / "business_script.md"
+            business.write_text("## 第4页：形势变化\n### 页面内容脚本\n- 用电量增长。\n", encoding="utf-8")
+            llm = root / "llm.json"
+            llm.write_text(
+                json.dumps(
+                    {
+                        "notes": [
+                            {
+                                "page_number": 4,
+                                "notes_text": "本页围绕形势变化展开。各位领导，当前用电量保持增长。",
+                            }
+                        ]
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            manifest = build_manifest(business_script=business, pages_raw="4", output_dir=root / "notes", llm_output=llm)
+
+        self.assertEqual("各位领导，当前用电量保持增长。", manifest["notes"][0]["notes_text"])
 
     def test_parse_llm_notes_accepts_fenced_json(self) -> None:
         notes = parse_llm_notes('```json\n{"notes":[{"page_number":2,"notes_text":"进入目录。"}]}\n```')

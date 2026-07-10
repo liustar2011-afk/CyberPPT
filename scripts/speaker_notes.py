@@ -26,6 +26,10 @@ NOTE_PROVENANCE_RE = re.compile(
     r"(证据链|来源位置|源材料|完整性校核|业务稿证据|重点对应|对应E\d+|\bE\d+\b|P\d+|T\d+)"
 )
 NOTE_FILLER_RE = re.compile(r"(围绕本章内容|本章内容开展汇报|作简要汇报|先对本章涉及)")
+NOTE_META_RE = re.compile(
+    r"(本页围绕|本页主要|页面中可以看到|如下图所示|汇报要点|核心提示|组件[A-Z]?|"
+    r"上屏文字|非上屏|页面表达框架|内容锁定|构图|绘制|草图|机器|生图)"
+)
 
 
 @dataclass(frozen=True)
@@ -167,10 +171,23 @@ def sanitize_speech_note(text: str) -> str:
         stripped = sentence.strip()
         if not stripped:
             continue
-        if NOTE_PROVENANCE_RE.search(stripped) or NOTE_FILLER_RE.search(stripped):
+        if NOTE_PROVENANCE_RE.search(stripped) or NOTE_FILLER_RE.search(stripped) or NOTE_META_RE.search(stripped):
             continue
         kept.append(stripped)
     return "".join(kept).strip()
+
+
+def validate_speech_note_text(page_number: int, text: str) -> None:
+    for pattern, label in (
+        (NOTE_PROVENANCE_RE, "evidence/provenance"),
+        (NOTE_FILLER_RE, "empty transition filler"),
+        (NOTE_META_RE, "page-design/meta wording"),
+    ):
+        match = pattern.search(text)
+        if match:
+            raise ValueError(
+                f"speaker note for page {page_number} contains {label} wording: {match.group(0)}"
+            )
 
 
 def page_role(page: NotePage) -> str:
@@ -314,13 +331,18 @@ def build_manifest(
         llm_notes = parse_llm_notes(generated_llm_output.read_text(encoding="utf-8"))
     note_records = []
     for page in pages:
+        role = page_role(page)
         source = "llm_optimized" if page.page_number in llm_notes else "business_rule_draft"
+        notes_text = "" if role == "section" else sanitize_speech_note(
+            llm_notes.get(page.page_number, rule_notes[page.page_number])
+        )
+        validate_speech_note_text(page.page_number, notes_text)
         note_records.append(
             {
                 "page_number": page.page_number,
                 "title": note_heading(page),
-                "page_role": page_role(page),
-                "notes_text": sanitize_speech_note(llm_notes.get(page.page_number, rule_notes[page.page_number])),
+                "page_role": role,
+                "notes_text": notes_text,
                 "source": source,
                 "business_source_excerpt": page.text[:2000],
             }

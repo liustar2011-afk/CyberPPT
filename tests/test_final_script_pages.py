@@ -264,6 +264,22 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertEqual({}, summary["tool_consumption"])
         self.assertIsNone(summary["production_readiness"])
 
+    def test_production_build_requires_business_script_speaker_notes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "legacy-report"
+            script = root / "script-final.md"
+            script.write_text("## 第1页：测试\n组件A：内容\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(RuntimeError, "requires an approved business script speaker-notes manifest"):
+                run_final_script_pages(
+                    project=project,
+                    script=script,
+                    pages_raw="1",
+                    style_id=4,
+                    production_build=True,
+                )
+
     def test_run_rebuild_is_no_longer_supported_by_final_script_pages(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -318,7 +334,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             script.write_text(
                 """# 终稿脚本
 
-## 第7页：态势感知能力
+## 第1页：态势感知能力
 本页结论标题为“态势感知能力要从工具堆叠转向风险闭环”
 组件A（左侧主图）——三层能力链：
 数据接入、模型研判、处置反馈
@@ -326,7 +342,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                 encoding="utf-8",
             )
             _approve_stage02_input(project, script)
-            _approve_stage02_images(project, script, "7")
+            _approve_stage02_images(project, script, "1")
 
             with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
                 run.return_value = Mock(returncode=3)
@@ -334,7 +350,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                     run_final_script_pages(
                         project=project,
                         script=script,
-                        pages_raw="7",
+                        pages_raw="1",
                         production_build=True,
                     )
 

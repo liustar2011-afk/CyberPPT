@@ -30,9 +30,14 @@ PAGE_HEADING_RE = re.compile(r"^##\s*第(?P<num>\d+)页[:：](?P<title>.+?)\s*$"
 MODULE_PREFIX_RE = re.compile(r"^模块[一二三四五六七八九十百千万0-9]+[:：]\s*")
 MODULE_MARKER_RE = re.compile(r"模块[一二三四五六七八九十百千万0-9]+[:：]?\s*")
 IMAGEGEN_NON_VISIBLE_SECTION_RE = re.compile(
-    r"\n(?:保真约束[:：]|【(?:保真约束|构图指令|构图接口)】)"
+    r"\n(?:保真约束[:：]|来源位置[:：]|完整性校核[:：]|"
+    r"#{1,6}\s*(?:非上屏|证据链|来源位置|完整性校核).*|"
+    r"【(?:保真约束|构图指令|构图接口|非上屏|证据链|来源位置|完整性校核)】)"
 )
 COMPOSITION_SECTION_RE = re.compile(r"【(?:构图指令|构图接口)】(?P<body>.*)$", re.S)
+IMAGE_PROMPT_PROVENANCE_RE = re.compile(
+    r"(证据链|来源位置|源材料|完整性校核|业务稿证据|重点对应|对应E\d+|\bE\d+\b|P\d+|T\d+)"
+)
 CANVAS_SIZE = (1280, 720)
 CONTENT_REGION_TOP_INSET = -18
 CONTENT_REGION_BOTTOM_INSET = -20
@@ -324,6 +329,41 @@ def content_prompt(
 构图要求：
 {extract_composition_instruction(page)}
 """
+
+
+def validate_image_prompt_text(page_number: int, prompt: str) -> None:
+    match = IMAGE_PROMPT_PROVENANCE_RE.search(prompt)
+    if match:
+        raise ValueError(
+            f"image generation prompt for page {page_number} contains non-visual provenance text: {match.group(0)}"
+        )
+
+
+def validate_task_role_contract(task: dict) -> None:
+    page_number = int(task.get("page_number", 0))
+    role = str(task.get("page_role") or "")
+    render_mode = str(task.get("render_mode") or "")
+    if role in {"cover", "agenda", "section", "ending"}:
+        expected_template = page_template_name(role)
+        if render_mode != "brand-template" or task.get("template") != expected_template:
+            raise ValueError(f"page {page_number} role {role} must use brand template rendering")
+        forbidden = [key for key in ("image_path", "prompt", "size") if key in task]
+        if forbidden:
+            raise ValueError(f"page {page_number} role {role} must not request image generation: {forbidden}")
+    else:
+        if render_mode != "content-image":
+            raise ValueError(f"page {page_number} body page must use content-image rendering")
+        required = [key for key in ("image_path", "prompt", "size") if not task.get(key)]
+        if required:
+            raise ValueError(f"page {page_number} body page missing image generation fields: {required}")
+        validate_image_prompt_text(page_number, str(task["prompt"]))
+
+
+def validate_manifest_contract(manifest: dict) -> None:
+    for task in manifest.get("tasks", []):
+        if not isinstance(task, dict):
+            raise ValueError("template image manifest tasks must be objects")
+        validate_task_role_contract(task)
 
 
 def page_template_name(role: str) -> str | None:
@@ -663,11 +703,13 @@ def build_manifest(
                 task["section_title"] = section_title
         else:
             image_path = output_dir / "images" / f"{stem}_content.png"
+            prompt = content_prompt(page, content, body_region, generation_size, role, image_style)
+            validate_image_prompt_text(number, prompt)
             task.update(
                 {
                     "render_mode": "content-image",
                     "image_path": str(image_path),
-                    "prompt": content_prompt(page, content, body_region, generation_size, role, image_style),
+                    "prompt": prompt,
                     "size": f"{generation_size['width']}x{generation_size['height']}",
                     "status": "Pending",
                 }
@@ -680,8 +722,9 @@ def build_manifest(
         else:
             task["notes_text"] = page_notes_text_for_task(page, task)
             task["notes_source"] = "fallback_from_page_script"
+        validate_task_role_contract(task)
         tasks.append(task)
-    return {
+    manifest = {
         "mode": "template-image-ppt",
         "source_script": str(script_path),
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -702,6 +745,8 @@ def build_manifest(
         "speaker_notes_manifest": str(speaker_notes_manifest) if speaker_notes_manifest else None,
         "tasks": tasks,
     }
+    validate_manifest_contract(manifest)
+    return manifest
 
 
 def write_json(path: Path, data: dict) -> None:

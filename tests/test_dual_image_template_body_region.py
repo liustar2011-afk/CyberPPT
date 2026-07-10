@@ -111,6 +111,37 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
         self.assertIn("有效内容整体宽度不少于画布宽度 90%", prompt)
         self.assertIn("不要把内容缩成居中的", prompt)
 
+    def test_image_prompt_rejects_evidence_chain_text(self) -> None:
+        module = load_template_image_ppt_export()
+
+        with self.assertRaisesRegex(ValueError, "non-visual provenance"):
+            module.validate_image_prompt_text(4, "请绘制供需形势，相关判断重点对应E01。")
+
+    def test_non_visible_evidence_sections_do_not_enter_content_prompt(self) -> None:
+        module = load_template_image_ppt_export()
+        with tempfile.TemporaryDirectory() as tmp:
+            script = Path(tmp) / "script.md"
+            script.write_text(
+                "\n".join(
+                    [
+                        "## 第4页：工作背景",
+                        "【内容锁定】",
+                        "- 全国全社会用电量103682亿千瓦时",
+                        "### 非上屏：证据链",
+                        "- E01、E02",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            pages = module.parse_page_blocks(script)
+
+            manifest = module.build_manifest(script, [4], pages, Path(tmp))
+
+        prompt = manifest["tasks"][0]["prompt"]
+        self.assertIn("全国全社会用电量103682亿千瓦时", prompt)
+        self.assertNotIn("证据链", prompt)
+        self.assertNotIn("E01", prompt)
+
     def test_agenda_and_section_pages_use_brand_templates_not_images(self) -> None:
         module = load_template_image_ppt_export()
         with tempfile.TemporaryDirectory() as tmp:
@@ -150,6 +181,8 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
         self.assertEqual("ending", tasks[5]["template"])
         self.assertNotIn("image_path", tasks[2])
         self.assertNotIn("image_path", tasks[3])
+        self.assertNotIn("prompt", tasks[2])
+        self.assertNotIn("prompt", tasks[3])
         self.assertEqual([{"label": "第一章", "title": "建设背景与基础"}], tasks[2]["agenda_items"])
         self.assertEqual("第一章", tasks[3]["section_no"])
         self.assertEqual("建设背景与基础", tasks[3]["section_title"])
