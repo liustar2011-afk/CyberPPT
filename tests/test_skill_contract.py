@@ -89,6 +89,11 @@ class SkillContractTests(unittest.TestCase):
         self.assertNotIn("第三阶段默认使用 `dual_image_editable_overlay`", readme)
         self.assertNotIn("full/background pair manifests", layout)
         self.assertNotIn("主要文字可编辑”的混合还原策略生成 PPTX", readme)
+        self.assertNotIn("## 第三步：复杂视觉保真 + 主要文字可编辑", skill := SKILL.read_text(encoding="utf-8-sig"))
+        self.assertIn("## Legacy/Advanced: editable rebuild", skill)
+        self.assertIn("默认 `full_image_ppt` 不要求正文区主要文字可编辑", skill)
+        self.assertNotIn("关键原则：`结构可编辑` 和 `视觉还原` 是同等硬门槛", readme)
+        self.assertIn("Legacy/Advanced editable rebuild 才要求结构可编辑与视觉还原同时成立", readme)
 
     def test_manual_stop_points_are_allowed_but_must_record_state(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
