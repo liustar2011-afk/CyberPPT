@@ -1,0 +1,11 @@
+{
+  "schema": "cyberppt.analysis_expression.approval.v1",
+  "gate": "source_analysis",
+  "approved": true,
+  "approved_at": "2026-07-10T05:58:14.038236+00:00",
+  "pending_confirmation": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/source_analysis.pending-confirmation.json",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/source_analysis.md",
+  "source_sha256": "76a283dcce79cc18b37aac1490a7b55ddf0588a36b8a70d38d87f28c96a79d46",
+  "option_id": "confirm_source_analysis",
+  "note": "用户确认恢复原阶段一证据链作为业务稿前置。"
+}

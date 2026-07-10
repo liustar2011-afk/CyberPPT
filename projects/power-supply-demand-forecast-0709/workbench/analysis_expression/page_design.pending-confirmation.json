@@ -1,0 +1,20 @@
+{
+  "schema": "cyberppt.analysis_expression.pending_confirmation.v1",
+  "gate": "page_design",
+  "status": "pending_confirmation",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/page_design.md",
+  "source_sha256": "1fc9805a09ff17987f559f48f40b7984ac5805e887ca47ce6cbec31f2c6d8922",
+  "recommendation": "confirm_page_design",
+  "question": "是否确认已补齐逐页任务、信息结构、不可压缩要点和承接关系的页面设计？",
+  "options": [
+    {
+      "id": "confirm_page_design",
+      "label": "确认页面设计"
+    },
+    {
+      "id": "revise_page_design",
+      "label": "返回调整页面设计"
+    }
+  ],
+  "created_at": "2026-07-10T07:46:22.126595+00:00"
+}

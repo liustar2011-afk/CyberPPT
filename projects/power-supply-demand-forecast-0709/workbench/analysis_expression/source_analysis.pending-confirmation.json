@@ -1,0 +1,20 @@
+{
+  "schema": "cyberppt.analysis_expression.pending_confirmation.v1",
+  "gate": "source_analysis",
+  "status": "pending_confirmation",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/source_analysis.md",
+  "source_sha256": "76a283dcce79cc18b37aac1490a7b55ddf0588a36b8a70d38d87f28c96a79d46",
+  "recommendation": "source_analysis_complete",
+  "question": "是否确认源文档抽取、证据表、冲突缺口、主线比较和页面物料池可作为后续业务稿的唯一事实依据？",
+  "options": [
+    {
+      "id": "confirm_source_analysis",
+      "label": "确认源分析"
+    },
+    {
+      "id": "revise_source_analysis",
+      "label": "返回补充源分析"
+    }
+  ],
+  "created_at": "2026-07-10T05:58:13.986732+00:00"
+}

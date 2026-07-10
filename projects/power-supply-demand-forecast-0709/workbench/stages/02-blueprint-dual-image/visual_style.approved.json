@@ -1,0 +1,12 @@
+{
+  "schema": "cyberppt.visual_style.approval.v1",
+  "approved": true,
+  "approved_at": "2026-07-10T07:09:44+00:00",
+  "pending_confirmation": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/visual_style.pending-confirmation.json",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/visual_style_options.json",
+  "option_id": "style_4",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/locks/visual_style_lock.json",
+  "style_lock_sha256": "0a7d6c88a15d743e18da1171281954c3029c9e837a718706ad243267a9e8e2f0",
+  "business_script_sha256": "3816af8df7fc470d4fa29e191ef4ade169dd6da92fcc58e623658ae35e527db9",
+  "note": "用户选择象牙白加深蓝强调"
+}
