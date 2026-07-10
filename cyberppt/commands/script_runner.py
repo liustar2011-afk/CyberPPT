@@ -6,6 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from cyberppt.commands.analysis_expression_gate import assert_analysis_expression_ready
 from cyberppt.paths import SCRIPTS_DIR
 
 
@@ -28,6 +29,11 @@ SCRIPT_ALIASES: dict[str, str] = {
     "validate": "validate_pptx.py",
 }
 
+_STAGE_2_PLUS_GENERATION_ALIASES = frozenset(
+    {"body-blueprint-prompts", "image-ppt", "pair-manifest", "source-capture", "template-rebuild"}
+)
+_PROJECT_OPTION_NAMES = ("--project", "--project-path", "--project-dir", "--project-root")
+
 
 def script_path(script_name: str) -> Path:
     if script_name not in SCRIPT_ALIASES:
@@ -39,6 +45,36 @@ def script_path(script_name: str) -> Path:
 
 
 def run_script(script_name: str, args: list[str]) -> int:
+    _assert_generation_alias_ready(script_name, args)
     path = script_path(script_name)
     completed = subprocess.run([sys.executable, str(path), *args], check=False)
     return int(completed.returncode)
+
+
+def _assert_generation_alias_ready(script_name: str, args: list[str]) -> None:
+    if script_name not in _STAGE_2_PLUS_GENERATION_ALIASES:
+        return
+    for candidate in _generation_project_candidates(script_name, args):
+        if (candidate / "workbench" / "analysis_expression" / "contract.json").exists():
+            assert_analysis_expression_ready(candidate)
+
+
+def _generation_project_candidates(script_name: str, args: list[str]) -> tuple[Path, ...]:
+    candidates: list[Path] = []
+    for index, arg in enumerate(args[:-1]):
+        if arg in _PROJECT_OPTION_NAMES:
+            candidates.append(Path(args[index + 1]).expanduser().resolve())
+    if script_name == "source-capture" and args and not args[0].startswith("-"):
+        candidates.append(Path(args[0]).expanduser().resolve())
+    for arg in args:
+        if arg.startswith("-"):
+            continue
+        path = Path(arg).expanduser()
+        if path.exists():
+            resolved = path.resolve()
+            candidates.extend(
+                parent
+                for parent in (resolved, *resolved.parents)
+                if (parent / "workbench" / "analysis_expression" / "contract.json").exists()
+            )
+    return tuple(dict.fromkeys(candidates))

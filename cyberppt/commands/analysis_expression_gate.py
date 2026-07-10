@@ -36,11 +36,17 @@ _DRAWING_GEOMETRY_PATTERN = re.compile(
     r"(?:\b[xy]\s*=|\b(?:width|height|left|top)\s*=|\b\d+(?:\.\d+)?px\b|坐标|像素|几何)",
     re.IGNORECASE,
 )
+_DRAWING_IMPLEMENTATION_PATTERN = re.compile(
+    r"(?:#[0-9a-f]{3,8}\b|\brgba?\b|颜色|色值|配色|字体|字号|字重|字族|图标|\bicons?\b|最终构图|最终版|完整页面|页面定稿)",
+    re.IGNORECASE,
+)
 _CONSULTING_DELIVERY_PATTERN = re.compile(r"\b(?:MBB|SO\s+WHAT|Caveat|Resolution)\b|核心判断", re.IGNORECASE)
 _NON_VISIBLE_HEADINGS = ("非上屏", "来源位置")
 _COMPLETENESS_CATEGORIES = ("事实", "数字", "分类", "边界", "请求事项")
 _NUMBER_PATTERN = re.compile(r"\d+(?:\.\d+)?(?:[%％]|万千瓦|亿千瓦时|万|亿|台|项|个|页|年|月|日)?")
 _ALLOWED_CONCISE_FACTS = {"供需总体平衡": "供需平衡"}
+_CONTENT_PAGE_PATTERN = re.compile(r"^##\s*第(?P<number>\d+)页[：:](?P<title>.+?)\s*$", re.MULTILINE)
+_NON_CONTENT_PAGE_TITLES = ("封面", "目录", "过渡", "封底", "结束", "感谢")
 
 
 @dataclass(frozen=True)
@@ -189,6 +195,23 @@ def _parse_inherited_units(text: str) -> InheritedUnits:
     )
 
 
+def _content_pages(text: str) -> tuple[tuple[int | None, str], ...]:
+    matches = list(_CONTENT_PAGE_PATTERN.finditer(text))
+    if not matches:
+        return ((None, text),)
+    pages: list[tuple[int | None, str]] = []
+    for index, match in enumerate(matches):
+        if any(marker in match.group("title") for marker in _NON_CONTENT_PAGE_TITLES):
+            continue
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        pages.append((int(match.group("number")), text[match.start() : end]))
+    return tuple(pages)
+
+
+def _page_label(gate: str, page_number: int | None) -> str:
+    return gate if page_number in {None, 1} else f"{gate} page {page_number}"
+
+
 def _required_completeness_categories(units: InheritedUnits) -> set[str]:
     categories: set[str] = set()
     for unit in units.completeness_units:
@@ -235,6 +258,22 @@ def _drawing_visible_text(text: str) -> str:
     return "\n".join(_all_section_texts(text, "上屏文字"))
 
 
+def _validate_business_units(units: InheritedUnits, *, label: str) -> list[str]:
+    errors: list[str] = []
+    if not units.evidence_bindings:
+        errors.append(f"{label} requires at least one evidence binding")
+    if not units.source_locations:
+        errors.append(f"{label} requires at least one source location")
+    if not units.completeness_units:
+        errors.append(f"{label} requires at least one completeness unit")
+    missing_categories = set(_COMPLETENESS_CATEGORIES) - _required_completeness_categories(units)
+    if missing_categories:
+        errors.append(f"{label} completeness check is missing categories: " + ", ".join(sorted(missing_categories)))
+    if not units.density_units:
+        errors.append(f"{label} requires at least one high-density unit")
+    return errors
+
+
 def validate_business_script(text: str) -> list[str]:
     """Validate formal visible language and required non-visible business units."""
 
@@ -242,18 +281,8 @@ def validate_business_script(text: str) -> list[str]:
     if _CONSULTING_DELIVERY_PATTERN.search(_visible_text(text)):
         errors.append("business_script must not contain consulting-delivery language in visible text")
 
-    units = _parse_inherited_units(text)
-    if not units.evidence_bindings:
-        errors.append("business_script requires at least one evidence binding")
-    if not units.source_locations:
-        errors.append("business_script requires at least one source location")
-    if not units.completeness_units:
-        errors.append("business_script requires at least one completeness unit")
-    missing_categories = set(_COMPLETENESS_CATEGORIES) - _required_completeness_categories(units)
-    if missing_categories:
-        errors.append("business_script completeness check is missing categories: " + ", ".join(sorted(missing_categories)))
-    if not units.density_units:
-        errors.append("business_script requires at least one high-density unit")
+    for page_number, page_text in _content_pages(text):
+        errors.extend(_validate_business_units(_parse_inherited_units(page_text), label=_page_label("business_script", page_number)))
     return errors
 
 
@@ -263,37 +292,47 @@ def validate_drawing_script(text: str, business: str) -> list[str]:
     errors: list[str] = []
     if _DRAWING_GEOMETRY_PATTERN.search(text):
         errors.append("drawing_script must not contain geometry keywords")
+    if _DRAWING_IMPLEMENTATION_PATTERN.search(text):
+        errors.append("drawing_script must not contain implementation directives")
 
-    business_units = _parse_inherited_units(business)
-    drawing_units = _parse_inherited_units(text)
-    for label, required, actual in (
-        ("evidence binding", business_units.evidence_bindings, drawing_units.evidence_bindings),
-        ("source location", business_units.source_locations, drawing_units.source_locations),
-        ("completeness unit", business_units.completeness_units, drawing_units.completeness_units),
-        ("high-density unit", business_units.density_units, drawing_units.density_units),
-    ):
-        actual_values = set(actual)
-        for unit in required:
-            if unit not in actual_values:
-                category = unit.split("：", 1)[0].split(":", 1)[0]
-                if label == "completeness unit" and any(value.startswith(f"{category}：") or value.startswith(f"{category}:") for value in actual_values):
-                    errors.append(f"changed required completeness unit: {unit}")
-                else:
-                    errors.append(f"missing required {label}: {unit}")
+    drawing_pages = dict(_content_pages(text))
+    for page_number, business_page in _content_pages(business):
+        label = _page_label("drawing_script", page_number)
+        error_prefix = "" if page_number in {None, 1} else f"{label} "
+        drawing_page = drawing_pages.get(page_number)
+        if drawing_page is None:
+            errors.append(f"{error_prefix}is missing for required business content")
+            continue
+        business_units = _parse_inherited_units(business_page)
+        drawing_units = _parse_inherited_units(drawing_page)
+        for unit_label, required, actual in (
+            ("evidence binding", business_units.evidence_bindings, drawing_units.evidence_bindings),
+            ("source location", business_units.source_locations, drawing_units.source_locations),
+            ("completeness unit", business_units.completeness_units, drawing_units.completeness_units),
+            ("high-density unit", business_units.density_units, drawing_units.density_units),
+        ):
+            actual_values = set(actual)
+            for unit in required:
+                if unit not in actual_values:
+                    category = unit.split("：", 1)[0].split(":", 1)[0]
+                    if unit_label == "completeness unit" and any(value.startswith(f"{category}：") or value.startswith(f"{category}:") for value in actual_values):
+                        errors.append(f"{error_prefix}changed required completeness unit: {unit}")
+                    else:
+                        errors.append(f"{error_prefix}missing required {unit_label}: {unit}")
 
-    business_numbers = set(_NUMBER_PATTERN.findall(business))
-    visible_text = _drawing_visible_text(text)
-    for fact in _completeness_values(business_units, "事实"):
-        if not _fact_is_visible(fact, visible_text):
-            errors.append(f"missing required business fact in visible text: {fact}")
-    for number in _completeness_values(business_units, "数字"):
-        if _normalized_visible_value(number) not in _normalized_visible_value(visible_text):
-            errors.append(f"missing required business number in visible text: {number}")
+        business_numbers = set(_NUMBER_PATTERN.findall(business_page))
+        visible_text = _drawing_visible_text(drawing_page)
+        for fact in _completeness_values(business_units, "事实"):
+            if not _fact_is_visible(fact, visible_text):
+                errors.append(f"{error_prefix}missing required business fact in visible text: {fact}")
+        for number in _completeness_values(business_units, "数字"):
+            if _normalized_visible_value(number) not in _normalized_visible_value(visible_text):
+                errors.append(f"{error_prefix}missing required business number in visible text: {number}")
 
-    drawing_numbers = set(_NUMBER_PATTERN.findall(visible_text))
-    added_numbers = sorted(drawing_numbers - business_numbers)
-    if added_numbers:
-        errors.append("drawing_script changes required numbers: " + ", ".join(added_numbers))
+        drawing_numbers = set(_NUMBER_PATTERN.findall(visible_text))
+        added_numbers = sorted(drawing_numbers - business_numbers)
+        if added_numbers:
+            errors.append(f"{error_prefix}changes required numbers: " + ", ".join(added_numbers))
     return errors
 
 
@@ -325,6 +364,8 @@ def validate_analysis_artifact(gate: str, text: str) -> list[str]:
 
     if gate == "drawing_script" and _DRAWING_GEOMETRY_PATTERN.search(text):
         errors.append("drawing_script must not contain geometry keywords")
+    if gate == "drawing_script" and _DRAWING_IMPLEMENTATION_PATTERN.search(text):
+        errors.append("drawing_script must not contain implementation directives")
 
     if gate == "business_script":
         errors.extend(validate_business_script(text))
@@ -356,6 +397,7 @@ def stage_analysis_artifact(
     source: str,
     recommendation: str,
     options: list[dict[str, Any]],
+    question: str | None = None,
 ) -> Path:
     """Save a validated artifact and its pending, user-selectable confirmation record."""
 
@@ -378,7 +420,7 @@ def stage_analysis_artifact(
         errors.extend(validate_drawing_script(source, business))
         inherited_units = _parse_inherited_units(business)
     if errors:
-        raise ValueError("; ".join(errors))
+        raise ValueError("; ".join(dict.fromkeys(errors)))
 
     normalized_options = _normalize_options(options, require_labels=gate == "reporting_direction")
     if gate == "reporting_direction":
@@ -399,6 +441,7 @@ def stage_analysis_artifact(
             "artifact": str(artifact),
             "source_sha256": hashlib.sha256(source.encode("utf-8")).hexdigest(),
             "recommendation": recommendation,
+            "question": question or _default_confirmation_question(gate, recommendation),
             "options": normalized_options,
             "created_at": _utc_now(),
     }
@@ -411,6 +454,12 @@ def stage_analysis_artifact(
         approval.unlink()
     _invalidate_successor_records(root, gate)
     return pending
+
+
+def _default_confirmation_question(gate: str, recommendation: str) -> str:
+    if gate == "reporting_direction":
+        return f"是否采用{recommendation}汇报方向？"
+    return f"是否确认{gate.replace('_', ' ')}？"
 
 
 def approve_analysis_artifact(project: Path, gate: str, option_id: str, note: str = "") -> Path:
@@ -445,6 +494,47 @@ def approve_analysis_artifact(project: Path, gate: str, option_id: str, note: st
     return approval
 
 
+def _artifact_status(root: Path, gate: str, record: dict[str, object]) -> dict[str, object]:
+    failures: list[str] = []
+    source_hash_state = "unavailable"
+    artifact_value = record.get("artifact")
+    source = ""
+    if isinstance(artifact_value, str):
+        artifact = Path(artifact_value)
+        if artifact.exists():
+            source = artifact.read_text(encoding="utf-8")
+            current_hash = hashlib.sha256(source.encode("utf-8")).hexdigest()
+            source_hash_state = "current" if current_hash == record.get("source_sha256") else "stale"
+            failures.extend(validate_analysis_artifact(gate, source))
+        else:
+            failures.append(f"artifact is missing: {artifact}")
+    else:
+        failures.append("artifact path is missing")
+
+    status: dict[str, object] = {
+        "validation_failures": failures,
+        "source_hash_state": source_hash_state,
+    }
+    if gate == "drawing_script":
+        business_approval = _approval_path(root, "business_script")
+        if not business_approval.exists():
+            status["business_dependency_hash_state"] = "unavailable"
+        else:
+            business_record = json.loads(business_approval.read_text(encoding="utf-8"))
+            business_artifact = Path(str(business_record.get("artifact", "")))
+            if not business_artifact.exists():
+                status["business_dependency_hash_state"] = "unavailable"
+            else:
+                business = business_artifact.read_text(encoding="utf-8")
+                business_hash = hashlib.sha256(business.encode("utf-8")).hexdigest()
+                status["business_dependency_hash_state"] = (
+                    "current" if business_hash == record.get("business_source_sha256") else "stale"
+                )
+                if source:
+                    failures.extend(validate_drawing_script(source, business))
+    return status
+
+
 def get_analysis_expression_status(project: Path) -> AnalysisExpressionStatus:
     contract = _contract_path(project)
     if not contract.exists():
@@ -456,17 +546,24 @@ def get_analysis_expression_status(project: Path) -> AnalysisExpressionStatus:
         approval = _approval_path(root, gate)
         pending = _pending_path(root, gate)
         if _approval_exists(root, gate):
-            gates[gate] = {"status": "approved", "approval": str(approval)}
+            data = json.loads(approval.read_text(encoding="utf-8"))
+            gates[gate] = {
+                "status": "approved",
+                "approval": str(approval),
+                **_artifact_status(root, gate, data),
+            }
         elif pending.exists():
             data = json.loads(pending.read_text(encoding="utf-8"))
             gates[gate] = {
                 "status": "pending_confirmation",
                 "pending_confirmation": str(pending),
+                "question": data.get("question"),
                 "recommendation": data.get("recommendation"),
                 "options": data.get("options", []),
+                **_artifact_status(root, gate, data),
             }
         else:
-            gates[gate] = {"status": "not_staged"}
+            gates[gate] = {"status": "not_staged", "validation_failures": [], "source_hash_state": "unavailable"}
     return AnalysisExpressionStatus(adopted=True, next_gate=next_gate, gates=gates)
 
 

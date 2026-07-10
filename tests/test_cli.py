@@ -77,6 +77,8 @@ class CliTests(unittest.TestCase):
         self.assertEqual(3, code)
         self.assertEqual("reporting_direction", payload["next_gate"])
         self.assertEqual("pending_confirmation", payload["gates"]["reporting_direction"]["status"])
+        self.assertIn("question", payload["gates"]["reporting_direction"])
+        self.assertEqual([], payload["gates"]["reporting_direction"]["validation_failures"])
         self.assertEqual("leadership_review", payload["gates"]["reporting_direction"]["options"][0]["id"])
 
     def test_final_script_pages_requires_explicit_style_choice(self) -> None:

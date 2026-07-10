@@ -109,6 +109,7 @@ def _stage_analysis_expression_command(args: argparse.Namespace) -> int:
             Path(args.source).read_text(encoding="utf-8"),
             args.recommendation,
             options,
+            args.question,
         )
     except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
         print(str(exc), file=sys.stderr)
@@ -139,7 +140,13 @@ def _analysis_expression_status_command(args: argparse.Namespace) -> int:
             print(f"{gate}: {gate_status['status']}")
             if gate_status["status"] == "pending_confirmation":
                 print(f"  recommendation: {gate_status.get('recommendation', '')}")
+                print(f"  question: {gate_status.get('question', '')}")
                 print(f"  options: {json.dumps(gate_status.get('options', []), ensure_ascii=False)}")
+            failures = gate_status.get("validation_failures", [])
+            if failures:
+                print(f"  validation_failures: {json.dumps(failures, ensure_ascii=False)}")
+            if gate == "drawing_script":
+                print(f"  business_dependency_hash_state: {gate_status.get('business_dependency_hash_state', 'unavailable')}")
     return 0 if status.adopted and status.next_gate is None else 3
 
 
@@ -250,6 +257,7 @@ def build_parser() -> argparse.ArgumentParser:
         stage_parser.add_argument("project", help="CyberPPT project directory.")
         stage_parser.add_argument("--source", required=True, help="UTF-8 Markdown artifact file.")
         stage_parser.add_argument("--recommendation", required=True, help="Recommended confirmation option.")
+        stage_parser.add_argument("--question", help="Question recorded in the pending confirmation.")
         stage_parser.add_argument("--options-json", required=True, help="JSON array of selectable confirmation options.")
         stage_parser.set_defaults(func=_stage_analysis_expression_command, gate=gate)
 
