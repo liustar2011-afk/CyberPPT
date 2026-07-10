@@ -22,10 +22,16 @@ class ScriptGateTests(unittest.TestCase):
             self.assertEqual([], ledger["artifacts"])
             manifest = (project / "manifest.yml").read_text(encoding="utf-8")
             self.assertIn("template_text_locks: workbench/locks/template_text", manifest)
+            self.assertIn("stage_full_image_ppt: workbench/stages/02-blueprint-dual-image", manifest)
+            self.assertIn("stage_02_path_note: historical path name; current production mode is full_image_ppt", manifest)
             self.assertIn(
                 "writing_style:\n  default: internal_public_sector\n  structure_strategy: source_and_task_adaptive",
                 manifest,
             )
+            readme = (project / "README.md").read_text(encoding="utf-8")
+            self.assertIn("python3 -m cyberppt produce prepare", readme)
+            self.assertIn("python3 -m cyberppt produce assemble", readme)
+            self.assertIn("python3 -m cyberppt produce verify", readme)
             self.assertTrue((project / "workbench/stages/01-analysis").is_dir())
             self.assertTrue((project / "workbench/stages/02-blueprint-dual-image").is_dir())
             self.assertTrue((project / "workbench/stages/03-overlay").is_dir())
