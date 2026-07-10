@@ -384,21 +384,28 @@ class FinalScriptPagesTests(unittest.TestCase):
             )
             self.assertEqual("completed", summary["image_ppt_build"]["status"])
 
-    def test_production_build_requires_business_script_speaker_notes(self) -> None:
+    def test_non_adopted_production_requires_contract_before_notes_or_assembly(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "legacy-report"
             script = root / "script-final.md"
             script.write_text("## 第1页：测试\n组件A：内容\n", encoding="utf-8")
 
-            with self.assertRaisesRegex(RuntimeError, "requires an approved business script speaker-notes manifest"):
-                run_final_script_pages(
-                    project=project,
-                    script=script,
-                    pages_raw="1",
-                    style_id=4,
-                    production_build=True,
-                )
+            with (
+                patch("cyberppt.commands.final_script_pages._run_speaker_notes_build") as notes_build,
+                patch("cyberppt.commands.final_script_pages.subprocess.run") as image_ppt_run,
+            ):
+                with self.assertRaisesRegex(ValueError, "adopt-analysis-expression-contract"):
+                    run_final_script_pages(
+                        project=project,
+                        script=script,
+                        pages_raw="1",
+                        style_id=4,
+                        production_build=True,
+                    )
+
+            notes_build.assert_not_called()
+            image_ppt_run.assert_not_called()
 
     def test_run_rebuild_is_no_longer_supported_by_final_script_pages(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
