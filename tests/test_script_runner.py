@@ -42,3 +42,16 @@ class ScriptRunnerTests(unittest.TestCase):
                             run_script(alias, ["--project-path", str(project)])
 
                     run.assert_not_called()
+
+    def test_generation_alias_rejects_unapproved_equals_form_project_path_before_subprocess(self) -> None:
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            adopt_analysis_expression_contract(project)
+
+            with patch("cyberppt.commands.script_runner.subprocess.run") as run:
+                with self.assertRaisesRegex(ValueError, "reporting_direction approval is required"):
+                    run_script("pair-manifest", [f"--project-path={project}"])
+
+            run.assert_not_called()
