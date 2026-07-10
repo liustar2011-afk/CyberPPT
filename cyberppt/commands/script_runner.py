@@ -64,6 +64,10 @@ def _generation_project_candidates(script_name: str, args: list[str]) -> tuple[P
     for index, arg in enumerate(args[:-1]):
         if arg in _PROJECT_OPTION_NAMES:
             candidates.append(Path(args[index + 1]).expanduser().resolve())
+    for arg in args:
+        option, separator, value = arg.partition("=")
+        if separator and option in _PROJECT_OPTION_NAMES:
+            candidates.append(Path(value).expanduser().resolve())
     if script_name == "source-capture" and args and not args[0].startswith("-"):
         candidates.append(Path(args[0]).expanduser().resolve())
     for arg in args:
