@@ -503,14 +503,17 @@ def run_final_script_pages(
     image_ppt_name = slug
     speaker_notes_build = _run_speaker_notes_build(project=project, pages_raw=pages_raw, output_dir=target_dir)
     if production_build:
+        if not speaker_notes_build or not speaker_notes_build.get("speaker_notes_manifest"):
+            raise RuntimeError(
+                "image-ppt production build requires an approved business script speaker-notes manifest. "
+                "Confirm the business script/page content design before packaging the image PPT."
+            )
         image_ppt_build = _run_image_ppt_build(
             script=script,
             pages_raw=pages_raw,
             output_dir=image_ppt_output_dir,
             name=image_ppt_name,
-            speaker_notes_manifest=Path(speaker_notes_build["speaker_notes_manifest"])
-            if speaker_notes_build and speaker_notes_build.get("speaker_notes_manifest")
-            else None,
+            speaker_notes_manifest=Path(speaker_notes_build["speaker_notes_manifest"]),
         )
         status = "production_ready"
     run_summary = {
