@@ -11,7 +11,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from cyberppt.cli import build_parser, main
-from cyberppt.commands.analysis_expression_gate import stage_analysis_artifact
+from cyberppt.commands.analysis_expression_gate import approve_analysis_artifact, stage_analysis_artifact
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.script_runner import SCRIPT_ALIASES
 
@@ -53,6 +53,15 @@ class CliTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp) / "client-report"
             init_project(project)
+            stage_analysis_artifact(
+                project,
+                "source_analysis",
+                "## 输入盘点\n源文件\n## 证据表\n| ID | 论点 | 来源位置 |\n|---|---|---|\n| E01 | 供需平衡 | 第3页 |\n"
+                "## 开放数据冲突\n无\n## 内容脑暴\n方向比较\n## 页面物料池\n供需平衡\n",
+                "证据完整",
+                [{"id": "leadership_review", "label": "领导审定型"}],
+            )
+            approve_analysis_artifact(project, "source_analysis", "leadership_review")
             source = (
                 "## 汇报对象\n分管领导\n## 汇报目的\n审定工作安排\n## 内容重点\n供需研判\n"
                 "## 证据\n预测数据\n## 优势\n基础扎实\n## 边界\n不替代执行方案\n"

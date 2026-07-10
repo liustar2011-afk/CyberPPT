@@ -10,7 +10,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
-from cyberppt.commands.analysis_expression_gate import assert_analysis_expression_ready
+from cyberppt.commands.blueprint_gate import assert_blueprint_image_review_ready, assert_blueprint_input_ready
 from scripts.dual_image_overlay.cyberppt_pair_manifest import build_manifest, require_generated
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, parse_pages, template_title
 from scripts.dual_image_overlay.production_readiness import build_production_readiness
@@ -400,11 +400,16 @@ def run_final_script_pages(
         raise ValueError("--run-rebuild is no longer supported by final-script-pages; use image-ppt for Stage 02 production builds.")
     if semantic_plan_dir is not None:
         raise ValueError("--semantic-plan-dir is no longer supported by final-script-pages; Stage 02 no longer enters OCR/overlay/template-rebuild.")
-    assert_analysis_expression_ready(project)
     _ensure_project_dirs(project)
     if style_lock is not None and (style_id is not None or style_name):
         raise ValueError("--style-lock cannot be combined with --style-id or --style-name")
-    if style_lock is None:
+    adopted_contract = (project / "workbench" / "analysis_expression" / "contract.json").is_file()
+    if adopted_contract:
+        approved_style_lock = assert_blueprint_input_ready(project, script, style_lock)
+        if style_id is not None or style_name:
+            raise ValueError("select and approve visual style before compiling blueprint input")
+        style_lock = approved_style_lock
+    elif style_lock is None:
         style_lock = write_project_style_lock(
             project=project,
             style_id=style_id,
@@ -434,6 +439,9 @@ def run_final_script_pages(
     )
     if require_images:
         require_generated(manifest)
+    if production_build and adopted_contract:
+        require_generated(manifest)
+        assert_blueprint_image_review_ready(project, manifest)
 
     resume_command = (
         f"python3 -m cyberppt final-script-pages {project} --script {script} "

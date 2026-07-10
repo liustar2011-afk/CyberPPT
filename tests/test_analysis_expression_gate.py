@@ -18,6 +18,12 @@ from cyberppt.commands.analysis_expression_gate import (
     validate_business_script,
     validate_drawing_script,
 )
+from cyberppt.commands.blueprint_gate import (
+    approve_blueprint_input,
+    approve_visual_style,
+    stage_blueprint_input,
+    stage_visual_style_options,
+)
 from cyberppt.commands.init_project import init_project
 
 
@@ -25,6 +31,23 @@ OPTIONS = [
     {"id": "leadership_review", "label": "领导审定型"},
     {"id": "execution_alignment", "label": "执行对齐型"},
 ]
+
+SOURCE_ANALYSIS = """# 阶段一确认包
+## 输入盘点
+- 源文件：年度供需预测报告
+## 证据表
+| ID | 论点或数据 | 来源位置 |
+|---|---|---|
+| E01 | 供需总体平衡 | 年度供需预测报告第3页 |
+| E02 | 最大负荷1000万千瓦 | 年度供需预测报告第3页 |
+## 开放数据冲突
+- 无重大冲突。
+## 内容脑暴
+- 方向一：领导审定型。
+- 方向二：执行对齐型。
+## 页面物料池
+- 最大负荷、供需平衡、风险提示。
+"""
 
 DIRECTION = """# 汇报方向
 ## 汇报对象
@@ -71,6 +94,10 @@ BUSINESS_SCRIPT = """# 业务脚本
 ## 第1页：供需预测分析
 ### 业务内容
 2026年最大负荷预计为1000万千瓦，供需总体平衡。
+### 上屏内容
+- 2026年最大负荷1000万千瓦
+- 供需总体平衡
+- 请审定预测结论
 ### 非上屏：证据链
 - E-01
 ### 来源位置
@@ -98,21 +125,16 @@ DRAWING_SCRIPT = """# 绘制脚本
 - 最少呈现3项供需指标
 ### 禁止项
 - 避免装饰元素
-### 非上屏：证据链
-- E-01
-### 来源位置
-- 年度供需预测报告第3页
-### 非上屏：完整性校核
-- 事实：供需总体平衡
-- 数字：1000万千瓦
-- 分类：最大负荷预测
-- 边界：2026年
-- 请求事项：请审定预测结论
 """
 
 
 class AnalysisExpressionGateTests(unittest.TestCase):
+    def _approve_source_analysis(self, project: Path) -> None:
+        stage_analysis_artifact(project, "source_analysis", SOURCE_ANALYSIS, "证据链完整", OPTIONS)
+        approve_analysis_artifact(project, "source_analysis", "leadership_review")
+
     def _approve_all_through_business(self, project: Path) -> None:
+        self._approve_source_analysis(project)
         stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS)
         approve_analysis_artifact(project, "reporting_direction", "leadership_review")
         stage_analysis_artifact(project, "report_structure", STRUCTURE, "four modules", OPTIONS)
@@ -160,17 +182,18 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 
         self.assertEqual([], validate_business_script(text))
 
-    def test_drawing_uses_business_evidence_as_internal_inherited_metadata(self) -> None:
+    def test_blueprint_input_binds_business_and_style_without_copying_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
             init_project(project)
             self._approve_all_through_business(project)
-            incomplete_drawing = DRAWING_SCRIPT.replace("### 非上屏：证据链\n- E-01\n", "")
-
-            pending = stage_analysis_artifact(project, "drawing_script", incomplete_drawing, "", [])
+            stage_visual_style_options(project)
+            approve_visual_style(project, "style_4")
+            pending = stage_blueprint_input(project, DRAWING_SCRIPT, "确认", OPTIONS)
             data = json.loads(pending.read_text(encoding="utf-8"))
 
-            self.assertEqual(["E-01"], data["inherited_units"]["evidence_bindings"])
+            self.assertEqual(hashlib.sha256(BUSINESS_SCRIPT.encode("utf-8")).hexdigest(), data["business_script_sha256"])
+            self.assertNotIn("inherited_units", data)
 
     def test_drawing_rejects_changed_required_units_and_geometry(self) -> None:
         changed = DRAWING_SCRIPT.replace("1000万千瓦", "1200万千瓦").replace("指标卡与结论卡", "x=10, 指标卡与结论卡")
@@ -194,6 +217,13 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 
         self.assertIn("missing required business number in visible text: 1000万千瓦", errors)
 
+    def test_drawing_rejects_evidence_and_source_text(self) -> None:
+        drawing = DRAWING_SCRIPT + "\n- E02，源材料 P26：不应出现在绘制稿。\n"
+
+        errors = validate_drawing_script(drawing, BUSINESS_SCRIPT)
+
+        self.assertIn("drawing_script must not contain evidence or source text", errors)
+
     def test_drawing_keeps_non_visible_completeness_checks_off_screen(self) -> None:
         business = BUSINESS_SCRIPT.replace(
             "- 事实：供需总体平衡",
@@ -207,6 +237,17 @@ class AnalysisExpressionGateTests(unittest.TestCase):
         self.assertNotIn(
             "missing required business fact in visible text: 不得删除或替换为泛化表述",
             validate_drawing_script(drawing, business),
+        )
+
+    def test_drawing_keeps_non_visible_retention_checks_off_screen(self) -> None:
+        business = BUSINESS_SCRIPT.replace(
+            "- 事实：供需总体平衡",
+            "- 事实：供需总体平衡\n- 事实：总体技术路线和成果去向均需保留。",
+        )
+
+        self.assertNotIn(
+            "missing required business fact in visible text: 总体技术路线和成果去向均需保留。",
+            validate_drawing_script(DRAWING_SCRIPT, business),
         )
 
     def test_drawing_allows_concise_required_business_fact_translation(self) -> None:
@@ -226,23 +267,23 @@ class AnalysisExpressionGateTests(unittest.TestCase):
     def test_drawing_does_not_drop_unapproved_fact_modifiers(self) -> None:
         self.assertFalse(analysis_expression_gate._fact_is_visible("基本完成", "完成"))
 
-    def test_drawing_preserves_all_inherited_units_in_approval_record(self) -> None:
+    def test_blueprint_input_preserves_business_and_style_dependencies_in_approval_record(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
             init_project(project)
             self._approve_all_through_business(project)
 
-            stage_analysis_artifact(project, "drawing_script", DRAWING_SCRIPT, "drawing script", OPTIONS)
-            approval = approve_analysis_artifact(project, "drawing_script", "leadership_review")
+            stage_visual_style_options(project)
+            approve_visual_style(project, "style_4")
+            stage_blueprint_input(project, DRAWING_SCRIPT, "drawing script", OPTIONS)
+            approval = approve_blueprint_input(project, "leadership_review")
 
             data = json.loads(approval.read_text(encoding="utf-8"))
             self.assertEqual(
-                data["business_source_sha256"],
+                data["business_script_sha256"],
                 hashlib.sha256(BUSINESS_SCRIPT.encode("utf-8")).hexdigest(),
             )
-            self.assertEqual(["E-01"], data["inherited_units"]["evidence_bindings"])
-            self.assertEqual(["年度供需预测报告第3页"], data["inherited_units"]["source_locations"])
-            self.assertEqual(["最少呈现3项供需指标"], data["inherited_units"]["density_units"])
+            self.assertTrue(data["style_lock_sha256"])
 
     def test_new_project_starts_at_reporting_direction(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -253,14 +294,14 @@ class AnalysisExpressionGateTests(unittest.TestCase):
             status = get_analysis_expression_status(project)
 
             self.assertTrue(status.adopted)
-            self.assertEqual("reporting_direction", status.next_gate)
+            self.assertEqual("source_analysis", status.next_gate)
             self.assertEqual(
                 (
+                    "source_analysis",
                     "reporting_direction",
                     "report_structure",
                     "page_design",
                     "business_script",
-                    "drawing_script",
                 ),
                 GATE_ORDER,
             )
@@ -271,6 +312,41 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 
             ledger = json.loads((project / "workbench/artifact-ledger.json").read_text(encoding="utf-8"))
             self.assertEqual([], ledger["analysis_expression_contracts"])
+
+    def test_direction_requires_approved_source_analysis(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+
+            with self.assertRaisesRegex(ValueError, "source_analysis approval is required"):
+                stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS)
+
+    def test_source_analysis_requires_an_evidence_table(self) -> None:
+        errors = validate_analysis_artifact("source_analysis", "## 输入盘点\n源文件\n")
+
+        self.assertIn("missing required heading: 证据表", errors)
+
+    def test_business_rejects_evidence_ids_outside_approved_source_analysis(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+            stage_analysis_artifact(project, "source_analysis", SOURCE_ANALYSIS, "证据链完整", OPTIONS)
+            approve_analysis_artifact(project, "source_analysis", "leadership_review")
+            stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS)
+            approve_analysis_artifact(project, "reporting_direction", "leadership_review")
+            stage_analysis_artifact(project, "report_structure", STRUCTURE, "four modules", OPTIONS)
+            approve_analysis_artifact(project, "report_structure", "leadership_review")
+            stage_analysis_artifact(project, "page_design", PAGE_DESIGN, "page design", OPTIONS)
+            approve_analysis_artifact(project, "page_design", "leadership_review")
+
+            with self.assertRaisesRegex(ValueError, "unknown evidence IDs: E99"):
+                stage_analysis_artifact(
+                    project,
+                    "business_script",
+                    BUSINESS_SCRIPT.replace("E-01", "E99"),
+                    "business script",
+                    OPTIONS,
+                )
 
     def test_adoption_does_not_overwrite_existing_files(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -296,6 +372,7 @@ class AnalysisExpressionGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
             init_project(project)
+            self._approve_source_analysis(project)
 
             pending = stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS)
 
@@ -331,21 +408,32 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 
         self.assertIn("requires at least one component directive", validate_drawing_script(drawing, BUSINESS_SCRIPT))
 
-    def test_status_reports_validation_failures_and_dependency_hash_state(self) -> None:
+    def test_business_status_reports_stale_source_dependency(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
             init_project(project)
             self._approve_all_through_business(project)
-            stage_analysis_artifact(project, "drawing_script", DRAWING_SCRIPT, "drawing script", OPTIONS)
-            approve_analysis_artifact(project, "drawing_script", "leadership_review")
-            business = project / "workbench/analysis_expression/business_script.md"
-            business.write_text(BUSINESS_SCRIPT.replace("供需总体平衡", "供需偏紧"), encoding="utf-8")
+            source_analysis = project / "workbench/analysis_expression/source_analysis.md"
+            source_analysis.write_text(SOURCE_ANALYSIS.replace("最大负荷1000万千瓦", "最大负荷1100万千瓦"), encoding="utf-8")
 
             status = get_analysis_expression_status(project)
 
-        drawing_status = status.gates["drawing_script"]
-        self.assertEqual("stale", drawing_status["business_dependency_hash_state"])
-        self.assertTrue(drawing_status["validation_failures"])
+        business_status = status.gates["business_script"]
+        self.assertEqual("stale", business_status["source_analysis_dependency_hash_state"])
+        self.assertEqual("source_analysis", status.next_gate)
+
+    def test_status_requires_reapproval_after_an_approved_artifact_changes(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+            self._approve_all_through_business(project)
+            page_design = project / "workbench/analysis_expression/page_design.md"
+            page_design.write_text(PAGE_DESIGN + "\n页面角色：内容页\n", encoding="utf-8")
+
+            status = get_analysis_expression_status(project)
+
+        self.assertEqual("page_design", status.next_gate)
+        self.assertEqual("stale", status.gates["page_design"]["source_hash_state"])
 
     def test_utc_timestamp_uses_timezone_utc_for_python_310_compatibility(self) -> None:
         source = inspect.getsource(analysis_expression_gate._utc_now)
@@ -357,6 +445,7 @@ class AnalysisExpressionGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
             init_project(project)
+            self._approve_source_analysis(project)
             stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS)
             approve_analysis_artifact(project, "reporting_direction", "leadership_review")
             stage_analysis_artifact(project, "report_structure", STRUCTURE, "four modules", OPTIONS)
@@ -373,6 +462,7 @@ class AnalysisExpressionGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
             init_project(project)
+            self._approve_source_analysis(project)
 
             with self.assertRaisesRegex(ValueError, "at least two"):
                 stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS[:1])
@@ -391,6 +481,7 @@ class AnalysisExpressionGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
             init_project(project)
+            self._approve_source_analysis(project)
             stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS)
             approval = approve_analysis_artifact(project, "reporting_direction", "leadership_review")
             artifact = project / "workbench/analysis_expression/reporting_direction.md"
@@ -409,6 +500,7 @@ class AnalysisExpressionGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
             init_project(project)
+            self._approve_source_analysis(project)
 
             pending = stage_analysis_artifact(project, "reporting_direction", DIRECTION, "leadership_review", OPTIONS)
 
@@ -418,6 +510,7 @@ class AnalysisExpressionGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
             init_project(project)
+            self._approve_source_analysis(project)
             stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS)
 
             approval = approve_analysis_artifact(project, "reporting_direction", "leadership_review", "已审定")
@@ -479,42 +572,15 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 
         self.assertEqual([], validate_analysis_artifact("report_structure", text))
 
-    def test_page_design_rejects_evidence_or_decisions_on_navigation_pages(self) -> None:
-        text = PAGE_DESIGN.replace("章节导航", "章节导航\n证据：供需预测数据\n决策：审定方案")
-
-        errors = validate_analysis_artifact("page_design", text)
-
-        self.assertIn("navigation pages must not contain evidence or decisions", errors)
-
-    def test_page_design_requires_roles_as_markdown_sections(self) -> None:
-        text = PAGE_DESIGN.replace("## 目录", "目录")
-
-        errors = validate_analysis_artifact("page_design", text)
-
-        self.assertIn("missing required heading: 目录", errors)
-
-    def test_page_design_allows_formal_role_aliases_and_scope_boundaries(self) -> None:
+    def test_page_design_allows_page_allocation_without_fixed_markdown_roles(self) -> None:
         text = """# 页面设计
-### 封面
-不承载汇报论证或方案内容。
-### 目录页
-不放各章要点或具体内容。
-### 章节过渡页
-不放业务数据或判断。
-### 内容第 1 页（完整汇报第 4 页）
-表达建设背景。
-### 封底页
-不重复审定事项。
+## 第 4 页
+承接工作背景、形势变化和总体判断。
+## 第 5 页
+承接工作基础、建设必要性和问题导向。
 """
 
         self.assertEqual([], validate_analysis_artifact("page_design", text))
-
-    def test_page_design_navigation_restrictions_are_section_scoped_and_reject_argument_terms(self) -> None:
-        text = PAGE_DESIGN.replace("章节导航", "章节导航\n论证：供需判断\n论据：预测数据")
-
-        errors = validate_analysis_artifact("page_design", text)
-
-        self.assertIn("navigation pages must not contain evidence or decisions", errors)
 
     def test_drawing_script_rejects_geometry_keywords(self) -> None:
         text = """## 上屏文字
@@ -529,7 +595,7 @@ x=10, y=20
 E-01
 """
 
-        errors = validate_analysis_artifact("drawing_script", text)
+        errors = validate_drawing_script(text, BUSINESS_SCRIPT)
 
         self.assertIn("drawing_script must not contain geometry keywords", errors)
 

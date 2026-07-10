@@ -91,19 +91,19 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 
 ### 分析表达确认门
 
-在进入蓝图、图片或 PPT 生成前，项目必须按以下顺序完成五道确认门：
+在进入视觉设计前，项目必须按以下顺序完成五道分析表达确认门：
 
-1. reporting direction（汇报方向）
-2. report structure（汇报结构）
-3. page design（页面设计）
-4. business script（页面业务稿）
-5. drawing script（页面绘制稿）
+1. source analysis（源材料与证据分析）
+2. reporting direction（汇报方向）
+3. report structure（汇报结构）
+4. page design（页面设计）
+5. business script（页面业务稿）
 
-`stage-*` 只会保存待确认工件。每个待确认记录都必须包含问题、推荐选项、可选择的 UI choices 和审计信息；只有通过对应 `approve-* --option-id <id>` 选择记录中的选项后，才能进入下一门。用 `analysis-expression-status <project> --json` 获取机器可读的当前门、待选项、验证失败项和源/业务依赖哈希状态；在五门全部批准前，所有携带项目路径的 Stage 2+ 生成入口保持阻断。
+业务稿确认后，第二阶段依次生成独立成果物：视觉风格候选与批准锁、蓝图输入（绘制稿）与批准记录、逐页全图及图片复核记录、图片型 PPT 和渲染 QA。`stage-*` 只会保存待确认工件；`approve-* --option-id <id>` 才能进入下一环。用 `analysis-expression-status <project> --json` 检查第一阶段状态；Stage 2 的每个成果物都保留其上游哈希，便于定位问题。
 
-业务稿的每个内容页均使用正式内部汇报语言，并在非上屏区域保存证据 ID、来源位置、完整性校核和信息密度单元。绘制稿须按内容页继承这些绑定，不得删改来源支撑的事实、数字、分类、边界或请示事项；也不得加入坐标、颜色、字体、图标或最终构图等绘制实现。目录、章节过渡等导航页不承载论证或证据。
+业务稿的每个内容页均使用正式内部汇报语言，并在非上屏区域保存证据 ID、来源位置、完整性校核和信息密度单元。蓝图输入从已确认业务稿转换，只保留上屏内容、阅读关系和表达方式；不得出现证据链、来源位置、坐标、颜色、字体或最终构图等制作信息。目录、章节过渡等导航页不承载论证或证据。
 
-新建项目自动启用该合同。已有项目只有在显式执行 `adopt-analysis-expression-contract <project>` 后才创建合同 metadata；该命令不会覆盖已有业务/页面工件，也不会替项目生成 drawing script。采用后应先检查 status 输出的下一道门和缺失上游工件，再手工准备相应的待确认输入。
+新建项目自动启用该合同。已有项目只有在显式执行 `adopt-analysis-expression-contract <project>` 后才创建合同 metadata；该命令不会覆盖已有业务或页面工件，也不会替项目生成内容。
 
 ```bash
 python3 -m cyberppt doctor
