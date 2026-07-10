@@ -8,6 +8,14 @@ import sys
 from pathlib import Path
 
 from cyberppt import __version__
+from cyberppt.commands.analysis_expression_gate import (
+    GATE_ORDER,
+    adopt_analysis_expression_contract,
+    analysis_expression_status_as_json,
+    approve_analysis_artifact,
+    get_analysis_expression_status,
+    stage_analysis_artifact,
+)
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script, status_as_json
@@ -88,6 +96,59 @@ def _script_status_command(args: argparse.Namespace) -> int:
 
 def _rebuild_dual_image_command(args: argparse.Namespace) -> int:
     return run_script("template-rebuild", args.rebuild_args)
+
+
+def _stage_analysis_expression_command(args: argparse.Namespace) -> int:
+    try:
+        options = json.loads(args.options_json)
+        if not isinstance(options, list):
+            raise ValueError("--options-json must decode to a JSON array")
+        pending = stage_analysis_artifact(
+            Path(args.project),
+            args.gate,
+            Path(args.source).read_text(encoding="utf-8"),
+            args.recommendation,
+            options,
+        )
+    except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"pending_confirmation: {pending}")
+    return 0
+
+
+def _approve_analysis_expression_command(args: argparse.Namespace) -> int:
+    try:
+        approval = approve_analysis_artifact(Path(args.project), args.gate, args.option_id, args.note)
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"approval_recorded: {approval}")
+    return 0
+
+
+def _analysis_expression_status_command(args: argparse.Namespace) -> int:
+    status = get_analysis_expression_status(Path(args.project))
+    if args.json:
+        print(analysis_expression_status_as_json(status))
+    else:
+        print(f"adopted: {'yes' if status.adopted else 'no'}")
+        print(f"next_gate: {status.next_gate or 'none'}")
+        for gate in GATE_ORDER:
+            gate_status = status.gates.get(gate, {"status": "not_applicable"})
+            print(f"{gate}: {gate_status['status']}")
+            if gate_status["status"] == "pending_confirmation":
+                print(f"  recommendation: {gate_status.get('recommendation', '')}")
+                print(f"  options: {json.dumps(gate_status.get('options', []), ensure_ascii=False)}")
+    return 0 if status.adopted and status.next_gate is None else 3
+
+
+def _adopt_analysis_expression_contract_command(args: argparse.Namespace) -> int:
+    contract = adopt_analysis_expression_contract(Path(args.project))
+    status = get_analysis_expression_status(Path(args.project))
+    print(f"analysis_expression_contract: {contract}")
+    print(f"next_gate: {status.next_gate or 'none'}")
+    return 0
 
 
 def _final_script_pages_command(args: argparse.Namespace) -> int:
@@ -180,6 +241,41 @@ def build_parser() -> argparse.ArgumentParser:
     )
     script_status_parser.add_argument("--json", action="store_true", help="Print machine-readable status.")
     script_status_parser.set_defaults(func=_script_status_command)
+
+    for gate in GATE_ORDER:
+        stage_parser = subparsers.add_parser(
+            f"stage-{gate.replace('_', '-')}",
+            help=f"Stage the {gate.replace('_', ' ')} artifact for confirmation.",
+        )
+        stage_parser.add_argument("project", help="CyberPPT project directory.")
+        stage_parser.add_argument("--source", required=True, help="UTF-8 Markdown artifact file.")
+        stage_parser.add_argument("--recommendation", required=True, help="Recommended confirmation option.")
+        stage_parser.add_argument("--options-json", required=True, help="JSON array of selectable confirmation options.")
+        stage_parser.set_defaults(func=_stage_analysis_expression_command, gate=gate)
+
+        approve_parser = subparsers.add_parser(
+            f"approve-{gate.replace('_', '-')}",
+            help=f"Record a selected confirmation option for {gate.replace('_', ' ')}.",
+        )
+        approve_parser.add_argument("project", help="CyberPPT project directory.")
+        approve_parser.add_argument("--option-id", required=True, help="Selected confirmation option id.")
+        approve_parser.add_argument("--note", default="", help="Optional approval note.")
+        approve_parser.set_defaults(func=_approve_analysis_expression_command, gate=gate)
+
+    analysis_status_parser = subparsers.add_parser(
+        "analysis-expression-status",
+        help="Show project-level analysis-expression approvals and pending choices.",
+    )
+    analysis_status_parser.add_argument("project", help="CyberPPT project directory.")
+    analysis_status_parser.add_argument("--json", action="store_true", help="Print machine-readable status.")
+    analysis_status_parser.set_defaults(func=_analysis_expression_status_command)
+
+    adopt_analysis_parser = subparsers.add_parser(
+        "adopt-analysis-expression-contract",
+        help="Adopt the analysis-expression contract for an existing project without overwriting artifacts.",
+    )
+    adopt_analysis_parser.add_argument("project", help="CyberPPT project directory.")
+    adopt_analysis_parser.set_defaults(func=_adopt_analysis_expression_contract_command)
 
     rebuild_dual_image_parser = subparsers.add_parser(
         "rebuild-dual-image",

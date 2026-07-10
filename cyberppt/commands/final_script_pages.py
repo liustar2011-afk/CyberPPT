@@ -10,6 +10,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
+from cyberppt.commands.analysis_expression_gate import assert_analysis_expression_ready
 from scripts.dual_image_overlay.cyberppt_pair_manifest import build_manifest, require_generated
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, parse_pages, template_title
 from scripts.dual_image_overlay.production_readiness import build_production_readiness
@@ -399,6 +400,7 @@ def run_final_script_pages(
         raise ValueError("--run-rebuild is no longer supported by final-script-pages; use image-ppt for Stage 02 production builds.")
     if semantic_plan_dir is not None:
         raise ValueError("--semantic-plan-dir is no longer supported by final-script-pages; Stage 02 no longer enters OCR/overlay/template-rebuild.")
+    assert_analysis_expression_ready(project)
     _ensure_project_dirs(project)
     if style_lock is not None and (style_id is not None or style_name):
         raise ValueError("--style-lock cannot be combined with --style-id or --style-name")
