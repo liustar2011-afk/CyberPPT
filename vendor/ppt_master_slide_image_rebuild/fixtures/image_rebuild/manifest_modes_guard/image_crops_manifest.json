@@ -1,0 +1,12 @@
+{
+  "workflow": "slide-image-rebuild",
+  "version": "1.0",
+  "generated_by": "build_image_crops_manifest.py",
+  "rebuild_mode": "vector-hifi",
+  "pptx_export_mode": "hifi",
+  "editability_priority": "structure_fidelity",
+  "crop_policy": "decorative_only_crop_vector_main_structure",
+  "source": "auto",
+  "project": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/manifest_modes_guard",
+  "crops": []
+}

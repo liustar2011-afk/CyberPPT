@@ -1,0 +1,8 @@
+{
+  "purpose": "Layout family contract passes for central hub process-flow fixture.",
+  "reuse_project": "noise_connector_guard",
+  "layout_reference": false,
+  "svg_spacing": false,
+  "layout_family_contract": true,
+  "expected_layout_family": "central_platform_with_side_columns"
+}

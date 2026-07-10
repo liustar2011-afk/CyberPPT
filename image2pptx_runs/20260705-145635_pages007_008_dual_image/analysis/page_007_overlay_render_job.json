@@ -1,0 +1,447 @@
+{
+  "schema": "cyberppt.dual_image.overlay_job.v1",
+  "canvas": {
+    "width": 1280,
+    "height": 720
+  },
+  "slide": {
+    "width_in": 13.333,
+    "height_in": 7.5
+  },
+  "background": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-145635_pages007_008_dual_image/images/page_007_background.png",
+  "output_pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-145635_pages007_008_dual_image/exports/page_007_dual_image_editable_overlay.pptx",
+  "boxes": [
+    {
+      "id": "p7_node_1_title",
+      "text": "1 企业入库",
+      "bbox": [
+        82,
+        165,
+        144,
+        190
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_node_1_body",
+      "text": "企业类型 / 业务范围 / 目标区域 / 应用需求",
+      "bbox": [
+        54,
+        198,
+        138,
+        254
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 10,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "left",
+      "v_align": "top"
+    },
+    {
+      "id": "p7_node_2_title",
+      "text": "2 角色识别",
+      "bbox": [
+        208,
+        165,
+        270,
+        190
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_node_2_body",
+      "text": "投资运营 / 规划设计 / EPC / 装备制造 / 运维等",
+      "bbox": [
+        180,
+        198,
+        264,
+        254
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 10,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "left",
+      "v_align": "top"
+    },
+    {
+      "id": "p7_node_3_title",
+      "text": "3 授权取证",
+      "bbox": [
+        334,
+        165,
+        396,
+        190
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_node_3_body",
+      "text": "基础评价 / 专项评价 / 对外传播授权",
+      "bbox": [
+        306,
+        198,
+        390,
+        254
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 10,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "left",
+      "v_align": "top"
+    },
+    {
+      "id": "p7_node_4_title",
+      "text": "4 数据治理",
+      "bbox": [
+        460,
+        165,
+        522,
+        190
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_node_4_body",
+      "text": "清洗 / 校验 / 去重 / 口径统一 / 版本管理",
+      "bbox": [
+        432,
+        198,
+        516,
+        254
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 10,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "left",
+      "v_align": "top"
+    },
+    {
+      "id": "p7_node_5_title",
+      "text": "5 证据入库",
+      "bbox": [
+        586,
+        165,
+        648,
+        190
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_node_5_body",
+      "text": "按证据类型 / 能力维度 / 场景 / 授权边界入库",
+      "bbox": [
+        558,
+        198,
+        642,
+        254
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 10,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "left",
+      "v_align": "top"
+    },
+    {
+      "id": "p7_node_6_title",
+      "text": "6 能力评价",
+      "bbox": [
+        586,
+        335,
+        648,
+        360
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_node_6_body",
+      "text": "评价模型 / 证据等级 / 场景适配规则",
+      "bbox": [
+        558,
+        368,
+        642,
+        424
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 10,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "left",
+      "v_align": "top"
+    },
+    {
+      "id": "p7_node_7_title",
+      "text": "7 专家复核",
+      "bbox": [
+        460,
+        335,
+        522,
+        360
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_node_7_body",
+      "text": "重大结论 / 关键证据 / 风险提示 / 争议事项",
+      "bbox": [
+        432,
+        368,
+        516,
+        424
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 10,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "left",
+      "v_align": "top"
+    },
+    {
+      "id": "p7_node_8_title",
+      "text": "8 结果生成",
+      "bbox": [
+        334,
+        335,
+        396,
+        360
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_node_8_body",
+      "text": "画像报告 / 评价结果 / 证明材料 / 专题报告",
+      "bbox": [
+        306,
+        368,
+        390,
+        424
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 10,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "left",
+      "v_align": "top"
+    },
+    {
+      "id": "p7_node_9_title",
+      "text": "9 场景调用",
+      "bbox": [
+        208,
+        335,
+        270,
+        360
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_node_9_body",
+      "text": "投标 / 融资 / 供应链 / 国别进入 / 监测传播",
+      "bbox": [
+        180,
+        368,
+        264,
+        424
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 10,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "left",
+      "v_align": "top"
+    },
+    {
+      "id": "p7_node_10_title",
+      "text": "10 反馈更新",
+      "bbox": [
+        82,
+        335,
+        144,
+        360
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_node_10_body",
+      "text": "使用反馈 / 异议处理 / 补证修正 / 规则修订",
+      "bbox": [
+        54,
+        368,
+        138,
+        424
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 10,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "left",
+      "v_align": "top"
+    },
+    {
+      "id": "p7_trigger_1",
+      "text": "项目新增/完工",
+      "bbox": [
+        58,
+        565,
+        206,
+        589
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_trigger_2",
+      "text": "证书到期/更新",
+      "bbox": [
+        254,
+        565,
+        402,
+        589
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_trigger_3",
+      "text": "行政处罚/信用修复",
+      "bbox": [
+        450,
+        565,
+        598,
+        589
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_trigger_4",
+      "text": "国别规则变化",
+      "bbox": [
+        646,
+        565,
+        794,
+        589
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_trigger_5",
+      "text": "风险事件变化",
+      "bbox": [
+        842,
+        565,
+        990,
+        589
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_trigger_6",
+      "text": "企业补证",
+      "bbox": [
+        1038,
+        565,
+        1186,
+        589
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 15,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p7_sowhat",
+      "text": "核心逻辑：以授权取证和证据入库为基础，用模型评价形成结果，再通过场景调用和反馈更新形成可持续运营闭环。",
+      "bbox": [
+        70,
+        630,
+        1210,
+        670
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 18,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "cyberppt.template_assembly.v1",
+  "page": 6,
+  "version": "v7_dynamic_slide_number_no_offset",
+  "title": "总体架构",
+  "source": "v6 with presentation.firstSlideNum removed",
+  "output_pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v7_dynamic_slide_number_no_offset.pptx",
+  "public_elements_injected_via": "slide master",
+  "page_number": {
+    "mode": "dynamic_field",
+    "field_type": "slidenum",
+    "host": "ppt/slideMasters/slideMaster1.xml",
+    "presentation_firstSlideNum": "not_set"
+  },
+  "supersedes": [
+    "template_assembly/page_006_template_assembled_总体架构_v6_dynamic_slide_number.pptx"
+  ]
+}

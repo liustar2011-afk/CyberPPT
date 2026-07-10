@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.dual_image_overlay.cyberppt_pair_manifest import main
+from scripts.dual_image_overlay.cyberppt_pair_manifest import main, require_generated
 
 
 class CyberpptPairManifestTests(unittest.TestCase):
@@ -34,6 +34,10 @@ class CyberpptPairManifestTests(unittest.TestCase):
                     "2",
                     "--output-dir",
                     str(output_dir),
+                    "--project-path",
+                    str(root / "project"),
+                    "--style-id",
+                    "4",
                     "--promote-blueprints-from",
                     str(blueprint_dir),
                 ]
@@ -42,12 +46,74 @@ class CyberpptPairManifestTests(unittest.TestCase):
             pair = manifest["pairs"][0]
             full_status = pair["full"]["status"]
             full_bytes = Path(pair["full"]["path"]).read_bytes()
-            background_status = pair["background"]["status"]
 
         self.assertEqual(code, 0)
+        self.assertEqual("cyberppt-full-image-only", manifest["mode"])
+        self.assertEqual(["full"], manifest["output_variants"])
         self.assertEqual("Generated", full_status)
         self.assertEqual(b"approved-blueprint", full_bytes)
-        self.assertEqual("Pending", background_status)
+        self.assertNotIn("background", pair)
+
+    def test_manifest_generates_full_images_only(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            script = root / "script.md"
+            output_dir = root / "images"
+            script.write_text(
+                """## 第3页：双图派生约束
+本页结论标题为“先生成全图，再由全图派生无文字底图”
+""",
+                encoding="utf-8",
+            )
+
+            code = main(
+                [
+                    "--script",
+                    str(script),
+                    "--pages",
+                    "3",
+                    "--output-dir",
+                    str(output_dir),
+                    "--project-path",
+                    str(root / "project"),
+                    "--style-id",
+                    "5",
+                ]
+            )
+            manifest = json.loads((output_dir / "page_image_pairs.json").read_text(encoding="utf-8"))
+            pair = manifest["pairs"][0]
+            style_lock_exists = Path(manifest["style_lock"]).is_file()
+
+        self.assertEqual(code, 0)
+        self.assertTrue(style_lock_exists)
+        self.assertEqual("cyberppt-full-image-only", manifest["mode"])
+        self.assertEqual(["full"], manifest["output_variants"])
+        self.assertEqual("text_to_image_generate_full", pair["full"]["generation_method"])
+        self.assertEqual({"width": 1672, "height": 941}, manifest["generation_contract"]["slide_canvas"])
+        self.assertEqual({"width": 1672, "height": 941}, manifest["generation_contract"]["generation_size"])
+        self.assertEqual("full-image-only", manifest["generation_contract"]["mode"])
+        self.assertEqual("1672x941", pair["full"]["canvas"])
+        self.assertNotIn("background", pair)
+
+    def test_require_generated_accepts_full_image_without_background(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            full = root / "page_full.png"
+            full.write_bytes(b"full")
+            manifest = {
+                "pairs": [
+                    {
+                        "page_number": 1,
+                        "full": {
+                            "path": str(full),
+                            "status": "Generated",
+                            "generation_method": "text_to_image_generate_full",
+                        },
+                    }
+                ]
+            }
+
+            require_generated(manifest)
 
 
 if __name__ == "__main__":

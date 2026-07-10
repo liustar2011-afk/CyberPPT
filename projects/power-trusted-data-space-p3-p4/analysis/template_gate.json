@@ -1,0 +1,13 @@
+{
+  "schema": "cyberppt.dual_image.template_gate.v1",
+  "valid": true,
+  "checks": {
+    "spec_lock_available": true,
+    "brand_rules_available": true,
+    "master_chrome_available": true,
+    "svg_output_available": true,
+    "pptx_exported": true
+  },
+  "export_requested": true,
+  "exported_pptx": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/exports/power-trusted-data-space-p3-p4_20260705_234107.pptx"
+}

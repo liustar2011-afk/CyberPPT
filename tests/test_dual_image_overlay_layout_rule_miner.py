@@ -26,6 +26,10 @@ class DualImageOverlayLayoutRuleMinerTests(unittest.TestCase):
                             _box("系统性", 238, 509, 50, 17, "center"),
                             _box("长周期属性", 433, 509, 76, 17, "center"),
                             _box("强合规属性", 650, 509, 76, 17, "center"),
+                            _box("E&S/HSE：项目关键条件", 110, 468, 160, 18, "left"),
+                            _box("E&S/HSE：环境、安全、劳工社区", 424, 440, 170, 18, "left"),
+                            _box("版本难追溯：来源与时点不清", 728, 468, 170, 18, "left"),
+                            _box("供应链准入：质量与交付证明", 1028, 468, 170, 18, "left"),
                             _box("E&S/ESG/HSE与\n供应链责任", 617, 371, 106, 40, "left"),
                         ],
                     },
@@ -48,6 +52,14 @@ class DualImageOverlayLayoutRuleMinerTests(unittest.TestCase):
             phrase_breaks,
         )
         self.assertTrue(any(group["support"] >= 3 and "系统性" in group["labels"] for group in report["baseline_groups"]))
+        self.assertTrue(
+            any(
+                group.get("source") == "repeated_column_body_rows"
+                and group["support"] == 4
+                and "E&S/HSE：环境、安全、劳工社区" in group["labels"]
+                for group in report["baseline_groups"]
+            )
+        )
         self.assertEqual(report["alignment_issues"][0]["suggested_text_anchor"], "middle")
         self.assertEqual(report["alignment_issues"][0]["current_svg_anchor"], "middle")
 

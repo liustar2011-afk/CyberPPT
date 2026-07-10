@@ -94,6 +94,17 @@
       "background": "cover_bg.jpg",
       "content_policy": "Brand cover page template for project title, subtitle, author or unit, and date. Replace placeholders only; do not derive body-page colors or layout from this page."
     },
+    "agenda": {
+      "file": "02_agenda.svg",
+      "visible_text": [
+        "目录"
+      ],
+      "content_policy": "Brand agenda page template. Use for table-of-contents pages; replace item placeholders from section pages and ignore any generated content image."
+    },
+    "section": {
+      "file": "03_section.svg",
+      "content_policy": "Brand section-break page template. Use for chapter transition pages; replace section number and title placeholders and ignore any generated content image."
+    },
     "ending": {
       "file": "04_ending.svg",
       "background": "cover_bg.jpg",
@@ -109,6 +120,8 @@
     "master_chrome": "master_elements.svg",
     "cover_background": "cover_bg.jpg",
     "cover_template": "01_cover.svg",
+    "agenda_template": "02_agenda.svg",
+    "section_template": "03_section.svg",
     "ending_template": "04_ending.svg"
   },
   "runtime_policy": {

@@ -1,0 +1,98 @@
+{
+  "pages": [
+    {
+      "page_number": 12,
+      "title": "场景五：知识产权全周期保护",
+      "rebuild_mode": "template_body_region",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan/page_012_semantic_plan.json",
+      "semantic_plan_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan_gate/page_012_semantic_plan_gate.json",
+      "semantic_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_layout_plan/page_012_layout_plan.json",
+      "scene_graph": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/scene_graph/page_012_scene_graph.json",
+      "scene_graph_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/scene_graph_gate/page_012_scene_graph_gate.json",
+      "page_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/page_layout_plan/page_012_layout_plan.json",
+      "semantic_source": "script_derived_fallback",
+      "editable_text_layout_source": "ocr_script_recognition",
+      "visual_registry_source": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_registry/slide-12-visual-element-registry.json",
+      "semantic_containers": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_containers/page_012_containers.json",
+      "image_size_check": {
+        "status": "normalized_1280x720",
+        "source_full_size": [
+          1815,
+          866
+        ],
+        "source_background_size": [
+          1817,
+          866
+        ],
+        "full_size": [
+          1280,
+          720
+        ],
+        "background_size": [
+          1280,
+          720
+        ],
+        "output_size": [
+          1280,
+          720
+        ],
+        "full_output_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/images/normalized/page_012_场景五_知识产权全周期保护_full_1280x720.png",
+        "background_output_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/images/normalized/page_012_场景五_知识产权全周期保护_background_1280x720.png",
+        "output_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/images/normalized/page_012_场景五_知识产权全周期保护_background_1280x720.png"
+      },
+      "text_color_check": {
+        "white_text_boxes": 2,
+        "total_text_boxes": 97
+      },
+      "visible_image_variant": "background",
+      "editable_text_visibility": "visible"
+    },
+    {
+      "page_number": 13,
+      "title": "场景六：科技金融赋能服务",
+      "rebuild_mode": "template_body_region",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan/page_013_semantic_plan.json",
+      "semantic_plan_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan_gate/page_013_semantic_plan_gate.json",
+      "semantic_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_layout_plan/page_013_layout_plan.json",
+      "scene_graph": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/scene_graph/page_013_scene_graph.json",
+      "scene_graph_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/scene_graph_gate/page_013_scene_graph_gate.json",
+      "page_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/page_layout_plan/page_013_layout_plan.json",
+      "semantic_source": "script_derived_fallback",
+      "editable_text_layout_source": "ocr_script_recognition",
+      "visual_registry_source": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_registry/slide-13-visual-element-registry.json",
+      "semantic_containers": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_containers/page_013_containers.json",
+      "image_size_check": {
+        "status": "normalized_1280x720",
+        "source_full_size": [
+          1815,
+          866
+        ],
+        "source_background_size": [
+          1816,
+          866
+        ],
+        "full_size": [
+          1280,
+          720
+        ],
+        "background_size": [
+          1280,
+          720
+        ],
+        "output_size": [
+          1280,
+          720
+        ],
+        "full_output_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/images/normalized/page_013_场景六_科技金融赋能服务_full_1280x720.png",
+        "background_output_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/images/normalized/page_013_场景六_科技金融赋能服务_background_1280x720.png",
+        "output_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/images/normalized/page_013_场景六_科技金融赋能服务_background_1280x720.png"
+      },
+      "text_color_check": {
+        "white_text_boxes": 5,
+        "total_text_boxes": 62
+      },
+      "visible_image_variant": "background",
+      "editable_text_visibility": "visible"
+    }
+  ]
+}

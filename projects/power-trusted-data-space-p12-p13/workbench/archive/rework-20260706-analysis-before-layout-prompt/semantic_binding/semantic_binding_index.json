@@ -1,0 +1,30 @@
+{
+  "schema": "cyberppt.dual_image.semantic_binding_set.v1",
+  "valid": true,
+  "page_count": 2,
+  "container_count": 2,
+  "item_count": 10,
+  "unassigned_text_count": 149,
+  "binding_dir": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_binding",
+  "semantic_plan_dir": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan",
+  "pages": [
+    {
+      "page_number": 12,
+      "valid": true,
+      "container_count": 1,
+      "item_count": 5,
+      "unassigned_text_count": 92,
+      "semantic_binding": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_binding/page_012_semantic_binding.json",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan/page_012_semantic_plan.json"
+    },
+    {
+      "page_number": 13,
+      "valid": true,
+      "container_count": 1,
+      "item_count": 5,
+      "unassigned_text_count": 57,
+      "semantic_binding": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_binding/page_013_semantic_binding.json",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan/page_013_semantic_plan.json"
+    }
+  ]
+}

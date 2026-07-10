@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" data-brand-template="03_section">
+  <rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="0" y="82" width="1280" height="7" fill="#8B0000"/>
+  <rect x="0" y="652" width="1280" height="22" fill="#123B66"/>
+  <text x="96" y="244" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="700" fill="#8B0000">{{SECTION_NO}}</text>
+  <text x="96" y="330" font-family="Microsoft YaHei, Arial, sans-serif" font-size="54" font-weight="700" fill="#1F2933">{{SECTION_TITLE}}</text>
+  <rect x="96" y="368" width="760" height="2" fill="#8B0000" fill-opacity="0.75"/>
+  <text x="96" y="426" font-family="Microsoft YaHei, Arial, sans-serif" font-size="20" fill="#60758A">围绕本章内容开展汇报</text>
+  <text x="96" y="694" font-family="Microsoft YaHei, Arial, sans-serif" font-size="14" fill="#FFFFFF" fill-opacity="0.88">中国电力企业联合会</text>
+</svg>

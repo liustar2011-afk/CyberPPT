@@ -1,0 +1,233 @@
+{
+  "schema": "cyberppt.dual_image.quality_rules.v1",
+  "rules": [
+    {
+      "id": "overlay.layout_qa_pass",
+      "stage": "overlay",
+      "severity": "error",
+      "description": "Overlay semantic layout QA must pass.",
+      "kind": "report_valid",
+      "report": "layout_qa",
+      "evidence_required": true
+    },
+    {
+      "id": "overlay.text_content_matches_lock",
+      "stage": "overlay",
+      "severity": "error",
+      "description": "Editable PPTX text must match source-captured expected text.",
+      "kind": "report_valid",
+      "report": "text_content_qa",
+      "evidence_required": true
+    },
+    {
+      "id": "overlay.semantic_typography_pass",
+      "stage": "overlay",
+      "severity": "error",
+      "description": "Parallel semantic text must use consistent typography weight.",
+      "kind": "report_valid",
+      "report": "semantic_typography_qa",
+      "evidence_required": true
+    },
+    {
+      "id": "overlay.office_textbox_fit_pass",
+      "stage": "overlay",
+      "severity": "error",
+      "description": "Office text boxes must fit without dropping below the minimum font size.",
+      "kind": "report_valid",
+      "report": "office_textbox_fit",
+      "evidence_required": true
+    },
+    {
+      "id": "overlay.container_workspace_pass",
+      "stage": "overlay",
+      "severity": "error",
+      "description": "Overlay stage must derive container workspaces with at least one usable text slot per container.",
+      "kind": "container_workspace_required",
+      "report": "container_workspace",
+      "evidence_required": true
+    },
+    {
+      "id": "overlay.occupied_zone_avoidance_pass",
+      "stage": "overlay",
+      "severity": "error",
+      "description": "Overlay work slots must avoid detected icons, numbers, arrows and other non-writable visual zones.",
+      "kind": "occupied_zone_avoidance",
+      "report": "container_workspace",
+      "evidence_required": true
+    },
+    {
+      "id": "overlay.workspace_assignment_pass",
+      "stage": "overlay",
+      "severity": "error",
+      "description": "Overlay text must be assigned to container work slots before Office text box fitting.",
+      "kind": "workspace_assignment_required",
+      "report": "workspace_assignment",
+      "evidence_required": true
+    },
+    {
+      "id": "overlay.background_has_no_text",
+      "stage": "overlay",
+      "severity": "error",
+      "description": "Background image must not carry readable text unless explicitly skipped.",
+      "kind": "report_valid",
+      "report": "background_text_scan",
+      "evidence_required": true
+    },
+    {
+      "id": "overlay.source_capture_gate_pass",
+      "stage": "overlay",
+      "severity": "error",
+      "description": "Source capture must be present, consumed and free of unresolved capture gaps.",
+      "kind": "report_valid",
+      "report": "source_capture_gate",
+      "evidence_required": true
+    },
+    {
+      "id": "overlay.visual_preview_generated",
+      "stage": "overlay",
+      "severity": "error",
+      "description": "Overlay render preview and side-by-side evidence must exist before visual approval.",
+      "kind": "report_valid",
+      "report": "visual_preview",
+      "evidence_required": true
+    },
+    {
+      "id": "template.dual_image_required",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template rebuild must be driven by a CyberPPT dual-image pair manifest with full and background images for every page.",
+      "kind": "dual_image_pair_required",
+      "report": "pair_manifest",
+      "evidence_required": true
+    },
+    {
+      "id": "template.source_capture_required",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template rebuild must produce source_capture pages from the dual-image inputs.",
+      "kind": "source_capture_required",
+      "report": "source_capture",
+      "evidence_required": true
+    },
+    {
+      "id": "template.template_gate_pass",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template rebuild must consume required template files and export state.",
+      "kind": "report_valid",
+      "report": "template_gate",
+      "evidence_required": true
+    },
+    {
+      "id": "template.source_capture_gate_pass",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template rebuild must consume source_capture and pass its gate.",
+      "kind": "report_valid",
+      "report": "source_capture_gate",
+      "evidence_required": true
+    },
+    {
+      "id": "template.page_understanding_consumed",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template rebuild must consume page_understanding artifacts for dual-image editable overlay pages.",
+      "kind": "page_understanding_consumed",
+      "report": "source_capture_gate",
+      "evidence_required": true
+    },
+    {
+      "id": "template.scene_graph_gate_pass",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template rebuild must have at least one valid scene graph gate.",
+      "kind": "all_reports_valid",
+      "report": "scene_graph_gates",
+      "require_non_empty": true,
+      "evidence_required": true
+    },
+    {
+      "id": "template.body_region_declared",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template/body content region coordinates must be declared before template assembly QA.",
+      "kind": "template_region_declared",
+      "report": "pair_manifest",
+      "evidence_required": true
+    },
+    {
+      "id": "template.min_font_after_template",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template-stage editable text must not fall below the configured minimum font size.",
+      "kind": "min_font_size",
+      "report": "source_capture",
+      "minimum_pt": 9,
+      "evidence_required": true
+    },
+    {
+      "id": "template.semantic_weight_consistency",
+      "stage": "template",
+      "severity": "error",
+      "description": "Peer text with the same semantic role must use consistent font weight.",
+      "kind": "semantic_peer_style",
+      "report": "source_capture",
+      "style_field": "font_weight",
+      "evidence_required": true
+    },
+    {
+      "id": "template.container_workspace_pass",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template stage must derive container workspaces before final QA.",
+      "kind": "container_workspace_required",
+      "report": "container_workspace",
+      "evidence_required": true
+    },
+    {
+      "id": "template.occupied_zone_avoidance_pass",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template work slots must avoid detected scene graph and visual registry non-writable zones.",
+      "kind": "occupied_zone_avoidance",
+      "report": "container_workspace",
+      "evidence_required": true
+    },
+    {
+      "id": "template.workspace_assignment_pass",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template text must have a workspace assignment with every assigned text inside its slot.",
+      "kind": "workspace_assignment_required",
+      "report": "workspace_assignment",
+      "evidence_required": true
+    },
+    {
+      "id": "template.visual_reference_available",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template QA must keep a visual reference for post-template comparison.",
+      "kind": "artifact_exists",
+      "artifact": "visual_reference",
+      "evidence_required": true
+    },
+    {
+      "id": "template.office_render_required",
+      "stage": "template",
+      "severity": "error",
+      "description": "Final template-stage QA must include an Office/WPS render evidence artifact.",
+      "kind": "office_render_required",
+      "artifact": "rendered_preview",
+      "evidence_required": true
+    },
+    {
+      "id": "template.visual_qa_gate_pass",
+      "stage": "template",
+      "severity": "error",
+      "description": "Template-stage visual QA gate must pass using render comparison and spatial registration evidence.",
+      "kind": "report_valid",
+      "report": "visual_qa_gate",
+      "evidence_required": true
+    }
+  ]
+}

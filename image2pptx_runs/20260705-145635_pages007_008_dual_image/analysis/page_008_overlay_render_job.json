@@ -1,0 +1,543 @@
+{
+  "schema": "cyberppt.dual_image.overlay_job.v1",
+  "canvas": {
+    "width": 1280,
+    "height": 720
+  },
+  "slide": {
+    "width_in": 13.333,
+    "height_in": 7.5
+  },
+  "background": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-145635_pages007_008_dual_image/images/page_008_background.png",
+  "output_pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-145635_pages007_008_dual_image/exports/page_008_dual_image_editable_overlay.pptx",
+  "boxes": [
+    {
+      "id": "p8_evidence_title",
+      "text": "六类证据资源",
+      "bbox": [
+        70,
+        158,
+        258,
+        186
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 21,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_evidence_1",
+      "text": "企业主体数据",
+      "bbox": [
+        82,
+        211,
+        246,
+        231
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 14,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_evidence_2",
+      "text": "海外项目数据",
+      "bbox": [
+        82,
+        268,
+        246,
+        288
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 14,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_evidence_3",
+      "text": "技术装备数据",
+      "bbox": [
+        82,
+        325,
+        246,
+        345
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 14,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_evidence_4",
+      "text": "财务信用数据",
+      "bbox": [
+        82,
+        382,
+        246,
+        402
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 14,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_evidence_5",
+      "text": "E&S/HSE与合规数据",
+      "bbox": [
+        82,
+        439,
+        246,
+        459
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 14,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_evidence_6",
+      "text": "国别市场与风险数据",
+      "bbox": [
+        82,
+        496,
+        246,
+        516
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 14,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_dim_title",
+      "text": "九类能力维度",
+      "bbox": [
+        520,
+        158,
+        746,
+        186
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 22,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_dim_1",
+      "text": "主体治理与合规能力",
+      "bbox": [
+        452,
+        233,
+        546,
+        275
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 13,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_dim_2",
+      "text": "财务稳健与信用履约能力",
+      "bbox": [
+        610,
+        233,
+        704,
+        275
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 13,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_dim_3",
+      "text": "国际项目经验与交付能力",
+      "bbox": [
+        768,
+        233,
+        862,
+        275
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 13,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_dim_4",
+      "text": "技术装备与系统集成能力",
+      "bbox": [
+        452,
+        338,
+        546,
+        380
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 13,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_dim_5",
+      "text": "E&S/ESG/HSE能力",
+      "bbox": [
+        610,
+        338,
+        704,
+        380
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 13,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_dim_6",
+      "text": "供应链责任能力",
+      "bbox": [
+        768,
+        338,
+        862,
+        380
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 13,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_dim_7",
+      "text": "属地化经营与伙伴协同能力",
+      "bbox": [
+        452,
+        443,
+        546,
+        485
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 13,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_dim_8",
+      "text": "国别适配与风险应对能力",
+      "bbox": [
+        610,
+        443,
+        704,
+        485
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 13,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_dim_9",
+      "text": "数据可信与证据管理能力",
+      "bbox": [
+        768,
+        443,
+        862,
+        485
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 13,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "left",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_type_title",
+      "text": "企业类型适配",
+      "bbox": [
+        1000,
+        158,
+        1204,
+        183
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 20,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_type_1",
+      "text": "投资运营企业",
+      "bbox": [
+        1000,
+        202,
+        1096,
+        224
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 12,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_type_2",
+      "text": "规划设计企业",
+      "bbox": [
+        1104,
+        202,
+        1200,
+        224
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 12,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_type_3",
+      "text": "EPC总承包企业",
+      "bbox": [
+        1000,
+        233,
+        1096,
+        255
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 12,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_type_4",
+      "text": "装备制造企业",
+      "bbox": [
+        1104,
+        233,
+        1200,
+        255
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 12,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_type_5",
+      "text": "运维服务企业",
+      "bbox": [
+        1000,
+        264,
+        1096,
+        286
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 12,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_type_6",
+      "text": "平台集成企业",
+      "bbox": [
+        1104,
+        264,
+        1200,
+        286
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 12,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_type_7",
+      "text": "供应链服务企业",
+      "bbox": [
+        1000,
+        295,
+        1096,
+        317
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 12,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_scene_title",
+      "text": "场景适配",
+      "bbox": [
+        1000,
+        402,
+        1204,
+        427
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 20,
+      "fill": "#1F5B4D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_scene_1",
+      "text": "基础画像评价",
+      "bbox": [
+        1000,
+        446,
+        1096,
+        468
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 12,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_scene_2",
+      "text": "投标预审评价",
+      "bbox": [
+        1104,
+        446,
+        1200,
+        468
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 12,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_scene_3",
+      "text": "融资保险评价",
+      "bbox": [
+        1000,
+        480,
+        1096,
+        502
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 12,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_scene_4",
+      "text": "供应链准入评价",
+      "bbox": [
+        1104,
+        480,
+        1200,
+        502
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 12,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_scene_5",
+      "text": "国别适配评价",
+      "bbox": [
+        1000,
+        514,
+        1096,
+        536
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 12,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_scene_6",
+      "text": "传播展示评价",
+      "bbox": [
+        1104,
+        514,
+        1200,
+        536
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 12,
+      "fill": "#23312D",
+      "bold": false,
+      "align": "center",
+      "v_align": "mid"
+    },
+    {
+      "id": "p8_sowhat",
+      "text": "评价模型不是单一打分表，而是“证据资源 × 能力维度 × 企业类型 × 应用场景”的组合支撑体系。",
+      "bbox": [
+        82,
+        624,
+        1192,
+        664
+      ],
+      "font_family": "Arial Unicode MS",
+      "font_size": 18,
+      "fill": "#23312D",
+      "bold": true,
+      "align": "center",
+      "v_align": "mid"
+    }
+  ]
+}

@@ -1,0 +1,1283 @@
+{
+  "version": "2.0",
+  "workflow": "layout-reference-rebuild-2",
+  "source_reference": {
+    "type": "image",
+    "purpose": "layout_only",
+    "content_trust": "untrusted_for_final_text",
+    "copy_text_from_reference": false,
+    "path": "images/reference_layout.png",
+    "image_width_px": 1672,
+    "image_height_px": 941,
+    "image_mode": "RGB"
+  },
+  "canvas": {
+    "aspect": "16:9",
+    "width_px": 1280,
+    "height_px": 720,
+    "safe_margin_px": 48,
+    "title_height_px": 72,
+    "footer_height_px": 42
+  },
+  "page_role": "custom",
+  "layout_type": "five_stage_process_flow_with_guidance_and_footer",
+  "main_message_slot": "title_area",
+  "visual_layering": {
+    "content_layer": [
+      "title",
+      "body_text",
+      "labels",
+      "metrics",
+      "footer_text"
+    ],
+    "structure_layer": [
+      "panels",
+      "cards",
+      "arrows",
+      "connectors",
+      "tables",
+      "simple_charts"
+    ],
+    "semantic_icon_layer": [
+      "functional_icons"
+    ],
+    "decorative_layer": [
+      "background_illustration",
+      "glow_rings",
+      "texture",
+      "atmospheric_lines"
+    ],
+    "noise_layer": [
+      "non_semantic_light_effects",
+      "decorative_repeated_marks"
+    ]
+  },
+  "decorative_noise": [
+    {
+      "id": "background_decorative_context",
+      "bbox_px": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "bbox_ratio": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "type": "background_illustration",
+      "layer": "decorative_layer",
+      "treatment": "ignore_or_simplified_vector",
+      "semantic_weight": "none",
+      "reason": "Decorative/background context only; do not treat as content, icon, or connector."
+    }
+  ],
+  "layout_grammar": {
+    "primary_axis": "left_to_right",
+    "reading_order": [
+      "zone_title",
+      "zone_guidance",
+      "zone_stage_01",
+      "zone_stage_02",
+      "zone_stage_03",
+      "zone_stage_04",
+      "zone_footer"
+    ],
+    "composition_type": "four_stage_cards_with_connectors_consensus_and_action_bands",
+    "alignment_system": "column_grid",
+    "repetition_pattern": "4_stage_equal_columns",
+    "page_type_hint": "process"
+  },
+  "page_type_classifier": {
+    "page_type_hint": "process",
+    "confidence": 0.84,
+    "reason": "four stage card/connector geometry detected",
+    "signals": {
+      "estimated_column_count": 4,
+      "has_top_guidance_band": true,
+      "has_bottom_principle_band": true,
+      "looks_like_four_stage_cards": true
+    },
+    "needs_review": []
+  },
+  "visual_anchors": [
+    {
+      "id": "title_bottom_edge",
+      "type": "horizontal_edge",
+      "x": 0,
+      "y": 90,
+      "confidence": 0.78
+    },
+    {
+      "id": "guidance_band",
+      "type": "band",
+      "bbox_px": [
+        0,
+        104,
+        1280,
+        88
+      ],
+      "bbox_ratio": [
+        0.0,
+        0.1444,
+        1.0,
+        0.1222
+      ],
+      "confidence": 0.72
+    },
+    {
+      "id": "header_top_edge",
+      "type": "horizontal_edge",
+      "x": 0,
+      "y": 207,
+      "confidence": 0.74
+    },
+    {
+      "id": "footer_top_edge",
+      "type": "horizontal_edge",
+      "x": 0,
+      "y": 641,
+      "confidence": 0.82
+    }
+  ],
+  "crop_candidates": [
+    {
+      "id": "footer_power_art",
+      "bbox_px": [
+        820,
+        610,
+        420,
+        100
+      ],
+      "bbox_ratio": [
+        0.6406,
+        0.8472,
+        0.3281,
+        0.1389
+      ],
+      "reason": "decorative power infrastructure line art bottom-right",
+      "recommended_treatment": "local_crop_allowed",
+      "contains_text": false,
+      "mode_fit": [
+        "vector-hifi",
+        "hifi",
+        "wps-hifi"
+      ],
+      "editability_intent": "asset",
+      "needs_review": false,
+      "precrop": {
+        "enabled": false
+      }
+    }
+  ],
+  "text_background_relation": [
+    {
+      "text_region_id": "zone_title",
+      "background_complexity": "plain_or_low",
+      "requires_text_underlay_removal": false,
+      "related_anchor_id": "title_bottom_edge"
+    },
+    {
+      "text_region_id": "zone_guidance",
+      "background_complexity": "banner",
+      "requires_text_underlay_removal": false,
+      "related_anchor_id": "guidance_band"
+    },
+    {
+      "text_region_id": "zone_footer",
+      "background_complexity": "decorative_or_dense",
+      "requires_text_underlay_removal": true,
+      "related_anchor_id": "footer_top_edge"
+    }
+  ],
+  "confidence": {
+    "layout_type": 0.9,
+    "main_chain": 0.88,
+    "text_regions": 0.85,
+    "crop_candidates": 0.8
+  },
+  "needs_review": [],
+  "detected_layout_family": {
+    "family": "five_stage_process_flow",
+    "label": "五阶段流程页",
+    "confidence": 0.84,
+    "template_version": "1.0",
+    "layout_type": "five_stage_process_flow_with_guidance_and_footer",
+    "layout_family_legacy": "four_stage_cards_with_connectors_consensus_and_action_bands",
+    "signals": {
+      "estimated_column_count": 5,
+      "has_top_guidance_band": true,
+      "has_bottom_principle_band": true,
+      "looks_like_four_stage_cards": false
+    },
+    "components": {
+      "columns": [
+        "zone_stage_01",
+        "zone_stage_02",
+        "zone_stage_03",
+        "zone_stage_04",
+        "zone_stage_05"
+      ],
+      "cards": [
+        "zone_stage_01",
+        "zone_stage_02",
+        "zone_stage_03",
+        "zone_stage_04",
+        "zone_stage_05"
+      ],
+      "icon_slots": [
+        "icon-guidance",
+        "icon-footer-target",
+        "icon-h-zone_stage_01",
+        "icon-c-zone_stage_01-content",
+        "icon-c-zone_stage_01-audience",
+        "icon-c-zone_stage_01-value",
+        "icon-h-zone_stage_02",
+        "icon-c-zone_stage_02-content",
+        "icon-c-zone_stage_02-audience",
+        "icon-c-zone_stage_02-value",
+        "icon-h-zone_stage_03",
+        "icon-c-zone_stage_03-content",
+        "icon-c-zone_stage_03-audience",
+        "icon-c-zone_stage_03-value",
+        "icon-h-zone_stage_04",
+        "icon-c-zone_stage_04-content",
+        "icon-c-zone_stage_04-audience",
+        "icon-c-zone_stage_04-value",
+        "icon-h-zone_stage_05",
+        "icon-c-zone_stage_05-content",
+        "icon-c-zone_stage_05-audience",
+        "icon-c-zone_stage_05-value"
+      ],
+      "flow_arrows": [
+        "stage_01->stage_02",
+        "stage_02->stage_03",
+        "stage_03->stage_04"
+      ],
+      "footer_chains": [
+        "zone_footer"
+      ],
+      "bottom_bars": []
+    }
+  },
+  "visual_structure": {
+    "title_area": {
+      "position": "top",
+      "role": "page_judgment",
+      "height_ratio": 0.1
+    },
+    "body_area": {
+      "position": "middle",
+      "role": "main_logic",
+      "height_ratio": 0.82
+    },
+    "footer_area": {
+      "position": "bottom",
+      "role": "page_number_or_source",
+      "height_ratio": 0.08
+    }
+  },
+  "main_chain": {
+    "chain_type": "five_stage_process_flow",
+    "direction": "left_to_right",
+    "nodes": [
+      {
+        "id": "stage_01",
+        "label": "资源目录化",
+        "zone_id": "zone_stage_01"
+      },
+      {
+        "id": "stage_02",
+        "label": "规则工程化",
+        "zone_id": "zone_stage_02"
+      },
+      {
+        "id": "stage_03",
+        "label": "受控计算",
+        "zone_id": "zone_stage_03"
+      },
+      {
+        "id": "stage_04",
+        "label": "结果出证",
+        "zone_id": "zone_stage_04"
+      },
+      {
+        "id": "stage_05",
+        "label": "服务运营",
+        "zone_id": "zone_stage_05"
+      }
+    ],
+    "relationship_style": "directed_flow_with_arrow_connectors",
+    "support_layer": "zone_footer",
+    "connectors": [
+      {
+        "from": "stage_01",
+        "to": "stage_02",
+        "style": "arrow"
+      },
+      {
+        "from": "stage_02",
+        "to": "stage_03",
+        "style": "arrow"
+      },
+      {
+        "from": "stage_03",
+        "to": "stage_04",
+        "style": "arrow"
+      },
+      {
+        "from": "stage_04",
+        "to": "stage_05",
+        "style": "arrow"
+      }
+    ]
+  },
+  "zones": [
+    {
+      "id": "zone_page_number",
+      "role": "page_number",
+      "component": "page_number_badge",
+      "position_hint": "page_number",
+      "bbox_px": [
+        38,
+        14,
+        40,
+        40
+      ],
+      "bbox_ratio": [
+        0.0297,
+        0.0194,
+        0.0312,
+        0.0556
+      ],
+      "x_ratio": 0.0297,
+      "y_ratio": 0.0194,
+      "w_ratio": 0.0312,
+      "h_ratio": 0.0556,
+      "visual_weight": "secondary",
+      "editable": true
+    },
+    {
+      "id": "zone_title",
+      "role": "page_title",
+      "component": "title_block",
+      "position_hint": "title",
+      "bbox_px": [
+        88,
+        29,
+        1140,
+        47
+      ],
+      "bbox_ratio": [
+        0.0688,
+        0.0403,
+        0.8906,
+        0.0653
+      ],
+      "x_ratio": 0.0688,
+      "y_ratio": 0.0403,
+      "w_ratio": 0.8906,
+      "h_ratio": 0.0653,
+      "visual_weight": "secondary",
+      "editable": true
+    },
+    {
+      "id": "zone_guidance",
+      "role": "design_guidance",
+      "component": "guidance_banner",
+      "position_hint": "guidance",
+      "bbox_px": [
+        38,
+        104,
+        1204,
+        88
+      ],
+      "bbox_ratio": [
+        0.0297,
+        0.1444,
+        0.9406,
+        0.1222
+      ],
+      "x_ratio": 0.0297,
+      "y_ratio": 0.1444,
+      "w_ratio": 0.9406,
+      "h_ratio": 0.1222,
+      "visual_weight": "secondary",
+      "editable": true
+    },
+    {
+      "id": "zone_stage_01",
+      "role": "process_step",
+      "component": "chevron_column",
+      "position_hint": "stage 1 chevron + body",
+      "bbox_px": [
+        38,
+        207,
+        231,
+        322
+      ],
+      "bbox_ratio": [
+        0.0297,
+        0.2875,
+        0.1805,
+        0.4472
+      ],
+      "x_ratio": 0.0297,
+      "y_ratio": 0.2875,
+      "w_ratio": 0.1805,
+      "h_ratio": 0.4472,
+      "visual_weight": "secondary",
+      "editable": true
+    },
+    {
+      "id": "zone_stage_02",
+      "role": "process_step",
+      "component": "chevron_column",
+      "position_hint": "stage 2 chevron + body",
+      "bbox_px": [
+        281,
+        207,
+        231,
+        322
+      ],
+      "bbox_ratio": [
+        0.2195,
+        0.2875,
+        0.1805,
+        0.4472
+      ],
+      "x_ratio": 0.2195,
+      "y_ratio": 0.2875,
+      "w_ratio": 0.1805,
+      "h_ratio": 0.4472,
+      "visual_weight": "secondary",
+      "editable": true
+    },
+    {
+      "id": "zone_stage_03",
+      "role": "process_step",
+      "component": "chevron_column",
+      "position_hint": "stage 3 chevron + body",
+      "bbox_px": [
+        524,
+        207,
+        231,
+        322
+      ],
+      "bbox_ratio": [
+        0.4094,
+        0.2875,
+        0.1805,
+        0.4472
+      ],
+      "x_ratio": 0.4094,
+      "y_ratio": 0.2875,
+      "w_ratio": 0.1805,
+      "h_ratio": 0.4472,
+      "visual_weight": "secondary",
+      "editable": true
+    },
+    {
+      "id": "zone_stage_04",
+      "role": "process_step",
+      "component": "chevron_column",
+      "position_hint": "stage 4 chevron + body",
+      "bbox_px": [
+        768,
+        207,
+        231,
+        322
+      ],
+      "bbox_ratio": [
+        0.6,
+        0.2875,
+        0.1805,
+        0.4472
+      ],
+      "x_ratio": 0.6,
+      "y_ratio": 0.2875,
+      "w_ratio": 0.1805,
+      "h_ratio": 0.4472,
+      "visual_weight": "secondary",
+      "editable": true
+    },
+    {
+      "id": "zone_stage_05",
+      "role": "process_step",
+      "component": "chevron_column",
+      "position_hint": "stage 5 chevron + body",
+      "bbox_px": [
+        1011,
+        207,
+        231,
+        322
+      ],
+      "bbox_ratio": [
+        0.7898,
+        0.2875,
+        0.1805,
+        0.4472
+      ],
+      "x_ratio": 0.7898,
+      "y_ratio": 0.2875,
+      "w_ratio": 0.1805,
+      "h_ratio": 0.4472,
+      "visual_weight": "secondary",
+      "editable": true
+    },
+    {
+      "id": "zone_footer",
+      "role": "operating_principles",
+      "component": "footer_summary_band",
+      "position_hint": "footer summary",
+      "bbox_px": [
+        38,
+        558,
+        1204,
+        68
+      ],
+      "bbox_ratio": [
+        0.0297,
+        0.775,
+        0.9406,
+        0.0944
+      ],
+      "x_ratio": 0.0297,
+      "y_ratio": 0.775,
+      "w_ratio": 0.9406,
+      "h_ratio": 0.0944,
+      "visual_weight": "secondary",
+      "editable": true
+    }
+  ],
+  "style_reference": {
+    "tone": "corporate_blue",
+    "primary_color": "#0A3580",
+    "accent_color": "#2E7FD6",
+    "background": "#FFFFFF",
+    "guidance_bg": "#E8F4FC",
+    "card_body": "#FFFFFF",
+    "footer_fill": "#E8F4FC",
+    "font_family": "Microsoft YaHei",
+    "column_header_colors": [
+      "#0A3580",
+      "#0A3580",
+      "#0A3580",
+      "#0A3580",
+      "#0A3580"
+    ]
+  },
+  "icon_reconstruction": {
+    "policy": "semantic_vector_first",
+    "preferred_libraries": [
+      "tabler-filled",
+      "tabler-outline"
+    ],
+    "fallback": "repo_library_only_for_fast_obvious_matches",
+    "slot_model": "centered_square_with_optical_adjustment",
+    "icons": [
+      {
+        "id": "icon-guidance",
+        "semantic_intent": "guidance document",
+        "parent_zone_id": "zone_guidance",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 94,
+          "text_top_px": 122,
+          "text_height_px": 16
+        },
+        "slot": {
+          "cx_ratio": 0.0516,
+          "cy_ratio": 0.2056,
+          "size_ratio": 0.025,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-footer-target",
+        "semantic_intent": "target",
+        "parent_zone_id": "zone_footer",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 94,
+          "text_top_px": 572,
+          "text_height_px": 16
+        },
+        "slot": {
+          "cx_ratio": 0.0516,
+          "cy_ratio": 0.8222,
+          "size_ratio": 0.025,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-h-zone_stage_01",
+        "semantic_intent": "资源目录化",
+        "parent_zone_id": "zone_stage_01",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 84.0,
+          "text_top_px": 227,
+          "text_height_px": 16
+        },
+        "slot": {
+          "cx_ratio": 0.0516,
+          "cy_ratio": 0.3278,
+          "size_ratio": 0.0194,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_01-content",
+        "semantic_intent": "content",
+        "parent_zone_id": "zone_stage_01",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 70.0,
+          "text_top_px": 317,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.0437,
+          "cy_ratio": 0.4153,
+          "size_ratio": 0.0181,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_01-audience",
+        "semantic_intent": "audience",
+        "parent_zone_id": "zone_stage_01",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 70.0,
+          "text_top_px": 389,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.0437,
+          "cy_ratio": 0.5486,
+          "size_ratio": 0.0167,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_01-value",
+        "semantic_intent": "value",
+        "parent_zone_id": "zone_stage_01",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 70.0,
+          "text_top_px": 467,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.0437,
+          "cy_ratio": 0.6569,
+          "size_ratio": 0.0167,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-h-zone_stage_02",
+        "semantic_intent": "规则工程化",
+        "parent_zone_id": "zone_stage_02",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 327.2,
+          "text_top_px": 227,
+          "text_height_px": 16
+        },
+        "slot": {
+          "cx_ratio": 0.2416,
+          "cy_ratio": 0.3278,
+          "size_ratio": 0.0194,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_02-content",
+        "semantic_intent": "content",
+        "parent_zone_id": "zone_stage_02",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 313.2,
+          "text_top_px": 317,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.2337,
+          "cy_ratio": 0.4153,
+          "size_ratio": 0.0181,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_02-audience",
+        "semantic_intent": "audience",
+        "parent_zone_id": "zone_stage_02",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 313.2,
+          "text_top_px": 389,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.2337,
+          "cy_ratio": 0.5486,
+          "size_ratio": 0.0167,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_02-value",
+        "semantic_intent": "value",
+        "parent_zone_id": "zone_stage_02",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 313.2,
+          "text_top_px": 467,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.2337,
+          "cy_ratio": 0.6569,
+          "size_ratio": 0.0167,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-h-zone_stage_03",
+        "semantic_intent": "受控计算",
+        "parent_zone_id": "zone_stage_03",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 570.4,
+          "text_top_px": 227,
+          "text_height_px": 16
+        },
+        "slot": {
+          "cx_ratio": 0.4316,
+          "cy_ratio": 0.3278,
+          "size_ratio": 0.0194,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_03-content",
+        "semantic_intent": "content",
+        "parent_zone_id": "zone_stage_03",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 556.4,
+          "text_top_px": 317,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.4237,
+          "cy_ratio": 0.4153,
+          "size_ratio": 0.0181,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_03-audience",
+        "semantic_intent": "audience",
+        "parent_zone_id": "zone_stage_03",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 556.4,
+          "text_top_px": 389,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.4237,
+          "cy_ratio": 0.5486,
+          "size_ratio": 0.0167,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_03-value",
+        "semantic_intent": "value",
+        "parent_zone_id": "zone_stage_03",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 556.4,
+          "text_top_px": 467,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.4237,
+          "cy_ratio": 0.6569,
+          "size_ratio": 0.0167,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-h-zone_stage_04",
+        "semantic_intent": "结果出证",
+        "parent_zone_id": "zone_stage_04",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 813.6,
+          "text_top_px": 227,
+          "text_height_px": 16
+        },
+        "slot": {
+          "cx_ratio": 0.6216,
+          "cy_ratio": 0.3278,
+          "size_ratio": 0.0194,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_04-content",
+        "semantic_intent": "content",
+        "parent_zone_id": "zone_stage_04",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 799.6,
+          "text_top_px": 317,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.6137,
+          "cy_ratio": 0.4153,
+          "size_ratio": 0.0181,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_04-audience",
+        "semantic_intent": "audience",
+        "parent_zone_id": "zone_stage_04",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 799.6,
+          "text_top_px": 389,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.6137,
+          "cy_ratio": 0.5486,
+          "size_ratio": 0.0167,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_04-value",
+        "semantic_intent": "value",
+        "parent_zone_id": "zone_stage_04",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 799.6,
+          "text_top_px": 467,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.6137,
+          "cy_ratio": 0.6569,
+          "size_ratio": 0.0167,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-h-zone_stage_05",
+        "semantic_intent": "服务运营",
+        "parent_zone_id": "zone_stage_05",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 1056.8,
+          "text_top_px": 227,
+          "text_height_px": 16
+        },
+        "slot": {
+          "cx_ratio": 0.8116,
+          "cy_ratio": 0.3278,
+          "size_ratio": 0.0194,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_05-content",
+        "semantic_intent": "content",
+        "parent_zone_id": "zone_stage_05",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 1042.8,
+          "text_top_px": 317,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.8037,
+          "cy_ratio": 0.4153,
+          "size_ratio": 0.0181,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_05-audience",
+        "semantic_intent": "audience",
+        "parent_zone_id": "zone_stage_05",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 1042.8,
+          "text_top_px": 389,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.8037,
+          "cy_ratio": 0.5486,
+          "size_ratio": 0.0167,
+          "fit": "contain"
+        }
+      },
+      {
+        "id": "icon-c-zone_stage_05-value",
+        "semantic_intent": "value",
+        "parent_zone_id": "zone_stage_05",
+        "level": "card_section",
+        "source": {
+          "kind": "semantic_vector"
+        },
+        "text_anchor": {
+          "text_left_px": 1042.8,
+          "text_top_px": 467,
+          "text_height_px": 14
+        },
+        "slot": {
+          "cx_ratio": 0.8037,
+          "cy_ratio": 0.6569,
+          "size_ratio": 0.0167,
+          "fit": "contain"
+        }
+      }
+    ]
+  },
+  "editability_policy": {
+    "native_editable": [
+      "title",
+      "body_text",
+      "cards",
+      "arrows",
+      "tables",
+      "simple_charts"
+    ],
+    "image_allowed": [
+      "logo",
+      "screenshot",
+      "complex_icon",
+      "decorative_pattern"
+    ],
+    "never_flatten_full_slide": true,
+    "reference_image_as_background": "only_for_temporary_alignment"
+  },
+  "render_notes": {
+    "text_density": "medium_dense_five_column_process",
+    "title_style": "numbered_judgment_title",
+    "body_style": "formal_business_phrases",
+    "avoid": [
+      "pixel_copy",
+      "ocr_dependency",
+      "generic_card_stack",
+      "rendering_instructions_on_slide",
+      "isolated_rounded_card_grid",
+      "footer_chevron_chain_without_principle_chips"
+    ]
+  },
+  "structure_contract": {
+    "fidelity": "reference",
+    "layout_type": "five_stage_process_flow_with_guidance_and_footer",
+    "required_primitives": [
+      "guidance_banner",
+      "chevron_column_header",
+      "horizontal_arrow_connector",
+      "stage_detail_card",
+      "footer_summary_band"
+    ],
+    "forbidden_substitutes": [
+      "isolated_rounded_card_grid"
+    ],
+    "detected_signals": {
+      "estimated_column_count": 5,
+      "has_top_guidance_band": true,
+      "has_bottom_principle_band": true
+    }
+  },
+  "geometry_measurement": {
+    "title_bottom_px": 90,
+    "guidance_y_px": 104,
+    "guidance_h_px": 88,
+    "header_y_px": 207,
+    "header_h_px": 58,
+    "body_y_px": 277,
+    "body_h_px": 252,
+    "footer_y_px": 558,
+    "footer_h_px": 68,
+    "column_boxes_px": [
+      [
+        38,
+        277
+      ],
+      [
+        281,
+        277
+      ],
+      [
+        524,
+        277
+      ],
+      [
+        768,
+        277
+      ],
+      [
+        1011,
+        277
+      ]
+    ]
+  },
+  "geometry_locks": [
+    {
+      "id": "lock_title_rule",
+      "kind": "title_rule",
+      "label": "Title band bottom / red rule",
+      "y_px": 90.0,
+      "bbox_px": [
+        0,
+        90,
+        1280,
+        3
+      ],
+      "svg_selector": {
+        "data-primitive": "title_rule"
+      },
+      "style": {
+        "stroke": "#C00000",
+        "stroke_width_px": 2
+      },
+      "tolerance_px": 3,
+      "blocking": true,
+      "source": "manual_refine"
+    },
+    {
+      "id": "lock_guidance_band",
+      "kind": "box",
+      "label": "Top guidance banner",
+      "bbox_px": [
+        38,
+        104,
+        1204,
+        88
+      ],
+      "svg_selector": {
+        "data-zone-id": "zone_guidance",
+        "data-primitive": "guidance_banner"
+      },
+      "style": {
+        "fill": "#E8F4FC",
+        "stroke": "#B8D4E8"
+      },
+      "tolerance_px": 3,
+      "blocking": true,
+      "source": "manual_refine"
+    },
+    {
+      "id": "lock_footer_bar",
+      "kind": "footer_bar",
+      "label": "Bottom summary band",
+      "bbox_px": [
+        38,
+        558,
+        1204,
+        68
+      ],
+      "svg_selector": {
+        "data-zone-id": "zone_footer",
+        "data-primitive": "footer_summary_band"
+      },
+      "style": {
+        "fill": "#E8F4FC",
+        "stroke": "#B8D4E8"
+      },
+      "tolerance_px": 3,
+      "blocking": true,
+      "source": "manual_refine"
+    },
+    {
+      "id": "lock_column_01",
+      "kind": "box",
+      "label": "Column/card frame 1",
+      "bbox_px": [
+        38,
+        277,
+        231,
+        252
+      ],
+      "svg_selector": {
+        "data-geometry-lock-id": "lock_column_01"
+      },
+      "style": {
+        "stroke": "#C8D8E8",
+        "rx_px": 6
+      },
+      "tolerance_px": 4,
+      "blocking": true,
+      "source": "manual_refine"
+    },
+    {
+      "id": "lock_column_02",
+      "kind": "box",
+      "label": "Column/card frame 2",
+      "bbox_px": [
+        281,
+        277,
+        231,
+        252
+      ],
+      "svg_selector": {
+        "data-geometry-lock-id": "lock_column_02"
+      },
+      "style": {
+        "stroke": "#C8D8E8",
+        "rx_px": 6
+      },
+      "tolerance_px": 4,
+      "blocking": true,
+      "source": "manual_refine"
+    },
+    {
+      "id": "lock_column_03",
+      "kind": "box",
+      "label": "Column/card frame 3",
+      "bbox_px": [
+        524,
+        277,
+        231,
+        252
+      ],
+      "svg_selector": {
+        "data-geometry-lock-id": "lock_column_03"
+      },
+      "style": {
+        "stroke": "#C8D8E8",
+        "rx_px": 6
+      },
+      "tolerance_px": 4,
+      "blocking": true,
+      "source": "manual_refine"
+    },
+    {
+      "id": "lock_column_04",
+      "kind": "box",
+      "label": "Column/card frame 4",
+      "bbox_px": [
+        768,
+        277,
+        231,
+        252
+      ],
+      "svg_selector": {
+        "data-geometry-lock-id": "lock_column_04"
+      },
+      "style": {
+        "stroke": "#C8D8E8",
+        "rx_px": 6
+      },
+      "tolerance_px": 4,
+      "blocking": true,
+      "source": "manual_refine"
+    },
+    {
+      "id": "lock_column_05",
+      "kind": "box",
+      "label": "Column/card frame 5",
+      "bbox_px": [
+        1011,
+        277,
+        231,
+        252
+      ],
+      "svg_selector": {
+        "data-geometry-lock-id": "lock_column_05"
+      },
+      "style": {
+        "stroke": "#C8D8E8",
+        "rx_px": 6
+      },
+      "tolerance_px": 4,
+      "blocking": true,
+      "source": "manual_refine"
+    }
+  ],
+  "layout_measurement_artifacts": {
+    "report": "projects/slide_rebuild_infra_reliability_0602_06_ppt169_20260608/layout_measurement_report.json",
+    "overlay": "projects/slide_rebuild_infra_reliability_0602_06_ppt169_20260608/layout_measurement_overlay.png"
+  }
+}

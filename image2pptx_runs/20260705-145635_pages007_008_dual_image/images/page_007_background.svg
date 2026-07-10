@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+  <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+    <path d="M2,2 L10,6 L2,10 Z" fill="#1F5B4D"/>
+  </marker>
+  <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+    <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#9DA8A2" flood-opacity="0.24"/>
+  </filter>
+</defs>
+<rect width="1280" height="720" fill="#F5F6F2"/><path d="M0 0 H1280 V720 H0 Z" fill="#F7F8F4"/><path d="M0 0 H1280 V112 H0 Z" fill="#ECF1EB"/><path d="M28 114 C220 82, 410 132, 610 102 S1010 66, 1252 116" fill="none" stroke="#D9E2DC" stroke-width="2"/><text x="48" y="58" font-family="Arial Unicode MS" font-size="30" font-weight="700" fill="#1F5B4D">闭环运行链路</text>
+<text x="48" y="91" font-family="Arial Unicode MS" font-size="17" fill="#68746F">企业入库到场景调用，再通过反馈与事件触发持续更新</text>
+<g filter="url(#shadow)"><rect x="40" y="150" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="62" cy="174" r="15" fill="#1F5B4D"/>
+<text x="62" y="180" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">1</text>
+<g filter="url(#shadow)"><rect x="166" y="150" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="188" cy="174" r="15" fill="#1F5B4D"/>
+<text x="188" y="180" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">2</text>
+<g filter="url(#shadow)"><rect x="292" y="150" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="314" cy="174" r="15" fill="#1F5B4D"/>
+<text x="314" y="180" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">3</text>
+<g filter="url(#shadow)"><rect x="418" y="150" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="440" cy="174" r="15" fill="#1F5B4D"/>
+<text x="440" y="180" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">4</text>
+<g filter="url(#shadow)"><rect x="544" y="150" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="566" cy="174" r="15" fill="#1F5B4D"/>
+<text x="566" y="180" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">5</text>
+<g filter="url(#shadow)"><rect x="544" y="320" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="566" cy="344" r="15" fill="#1F5B4D"/>
+<text x="566" y="350" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">6</text>
+<g filter="url(#shadow)"><rect x="418" y="320" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="440" cy="344" r="15" fill="#1F5B4D"/>
+<text x="440" y="350" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">7</text>
+<g filter="url(#shadow)"><rect x="292" y="320" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="314" cy="344" r="15" fill="#1F5B4D"/>
+<text x="314" y="350" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">8</text>
+<g filter="url(#shadow)"><rect x="166" y="320" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="188" cy="344" r="15" fill="#1F5B4D"/>
+<text x="188" y="350" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">9</text>
+<g filter="url(#shadow)"><rect x="40" y="320" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="62" cy="344" r="15" fill="#1F5B4D"/>
+<text x="62" y="350" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">10</text>
+<line x1="154" y1="209" x2="164" y2="209" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="280" y1="209" x2="290" y2="209" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="406" y1="209" x2="416" y2="209" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="532" y1="209" x2="542" y2="209" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="600" y1="276" x2="600" y2="312" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="542" y1="379" x2="532" y2="379" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="416" y1="379" x2="406" y2="379" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="290" y1="379" x2="280" y2="379" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="164" y1="379" x2="154" y2="379" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M1014 374 C1155 384,1182 240,656 210" fill="none" stroke="#1F5B4D" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#arrow)"/>
+<text x="1028" y="356" font-family="Arial Unicode MS" font-size="16" font-weight="700" fill="#1F5B4D">回流至数据治理 / 证据入库</text>
+<text x="48" y="520" font-family="Arial Unicode MS" font-size="22" font-weight="700" fill="#1F5B4D">更新触发因素</text>
+<rect x="46" y="548" width="172" height="58" rx="18" fill="#EAF3ED" stroke="#BBD3C4" stroke-width="2"/>
+<line x1="132" y1="548" x2="1092" y2="450" stroke="#6D8B7A" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+<rect x="242" y="548" width="172" height="58" rx="18" fill="#EAF3ED" stroke="#BBD3C4" stroke-width="2"/>
+<line x1="328" y1="548" x2="1092" y2="450" stroke="#6D8B7A" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+<rect x="438" y="548" width="172" height="58" rx="18" fill="#EAF3ED" stroke="#BBD3C4" stroke-width="2"/>
+<line x1="524" y1="548" x2="1092" y2="450" stroke="#6D8B7A" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+<rect x="634" y="548" width="172" height="58" rx="18" fill="#EAF3ED" stroke="#BBD3C4" stroke-width="2"/>
+<line x1="720" y1="548" x2="1092" y2="450" stroke="#6D8B7A" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+<rect x="830" y="548" width="172" height="58" rx="18" fill="#EAF3ED" stroke="#BBD3C4" stroke-width="2"/>
+<line x1="916" y1="548" x2="1092" y2="450" stroke="#6D8B7A" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+<rect x="1026" y="548" width="172" height="58" rx="18" fill="#EAF3ED" stroke="#BBD3C4" stroke-width="2"/>
+<line x1="1112" y1="548" x2="1092" y2="450" stroke="#6D8B7A" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+<rect x="46" y="618" width="1188" height="62" rx="18" fill="#FFFFFF" stroke="#D8E1DB" stroke-width="2"/></svg>

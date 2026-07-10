@@ -1,0 +1,4971 @@
+{
+  "canvas": {
+    "width": 1280,
+    "height": 720
+  },
+  "slide": {
+    "width_in": 13.333333,
+    "height_in": 7.5
+  },
+  "background": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/project/images/normalized/page_006_background_1280x720.png",
+  "output_pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v3.pptx",
+  "shapes": [
+    {
+      "type": "ellipse",
+      "bbox": [
+        290.5,
+        72.0,
+        310.5,
+        92.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        489.5,
+        72.0,
+        509.5,
+        92.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        688.5,
+        72.0,
+        708.5,
+        92.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        290.5,
+        202.0,
+        310.5,
+        222.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        489.5,
+        202.0,
+        509.5,
+        222.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        688.5,
+        202.0,
+        708.5,
+        222.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        290.5,
+        332.0,
+        310.5,
+        352.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        489.5,
+        332.0,
+        509.5,
+        352.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        688.5,
+        332.0,
+        708.5,
+        352.0
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        1159.0,
+        77.5,
+        1177.0,
+        95.5
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        1159.0,
+        184.5,
+        1177.0,
+        202.5
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        1159.0,
+        290.5,
+        1177.0,
+        308.5
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        1159.0,
+        397.5,
+        1177.0,
+        415.5
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        1159.0,
+        503.5,
+        1177.0,
+        521.5
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    },
+    {
+      "type": "ellipse",
+      "bbox": [
+        1159.0,
+        610.5,
+        1177.0,
+        628.5
+      ],
+      "fill": "#0B3B75",
+      "line": "#0B3B75"
+    }
+  ],
+  "boxes": [
+    {
+      "text": "数据基础",
+      "bbox": [
+        58.0,
+        18.0,
+        127.0,
+        37.0
+      ],
+      "font_size": 14.62,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "（多源汇聚）",
+      "bbox": [
+        59.0,
+        36.0,
+        128.0,
+        52.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.96,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "企业/业务数据",
+      "bbox": [
+        69.0,
+        77.0,
+        137.0,
+        93.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "经营管理数据",
+      "bbox": [
+        80.0,
+        99.0,
+        145.0,
+        111.0
+      ],
+      "font_size": 8.6,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        98.5,
+        73.0,
+        111.0
+      ],
+      "font_size": 7.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "项目执行数据",
+      "bbox": [
+        80.0,
+        118.0,
+        144.0,
+        130.0
+      ],
+      "font_size": 8.6,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        117.5,
+        73.0,
+        130.0
+      ],
+      "font_size": 7.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "合同订单数据",
+      "bbox": [
+        80.0,
+        137.0,
+        144.0,
+        149.0
+      ],
+      "font_size": 8.6,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        136.5,
+        73.0,
+        149.0
+      ],
+      "font_size": 7.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "绩效与指标数据",
+      "bbox": [
+        80.0,
+        153.0,
+        154.0,
+        166.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        152.5,
+        73.0,
+        166.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "……",
+      "bbox": [
+        80.0,
+        169.0,
+        108.0,
+        178.0
+      ],
+      "font_size": 6.02,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.9
+    },
+    {
+      "text": "内部职能数据",
+      "bbox": [
+        69.0,
+        203.0,
+        137.0,
+        219.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "人力资源数据",
+      "bbox": [
+        80.0,
+        227.0,
+        145.0,
+        240.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        226.5,
+        73.0,
+        240.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "财务管理数据",
+      "bbox": [
+        80.0,
+        244.0,
+        145.0,
+        257.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        243.5,
+        73.0,
+        257.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "法务合规数据",
+      "bbox": [
+        80.0,
+        262.0,
+        145.0,
+        275.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        261.5,
+        73.0,
+        275.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "采购供应链数据",
+      "bbox": [
+        80.0,
+        278.0,
+        154.0,
+        291.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        277.5,
+        73.0,
+        291.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "……",
+      "bbox": [
+        80.0,
+        296.0,
+        108.0,
+        305.0
+      ],
+      "font_size": 6.02,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.9
+    },
+    {
+      "text": "外部公共数据",
+      "bbox": [
+        69.0,
+        331.0,
+        137.0,
+        347.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "工商税务数据",
+      "bbox": [
+        80.0,
+        355.0,
+        145.0,
+        368.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        354.5,
+        73.0,
+        368.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "信用/司法数据",
+      "bbox": [
+        80.0,
+        372.0,
+        147.0,
+        385.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        371.5,
+        73.0,
+        385.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "进出口与海关数据",
+      "bbox": [
+        80.0,
+        389.0,
+        163.0,
+        402.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        388.5,
+        73.0,
+        402.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "宏观经济数据",
+      "bbox": [
+        80.0,
+        406.0,
+        145.0,
+        419.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        405.5,
+        73.0,
+        419.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "……",
+      "bbox": [
+        80.0,
+        424.0,
+        108.0,
+        433.0
+      ],
+      "font_size": 6.02,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.9
+    },
+    {
+      "text": "外部专业机构数据",
+      "bbox": [
+        62.0,
+        459.0,
+        144.0,
+        476.0
+      ],
+      "font_size": 12.9,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "评级评估数据",
+      "bbox": [
+        80.0,
+        483.0,
+        145.0,
+        496.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        482.5,
+        73.0,
+        496.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "行业基准数据",
+      "bbox": [
+        80.0,
+        500.0,
+        145.0,
+        513.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        499.5,
+        73.0,
+        513.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "ESG/HSE评估数据",
+      "bbox": [
+        80.0,
+        517.0,
+        165.0,
+        530.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        516.5,
+        73.0,
+        530.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "风险情报数据",
+      "bbox": [
+        80.0,
+        535.0,
+        145.0,
+        548.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        69.0,
+        534.5,
+        73.0,
+        548.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "……",
+      "bbox": [
+        80.0,
+        552.0,
+        108.0,
+        561.0
+      ],
+      "font_size": 6.02,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.9
+    },
+    {
+      "text": "核心能力评估空间（评估模型与能力引擎）",
+      "bbox": [
+        389.0,
+        18.0,
+        746.0,
+        38.0
+      ],
+      "font_size": 15.48,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "1",
+      "bbox": [
+        290.5,
+        73.0,
+        310.5,
+        94.0
+      ],
+      "font_size": 8.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "目录管理",
+      "bbox": [
+        337.0,
+        76.0,
+        396.0,
+        92.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "指标/能力目录",
+      "bbox": [
+        347.0,
+        106.0,
+        421.0,
+        119.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        336.0,
+        105.5,
+        340.0,
+        119.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "评估维度管理",
+      "bbox": [
+        347.0,
+        126.0,
+        421.0,
+        139.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        336.0,
+        125.5,
+        340.0,
+        139.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "分类与标签管理",
+      "bbox": [
+        347.0,
+        146.0,
+        430.0,
+        159.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        336.0,
+        145.5,
+        340.0,
+        159.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "目录版本管理",
+      "bbox": [
+        347.0,
+        165.0,
+        421.0,
+        178.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        336.0,
+        164.5,
+        340.0,
+        178.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "2",
+      "bbox": [
+        489.5,
+        73.0,
+        509.5,
+        94.0
+      ],
+      "font_size": 8.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "身份认证",
+      "bbox": [
+        535.0,
+        76.0,
+        594.0,
+        92.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "主体身份管理",
+      "bbox": [
+        550.0,
+        106.0,
+        614.0,
+        119.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        539.0,
+        105.5,
+        543.0,
+        119.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "人员身份管理",
+      "bbox": [
+        550.0,
+        126.0,
+        614.0,
+        139.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        539.0,
+        125.5,
+        543.0,
+        139.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "可信身份校验",
+      "bbox": [
+        550.0,
+        146.0,
+        614.0,
+        159.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        539.0,
+        145.5,
+        543.0,
+        159.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "认证策略配置",
+      "bbox": [
+        550.0,
+        165.0,
+        614.0,
+        178.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        539.0,
+        164.5,
+        543.0,
+        178.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "3",
+      "bbox": [
+        688.5,
+        73.0,
+        708.5,
+        94.0
+      ],
+      "font_size": 8.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "授权控制",
+      "bbox": [
+        738.0,
+        76.0,
+        797.0,
+        92.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "数据资源授权",
+      "bbox": [
+        752.0,
+        106.0,
+        816.0,
+        119.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        741.0,
+        105.5,
+        745.0,
+        119.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "能力访问授权",
+      "bbox": [
+        752.0,
+        126.0,
+        816.0,
+        139.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        741.0,
+        125.5,
+        745.0,
+        139.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "角色权限管理",
+      "bbox": [
+        752.0,
+        146.0,
+        816.0,
+        159.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        741.0,
+        145.5,
+        745.0,
+        159.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "授权策略管理",
+      "bbox": [
+        752.0,
+        165.0,
+        816.0,
+        178.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        741.0,
+        164.5,
+        745.0,
+        178.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "4",
+      "bbox": [
+        290.5,
+        203.0,
+        310.5,
+        224.0
+      ],
+      "font_size": 8.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "规则调用",
+      "bbox": [
+        337.0,
+        205.0,
+        396.0,
+        221.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "评估规则引擎",
+      "bbox": [
+        347.0,
+        235.0,
+        421.0,
+        248.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        336.0,
+        234.5,
+        340.0,
+        248.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "评分算法管理",
+      "bbox": [
+        347.0,
+        254.0,
+        421.0,
+        267.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        336.0,
+        253.5,
+        340.0,
+        267.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "规则版本管理",
+      "bbox": [
+        347.0,
+        274.0,
+        421.0,
+        287.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        336.0,
+        273.5,
+        340.0,
+        287.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "规则执行日志",
+      "bbox": [
+        347.0,
+        293.0,
+        421.0,
+        306.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        336.0,
+        292.5,
+        340.0,
+        306.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "5",
+      "bbox": [
+        489.5,
+        203.0,
+        509.5,
+        224.0
+      ],
+      "font_size": 8.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "证据管理",
+      "bbox": [
+        535.0,
+        205.0,
+        594.0,
+        221.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "证据采集接入",
+      "bbox": [
+        550.0,
+        235.0,
+        624.0,
+        248.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        539.0,
+        234.5,
+        543.0,
+        248.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "证据标准化",
+      "bbox": [
+        550.0,
+        254.0,
+        614.0,
+        267.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        539.0,
+        253.5,
+        543.0,
+        267.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "证据质量校验",
+      "bbox": [
+        550.0,
+        274.0,
+        624.0,
+        287.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        539.0,
+        273.5,
+        543.0,
+        287.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "证据关联映射",
+      "bbox": [
+        550.0,
+        293.0,
+        624.0,
+        306.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        539.0,
+        292.5,
+        543.0,
+        306.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "6",
+      "bbox": [
+        688.5,
+        203.0,
+        708.5,
+        224.0
+      ],
+      "font_size": 8.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "能力评估",
+      "bbox": [
+        738.0,
+        205.0,
+        797.0,
+        221.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "能力评分计算",
+      "bbox": [
+        752.0,
+        235.0,
+        816.0,
+        248.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        741.0,
+        234.5,
+        745.0,
+        248.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "维度权重配置",
+      "bbox": [
+        752.0,
+        254.0,
+        826.0,
+        267.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        741.0,
+        253.5,
+        745.0,
+        267.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "评估结果校验",
+      "bbox": [
+        752.0,
+        274.0,
+        826.0,
+        287.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        741.0,
+        273.5,
+        745.0,
+        287.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "敏感项校验",
+      "bbox": [
+        752.0,
+        293.0,
+        816.0,
+        306.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        741.0,
+        292.5,
+        745.0,
+        306.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "7",
+      "bbox": [
+        290.5,
+        333.0,
+        310.5,
+        354.0
+      ],
+      "font_size": 8.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "结果生成",
+      "bbox": [
+        337.0,
+        335.0,
+        396.0,
+        351.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "评估报告生成",
+      "bbox": [
+        347.0,
+        365.0,
+        421.0,
+        378.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        336.0,
+        364.5,
+        340.0,
+        378.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "结果可视化",
+      "bbox": [
+        347.0,
+        384.0,
+        411.0,
+        397.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        336.0,
+        383.5,
+        340.0,
+        397.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "结论与建议",
+      "bbox": [
+        347.0,
+        404.0,
+        411.0,
+        417.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        336.0,
+        403.5,
+        340.0,
+        417.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "结果导出共享",
+      "bbox": [
+        347.0,
+        423.0,
+        421.0,
+        436.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        336.0,
+        422.5,
+        340.0,
+        436.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "8",
+      "bbox": [
+        489.5,
+        333.0,
+        509.5,
+        354.0
+      ],
+      "font_size": 8.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "版本溯源",
+      "bbox": [
+        535.0,
+        335.0,
+        594.0,
+        351.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "版本记录管理",
+      "bbox": [
+        550.0,
+        365.0,
+        624.0,
+        378.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        539.0,
+        364.5,
+        543.0,
+        378.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "变更影响追踪",
+      "bbox": [
+        550.0,
+        384.0,
+        624.0,
+        397.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        539.0,
+        383.5,
+        543.0,
+        397.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "溯源链路管理",
+      "bbox": [
+        550.0,
+        404.0,
+        624.0,
+        417.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        539.0,
+        403.5,
+        543.0,
+        417.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "回溯与对比",
+      "bbox": [
+        550.0,
+        423.0,
+        614.0,
+        436.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        539.0,
+        422.5,
+        543.0,
+        436.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "9",
+      "bbox": [
+        688.5,
+        333.0,
+        708.5,
+        354.0
+      ],
+      "font_size": 8.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "证书审核",
+      "bbox": [
+        738.0,
+        335.0,
+        797.0,
+        351.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "结果合规审核",
+      "bbox": [
+        752.0,
+        365.0,
+        826.0,
+        378.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        741.0,
+        364.5,
+        745.0,
+        378.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "证书签发管理",
+      "bbox": [
+        752.0,
+        384.0,
+        826.0,
+        397.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        741.0,
+        383.5,
+        745.0,
+        397.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "证书状态管理",
+      "bbox": [
+        752.0,
+        404.0,
+        826.0,
+        417.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        741.0,
+        403.5,
+        745.0,
+        417.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "撤销与更新",
+      "bbox": [
+        752.0,
+        423.0,
+        816.0,
+        436.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        741.0,
+        422.5,
+        745.0,
+        436.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "反馈迭代",
+      "bbox": [
+        903.0,
+        259.0,
+        929.0,
+        293.0
+      ],
+      "font_size": 18.5,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.93,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "证据支撑",
+      "bbox": [
+        571.0,
+        455.0,
+        631.0,
+        470.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.97,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "对象/证据池（评估对象与关键证据沉淀）",
+      "bbox": [
+        424.0,
+        476.0,
+        710.0,
+        493.0
+      ],
+      "font_size": 12.9,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "企业主体",
+      "bbox": [
+        305.0,
+        525.0,
+        355.0,
+        540.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "海外项目",
+      "bbox": [
+        402.0,
+        525.0,
+        454.0,
+        540.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "技术设备",
+      "bbox": [
+        503.0,
+        525.0,
+        554.0,
+        540.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "财务信用",
+      "bbox": [
+        606.0,
+        525.0,
+        657.0,
+        540.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "E&S/HSE",
+      "bbox": [
+        707.0,
+        514.0,
+        757.0,
+        529.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.96,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "合规",
+      "bbox": [
+        721.0,
+        529.0,
+        747.0,
+        544.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "国别市场",
+      "bbox": [
+        811.0,
+        514.0,
+        862.0,
+        529.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "与风险",
+      "bbox": [
+        824.0,
+        529.0,
+        862.0,
+        544.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "结果应用",
+      "bbox": [
+        998.0,
+        18.0,
+        1066.0,
+        37.0
+      ],
+      "font_size": 14.62,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "（多场景赋能）",
+      "bbox": [
+        997.0,
+        36.0,
+        1066.0,
+        52.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.96,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "企业应用",
+      "bbox": [
+        998.0,
+        77.0,
+        1050.0,
+        92.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "战略决策支持",
+      "bbox": [
+        1012.0,
+        105.0,
+        1085.0,
+        118.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        104.5,
+        1005.0,
+        118.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "投资立项评估",
+      "bbox": [
+        1012.0,
+        124.0,
+        1085.0,
+        137.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        123.5,
+        1005.0,
+        137.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "项目投标支持",
+      "bbox": [
+        1012.0,
+        144.0,
+        1085.0,
+        157.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        143.5,
+        1005.0,
+        157.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "绩效考核应用",
+      "bbox": [
+        1012.0,
+        163.0,
+        1085.0,
+        176.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        162.5,
+        1005.0,
+        176.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "风险预警控制",
+      "bbox": [
+        1012.0,
+        182.0,
+        1085.0,
+        195.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        181.5,
+        1005.0,
+        195.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "外部合作伙伴应用",
+      "bbox": [
+        995.0,
+        249.0,
+        1080.0,
+        265.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "金融机构授信",
+      "bbox": [
+        1012.0,
+        279.0,
+        1085.0,
+        292.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        278.5,
+        1005.0,
+        292.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "供应商准入评估",
+      "bbox": [
+        1012.0,
+        299.0,
+        1094.0,
+        312.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        298.5,
+        1005.0,
+        312.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "合作伙伴尽调",
+      "bbox": [
+        1012.0,
+        318.0,
+        1085.0,
+        331.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        317.5,
+        1005.0,
+        331.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "保险承保参考",
+      "bbox": [
+        1012.0,
+        337.0,
+        1085.0,
+        350.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        336.5,
+        1005.0,
+        350.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "法律合规尽职",
+      "bbox": [
+        1012.0,
+        357.0,
+        1085.0,
+        370.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        356.5,
+        1005.0,
+        370.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "行业组织应用",
+      "bbox": [
+        998.0,
+        419.0,
+        1066.0,
+        435.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "行业能力对标",
+      "bbox": [
+        1012.0,
+        448.0,
+        1085.0,
+        461.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        447.5,
+        1005.0,
+        461.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "标准制定参考",
+      "bbox": [
+        1012.0,
+        468.0,
+        1085.0,
+        481.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        467.5,
+        1005.0,
+        481.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "行业洞察分析",
+      "bbox": [
+        1012.0,
+        487.0,
+        1085.0,
+        500.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        486.5,
+        1005.0,
+        500.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "政策研究支持",
+      "bbox": [
+        1012.0,
+        506.0,
+        1085.0,
+        519.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        505.5,
+        1005.0,
+        519.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "公共服务支撑",
+      "bbox": [
+        1012.0,
+        526.0,
+        1085.0,
+        539.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1001.0,
+        525.5,
+        1005.0,
+        539.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "运营保障",
+      "bbox": [
+        1171.0,
+        18.0,
+        1238.0,
+        37.0
+      ],
+      "font_size": 14.62,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "（安全合规）",
+      "bbox": [
+        1171.0,
+        36.0,
+        1239.0,
+        52.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.96,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "1",
+      "bbox": [
+        1159.0,
+        78.5,
+        1177.0,
+        97.5
+      ],
+      "font_size": 7.8,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "分类分级",
+      "bbox": [
+        1197.0,
+        89.0,
+        1248.0,
+        104.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "数据与能力",
+      "bbox": [
+        1194.0,
+        118.0,
+        1254.0,
+        132.0
+      ],
+      "font_size": 10.32,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1187.0,
+        117.5,
+        1191.0,
+        132.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "分类分级管理",
+      "bbox": [
+        1194.0,
+        134.0,
+        1263.0,
+        148.0
+      ],
+      "font_size": 10.32,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1187.0,
+        133.5,
+        1191.0,
+        148.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "2",
+      "bbox": [
+        1159.0,
+        185.5,
+        1177.0,
+        204.5
+      ],
+      "font_size": 7.8,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "授权管理",
+      "bbox": [
+        1197.0,
+        196.0,
+        1248.0,
+        211.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "访问主体与",
+      "bbox": [
+        1195.0,
+        225.0,
+        1254.0,
+        239.0
+      ],
+      "font_size": 10.32,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1188.0,
+        224.5,
+        1192.0,
+        239.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "范围授权管理",
+      "bbox": [
+        1194.0,
+        240.0,
+        1263.0,
+        254.0
+      ],
+      "font_size": 10.32,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1187.0,
+        239.5,
+        1191.0,
+        254.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "3",
+      "bbox": [
+        1159.0,
+        291.5,
+        1177.0,
+        310.5
+      ],
+      "font_size": 7.8,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "权限控制",
+      "bbox": [
+        1197.0,
+        303.0,
+        1248.0,
+        318.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "细粒度权限",
+      "bbox": [
+        1194.0,
+        332.0,
+        1254.0,
+        346.0
+      ],
+      "font_size": 10.32,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1187.0,
+        331.5,
+        1191.0,
+        346.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "与策略控制",
+      "bbox": [
+        1194.0,
+        347.0,
+        1254.0,
+        361.0
+      ],
+      "font_size": 10.32,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1187.0,
+        346.5,
+        1191.0,
+        361.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "4",
+      "bbox": [
+        1159.0,
+        398.5,
+        1177.0,
+        417.5
+      ],
+      "font_size": 7.8,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "数据脱敏",
+      "bbox": [
+        1197.0,
+        410.0,
+        1248.0,
+        425.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "敏感数据识别",
+      "bbox": [
+        1194.0,
+        439.0,
+        1263.0,
+        453.0
+      ],
+      "font_size": 10.32,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1187.0,
+        438.5,
+        1191.0,
+        453.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "与脱敏处理",
+      "bbox": [
+        1194.0,
+        454.0,
+        1254.0,
+        468.0
+      ],
+      "font_size": 10.32,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1187.0,
+        453.5,
+        1191.0,
+        468.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "5",
+      "bbox": [
+        1159.0,
+        504.5,
+        1177.0,
+        523.5
+      ],
+      "font_size": 7.8,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "发布审核",
+      "bbox": [
+        1197.0,
+        516.0,
+        1248.0,
+        531.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "对外发布前",
+      "bbox": [
+        1194.0,
+        545.0,
+        1254.0,
+        559.0
+      ],
+      "font_size": 10.32,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1187.0,
+        544.5,
+        1191.0,
+        559.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "合规审核",
+      "bbox": [
+        1194.0,
+        560.0,
+        1245.0,
+        574.0
+      ],
+      "font_size": 10.32,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1187.0,
+        559.5,
+        1191.0,
+        574.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "6",
+      "bbox": [
+        1159.0,
+        611.5,
+        1177.0,
+        630.5
+      ],
+      "font_size": 7.8,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "index",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "index_weight_contract"
+    },
+    {
+      "text": "审计追踪",
+      "bbox": [
+        1197.0,
+        623.0,
+        1248.0,
+        638.0
+      ],
+      "font_size": 11.18,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "全链路操作",
+      "bbox": [
+        1194.0,
+        652.0,
+        1254.0,
+        666.0
+      ],
+      "font_size": 10.32,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1187.0,
+        651.5,
+        1191.0,
+        666.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "日志留存审计",
+      "bbox": [
+        1194.0,
+        667.0,
+        1263.0,
+        681.0
+      ],
+      "font_size": 10.32,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        1187.0,
+        666.5,
+        1191.0,
+        681.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "服务价值层",
+      "bbox": [
+        41.0,
+        631.0,
+        126.0,
+        652.0
+      ],
+      "font_size": 16.34,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "（能力输出与服务支撑）",
+      "bbox": [
+        18.0,
+        660.0,
+        149.0,
+        679.0
+      ],
+      "font_size": 14.62,
+      "font_family": "Microsoft YaHei",
+      "fill": "#FFFFFF",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "基础评估服务",
+      "bbox": [
+        246.0,
+        621.0,
+        321.0,
+        637.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "标准化评估服务",
+      "bbox": [
+        256.0,
+        649.0,
+        340.0,
+        662.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        245.0,
+        648.5,
+        249.0,
+        662.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "快速评估工具",
+      "bbox": [
+        256.0,
+        668.0,
+        330.0,
+        681.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        245.0,
+        667.5,
+        249.0,
+        681.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "评估模板中心",
+      "bbox": [
+        256.0,
+        686.0,
+        330.0,
+        699.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        245.0,
+        685.5,
+        249.0,
+        699.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "专项评估服务",
+      "bbox": [
+        428.0,
+        621.0,
+        503.0,
+        637.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "专项能力评估",
+      "bbox": [
+        437.0,
+        649.0,
+        512.0,
+        662.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        426.0,
+        648.5,
+        430.0,
+        662.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "行业场景评估",
+      "bbox": [
+        437.0,
+        668.0,
+        512.0,
+        681.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        426.0,
+        667.5,
+        430.0,
+        681.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "定制化评估服务",
+      "bbox": [
+        437.0,
+        686.0,
+        521.0,
+        699.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        426.0,
+        685.5,
+        430.0,
+        699.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "监测订阅服务",
+      "bbox": [
+        616.0,
+        621.0,
+        691.0,
+        637.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "能力动态监测",
+      "bbox": [
+        624.0,
+        649.0,
+        699.0,
+        662.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        613.0,
+        648.5,
+        617.0,
+        662.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "风险预警订阅",
+      "bbox": [
+        624.0,
+        668.0,
+        699.0,
+        681.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        613.0,
+        667.5,
+        617.0,
+        681.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "指标变化推送",
+      "bbox": [
+        624.0,
+        686.0,
+        699.0,
+        699.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        613.0,
+        685.5,
+        617.0,
+        699.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "国际交流服务",
+      "bbox": [
+        806.0,
+        621.0,
+        881.0,
+        637.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "国际标准对接",
+      "bbox": [
+        814.0,
+        649.0,
+        889.0,
+        662.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        803.0,
+        648.5,
+        807.0,
+        662.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "跨境互认支持",
+      "bbox": [
+        814.0,
+        668.0,
+        889.0,
+        681.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        803.0,
+        667.5,
+        807.0,
+        681.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "国别信息服务",
+      "bbox": [
+        814.0,
+        686.0,
+        889.0,
+        699.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        803.0,
+        685.5,
+        807.0,
+        699.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "生态协作服务",
+      "bbox": [
+        996.0,
+        621.0,
+        1071.0,
+        637.0
+      ],
+      "font_size": 12.04,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": true,
+      "semantic_role": "parallel_title",
+      "align": "center",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.98,
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "title_weight_contract"
+    },
+    {
+      "text": "合作生态对接",
+      "bbox": [
+        1004.0,
+        649.0,
+        1079.0,
+        662.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        993.0,
+        648.5,
+        997.0,
+        662.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "能力开放共享",
+      "bbox": [
+        1004.0,
+        668.0,
+        1079.0,
+        681.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        993.0,
+        667.5,
+        997.0,
+        681.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    },
+    {
+      "text": "生态共建共赢",
+      "bbox": [
+        1004.0,
+        686.0,
+        1079.0,
+        699.0
+      ],
+      "font_size": 9.46,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "body",
+      "align": "left",
+      "v_align": "mid",
+      "source": "vision-json",
+      "confidence": 0.94
+    },
+    {
+      "text": "•",
+      "bbox": [
+        993.0,
+        685.5,
+        997.0,
+        699.0
+      ],
+      "font_size": 8.0,
+      "font_family": "Microsoft YaHei",
+      "fill": "#0B3B75",
+      "bold": false,
+      "semantic_role": "bullet_marker",
+      "align": "center",
+      "v_align": "mid",
+      "source": "generated_bullet",
+      "semantic_typography_corrected": true,
+      "semantic_typography_reason": "bullet_marker_weight_contract"
+    }
+  ]
+}

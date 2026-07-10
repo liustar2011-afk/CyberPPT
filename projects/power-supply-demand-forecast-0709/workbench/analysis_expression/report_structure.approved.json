@@ -1,0 +1,11 @@
+{
+  "schema": "cyberppt.analysis_expression.approval.v1",
+  "gate": "report_structure",
+  "approved": true,
+  "approved_at": "2026-07-10T06:05:44.271635+00:00",
+  "pending_confirmation": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/report_structure.pending-confirmation.json",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/report_structure.md",
+  "source_sha256": "0eb1c65333f0eaf1603ceba00e64292fc6581148c20e2c577c886eddab14bf41",
+  "option_id": "confirm_four_module_structure",
+  "note": "用户确认四章汇报结构。"
+}

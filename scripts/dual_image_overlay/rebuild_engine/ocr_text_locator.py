@@ -7,12 +7,17 @@ import argparse
 import json
 import re
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
 from PIL import Image
 
 from codex_oauth_image import run_codex_vision_text
+
+
+DEFAULT_TRANSIENT_RETRY_DELAYS: tuple[float, ...] = (1.0, 3.0, 9.0)
+DEFAULT_QUALITY_RETRIES = 2
 
 
 VISION_JSON_PROMPT = """识别这张 PPT 页面图片中的所有可读文字，并返回严格 JSON。
@@ -99,6 +104,38 @@ def load_layout(path: Path) -> dict[str, Any]:
     return normalize_layout(json.loads(path.read_text(encoding="utf-8")))
 
 
+def _call_vision_backend_once(
+    image_path: Path,
+    *,
+    timeout: int,
+    retry_delays: tuple[float, ...] = DEFAULT_TRANSIENT_RETRY_DELAYS,
+) -> dict[str, Any]:
+    """Call the vision OCR backend, retrying on transient network failures.
+
+    The Codex OAuth Responses call occasionally fails with a transient network
+    error (e.g. SSL EOF) that has nothing to do with the image or prompt; a
+    plain retry with backoff resolves it without a human needing to notice the
+    stack trace and manually re-run the whole rebuild command.
+    """
+    last_error: Exception | None = None
+    for attempt, delay in enumerate((0.0, *retry_delays)):
+        if delay:
+            print(
+                f"OCR vision call failed ({last_error}); retrying in {delay:.0f}s "
+                f"(attempt {attempt + 1}/{len(retry_delays) + 1}).",
+                file=sys.stderr,
+            )
+            time.sleep(delay)
+        try:
+            raw = run_codex_vision_text(prompt=VISION_JSON_PROMPT, image_paths=[image_path], timeout=timeout)
+            return parse_json_output(raw)
+        except Exception as exc:  # noqa: BLE001 - network/SSL/JSON hiccups are all transient here
+            last_error = exc
+    raise RuntimeError(
+        f"OCR vision backend failed after {len(retry_delays) + 1} attempts: {last_error}"
+    ) from last_error
+
+
 def locate_text(
     image_path: Path,
     *,
@@ -106,8 +143,20 @@ def locate_text(
     output_path: Path | None = None,
     dry_run: bool = False,
     timeout: int = 300,
+    min_expected_items: int | None = None,
+    quality_retries: int = DEFAULT_QUALITY_RETRIES,
 ) -> dict[str, Any]:
-    """Locate text in an image and optionally write the normalized JSON."""
+    """Locate text in an image and optionally write the normalized JSON.
+
+    `min_expected_items`, when given, is a rough floor for how many distinct
+    text items the source content should contain (e.g. the number of known
+    body lines in the page script). The vision OCR backend is not
+    deterministic: the same image can come back with adjacent lines merged
+    into one blob on one call and cleanly separated on the next. When the
+    first attempt detects fewer items than expected, this resamples up to
+    `quality_retries` more times and keeps whichever attempt found the most
+    items, instead of silently accepting a likely-merged result.
+    """
     image_path = image_path.resolve()
     if not image_path.is_file():
         raise FileNotFoundError(f"Image not found: {image_path}")
@@ -118,10 +167,27 @@ def locate_text(
         if dry_run:
             layout = {"image_size": image_size(image_path), "items": []}
         else:
-            raw = run_codex_vision_text(prompt=VISION_JSON_PROMPT, image_paths=[image_path], timeout=timeout)
-            data = parse_json_output(raw)
-            data.setdefault("backend", backend)
-            layout = normalize_layout(data)
+            best_layout: dict[str, Any] | None = None
+            attempts_used = 0
+            for attempt in range(1 + max(0, quality_retries)):
+                data = _call_vision_backend_once(image_path, timeout=timeout)
+                data.setdefault("backend", backend)
+                candidate = normalize_layout(data)
+                attempts_used += 1
+                if best_layout is None or len(candidate["items"]) > len(best_layout["items"]):
+                    best_layout = candidate
+                if min_expected_items is None or len(candidate["items"]) >= min_expected_items:
+                    break
+                print(
+                    f"OCR detected only {len(candidate['items'])} text item(s), "
+                    f"expected at least {min_expected_items}; resampling "
+                    f"({attempt + 1}/{1 + quality_retries}).",
+                    file=sys.stderr,
+                )
+            assert best_layout is not None
+            layout = best_layout
+            if attempts_used > 1:
+                layout["quality_retry_attempts"] = attempts_used
     else:
         raise ValueError(f"Unsupported OCR backend: {backend}")
 

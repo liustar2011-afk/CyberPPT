@@ -1,0 +1,75 @@
+{
+  "schema": "cyberppt.artifact_ledger.v1",
+  "artifacts": [
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "11",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/stages/02-blueprint-dual-image/pages_011_011/script-imagegen_cyberppt_deliverable_p11_p11.md",
+      "status": "ready_for_image_generation",
+      "depends_on": [
+        "/Volumes/DOC/ppt脚本示例/ppt脚本规则库/0629/script-imagegen.md",
+        "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11 --script /Volumes/DOC/ppt脚本示例/ppt脚本规则库/0629/script-imagegen.md --pages 11 --style-lock /Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/locks/visual_style_lock.json",
+      "sha256": "82ebb2eff66eb410dc4068582a5617a42da700876ffaa416f81e716bd28bd70e",
+      "updated_at": "2026-07-05T15:45:47+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "11",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/stages/02-blueprint-dual-image/pages_011_011/page_image_pairs.json",
+      "status": "ready_for_image_generation",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/stages/02-blueprint-dual-image/pages_011_011/script-imagegen_cyberppt_deliverable_p11_p11.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11 --script /Volumes/DOC/ppt脚本示例/ppt脚本规则库/0629/script-imagegen.md --pages 11 --style-lock /Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/locks/visual_style_lock.json",
+      "sha256": "af3d301025c2317e747246064f82c9878ba6895b7d37140b0e6022fd8eca8821",
+      "updated_at": "2026-07-05T15:45:47+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "11",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/locks/template_text/pages_011_011_template_text_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "/Volumes/DOC/ppt脚本示例/ppt脚本规则库/0629/script-imagegen.md",
+        "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/stages/02-blueprint-dual-image/pages_011_011/page_image_pairs.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11 --script /Volumes/DOC/ppt脚本示例/ppt脚本规则库/0629/script-imagegen.md --pages 11 --style-lock /Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/locks/visual_style_lock.json",
+      "sha256": "65e9d85fc7f7f931dffda235ca4d3cc250cdf6f850507824716959cc42b3ad58",
+      "updated_at": "2026-07-05T15:45:47+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "11",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/locks/visual_style_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "/Volumes/DOC/ppt脚本示例/ppt脚本规则库/0629/script-imagegen.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11 --script /Volumes/DOC/ppt脚本示例/ppt脚本规则库/0629/script-imagegen.md --pages 11 --style-lock /Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/locks/visual_style_lock.json",
+      "sha256": "68cbdf719507d5342b7373e8d32ff49669b8b8536b716771c99321696aa50c0d",
+      "updated_at": "2026-07-05T15:45:47+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "11",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/stages/02-blueprint-dual-image/pages_011_011/pages_011_011_final_script_pages_run.json",
+      "status": "ready_for_image_generation",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/stages/02-blueprint-dual-image/pages_011_011/script-imagegen_cyberppt_deliverable_p11_p11.md",
+        "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/stages/02-blueprint-dual-image/pages_011_011/page_image_pairs.json",
+        "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/locks/template_text/pages_011_011_template_text_lock.json",
+        "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11 --script /Volumes/DOC/ppt脚本示例/ppt脚本规则库/0629/script-imagegen.md --pages 11 --style-lock /Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/workbench/locks/visual_style_lock.json",
+      "sha256": "d249f5ba8d7b8a20055761cb71eebccadd3aba6a2b7a3b67cf7f23ace380695c",
+      "updated_at": "2026-07-05T15:45:47+00:00"
+    }
+  ]
+}

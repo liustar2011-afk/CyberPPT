@@ -1,0 +1,4378 @@
+{
+  "schema": "cyberppt.dual_image.container_workspace.v1",
+  "stage": "template",
+  "page_number": 13,
+  "valid": true,
+  "container_count": 13,
+  "slot_count": 13,
+  "containers": [
+    {
+      "id": "inferred_row_band_top",
+      "role": "row_band",
+      "container_bbox": {
+        "x": 31.06,
+        "y": 105.73,
+        "w": 1220.79,
+        "h": 195.92
+      },
+      "text_safe_bbox": {
+        "x": 31.06,
+        "y": 105.73,
+        "w": 1220.79,
+        "h": 195.92
+      },
+      "occupied_zones": [
+        {
+          "id": "inferred_row_band_top_visual_occupied_084",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_002",
+          "bbox": {
+            "x": 208.0,
+            "y": 82.62,
+            "w": 522.0,
+            "h": 47.21
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_085",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_003",
+          "bbox": {
+            "x": 746.0,
+            "y": 82.62,
+            "w": 208.0,
+            "h": 47.21
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_086",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_004",
+          "bbox": {
+            "x": 6.0,
+            "y": 82.62,
+            "w": 188.0,
+            "h": 44.85
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_087",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_005",
+          "bbox": {
+            "x": 1110.0,
+            "y": 82.62,
+            "w": 160.0,
+            "h": 44.85
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_088",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_006",
+          "bbox": {
+            "x": 968.0,
+            "y": 82.62,
+            "w": 126.0,
+            "h": 44.85
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_089",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_007",
+          "bbox": {
+            "x": 764.0,
+            "y": 177.05,
+            "w": 56.0,
+            "h": 77.9
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_093",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_011",
+          "bbox": {
+            "x": 1008.0,
+            "y": 181.77,
+            "w": 46.0,
+            "h": 56.66
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_094",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_012",
+          "bbox": {
+            "x": 236.0,
+            "y": 155.8,
+            "w": 36.0,
+            "h": 44.85
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_098",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_016",
+          "bbox": {
+            "x": 1126.0,
+            "y": 162.89,
+            "w": 28.0,
+            "h": 42.49
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_099",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_017",
+          "bbox": {
+            "x": 28.0,
+            "y": 184.13,
+            "w": 28.0,
+            "h": 40.13
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_100",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_018",
+          "bbox": {
+            "x": 28.0,
+            "y": 240.79,
+            "w": 28.0,
+            "h": 40.13
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_109",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_027",
+          "bbox": {
+            "x": 408.0,
+            "y": 290.36,
+            "w": 20.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_110",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_028",
+          "bbox": {
+            "x": 574.0,
+            "y": 290.36,
+            "w": 20.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_111",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_029",
+          "bbox": {
+            "x": 662.0,
+            "y": 290.36,
+            "w": 20.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_113",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_031",
+          "bbox": {
+            "x": 246.0,
+            "y": 290.36,
+            "w": 18.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_114",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_032",
+          "bbox": {
+            "x": 328.0,
+            "y": 290.36,
+            "w": 18.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_115",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_033",
+          "bbox": {
+            "x": 490.0,
+            "y": 290.36,
+            "w": 18.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_117",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_035",
+          "bbox": {
+            "x": 762.0,
+            "y": 148.72,
+            "w": 166.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_118",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_036",
+          "bbox": {
+            "x": 20.0,
+            "y": 141.64,
+            "w": 160.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_121",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_039",
+          "bbox": {
+            "x": 22.0,
+            "y": 295.08,
+            "w": 156.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_142",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_060",
+          "bbox": {
+            "x": 1116.0,
+            "y": 200.66,
+            "w": 2.0,
+            "h": 51.93
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_154",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_072",
+          "bbox": {
+            "x": 1116.0,
+            "y": 259.67,
+            "w": 2.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_157",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_075",
+          "bbox": {
+            "x": 1132.0,
+            "y": 290.36,
+            "w": 16.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_161",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_002",
+          "bbox": {
+            "x": 208.0,
+            "y": 82.62,
+            "w": 522.0,
+            "h": 47.21
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_162",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 974.462,
+            "y": 107.98,
+            "w": 271.7,
+            "h": 61.701
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_163",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_003",
+          "bbox": {
+            "x": 746.0,
+            "y": 82.62,
+            "w": 208.0,
+            "h": 47.21
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_164",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 7.837,
+            "y": 107.98,
+            "w": 245.575,
+            "h": 58.616
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_165",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_004",
+          "bbox": {
+            "x": 6.0,
+            "y": 82.62,
+            "w": 188.0,
+            "h": 44.85
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_167",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_005",
+          "bbox": {
+            "x": 1110.0,
+            "y": 82.62,
+            "w": 160.0,
+            "h": 44.85
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_169",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_006",
+          "bbox": {
+            "x": 968.0,
+            "y": 82.62,
+            "w": 126.0,
+            "h": 44.85
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_170",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 997.975,
+            "y": 231.395,
+            "w": 73.15,
+            "h": 101.81
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_171",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_007",
+          "bbox": {
+            "x": 764.0,
+            "y": 177.05,
+            "w": 56.0,
+            "h": 77.9
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_179",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_011",
+          "bbox": {
+            "x": 1008.0,
+            "y": 181.77,
+            "w": 46.0,
+            "h": 56.66
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_181",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_012",
+          "bbox": {
+            "x": 236.0,
+            "y": 155.8,
+            "w": 36.0,
+            "h": 44.85
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_189",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_016",
+          "bbox": {
+            "x": 1126.0,
+            "y": 162.89,
+            "w": 28.0,
+            "h": 42.49
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_190",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 36.575,
+            "y": 240.648,
+            "w": 36.575,
+            "h": 52.447
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_191",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_017",
+          "bbox": {
+            "x": 28.0,
+            "y": 184.13,
+            "w": 28.0,
+            "h": 40.13
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_193",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_018",
+          "bbox": {
+            "x": 28.0,
+            "y": 240.79,
+            "w": 28.0,
+            "h": 40.13
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_211",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_027",
+          "bbox": {
+            "x": 408.0,
+            "y": 290.36,
+            "w": 20.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_213",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_028",
+          "bbox": {
+            "x": 574.0,
+            "y": 290.36,
+            "w": 20.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_215",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_029",
+          "bbox": {
+            "x": 662.0,
+            "y": 290.36,
+            "w": 20.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_219",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_031",
+          "bbox": {
+            "x": 246.0,
+            "y": 290.36,
+            "w": 18.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_221",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_032",
+          "bbox": {
+            "x": 328.0,
+            "y": 290.36,
+            "w": 18.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_223",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_033",
+          "bbox": {
+            "x": 490.0,
+            "y": 290.36,
+            "w": 18.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_226",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 995.362,
+            "y": 194.369,
+            "w": 216.838,
+            "h": 3.084
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_227",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_035",
+          "bbox": {
+            "x": 762.0,
+            "y": 148.72,
+            "w": 166.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_229",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_036",
+          "bbox": {
+            "x": 20.0,
+            "y": 141.64,
+            "w": 160.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_235",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_039",
+          "bbox": {
+            "x": 22.0,
+            "y": 295.08,
+            "w": 156.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_277",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_060",
+          "bbox": {
+            "x": 1116.0,
+            "y": 200.66,
+            "w": 2.0,
+            "h": 51.93
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_301",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_072",
+          "bbox": {
+            "x": 1116.0,
+            "y": 259.67,
+            "w": 2.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_row_band_top_visual_occupied_307",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_075",
+          "bbox": {
+            "x": 1132.0,
+            "y": 290.36,
+            "w": 16.0,
+            "h": 2.36
+          }
+        }
+      ],
+      "work_slots": [
+        {
+          "id": "inferred_row_band_top_body_slot",
+          "bbox": {
+            "x": 276.0,
+            "y": 133.83,
+            "w": 484.0,
+            "h": 152.53
+          },
+          "preferred_roles": [
+            "body",
+            "bullet",
+            "description",
+            "title",
+            "ability_title"
+          ],
+          "capacity": {
+            "area": 73824.52,
+            "source": "safe_zone_minus_occupied_zones"
+          },
+          "slot_adjustments": [
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_row_band_top_visual_occupied_084",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 31.06,
+                "y": 105.73,
+                "w": 1220.79,
+                "h": 195.92
+              },
+              "to_bbox": {
+                "x": 31.06,
+                "y": 133.83,
+                "w": 1220.79,
+                "h": 167.82
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_row_band_top_visual_occupied_089",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 31.06,
+                "y": 133.83,
+                "w": 1220.79,
+                "h": 167.82
+              },
+              "to_bbox": {
+                "x": 31.06,
+                "y": 133.83,
+                "w": 728.94,
+                "h": 167.82
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_row_band_top_visual_occupied_094",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 31.06,
+                "y": 133.83,
+                "w": 728.94,
+                "h": 167.82
+              },
+              "to_bbox": {
+                "x": 276.0,
+                "y": 133.83,
+                "w": 484.0,
+                "h": 167.82
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_row_band_top_visual_occupied_109",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 276.0,
+                "y": 133.83,
+                "w": 484.0,
+                "h": 167.82
+              },
+              "to_bbox": {
+                "x": 276.0,
+                "y": 133.83,
+                "w": 484.0,
+                "h": 152.53
+              }
+            }
+          ]
+        }
+      ],
+      "slot_count": 1
+    },
+    {
+      "id": "inferred_panel_01",
+      "role": "repeated_panel",
+      "container_bbox": {
+        "x": 38.81,
+        "y": 291.97,
+        "w": 207.94,
+        "h": 298.29
+      },
+      "text_safe_bbox": {
+        "x": 38.81,
+        "y": 291.97,
+        "w": 207.94,
+        "h": 298.29
+      },
+      "occupied_zones": [
+        {
+          "id": "inferred_panel_01_visual_occupied_102",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_020",
+          "bbox": {
+            "x": 28.0,
+            "y": 354.1,
+            "w": 30.0,
+            "h": 35.41
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_103",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_021",
+          "bbox": {
+            "x": 238.0,
+            "y": 361.18,
+            "w": 32.0,
+            "h": 33.05
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_104",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_022",
+          "bbox": {
+            "x": 28.0,
+            "y": 462.69,
+            "w": 28.0,
+            "h": 35.41
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_107",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_025",
+          "bbox": {
+            "x": 22.0,
+            "y": 540.59,
+            "w": 22.0,
+            "h": 33.05
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_113",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_031",
+          "bbox": {
+            "x": 246.0,
+            "y": 290.36,
+            "w": 18.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_119",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_037",
+          "bbox": {
+            "x": 20.0,
+            "y": 512.26,
+            "w": 160.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_120",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_038",
+          "bbox": {
+            "x": 20.0,
+            "y": 406.03,
+            "w": 158.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_121",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_039",
+          "bbox": {
+            "x": 22.0,
+            "y": 295.08,
+            "w": 156.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_125",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_043",
+          "bbox": {
+            "x": 192.0,
+            "y": 309.25,
+            "w": 16.0,
+            "h": 18.89
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_140",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_058",
+          "bbox": {
+            "x": 218.0,
+            "y": 512.26,
+            "w": 52.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_190",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 36.575,
+            "y": 240.648,
+            "w": 36.575,
+            "h": 52.447
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_192",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 36.575,
+            "y": 314.699,
+            "w": 36.575,
+            "h": 52.448
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_196",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 36.575,
+            "y": 462.789,
+            "w": 39.187,
+            "h": 46.279
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_197",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_020",
+          "bbox": {
+            "x": 28.0,
+            "y": 354.1,
+            "w": 30.0,
+            "h": 35.41
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_199",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_021",
+          "bbox": {
+            "x": 238.0,
+            "y": 361.18,
+            "w": 32.0,
+            "h": 33.05
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_201",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_022",
+          "bbox": {
+            "x": 28.0,
+            "y": 462.69,
+            "w": 28.0,
+            "h": 35.41
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_207",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_025",
+          "bbox": {
+            "x": 22.0,
+            "y": 540.59,
+            "w": 22.0,
+            "h": 33.05
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_219",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_031",
+          "bbox": {
+            "x": 246.0,
+            "y": 290.36,
+            "w": 18.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_231",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_037",
+          "bbox": {
+            "x": 20.0,
+            "y": 512.26,
+            "w": 160.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_232",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 26.125,
+            "y": 530.659,
+            "w": 206.387,
+            "h": 3.084
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_233",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_038",
+          "bbox": {
+            "x": 20.0,
+            "y": 406.03,
+            "w": 158.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_234",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 28.737,
+            "y": 385.653,
+            "w": 203.775,
+            "h": 3.085
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_235",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_039",
+          "bbox": {
+            "x": 22.0,
+            "y": 295.08,
+            "w": 156.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_243",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_043",
+          "bbox": {
+            "x": 192.0,
+            "y": 309.25,
+            "w": 16.0,
+            "h": 18.89
+          }
+        },
+        {
+          "id": "inferred_panel_01_visual_occupied_273",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_058",
+          "bbox": {
+            "x": 218.0,
+            "y": 512.26,
+            "w": 52.0,
+            "h": 2.36
+          }
+        }
+      ],
+      "work_slots": [
+        {
+          "id": "inferred_panel_01_body_slot",
+          "bbox": {
+            "x": 77.15,
+            "y": 301.44,
+            "w": 110.85,
+            "h": 80.213
+          },
+          "preferred_roles": [
+            "body",
+            "bullet",
+            "description",
+            "title",
+            "ability_title"
+          ],
+          "capacity": {
+            "area": 8891.611,
+            "source": "safe_zone_minus_occupied_zones"
+          },
+          "slot_adjustments": [
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_01_visual_occupied_102",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 38.81,
+                "y": 291.97,
+                "w": 207.94,
+                "h": 298.29
+              },
+              "to_bbox": {
+                "x": 62.0,
+                "y": 291.97,
+                "w": 184.75,
+                "h": 298.29
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_01_visual_occupied_103",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 62.0,
+                "y": 291.97,
+                "w": 184.75,
+                "h": 298.29
+              },
+              "to_bbox": {
+                "x": 62.0,
+                "y": 291.97,
+                "w": 172.0,
+                "h": 298.29
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_01_visual_occupied_119",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 62.0,
+                "y": 291.97,
+                "w": 172.0,
+                "h": 298.29
+              },
+              "to_bbox": {
+                "x": 62.0,
+                "y": 291.97,
+                "w": 172.0,
+                "h": 216.29
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_01_visual_occupied_120",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 62.0,
+                "y": 291.97,
+                "w": 172.0,
+                "h": 216.29
+              },
+              "to_bbox": {
+                "x": 62.0,
+                "y": 291.97,
+                "w": 172.0,
+                "h": 110.06
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_01_visual_occupied_121",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 62.0,
+                "y": 291.97,
+                "w": 172.0,
+                "h": 110.06
+              },
+              "to_bbox": {
+                "x": 62.0,
+                "y": 301.44,
+                "w": 172.0,
+                "h": 100.59
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_01_visual_occupied_125",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 62.0,
+                "y": 301.44,
+                "w": 172.0,
+                "h": 100.59
+              },
+              "to_bbox": {
+                "x": 62.0,
+                "y": 301.44,
+                "w": 126.0,
+                "h": 100.59
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_01_visual_occupied_192",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 62.0,
+                "y": 301.44,
+                "w": 126.0,
+                "h": 100.59
+              },
+              "to_bbox": {
+                "x": 77.15,
+                "y": 301.44,
+                "w": 110.85,
+                "h": 100.59
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_01_visual_occupied_234",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 77.15,
+                "y": 301.44,
+                "w": 110.85,
+                "h": 100.59
+              },
+              "to_bbox": {
+                "x": 77.15,
+                "y": 301.44,
+                "w": 110.85,
+                "h": 80.213
+              }
+            }
+          ]
+        }
+      ],
+      "slot_count": 1
+    },
+    {
+      "id": "inferred_panel_02",
+      "role": "repeated_panel",
+      "container_bbox": {
+        "x": 223.84,
+        "y": 329.38,
+        "w": 167.75,
+        "h": 69.71
+      },
+      "text_safe_bbox": {
+        "x": 223.84,
+        "y": 329.38,
+        "w": 167.75,
+        "h": 69.71
+      },
+      "occupied_zones": [
+        {
+          "id": "inferred_panel_02_visual_occupied_101",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_019",
+          "bbox": {
+            "x": 324.0,
+            "y": 356.46,
+            "w": 28.0,
+            "h": 40.13
+          }
+        },
+        {
+          "id": "inferred_panel_02_visual_occupied_103",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_021",
+          "bbox": {
+            "x": 238.0,
+            "y": 361.18,
+            "w": 32.0,
+            "h": 33.05
+          }
+        },
+        {
+          "id": "inferred_panel_02_visual_occupied_130",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_048",
+          "bbox": {
+            "x": 288.0,
+            "y": 368.26,
+            "w": 18.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_02_visual_occupied_131",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_049",
+          "bbox": {
+            "x": 370.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_02_visual_occupied_195",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_019",
+          "bbox": {
+            "x": 324.0,
+            "y": 356.46,
+            "w": 28.0,
+            "h": 40.13
+          }
+        },
+        {
+          "id": "inferred_panel_02_visual_occupied_199",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_021",
+          "bbox": {
+            "x": 238.0,
+            "y": 361.18,
+            "w": 32.0,
+            "h": 33.05
+          }
+        },
+        {
+          "id": "inferred_panel_02_visual_occupied_218",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 321.337,
+            "y": 379.484,
+            "w": 23.513,
+            "h": 30.857
+          }
+        },
+        {
+          "id": "inferred_panel_02_visual_occupied_234",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 28.737,
+            "y": 385.653,
+            "w": 203.775,
+            "h": 3.085
+          }
+        },
+        {
+          "id": "inferred_panel_02_visual_occupied_253",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_048",
+          "bbox": {
+            "x": 288.0,
+            "y": 368.26,
+            "w": 18.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_02_visual_occupied_255",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_049",
+          "bbox": {
+            "x": 370.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        }
+      ],
+      "work_slots": [
+        {
+          "id": "inferred_panel_02_body_slot",
+          "bbox": {
+            "x": 274.0,
+            "y": 329.38,
+            "w": 46.0,
+            "h": 34.88
+          },
+          "preferred_roles": [
+            "body",
+            "bullet",
+            "description",
+            "title",
+            "ability_title"
+          ],
+          "capacity": {
+            "area": 1604.48,
+            "source": "safe_zone_minus_occupied_zones"
+          },
+          "slot_adjustments": [
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_02_visual_occupied_101",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 223.84,
+                "y": 329.38,
+                "w": 167.75,
+                "h": 69.71
+              },
+              "to_bbox": {
+                "x": 223.84,
+                "y": 329.38,
+                "w": 96.16,
+                "h": 69.71
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_02_visual_occupied_103",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 223.84,
+                "y": 329.38,
+                "w": 96.16,
+                "h": 69.71
+              },
+              "to_bbox": {
+                "x": 274.0,
+                "y": 329.38,
+                "w": 46.0,
+                "h": 69.71
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_02_visual_occupied_130",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 274.0,
+                "y": 329.38,
+                "w": 46.0,
+                "h": 69.71
+              },
+              "to_bbox": {
+                "x": 274.0,
+                "y": 329.38,
+                "w": 46.0,
+                "h": 34.88
+              }
+            }
+          ]
+        }
+      ],
+      "slot_count": 1
+    },
+    {
+      "id": "inferred_panel_03",
+      "role": "repeated_panel",
+      "container_bbox": {
+        "x": 218.03,
+        "y": 430.51,
+        "w": 184.22,
+        "h": 77.94
+      },
+      "text_safe_bbox": {
+        "x": 218.03,
+        "y": 430.51,
+        "w": 184.22,
+        "h": 77.94
+      },
+      "occupied_zones": [
+        {
+          "id": "inferred_panel_03_visual_occupied_252",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 376.2,
+            "y": 481.295,
+            "w": 23.512,
+            "h": 15.422
+          }
+        }
+      ],
+      "work_slots": [
+        {
+          "id": "inferred_panel_03_body_slot",
+          "bbox": {
+            "x": 218.03,
+            "y": 430.51,
+            "w": 154.17,
+            "h": 77.94
+          },
+          "preferred_roles": [
+            "body",
+            "bullet",
+            "description",
+            "title",
+            "ability_title"
+          ],
+          "capacity": {
+            "area": 12016.01,
+            "source": "safe_zone_minus_occupied_zones"
+          },
+          "slot_adjustments": [
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_03_visual_occupied_252",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 218.03,
+                "y": 430.51,
+                "w": 184.22,
+                "h": 77.94
+              },
+              "to_bbox": {
+                "x": 218.03,
+                "y": 430.51,
+                "w": 154.17,
+                "h": 77.94
+              }
+            }
+          ]
+        }
+      ],
+      "slot_count": 1
+    },
+    {
+      "id": "inferred_panel_04",
+      "role": "repeated_panel",
+      "container_bbox": {
+        "x": 145.38,
+        "y": 606.47,
+        "w": 382.81,
+        "h": 76.29
+      },
+      "text_safe_bbox": {
+        "x": 145.38,
+        "y": 606.47,
+        "w": 382.81,
+        "h": 76.29
+      },
+      "occupied_zones": [
+        {
+          "id": "inferred_panel_04_visual_occupied_230",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 26.125,
+            "y": 669.495,
+            "w": 209.0,
+            "h": 3.085
+          }
+        },
+        {
+          "id": "inferred_panel_04_visual_occupied_272",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 284.762,
+            "y": 669.495,
+            "w": 67.926,
+            "h": 3.085
+          }
+        },
+        {
+          "id": "inferred_panel_04_visual_occupied_282",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 412.775,
+            "y": 669.495,
+            "w": 41.8,
+            "h": 3.085
+          }
+        },
+        {
+          "id": "inferred_panel_04_visual_occupied_292",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 525.112,
+            "y": 669.495,
+            "w": 39.188,
+            "h": 3.085
+          }
+        }
+      ],
+      "work_slots": [
+        {
+          "id": "inferred_panel_04_body_slot",
+          "bbox": {
+            "x": 145.38,
+            "y": 606.47,
+            "w": 382.81,
+            "h": 59.025
+          },
+          "preferred_roles": [
+            "body",
+            "bullet",
+            "description",
+            "title",
+            "ability_title"
+          ],
+          "capacity": {
+            "area": 22595.36,
+            "source": "safe_zone_minus_occupied_zones"
+          },
+          "slot_adjustments": [
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_04_visual_occupied_230",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 145.38,
+                "y": 606.47,
+                "w": 382.81,
+                "h": 76.29
+              },
+              "to_bbox": {
+                "x": 145.38,
+                "y": 606.47,
+                "w": 382.81,
+                "h": 59.025
+              }
+            }
+          ]
+        }
+      ],
+      "slot_count": 1
+    },
+    {
+      "id": "inferred_panel_05",
+      "role": "repeated_panel",
+      "container_bbox": {
+        "x": 302.31,
+        "y": 291.97,
+        "w": 343.09,
+        "h": 300.75
+      },
+      "text_safe_bbox": {
+        "x": 302.31,
+        "y": 291.97,
+        "w": 343.09,
+        "h": 300.75
+      },
+      "occupied_zones": [
+        {
+          "id": "inferred_panel_05_visual_occupied_097",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_015",
+          "bbox": {
+            "x": 570.0,
+            "y": 356.46,
+            "w": 30.0,
+            "h": 40.13
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_101",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_019",
+          "bbox": {
+            "x": 324.0,
+            "y": 356.46,
+            "w": 28.0,
+            "h": 40.13
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_105",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_023",
+          "bbox": {
+            "x": 484.0,
+            "y": 358.82,
+            "w": 26.0,
+            "h": 37.77
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_109",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_027",
+          "bbox": {
+            "x": 408.0,
+            "y": 290.36,
+            "w": 20.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_110",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_028",
+          "bbox": {
+            "x": 574.0,
+            "y": 290.36,
+            "w": 20.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_114",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_032",
+          "bbox": {
+            "x": 328.0,
+            "y": 290.36,
+            "w": 18.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_115",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_033",
+          "bbox": {
+            "x": 490.0,
+            "y": 290.36,
+            "w": 18.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_130",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_048",
+          "bbox": {
+            "x": 288.0,
+            "y": 368.26,
+            "w": 18.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_131",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_049",
+          "bbox": {
+            "x": 370.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_132",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_050",
+          "bbox": {
+            "x": 450.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_133",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_051",
+          "bbox": {
+            "x": 534.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_134",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_052",
+          "bbox": {
+            "x": 618.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_141",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_059",
+          "bbox": {
+            "x": 558.0,
+            "y": 512.26,
+            "w": 46.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_143",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_061",
+          "bbox": {
+            "x": 474.0,
+            "y": 512.26,
+            "w": 44.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_145",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_063",
+          "bbox": {
+            "x": 316.0,
+            "y": 512.26,
+            "w": 32.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_150",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_068",
+          "bbox": {
+            "x": 402.0,
+            "y": 512.26,
+            "w": 30.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_151",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_069",
+          "bbox": {
+            "x": 328.0,
+            "y": 375.34,
+            "w": 14.0,
+            "h": 4.72
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_156",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_074",
+          "bbox": {
+            "x": 496.0,
+            "y": 365.9,
+            "w": 10.0,
+            "h": 4.72
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_184",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 525.112,
+            "y": 465.873,
+            "w": 41.8,
+            "h": 55.532
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_187",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_015",
+          "bbox": {
+            "x": 570.0,
+            "y": 356.46,
+            "w": 30.0,
+            "h": 40.13
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_194",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 423.225,
+            "y": 465.873,
+            "w": 36.575,
+            "h": 52.448
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_195",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_019",
+          "bbox": {
+            "x": 324.0,
+            "y": 356.46,
+            "w": 28.0,
+            "h": 40.13
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_198",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 310.887,
+            "y": 472.042,
+            "w": 41.801,
+            "h": 43.195
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_202",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 632.225,
+            "y": 468.958,
+            "w": 33.963,
+            "h": 49.363
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_203",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_023",
+          "bbox": {
+            "x": 484.0,
+            "y": 358.82,
+            "w": 26.0,
+            "h": 37.77
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_210",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 532.95,
+            "y": 379.484,
+            "w": 26.125,
+            "h": 30.857
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_211",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_027",
+          "bbox": {
+            "x": 408.0,
+            "y": 290.36,
+            "w": 20.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_213",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_028",
+          "bbox": {
+            "x": 574.0,
+            "y": 290.36,
+            "w": 20.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_218",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 321.337,
+            "y": 379.484,
+            "w": 23.513,
+            "h": 30.857
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_220",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 428.45,
+            "y": 379.484,
+            "w": 23.512,
+            "h": 30.857
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_221",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_032",
+          "bbox": {
+            "x": 328.0,
+            "y": 290.36,
+            "w": 18.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_222",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 640.062,
+            "y": 379.484,
+            "w": 23.513,
+            "h": 30.857
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_223",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_033",
+          "bbox": {
+            "x": 490.0,
+            "y": 290.36,
+            "w": 18.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_252",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 376.2,
+            "y": 481.295,
+            "w": 23.512,
+            "h": 15.422
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_253",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_048",
+          "bbox": {
+            "x": 288.0,
+            "y": 368.26,
+            "w": 18.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_254",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 483.312,
+            "y": 481.295,
+            "w": 20.9,
+            "h": 15.422
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_255",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_049",
+          "bbox": {
+            "x": 370.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_256",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 587.812,
+            "y": 481.295,
+            "w": 20.9,
+            "h": 15.422
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_257",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_050",
+          "bbox": {
+            "x": 450.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_259",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_051",
+          "bbox": {
+            "x": 534.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_261",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_052",
+          "bbox": {
+            "x": 618.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_275",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_059",
+          "bbox": {
+            "x": 558.0,
+            "y": 512.26,
+            "w": 46.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_279",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_061",
+          "bbox": {
+            "x": 474.0,
+            "y": 512.26,
+            "w": 44.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_283",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_063",
+          "bbox": {
+            "x": 316.0,
+            "y": 512.26,
+            "w": 32.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_293",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_068",
+          "bbox": {
+            "x": 402.0,
+            "y": 512.26,
+            "w": 30.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_294",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 428.45,
+            "y": 490.549,
+            "w": 18.287,
+            "h": 6.168
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_295",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_069",
+          "bbox": {
+            "x": 328.0,
+            "y": 375.34,
+            "w": 14.0,
+            "h": 4.72
+          }
+        },
+        {
+          "id": "inferred_panel_05_visual_occupied_305",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_074",
+          "bbox": {
+            "x": 496.0,
+            "y": 365.9,
+            "w": 10.0,
+            "h": 4.72
+          }
+        }
+      ],
+      "work_slots": [
+        {
+          "id": "inferred_panel_05_body_slot",
+          "bbox": {
+            "x": 356.0,
+            "y": 414.341,
+            "w": 114.0,
+            "h": 47.532
+          },
+          "preferred_roles": [
+            "body",
+            "bullet",
+            "description",
+            "title",
+            "ability_title"
+          ],
+          "capacity": {
+            "area": 5418.648,
+            "source": "safe_zone_minus_occupied_zones"
+          },
+          "slot_adjustments": [
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_05_visual_occupied_097",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 302.31,
+                "y": 291.97,
+                "w": 343.09,
+                "h": 300.75
+              },
+              "to_bbox": {
+                "x": 302.31,
+                "y": 291.97,
+                "w": 263.69,
+                "h": 300.75
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_05_visual_occupied_101",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 302.31,
+                "y": 291.97,
+                "w": 263.69,
+                "h": 300.75
+              },
+              "to_bbox": {
+                "x": 356.0,
+                "y": 291.97,
+                "w": 210.0,
+                "h": 300.75
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_05_visual_occupied_105",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 356.0,
+                "y": 291.97,
+                "w": 210.0,
+                "h": 300.75
+              },
+              "to_bbox": {
+                "x": 356.0,
+                "y": 400.59,
+                "w": 210.0,
+                "h": 192.13
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_05_visual_occupied_141",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 356.0,
+                "y": 400.59,
+                "w": 210.0,
+                "h": 192.13
+              },
+              "to_bbox": {
+                "x": 356.0,
+                "y": 400.59,
+                "w": 198.0,
+                "h": 192.13
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_05_visual_occupied_143",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 356.0,
+                "y": 400.59,
+                "w": 198.0,
+                "h": 192.13
+              },
+              "to_bbox": {
+                "x": 356.0,
+                "y": 400.59,
+                "w": 114.0,
+                "h": 192.13
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_05_visual_occupied_150",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 356.0,
+                "y": 400.59,
+                "w": 114.0,
+                "h": 192.13
+              },
+              "to_bbox": {
+                "x": 356.0,
+                "y": 400.59,
+                "w": 114.0,
+                "h": 107.67
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_05_visual_occupied_194",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 356.0,
+                "y": 400.59,
+                "w": 114.0,
+                "h": 107.67
+              },
+              "to_bbox": {
+                "x": 356.0,
+                "y": 400.59,
+                "w": 114.0,
+                "h": 61.283
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_05_visual_occupied_220",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 356.0,
+                "y": 400.59,
+                "w": 114.0,
+                "h": 61.283
+              },
+              "to_bbox": {
+                "x": 356.0,
+                "y": 414.341,
+                "w": 114.0,
+                "h": 47.532
+              }
+            }
+          ]
+        }
+      ],
+      "slot_count": 1
+    },
+    {
+      "id": "inferred_panel_06",
+      "role": "repeated_panel",
+      "container_bbox": {
+        "x": 542.56,
+        "y": 329.38,
+        "w": 88.31,
+        "h": 69.71
+      },
+      "text_safe_bbox": {
+        "x": 542.56,
+        "y": 329.38,
+        "w": 88.31,
+        "h": 69.71
+      },
+      "occupied_zones": [
+        {
+          "id": "inferred_panel_06_visual_occupied_133",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_051",
+          "bbox": {
+            "x": 534.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_06_visual_occupied_134",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_052",
+          "bbox": {
+            "x": 618.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_06_visual_occupied_210",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 532.95,
+            "y": 379.484,
+            "w": 26.125,
+            "h": 30.857
+          }
+        },
+        {
+          "id": "inferred_panel_06_visual_occupied_259",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_051",
+          "bbox": {
+            "x": 534.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_06_visual_occupied_261",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_052",
+          "bbox": {
+            "x": 618.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        }
+      ],
+      "work_slots": [
+        {
+          "id": "inferred_panel_06_body_slot",
+          "bbox": {
+            "x": 563.075,
+            "y": 329.38,
+            "w": 50.925,
+            "h": 69.71
+          },
+          "preferred_roles": [
+            "body",
+            "bullet",
+            "description",
+            "title",
+            "ability_title"
+          ],
+          "capacity": {
+            "area": 3549.982,
+            "source": "safe_zone_minus_occupied_zones"
+          },
+          "slot_adjustments": [
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_06_visual_occupied_133",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 542.56,
+                "y": 329.38,
+                "w": 88.31,
+                "h": 69.71
+              },
+              "to_bbox": {
+                "x": 554.0,
+                "y": 329.38,
+                "w": 76.87,
+                "h": 69.71
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_06_visual_occupied_134",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 554.0,
+                "y": 329.38,
+                "w": 76.87,
+                "h": 69.71
+              },
+              "to_bbox": {
+                "x": 554.0,
+                "y": 329.38,
+                "w": 60.0,
+                "h": 69.71
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_06_visual_occupied_210",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 554.0,
+                "y": 329.38,
+                "w": 60.0,
+                "h": 69.71
+              },
+              "to_bbox": {
+                "x": 563.075,
+                "y": 329.38,
+                "w": 50.925,
+                "h": 69.71
+              }
+            }
+          ]
+        }
+      ],
+      "slot_count": 1
+    },
+    {
+      "id": "inferred_panel_07",
+      "role": "repeated_panel",
+      "container_bbox": {
+        "x": 530.94,
+        "y": 430.51,
+        "w": 115.44,
+        "h": 77.94
+      },
+      "text_safe_bbox": {
+        "x": 530.94,
+        "y": 430.51,
+        "w": 115.44,
+        "h": 77.94
+      },
+      "occupied_zones": [
+        {
+          "id": "inferred_panel_07_visual_occupied_184",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 525.112,
+            "y": 465.873,
+            "w": 41.8,
+            "h": 55.532
+          }
+        },
+        {
+          "id": "inferred_panel_07_visual_occupied_202",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 632.225,
+            "y": 468.958,
+            "w": 33.963,
+            "h": 49.363
+          }
+        }
+      ],
+      "work_slots": [
+        {
+          "id": "inferred_panel_07_body_slot",
+          "bbox": {
+            "x": 570.912,
+            "y": 430.51,
+            "w": 57.313,
+            "h": 77.94
+          },
+          "preferred_roles": [
+            "body",
+            "bullet",
+            "description",
+            "title",
+            "ability_title"
+          ],
+          "capacity": {
+            "area": 4466.975,
+            "source": "safe_zone_minus_occupied_zones"
+          },
+          "slot_adjustments": [
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_07_visual_occupied_184",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 530.94,
+                "y": 430.51,
+                "w": 115.44,
+                "h": 77.94
+              },
+              "to_bbox": {
+                "x": 570.912,
+                "y": 430.51,
+                "w": 75.468,
+                "h": 77.94
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_07_visual_occupied_202",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 570.912,
+                "y": 430.51,
+                "w": 75.468,
+                "h": 77.94
+              },
+              "to_bbox": {
+                "x": 570.912,
+                "y": 430.51,
+                "w": 57.313,
+                "h": 77.94
+              }
+            }
+          ]
+        }
+      ],
+      "slot_count": 1
+    },
+    {
+      "id": "inferred_panel_08",
+      "role": "repeated_panel",
+      "container_bbox": {
+        "x": 612.31,
+        "y": 329.38,
+        "w": 114.47,
+        "h": 194.68
+      },
+      "text_safe_bbox": {
+        "x": 612.31,
+        "y": 329.38,
+        "w": 114.47,
+        "h": 194.68
+      },
+      "occupied_zones": [
+        {
+          "id": "inferred_panel_08_visual_occupied_134",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_052",
+          "bbox": {
+            "x": 618.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_08_visual_occupied_147",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_065",
+          "bbox": {
+            "x": 672.0,
+            "y": 363.54,
+            "w": 6.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_08_visual_occupied_153",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_071",
+          "bbox": {
+            "x": 648.0,
+            "y": 512.26,
+            "w": 22.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_08_visual_occupied_222",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 640.062,
+            "y": 379.484,
+            "w": 23.513,
+            "h": 30.857
+          }
+        },
+        {
+          "id": "inferred_panel_08_visual_occupied_258",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 697.537,
+            "y": 481.295,
+            "w": 20.901,
+            "h": 15.422
+          }
+        },
+        {
+          "id": "inferred_panel_08_visual_occupied_261",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_052",
+          "bbox": {
+            "x": 618.0,
+            "y": 368.26,
+            "w": 16.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_08_visual_occupied_287",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_065",
+          "bbox": {
+            "x": 672.0,
+            "y": 363.54,
+            "w": 6.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_08_visual_occupied_299",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_071",
+          "bbox": {
+            "x": 648.0,
+            "y": 512.26,
+            "w": 22.0,
+            "h": 2.36
+          }
+        }
+      ],
+      "work_slots": [
+        {
+          "id": "inferred_panel_08_body_slot",
+          "bbox": {
+            "x": 638.0,
+            "y": 414.341,
+            "w": 88.78,
+            "h": 62.954
+          },
+          "preferred_roles": [
+            "body",
+            "bullet",
+            "description",
+            "title",
+            "ability_title"
+          ],
+          "capacity": {
+            "area": 5589.056,
+            "source": "safe_zone_minus_occupied_zones"
+          },
+          "slot_adjustments": [
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_08_visual_occupied_134",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 612.31,
+                "y": 329.38,
+                "w": 114.47,
+                "h": 194.68
+              },
+              "to_bbox": {
+                "x": 638.0,
+                "y": 329.38,
+                "w": 88.78,
+                "h": 194.68
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_08_visual_occupied_147",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 638.0,
+                "y": 329.38,
+                "w": 88.78,
+                "h": 194.68
+              },
+              "to_bbox": {
+                "x": 638.0,
+                "y": 379.34,
+                "w": 88.78,
+                "h": 144.72
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_08_visual_occupied_153",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 638.0,
+                "y": 379.34,
+                "w": 88.78,
+                "h": 144.72
+              },
+              "to_bbox": {
+                "x": 638.0,
+                "y": 379.34,
+                "w": 88.78,
+                "h": 128.92
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_08_visual_occupied_222",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 638.0,
+                "y": 379.34,
+                "w": 88.78,
+                "h": 128.92
+              },
+              "to_bbox": {
+                "x": 638.0,
+                "y": 414.341,
+                "w": 88.78,
+                "h": 93.919
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_08_visual_occupied_258",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 638.0,
+                "y": 414.341,
+                "w": 88.78,
+                "h": 93.919
+              },
+              "to_bbox": {
+                "x": 638.0,
+                "y": 414.341,
+                "w": 88.78,
+                "h": 62.954
+              }
+            }
+          ]
+        }
+      ],
+      "slot_count": 1
+    },
+    {
+      "id": "inferred_panel_10",
+      "role": "repeated_panel",
+      "container_bbox": {
+        "x": 669.47,
+        "y": 291.97,
+        "w": 454.5,
+        "h": 390.79
+      },
+      "text_safe_bbox": {
+        "x": 669.47,
+        "y": 291.97,
+        "w": 454.5,
+        "h": 390.79
+      },
+      "occupied_zones": [
+        {
+          "id": "inferred_panel_10_visual_occupied_090",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_008",
+          "bbox": {
+            "x": 762.0,
+            "y": 380.07,
+            "w": 56.0,
+            "h": 77.9
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_095",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_013",
+          "bbox": {
+            "x": 654.0,
+            "y": 356.46,
+            "w": 36.0,
+            "h": 40.13
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_111",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_029",
+          "bbox": {
+            "x": 662.0,
+            "y": 290.36,
+            "w": 20.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_116",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_034",
+          "bbox": {
+            "x": 760.0,
+            "y": 542.95,
+            "w": 178.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_122",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_040",
+          "bbox": {
+            "x": 1122.0,
+            "y": 531.15,
+            "w": 134.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_123",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_041",
+          "bbox": {
+            "x": 1116.0,
+            "y": 372.98,
+            "w": 2.0,
+            "h": 153.44
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_126",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_044",
+          "bbox": {
+            "x": 730.0,
+            "y": 309.25,
+            "w": 16.0,
+            "h": 18.89
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_128",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_046",
+          "bbox": {
+            "x": 1092.0,
+            "y": 311.61,
+            "w": 16.0,
+            "h": 16.52
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_129",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_047",
+          "bbox": {
+            "x": 954.0,
+            "y": 311.61,
+            "w": 14.0,
+            "h": 16.52
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_136",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_054",
+          "bbox": {
+            "x": 774.0,
+            "y": 356.46,
+            "w": 60.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_137",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_055",
+          "bbox": {
+            "x": 1120.0,
+            "y": 368.26,
+            "w": 58.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_147",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_065",
+          "bbox": {
+            "x": 672.0,
+            "y": 363.54,
+            "w": 6.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_148",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_066",
+          "bbox": {
+            "x": 896.0,
+            "y": 337.57,
+            "w": 30.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_153",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_071",
+          "bbox": {
+            "x": 648.0,
+            "y": 512.26,
+            "w": 22.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_155",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_073",
+          "bbox": {
+            "x": 840.0,
+            "y": 356.46,
+            "w": 20.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_170",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 997.975,
+            "y": 231.395,
+            "w": 73.15,
+            "h": 101.81
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_172",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 995.362,
+            "y": 496.73,
+            "w": 73.15,
+            "h": 101.811
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_173",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_008",
+          "bbox": {
+            "x": 762.0,
+            "y": 380.07,
+            "w": 56.0,
+            "h": 77.9
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_183",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_013",
+          "bbox": {
+            "x": 654.0,
+            "y": 356.46,
+            "w": 36.0,
+            "h": 40.13
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_186",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 744.562,
+            "y": 465.873,
+            "w": 39.188,
+            "h": 52.448
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_212",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 749.787,
+            "y": 379.484,
+            "w": 26.125,
+            "h": 30.857
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_214",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 864.737,
+            "y": 379.484,
+            "w": 26.125,
+            "h": 30.857
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_215",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_029",
+          "bbox": {
+            "x": 662.0,
+            "y": 290.36,
+            "w": 20.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_225",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_034",
+          "bbox": {
+            "x": 760.0,
+            "y": 542.95,
+            "w": 178.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_237",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_040",
+          "bbox": {
+            "x": 1122.0,
+            "y": 531.15,
+            "w": 134.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_239",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_041",
+          "bbox": {
+            "x": 1116.0,
+            "y": 372.98,
+            "w": 2.0,
+            "h": 153.44
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_244",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 953.562,
+            "y": 404.173,
+            "w": 20.9,
+            "h": 24.688
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_245",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_044",
+          "bbox": {
+            "x": 730.0,
+            "y": 309.25,
+            "w": 16.0,
+            "h": 18.89
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_249",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_046",
+          "bbox": {
+            "x": 1092.0,
+            "y": 311.61,
+            "w": 16.0,
+            "h": 16.52
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_251",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_047",
+          "bbox": {
+            "x": 954.0,
+            "y": 311.61,
+            "w": 14.0,
+            "h": 16.52
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_258",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 697.537,
+            "y": 481.295,
+            "w": 20.901,
+            "h": 15.422
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_260",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 807.262,
+            "y": 481.295,
+            "w": 20.9,
+            "h": 15.422
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_264",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 1011.037,
+            "y": 465.873,
+            "w": 78.375,
+            "h": 3.085
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_265",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_054",
+          "bbox": {
+            "x": 774.0,
+            "y": 356.46,
+            "w": 60.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_267",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_055",
+          "bbox": {
+            "x": 1120.0,
+            "y": 368.26,
+            "w": 58.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_274",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 728.887,
+            "y": 669.495,
+            "w": 60.088,
+            "h": 3.085
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_278",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 619.162,
+            "y": 669.495,
+            "w": 57.475,
+            "h": 3.085
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_287",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_065",
+          "bbox": {
+            "x": 672.0,
+            "y": 363.54,
+            "w": 6.0,
+            "h": 11.8
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_289",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_066",
+          "bbox": {
+            "x": 896.0,
+            "y": 337.57,
+            "w": 30.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_298",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 846.45,
+            "y": 669.495,
+            "w": 28.737,
+            "h": 3.085
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_299",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_071",
+          "bbox": {
+            "x": 648.0,
+            "y": 512.26,
+            "w": 22.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_302",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 1097.25,
+            "y": 465.873,
+            "w": 26.125,
+            "h": 3.085
+          }
+        },
+        {
+          "id": "inferred_panel_10_visual_occupied_303",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_073",
+          "bbox": {
+            "x": 840.0,
+            "y": 356.46,
+            "w": 20.0,
+            "h": 2.36
+          }
+        }
+      ],
+      "work_slots": [
+        {
+          "id": "inferred_panel_10_body_slot",
+          "bbox": {
+            "x": 978.462,
+            "y": 362.82,
+            "w": 109.538,
+            "h": 99.053
+          },
+          "preferred_roles": [
+            "body",
+            "bullet",
+            "description",
+            "title",
+            "ability_title"
+          ],
+          "capacity": {
+            "area": 10850.068,
+            "source": "safe_zone_minus_occupied_zones"
+          },
+          "slot_adjustments": [
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_10_visual_occupied_090",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 669.47,
+                "y": 291.97,
+                "w": 454.5,
+                "h": 390.79
+              },
+              "to_bbox": {
+                "x": 822.0,
+                "y": 291.97,
+                "w": 301.97,
+                "h": 390.79
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_10_visual_occupied_116",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 822.0,
+                "y": 291.97,
+                "w": 301.97,
+                "h": 390.79
+              },
+              "to_bbox": {
+                "x": 822.0,
+                "y": 291.97,
+                "w": 301.97,
+                "h": 246.98
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_10_visual_occupied_122",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 822.0,
+                "y": 291.97,
+                "w": 301.97,
+                "h": 246.98
+              },
+              "to_bbox": {
+                "x": 822.0,
+                "y": 291.97,
+                "w": 296.0,
+                "h": 246.98
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_10_visual_occupied_123",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 822.0,
+                "y": 291.97,
+                "w": 296.0,
+                "h": 246.98
+              },
+              "to_bbox": {
+                "x": 822.0,
+                "y": 291.97,
+                "w": 290.0,
+                "h": 246.98
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_10_visual_occupied_128",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 822.0,
+                "y": 291.97,
+                "w": 290.0,
+                "h": 246.98
+              },
+              "to_bbox": {
+                "x": 822.0,
+                "y": 291.97,
+                "w": 266.0,
+                "h": 246.98
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_10_visual_occupied_129",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 822.0,
+                "y": 291.97,
+                "w": 266.0,
+                "h": 246.98
+              },
+              "to_bbox": {
+                "x": 822.0,
+                "y": 332.13,
+                "w": 266.0,
+                "h": 206.82
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_10_visual_occupied_136",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 822.0,
+                "y": 332.13,
+                "w": 266.0,
+                "h": 206.82
+              },
+              "to_bbox": {
+                "x": 838.0,
+                "y": 332.13,
+                "w": 250.0,
+                "h": 206.82
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_10_visual_occupied_148",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 838.0,
+                "y": 332.13,
+                "w": 250.0,
+                "h": 206.82
+              },
+              "to_bbox": {
+                "x": 838.0,
+                "y": 343.93,
+                "w": 250.0,
+                "h": 195.02
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_10_visual_occupied_155",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 838.0,
+                "y": 343.93,
+                "w": 250.0,
+                "h": 195.02
+              },
+              "to_bbox": {
+                "x": 838.0,
+                "y": 362.82,
+                "w": 250.0,
+                "h": 176.13
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_10_visual_occupied_172",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 838.0,
+                "y": 362.82,
+                "w": 250.0,
+                "h": 176.13
+              },
+              "to_bbox": {
+                "x": 838.0,
+                "y": 362.82,
+                "w": 250.0,
+                "h": 129.91
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_10_visual_occupied_214",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 838.0,
+                "y": 362.82,
+                "w": 250.0,
+                "h": 129.91
+              },
+              "to_bbox": {
+                "x": 894.862,
+                "y": 362.82,
+                "w": 193.138,
+                "h": 129.91
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_10_visual_occupied_244",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 894.862,
+                "y": 362.82,
+                "w": 193.138,
+                "h": 129.91
+              },
+              "to_bbox": {
+                "x": 978.462,
+                "y": 362.82,
+                "w": 109.538,
+                "h": 129.91
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_10_visual_occupied_264",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 978.462,
+                "y": 362.82,
+                "w": 109.538,
+                "h": 129.91
+              },
+              "to_bbox": {
+                "x": 978.462,
+                "y": 362.82,
+                "w": 109.538,
+                "h": 99.053
+              }
+            }
+          ]
+        }
+      ],
+      "slot_count": 1
+    },
+    {
+      "id": "inferred_panel_11",
+      "role": "repeated_panel",
+      "container_bbox": {
+        "x": 951.38,
+        "y": 291.97,
+        "w": 206.0,
+        "h": 236.21
+      },
+      "text_safe_bbox": {
+        "x": 951.38,
+        "y": 291.97,
+        "w": 206.0,
+        "h": 236.21
+      },
+      "occupied_zones": [
+        {
+          "id": "inferred_panel_11_visual_occupied_106",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_024",
+          "bbox": {
+            "x": 1126.0,
+            "y": 382.43,
+            "w": 26.0,
+            "h": 33.05
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_123",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_041",
+          "bbox": {
+            "x": 1116.0,
+            "y": 372.98,
+            "w": 2.0,
+            "h": 153.44
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_128",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_046",
+          "bbox": {
+            "x": 1092.0,
+            "y": 311.61,
+            "w": 16.0,
+            "h": 16.52
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_129",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_047",
+          "bbox": {
+            "x": 954.0,
+            "y": 311.61,
+            "w": 14.0,
+            "h": 16.52
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_137",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_055",
+          "bbox": {
+            "x": 1120.0,
+            "y": 368.26,
+            "w": 58.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_157",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_075",
+          "bbox": {
+            "x": 1132.0,
+            "y": 290.36,
+            "w": 16.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_205",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_024",
+          "bbox": {
+            "x": 1126.0,
+            "y": 382.43,
+            "w": 26.0,
+            "h": 33.05
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_239",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_041",
+          "bbox": {
+            "x": 1116.0,
+            "y": 372.98,
+            "w": 2.0,
+            "h": 153.44
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_244",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 953.562,
+            "y": 404.173,
+            "w": 20.9,
+            "h": 24.688
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_249",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_046",
+          "bbox": {
+            "x": 1092.0,
+            "y": 311.61,
+            "w": 16.0,
+            "h": 16.52
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_251",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_047",
+          "bbox": {
+            "x": 954.0,
+            "y": 311.61,
+            "w": 14.0,
+            "h": 16.52
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_264",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 1011.037,
+            "y": 465.873,
+            "w": 78.375,
+            "h": 3.085
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_267",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_055",
+          "bbox": {
+            "x": 1120.0,
+            "y": 368.26,
+            "w": 58.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_302",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 1097.25,
+            "y": 465.873,
+            "w": 26.125,
+            "h": 3.085
+          }
+        },
+        {
+          "id": "inferred_panel_11_visual_occupied_307",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_075",
+          "bbox": {
+            "x": 1132.0,
+            "y": 290.36,
+            "w": 16.0,
+            "h": 2.36
+          }
+        }
+      ],
+      "work_slots": [
+        {
+          "id": "inferred_panel_11_body_slot",
+          "bbox": {
+            "x": 978.462,
+            "y": 291.97,
+            "w": 109.538,
+            "h": 169.903
+          },
+          "preferred_roles": [
+            "body",
+            "bullet",
+            "description",
+            "title",
+            "ability_title"
+          ],
+          "capacity": {
+            "area": 18610.835,
+            "source": "safe_zone_minus_occupied_zones"
+          },
+          "slot_adjustments": [
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_11_visual_occupied_106",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 951.38,
+                "y": 291.97,
+                "w": 206.0,
+                "h": 236.21
+              },
+              "to_bbox": {
+                "x": 951.38,
+                "y": 291.97,
+                "w": 170.62,
+                "h": 236.21
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_11_visual_occupied_123",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 951.38,
+                "y": 291.97,
+                "w": 170.62,
+                "h": 236.21
+              },
+              "to_bbox": {
+                "x": 951.38,
+                "y": 291.97,
+                "w": 160.62,
+                "h": 236.21
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_11_visual_occupied_128",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 951.38,
+                "y": 291.97,
+                "w": 160.62,
+                "h": 236.21
+              },
+              "to_bbox": {
+                "x": 951.38,
+                "y": 291.97,
+                "w": 136.62,
+                "h": 236.21
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_11_visual_occupied_129",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 951.38,
+                "y": 291.97,
+                "w": 136.62,
+                "h": 236.21
+              },
+              "to_bbox": {
+                "x": 972.0,
+                "y": 291.97,
+                "w": 116.0,
+                "h": 236.21
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_11_visual_occupied_244",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 972.0,
+                "y": 291.97,
+                "w": 116.0,
+                "h": 236.21
+              },
+              "to_bbox": {
+                "x": 978.462,
+                "y": 291.97,
+                "w": 109.538,
+                "h": 236.21
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_11_visual_occupied_264",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 978.462,
+                "y": 291.97,
+                "w": 109.538,
+                "h": 236.21
+              },
+              "to_bbox": {
+                "x": 978.462,
+                "y": 291.97,
+                "w": 109.538,
+                "h": 169.903
+              }
+            }
+          ]
+        }
+      ],
+      "slot_count": 1
+    },
+    {
+      "id": "inferred_panel_12",
+      "role": "repeated_panel",
+      "container_bbox": {
+        "x": 1100.56,
+        "y": 275.93,
+        "w": 139.66,
+        "h": 63.55
+      },
+      "text_safe_bbox": {
+        "x": 1100.56,
+        "y": 275.93,
+        "w": 139.66,
+        "h": 63.55
+      },
+      "occupied_zones": [
+        {
+          "id": "inferred_panel_12_visual_occupied_108",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_026",
+          "bbox": {
+            "x": 1184.0,
+            "y": 302.16,
+            "w": 12.0,
+            "h": 56.66
+          }
+        },
+        {
+          "id": "inferred_panel_12_visual_occupied_128",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_046",
+          "bbox": {
+            "x": 1092.0,
+            "y": 311.61,
+            "w": 16.0,
+            "h": 16.52
+          }
+        },
+        {
+          "id": "inferred_panel_12_visual_occupied_154",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_072",
+          "bbox": {
+            "x": 1116.0,
+            "y": 259.67,
+            "w": 2.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_12_visual_occupied_157",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_075",
+          "bbox": {
+            "x": 1132.0,
+            "y": 290.36,
+            "w": 16.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_12_visual_occupied_209",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_026",
+          "bbox": {
+            "x": 1184.0,
+            "y": 302.16,
+            "w": 12.0,
+            "h": 56.66
+          }
+        },
+        {
+          "id": "inferred_panel_12_visual_occupied_249",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_046",
+          "bbox": {
+            "x": 1092.0,
+            "y": 311.61,
+            "w": 16.0,
+            "h": 16.52
+          }
+        },
+        {
+          "id": "inferred_panel_12_visual_occupied_301",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_072",
+          "bbox": {
+            "x": 1116.0,
+            "y": 259.67,
+            "w": 2.0,
+            "h": 23.61
+          }
+        },
+        {
+          "id": "inferred_panel_12_visual_occupied_307",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_075",
+          "bbox": {
+            "x": 1132.0,
+            "y": 290.36,
+            "w": 16.0,
+            "h": 2.36
+          }
+        }
+      ],
+      "work_slots": [
+        {
+          "id": "inferred_panel_12_body_slot",
+          "bbox": {
+            "x": 1122.0,
+            "y": 296.72,
+            "w": 58.0,
+            "h": 42.76
+          },
+          "preferred_roles": [
+            "body",
+            "bullet",
+            "description",
+            "title",
+            "ability_title"
+          ],
+          "capacity": {
+            "area": 2480.08,
+            "source": "safe_zone_minus_occupied_zones"
+          },
+          "slot_adjustments": [
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_12_visual_occupied_108",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 1100.56,
+                "y": 275.93,
+                "w": 139.66,
+                "h": 63.55
+              },
+              "to_bbox": {
+                "x": 1100.56,
+                "y": 275.93,
+                "w": 79.44,
+                "h": 63.55
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_12_visual_occupied_128",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 1100.56,
+                "y": 275.93,
+                "w": 79.44,
+                "h": 63.55
+              },
+              "to_bbox": {
+                "x": 1112.0,
+                "y": 275.93,
+                "w": 68.0,
+                "h": 63.55
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_12_visual_occupied_154",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 1112.0,
+                "y": 275.93,
+                "w": 68.0,
+                "h": 63.55
+              },
+              "to_bbox": {
+                "x": 1122.0,
+                "y": 275.93,
+                "w": 58.0,
+                "h": 63.55
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_12_visual_occupied_157",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 1122.0,
+                "y": 275.93,
+                "w": 58.0,
+                "h": 63.55
+              },
+              "to_bbox": {
+                "x": 1122.0,
+                "y": 296.72,
+                "w": 58.0,
+                "h": 42.76
+              }
+            }
+          ]
+        }
+      ],
+      "slot_count": 1
+    },
+    {
+      "id": "inferred_panel_13",
+      "role": "repeated_panel",
+      "container_bbox": {
+        "x": 1100.56,
+        "y": 403.79,
+        "w": 146.44,
+        "h": 142.48
+      },
+      "text_safe_bbox": {
+        "x": 1100.56,
+        "y": 403.79,
+        "w": 146.44,
+        "h": 142.48
+      },
+      "occupied_zones": [
+        {
+          "id": "inferred_panel_13_visual_occupied_106",
+          "kind": "shape",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_024",
+          "bbox": {
+            "x": 1126.0,
+            "y": 382.43,
+            "w": 26.0,
+            "h": 33.05
+          }
+        },
+        {
+          "id": "inferred_panel_13_visual_occupied_122",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_040",
+          "bbox": {
+            "x": 1122.0,
+            "y": 531.15,
+            "w": 134.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_13_visual_occupied_123",
+          "kind": "line",
+          "source": "visual_element_registry",
+          "element_id": "background_visual_041",
+          "bbox": {
+            "x": 1116.0,
+            "y": 372.98,
+            "w": 2.0,
+            "h": 153.44
+          }
+        },
+        {
+          "id": "inferred_panel_13_visual_occupied_205",
+          "kind": "shape",
+          "source": "scene_graph",
+          "element_id": "background_visual_024",
+          "bbox": {
+            "x": 1126.0,
+            "y": 382.43,
+            "w": 26.0,
+            "h": 33.05
+          }
+        },
+        {
+          "id": "inferred_panel_13_visual_occupied_237",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_040",
+          "bbox": {
+            "x": 1122.0,
+            "y": 531.15,
+            "w": 134.0,
+            "h": 2.36
+          }
+        },
+        {
+          "id": "inferred_panel_13_visual_occupied_239",
+          "kind": "line",
+          "source": "scene_graph",
+          "element_id": "background_visual_041",
+          "bbox": {
+            "x": 1116.0,
+            "y": 372.98,
+            "w": 2.0,
+            "h": 153.44
+          }
+        },
+        {
+          "id": "inferred_panel_13_visual_occupied_250",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 1246.162,
+            "y": 407.257,
+            "w": 18.288,
+            "h": 21.591
+          }
+        },
+        {
+          "id": "inferred_panel_13_visual_occupied_302",
+          "kind": "visual",
+          "source": "scene_graph",
+          "element_id": null,
+          "bbox": {
+            "x": 1097.25,
+            "y": 465.873,
+            "w": 26.125,
+            "h": 3.085
+          }
+        }
+      ],
+      "work_slots": [
+        {
+          "id": "inferred_panel_13_body_slot",
+          "bbox": {
+            "x": 1127.375,
+            "y": 419.48,
+            "w": 114.787,
+            "h": 107.67
+          },
+          "preferred_roles": [
+            "body",
+            "bullet",
+            "description",
+            "title",
+            "ability_title"
+          ],
+          "capacity": {
+            "area": 12359.116,
+            "source": "safe_zone_minus_occupied_zones"
+          },
+          "slot_adjustments": [
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_13_visual_occupied_106",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 1100.56,
+                "y": 403.79,
+                "w": 146.44,
+                "h": 142.48
+              },
+              "to_bbox": {
+                "x": 1100.56,
+                "y": 419.48,
+                "w": 146.44,
+                "h": 126.79
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_13_visual_occupied_122",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 1100.56,
+                "y": 419.48,
+                "w": 146.44,
+                "h": 126.79
+              },
+              "to_bbox": {
+                "x": 1100.56,
+                "y": 419.48,
+                "w": 146.44,
+                "h": 107.67
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_13_visual_occupied_123",
+              "source": "visual_element_registry",
+              "from_bbox": {
+                "x": 1100.56,
+                "y": 419.48,
+                "w": 146.44,
+                "h": 107.67
+              },
+              "to_bbox": {
+                "x": 1122.0,
+                "y": 419.48,
+                "w": 125.0,
+                "h": 107.67
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_13_visual_occupied_250",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 1122.0,
+                "y": 419.48,
+                "w": 125.0,
+                "h": 107.67
+              },
+              "to_bbox": {
+                "x": 1122.0,
+                "y": 419.48,
+                "w": 120.162,
+                "h": 107.67
+              }
+            },
+            {
+              "code": "subtract_occupied_zone",
+              "occupied_zone": "inferred_panel_13_visual_occupied_302",
+              "source": "scene_graph",
+              "from_bbox": {
+                "x": 1122.0,
+                "y": 419.48,
+                "w": 120.162,
+                "h": 107.67
+              },
+              "to_bbox": {
+                "x": 1127.375,
+                "y": 419.48,
+                "w": 114.787,
+                "h": 107.67
+              }
+            }
+          ]
+        }
+      ],
+      "slot_count": 1
+    }
+  ],
+  "issues": [],
+  "error_count": 0
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "cyberppt.visual_qa_gate.v1",
+  "valid": true,
+  "status": "passed_for_user_review",
+  "pages": [
+    7,
+    8
+  ],
+  "rendered_preview": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-145635_pages007_008_dual_image/template_assembly/render/pages_007_008_template_assembled-1.png",
+  "checks": {
+    "pptx_rendered": true,
+    "template_rebuild_consumed": true,
+    "editable_text_layer_present": true,
+    "background_no_text_used": true
+  }
+}

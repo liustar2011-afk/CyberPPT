@@ -9,6 +9,7 @@ created by the PPT pipeline.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -20,22 +21,75 @@ from pathlib import Path
 from xml.sax.saxutils import escape as xml_escape
 from xml.sax.saxutils import quoteattr
 
-from PIL import Image
+from PIL import Image, ImageChops
+
+try:
+    from .codex_oauth_image import run_codex_image
+except ImportError:
+    from codex_oauth_image import run_codex_image
 
 SCRIPTS_DIR = Path(__file__).resolve().parent
 DEFAULT_BRAND_DIR = SCRIPTS_DIR / "templates" / "brands" / "中电联公共元素_轻量版"
+PROJECT_CONTRACT = Path("workbench/analysis_expression/contract.json")
+PROJECT_STAGE_ROOT = Path("workbench/stages/02-blueprint-dual-image")
 PAGE_HEADING_RE = re.compile(r"^##\s*第(?P<num>\d+)页[:：](?P<title>.+?)\s*$", re.M)
 MODULE_PREFIX_RE = re.compile(r"^模块[一二三四五六七八九十百千万0-9]+[:：]\s*")
 MODULE_MARKER_RE = re.compile(r"模块[一二三四五六七八九十百千万0-9]+[:：]?\s*")
 IMAGEGEN_NON_VISIBLE_SECTION_RE = re.compile(
-    r"\n(?:保真约束[:：]|【(?:保真约束|构图指令|构图接口)】)"
+    r"\n(?:保真约束[:：]|来源位置[:：]|完整性校核[:：]|"
+    r"#{1,6}\s*(?:非上屏|证据链|来源位置|完整性校核).*|"
+    r"【(?:保真约束|构图指令|构图接口|非上屏|证据链|来源位置|完整性校核)】)"
 )
 COMPOSITION_SECTION_RE = re.compile(r"【(?:构图指令|构图接口)】(?P<body>.*)$", re.S)
+IMAGE_PROMPT_PROVENANCE_RE = re.compile(
+    r"(证据链|来源位置|源材料|完整性校核|业务稿证据|重点对应|对应E\d+|\bE\d+\b|P\d+|T\d+)"
+)
 CANVAS_SIZE = (1280, 720)
 CONTENT_REGION_TOP_INSET = -18
 CONTENT_REGION_BOTTOM_INSET = -20
 CONTENT_REGION_SIDE_OUTSET = 38
 IMAGE_GENERATION_SCALE = 2
+MAX_GENERATED_ASPECT_RATIO_DRIFT = 0.08
+MIN_GENERATED_CONTENT_WIDTH_RATIO = 0.90
+MAX_GENERATED_SIDE_MARGIN_RATIO = 0.06
+GENERATED_CONTENT_BACKGROUND_DIFF_THRESHOLD = 18
+DEFAULT_STYLE_NAME = "cyberppt-full-image-default"
+DEFAULT_IMAGE_STYLE = {
+    "name": DEFAULT_STYLE_NAME,
+    "style_prompt": (
+        "咨询报告式信息图风格；清晰分区、克制配色、轻量图表语言、"
+        "高信息密度但保持可读；避免营销海报感、避免大段装饰性背景。"
+    ),
+}
+
+
+def load_image_style(name: str | None) -> dict:
+    """Return the self-contained default style used by the full-image PPT path."""
+    if name in {None, "", DEFAULT_STYLE_NAME}:
+        return dict(DEFAULT_IMAGE_STYLE)
+    candidate = Path(str(name)).expanduser()
+    if candidate.is_file():
+        if candidate.suffix.lower() == ".json":
+            data = json.loads(candidate.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                data.setdefault("name", candidate.stem)
+                return data
+        return {"name": candidate.stem, "style_prompt": candidate.read_text(encoding="utf-8").strip()}
+    return {"name": str(name), "style_prompt": str(name)}
+
+
+def style_name(style: dict | None) -> str:
+    if not style:
+        return DEFAULT_STYLE_NAME
+    return str(style.get("name") or DEFAULT_STYLE_NAME)
+
+
+def style_prompt_block(style: dict | None) -> str:
+    style = style or DEFAULT_IMAGE_STYLE
+    prompt = str(style.get("style_prompt") or style.get("prompt") or "").strip()
+    if not prompt:
+        prompt = DEFAULT_IMAGE_STYLE["style_prompt"]
+    return f"视觉风格：{style_name(style)}\n{prompt}"
 
 
 def sanitize_name(value: str) -> str:
@@ -82,6 +136,10 @@ def page_notes_text(block: PageBlock) -> str:
 def page_role(block: PageBlock) -> str:
     if block.page_number == 1 or "封面" in block.title:
         return "cover"
+    if "目录" in block.title:
+        return "agenda"
+    if re.search(r"第[一二三四五六七八九十]+章", block.title):
+        return "section"
     if any(keyword in block.title for keyword in ("封底", "结束", "感谢")):
         return "ending"
     return "body"
@@ -264,6 +322,8 @@ def content_prompt(
 - {title_rule}
 - 不要画页码、Logo、页脚、红线、蓝色底栏或任何中电联公共元素。
 - 不要预留页面外边框，不要生成完整 PPT 页面，只生成正文内容区画面。
+- 内容必须充分铺满本图片画布：最左侧有效内容距左边缘不超过画布宽度 6%，最右侧有效内容距右边缘不超过画布宽度 6%，有效内容整体宽度不少于画布宽度 90%。
+- 不要把内容缩成居中的“小版面”“截图页”“白纸页”或带宽边距的容器；背景承载面可以到达画布边缘，模块、流程线、图表和说明文字应横向展开。
 - 可见文字只能取自下面“正文内容”中的事实、概念、数字和短语；可以压缩、取舍、重组，但不得新增事实、数字、口号、英文伪字、水印、乱码。
 - 脚本里的结构编号只用于分组理解，不得作为画面文字出现，也不得按原编号抄写。
 
@@ -277,12 +337,84 @@ def content_prompt(
 """
 
 
+def validate_image_prompt_text(page_number: int, prompt: str) -> None:
+    match = IMAGE_PROMPT_PROVENANCE_RE.search(prompt)
+    if match:
+        raise ValueError(
+            f"image generation prompt for page {page_number} contains non-visual provenance text: {match.group(0)}"
+        )
+
+
+def validate_task_role_contract(task: dict) -> None:
+    page_number = int(task.get("page_number", 0))
+    role = str(task.get("page_role") or "")
+    render_mode = str(task.get("render_mode") or "")
+    if role in {"cover", "agenda", "section", "ending"}:
+        expected_template = page_template_name(role)
+        if render_mode != "brand-template" or task.get("template") != expected_template:
+            raise ValueError(f"page {page_number} role {role} must use brand template rendering")
+        forbidden = [key for key in ("image_path", "prompt", "size") if key in task]
+        if forbidden:
+            raise ValueError(f"page {page_number} role {role} must not request image generation: {forbidden}")
+    else:
+        if render_mode != "content-image":
+            raise ValueError(f"page {page_number} body page must use content-image rendering")
+        required = [key for key in ("image_path", "prompt", "size") if not task.get(key)]
+        if required:
+            raise ValueError(f"page {page_number} body page missing image generation fields: {required}")
+        validate_image_prompt_text(page_number, str(task["prompt"]))
+
+
+def validate_manifest_contract(manifest: dict) -> None:
+    for task in manifest.get("tasks", []):
+        if not isinstance(task, dict):
+            raise ValueError("template image manifest tasks must be objects")
+        validate_task_role_contract(task)
+
+
 def page_template_name(role: str) -> str | None:
-    if role == "cover":
-        return "cover"
-    if role == "ending":
-        return "ending"
+    if role in {"cover", "agenda", "section", "ending"}:
+        return role
     return None
+
+
+def chapter_label_and_title(title: str) -> tuple[str, str]:
+    match = re.search(r"(第[一二三四五六七八九十]+章)\s*(?P<title>.*)", title)
+    if match:
+        return match.group(1), match.group("title").strip() or title
+    return "", title
+
+
+def agenda_items_from_pages(pages: dict[int, PageBlock], selected: list[int]) -> list[dict[str, str]]:
+    items: list[dict[str, str]] = []
+    for number in selected:
+        block = pages[number]
+        if page_role(block) != "section":
+            continue
+        label, title = chapter_label_and_title(block.title)
+        items.append({"label": label, "title": title})
+    return items
+
+
+def agenda_items_svg(items: list[dict[str, str]]) -> str:
+    if not items:
+        items = [
+            {"label": "01", "title": "建设背景与基础"},
+            {"label": "02", "title": "建设总体思路"},
+            {"label": "03", "title": "建设内容及实施方案"},
+            {"label": "04", "title": "需请领导审定事项"},
+        ]
+    y0 = 246
+    gap = 82
+    lines = []
+    for index, item in enumerate(items[:6], start=1):
+        y = y0 + (index - 1) * gap
+        label = str(item.get("label") or f"{index:02d}")
+        title = str(item.get("title") or "")
+        lines.append(f'<text x="356" y="{y}" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="700" fill="#8B0000">{xml_escape(label)}</text>')
+        lines.append(f'<text x="448" y="{y}" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="600" fill="#1F2933">{xml_escape(title)}</text>')
+        lines.append(f'<line x1="448" y1="{y + 24}" x2="1088" y2="{y + 24}" stroke="#D8DEE8" stroke-width="1"/>')
+    return "\n    ".join(lines)
 
 
 def page_meta_value(content: PageContent, label: str) -> str:
@@ -300,6 +432,72 @@ def cover_author(content: PageContent) -> str:
 
 def cover_date(content: PageContent) -> str:
     return page_meta_value(content, "汇报日期") or page_meta_value(content, "日期")
+
+
+def cover_content_fields(task: dict) -> tuple[str, str, str]:
+    """Extract cover title, author/unit, and date from script content before using role labels."""
+
+    fallback_title = str(task.get("slide_title") or task.get("title") or "")
+    body_lines = [
+        line.strip().lstrip("- ").strip()
+        for line in str(task.get("body_text") or "").splitlines()
+        if line.strip()
+    ]
+    content = PageContent(fallback_title, str(task.get("subtitle") or ""), str(task.get("body_text") or ""))
+    title = page_meta_value(content, "汇报标题") or page_meta_value(content, "项目名称")
+    if not title and fallback_title in {"封面", "首页"} and body_lines:
+        title = body_lines[0]
+    title = title or fallback_title
+    author = cover_author(content)
+    if not author and len(body_lines) >= 2:
+        author = body_lines[1]
+    date = cover_date(content)
+    if not date and len(body_lines) >= 3:
+        date = body_lines[2]
+    date = re.sub(r"\s+", "", date)
+    return title, author, date
+
+
+def body_lines_from_task(task: dict) -> list[str]:
+    return [
+        line.strip().lstrip("- ").strip()
+        for line in str(task.get("body_text") or "").splitlines()
+        if line.strip()
+    ]
+
+
+def notes_heading_for_task(task: dict) -> str:
+    template_name = task.get("template") or page_template_name(task.get("page_role", ""))
+    if template_name == "cover":
+        title, _, _ = cover_content_fields(task)
+        return title
+    if template_name == "section":
+        return str(task.get("section_title") or task.get("slide_title") or task.get("title") or "")
+    if template_name == "ending":
+        lines = body_lines_from_task(task)
+        if lines and str(task.get("slide_title") or task.get("title") or "") in {"封底", "结束页"}:
+            return lines[0]
+    return str(task.get("slide_title") or task.get("title") or "")
+
+
+def page_notes_text_for_task(block: PageBlock, task: dict) -> str:
+    """Build speaker notes from the script page, with template-page headings resolved from page content."""
+    explicit = re.search(r"【(?:演讲者备注|演讲稿|讲稿|备注)】(?P<body>.*)$", block.text, re.S)
+    if explicit:
+        text = explicit.group("body").strip()
+        return re.sub(r"\n-{3,}\s*$", "", text).strip()
+    lines = body_lines_from_task(task)
+    notes: list[str] = []
+    heading = notes_heading_for_task(task)
+    if heading:
+        notes.append(f"本页围绕“{heading}”展开。")
+    subtitle = str(task.get("subtitle") or "")
+    if subtitle:
+        notes.append(f"核心提示：{subtitle}")
+    if lines:
+        notes.append("汇报要点：")
+        notes.extend(f"- {line}" for line in lines)
+    return "\n".join(notes).strip()
 
 
 def char_width_units(char: str) -> float:
@@ -391,39 +589,397 @@ def normalize_generated_image_size(image_path: Path, size: str) -> tuple[int, in
         actual = image.size
         if actual == target:
             return actual
-        resized = image.convert("RGBA").resize(target, Image.Resampling.LANCZOS)
-        resized.save(image_path)
+        target_ratio = target[0] / target[1]
+        actual_ratio = actual[0] / actual[1]
+        if actual[0] <= actual[1]:
+            raise ValueError(
+                f"generated image is portrait ({actual[0]}x{actual[1]}), expected landscape {size}"
+            )
+        ratio_drift = abs(actual_ratio - target_ratio) / target_ratio
+        if ratio_drift > MAX_GENERATED_ASPECT_RATIO_DRIFT:
+            raise ValueError(
+                f"generated image aspect ratio {actual_ratio:.3f} differs from target {target_ratio:.3f}; "
+                f"actual={actual[0]}x{actual[1]}, target={size}"
+            )
+        source = image.convert("RGB")
+        scale = min(target[0] / actual[0], target[1] / actual[1])
+        scaled_size = (
+            max(1, round(actual[0] * scale)),
+            max(1, round(actual[1] * scale)),
+        )
+        resized = source.resize(scaled_size, Image.Resampling.LANCZOS)
+        background = source.getpixel((0, 0))
+        canvas = Image.new("RGB", target, background)
+        offset = ((target[0] - scaled_size[0]) // 2, (target[1] - scaled_size[1]) // 2)
+        canvas.paste(resized, offset)
+        canvas.save(image_path)
     return target
+
+
+def generated_content_fill_report(image_path: Path) -> dict[str, object]:
+    with Image.open(image_path) as image:
+        source = image.convert("RGB")
+        background = source.getpixel((0, 0))
+        diff = ImageChops.difference(source, Image.new("RGB", source.size, background)).convert("L")
+        mask = diff.point(lambda value: 255 if value > GENERATED_CONTENT_BACKGROUND_DIFF_THRESHOLD else 0)
+        bbox = mask.getbbox()
+        width, height = source.size
+    if bbox is None:
+        return {
+            "image_size": f"{width}x{height}",
+            "content_bbox": None,
+            "content_width_ratio": 0.0,
+            "left_margin_ratio": 1.0,
+            "right_margin_ratio": 1.0,
+        }
+    left, top, right, bottom = bbox
+    content_width = max(0, right - left)
+    return {
+        "image_size": f"{width}x{height}",
+        "content_bbox": [left, top, right, bottom],
+        "content_width_ratio": round(content_width / width, 4),
+        "left_margin_ratio": round(left / width, 4),
+        "right_margin_ratio": round((width - right) / width, 4),
+    }
+
+
+def assert_generated_content_fill(image_path: Path) -> dict[str, object]:
+    report = generated_content_fill_report(image_path)
+    width_ratio = float(report["content_width_ratio"])
+    left_ratio = float(report["left_margin_ratio"])
+    right_ratio = float(report["right_margin_ratio"])
+    if (
+        width_ratio < MIN_GENERATED_CONTENT_WIDTH_RATIO
+        or left_ratio > MAX_GENERATED_SIDE_MARGIN_RATIO
+        or right_ratio > MAX_GENERATED_SIDE_MARGIN_RATIO
+    ):
+        raise ValueError(
+            "generated image has too much internal horizontal whitespace; "
+            f"content_width_ratio={width_ratio:.3f}, "
+            f"left_margin_ratio={left_ratio:.3f}, right_margin_ratio={right_ratio:.3f}, "
+            f"image={image_path}"
+        )
+    return report
+
+
+def _assert_exact_page_set(label: str, actual: set[int], pages: list[int]) -> None:
+    expected = set(pages)
+    if actual != expected:
+        raise ValueError(
+            f"{label} page set mismatch: expected {sorted(expected)}, got {sorted(actual)}"
+        )
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _require_exact_page_records(
+    label: str,
+    records: object,
+    pages: list[int],
+    *,
+    page_key: str,
+) -> list[dict]:
+    if len(pages) != len(set(pages)):
+        duplicates = sorted({page for page in pages if pages.count(page) > 1})
+        raise ValueError(f"duplicate requested page {duplicates[0]}")
+    if not isinstance(records, list):
+        raise ValueError(f"{label} must contain records[]")
+    expected = set(pages)
+    by_page: dict[int, dict] = {}
+    for record in records:
+        if not isinstance(record, dict) or page_key not in record:
+            raise ValueError(f"{label} record is missing {page_key}")
+        page_number = int(record[page_key])
+        if page_number in by_page:
+            raise ValueError(f"duplicate {label} record for page {page_number}")
+        by_page[page_number] = record
+    if len(records) != len(expected):
+        raise ValueError(
+            f"{label} record count mismatch: expected {len(expected)}, got {len(records)}"
+        )
+    _assert_exact_page_set(label, set(by_page), pages)
+    return [by_page[page_number] for page_number in pages]
+
+
+def _resolve_recorded_path(value: object, *, base: Path, label: str) -> Path:
+    if not value:
+        raise ValueError(f"{label} is required")
+    path = Path(str(value)).expanduser()
+    if not path.is_absolute():
+        path = base / path
+    return path.resolve()
+
+
+def _locate_project_root(*approved_inputs: Path) -> Path:
+    roots: set[Path] = set()
+    for approved_input in approved_inputs:
+        path = Path(approved_input).expanduser().resolve()
+        for candidate in (path.parent, *path.parents):
+            if (candidate / PROJECT_CONTRACT).is_file():
+                roots.add(candidate)
+                break
+        else:
+            raise ValueError(
+                "project production requires approved inputs under a project containing "
+                "workbench/analysis_expression/contract.json"
+            )
+    if len(roots) != 1:
+        raise ValueError("project production approved inputs must belong to the same project")
+    return roots.pop()
+
+
+def _read_json_object(path: Path, label: str) -> dict:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"{label} must be a JSON object: {path}")
+    return payload
+
+
+def _validate_blueprint_image_review(
+    project_root: Path,
+    page_image_manifest: Path,
+    pages: list[int],
+    approved_images: dict[int, Path],
+) -> None:
+    stage_root = project_root / PROJECT_STAGE_ROOT
+    approval_path = stage_root / "blueprint_image_review.approved.json"
+    if not approval_path.is_file():
+        raise ValueError("blueprint image review approval is required")
+    approval = _read_json_object(approval_path, "blueprint image review approval")
+    if approval.get("approved") is not True:
+        raise ValueError("blueprint image review approval is required")
+    review_path = _resolve_recorded_path(
+        approval.get("artifact"), base=approval_path.parent, label="blueprint image review approval artifact"
+    )
+    expected_review = stage_root / "blueprint_image_review.json"
+    if review_path != expected_review or not review_path.is_file():
+        raise ValueError("blueprint image review approval artifact mismatch")
+    review = _read_json_object(review_path, "blueprint image review")
+    reviewed_manifest = _resolve_recorded_path(
+        review.get("page_image_manifest"), base=review_path.parent, label="blueprint image review manifest"
+    )
+    if reviewed_manifest != page_image_manifest:
+        raise ValueError("approved page image manifest path mismatch")
+    if review.get("page_image_manifest_sha256") != _sha256(page_image_manifest):
+        raise ValueError("approved page image manifest has changed")
+    records = _require_exact_page_records(
+        "approved blueprint image review", review.get("images"), pages, page_key="page"
+    )
+    for record in records:
+        page_number = int(record["page"])
+        image_path = _resolve_recorded_path(
+            record.get("path"), base=review_path.parent, label=f"approved blueprint image path for page {page_number}"
+        )
+        if image_path != approved_images[page_number]:
+            raise ValueError(f"approved blueprint image path mismatch for page {page_number}")
+        if not image_path.is_file() or record.get("sha256") != _sha256(image_path):
+            raise ValueError(f"approved blueprint image hash mismatch for page {page_number}")
+
+
+def _validate_speaker_notes_review(project_root: Path, speaker_notes_manifest: Path) -> None:
+    approval_path = project_root / PROJECT_STAGE_ROOT / "speaker_notes_review.approved.json"
+    if not approval_path.is_file():
+        raise ValueError("speaker notes approval is required")
+    approval = _read_json_object(approval_path, "speaker notes review approval")
+    if approval.get("approved") is not True:
+        raise ValueError("speaker notes approval is required")
+    approved_manifest = _resolve_recorded_path(
+        approval.get("manifest"), base=approval_path.parent, label="speaker notes approval manifest"
+    )
+    if approved_manifest != speaker_notes_manifest:
+        raise ValueError("approved speaker notes manifest path mismatch")
+    if approval.get("manifest_sha256") != _sha256(speaker_notes_manifest):
+        raise ValueError("approved speaker notes manifest has changed")
+
+
+def load_template_text_lock(path: Path, pages: list[int]) -> dict[int, dict]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    records = data.get("records")
+    if not isinstance(records, list):
+        raise ValueError(f"template text lock must contain records[]: {path}")
+    declared_pages = data.get("pages")
+    if not isinstance(declared_pages, list):
+        raise ValueError(f"template text lock must contain pages[]: {path}")
+    if len(declared_pages) != len(set(declared_pages)):
+        duplicates = sorted({int(page) for page in declared_pages if declared_pages.count(page) > 1})
+        raise ValueError(f"duplicate template text lock declared page {duplicates[0]}")
+    _assert_exact_page_set("template text lock", {int(item) for item in declared_pages}, pages)
+
+    by_page: dict[int, dict] = {}
+    for item in records:
+        if not isinstance(item, dict) or "page" not in item:
+            continue
+        page_number = int(item["page"])
+        if page_number in by_page:
+            raise ValueError(f"duplicate template text lock record for page {page_number}")
+        by_page[page_number] = item
+    for page_number in pages:
+        record = by_page.get(page_number)
+        if record is None:
+            raise ValueError(f"missing template text lock record for page {page_number}")
+        if record.get("approved") is not True:
+            raise ValueError(f"template text lock is not approved for page {page_number}")
+    return by_page
+
+
+def load_approved_full_images(
+    path: Path, pages: list[int], *, project_root: Path | None = None
+) -> dict[int, Path]:
+    path = Path(path).expanduser().resolve()
+    data = _read_json_object(path, "approved page image manifest")
+    pairs = data.get("pairs")
+    pairs = _require_exact_page_records(
+        "approved page image manifest", pairs, pages, page_key="page_number"
+    )
+    images: dict[int, Path] = {}
+    for item in pairs:
+        page_number = int(item["page_number"])
+        full = item.get("full")
+        raw_path = full.get("path") if isinstance(full, dict) else None
+        if not raw_path:
+            raise ValueError(f"approved full image path is missing for page {page_number}")
+        image_path = Path(str(raw_path)).expanduser()
+        if not image_path.is_absolute():
+            image_path = path.parent / image_path
+        image_path = image_path.resolve()
+        if not image_path.is_file():
+            raise FileNotFoundError(
+                f"approved full image is missing for page {page_number}: {image_path}"
+            )
+        images[page_number] = image_path
+    if project_root is not None:
+        _validate_blueprint_image_review(project_root, path, pages, images)
+    return images
+
+
+def _load_approved_speaker_notes(
+    path: Path, pages: list[int], *, project_root: Path | None = None
+) -> dict[int, dict]:
+    path = Path(path).expanduser().resolve()
+    data = _read_json_object(path, "approved speaker notes manifest")
+    records = _require_exact_page_records(
+        "approved speaker notes", data.get("notes"), pages, page_key="page_number"
+    )
+    declared_pages = data.get("pages")
+    if not isinstance(declared_pages, list):
+        raise ValueError(f"approved speaker notes manifest must contain pages[]: {path}")
+    if len(declared_pages) != len(set(declared_pages)):
+        duplicates = sorted({int(page) for page in declared_pages if declared_pages.count(page) > 1})
+        raise ValueError(f"duplicate approved speaker notes declared page {duplicates[0]}")
+    _assert_exact_page_set("approved speaker notes manifest", {int(page) for page in declared_pages}, pages)
+    notes = {int(record["page_number"]): record for record in records}
+    if project_root is not None:
+        _validate_speaker_notes_review(project_root, path)
+    return notes
 
 
 def build_manifest(
     script_path: Path,
-    page_numbers: list[int],
-    pages: dict[int, PageBlock],
-    output_dir: Path,
+    page_numbers: list[int] | None = None,
+    pages: dict[int, PageBlock] | None = None,
+    output_dir: Path | None = None,
     *,
+    selected_pages: list[int] | None = None,
     image_style_name: str | None = None,
+    speaker_notes_manifest: Path | None = None,
+    template_text_lock: Path | None = None,
+    page_image_manifest: Path | None = None,
+    project_production: bool = False,
 ) -> dict:
+    script_path = Path(script_path)
+    pages = pages if pages is not None else parse_page_blocks(script_path)
+    if selected_pages is not None:
+        if page_numbers is not None and list(page_numbers) != list(selected_pages):
+            raise ValueError("page_numbers and selected_pages must match when both are provided")
+        page_numbers = list(selected_pages)
+    if page_numbers is None:
+        page_numbers = sorted(pages)
+    missing_script_pages = sorted(set(page_numbers) - set(pages))
+    if missing_script_pages:
+        raise ValueError(f"Pages not found in script: {missing_script_pages}")
+    if output_dir is None:
+        raise ValueError("output_dir is required")
+    output_dir = Path(output_dir)
+
+    template_locks: dict[int, dict] = {}
+    approved_images: dict[int, Path] = {}
+    if project_production:
+        if template_text_lock is None:
+            raise ValueError("metadata_required: --template-text-lock is required")
+        if page_image_manifest is None:
+            raise ValueError("approved page image manifest is required")
+        if speaker_notes_manifest is None:
+            raise ValueError("approved speaker notes manifest is required")
+        template_locks = load_template_text_lock(Path(template_text_lock), page_numbers)
+        project_root = _locate_project_root(
+            Path(template_text_lock), Path(page_image_manifest), Path(speaker_notes_manifest)
+        )
+        approved_images = load_approved_full_images(
+            Path(page_image_manifest), page_numbers, project_root=project_root
+        )
+        speaker_notes = _load_approved_speaker_notes(
+            Path(speaker_notes_manifest), page_numbers, project_root=project_root
+        )
+    else:
+        speaker_notes = load_speaker_notes(speaker_notes_manifest)
+
     rules = load_brand_rules()
     brand_body_region = scale_region(rules["content_regions"]["body_pages"], CANVAS_SIZE)
     body_region = inset_content_region(brand_body_region)
     generation_size = generation_size_for_region(body_region)
     image_style = load_image_style(image_style_name)
+    if project_production:
+        agenda_items = []
+        for number in page_numbers:
+            page = pages[number]
+            if page_role(page) != "section":
+                continue
+            record = template_locks[number]
+            locked_title = str(record.get("title") or "")
+            fallback_label, section_title = chapter_label_and_title(locked_title)
+            agenda_items.append(
+                {
+                    "label": str(record.get("section") or fallback_label),
+                    "title": section_title,
+                }
+            )
+    else:
+        agenda_items = agenda_items_from_pages(pages, page_numbers)
     tasks = []
     for number in page_numbers:
         page = pages[number]
         role = page_role(page)
         content = extract_content(page)
-        stem = page_stem(number, page.title)
+        lock_record = template_locks.get(number)
+        if lock_record is not None:
+            task_title = str(lock_record.get("title") or "")
+            content = PageContent(
+                title=task_title,
+                subtitle=str(lock_record.get("subtitle") or ""),
+                body=content.body,
+            )
+        else:
+            task_title = page.title
+        stem = page_stem(number, task_title)
         task = {
             "page_number": number,
             "page_role": role,
-            "title": page.title,
+            "title": task_title,
             "slide_title": content.title,
             "subtitle": content.subtitle,
             "body_text": content.body,
-            "notes_text": page_notes_text(page),
         }
+        if lock_record is not None:
+            task.update(
+                {
+                    "section": str(lock_record.get("section") or ""),
+                    "template_variant": str(lock_record.get("template_variant") or "default"),
+                    "page_badge_enabled": bool(lock_record.get("page_badge_enabled", False)),
+                    "footer_enabled": bool(lock_record.get("footer_enabled", False)),
+                }
+            )
         template_name = page_template_name(role)
         if template_name:
             task.update(
@@ -433,20 +989,51 @@ def build_manifest(
                     "status": "Template",
                 }
             )
+            if template_name == "agenda":
+                task["agenda_items"] = agenda_items
+            elif template_name == "section":
+                if lock_record is not None:
+                    label = str(lock_record.get("section") or "")
+                    fallback_label, section_title = chapter_label_and_title(task_title)
+                    label = label or fallback_label
+                else:
+                    label, section_title = chapter_label_and_title(page.title)
+                task["section_no"] = label
+                task["section_title"] = section_title
         else:
-            image_path = output_dir / "images" / f"{stem}_content.png"
+            image_path = (
+                approved_images[number]
+                if project_production
+                else output_dir / "images" / f"{stem}_content.png"
+            )
+            prompt = content_prompt(page, content, body_region, generation_size, role, image_style)
+            validate_image_prompt_text(number, prompt)
             task.update(
                 {
                     "render_mode": "content-image",
                     "image_path": str(image_path),
-                    "prompt": content_prompt(page, content, body_region, generation_size, role, image_style),
+                    "prompt": prompt,
                     "size": f"{generation_size['width']}x{generation_size['height']}",
-                    "status": "Pending",
+                    "status": "Approved" if project_production else "Pending",
                 }
             )
+        note_record = speaker_notes.get(number)
+        if note_record is not None:
+            task["notes_text"] = str(note_record.get("notes_text") or "")
+            task["notes_source"] = (
+                "approved_speaker_notes"
+                if project_production
+                else str(note_record.get("source") or "speaker_notes_manifest")
+            )
+            task["notes_title"] = str(note_record.get("title") or notes_heading_for_task(task))
+        else:
+            task["notes_text"] = page_notes_text_for_task(page, task)
+            task["notes_source"] = "fallback_from_page_script"
+        validate_task_role_contract(task)
         tasks.append(task)
-    return {
+    manifest = {
         "mode": "template-image-ppt",
+        "project_production": project_production,
         "source_script": str(script_path),
         "created_at": datetime.now(timezone.utc).isoformat(),
         "canvas": {"width": CANVAS_SIZE[0], "height": CANVAS_SIZE[1]},
@@ -463,13 +1050,34 @@ def build_manifest(
         },
         "image_generation_scale": IMAGE_GENERATION_SCALE,
         "generation_size": generation_size,
+        "speaker_notes_manifest": str(speaker_notes_manifest) if speaker_notes_manifest else None,
+        "template_text_lock": str(template_text_lock) if template_text_lock else None,
+        "page_image_manifest": str(page_image_manifest) if page_image_manifest else None,
         "tasks": tasks,
     }
+    validate_manifest_contract(manifest)
+    return manifest
 
 
 def write_json(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def load_speaker_notes(notes_manifest: Path | None) -> dict[int, dict]:
+    if notes_manifest is None:
+        return {}
+    data = json.loads(notes_manifest.read_text(encoding="utf-8"))
+    notes = data.get("notes")
+    if not isinstance(notes, list):
+        raise ValueError(f"speaker notes manifest must contain notes[]: {notes_manifest}")
+    by_page: dict[int, dict] = {}
+    for item in notes:
+        if not isinstance(item, dict):
+            continue
+        page_number = int(item.get("page_number"))
+        by_page[page_number] = item
+    return by_page
 
 
 def copy_brand(project_path: Path, brand_dir: Path = DEFAULT_BRAND_DIR) -> None:
@@ -547,8 +1155,7 @@ def render_brand_template_svg(task: dict, rules: dict) -> str:
     svg = (DEFAULT_BRAND_DIR / template_file).read_text(encoding="utf-8")
     svg = template_href_for_output(svg)
     if template_name == "cover":
-        content = PageContent(task.get("slide_title", ""), task.get("subtitle", ""), task.get("body_text", ""))
-        title = task.get("slide_title") or task.get("title", "")
+        title, author, date = cover_content_fields(task)
         svg = re.sub(
             r'\s*<text[^>]*>\{\{TITLE\}\}</text>',
             "\n" + cover_title_svg(title),
@@ -556,11 +1163,19 @@ def render_brand_template_svg(task: dict, rules: dict) -> str:
             count=1,
         )
         replacements = {
-            "{{AUTHOR}}": cover_author(content),
-            "{{DATE}}": cover_date(content),
+            "{{AUTHOR}}": author,
+            "{{DATE}}": date,
         }
         for placeholder, value in replacements.items():
             svg = svg.replace(placeholder, xml_escape(value))
+    elif template_name == "agenda":
+        items = task.get("agenda_items")
+        svg = svg.replace("{{AGENDA_ITEMS}}", agenda_items_svg(items if isinstance(items, list) else []))
+    elif template_name == "section":
+        label = str(task.get("section_no") or "")
+        title = str(task.get("section_title") or task.get("slide_title") or task.get("title") or "")
+        svg = svg.replace("{{SECTION_NO}}", xml_escape(label))
+        svg = svg.replace("{{SECTION_TITLE}}", xml_escape(title))
     return svg
 
 
@@ -592,8 +1207,8 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
             target_image = project_path / "images" / image_path.name
             shutil.copy2(image_path, target_image)
             svg = [
-                f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="720" viewBox="0 0 1280 720">',
-                '<rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>',
+                f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_SIZE[0]}" height="{CANVAS_SIZE[1]}" viewBox="0 0 {CANVAS_SIZE[0]} {CANVAS_SIZE[1]}">',
+                f'<rect x="0" y="0" width="{CANVAS_SIZE[0]}" height="{CANVAS_SIZE[1]}" fill="#FFFFFF"/>',
             ]
             svg.append(svg_text(header["x"], header["y"] + 30, task["slide_title"], 25, 700))
             if task.get("subtitle"):
@@ -606,11 +1221,12 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
             svg_text_content = "\n".join(svg)
         (project_path / "svg_output" / f"{stem}.svg").write_text(svg_text_content, encoding="utf-8")
         notes_text = task.get("notes_text")
-        if not notes_text:
+        if notes_text is None:
             source_page = source_pages.get(int(task["page_number"]))
             notes_text = page_notes_text(source_page) if source_page else task.get("body_text", "")
+        notes_heading = str(task.get("notes_title") or notes_heading_for_task(task))
         (project_path / "notes" / f"{stem}.md").write_text(
-            f"# {task['slide_title']}\n\n{notes_text}\n",
+            f"# {notes_heading}\n\n{notes_text}\n",
             encoding="utf-8",
         )
     write_json(project_path / "template_image_manifest.json", manifest)
@@ -633,7 +1249,15 @@ def command_plan(args: argparse.Namespace) -> int:
     pages = parse_page_blocks(script)
     nums = parse_page_selection(args.pages, set(pages))
     output_dir = args.output_dir.resolve()
-    manifest = build_manifest(script, nums, pages, output_dir, image_style_name=args.image_style)
+    speaker_notes_manifest = args.speaker_notes_manifest.resolve() if args.speaker_notes_manifest else None
+    manifest = build_manifest(
+        script,
+        nums,
+        pages,
+        output_dir,
+        image_style_name=args.image_style,
+        speaker_notes_manifest=speaker_notes_manifest,
+    )
     write_json(output_dir / "template_image_manifest.json", manifest)
     prompt_blocks = []
     for task in manifest["tasks"]:
@@ -642,6 +1266,32 @@ def command_plan(args: argparse.Namespace) -> int:
         else:
             prompt_blocks.append(f"## 第{task['page_number']}页：{task['title']}\n\n保存到：`{task['image_path']}`\n\n{task['prompt']}")
     (output_dir / "template_image_prompts.md").write_text("\n\n".join(prompt_blocks) + "\n", encoding="utf-8")
+    print(output_dir / "template_image_manifest.json")
+    return 0
+
+
+def command_plan_dispatch(args: argparse.Namespace) -> int:
+    if not getattr(args, "project_production", False):
+        return command_plan(args)
+
+    script = args.script.resolve()
+    pages = parse_page_blocks(script)
+    nums = parse_page_selection(args.pages, set(pages))
+    output_dir = args.output_dir.resolve()
+    manifest = build_manifest(
+        script_path=script,
+        selected_pages=nums,
+        pages=pages,
+        output_dir=output_dir,
+        image_style_name=args.image_style,
+        speaker_notes_manifest=(
+            args.speaker_notes_manifest.resolve() if args.speaker_notes_manifest else None
+        ),
+        template_text_lock=(args.template_text_lock.resolve() if args.template_text_lock else None),
+        page_image_manifest=(args.page_image_manifest.resolve() if args.page_image_manifest else None),
+        project_production=True,
+    )
+    write_json(output_dir / "template_image_manifest.json", manifest)
     print(output_dir / "template_image_manifest.json")
     return 0
 
@@ -655,7 +1305,11 @@ def command_generate(args: argparse.Namespace) -> int:
             continue
         image_path = Path(task["image_path"])
         if image_path.exists() and not args.force:
+            normalized_size = normalize_generated_image_size(image_path, args.size or task["size"])
+            fill_report = assert_generated_content_fill(image_path)
             task["status"] = "Generated"
+            task["actual_size"] = f"{normalized_size[0]}x{normalized_size[1]}"
+            task["content_fill"] = fill_report
             continue
         run_codex_image(
             prompt=task["prompt"],
@@ -670,9 +1324,11 @@ def command_generate(args: argparse.Namespace) -> int:
         )
         if not args.dry_run:
             normalized_size = normalize_generated_image_size(image_path, args.size or task["size"])
+            fill_report = assert_generated_content_fill(image_path)
             task["status"] = "Generated"
             task["generated_at"] = datetime.now(timezone.utc).isoformat()
             task["actual_size"] = f"{normalized_size[0]}x{normalized_size[1]}"
+            task["content_fill"] = fill_report
     write_json(manifest_path, manifest)
     return 0
 
@@ -687,10 +1343,14 @@ def command_export(args: argparse.Namespace) -> int:
 
 
 def command_run(args: argparse.Namespace) -> int:
-    rc = command_plan(args)
+    rc = command_plan_dispatch(args)
     if rc != 0 or args.dry_run:
         return rc
     manifest = args.output_dir.resolve() / "template_image_manifest.json"
+    if getattr(args, "project_production", False):
+        return command_export(
+            argparse.Namespace(manifest=manifest, output_dir=args.output_dir, name=args.name)
+        )
     gen_args = argparse.Namespace(
         manifest=manifest,
         model=args.model,
@@ -722,7 +1382,11 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--force", action="store_true")
         p.add_argument("--dry-run", action="store_true")
         p.add_argument("--image-style", default=DEFAULT_STYLE_NAME, help="Image style preset name or style JSON/Markdown path.")
-        p.set_defaults(func=command_plan if name == "plan" else command_run)
+        p.add_argument("--speaker-notes-manifest", type=Path, help="Optional business-script speaker notes manifest.")
+        p.add_argument("--project-production", action="store_true")
+        p.add_argument("--template-text-lock", type=Path)
+        p.add_argument("--page-image-manifest", type=Path)
+        p.set_defaults(func=command_plan_dispatch if name == "plan" else command_run)
     gen = sub.add_parser("generate")
     gen.add_argument("manifest", type=Path)
     gen.add_argument("--model", default="gpt-image-2")

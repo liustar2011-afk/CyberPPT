@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "workflow": "slide-image-rebuild",
+  "canvas": {
+    "aspect": "16:9",
+    "width_px": 1280,
+    "height_px": 720,
+    "safe_margin_px": 48
+  },
+  "page_role": "custom",
+  "layout_type": "precrop_fixture",
+  "zones": [],
+  "crop_candidates": [
+    {
+      "id": "footer_line_art",
+      "type": "decorative",
+      "bbox_px": [0, 650, 1280, 70],
+      "recommended_treatment": "local_clean_crop",
+      "editability_intent": "asset",
+      "needs_review": false,
+      "reason": "Footer decorative line art only",
+      "precrop": {
+        "enabled": true,
+        "file": "",
+        "source_image": "images/reference_pages/P01.png"
+      }
+    }
+  ]
+}

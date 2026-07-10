@@ -1,0 +1,51 @@
+{
+  "pages": [
+    {
+      "page_number": 11,
+      "title": "场景四：转化全流程可信履约",
+      "rebuild_mode": "template_body_region",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/analysis/semantic_plan/page_011_semantic_plan.json",
+      "semantic_plan_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/analysis/semantic_plan_gate/page_011_semantic_plan_gate.json",
+      "semantic_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/analysis/semantic_layout_plan/page_011_layout_plan.json",
+      "scene_graph": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/analysis/scene_graph/page_011_scene_graph.json",
+      "scene_graph_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/analysis/scene_graph_gate/page_011_scene_graph_gate.json",
+      "page_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/analysis/page_layout_plan/page_011_layout_plan.json",
+      "semantic_source": "script_derived_fallback",
+      "editable_text_layout_source": "ocr_script_recognition",
+      "visual_registry_source": null,
+      "semantic_containers": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/analysis/semantic_containers/page_011_containers.json",
+      "image_size_check": {
+        "status": "normalized_1280x720",
+        "source_full_size": [
+          1693,
+          929
+        ],
+        "source_background_size": [
+          1693,
+          929
+        ],
+        "full_size": [
+          1280,
+          720
+        ],
+        "background_size": [
+          1280,
+          720
+        ],
+        "output_size": [
+          1280,
+          720
+        ],
+        "full_output_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/images/normalized/page_011_场景四_转化全流程可信履约_full_1280x720.png",
+        "background_output_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/images/normalized/page_011_场景四_转化全流程可信履约_background_1280x720.png",
+        "output_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p11/images/normalized/page_011_场景四_转化全流程可信履约_background_1280x720.png"
+      },
+      "text_color_check": {
+        "white_text_boxes": 6,
+        "total_text_boxes": 59
+      },
+      "visible_image_variant": "background",
+      "editable_text_visibility": "visible"
+    }
+  ]
+}

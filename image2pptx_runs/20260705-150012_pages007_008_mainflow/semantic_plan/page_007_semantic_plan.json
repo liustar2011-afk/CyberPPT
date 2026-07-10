@@ -1,0 +1,575 @@
+{
+  "schema": "cyberppt.dual_image.semantic_plan.v1",
+  "page_number": 7,
+  "image_size": {
+    "width": 1280,
+    "height": 720
+  },
+  "inputs": {
+    "script_truth": "image2pptx_runs/20260705-150012_pages007_008_mainflow/source_script.md"
+  },
+  "geometry_truth": "semantic_containers",
+  "text_truth": "semantic_display_text",
+  "containers": [
+    {
+      "id": "p7_node_1",
+      "role": "process_node",
+      "bbox": [
+        64,
+        100,
+        162,
+        182
+      ],
+      "text_safe_bbox": [
+        64,
+        100,
+        162,
+        182
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_node_2",
+      "role": "process_node",
+      "bbox": [
+        196,
+        100,
+        294,
+        182
+      ],
+      "text_safe_bbox": [
+        196,
+        100,
+        294,
+        182
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_node_3",
+      "role": "process_node",
+      "bbox": [
+        328,
+        100,
+        426,
+        182
+      ],
+      "text_safe_bbox": [
+        328,
+        100,
+        426,
+        182
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_node_4",
+      "role": "process_node",
+      "bbox": [
+        460,
+        100,
+        558,
+        182
+      ],
+      "text_safe_bbox": [
+        460,
+        100,
+        558,
+        182
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_node_5",
+      "role": "process_node",
+      "bbox": [
+        592,
+        100,
+        690,
+        182
+      ],
+      "text_safe_bbox": [
+        592,
+        100,
+        690,
+        182
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_node_6",
+      "role": "process_node",
+      "bbox": [
+        592,
+        262,
+        690,
+        344
+      ],
+      "text_safe_bbox": [
+        592,
+        262,
+        690,
+        344
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_node_7",
+      "role": "process_node",
+      "bbox": [
+        460,
+        262,
+        558,
+        344
+      ],
+      "text_safe_bbox": [
+        460,
+        262,
+        558,
+        344
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_node_8",
+      "role": "process_node",
+      "bbox": [
+        328,
+        262,
+        426,
+        344
+      ],
+      "text_safe_bbox": [
+        328,
+        262,
+        426,
+        344
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_node_9",
+      "role": "process_node",
+      "bbox": [
+        196,
+        262,
+        294,
+        344
+      ],
+      "text_safe_bbox": [
+        196,
+        262,
+        294,
+        344
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_node_10",
+      "role": "process_node",
+      "bbox": [
+        64,
+        262,
+        162,
+        344
+      ],
+      "text_safe_bbox": [
+        64,
+        262,
+        162,
+        344
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_feedback_label",
+      "role": "edge_label",
+      "bbox": [
+        925,
+        290,
+        1190,
+        322
+      ],
+      "text_safe_bbox": [
+        925,
+        290,
+        1190,
+        322
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_trigger_1",
+      "role": "trigger_tag",
+      "bbox": [
+        62,
+        464,
+        212,
+        487
+      ],
+      "text_safe_bbox": [
+        62,
+        464,
+        212,
+        487
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_trigger_2",
+      "role": "trigger_tag",
+      "bbox": [
+        260,
+        464,
+        410,
+        487
+      ],
+      "text_safe_bbox": [
+        260,
+        464,
+        410,
+        487
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_trigger_3",
+      "role": "trigger_tag",
+      "bbox": [
+        458,
+        464,
+        608,
+        487
+      ],
+      "text_safe_bbox": [
+        458,
+        464,
+        608,
+        487
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_trigger_4",
+      "role": "trigger_tag",
+      "bbox": [
+        656,
+        464,
+        806,
+        487
+      ],
+      "text_safe_bbox": [
+        656,
+        464,
+        806,
+        487
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_trigger_5",
+      "role": "trigger_tag",
+      "bbox": [
+        854,
+        464,
+        1004,
+        487
+      ],
+      "text_safe_bbox": [
+        854,
+        464,
+        1004,
+        487
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_trigger_6",
+      "role": "trigger_tag",
+      "bbox": [
+        1052,
+        464,
+        1202,
+        487
+      ],
+      "text_safe_bbox": [
+        1052,
+        464,
+        1202,
+        487
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p7_sowhat",
+      "role": "so_what_band",
+      "bbox": [
+        92,
+        580,
+        1188,
+        615
+      ],
+      "text_safe_bbox": [
+        92,
+        580,
+        1188,
+        615
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    }
+  ],
+  "items": [
+    {
+      "display_text": "1  企业入库\n企业类型 / 业务范围 / 目标区域 / 应用需求",
+      "source_text": "1  企业入库\n企业类型 / 业务范围 / 目标区域 / 应用需求",
+      "role": "body",
+      "container_id": "p7_node_1",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "2  角色识别\n投资运营 / 规划设计 / EPC / 装备制造 / 运维等",
+      "source_text": "2  角色识别\n投资运营 / 规划设计 / EPC / 装备制造 / 运维等",
+      "role": "body",
+      "container_id": "p7_node_2",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "3  授权取证\n基础评价 / 专项评价 / 对外传播授权",
+      "source_text": "3  授权取证\n基础评价 / 专项评价 / 对外传播授权",
+      "role": "body",
+      "container_id": "p7_node_3",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "4  数据治理\n清洗 / 校验 / 去重 / 口径统一 / 版本管理",
+      "source_text": "4  数据治理\n清洗 / 校验 / 去重 / 口径统一 / 版本管理",
+      "role": "body",
+      "container_id": "p7_node_4",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "5  证据入库\n按证据类型 / 能力维度 / 场景 / 授权边界入库",
+      "source_text": "5  证据入库\n按证据类型 / 能力维度 / 场景 / 授权边界入库",
+      "role": "body",
+      "container_id": "p7_node_5",
+      "font_size": 10,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "6  能力评价\n评价模型 / 证据等级 / 场景适配规则",
+      "source_text": "6  能力评价\n评价模型 / 证据等级 / 场景适配规则",
+      "role": "body",
+      "container_id": "p7_node_6",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "7  专家复核\n重大结论 / 关键证据 / 风险提示 / 争议事项",
+      "source_text": "7  专家复核\n重大结论 / 关键证据 / 风险提示 / 争议事项",
+      "role": "body",
+      "container_id": "p7_node_7",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "8  结果生成\n画像报告 / 评价结果 / 证明材料 / 专题报告",
+      "source_text": "8  结果生成\n画像报告 / 评价结果 / 证明材料 / 专题报告",
+      "role": "body",
+      "container_id": "p7_node_8",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "9  场景调用\n投标 / 融资 / 供应链 / 国别进入 / 监测传播",
+      "source_text": "9  场景调用\n投标 / 融资 / 供应链 / 国别进入 / 监测传播",
+      "role": "body",
+      "container_id": "p7_node_9",
+      "font_size": 10,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "10  反馈更新\n使用反馈 / 异议处理 / 补证修正 / 规则修订",
+      "source_text": "10  反馈更新\n使用反馈 / 异议处理 / 补证修正 / 规则修订",
+      "role": "body",
+      "container_id": "p7_node_10",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "回流至数据治理 / 证据入库",
+      "source_text": "回流至数据治理 / 证据入库",
+      "role": "arrow_label",
+      "container_id": "p7_feedback_label",
+      "font_size": 15,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "项目新增/完工",
+      "source_text": "项目新增/完工",
+      "role": "body",
+      "container_id": "p7_trigger_1",
+      "font_size": 14,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "证书到期/更新",
+      "source_text": "证书到期/更新",
+      "role": "body",
+      "container_id": "p7_trigger_2",
+      "font_size": 14,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "行政处罚/信用修复",
+      "source_text": "行政处罚/信用修复",
+      "role": "body",
+      "container_id": "p7_trigger_3",
+      "font_size": 14,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "国别规则变化",
+      "source_text": "国别规则变化",
+      "role": "body",
+      "container_id": "p7_trigger_4",
+      "font_size": 14,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "风险事件变化",
+      "source_text": "风险事件变化",
+      "role": "body",
+      "container_id": "p7_trigger_5",
+      "font_size": 14,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "企业补证",
+      "source_text": "企业补证",
+      "role": "body",
+      "container_id": "p7_trigger_6",
+      "font_size": 14,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "核心逻辑：以授权取证和证据入库为基础，用模型评价形成结果，再通过场景调用和反馈更新形成可持续运营闭环。",
+      "source_text": "核心逻辑：以授权取证和证据入库为基础，用模型评价形成结果，再通过场景调用和反馈更新形成可持续运营闭环。",
+      "role": "body",
+      "container_id": "p7_sowhat",
+      "font_size": 18,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    }
+  ]
+}

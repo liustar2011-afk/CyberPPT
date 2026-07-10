@@ -1,0 +1,53 @@
+{
+  "schema": "cyberppt.template_assembly_visual_check.v1",
+  "page": 6,
+  "version": "v5_master_chrome_office_clean",
+  "pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v5_master_chrome_office_clean.pptx",
+  "render_png": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v5/page_006_template_assembled_总体架构_v5_master_chrome_office_clean.png",
+  "render_pdf": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v5/page_006_template_assembled_总体架构_v5_master_chrome_office_clean.pdf",
+  "checks": {
+    "opened_in_microsoft_powerpoint_without_repaired_title": true,
+    "pptx_opened_by_soffice_export": true,
+    "public_elements_in_slide_master": true,
+    "public_elements_absent_from_slide_layer": true,
+    "slide_empty_txbody_count": 0,
+    "master_empty_txbody_count": 0,
+    "template_title_present": true,
+    "title_text": "总体架构",
+    "explicit_title_region_px": {
+      "x": 58,
+      "y": 20,
+      "width": 760,
+      "height": 40
+    },
+    "explicit_subtitle_region_px": {
+      "x": 58,
+      "y": 61,
+      "width": 900,
+      "height": 20
+    },
+    "subtitle_visible": false,
+    "body_text_layer_preserved_samples": true,
+    "logo_present_in_master": true,
+    "red_divider_present_in_master": true,
+    "red_divider_px": {
+      "x": 0,
+      "y": 87,
+      "width": 1280,
+      "height": 5
+    },
+    "red_divider_not_blocked": true,
+    "placed_region_px": {
+      "x": 96,
+      "y": 96,
+      "width": 1088,
+      "height": 612
+    },
+    "page_number_present_in_master": true,
+    "obvious_template_collision_visible_in_render": false
+  },
+  "visual_notes": [
+    "v4 由 PowerPoint 打开后显示 Repaired；已保存 PowerPoint 规范化副本作为 v5，并验证 v5 再次打开不显示 Repaired。公共元素位于 slideMaster1.xml，slide 层仅保留标题与正文内容。"
+  ],
+  "deliverable_allowed_for_user_review": true
+}

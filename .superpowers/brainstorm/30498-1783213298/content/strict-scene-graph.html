@@ -1,0 +1,72 @@
+<h2>强制切换：Scene Graph First</h2>
+<p class="subtitle">所有脚本生图转 PPT 必须先通过 page_scene_graph_gate；不通过则不导出 PPTX。</p>
+
+<div class="section">
+  <h3>主流程</h3>
+  <div class="mockup">
+    <div class="mockup-header">CyberPPT Script ImageGen → Editable PPT</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;text-align:center">
+        <div class="placeholder">Script<br>Content Lock<br>Evidence</div>
+        <div class="placeholder">Image Pair<br>full/background</div>
+        <div class="placeholder">Visual Registry<br>containers/icons</div>
+        <div class="placeholder" style="border-color:#2563eb;color:#1d4ed8">Scene Graph<br>required</div>
+        <div class="placeholder" style="border-color:#b91c1c;color:#7f1d1d">Scene Graph Gate<br>blocking</div>
+        <div class="placeholder">Layout Solver<br>safe areas</div>
+        <div class="placeholder">PPTX Export<br>editable</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Gate 分层</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+    <div class="placeholder">
+      <b>Truth Gate</b><br>
+      文本必须来自脚本/内容锁/人工覆盖；禁止 OCR 改写。
+    </div>
+    <div class="placeholder">
+      <b>Geometry Gate</b><br>
+      坐标空间必须可解释；容器、安全区、text zone 均需归一化。
+    </div>
+    <div class="placeholder">
+      <b>Layout Gate</b><br>
+      文本必须绑定容器并避让图标、箭头、分隔线。
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+    <div class="placeholder">
+      <b>Render Gate</b><br>
+      导出后截图检查可见性、裁切、重叠、文本缺失。
+    </div>
+    <div class="placeholder">
+      <b>Capture Gate</b><br>
+      source_capture 必须记录 scene graph、关系、QA 结论。
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>失败不再静默</h3>
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>允许继续</h4>
+      <ul>
+        <li>所有文本节点有 truth source。</li>
+        <li>每个文本节点有 bound_container_id。</li>
+        <li>容器有 text_safe_bbox 与 reserved zones。</li>
+        <li>渲染后文本完整且可见。</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>阻断导出</h4>
+      <ul>
+        <li>只有 OCR bbox，没有语义容器。</li>
+        <li>registry 有容器但未绑定文本。</li>
+        <li>坐标归一化存在未解释漂移。</li>
+        <li>源脚本和可编辑文本不一致。</li>
+      </ul>
+    </div>
+  </div>
+</div>

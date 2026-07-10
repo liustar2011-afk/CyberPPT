@@ -1,0 +1,66 @@
+{
+  "version": "1.0",
+  "workflow": "slide-image-rebuild",
+  "check": "strict_run_summary",
+  "run_id": "20260608T082901Z",
+  "generated_at": "2026-06-08T08:29:01Z",
+  "completed_at": "2026-06-08T08:29:01Z",
+  "valid": false,
+  "status": "failed",
+  "project": "slide-image-rebuild/fixtures/image_rebuild/geometry_locks_validator",
+  "failed_step_id": "0.2.manifest_exists",
+  "failed_stage": "bootstrap",
+  "first_blocking_error_code": "tool_error",
+  "blocking_errors": [
+    {
+      "step_id": "0.2.manifest_exists",
+      "stage": "bootstrap",
+      "code": "tool_error",
+      "message": "slide_image_rebuild_manifest.json is required.",
+      "path": "",
+      "page_id": null,
+      "stdout_json_ref": "exports/qa/captures/0_2_manifest_exists.stdout.json"
+    },
+    {
+      "step_id": "agent_summary",
+      "stage": "package",
+      "code": "summary_inconsistent",
+      "message": "failed_step_id mismatch: report=None summary='0.2.manifest_exists'",
+      "path": "exports/qa/strict_run_summary.json",
+      "page_id": null,
+      "stdout_json_ref": null
+    }
+  ],
+  "warnings_count": 0,
+  "steps_total": 2,
+  "steps_passed": 0,
+  "steps_failed": 1,
+  "steps_skipped": 1,
+  "resolved": {
+    "rebuild_mode": "vector-hifi",
+    "export_mode": "hifi",
+    "precise_lock": false,
+    "render_enabled": false,
+    "page_count": 1,
+    "pages": [
+      "01"
+    ]
+  },
+  "runner": {
+    "stage_requested": "mapped",
+    "stage_reached": "bootstrap",
+    "dry_run": false
+  },
+  "artifacts": {
+    "strict_run_report": "exports/qa/strict_run_report.json",
+    "strict_run_summary": "exports/qa/strict_run_summary.json"
+  },
+  "next_action": {
+    "reread": [
+      "exports/qa/captures/0_2_manifest_exists.stdout.json",
+      "exports/qa/repair_tasks.json"
+    ],
+    "resume_stage": "svg",
+    "resume_command": "/opt/homebrew/opt/python@3.14/bin/python3.14 /Volumes/DOC/ppt-master/skills/ppt-master/scripts/run_slide_image_rebuild_strict.py --project slide-image-rebuild/fixtures/image_rebuild/geometry_locks_validator --stage svg --export-mode hifi --render --skip-export"
+  }
+}

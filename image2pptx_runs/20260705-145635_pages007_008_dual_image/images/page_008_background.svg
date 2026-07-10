@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+  <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+    <path d="M2,2 L10,6 L2,10 Z" fill="#1F5B4D"/>
+  </marker>
+  <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+    <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#9DA8A2" flood-opacity="0.24"/>
+  </filter>
+</defs>
+<rect width="1280" height="720" fill="#F5F6F2"/><path d="M0 0 H1280 V720 H0 Z" fill="#F7F8F4"/><path d="M0 0 H1280 V112 H0 Z" fill="#ECF1EB"/><path d="M28 114 C220 82, 410 132, 610 102 S1010 66, 1252 116" fill="none" stroke="#D9E2DC" stroke-width="2"/><text x="48" y="58" font-family="Arial Unicode MS" font-size="30" font-weight="700" fill="#1F5B4D">评价模型核心支撑</text>
+<text x="48" y="91" font-family="Arial Unicode MS" font-size="17" fill="#68746F">六类证据资源进入九类能力维度，并按企业类型与应用场景适配输出</text>
+<rect x="42" y="134" width="244" height="452" rx="18" fill="#FFFFFF" stroke="#D1DCD5" stroke-width="2"/>
+<rect x="66" y="202" width="196" height="38" rx="12" fill="#EFF6F1" stroke="#BBD2C5" stroke-width="2"/>
+<rect x="66" y="259" width="196" height="38" rx="12" fill="#EFF6F1" stroke="#BBD2C5" stroke-width="2"/>
+<rect x="66" y="316" width="196" height="38" rx="12" fill="#EFF6F1" stroke="#BBD2C5" stroke-width="2"/>
+<rect x="66" y="373" width="196" height="38" rx="12" fill="#EFF6F1" stroke="#BBD2C5" stroke-width="2"/>
+<rect x="66" y="430" width="196" height="38" rx="12" fill="#EFF6F1" stroke="#BBD2C5" stroke-width="2"/>
+<rect x="66" y="487" width="196" height="38" rx="12" fill="#EFF6F1" stroke="#BBD2C5" stroke-width="2"/>
+<line x1="292" y1="360" x2="372" y2="360" stroke="#1F5B4D" stroke-width="4" marker-end="url(#arrow)"/>
+<rect x="374" y="134" width="520" height="452" rx="18" fill="#FFFFFF" stroke="#D1DCD5" stroke-width="2"/>
+<rect x="410" y="214" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="432" cy="236" r="14" fill="#1F5B4D"/>
+<text x="432" y="241" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">1</text>
+<rect x="568" y="214" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="590" cy="236" r="14" fill="#1F5B4D"/>
+<text x="590" y="241" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">2</text>
+<rect x="726" y="214" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="748" cy="236" r="14" fill="#1F5B4D"/>
+<text x="748" y="241" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">3</text>
+<rect x="410" y="319" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="432" cy="341" r="14" fill="#1F5B4D"/>
+<text x="432" y="346" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">4</text>
+<rect x="568" y="319" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="590" cy="341" r="14" fill="#1F5B4D"/>
+<text x="590" y="346" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">5</text>
+<rect x="726" y="319" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="748" cy="341" r="14" fill="#1F5B4D"/>
+<text x="748" y="346" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">6</text>
+<rect x="410" y="424" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="432" cy="446" r="14" fill="#1F5B4D"/>
+<text x="432" y="451" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">7</text>
+<rect x="568" y="424" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="590" cy="446" r="14" fill="#1F5B4D"/>
+<text x="590" y="451" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">8</text>
+<rect x="726" y="424" width="150" height="84" rx="14" fill="#F7FAF7" stroke="#C2D4CA" stroke-width="2"/>
+<circle cx="748" cy="446" r="14" fill="#1F5B4D"/>
+<text x="748" y="451" text-anchor="middle" font-family="Arial Unicode MS" font-size="14" font-weight="700" fill="#FFFFFF">9</text>
+<line x1="902" y1="360" x2="970" y2="360" stroke="#1F5B4D" stroke-width="4" marker-end="url(#arrow)"/>
+<rect x="972" y="134" width="260" height="208" rx="18" fill="#FFFFFF" stroke="#D1DCD5" stroke-width="2"/>
+<rect x="994" y="197" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="1104" y="197" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="994" y="228" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="1104" y="228" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="994" y="259" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="1104" y="259" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="994" y="290" width="104" height="26" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="972" y="378" width="260" height="208" rx="18" fill="#FFFFFF" stroke="#D1DCD5" stroke-width="2"/>
+<rect x="994" y="441" width="104" height="28" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="1104" y="441" width="104" height="28" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="994" y="475" width="104" height="28" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="1104" y="475" width="104" height="28" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="994" y="509" width="104" height="28" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="1104" y="509" width="104" height="28" rx="9" fill="#F0F5F1" stroke="#D0DED5" stroke-width="1"/>
+<rect x="46" y="612" width="1188" height="64" rx="18" fill="#FFFFFF" stroke="#D8E1DB" stroke-width="2"/></svg>

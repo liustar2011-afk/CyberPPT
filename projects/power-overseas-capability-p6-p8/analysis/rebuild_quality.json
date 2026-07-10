@@ -1,0 +1,145 @@
+{
+  "pages": [
+    {
+      "page_number": 6,
+      "title": "总体架构按照“数据底座—评价证据—评价模型—结果应用—运营保障”组织",
+      "rebuild_mode": "template_body_region",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_plan/page_006_semantic_plan.json",
+      "semantic_plan_gate": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_plan_gate/page_006_semantic_plan_gate.json",
+      "semantic_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_layout_plan/page_006_layout_plan.json",
+      "scene_graph": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/scene_graph/page_006_scene_graph.json",
+      "scene_graph_gate": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/scene_graph_gate/page_006_scene_graph_gate.json",
+      "page_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/page_layout_plan/page_006_layout_plan.json",
+      "semantic_source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/stages/02-blueprint-dual-image/pages_006_008/semantic_plans/page_006_semantic_plan.json",
+      "editable_text_layout_source": "scene_graph_layout",
+      "visual_registry_source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/visual_registry/slide-06-visual-element-registry.json",
+      "semantic_containers": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_containers/page_006_containers.json",
+      "image_size_check": {
+        "status": "normalized_1280x720",
+        "source_full_size": [
+          1693,
+          929
+        ],
+        "source_background_size": [
+          1692,
+          929
+        ],
+        "full_size": [
+          1280,
+          720
+        ],
+        "background_size": [
+          1280,
+          720
+        ],
+        "output_size": [
+          1280,
+          720
+        ],
+        "full_output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/images/normalized/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织_full_1280x720.png",
+        "background_output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/images/normalized/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织_background_1280x720.png",
+        "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/images/normalized/page_006_总体架构按照_数据底座_评价证据_评价模型_结果应用_运营保障_组织_background_1280x720.png"
+      },
+      "text_color_check": {
+        "white_text_boxes": 0,
+        "total_text_boxes": 34
+      },
+      "visible_image_variant": "background",
+      "editable_text_visibility": "visible"
+    },
+    {
+      "page_number": 7,
+      "title": "能力评价场景按“企业入库—证据归集—能力评价—结果生成—场景调用—反馈更新”闭环运行",
+      "rebuild_mode": "template_body_region",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_plan/page_007_semantic_plan.json",
+      "semantic_plan_gate": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_plan_gate/page_007_semantic_plan_gate.json",
+      "semantic_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_layout_plan/page_007_layout_plan.json",
+      "scene_graph": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/scene_graph/page_007_scene_graph.json",
+      "scene_graph_gate": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/scene_graph_gate/page_007_scene_graph_gate.json",
+      "page_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/page_layout_plan/page_007_layout_plan.json",
+      "semantic_source": "script_derived_fallback",
+      "editable_text_layout_source": "ocr_script_recognition",
+      "visual_registry_source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/visual_registry/slide-07-visual-element-registry.json",
+      "semantic_containers": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_containers/page_007_containers.json",
+      "image_size_check": {
+        "status": "normalized_1280x720",
+        "source_full_size": [
+          1693,
+          929
+        ],
+        "source_background_size": [
+          1693,
+          929
+        ],
+        "full_size": [
+          1280,
+          720
+        ],
+        "background_size": [
+          1280,
+          720
+        ],
+        "output_size": [
+          1280,
+          720
+        ],
+        "full_output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/images/normalized/page_007_能力评价场景按_企业入库_证据归集_能力评价_结果生成_场景调用_反馈更_full_1280x720.png",
+        "background_output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/images/normalized/page_007_能力评价场景按_企业入库_证据归集_能力评价_结果生成_场景调用_反馈更_background_1280x720.png",
+        "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/images/normalized/page_007_能力评价场景按_企业入库_证据归集_能力评价_结果生成_场景调用_反馈更_background_1280x720.png"
+      },
+      "text_color_check": {
+        "white_text_boxes": 10,
+        "total_text_boxes": 36
+      },
+      "visible_image_variant": "background",
+      "editable_text_visibility": "visible"
+    },
+    {
+      "page_number": 8,
+      "title": "九类能力维度与六类证据资源共同构成评价模型的核心支撑",
+      "rebuild_mode": "template_body_region",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_plan/page_008_semantic_plan.json",
+      "semantic_plan_gate": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_plan_gate/page_008_semantic_plan_gate.json",
+      "semantic_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_layout_plan/page_008_layout_plan.json",
+      "scene_graph": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/scene_graph/page_008_scene_graph.json",
+      "scene_graph_gate": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/scene_graph_gate/page_008_scene_graph_gate.json",
+      "page_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/page_layout_plan/page_008_layout_plan.json",
+      "semantic_source": "script_derived_fallback",
+      "editable_text_layout_source": "ocr_script_recognition",
+      "visual_registry_source": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/visual_registry/slide-08-visual-element-registry.json",
+      "semantic_containers": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/analysis/semantic_containers/page_008_containers.json",
+      "image_size_check": {
+        "status": "normalized_1280x720",
+        "source_full_size": [
+          1693,
+          929
+        ],
+        "source_background_size": [
+          1692,
+          929
+        ],
+        "full_size": [
+          1280,
+          720
+        ],
+        "background_size": [
+          1280,
+          720
+        ],
+        "output_size": [
+          1280,
+          720
+        ],
+        "full_output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/images/normalized/page_008_九类能力维度与六类证据资源共同构成评价模型的核心支撑_full_1280x720.png",
+        "background_output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/images/normalized/page_008_九类能力维度与六类证据资源共同构成评价模型的核心支撑_background_1280x720.png",
+        "output_path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/images/normalized/page_008_九类能力维度与六类证据资源共同构成评价模型的核心支撑_background_1280x720.png"
+      },
+      "text_color_check": {
+        "white_text_boxes": 4,
+        "total_text_boxes": 51
+      },
+      "visible_image_variant": "background",
+      "editable_text_visibility": "visible"
+    }
+  ]
+}

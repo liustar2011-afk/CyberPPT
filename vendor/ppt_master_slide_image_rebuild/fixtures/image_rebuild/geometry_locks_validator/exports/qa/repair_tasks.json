@@ -1,0 +1,11 @@
+{
+  "workflow": "slide-image-rebuild",
+  "version": "1.0",
+  "generated_at": "2026-06-07T04:50:08Z",
+  "project": "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/geometry_locks_validator",
+  "status": "clear",
+  "valid": true,
+  "task_count": 0,
+  "blocking_open_count": 0,
+  "tasks": []
+}

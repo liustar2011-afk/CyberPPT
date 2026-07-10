@@ -1,0 +1,1005 @@
+{
+  "schema": "cyberppt.visual_annotations.v1",
+  "slide": 7,
+  "elements": [
+    {
+      "element_id": "p7_dual_image_background",
+      "priority": "P0",
+      "element_type": "dual_image_background",
+      "source_component_id": "p7_dual_image_background",
+      "semantic_meaning": "no-text background plus editable text overlay visual carrier",
+      "blueprint_bbox_px": {
+        "x": 0,
+        "y": 0,
+        "w": 1280,
+        "h": 720
+      },
+      "render_bbox_px": {
+        "x": 0,
+        "y": 0,
+        "w": 1280,
+        "h": 720
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 30
+    },
+    {
+      "element_id": "p7_text_001",
+      "priority": "P0",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_001",
+      "semantic_meaning": "1",
+      "blueprint_bbox_px": {
+        "x": 101.38,
+        "y": 203.49,
+        "w": 16.47,
+        "h": 18.91
+      },
+      "render_bbox_px": {
+        "x": 101.38,
+        "y": 203.49,
+        "w": 16.47,
+        "h": 18.91
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_002",
+      "priority": "P0",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_002",
+      "semantic_meaning": "1. 企业入库",
+      "blueprint_bbox_px": {
+        "x": 76.19,
+        "y": 316.13,
+        "w": 66.84,
+        "h": 14.8
+      },
+      "render_bbox_px": {
+        "x": 76.19,
+        "y": 316.13,
+        "w": 66.84,
+        "h": 14.8
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_003",
+      "priority": "P0",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_003",
+      "semantic_meaning": "明确企业类型、业务范围、目标区域、应用需求",
+      "blueprint_bbox_px": {
+        "x": 68.44,
+        "y": 350.67,
+        "w": 79.44,
+        "h": 91.27
+      },
+      "render_bbox_px": {
+        "x": 68.44,
+        "y": 350.67,
+        "w": 79.44,
+        "h": 91.27
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_004",
+      "priority": "P0",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_004",
+      "semantic_meaning": "2",
+      "blueprint_bbox_px": {
+        "x": 225.38,
+        "y": 203.49,
+        "w": 16.47,
+        "h": 18.91
+      },
+      "render_bbox_px": {
+        "x": 225.38,
+        "y": 203.49,
+        "w": 16.47,
+        "h": 18.91
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_005",
+      "priority": "P0",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_005",
+      "semantic_meaning": "2. 企业角色识别",
+      "blueprint_bbox_px": {
+        "x": 193.41,
+        "y": 316.13,
+        "w": 81.38,
+        "h": 14.8
+      },
+      "render_bbox_px": {
+        "x": 193.41,
+        "y": 316.13,
+        "w": 81.38,
+        "h": 14.8
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_006",
+      "priority": "P0",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_006",
+      "semantic_meaning": "投资运营、规划设计、EPC总包、装备制造、运维服务、供应链服务",
+      "blueprint_bbox_px": {
+        "x": 198.25,
+        "y": 350.67,
+        "w": 71.69,
+        "h": 108.53
+      },
+      "render_bbox_px": {
+        "x": 198.25,
+        "y": 350.67,
+        "w": 71.69,
+        "h": 108.53
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_007",
+      "priority": "P0",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_007",
+      "semantic_meaning": "3",
+      "blueprint_bbox_px": {
+        "x": 349.38,
+        "y": 203.49,
+        "w": 15.5,
+        "h": 18.91
+      },
+      "render_bbox_px": {
+        "x": 349.38,
+        "y": 203.49,
+        "w": 15.5,
+        "h": 18.91
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_008",
+      "priority": "P0",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_008",
+      "semantic_meaning": "3. 授权取证",
+      "blueprint_bbox_px": {
+        "x": 326.12,
+        "y": 316.13,
+        "w": 59.09,
+        "h": 14.8
+      },
+      "render_bbox_px": {
+        "x": 326.12,
+        "y": 316.13,
+        "w": 59.09,
+        "h": 14.8
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_009",
+      "priority": "P0",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_009",
+      "semantic_meaning": "基础评价授权 / 专项评价授权 / 对外传播授权",
+      "blueprint_bbox_px": {
+        "x": 312.56,
+        "y": 350.67,
+        "w": 86.22,
+        "h": 49.33
+      },
+      "render_bbox_px": {
+        "x": 312.56,
+        "y": 350.67,
+        "w": 86.22,
+        "h": 49.33
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_010",
+      "priority": "P0",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_010",
+      "semantic_meaning": "4",
+      "blueprint_bbox_px": {
+        "x": 467.56,
+        "y": 203.49,
+        "w": 15.5,
+        "h": 18.91
+      },
+      "render_bbox_px": {
+        "x": 467.56,
+        "y": 203.49,
+        "w": 15.5,
+        "h": 18.91
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_011",
+      "priority": "P0",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_011",
+      "semantic_meaning": "4. 数据治理",
+      "blueprint_bbox_px": {
+        "x": 443.34,
+        "y": 316.13,
+        "w": 61.03,
+        "h": 14.8
+      },
+      "render_bbox_px": {
+        "x": 443.34,
+        "y": 316.13,
+        "w": 61.03,
+        "h": 14.8
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_012",
+      "priority": "P0",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_012",
+      "semantic_meaning": "清洗、校验、去重、分类、口径统一、版本管理",
+      "blueprint_bbox_px": {
+        "x": 438.5,
+        "y": 350.67,
+        "w": 70.72,
+        "h": 69.89
+      },
+      "render_bbox_px": {
+        "x": 438.5,
+        "y": 350.67,
+        "w": 70.72,
+        "h": 69.89
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_013",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_013",
+      "semantic_meaning": "5",
+      "blueprint_bbox_px": {
+        "x": 588.66,
+        "y": 203.49,
+        "w": 16.47,
+        "h": 18.91
+      },
+      "render_bbox_px": {
+        "x": 588.66,
+        "y": 203.49,
+        "w": 16.47,
+        "h": 18.91
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_014",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_014",
+      "semantic_meaning": "5. 证据入库",
+      "blueprint_bbox_px": {
+        "x": 562.5,
+        "y": 316.13,
+        "w": 62.0,
+        "h": 14.8
+      },
+      "render_bbox_px": {
+        "x": 562.5,
+        "y": 316.13,
+        "w": 62.0,
+        "h": 14.8
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_015",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_015",
+      "semantic_meaning": "按证据类型、能力维度、适用场景、授权边界组织入库",
+      "blueprint_bbox_px": {
+        "x": 559.59,
+        "y": 350.67,
+        "w": 70.72,
+        "h": 91.27
+      },
+      "render_bbox_px": {
+        "x": 559.59,
+        "y": 350.67,
+        "w": 70.72,
+        "h": 91.27
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_016",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_016",
+      "semantic_meaning": "6",
+      "blueprint_bbox_px": {
+        "x": 705.88,
+        "y": 203.49,
+        "w": 15.5,
+        "h": 18.91
+      },
+      "render_bbox_px": {
+        "x": 705.88,
+        "y": 203.49,
+        "w": 15.5,
+        "h": 18.91
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_017",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_017",
+      "semantic_meaning": "6. 能力评价",
+      "blueprint_bbox_px": {
+        "x": 680.69,
+        "y": 316.13,
+        "w": 60.06,
+        "h": 14.8
+      },
+      "render_bbox_px": {
+        "x": 680.69,
+        "y": 316.13,
+        "w": 60.06,
+        "h": 14.8
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_018",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_018",
+      "semantic_meaning": "按评价模型、证据等级、场景适配规则形成评价结论",
+      "blueprint_bbox_px": {
+        "x": 678.75,
+        "y": 350.67,
+        "w": 67.81,
+        "h": 70.71
+      },
+      "render_bbox_px": {
+        "x": 678.75,
+        "y": 350.67,
+        "w": 67.81,
+        "h": 70.71
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_019",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_019",
+      "semantic_meaning": "7",
+      "blueprint_bbox_px": {
+        "x": 823.09,
+        "y": 203.49,
+        "w": 16.47,
+        "h": 18.91
+      },
+      "render_bbox_px": {
+        "x": 823.09,
+        "y": 203.49,
+        "w": 16.47,
+        "h": 18.91
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_020",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_020",
+      "semantic_meaning": "7. 专家复核",
+      "blueprint_bbox_px": {
+        "x": 797.91,
+        "y": 316.13,
+        "w": 61.03,
+        "h": 14.8
+      },
+      "render_bbox_px": {
+        "x": 797.91,
+        "y": 316.13,
+        "w": 61.03,
+        "h": 14.8
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_021",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_021",
+      "semantic_meaning": "对重大结论、关键证据、风险提示、争议事项进行复核",
+      "blueprint_bbox_px": {
+        "x": 795.97,
+        "y": 350.67,
+        "w": 70.72,
+        "h": 91.27
+      },
+      "render_bbox_px": {
+        "x": 795.97,
+        "y": 350.67,
+        "w": 70.72,
+        "h": 91.27
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_022",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_022",
+      "semantic_meaning": "8",
+      "blueprint_bbox_px": {
+        "x": 945.16,
+        "y": 203.49,
+        "w": 16.47,
+        "h": 18.91
+      },
+      "render_bbox_px": {
+        "x": 945.16,
+        "y": 203.49,
+        "w": 16.47,
+        "h": 18.91
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_023",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_023",
+      "semantic_meaning": "8. 结果生成",
+      "blueprint_bbox_px": {
+        "x": 920.94,
+        "y": 316.13,
+        "w": 60.06,
+        "h": 14.8
+      },
+      "render_bbox_px": {
+        "x": 920.94,
+        "y": 316.13,
+        "w": 60.06,
+        "h": 14.8
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_024",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_024",
+      "semantic_meaning": "画像报告、能力评价结果、证明材料、专题报告、风险提示",
+      "blueprint_bbox_px": {
+        "x": 919.97,
+        "y": 350.67,
+        "w": 68.78,
+        "h": 91.27
+      },
+      "render_bbox_px": {
+        "x": 919.97,
+        "y": 350.67,
+        "w": 68.78,
+        "h": 91.27
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_025",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_025",
+      "semantic_meaning": "9",
+      "blueprint_bbox_px": {
+        "x": 1061.41,
+        "y": 203.49,
+        "w": 16.47,
+        "h": 18.91
+      },
+      "render_bbox_px": {
+        "x": 1061.41,
+        "y": 203.49,
+        "w": 16.47,
+        "h": 18.91
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_026",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_026",
+      "semantic_meaning": "9. 场景调用",
+      "blueprint_bbox_px": {
+        "x": 1036.22,
+        "y": 316.13,
+        "w": 62.0,
+        "h": 14.8
+      },
+      "render_bbox_px": {
+        "x": 1036.22,
+        "y": 316.13,
+        "w": 62.0,
+        "h": 14.8
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_027",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_027",
+      "semantic_meaning": "投标、融资、供应链、国别进入、行业监测、国际传播",
+      "blueprint_bbox_px": {
+        "x": 1036.22,
+        "y": 350.67,
+        "w": 66.84,
+        "h": 108.53
+      },
+      "render_bbox_px": {
+        "x": 1036.22,
+        "y": 350.67,
+        "w": 66.84,
+        "h": 108.53
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_028",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_028",
+      "semantic_meaning": "10",
+      "blueprint_bbox_px": {
+        "x": 1172.81,
+        "y": 203.49,
+        "w": 21.31,
+        "h": 18.91
+      },
+      "render_bbox_px": {
+        "x": 1172.81,
+        "y": 203.49,
+        "w": 21.31,
+        "h": 18.91
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_029",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_029",
+      "semantic_meaning": "10. 反馈更新",
+      "blueprint_bbox_px": {
+        "x": 1152.47,
+        "y": 316.13,
+        "w": 59.09,
+        "h": 14.8
+      },
+      "render_bbox_px": {
+        "x": 1152.47,
+        "y": 316.13,
+        "w": 59.09,
+        "h": 14.8
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_030",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_030",
+      "semantic_meaning": "使用反馈、异议处理、补证修正、规则修订",
+      "blueprint_bbox_px": {
+        "x": 1151.5,
+        "y": 350.67,
+        "w": 62.97,
+        "h": 69.89
+      },
+      "render_bbox_px": {
+        "x": 1151.5,
+        "y": 350.67,
+        "w": 62.97,
+        "h": 69.89
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_031",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_031",
+      "semantic_meaning": "项目新增/完工",
+      "blueprint_bbox_px": {
+        "x": 137.22,
+        "y": 594.04,
+        "w": 93.0,
+        "h": 15.62
+      },
+      "render_bbox_px": {
+        "x": 137.22,
+        "y": 594.04,
+        "w": 93.0,
+        "h": 15.62
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_032",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_032",
+      "semantic_meaning": "证书到期/更新",
+      "blueprint_bbox_px": {
+        "x": 330.0,
+        "y": 594.04,
+        "w": 94.94,
+        "h": 15.62
+      },
+      "render_bbox_px": {
+        "x": 330.0,
+        "y": 594.04,
+        "w": 94.94,
+        "h": 15.62
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_033",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_033",
+      "semantic_meaning": "行政处罚/信用修复",
+      "blueprint_bbox_px": {
+        "x": 526.66,
+        "y": 594.04,
+        "w": 93.97,
+        "h": 15.62
+      },
+      "render_bbox_px": {
+        "x": 526.66,
+        "y": 594.04,
+        "w": 93.97,
+        "h": 15.62
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_034",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_034",
+      "semantic_meaning": "国别规则变化",
+      "blueprint_bbox_px": {
+        "x": 722.34,
+        "y": 594.04,
+        "w": 88.16,
+        "h": 15.62
+      },
+      "render_bbox_px": {
+        "x": 722.34,
+        "y": 594.04,
+        "w": 88.16,
+        "h": 15.62
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_035",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_035",
+      "semantic_meaning": "风险事件变化",
+      "blueprint_bbox_px": {
+        "x": 906.41,
+        "y": 594.04,
+        "w": 88.16,
+        "h": 15.62
+      },
+      "render_bbox_px": {
+        "x": 906.41,
+        "y": 594.04,
+        "w": 88.16,
+        "h": 15.62
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    },
+    {
+      "element_id": "p7_text_036",
+      "priority": "P1",
+      "element_type": "editable_text",
+      "source_component_id": "p7_text_036",
+      "semantic_meaning": "企业补证",
+      "blueprint_bbox_px": {
+        "x": 1109.84,
+        "y": 594.04,
+        "w": 61.03,
+        "h": 15.62
+      },
+      "render_bbox_px": {
+        "x": 1109.84,
+        "y": 594.04,
+        "w": 61.03,
+        "h": 15.62
+      },
+      "delta_px": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      "registration_status": "passed",
+      "pixel_mean_abs_tolerance": 42
+    }
+  ]
+}

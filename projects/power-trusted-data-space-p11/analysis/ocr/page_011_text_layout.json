@@ -1,0 +1,657 @@
+{
+  "image_size": {
+    "width": 1280,
+    "height": 720
+  },
+  "items": [
+    {
+      "text": "通过合同全生命周期管理与智能合约履约管控，解决履约风险高、流程不透明、追溯难、纠纷多的问题，破解“付款后不交付、交付后不付款”双向信任困境",
+      "bbox": [
+        102.0,
+        35.0,
+        1179.0,
+        57.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "模块一",
+      "bbox": [
+        80.0,
+        114.0,
+        135.0,
+        130.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "数据来源方",
+      "bbox": [
+        59.0,
+        145.0,
+        139.0,
+        164.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "· 转化合同双方：技术转让、技术许可、合作开发、技术服务等合同类型数据",
+      "bbox": [
+        26.0,
+        309.0,
+        158.0,
+        359.0
+      ],
+      "confidence": 0.88,
+      "source": "vision-json"
+    },
+    {
+      "text": "· 交付节点、验收标准、支付比例、知识产权归属、收益分成等关键条款",
+      "bbox": [
+        25.0,
+        382.0,
+        158.0,
+        437.0
+      ],
+      "confidence": 0.88,
+      "source": "vision-json"
+    },
+    {
+      "text": "模块二   技术支撑方与底座加工",
+      "bbox": [
+        293.0,
+        115.0,
+        492.0,
+        130.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "技术支撑方",
+      "bbox": [
+        298.0,
+        171.0,
+        377.0,
+        188.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "区块链智能合约技术提供方，将合同关键条款转化为可自动执行的智能合约",
+      "bbox": [
+        383.0,
+        162.0,
+        585.0,
+        194.0
+      ],
+      "confidence": 0.91,
+      "source": "vision-json"
+    },
+    {
+      "text": "加工链条（对照九环节标注覆盖情况）",
+      "bbox": [
+        282.0,
+        229.0,
+        506.0,
+        244.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "可信计算",
+      "bbox": [
+        223.0,
+        329.0,
+        280.0,
+        346.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "履约节点自动触发、合同条款代码化执行",
+      "bbox": [
+        218.0,
+        355.0,
+        286.0,
+        392.0
+      ],
+      "confidence": 0.85,
+      "source": "vision-json"
+    },
+    {
+      "text": "成果输出",
+      "bbox": [
+        324.0,
+        329.0,
+        380.0,
+        346.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "公证合同、验收结果上链确认",
+      "bbox": [
+        313.0,
+        355.0,
+        383.0,
+        392.0
+      ],
+      "confidence": 0.86,
+      "source": "vision-json"
+    },
+    {
+      "text": "审计留痕",
+      "bbox": [
+        423.0,
+        329.0,
+        479.0,
+        346.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "违约行为自动预警、全程上链",
+      "bbox": [
+        414.0,
+        355.0,
+        483.0,
+        392.0
+      ],
+      "confidence": 0.86,
+      "source": "vision-json"
+    },
+    {
+      "text": "收益结算",
+      "bbox": [
+        521.0,
+        329.0,
+        578.0,
+        346.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "资金托管分阶段支付智能结算",
+      "bbox": [
+        513.0,
+        355.0,
+        581.0,
+        392.0
+      ],
+      "confidence": 0.86,
+      "source": "vision-json"
+    },
+    {
+      "text": "目录发布",
+      "bbox": [
+        226.0,
+        446.0,
+        279.0,
+        461.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "（非本场景原文展开重点）",
+      "bbox": [
+        210.0,
+        465.0,
+        291.0,
+        490.0
+      ],
+      "confidence": 0.78,
+      "source": "vision-json"
+    },
+    {
+      "text": "主体认证",
+      "bbox": [
+        326.0,
+        446.0,
+        376.0,
+        461.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "（非本场景原文展开重点）",
+      "bbox": [
+        309.0,
+        465.0,
+        391.0,
+        490.0
+      ],
+      "confidence": 0.78,
+      "source": "vision-json"
+    },
+    {
+      "text": "数据授权",
+      "bbox": [
+        425.0,
+        446.0,
+        475.0,
+        461.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "（非本场景原文展开重点）",
+      "bbox": [
+        408.0,
+        465.0,
+        489.0,
+        490.0
+      ],
+      "confidence": 0.78,
+      "source": "vision-json"
+    },
+    {
+      "text": "受控接入",
+      "bbox": [
+        524.0,
+        446.0,
+        575.0,
+        461.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "（非本场景原文展开重点）",
+      "bbox": [
+        508.0,
+        465.0,
+        589.0,
+        490.0
+      ],
+      "confidence": 0.78,
+      "source": "vision-json"
+    },
+    {
+      "text": "模块三",
+      "bbox": [
+        678.0,
+        114.0,
+        722.0,
+        130.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "服务产品",
+      "bbox": [
+        667.0,
+        145.0,
+        737.0,
+        164.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "公证合同",
+      "bbox": [
+        668.0,
+        216.0,
+        738.0,
+        237.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "对接公证处实现合同公证，具备法定证据效力，可独立用于举证维权",
+      "bbox": [
+        631.0,
+        409.0,
+        772.0,
+        491.0
+      ],
+      "confidence": 0.9,
+      "source": "vision-json"
+    },
+    {
+      "text": "模块四",
+      "bbox": [
+        915.0,
+        114.0,
+        959.0,
+        130.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "空间运营方与第三方服务方",
+      "bbox": [
+        848.0,
+        137.0,
+        1054.0,
+        155.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "空间运营方",
+      "bbox": [
+        837.0,
+        177.0,
+        909.0,
+        193.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "中电联统筹合同管理规则与纠纷处理对接，不承担底层技术研发",
+      "bbox": [
+        820.0,
+        198.0,
+        928.0,
+        235.0
+      ],
+      "confidence": 0.88,
+      "source": "vision-json"
+    },
+    {
+      "text": "具体运营动作",
+      "bbox": [
+        837.0,
+        259.0,
+        909.0,
+        274.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "合同起草模板匹配",
+      "bbox": [
+        845.0,
+        288.0,
+        933.0,
+        304.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "合规审核",
+      "bbox": [
+        845.0,
+        326.0,
+        906.0,
+        341.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "电子签署",
+      "bbox": [
+        846.0,
+        367.0,
+        906.0,
+        382.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "智能合约履约触发",
+      "bbox": [
+        846.0,
+        405.0,
+        936.0,
+        421.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "（如有异常）纠纷对接",
+      "bbox": [
+        835.0,
+        441.0,
+        945.0,
+        457.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "产生自动结算记录、调解司法对接服务，作为运营流程产出而非独立产品",
+      "bbox": [
+        819.0,
+        469.0,
+        935.0,
+        532.0
+      ],
+      "confidence": 0.89,
+      "source": "vision-json"
+    },
+    {
+      "text": "第三方服务方",
+      "bbox": [
+        997.0,
+        183.0,
+        1073.0,
+        199.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "公证处",
+      "bbox": [
+        1027.0,
+        234.0,
+        1071.0,
+        250.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "（合同公证）",
+      "bbox": [
+        1016.0,
+        254.0,
+        1082.0,
+        267.0
+      ],
+      "confidence": 0.91,
+      "source": "vision-json"
+    },
+    {
+      "text": "第三方银行机构",
+      "bbox": [
+        1007.0,
+        319.0,
+        1087.0,
+        335.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "（资金托管结算）",
+      "bbox": [
+        1007.0,
+        342.0,
+        1090.0,
+        354.0
+      ],
+      "confidence": 0.9,
+      "source": "vision-json"
+    },
+    {
+      "text": "行业调解机构/司法鉴定机构/法院",
+      "bbox": [
+        1000.0,
+        397.0,
+        1094.0,
+        440.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "（在线调解、证据一键调取、司法对接）",
+      "bbox": [
+        995.0,
+        464.0,
+        1099.0,
+        489.0
+      ],
+      "confidence": 0.87,
+      "source": "vision-json"
+    },
+    {
+      "text": "模块五",
+      "bbox": [
+        1180.0,
+        114.0,
+        1224.0,
+        130.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "用户方",
+      "bbox": [
+        1175.0,
+        145.0,
+        1226.0,
+        164.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "转化合同双方",
+      "bbox": [
+        1160.0,
+        340.0,
+        1243.0,
+        357.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "（履约保障的直接受益者）",
+      "bbox": [
+        1154.0,
+        366.0,
+        1250.0,
+        398.0
+      ],
+      "confidence": 0.9,
+      "source": "vision-json"
+    },
+    {
+      "text": "可信机制贯穿全程",
+      "bbox": [
+        211.0,
+        591.0,
+        329.0,
+        608.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "合同对接公证处实现法定证据效力",
+      "bbox": [
+        209.0,
+        615.0,
+        329.0,
+        650.0
+      ],
+      "confidence": 0.93,
+      "source": "vision-json"
+    },
+    {
+      "text": "（结果可信）",
+      "bbox": [
+        228.0,
+        657.0,
+        310.0,
+        676.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "履约节点自动触发、验收结果上链确认、违约自动预警",
+      "bbox": [
+        493.0,
+        591.0,
+        608.0,
+        650.0
+      ],
+      "confidence": 0.92,
+      "source": "vision-json"
+    },
+    {
+      "text": "（过程可信）",
+      "bbox": [
+        510.0,
+        657.0,
+        591.0,
+        676.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "资金托管分阶段支付智能结算",
+      "bbox": [
+        755.0,
+        600.0,
+        855.0,
+        636.0
+      ],
+      "confidence": 0.94,
+      "source": "vision-json"
+    },
+    {
+      "text": "（权益可信）",
+      "bbox": [
+        767.0,
+        646.0,
+        846.0,
+        664.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "证据一键调取，大幅降低维权成本、缩短纠纷处理周期",
+      "bbox": [
+        1024.0,
+        601.0,
+        1142.0,
+        654.0
+      ],
+      "confidence": 0.92,
+      "source": "vision-json"
+    }
+  ]
+}

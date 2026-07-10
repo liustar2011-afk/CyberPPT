@@ -1,0 +1,1626 @@
+{
+  "schema": "cyberppt.dual_image.template_rebuild_readiness.v1",
+  "valid": false,
+  "status": "preflight_rework_required",
+  "project_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13",
+  "pair_manifest": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/workbench/stages/02-blueprint-dual-image/pages_012_013/page_image_pairs.json",
+  "rebuild_mode": "template_body_region",
+  "visual_reference_mode": "template_normalized_reference",
+  "visual_registry_dir": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_registry",
+  "draft_visual_registry_generated": false,
+  "semantic_plan_dir": null,
+  "rendered_preview": null,
+  "render_compare": {
+    "available": false,
+    "skipped": true,
+    "reason": "rendered_preview_not_provided"
+  },
+  "checks": {
+    "template_rebuild_consumed": true,
+    "preflight_gate_pass": false,
+    "build_gate_pass": true,
+    "postflight_gate_pass": false,
+    "template_gate_pass": true,
+    "source_capture_consumed": true,
+    "source_capture_gate_pass": false,
+    "draft_visual_registry_generated": false,
+    "render_compare_consumed": false,
+    "scene_graph_gate_pass": true,
+    "scene_graph_gate_pages": 2,
+    "semantic_binding_pass": true,
+    "semantic_binding_pages": 2,
+    "visual_qa_gate_pass": false,
+    "page_quality_report_pass": false
+  },
+  "template_gate": {
+    "schema": "cyberppt.dual_image.template_gate.v1",
+    "valid": true,
+    "checks": {
+      "spec_lock_available": true,
+      "brand_rules_available": true,
+      "master_chrome_available": true,
+      "svg_output_available": true,
+      "pptx_exported": true
+    },
+    "export_requested": true,
+    "exported_pptx": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/exports/power-trusted-data-space-p12-p13_20260706_093128.pptx"
+  },
+  "preflight_gate": {
+    "schema": "cyberppt.dual_image.page_quality_report.v1",
+    "stage": "preflight",
+    "page_number": 12,
+    "project_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13",
+    "valid": false,
+    "status": "rework_required",
+    "rule_count": 9,
+    "passed_count": 5,
+    "blocking_error_count": 4,
+    "warning_count": 0,
+    "checks": [
+      {
+        "id": "preflight.dual_image_required",
+        "stage": "preflight",
+        "severity": "error",
+        "description": "Template rebuild must be driven by a CyberPPT dual-image pair manifest with full and background images for every page.",
+        "kind": "dual_image_pair_required",
+        "passed": true,
+        "blocking": false,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/workbench/stages/02-blueprint-dual-image/pages_012_013/page_image_pairs.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "pair_count": 2,
+          "failures": []
+        }
+      },
+      {
+        "id": "preflight.source_capture_required",
+        "stage": "preflight",
+        "severity": "error",
+        "description": "Template rebuild must produce source_capture pages from the dual-image inputs.",
+        "kind": "source_capture_required",
+        "passed": true,
+        "blocking": false,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": []
+        }
+      },
+      {
+        "id": "preflight.scene_graph_gate_pass",
+        "stage": "preflight",
+        "severity": "error",
+        "description": "Template rebuild must have at least one valid scene graph gate.",
+        "kind": "all_reports_valid",
+        "passed": true,
+        "blocking": false,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/scene_graph_gate",
+          "report_path_exists": true
+        },
+        "observed": {
+          "count": 2,
+          "valid_count": 2
+        }
+      },
+      {
+        "id": "preflight.body_region_declared",
+        "stage": "preflight",
+        "severity": "error",
+        "description": "Template/body content region coordinates must be declared before template assembly QA.",
+        "kind": "template_region_declared",
+        "passed": true,
+        "blocking": false,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/workbench/stages/02-blueprint-dual-image/pages_012_013/page_image_pairs.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "content_region": {
+            "x": 20.0,
+            "y": 104.0,
+            "w": 1240.0,
+            "h": 592.0
+          },
+          "canvas": {
+            "width": 1280.0,
+            "height": 720.0
+          }
+        }
+      },
+      {
+        "id": "preflight.min_font_after_template",
+        "stage": "preflight",
+        "severity": "error",
+        "description": "Template-stage editable text must not fall below the configured minimum font size.",
+        "kind": "min_font_size",
+        "passed": true,
+        "blocking": false,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "minimum": 9.0,
+          "text_object_count": 159,
+          "below_minimum": [],
+          "missing_font_size_count": 0
+        }
+      },
+      {
+        "id": "preflight.semantic_weight_consistency",
+        "stage": "preflight",
+        "severity": "error",
+        "description": "Peer text with the same semantic role must use consistent font weight.",
+        "kind": "semantic_peer_style",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "field": "font_weight",
+          "groups": {
+            "text": [
+              "400",
+              "700"
+            ]
+          },
+          "inconsistent": {
+            "text": [
+              "400",
+              "700"
+            ]
+          }
+        }
+      },
+      {
+        "id": "preflight.container_workspace_pass",
+        "stage": "preflight",
+        "severity": "error",
+        "description": "Template stage must derive container workspaces before final QA.",
+        "kind": "container_workspace_required",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": [
+            {
+              "page_number": 12,
+              "valid": false,
+              "container_count": 9,
+              "slot_count": 8,
+              "error_count": 3
+            },
+            {
+              "page_number": 13,
+              "valid": false,
+              "container_count": 11,
+              "slot_count": 10,
+              "error_count": 1
+            }
+          ],
+          "slot_count": 18,
+          "container_count": 20
+        }
+      },
+      {
+        "id": "preflight.occupied_zone_avoidance_pass",
+        "stage": "preflight",
+        "severity": "error",
+        "description": "Template work slots must avoid detected scene graph and visual registry non-writable zones.",
+        "kind": "occupied_zone_avoidance",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": [
+            {
+              "page_number": 12,
+              "failures": [
+                {
+                  "container_id": "inferred_row_band_bottom",
+                  "slot_id": "inferred_row_band_bottom_body_slot",
+                  "occupied_zone": "inferred_row_band_bottom_visual_occupied_101",
+                  "source": "visual_element_registry"
+                },
+                {
+                  "container_id": "inferred_row_band_bottom",
+                  "slot_id": "inferred_row_band_bottom_body_slot",
+                  "occupied_zone": "inferred_row_band_bottom_visual_occupied_184",
+                  "source": "scene_graph"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "preflight.workspace_assignment_pass",
+        "stage": "preflight",
+        "severity": "error",
+        "description": "Template text must have a workspace assignment with every assigned text inside its slot.",
+        "kind": "workspace_assignment_required",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/workspace_assignment",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": [
+            {
+              "page_number": 12,
+              "valid": false,
+              "assignment_count": 97,
+              "error_count": 9,
+              "issues": [
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 62,
+                  "container_id": "inferred_panel_05",
+                  "slot_id": "inferred_panel_05_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 63,
+                  "container_id": "inferred_panel_05",
+                  "slot_id": "inferred_panel_05_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 66,
+                  "container_id": "inferred_panel_05",
+                  "slot_id": "inferred_panel_05_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 75,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 76,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 77,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 78,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 79,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 80,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                }
+              ]
+            }
+          ],
+          "assignment_count": 159
+        }
+      }
+    ],
+    "blocking_errors": [
+      {
+        "id": "preflight.semantic_weight_consistency",
+        "stage": "preflight",
+        "severity": "error",
+        "description": "Peer text with the same semantic role must use consistent font weight.",
+        "kind": "semantic_peer_style",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "field": "font_weight",
+          "groups": {
+            "text": [
+              "400",
+              "700"
+            ]
+          },
+          "inconsistent": {
+            "text": [
+              "400",
+              "700"
+            ]
+          }
+        }
+      },
+      {
+        "id": "preflight.container_workspace_pass",
+        "stage": "preflight",
+        "severity": "error",
+        "description": "Template stage must derive container workspaces before final QA.",
+        "kind": "container_workspace_required",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": [
+            {
+              "page_number": 12,
+              "valid": false,
+              "container_count": 9,
+              "slot_count": 8,
+              "error_count": 3
+            },
+            {
+              "page_number": 13,
+              "valid": false,
+              "container_count": 11,
+              "slot_count": 10,
+              "error_count": 1
+            }
+          ],
+          "slot_count": 18,
+          "container_count": 20
+        }
+      },
+      {
+        "id": "preflight.occupied_zone_avoidance_pass",
+        "stage": "preflight",
+        "severity": "error",
+        "description": "Template work slots must avoid detected scene graph and visual registry non-writable zones.",
+        "kind": "occupied_zone_avoidance",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": [
+            {
+              "page_number": 12,
+              "failures": [
+                {
+                  "container_id": "inferred_row_band_bottom",
+                  "slot_id": "inferred_row_band_bottom_body_slot",
+                  "occupied_zone": "inferred_row_band_bottom_visual_occupied_101",
+                  "source": "visual_element_registry"
+                },
+                {
+                  "container_id": "inferred_row_band_bottom",
+                  "slot_id": "inferred_row_band_bottom_body_slot",
+                  "occupied_zone": "inferred_row_band_bottom_visual_occupied_184",
+                  "source": "scene_graph"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "preflight.workspace_assignment_pass",
+        "stage": "preflight",
+        "severity": "error",
+        "description": "Template text must have a workspace assignment with every assigned text inside its slot.",
+        "kind": "workspace_assignment_required",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/workspace_assignment",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": [
+            {
+              "page_number": 12,
+              "valid": false,
+              "assignment_count": 97,
+              "error_count": 9,
+              "issues": [
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 62,
+                  "container_id": "inferred_panel_05",
+                  "slot_id": "inferred_panel_05_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 63,
+                  "container_id": "inferred_panel_05",
+                  "slot_id": "inferred_panel_05_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 66,
+                  "container_id": "inferred_panel_05",
+                  "slot_id": "inferred_panel_05_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 75,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 76,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 77,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 78,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 79,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 80,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                }
+              ]
+            }
+          ],
+          "assignment_count": 159
+        }
+      }
+    ],
+    "warnings": [],
+    "artifacts": {
+      "pair_manifest": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/workbench/stages/02-blueprint-dual-image/pages_012_013/page_image_pairs.json",
+      "source_capture": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture.json",
+      "source_capture_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture_gate.json",
+      "template_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/template_gate.json",
+      "scene_graph_gates": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/scene_graph_gate",
+      "semantic_binding": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_binding",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan",
+      "container_workspace": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
+      "workspace_assignment": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/workspace_assignment",
+      "visual_reference": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png",
+      "draft_visual_registry": null,
+      "render_compare": null,
+      "measured_visual_registry": null,
+      "rendered_preview": null,
+      "exported_pptx": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/exports/power-trusted-data-space-p12-p13_20260706_093128.pptx",
+      "visual_qa_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_qa_gate.json"
+    },
+    "extra": {
+      "rebuild_mode": "template_body_region",
+      "visual_reference_mode": "template_normalized_reference",
+      "export_requested": true
+    }
+  },
+  "build_gate": {
+    "schema": "cyberppt.dual_image.page_quality_report.v1",
+    "stage": "build",
+    "page_number": 12,
+    "project_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13",
+    "valid": true,
+    "status": "passed",
+    "rule_count": 1,
+    "passed_count": 1,
+    "blocking_error_count": 0,
+    "warning_count": 0,
+    "checks": [
+      {
+        "id": "build.template_gate_pass",
+        "stage": "build",
+        "severity": "error",
+        "description": "Template rebuild must consume required template files and export state.",
+        "kind": "report_valid",
+        "passed": true,
+        "blocking": false,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/template_gate.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "schema": "cyberppt.dual_image.template_gate.v1",
+          "valid": true,
+          "checks": {
+            "spec_lock_available": true,
+            "brand_rules_available": true,
+            "master_chrome_available": true,
+            "svg_output_available": true,
+            "pptx_exported": true
+          }
+        }
+      }
+    ],
+    "blocking_errors": [],
+    "warnings": [],
+    "artifacts": {
+      "pair_manifest": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/workbench/stages/02-blueprint-dual-image/pages_012_013/page_image_pairs.json",
+      "source_capture": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture.json",
+      "source_capture_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture_gate.json",
+      "template_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/template_gate.json",
+      "scene_graph_gates": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/scene_graph_gate",
+      "semantic_binding": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_binding",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan",
+      "container_workspace": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
+      "workspace_assignment": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/workspace_assignment",
+      "visual_reference": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png",
+      "draft_visual_registry": null,
+      "render_compare": null,
+      "measured_visual_registry": null,
+      "rendered_preview": null,
+      "exported_pptx": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/exports/power-trusted-data-space-p12-p13_20260706_093128.pptx",
+      "visual_qa_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_qa_gate.json"
+    },
+    "extra": {
+      "rebuild_mode": "template_body_region",
+      "visual_reference_mode": "template_normalized_reference",
+      "export_requested": true
+    }
+  },
+  "postflight_gate": {
+    "schema": "cyberppt.dual_image.page_quality_report.v1",
+    "stage": "postflight",
+    "page_number": 12,
+    "project_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13",
+    "valid": false,
+    "status": "rework_required",
+    "rule_count": 4,
+    "passed_count": 0,
+    "blocking_error_count": 4,
+    "warning_count": 0,
+    "checks": [
+      {
+        "id": "postflight.source_capture_gate_pass",
+        "stage": "postflight",
+        "severity": "error",
+        "description": "Template rebuild must consume source_capture and pass its gate.",
+        "kind": "report_valid",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture_gate.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "schema": "cyberppt.dual_image.source_capture_gate.v1",
+          "valid": false,
+          "gap_counts": {
+            "render_delta_not_measured": 2
+          },
+          "checks": {
+            "source_capture_available": true,
+            "source_text_objects_available": true,
+            "visual_element_inventory_available": true,
+            "p0_inventory_available": true,
+            "render_delta_measured": false,
+            "capture_gaps_resolved": false
+          },
+          "page_count": 2,
+          "text_object_count": 159
+        }
+      },
+      {
+        "id": "postflight.visual_reference_available",
+        "stage": "postflight",
+        "severity": "error",
+        "description": "Template QA must keep a visual reference for post-template comparison.",
+        "kind": "artifact_exists",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "artifact_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png",
+          "artifact_path_exists": false
+        },
+        "observed": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png"
+      },
+      {
+        "id": "postflight.office_render_required",
+        "stage": "postflight",
+        "severity": "error",
+        "description": "Final template-stage QA must include an Office/WPS render evidence artifact.",
+        "kind": "office_render_required",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "artifact_path": null,
+          "artifact_path_exists": false
+        },
+        "observed": {
+          "render_path": null,
+          "exists": false,
+          "accepted_sources": [
+            "office",
+            "wps",
+            "explicit_render_artifact"
+          ]
+        }
+      },
+      {
+        "id": "postflight.visual_qa_gate_pass",
+        "stage": "postflight",
+        "severity": "error",
+        "description": "Template-stage visual QA gate must pass using render comparison and spatial registration evidence.",
+        "kind": "report_valid",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_qa_gate.json",
+          "report_path_exists": false
+        },
+        "observed": null
+      }
+    ],
+    "blocking_errors": [
+      {
+        "id": "postflight.source_capture_gate_pass",
+        "stage": "postflight",
+        "severity": "error",
+        "description": "Template rebuild must consume source_capture and pass its gate.",
+        "kind": "report_valid",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture_gate.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "schema": "cyberppt.dual_image.source_capture_gate.v1",
+          "valid": false,
+          "gap_counts": {
+            "render_delta_not_measured": 2
+          },
+          "checks": {
+            "source_capture_available": true,
+            "source_text_objects_available": true,
+            "visual_element_inventory_available": true,
+            "p0_inventory_available": true,
+            "render_delta_measured": false,
+            "capture_gaps_resolved": false
+          },
+          "page_count": 2,
+          "text_object_count": 159
+        }
+      },
+      {
+        "id": "postflight.visual_reference_available",
+        "stage": "postflight",
+        "severity": "error",
+        "description": "Template QA must keep a visual reference for post-template comparison.",
+        "kind": "artifact_exists",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "artifact_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png",
+          "artifact_path_exists": false
+        },
+        "observed": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png"
+      },
+      {
+        "id": "postflight.office_render_required",
+        "stage": "postflight",
+        "severity": "error",
+        "description": "Final template-stage QA must include an Office/WPS render evidence artifact.",
+        "kind": "office_render_required",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "artifact_path": null,
+          "artifact_path_exists": false
+        },
+        "observed": {
+          "render_path": null,
+          "exists": false,
+          "accepted_sources": [
+            "office",
+            "wps",
+            "explicit_render_artifact"
+          ]
+        }
+      },
+      {
+        "id": "postflight.visual_qa_gate_pass",
+        "stage": "postflight",
+        "severity": "error",
+        "description": "Template-stage visual QA gate must pass using render comparison and spatial registration evidence.",
+        "kind": "report_valid",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_qa_gate.json",
+          "report_path_exists": false
+        },
+        "observed": null
+      }
+    ],
+    "warnings": [],
+    "artifacts": {
+      "pair_manifest": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/workbench/stages/02-blueprint-dual-image/pages_012_013/page_image_pairs.json",
+      "source_capture": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture.json",
+      "source_capture_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture_gate.json",
+      "template_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/template_gate.json",
+      "scene_graph_gates": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/scene_graph_gate",
+      "semantic_binding": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_binding",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan",
+      "container_workspace": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
+      "workspace_assignment": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/workspace_assignment",
+      "visual_reference": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png",
+      "draft_visual_registry": null,
+      "render_compare": null,
+      "measured_visual_registry": null,
+      "rendered_preview": null,
+      "exported_pptx": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/exports/power-trusted-data-space-p12-p13_20260706_093128.pptx",
+      "visual_qa_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_qa_gate.json"
+    },
+    "extra": {
+      "rebuild_mode": "template_body_region",
+      "visual_reference_mode": "template_normalized_reference",
+      "export_requested": true
+    }
+  },
+  "source_capture_gate": {
+    "schema": "cyberppt.dual_image.source_capture_gate.v1",
+    "valid": false,
+    "page_count": 2,
+    "text_object_count": 159,
+    "visual_element_count": 321,
+    "p0_element_count": 160,
+    "render_measured_count": 0,
+    "render_delta_measurement": null,
+    "gap_counts": {
+      "render_delta_not_measured": 2
+    },
+    "blocking_gaps": [
+      {
+        "page_number": 12,
+        "code": "render_delta_not_measured",
+        "message": "Source-to-render delta fields are placeholders until post-render measurement is attached."
+      },
+      {
+        "page_number": 13,
+        "code": "render_delta_not_measured",
+        "message": "Source-to-render delta fields are placeholders until post-render measurement is attached."
+      }
+    ],
+    "checks": {
+      "source_capture_available": true,
+      "source_text_objects_available": true,
+      "visual_element_inventory_available": true,
+      "p0_inventory_available": true,
+      "render_delta_measured": false,
+      "capture_gaps_resolved": false
+    }
+  },
+  "scene_graph_gates": [
+    {
+      "schema": "cyberppt.page_scene_graph_gate.v1",
+      "valid": true,
+      "blocking_count": 0,
+      "warning_count": 0,
+      "issues": []
+    },
+    {
+      "schema": "cyberppt.page_scene_graph_gate.v1",
+      "valid": true,
+      "blocking_count": 0,
+      "warning_count": 0,
+      "issues": []
+    }
+  ],
+  "artifacts": {
+    "source_capture": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture.json",
+    "source_capture_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture_gate.json",
+    "template_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/template_gate.json",
+    "preflight_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/preflight_gate.json",
+    "build_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/build_gate.json",
+    "postflight_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/postflight_gate.json",
+    "scene_graph_gate_dir": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/scene_graph_gate",
+    "semantic_binding": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_binding/semantic_binding_index.json",
+    "semantic_plan_dir": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan",
+    "container_workspace": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace/container_workspace_index.json",
+    "workspace_assignment": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/workspace_assignment/workspace_assignment_index.json",
+    "exported_pptx": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/exports/power-trusted-data-space-p12-p13_20260706_093128.pptx",
+    "visual_reference": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png",
+    "draft_visual_registry": null,
+    "render_compare": null,
+    "measured_visual_registry": null,
+    "visual_qa_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_qa_gate.json",
+    "page_quality_report": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/page_quality_report.json"
+  },
+  "page_quality_report": {
+    "schema": "cyberppt.dual_image.page_quality_report.v1",
+    "stage": "template",
+    "page_number": 12,
+    "project_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13",
+    "valid": false,
+    "status": "rework_required",
+    "rule_count": 14,
+    "passed_count": 6,
+    "blocking_error_count": 8,
+    "warning_count": 0,
+    "checks": [
+      {
+        "id": "template.dual_image_required",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template rebuild must be driven by a CyberPPT dual-image pair manifest with full and background images for every page.",
+        "kind": "dual_image_pair_required",
+        "passed": true,
+        "blocking": false,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/workbench/stages/02-blueprint-dual-image/pages_012_013/page_image_pairs.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "pair_count": 2,
+          "failures": []
+        }
+      },
+      {
+        "id": "template.source_capture_required",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template rebuild must produce source_capture pages from the dual-image inputs.",
+        "kind": "source_capture_required",
+        "passed": true,
+        "blocking": false,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": []
+        }
+      },
+      {
+        "id": "template.template_gate_pass",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template rebuild must consume required template files and export state.",
+        "kind": "report_valid",
+        "passed": true,
+        "blocking": false,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/template_gate.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "schema": "cyberppt.dual_image.template_gate.v1",
+          "valid": true,
+          "checks": {
+            "spec_lock_available": true,
+            "brand_rules_available": true,
+            "master_chrome_available": true,
+            "svg_output_available": true,
+            "pptx_exported": true
+          }
+        }
+      },
+      {
+        "id": "template.source_capture_gate_pass",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template rebuild must consume source_capture and pass its gate.",
+        "kind": "report_valid",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture_gate.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "schema": "cyberppt.dual_image.source_capture_gate.v1",
+          "valid": false,
+          "gap_counts": {
+            "render_delta_not_measured": 2
+          },
+          "checks": {
+            "source_capture_available": true,
+            "source_text_objects_available": true,
+            "visual_element_inventory_available": true,
+            "p0_inventory_available": true,
+            "render_delta_measured": false,
+            "capture_gaps_resolved": false
+          },
+          "page_count": 2,
+          "text_object_count": 159
+        }
+      },
+      {
+        "id": "template.scene_graph_gate_pass",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template rebuild must have at least one valid scene graph gate.",
+        "kind": "all_reports_valid",
+        "passed": true,
+        "blocking": false,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/scene_graph_gate",
+          "report_path_exists": true
+        },
+        "observed": {
+          "count": 2,
+          "valid_count": 2
+        }
+      },
+      {
+        "id": "template.body_region_declared",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template/body content region coordinates must be declared before template assembly QA.",
+        "kind": "template_region_declared",
+        "passed": true,
+        "blocking": false,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/workbench/stages/02-blueprint-dual-image/pages_012_013/page_image_pairs.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "content_region": {
+            "x": 20.0,
+            "y": 104.0,
+            "w": 1240.0,
+            "h": 592.0
+          },
+          "canvas": {
+            "width": 1280.0,
+            "height": 720.0
+          }
+        }
+      },
+      {
+        "id": "template.min_font_after_template",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template-stage editable text must not fall below the configured minimum font size.",
+        "kind": "min_font_size",
+        "passed": true,
+        "blocking": false,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "minimum": 9.0,
+          "text_object_count": 159,
+          "below_minimum": [],
+          "missing_font_size_count": 0
+        }
+      },
+      {
+        "id": "template.semantic_weight_consistency",
+        "stage": "template",
+        "severity": "error",
+        "description": "Peer text with the same semantic role must use consistent font weight.",
+        "kind": "semantic_peer_style",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "field": "font_weight",
+          "groups": {
+            "text": [
+              "400",
+              "700"
+            ]
+          },
+          "inconsistent": {
+            "text": [
+              "400",
+              "700"
+            ]
+          }
+        }
+      },
+      {
+        "id": "template.container_workspace_pass",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template stage must derive container workspaces before final QA.",
+        "kind": "container_workspace_required",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": [
+            {
+              "page_number": 12,
+              "valid": false,
+              "container_count": 9,
+              "slot_count": 8,
+              "error_count": 3
+            },
+            {
+              "page_number": 13,
+              "valid": false,
+              "container_count": 11,
+              "slot_count": 10,
+              "error_count": 1
+            }
+          ],
+          "slot_count": 18,
+          "container_count": 20
+        }
+      },
+      {
+        "id": "template.occupied_zone_avoidance_pass",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template work slots must avoid detected scene graph and visual registry non-writable zones.",
+        "kind": "occupied_zone_avoidance",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": [
+            {
+              "page_number": 12,
+              "failures": [
+                {
+                  "container_id": "inferred_row_band_bottom",
+                  "slot_id": "inferred_row_band_bottom_body_slot",
+                  "occupied_zone": "inferred_row_band_bottom_visual_occupied_101",
+                  "source": "visual_element_registry"
+                },
+                {
+                  "container_id": "inferred_row_band_bottom",
+                  "slot_id": "inferred_row_band_bottom_body_slot",
+                  "occupied_zone": "inferred_row_band_bottom_visual_occupied_184",
+                  "source": "scene_graph"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "template.workspace_assignment_pass",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template text must have a workspace assignment with every assigned text inside its slot.",
+        "kind": "workspace_assignment_required",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/workspace_assignment",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": [
+            {
+              "page_number": 12,
+              "valid": false,
+              "assignment_count": 97,
+              "error_count": 9,
+              "issues": [
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 62,
+                  "container_id": "inferred_panel_05",
+                  "slot_id": "inferred_panel_05_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 63,
+                  "container_id": "inferred_panel_05",
+                  "slot_id": "inferred_panel_05_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 66,
+                  "container_id": "inferred_panel_05",
+                  "slot_id": "inferred_panel_05_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 75,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 76,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 77,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 78,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 79,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 80,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                }
+              ]
+            }
+          ],
+          "assignment_count": 159
+        }
+      },
+      {
+        "id": "template.visual_reference_available",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template QA must keep a visual reference for post-template comparison.",
+        "kind": "artifact_exists",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "artifact_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png",
+          "artifact_path_exists": false
+        },
+        "observed": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png"
+      },
+      {
+        "id": "template.office_render_required",
+        "stage": "template",
+        "severity": "error",
+        "description": "Final template-stage QA must include an Office/WPS render evidence artifact.",
+        "kind": "office_render_required",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "artifact_path": null,
+          "artifact_path_exists": false
+        },
+        "observed": {
+          "render_path": null,
+          "exists": false,
+          "accepted_sources": [
+            "office",
+            "wps",
+            "explicit_render_artifact"
+          ]
+        }
+      },
+      {
+        "id": "template.visual_qa_gate_pass",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template-stage visual QA gate must pass using render comparison and spatial registration evidence.",
+        "kind": "report_valid",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_qa_gate.json",
+          "report_path_exists": false
+        },
+        "observed": null
+      }
+    ],
+    "blocking_errors": [
+      {
+        "id": "template.source_capture_gate_pass",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template rebuild must consume source_capture and pass its gate.",
+        "kind": "report_valid",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture_gate.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "schema": "cyberppt.dual_image.source_capture_gate.v1",
+          "valid": false,
+          "gap_counts": {
+            "render_delta_not_measured": 2
+          },
+          "checks": {
+            "source_capture_available": true,
+            "source_text_objects_available": true,
+            "visual_element_inventory_available": true,
+            "p0_inventory_available": true,
+            "render_delta_measured": false,
+            "capture_gaps_resolved": false
+          },
+          "page_count": 2,
+          "text_object_count": 159
+        }
+      },
+      {
+        "id": "template.semantic_weight_consistency",
+        "stage": "template",
+        "severity": "error",
+        "description": "Peer text with the same semantic role must use consistent font weight.",
+        "kind": "semantic_peer_style",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture.json",
+          "report_path_exists": true
+        },
+        "observed": {
+          "field": "font_weight",
+          "groups": {
+            "text": [
+              "400",
+              "700"
+            ]
+          },
+          "inconsistent": {
+            "text": [
+              "400",
+              "700"
+            ]
+          }
+        }
+      },
+      {
+        "id": "template.container_workspace_pass",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template stage must derive container workspaces before final QA.",
+        "kind": "container_workspace_required",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": [
+            {
+              "page_number": 12,
+              "valid": false,
+              "container_count": 9,
+              "slot_count": 8,
+              "error_count": 3
+            },
+            {
+              "page_number": 13,
+              "valid": false,
+              "container_count": 11,
+              "slot_count": 10,
+              "error_count": 1
+            }
+          ],
+          "slot_count": 18,
+          "container_count": 20
+        }
+      },
+      {
+        "id": "template.occupied_zone_avoidance_pass",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template work slots must avoid detected scene graph and visual registry non-writable zones.",
+        "kind": "occupied_zone_avoidance",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": [
+            {
+              "page_number": 12,
+              "failures": [
+                {
+                  "container_id": "inferred_row_band_bottom",
+                  "slot_id": "inferred_row_band_bottom_body_slot",
+                  "occupied_zone": "inferred_row_band_bottom_visual_occupied_101",
+                  "source": "visual_element_registry"
+                },
+                {
+                  "container_id": "inferred_row_band_bottom",
+                  "slot_id": "inferred_row_band_bottom_body_slot",
+                  "occupied_zone": "inferred_row_band_bottom_visual_occupied_184",
+                  "source": "scene_graph"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "template.workspace_assignment_pass",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template text must have a workspace assignment with every assigned text inside its slot.",
+        "kind": "workspace_assignment_required",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/workspace_assignment",
+          "report_path_exists": true
+        },
+        "observed": {
+          "page_count": 2,
+          "failures": [
+            {
+              "page_number": 12,
+              "valid": false,
+              "assignment_count": 97,
+              "error_count": 9,
+              "issues": [
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 62,
+                  "container_id": "inferred_panel_05",
+                  "slot_id": "inferred_panel_05_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 63,
+                  "container_id": "inferred_panel_05",
+                  "slot_id": "inferred_panel_05_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 66,
+                  "container_id": "inferred_panel_05",
+                  "slot_id": "inferred_panel_05_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 75,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 76,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 77,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 78,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 79,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                },
+                {
+                  "severity": "error",
+                  "code": "assigned_text_outside_slot",
+                  "text_index": 80,
+                  "container_id": "inferred_panel_06",
+                  "slot_id": "inferred_panel_06_body_slot"
+                }
+              ]
+            }
+          ],
+          "assignment_count": 159
+        }
+      },
+      {
+        "id": "template.visual_reference_available",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template QA must keep a visual reference for post-template comparison.",
+        "kind": "artifact_exists",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "artifact_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png",
+          "artifact_path_exists": false
+        },
+        "observed": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png"
+      },
+      {
+        "id": "template.office_render_required",
+        "stage": "template",
+        "severity": "error",
+        "description": "Final template-stage QA must include an Office/WPS render evidence artifact.",
+        "kind": "office_render_required",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "artifact_path": null,
+          "artifact_path_exists": false
+        },
+        "observed": {
+          "render_path": null,
+          "exists": false,
+          "accepted_sources": [
+            "office",
+            "wps",
+            "explicit_render_artifact"
+          ]
+        }
+      },
+      {
+        "id": "template.visual_qa_gate_pass",
+        "stage": "template",
+        "severity": "error",
+        "description": "Template-stage visual QA gate must pass using render comparison and spatial registration evidence.",
+        "kind": "report_valid",
+        "passed": false,
+        "blocking": true,
+        "evidence_required": true,
+        "evidence": {
+          "report_path": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_qa_gate.json",
+          "report_path_exists": false
+        },
+        "observed": null
+      }
+    ],
+    "warnings": [],
+    "artifacts": {
+      "pair_manifest": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/workbench/stages/02-blueprint-dual-image/pages_012_013/page_image_pairs.json",
+      "source_capture": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture.json",
+      "source_capture_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/source_capture_gate.json",
+      "template_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/template_gate.json",
+      "scene_graph_gates": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/scene_graph_gate",
+      "semantic_binding": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_binding",
+      "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan",
+      "container_workspace": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/container_workspace",
+      "workspace_assignment": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/workspace_assignment",
+      "visual_reference": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/qa/visual-reference/template-normalized-reference.png",
+      "draft_visual_registry": null,
+      "render_compare": null,
+      "measured_visual_registry": null,
+      "rendered_preview": null,
+      "exported_pptx": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/exports/power-trusted-data-space-p12-p13_20260706_093128.pptx",
+      "visual_qa_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/visual_qa_gate.json"
+    },
+    "extra": {
+      "rebuild_mode": "template_body_region",
+      "visual_reference_mode": "template_normalized_reference",
+      "export_requested": true
+    }
+  }
+}

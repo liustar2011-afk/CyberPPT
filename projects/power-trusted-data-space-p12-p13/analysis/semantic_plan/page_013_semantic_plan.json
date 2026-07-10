@@ -1,0 +1,131 @@
+{
+  "schema": "cyberppt.explicit_semantic_plan.v1",
+  "page_number": 13,
+  "image_size": {
+    "width": 1672,
+    "height": 941
+  },
+  "inputs": {
+    "source_capture": true,
+    "visual_element_registry": false,
+    "script_truth": false,
+    "geometry_truth": "semantic_binding"
+  },
+  "geometry_truth": "semantic_containers",
+  "text_truth": "script_truth_plus_ocr_locator",
+  "containers": [
+    {
+      "id": "dark_band_1",
+      "role": "dark_band",
+      "bbox": [
+        27.75,
+        173.07,
+        1248.37,
+        209.25
+      ],
+      "text_safe_bbox": [
+        27.75,
+        173.07,
+        1248.37,
+        209.25
+      ],
+      "aliases": [],
+      "source": {
+        "kind": "source_capture"
+      },
+      "confidence": 0.7
+    }
+  ],
+  "items": [
+    {
+      "id": "text_002",
+      "container_id": "dark_band_1",
+      "display_text": "模块一：数据来源方",
+      "source_text": "模块一：数据来源方",
+      "role": "dark_band_text",
+      "bbox": [
+        49.06,
+        182.93,
+        183.72,
+        196.91
+      ],
+      "word_wrap": true,
+      "source": {
+        "kind": "ocr_locator"
+      },
+      "confidence": 0.75
+    },
+    {
+      "id": "text_003",
+      "container_id": "dark_band_1",
+      "display_text": "技术支撑方与底座加工",
+      "source_text": "技术支撑方与底座加工",
+      "role": "dark_band_text",
+      "bbox": [
+        364.88,
+        182.93,
+        584.79,
+        197.73000000000002
+      ],
+      "word_wrap": true,
+      "source": {
+        "kind": "ocr_locator"
+      },
+      "confidence": 0.75
+    },
+    {
+      "id": "text_004",
+      "container_id": "dark_band_1",
+      "display_text": "模块三：服务产品",
+      "source_text": "模块三：服务产品",
+      "role": "dark_band_text",
+      "bbox": [
+        784.34,
+        182.93,
+        904.46,
+        197.73000000000002
+      ],
+      "word_wrap": true,
+      "source": {
+        "kind": "ocr_locator"
+      },
+      "confidence": 0.75
+    },
+    {
+      "id": "text_005",
+      "container_id": "dark_band_1",
+      "display_text": "模块四：空间运营方",
+      "source_text": "模块四：空间运营方",
+      "role": "dark_band_text",
+      "bbox": [
+        963.56,
+        182.93,
+        1074.0,
+        196.91
+      ],
+      "word_wrap": true,
+      "source": {
+        "kind": "ocr_locator"
+      },
+      "confidence": 0.75
+    },
+    {
+      "id": "text_006",
+      "container_id": "dark_band_1",
+      "display_text": "模块五：用户方",
+      "source_text": "模块五：用户方",
+      "role": "dark_band_text",
+      "bbox": [
+        1122.44,
+        182.93,
+        1224.16,
+        196.91
+      ],
+      "word_wrap": true,
+      "source": {
+        "kind": "ocr_locator"
+      },
+      "confidence": 0.75
+    }
+  ]
+}

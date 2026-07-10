@@ -1,0 +1,94 @@
+<h2>路线 B：page_scene_graph 中间层</h2>
+<p class="subtitle">把“源图采集、脚本 truth、registry、source_capture、布局引擎”统一到一个页面级契约。</p>
+
+<div class="section">
+  <h3>核心契约</h3>
+  <div class="mockup">
+    <div class="mockup-header">page_scene_graph.json</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div class="placeholder">
+          <b>Coordinate Context</b><br>
+          source_size<br>
+          registry_size<br>
+          normalized_canvas=1280x720<br>
+          transform warnings
+        </div>
+        <div class="placeholder">
+          <b>Visual Elements</b><br>
+          containers<br>
+          icons / arrows<br>
+          text zones<br>
+          parent-child relation
+        </div>
+        <div class="placeholder">
+          <b>Text Nodes</b><br>
+          script truth<br>
+          source evidence<br>
+          semantic role<br>
+          bound container
+        </div>
+      </div>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="placeholder">
+          <b>Relations</b><br>
+          left/right/above/below/overlap<br>
+          icon-to-text<br>
+          container-to-child<br>
+          flow order
+        </div>
+        <div class="placeholder">
+          <b>Layout Intent</b><br>
+          safe area<br>
+          anchor rules<br>
+          font scale<br>
+          wrap strategy
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>数据流</h3>
+  <div class="mockup">
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;text-align:center">
+        <div class="placeholder">源图 pair</div>
+        <div class="placeholder">脚本 / 内容锁</div>
+        <div class="placeholder">visual registry</div>
+        <div class="placeholder">scene graph builder</div>
+        <div class="placeholder">layout solver</div>
+        <div class="placeholder">PPTX + QA</div>
+      </div>
+      <div style="margin-top:12px;color:#6b7280">
+        关键变化：layout solver 不再直接读零散 JSON；只读 page_scene_graph。source_capture 也从 scene graph 派生，避免采集和使用脱节。
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>硬性 Gate</h3>
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>必须通过</h4>
+      <ul>
+        <li>所有文本节点必须来自脚本 truth 或明确人工覆盖。</li>
+        <li>所有文本节点必须绑定容器，不能只有 OCR bbox。</li>
+        <li>所有容器必须有 normalized bbox 和 text_safe_bbox。</li>
+        <li>文本 bbox 不能出容器，不能压图标、箭头、分隔线。</li>
+        <li>源图 text zone / icon / container 关系必须进入 source_capture。</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>必须阻断</h4>
+      <ul>
+        <li>坐标系不一致但没有 transform 解释。</li>
+        <li>registry 有承载容器但无对应文本节点。</li>
+        <li>脚本 truth 与语义计划文本不一致。</li>
+        <li>render 后文字不可见、重叠、越界或被裁切。</li>
+      </ul>
+    </div>
+  </div>
+</div>

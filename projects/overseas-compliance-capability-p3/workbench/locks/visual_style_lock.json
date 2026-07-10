@@ -1,0 +1,30 @@
+{
+  "schema": "cyberppt.visual_style_lock.v1",
+  "created_at": "2026-07-05T09:54:58+00:00",
+  "style_source": "/Volumes/DOC/CyberPPT/scripts/dual_image_overlay/style_presets/cyberppt_default_styles.json",
+  "source_reference": "references/visual-system.md",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/scripts/final/script-final.md",
+  "style": {
+    "id": 4,
+    "slug": "ivory_deep_blue",
+    "name": "象牙白 + 深蓝强调",
+    "colors": {
+      "background": "#F7F6F0",
+      "title": "#101820",
+      "body": "#303030",
+      "secondary": "#6F7275",
+      "divider": "#C9CDD1",
+      "accent": "#12355B"
+    },
+    "scenario": "科技、SaaS、B2B、企业数字化、AI Agent 报告",
+    "sample": "assets/palette-samples/palette-04.png",
+    "prompt_contract": "视觉风格使用象牙白 + 深蓝强调：背景 #F7F6F0，标题 #101820，正文 #303030，次级文字 #6F7275，线条 #C9CDD1，强调色 #12355B。适合科技、SaaS、B2B、企业数字化、AI Agent 报告；采用正式内部汇报结构、深蓝页内强调、紧凑矩阵、细线分隔、右侧栏、编号 chips 和底部 SO WHAT 条。",
+    "density_rule": "保持高密度企业数字化汇报页；优先使用紧凑矩阵、右侧栏、编号 chips、流程轴和底部 SO WHAT 条。"
+  },
+  "policy": {
+    "selected_from_default_8": true,
+    "prompt_must_use_style_lock": true,
+    "do_not_substitute_external_preset": true,
+    "samples_are_required_for_user_confirmation": true
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "page_number": 4,
+  "ocr_layout": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/analysis/ocr/page_004_text_layout.json",
+  "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/analysis/semantic_plan/page_004_semantic_plan.json",
+  "semantic_plan_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/analysis/semantic_plan_gate/page_004_semantic_plan_gate.json",
+  "semantic_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/analysis/semantic_layout_plan/page_004_layout_plan.json",
+  "scene_graph": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/analysis/scene_graph/page_004_scene_graph.json",
+  "scene_graph_gate": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/analysis/scene_graph_gate/page_004_scene_graph_gate.json",
+  "page_layout_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/analysis/page_layout_plan/page_004_layout_plan.json",
+  "semantic_source": "script_derived_fallback",
+  "editable_text_layout_source": "ocr_script_recognition",
+  "visual_registry_source": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/analysis/visual_registry/slide-04-visual-element-registry.json",
+  "geometry_truth": "ocr_script_recognition",
+  "boxes": []
+}

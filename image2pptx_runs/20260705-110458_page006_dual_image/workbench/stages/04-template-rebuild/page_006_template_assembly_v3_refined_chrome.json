@@ -1,0 +1,56 @@
+{
+  "schema": "cyberppt.template_assembly.v1",
+  "page": 6,
+  "version": "v3_refined_chrome",
+  "title": "总体架构",
+  "subtitle": "",
+  "source_overlay_pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v12_clear_band_labels.pptx",
+  "output_pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v3_refined_chrome.pptx",
+  "template_text_lock": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/workbench/locks/template_text/page_006_template_text_lock.json",
+  "template_regions_px": {
+    "title_box": {
+      "x": 58.0,
+      "y": 20.0,
+      "width": 760.0,
+      "height": 40.0
+    },
+    "subtitle_box": {
+      "x": 58.0,
+      "y": 61.0,
+      "width": 900.0,
+      "height": 20.0
+    },
+    "red_divider": {
+      "x": 0.0,
+      "y": 87.0,
+      "width": 1280.0,
+      "height": 5.0
+    },
+    "logo_box": {
+      "x": 1050,
+      "y": 13,
+      "width": 210,
+      "height": 70
+    },
+    "page_number_box": {
+      "x": 1192,
+      "y": 700,
+      "width": 54,
+      "height": 16
+    }
+  },
+  "content_transform": {
+    "mode": "uniform_scale_centered_below_refined_red_divider",
+    "scale": 0.85,
+    "placed_region_px": {
+      "x": 96.0,
+      "y": 96.0,
+      "width": 1088.0,
+      "height": 612.0
+    },
+    "red_divider_clearance_px": 4.0
+  },
+  "supersedes": [
+    "template_assembly/page_006_template_assembled_总体架构_v2_enlarged.pptx"
+  ]
+}
