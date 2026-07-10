@@ -152,6 +152,27 @@ class AnalysisExpressionGateTests(unittest.TestCase):
         self.assertIn("changed required completeness unit: 数字：1000万千瓦", errors)
         self.assertIn("drawing_script must not contain geometry keywords", errors)
 
+    def test_drawing_visible_text_retains_required_business_facts(self) -> None:
+        changed = DRAWING_SCRIPT.replace("供需总体平衡", "供需偏紧", 1)
+
+        errors = validate_drawing_script(changed, BUSINESS_SCRIPT)
+
+        self.assertIn("missing required business fact in visible text: 供需总体平衡", errors)
+
+    def test_drawing_visible_text_retains_required_business_numbers(self) -> None:
+        omitted = DRAWING_SCRIPT.replace("- 2026年最大负荷1000万千瓦\n", "- 最大负荷预测\n")
+
+        errors = validate_drawing_script(omitted, BUSINESS_SCRIPT)
+
+        self.assertIn("missing required business number in visible text: 1000万千瓦", errors)
+
+    def test_drawing_allows_concise_required_business_fact_translation(self) -> None:
+        concise = DRAWING_SCRIPT.replace("供需总体平衡", "供需平衡", 1)
+
+        errors = validate_drawing_script(concise, BUSINESS_SCRIPT)
+
+        self.assertNotIn("missing required business fact in visible text: 供需总体平衡", errors)
+
     def test_drawing_preserves_all_inherited_units_in_approval_record(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"

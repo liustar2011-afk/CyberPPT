@@ -40,6 +40,7 @@ _CONSULTING_DELIVERY_PATTERN = re.compile(r"\b(?:MBB|SO\s+WHAT|Caveat|Resolution
 _NON_VISIBLE_HEADINGS = ("非上屏", "来源位置")
 _COMPLETENESS_CATEGORIES = ("事实", "数字", "分类", "边界", "请求事项")
 _NUMBER_PATTERN = re.compile(r"\d+(?:\.\d+)?(?:[%％]|万千瓦|亿千瓦时|万|亿|台|项|个|页|年|月|日)?")
+_CONCISE_FACT_MODIFIERS = ("总体", "基本")
 
 
 @dataclass(frozen=True)
@@ -196,6 +197,35 @@ def _required_completeness_categories(units: InheritedUnits) -> set[str]:
     return categories
 
 
+def _completeness_values(units: InheritedUnits, category: str) -> tuple[str, ...]:
+    prefix = re.compile(rf"^{re.escape(category)}[：:]\s*(.+)$")
+    values: list[str] = []
+    for unit in units.completeness_units:
+        match = prefix.match(unit)
+        if match:
+            values.append(match.group(1).strip())
+    return tuple(dict.fromkeys(values))
+
+
+def _normalized_visible_value(value: str) -> str:
+    return re.sub(r"\s+|[，。、“”‘’：:；;、,.!?！？]", "", value)
+
+
+def _fact_is_visible(fact: str, visible_text: str) -> bool:
+    normalized_fact = _normalized_visible_value(fact)
+    normalized_visible = _normalized_visible_value(visible_text)
+    if normalized_fact in normalized_visible:
+        return True
+    concise_fact = normalized_fact
+    for modifier in _CONCISE_FACT_MODIFIERS:
+        concise_fact = concise_fact.replace(modifier, "")
+    return bool(concise_fact) and concise_fact in normalized_visible
+
+
+def _drawing_visible_text(text: str) -> str:
+    return "\n".join(_all_section_texts(text, "上屏文字"))
+
+
 def validate_business_script(text: str) -> list[str]:
     """Validate formal visible language and required non-visible business units."""
 
@@ -243,7 +273,15 @@ def validate_drawing_script(text: str, business: str) -> list[str]:
                     errors.append(f"missing required {label}: {unit}")
 
     business_numbers = set(_NUMBER_PATTERN.findall(business))
-    drawing_numbers = set(_NUMBER_PATTERN.findall(_visible_text(text)))
+    visible_text = _drawing_visible_text(text)
+    for fact in _completeness_values(business_units, "事实"):
+        if not _fact_is_visible(fact, visible_text):
+            errors.append(f"missing required business fact in visible text: {fact}")
+    for number in _completeness_values(business_units, "数字"):
+        if _normalized_visible_value(number) not in _normalized_visible_value(visible_text):
+            errors.append(f"missing required business number in visible text: {number}")
+
+    drawing_numbers = set(_NUMBER_PATTERN.findall(visible_text))
     added_numbers = sorted(drawing_numbers - business_numbers)
     if added_numbers:
         errors.append("drawing_script changes required numbers: " + ", ".join(added_numbers))
