@@ -173,6 +173,13 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 
         self.assertNotIn("missing required business fact in visible text: 供需总体平衡", errors)
 
+    def test_drawing_rejects_concise_fact_with_unapproved_qualifier(self) -> None:
+        qualified = DRAWING_SCRIPT.replace("供需总体平衡", "供需平衡偏紧", 1)
+
+        errors = validate_drawing_script(qualified, BUSINESS_SCRIPT)
+
+        self.assertIn("missing required business fact in visible text: 供需总体平衡", errors)
+
     def test_drawing_does_not_drop_unapproved_fact_modifiers(self) -> None:
         self.assertFalse(analysis_expression_gate._fact_is_visible("基本完成", "完成"))
 
