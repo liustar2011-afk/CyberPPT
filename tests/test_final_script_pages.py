@@ -79,7 +79,7 @@ def _approve_stage02_input(project: Path, script: Path) -> None:
     approve_blueprint_input(project, "confirm_blueprint_input")
 
 
-def _approve_stage02_images(project: Path, script: Path, pages: str) -> None:
+def _approve_stage02_images(project: Path, script: Path, pages: str) -> Path:
     summary = run_final_script_pages(project=project, script=script, pages_raw=pages)
     manifest_path = Path(summary["artifacts"]["page_image_pairs"])
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -87,6 +87,12 @@ def _approve_stage02_images(project: Path, script: Path, pages: str) -> None:
         Path(pair["full"]["path"]).write_bytes(b"png")
     stage_blueprint_image_review(project, manifest_path)
     approve_blueprint_image_review(project, "confirm_blueprint_images")
+    return Path(summary["artifacts"]["speaker_notes_manifest"])
+
+
+def _approve_stage02_speaker_notes(project: Path, manifest_path: Path, pages: str) -> None:
+    stage_speaker_notes_review(project, manifest_path, pages)
+    approve_speaker_notes_review(project, "confirm_speaker_notes")
 
 
 class FinalScriptPagesTests(unittest.TestCase):
@@ -289,9 +295,17 @@ class FinalScriptPagesTests(unittest.TestCase):
             script = root / "script-final.md"
             script.write_text("## 第1页：测试\n组件A：内容\n", encoding="utf-8")
             _approve_stage02_input(project, script)
-            _approve_stage02_images(project, script, "1")
+            speaker_notes_manifest = _approve_stage02_images(project, script, "1")
+            _approve_stage02_speaker_notes(project, speaker_notes_manifest, "1")
+            speaker_notes_payload = json.loads(speaker_notes_manifest.read_text(encoding="utf-8"))
 
-            with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
+            with (
+                patch(
+                    "cyberppt.commands.final_script_pages.build_speaker_notes_manifest",
+                    return_value=speaker_notes_payload,
+                ),
+                patch("cyberppt.commands.final_script_pages.subprocess.run") as run,
+            ):
                 run.return_value = Mock(returncode=0)
                 summary = run_final_script_pages(
                     project=project,
@@ -327,6 +341,59 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertIsNone(summary["rebuild"])
         self.assertEqual({}, summary["tool_consumption"])
         self.assertIsNone(summary["production_readiness"])
+
+    def test_production_build_requires_confirmed_speaker_notes_before_image_ppt(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            _approve_all_analysis_expression_gates(project)
+            script = root / "script-final.md"
+            script.write_text("## 第1页：测试\n组件A：内容\n", encoding="utf-8")
+            _approve_stage02_input(project, script)
+            speaker_notes_manifest = _approve_stage02_images(project, script, "1")
+            speaker_notes_payload = json.loads(speaker_notes_manifest.read_text(encoding="utf-8"))
+
+            with (
+                patch(
+                    "cyberppt.commands.final_script_pages.build_speaker_notes_manifest",
+                    return_value=speaker_notes_payload,
+                ),
+                patch("cyberppt.commands.final_script_pages.subprocess.run") as run,
+            ):
+                run.return_value = Mock(returncode=0)
+                with self.assertRaisesRegex(ValueError, "speaker notes approval is required"):
+                    run_final_script_pages(
+                        project=project,
+                        script=script,
+                        pages_raw="1",
+                        production_build=True,
+                    )
+
+            run.assert_not_called()
+            _approve_stage02_speaker_notes(project, speaker_notes_manifest, "1")
+
+            with (
+                patch(
+                    "cyberppt.commands.final_script_pages.build_speaker_notes_manifest",
+                    return_value=speaker_notes_payload,
+                ),
+                patch("cyberppt.commands.final_script_pages.subprocess.run") as run,
+            ):
+                run.return_value = Mock(returncode=0)
+                summary = run_final_script_pages(
+                    project=project,
+                    script=script,
+                    pages_raw="1",
+                    production_build=True,
+                )
+
+            command = run.call_args.args[0]
+            self.assertEqual(
+                str(speaker_notes_manifest.resolve()),
+                command[command.index("--speaker-notes-manifest") + 1],
+            )
+            self.assertEqual("completed", summary["image_ppt_build"]["status"])
 
     def test_production_build_requires_business_script_speaker_notes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -406,9 +473,17 @@ class FinalScriptPagesTests(unittest.TestCase):
                 encoding="utf-8",
             )
             _approve_stage02_input(project, script)
-            _approve_stage02_images(project, script, "1")
+            speaker_notes_manifest = _approve_stage02_images(project, script, "1")
+            _approve_stage02_speaker_notes(project, speaker_notes_manifest, "1")
+            speaker_notes_payload = json.loads(speaker_notes_manifest.read_text(encoding="utf-8"))
 
-            with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
+            with (
+                patch(
+                    "cyberppt.commands.final_script_pages.build_speaker_notes_manifest",
+                    return_value=speaker_notes_payload,
+                ),
+                patch("cyberppt.commands.final_script_pages.subprocess.run") as run,
+            ):
                 run.return_value = Mock(returncode=3)
                 with self.assertRaises(RuntimeError) as caught:
                     run_final_script_pages(
