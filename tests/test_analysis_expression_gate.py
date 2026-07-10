@@ -159,22 +159,24 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 
         self.assertEqual([], validate_business_script(text))
 
-    def test_drawing_cannot_omit_required_business_evidence(self) -> None:
+    def test_drawing_uses_business_evidence_as_internal_inherited_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
             init_project(project)
             self._approve_all_through_business(project)
             incomplete_drawing = DRAWING_SCRIPT.replace("### 非上屏：证据链\n- E-01\n", "")
 
-            with self.assertRaisesRegex(ValueError, "missing required evidence binding"):
-                stage_analysis_artifact(project, "drawing_script", incomplete_drawing, "", [])
+            pending = stage_analysis_artifact(project, "drawing_script", incomplete_drawing, "", [])
+            data = json.loads(pending.read_text(encoding="utf-8"))
+
+            self.assertEqual(["E-01"], data["inherited_units"]["evidence_bindings"])
 
     def test_drawing_rejects_changed_required_units_and_geometry(self) -> None:
         changed = DRAWING_SCRIPT.replace("1000万千瓦", "1200万千瓦").replace("指标卡与结论卡", "x=10, 指标卡与结论卡")
 
         errors = validate_drawing_script(changed, BUSINESS_SCRIPT)
 
-        self.assertIn("changed required completeness unit: 数字：1000万千瓦", errors)
+        self.assertIn("missing required business number in visible text: 1000万千瓦", errors)
         self.assertIn("drawing_script must not contain geometry keywords", errors)
 
     def test_drawing_visible_text_retains_required_business_facts(self) -> None:
@@ -190,6 +192,21 @@ class AnalysisExpressionGateTests(unittest.TestCase):
         errors = validate_drawing_script(omitted, BUSINESS_SCRIPT)
 
         self.assertIn("missing required business number in visible text: 1000万千瓦", errors)
+
+    def test_drawing_keeps_non_visible_completeness_checks_off_screen(self) -> None:
+        business = BUSINESS_SCRIPT.replace(
+            "- 事实：供需总体平衡",
+            "- 事实：供需总体平衡\n- 事实：不得删除或替换为泛化表述",
+        )
+        drawing = DRAWING_SCRIPT.replace(
+            "- 事实：供需总体平衡",
+            "- 事实：供需总体平衡\n- 事实：不得删除或替换为泛化表述",
+        )
+
+        self.assertNotIn(
+            "missing required business fact in visible text: 不得删除或替换为泛化表述",
+            validate_drawing_script(drawing, business),
+        )
 
     def test_drawing_allows_concise_required_business_fact_translation(self) -> None:
         concise = DRAWING_SCRIPT.replace("供需总体平衡", "供需平衡", 1)
@@ -294,12 +311,12 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 
         self.assertIn("business_script page 2 requires at least one source location", errors)
 
-    def test_drawing_requires_inherited_units_on_each_content_page(self) -> None:
+    def test_drawing_inherits_business_units_without_repeating_them_in_page_text(self) -> None:
         second_page = DRAWING_SCRIPT.replace("第1页", "第2页").replace("- E-01\n### 来源位置", "### 来源位置")
 
         errors = validate_drawing_script(DRAWING_SCRIPT + "\n" + second_page, BUSINESS_SCRIPT + "\n" + BUSINESS_SCRIPT.replace("第1页", "第2页"))
 
-        self.assertIn("drawing_script page 2 missing required evidence binding: E-01", errors)
+        self.assertEqual([], errors)
 
     def test_drawing_rejects_implementation_directives(self) -> None:
         drawing = DRAWING_SCRIPT.replace("指标卡与结论卡通过箭头关联。", "使用蓝色 #005BAC，微软雅黑字体和线性图标完成最终构图。")
