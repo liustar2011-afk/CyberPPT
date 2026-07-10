@@ -134,6 +134,31 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 
         self.assertFalse(any("consulting-delivery language" in error for error in errors))
 
+    def test_business_allows_formal_page_and_combined_evidence_block(self) -> None:
+        text = """# 页面业务稿
+## 第 4 页 工作背景
+供需预测工作需要持续完善。
+### 非上屏：证据链与完整性校核
+- E02，源材料 P26：用电量数据。
+- 校核：工作背景和用电量数据不得删除。
+"""
+
+        self.assertEqual([], validate_business_script(text))
+        self.assertEqual([], validate_analysis_artifact("business_script", text))
+
+    def test_business_excludes_chapter_transition_pages_from_evidence_requirements(self) -> None:
+        text = """# 页面业务稿
+## 第 3 页 第一章 建设背景与基础
+章节过渡。
+## 第 4 页 工作背景
+工作背景内容。
+### 非上屏：证据链与完整性校核
+- E02，源材料 P26：用电量数据。
+- 校核：工作背景和用电量数据不得删除。
+"""
+
+        self.assertEqual([], validate_business_script(text))
+
     def test_drawing_cannot_omit_required_business_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"

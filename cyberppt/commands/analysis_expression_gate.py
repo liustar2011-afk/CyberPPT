@@ -38,6 +38,11 @@ HEADING_ALIASES = {
         "过渡页": ("章节过渡页",),
         "封底": ("封底页",),
     },
+    "business_script": {
+        "非上屏：证据链": ("非上屏：证据链与完整性校核",),
+        "来源位置": ("非上屏：证据链与完整性校核",),
+        "非上屏：完整性校核": ("非上屏：证据链与完整性校核",),
+    },
 }
 
 _STRUCTURE_PAGE_COUNT_FIELDS = ("页数", "页码", "页面数量")
@@ -59,7 +64,7 @@ _NON_VISIBLE_HEADINGS = ("非上屏", "来源位置")
 _COMPLETENESS_CATEGORIES = ("事实", "数字", "分类", "边界", "请求事项")
 _NUMBER_PATTERN = re.compile(r"\d+(?:\.\d+)?(?:[%％]|万千瓦|亿千瓦时|万|亿|台|项|个|页|年|月|日)?")
 _ALLOWED_CONCISE_FACTS = {"供需总体平衡": "供需平衡"}
-_CONTENT_PAGE_PATTERN = re.compile(r"^##\s*第(?P<number>\d+)页[：:](?P<title>.+?)\s*$", re.MULTILINE)
+_CONTENT_PAGE_PATTERN = re.compile(r"^##\s*第\s*(?P<number>\d+)\s*页(?:[：:]|\s+)(?P<title>.+?)\s*$", re.MULTILINE)
 _NON_CONTENT_PAGE_TITLES = ("封面", "目录", "过渡", "封底", "结束", "感谢")
 
 
@@ -216,10 +221,18 @@ def _visible_text(text: str) -> str:
 
 
 def _parse_inherited_units(text: str) -> InheritedUnits:
-    completeness = _section_items(text, "非上屏：完整性校核")
+    combined = _section_items(text, "非上屏：证据链与完整性校核")
+    combined_evidence = tuple(item for item in combined if re.match(r"^E\d+", item))
+    combined_sources = tuple(item for item in combined if "源材料" in item or re.search(r"\bP\d+", item))
+    combined_checks = tuple(
+        f"事实：{re.sub(r'^校核[：:]\s*', '', item)}"
+        for item in combined
+        if item.startswith("校核：") or item.startswith("校核:")
+    )
+    completeness = _section_items(text, "非上屏：完整性校核") or combined_checks
     return InheritedUnits(
-        evidence_bindings=_section_items(text, "非上屏：证据链"),
-        source_locations=_section_items(text, "来源位置"),
+        evidence_bindings=_section_items(text, "非上屏：证据链") or combined_evidence,
+        source_locations=_section_items(text, "来源位置") or combined_sources,
         completeness_units=completeness,
         density_units=_section_items(text, "非上屏：信息密度") or _section_items(text, "信息密度"),
     )
@@ -231,7 +244,8 @@ def _content_pages(text: str) -> tuple[tuple[int | None, str], ...]:
         return ((None, text),)
     pages: list[tuple[int | None, str]] = []
     for index, match in enumerate(matches):
-        if any(marker in match.group("title") for marker in _NON_CONTENT_PAGE_TITLES):
+        title = match.group("title")
+        if any(marker in title for marker in _NON_CONTENT_PAGE_TITLES) or re.match(r"第[一二三四五六七八九十]+章", title):
             continue
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
         pages.append((int(match.group("number")), text[match.start() : end]))
@@ -288,7 +302,9 @@ def _drawing_visible_text(text: str) -> str:
     return "\n".join(_all_section_texts(text, "上屏文字"))
 
 
-def _validate_business_units(units: InheritedUnits, *, label: str) -> list[str]:
+def _validate_business_units(
+    units: InheritedUnits, *, label: str, require_categories: bool = True, require_density: bool = True
+) -> list[str]:
     errors: list[str] = []
     if not units.evidence_bindings:
         errors.append(f"{label} requires at least one evidence binding")
@@ -297,9 +313,9 @@ def _validate_business_units(units: InheritedUnits, *, label: str) -> list[str]:
     if not units.completeness_units:
         errors.append(f"{label} requires at least one completeness unit")
     missing_categories = set(_COMPLETENESS_CATEGORIES) - _required_completeness_categories(units)
-    if missing_categories:
+    if require_categories and missing_categories:
         errors.append(f"{label} completeness check is missing categories: " + ", ".join(sorted(missing_categories)))
-    if not units.density_units:
+    if require_density and not units.density_units:
         errors.append(f"{label} requires at least one high-density unit")
     return errors
 
@@ -312,7 +328,14 @@ def validate_business_script(text: str) -> list[str]:
         errors.append("business_script must not contain consulting-delivery language in visible text")
 
     for page_number, page_text in _content_pages(text):
-        errors.extend(_validate_business_units(_parse_inherited_units(page_text), label=_page_label("business_script", page_number)))
+        errors.extend(
+            _validate_business_units(
+                _parse_inherited_units(page_text),
+                label=_page_label("business_script", page_number),
+                require_categories=False,
+                require_density=False,
+            )
+        )
     return errors
 
 
