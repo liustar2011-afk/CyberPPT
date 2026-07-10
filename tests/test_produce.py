@@ -22,7 +22,7 @@ from cyberppt.commands.blueprint_gate import (
 )
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
-from cyberppt.commands.produce import assemble_production, get_production_status, prepare_production
+from cyberppt.commands.produce import assemble_production, get_production_status, prepare_production, verify_production
 
 
 OPTIONS = [
@@ -162,6 +162,86 @@ class ProduceTests(unittest.TestCase):
             with patch("cyberppt.commands.produce.subprocess.run", return_value=Mock(returncode=0)):
                 with self.assertRaisesRegex(RuntimeError, "assembly_artifact_missing"):
                     assemble_production(project, "1")
+
+    def test_verify_promotes_valid_assembly_to_delivery(self) -> None:
+        project, temporary_directory = _approved_project()
+        with temporary_directory:
+            stage_dir = project / "workbench/stages/02-blueprint-dual-image/pages_001"
+            image_ppt = stage_dir / "image_ppt"
+            approved = image_ppt / "approved.png"
+            exported = image_ppt / "assembled.pptx"
+            manifest = image_ppt / "template_image_manifest.json"
+            assembly = image_ppt / "assembly_report.json"
+            approved.parent.mkdir(parents=True)
+            approved.write_bytes(b"approved-image")
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "canvas": {"width": 1280, "height": 720},
+                        "body_region": {"x": 0, "y": 0, "width": 1280, "height": 720},
+                        "tasks": [{"page_number": 1, "image_path": str(approved), "notes_text": "approved notes"}],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            exported.write_bytes(b"pptx")
+            assembly.write_text(
+                json.dumps(
+                    {
+                        "schema": "cyberppt.assembly_report.v1",
+                        "valid": True,
+                        "artifacts": {"exported_pptx": str(exported), "template_image_manifest": str(manifest)},
+                        "approved_images": {"1": str(approved)},
+                        "artifacts_sha256": {
+                            "exported_pptx": _sha256_for_test(exported),
+                            "template_image_manifest": _sha256_for_test(manifest),
+                        },
+                        "failures": [],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            with patch(
+                "cyberppt.commands.produce.render_and_compare",
+                return_value={"schema": "cyberppt.production_visual_report.v1", "passed": True, "slides": []},
+            ), patch("cyberppt.commands.produce.validate_pptx", return_value={"errors": [], "warnings": []}):
+                report = verify_production(project, "1")
+
+            self.assertEqual("deliverable_ready", report["status"])
+            self.assertTrue(Path(report["delivery_pptx"]).is_file())
+
+    def test_verify_rejects_stale_assembly_hash(self) -> None:
+        project, temporary_directory = _approved_project()
+        with temporary_directory:
+            stage_dir = project / "workbench/stages/02-blueprint-dual-image/pages_001/image_ppt"
+            stage_dir.mkdir(parents=True)
+            exported = stage_dir / "assembled.pptx"
+            manifest = stage_dir / "template_image_manifest.json"
+            exported.write_bytes(b"pptx")
+            manifest.write_text('{"tasks":[]}', encoding="utf-8")
+            (stage_dir / "assembly_report.json").write_text(
+                json.dumps(
+                    {
+                        "valid": True,
+                        "artifacts": {"exported_pptx": str(exported), "template_image_manifest": str(manifest)},
+                        "approved_images": {},
+                        "artifacts_sha256": {"exported_pptx": "stale", "template_image_manifest": _sha256_for_test(manifest)},
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(RuntimeError, "stale assembly"):
+                verify_production(project, "1")
+
+
+def _sha256_for_test(path: Path) -> str:
+    import hashlib
+
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 if __name__ == "__main__":

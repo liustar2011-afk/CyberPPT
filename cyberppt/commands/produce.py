@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -18,11 +19,14 @@ from cyberppt.commands.blueprint_gate import (
     stage_speaker_notes_review,
 )
 from cyberppt.commands.final_script_pages import run_final_script_pages
-from cyberppt.commands.production_qa import validate_assembly_bundle
+from cyberppt.commands.production_qa import render_and_compare, validate_assembly_bundle
+from scripts.validate_pptx import validate_pptx
 
 
 STAGE_ROOT = Path("workbench/stages/02-blueprint-dual-image")
 BLUEPRINT_APPROVAL = STAGE_ROOT / "blueprint_input.approved.json"
+QA_STAGE_ROOT = Path("workbench/stages/05-qa-delivery")
+LEDGER_PATH = Path("workbench/artifact-ledger.json")
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -44,6 +48,57 @@ def _sha256(path: Path) -> str:
 
 def _project(project: Path) -> Path:
     return project.expanduser().resolve()
+
+
+def _pages_slug_from_raw(pages_raw: str) -> str:
+    pages: list[int] = []
+    for part in pages_raw.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            start, end = [int(item.strip()) for item in part.split("-", 1)]
+            pages.extend(range(start, end + 1))
+        else:
+            pages.append(int(part))
+    pages = sorted(set(pages))
+    if not pages:
+        raise ValueError("at least one page is required")
+    if pages == list(range(pages[0], pages[-1] + 1)):
+        return f"pages_{pages[0]:03d}_{pages[-1]:03d}"
+    return "pages_" + "_".join(f"{page:03d}" for page in pages)
+
+
+def _stage_dir(project: Path, pages_raw: str) -> Path:
+    return project / STAGE_ROOT / _pages_slug_from_raw(pages_raw)
+
+
+def _assembly_report_path(project: Path, pages_raw: str) -> Path:
+    prepare_path = _prepare_path(project, pages_raw)
+    if prepare_path is not None:
+        candidate = prepare_path.parent / "image_ppt" / "assembly_report.json"
+        if candidate.is_file():
+            return candidate
+    candidate = _stage_dir(project, pages_raw) / "image_ppt" / "assembly_report.json"
+    if candidate.is_file():
+        return candidate
+    if pages_raw.strip().isdigit():
+        return project / STAGE_ROOT / f"pages_{int(pages_raw):03d}" / "image_ppt" / "assembly_report.json"
+    return candidate
+
+
+def _append_ledger(project: Path, records: list[dict[str, Any]]) -> Path:
+    path = project / LEDGER_PATH
+    if path.exists():
+        ledger = _read_json(path)
+    else:
+        ledger = {"schema": "cyberppt.artifact_ledger.v1", "artifacts": []}
+    artifacts = ledger.setdefault("artifacts", [])
+    existing = {str(item.get("path")): item for item in artifacts if isinstance(item, dict)}
+    for record in records:
+        existing[str(record["path"])] = record
+    ledger["artifacts"] = list(existing.values())
+    return _write_json(path, ledger)
 
 
 def _approved_blueprint_script(project: Path) -> Path:
@@ -186,6 +241,30 @@ def get_production_status(project: Path, pages_raw: str) -> dict[str, Any]:
         return result
     result["gates"].append("speaker_notes_approved")
     result["artifacts"]["speaker_notes_manifest"] = str(notes_manifest)
+    assembly_path = _assembly_report_path(root, pages_raw)
+    if assembly_path.is_file():
+        assembly = _read_json(assembly_path)
+        if assembly.get("valid") is True:
+            readiness_path = root / QA_STAGE_ROOT / _pages_slug_from_raw(pages_raw) / "production_readiness.json"
+            if readiness_path.is_file():
+                readiness = _read_json(readiness_path)
+                delivery_pptx = Path(str(readiness.get("delivery_pptx", ""))).expanduser().resolve()
+                if (
+                    readiness.get("status") == "deliverable_ready"
+                    and delivery_pptx.is_file()
+                    and readiness.get("delivery_pptx_sha256") == _sha256(delivery_pptx)
+                ):
+                    result["gates"].extend(("blueprint_images_approved", "image_ppt_assembled", "render_qa_passed", "strict_qa_passed"))
+                    result["artifacts"].update(readiness.get("artifacts", {}))
+                    result.update(status="deliverable_ready", next_gate="none", next_command="")
+                    return result
+            result["gates"].extend(("blueprint_images_approved", "image_ppt_assembled"))
+            result.update(
+                status="image_ppt_assembled",
+                next_gate="render_qa_required",
+                next_command=f"produce verify {root} --pages {pages_raw}",
+            )
+            return result
     result.update(
         status="speaker_notes_approved",
         next_gate="blueprint_images_approval_required",
@@ -269,3 +348,136 @@ def assemble_production(project: Path, pages_raw: str) -> dict[str, Any]:
         "next_command": f"produce verify {root} --pages {pages_raw}",
         "artifacts": {**bundle, "assembly_report": str(report_path)},
     }
+
+
+def _approved_images_from_assembly(assembly: dict[str, Any]) -> dict[int, Path]:
+    approved: dict[int, Path] = {}
+    for page, path in assembly.get("approved_images", {}).items():
+        approved[int(page)] = Path(str(path)).expanduser().resolve()
+    return approved
+
+
+def _assert_current_assembly(assembly: dict[str, Any]) -> tuple[Path, Path]:
+    artifacts = assembly.get("artifacts") if isinstance(assembly.get("artifacts"), dict) else {}
+    pptx = Path(str(artifacts.get("exported_pptx", ""))).expanduser().resolve()
+    manifest = Path(str(artifacts.get("template_image_manifest", ""))).expanduser().resolve()
+    if assembly.get("valid") is not True:
+        raise RuntimeError("assembly is not valid")
+    if not pptx.is_file() or not manifest.is_file():
+        raise RuntimeError("assembly artifact missing")
+    expected_hashes = assembly.get("artifacts_sha256") if isinstance(assembly.get("artifacts_sha256"), dict) else {}
+    for key, path in (("exported_pptx", pptx), ("template_image_manifest", manifest)):
+        expected = expected_hashes.get(key)
+        if expected and expected != _sha256(path):
+            raise RuntimeError(f"stale assembly: {key} changed since assembly_report.json")
+    return pptx, manifest
+
+
+def _full_image_delivery_manifest(
+    *,
+    project: Path,
+    pages: list[int],
+    template_manifest: Path,
+    approved_images: dict[int, Path],
+    visual_report: dict[str, Any],
+    visual_report_path: Path,
+) -> dict[str, Any]:
+    template = _read_json(template_manifest)
+    tasks = {
+        int(item["page_number"]): item
+        for item in template.get("tasks", [])
+        if isinstance(item, dict) and isinstance(item.get("page_number"), int)
+    }
+    return {
+        "schema": "cyberppt.full_image_delivery_manifest.v1",
+        "delivery_mode": "full_image_ppt",
+        "body_content_editable": False,
+        "template_text_editable": True,
+        "speaker_notes_required": True,
+        "project": str(project),
+        "template_image_manifest": str(template_manifest),
+        "production_visual_report": {"path": str(visual_report_path), "passed": visual_report.get("passed") is True},
+        "slides": [
+            {
+                "slide": index,
+                "source_page": page,
+                "delivery_mode": "full_image_ppt",
+                "image_assets": [{"role": "approved_full_image", "path": str(approved_images[page])}],
+                "notes_present": bool(str(tasks.get(page, {}).get("notes_text") or "").strip()),
+            }
+            for index, page in enumerate(pages, start=1)
+        ],
+    }
+
+
+def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
+    """Run render, visual, strict, and delivery promotion gates for an assembled PPTX."""
+
+    root = _project(project)
+    assembly_path = _assembly_report_path(root, pages_raw)
+    if not assembly_path.is_file():
+        raise ValueError(f"image PPT assembly is required; run produce assemble {root} --pages {pages_raw}")
+    assembly = _read_json(assembly_path)
+    pptx, template_manifest = _assert_current_assembly(assembly)
+    approved_images = _approved_images_from_assembly(assembly)
+    pages = sorted(approved_images)
+    if not pages:
+        raise RuntimeError("assembly has no approved images")
+
+    qa_dir = root / QA_STAGE_ROOT / _pages_slug_from_raw(pages_raw)
+    visual_report = render_and_compare(pptx, template_manifest, approved_images, pages, qa_dir)
+    visual_report_path = qa_dir / "production_visual_report.json"
+    if visual_report.get("passed") is not True:
+        raise RuntimeError("render_qa_failed: " + ", ".join(visual_report.get("failures", [])))
+
+    delivery_manifest = _full_image_delivery_manifest(
+        project=root,
+        pages=pages,
+        template_manifest=template_manifest,
+        approved_images=approved_images,
+        visual_report=visual_report,
+        visual_report_path=visual_report_path,
+    )
+    delivery_manifest_path = _write_json(qa_dir / "full_image_delivery_manifest.json", delivery_manifest)
+    strict_report = validate_pptx(pptx, manifest_path=delivery_manifest_path, strict=True)
+    strict_report_path = _write_json(qa_dir / "strict_validation_report.json", strict_report)
+    if strict_report.get("errors"):
+        raise RuntimeError("strict_qa_failed: " + ", ".join(str(item.get("code")) for item in strict_report["errors"]))
+
+    delivery_dir = root / "delivery"
+    delivery_dir.mkdir(parents=True, exist_ok=True)
+    delivery_pptx = delivery_dir / f"{root.name}_{_pages_slug_from_raw(pages_raw)}.pptx"
+    shutil.copy2(pptx, delivery_pptx)
+    readiness = {
+        "schema": "cyberppt.production_readiness.v1",
+        "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "status": "deliverable_ready",
+        "project": str(root),
+        "pages_raw": pages_raw,
+        "assembly_report": str(assembly_path),
+        "delivery_pptx": str(delivery_pptx),
+        "delivery_pptx_sha256": _sha256(delivery_pptx),
+        "artifacts": {
+            "production_visual_report": str(visual_report_path),
+            "strict_validation_report": str(strict_report_path),
+            "full_image_delivery_manifest": str(delivery_manifest_path),
+            "delivery_pptx": str(delivery_pptx),
+        },
+    }
+    readiness_path = _write_json(qa_dir / "production_readiness.json", readiness)
+    _append_ledger(
+        root,
+        [
+            {
+                "stage": "05-qa-delivery",
+                "page": pages_raw,
+                "path": str(delivery_pptx),
+                "status": "deliverable_ready",
+                "sha256": readiness["delivery_pptx_sha256"],
+                "depends_on": [str(assembly_path), str(visual_report_path), str(strict_report_path)],
+                "updated_at": readiness["created_at"],
+                "resume_command": f"python3 -m cyberppt produce status {root} --pages {pages_raw} --json",
+            }
+        ],
+    )
+    return {**readiness, "production_readiness": str(readiness_path), "next_gate": "none", "next_command": ""}

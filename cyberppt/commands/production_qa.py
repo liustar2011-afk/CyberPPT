@@ -4,8 +4,16 @@ from __future__ import annotations
 
 import json
 import zipfile
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
+
+from PIL import Image, ImageChops, ImageStat
+
+from scripts.dual_image_overlay.qa_render_page import render_to_png
+
+
+VISUAL_DIFF_THRESHOLD = 12.0
 
 
 def _inside(path: Path, root: Path) -> bool:
@@ -21,6 +29,31 @@ def _read_json(path: Path) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError(f"JSON root must be an object: {path}")
     return payload
+
+
+def _sha256(path: Path) -> str:
+    digest = sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _body_crop_box(region: dict[str, Any], canvas: dict[str, Any], render_size: tuple[int, int]) -> tuple[int, int, int, int]:
+    canvas_width = float(canvas.get("width") or 1280)
+    canvas_height = float(canvas.get("height") or 720)
+    scale_x = render_size[0] / canvas_width
+    scale_y = render_size[1] / canvas_height
+    left = int(round(float(region.get("x", 0)) * scale_x))
+    top = int(round(float(region.get("y", 0)) * scale_y))
+    right = int(round((float(region.get("x", 0)) + float(region.get("width", canvas_width))) * scale_x))
+    bottom = int(round((float(region.get("y", 0)) + float(region.get("height", canvas_height))) * scale_y))
+    return (
+        max(0, min(left, render_size[0])),
+        max(0, min(top, render_size[1])),
+        max(0, min(right, render_size[0])),
+        max(0, min(bottom, render_size[1])),
+    )
 
 
 def validate_assembly_bundle(bundle: dict[str, Any], expected_pages: list[int]) -> dict[str, Any]:
@@ -91,5 +124,90 @@ def validate_assembly_bundle(bundle: dict[str, Any], expected_pages: list[int]) 
         "valid": not failures,
         "checks": checks,
         "artifacts": {"exported_pptx": str(pptx), "template_image_manifest": str(manifest_path)},
+        "approved_images": {str(page): str(path) for page, path in approved_images.items()},
+        "artifacts_sha256": {
+            "exported_pptx": _sha256(pptx) if checks["pptx_exists"] else None,
+            "template_image_manifest": _sha256(manifest_path) if checks["manifest_exists"] else None,
+        },
         "failures": failures,
     }
+
+
+def render_and_compare(
+    pptx: Path,
+    template_image_manifest: Path,
+    approved_images: dict[int, Path],
+    expected_pages: list[int],
+    output_dir: Path,
+    *,
+    threshold: float = VISUAL_DIFF_THRESHOLD,
+) -> dict[str, Any]:
+    """Render the assembled PPTX and compare each body region against approved full images."""
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    manifest = _read_json(template_image_manifest)
+    rendered = render_to_png(pptx, output_dir / "renders")
+    if not rendered:
+        raise RuntimeError("render_tool_unavailable: no rendered pages were produced")
+
+    tasks = {
+        int(item["page_number"]): item
+        for item in manifest.get("tasks", [])
+        if isinstance(item, dict) and isinstance(item.get("page_number"), int)
+    }
+    canvas = manifest.get("canvas") if isinstance(manifest.get("canvas"), dict) else {"width": 1280, "height": 720}
+    body_region = manifest.get("body_region") if isinstance(manifest.get("body_region"), dict) else {"x": 0, "y": 0, "width": 1280, "height": 720}
+    slides: list[dict[str, Any]] = []
+    failures: list[str] = []
+    for index, page in enumerate(expected_pages):
+        if page not in tasks:
+            failures.append(f"missing_manifest_task:{page}")
+            continue
+        if page not in approved_images:
+            failures.append(f"missing_approved_image:{page}")
+            continue
+        if index >= len(rendered):
+            failures.append(f"missing_render:{page}")
+            continue
+        render_path = rendered[index]
+        approved_path = approved_images[page]
+        with Image.open(render_path).convert("RGB") as rendered_image:
+            box = _body_crop_box(body_region, canvas, rendered_image.size)
+            crop = rendered_image.crop(box)
+        with Image.open(approved_path).convert("RGB") as approved_image:
+            resized = approved_image.resize(crop.size)
+        diff = ImageChops.difference(crop, resized)
+        mean_abs_diff = round(sum(ImageStat.Stat(diff).mean) / 3.0, 4)
+        passed = mean_abs_diff <= threshold
+        if not passed:
+            failures.append(f"visual_diff_exceeds_threshold:{page}")
+        crop_path = output_dir / f"page_{page:03d}_body_crop.png"
+        crop.save(crop_path)
+        slides.append(
+            {
+                "page": page,
+                "rendered_page": str(render_path),
+                "approved_image": str(approved_path),
+                "body_crop": str(crop_path),
+                "mean_abs_diff": mean_abs_diff,
+                "threshold": threshold,
+                "passed": passed,
+                "rendered_sha256": _sha256(render_path),
+                "approved_image_sha256": _sha256(approved_path),
+            }
+        )
+
+    report = {
+        "schema": "cyberppt.production_visual_report.v1",
+        "pptx": str(pptx),
+        "template_image_manifest": str(template_image_manifest),
+        "threshold": threshold,
+        "passed": not failures and len(slides) == len(expected_pages),
+        "slides": slides,
+        "failures": failures,
+    }
+    (output_dir / "production_visual_report.json").write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return report
