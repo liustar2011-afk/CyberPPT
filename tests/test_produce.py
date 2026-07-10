@@ -170,15 +170,26 @@ class ProduceTests(unittest.TestCase):
             image_ppt = stage_dir / "image_ppt"
             approved = image_ppt / "approved.png"
             exported = image_ppt / "assembled.pptx"
+            pairs = image_ppt / "page_image_pairs.json"
             manifest = image_ppt / "template_image_manifest.json"
             assembly = image_ppt / "assembly_report.json"
             approved.parent.mkdir(parents=True)
             approved.write_bytes(b"approved-image")
+            pairs.write_text(
+                json.dumps(
+                    {"pairs": [{"page_number": 1, "full": {"path": str(approved)}}]},
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            stage_blueprint_image_review(project, pairs)
+            approve_blueprint_image_review(project, "confirm_blueprint_images")
             manifest.write_text(
                 json.dumps(
                     {
                         "canvas": {"width": 1280, "height": 720},
                         "body_region": {"x": 0, "y": 0, "width": 1280, "height": 720},
+                        "page_image_manifest": str(pairs),
                         "tasks": [{"page_number": 1, "image_path": str(approved), "notes_text": "approved notes"}],
                     },
                     ensure_ascii=False,
@@ -214,6 +225,52 @@ class ProduceTests(unittest.TestCase):
 
             self.assertEqual("deliverable_ready", report["status"])
             self.assertTrue(Path(report["delivery_pptx"]).is_file())
+
+    def test_verify_requires_current_blueprint_image_approval(self) -> None:
+        project, temporary_directory = _approved_project()
+        with temporary_directory:
+            stage_dir = project / "workbench/stages/02-blueprint-dual-image/pages_001"
+            image_ppt = stage_dir / "image_ppt"
+            image_ppt.mkdir(parents=True)
+            approved = image_ppt / "approved.png"
+            exported = image_ppt / "assembled.pptx"
+            pairs = image_ppt / "page_image_pairs.json"
+            manifest = image_ppt / "template_image_manifest.json"
+            approved.write_bytes(b"approved-image")
+            exported.write_bytes(b"pptx")
+            pairs.write_text(
+                json.dumps({"pairs": [{"page_number": 1, "full": {"path": str(approved)}}]}),
+                encoding="utf-8",
+            )
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "page_image_manifest": str(pairs),
+                        "tasks": [{"page_number": 1, "image_path": str(approved), "notes_text": "approved notes"}],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            (image_ppt / "assembly_report.json").write_text(
+                json.dumps(
+                    {
+                        "valid": True,
+                        "artifacts": {"exported_pptx": str(exported), "template_image_manifest": str(manifest)},
+                        "approved_images": {"1": str(approved)},
+                        "artifacts_sha256": {
+                            "exported_pptx": _sha256_for_test(exported),
+                            "template_image_manifest": _sha256_for_test(manifest),
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            stage_speaker_notes_review(project, manifest, "1")
+            approve_speaker_notes_review(project, "confirm_speaker_notes")
+
+            with self.assertRaisesRegex(ValueError, "blueprint image review approval is required"):
+                verify_production(project, "1")
 
     def test_verify_requires_current_speaker_notes_approval(self) -> None:
         project, temporary_directory = _approved_project()
@@ -283,16 +340,22 @@ class ProduceTests(unittest.TestCase):
             prepared = prepare_production(project, "1")
             image_ppt = Path(prepared["artifacts"]["production_prepare"]).parent / "image_ppt"
             image_ppt.mkdir(parents=True)
-            approved = image_ppt / "approved.png"
+            pairs = Path(prepared["artifacts"]["page_image_pairs"])
+            pair_manifest = json.loads(pairs.read_text(encoding="utf-8"))
+            approved = Path(pair_manifest["pairs"][0]["full"]["path"])
             exported = image_ppt / "assembled.pptx"
             manifest = image_ppt / "template_image_manifest.json"
+            approved.parent.mkdir(parents=True, exist_ok=True)
             approved.write_bytes(b"approved-image")
+            stage_blueprint_image_review(project, pairs)
+            approve_blueprint_image_review(project, "confirm_blueprint_images")
             exported.write_bytes(b"pptx")
             manifest.write_text(
                 json.dumps(
                     {
                         "speaker_notes_manifest": prepared["artifacts"]["speaker_notes_manifest"],
                         "template_text_lock": prepared["artifacts"]["template_text_lock"],
+                        "page_image_manifest": str(pairs),
                         "tasks": [{"page_number": 1, "image_path": str(approved), "notes_text": "approved notes", "slide_title": "测试"}],
                     },
                     ensure_ascii=False,
@@ -327,22 +390,87 @@ class ProduceTests(unittest.TestCase):
 
             self.assertNotEqual("deliverable_ready", get_production_status(project, "1")["status"])
 
-    def test_status_rejects_legacy_readiness_without_dependency_hashes(self) -> None:
+    def test_status_rejects_readiness_with_incomplete_dependency_hashes(self) -> None:
         project, temporary_directory = _approved_project()
         with temporary_directory:
             prepared = prepare_production(project, "1")
             image_ppt = Path(prepared["artifacts"]["production_prepare"]).parent / "image_ppt"
             image_ppt.mkdir(parents=True)
-            approved = image_ppt / "approved.png"
+            pairs = Path(prepared["artifacts"]["page_image_pairs"])
+            pair_manifest = json.loads(pairs.read_text(encoding="utf-8"))
+            approved = Path(pair_manifest["pairs"][0]["full"]["path"])
             exported = image_ppt / "assembled.pptx"
             manifest = image_ppt / "template_image_manifest.json"
+            approved.parent.mkdir(parents=True, exist_ok=True)
             approved.write_bytes(b"approved-image")
+            stage_blueprint_image_review(project, pairs)
+            approve_blueprint_image_review(project, "confirm_blueprint_images")
             exported.write_bytes(b"pptx")
             manifest.write_text(
                 json.dumps(
                     {
                         "speaker_notes_manifest": prepared["artifacts"]["speaker_notes_manifest"],
                         "template_text_lock": prepared["artifacts"]["template_text_lock"],
+                        "page_image_manifest": str(pairs),
+                        "tasks": [{"page_number": 1, "image_path": str(approved), "notes_text": "approved notes"}],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            approve_speaker_notes_review(project, "confirm_speaker_notes")
+            assembly = image_ppt / "assembly_report.json"
+            assembly.write_text(
+                json.dumps(
+                    {
+                        "valid": True,
+                        "artifacts": {"exported_pptx": str(exported), "template_image_manifest": str(manifest)},
+                        "approved_images": {"1": str(approved)},
+                        "artifacts_sha256": {
+                            "exported_pptx": _sha256_for_test(exported),
+                            "template_image_manifest": _sha256_for_test(manifest),
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with patch(
+                "cyberppt.commands.produce.render_and_compare",
+                return_value={"schema": "cyberppt.production_visual_report.v1", "passed": True, "slides": []},
+            ), patch("cyberppt.commands.produce.validate_pptx", return_value={"errors": [], "warnings": []}):
+                report = verify_production(project, "1")
+
+            readiness = Path(report["production_readiness"])
+            payload = json.loads(readiness.read_text(encoding="utf-8"))
+            delivery_pptx = Path(payload["delivery_pptx"])
+            payload["dependency_hashes"] = {str(delivery_pptx.resolve()): _sha256_for_test(delivery_pptx)}
+            readiness.write_text(json.dumps(payload), encoding="utf-8")
+
+            self.assertNotEqual("deliverable_ready", get_production_status(project, "1")["status"])
+
+    def test_status_rejects_legacy_readiness_without_dependency_hashes(self) -> None:
+        project, temporary_directory = _approved_project()
+        with temporary_directory:
+            prepared = prepare_production(project, "1")
+            image_ppt = Path(prepared["artifacts"]["production_prepare"]).parent / "image_ppt"
+            image_ppt.mkdir(parents=True)
+            pairs = Path(prepared["artifacts"]["page_image_pairs"])
+            pair_manifest = json.loads(pairs.read_text(encoding="utf-8"))
+            approved = Path(pair_manifest["pairs"][0]["full"]["path"])
+            exported = image_ppt / "assembled.pptx"
+            manifest = image_ppt / "template_image_manifest.json"
+            approved.parent.mkdir(parents=True, exist_ok=True)
+            approved.write_bytes(b"approved-image")
+            stage_blueprint_image_review(project, pairs)
+            approve_blueprint_image_review(project, "confirm_blueprint_images")
+            exported.write_bytes(b"pptx")
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "speaker_notes_manifest": prepared["artifacts"]["speaker_notes_manifest"],
+                        "template_text_lock": prepared["artifacts"]["template_text_lock"],
+                        "page_image_manifest": str(pairs),
                         "tasks": [{"page_number": 1, "image_path": str(approved), "notes_text": "approved notes"}],
                     },
                     ensure_ascii=False,

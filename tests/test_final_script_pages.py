@@ -11,6 +11,8 @@ from cyberppt.commands.blueprint_gate import (
     approve_blueprint_image_review,
     approve_speaker_notes_review,
     approve_visual_style,
+    assert_blueprint_image_review_ready,
+    assert_blueprint_input_ready,
     assert_speaker_notes_review_ready,
     stage_blueprint_input,
     stage_blueprint_image_review,
@@ -145,6 +147,17 @@ class FinalScriptPagesTests(unittest.TestCase):
             pending = stage_blueprint_image_review(project, manifest_path)
             self.assertTrue(pending.is_file())
 
+            revision = approve_blueprint_image_review(project, "revise_blueprint_images", "regenerate page 1")
+
+            self.assertFalse(json.loads(revision.read_text(encoding="utf-8"))["approved"])
+            with self.assertRaisesRegex(ValueError, "blueprint image review approval is required"):
+                assert_blueprint_image_review_ready(project, json.loads(manifest_path.read_text(encoding="utf-8")))
+
+            approval = approve_blueprint_image_review(project, "confirm_blueprint_images")
+
+            self.assertTrue(json.loads(approval.read_text(encoding="utf-8"))["approved"])
+            assert_blueprint_image_review_ready(project, json.loads(manifest_path.read_text(encoding="utf-8")))
+
     def test_speaker_notes_review_requires_current_confirmation(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -178,6 +191,38 @@ class FinalScriptPagesTests(unittest.TestCase):
             manifest.write_text('{"notes": []}\n', encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "speaker notes changed"):
                 assert_speaker_notes_review_ready(project, "1-3")
+
+    def test_blueprint_input_revision_is_not_ready(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            _approve_all_analysis_expression_gates(project)
+            script = root / "script-final.md"
+            script.write_text("## 第1页：测试\n组件A：内容\n", encoding="utf-8")
+            stage_visual_style_options(project)
+            approve_visual_style(project, "style_4")
+            stage_blueprint_input(
+                project,
+                script.read_text(encoding="utf-8"),
+                "confirm_blueprint_input",
+                [
+                    {"id": "confirm_blueprint_input", "label": "确认蓝图输入"},
+                    {"id": "revise_blueprint_input", "label": "返回调整"},
+                ],
+            )
+
+            revision = approve_blueprint_input(project, "revise_blueprint_input", "rewrite page 1")
+
+            self.assertFalse(json.loads(revision.read_text(encoding="utf-8"))["approved"])
+            approved_input = project / "workbench/stages/02-blueprint-dual-image/blueprint_input.md"
+            with self.assertRaisesRegex(ValueError, "blueprint input approval is required"):
+                assert_blueprint_input_ready(project, approved_input, None)
+
+            approval = approve_blueprint_input(project, "confirm_blueprint_input")
+
+            self.assertTrue(json.loads(approval.read_text(encoding="utf-8"))["approved"])
+            self.assertTrue(assert_blueprint_input_ready(project, approved_input, None).is_file())
 
     def test_speaker_notes_review_invalidates_business_and_page_dependencies(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
