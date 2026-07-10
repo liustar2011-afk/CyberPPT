@@ -16,6 +16,7 @@ from scripts.dual_image_overlay.deliverable_prompt import (
     template_title,
     visible_deliverable_lines,
 )
+from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,7 +62,7 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
 
             prompt = compile_pages(script, [2], style_lock_path=style)
 
-        self.assertIn("面向最终客户交付", prompt)
+        self.assertIn("正式内部汇报", prompt)
         self.assertIn("【内容锁定】", prompt)
         self.assertIn("## 第2页：建议由中电联牵头", prompt)
         self.assertNotIn("\n标题：", prompt)
@@ -70,7 +71,14 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertIn("【结构密度】", prompt)
         self.assertIn("七点结论清单", prompt)
         self.assertIn("底部墨绿通栏", prompt)
-        self.assertIn("不使用外部风格 preset", prompt)
+        self.assertNotIn("组件A", prompt)
+        self.assertNotIn("组件B", prompt)
+        self.assertNotIn("组件C", prompt)
+        self.assertIn("视觉锁定：核心色板", prompt)
+        self.assertIn("完整保留本页内容", prompt)
+        self.assertIn("页面类型不得改作通用内容页", prompt)
+        self.assertNotIn("可被后续 PPT 文本层覆盖", prompt)
+        self.assertNotIn("适合作为无字背景保留", prompt)
         self.assertIn("#F2F3EF", prompt)
         self.assertIn("电力产业链企业出海能力证明体系建设已具备推进必要性", prompt)
         self.assertIn("补齐企业能力可信表达短板", prompt)
@@ -81,6 +89,21 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertNotIn("标题占位条（顶部通栏", prompt)
         self.assertNotIn("仅供参考", prompt)
         self.assertNotIn("[通用风格前缀]", prompt)
+
+    def test_style_contract_excludes_style_scenarios_and_sample_paths(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            script = root / "script.md"
+            script.write_text("## 第1页：封面\n页面类型：封面\n组件A：\n测试\n", encoding="utf-8")
+            style_lock = write_project_style_lock(project=root, style_id=4)
+
+            prompt = compile_pages(script, [1], style_lock_path=style_lock)
+
+        self.assertIn("背景#F7F6F0", prompt)
+        self.assertIn("正式内部汇报语气", prompt)
+        self.assertNotIn("科技、SaaS", prompt)
+        self.assertNotIn("palette-04.png", prompt)
+        self.assertNotIn("SO WHAT", prompt)
 
     def test_layout_density_directives_keep_component_structure_without_evidence_labels(self) -> None:
         with TemporaryDirectory() as directory:
@@ -102,11 +125,27 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertEqual(
             directives,
             [
-                "组件A（左上或上方并排，两个背景数字卡片）",
-                "组件B（主图，占主要版面）——三段式横向流程图",
-                "组件C（底部墨绿结论条）——SO WHAT",
+                "左上或上方并排，两个背景数字卡片",
+                "主图，占主要版面，三段式横向流程图",
+                "底部墨绿结论条，SO WHAT",
             ],
         )
+
+    def test_page_type_is_a_non_visible_composition_instruction(self) -> None:
+        with TemporaryDirectory() as directory:
+            script = Path(directory) / "script.md"
+            script.write_text(
+                "## 第3页：建设背景与基础\n页面类型：章节过渡页\n组件A（正文区中部，主标题）——\n建设背景与基础\n01\n",
+                encoding="utf-8",
+            )
+            style = Path(directory) / "style.json"
+            style.write_text('{"style": {"prompt_contract": "正式"}}', encoding="utf-8")
+
+            prompt = compile_pages(script, [3], style_lock_path=style)
+
+        self.assertIn("【页面类型】", prompt)
+        self.assertIn("本页类型：章节过渡页。此信息只用于构图，不得作为页面可见文字。", prompt)
+        self.assertEqual(1, prompt.count("章节过渡页"))
 
     def test_template_title_extracts_conclusion_title_for_template_layer(self) -> None:
         with TemporaryDirectory() as directory:
@@ -162,6 +201,7 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
             script = root / "script.md"
             out = root / "out.md"
             manifest = root / "manifest.json"
+            style_lock = write_project_style_lock(project=root / "project", style_id=4, source_script=script)
             script.write_text("## P2 核心结论\n组件A：最终内容\n", encoding="utf-8")
 
             result = subprocess.run(
@@ -172,6 +212,8 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
                     str(script),
                     "--pages",
                     "2",
+                    "--style-lock",
+                    str(style_lock),
                     "--out",
                     str(out),
                     "--manifest",
@@ -189,11 +231,20 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertTrue(payload["policy"]["forbid_external_style_preset"])
         self.assertTrue(payload["policy"]["forbid_evidence_ids"])
 
+    def test_compile_requires_style_lock(self) -> None:
+        with TemporaryDirectory() as directory:
+            script = Path(directory) / "script.md"
+            script.write_text("## P2 核心结论\n组件A：最终内容\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "missing visual style lock"):
+                compile_pages(script, [2])
+
     def test_compile_from_content_locks_uses_clean_truth(self) -> None:
         with TemporaryDirectory() as directory:
             root = Path(directory)
             locks = root / "locks"
             locks.mkdir()
+            style_lock = write_project_style_lock(project=root / "project", style_id=5)
             (locks / "slide-04-content-lock.json").write_text(
                 json.dumps(
                     {
@@ -220,12 +271,14 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
             )
 
             blocks = parse_content_locks(locks)
-            prompt = compile_page_blocks(blocks, [4])
+            prompt = compile_page_blocks(blocks, [4], style_lock_path=style_lock)
 
         self.assertIn("## 第4页：统一入口、统一证据、统一评价和统一结果应用体系", prompt)
         self.assertIn("中心定位框", prompt)
         self.assertIn("左右两侧信息通过短箭头指向中心定位框", prompt)
         self.assertIn("中心定位框1个", prompt)
+        self.assertIn("采用正式内部汇报语气、清晰层级、克制图形和紧凑信息密度", prompt)
+        self.assertIn("版式必须服从本页内容锁定和构图要求", prompt)
         self.assertNotIn("E05", prompt)
         self.assertNotIn("【用途】", prompt)
         self.assertNotIn("目标语言", prompt)

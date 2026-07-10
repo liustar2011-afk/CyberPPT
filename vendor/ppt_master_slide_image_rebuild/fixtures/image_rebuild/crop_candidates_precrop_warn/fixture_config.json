@@ -1,0 +1,8 @@
+{
+  "purpose": "precrop.enabled without file emits warning only.",
+  "rebuild2": false,
+  "layout_reference": true,
+  "expected_layout_reference_warnings": [
+    "precrop_enabled_without_file"
+  ]
+}

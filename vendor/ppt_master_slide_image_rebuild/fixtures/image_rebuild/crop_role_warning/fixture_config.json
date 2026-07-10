@@ -1,0 +1,7 @@
+{
+  "purpose": "Guard that vague crop roles produce a review warning in vector-hifi.",
+  "layout_reference": false,
+  "expected_warning_codes": [
+    "unknown_crop_role"
+  ]
+}

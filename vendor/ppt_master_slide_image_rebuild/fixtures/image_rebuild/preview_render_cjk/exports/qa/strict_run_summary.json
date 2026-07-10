@@ -1,0 +1,45 @@
+{
+  "version": "1.0",
+  "workflow": "slide-image-rebuild",
+  "check": "strict_run_summary",
+  "run_id": "20260608T090550Z",
+  "generated_at": "2026-06-08T09:05:50Z",
+  "completed_at": "2026-06-08T09:05:50Z",
+  "valid": true,
+  "status": "completed",
+  "project": "slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+  "failed_step_id": null,
+  "failed_stage": "svg",
+  "first_blocking_error_code": null,
+  "blocking_errors": [],
+  "warnings_count": 0,
+  "steps_total": 33,
+  "steps_passed": 0,
+  "steps_failed": 0,
+  "steps_skipped": 33,
+  "resolved": {
+    "rebuild_mode": "vector-hifi",
+    "export_mode": "hifi",
+    "precise_lock": false,
+    "render_enabled": true,
+    "preview_render_backend": "cairo",
+    "page_count": 1,
+    "pages": [
+      "01"
+    ]
+  },
+  "runner": {
+    "stage_requested": "svg",
+    "stage_reached": "svg",
+    "dry_run": true
+  },
+  "artifacts": {
+    "strict_run_report": "exports/qa/strict_run_report.json",
+    "strict_run_summary": "exports/qa/strict_run_summary.json"
+  },
+  "next_action": {
+    "reread": [],
+    "resume_stage": "svg",
+    "resume_command": "/Volumes/DOC/ppt-master/.venv/bin/python /Volumes/DOC/ppt-master/skills/ppt-master/scripts/run_slide_image_rebuild_strict.py --project slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk --stage svg --export-mode hifi --render --skip-export"
+  }
+}

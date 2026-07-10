@@ -43,8 +43,12 @@ build/
 !assets/icons/**/*.svg
 
 # Project-specific working directories
+.worktrees/
+canvas/
 deck/
 *-deck/
+image2pptx_runs/
+images/
 output/
 outputs/
 preview/

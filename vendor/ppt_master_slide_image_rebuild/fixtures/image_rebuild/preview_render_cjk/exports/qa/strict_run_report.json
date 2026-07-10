@@ -1,0 +1,1539 @@
+{
+  "version": "1.0",
+  "workflow": "slide-image-rebuild",
+  "check": "strict_run",
+  "run_id": "20260608T090550Z",
+  "generated_at": "2026-06-08T09:05:50Z",
+  "completed_at": "2026-06-08T09:05:50Z",
+  "status": "completed",
+  "valid": true,
+  "project": "slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+  "runner": {
+    "script": "skills/ppt-master/scripts/run_slide_image_rebuild_strict.py",
+    "stage_requested": "svg",
+    "stage_reached": "svg",
+    "stop_on_error": true,
+    "dry_run": true,
+    "skip_export": true
+  },
+  "resolved": {
+    "rebuild_mode": "vector-hifi",
+    "export_mode": "hifi",
+    "precise_lock": false,
+    "render_enabled": true,
+    "preview_render_backend": "cairo",
+    "page_count": 1,
+    "pages": [
+      "01"
+    ]
+  },
+  "summary": {
+    "steps_total": 33,
+    "steps_passed": 0,
+    "steps_failed": 0,
+    "steps_skipped": 33,
+    "failed_step_id": null,
+    "first_blocking_error_code": null
+  },
+  "blocking_errors": [],
+  "warnings": [],
+  "artifacts": {
+    "strict_run_report": "exports/qa/strict_run_report.json",
+    "strict_run_summary": "exports/qa/strict_run_summary.json",
+    "layout_artifacts_stamp": "exports/qa/layout_artifacts_stamp.json"
+  },
+  "stages": [
+    {
+      "stage": "bootstrap",
+      "stage_index": 0,
+      "status": "passed",
+      "valid": true,
+      "steps_total": 3,
+      "steps_passed": 0,
+      "steps_failed": 0,
+      "steps_skipped": 3,
+      "failed_step_ids": [],
+      "step_ids": [
+        "0.1.check_cairo_backend",
+        "0.2.manifest_exists",
+        "0.3.project_validate"
+      ]
+    },
+    {
+      "stage": "intake",
+      "stage_index": 1,
+      "status": "passed",
+      "valid": true,
+      "steps_total": 4,
+      "steps_passed": 0,
+      "steps_failed": 0,
+      "steps_skipped": 4,
+      "failed_step_ids": [],
+      "step_ids": [
+        "1.1.manifest_intake",
+        "1.2.preprocess_reference",
+        "1.3.precrop_candidates",
+        "1.4.crop_intake_summary"
+      ]
+    },
+    {
+      "stage": "layout",
+      "stage_index": 2,
+      "status": "passed",
+      "valid": true,
+      "steps_total": 2,
+      "steps_passed": 0,
+      "steps_failed": 0,
+      "steps_skipped": 2,
+      "failed_step_ids": [],
+      "step_ids": [
+        "2.1.manifest_extracted",
+        "2.5.placeholder_scan"
+      ]
+    },
+    {
+      "stage": "mapped",
+      "stage_index": 3,
+      "status": "passed",
+      "valid": true,
+      "steps_total": 3,
+      "steps_passed": 0,
+      "steps_failed": 0,
+      "steps_skipped": 3,
+      "failed_step_ids": [],
+      "step_ids": [
+        "3.1.manifest_mapped",
+        "3.3.artifacts_design_spec",
+        "3.4.layout_family_contract"
+      ]
+    },
+    {
+      "stage": "icon",
+      "stage_index": 4,
+      "status": "passed",
+      "valid": true,
+      "steps_total": 4,
+      "steps_passed": 0,
+      "steps_failed": 0,
+      "steps_skipped": 4,
+      "failed_step_ids": [],
+      "step_ids": [
+        "4.0.build_icon_manifest",
+        "4.1.icon_manifest_exists",
+        "4.2.verify_icon_contract",
+        "4.3.chatgpt_precise_lock"
+      ]
+    },
+    {
+      "stage": "svg",
+      "stage_index": 5,
+      "status": "passed",
+      "valid": true,
+      "steps_total": 17,
+      "steps_passed": 0,
+      "steps_failed": 0,
+      "steps_skipped": 17,
+      "failed_step_ids": [],
+      "step_ids": [
+        "5.1.svg_quality_checker",
+        "5.2.verify_svg_preview",
+        "5.3.layout_executor_contract",
+        "5.3b.svg_rebuild_completeness",
+        "5.4.verify_text_fit",
+        "5.4b.text_wrap_similarity",
+        "5.5.verify_svg_spacing",
+        "5.6.build_image_crops_manifest",
+        "5.7.verify_text_bearing_images",
+        "5.8.reference_similarity",
+        "5.8b.object_similarity",
+        "5.8c.geometry_locks",
+        "5.8d.visual_diff_report",
+        "5.9.manifest_svg",
+        "5.10.icon_contract_svg",
+        "5.11.notes_total_md",
+        "5.12.aggregate_repair_tasks"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "0.1.check_cairo_backend",
+      "stage": "bootstrap",
+      "stage_index": 0,
+      "seq": 1,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "check_cairo_backend",
+        "script": "skills/ppt-master/scripts/check_cairo_backend.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/check_cairo_backend.py"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "0.2.manifest_exists",
+      "stage": "bootstrap",
+      "stage_index": 0,
+      "seq": 2,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "inline",
+        "script": null
+      },
+      "invocation": {
+        "argv": []
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "0.3.project_validate",
+      "stage": "bootstrap",
+      "stage_index": 0,
+      "seq": 3,
+      "gate": "soft",
+      "status": "skipped",
+      "tool": {
+        "name": "project_manager",
+        "script": "skills/ppt-master/scripts/project_manager.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/project_manager.py",
+          "validate",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "1.1.manifest_intake",
+      "stage": "intake",
+      "stage_index": 1,
+      "seq": 4,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_slide_image_rebuild_manifest",
+        "script": "skills/ppt-master/scripts/verify_slide_image_rebuild_manifest.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_slide_image_rebuild_manifest.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--stage",
+          "intake"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "1.2.preprocess_reference",
+      "stage": "intake",
+      "stage_index": 1,
+      "seq": 5,
+      "gate": "conditional",
+      "status": "skipped",
+      "tool": {
+        "name": "preprocess_reference_image",
+        "script": "skills/ppt-master/scripts/preprocess_reference_image.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/preprocess_reference_image.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk/images/reference_layout.png",
+          "--project",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "condition_not_met"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "1.3.precrop_candidates",
+      "stage": "intake",
+      "stage_index": 1,
+      "seq": 6,
+      "gate": "conditional",
+      "status": "skipped",
+      "tool": {
+        "name": "precrop_layout_candidates",
+        "script": "skills/ppt-master/scripts/precrop_layout_candidates.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/precrop_layout_candidates.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--source-image",
+          "images/reference_layout.normalized.png",
+          "--write-back"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "condition_not_met"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "1.4.crop_intake_summary",
+      "stage": "intake",
+      "stage_index": 1,
+      "seq": 7,
+      "gate": "soft",
+      "status": "skipped",
+      "tool": {
+        "name": "crop_intake_summary",
+        "script": "skills/ppt-master/scripts/crop_intake_summary.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/crop_intake_summary.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "2.1.manifest_extracted",
+      "stage": "layout",
+      "stage_index": 2,
+      "seq": 8,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_slide_image_rebuild_manifest",
+        "script": "skills/ppt-master/scripts/verify_slide_image_rebuild_manifest.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_slide_image_rebuild_manifest.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--stage",
+          "extracted"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "2.5.placeholder_scan",
+      "stage": "layout",
+      "stage_index": 2,
+      "seq": 9,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "inline",
+        "script": null
+      },
+      "invocation": {
+        "argv": []
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "3.1.manifest_mapped",
+      "stage": "mapped",
+      "stage_index": 3,
+      "seq": 10,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_slide_image_rebuild_manifest",
+        "script": "skills/ppt-master/scripts/verify_slide_image_rebuild_manifest.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_slide_image_rebuild_manifest.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--stage",
+          "mapped"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "3.3.artifacts_design_spec",
+      "stage": "mapped",
+      "stage_index": 3,
+      "seq": 11,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "inline",
+        "script": null
+      },
+      "invocation": {
+        "argv": []
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "3.4.layout_family_contract",
+      "stage": "mapped",
+      "stage_index": 3,
+      "seq": 12,
+      "gate": "soft",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_layout_family_contract",
+        "script": "skills/ppt-master/scripts/verify_layout_family_contract.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_layout_family_contract.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--write-report"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "condition_not_met"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "4.0.build_icon_manifest",
+      "stage": "icon",
+      "stage_index": 4,
+      "seq": 13,
+      "gate": "soft",
+      "status": "skipped",
+      "tool": {
+        "name": "build_icon_manifest_from_layout",
+        "script": "skills/ppt-master/scripts/build_icon_manifest_from_layout.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/build_icon_manifest_from_layout.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--write"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "condition_not_met"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "4.1.icon_manifest_exists",
+      "stage": "icon",
+      "stage_index": 4,
+      "seq": 14,
+      "gate": "conditional",
+      "status": "skipped",
+      "tool": {
+        "name": "inline",
+        "script": null
+      },
+      "invocation": {
+        "argv": []
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "condition_not_met"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "4.2.verify_icon_contract",
+      "stage": "icon",
+      "stage_index": 4,
+      "seq": 15,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_icon_contract",
+        "script": "skills/ppt-master/scripts/verify_icon_contract.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_icon_contract.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--style-check",
+          "--write-report",
+          "--render",
+          "--render-backend",
+          "cairo",
+          "--hard-gate"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "condition_not_met"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "4.3.chatgpt_precise_lock",
+      "stage": "icon",
+      "stage_index": 4,
+      "seq": 16,
+      "gate": "conditional",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_chatgpt_precise_rebuild_lock",
+        "script": "skills/ppt-master/scripts/verify_chatgpt_precise_rebuild_lock.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_chatgpt_precise_rebuild_lock.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--enforce"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "condition_not_met"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.1.svg_quality_checker",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 17,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "svg_quality_checker",
+        "script": "skills/ppt-master/scripts/svg_quality_checker.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/svg_quality_checker.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.2.verify_svg_preview",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 18,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_svg_preview",
+        "script": "skills/ppt-master/scripts/verify_svg_preview.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_svg_preview.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--render",
+          "--render-backend",
+          "cairo",
+          "--hard-gate"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.3.layout_executor_contract",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 19,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_layout_executor_contract",
+        "script": "skills/ppt-master/scripts/verify_layout_executor_contract.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_layout_executor_contract.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.3b.svg_rebuild_completeness",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 20,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_svg_rebuild_completeness",
+        "script": "skills/ppt-master/scripts/verify_svg_rebuild_completeness.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_svg_rebuild_completeness.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--strict",
+          "--write-report"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "condition_not_met"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.4.verify_text_fit",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 21,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_text_fit",
+        "script": "skills/ppt-master/scripts/verify_text_fit.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_text_fit.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.4b.text_wrap_similarity",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 22,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_text_wrap_similarity",
+        "script": "skills/ppt-master/scripts/verify_text_wrap_similarity.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_text_wrap_similarity.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--write-report"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "condition_not_met"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.5.verify_svg_spacing",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 23,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_svg_spacing",
+        "script": "skills/ppt-master/scripts/verify_svg_spacing.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_svg_spacing.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.6.build_image_crops_manifest",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 24,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "build_image_crops_manifest",
+        "script": "skills/ppt-master/scripts/build_image_crops_manifest.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/build_image_crops_manifest.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--source",
+          "output",
+          "--mode",
+          "vector-hifi"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.7.verify_text_bearing_images",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 25,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_text_bearing_images",
+        "script": "skills/ppt-master/scripts/verify_text_bearing_images.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_text_bearing_images.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--write-report"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.8.reference_similarity",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 26,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_reference_similarity",
+        "script": "skills/ppt-master/scripts/verify_reference_similarity.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_reference_similarity.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--render",
+          "--render-backend",
+          "cairo",
+          "--hard-gate",
+          "--threshold",
+          "58",
+          "--anchor-threshold",
+          "3"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.8b.object_similarity",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 27,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_reference_object_similarity",
+        "script": "skills/ppt-master/scripts/verify_reference_object_similarity.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_reference_object_similarity.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--render",
+          "--render-backend",
+          "cairo",
+          "--hard-gate",
+          "--bbox-threshold",
+          "3",
+          "--icon-threshold",
+          "4",
+          "--anchor-threshold",
+          "3",
+          "--write-report"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.8c.geometry_locks",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 28,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_geometry_locks",
+        "script": "skills/ppt-master/scripts/verify_geometry_locks.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_geometry_locks.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--write-report"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "condition_not_met"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.8d.visual_diff_report",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 29,
+      "gate": "soft",
+      "status": "skipped",
+      "tool": {
+        "name": "generate_visual_diff_report",
+        "script": "skills/ppt-master/scripts/generate_visual_diff_report.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/generate_visual_diff_report.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--render",
+          "--render-backend",
+          "cairo",
+          "--hard-gate",
+          "--write-report"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.9.manifest_svg",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 30,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_slide_image_rebuild_manifest",
+        "script": "skills/ppt-master/scripts/verify_slide_image_rebuild_manifest.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_slide_image_rebuild_manifest.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--stage",
+          "svg"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.10.icon_contract_svg",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 31,
+      "gate": "conditional",
+      "status": "skipped",
+      "tool": {
+        "name": "verify_icon_contract",
+        "script": "skills/ppt-master/scripts/verify_icon_contract.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/verify_icon_contract.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--style-check",
+          "--write-report",
+          "--render",
+          "--render-backend",
+          "cairo",
+          "--hard-gate"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "condition_not_met"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.11.notes_total_md",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 32,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "inline",
+        "script": null
+      },
+      "invocation": {
+        "argv": []
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "id": "5.12.aggregate_repair_tasks",
+      "stage": "svg",
+      "stage_index": 5,
+      "seq": 33,
+      "gate": "hard",
+      "status": "skipped",
+      "tool": {
+        "name": "aggregate_repair_tasks",
+        "script": "skills/ppt-master/scripts/aggregate_repair_tasks.py"
+      },
+      "invocation": {
+        "argv": [
+          "/Volumes/DOC/ppt-master/.venv/bin/python",
+          "/Volumes/DOC/ppt-master/skills/ppt-master/scripts/aggregate_repair_tasks.py",
+          "/Volumes/DOC/ppt-master/skills/slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+          "--write-report",
+          "--enforce"
+        ]
+      },
+      "scope": {
+        "page_id": null,
+        "multi_page": false
+      },
+      "timing": {
+        "started_at": "2026-06-08T09:05:50Z",
+        "finished_at": "2026-06-08T09:05:50Z"
+      },
+      "result": {
+        "exit_code": 0,
+        "valid": true,
+        "skipped": true,
+        "skip_reason": "dry_run"
+      },
+      "outputs": {
+        "report_files": [],
+        "side_effect_files": []
+      },
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "agent_summary": {
+    "version": "1.0",
+    "workflow": "slide-image-rebuild",
+    "check": "strict_run_summary",
+    "run_id": "20260608T090550Z",
+    "generated_at": "2026-06-08T09:05:50Z",
+    "completed_at": "2026-06-08T09:05:50Z",
+    "valid": true,
+    "status": "completed",
+    "project": "slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk",
+    "failed_step_id": null,
+    "failed_stage": "svg",
+    "first_blocking_error_code": null,
+    "blocking_errors": [],
+    "warnings_count": 0,
+    "steps_total": 33,
+    "steps_passed": 0,
+    "steps_failed": 0,
+    "steps_skipped": 33,
+    "resolved": {
+      "rebuild_mode": "vector-hifi",
+      "export_mode": "hifi",
+      "precise_lock": false,
+      "render_enabled": true,
+      "preview_render_backend": "cairo",
+      "page_count": 1,
+      "pages": [
+        "01"
+      ]
+    },
+    "runner": {
+      "stage_requested": "svg",
+      "stage_reached": "svg",
+      "dry_run": true
+    },
+    "artifacts": {
+      "strict_run_report": "exports/qa/strict_run_report.json",
+      "strict_run_summary": "exports/qa/strict_run_summary.json"
+    },
+    "next_action": {
+      "reread": [],
+      "resume_stage": "svg",
+      "resume_command": "/Volumes/DOC/ppt-master/.venv/bin/python /Volumes/DOC/ppt-master/skills/ppt-master/scripts/run_slide_image_rebuild_strict.py --project slide-image-rebuild/fixtures/image_rebuild/preview_render_cjk --stage svg --export-mode hifi --render --skip-export"
+    }
+  }
+}

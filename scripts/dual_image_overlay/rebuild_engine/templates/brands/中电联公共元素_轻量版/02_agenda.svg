@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" data-brand-template="02_agenda">
+  <rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="0" y="82" width="1280" height="7" fill="#8B0000"/>
+  <text x="74" y="62" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="700" fill="#123B66">目录</text>
+  <text x="74" y="148" font-family="Microsoft YaHei, Arial, sans-serif" font-size="46" font-weight="700" fill="#1F2933">汇报目录</text>
+  <rect x="74" y="176" width="90" height="4" fill="#8B0000"/>
+  <g id="agenda-items">
+    {{AGENDA_ITEMS}}
+  </g>
+  <text x="74" y="648" font-family="Microsoft YaHei, Arial, sans-serif" font-size="16" fill="#60758A">中国电力企业联合会</text>
+</svg>

@@ -36,6 +36,16 @@ function normalizeValign(value) {
   return value || "top";
 }
 
+function normalizeShapeType(pptx, value) {
+  if (value === "ellipse") {
+    return pptx.ShapeType.ellipse;
+  }
+  if (value === "rect") {
+    return pptx.ShapeType.rect;
+  }
+  return pptx.ShapeType.rect;
+}
+
 async function main() {
   const jobPath = process.argv[2];
   if (!jobPath || jobPath === "--help" || jobPath === "-h") {
@@ -47,7 +57,7 @@ async function main() {
   }
 
   const job = readJob(jobPath);
-  const canvas = job.canvas || { width: 1280, height: 720 };
+  const canvas = job.canvas || { width: 1672, height: 941 };
   const slideSize = job.slide || { width_in: 13.333, height_in: 7.5 };
   requireFile(job.background, "background");
 
@@ -74,6 +84,18 @@ async function main() {
     h: Number(slideSize.height_in)
   });
 
+  for (const shape of job.shapes || []) {
+    const rect = pxBoxToInches(shape.bbox, canvas, slideSize);
+    slide.addShape(normalizeShapeType(pptx, shape.type), {
+      x: rect.x,
+      y: rect.y,
+      w: rect.w,
+      h: rect.h,
+      fill: { color: normalizeColor(shape.fill, "#0B3B75"), transparency: Number(shape.transparency || 0) },
+      line: { color: normalizeColor(shape.line || shape.fill || "#0B3B75"), transparency: Number(shape.lineTransparency || 100) }
+    });
+  }
+
   for (const box of job.boxes || []) {
     const rect = pxBoxToInches(box.bbox, canvas, slideSize);
     slide.addText(String(box.text || ""), {
@@ -90,6 +112,7 @@ async function main() {
       align: box.align || "left",
       valign: normalizeValign(box.v_align),
       fit: "shrink",
+      wrap: box.wrap === false ? false : true,
       breakLine: false
     });
   }

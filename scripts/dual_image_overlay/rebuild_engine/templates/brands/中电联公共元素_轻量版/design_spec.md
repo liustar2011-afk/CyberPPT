@@ -44,14 +44,16 @@ The red divider, gray page number, and logo colors are fixed only for the public
 
 Cover generation may use this background as an institutional base plate. It should add only project-specific text and restrained alignment aids when needed; do not add another logo, large decorative graphic, or unrelated visual motif over the existing watermark.
 
-## IV. Cover And Ending Templates
+## IV. Brand Page Templates
 
 | File | Purpose | Usage |
 |---|---|---|
 | `./01_cover.svg` | Brand cover page template | Replace `{{TITLE}}`, `{{SUBTITLE}}`, `{{AUTHOR}}`, and `{{DATE}}` with project-specific text. Keep the cover background, text regions, and local contrast rules. |
+| `./02_agenda.svg` | Brand agenda page template | Use for directory/table-of-contents pages. Replace `{{AGENDA_ITEMS}}` from detected section pages; ignore any generated content image for this page. |
+| `./03_section.svg` | Brand section-break page template | Use for chapter transition pages. Replace `{{SECTION_NO}}` and `{{SECTION_TITLE}}`; ignore any generated content image for this page. |
 | `./04_ending.svg` | Brand ending page template | Generic formal closing page with `感谢聆听` and `THANK YOU`. Use as the closing page unless the user explicitly requests a content-specific conclusion page. |
 
-These two page templates are borrowed from `templates/brands/中电联公司_现代能源科技/` as public cover/ending assets. They are part of the chrome-only brand boundary only for opening and closing pages; they must not lock body-page structure, body color palette, icon style, or chart styling.
+These page templates are part of the chrome-only brand boundary for non-content pages. They must not lock body-page structure, body color palette, icon style, or chart styling. During image-PPT export, cover, agenda, section-break, and ending pages are rendered from these templates even if a generated full image exists.
 
 ## V. Safety Regions
 
@@ -70,6 +72,8 @@ These two page templates are borrowed from `templates/brands/中电联公司_现
 | `./master_elements.svg` | Public page chrome | Red divider, top-right logo, gray page number. |
 | `./cover_bg.jpg` | Public cover base | Optional full-bleed cover background for formal CEC-facing decks; not a content style source. |
 | `./01_cover.svg` | Public cover template | Optional cover-page SVG skeleton with placeholders. |
+| `./02_agenda.svg` | Public agenda template | Optional directory-page SVG skeleton with generated section entries. |
+| `./03_section.svg` | Public section-break template | Optional chapter-transition SVG skeleton with chapter number and name. |
 | `./04_ending.svg` | Public ending template | Optional closing-page SVG skeleton. |
 | `./master_elements.reference.txt` | Text reference copy | Agent/tooling reference only. |
 | `./brand_rules.json` | Machine-readable chrome rules | Safety regions, master element geometry, and chrome-only policy. |
@@ -89,7 +93,7 @@ These two page templates are borrowed from `templates/brands/中电联公司_现
 
 When this brand is copied into `<project_path>/templates/`, Strategist must treat it as a chrome-only public-element preset:
 
-- Lock `master_elements.svg`, `logo.png`, `cover_bg.jpg`, `01_cover.svg`, `04_ending.svg`, `brand_rules.json`, protected regions, cover/ending template regions, cover base regions, and public chrome placement.
+- Lock `master_elements.svg`, `logo.png`, `cover_bg.jpg`, `01_cover.svg`, `02_agenda.svg`, `03_section.svg`, `04_ending.svg`, `brand_rules.json`, protected regions, non-content page template regions, cover base regions, and public chrome placement.
 - Do not treat this brand as a color, typography, icon, or voice truth source.
 - Generate the content palette and typography through the normal visual-style-driven confirmations.
 - When using `cover_bg.jpg`, place project text inside the declared cover regions and do not infer body-page colors from the cover image.

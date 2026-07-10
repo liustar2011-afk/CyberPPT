@@ -1,0 +1,206 @@
+{
+  "workflow": "slide-image-rebuild",
+  "version": "1.0",
+  "pages": [
+    {
+      "page_id": "01",
+      "regions": [
+        {
+          "id": "title",
+          "page_id": "01",
+          "bbox": [
+            88,
+            29,
+            1140,
+            47
+          ],
+          "draft_text": "6 电力领域数据基础设施为可靠性成果深化应用提供受控承接底座",
+          "role": "title",
+          "final_treatment": "editable_text",
+          "background_action": "remove_text_underlay",
+          "reason": ""
+        },
+        {
+          "id": "guidance",
+          "page_id": "01",
+          "bbox": [
+            94,
+            116,
+            1132,
+            52
+          ],
+          "draft_text": "电力领域数据基础设施在可靠性场景中的价值，体现在把可靠性资源、规则、授权、计算、结果和反馈统一组织起来，形成边界清晰、过程留痕、结果可用的运行机制。",
+          "role": "body",
+          "final_treatment": "editable_text",
+          "background_action": "remove_text_underlay",
+          "reason": ""
+        },
+        {
+          "id": "footer",
+          "page_id": "01",
+          "bbox": [
+            94,
+            566,
+            1084,
+            44
+          ],
+          "draft_text": "数据基础设施解决的不是“拿数据”，而是把可靠性成果在安全边界内组织成可运行、可复用、可交付的场景机制。",
+          "role": "footer",
+          "final_treatment": "editable_text",
+          "background_action": "remove_text_underlay",
+          "reason": ""
+        },
+        {
+          "id": "stage_1_header",
+          "page_id": "01",
+          "bbox": [
+            38,
+            207,
+            231,
+            58
+          ],
+          "draft_text": "资源目录化",
+          "role": "heading",
+          "final_treatment": "editable_text",
+          "background_action": "none",
+          "reason": ""
+        },
+        {
+          "id": "stage_1_body",
+          "page_id": "01",
+          "bbox": [
+            38,
+            277,
+            231,
+            252
+          ],
+          "draft_text": "建立可靠性数据目录、指标目录、规则目录、成果目录和产品目录，明确资源来源、责任主体、质量状态、授权状态和适用场景。",
+          "role": "body",
+          "final_treatment": "editable_text",
+          "background_action": "remove_text_underlay",
+          "reason": ""
+        },
+        {
+          "id": "stage_2_header",
+          "page_id": "01",
+          "bbox": [
+            281,
+            207,
+            231,
+            58
+          ],
+          "draft_text": "规则工程化",
+          "role": "heading",
+          "final_treatment": "editable_text",
+          "background_action": "none",
+          "reason": ""
+        },
+        {
+          "id": "stage_2_body",
+          "page_id": "01",
+          "bbox": [
+            281,
+            277,
+            231,
+            252
+          ],
+          "draft_text": "把指标口径、评价规程、采集规范、质量校核逻辑转化为字段、规则、模板和计算流程。",
+          "role": "body",
+          "final_treatment": "editable_text",
+          "background_action": "remove_text_underlay",
+          "reason": ""
+        },
+        {
+          "id": "stage_3_header",
+          "page_id": "01",
+          "bbox": [
+            524,
+            207,
+            231,
+            58
+          ],
+          "draft_text": "受控计算",
+          "role": "heading",
+          "final_treatment": "editable_text",
+          "background_action": "none",
+          "reason": ""
+        },
+        {
+          "id": "stage_3_body",
+          "page_id": "01",
+          "bbox": [
+            524,
+            277,
+            231,
+            252
+          ],
+          "draft_text": "支持汇总统计、规则计算、质量校核、本地计算、可信执行和结果生成，敏感明细保持在原有管理边界内。",
+          "role": "body",
+          "final_treatment": "editable_text",
+          "background_action": "remove_text_underlay",
+          "reason": ""
+        },
+        {
+          "id": "stage_4_header",
+          "page_id": "01",
+          "bbox": [
+            768,
+            207,
+            231,
+            58
+          ],
+          "draft_text": "结果出证",
+          "role": "heading",
+          "final_treatment": "editable_text",
+          "background_action": "none",
+          "reason": ""
+        },
+        {
+          "id": "stage_4_body",
+          "page_id": "01",
+          "bbox": [
+            768,
+            277,
+            231,
+            252
+          ],
+          "draft_text": "输出分析报告、专题评价、诊断结论、风险标签和核验结果，通过版本留痕和出证审计保障可复核。",
+          "role": "body",
+          "final_treatment": "editable_text",
+          "background_action": "remove_text_underlay",
+          "reason": ""
+        },
+        {
+          "id": "stage_5_header",
+          "page_id": "01",
+          "bbox": [
+            1011,
+            207,
+            231,
+            58
+          ],
+          "draft_text": "服务运营",
+          "role": "heading",
+          "final_treatment": "editable_text",
+          "background_action": "none",
+          "reason": ""
+        },
+        {
+          "id": "stage_5_body",
+          "page_id": "01",
+          "bbox": [
+            1011,
+            277,
+            231,
+            252
+          ],
+          "draft_text": "将服务反馈、整改结果、案例复盘回流到指标基准库、规则模型库、案例知识库和产品库。",
+          "role": "body",
+          "final_treatment": "editable_text",
+          "background_action": "remove_text_underlay",
+          "reason": ""
+        }
+      ]
+    }
+  ]
+}

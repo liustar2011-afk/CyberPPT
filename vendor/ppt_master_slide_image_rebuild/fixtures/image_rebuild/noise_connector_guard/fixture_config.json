@@ -1,0 +1,4 @@
+{
+  "rebuild2": false,
+  "purpose": "Guard visual-noise handling and connector marker purity for slide-image rebuild."
+}

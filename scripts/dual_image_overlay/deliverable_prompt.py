@@ -6,9 +6,15 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from scripts.dual_image_overlay.style_library import default_style_choices, load_style_lock
 
 
 PAGE_HEADING_RE = re.compile(
@@ -21,6 +27,7 @@ QUOTED_EVIDENCE_LABEL_RE = re.compile(r"标签[\"“']?\s*[（(]E\d+.*?[)）][\"
 COMPONENT_PREFIX_RE = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+[（(].*?[)）]\s*[—-]+")
 COMPONENT_PREFIX_SIMPLE_RE = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+[：:]\s*")
 COMPONENT_LINE_RE = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+")
+PAGE_TYPE_LINE_RE = re.compile(r"^页面类型\s*[:：]\s*(?P<page_type>.+?)\s*$")
 TITLE_REFERENCE_RE = re.compile(r"本页结论标题.*")
 TEMPLATE_TITLE_RE = re.compile(r"本页结论标题[^\"“”]*[\"“](?P<title>[^\"”]+)[\"”]")
 TEMPLATE_TITLE_MAX_CHARS = 42
@@ -132,6 +139,8 @@ def _drop_line(line: str) -> bool:
         return True
     if FENCE_RE.match(stripped):
         return True
+    if PAGE_TYPE_LINE_RE.match(stripped):
+        return True
     if re.match(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+", stripped) and (
         "——" in stripped or "标签" in stripped or "下方" in stripped or "主体" in stripped or "（" in stripped
     ):
@@ -172,6 +181,8 @@ def visible_deliverable_lines(page: PageBlock) -> list[str]:
 def _clean_structure_directive(line: str) -> str:
     line = line.strip()
     line = TITLE_REFERENCE_RE.sub("", line)
+    line = re.sub(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+", "", line)
+    line = re.sub(r"^[（(]([^）)]+)[）)]\s*[—-]*\s*", r"\1，", line)
     line = re.sub(r"，?\s*右下角小标签[\"“']?\s*[（(]E\d+.*?[)）][\"”']?", "", line)
     line = re.sub(r"，?\s*标签[\"“']?\s*[（(]E\d+.*?[)）][\"”']?", "", line)
     line = QUOTED_EVIDENCE_LABEL_RE.sub("", line)
@@ -201,6 +212,16 @@ def layout_density_directives(page: PageBlock) -> list[str]:
             directives.append(cleaned)
             seen.add(key)
     return directives
+
+
+def page_type_directive(page: PageBlock) -> str:
+    """Return a non-visible page-type instruction for ImageGen composition."""
+
+    for raw in page.text.splitlines():
+        match = PAGE_TYPE_LINE_RE.match(raw.strip())
+        if match:
+            return match.group("page_type").strip()
+    return "内容页"
 
 
 def template_title(page: PageBlock) -> str:
@@ -238,45 +259,74 @@ def _extract_hex_colors(text: str) -> list[str]:
     return colors
 
 
+def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
+    style = payload.get("style")
+    if not isinstance(style, dict):
+        return None
+    colors = style.get("colors") if isinstance(style.get("colors"), dict) else {}
+    color_values = [
+        ("背景", colors.get("background")),
+        ("标题", colors.get("title")),
+        ("正文", colors.get("body")),
+        ("强调", colors.get("accent")),
+    ]
+    color_text = "，".join(f"{label}{value}" for label, value in color_values if value)
+    style_name = _collapse_text(style.get("name")) or "项目视觉锁定"
+    return (
+        f"视觉锁定：{style_name}；{color_text or '按锁定色板执行'}。"
+        "采用正式内部汇报语气、清晰层级、克制图形和紧凑信息密度；"
+        "版式必须服从本页内容锁定和构图要求。"
+    )
+
+
 def style_contract(style_lock_path: Path | None) -> str:
     if style_lock_path is None:
-        return (
-            "采用正式咨询汇报成稿风格：浅灰白连续纸面、墨绿强调、细线分隔、"
-            "规则几何容器、克制图标、清晰留白。"
+        raise ValueError(
+            "missing visual style lock. 直接上传脚本转换前必须先选择 CyberPPT 默认 8 种风格之一，"
+            "或传入 --style-lock。可用选项：\n" + default_style_choices()
         )
+    try:
+        payload = load_style_lock(style_lock_path)
+    except json.JSONDecodeError:
+        payload = {}
+    if payload:
+        contract = _style_contract_from_payload(payload)
+        if contract:
+            return contract
     text = style_lock_path.read_text(encoding="utf-8")
     colors = _extract_hex_colors(text)
-    color_text = "、".join(colors[:8]) if colors else "#F2F3EF、#1F5B4D、#333333、#D7D9D3"
+    color_text = "、".join(colors[:8]) if colors else "以该视觉锁定文件为准"
     return (
-        "沿用项目视觉锁定，不使用外部风格 preset。"
-        f"核心色板：{color_text}。"
-        "页面应是最终交付成稿：连续纸面、墨绿结论锚点、细线分隔、规则信息容器、"
-        "低干扰图标和企业汇报质感。"
+        f"视觉锁定：核心色板 {color_text}。"
+        "采用正式内部汇报语气、清晰层级、克制图形和紧凑信息密度；"
+        "版式必须服从本页内容锁定和构图要求。"
     )
 
 
 def render_prompt(page: PageBlock, *, style_lock_path: Path | None = None) -> str:
     body = "\n".join(f"- {line}" for line in visible_deliverable_lines(page))
     layout_directives = "\n".join(f"- {line}" for line in layout_density_directives(page))
+    page_type = page_type_directive(page)
     return f"""## 第{page.page_number}页：{template_title(page)}
+
+【页面类型】
+本页类型：{page_type}。此信息只用于构图，不得作为页面可见文字。
 
 【内容锁定】
 {body}
 
 【构图指令】
-生成一张面向最终客户交付的 PPT 正文内容区成稿图，不是蓝图、草稿、过程说明页、复刻中间产物或调试预览图。
-
-只生成正文内容区画面。不要生成页面标题、副标题、Logo、页脚、页码、母版红线、公共元素、临时占位元素或任何完整 PPT 外框；这些由 PPT 模板/母版和可编辑文字层生成。上方 Markdown 页标题只供模板层提取，不属于图片内容。
-
-不得出现证据编号、来源编号、过程性注释、脚注、口径说明、参考来源、调试标记、占位符、乱码、水印，或任何面向制作过程而非最终受众的文字。
+生成正式内部汇报的正文内容区成稿图。
+仅生成正文内容区；模板标题、页眉页脚、页码、Logo 和公共外框不绘制。
+不得出现证据编号、来源、脚注、制作注释、占位符、乱码或水印。
 
 {style_contract(style_lock_path)}
 
 【结构密度】
-必须保持高信息密度，不能把页面简化成少量留白卡片。保留原脚本组件数量、组件关系、网格/流程/卡片结构和底部 SO WHAT 区。下列正文内容要进入画面，但不包含页面标题、副标题、Logo、页脚、页码或公共模板元素；不得遗漏关键数字、判断句、清单项或行动链。
+保持高信息密度，完整保留本页内容、关键数字、判断句、清单项和结构关系；不得擅自合并、删减或改写业务术语。
 {layout_directives}
 
-把正文内容组织为正式汇报页的信息图结构：一个清晰主判断区、若干业务要点/结构模块、一个醒目的 SO WHAT 或行动提示。所有文字承载区必须干净、留白充分、可被后续 PPT 文本层覆盖；图形关系、容器、图标和连接线应边界清楚，适合作为无字背景保留。
+图形关系、容器和连接线边界清楚，文字清晰可读；页面类型不得改作通用内容页。
 """.strip() + "\n"
 
 

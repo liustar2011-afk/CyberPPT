@@ -19,9 +19,14 @@ if __package__ in {None, ""}:
 
 from .background_text_scan import scan_background_text
 from .alignment import AlignmentTransform, estimate_alignment
+from .container_workspace import build_container_workspace, write_container_workspace
 from .layout_qa import check_layout
-from .normalize import normalize_image
+from .normalize import CANVAS, normalize_image
+from .office_textbox_fit import apply_office_textbox_fit
+from .qa_registry import write_page_quality_report
+from .render_compare_flow import attach_render_compare_measurement, run_render_compare_for_page
 from .semantic_plan import load_semantic_plan
+from .semantic_typography_qa import apply_semantic_typography_qa
 from .source_capture import (
     attach_render_delta_measurement,
     build_source_capture,
@@ -29,6 +34,8 @@ from .source_capture import (
     expected_texts_from_source_capture,
 )
 from .text_content_qa import build_text_content_qa
+from .workspace_assignment import build_workspace_assignment, write_workspace_assignment
+from scripts.visual_registry_from_source_capture import build_registries, write_registries
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -96,11 +103,11 @@ def _render_pptx_preview(pptx_path: Path, exports: Path) -> Path:
 def _build_side_by_side(reference: Path, rendered: Path, target: Path) -> None:
     target.parent.mkdir(parents=True, exist_ok=True)
     with Image.open(reference) as left_source, Image.open(rendered) as right_source:
-        left = left_source.convert("RGB").resize((1280, 720), Image.Resampling.LANCZOS)
-        right = right_source.convert("RGB").resize((1280, 720), Image.Resampling.LANCZOS)
-        canvas = Image.new("RGB", (2560, 720), "#FFFFFF")
+        left = left_source.convert("RGB").resize(CANVAS, Image.Resampling.LANCZOS)
+        right = right_source.convert("RGB").resize(CANVAS, Image.Resampling.LANCZOS)
+        canvas = Image.new("RGB", (CANVAS[0] * 2, CANVAS[1]), "#FFFFFF")
         canvas.paste(left, (0, 0))
-        canvas.paste(right, (1280, 0))
+        canvas.paste(right, (CANVAS[0], 0))
         canvas.save(target)
 
 
@@ -147,6 +154,8 @@ def _source_capture_text_mapping(page_number: int, boxes: list[dict]) -> dict:
                 "fill": box["fill"],
                 "font_weight": "700" if box.get("bold") else "400",
                 "align": box.get("align"),
+                "container_id": box.get("container_id"),
+                "role": box.get("role"),
                 "word_wrap": "\n" in str(box.get("text", "")),
                 "source": "semantic_plan",
                 "confidence": 1.0,
@@ -199,8 +208,8 @@ def _source_capture_pair_manifest(page_number: int, full: Path, background: Path
     return {
         "schema": "cyberppt.dual_image.page_image_pairs.v1",
         "generation_contract": {
-            "slide_canvas": {"width": 1280, "height": 720},
-            "brand_body_region": {"x": 0, "y": 0, "width": 1280, "height": 720},
+            "slide_canvas": {"width": CANVAS[0], "height": CANVAS[1]},
+            "brand_body_region": {"x": 0, "y": 0, "width": CANVAS[0], "height": CANVAS[1]},
         },
         "pairs": [
             {
@@ -209,13 +218,13 @@ def _source_capture_pair_manifest(page_number: int, full: Path, background: Path
                     "filename": full.name,
                     "path": str(full),
                     "status": "ready",
-                    "image_size": {"width": 1280, "height": 720},
+                    "image_size": {"width": CANVAS[0], "height": CANVAS[1]},
                 },
                 "background": {
                     "filename": background.name,
                     "path": str(background),
                     "status": "ready",
-                    "image_size": {"width": 1280, "height": 720},
+                    "image_size": {"width": CANVAS[0], "height": CANVAS[1]},
                 },
             }
         ],
@@ -249,6 +258,18 @@ def _write_source_capture_inputs(
     )
 
 
+def _write_draft_visual_registry_if_needed(out_dir: Path, source_capture: dict) -> tuple[Path | None, bool]:
+    if source_capture.get("inputs", {}).get("visual_registry_elements", 0):
+        registry_dir = source_capture.get("inputs", {}).get("visual_registry_dir")
+        return Path(registry_dir) if isinstance(registry_dir, str) and registry_dir else None, False
+    registries = build_registries(source_capture)
+    if not any(int(registry.get("element_count", 0) or 0) for registry in registries):
+        return None, False
+    registry_dir = out_dir / "analysis" / "visual_registry"
+    write_registries(registries, registry_dir)
+    return registry_dir, True
+
+
 def _alignment_layout(plan) -> dict:
     return {
         "items": [
@@ -278,8 +299,8 @@ def build_page(args: argparse.Namespace) -> dict:
     normalized = out_dir / "normalized"
     analysis = out_dir / "analysis"
     exports = out_dir / "exports"
-    full_norm = normalized / "full-1280x720.png"
-    background_norm = normalized / "background-1280x720.png"
+    full_norm = normalized / f"full-{CANVAS[0]}x{CANVAS[1]}.png"
+    background_norm = normalized / f"background-{CANVAS[0]}x{CANVAS[1]}.png"
 
     normalize_image(args.full.resolve(), full_norm)
     normalize_image(args.background.resolve(), background_norm)
@@ -308,6 +329,36 @@ def build_page(args: argparse.Namespace) -> dict:
     boxes = _render_boxes(plan)
     if args.align_from_full:
         boxes = _apply_transform_to_boxes(boxes, transform)
+    boxes, semantic_typography_qa = apply_semantic_typography_qa(
+        boxes,
+        report_path=analysis / "semantic_typography_qa.json",
+    )
+    container_workspace = build_container_workspace(
+        page_number=args.page_number,
+        containers=list(plan.containers),
+        text_items=boxes,
+        stage="overlay",
+        background_image=background_norm,
+    )
+    container_workspace_path = analysis / "container_workspace" / f"page_{args.page_number:03d}_container_workspace.json"
+    write_container_workspace(container_workspace_path, container_workspace)
+    workspace_assignment = build_workspace_assignment(
+        page_number=args.page_number,
+        workspace=container_workspace,
+        text_items=boxes,
+        stage="overlay",
+    )
+    workspace_assignment_path = (
+        analysis / "workspace_assignment" / f"page_{args.page_number:03d}_workspace_assignment.json"
+    )
+    write_workspace_assignment(workspace_assignment_path, workspace_assignment)
+    boxes, office_textbox_fit = apply_office_textbox_fit(
+        boxes,
+        canvas={"width": CANVAS[0], "height": CANVAS[1]},
+        background_image=background_norm,
+        workspace_assignment=workspace_assignment,
+        report_path=analysis / "office_textbox_fit.json",
+    )
     _write_source_capture_inputs(
         out_dir,
         page_number=args.page_number,
@@ -317,24 +368,32 @@ def build_page(args: argparse.Namespace) -> dict:
         background_norm=background_norm,
     )
     source_capture = build_source_capture(out_dir)
+    draft_visual_registry_dir, draft_visual_registry_generated = _write_draft_visual_registry_if_needed(
+        out_dir,
+        source_capture,
+    )
+    if draft_visual_registry_generated:
+        source_capture = build_source_capture(out_dir, visual_registry_dir=draft_visual_registry_dir)
     _write_json(analysis / "source_capture.json", source_capture)
     source_capture_gate = build_source_capture_gate(source_capture)
     _write_json(analysis / "source_capture_gate.json", source_capture_gate)
     mapping = {
         "schema": "cyberppt.dual_image.text_mapping.v1",
         "delivery_mode": "dual_image_editable_overlay",
-        "canvas": {"width": 1280, "height": 720},
+        "canvas": {"width": CANVAS[0], "height": CANVAS[1]},
         "background": str(background_norm),
         "semantic_plan": str(args.semantic_plan.resolve()),
         "geometry_source": geometry_source,
         "alignment": transform.to_dict(),
+        "semantic_typography_qa": str(analysis / "semantic_typography_qa.json"),
+        "office_textbox_fit": str(analysis / "office_textbox_fit.json"),
         "boxes": boxes,
     }
     _write_json(analysis / "text_mapping.json", mapping)
 
     pptx_path = exports / "page.pptx"
     job = {
-        "canvas": {"width": 1280, "height": 720},
+        "canvas": {"width": CANVAS[0], "height": CANVAS[1]},
         "slide": {"width_in": 13.333, "height_in": 7.5},
         "background": str(background_norm),
         "output_pptx": str(pptx_path),
@@ -358,10 +417,27 @@ def build_page(args: argparse.Namespace) -> dict:
         "reason": "render_preview_not_requested",
         "artifacts": {},
     }
+    render_compare = {
+        "available": False,
+        "skipped": True,
+        "reason": "render_preview_not_requested",
+    }
     if args.render_preview:
         rendered_png = _render_pptx_preview(pptx_path, exports)
         side_by_side = exports / "side-by-side.png"
         _build_side_by_side(full_norm, rendered_png, side_by_side)
+        registry_dir_for_compare = draft_visual_registry_dir
+        if registry_dir_for_compare is None:
+            raw_registry_dir = source_capture.get("inputs", {}).get("visual_registry_dir")
+            if isinstance(raw_registry_dir, str) and raw_registry_dir:
+                registry_dir_for_compare = Path(raw_registry_dir)
+        render_compare = run_render_compare_for_page(
+            blueprint=full_norm,
+            rendered=rendered_png,
+            registry_dir=registry_dir_for_compare,
+            page_number=args.page_number,
+            analysis_dir=analysis,
+        )
         visual_preview = {
             "valid": True,
             "skipped": False,
@@ -369,16 +445,68 @@ def build_page(args: argparse.Namespace) -> dict:
             "artifacts": {
                 "ppt_render": str(rendered_png),
                 "side_by_side": str(side_by_side),
+                "render_compare": render_compare.get("report_path"),
+                "measured_visual_registry": render_compare.get("measured_registry_dir"),
             },
         }
-        source_capture = attach_render_delta_measurement(
-            source_capture,
-            rendered_preview=str(rendered_png),
-        )
+        measured_registry_dir = render_compare.get("measured_registry_dir")
+        if isinstance(measured_registry_dir, str) and measured_registry_dir:
+            source_capture = build_source_capture(out_dir, visual_registry_dir=Path(measured_registry_dir))
+            source_capture = attach_render_compare_measurement(
+                source_capture,
+                rendered_preview=str(rendered_png),
+                render_compare=render_compare,
+            )
+        else:
+            source_capture = attach_render_delta_measurement(
+                source_capture,
+                rendered_preview=str(rendered_png),
+            )
         _write_json(analysis / "source_capture.json", source_capture)
         source_capture_gate = build_source_capture_gate(source_capture)
         _write_json(analysis / "source_capture_gate.json", source_capture_gate)
     _write_json(analysis / "visual_preview.json", visual_preview)
+
+    qa_artifacts = {
+        "layout_qa": str(analysis / "layout_qa.json"),
+        "text_content_qa": str(analysis / "text_content_qa.json"),
+        "semantic_typography_qa": str(analysis / "semantic_typography_qa.json"),
+        "office_textbox_fit": str(analysis / "office_textbox_fit.json"),
+        "container_workspace": str(container_workspace_path),
+        "workspace_assignment": str(workspace_assignment_path),
+        "background_text_scan": str(analysis / "background_text_scan.json"),
+        "source_capture_gate": str(analysis / "source_capture_gate.json"),
+        "draft_visual_registry": str(draft_visual_registry_dir)
+        if draft_visual_registry_generated and draft_visual_registry_dir
+        else None,
+        "render_compare": render_compare.get("report_path"),
+        "measured_visual_registry": render_compare.get("measured_registry_dir"),
+        "visual_preview": str(analysis / "visual_preview.json"),
+        "pptx": str(pptx_path),
+    }
+    page_quality_report = write_page_quality_report(
+        analysis / "page_quality_report.json",
+        stage="overlay",
+        page_number=args.page_number,
+        project_path=out_dir,
+        artifacts=qa_artifacts,
+        reports={
+            "layout_qa": layout_qa,
+            "text_content_qa": text_content_qa,
+            "semantic_typography_qa": semantic_typography_qa,
+            "office_textbox_fit": office_textbox_fit,
+            "container_workspace": container_workspace,
+            "workspace_assignment": workspace_assignment,
+            "background_text_scan": background_scan,
+            "source_capture_gate": source_capture_gate,
+            "render_compare": render_compare,
+            "visual_preview": visual_preview,
+        },
+        extra={
+            "geometry_source": geometry_source,
+            "alignment": transform.to_dict(),
+        },
+    )
 
     structural_valid = bool(layout_qa["valid"] and text_content_qa["valid"] and background_scan["valid"])
     human_visual_review_pass = False
@@ -404,8 +532,11 @@ def build_page(args: argparse.Namespace) -> dict:
             "source_capture_available": bool(source_capture["pages"]),
             "source_capture_consumed": True,
             "source_capture_gate_pass": bool(source_capture_gate["valid"]),
+            "draft_visual_registry_generated": draft_visual_registry_generated,
+            "render_compare_consumed": bool(render_compare.get("available")),
             "source_capture_text_drives_qa": True,
             "source_capture_gaps_resolved": bool(source_capture_gate["checks"]["capture_gaps_resolved"]),
+            "page_quality_report_pass": bool(page_quality_report["valid"]),
         },
         "source_capture_gate": source_capture_gate,
         "geometry_source": geometry_source,
@@ -422,11 +553,22 @@ def build_page(args: argparse.Namespace) -> dict:
             "text_mapping": str(analysis / "text_mapping.json"),
             "text_content_qa": str(analysis / "text_content_qa.json"),
             "layout_qa": str(analysis / "layout_qa.json"),
+            "semantic_typography_qa": str(analysis / "semantic_typography_qa.json"),
+            "container_workspace": str(container_workspace_path),
+            "workspace_assignment": str(workspace_assignment_path),
             "background_text_scan": str(analysis / "background_text_scan.json"),
             "visual_preview": str(analysis / "visual_preview.json"),
             "source_capture": str(analysis / "source_capture.json"),
             "source_capture_gate": str(analysis / "source_capture_gate.json"),
+            "draft_visual_registry": str(draft_visual_registry_dir)
+            if draft_visual_registry_generated and draft_visual_registry_dir
+            else None,
+            "render_compare": render_compare.get("report_path"),
+            "measured_visual_registry": render_compare.get("measured_registry_dir"),
+            "page_quality_report": str(analysis / "page_quality_report.json"),
         },
+        "semantic_typography_qa": semantic_typography_qa,
+        "page_quality_report": page_quality_report,
     }
     _write_json(analysis / "production_readiness.json", readiness)
     return readiness

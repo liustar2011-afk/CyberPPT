@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "adapter": {
+    "source": "ppt-master/layout_reference",
+    "adapter_version": "0.1.0",
+    "quality_mode": "balanced",
+    "warnings": []
+  },
+  "canvas": {
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "background": "#FFFFFF"
+  },
+  "quality_mode": "balanced",
+  "assets": [],
+  "elements": []
+}

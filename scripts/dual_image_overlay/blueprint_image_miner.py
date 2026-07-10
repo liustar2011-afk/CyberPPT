@@ -10,8 +10,8 @@ from typing import Any
 from PIL import Image
 
 
-CANVAS_W = 1280
-CANVAS_H = 720
+CANVAS_W = 1672
+CANVAS_H = 941
 
 
 def _page_number_from_name(name: str) -> int | None:

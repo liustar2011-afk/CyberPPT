@@ -1,0 +1,14 @@
+{
+  "purpose": "Intake preprocess enabled without source_meta emits manifest warning.",
+  "layout_reference": false,
+  "manifest_stage": "intake",
+  "expected_warning_codes": [
+    "preprocess_meta_missing"
+  ],
+  "crop_intake_summary": true,
+  "expected_crop_candidates_total": 1,
+  "layout_reference_to_layout_plan": true,
+  "expected_layout_plan_elements_min": 0,
+  "strict_runner": true,
+  "strict_runner_stage": "intake"
+}

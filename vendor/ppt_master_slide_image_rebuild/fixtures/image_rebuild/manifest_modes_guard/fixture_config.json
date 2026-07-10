@@ -1,0 +1,5 @@
+{
+  "purpose": "Guard explicit rebuild_mode and pptx_export_mode split in slide-image rebuild manifests.",
+  "layout_reference": false,
+  "manifest_stage": "intake"
+}

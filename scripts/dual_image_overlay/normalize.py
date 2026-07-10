@@ -6,7 +6,7 @@ from typing import Sequence
 from PIL import Image
 
 
-CANVAS = (1280, 720)
+CANVAS = (1672, 941)
 
 
 def scale_bbox(

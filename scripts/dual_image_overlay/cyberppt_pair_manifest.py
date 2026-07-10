@@ -30,12 +30,15 @@ from scripts.dual_image_overlay.deliverable_prompt import (
     parse_page_blocks,
     parse_pages,
 )
+from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
-CANVAS = {"width": 1280, "height": 720}
-CONTENT_REGION = {"x": 20, "y": 104, "width": 1240, "height": 592}
-GENERATION_SIZE = {"width": 2480, "height": 1184}
-OUTPUT_VARIANTS = ["full", "background"]
+CANVAS = {"width": 1672, "height": 941}
+CONTENT_REGION = {"x": 26, "y": 136, "width": 1619, "height": 774}
+GENERATION_SIZE = {"width": 1672, "height": 941}
+OUTPUT_VARIANTS = ["full"]
+FULL_GENERATION_METHOD = "text_to_image_generate_full"
+BACKGROUND_GENERATION_METHOD = "image_to_image_edit_from_full"
 BLUEPRINT_PATTERNS = (
     "slide-{page:03d}-blueprint.png",
     "slide-{page:02d}-blueprint.png",
@@ -109,45 +112,37 @@ def build_manifest(
         page = compiled_pages[page_number]
         stem = _page_stem(page_number, page.title)
         full_path = output_dir / f"{stem}_full.png"
-        background_path = output_dir / f"{stem}_background.png"
         full = {
             "filename": full_path.name,
             "path": str(full_path),
             "prompt": page.text,
-            "aspect_ratio": "content-region",
-            "image_size": "2x-content-region",
-            "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
-        }
-        background = {
-            "filename": background_path.name,
-            "path": str(background_path),
-            "prompt": _background_prompt(page_number),
+            "generation_method": FULL_GENERATION_METHOD,
+            "operation": "generate",
+            "output_role": "full_textual_visual_reference",
             "aspect_ratio": "content-region",
             "image_size": "2x-content-region",
             "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
         }
         _mark_status(full, force_pending=force_pending)
-        _mark_status(background, force_pending=force_pending)
         pairs.append(
             {
                 "page_number": page_number,
                 "title": page.title,
                 "page_script": page.text,
                 "full": full,
-                "background": background,
             }
         )
 
     manifest = {
-        "mode": "cyberppt-dual-image-pair",
+        "mode": "cyberppt-full-image-only",
         "output_variants": OUTPUT_VARIANTS,
         "generation_contract": {
-            "mode": "template-content-region",
+            "mode": "full-image-only",
             "owner": "CyberPPT",
             "slide_canvas": CANVAS,
             "content_region": CONTENT_REGION,
             "generation_size": GENERATION_SIZE,
-            "rule": "Generate content-area images only; PPT title, subtitle and enterprise chrome are handled by template/export code.",
+            "rule": "Generate full content-area images only; PPT title, subtitle and enterprise chrome are handled by template/export code. OCR, overlay, background derivation and template-rebuild are not part of Stage 02.",
         },
         "project_path": str(project_path.resolve()) if project_path else "",
         "source_script": str(compiled_script.resolve()),
@@ -164,17 +159,29 @@ def build_manifest(
 
 def require_generated(manifest: dict[str, Any]) -> None:
     missing: list[str] = []
+    contract_errors: list[str] = []
     for pair in manifest.get("pairs", []):
+        page_number = pair.get("page_number", "?")
+        full_item = pair.get("full") or {}
+        full_path_value = str(full_item.get("path", ""))
+        if full_item.get("generation_method") != FULL_GENERATION_METHOD:
+            contract_errors.append(
+                f"page {page_number} full.generation_method must be {FULL_GENERATION_METHOD}"
+            )
         for variant in OUTPUT_VARIANTS:
             item = pair.get(variant) or {}
             path = Path(str(item.get("path", "")))
             if not path.is_file() or path.stat().st_size <= 0:
                 missing.append(str(path))
+    if contract_errors:
+        raise ValueError(
+            "CyberPPT full-image contract violation. Stage 02 only accepts generated full images.\n"
+            + "\n".join(contract_errors)
+        )
     if missing:
         raise FileNotFoundError(
-            "CyberPPT image files are not generated yet. Promote approved blueprints to full images "
-            "with --promote-blueprints-from, generate no-text background images from each full image, "
-            "then rerun with --resume.\nMissing:\n"
+            "CyberPPT full image files are not generated yet. Generate each full image from the "
+            "manifest full.prompt, then rerun with --require-images.\nMissing:\n"
             + "\n".join(missing)
         )
 
@@ -236,6 +243,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--project-path", type=Path)
     parser.add_argument("--style-lock", type=Path)
+    parser.add_argument("--style-id", type=int, choices=range(1, 9), metavar="1-8")
+    parser.add_argument("--style-name")
     parser.add_argument("--resume", action="store_true", help="Reuse existing images in output-dir if present.")
     parser.add_argument("--force", action="store_true", help="Mark images pending and overwrite copied cache images.")
     parser.add_argument("--require-generated", action="store_true", help="Fail if full/background images are missing.")
@@ -258,12 +267,25 @@ def main(argv: Sequence[str] | None = None) -> int:
             force=args.force,
         )
 
+    style_lock = args.style_lock.resolve() if args.style_lock else None
+    if style_lock is not None and (args.style_id is not None or args.style_name):
+        raise ValueError("--style-lock cannot be combined with --style-id or --style-name")
+    if style_lock is None:
+        if args.project_path is None:
+            raise ValueError("--project-path is required when selecting a default CyberPPT style")
+        style_lock = write_project_style_lock(
+            project=args.project_path.resolve(),
+            style_id=args.style_id,
+            style_name=args.style_name,
+            source_script=args.script.resolve(),
+        )
+
     manifest, manifest_path, compiled_script, page_numbers = build_manifest(
         script=args.script.resolve(),
         pages_raw=args.pages,
         output_dir=args.output_dir.resolve(),
         project_path=args.project_path.resolve() if args.project_path else None,
-        style_lock=args.style_lock.resolve() if args.style_lock else None,
+        style_lock=style_lock,
         force_pending=bool(args.force and not args.resume),
     )
     if args.require_generated:

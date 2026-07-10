@@ -22,7 +22,7 @@ from urllib import error, request
 
 
 DEFAULT_MODEL = "gpt-image-2"
-DEFAULT_SIZE = "1280x720"
+DEFAULT_SIZE = "1672x941"
 DEFAULT_QUALITY = "high"
 DEFAULT_OUTPUT_FORMAT = "png"
 DEFAULT_TIMEOUT = 600
@@ -169,7 +169,7 @@ def validate_gpt_image_2_size(size: str) -> None:
         return
     parsed = _parse_size(size)
     if parsed is None:
-        _die("size must be auto or WIDTHxHEIGHT, for example 1280x720.")
+        _die("size must be auto or WIDTHxHEIGHT, for example 1672x941.")
     width, height = parsed
     max_edge = max(width, height)
     min_edge = min(width, height)

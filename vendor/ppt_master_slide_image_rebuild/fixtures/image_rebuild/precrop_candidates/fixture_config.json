@@ -1,0 +1,9 @@
+{
+  "purpose": "Decorative crop candidate precrop writes PNG when policy passes.",
+  "layout_reference": false,
+  "rebuild2": false,
+  "manifest_stage": "intake",
+  "precrop_layout_candidates": true,
+  "expected_precrop_items": 1,
+  "cleanup_precrop_outputs": true
+}

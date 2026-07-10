@@ -1,0 +1,22 @@
+{
+  "workflow": "slide-image-rebuild",
+  "version": "1.0",
+  "rebuild_mode": "vector-hifi",
+  "pptx_export_mode": "hifi",
+  "crops": [
+    {
+      "id": "P01_card_body_crop",
+      "page_id": "P01",
+      "href": "../images/crop_P01_card_body.png",
+      "bbox": [100, 100, 420, 180],
+      "area_ratio": 0.082,
+      "crop_role": "card_body",
+      "source_kind": "crop",
+      "risk_flags": [],
+      "contains_text": false,
+      "text_removed": false,
+      "treatment": "local_crop_allowed",
+      "reason": ""
+    }
+  ]
+}

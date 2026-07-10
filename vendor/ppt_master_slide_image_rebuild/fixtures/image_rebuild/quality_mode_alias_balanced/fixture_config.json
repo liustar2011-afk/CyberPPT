@@ -1,0 +1,7 @@
+{
+  "purpose": "Resolve rebuild_quality_mode balanced alias at intake.",
+  "layout_reference": false,
+  "manifest_stage": "intake",
+  "crop_intake_summary": true,
+  "expected_intake_rebuild_mode": "vector-hifi"
+}
