@@ -173,7 +173,7 @@ def _has_required_heading(gate: str, text: str, heading: str) -> bool:
         module_headings = _STRUCTURE_MODULE_PATTERN.findall(text)
         return len(module_headings) > position or _has_heading(text, heading)
     if gate == "page_design" and heading == "内容页":
-        return bool(re.search(r"^#+\s*内容(?:页|第\s*\d+\s*页)\s*$", text, re.MULTILINE))
+        return bool(re.search(r"^#+\s*内容(?:页|第\s*\d+\s*页)(?:\s*[（(].*[）)])?\s*$", text, re.MULTILINE))
     return any(_has_heading(text, candidate) for candidate in (heading, *aliases))
 
 

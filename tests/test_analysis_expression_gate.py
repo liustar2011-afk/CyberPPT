@@ -453,7 +453,7 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 不放各章要点或具体内容。
 ### 章节过渡页
 不放业务数据或判断。
-### 内容第 1 页
+### 内容第 1 页（完整汇报第 4 页）
 表达建设背景。
 ### 封底页
 不重复审定事项。
