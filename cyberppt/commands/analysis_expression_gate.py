@@ -494,13 +494,23 @@ def assert_analysis_expression_ready(project: Path) -> None:
         if not _approval_exists(root, gate):
             raise ValueError(f"{gate} approval is required")
 
-    business_approval = json.loads(_approval_path(root, "business_script").read_text(encoding="utf-8"))
-    drawing_approval = json.loads(_approval_path(root, "drawing_script").read_text(encoding="utf-8"))
-    business = Path(str(business_approval["artifact"])).read_text(encoding="utf-8")
-    drawing = Path(str(drawing_approval["artifact"])).read_text(encoding="utf-8")
+    approvals = {
+        gate: json.loads(_approval_path(root, gate).read_text(encoding="utf-8"))
+        for gate in GATE_ORDER
+    }
+    artifacts: dict[str, str] = {}
+    for gate, approval in approvals.items():
+        artifact = Path(str(approval["artifact"]))
+        source = artifact.read_text(encoding="utf-8")
+        if hashlib.sha256(source.encode("utf-8")).hexdigest() != approval.get("source_sha256"):
+            raise ValueError(f"approved {gate} has changed; approve {gate} again")
+        artifacts[gate] = source
+
+    business_approval = approvals["business_script"]
+    drawing_approval = approvals["drawing_script"]
+    business = artifacts["business_script"]
+    drawing = artifacts["drawing_script"]
     business_sha256 = hashlib.sha256(business.encode("utf-8")).hexdigest()
-    if business_sha256 != business_approval.get("source_sha256"):
-        raise ValueError("approved business script has changed; approve business_script again")
     if drawing_approval.get("business_source_sha256") != business_sha256:
         raise ValueError("drawing_script dependency hash is stale; stage and approve drawing_script again")
 
