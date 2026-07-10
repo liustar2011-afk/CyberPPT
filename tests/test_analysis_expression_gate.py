@@ -415,6 +415,22 @@ class AnalysisExpressionGateTests(unittest.TestCase):
         self.assertIn("report_structure must not contain page title fields", errors)
         self.assertIn("report_structure must not contain visual form fields", errors)
 
+    def test_structure_allows_chinese_chapter_headings_and_scope_boundary(self) -> None:
+        text = """# 汇报结构设计
+本文件不确定页数、页面标题或视觉形式。
+## 推荐汇报结构
+### 一、建设背景与基础
+说明工作背景和建设必要性。
+### 二、建设总体思路
+说明目标定位和建设原则。
+### 三、建设内容及实施方案
+说明建设任务和实施条件。
+### 四、需请领导审定事项
+说明需审定的事项。
+"""
+
+        self.assertEqual([], validate_analysis_artifact("report_structure", text))
+
     def test_page_design_rejects_evidence_or_decisions_on_navigation_pages(self) -> None:
         text = PAGE_DESIGN.replace("章节导航", "章节导航\n证据：供需预测数据\n决策：审定方案")
 

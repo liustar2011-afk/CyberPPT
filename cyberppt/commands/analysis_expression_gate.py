@@ -38,6 +38,7 @@ HEADING_ALIASES = {
 _STRUCTURE_PAGE_COUNT_FIELDS = ("页数", "页码", "页面数量")
 _STRUCTURE_PAGE_TITLE_FIELDS = ("页面标题", "页标题")
 _STRUCTURE_VISUAL_FIELDS = ("视觉形式", "视觉形态", "视觉样式")
+_STRUCTURE_MODULE_PATTERN = re.compile(r"^#{3,}\s*[一二三四五六七八九十]+[、.．]\s*.+$", re.MULTILINE)
 _NAVIGATION_HEADINGS = ("封面", "目录", "过渡页", "封底")
 _NAVIGATION_RESTRICTED_TERMS = ("证据", "决策", "决定", "论证", "论据")
 _DRAWING_GEOMETRY_PATTERN = re.compile(
@@ -162,6 +163,10 @@ def _has_heading(text: str, heading: str) -> bool:
 
 def _has_required_heading(gate: str, text: str, heading: str) -> bool:
     aliases = HEADING_ALIASES.get(gate, {}).get(heading, ())
+    if gate == "report_structure" and heading.startswith("模块"):
+        position = "一二三四五六七八九十".index(heading[-1])
+        module_headings = _STRUCTURE_MODULE_PATTERN.findall(text)
+        return len(module_headings) > position or _has_heading(text, heading)
     return any(_has_heading(text, candidate) for candidate in (heading, *aliases))
 
 
@@ -360,14 +365,15 @@ def validate_analysis_artifact(gate: str, text: str) -> list[str]:
     ]
 
     if gate == "report_structure":
-        module_count = len(re.findall(r"^#+\s*模块[一二三四五六七八九十0-9]+\s*$", text, re.MULTILINE))
+        canonical_modules = re.findall(r"^#+\s*模块[一二三四五六七八九十0-9]+\s*$", text, re.MULTILINE)
+        module_count = max(len(canonical_modules), len(_STRUCTURE_MODULE_PATTERN.findall(text)))
         if not 4 <= module_count <= 6:
             errors.append("report_structure must contain 4-6 modules")
-        if any(field in text for field in _STRUCTURE_PAGE_COUNT_FIELDS):
+        if any(re.search(rf"^\s*{re.escape(field)}\s*[:：]\s*\S", text, re.MULTILINE) for field in _STRUCTURE_PAGE_COUNT_FIELDS):
             errors.append("report_structure must not contain page count fields")
-        if any(field in text for field in _STRUCTURE_PAGE_TITLE_FIELDS):
+        if any(re.search(rf"^\s*{re.escape(field)}\s*[:：]\s*\S", text, re.MULTILINE) for field in _STRUCTURE_PAGE_TITLE_FIELDS):
             errors.append("report_structure must not contain page title fields")
-        if any(field in text for field in _STRUCTURE_VISUAL_FIELDS):
+        if any(re.search(rf"^\s*{re.escape(field)}\s*[:：]\s*\S", text, re.MULTILINE) for field in _STRUCTURE_VISUAL_FIELDS):
             errors.append("report_structure must not contain visual form fields")
 
     if gate == "page_design":
