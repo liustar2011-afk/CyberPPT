@@ -87,6 +87,7 @@ BUSINESS_SCRIPT = """# 业务脚本
 
 DRAWING_SCRIPT = """# 绘制脚本
 ## 第1页：供需预测分析
+组件A（顶部并列，三张关键指标卡）——关键数据：
 ### 上屏文字
 - 2026年最大负荷1000万千瓦
 - 供需总体平衡
@@ -324,6 +325,11 @@ class AnalysisExpressionGateTests(unittest.TestCase):
         errors = validate_drawing_script(drawing, BUSINESS_SCRIPT)
 
         self.assertIn("drawing_script must not contain implementation directives", errors)
+
+    def test_drawing_requires_component_directives_for_content_pages(self) -> None:
+        drawing = DRAWING_SCRIPT.replace("组件A（顶部并列，三张关键指标卡）——关键数据：\n", "")
+
+        self.assertIn("requires at least one component directive", validate_drawing_script(drawing, BUSINESS_SCRIPT))
 
     def test_status_reports_validation_failures_and_dependency_hash_state(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
