@@ -237,6 +237,8 @@ class FinalScriptPagesTests(unittest.TestCase):
                 )
 
             command = run.call_args.args[0]
+            speaker_notes_manifest_exists = Path(summary["artifacts"]["speaker_notes_manifest"]).is_file()
+            speaker_notes_prompt_exists = Path(summary["artifacts"]["speaker_notes_llm_prompt"]).is_file()
 
         self.assertEqual("02-production-build", summary["stage"])
         self.assertEqual("production_ready", summary["status"])
@@ -250,6 +252,14 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertIn("--pages", command)
         self.assertIn("1", command)
         self.assertIn(str(Path(summary["artifacts"]["image_ppt_output_dir"])), command)
+        self.assertIn("--speaker-notes-manifest", command)
+        self.assertEqual(
+            str(Path(summary["artifacts"]["speaker_notes_manifest"]).resolve()),
+            command[command.index("--speaker-notes-manifest") + 1],
+        )
+        self.assertTrue(speaker_notes_manifest_exists)
+        self.assertTrue(speaker_notes_prompt_exists)
+        self.assertEqual("ready_for_review", summary["speaker_notes_build"]["status"])
         self.assertIsNone(summary["rebuild"])
         self.assertEqual({}, summary["tool_consumption"])
         self.assertIsNone(summary["production_readiness"])

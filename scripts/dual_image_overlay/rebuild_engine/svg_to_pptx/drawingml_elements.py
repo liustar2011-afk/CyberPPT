@@ -1428,6 +1428,15 @@ def convert_text(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
     box_y = y - font_size * 0.85
     box_w = text_width + padding * 2
     box_h = text_height + padding
+    explicit_box_w = _f(elem.get('data-pptx-width'), 0.0)
+    if explicit_box_w > 0:
+        explicit_box_w = ctx_w(explicit_box_w, ctx)
+        if explicit_box_w > box_w:
+            if text_anchor == 'middle':
+                box_x -= (explicit_box_w - box_w) / 2
+            elif text_anchor == 'end':
+                box_x -= explicit_box_w - box_w
+            box_w = explicit_box_w
 
     text_transform = elem.get('transform', '')
     if text_transform and 'rotate' not in text_transform and not ctx.use_transform_matrix:

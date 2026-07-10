@@ -55,8 +55,16 @@ class SkillContractTests(unittest.TestCase):
     def test_main_pipeline_names_script_full_image_and_image_ppt_export(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
-        self.assertIn("脚本锁定 -> 正文区 ImageGen full 图 -> template_image_ppt_export -> 渲染 QA -> 交付", text)
+        self.assertIn("脚本锁定 -> 正文区 ImageGen full 图 -> 业务稿生成 speaker_notes_manifest -> template_image_ppt_export -> 渲染 QA -> 交付", text)
         self.assertIn("正文区主要内容以 full 图承载", text)
+
+    def test_speaker_notes_are_business_script_artifacts_not_drawing_script_fallback(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("`speaker_notes_manifest.json`", text)
+        self.assertIn("从业务稿/页面内容稿生成", text)
+        self.assertIn("不得把绘图脚本的组件清单直接当作演讲备注", text)
+        self.assertIn("大模型优化只能在该 prompt 约束下进行", text)
 
     def test_ppt_generation_uses_full_image_stage02_not_dual_image_stage(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")

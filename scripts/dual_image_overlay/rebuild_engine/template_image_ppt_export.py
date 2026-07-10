@@ -20,7 +20,9 @@ from pathlib import Path
 from xml.sax.saxutils import escape as xml_escape
 from xml.sax.saxutils import quoteattr
 
-from PIL import Image
+from PIL import Image, ImageChops
+
+from codex_oauth_image import run_codex_image
 
 SCRIPTS_DIR = Path(__file__).resolve().parent
 DEFAULT_BRAND_DIR = SCRIPTS_DIR / "templates" / "brands" / "中电联公共元素_轻量版"
@@ -37,6 +39,9 @@ CONTENT_REGION_BOTTOM_INSET = -20
 CONTENT_REGION_SIDE_OUTSET = 38
 IMAGE_GENERATION_SCALE = 2
 MAX_GENERATED_ASPECT_RATIO_DRIFT = 0.08
+MIN_GENERATED_CONTENT_WIDTH_RATIO = 0.90
+MAX_GENERATED_SIDE_MARGIN_RATIO = 0.06
+GENERATED_CONTENT_BACKGROUND_DIFF_THRESHOLD = 18
 DEFAULT_STYLE_NAME = "cyberppt-full-image-default"
 DEFAULT_IMAGE_STYLE = {
     "name": DEFAULT_STYLE_NAME,
@@ -120,6 +125,10 @@ def page_notes_text(block: PageBlock) -> str:
 def page_role(block: PageBlock) -> str:
     if block.page_number == 1 or "封面" in block.title:
         return "cover"
+    if "目录" in block.title:
+        return "agenda"
+    if re.search(r"第[一二三四五六七八九十]+章", block.title):
+        return "section"
     if any(keyword in block.title for keyword in ("封底", "结束", "感谢")):
         return "ending"
     return "body"
@@ -302,6 +311,8 @@ def content_prompt(
 - {title_rule}
 - 不要画页码、Logo、页脚、红线、蓝色底栏或任何中电联公共元素。
 - 不要预留页面外边框，不要生成完整 PPT 页面，只生成正文内容区画面。
+- 内容必须充分铺满本图片画布：最左侧有效内容距左边缘不超过画布宽度 6%，最右侧有效内容距右边缘不超过画布宽度 6%，有效内容整体宽度不少于画布宽度 90%。
+- 不要把内容缩成居中的“小版面”“截图页”“白纸页”或带宽边距的容器；背景承载面可以到达画布边缘，模块、流程线、图表和说明文字应横向展开。
 - 可见文字只能取自下面“正文内容”中的事实、概念、数字和短语；可以压缩、取舍、重组，但不得新增事实、数字、口号、英文伪字、水印、乱码。
 - 脚本里的结构编号只用于分组理解，不得作为画面文字出现，也不得按原编号抄写。
 
@@ -316,11 +327,48 @@ def content_prompt(
 
 
 def page_template_name(role: str) -> str | None:
-    if role == "cover":
-        return "cover"
-    if role == "ending":
-        return "ending"
+    if role in {"cover", "agenda", "section", "ending"}:
+        return role
     return None
+
+
+def chapter_label_and_title(title: str) -> tuple[str, str]:
+    match = re.search(r"(第[一二三四五六七八九十]+章)\s*(?P<title>.*)", title)
+    if match:
+        return match.group(1), match.group("title").strip() or title
+    return "", title
+
+
+def agenda_items_from_pages(pages: dict[int, PageBlock], selected: list[int]) -> list[dict[str, str]]:
+    items: list[dict[str, str]] = []
+    for number in selected:
+        block = pages[number]
+        if page_role(block) != "section":
+            continue
+        label, title = chapter_label_and_title(block.title)
+        items.append({"label": label, "title": title})
+    return items
+
+
+def agenda_items_svg(items: list[dict[str, str]]) -> str:
+    if not items:
+        items = [
+            {"label": "01", "title": "建设背景与基础"},
+            {"label": "02", "title": "建设总体思路"},
+            {"label": "03", "title": "建设内容及实施方案"},
+            {"label": "04", "title": "需请领导审定事项"},
+        ]
+    y0 = 246
+    gap = 82
+    lines = []
+    for index, item in enumerate(items[:6], start=1):
+        y = y0 + (index - 1) * gap
+        label = str(item.get("label") or f"{index:02d}")
+        title = str(item.get("title") or "")
+        lines.append(f'<text x="356" y="{y}" font-family="Microsoft YaHei, Arial, sans-serif" font-size="22" font-weight="700" fill="#8B0000">{xml_escape(label)}</text>')
+        lines.append(f'<text x="448" y="{y}" font-family="Microsoft YaHei, Arial, sans-serif" font-size="28" font-weight="600" fill="#1F2933">{xml_escape(title)}</text>')
+        lines.append(f'<line x1="448" y1="{y + 24}" x2="1088" y2="{y + 24}" stroke="#D8DEE8" stroke-width="1"/>')
+    return "\n    ".join(lines)
 
 
 def page_meta_value(content: PageContent, label: str) -> str:
@@ -338,6 +386,72 @@ def cover_author(content: PageContent) -> str:
 
 def cover_date(content: PageContent) -> str:
     return page_meta_value(content, "汇报日期") or page_meta_value(content, "日期")
+
+
+def cover_content_fields(task: dict) -> tuple[str, str, str]:
+    """Extract cover title, author/unit, and date from script content before using role labels."""
+
+    fallback_title = str(task.get("slide_title") or task.get("title") or "")
+    body_lines = [
+        line.strip().lstrip("- ").strip()
+        for line in str(task.get("body_text") or "").splitlines()
+        if line.strip()
+    ]
+    content = PageContent(fallback_title, str(task.get("subtitle") or ""), str(task.get("body_text") or ""))
+    title = page_meta_value(content, "汇报标题") or page_meta_value(content, "项目名称")
+    if not title and fallback_title in {"封面", "首页"} and body_lines:
+        title = body_lines[0]
+    title = title or fallback_title
+    author = cover_author(content)
+    if not author and len(body_lines) >= 2:
+        author = body_lines[1]
+    date = cover_date(content)
+    if not date and len(body_lines) >= 3:
+        date = body_lines[2]
+    date = re.sub(r"\s+", "", date)
+    return title, author, date
+
+
+def body_lines_from_task(task: dict) -> list[str]:
+    return [
+        line.strip().lstrip("- ").strip()
+        for line in str(task.get("body_text") or "").splitlines()
+        if line.strip()
+    ]
+
+
+def notes_heading_for_task(task: dict) -> str:
+    template_name = task.get("template") or page_template_name(task.get("page_role", ""))
+    if template_name == "cover":
+        title, _, _ = cover_content_fields(task)
+        return title
+    if template_name == "section":
+        return str(task.get("section_title") or task.get("slide_title") or task.get("title") or "")
+    if template_name == "ending":
+        lines = body_lines_from_task(task)
+        if lines and str(task.get("slide_title") or task.get("title") or "") in {"封底", "结束页"}:
+            return lines[0]
+    return str(task.get("slide_title") or task.get("title") or "")
+
+
+def page_notes_text_for_task(block: PageBlock, task: dict) -> str:
+    """Build speaker notes from the script page, with template-page headings resolved from page content."""
+    explicit = re.search(r"【(?:演讲者备注|演讲稿|讲稿|备注)】(?P<body>.*)$", block.text, re.S)
+    if explicit:
+        text = explicit.group("body").strip()
+        return re.sub(r"\n-{3,}\s*$", "", text).strip()
+    lines = body_lines_from_task(task)
+    notes: list[str] = []
+    heading = notes_heading_for_task(task)
+    if heading:
+        notes.append(f"本页围绕“{heading}”展开。")
+    subtitle = str(task.get("subtitle") or "")
+    if subtitle:
+        notes.append(f"核心提示：{subtitle}")
+    if lines:
+        notes.append("汇报要点：")
+        notes.extend(f"- {line}" for line in lines)
+    return "\n".join(notes).strip()
 
 
 def char_width_units(char: str) -> float:
@@ -456,6 +570,52 @@ def normalize_generated_image_size(image_path: Path, size: str) -> tuple[int, in
     return target
 
 
+def generated_content_fill_report(image_path: Path) -> dict[str, object]:
+    with Image.open(image_path) as image:
+        source = image.convert("RGB")
+        background = source.getpixel((0, 0))
+        diff = ImageChops.difference(source, Image.new("RGB", source.size, background)).convert("L")
+        mask = diff.point(lambda value: 255 if value > GENERATED_CONTENT_BACKGROUND_DIFF_THRESHOLD else 0)
+        bbox = mask.getbbox()
+        width, height = source.size
+    if bbox is None:
+        return {
+            "image_size": f"{width}x{height}",
+            "content_bbox": None,
+            "content_width_ratio": 0.0,
+            "left_margin_ratio": 1.0,
+            "right_margin_ratio": 1.0,
+        }
+    left, top, right, bottom = bbox
+    content_width = max(0, right - left)
+    return {
+        "image_size": f"{width}x{height}",
+        "content_bbox": [left, top, right, bottom],
+        "content_width_ratio": round(content_width / width, 4),
+        "left_margin_ratio": round(left / width, 4),
+        "right_margin_ratio": round((width - right) / width, 4),
+    }
+
+
+def assert_generated_content_fill(image_path: Path) -> dict[str, object]:
+    report = generated_content_fill_report(image_path)
+    width_ratio = float(report["content_width_ratio"])
+    left_ratio = float(report["left_margin_ratio"])
+    right_ratio = float(report["right_margin_ratio"])
+    if (
+        width_ratio < MIN_GENERATED_CONTENT_WIDTH_RATIO
+        or left_ratio > MAX_GENERATED_SIDE_MARGIN_RATIO
+        or right_ratio > MAX_GENERATED_SIDE_MARGIN_RATIO
+    ):
+        raise ValueError(
+            "generated image has too much internal horizontal whitespace; "
+            f"content_width_ratio={width_ratio:.3f}, "
+            f"left_margin_ratio={left_ratio:.3f}, right_margin_ratio={right_ratio:.3f}, "
+            f"image={image_path}"
+        )
+    return report
+
+
 def build_manifest(
     script_path: Path,
     page_numbers: list[int],
@@ -463,12 +623,15 @@ def build_manifest(
     output_dir: Path,
     *,
     image_style_name: str | None = None,
+    speaker_notes_manifest: Path | None = None,
 ) -> dict:
     rules = load_brand_rules()
     brand_body_region = scale_region(rules["content_regions"]["body_pages"], CANVAS_SIZE)
     body_region = inset_content_region(brand_body_region)
     generation_size = generation_size_for_region(body_region)
     image_style = load_image_style(image_style_name)
+    agenda_items = agenda_items_from_pages(pages, page_numbers)
+    speaker_notes = load_speaker_notes(speaker_notes_manifest)
     tasks = []
     for number in page_numbers:
         page = pages[number]
@@ -482,7 +645,6 @@ def build_manifest(
             "slide_title": content.title,
             "subtitle": content.subtitle,
             "body_text": content.body,
-            "notes_text": page_notes_text(page),
         }
         template_name = page_template_name(role)
         if template_name:
@@ -493,6 +655,12 @@ def build_manifest(
                     "status": "Template",
                 }
             )
+            if template_name == "agenda":
+                task["agenda_items"] = agenda_items
+            elif template_name == "section":
+                label, section_title = chapter_label_and_title(page.title)
+                task["section_no"] = label
+                task["section_title"] = section_title
         else:
             image_path = output_dir / "images" / f"{stem}_content.png"
             task.update(
@@ -504,6 +672,14 @@ def build_manifest(
                     "status": "Pending",
                 }
             )
+        note_record = speaker_notes.get(number)
+        if note_record:
+            task["notes_text"] = str(note_record.get("notes_text") or "")
+            task["notes_source"] = str(note_record.get("source") or "speaker_notes_manifest")
+            task["notes_title"] = str(note_record.get("title") or notes_heading_for_task(task))
+        else:
+            task["notes_text"] = page_notes_text_for_task(page, task)
+            task["notes_source"] = "fallback_from_page_script"
         tasks.append(task)
     return {
         "mode": "template-image-ppt",
@@ -523,6 +699,7 @@ def build_manifest(
         },
         "image_generation_scale": IMAGE_GENERATION_SCALE,
         "generation_size": generation_size,
+        "speaker_notes_manifest": str(speaker_notes_manifest) if speaker_notes_manifest else None,
         "tasks": tasks,
     }
 
@@ -530,6 +707,24 @@ def build_manifest(
 def write_json(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def load_speaker_notes(notes_manifest: Path | None) -> dict[int, dict]:
+    if notes_manifest is None:
+        return {}
+    data = json.loads(notes_manifest.read_text(encoding="utf-8"))
+    notes = data.get("notes")
+    if not isinstance(notes, list):
+        raise ValueError(f"speaker notes manifest must contain notes[]: {notes_manifest}")
+    by_page: dict[int, dict] = {}
+    for item in notes:
+        if not isinstance(item, dict):
+            continue
+        page_number = int(item.get("page_number"))
+        notes_text = str(item.get("notes_text") or "").strip()
+        if notes_text:
+            by_page[page_number] = item
+    return by_page
 
 
 def copy_brand(project_path: Path, brand_dir: Path = DEFAULT_BRAND_DIR) -> None:
@@ -607,8 +802,7 @@ def render_brand_template_svg(task: dict, rules: dict) -> str:
     svg = (DEFAULT_BRAND_DIR / template_file).read_text(encoding="utf-8")
     svg = template_href_for_output(svg)
     if template_name == "cover":
-        content = PageContent(task.get("slide_title", ""), task.get("subtitle", ""), task.get("body_text", ""))
-        title = task.get("slide_title") or task.get("title", "")
+        title, author, date = cover_content_fields(task)
         svg = re.sub(
             r'\s*<text[^>]*>\{\{TITLE\}\}</text>',
             "\n" + cover_title_svg(title),
@@ -616,11 +810,19 @@ def render_brand_template_svg(task: dict, rules: dict) -> str:
             count=1,
         )
         replacements = {
-            "{{AUTHOR}}": cover_author(content),
-            "{{DATE}}": cover_date(content),
+            "{{AUTHOR}}": author,
+            "{{DATE}}": date,
         }
         for placeholder, value in replacements.items():
             svg = svg.replace(placeholder, xml_escape(value))
+    elif template_name == "agenda":
+        items = task.get("agenda_items")
+        svg = svg.replace("{{AGENDA_ITEMS}}", agenda_items_svg(items if isinstance(items, list) else []))
+    elif template_name == "section":
+        label = str(task.get("section_no") or "")
+        title = str(task.get("section_title") or task.get("slide_title") or task.get("title") or "")
+        svg = svg.replace("{{SECTION_NO}}", xml_escape(label))
+        svg = svg.replace("{{SECTION_TITLE}}", xml_escape(title))
     return svg
 
 
@@ -669,8 +871,9 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
         if not notes_text:
             source_page = source_pages.get(int(task["page_number"]))
             notes_text = page_notes_text(source_page) if source_page else task.get("body_text", "")
+        notes_heading = str(task.get("notes_title") or notes_heading_for_task(task))
         (project_path / "notes" / f"{stem}.md").write_text(
-            f"# {task['slide_title']}\n\n{notes_text}\n",
+            f"# {notes_heading}\n\n{notes_text}\n",
             encoding="utf-8",
         )
     write_json(project_path / "template_image_manifest.json", manifest)
@@ -693,7 +896,15 @@ def command_plan(args: argparse.Namespace) -> int:
     pages = parse_page_blocks(script)
     nums = parse_page_selection(args.pages, set(pages))
     output_dir = args.output_dir.resolve()
-    manifest = build_manifest(script, nums, pages, output_dir, image_style_name=args.image_style)
+    speaker_notes_manifest = args.speaker_notes_manifest.resolve() if args.speaker_notes_manifest else None
+    manifest = build_manifest(
+        script,
+        nums,
+        pages,
+        output_dir,
+        image_style_name=args.image_style,
+        speaker_notes_manifest=speaker_notes_manifest,
+    )
     write_json(output_dir / "template_image_manifest.json", manifest)
     prompt_blocks = []
     for task in manifest["tasks"]:
@@ -716,8 +927,10 @@ def command_generate(args: argparse.Namespace) -> int:
         image_path = Path(task["image_path"])
         if image_path.exists() and not args.force:
             normalized_size = normalize_generated_image_size(image_path, args.size or task["size"])
+            fill_report = assert_generated_content_fill(image_path)
             task["status"] = "Generated"
             task["actual_size"] = f"{normalized_size[0]}x{normalized_size[1]}"
+            task["content_fill"] = fill_report
             continue
         run_codex_image(
             prompt=task["prompt"],
@@ -732,9 +945,11 @@ def command_generate(args: argparse.Namespace) -> int:
         )
         if not args.dry_run:
             normalized_size = normalize_generated_image_size(image_path, args.size or task["size"])
+            fill_report = assert_generated_content_fill(image_path)
             task["status"] = "Generated"
             task["generated_at"] = datetime.now(timezone.utc).isoformat()
             task["actual_size"] = f"{normalized_size[0]}x{normalized_size[1]}"
+            task["content_fill"] = fill_report
     write_json(manifest_path, manifest)
     return 0
 
@@ -784,6 +999,7 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--force", action="store_true")
         p.add_argument("--dry-run", action="store_true")
         p.add_argument("--image-style", default=DEFAULT_STYLE_NAME, help="Image style preset name or style JSON/Markdown path.")
+        p.add_argument("--speaker-notes-manifest", type=Path, help="Optional business-script speaker notes manifest.")
         p.set_defaults(func=command_plan if name == "plan" else command_run)
     gen = sub.add_parser("generate")
     gen.add_argument("manifest", type=Path)

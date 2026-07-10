@@ -25,12 +25,13 @@ SCRIPT_ALIASES: dict[str, str] = {
     "pair-manifest": "dual_image_overlay/cyberppt_pair_manifest.py",
     "rework-report": "build_rework_report.py",
     "source-capture": "dual_image_overlay/source_capture.py",
+    "speaker-notes": "speaker_notes.py",
     "template-rebuild": "dual_image_overlay/template_rebuild.py",
     "validate": "validate_pptx.py",
 }
 
 _STAGE_2_PLUS_GENERATION_ALIASES = frozenset(
-    {"body-blueprint-prompts", "image-ppt", "pair-manifest", "source-capture", "template-rebuild"}
+    {"body-blueprint-prompts", "image-ppt", "pair-manifest", "source-capture", "speaker-notes", "template-rebuild"}
 )
 _PROJECT_OPTION_NAMES = ("--project", "--project-path", "--project-dir", "--project-root")
 
