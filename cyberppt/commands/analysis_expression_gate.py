@@ -6,7 +6,7 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -31,7 +31,7 @@ _STRUCTURE_PAGE_COUNT_FIELDS = ("页数", "页码", "页面数量")
 _STRUCTURE_PAGE_TITLE_FIELDS = ("页面标题", "页标题")
 _STRUCTURE_VISUAL_FIELDS = ("视觉形式", "视觉形态", "视觉样式")
 _NAVIGATION_HEADINGS = ("封面", "目录", "过渡页", "封底")
-_NAVIGATION_RESTRICTED_TERMS = ("证据", "决策", "决定")
+_NAVIGATION_RESTRICTED_TERMS = ("证据", "决策", "决定", "论证", "论据")
 _DRAWING_GEOMETRY_PATTERN = re.compile(
     r"(?:\b[xy]\s*=|\b(?:width|height|left|top)\s*=|\b\d+(?:\.\d+)?px\b|坐标|像素|几何)",
     re.IGNORECASE,
@@ -106,7 +106,7 @@ def _approval_exists(project: Path, gate: str) -> bool:
 
 
 def _utc_now() -> str:
-    return datetime.now(UTC).isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 def _section_text(text: str, heading: str) -> str:
@@ -118,11 +118,19 @@ def _section_text(text: str, heading: str) -> str:
     return text[match.end() : end]
 
 
+def _has_heading(text: str, heading: str) -> bool:
+    return bool(re.search(rf"^#+\s*{re.escape(heading)}\s*$", text, re.MULTILINE))
+
+
 def validate_analysis_artifact(gate: str, text: str) -> list[str]:
     """Return semantic validation failures for one ordered analysis artifact."""
 
     _validate_gate(gate)
-    errors = [f"missing required heading: {heading}" for heading in REQUIRED_HEADINGS[gate] if heading not in text]
+    errors = [
+        f"missing required heading: {heading}"
+        for heading in REQUIRED_HEADINGS[gate]
+        if not _has_heading(text, heading)
+    ]
 
     if gate == "report_structure":
         module_count = len(re.findall(r"^#+\s*模块[一二三四五六七八九十0-9]+\s*$", text, re.MULTILINE))
@@ -146,13 +154,22 @@ def validate_analysis_artifact(gate: str, text: str) -> list[str]:
     return errors
 
 
-def _normalize_options(options: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _normalize_options(options: list[dict[str, Any]], *, require_labels: bool = False) -> list[dict[str, Any]]:
     normalized: list[dict[str, Any]] = []
     for option in options:
-        if not isinstance(option, dict) or not isinstance(option.get("id"), str) or not option["id"]:
+        if not isinstance(option, dict) or not isinstance(option.get("id"), str) or not option["id"].strip():
             raise ValueError("each confirmation option requires a non-empty id")
+        if require_labels and (not isinstance(option.get("label"), str) or not option["label"].strip()):
+            raise ValueError("each reporting_direction option requires a non-empty label")
         normalized.append(dict(option))
     return normalized
+
+
+def _invalidate_successor_records(project: Path, gate: str) -> None:
+    for successor in GATE_ORDER[GATE_ORDER.index(gate) + 1 :]:
+        for path in (_pending_path(project, successor), _approval_path(project, successor)):
+            if path.exists():
+                path.unlink()
 
 
 def stage_analysis_artifact(
@@ -178,7 +195,13 @@ def stage_analysis_artifact(
     artifact.parent.mkdir(parents=True, exist_ok=True)
     artifact.write_text(source, encoding="utf-8")
     pending = _pending_path(root, gate)
-    normalized_options = _normalize_options(options)
+    normalized_options = _normalize_options(options, require_labels=gate == "reporting_direction")
+    if gate == "reporting_direction":
+        if len(normalized_options) < 2:
+            raise ValueError("reporting_direction requires at least two confirmation options")
+        option_values = {option["id"] for option in normalized_options} | {option["label"] for option in normalized_options}
+        if recommendation not in option_values:
+            raise ValueError("reporting_direction recommendation must match an option id or label")
     _write_json(
         pending,
         {
@@ -195,6 +218,7 @@ def stage_analysis_artifact(
     approval = _approval_path(root, gate)
     if approval.exists():
         approval.unlink()
+    _invalidate_successor_records(root, gate)
     return pending
 
 
