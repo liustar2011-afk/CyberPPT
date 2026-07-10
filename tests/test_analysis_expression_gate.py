@@ -445,6 +445,22 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 
         self.assertIn("missing required heading: 目录", errors)
 
+    def test_page_design_allows_formal_role_aliases_and_scope_boundaries(self) -> None:
+        text = """# 页面设计
+### 封面
+不承载汇报论证或方案内容。
+### 目录页
+不放各章要点或具体内容。
+### 章节过渡页
+不放业务数据或判断。
+### 内容第 1 页
+表达建设背景。
+### 封底页
+不重复审定事项。
+"""
+
+        self.assertEqual([], validate_analysis_artifact("page_design", text))
+
     def test_page_design_navigation_restrictions_are_section_scoped_and_reject_argument_terms(self) -> None:
         text = PAGE_DESIGN.replace("章节导航", "章节导航\n论证：供需判断\n论据：预测数据")
 
