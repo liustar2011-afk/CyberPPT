@@ -33,6 +33,7 @@ SCRIPT_ALIASES: dict[str, str] = {
 _STAGE_2_PLUS_GENERATION_ALIASES = frozenset(
     {"body-blueprint-prompts", "image-ppt", "pair-manifest", "source-capture", "speaker-notes", "template-rebuild"}
 )
+_PROJECT_CONTEXT_ERROR = "production-capable aliases require exactly one --project <path>"
 
 
 def script_path(script_name: str) -> Path:
@@ -54,7 +55,7 @@ def run_script(script_name: str, args: list[str]) -> int:
 def generation_project(args: list[str]) -> Path:
     values = _option_values(args, "--project")
     if len(values) != 1:
-        raise ValueError("production-capable aliases require exactly one --project <path>")
+        raise ValueError(_PROJECT_CONTEXT_ERROR)
     project = Path(values[0]).expanduser().resolve()
     contract = project / "workbench" / "analysis_expression" / "contract.json"
     if not contract.is_file():
@@ -71,7 +72,24 @@ def _assert_generation_alias_ready(script_name: str, args: list[str]) -> list[st
 
 
 def _option_values(args: list[str], option: str) -> list[str]:
-    return [args[index + 1] for index, arg in enumerate(args[:-1]) if arg == option]
+    values: list[str] = []
+    equals_option = f"{option}="
+    index = 0
+    while index < len(args):
+        arg = args[index]
+        if arg == option:
+            if index + 1 >= len(args) or args[index + 1].startswith("-"):
+                raise ValueError(_PROJECT_CONTEXT_ERROR)
+            values.append(args[index + 1])
+            index += 2
+            continue
+        if arg.startswith(equals_option):
+            value = arg.removeprefix(equals_option)
+            if not value:
+                raise ValueError(_PROJECT_CONTEXT_ERROR)
+            values.append(value)
+        index += 1
+    return values
 
 
 def _without_option(args: list[str], option: str) -> list[str]:
@@ -80,6 +98,9 @@ def _without_option(args: list[str], option: str) -> list[str]:
     while index < len(args):
         if args[index] == option:
             index += 2
+            continue
+        if args[index].startswith(f"{option}="):
+            index += 1
             continue
         forwarded.append(args[index])
         index += 1

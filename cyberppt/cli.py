@@ -103,7 +103,7 @@ def _script_status_command(args: argparse.Namespace) -> int:
 
 
 def _rebuild_dual_image_command(args: argparse.Namespace) -> int:
-    return run_script("template-rebuild", args.rebuild_args)
+    return run_script("template-rebuild", ["--project", args.project, *args.rebuild_args])
 
 
 def _stage_analysis_expression_command(args: argparse.Namespace) -> int:
@@ -416,8 +416,9 @@ def build_parser() -> argparse.ArgumentParser:
     rebuild_dual_image_parser = subparsers.add_parser(
         "rebuild-dual-image",
         add_help=False,
-        help="Run the dual-image rebuild flow from a page_image_pairs.json manifest.",
+        help="Run the dual-image rebuild flow with an explicit CyberPPT project context.",
     )
+    rebuild_dual_image_parser.add_argument("--project", required=True, help="CyberPPT project directory.")
     rebuild_dual_image_parser.add_argument("rebuild_args", nargs=argparse.REMAINDER)
     rebuild_dual_image_parser.set_defaults(func=_rebuild_dual_image_command)
 
@@ -485,11 +486,15 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
-    if argv and argv[0] in SCRIPT_ALIASES:
-        return run_script(argv[0], argv[1:])
-    parser = build_parser()
-    args = parser.parse_args(argv)
-    if not hasattr(args, "func"):
-        parser.print_help()
-        return 0
-    return int(args.func(args))
+    try:
+        if argv and argv[0] in SCRIPT_ALIASES:
+            return run_script(argv[0], argv[1:])
+        parser = build_parser()
+        args = parser.parse_args(argv)
+        if not hasattr(args, "func"):
+            parser.print_help()
+            return 0
+        return int(args.func(args))
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2

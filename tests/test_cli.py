@@ -131,10 +131,26 @@ class CliTests(unittest.TestCase):
 
     def test_rebuild_dual_image_routes_to_template_rebuild(self) -> None:
         with patch("cyberppt.cli.run_script", return_value=3) as run_script:
-            code = main(["rebuild-dual-image", "page_image_pairs.json", "--no-export"])
+            code = main(["rebuild-dual-image", "--project", "/tmp/project", "page_image_pairs.json", "--no-export"])
 
         self.assertEqual(3, code)
-        run_script.assert_called_once_with("template-rebuild", ["page_image_pairs.json", "--no-export"])
+        run_script.assert_called_once_with(
+            "template-rebuild",
+            ["--project", "/tmp/project", "page_image_pairs.json", "--no-export"],
+        )
+
+    def test_rebuild_dual_image_uses_project_for_real_generation_guard(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "client-report"
+            init_project(project)
+            buffer = io.StringIO()
+
+            with redirect_stderr(buffer):
+                code = main(["rebuild-dual-image", "--project", str(project), "page_image_pairs.json"])
+
+        self.assertEqual(2, code)
+        self.assertIn("source_analysis approval is required", buffer.getvalue())
+        self.assertNotIn("Traceback", buffer.getvalue())
 
     def test_final_script_pages_rejects_blueprint_only_with_production_build(self) -> None:
         buffer = io.StringIO()
@@ -178,5 +194,6 @@ class CliTests(unittest.TestCase):
             capture_output=True,
             text=True,
         )
-        self.assertNotEqual(completed.returncode, 0)
+        self.assertEqual(completed.returncode, 2)
         self.assertIn("production-capable aliases require exactly one --project <path>", completed.stderr)
+        self.assertNotIn("Traceback", completed.stderr)

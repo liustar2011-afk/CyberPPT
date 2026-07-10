@@ -58,6 +58,45 @@ class ScriptRunnerTests(unittest.TestCase):
 
             run.assert_not_called()
 
+    def test_generation_alias_rejects_trailing_bare_project_flag(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            contract = project / "workbench" / "analysis_expression" / "contract.json"
+            contract.parent.mkdir(parents=True)
+            contract.write_text("{}", encoding="utf-8")
+
+            with patch("cyberppt.commands.script_runner.subprocess.run") as run:
+                with self.assertRaisesRegex(ValueError, "require exactly one --project"):
+                    run_script("image-ppt", ["--project", str(project), "--project"])
+
+            run.assert_not_called()
+
+    def test_generation_alias_rejects_duplicate_project_flag_and_value(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            contract = project / "workbench" / "analysis_expression" / "contract.json"
+            contract.parent.mkdir(parents=True)
+            contract.write_text("{}", encoding="utf-8")
+
+            with patch("cyberppt.commands.script_runner.subprocess.run") as run:
+                with self.assertRaisesRegex(ValueError, "require exactly one --project"):
+                    run_script("image-ppt", ["--project", str(project), "--project", str(project)])
+
+            run.assert_not_called()
+
+    def test_generation_alias_rejects_mixed_project_option_forms(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            contract = project / "workbench" / "analysis_expression" / "contract.json"
+            contract.parent.mkdir(parents=True)
+            contract.write_text("{}", encoding="utf-8")
+
+            with patch("cyberppt.commands.script_runner.subprocess.run") as run:
+                with self.assertRaisesRegex(ValueError, "require exactly one --project"):
+                    run_script("image-ppt", [f"--project={project}", "--project", str(project)])
+
+            run.assert_not_called()
+
     def test_generation_aliases_strip_explicit_project_before_forwarding(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
@@ -80,6 +119,24 @@ class ScriptRunnerTests(unittest.TestCase):
                         ["run", "--script", "outside.md", "-o", "out"],
                         run.call_args.args[0][2:],
                     )
+
+    def test_generation_alias_strips_equals_project_before_forwarding(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            contract = project / "workbench" / "analysis_expression" / "contract.json"
+            contract.parent.mkdir(parents=True)
+            contract.write_text("{}", encoding="utf-8")
+
+            with (
+                patch("cyberppt.commands.script_runner.assert_analysis_expression_ready") as ready,
+                patch("cyberppt.commands.script_runner.subprocess.run") as run,
+            ):
+                run.return_value.returncode = 0
+                result = run_script("image-ppt", [f"--project={project}", "run", "--script", "outside.md"])
+
+        self.assertEqual(0, result)
+        ready.assert_called_once_with(project.resolve())
+        self.assertEqual(["run", "--script", "outside.md"], run.call_args.args[0][2:])
 
     def test_non_generation_alias_forwards_project_option_unchanged(self) -> None:
         with patch("cyberppt.commands.script_runner.subprocess.run") as run:
