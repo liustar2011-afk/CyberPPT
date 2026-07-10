@@ -24,7 +24,7 @@ REQUIRED_HEADINGS = {
     "report_structure": ("模块一", "模块二", "模块三", "模块四"),
     "page_design": ("封面", "目录", "过渡页", "内容页", "封底"),
     "business_script": ("非上屏：证据链", "来源位置", "非上屏：完整性校核"),
-    "drawing_script": ("上屏文字", "组件关系", "信息密度", "禁止项"),
+    "drawing_script": (),
 }
 HEADING_ALIASES = {
     "reporting_direction": {
@@ -59,6 +59,7 @@ _DRAWING_IMPLEMENTATION_PATTERN = re.compile(
     r"(?:#[0-9a-f]{3,8}\b|\brgba?\b|颜色|色值|配色|字体|字号|字重|字族|图标|\bicons?\b|最终构图|最终版|完整页面|页面定稿)",
     re.IGNORECASE,
 )
+_DRAWING_COMPONENT_PATTERN = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+(?:[（(].*?[)）])?\s*(?:[—-]+|[:：])", re.MULTILINE)
 _CONSULTING_DELIVERY_PATTERN = re.compile(r"\b(?:MBB|SO\s+WHAT|Caveat|Resolution)\b|核心判断", re.IGNORECASE)
 _NON_VISIBLE_HEADINGS = ("非上屏", "来源位置")
 _COMPLETENESS_CATEGORIES = ("事实", "数字", "分类", "边界", "请求事项")
@@ -299,7 +300,8 @@ def _fact_is_visible(fact: str, visible_text: str) -> bool:
 
 
 def _drawing_visible_text(text: str) -> str:
-    return "\n".join(_all_section_texts(text, "上屏文字"))
+    sections = _all_section_texts(text, "上屏文字")
+    return "\n".join(sections) if sections else text
 
 
 def _validate_business_units(
@@ -356,8 +358,10 @@ def validate_drawing_script(text: str, business: str) -> list[str]:
         if drawing_page is None:
             errors.append(f"{error_prefix}is missing for required business content")
             continue
+        if not _DRAWING_COMPONENT_PATTERN.search(drawing_page):
+            errors.append(f"{error_prefix}requires at least one component directive")
+            continue
         business_units = _parse_inherited_units(business_page)
-
         business_numbers = set(re.findall(r"\d+(?:\.\d+)?", business_page))
         visible_text = _drawing_visible_text(drawing_page)
         for fact in _completeness_values(business_units, "事实"):
