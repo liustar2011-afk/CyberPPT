@@ -454,6 +454,8 @@ def run_final_script_pages(
     if style_lock is not None and (style_id is not None or style_name):
         raise ValueError("--style-lock cannot be combined with --style-id or --style-name")
     adopted_contract = (project / "workbench" / "analysis_expression" / "contract.json").is_file()
+    if production_build and not adopted_contract:
+        raise ValueError("production build requires adopt-analysis-expression-contract")
     if adopted_contract:
         approved_style_lock = assert_blueprint_input_ready(project, script, style_lock)
         if style_id is not None or style_name:
@@ -506,7 +508,7 @@ def run_final_script_pages(
     image_ppt_output_dir = target_dir / "image_ppt"
     image_ppt_name = slug
     verified_speaker_notes_manifest: Path | None = None
-    if production_build and adopted_contract:
+    if production_build:
         verified_speaker_notes_manifest = assert_speaker_notes_review_ready(project, pages_raw)
         approved_notes_manifest = _read_json(verified_speaker_notes_manifest)
         speaker_notes_build = {
@@ -518,13 +520,6 @@ def run_final_script_pages(
     else:
         speaker_notes_build = _run_speaker_notes_build(project=project, pages_raw=pages_raw, output_dir=target_dir)
     if production_build:
-        if not speaker_notes_build or not speaker_notes_build.get("speaker_notes_manifest"):
-            raise RuntimeError(
-                "image-ppt production build requires an approved business script speaker-notes manifest. "
-                "Confirm the business script/page content design before packaging the image PPT."
-            )
-        if verified_speaker_notes_manifest is None:
-            verified_speaker_notes_manifest = assert_speaker_notes_review_ready(project, pages_raw)
         image_ppt_build = _run_image_ppt_build(
             script=script,
             pages_raw=pages_raw,
