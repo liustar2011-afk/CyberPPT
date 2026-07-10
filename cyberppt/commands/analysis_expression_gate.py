@@ -33,6 +33,11 @@ HEADING_ALIASES = {
         "边界": ("风险边界",),
         "推荐方向": ("推荐策略",),
     },
+    "page_design": {
+        "目录": ("目录页",),
+        "过渡页": ("章节过渡页",),
+        "封底": ("封底页",),
+    },
 }
 
 _STRUCTURE_PAGE_COUNT_FIELDS = ("页数", "页码", "页面数量")
@@ -167,7 +172,14 @@ def _has_required_heading(gate: str, text: str, heading: str) -> bool:
         position = "一二三四五六七八九十".index(heading[-1])
         module_headings = _STRUCTURE_MODULE_PATTERN.findall(text)
         return len(module_headings) > position or _has_heading(text, heading)
+    if gate == "page_design" and heading == "内容页":
+        return bool(re.search(r"^#+\s*内容(?:页|第\s*\d+\s*页)\s*$", text, re.MULTILINE))
     return any(_has_heading(text, candidate) for candidate in (heading, *aliases))
+
+
+def _role_section_texts(text: str, role: str) -> list[str]:
+    headings = (role, *HEADING_ALIASES.get("page_design", {}).get(role, ()))
+    return [section for heading in headings for section in _all_section_texts(text, heading)]
 
 
 def _all_section_texts(text: str, heading: str) -> list[str]:
@@ -377,8 +389,10 @@ def validate_analysis_artifact(gate: str, text: str) -> list[str]:
             errors.append("report_structure must not contain visual form fields")
 
     if gate == "page_design":
-        navigation_text = "\n".join(_section_text(text, heading) for heading in _NAVIGATION_HEADINGS)
-        if any(term in navigation_text for term in _NAVIGATION_RESTRICTED_TERMS):
+        navigation_text = "\n".join(
+            section for heading in _NAVIGATION_HEADINGS for section in _role_section_texts(text, heading)
+        )
+        if re.search(r"^\s*(?:证据|论据|决策|决定)\s*[:：]", navigation_text, re.MULTILINE):
             errors.append("navigation pages must not contain evidence or decisions")
 
     if gate == "drawing_script" and _DRAWING_GEOMETRY_PATTERN.search(text):
