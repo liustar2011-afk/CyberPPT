@@ -101,6 +101,23 @@ def _append_ledger(project: Path, records: list[dict[str, Any]]) -> Path:
     return _write_json(path, ledger)
 
 
+def _dependency_hashes(paths: list[Path]) -> dict[str, str]:
+    hashes: dict[str, str] = {}
+    for path in paths:
+        resolved = path.expanduser().resolve()
+        if resolved.is_file():
+            hashes[str(resolved)] = _sha256(resolved)
+    return hashes
+
+
+def _dependencies_current(hashes: dict[str, Any]) -> bool:
+    for raw_path, expected in hashes.items():
+        path = Path(str(raw_path)).expanduser().resolve()
+        if not path.is_file() or not isinstance(expected, str) or _sha256(path) != expected:
+            return False
+    return True
+
+
 def _approved_blueprint_script(project: Path) -> Path:
     approval_path = project / BLUEPRINT_APPROVAL
     if not approval_path.is_file():
@@ -253,6 +270,7 @@ def get_production_status(project: Path, pages_raw: str) -> dict[str, Any]:
                     readiness.get("status") == "deliverable_ready"
                     and delivery_pptx.is_file()
                     and readiness.get("delivery_pptx_sha256") == _sha256(delivery_pptx)
+                    and _dependencies_current(readiness.get("dependency_hashes", {}))
                 ):
                     result["gates"].extend(("blueprint_images_approved", "image_ppt_assembled", "render_qa_passed", "strict_qa_passed"))
                     result["artifacts"].update(readiness.get("artifacts", {}))
@@ -373,6 +391,46 @@ def _assert_current_assembly(assembly: dict[str, Any]) -> tuple[Path, Path]:
     return pptx, manifest
 
 
+def _assert_current_speaker_notes(project: Path, pages_raw: str, template_manifest: Path) -> Path:
+    notes_manifest = assert_speaker_notes_review_ready(project, pages_raw)
+    template = _read_json(template_manifest)
+    recorded = template.get("speaker_notes_manifest")
+    if recorded is not None and Path(str(recorded)).expanduser().resolve() != notes_manifest:
+        raise RuntimeError("speaker notes approval does not match the assembled manifest")
+    return notes_manifest
+
+
+def _template_text_lock_record(template_manifest: Path) -> dict[str, Any] | None:
+    template = _read_json(template_manifest)
+    raw_path = template.get("template_text_lock")
+    if not raw_path:
+        return None
+    path = Path(str(raw_path)).expanduser().resolve()
+    if not path.is_file():
+        raise RuntimeError(f"template text lock is missing: {path}")
+    return {"path": str(path), "sha256": _sha256(path)}
+
+
+def _template_text_requirements(template_manifest: Path, pages: list[int]) -> dict[int, list[str]]:
+    template = _read_json(template_manifest)
+    raw_path = template.get("template_text_lock")
+    if not raw_path:
+        return {}
+    lock = _read_json(Path(str(raw_path)).expanduser().resolve())
+    requirements: dict[int, list[str]] = {page: [] for page in pages}
+    for record in lock.get("records", []):
+        if not isinstance(record, dict):
+            continue
+        page = int(record.get("page", 0) or 0)
+        if page not in requirements:
+            continue
+        for field in ("title", "subtitle"):
+            value = str(record.get(field) or "").strip()
+            if value:
+                requirements[page].append(value)
+    return requirements
+
+
 def _full_image_delivery_manifest(
     *,
     project: Path,
@@ -383,6 +441,8 @@ def _full_image_delivery_manifest(
     visual_report_path: Path,
 ) -> dict[str, Any]:
     template = _read_json(template_manifest)
+    template_text_lock = _template_text_lock_record(template_manifest)
+    native_text_requirements = _template_text_requirements(template_manifest, pages)
     tasks = {
         int(item["page_number"]): item
         for item in template.get("tasks", [])
@@ -396,12 +456,14 @@ def _full_image_delivery_manifest(
         "speaker_notes_required": True,
         "project": str(project),
         "template_image_manifest": str(template_manifest),
+        "template_text_lock": template_text_lock,
         "production_visual_report": {"path": str(visual_report_path), "passed": visual_report.get("passed") is True},
         "slides": [
             {
                 "slide": index,
                 "source_page": page,
                 "delivery_mode": "full_image_ppt",
+                "native_text_requirements": native_text_requirements.get(page, []),
                 "image_assets": [{"role": "approved_full_image", "path": str(approved_images[page])}],
                 "notes_present": bool(str(tasks.get(page, {}).get("notes_text") or "").strip()),
             }
@@ -419,6 +481,7 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
         raise ValueError(f"image PPT assembly is required; run produce assemble {root} --pages {pages_raw}")
     assembly = _read_json(assembly_path)
     pptx, template_manifest = _assert_current_assembly(assembly)
+    notes_manifest = _assert_current_speaker_notes(root, pages_raw, template_manifest)
     approved_images = _approved_images_from_assembly(assembly)
     pages = sorted(approved_images)
     if not pages:
@@ -427,6 +490,8 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
     qa_dir = root / QA_STAGE_ROOT / _pages_slug_from_raw(pages_raw)
     visual_report = render_and_compare(pptx, template_manifest, approved_images, pages, qa_dir)
     visual_report_path = qa_dir / "production_visual_report.json"
+    if not visual_report_path.is_file():
+        _write_json(visual_report_path, visual_report)
     if visual_report.get("passed") is not True:
         raise RuntimeError("render_qa_failed: " + ", ".join(visual_report.get("failures", [])))
 
@@ -448,6 +513,19 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
     delivery_dir.mkdir(parents=True, exist_ok=True)
     delivery_pptx = delivery_dir / f"{root.name}_{_pages_slug_from_raw(pages_raw)}.pptx"
     shutil.copy2(pptx, delivery_pptx)
+    dependencies = [
+        assembly_path,
+        pptx,
+        template_manifest,
+        notes_manifest,
+        visual_report_path,
+        strict_report_path,
+        delivery_manifest_path,
+        *approved_images.values(),
+    ]
+    template_text_lock = _template_text_lock_record(template_manifest)
+    if template_text_lock is not None:
+        dependencies.append(Path(template_text_lock["path"]))
     readiness = {
         "schema": "cyberppt.production_readiness.v1",
         "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -457,6 +535,7 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
         "assembly_report": str(assembly_path),
         "delivery_pptx": str(delivery_pptx),
         "delivery_pptx_sha256": _sha256(delivery_pptx),
+        "dependency_hashes": _dependency_hashes(dependencies),
         "artifacts": {
             "production_visual_report": str(visual_report_path),
             "strict_validation_report": str(strict_report_path),

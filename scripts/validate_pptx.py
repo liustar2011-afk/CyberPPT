@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -222,6 +223,8 @@ STRICT_FAILURE_CODES = {
     "FULL_IMAGE_BODY_EDITABILITY_INVALID",
     "FULL_IMAGE_TEMPLATE_TEXT_INVALID",
     "FULL_IMAGE_SPEAKER_NOTES_INVALID",
+    "FULL_IMAGE_TEMPLATE_TEXT_LOCK_MISSING",
+    "FULL_IMAGE_TEMPLATE_TEXT_LOCK_STALE",
     "FULL_IMAGE_VISUAL_REPORT_MISSING",
     "FULL_IMAGE_ASSET_MISSING",
     "FULL_IMAGE_BODY_IMAGE_MISSING",
@@ -299,6 +302,10 @@ def issue(code: str, message: str, *, slide: int | None = None) -> dict[str, Any
 
 def read_xml(archive: zipfile.ZipFile, name: str) -> ET.Element:
     return ET.fromstring(archive.read(name))
+
+
+def hashlib_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def find_slide_names(archive: zipfile.ZipFile) -> list[str]:
@@ -541,6 +548,31 @@ def validate_manifest(manifest: dict[str, Any] | None) -> list[dict[str, Any]]:
                     "full_image_ppt delivery must declare speaker_notes_required=true.",
                 )
             )
+        template_lock = manifest.get("template_text_lock")
+        if not isinstance(template_lock, dict) or not manifest_ref_exists(template_lock.get("path")) or not has_valid_sha256(template_lock.get("sha256")):
+            warnings.append(
+                issue(
+                    "FULL_IMAGE_TEMPLATE_TEXT_LOCK_MISSING",
+                    "full_image_ppt delivery requires an approved template_text_lock path and sha256.",
+                )
+            )
+        else:
+            path = Path(str(template_lock["path"]))
+            try:
+                if hashlib_sha256(path) != template_lock.get("sha256"):
+                    warnings.append(
+                        issue(
+                            "FULL_IMAGE_TEMPLATE_TEXT_LOCK_STALE",
+                            "full_image_ppt template_text_lock hash does not match the current file.",
+                        )
+                    )
+            except OSError:
+                warnings.append(
+                    issue(
+                        "FULL_IMAGE_TEMPLATE_TEXT_LOCK_MISSING",
+                        "full_image_ppt template_text_lock is not readable.",
+                    )
+                )
         visual = manifest.get("production_visual_report")
         if not isinstance(visual, dict) or visual.get("passed") is not True or not manifest_ref_exists(visual.get("path")):
             warnings.append(
@@ -768,6 +800,19 @@ def validate_manifest_slide(
                     slide=slide_number,
                 )
             )
+        combined_text = str(metrics.get("text_content") or "")
+        requirements = entry.get("native_text_requirements")
+        if isinstance(requirements, list):
+            missing = [str(value) for value in requirements if str(value).strip() and str(value) not in combined_text]
+            if missing:
+                warnings.append(
+                    issue(
+                        "FULL_IMAGE_NATIVE_TEMPLATE_TEXT_MISSING",
+                        "full_image_ppt native template text does not match the approved template text lock: "
+                        + ", ".join(missing),
+                        slide=slide_number,
+                    )
+                )
         return warnings
 
     qa = entry.get("qa_expectations") if isinstance(entry.get("qa_expectations"), dict) else {}
@@ -2076,6 +2121,7 @@ def inspect_slide(
         "min_font_size_pt": round(min_font_size, 2) if min_font_size is not None else None,
         "max_font_size_pt": round(max_font_size, 2) if max_font_size is not None else None,
         "text_characters": len(combined_text),
+        "text_content": combined_text,
     }
     return metrics, warnings
 
