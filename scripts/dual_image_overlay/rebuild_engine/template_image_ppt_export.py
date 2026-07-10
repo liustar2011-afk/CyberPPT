@@ -36,6 +36,7 @@ CONTENT_REGION_TOP_INSET = -18
 CONTENT_REGION_BOTTOM_INSET = -20
 CONTENT_REGION_SIDE_OUTSET = 38
 IMAGE_GENERATION_SCALE = 2
+MAX_GENERATED_ASPECT_RATIO_DRIFT = 0.08
 DEFAULT_STYLE_NAME = "cyberppt-full-image-default"
 DEFAULT_IMAGE_STYLE = {
     "name": DEFAULT_STYLE_NAME,
@@ -428,8 +429,30 @@ def normalize_generated_image_size(image_path: Path, size: str) -> tuple[int, in
         actual = image.size
         if actual == target:
             return actual
-        resized = image.convert("RGBA").resize(target, Image.Resampling.LANCZOS)
-        resized.save(image_path)
+        target_ratio = target[0] / target[1]
+        actual_ratio = actual[0] / actual[1]
+        if actual[0] <= actual[1]:
+            raise ValueError(
+                f"generated image is portrait ({actual[0]}x{actual[1]}), expected landscape {size}"
+            )
+        ratio_drift = abs(actual_ratio - target_ratio) / target_ratio
+        if ratio_drift > MAX_GENERATED_ASPECT_RATIO_DRIFT:
+            raise ValueError(
+                f"generated image aspect ratio {actual_ratio:.3f} differs from target {target_ratio:.3f}; "
+                f"actual={actual[0]}x{actual[1]}, target={size}"
+            )
+        source = image.convert("RGB")
+        scale = min(target[0] / actual[0], target[1] / actual[1])
+        scaled_size = (
+            max(1, round(actual[0] * scale)),
+            max(1, round(actual[1] * scale)),
+        )
+        resized = source.resize(scaled_size, Image.Resampling.LANCZOS)
+        background = source.getpixel((0, 0))
+        canvas = Image.new("RGB", target, background)
+        offset = ((target[0] - scaled_size[0]) // 2, (target[1] - scaled_size[1]) // 2)
+        canvas.paste(resized, offset)
+        canvas.save(image_path)
     return target
 
 
@@ -692,7 +715,9 @@ def command_generate(args: argparse.Namespace) -> int:
             continue
         image_path = Path(task["image_path"])
         if image_path.exists() and not args.force:
+            normalized_size = normalize_generated_image_size(image_path, args.size or task["size"])
             task["status"] = "Generated"
+            task["actual_size"] = f"{normalized_size[0]}x{normalized_size[1]}"
             continue
         run_codex_image(
             prompt=task["prompt"],

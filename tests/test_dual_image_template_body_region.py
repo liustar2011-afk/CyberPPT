@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import importlib.util
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+
+from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -43,6 +46,27 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
 
         self.assertEqual({"x": 20, "y": 104, "width": 1240, "height": 592}, adjusted)
         self.assertGreaterEqual(adjusted["y"], 104)
+
+    def test_normalize_generated_image_size_rejects_portrait_output(self) -> None:
+        module = load_template_image_ppt_export()
+        with tempfile.TemporaryDirectory() as tmp:
+            image_path = Path(tmp) / "portrait.png"
+            Image.new("RGB", (1024, 1536), "#f7f6f0").save(image_path)
+
+            with self.assertRaisesRegex(ValueError, "portrait|aspect"):
+                module.normalize_generated_image_size(image_path, "1680x944")
+
+    def test_normalize_generated_image_size_contains_close_landscape_without_distortion(self) -> None:
+        module = load_template_image_ppt_export()
+        with tempfile.TemporaryDirectory() as tmp:
+            image_path = Path(tmp) / "landscape.png"
+            Image.new("RGB", (1672, 941), "#12355b").save(image_path)
+
+            normalized = module.normalize_generated_image_size(image_path, "1680x944")
+
+            self.assertEqual((1680, 944), normalized)
+            with Image.open(image_path) as image:
+                self.assertEqual((1680, 944), image.size)
 
 
 if __name__ == "__main__":
