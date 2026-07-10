@@ -720,12 +720,15 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         self.assertEqual("700", text_block["style"]["font_weight"])
 
     def test_pages_12_13_fixture_consumes_page_understanding_without_fragment_unique_match_gate(self) -> None:
+        project = ROOT / "projects/power-trusted-data-space-p12-p13"
         manifest = (
-            ROOT
-            / "projects/power-trusted-data-space-p12-p13/workbench/stages/02-blueprint-dual-image/pages_012_013/page_image_pairs.json"
+            project
+            / "workbench/stages/02-blueprint-dual-image/pages_012_013/page_image_pairs.json"
         )
         if not manifest.exists():
             self.skipTest("pages 12/13 fixture is not present")
+        if not (project / "workbench/analysis_expression/contract.json").is_file():
+            self.skipTest("pages 12/13 fixture does not have the required project contract")
 
         result = subprocess.run(
             [
@@ -733,6 +736,8 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
                 "-m",
                 "cyberppt",
                 "template-rebuild",
+                "--project",
+                str(project),
                 str(manifest),
                 "--export",
             ],
@@ -743,7 +748,6 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
         )
 
         self.assertIn(result.returncode, {0, 3}, result.stdout + result.stderr)
-        project = ROOT / "projects/power-trusted-data-space-p12-p13"
         source_gate = json.loads((project / "analysis/source_capture_gate.json").read_text(encoding="utf-8"))
         page_013 = json.loads(
             (project / "analysis/page_understanding/page_013_page_understanding.json").read_text(encoding="utf-8")

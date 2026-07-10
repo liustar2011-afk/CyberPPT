@@ -22,7 +22,10 @@ from xml.sax.saxutils import quoteattr
 
 from PIL import Image, ImageChops
 
-from codex_oauth_image import run_codex_image
+try:
+    from .codex_oauth_image import run_codex_image
+except ImportError:
+    from codex_oauth_image import run_codex_image
 
 SCRIPTS_DIR = Path(__file__).resolve().parent
 DEFAULT_BRAND_DIR = SCRIPTS_DIR / "templates" / "brands" / "中电联公共元素_轻量版"
@@ -656,36 +659,178 @@ def assert_generated_content_fill(image_path: Path) -> dict[str, object]:
     return report
 
 
+def _assert_exact_page_set(label: str, actual: set[int], pages: list[int]) -> None:
+    expected = set(pages)
+    if actual != expected:
+        raise ValueError(
+            f"{label} page set mismatch: expected {sorted(expected)}, got {sorted(actual)}"
+        )
+
+
+def load_template_text_lock(path: Path, pages: list[int]) -> dict[int, dict]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    records = data.get("records")
+    if not isinstance(records, list):
+        raise ValueError(f"template text lock must contain records[]: {path}")
+    declared_pages = data.get("pages")
+    if not isinstance(declared_pages, list):
+        raise ValueError(f"template text lock must contain pages[]: {path}")
+    _assert_exact_page_set("template text lock", {int(item) for item in declared_pages}, pages)
+
+    by_page: dict[int, dict] = {}
+    for item in records:
+        if not isinstance(item, dict) or "page" not in item:
+            continue
+        page_number = int(item["page"])
+        if page_number in by_page:
+            raise ValueError(f"duplicate template text lock record for page {page_number}")
+        by_page[page_number] = item
+    for page_number in pages:
+        record = by_page.get(page_number)
+        if record is None:
+            raise ValueError(f"missing template text lock record for page {page_number}")
+        if record.get("approved") is not True:
+            raise ValueError(f"template text lock is not approved for page {page_number}")
+    return by_page
+
+
+def load_approved_full_images(path: Path, pages: list[int]) -> dict[int, Path]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    pairs = data.get("pairs")
+    if not isinstance(pairs, list):
+        raise ValueError(f"approved page image manifest must contain pairs[]: {path}")
+
+    pair_pages = {
+        int(item["page_number"])
+        for item in pairs
+        if isinstance(item, dict) and "page_number" in item
+    }
+    _assert_exact_page_set("approved page image manifest", pair_pages, pages)
+    images: dict[int, Path] = {}
+    for item in pairs:
+        if not isinstance(item, dict) or "page_number" not in item:
+            continue
+        page_number = int(item["page_number"])
+        full = item.get("full")
+        raw_path = full.get("path") if isinstance(full, dict) else None
+        if not raw_path:
+            raise ValueError(f"approved full image path is missing for page {page_number}")
+        image_path = Path(str(raw_path)).expanduser()
+        if not image_path.is_absolute():
+            image_path = path.parent / image_path
+        image_path = image_path.resolve()
+        if not image_path.is_file():
+            raise FileNotFoundError(
+                f"approved full image is missing for page {page_number}: {image_path}"
+            )
+        images[page_number] = image_path
+    return images
+
+
+def _load_approved_speaker_notes(path: Path, pages: list[int]) -> dict[int, dict]:
+    notes = load_speaker_notes(path)
+    _assert_exact_page_set("approved speaker notes manifest", set(notes), pages)
+    return notes
+
+
 def build_manifest(
     script_path: Path,
-    page_numbers: list[int],
-    pages: dict[int, PageBlock],
-    output_dir: Path,
+    page_numbers: list[int] | None = None,
+    pages: dict[int, PageBlock] | None = None,
+    output_dir: Path | None = None,
     *,
+    selected_pages: list[int] | None = None,
     image_style_name: str | None = None,
     speaker_notes_manifest: Path | None = None,
+    template_text_lock: Path | None = None,
+    page_image_manifest: Path | None = None,
+    project_production: bool = False,
 ) -> dict:
+    script_path = Path(script_path)
+    pages = pages if pages is not None else parse_page_blocks(script_path)
+    if selected_pages is not None:
+        if page_numbers is not None and list(page_numbers) != list(selected_pages):
+            raise ValueError("page_numbers and selected_pages must match when both are provided")
+        page_numbers = list(selected_pages)
+    if page_numbers is None:
+        page_numbers = sorted(pages)
+    missing_script_pages = sorted(set(page_numbers) - set(pages))
+    if missing_script_pages:
+        raise ValueError(f"Pages not found in script: {missing_script_pages}")
+    if output_dir is None:
+        raise ValueError("output_dir is required")
+    output_dir = Path(output_dir)
+
+    template_locks: dict[int, dict] = {}
+    approved_images: dict[int, Path] = {}
+    if project_production:
+        if template_text_lock is None:
+            raise ValueError("metadata_required: --template-text-lock is required")
+        if page_image_manifest is None:
+            raise ValueError("approved page image manifest is required")
+        if speaker_notes_manifest is None:
+            raise ValueError("approved speaker notes manifest is required")
+        template_locks = load_template_text_lock(Path(template_text_lock), page_numbers)
+        approved_images = load_approved_full_images(Path(page_image_manifest), page_numbers)
+        speaker_notes = _load_approved_speaker_notes(Path(speaker_notes_manifest), page_numbers)
+    else:
+        speaker_notes = load_speaker_notes(speaker_notes_manifest)
+
     rules = load_brand_rules()
     brand_body_region = scale_region(rules["content_regions"]["body_pages"], CANVAS_SIZE)
     body_region = inset_content_region(brand_body_region)
     generation_size = generation_size_for_region(body_region)
     image_style = load_image_style(image_style_name)
-    agenda_items = agenda_items_from_pages(pages, page_numbers)
-    speaker_notes = load_speaker_notes(speaker_notes_manifest)
+    if project_production:
+        agenda_items = []
+        for number in page_numbers:
+            page = pages[number]
+            if page_role(page) != "section":
+                continue
+            record = template_locks[number]
+            locked_title = str(record.get("title") or "")
+            fallback_label, section_title = chapter_label_and_title(locked_title)
+            agenda_items.append(
+                {
+                    "label": str(record.get("section") or fallback_label),
+                    "title": section_title,
+                }
+            )
+    else:
+        agenda_items = agenda_items_from_pages(pages, page_numbers)
     tasks = []
     for number in page_numbers:
         page = pages[number]
         role = page_role(page)
         content = extract_content(page)
-        stem = page_stem(number, page.title)
+        lock_record = template_locks.get(number)
+        if lock_record is not None:
+            task_title = str(lock_record.get("title") or "")
+            content = PageContent(
+                title=task_title,
+                subtitle=str(lock_record.get("subtitle") or ""),
+                body=content.body,
+            )
+        else:
+            task_title = page.title
+        stem = page_stem(number, task_title)
         task = {
             "page_number": number,
             "page_role": role,
-            "title": page.title,
+            "title": task_title,
             "slide_title": content.title,
             "subtitle": content.subtitle,
             "body_text": content.body,
         }
+        if lock_record is not None:
+            task.update(
+                {
+                    "section": str(lock_record.get("section") or ""),
+                    "template_variant": str(lock_record.get("template_variant") or "default"),
+                    "page_badge_enabled": bool(lock_record.get("page_badge_enabled", False)),
+                    "footer_enabled": bool(lock_record.get("footer_enabled", False)),
+                }
+            )
         template_name = page_template_name(role)
         if template_name:
             task.update(
@@ -698,11 +843,20 @@ def build_manifest(
             if template_name == "agenda":
                 task["agenda_items"] = agenda_items
             elif template_name == "section":
-                label, section_title = chapter_label_and_title(page.title)
+                if lock_record is not None:
+                    label = str(lock_record.get("section") or "")
+                    fallback_label, section_title = chapter_label_and_title(task_title)
+                    label = label or fallback_label
+                else:
+                    label, section_title = chapter_label_and_title(page.title)
                 task["section_no"] = label
                 task["section_title"] = section_title
         else:
-            image_path = output_dir / "images" / f"{stem}_content.png"
+            image_path = (
+                approved_images[number]
+                if project_production
+                else output_dir / "images" / f"{stem}_content.png"
+            )
             prompt = content_prompt(page, content, body_region, generation_size, role, image_style)
             validate_image_prompt_text(number, prompt)
             task.update(
@@ -711,13 +865,17 @@ def build_manifest(
                     "image_path": str(image_path),
                     "prompt": prompt,
                     "size": f"{generation_size['width']}x{generation_size['height']}",
-                    "status": "Pending",
+                    "status": "Approved" if project_production else "Pending",
                 }
             )
         note_record = speaker_notes.get(number)
         if note_record is not None:
             task["notes_text"] = str(note_record.get("notes_text") or "")
-            task["notes_source"] = str(note_record.get("source") or "speaker_notes_manifest")
+            task["notes_source"] = (
+                "approved_speaker_notes"
+                if project_production
+                else str(note_record.get("source") or "speaker_notes_manifest")
+            )
             task["notes_title"] = str(note_record.get("title") or notes_heading_for_task(task))
         else:
             task["notes_text"] = page_notes_text_for_task(page, task)
@@ -726,6 +884,7 @@ def build_manifest(
         tasks.append(task)
     manifest = {
         "mode": "template-image-ppt",
+        "project_production": project_production,
         "source_script": str(script_path),
         "created_at": datetime.now(timezone.utc).isoformat(),
         "canvas": {"width": CANVAS_SIZE[0], "height": CANVAS_SIZE[1]},
@@ -743,6 +902,8 @@ def build_manifest(
         "image_generation_scale": IMAGE_GENERATION_SCALE,
         "generation_size": generation_size,
         "speaker_notes_manifest": str(speaker_notes_manifest) if speaker_notes_manifest else None,
+        "template_text_lock": str(template_text_lock) if template_text_lock else None,
+        "page_image_manifest": str(page_image_manifest) if page_image_manifest else None,
         "tasks": tasks,
     }
     validate_manifest_contract(manifest)
@@ -960,6 +1121,32 @@ def command_plan(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_plan_dispatch(args: argparse.Namespace) -> int:
+    if not getattr(args, "project_production", False):
+        return command_plan(args)
+
+    script = args.script.resolve()
+    pages = parse_page_blocks(script)
+    nums = parse_page_selection(args.pages, set(pages))
+    output_dir = args.output_dir.resolve()
+    manifest = build_manifest(
+        script_path=script,
+        selected_pages=nums,
+        pages=pages,
+        output_dir=output_dir,
+        image_style_name=args.image_style,
+        speaker_notes_manifest=(
+            args.speaker_notes_manifest.resolve() if args.speaker_notes_manifest else None
+        ),
+        template_text_lock=(args.template_text_lock.resolve() if args.template_text_lock else None),
+        page_image_manifest=(args.page_image_manifest.resolve() if args.page_image_manifest else None),
+        project_production=True,
+    )
+    write_json(output_dir / "template_image_manifest.json", manifest)
+    print(output_dir / "template_image_manifest.json")
+    return 0
+
+
 def command_generate(args: argparse.Namespace) -> int:
     manifest_path = args.manifest.resolve()
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -1007,10 +1194,14 @@ def command_export(args: argparse.Namespace) -> int:
 
 
 def command_run(args: argparse.Namespace) -> int:
-    rc = command_plan(args)
+    rc = command_plan_dispatch(args)
     if rc != 0 or args.dry_run:
         return rc
     manifest = args.output_dir.resolve() / "template_image_manifest.json"
+    if getattr(args, "project_production", False):
+        return command_export(
+            argparse.Namespace(manifest=manifest, output_dir=args.output_dir, name=args.name)
+        )
     gen_args = argparse.Namespace(
         manifest=manifest,
         model=args.model,
@@ -1043,7 +1234,10 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--dry-run", action="store_true")
         p.add_argument("--image-style", default=DEFAULT_STYLE_NAME, help="Image style preset name or style JSON/Markdown path.")
         p.add_argument("--speaker-notes-manifest", type=Path, help="Optional business-script speaker notes manifest.")
-        p.set_defaults(func=command_plan if name == "plan" else command_run)
+        p.add_argument("--project-production", action="store_true")
+        p.add_argument("--template-text-lock", type=Path)
+        p.add_argument("--page-image-manifest", type=Path)
+        p.set_defaults(func=command_plan_dispatch if name == "plan" else command_run)
     gen = sub.add_parser("generate")
     gen.add_argument("manifest", type=Path)
     gen.add_argument("--model", default="gpt-image-2")

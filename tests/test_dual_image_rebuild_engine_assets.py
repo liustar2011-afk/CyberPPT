@@ -1,14 +1,230 @@
 from __future__ import annotations
 
+import json
+import sys
 import unittest
 from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
 ENGINE = ROOT / "scripts" / "dual_image_overlay" / "rebuild_engine"
+if str(ENGINE) not in sys.path:
+    sys.path.insert(0, str(ENGINE))
+
+import template_image_ppt_export as exporter  # noqa: E402
+
+
+def _write_json(path: Path, payload: dict) -> Path:
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return path
+
+
+def _write_project_production_fixture(root: Path) -> dict[str, Path]:
+    script = root / "script-final.md"
+    script.write_text(
+        "## \u7b2c2\u9875\uff1aScript title\n"
+        "\u3010\u5185\u5bb9\u9501\u5b9a\u3011\n"
+        "\u6807\u9898\uff1aScript title\n"
+        "\u526f\u6807\u9898\uff1aScript subtitle\n"
+        "Script body\n",
+        encoding="utf-8",
+    )
+    full_image = root / "page_002_full.png"
+    full_image.write_bytes(b"approved-full-image")
+    template_lock = _write_json(
+        root / "template_text_lock.json",
+        {
+            "schema": "cyberppt.template_text_lock.v1",
+            "pages": [2],
+            "records": [
+                {
+                    "page": 2,
+                    "title": "Locked title",
+                    "subtitle": "Locked subtitle",
+                    "section": "Locked section",
+                    "template_variant": "locked-variant",
+                    "page_badge_enabled": True,
+                    "footer_enabled": False,
+                    "approved": True,
+                }
+            ],
+        },
+    )
+    pair_manifest = _write_json(
+        root / "page_image_pairs.json",
+        {
+            "mode": "cyberppt-full-image-only",
+            "pairs": [
+                {
+                    "page_number": 2,
+                    "title": "Script title",
+                    "full": {
+                        "path": str(full_image),
+                        "status": "Generated",
+                    },
+                }
+            ],
+        },
+    )
+    notes_manifest = _write_json(
+        root / "speaker_notes_manifest.json",
+        {
+            "schema": "cyberppt.speaker_notes_manifest.v1",
+            "pages": [2],
+            "notes": [
+                {
+                    "page_number": 2,
+                    "title": "Approved note title",
+                    "notes_text": "Approved note body",
+                    "source": "business_rule_draft",
+                }
+            ],
+        },
+    )
+    return {
+        "script": script,
+        "full_image": full_image,
+        "template_lock": template_lock,
+        "pair_manifest": pair_manifest,
+        "notes_manifest": notes_manifest,
+        "output": root / "output",
+    }
+
+
+def _build_project_production_manifest(paths: dict[str, Path], **overrides: object) -> dict:
+    kwargs: dict[str, object] = {
+        "script_path": paths["script"],
+        "selected_pages": [2],
+        "output_dir": paths["output"],
+        "template_text_lock": paths["template_lock"],
+        "page_image_manifest": paths["pair_manifest"],
+        "speaker_notes_manifest": paths["notes_manifest"],
+        "project_production": True,
+    }
+    kwargs.update(overrides)
+    return exporter.build_manifest(**kwargs)
 
 
 class DualImageRebuildEngineAssetsTest(unittest.TestCase):
+    def test_project_production_uses_locked_text_approved_images_and_notes(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+
+            locks = exporter.load_template_text_lock(paths["template_lock"], [2])
+            images = exporter.load_approved_full_images(paths["pair_manifest"], [2])
+            manifest = _build_project_production_manifest(paths)
+
+        task = manifest["tasks"][0]
+        self.assertEqual("Locked title", locks[2]["title"])
+        self.assertEqual(paths["full_image"].resolve(), images[2])
+        self.assertEqual("Locked title", task["title"])
+        self.assertEqual("Locked title", task["slide_title"])
+        self.assertEqual("Locked subtitle", task["subtitle"])
+        self.assertEqual("Locked section", task["section"])
+        self.assertEqual("locked-variant", task["template_variant"])
+        self.assertTrue(task["page_badge_enabled"])
+        self.assertFalse(task["footer_enabled"])
+        self.assertEqual(str(paths["full_image"].resolve()), task["image_path"])
+        self.assertEqual("approved_speaker_notes", task["notes_source"])
+        self.assertEqual("Approved note body", task["notes_text"])
+
+    def test_project_production_requires_all_approved_inputs(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            cases = (
+                ("template_text_lock", None, "metadata_required: --template-text-lock is required"),
+                ("page_image_manifest", None, "approved page image manifest is required"),
+                ("speaker_notes_manifest", None, "approved speaker notes manifest is required"),
+            )
+            for key, value, message in cases:
+                with self.subTest(key=key), self.assertRaisesRegex(ValueError, message):
+                    _build_project_production_manifest(paths, **{key: value})
+
+    def test_project_production_rejects_missing_page_lock(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            payload = json.loads(paths["template_lock"].read_text(encoding="utf-8"))
+            payload["records"] = []
+            _write_json(paths["template_lock"], payload)
+
+            with self.assertRaisesRegex(ValueError, "missing template text lock record for page 2"):
+                _build_project_production_manifest(paths)
+
+    def test_project_production_rejects_unapproved_page_lock(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            payload = json.loads(paths["template_lock"].read_text(encoding="utf-8"))
+            payload["records"][0]["approved"] = False
+            _write_json(paths["template_lock"], payload)
+
+            with self.assertRaisesRegex(ValueError, "template text lock is not approved for page 2"):
+                _build_project_production_manifest(paths)
+
+    def test_project_production_rejects_page_set_mismatch(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            payload = json.loads(paths["pair_manifest"].read_text(encoding="utf-8"))
+            payload["pairs"][0]["page_number"] = 1
+            _write_json(paths["pair_manifest"], payload)
+
+            with self.assertRaisesRegex(ValueError, "approved page image manifest page set mismatch"):
+                _build_project_production_manifest(paths)
+
+    def test_project_production_rejects_missing_full_image(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            paths["full_image"].unlink()
+
+            with self.assertRaisesRegex(FileNotFoundError, "approved full image is missing for page 2"):
+                _build_project_production_manifest(paths)
+
+    def test_project_production_run_skips_image_generation(self) -> None:
+        with TemporaryDirectory() as directory:
+            paths = _write_project_production_fixture(Path(directory))
+            args = exporter.build_parser().parse_args(
+                [
+                    "run",
+                    "--script",
+                    str(paths["script"]),
+                    "--pages",
+                    "2",
+                    "--output-dir",
+                    str(paths["output"]),
+                    "--project-production",
+                    "--template-text-lock",
+                    str(paths["template_lock"]),
+                    "--page-image-manifest",
+                    str(paths["pair_manifest"]),
+                    "--speaker-notes-manifest",
+                    str(paths["notes_manifest"]),
+                ]
+            )
+
+            exported_pptx = Path(directory) / "approved-inputs.pptx"
+            with patch.object(exporter, "command_generate") as generate, patch.object(
+                exporter, "run_export", return_value=exported_pptx
+            ) as export:
+                result = args.func(args)
+
+            manifest = json.loads(
+                (paths["output"] / "template_image_manifest.json").read_text(encoding="utf-8")
+            )
+            project = (
+                paths["output"] / "template_image_ppt_template_image_project"
+            ).resolve()
+            svg = next((project / "svg_output").glob("*.svg")).read_text(encoding="utf-8")
+            copied_image_exists = (project / "images" / paths["full_image"].name).is_file()
+
+        self.assertEqual(0, result)
+        generate.assert_not_called()
+        export.assert_called_once_with(project)
+        self.assertTrue(copied_image_exists)
+        self.assertIn("Locked title", svg)
+        self.assertIn("Locked subtitle", svg)
+        self.assertEqual(str(paths["full_image"].resolve()), manifest["tasks"][0]["image_path"])
+
     def test_rebuild_engine_required_files_exist(self) -> None:
         required = [
             "editable_overlay_rebuild.py",
