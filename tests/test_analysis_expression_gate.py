@@ -96,7 +96,7 @@ DRAWING_SCRIPT = """# 绘制脚本
 ### 信息密度
 - 最少呈现3项供需指标
 ### 禁止项
-- 不使用装饰性图标
+- 避免装饰元素
 ### 非上屏：证据链
 - E-01
 ### 来源位置
@@ -257,9 +257,47 @@ class AnalysisExpressionGateTests(unittest.TestCase):
             pending = stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS)
 
             data = json.loads(pending.read_text(encoding="utf-8"))
+            self.assertEqual("是否采用领导审定型汇报方向？", data["question"])
             self.assertEqual("领导审定型", data["recommendation"])
             self.assertEqual("leadership_review", data["options"][0]["id"])
             self.assertTrue((project / "workbench/analysis_expression/reporting_direction.md").is_file())
+
+    def test_business_requires_evidence_units_on_each_content_page(self) -> None:
+        second_page = BUSINESS_SCRIPT.replace("第1页", "第2页").replace("年度供需预测报告第3页", "")
+
+        errors = validate_business_script(BUSINESS_SCRIPT + "\n" + second_page)
+
+        self.assertIn("business_script page 2 requires at least one source location", errors)
+
+    def test_drawing_requires_inherited_units_on_each_content_page(self) -> None:
+        second_page = DRAWING_SCRIPT.replace("第1页", "第2页").replace("- E-01\n### 来源位置", "### 来源位置")
+
+        errors = validate_drawing_script(DRAWING_SCRIPT + "\n" + second_page, BUSINESS_SCRIPT + "\n" + BUSINESS_SCRIPT.replace("第1页", "第2页"))
+
+        self.assertIn("drawing_script page 2 missing required evidence binding: E-01", errors)
+
+    def test_drawing_rejects_implementation_directives(self) -> None:
+        drawing = DRAWING_SCRIPT.replace("指标卡与结论卡通过箭头关联。", "使用蓝色 #005BAC，微软雅黑字体和线性图标完成最终构图。")
+
+        errors = validate_drawing_script(drawing, BUSINESS_SCRIPT)
+
+        self.assertIn("drawing_script must not contain implementation directives", errors)
+
+    def test_status_reports_validation_failures_and_dependency_hash_state(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+            self._approve_all_through_business(project)
+            stage_analysis_artifact(project, "drawing_script", DRAWING_SCRIPT, "drawing script", OPTIONS)
+            approve_analysis_artifact(project, "drawing_script", "leadership_review")
+            business = project / "workbench/analysis_expression/business_script.md"
+            business.write_text(BUSINESS_SCRIPT.replace("供需总体平衡", "供需偏紧"), encoding="utf-8")
+
+            status = get_analysis_expression_status(project)
+
+        drawing_status = status.gates["drawing_script"]
+        self.assertEqual("stale", drawing_status["business_dependency_hash_state"])
+        self.assertTrue(drawing_status["validation_failures"])
 
     def test_utc_timestamp_uses_timezone_utc_for_python_310_compatibility(self) -> None:
         source = inspect.getsource(analysis_expression_gate._utc_now)
