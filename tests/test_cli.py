@@ -49,6 +49,21 @@ class CliTests(unittest.TestCase):
         self.assertIn("analysis-expression-status", help_text)
         self.assertIn("adopt-analysis-expression-contract", help_text)
 
+    def test_production_alias_help_requires_explicit_project(self) -> None:
+        parser = build_parser()
+        help_text = parser.format_help()
+
+        for alias in (
+            "body-blueprint-prompts",
+            "image-ppt",
+            "pair-manifest",
+            "source-capture",
+            "speaker-notes",
+            "template-rebuild",
+        ):
+            with self.subTest(alias):
+                self.assertIn(f"{alias} requires --project <path>", help_text)
+
     def test_analysis_expression_status_json_includes_pending_choices(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp) / "client-report"
@@ -156,12 +171,12 @@ class CliTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 0)
         self.assertIn("Check PPTX structure", completed.stdout)
 
-    def test_image_ppt_help_is_forwarded_to_underlying_script(self) -> None:
+    def test_image_ppt_help_requires_project_context(self) -> None:
         completed = subprocess.run(
             [sys.executable, "-m", "cyberppt", "image-ppt", "--help"],
             check=False,
             capture_output=True,
             text=True,
         )
-        self.assertEqual(completed.returncode, 0)
-        self.assertIn("Generate image-based PPT inside the CEC template", completed.stdout)
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn("production-capable aliases require exactly one --project <path>", completed.stderr)

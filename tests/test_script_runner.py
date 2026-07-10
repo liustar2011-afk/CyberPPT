@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 import unittest
+import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
 from cyberppt.commands.analysis_expression_gate import adopt_analysis_expression_contract
-from cyberppt.commands.script_runner import SCRIPT_ALIASES, run_script, script_path
+from cyberppt.commands.script_runner import (
+    SCRIPT_ALIASES,
+    _STAGE_2_PLUS_GENERATION_ALIASES,
+    run_script,
+    script_path,
+)
 
 
 class ScriptRunnerTests(unittest.TestCase):
@@ -31,30 +37,70 @@ class ScriptRunnerTests(unittest.TestCase):
         with self.assertRaises(KeyError):
             script_path("missing-command")
 
-    def test_project_bearing_stage_2_generation_aliases_require_analysis_approval(self) -> None:
-        import tempfile
+    def test_generation_aliases_require_explicit_project(self) -> None:
+        for alias in _STAGE_2_PLUS_GENERATION_ALIASES:
+            with self.subTest(alias):
+                with patch("cyberppt.commands.script_runner.subprocess.run") as run:
+                    with self.assertRaises(ValueError) as error:
+                        run_script(alias, ["run", "--script", "outside.md", "-o", "new-output"])
 
+                self.assertEqual(
+                    "production-capable aliases require exactly one --project <path>",
+                    str(error.exception),
+                )
+                run.assert_not_called()
+
+    def test_generation_alias_rejects_non_project_path(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            with patch("cyberppt.commands.script_runner.subprocess.run") as run:
+                with self.assertRaisesRegex(ValueError, "CyberPPT project contract"):
+                    run_script("image-ppt", ["--project", temp, "run", "--script", "outside.md", "-o", "out"])
+
+            run.assert_not_called()
+
+    def test_generation_aliases_strip_explicit_project_before_forwarding(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            contract = project / "workbench" / "analysis_expression" / "contract.json"
+            contract.parent.mkdir(parents=True)
+            contract.write_text("{}", encoding="utf-8")
+
+            for alias in _STAGE_2_PLUS_GENERATION_ALIASES:
+                with self.subTest(alias):
+                    with (
+                        patch("cyberppt.commands.script_runner.assert_analysis_expression_ready") as ready,
+                        patch("cyberppt.commands.script_runner.subprocess.run") as run,
+                    ):
+                        run.return_value.returncode = 0
+                        result = run_script(alias, ["--project", str(project), "run", "--script", "outside.md", "-o", "out"])
+
+                    self.assertEqual(0, result)
+                    ready.assert_called_once_with(project.resolve())
+                    self.assertEqual(
+                        ["run", "--script", "outside.md", "-o", "out"],
+                        run.call_args.args[0][2:],
+                    )
+
+    def test_non_generation_alias_forwards_project_option_unchanged(self) -> None:
+        with patch("cyberppt.commands.script_runner.subprocess.run") as run:
+            run.return_value.returncode = 0
+            result = run_script("validate", ["--project", "/tmp/outside", "presentation.pptx"])
+
+        self.assertEqual(0, result)
+        self.assertEqual(
+            ["--project", "/tmp/outside", "presentation.pptx"],
+            run.call_args.args[0][2:],
+        )
+
+    def test_generation_aliases_require_analysis_approval_after_project_validation(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
             adopt_analysis_expression_contract(project)
 
-            for alias in ("body-blueprint-prompts", "image-ppt", "pair-manifest", "source-capture", "speaker-notes", "template-rebuild"):
+            for alias in _STAGE_2_PLUS_GENERATION_ALIASES:
                 with self.subTest(alias):
                     with patch("cyberppt.commands.script_runner.subprocess.run") as run:
                         with self.assertRaisesRegex(ValueError, "source_analysis approval is required"):
-                            run_script(alias, ["--project-path", str(project)])
+                            run_script(alias, ["--project", str(project)])
 
                     run.assert_not_called()
-
-    def test_generation_alias_rejects_unapproved_equals_form_project_path_before_subprocess(self) -> None:
-        import tempfile
-
-        with tempfile.TemporaryDirectory() as temp:
-            project = Path(temp) / "client-report"
-            adopt_analysis_expression_contract(project)
-
-            with patch("cyberppt.commands.script_runner.subprocess.run") as run:
-                with self.assertRaisesRegex(ValueError, "source_analysis approval is required"):
-                    run_script("pair-manifest", [f"--project-path={project}"])
-
-            run.assert_not_called()

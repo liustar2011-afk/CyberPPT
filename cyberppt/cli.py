@@ -27,7 +27,7 @@ from cyberppt.commands.blueprint_gate import (
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script, status_as_json
-from cyberppt.commands.script_runner import SCRIPT_ALIASES, run_script
+from cyberppt.commands.script_runner import _STAGE_2_PLUS_GENERATION_ALIASES, SCRIPT_ALIASES, run_script
 from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
 
 
@@ -473,7 +473,10 @@ def build_parser() -> argparse.ArgumentParser:
     final_script_pages_parser.set_defaults(func=_final_script_pages_command)
 
     for alias in sorted(SCRIPT_ALIASES):
-        command = subparsers.add_parser(alias, add_help=False, help=f"Run scripts/{SCRIPT_ALIASES[alias]}.")
+        help_text = f"Run scripts/{SCRIPT_ALIASES[alias]}."
+        if alias in _STAGE_2_PLUS_GENERATION_ALIASES:
+            help_text = f"{alias} requires --project <path>. {help_text}"
+        command = subparsers.add_parser(alias, add_help=False, help=help_text)
         command.add_argument("script_args", nargs=argparse.REMAINDER)
         command.set_defaults(func=lambda args, alias=alias: run_script(alias, args.script_args))
 

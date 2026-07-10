@@ -33,7 +33,6 @@ SCRIPT_ALIASES: dict[str, str] = {
 _STAGE_2_PLUS_GENERATION_ALIASES = frozenset(
     {"body-blueprint-prompts", "image-ppt", "pair-manifest", "source-capture", "speaker-notes", "template-rebuild"}
 )
-_PROJECT_OPTION_NAMES = ("--project", "--project-path", "--project-dir", "--project-root")
 
 
 def script_path(script_name: str) -> Path:
@@ -46,40 +45,42 @@ def script_path(script_name: str) -> Path:
 
 
 def run_script(script_name: str, args: list[str]) -> int:
-    _assert_generation_alias_ready(script_name, args)
+    forwarded_args = _assert_generation_alias_ready(script_name, args)
     path = script_path(script_name)
-    completed = subprocess.run([sys.executable, str(path), *args], check=False)
+    completed = subprocess.run([sys.executable, str(path), *forwarded_args], check=False)
     return int(completed.returncode)
 
 
-def _assert_generation_alias_ready(script_name: str, args: list[str]) -> None:
+def generation_project(args: list[str]) -> Path:
+    values = _option_values(args, "--project")
+    if len(values) != 1:
+        raise ValueError("production-capable aliases require exactly one --project <path>")
+    project = Path(values[0]).expanduser().resolve()
+    contract = project / "workbench" / "analysis_expression" / "contract.json"
+    if not contract.is_file():
+        raise ValueError(f"CyberPPT project contract not found: {contract}")
+    return project
+
+
+def _assert_generation_alias_ready(script_name: str, args: list[str]) -> list[str]:
     if script_name not in _STAGE_2_PLUS_GENERATION_ALIASES:
-        return
-    for candidate in _generation_project_candidates(script_name, args):
-        if (candidate / "workbench" / "analysis_expression" / "contract.json").exists():
-            assert_analysis_expression_ready(candidate)
+        return args
+    project = generation_project(args)
+    assert_analysis_expression_ready(project)
+    return _without_option(args, "--project")
 
 
-def _generation_project_candidates(script_name: str, args: list[str]) -> tuple[Path, ...]:
-    candidates: list[Path] = []
-    for index, arg in enumerate(args[:-1]):
-        if arg in _PROJECT_OPTION_NAMES:
-            candidates.append(Path(args[index + 1]).expanduser().resolve())
-    for arg in args:
-        option, separator, value = arg.partition("=")
-        if separator and option in _PROJECT_OPTION_NAMES:
-            candidates.append(Path(value).expanduser().resolve())
-    if script_name == "source-capture" and args and not args[0].startswith("-"):
-        candidates.append(Path(args[0]).expanduser().resolve())
-    for arg in args:
-        if arg.startswith("-"):
+def _option_values(args: list[str], option: str) -> list[str]:
+    return [args[index + 1] for index, arg in enumerate(args[:-1]) if arg == option]
+
+
+def _without_option(args: list[str], option: str) -> list[str]:
+    forwarded: list[str] = []
+    index = 0
+    while index < len(args):
+        if args[index] == option:
+            index += 2
             continue
-        path = Path(arg).expanduser()
-        if path.exists():
-            resolved = path.resolve()
-            candidates.extend(
-                parent
-                for parent in (resolved, *resolved.parents)
-                if (parent / "workbench" / "analysis_expression" / "contract.json").exists()
-            )
-    return tuple(dict.fromkeys(candidates))
+        forwarded.append(args[index])
+        index += 1
+    return forwarded
