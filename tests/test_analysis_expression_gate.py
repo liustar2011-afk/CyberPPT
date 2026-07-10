@@ -173,6 +173,9 @@ class AnalysisExpressionGateTests(unittest.TestCase):
 
         self.assertNotIn("missing required business fact in visible text: 供需总体平衡", errors)
 
+    def test_drawing_does_not_drop_unapproved_fact_modifiers(self) -> None:
+        self.assertFalse(analysis_expression_gate._fact_is_visible("基本完成", "完成"))
+
     def test_drawing_preserves_all_inherited_units_in_approval_record(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
