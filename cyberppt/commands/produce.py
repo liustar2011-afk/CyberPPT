@@ -111,6 +111,8 @@ def _dependency_hashes(paths: list[Path]) -> dict[str, str]:
 
 
 def _dependencies_current(hashes: dict[str, Any]) -> bool:
+    if not hashes:
+        return False
     for raw_path, expected in hashes.items():
         path = Path(str(raw_path)).expanduser().resolve()
         if not path.is_file() or not isinstance(expected, str) or _sha256(path) != expected:
@@ -270,7 +272,8 @@ def get_production_status(project: Path, pages_raw: str) -> dict[str, Any]:
                     readiness.get("status") == "deliverable_ready"
                     and delivery_pptx.is_file()
                     and readiness.get("delivery_pptx_sha256") == _sha256(delivery_pptx)
-                    and _dependencies_current(readiness.get("dependency_hashes", {}))
+                    and isinstance(readiness.get("dependency_hashes"), dict)
+                    and _dependencies_current(readiness["dependency_hashes"])
                 ):
                     result["gates"].extend(("blueprint_images_approved", "image_ppt_assembled", "render_qa_passed", "strict_qa_passed"))
                     result["artifacts"].update(readiness.get("artifacts", {}))

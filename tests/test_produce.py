@@ -327,6 +327,62 @@ class ProduceTests(unittest.TestCase):
 
             self.assertNotEqual("deliverable_ready", get_production_status(project, "1")["status"])
 
+    def test_status_rejects_legacy_readiness_without_dependency_hashes(self) -> None:
+        project, temporary_directory = _approved_project()
+        with temporary_directory:
+            prepared = prepare_production(project, "1")
+            image_ppt = Path(prepared["artifacts"]["production_prepare"]).parent / "image_ppt"
+            image_ppt.mkdir(parents=True)
+            approved = image_ppt / "approved.png"
+            exported = image_ppt / "assembled.pptx"
+            manifest = image_ppt / "template_image_manifest.json"
+            approved.write_bytes(b"approved-image")
+            exported.write_bytes(b"pptx")
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "speaker_notes_manifest": prepared["artifacts"]["speaker_notes_manifest"],
+                        "template_text_lock": prepared["artifacts"]["template_text_lock"],
+                        "tasks": [{"page_number": 1, "image_path": str(approved), "notes_text": "approved notes"}],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            approve_speaker_notes_review(project, "confirm_speaker_notes")
+            (image_ppt / "assembly_report.json").write_text(
+                json.dumps(
+                    {
+                        "valid": True,
+                        "artifacts": {"exported_pptx": str(exported), "template_image_manifest": str(manifest)},
+                        "approved_images": {"1": str(approved)},
+                        "artifacts_sha256": {
+                            "exported_pptx": _sha256_for_test(exported),
+                            "template_image_manifest": _sha256_for_test(manifest),
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            delivery = project / "delivery/client-report_pages_001_001.pptx"
+            delivery.parent.mkdir(parents=True, exist_ok=True)
+            delivery.write_bytes(b"pptx")
+            readiness_dir = project / "workbench/stages/05-qa-delivery/pages_001_001"
+            readiness_dir.mkdir(parents=True)
+            (readiness_dir / "production_readiness.json").write_text(
+                json.dumps(
+                    {
+                        "status": "deliverable_ready",
+                        "delivery_pptx": str(delivery),
+                        "delivery_pptx_sha256": _sha256_for_test(delivery),
+                        "artifacts": {"delivery_pptx": str(delivery)},
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            self.assertNotEqual("deliverable_ready", get_production_status(project, "1")["status"])
+
 
 def _sha256_for_test(path: Path) -> str:
     import hashlib
