@@ -10,7 +10,11 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
-from cyberppt.commands.blueprint_gate import assert_blueprint_image_review_ready, assert_blueprint_input_ready
+from cyberppt.commands.blueprint_gate import (
+    assert_blueprint_image_review_ready,
+    assert_blueprint_input_ready,
+    assert_speaker_notes_review_ready,
+)
 from scripts.dual_image_overlay.cyberppt_pair_manifest import build_manifest, require_generated
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, parse_pages, template_title
 from scripts.dual_image_overlay.production_readiness import build_production_readiness
@@ -508,12 +512,13 @@ def run_final_script_pages(
                 "image-ppt production build requires an approved business script speaker-notes manifest. "
                 "Confirm the business script/page content design before packaging the image PPT."
             )
+        verified_speaker_notes_manifest = assert_speaker_notes_review_ready(project, pages_raw)
         image_ppt_build = _run_image_ppt_build(
             script=script,
             pages_raw=pages_raw,
             output_dir=image_ppt_output_dir,
             name=image_ppt_name,
-            speaker_notes_manifest=Path(speaker_notes_build["speaker_notes_manifest"]),
+            speaker_notes_manifest=verified_speaker_notes_manifest,
         )
         status = "production_ready"
     run_summary = {
