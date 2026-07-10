@@ -110,14 +110,25 @@ def _dependency_hashes(paths: list[Path]) -> dict[str, str]:
     return hashes
 
 
-def _dependencies_current(hashes: dict[str, Any]) -> bool:
+def _dependencies_current(hashes: dict[str, Any], required_paths: list[Path] | None = None) -> bool:
     if not hashes:
         return False
+    if required_paths is not None:
+        required = {str(path.expanduser().resolve()) for path in required_paths}
+        if not required.issubset(set(hashes)):
+            return False
     for raw_path, expected in hashes.items():
         path = Path(str(raw_path)).expanduser().resolve()
         if not path.is_file() or not isinstance(expected, str) or _sha256(path) != expected:
             return False
     return True
+
+
+def _recorded_path(record: dict[str, Any], key: str, *, base: Path) -> Path:
+    path = Path(str(record.get(key, ""))).expanduser()
+    if not path.is_absolute():
+        path = base / path
+    return path.resolve()
 
 
 def _approved_blueprint_script(project: Path) -> Path:
@@ -264,16 +275,38 @@ def get_production_status(project: Path, pages_raw: str) -> dict[str, Any]:
     if assembly_path.is_file():
         assembly = _read_json(assembly_path)
         if assembly.get("valid") is True:
+            try:
+                pptx, template_manifest = _assert_current_assembly(assembly)
+                approved_images = _approved_images_from_assembly(assembly)
+                _assert_current_blueprint_images(root, template_manifest, approved_images)
+            except (OSError, RuntimeError, ValueError, json.JSONDecodeError) as exc:
+                result.update(
+                    status="speaker_notes_approved",
+                    next_gate="blueprint_images_approval_required",
+                    next_command=f"stage-blueprint-image-review {root} --manifest {prepared['page_image_pairs']}",
+                )
+                result["failures"].append(str(exc))
+                return result
             readiness_path = root / QA_STAGE_ROOT / _pages_slug_from_raw(pages_raw) / "production_readiness.json"
             if readiness_path.is_file():
                 readiness = _read_json(readiness_path)
                 delivery_pptx = Path(str(readiness.get("delivery_pptx", ""))).expanduser().resolve()
+                required_dependencies = _readiness_required_dependencies(
+                    assembly_path=assembly_path,
+                    assembly=assembly,
+                    template_manifest=template_manifest,
+                    notes_manifest=notes_manifest,
+                    approved_images=approved_images,
+                    readiness=readiness,
+                    delivery_pptx=delivery_pptx,
+                )
                 if (
                     readiness.get("status") == "deliverable_ready"
                     and delivery_pptx.is_file()
                     and readiness.get("delivery_pptx_sha256") == _sha256(delivery_pptx)
                     and isinstance(readiness.get("dependency_hashes"), dict)
-                    and _dependencies_current(readiness["dependency_hashes"])
+                    and required_dependencies is not None
+                    and _dependencies_current(readiness["dependency_hashes"], required_dependencies)
                 ):
                     result["gates"].extend(("blueprint_images_approved", "image_ppt_assembled", "render_qa_passed", "strict_qa_passed"))
                     result["artifacts"].update(readiness.get("artifacts", {}))
@@ -378,6 +411,45 @@ def _approved_images_from_assembly(assembly: dict[str, Any]) -> dict[int, Path]:
     return approved
 
 
+def _approved_images_from_page_manifest(manifest_path: Path) -> tuple[dict[str, Any], dict[int, Path]]:
+    manifest = _read_json(manifest_path)
+    images: dict[int, Path] = {}
+    for pair in manifest.get("pairs", []):
+        if not isinstance(pair, dict) or "page_number" not in pair:
+            continue
+        full = pair.get("full")
+        if not isinstance(full, dict):
+            continue
+        image_path = Path(str(full.get("path", ""))).expanduser()
+        if not image_path.is_absolute():
+            image_path = manifest_path.parent / image_path
+        images[int(pair["page_number"])] = image_path.resolve()
+    return manifest, images
+
+
+def _assert_current_blueprint_images(
+    project: Path, template_manifest: Path, assembly_images: dict[int, Path]
+) -> tuple[Path, dict[str, Any]]:
+    template = _read_json(template_manifest)
+    raw_manifest = template.get("page_image_manifest")
+    if not raw_manifest:
+        raise RuntimeError("template image manifest is missing page_image_manifest")
+    page_manifest = Path(str(raw_manifest)).expanduser()
+    if not page_manifest.is_absolute():
+        page_manifest = template_manifest.parent / page_manifest
+    page_manifest = page_manifest.resolve()
+    if not page_manifest.is_file():
+        raise RuntimeError(f"page image manifest is missing: {page_manifest}")
+    manifest, manifest_images = _approved_images_from_page_manifest(page_manifest)
+    assert_blueprint_image_review_ready(project, manifest)
+    if set(manifest_images) != set(assembly_images):
+        raise RuntimeError("assembly approved images do not match the approved page image manifest")
+    for page, image_path in manifest_images.items():
+        if assembly_images[page] != image_path:
+            raise RuntimeError(f"assembly approved image path mismatch for page {page}")
+    return page_manifest, manifest
+
+
 def _assert_current_assembly(assembly: dict[str, Any]) -> tuple[Path, Path]:
     artifacts = assembly.get("artifacts") if isinstance(assembly.get("artifacts"), dict) else {}
     pptx = Path(str(artifacts.get("exported_pptx", ""))).expanduser().resolve()
@@ -412,6 +484,43 @@ def _template_text_lock_record(template_manifest: Path) -> dict[str, Any] | None
     if not path.is_file():
         raise RuntimeError(f"template text lock is missing: {path}")
     return {"path": str(path), "sha256": _sha256(path)}
+
+
+def _readiness_required_dependencies(
+    *,
+    assembly_path: Path,
+    assembly: dict[str, Any],
+    template_manifest: Path,
+    notes_manifest: Path,
+    approved_images: dict[int, Path],
+    readiness: dict[str, Any],
+    delivery_pptx: Path,
+) -> list[Path] | None:
+    artifacts = readiness.get("artifacts") if isinstance(readiness.get("artifacts"), dict) else {}
+    visual_report = Path(str(artifacts.get("production_visual_report", ""))).expanduser().resolve()
+    strict_report = Path(str(artifacts.get("strict_validation_report", ""))).expanduser().resolve()
+    delivery_manifest = Path(str(artifacts.get("full_image_delivery_manifest", ""))).expanduser().resolve()
+    assembly_artifacts = assembly.get("artifacts") if isinstance(assembly.get("artifacts"), dict) else {}
+    exported_pptx = Path(str(assembly_artifacts.get("exported_pptx", ""))).expanduser().resolve()
+    page_manifest = _recorded_path(_read_json(template_manifest), "page_image_manifest", base=template_manifest.parent)
+    required = [
+        assembly_path.expanduser().resolve(),
+        exported_pptx,
+        template_manifest.expanduser().resolve(),
+        page_manifest,
+        notes_manifest.expanduser().resolve(),
+        visual_report,
+        strict_report,
+        delivery_manifest,
+        delivery_pptx.expanduser().resolve(),
+        *[path.expanduser().resolve() for path in approved_images.values()],
+    ]
+    template_text_lock = _template_text_lock_record(template_manifest)
+    if template_text_lock is not None:
+        required.append(Path(template_text_lock["path"]).expanduser().resolve())
+    if any(not path.is_file() for path in required):
+        return None
+    return required
 
 
 def _template_text_requirements(template_manifest: Path, pages: list[int]) -> dict[int, list[str]]:
@@ -486,6 +595,7 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
     pptx, template_manifest = _assert_current_assembly(assembly)
     notes_manifest = _assert_current_speaker_notes(root, pages_raw, template_manifest)
     approved_images = _approved_images_from_assembly(assembly)
+    page_manifest, _ = _assert_current_blueprint_images(root, template_manifest, approved_images)
     pages = sorted(approved_images)
     if not pages:
         raise RuntimeError("assembly has no approved images")
@@ -520,10 +630,12 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
         assembly_path,
         pptx,
         template_manifest,
+        page_manifest,
         notes_manifest,
         visual_report_path,
         strict_report_path,
         delivery_manifest_path,
+        delivery_pptx,
         *approved_images.values(),
     ]
     template_text_lock = _template_text_lock_record(template_manifest)

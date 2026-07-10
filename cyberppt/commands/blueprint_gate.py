@@ -217,12 +217,13 @@ def approve_blueprint_input(project: Path, option_id: str, note: str = "") -> Pa
     style_lock, style_lock_sha256 = _approved_visual_style(root)
     if business_sha256 != data.get("business_script_sha256") or style_lock_sha256 != data.get("style_lock_sha256"):
         raise ValueError("business content or style changed; stage blueprint input again")
+    approved = not str(option_id).startswith("revise")
     approval = _stage_path(root, "blueprint_input.approved.json")
     _write_json(
         approval,
         {
             "schema": "cyberppt.blueprint_input.approval.v1",
-            "approved": True,
+            "approved": approved,
             "approved_at": _utc_now(),
             "pending_confirmation": str(pending),
             "artifact": str(artifact),
@@ -253,6 +254,8 @@ def assert_blueprint_input_ready(project: Path, script: Path, style_lock: Path |
     if not approval.is_file():
         raise ValueError("blueprint input approval is required")
     data = _read_json(approval)
+    if data.get("approved") is not True:
+        raise ValueError("blueprint input approval is required")
     if not script.is_file() or _sha256(script) != data.get("source_sha256"):
         raise ValueError("final-script-pages script must match the approved blueprint input")
     if data.get("style_lock_sha256") != approved_lock_sha256:
@@ -435,6 +438,7 @@ def approve_blueprint_image_review(project: Path, option_id: str, note: str = ""
         raise ValueError(f"blueprint image review option is not available: {option_id}")
     artifact = Path(str(data["artifact"]))
     review = _read_json(artifact)
+    approved = option_id == "confirm_blueprint_images"
     for image in review.get("images", []):
         path = Path(str(image.get("path", "")))
         if not path.is_file() or _sha256(path) != image.get("sha256"):
@@ -444,7 +448,7 @@ def approve_blueprint_image_review(project: Path, option_id: str, note: str = ""
         approval,
         {
             "schema": "cyberppt.blueprint_image_review.approval.v1",
-            "approved": True,
+            "approved": approved,
             "approved_at": _utc_now(),
             "pending_confirmation": str(pending),
             "artifact": str(artifact),
@@ -463,6 +467,8 @@ def assert_blueprint_image_review_ready(project: Path, manifest: dict[str, Any])
     if not approval.is_file():
         raise ValueError("blueprint image review approval is required before image-PPT assembly")
     data = _read_json(approval)
+    if data.get("approved") is not True:
+        raise ValueError("blueprint image review approval is required before image-PPT assembly")
     review = _read_json(Path(str(data["artifact"])))
     reviewed_pages = {item.get("page") for item in review.get("images", []) if isinstance(item, dict)}
     manifest_pages = {
