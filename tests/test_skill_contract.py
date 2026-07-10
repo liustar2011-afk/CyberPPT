@@ -72,6 +72,24 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("正式第二阶段不得要求 full/background 双图资产", text)
         self.assertIn("旧 `dual_image_editable_overlay`、OCR 和 `template_rebuild` 只可作为 legacy/advanced 路径", text)
 
+    def test_canonical_docs_expose_produce_state_machine(self) -> None:
+        skill = SKILL.read_text(encoding="utf-8-sig")
+        readme = README.read_text(encoding="utf-8-sig")
+        layout = (ROOT / "docs" / "repository-layout.md").read_text(encoding="utf-8-sig")
+
+        for text in (skill, readme, layout):
+            self.assertIn("python3 -m cyberppt produce prepare", text)
+            self.assertIn("python3 -m cyberppt produce assemble", text)
+            self.assertIn("python3 -m cyberppt produce verify", text)
+
+    def test_default_docs_do_not_claim_legacy_overlay_mainline(self) -> None:
+        readme = README.read_text(encoding="utf-8-sig")
+        layout = (ROOT / "docs" / "repository-layout.md").read_text(encoding="utf-8-sig")
+
+        self.assertNotIn("第三阶段默认使用 `dual_image_editable_overlay`", readme)
+        self.assertNotIn("full/background pair manifests", layout)
+        self.assertNotIn("主要文字可编辑”的混合还原策略生成 PPTX", readme)
+
     def test_manual_stop_points_are_allowed_but_must_record_state(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 

@@ -40,10 +40,10 @@ delivery files:
 | `workbench/artifact-ledger.json` | Durable artifact index with dependencies, status, and resume commands. |
 | `workbench/analysis_expression/` | Project-level five-gate contract, staged confirmation records, approval records, and status metadata. It records source analysis, reporting direction, report structure, page design, and business script without replacing their source workspaces. |
 | `workbench/stages/01-analysis/` | Evidence tables, conflicts, SCR, storylines, page plans, density plans. |
-| `workbench/stages/02-blueprint-dual-image/` | Style lock, content locks, ImageGen prompts, full/background pair manifests. |
-| `workbench/stages/03-overlay/` | Dual-image overlay artifacts, semantic plans, text mapping, fit and layout QA. |
-| `workbench/stages/04-template-rebuild/` | Template assembly jobs, source capture, readiness records, normalized references. |
-| `workbench/stages/05-qa-delivery/` | Visual QA, side-by-side checks, final manifests, delivery notes. |
+| `workbench/stages/02-blueprint-dual-image/` | Historical path name for the current `full_image_ppt` mainline: style lock, template text lock, ImageGen full prompts/images, `page_image_pairs.json`, speaker notes, image-PPT assembly, and `assembly_report.json`. |
+| `workbench/stages/03-overlay/` | Legacy/Advanced editable rebuild artifacts only: overlay plans, semantic plans, text mapping, fit and layout QA. |
+| `workbench/stages/04-template-rebuild/` | Legacy/Advanced template rebuild jobs only: source capture, readiness records, normalized references. |
+| `workbench/stages/05-qa-delivery/` | Production visual report, full-image delivery manifest, strict validation report, production readiness, and delivery notes. |
 | `workbench/locks/` | Slide content locks, template text locks, visual locks, and related truth files. |
 | `workbench/prompts/` | Plaintext prompt artifacts that require review or reuse. |
 | `workbench/scripts/` | Draft and final slide scripts used as generation truth. |
@@ -72,6 +72,16 @@ The blueprint input must preserve source-backed visible facts but must not
 contain evidence IDs, source positions, geometry, or final-composition
 instructions. Navigation pages are deliberately non-argumentative and contain
 no evidence bindings.
+
+The default project production sequence is:
+
+```bash
+python3 -m cyberppt produce prepare <project> --pages <range>
+python3 -m cyberppt produce assemble <project> --pages <range>
+python3 -m cyberppt produce verify <project> --pages <range>
+```
+
+`produce prepare` stops for speaker-notes approval, `produce assemble` consumes only approved notes/template/full-image inputs, and `produce verify` is the only step that can promote a PPTX to `delivery/` and `deliverable_ready`.
 
 New workspaces receive this contract during initialization. For an existing
 workspace, `adopt-analysis-expression-contract` creates only contract metadata.
