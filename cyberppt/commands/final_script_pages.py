@@ -450,12 +450,15 @@ def run_final_script_pages(
         raise ValueError("--run-rebuild is no longer supported by final-script-pages; use image-ppt for Stage 02 production builds.")
     if semantic_plan_dir is not None:
         raise ValueError("--semantic-plan-dir is no longer supported by final-script-pages; Stage 02 no longer enters OCR/overlay/template-rebuild.")
+    if production_build:
+        raise ValueError(
+            "--production-build is no longer supported by final-script-pages; "
+            "use python3 -m cyberppt produce assemble <project> --pages <range>."
+        )
     _ensure_project_dirs(project)
     if style_lock is not None and (style_id is not None or style_name):
         raise ValueError("--style-lock cannot be combined with --style-id or --style-name")
     adopted_contract = (project / "workbench" / "analysis_expression" / "contract.json").is_file()
-    if production_build and not adopted_contract:
-        raise ValueError("production build requires adopt-analysis-expression-contract")
     if adopted_contract:
         approved_style_lock = assert_blueprint_input_ready(project, script, style_lock)
         if style_id is not None or style_name:
@@ -491,9 +494,6 @@ def run_final_script_pages(
     )
     if require_images:
         require_generated(manifest)
-    if production_build and adopted_contract:
-        require_generated(manifest)
-        assert_blueprint_image_review_ready(project, manifest)
 
     resume_command = (
         f"python3 -m cyberppt final-script-pages {project} --script {script} "
@@ -501,33 +501,13 @@ def run_final_script_pages(
     )
     production_readiness = None
     tool_consumption: dict[str, Any] = {}
-    stage_name = "02-production-build" if production_build else "02-blueprint-dual-image"
+    stage_name = "02-blueprint-dual-image"
     status = "ready_for_image_generation" if not require_images else "image_assets_verified"
     image_ppt_build: dict[str, Any] | None = None
     speaker_notes_build: dict[str, Any] | None = None
     image_ppt_output_dir = target_dir / "image_ppt"
     image_ppt_name = slug
-    verified_speaker_notes_manifest: Path | None = None
-    if production_build:
-        verified_speaker_notes_manifest = assert_speaker_notes_review_ready(project, pages_raw)
-        approved_notes_manifest = _read_json(verified_speaker_notes_manifest)
-        speaker_notes_build = {
-            "business_script": str(approved_notes_manifest.get("business_script", "")),
-            "speaker_notes_manifest": str(verified_speaker_notes_manifest),
-            "llm_prompt": approved_notes_manifest.get("llm_prompt"),
-            "status": "approved",
-        }
-    else:
-        speaker_notes_build = _run_speaker_notes_build(project=project, pages_raw=pages_raw, output_dir=target_dir)
-    if production_build:
-        image_ppt_build = _run_image_ppt_build(
-            script=script,
-            pages_raw=pages_raw,
-            output_dir=image_ppt_output_dir,
-            name=image_ppt_name,
-            speaker_notes_manifest=verified_speaker_notes_manifest,
-        )
-        status = "production_ready"
+    speaker_notes_build = _run_speaker_notes_build(project=project, pages_raw=pages_raw, output_dir=target_dir)
     run_summary = {
         "schema": "cyberppt.final_script_pages_run.v1",
         "created_at": _utc_now(),
