@@ -89,9 +89,27 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 
 目录归整规则见 [docs/repository-layout.md](docs/repository-layout.md)。正式项目优先放在 `projects/<project-name>/`，临时运行可放在 `image2pptx_runs/`；根目录 `images/` 只作为历史 scratch 位置，不再作为新流程默认输出目标。
 
+### 分析表达确认门
+
+在进入蓝图、图片或 PPT 生成前，项目必须按以下顺序完成五道确认门：
+
+1. reporting direction（汇报方向）
+2. report structure（汇报结构）
+3. page design（页面设计）
+4. business script（页面业务稿）
+5. drawing script（页面绘制稿）
+
+`stage-*` 只会保存待确认工件。每个待确认记录都必须包含问题、推荐选项、可选择的 UI choices 和审计信息；只有通过对应 `approve-* --option-id <id>` 选择记录中的选项后，才能进入下一门。用 `analysis-expression-status <project> --json` 获取机器可读的当前门、待选项和缺失上游工件；在五门全部批准前，生成入口保持阻断。
+
+业务稿使用正式内部汇报语言，并在非上屏区域保存证据 ID、来源位置、完整性校核和信息密度单元。绘制稿必须继承这些绑定，不得删改来源支撑的事实、数字、分类、边界或请示事项；也不得加入几何尺寸、最终构图等绘制实现。目录、章节过渡等导航页不承载论证或证据。
+
+新建项目自动启用该合同。已有项目只有在显式执行 `adopt-analysis-expression-contract <project>` 后才创建合同 metadata；该命令不会覆盖已有业务/页面工件，也不会替项目生成 drawing script。采用后应先检查 status 输出的下一道门和缺失上游工件，再手工准备相应的待确认输入。
+
 ```bash
 python3 -m cyberppt doctor
 python3 -m cyberppt init projects/example
+python3 -m cyberppt analysis-expression-status projects/example --json
+python3 -m cyberppt adopt-analysis-expression-contract projects/existing-project
 python3 -m cyberppt stage-script projects/example --slide 1 --kind imagegen --phase draft --source prompt.md
 python3 -m cyberppt approve-script projects/example --slide 1 --kind imagegen
 python3 -m cyberppt script-status projects/example --slide 1 --kind imagegen

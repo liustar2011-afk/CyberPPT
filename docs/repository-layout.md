@@ -38,6 +38,7 @@ delivery files:
 |---|---|
 | `source/` | User-provided source materials and raw inputs. |
 | `workbench/artifact-ledger.json` | Durable artifact index with dependencies, status, and resume commands. |
+| `workbench/analysis_expression/` | Project-level five-gate contract, staged confirmation records, approval records, and status metadata. It records reporting direction, report structure, page design, business script, and drawing script without replacing their source workspaces. |
 | `workbench/stages/01-analysis/` | Evidence tables, conflicts, SCR, storylines, page plans, density plans. |
 | `workbench/stages/02-blueprint-dual-image/` | Style lock, content locks, ImageGen prompts, full/background pair manifests. |
 | `workbench/stages/03-overlay/` | Dual-image overlay artifacts, semantic plans, text mapping, fit and layout QA. |
@@ -53,6 +54,28 @@ delivery files:
 | `workbench/qa/` | QA reports that are not already stage-specific. |
 | `outputs/` | Rendered pages and generated intermediate deliverables. |
 | `delivery/` | User-facing final files and delivery notes. |
+
+## Analysis Expression Contract
+
+The analysis-expression contract is project-scoped and sequential: reporting
+direction -> report structure -> page design -> business script -> drawing
+script. Staging a gate persists its Markdown source plus a pending-confirmation
+record with a question, recommendation, selectable UI choices, and audit data;
+staging is not approval. The next gate is unavailable until the predecessor's
+recorded option is approved.
+
+Business scripts retain non-visible evidence IDs, source locations,
+completeness checks, and density units. Drawing scripts inherit those records
+unchanged: they cannot omit or change source-backed facts, numbers,
+classifications, boundaries, or request items, and they cannot introduce
+geometry or final-composition instructions. Navigation pages are deliberately
+non-argumentative and contain no evidence bindings.
+
+New workspaces receive this contract during initialization. For an existing
+workspace, `adopt-analysis-expression-contract` creates only contract metadata.
+It does not overwrite existing business/page files or create a drawing script.
+Use `analysis-expression-status --json` after adoption to identify the next
+gate, pending choices, and any missing upstream artifact.
 
 ## Cleanup Rules
 
