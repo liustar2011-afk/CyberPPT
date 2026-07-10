@@ -49,6 +49,56 @@ class CliTests(unittest.TestCase):
         self.assertIn("analysis-expression-status", help_text)
         self.assertIn("adopt-analysis-expression-contract", help_text)
 
+    def test_help_lists_speaker_notes_review_commands(self) -> None:
+        help_text = build_parser().format_help()
+
+        self.assertIn("stage-speaker-notes-review", help_text)
+        self.assertIn("approve-speaker-notes-review", help_text)
+
+    def test_speaker_notes_review_commands_print_record_paths(self) -> None:
+        pending = Path("/tmp/speaker_notes_review.pending-confirmation.json")
+        approval = Path("/tmp/speaker_notes_review.approved.json")
+        output = io.StringIO()
+
+        with (
+            patch("cyberppt.cli.stage_speaker_notes_review", return_value=pending) as stage,
+            redirect_stdout(output),
+        ):
+            stage_code = main(
+                [
+                    "stage-speaker-notes-review",
+                    "/tmp/project",
+                    "--manifest",
+                    "/tmp/speaker_notes_manifest.json",
+                    "--pages",
+                    "1-3",
+                ]
+            )
+
+        self.assertEqual(0, stage_code)
+        self.assertIn(str(pending), output.getvalue())
+        stage.assert_called_once_with(Path("/tmp/project"), Path("/tmp/speaker_notes_manifest.json"), "1-3")
+
+        output = io.StringIO()
+        with (
+            patch("cyberppt.cli.approve_speaker_notes_review", return_value=approval) as approve,
+            redirect_stdout(output),
+        ):
+            approve_code = main(
+                [
+                    "approve-speaker-notes-review",
+                    "/tmp/project",
+                    "--option-id",
+                    "confirm_speaker_notes",
+                    "--note",
+                    "ready",
+                ]
+            )
+
+        self.assertEqual(0, approve_code)
+        self.assertIn(str(approval), output.getvalue())
+        approve.assert_called_once_with(Path("/tmp/project"), "confirm_speaker_notes", "ready")
+
     def test_production_alias_help_requires_explicit_project(self) -> None:
         parser = build_parser()
         help_text = parser.format_help()

@@ -19,9 +19,11 @@ from cyberppt.commands.analysis_expression_gate import (
 from cyberppt.commands.blueprint_gate import (
     approve_blueprint_input,
     approve_blueprint_image_review,
+    approve_speaker_notes_review,
     approve_visual_style,
     stage_blueprint_input,
     stage_blueprint_image_review,
+    stage_speaker_notes_review,
     stage_visual_style_options,
 )
 from cyberppt.commands.final_script_pages import run_final_script_pages
@@ -233,6 +235,26 @@ def _approve_blueprint_image_review_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _stage_speaker_notes_review_command(args: argparse.Namespace) -> int:
+    try:
+        pending = stage_speaker_notes_review(Path(args.project), Path(args.manifest), args.pages)
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"pending_confirmation: {pending}")
+    return 0
+
+
+def _approve_speaker_notes_review_command(args: argparse.Namespace) -> int:
+    try:
+        approval = approve_speaker_notes_review(Path(args.project), args.option_id, args.note)
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"approval_recorded: {approval}")
+    return 0
+
+
 def _final_script_pages_command(args: argparse.Namespace) -> int:
     if args.blueprint_only and args.production_build:
         print("--blueprint-only cannot be combined with --production-build", file=sys.stderr)
@@ -412,6 +434,24 @@ def build_parser() -> argparse.ArgumentParser:
     approve_blueprint_image_review_parser.add_argument("--option-id", required=True, help="Selected confirmation option id.")
     approve_blueprint_image_review_parser.add_argument("--note", default="", help="Optional approval note.")
     approve_blueprint_image_review_parser.set_defaults(func=_approve_blueprint_image_review_command)
+
+    stage_speaker_notes_review_parser = subparsers.add_parser(
+        "stage-speaker-notes-review",
+        help="Stage generated speaker notes for explicit review before image-PPT assembly.",
+    )
+    stage_speaker_notes_review_parser.add_argument("project", help="CyberPPT project directory.")
+    stage_speaker_notes_review_parser.add_argument("--manifest", required=True, help="Generated speaker_notes_manifest.json file.")
+    stage_speaker_notes_review_parser.add_argument("--pages", required=True, help="Page range represented by the speaker notes.")
+    stage_speaker_notes_review_parser.set_defaults(func=_stage_speaker_notes_review_command)
+
+    approve_speaker_notes_review_parser = subparsers.add_parser(
+        "approve-speaker-notes-review",
+        help="Record the speaker-notes review decision before image-PPT assembly.",
+    )
+    approve_speaker_notes_review_parser.add_argument("project", help="CyberPPT project directory.")
+    approve_speaker_notes_review_parser.add_argument("--option-id", required=True, help="Selected speaker-notes review option id.")
+    approve_speaker_notes_review_parser.add_argument("--note", default="", help="Optional approval note.")
+    approve_speaker_notes_review_parser.set_defaults(func=_approve_speaker_notes_review_command)
 
     rebuild_dual_image_parser = subparsers.add_parser(
         "rebuild-dual-image",
