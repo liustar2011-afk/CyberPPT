@@ -266,6 +266,111 @@ def assert_blueprint_input_ready(project: Path, script: Path, style_lock: Path |
     return approved_lock
 
 
+def stage_speaker_notes_review(project: Path, manifest_path: Path, pages_raw: str) -> Path:
+    """Persist generated speaker notes for explicit review before production assembly."""
+
+    root = project.expanduser().resolve()
+    manifest = manifest_path.expanduser().resolve()
+    if not manifest.is_file():
+        raise FileNotFoundError(f"speaker notes manifest not found: {manifest}")
+    business_path, _, business_sha256 = _approved_business(root)
+    review = _stage_path(root, "speaker_notes_review.json")
+    manifest_sha256 = _sha256(manifest)
+    _write_json(
+        review,
+        {
+            "schema": "cyberppt.speaker_notes_review.v1",
+            "created_at": _utc_now(),
+            "manifest": str(manifest),
+            "manifest_sha256": manifest_sha256,
+            "business_script": str(business_path),
+            "business_script_sha256": business_sha256,
+            "pages_raw": pages_raw,
+        },
+    )
+    pending = _stage_path(root, "speaker_notes_review.pending-confirmation.json")
+    _write_json(
+        pending,
+        {
+            "schema": "cyberppt.speaker_notes_review.pending_confirmation.v1",
+            "status": "pending_confirmation",
+            "artifact": str(review),
+            "manifest": str(manifest),
+            "manifest_sha256": manifest_sha256,
+            "business_script": str(business_path),
+            "business_script_sha256": business_sha256,
+            "pages_raw": pages_raw,
+            "option_id": None,
+            "question": "是否确认本轮演讲者备注，并进入图片版 PPT 组装？",
+            "options": [
+                {"id": "confirm_speaker_notes", "label": "确认备注"},
+                {"id": "revise_speaker_notes", "label": "返回修改"},
+            ],
+            "created_at": _utc_now(),
+        },
+    )
+    approval = _stage_path(root, "speaker_notes_review.approved.json")
+    if approval.exists():
+        approval.unlink()
+    return pending
+
+
+def approve_speaker_notes_review(project: Path, option_id: str, note: str = "") -> Path:
+    root = project.expanduser().resolve()
+    pending = _stage_path(root, "speaker_notes_review.pending-confirmation.json")
+    if not pending.is_file():
+        raise FileNotFoundError("no pending speaker-notes review; stage speaker notes review first")
+    data = _read_json(pending)
+    if option_id not in {"confirm_speaker_notes", "revise_speaker_notes"}:
+        raise ValueError(f"speaker notes review option is not available: {option_id}")
+    manifest = Path(str(data.get("manifest", ""))).expanduser().resolve()
+    if not manifest.is_file() or _sha256(manifest) != data.get("manifest_sha256"):
+        raise ValueError("speaker notes changed; stage speaker notes review again")
+    business_path, _, business_sha256 = _approved_business(root)
+    if str(business_path) != data.get("business_script") or business_sha256 != data.get("business_script_sha256"):
+        raise ValueError("business script changed; stage speaker notes review again")
+    approval = _stage_path(root, "speaker_notes_review.approved.json")
+    _write_json(
+        approval,
+        {
+            "schema": "cyberppt.speaker_notes_review.approval.v1",
+            "approved": option_id == "confirm_speaker_notes",
+            "approved_at": _utc_now(),
+            "pending_confirmation": str(pending),
+            "artifact": str(_stage_path(root, "speaker_notes_review.json")),
+            "manifest": str(manifest),
+            "manifest_sha256": data["manifest_sha256"],
+            "business_script": str(business_path),
+            "business_script_sha256": business_sha256,
+            "pages_raw": data["pages_raw"],
+            "option_id": option_id,
+            "note": note,
+        },
+    )
+    return approval
+
+
+def assert_speaker_notes_review_ready(project: Path, pages_raw: str) -> Path:
+    """Require an approved, unchanged speaker-notes manifest for the selected pages."""
+
+    root = project.expanduser().resolve()
+    approval = _stage_path(root, "speaker_notes_review.approved.json")
+    if not approval.is_file():
+        raise ValueError("speaker notes approval is required")
+    data = _read_json(approval)
+    if data.get("approved") is not True:
+        raise ValueError("speaker notes approval is required")
+    manifest = Path(str(data.get("manifest", ""))).expanduser().resolve()
+    if not manifest.is_file() or _sha256(manifest) != data.get("manifest_sha256"):
+        raise ValueError("speaker notes changed; stage and approve speaker notes again")
+    if data.get("pages_raw") != pages_raw:
+        raise ValueError("approved speaker notes do not match the current page selection")
+    business_path, _, business_sha256 = _approved_business(root)
+    if str(business_path) != data.get("business_script") or business_sha256 != data.get("business_script_sha256"):
+        raise ValueError("business script changed; stage and approve speaker notes again")
+    return manifest
+
+
 def stage_blueprint_image_review(project: Path, manifest_path: Path) -> Path:
     """Persist the generated image set as a separate review artifact before PPT assembly."""
 

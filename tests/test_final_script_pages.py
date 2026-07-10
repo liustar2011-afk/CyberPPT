@@ -10,9 +10,12 @@ from cyberppt.commands.analysis_expression_gate import approve_analysis_artifact
 from cyberppt.commands.blueprint_gate import (
     approve_blueprint_input,
     approve_blueprint_image_review,
+    approve_speaker_notes_review,
     approve_visual_style,
+    assert_speaker_notes_review_ready,
     stage_blueprint_input,
     stage_blueprint_image_review,
+    stage_speaker_notes_review,
     stage_visual_style_options,
 )
 from cyberppt.commands.final_script_pages import run_final_script_pages
@@ -136,6 +139,67 @@ class FinalScriptPagesTests(unittest.TestCase):
 
             pending = stage_blueprint_image_review(project, manifest_path)
             self.assertTrue(pending.is_file())
+
+    def test_speaker_notes_review_requires_current_confirmation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            _approve_all_analysis_expression_gates(project)
+            manifest = root / "speaker_notes_manifest.json"
+            manifest.write_text('{"notes": ["briefing"]}\n', encoding="utf-8")
+
+            pending = stage_speaker_notes_review(project, manifest, "1-3")
+
+            self.assertTrue(pending.is_file())
+            pending_data = json.loads(pending.read_text(encoding="utf-8"))
+            self.assertEqual(str(manifest.resolve()), pending_data["manifest"])
+            self.assertEqual("1-3", pending_data["pages_raw"])
+            self.assertIsNone(pending_data["option_id"])
+            with self.assertRaisesRegex(ValueError, "speaker notes approval is required"):
+                assert_speaker_notes_review_ready(project, "1-3")
+
+            revision = approve_speaker_notes_review(project, "revise_speaker_notes", "expand page 2")
+
+            self.assertFalse(json.loads(revision.read_text(encoding="utf-8"))["approved"])
+            with self.assertRaisesRegex(ValueError, "speaker notes approval is required"):
+                assert_speaker_notes_review_ready(project, "1-3")
+
+            approval = approve_speaker_notes_review(project, "confirm_speaker_notes")
+
+            self.assertTrue(json.loads(approval.read_text(encoding="utf-8"))["approved"])
+            self.assertEqual(manifest.resolve(), assert_speaker_notes_review_ready(project, "1-3"))
+
+            manifest.write_text('{"notes": []}\n', encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "speaker notes changed"):
+                assert_speaker_notes_review_ready(project, "1-3")
+
+    def test_speaker_notes_review_invalidates_business_and_page_dependencies(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            _approve_all_analysis_expression_gates(project)
+            manifest = root / "speaker_notes_manifest.json"
+            manifest.write_text('{"notes": ["briefing"]}\n', encoding="utf-8")
+            stage_speaker_notes_review(project, manifest, "1-3")
+            approve_speaker_notes_review(project, "confirm_speaker_notes")
+
+            with self.assertRaisesRegex(ValueError, "current page selection"):
+                assert_speaker_notes_review_ready(project, "2-3")
+
+            stage_analysis_artifact(
+                project,
+                "business_script",
+                "## 第1页：章节过渡\n更新后的讲稿\n### 非上屏：证据链\n- E-01\n"
+                "### 来源位置\n- 年度供需预测报告第4页\n### 非上屏：完整性校核\n- 更新后的业务依据。\n",
+                "business script",
+                OPTIONS,
+            )
+            approve_analysis_artifact(project, "business_script", "leadership_review")
+
+            with self.assertRaisesRegex(ValueError, "business script changed"):
+                assert_speaker_notes_review_ready(project, "1-3")
 
     def test_compiles_pages_7_8_from_final_script_with_traceable_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
