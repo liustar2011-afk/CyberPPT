@@ -43,6 +43,7 @@ build/
 !assets/icons/**/*.svg
 
 # Project-specific working directories
+.worktrees/
 canvas/
 deck/
 *-deck/
