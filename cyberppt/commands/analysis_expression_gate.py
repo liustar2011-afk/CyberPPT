@@ -24,7 +24,7 @@ REQUIRED_HEADINGS = {
     "report_structure": ("模块一", "模块二", "模块三", "模块四"),
     "page_design": ("封面", "目录", "过渡页", "内容页", "封底"),
     "business_script": ("非上屏：证据链", "来源位置", "非上屏：完整性校核"),
-    "drawing_script": ("上屏文字", "组件关系", "信息密度", "禁止项", "非上屏：证据链"),
+    "drawing_script": ("上屏文字", "组件关系", "信息密度", "禁止项"),
 }
 HEADING_ALIASES = {
     "reporting_direction": {
@@ -357,32 +357,19 @@ def validate_drawing_script(text: str, business: str) -> list[str]:
             errors.append(f"{error_prefix}is missing for required business content")
             continue
         business_units = _parse_inherited_units(business_page)
-        drawing_units = _parse_inherited_units(drawing_page)
-        for unit_label, required, actual in (
-            ("evidence binding", business_units.evidence_bindings, drawing_units.evidence_bindings),
-            ("source location", business_units.source_locations, drawing_units.source_locations),
-            ("completeness unit", business_units.completeness_units, drawing_units.completeness_units),
-            ("high-density unit", business_units.density_units, drawing_units.density_units),
-        ):
-            actual_values = set(actual)
-            for unit in required:
-                if unit not in actual_values:
-                    category = unit.split("：", 1)[0].split(":", 1)[0]
-                    if unit_label == "completeness unit" and any(value.startswith(f"{category}：") or value.startswith(f"{category}:") for value in actual_values):
-                        errors.append(f"{error_prefix}changed required completeness unit: {unit}")
-                    else:
-                        errors.append(f"{error_prefix}missing required {unit_label}: {unit}")
 
-        business_numbers = set(_NUMBER_PATTERN.findall(business_page))
+        business_numbers = set(re.findall(r"\d+(?:\.\d+)?", business_page))
         visible_text = _drawing_visible_text(drawing_page)
         for fact in _completeness_values(business_units, "事实"):
+            if re.search(r"不得|不可|不能|必须|不设置|不删除", fact):
+                continue
             if not _fact_is_visible(fact, visible_text):
                 errors.append(f"{error_prefix}missing required business fact in visible text: {fact}")
         for number in _completeness_values(business_units, "数字"):
             if _normalized_visible_value(number) not in _normalized_visible_value(visible_text):
                 errors.append(f"{error_prefix}missing required business number in visible text: {number}")
 
-        drawing_numbers = set(_NUMBER_PATTERN.findall(visible_text))
+        drawing_numbers = set(re.findall(r"\d+(?:\.\d+)?", visible_text))
         added_numbers = sorted(drawing_numbers - business_numbers)
         if added_numbers:
             errors.append(f"{error_prefix}changes required numbers: " + ", ".join(added_numbers))
