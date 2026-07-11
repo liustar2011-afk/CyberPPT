@@ -42,12 +42,18 @@ def _same_line(item: tuple[dict[str, Any], tuple[float, float, float, float]],
     return overlap_ratio >= 0.35 or normalized_distance <= 0.45
 
 
-def _dominant_fill(image: Image.Image, box: tuple[int, int, int, int]) -> str | None:
-    pixels = list(image.crop(box).convert("RGB").getdata())
+def _dominant_fill(image: Image.Image, boxes: list[tuple[int, int, int, int]]) -> str | None:
+    pixels: list[tuple[int, int, int]] = []
+    for box in boxes:
+        pixels.extend(image.crop(box).convert("RGB").getdata())
     if not pixels:
         return None
     # Ignore the usual near-white slide background when estimating glyph fill.
-    ink = [pixel for pixel in pixels if min(pixel) < 235 or max(pixel) - min(pixel) > 12]
+    # The most frequent color in an OCR box is normally its fill/background;
+    # discard it before selecting the glyph/interior color. This also avoids
+    # padded slide backgrounds and colored decoration dominating the result.
+    background = Counter(pixels).most_common(1)[0][0]
+    ink = [pixel for pixel in pixels if sum(abs(a - b) for a, b in zip(pixel, background)) > 18]
     sample = ink or pixels
     color = Counter(sample).most_common(1)[0][0]
     return "#%02x%02x%02x" % color
@@ -73,13 +79,22 @@ def build_line_evidence(
         image = source.convert("RGB")
         actual_width, actual_height = image.size
         items: list[tuple[dict[str, Any], tuple[float, float, float, float]]] = []
+        sx, sy = actual_width / declared_width, actual_height / declared_height
         for raw in layout.get("items", []):
             if not isinstance(raw, dict) or not str(raw.get("text") or "").strip():
                 continue
-            items.append((raw, _bbox(raw)))
+            source_box = _bbox(raw)
+            observed = dict(raw)
+            observed["source_bbox"] = list(source_box)
+            observed["bbox"] = [source_box[0] * sx, source_box[1] * sy, source_box[2] * sx, source_box[3] * sy]
+            if isinstance(raw.get("polygon"), list):
+                observed["source_polygon"] = raw["polygon"]
+                observed["polygon"] = [[float(point[0]) * sx, float(point[1]) * sy] for point in raw["polygon"] if isinstance(point, (list, tuple)) and len(point) >= 2]
+            items.append((observed, _bbox(observed)))
 
-        # Greedy clustering is deterministic, while sorting the resulting
-        # clusters and members makes reading order independent of OCR order.
+        # Sort before clustering so equivalent OCR permutations produce the
+        # same groups and reading order.
+        items.sort(key=lambda pair: ((pair[1][1] + pair[1][3]) / 2, pair[1][0], pair[1][1], str(pair[0].get("text") or "")))
         lines: list[list[tuple[dict[str, Any], tuple[float, float, float, float]]]] = []
         for item in items:
             candidates = [line for line in lines if _same_line(item, line)]
@@ -104,21 +119,25 @@ def build_line_evidence(
             image.crop((x1, y1, x2, y2)).save(crop_path)
             observed = "".join(str(item.get("text") or "").strip() for item, _ in line)
             boxes = [list(box) for _, box in line]
+            source_boxes = [list(item.get("source_bbox", box)) for item, box in line]
             polygons = [item.get("polygon") for item, _ in line if item.get("polygon") is not None]
+            source_polygons = [item.get("source_polygon") for item, _ in line if item.get("source_polygon") is not None]
             record: dict[str, Any] = {
                 "observed_text": observed,
                 "polygon": polygons[0] if len(polygons) == 1 else polygons,
+                "source_polygon": source_polygons[0] if len(source_polygons) == 1 else source_polygons,
                 "bbox": [x1, y1, x2, y2],
+                "source_bbox": source_boxes,
                 "confidence": min(float(item.get("confidence", 1.0)) for item, _ in line),
                 "reading_order": reading_order,
                 "glyph_crop": str(crop_path),
-                "dominant_fill": _dominant_fill(image, (x1, y1, x2, y2)),
+                "dominant_fill": _dominant_fill(image, [(int(box[0]), int(box[1]), int(box[2]), int(box[3])) for _, box in line]),
                 "line_height_px": max(box[3] for _, box in line) - min(box[1] for _, box in line),
                 "items": [{"text": item.get("text"), "bbox": list(box), "polygon": item.get("polygon")} for item, box in line],
             }
             line_records.append(record)
 
-        scale = {"x": actual_width / declared_width, "y": actual_height / declared_height}
+        scale = {"x": sx, "y": sy}
         return {
             "schema_version": SCHEMA_VERSION,
             "image": {"path": str(image_path), "width": actual_width, "height": actual_height, "declared_width": declared_width, "declared_height": declared_height, "scale": scale},
