@@ -1,4 +1,5 @@
 from pathlib import Path
+import inspect
 from unittest.mock import patch
 
 from PIL import Image
@@ -71,3 +72,23 @@ def test_full_local_layout_and_forensics_share_one_facade_ocr_call(tmp_path: Pat
     assert facade.call_count == 1
     assert layout["items"][0]["text"] == "标题"
     assert forensics is info
+
+
+def test_main_full_future_uses_three_tuple_facade_helper() -> None:
+    source = inspect.getsource(
+        __import__(
+            "scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild",
+            fromlist=["rebuild_from_manifest"],
+        ).rebuild_from_manifest
+    )
+    assert "full_future = ocr_pool.submit(\n                _full_layout_for_page," in source
+
+
+def test_local_prefetch_is_disabled_to_prevent_duplicate_facade_ocr() -> None:
+    module = __import__(
+        "scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild",
+        fromlist=["_prefetch_page_ocr_layouts"],
+    )
+    source = inspect.getsource(module._prefetch_page_ocr_layouts)
+    assert 'if ocr_backend == "paddleocr-local":' in source
+    assert "return" in source

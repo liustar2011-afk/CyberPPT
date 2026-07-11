@@ -45,3 +45,11 @@ derives `runtime_dir` from the repository root.
 - OCR/overlay suite: 216 passed, 1 skipped, 346 deselected.
 - Regression coverage asserts one facade OCR call supplies both layout and
   forensic data.
+
+The follow-up tuple-shape blocker was fixed by routing `full_future` through
+`_full_layout_for_page` while leaving the background future on
+`_layout_for_page`. Local full-image prefetch is explicitly disabled so the
+main facade call remains the only OCR invocation per image.
+
+- Focused suite after blocker fix: 41 passed, 1 skipped.
+- OCR/overlay suite after blocker fix: 218 passed, 1 skipped, 346 deselected.

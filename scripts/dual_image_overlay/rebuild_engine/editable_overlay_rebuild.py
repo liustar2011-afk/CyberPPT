@@ -377,6 +377,10 @@ def _prefetch_page_ocr_layouts(
     exactly as it did before this function existed -- so a prefetch failure
     degrades to today's baseline behavior, never worse.
     """
+    # The local full-image path is facade-owned in the main loop. Prefetching
+    # it here would perform a second PaddleOCR call for the same image.
+    if ocr_backend == "paddleocr-local":
+        return
     indexed_tasks: list[tuple[int, Path, str, int | None]] = []
     for pair in manifest.get("pairs", []):
         page_number = int(pair["page_number"])
@@ -868,7 +872,7 @@ def rebuild_from_manifest(
         # call does or how its result is used below.
         with ThreadPoolExecutor(max_workers=2) as ocr_pool:
             full_future = ocr_pool.submit(
-                _layout_for_page,
+                _full_layout_for_page,
                 full_image=source_full_image,
                 ocr_dir=ocr_dir,
                 page_number=page_number,
