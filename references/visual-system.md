@@ -116,6 +116,8 @@
 
 除非用户明确要求跳过 ImageGen，第二阶段逐页正文区蓝图必须由 ImageGen 生成 bitmap 图片。蓝图不是 PPT 草稿、HTML 页面、SVG 线框、canvas 截图、Markdown 图示或本地脚本绘图。主线 prompt 编译入口是 `scripts/body_blueprint_prompt.py`；该脚本只能组织正文区 ImageGen prompt、manifest 和策略记录，不能替代 ImageGen 生图。
 
+CyberPPT 主流程中的 FULL 图执行器是 Codex 内置 `IMAGE_GEN`。执行时必须消费 `page_image_pairs.json` 中当前页的 `full.prompt`，并把返回 bitmap 放到当前页的 `full.path`。执行器替换不得改变现有画布、尺寸、OCR、QA、审批或 PPT 组装规则。
+
 本规则只约束第二阶段逐页蓝图交付，不限制第三阶段允许的 PPTX 还原辅助工具。PptxGenJS、SVG、custom geometry、Pillow、matplotlib、HTML 或 canvas 可以用于第三阶段 QA、裁图、overlay、metadata 或 prompt 管理，但不得作为第二阶段逐页蓝图的最终图像生成器。`python-pptx` 不得用于第三阶段正式 PPTX 生成。
 
 允许脚本做以下辅助工作：

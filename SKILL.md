@@ -56,6 +56,19 @@ python3 -m cyberppt produce verify <project> --pages <range>
 
 `imagegen_script.md` 是可人工修改的提示词源；页面可见文字只能来自已批准内容锁定。页面类型、构图指令、审阅意见、过程说明、证据编号、来源位置、提示词元数据与调试标记均不得进入页面。
 
+### FULL 图生图执行器
+
+主流程的 FULL 图由 Codex 内置 `IMAGE_GEN` 逐页生成，不调用仓库 OAuth 执行器 `run_codex_image`。
+
+对 `page_image_pairs.json` 中每个 `pairs[]` 内容页：
+
+1. 原样读取该页 `full.prompt`，不得改写、压缩、扩写或与其他页面合并。
+2. 调用一次 Codex 内置 `IMAGE_GEN`；一次调用只生成一页。
+3. 将返回的图片保存到该页既有的 `full.path`。
+4. 图片落盘后继续执行仓库现有检查、运行记录、image-text QA、图片审批和 PPT 生产流程。
+
+不得为此新增接收目录、CLI 参数、尺寸规则或旁路 manifest。`skipped_pages[]` 中的模板页不得调用 `IMAGE_GEN`。
+
 生成 full 图后必须运行：
 
 ```bash
