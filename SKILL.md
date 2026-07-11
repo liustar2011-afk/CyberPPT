@@ -263,6 +263,21 @@ python3 -m cyberppt approve-source-analysis <project> --option-id <id>
 
 full 图生成前必须先用 `scripts/dual_image_overlay/deliverable_prompt.py` 或 `template_image_ppt_export.py` 把项目脚本编译成最终交付 prompt。该 prompt 必须使用项目自身视觉锁定，不得用外部仓库 style preset 覆盖项目风格；生成图必须面向最终客户交付，不得画入证据编号、来源编号、caveat、脚注、口径说明、标题占位条、页码、Logo、页脚、公共元素或调试标记。
 
+### ImageGen 提示词分层与交付文字 QA
+
+`imagegen_script.md` 是人工可检查、可修改的生图提示词源文件；它不是最终页面文案，也不等于模型可以自由改写的内容。提示词编译器负责把已批准的页面内容锁定、视觉锁定和页面结构转成模型输入，并依据 `prompt_policy` 过滤过程指令、审阅意见、占位内容、执行元数据和调试标记。编译器策略属于内部控制信息，不得进入页面可见文字。
+
+`imagegen_script.md` 中的 `【页面类型】`、`【内容锁定】`、`【构图指令】` 和 `【结构密度】` 是面向模型的控制区，不是页面文字层；其中只有 `【内容锁定】` 和 `【结构密度】` 可作为页面可见内容污染检查的输入边界。提示词中的过程性说明、审阅要求、提示词元数据和制作标记，均不得进入页面可见文字。校验报告写入相邻的 `imagegen_script.validation.json`，MD 被人工修改后必须重新校验，再生成 `page_image_pairs.json` 和 full 图。
+
+生成 full 图后必须执行 image-text QA：
+
+```bash
+python3 -m cyberppt image-text-qa <project> --pages <range>
+python3 -m cyberppt produce verify <project> --pages <range>
+```
+
+OCR 只提供待核对文字，不负责裁决；确定性检查器负责判断文字是否属于已锁定正文、必要图表标签或正文注释。检测到过程性文字、占位文字、提示词元数据或未锁定文字时，状态为 `failed` 或 `review_required`，均不得写入 `deliverable_ready`。这里的 OCR 仅用于交付 QA，不得恢复 OCR、overlay 或 template rebuild 为第二阶段生图主线。
+
 ### 手工停点与阶段恢复
 
 用户可以明确要求停在任一子步骤：`script_locked`、`full_generated`、`image_ppt_exported`、`qa_rendered` 或 `deliverable_ready`。执行者必须尊重该停点，不得擅自继续到下一步。

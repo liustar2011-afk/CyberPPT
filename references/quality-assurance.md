@@ -103,6 +103,14 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 
 ## 第三阶段失败条件
 
+### Generated image text QA
+
+`imagegen_script.md` 是可人工修改的提示词源，`imagegen_script.validation.json` 是其校验报告；二者必须作为 full 图和 `page_image_pairs.json` 的上游依赖记录。提示词编译策略、过程指令、审阅意见、占位内容、执行元数据和调试标记属于内部控制信息，不得进入页面可见文字。
+
+生成 full 图后，必须先运行 image-text QA，再运行 `produce verify`。QA 至少检查三类结果：允许的正文、必要图表标签和正文注释；过程性或提示词元数据文字；未出现在内容锁定中的意外文字。OCR 只负责提供待核对字符串，确定性检查器负责最终判定。
+
+`image_text_qa/page_*.json` 和 `image_text_qa/image_text_qa_summary.json` 是交付依赖。任一页面为 `failed` 或 `review_required`、报告缺失、报告 hash 过期或汇总与当前 full 图不匹配，都必须阻断 `produce verify`，不得写入 `deliverable_ready`。检查失败时回到 `imagegen_script.md` 或页面内容锁定返工；不得通过删除 OCR 报告、改写 OCR 结果或把过程性文字解释为页面注释来绕过门禁。
+
 出现以下任一情况，不得交付确认，必须返工：
 
 - 内容页使用整页蓝图截图或覆盖面积超过页面 40% 的蓝图图片，且不是用户明确要求的不可编辑参考页。

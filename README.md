@@ -63,6 +63,19 @@ python3 -m cyberppt approve-source-analysis <project> --option-id <id>
 
 `phase1 prepare` 生成可直接检查和修改的 reviewable prompt；`phase1 generate` 保存原始响应、候选稿、grounding QA、模型和哈希；`phase1 critique` 只提供批评意见；模型结果不得自动批准，仍须通过既有人工确认门。
 
+## ImageGen 提示词与交付文字 QA
+
+第二阶段的 `imagegen_script.md` 是人工可检查、可修改的生图提示词源文件。页面内容锁定是唯一的页面可见文字来源；`【页面类型】`、`【内容锁定】`、`【构图指令】`、`【结构密度】` 等控制区只面向模型，不得把编译策略、过程说明、审阅意见、占位内容、执行元数据或调试标记写入页面。人工修改 MD 后，必须先通过 `imagegen_script.validation.json` 校验，再生成 full 图。
+
+生成 full 图后必须运行 image-text QA，再执行 `produce verify`：
+
+```bash
+python3 -m cyberppt image-text-qa <project> --pages <range>
+python3 -m cyberppt produce verify <project> --pages <range>
+```
+
+OCR 结果只作为待核对证据，不能替代确定性判定。`failed` 或 `review_required` 都会阻断交付，不得写入 `deliverable_ready`；检查不通过时回到 `imagegen_script.md` 或页面内容锁定返工。
+
 ## 8 种视觉风格
 
 | 选项 | 名称 | 样张 |

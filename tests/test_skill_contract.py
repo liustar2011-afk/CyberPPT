@@ -134,3 +134,26 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("不得从 full 图或 OCR 猜测标题和副标题", text)
         self.assertIn("中途接入 full 图时必须提供 `template_text_lock` 或等价标题层 metadata", text)
         self.assertIn("缺少模板文字层 truth 时必须停在 `metadata_required`", text)
+
+    def test_docs_describe_prompt_layers_and_image_text_gate(self) -> None:
+        skill = SKILL.read_text(encoding="utf-8-sig")
+        readme = README.read_text(encoding="utf-8-sig")
+        layout = (ROOT / "docs" / "repository-layout.md").read_text(encoding="utf-8-sig")
+        qa = (ROOT / "references" / "quality-assurance.md").read_text(encoding="utf-8-sig")
+
+        for text in (skill, readme, layout, qa):
+            self.assertIn("imagegen_script.md", text)
+            self.assertIn("image-text QA", text)
+
+        self.assertIn("不得进入页面可见文字", skill)
+        self.assertIn("produce verify", qa)
+        self.assertIn("deliverable_ready", qa)
+
+        fixture_dir = ROOT / "tests" / "fixtures" / "image_text_qa"
+        for name in (
+            "allowed_page_016.txt",
+            "clean_ocr.json",
+            "process_text_ocr.json",
+            "unexpected_text_ocr.json",
+        ):
+            self.assertTrue((fixture_dir / name).is_file(), name)

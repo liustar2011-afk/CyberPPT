@@ -41,7 +41,7 @@ delivery files:
 | `workbench/analysis_expression/` | Project-level five-gate contract, staged confirmation records, approval records, and status metadata. It records source analysis, reporting direction, report structure, page design, and business script without replacing their source workspaces. |
 | `workbench/stages/01-analysis/` | Evidence tables, conflicts, SCR, storylines, page plans, density plans. |
 | `workbench/stages/01-analysis/model-runs/` | Prompt-first Stage 1 model runs: reviewable prompts, raw responses, candidates, grounding QA, critic reports, and run manifests. Model outputs are candidates only and must not be auto-approved. |
-| `workbench/stages/02-blueprint-dual-image/` | Historical path name for the current `full_image_ppt` mainline: style lock, template text lock, human-editable `imagegen_script.md`, its `imagegen_script.validation.json`, ImageGen full images, `page_image_pairs.json`, speaker notes, image-PPT assembly, and `assembly_report.json`. The MD is the prompt source; its validation report and hash are recorded in the manifest. |
+| `workbench/stages/02-blueprint-dual-image/` | Historical path name for the current `full_image_ppt` mainline: style lock, template text lock, human-editable `imagegen_script.md`, its `imagegen_script.validation.json`, ImageGen full images, `page_image_pairs.json`, `image_text_qa/page_*.json`, `image_text_qa/image_text_qa_summary.json`, speaker notes, image-PPT assembly, and `assembly_report.json`. The MD is the prompt source; its validation report and hash are recorded in the manifest. |
 | `workbench/stages/03-overlay/` | Legacy/Advanced editable rebuild artifacts only: overlay plans, semantic plans, text mapping, fit and layout QA. |
 | `workbench/stages/04-template-rebuild/` | Legacy/Advanced template rebuild jobs only: source capture, readiness records, normalized references. |
 | `workbench/stages/05-qa-delivery/` | Production visual report, full-image delivery manifest, strict validation report, production readiness, and delivery notes. |
@@ -83,6 +83,8 @@ python3 -m cyberppt produce verify <project> --pages <range>
 ```
 
 `produce prepare` stops for speaker-notes approval, `produce assemble` consumes only approved notes/template/full-image inputs, and `produce verify` is the only step that can promote a PPTX to `delivery/` and `deliverable_ready`.
+
+The Stage 02 prompt contract has three separate layers: `imagegen_script.md` is the human-editable prompt source; the compiler policy and control sections are model-facing internal instructions; and the page content lock remains the only source for page-visible text. After full-image generation, image-text QA writes per-page reports and `image_text_qa_summary.json`. A `failed` or `review_required` summary blocks `produce verify`; OCR is evidence for the check, not a source of page text and not a return to the legacy OCR/overlay mainline.
 
 New workspaces receive this contract during initialization. For an existing
 workspace, `adopt-analysis-expression-contract` creates only contract metadata.
