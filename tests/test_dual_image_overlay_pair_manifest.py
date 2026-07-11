@@ -267,10 +267,10 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertEqual("cyberppt-full-image-only", manifest["mode"])
         self.assertEqual(["full"], manifest["output_variants"])
         self.assertEqual("text_to_image_generate_full", pair["full"]["generation_method"])
-        self.assertEqual({"width": 1672, "height": 941}, manifest["generation_contract"]["slide_canvas"])
-        self.assertEqual({"width": 1672, "height": 941}, manifest["generation_contract"]["generation_size"])
+        self.assertEqual({"width": 1680, "height": 944}, manifest["generation_contract"]["slide_canvas"])
+        self.assertEqual({"width": 1680, "height": 944}, manifest["generation_contract"]["generation_size"])
         self.assertEqual("full-image-only", manifest["generation_contract"]["mode"])
-        self.assertEqual("1672x941", pair["full"]["canvas"])
+        self.assertEqual("1680x944", pair["full"]["canvas"])
         self.assertNotIn("background", pair)
 
     def test_require_generated_accepts_full_image_without_background(self) -> None:

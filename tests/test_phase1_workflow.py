@@ -35,6 +35,24 @@ VALID_SOURCE_ANALYSIS_JSON = json.dumps(
     ensure_ascii=False,
 )
 
+CHUNK_JSON = json.dumps(
+    {
+        "chunk_id": "C001",
+        "evidence": [
+            {
+                "claim": "供需总体平衡",
+                "support": "供需总体平衡",
+                "source_unit_ids": ["U0001"],
+                "numbers": [],
+                "caveat": "",
+            }
+        ],
+        "material_signals": ["工作方案"],
+        "open_questions": [],
+    },
+    ensure_ascii=False,
+)
+
 
 def prepare_fixture_project(tmp_path: Path) -> tuple[Path, Path]:
     project = tmp_path / "project"
@@ -73,6 +91,36 @@ def test_generate_consumes_edited_prompt_without_overwriting_it(tmp_path: Path, 
     assert generated["prompt_sha256"] == sha256_file(prompt)
     assert Path(generated["candidate"]).exists()
     assert Path(generated["raw_output"]).read_text(encoding="utf-8").strip() == VALID_SOURCE_ANALYSIS_JSON
+
+
+def test_generate_uses_chunked_source_analysis_then_aggregates(tmp_path: Path, monkeypatch) -> None:
+    project = tmp_path / "chunked-project"
+    init_project(project)
+    source = project / "workbench/stages/01-analysis/source_extract.md"
+    source.write_text(
+        "## P1\n供需总体平衡。\n" + ("第一块材料。" * 3000)
+        + "\n\n## P2\n" + ("第二块材料。" * 3000)
+        + "\n\n## P3\n" + ("第三块材料。" * 3000),
+        encoding="utf-8",
+    )
+    workflow.prepare_phase1_prompt(project, "source_analysis", source)
+    calls: list[dict[str, object]] = []
+
+    def fake_run(**kwargs: object) -> str:
+        calls.append(kwargs)
+        return CHUNK_JSON if len(calls) < 4 else VALID_SOURCE_ANALYSIS_JSON
+
+    monkeypatch.setattr(workflow, "run_codex_text", fake_run)
+
+    generated = workflow.generate_phase1_candidate(project, "source_analysis", model="test-model")
+
+    assert generated["status"] == "candidate_ready"
+    assert len(calls) == 4
+    assert "chunk_id" in str(calls[0]["prompt"])
+    assert "分块证据" in str(calls[2]["prompt"])
+    run = json.loads(phase1_paths(project, "source_analysis").run_manifest.read_text(encoding="utf-8"))
+    assert run["source_analysis_strategy"] == "chunked_map_reduce"
+    assert run["source_analysis_chunk_count"] == 3
 
 
 def test_model_failure_preserves_prompt_and_writes_resumable_run(tmp_path: Path, monkeypatch) -> None:

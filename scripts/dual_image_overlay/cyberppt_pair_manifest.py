@@ -35,9 +35,9 @@ from scripts.dual_image_overlay.deliverable_prompt import (
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
-CANVAS = {"width": 1672, "height": 941}
+CANVAS = {"width": 1680, "height": 944}
 CONTENT_REGION = {"x": 26, "y": 136, "width": 1619, "height": 774}
-GENERATION_SIZE = {"width": 1672, "height": 941}
+GENERATION_SIZE = {"width": 1680, "height": 944}
 OUTPUT_VARIANTS = ["full"]
 FULL_GENERATION_METHOD = "text_to_image_generate_full"
 BACKGROUND_GENERATION_METHOD = "image_to_image_edit_from_full"

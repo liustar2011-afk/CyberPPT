@@ -26,7 +26,7 @@ class ImagegenRunTests(unittest.TestCase):
         output_path = stage / "page_004_full.png"
         prompt = "Use this approved prompt exactly."
         manifest = {
-            "generation_contract": {"generation_size": {"width": 1672, "height": 941}},
+            "generation_contract": {"generation_size": {"width": 1680, "height": 944}},
             "pairs": [
                 {
                     "page_number": 4,
@@ -53,7 +53,7 @@ class ImagegenRunTests(unittest.TestCase):
         full = manifest["pairs"][0]["full"]
         output_path = Path(str(full["path"]))
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        Image.new("RGB", (1672, 941), "white").save(output_path)
+        Image.new("RGB", (1680, 944), "white").save(output_path)
         qa_path = stage / "image_text_qa/page_004.json"
         qa_path.parent.mkdir(parents=True, exist_ok=True)
         qa_path.write_text(
@@ -140,7 +140,7 @@ class ImagegenRunTests(unittest.TestCase):
 
         def generator(**kwargs: object) -> Path:
             output_path = Path(str(kwargs["output_path"]))
-            Image.new("RGB", (1672, 941), "white").save(output_path)
+            Image.new("RGB", (1680, 944), "white").save(output_path)
             return output_path
 
         run = run_imagegen_page(project, "4", generator=generator)
@@ -167,15 +167,19 @@ class ImagegenRunTests(unittest.TestCase):
         def generator(**kwargs: object) -> Path:
             calls.append(kwargs)
             output_path = Path(str(kwargs["output_path"]))
-            Image.new("RGB", (1672, 941), "white").save(output_path)
+            Image.new("RGB", (1680, 944), "white").save(output_path)
             return output_path
 
         result = run_imagegen_page(project, "4", generator=generator)
 
         self.assertEqual(pair["full"]["prompt"], calls[0]["prompt"])
         self.assertEqual(pair["full"]["path"], str(calls[0]["output_path"]))
+        self.assertEqual("1680x944", calls[0]["size"])
         self.assertEqual(4, result["page"])
-        self.assertEqual([1672, 941], result["actual_dimensions"])
+        self.assertEqual([1680, 944], result["backend_requested_dimensions"])
+        self.assertEqual([1680, 944], result["actual_dimensions"])
+        with Image.open(str(pair["full"]["path"])) as image:
+            self.assertEqual((1680, 944), image.size)
         self.assertTrue(Path(str(result["run_path"])).is_file())
 
     def test_cover_page_is_rejected(self) -> None:

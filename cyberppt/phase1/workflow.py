@@ -20,7 +20,12 @@ from cyberppt.phase1.artifacts import (
     write_phase1_run,
 )
 from cyberppt.phase1.grounding import ground_gate_output, ground_source_analysis
-from cyberppt.phase1.prompts import build_gate_prompt, build_source_analysis_prompt
+from cyberppt.phase1.prompts import (
+    build_gate_prompt,
+    build_source_analysis_aggregate_prompt,
+    build_source_analysis_chunk_prompt,
+    build_source_analysis_prompt,
+)
 from cyberppt.phase1.renderers import render_gate_output, render_source_analysis
 from cyberppt.phase1.schemas import parse_gate_output, parse_source_analysis_output
 from cyberppt.phase1.source_bundle import (
@@ -109,7 +114,7 @@ def prepare_phase1_prompt(project: Path, gate: str, input_path: Path | None = No
         if input_path is None:
             raise ValueError("source_analysis preparation requires --input source extract")
         source_path = input_path.expanduser().resolve()
-        bundle = build_source_bundle(source_path)
+        bundle = build_source_bundle(source_path, max_chunk_chars=20000)
         write_source_bundle(bundle, paths)
         prompt = build_source_analysis_prompt(bundle, references)
         dependencies.extend([source_path, paths.source_bundle_json])
@@ -170,6 +175,85 @@ def _update_run(run: dict[str, Any], **updates: Any) -> None:
     path.write_text(json.dumps(run, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def _run_source_analysis_generation(
+    *,
+    prompt: str,
+    paths: Any,
+    bundle: SourceBundle,
+    model: str | None,
+) -> tuple[str, dict[str, Any], list[dict[str, object]]]:
+    if len(bundle.chunks) <= 1:
+        return run_codex_text(prompt=prompt, instructions=MODEL_INSTRUCTIONS, model=model), {}, []
+
+    units = {unit.unit_id: unit for unit in bundle.units}
+    chunk_outputs: list[str] = []
+    ledger_records: list[dict[str, object]] = []
+    chunk_prompt_paths: list[str] = []
+    chunk_output_paths: list[str] = []
+    for chunk in bundle.chunks:
+        chunk_prompt = build_source_analysis_chunk_prompt(prompt, chunk, units)
+        chunk_prompt_path = paths.root / "prompts" / f"source_analysis_{chunk.chunk_id}_prompt.md"
+        chunk_output_path = paths.root / "llm" / f"source_analysis_{chunk.chunk_id}_raw.json"
+        chunk_prompt_path.write_text(chunk_prompt, encoding="utf-8")
+        raw = run_codex_text(prompt=chunk_prompt, instructions=MODEL_INSTRUCTIONS, model=model)
+        payload = json.loads(raw)
+        if not isinstance(payload, dict):
+            raise ValueError(f"source analysis chunk {chunk.chunk_id} output must be a JSON object")
+        chunk_output_path.write_text(raw.strip() + "\n", encoding="utf-8")
+        chunk_outputs.append(raw)
+        chunk_prompt_paths.append(str(chunk_prompt_path))
+        chunk_output_paths.append(str(chunk_output_path))
+        ledger_records.extend(
+            [
+                {
+                    "stage": "01-analysis",
+                    "page": None,
+                    "path": str(chunk_prompt_path),
+                    "status": "prompt_ready",
+                    "depends_on": [str(paths.prompt), str(paths.source_bundle_json)],
+                    "supersedes": [],
+                    "resume_command": f"python3 -m cyberppt phase1 generate {paths.root} --gate source_analysis",
+                    "sha256": sha256_file(chunk_prompt_path),
+                },
+                {
+                    "stage": "01-analysis",
+                    "page": None,
+                    "path": str(chunk_output_path),
+                    "status": "generated",
+                    "depends_on": [str(chunk_prompt_path)],
+                    "supersedes": [],
+                    "resume_command": f"python3 -m cyberppt phase1 generate {paths.root} --gate source_analysis",
+                    "sha256": sha256_file(chunk_output_path),
+                },
+            ]
+        )
+
+    aggregate_prompt = build_source_analysis_aggregate_prompt(prompt, chunk_outputs)
+    aggregate_prompt_path = paths.root / "prompts" / "source_analysis_aggregate_prompt.md"
+    aggregate_prompt_path.write_text(aggregate_prompt, encoding="utf-8")
+    raw = run_codex_text(prompt=aggregate_prompt, instructions=MODEL_INSTRUCTIONS, model=model)
+    metadata = {
+        "source_analysis_strategy": "chunked_map_reduce",
+        "source_analysis_chunk_count": len(bundle.chunks),
+        "source_analysis_chunk_prompt_paths": chunk_prompt_paths,
+        "source_analysis_chunk_output_paths": chunk_output_paths,
+        "source_analysis_aggregate_prompt_path": str(aggregate_prompt_path),
+    }
+    ledger_records.append(
+        {
+            "stage": "01-analysis",
+            "page": None,
+            "path": str(aggregate_prompt_path),
+            "status": "prompt_ready",
+            "depends_on": chunk_prompt_paths + chunk_output_paths,
+            "supersedes": [],
+            "resume_command": f"python3 -m cyberppt phase1 generate {paths.root} --gate source_analysis",
+            "sha256": sha256_file(aggregate_prompt_path),
+        }
+    )
+    return raw, metadata, ledger_records
+
+
 def generate_phase1_candidate(project: Path, gate: str, model: str | None = None, dry_run: bool = False) -> dict[str, object]:
     root = project.expanduser().resolve()
     paths = phase1_paths(root, gate)
@@ -180,7 +264,18 @@ def generate_phase1_candidate(project: Path, gate: str, model: str | None = None
     prompt = paths.prompt.read_text(encoding="utf-8")
     prompt_hash = sha256_file(paths.prompt)
     try:
-        raw = run_codex_text(prompt=prompt, instructions=MODEL_INSTRUCTIONS, model=model, dry_run=dry_run)
+        source_metadata: dict[str, Any] = {}
+        source_ledger_records: list[dict[str, object]] = []
+        if gate == "source_analysis" and not dry_run:
+            bundle = _load_source_bundle(paths.source_bundle_json)
+            raw, source_metadata, source_ledger_records = _run_source_analysis_generation(
+                prompt=prompt,
+                paths=paths,
+                bundle=bundle,
+                model=model,
+            )
+        else:
+            raw = run_codex_text(prompt=prompt, instructions=MODEL_INSTRUCTIONS, model=model, dry_run=dry_run)
         paths.raw_output.write_text(raw.strip() + "\n", encoding="utf-8")
         if dry_run:
             _update_run(run, status="dry_run", prompt_sha256=prompt_hash, model=model, raw_output_path=str(paths.raw_output))
@@ -212,10 +307,12 @@ def generate_phase1_candidate(project: Path, gate: str, model: str | None = None
             recommendation=recommendation,
             options=options,
             candidate_sha256=sha256_file(paths.candidate),
+            **source_metadata,
         )
         append_phase1_ledger_records(
             root,
-            [
+            source_ledger_records
+            + [
                 {
                     "stage": "01-analysis",
                     "page": None,

@@ -41,7 +41,7 @@ from cyberppt.commands.script_gate import approve_script, get_script_status, sta
 from cyberppt.commands.script_runner import _STAGE_2_PLUS_GENERATION_ALIASES, SCRIPT_ALIASES, run_script
 from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
 from cyberppt.phase1.critic import critique_phase1_candidate
-from cyberppt.phase1.workflow import generate_phase1_candidate, get_phase1_status, prepare_phase1_prompt, stage_phase1_candidate
+from cyberppt.phase1.workflow import get_phase1_status, prepare_phase1_prompt, stage_phase1_candidate
 
 
 def _doctor() -> int:
@@ -179,13 +179,19 @@ def _phase1_prepare_command(args: argparse.Namespace) -> int:
 
 
 def _phase1_generate_command(args: argparse.Namespace) -> int:
-    try:
-        result = generate_phase1_candidate(Path(args.project), args.gate, model=args.model, dry_run=args.dry_run_llm)
-    except (FileNotFoundError, RuntimeError, ValueError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(json.dumps(result, ensure_ascii=False, indent=2))
-    return 0
+    print(
+        json.dumps(
+            {
+                "status": "manual_confirmation_required",
+                "gate": args.gate,
+                "message": "主流程不自动调用模型；请在当前 Codex 会话生成候选稿后，用 stage-source-analysis 登记。",
+                "next_command": f"python3 -m cyberppt stage-source-analysis {Path(args.project).expanduser().resolve()}",
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+    return 3
 
 
 def _phase1_critique_command(args: argparse.Namespace) -> int:
@@ -539,11 +545,9 @@ def build_parser() -> argparse.ArgumentParser:
     phase1_prepare_parser.add_argument("--input", help="Normalized source extract; required for source_analysis.")
     phase1_prepare_parser.set_defaults(func=_phase1_prepare_command)
 
-    phase1_generate_parser = phase1_subparsers.add_parser("generate", help="Call the model using the current prompt MD.")
+    phase1_generate_parser = phase1_subparsers.add_parser("generate", help="Show the manual candidate-staging entrypoint.")
     phase1_generate_parser.add_argument("project", help="CyberPPT project directory.")
     phase1_generate_parser.add_argument("--gate", choices=GATE_ORDER, required=True, help="Stage 1 gate to generate.")
-    phase1_generate_parser.add_argument("--model", help="Optional Codex Responses model.")
-    phase1_generate_parser.add_argument("--dry-run-llm", action="store_true", help="Write a request preview without calling the model.")
     phase1_generate_parser.set_defaults(func=_phase1_generate_command)
 
     phase1_critique_parser = phase1_subparsers.add_parser("critique", help="Run the advisory second-pass model critic.")

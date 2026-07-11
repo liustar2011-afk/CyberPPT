@@ -22,7 +22,7 @@ from urllib import error, request
 
 
 DEFAULT_MODEL = "gpt-image-2"
-DEFAULT_SIZE = "1672x941"
+DEFAULT_SIZE = "1680x944"
 DEFAULT_QUALITY = "high"
 DEFAULT_OUTPUT_FORMAT = "png"
 DEFAULT_TIMEOUT = 600
@@ -169,7 +169,7 @@ def validate_gpt_image_2_size(size: str) -> None:
         return
     parsed = _parse_size(size)
     if parsed is None:
-        _die("size must be auto or WIDTHxHEIGHT, for example 1672x941.")
+        _die("size must be auto or WIDTHxHEIGHT, for example 1680x944.")
     width, height = parsed
     max_edge = max(width, height)
     min_edge = min(width, height)
@@ -328,16 +328,36 @@ def _post_codex_sse(body: dict[str, Any], timeout: int) -> str:
         with request.urlopen(req, timeout=timeout) as resp:
             chunks: list[bytes] = []
             total = 0
+            event_data: list[str] = []
             while True:
                 if time.time() - started > timeout:
                     _die(f"Codex Responses request exceeded total timeout of {timeout}s.")
-                chunk = resp.read(1024 * 64)
-                if not chunk:
+                line = resp.readline()
+                if not line:
                     break
-                total += len(chunk)
+                total += len(line)
                 if total > MAX_CODEX_RESPONSE_BYTES:
                     _die("Codex image response exceeded size limit.")
-                chunks.append(chunk)
+                chunks.append(line)
+                if line.startswith(b"data:"):
+                    event_data.append(line[5:].strip().decode("utf-8", errors="replace"))
+                    continue
+                if line not in {b"\n", b"\r\n"}:
+                    continue
+                payload = "".join(event_data).strip()
+                event_data = []
+                if payload == "[DONE]":
+                    break
+                try:
+                    event = json.loads(payload) if payload else {}
+                except json.JSONDecodeError:
+                    continue
+                if isinstance(event, dict) and event.get("type") in {
+                    "response.completed",
+                    "response.failed",
+                    "error",
+                }:
+                    break
             return b"".join(chunks).decode("utf-8", errors="replace")
     except error.HTTPError as exc:
         detail = exc.read(4096).decode("utf-8", errors="replace")

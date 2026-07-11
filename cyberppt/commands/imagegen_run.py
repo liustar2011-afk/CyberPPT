@@ -11,8 +11,6 @@ from typing import Any, Callable
 from PIL import Image
 
 from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_codex_image
-
-
 STAGE_ROOT = Path("workbench/stages/02-blueprint-dual-image")
 ImageGenerator = Callable[..., Path]
 
@@ -112,8 +110,9 @@ def run_imagegen_page(
     if not output_path.is_absolute():
         output_path = (manifest_path.parent / output_path).resolve()
     expected_dimensions = _expected_dimensions(manifest)
+    backend_size = f"{expected_dimensions[0]}x{expected_dimensions[1]}"
     image_generator = generator or run_codex_image
-    kwargs: dict[str, Any] = {"prompt": prompt, "output_path": output_path}
+    kwargs: dict[str, Any] = {"prompt": prompt, "output_path": output_path, "size": backend_size}
     if model is not None:
         kwargs["model"] = model
     image_generator(**kwargs)
@@ -141,6 +140,7 @@ def run_imagegen_page(
         "prompt_sha256": _sha256_bytes(prompt.encode("utf-8")),
         "output_path": str(output_path),
         "output_sha256": _sha256_bytes(output_path.read_bytes()),
+        "backend_requested_dimensions": list(expected_dimensions),
         "expected_dimensions": list(expected_dimensions),
         "actual_dimensions": list(actual_dimensions),
         "status": "awaiting_image_text_qa",

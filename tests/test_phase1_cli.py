@@ -13,6 +13,7 @@ def test_phase1_help_lists_prompt_first_commands() -> None:
     help_text = build_parser().format_help()
 
     assert "phase1" in help_text
+    assert "codex-oauth" not in help_text
 
 
 def test_phase1_prepare_routes_input_to_workflow(tmp_path: Path) -> None:
@@ -28,14 +29,14 @@ def test_phase1_prepare_routes_input_to_workflow(tmp_path: Path) -> None:
     assert json.loads(output.getvalue())["status"] == "prompt_ready"
 
 
-def test_phase1_generate_model_failure_returns_two(tmp_path: Path) -> None:
+def test_phase1_generate_defaults_to_manual_confirmation(tmp_path: Path) -> None:
     output = io.StringIO()
 
-    with patch("cyberppt.cli.generate_phase1_candidate", side_effect=RuntimeError("model failed")), redirect_stderr(output):
+    with redirect_stdout(output):
         code = main(["phase1", "generate", str(tmp_path), "--gate", "source_analysis"])
 
-    assert code == 2
-    assert "model failed" in output.getvalue()
+    assert code == 3
+    assert json.loads(output.getvalue())["status"] == "manual_confirmation_required"
 
 
 def test_phase1_stage_parses_options_json(tmp_path: Path) -> None:
