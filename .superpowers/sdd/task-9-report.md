@@ -31,4 +31,17 @@ legacy rebuild path; no unrelated files were staged.
 - `pytest -q tests/test_high_fidelity_text_extractor.py tests/test_high_fidelity_text_extractor_integration.py tests/test_text_forensics.py tests/test_dual_image_overlay_template_rebuild.py`
   - 38 passed, 1 skipped.
 - `PYTHONPATH=. pytest -q tests -k 'ocr or overlay or template_rebuild or text_forensics or high_fidelity'`
-  - 215 passed, 1 skipped, 346 deselected.
+  - 216 passed, 1 skipped, 346 deselected.
+
+## Follow-up duplicate-OCR fix
+
+The full local image now goes through `_full_layout_for_page`, which calls the
+facade once and derives the normalized layout consumed by overlay construction
+from the same facade result. Background OCR remains a separate caller-owned
+scan; vision-json and none behavior are unchanged. The integration fixture
+derives `runtime_dir` from the repository root.
+
+- Focused suite: 39 passed, 1 skipped.
+- OCR/overlay suite: 216 passed, 1 skipped, 346 deselected.
+- Regression coverage asserts one facade OCR call supplies both layout and
+  forensic data.

@@ -317,6 +317,36 @@ def _extract_legacy_page_text(
     )
 
 
+def _layout_from_facade(info: dict[str, Any]) -> dict[str, Any]:
+    image = info.get("image") if isinstance(info.get("image"), dict) else {}
+    items: list[dict[str, Any]] = []
+    for line in info.get("lines", []):
+        if not isinstance(line, dict):
+            continue
+        for item in line.get("items", []):
+            if isinstance(item, dict) and str(item.get("text") or "").strip():
+                items.append({"text": item["text"], "bbox": item.get("bbox"), "confidence": line.get("confidence", 1.0)})
+    return {
+        "image_size": {"width": int(image.get("width", 0)), "height": int(image.get("height", 0))},
+        "items": items,
+        "backend": "paddleocr-local",
+    }
+
+
+def _full_layout_for_page(**kwargs: Any) -> tuple[Path, dict[str, Any], dict[str, Any] | None]:
+    """Resolve the full image once, returning layout and optional facade evidence."""
+    if kwargs.get("ocr_backend") == "paddleocr-local":
+        image_path = Path(kwargs["full_image"])
+        info = _extract_legacy_page_text(image_path, ocr_backend="paddleocr-local", ocr_scale=float(kwargs.get("ocr_scale", 1.0)))
+        assert info is not None
+        layout_path = Path(kwargs["ocr_dir"]) / f"page_{int(kwargs['page_number']):03d}_text_layout.json"
+        layout_path.parent.mkdir(parents=True, exist_ok=True)
+        _write_json(layout_path, _layout_from_facade(info))
+        return layout_path, _layout_from_facade(info), info
+    path, layout = _layout_for_page(**kwargs)
+    return path, layout, None
+
+
 def _prefetch_page_ocr_layouts(
     *,
     manifest: dict[str, Any],
@@ -366,7 +396,7 @@ def _prefetch_page_ocr_layouts(
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
         futures = [
             pool.submit(
-                _layout_for_page,
+                _full_layout_for_page,
                 full_image=image_path,
                 ocr_dir=ocr_dir,
                 page_number=page_number,
@@ -865,17 +895,12 @@ def rebuild_from_manifest(
                 variant="background",
                 ocr_scale=ocr_scale,
             )
-            layout_path, layout = full_future.result()
+            layout_path, layout, facade_forensics = full_future.result()
             background_layout_path, background_layout = background_future.result()
         # Preserve raw line-level evidence before any overlay boxes are built.
         # The local legacy path now consumes the single-image facade; page
         # pairing, script truth, and page-level gates remain here.
         forensic_dir = ocr_dir / f"page_{page_number:03d}_text_forensics"
-        facade_forensics = _extract_legacy_page_text(
-            full_image,
-            ocr_backend=ocr_backend,
-            ocr_scale=ocr_scale,
-        )
         if facade_forensics is not None:
             forensics = facade_forensics
         else:
