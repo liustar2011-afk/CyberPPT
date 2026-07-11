@@ -284,6 +284,7 @@ def stage_phase1_candidate(
         recommendation,
         options,
         question,
+        generation_run=paths.run_manifest,
     )
 
 

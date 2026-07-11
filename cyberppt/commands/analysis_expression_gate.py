@@ -22,7 +22,7 @@ GATE_ORDER = (
 REQUIRED_HEADINGS = {
     "source_analysis": ("输入盘点", "证据表", "开放数据冲突", "内容脑暴", "页面物料池"),
     "reporting_direction": ("汇报对象", "汇报目的", "内容重点", "证据", "优势", "边界", "推荐方向"),
-    "report_structure": ("模块一", "模块二", "模块三", "模块四"),
+    "report_structure": (),
     "page_design": (),
     "business_script": ("非上屏：证据链", "来源位置", "非上屏：完整性校核"),
     "drawing_script": (),
@@ -418,8 +418,8 @@ def validate_analysis_artifact(gate: str, text: str) -> list[str]:
     if gate == "report_structure":
         canonical_modules = re.findall(r"^#+\s*模块[一二三四五六七八九十0-9]+\s*$", text, re.MULTILINE)
         module_count = max(len(canonical_modules), len(_STRUCTURE_MODULE_PATTERN.findall(text)))
-        if not 4 <= module_count <= 6:
-            errors.append("report_structure must contain 4-6 modules")
+        if not 2 <= module_count <= 8:
+            errors.append("report_structure module count must be between 2 and 8")
         if any(re.search(rf"^\s*{re.escape(field)}\s*[:：]\s*\S", text, re.MULTILINE) for field in _STRUCTURE_PAGE_COUNT_FIELDS):
             errors.append("report_structure must not contain page count fields")
         if any(re.search(rf"^\s*{re.escape(field)}\s*[:：]\s*\S", text, re.MULTILINE) for field in _STRUCTURE_PAGE_TITLE_FIELDS):
@@ -466,6 +466,8 @@ def stage_analysis_artifact(
     recommendation: str,
     options: list[dict[str, Any]],
     question: str | None = None,
+    *,
+    generation_run: Path | None = None,
 ) -> Path:
     """Save a validated artifact and its pending, user-selectable confirmation record."""
 
@@ -496,6 +498,29 @@ def stage_analysis_artifact(
             raise ValueError("approved business script has changed; approve business_script again")
         errors.extend(validate_drawing_script(source, business))
         inherited_units = _parse_inherited_units(business)
+    generation_run_payload: dict[str, Any] | None = None
+    if generation_run is not None:
+        generation_run = generation_run.expanduser().resolve()
+        if not generation_run.is_file():
+            raise ValueError(f"generation run is missing: {generation_run}")
+        generation_run_payload = json.loads(generation_run.read_text(encoding="utf-8"))
+        if generation_run_payload.get("gate") != gate:
+            raise ValueError("generation run gate does not match staged gate")
+        if generation_run_payload.get("status") != "candidate_ready":
+            raise ValueError("generation run is not candidate_ready")
+        source_hash = hashlib.sha256(source.encode("utf-8")).hexdigest()
+        if generation_run_payload.get("candidate_sha256") != source_hash:
+            raise ValueError("generation run candidate hash does not match staged source")
+        for raw_path, expected in dict(generation_run_payload.get("dependency_hashes", {})).items():
+            dependency = Path(raw_path).expanduser().resolve()
+            if not dependency.is_file() or hashlib.sha256(dependency.read_bytes()).hexdigest() != expected:
+                raise ValueError(f"generation run dependency is stale: {dependency}")
+        grounding_path = Path(str(generation_run_payload.get("grounding_report_path", ""))).expanduser().resolve()
+        if not grounding_path.is_file():
+            raise ValueError("generation run grounding report is missing")
+        grounding = json.loads(grounding_path.read_text(encoding="utf-8"))
+        if grounding.get("blocking"):
+            raise ValueError("generation run deterministic grounding failed")
     if errors:
         raise ValueError("; ".join(dict.fromkeys(errors)))
 
@@ -527,6 +552,9 @@ def stage_analysis_artifact(
         pending_payload["inherited_units"] = inherited_units.to_payload()
     if source_analysis_sha256 is not None:
         pending_payload["source_analysis_sha256"] = source_analysis_sha256
+    if generation_run is not None:
+        pending_payload["generation_run"] = str(generation_run)
+        pending_payload["generation_run_sha256"] = hashlib.sha256(generation_run.read_bytes()).hexdigest()
     _write_json(pending, pending_payload)
     approval = _approval_path(root, gate)
     if approval.exists():

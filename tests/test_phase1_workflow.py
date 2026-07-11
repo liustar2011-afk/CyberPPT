@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -99,3 +99,25 @@ def test_generate_rejects_stale_source_dependency(tmp_path: Path, monkeypatch) -
 
     with pytest.raises(ValueError, match="dependency is stale"):
         workflow.generate_phase1_candidate(project, "source_analysis")
+
+
+def test_model_assisted_stage_records_generation_run_hash(tmp_path: Path) -> None:
+    project, source = prepare_fixture_project(tmp_path)
+    workflow.prepare_phase1_prompt(project, "source_analysis", source)
+    with patch.object(workflow, "run_codex_text", return_value=VALID_SOURCE_ANALYSIS_JSON):
+        workflow.generate_phase1_candidate(project, "source_analysis", model="test-model")
+
+    result = workflow.stage_phase1_candidate(
+        project,
+        "source_analysis",
+        "confirm_source_analysis",
+        [
+            {"id": "confirm_source_analysis", "label": "确认"},
+            {"id": "revise_source_analysis", "label": "修改"},
+        ],
+    )
+    data = json.loads(result.read_text(encoding="utf-8"))
+    run_path = phase1_paths(project, "source_analysis").run_manifest
+
+    assert data["generation_run"] == str(run_path)
+    assert data["generation_run_sha256"] == sha256_file(run_path)

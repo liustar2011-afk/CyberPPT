@@ -547,14 +547,41 @@ class AnalysisExpressionGateTests(unittest.TestCase):
         self.assertEqual([], validate_analysis_artifact("reporting_direction", text))
 
     def test_structure_rejects_page_and_visual_fields_and_invalid_module_count(self) -> None:
-        text = STRUCTURE + "## 模块五\n保障机制\n## 模块六\n风险闭环\n## 模块七\n附录\n页数：12\n页面标题：供需预测\n视觉形式：折线图\n"
+        text = STRUCTURE + "## 模块五\n保障机制\n## 模块六\n风险闭环\n## 模块七\n附录\n## 模块八\n扩展\n## 模块九\n收束\n页数：12\n页面标题：供需预测\n视觉形式：折线图\n"
 
         errors = validate_analysis_artifact("report_structure", text)
 
-        self.assertIn("report_structure must contain 4-6 modules", errors)
+        self.assertIn("report_structure module count must be between 2 and 8", errors)
         self.assertIn("report_structure must not contain page count fields", errors)
         self.assertIn("report_structure must not contain page title fields", errors)
         self.assertIn("report_structure must not contain visual form fields", errors)
+
+    def test_structure_allows_task_adaptive_module_counts(self) -> None:
+        for count in (2, 3, 4, 6, 8):
+            text = "# 汇报结构\n" + "\n".join(
+                f"## 模块{index}\n事项{index}" for index in range(1, count + 1)
+            )
+            self.assertFalse(any("module count" in error for error in validate_analysis_artifact("report_structure", text)))
+
+    def test_structure_rejects_zero_one_or_nine_modules(self) -> None:
+        for count in (0, 1, 9):
+            text = "# 汇报结构\n" + "\n".join(
+                f"## 模块{index}\n事项{index}" for index in range(1, count + 1)
+            )
+            self.assertIn(
+                "report_structure module count must be between 2 and 8",
+                validate_analysis_artifact("report_structure", text),
+            )
+
+    def test_manual_stage_has_no_model_generation_provenance(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+
+            pending = stage_analysis_artifact(project, "source_analysis", SOURCE_ANALYSIS, "complete", OPTIONS)
+            data = json.loads(pending.read_text(encoding="utf-8"))
+
+            self.assertNotIn("generation_run", data)
 
     def test_structure_allows_chinese_chapter_headings_and_scope_boundary(self) -> None:
         text = """# 汇报结构设计
