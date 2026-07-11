@@ -42,6 +42,8 @@ class TextLine:
     polygon: tuple[tuple[int, int], ...]
     confidence: float
     runs: tuple[TextRun, ...] = ()
+    layout: Mapping[str, Any] = field(default_factory=dict)
+    style_evidence: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if "\n" in self.text or "\r" in self.text:
@@ -61,6 +63,10 @@ class TextLine:
         }
         if self.runs:
             result["runs"] = [run.to_dict() for run in self.runs]
+        if self.layout:
+            result["layout"] = dict(self.layout)
+        if self.style_evidence:
+            result["style_evidence"] = dict(self.style_evidence)
         return result
 
 
@@ -179,4 +185,6 @@ def _text_line_from_dict(value: Mapping[str, Any]) -> TextLine:
             TextRun(text=run["text"], style=run.get("style", {}))
             for run in value.get("runs", ())
         ),
+        layout=value.get("layout", {}),
+        style_evidence=value.get("style_evidence", {}),
     )

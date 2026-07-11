@@ -49,6 +49,20 @@
         },
         "additionalProperties": false
       }
+    },
+    "layout": {
+      "type": "object",
+      "properties": {
+        "align": {"enum": ["left", "center", "right"]},
+        "valign": {"enum": ["top", "middle", "bottom"]},
+        "wrap": {"type": "boolean"},
+        "margin_px": {"type": "number", "minimum": 0},
+        "rotation_deg": {"type": "number", "minimum": -360, "maximum": 360}
+      },
+      "additionalProperties": false
+    },
+    "style_evidence": {
+      "type": "object"
     }
   },
   "additionalProperties": false

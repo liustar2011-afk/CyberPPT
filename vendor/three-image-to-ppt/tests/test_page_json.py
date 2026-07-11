@@ -103,6 +103,51 @@ def test_load_page_spec_round_trips(sample_page, sample_page_json):
     assert load_page_spec(sample_page_json) == sample_page
 
 
+def test_page_json_round_trips_enriched_layout_and_style_evidence(tmp_path, sample_page):
+    from scripts.build_page_json import write_page_spec
+    from scripts.models import load_page_spec
+
+    line = replace(
+        sample_page.text_lines[0],
+        layout={
+            "align": "center",
+            "valign": "top",
+            "wrap": False,
+            "margin_px": 0,
+            "rotation_deg": 0,
+        },
+        style_evidence={
+            "color": {"method": "full_background_delta", "confidence": 0.94},
+            "font": {"method": "glyph_fit", "confidence": 0.88},
+        },
+    )
+    output = write_page_spec(
+        replace(sample_page, text_lines=(line,), schema_version="1.1"),
+        tmp_path / "page.json",
+    )
+
+    loaded = load_page_spec(output)
+
+    assert loaded.text_lines[0].layout["align"] == "center"
+    assert loaded.text_lines[0].style_evidence["color"]["method"] == "full_background_delta"
+
+
+def test_page_schema_rejects_unknown_alignment(sample_page):
+    schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+    payload = sample_page.to_dict()
+    payload["schema_version"] = "1.1"
+    payload["text_lines"][0]["layout"] = {
+        "align": "diagonal",
+        "valign": "top",
+        "wrap": False,
+        "margin_px": 0,
+        "rotation_deg": 0,
+    }
+
+    with pytest.raises(ValidationError):
+        validate(payload, schema)
+
+
 def test_page_json_keeps_source_mapped_and_target_coordinates(tmp_path, sample_page):
     from scripts.build_page_json import build_page_spec, write_page_spec
     from scripts.map_text_coordinates import AffineTransform
