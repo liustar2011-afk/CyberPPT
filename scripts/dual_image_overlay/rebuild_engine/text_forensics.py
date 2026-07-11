@@ -13,6 +13,8 @@ from typing import Any
 
 from PIL import Image
 
+from .text_style_evidence import infer_line_style
+
 
 SCHEMA_VERSION = "1.0"
 
@@ -177,6 +179,8 @@ def build_line_evidence(
                 "line_height_px": max(box[3] for _, box in line) - min(box[1] for _, box in line),
                 "items": [{"text": item.get("text"), "bbox": list(box), "polygon": item.get("polygon")} for item, box in line],
             }
+            # Style is additive evidence; raw OCR observations above remain untouched.
+            record["style"] = infer_line_style(image, record)
             line_records.append(record)
 
         scale = {"x": sx, "y": sy}
