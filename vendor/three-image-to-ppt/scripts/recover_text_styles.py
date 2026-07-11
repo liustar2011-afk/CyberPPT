@@ -4,11 +4,13 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass
+import re
 from typing import Iterable
 
-from PIL import Image, ImageChops, ImageFilter
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
-from scripts.models import BBox
+from scripts.font_resolver import resolve_font_face
+from scripts.models import BBox, TextRun
 
 
 TEXT_MASK_THRESHOLD = 18
@@ -22,6 +24,23 @@ class RecoveredColor:
     confidence: float
     method: str
     sample_count: int
+
+
+@dataclass(frozen=True)
+class RecoveredFont:
+    font_family: str
+    font_size_px: int
+    weight: str
+    confidence: float
+    mask_iou: float
+    width_similarity: float
+    height_similarity: float
+
+
+@dataclass(frozen=True)
+class RecoveredAlignment:
+    align: str
+    confidence: float
 
 
 def _crop_box(bbox: BBox) -> tuple[int, int, int, int]:
@@ -124,3 +143,171 @@ def recover_line_color(
     fallback_pixels = _masked_pixels(text_crop, mask)
     color, _, count = _dominant_rgb(fallback_pixels)
     return RecoveredColor(_hex_color(color), 0.45 if count else 0.0, "text_fallback", count)
+
+
+def _trimmed(mask: Image.Image) -> Image.Image:
+    binary = mask.convert("L").point(lambda value: 255 if value else 0)
+    bounds = binary.getbbox()
+    return binary.crop(bounds) if bounds is not None else Image.new("L", (1, 1), 0)
+
+
+def _render_text_mask(text: str, font: ImageFont.FreeTypeFont) -> Image.Image:
+    left, top, right, bottom = font.getbbox(text)
+    width = max(1, right - left)
+    height = max(1, bottom - top)
+    image = Image.new("L", (width, height), 0)
+    ImageDraw.Draw(image).text((-left, -top), text, font=font, fill=255)
+    return image
+
+
+def _mask_iou(first: Image.Image, second: Image.Image) -> float:
+    target = _trimmed(first)
+    candidate = _trimmed(second).resize(target.size, Image.Resampling.NEAREST)
+    target_values = list(target.get_flattened_data())
+    candidate_values = list(candidate.get_flattened_data())
+    intersection = sum(1 for left, right in zip(target_values, candidate_values) if left and right)
+    union = sum(1 for left, right in zip(target_values, candidate_values) if left or right)
+    return intersection / union if union else 0.0
+
+
+def _dimension_similarity(first: int, second: int) -> float:
+    return min(first, second) / max(1, max(first, second))
+
+
+def fit_font_style(
+    text: str,
+    source_mask: Image.Image,
+    bbox: BBox,
+    font_family: str = "Microsoft YaHei",
+) -> RecoveredFont:
+    """Fit installed font size and weight to an extracted glyph mask."""
+
+    source = _trimmed(source_mask)
+    source_width, source_height = source.size
+    minimum = max(6, int(round(source_height * 0.75)))
+    maximum = max(minimum, int(round(source_height * 1.60)))
+    best: tuple[float, int, str, float, float, float] | None = None
+    for weight in ("light", "regular", "bold"):
+        font_path = resolve_font_face(font_family, weight)
+        for size in range(minimum, maximum + 1):
+            font = ImageFont.truetype(str(font_path), size)
+            candidate = _render_text_mask(text, font)
+            width_similarity = _dimension_similarity(source_width, candidate.width)
+            height_similarity = _dimension_similarity(source_height, candidate.height)
+            mask_iou = _mask_iou(source, candidate)
+            score = 0.55 * mask_iou + 0.25 * width_similarity + 0.20 * height_similarity
+            if best is None or score > best[0]:
+                best = (score, size, weight, mask_iou, width_similarity, height_similarity)
+    if best is None:
+        raise ValueError("font fitting produced no candidates")
+    score, size, weight, mask_iou, width_similarity, height_similarity = best
+    return RecoveredFont(
+        font_family=font_family,
+        font_size_px=size,
+        weight=weight,
+        confidence=score,
+        mask_iou=mask_iou,
+        width_similarity=width_similarity,
+        height_similarity=height_similarity,
+    )
+
+
+def recover_alignment(bbox: BBox, container: BBox) -> RecoveredAlignment:
+    """Infer horizontal alignment from a line bbox inside its container."""
+
+    width = max(1, container.width)
+    distances = {
+        "left": abs(bbox.x - container.x) / width,
+        "center": abs((bbox.x + bbox.width / 2) - (container.x + container.width / 2)) / width,
+        "right": abs((bbox.x + bbox.width) - (container.x + container.width)) / width,
+    }
+    ranked = sorted(distances.items(), key=lambda item: item[1])
+    best_name, best_distance = ranked[0]
+    second_distance = ranked[1][1]
+    confidence = max(0.0, min(1.0, (second_distance - best_distance) / 0.15))
+    return RecoveredAlignment(best_name, confidence)
+
+
+def _semantic_spans(text: str) -> list[tuple[int, int]]:
+    matches = list(re.finditer(r"\d+(?:[.,]\d+)*%?", text))
+    if not matches:
+        return [(0, len(text))]
+    boundaries = {0, len(text)}
+    for match in matches:
+        boundaries.add(match.start())
+        boundaries.add(match.end())
+    ordered = sorted(boundaries)
+    return [(start, end) for start, end in zip(ordered, ordered[1:]) if start < end]
+
+
+def _occupied_x_ranges(mask: Image.Image) -> list[tuple[int, int]]:
+    binary = mask.convert("L")
+    width, height = binary.size
+    pixels = binary.load()
+    occupied = [any(pixels[x, y] for y in range(height)) for x in range(width)]
+    ranges: list[tuple[int, int]] = []
+    start: int | None = None
+    for x, present in enumerate(occupied + [False]):
+        if present and start is None:
+            start = x
+        elif not present and start is not None:
+            ranges.append((start, x))
+            start = None
+    return ranges
+
+
+def _span_pixel_ranges(mask: Image.Image, count: int) -> list[tuple[int, int]]:
+    bounds = mask.getbbox()
+    if bounds is None or count <= 1:
+        return [(0, mask.width)]
+    ranges = _occupied_x_ranges(mask)
+    gaps = sorted(
+        ((ranges[index + 1][0] - ranges[index][1], ranges[index][1], ranges[index + 1][0]) for index in range(len(ranges) - 1)),
+        reverse=True,
+    )
+    split_points = sorted((left + right) // 2 for gap, left, right in gaps[: count - 1] if gap >= 4)
+    if len(split_points) != count - 1:
+        left, _, right, _ = bounds
+        split_points = [round(left + (right - left) * index / count) for index in range(1, count)]
+    points = [0, *split_points, mask.width]
+    return [(start, end) for start, end in zip(points, points[1:])]
+
+
+def recover_mixed_runs(
+    text: str,
+    full_image: Image.Image,
+    background_image: Image.Image,
+    text_image: Image.Image,
+    bbox: BBox,
+    font_family: str = "Microsoft YaHei",
+) -> tuple[TextRun, ...]:
+    """Recover numeric emphasis and surrounding text as independently styled runs."""
+
+    spans = _semantic_spans(text)
+    line_mask = build_text_mask(text_image, bbox)
+    pixel_ranges = _span_pixel_ranges(line_mask, len(spans))
+    runs: list[TextRun] = []
+    for (start, end), (pixel_start, pixel_end) in zip(spans, pixel_ranges):
+        run_text = text[start:end]
+        run_bbox = BBox(
+            bbox.x + pixel_start,
+            bbox.y,
+            max(1, pixel_end - pixel_start),
+            bbox.height,
+        )
+        run_mask = build_text_mask(text_image, run_bbox)
+        font = fit_font_style(run_text.strip() or run_text, run_mask, run_bbox, font_family)
+        color = recover_line_color(full_image, background_image, text_image, run_bbox)
+        runs.append(
+            TextRun(
+                text=run_text,
+                style={
+                    "font_family": font.font_family,
+                    "font_size_px": font.font_size_px,
+                    "weight": font.weight,
+                    "bold": font.weight == "bold",
+                    "color": color.hex_color,
+                },
+            )
+        )
+    return tuple(runs)
