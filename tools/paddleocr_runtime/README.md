@@ -16,6 +16,9 @@ PYTHON_BIN=/opt/homebrew/bin/python3.12 ./tools/paddleocr_runtime/bootstrap.sh
 The script creates `tools/paddleocr_runtime/.venv`, installs the pinned
 requirements, and invokes pip only as `"$VIRTUAL_ENV/bin/python" -m pip`.
 
-Model archives are downloaded by the OCR adapter on first use. Their exact
-URLs and SHA-256 digests are recorded in `runtime_manifest.json`; model
+The OCR adapter never downloads models. Provision the two manifest-listed
+archives out of band, verify their SHA-256 values, and unpack them under
+`tools/paddleocr_runtime/models/PP-OCRv5_mobile_det` and
+`PP-OCRv5_mobile_rec` (or provide equivalent verified det/rec directories).
+Missing or unverified models fail closed before PaddleOCR starts; model
 binaries are deliberately not committed to this repository.

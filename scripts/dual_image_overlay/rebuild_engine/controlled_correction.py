@@ -53,6 +53,7 @@ def correct_lines(
     *,
     policy_path: Path,
     protected_terms_path: Path,
+    require_candidate_context: bool | None = None,
 ) -> list[dict[str, Any]]:
     """Apply only high-confidence, policy-approved character candidates.
 
@@ -66,6 +67,7 @@ def correct_lines(
         raise ValueError("protected terms must be a list of strings")
     threshold = float(policy.get("min_confidence", policy.get("confidence_threshold", 0.995)))
     min_agreement = int(policy.get("min_agreement", policy.get("minimum_scale_agreement", 1)))
+    require_context = bool(require_candidate_context) if require_candidate_context is not None else False
     output: list[dict[str, Any]] = []
     for source in lines:
         line = dict(source)
@@ -97,6 +99,13 @@ def correct_lines(
             except (TypeError, ValueError):
                 pos = -1
             if confidence < threshold or _agreement(candidate) < min_agreement:
+                rejected = True
+                continue
+            context = candidate.get("context")
+            if context is not None and (not isinstance(context, str) or context.strip() not in observed):
+                rejected = True
+                continue
+            if require_context and not isinstance(context, str):
                 rejected = True
                 continue
             if pos < 0 or pos >= len(text) or text[pos] != old:

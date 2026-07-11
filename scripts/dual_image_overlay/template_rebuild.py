@@ -658,7 +658,7 @@ def build_parser() -> argparse.ArgumentParser:
         description="Run the vendored dual-image template rebuild, then consume source_capture as a CyberPPT gate."
     )
     parser.add_argument("manifest", type=Path, help="page_image_pairs.json")
-    parser.add_argument("--ocr-backend", choices=("paddleocr-local", "vision-json", "none"), default="vision-json")
+    parser.add_argument("--ocr-backend", choices=("paddleocr-local", "vision-json", "none"), default="paddleocr-local")
     parser.add_argument("--force-ocr", action="store_true")
     parser.add_argument("--timeout", type=int, default=300)
     parser.add_argument("--visible-image-variant", choices=("background", "full"), default="background")

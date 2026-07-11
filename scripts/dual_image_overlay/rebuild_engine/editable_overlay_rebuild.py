@@ -723,7 +723,7 @@ def _write_page_understanding_artifact(
 def rebuild_from_manifest(
     manifest_path: Path,
     *,
-    ocr_backend: str = "vision-json",
+    ocr_backend: str = "paddleocr-local",
     force_ocr: bool = False,
     timeout: int = 300,
     visible_image_variant: str = "background",
@@ -734,6 +734,8 @@ def rebuild_from_manifest(
 ) -> dict[str, Any]:
     """Create overlay SVG pages from generated full/background image pairs."""
     manifest_path = manifest_path.resolve()
+    if ocr_backend == "none":
+        return {"status": "diagnostic_only", "editable_output": False, "message": "OCR backend none isolates downstream stages; no editable output is claimed."}
     manifest = load_pair_manifest(manifest_path)
     rebuild_mode = resolve_rebuild_mode(manifest)
     project_path = resolve_project_path(manifest_path, manifest)
@@ -767,7 +769,20 @@ def rebuild_from_manifest(
         "min_line_recall": 0.95,
         "max_low_confidence_ratio": 0.10,
         "max_protected_replacement_failures": 0,
+        "fail_on_review_required": ocr_backend == "paddleocr-local",
+        "require_artifacts": ocr_backend == "paddleocr-local",
+        "require_geometry_provenance": ocr_backend == "paddleocr-local",
+        "required_artifacts": ["correction_audit", "evidence"],
     }
+    policy_path = project_path / "config" / "ocr_quality_policy.json"
+    if not policy_path.is_file():
+        policy_path = REPO_ROOT / "config" / "ocr" / "quality_policy.json"
+    if policy_path.is_file():
+        try:
+            configured = json.loads(policy_path.read_text(encoding="utf-8"))
+            if isinstance(configured, dict): forensic_policy.update(configured)
+        except (OSError, json.JSONDecodeError):
+            raise RuntimeError(f"invalid OCR quality policy: {policy_path}")
 
     for pair in manifest.get("pairs", []):
         page_number = int(pair["page_number"])
@@ -835,11 +850,18 @@ def rebuild_from_manifest(
         forensics = build_line_evidence(layout, full_image, evidence_dir=forensic_dir)
         forensics["page_number"] = page_number
         forensics["expected_lines"] = expected_lines
+        forensics["model"] = {"source": ocr_backend, "runtime_manifest": str(REPO_ROOT / "tools/paddleocr_runtime/runtime_manifest.json")}
+        forensics["artifacts"]["evidence"] = str(forensic_dir)
+        forensics["artifacts"]["correction_audit"] = str(ocr_dir / f"page_{page_number:03d}_correction_audit.json")
+        forensics["provenance"] = {"backend": ocr_backend, "policy": str(policy_path)}
         forensics = attach_correction_evidence(
             forensics,
             policy_path=REPO_ROOT / "config/ocr/correction_policy.json",
             protected_terms_path=REPO_ROOT / "config/ocr/protected_terms.json",
+            require_candidate_context=(ocr_backend == "paddleocr-local"),
         )
+        correction_audit_path = ocr_dir / f"page_{page_number:03d}_correction_audit.json"
+        _write_json(correction_audit_path, {"page_number": page_number, "lines": forensics.get("lines", []), "provenance": forensics.get("provenance", {})})
         quality_report = evaluate_ocr_quality(forensics, policy=forensic_policy)
         forensics["quality"] = {**forensics.get("quality", {}), **quality_report["metrics"], "gate": quality_report}
         forensic_path = ocr_dir / f"page_{page_number:03d}_text_forensics.json"
@@ -1121,7 +1143,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     rebuild = sub.add_parser("rebuild", help="Rebuild overlay SVG pages from an existing page_image_pairs.json.")
     rebuild.add_argument("manifest", type=Path)
-    rebuild.add_argument("--ocr-backend", choices=("paddleocr-local", "vision-json", "none"), default="vision-json")
+    rebuild.add_argument("--ocr-backend", choices=("paddleocr-local", "vision-json", "none"), default="paddleocr-local")
     rebuild.add_argument("--force-ocr", action="store_true")
     rebuild.add_argument("--ocr-scale", type=float, default=1.0, help="Local OCR scale factor (for example 2.0 for recovery).")
     rebuild.add_argument("--timeout", type=int, default=300)

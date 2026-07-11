@@ -22,6 +22,7 @@ def attach_correction_evidence(
     *,
     policy_path: Path,
     protected_terms_path: Path,
+    require_candidate_context: bool | None = None,
 ) -> dict[str, Any]:
     """Return line evidence with deterministic correction decisions attached."""
     from .controlled_correction import correct_lines
@@ -31,6 +32,7 @@ def attach_correction_evidence(
         list(forensics.get("lines", [])),
         policy_path=policy_path,
         protected_terms_path=protected_terms_path,
+        require_candidate_context=require_candidate_context,
     )
     return result
 

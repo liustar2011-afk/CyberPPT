@@ -24,3 +24,4 @@ export VIRTUAL_ENV
 "$VIRTUAL_ENV/bin/python" -m pip install --upgrade pip
 "$VIRTUAL_ENV/bin/python" -m pip install --requirement "$ROOT_DIR/requirements-paddleocr.txt"
 echo "PaddleOCR runtime ready at $VENV_DIR"
+echo "Models are not downloaded by bootstrap; provision and verify runtime_manifest.json archives offline." >&2
