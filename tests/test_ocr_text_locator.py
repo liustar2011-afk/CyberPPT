@@ -129,6 +129,18 @@ class OcrTextLocatorTests(unittest.TestCase):
         self.assertEqual(calls["count"], 1)
         self.assertEqual(len(layout["items"]), 3)
 
+    def test_local_backend_does_not_call_remote_vision(self) -> None:
+        with TemporaryDirectory() as directory:
+            image_path = Path(directory) / "full.png"
+            Image.new("RGB", (100, 80), "#ffffff").save(image_path)
+            with patch.object(ocr_text_locator, "run_codex_vision_text", side_effect=AssertionError("remote called")), \
+                    patch.object(ocr_text_locator, "run_local_ocr", return_value={
+                        "image_size": {"width": 100, "height": 80}, "items": [], "raw_items": [],
+                        "backend": "paddleocr-local", "runtime": directory,
+                    }):
+                layout = ocr_text_locator.locate_text(image_path, backend="paddleocr-local")
+        self.assertEqual(layout["items"], [])
+
 
 if __name__ == "__main__":
     unittest.main()

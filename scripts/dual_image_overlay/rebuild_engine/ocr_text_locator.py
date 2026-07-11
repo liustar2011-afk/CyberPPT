@@ -14,6 +14,7 @@ from typing import Any
 from PIL import Image
 
 from codex_oauth_image import run_codex_vision_text
+from paddleocr_local import run_local_ocr
 
 
 DEFAULT_TRANSIENT_RETRY_DELAYS: tuple[float, ...] = (1.0, 3.0, 9.0)
@@ -163,6 +164,13 @@ def locate_text(
 
     if backend == "none":
         layout = {"image_size": image_size(image_path), "items": []}
+    elif backend == "paddleocr-local":
+        if dry_run:
+            layout = {"image_size": image_size(image_path), "items": []}
+        else:
+            layout = normalize_layout(run_local_ocr(
+                image_path, runtime_dir=Path(__file__).resolve().parents[3] / "tools" / "paddleocr_runtime"
+            ))
     elif backend in {"vision-json", "paddleocr-vl"}:
         if dry_run:
             layout = {"image_size": image_size(image_path), "items": []}
@@ -201,7 +209,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Locate text boxes in a slide image.")
     parser.add_argument("image", type=Path)
     parser.add_argument("-o", "--out", type=Path)
-    parser.add_argument("--backend", choices=("vision-json", "paddleocr-vl", "none"), default="vision-json")
+    parser.add_argument("--backend", choices=("vision-json", "paddleocr-vl", "paddleocr-local", "none"), default="vision-json")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--timeout", type=int, default=300)
     return parser
