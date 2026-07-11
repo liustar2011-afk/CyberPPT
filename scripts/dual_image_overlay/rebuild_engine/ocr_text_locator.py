@@ -90,14 +90,18 @@ def normalize_layout(data: dict[str, Any]) -> dict[str, Any]:
         if x2 <= x1 or y2 <= y1:
             raise ValueError(f"items[{index}].bbox must satisfy x2>x1 and y2>y1.")
         confidence = item.get("confidence", 1.0)
-        normalized_items.append(
-            {
+        normalized_item = {
                 "text": text,
                 "bbox": [x1, y1, x2, y2],
                 "confidence": float(confidence) if confidence is not None else 1.0,
                 "source": str(item.get("source") or data.get("backend") or "ocr"),
             }
-        )
+        # Keep polygon evidence when an OCR backend provides it.  The bbox
+        # remains the canonical normalized geometry used by existing callers.
+        polygon = item.get("polygon")
+        if isinstance(polygon, list) and polygon:
+            normalized_item["polygon"] = polygon
+        normalized_items.append(normalized_item)
     return {"image_size": {"width": width, "height": height}, "items": normalized_items}
 
 
