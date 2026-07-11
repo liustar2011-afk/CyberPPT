@@ -60,13 +60,15 @@ def _box(value: Any) -> list[float] | None:
     def numeric(v: Any) -> bool:
         return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(float(v))
     if isinstance(value, (list, tuple)) and len(value) == 4 and all(numeric(v) for v in value):
-        return [float(v) for v in value]
+        box = [float(v) for v in value]
+        return box if box[2] > box[0] and box[3] > box[1] else None
     if isinstance(value, (list, tuple)) and value and all(isinstance(p, (list, tuple)) and len(p) >= 2 for p in value):
         if not all(numeric(p[0]) and numeric(p[1]) for p in value):
             return None
         xs = [float(p[0]) for p in value]
         ys = [float(p[1]) for p in value]
-        return [min(xs), min(ys), max(xs), max(ys)]
+        box = [min(xs), min(ys), max(xs), max(ys)]
+        return box if box[2] > box[0] and box[3] > box[1] else None
     return None
 
 
@@ -77,8 +79,8 @@ def run_local_ocr(
     image_path = Path(image_path).resolve()
     if not image_path.is_file():
         raise FileNotFoundError(f"Image not found: {image_path}")
-    if scale <= 0:
-        raise ValueError("scale must be positive")
+    if not math.isfinite(scale) or scale <= 0:
+        raise ValueError("scale must be a finite positive number")
     with Image.open(image_path) as image:
         width, height = image.size
     with tempfile.TemporaryDirectory(prefix="cyberppt-paddleocr-") as directory:

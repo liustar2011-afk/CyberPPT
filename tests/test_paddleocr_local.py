@@ -63,3 +63,28 @@ def test_adapter_falls_back_per_item_and_rejects_non_finite(monkeypatch, tmp_pat
     })
     result = paddleocr_local.run_local_ocr(image, runtime_dir=tmp_path)
     assert [item["text"] for item in result["items"]] == ["poly", "fallback"]
+
+
+def test_adapter_falls_back_when_rec_box_has_zero_area(monkeypatch, tmp_path):
+    image = tmp_path / "page.png"
+    Image.new("RGB", (100, 80), "white").save(image)
+    monkeypatch.setattr(paddleocr_local, "_invoke_runtime", lambda **_: {
+        "rec_texts": ["fallback"], "rec_scores": [0.8],
+        "rec_boxes": [[20, 20, 20, 30]],
+        "dt_polys": [[[10, 10], [30, 10], [30, 20], [10, 20]]],
+    })
+    result = paddleocr_local.run_local_ocr(image, runtime_dir=tmp_path)
+    assert result["items"][0]["bbox"] == [10.0, 10.0, 30.0, 20.0]
+
+
+def test_adapter_rejects_non_finite_scale(monkeypatch, tmp_path):
+    image = tmp_path / "page.png"
+    Image.new("RGB", (100, 80), "white").save(image)
+    monkeypatch.setattr(paddleocr_local, "_invoke_runtime", lambda **_: {})
+    for scale in (float("nan"), float("inf"), float("-inf")):
+        try:
+            paddleocr_local.run_local_ocr(image, runtime_dir=tmp_path, scale=scale)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"scale {scale!r} was accepted")
