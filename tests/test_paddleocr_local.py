@@ -88,3 +88,14 @@ def test_adapter_rejects_non_finite_scale(monkeypatch, tmp_path):
             pass
         else:
             raise AssertionError(f"scale {scale!r} was accepted")
+
+
+def test_adapter_rejects_polygon_with_fewer_than_three_points(monkeypatch, tmp_path):
+    image = tmp_path / "page.png"
+    Image.new("RGB", (100, 80), "white").save(image)
+    monkeypatch.setattr(paddleocr_local, "_invoke_runtime", lambda **_: {
+        "rec_texts": ["malformed"], "rec_scores": [0.8],
+        "rec_boxes": [], "dt_polys": [[[10, 10], [30, 20]]],
+    })
+    result = paddleocr_local.run_local_ocr(image, runtime_dir=tmp_path)
+    assert result["items"] == []

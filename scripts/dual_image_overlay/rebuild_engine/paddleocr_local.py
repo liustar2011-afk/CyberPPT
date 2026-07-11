@@ -62,7 +62,7 @@ def _box(value: Any) -> list[float] | None:
     if isinstance(value, (list, tuple)) and len(value) == 4 and all(numeric(v) for v in value):
         box = [float(v) for v in value]
         return box if box[2] > box[0] and box[3] > box[1] else None
-    if isinstance(value, (list, tuple)) and value and all(isinstance(p, (list, tuple)) and len(p) >= 2 for p in value):
+    if isinstance(value, (list, tuple)) and len(value) >= 3 and all(isinstance(p, (list, tuple)) and len(p) >= 2 for p in value):
         if not all(numeric(p[0]) and numeric(p[1]) for p in value):
             return None
         xs = [float(p[0]) for p in value]
