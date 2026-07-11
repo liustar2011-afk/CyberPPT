@@ -13,6 +13,7 @@ from cyberppt.phase1.artifacts import Phase1Paths
 
 _HEADING_RE = re.compile(r"^#{1,6}\s*(?P<title>.+?)\s*$")
 _PAGE_LOCATOR_RE = re.compile(r"\b(?:P|T)\d+\b", re.IGNORECASE)
+_RECORD_RE = re.compile(r"^\[(?P<number>\d+)\]\s+\((?P<style>[^)]+)\)\s*")
 _NUMBER_RE = re.compile(r"(?<![A-Za-z0-9_.])\d+(?:\.\d+)?")
 
 
@@ -59,6 +60,9 @@ def _blocks(text: str) -> list[tuple[int, list[str]]]:
     current: list[str] = []
     start = 1
     for line_number, line in enumerate(lines, start=1):
+        if line.strip() and _RECORD_RE.match(line.strip()) and current:
+            raw.append((start, current))
+            current = []
         if line.strip():
             if not current:
                 start = line_number
@@ -78,13 +82,29 @@ def _blocks(text: str) -> list[tuple[int, list[str]]]:
             merged.append((start, block + next_block))
             index += 2
             continue
+        if _contains_table_heading(block) and index + 1 < len(raw):
+            next_start, next_block = raw[index + 1]
+            if next_block and (next_block[0].lstrip().startswith("|") or "|" in next_block[0]):
+                merged.append((start, block + next_block))
+                index += 2
+                continue
         merged.append((start, block))
         index += 1
     return merged
 
 
+def _contains_table_heading(block: list[str]) -> bool:
+    return any(
+        (match := _HEADING_RE.match(line)) is not None and "table" in match.group("title").lower()
+        for line in block
+    )
+
+
 def _locator(block: list[str], current_heading: str, start_line: int) -> str:
     text = "\n".join(block)
+    record = _RECORD_RE.match(block[0].strip()) if block else None
+    if record:
+        return f"paragraph {record.group('number')}"
     page = _PAGE_LOCATOR_RE.search(text)
     if page:
         return page.group(0).upper()
@@ -96,12 +116,20 @@ def _locator(block: list[str], current_heading: str, start_line: int) -> str:
 
 
 def _kind(block: list[str]) -> str:
+    record = _RECORD_RE.match(block[0].strip()) if block else None
+    if record and record.group("style").lower().startswith("heading"):
+        return "heading"
     table_lines = sum(1 for line in block if "|" in line)
     if table_lines >= 2:
         return "table"
     if block and _HEADING_RE.match(block[0]) and len(block) == 1:
         return "heading"
     return "paragraph"
+
+
+def _numbers(block: list[str]) -> tuple[str, ...]:
+    cleaned = [_RECORD_RE.sub("", line.strip(), count=1) for line in block]
+    return tuple(_NUMBER_RE.findall("\n".join(cleaned)))
 
 
 def _chunks(units: list[SourceUnit], max_chunk_chars: int) -> tuple[SourceChunk, ...]:
@@ -139,7 +167,7 @@ def build_source_bundle(source: Path, *, max_chunk_chars: int = 40000) -> Source
                 text=value,
                 source_path=str(resolved),
                 locator=_locator(block, current_heading, start_line),
-                numbers=tuple(_NUMBER_RE.findall(value)),
+                numbers=_numbers(block),
             )
         )
     source_bytes = resolved.read_bytes()

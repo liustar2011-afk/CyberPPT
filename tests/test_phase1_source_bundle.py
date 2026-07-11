@@ -37,6 +37,40 @@ def test_source_bundle_keeps_table_rows_in_source_order(tmp_path: Path) -> None:
     assert bundle.units[1].text == "下一段。"
 
 
+def test_line_oriented_docx_extract_splits_paragraphs_but_keeps_tables(tmp_path: Path) -> None:
+    source = tmp_path / "source_extract.md"
+    source.write_text(
+        "# DOCX 文本抽取稿\n\n"
+        "## Paragraphs\n\n"
+        "[1] (Normal) 第一段事实。\n"
+        "[2] (Normal) 第二段事实。\n"
+        "[3] (Heading 1) 第一章\n"
+        "[4] (Normal) 标题下段落。\n\n"
+        "## Tables\n\n"
+        "### Table 1 (2 rows)\n\n"
+        "指标 | 数值\n"
+        "--- | ---\n"
+        "E01 | 10\n"
+        "E02 | 20\n",
+        encoding="utf-8",
+    )
+
+    bundle = build_source_bundle(source)
+
+    paragraph_units = [unit for unit in bundle.units if unit.locator.startswith("paragraph ")]
+    assert [unit.locator for unit in paragraph_units] == [
+        "paragraph 1",
+        "paragraph 2",
+        "paragraph 3",
+        "paragraph 4",
+    ]
+    assert "[2]" not in paragraph_units[0].text
+    table_units = [unit for unit in bundle.units if unit.kind == "table"]
+    assert len(table_units) == 1
+    assert "E01 | 10" in table_units[0].text
+    assert "E02 | 20" in table_units[0].text
+
+
 def test_source_bundle_is_stable_and_writes_machine_and_human_artifacts(tmp_path: Path) -> None:
     source = tmp_path / "source_extract.md"
     source.write_text("背景\n\n结论一。\n\n结论二。\n", encoding="utf-8")
