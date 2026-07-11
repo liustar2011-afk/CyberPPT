@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import subprocess
 import tempfile
 from pathlib import Path
@@ -56,9 +57,13 @@ def _invoke_runtime(
 
 
 def _box(value: Any) -> list[float] | None:
-    if isinstance(value, (list, tuple)) and len(value) == 4 and all(isinstance(v, (int, float)) for v in value):
+    def numeric(v: Any) -> bool:
+        return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(float(v))
+    if isinstance(value, (list, tuple)) and len(value) == 4 and all(numeric(v) for v in value):
         return [float(v) for v in value]
     if isinstance(value, (list, tuple)) and value and all(isinstance(p, (list, tuple)) and len(p) >= 2 for p in value):
+        if not all(numeric(p[0]) and numeric(p[1]) for p in value):
+            return None
         xs = [float(p[0]) for p in value]
         ys = [float(p[1]) for p in value]
         return [min(xs), min(ys), max(xs), max(ys)]
@@ -77,16 +82,25 @@ def run_local_ocr(
     with Image.open(image_path) as image:
         width, height = image.size
     with tempfile.TemporaryDirectory(prefix="cyberppt-paddleocr-") as directory:
+        runtime_image = image_path
+        if scale != 1.0:
+            runtime_image = Path(directory) / "scaled.png"
+            with Image.open(image_path) as image:
+                runtime_size = (max(1, round(width * scale)), max(1, round(height * scale)))
+                image.resize(runtime_size).save(runtime_image)
         output_path = Path(directory) / "result.json"
-        raw = _invoke_runtime(image_path=image_path, runtime_dir=Path(runtime_dir), output_path=output_path,
+        raw = _invoke_runtime(image_path=runtime_image, runtime_dir=Path(runtime_dir), output_path=output_path,
                               model_dir=model_dir, scale=scale)
     texts = raw.get("rec_texts") or []
     scores = raw.get("rec_scores") or []
-    boxes = raw.get("rec_boxes") or raw.get("dt_polys") or []
+    rec_boxes = raw.get("rec_boxes") or []
+    dt_polys = raw.get("dt_polys") or []
     items: list[dict[str, Any]] = []
     for index, text in enumerate(texts):
         text = str(text or "").strip()
-        bbox = _box(boxes[index] if index < len(boxes) else None)
+        bbox = _box(rec_boxes[index] if index < len(rec_boxes) else None)
+        if bbox is None:
+            bbox = _box(dt_polys[index] if index < len(dt_polys) else None)
         if not text or bbox is None:
             continue
         x1, y1, x2, y2 = [coord / scale for coord in bbox]

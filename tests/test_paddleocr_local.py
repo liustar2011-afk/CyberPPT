@@ -37,3 +37,29 @@ def test_adapter_clips_and_rejects_invalid_boxes(monkeypatch, tmp_path):
     result = paddleocr_local.run_local_ocr(image, runtime_dir=tmp_path)
     assert result["items"][0]["bbox"] == [0.0, 0.0, 100.0, 80.0]
     assert len(result["items"]) == 1
+
+
+def test_adapter_scales_input_and_maps_coordinates_back(monkeypatch, tmp_path):
+    image = tmp_path / "page.png"
+    Image.new("RGB", (100, 80), "white").save(image)
+    seen = {}
+    def fake(**kwargs):
+        with Image.open(kwargs["image_path"]) as scaled:
+            seen["size"] = scaled.size
+        return {"rec_texts": ["scaled"], "rec_scores": [0.9], "rec_boxes": [[20, 16, 80, 48]]}
+    monkeypatch.setattr(paddleocr_local, "_invoke_runtime", fake)
+    result = paddleocr_local.run_local_ocr(image, runtime_dir=tmp_path, scale=2.0)
+    assert seen["size"] == (200, 160)
+    assert result["items"][0]["bbox"] == [10.0, 8.0, 40.0, 24.0]
+
+
+def test_adapter_falls_back_per_item_and_rejects_non_finite(monkeypatch, tmp_path):
+    image = tmp_path / "page.png"
+    Image.new("RGB", (100, 80), "white").save(image)
+    monkeypatch.setattr(paddleocr_local, "_invoke_runtime", lambda **_: {
+        "rec_texts": ["poly", "nan", "fallback"], "rec_scores": [0.9, 0.2, 0.8],
+        "rec_boxes": [None, [float("nan"), 1, 2, 3]],
+        "dt_polys": [[[5, 6], [25, 6], [25, 16], [5, 16]], [[float("nan"), 1], [2, 2]], [[10, 10], [30, 10], [30, 20], [10, 20]]],
+    })
+    result = paddleocr_local.run_local_ocr(image, runtime_dir=tmp_path)
+    assert [item["text"] for item in result["items"]] == ["poly", "fallback"]
