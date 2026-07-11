@@ -20,12 +20,34 @@ def test_golden_forensics_has_required_audit_fields():
         assert data["schema_version"]
         assert data.get("fixture_id")
         assert data.get("fixture_status") in {"approved", "synthetic"}
+        image = data["image"]
+        assert isinstance(image, dict)
+        assert image.get("source")
+        assert isinstance(image.get("width"), int) and image["width"] > 0
+        assert isinstance(image.get("height"), int) and image["height"] > 0
+        model = data["model"]
+        assert model.get("backend") == "paddleocr-local"
+        assert model.get("runtime") == "offline"
+        assert model.get("model_manifest_sha256")
         assert isinstance(data.get("lines"), list) and data["lines"]
         for line in data["lines"]:
             assert "observed_text" in line and "final_text" in line
+            bbox = line.get("bbox")
+            assert isinstance(bbox, list) and len(bbox) == 4
+            assert bbox[2] > bbox[0] and bbox[3] > bbox[1]
+            polygon = line.get("polygon")
+            assert isinstance(polygon, list) and len(polygon) >= 4
+            assert all(isinstance(point, list) and len(point) >= 2 for point in polygon)
             assert "correction" in line
             assert isinstance(line["correction"], dict)
-            assert "reversible" in line["correction"]
+            audit = line["correction"]
+            assert {"applied", "changes", "reason", "confidence", "reversible"} <= audit.keys()
+            assert audit["reversible"] is True
+
+        if data["fixture_status"] == "synthetic":
+            assert data["approved_image"] is False
+            assert image.get("path") is None
+            assert data["artifacts"].get("render_check") == "not_run_synthetic_fixture"
 
 
 def test_golden_fixture_contract_has_no_external_credentials_or_services():

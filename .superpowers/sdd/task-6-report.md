@@ -35,3 +35,27 @@ follow-up needed when an approved GPT page image is curated.
 - Before promoting `paddleocr-local` as a golden-backed default for legacy
   rebuilds, add an approved GPT page image, human line annotations, and a
   recorded render inspection.
+
+## Review follow-up
+
+The contract test now checks image provenance/dimensions, local model/runtime
+provenance, line bbox/polygon geometry, and complete reversible correction
+audit fields. Synthetic fixtures additionally require
+`fixture_status=synthetic`, `approved_image=false`, `image.path=null`, and
+`artifacts.render_check=not_run_synthetic_fixture`.
+
+Synthetic legacy rebuild/render harness (no network, no repository writes):
+
+```text
+tmp=$(mktemp -d /tmp/cyberppt-task6-render-XXXX)
+python3 -c '... build_line_evidence -> attach_correction_evidence -> evaluate_ocr_quality -> render_overlay_svg ...' "$tmp"
+```
+
+Result: `quality: passed`; artifacts were written to
+`/tmp/cyberppt-task6-render-7NTX/synthetic_page.png`,
+`/tmp/cyberppt-task6-render-7NTX/text_forensics.json`,
+`/tmp/cyberppt-task6-render-7NTX/legacy_rebuild.svg`, and
+`/tmp/cyberppt-task6-render-7NTX/evidence/line_001.png`. The SVG render was
+inspected for canvas, image, and text geometry; `rsvg-convert`/ImageMagick is
+not installed, so no raster visual claim is made. This remains synthetic and
+does not establish production OCR accuracy.
