@@ -8,16 +8,36 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from PIL import Image, UnidentifiedImageError
+
+from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_codex_image
 
 
 FULL_IMAGE_MODE = "full_image_ppt"
 EDITABLE_TEXT_MODE = "editable_text_three_image"
+VENDOR_TWO_IMAGE_MODE = "two-image"
+VENDOR_THREE_IMAGE_MODE = "three-image"
+_SUPPORTED_VENDOR_INPUT_MODES = {VENDOR_TWO_IMAGE_MODE, VENDOR_THREE_IMAGE_MODE}
 _SUPPORTED_MODES = {FULL_IMAGE_MODE, EDITABLE_TEXT_MODE}
 _REPO_ROOT = Path(__file__).resolve().parents[2]
+VENDOR_ROOT = _REPO_ROOT / "vendor" / "three-image-to-ppt"
 VENDOR_RUNNER = _REPO_ROOT / "vendor" / "three-image-to-ppt" / "scripts" / "run_pipeline.py"
+VENDOR_VISION_OCR = VENDOR_ROOT / "scripts" / "vision_ocr.swift"
+VENDOR_TEXT_RENDERER = VENDOR_ROOT / "scripts" / "render_text_image.py"
+
+FullGenerator = Callable[[str, Path], Path]
+BackgroundGenerator = Callable[[Path, Path], Path]
+OcrGenerator = Callable[[Path, Path], Path]
+TextRenderer = Callable[[Path, Path, Path], Path]
+
+BACKGROUND_PROMPT = (
+    "Edit the supplied slide image into a text-free background. Remove only letters, "
+    "numbers, and punctuation. Preserve the canvas size, layout, containers, icons, "
+    "arrows, borders, shadows, colors, spacing, and all non-text geometry exactly. "
+    "Do not recenter or rebalance the composition."
+)
 
 
 def _read_project_manifest(project: Path) -> str:
@@ -80,6 +100,15 @@ def _path_from_value(value: object, base: Path) -> Path | None:
     return (base / path).resolve() if not path.is_absolute() else path.resolve()
 
 
+def _path_from_role_or_default(
+    role: dict[str, Any] | None,
+    base: Path,
+    default_path: Path,
+) -> Path:
+    path = _path_from_role(role, base)
+    return path if path is not None else default_path.resolve()
+
+
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -96,25 +125,176 @@ def _validate_image_set(paths: dict[str, Path]) -> tuple[int, int]:
         except (OSError, UnidentifiedImageError) as exc:
             raise ValueError(f"{role} image is not readable: {path}") from exc
     if len(set(sizes.values())) != 1:
-        raise ValueError("FULL, BACKGROUND, and TEXT image dimensions must be identical")
+        roles = ", ".join(role.upper() for role in paths)
+        raise ValueError(f"{roles} image dimensions must be identical")
     width, height = next(iter(sizes.values()))
     if width <= 0 or height <= 0:
         raise ValueError("image dimensions must be positive")
     return width, height
 
 
-def _three_image_job(project: Path, page: dict[str, Any], manifest_dir: Path) -> dict[str, Any]:
+def _default_full_generator(prompt: str, output_path: Path) -> Path:
+    return run_codex_image(prompt=prompt, output_path=output_path)
+
+
+def _default_background_generator(full_path: Path, output_path: Path) -> Path:
+    return run_codex_image(
+        prompt=BACKGROUND_PROMPT,
+        output_path=output_path,
+        image_paths=[full_path],
+    )
+
+
+def _default_ocr_generator(image_path: Path, output_path: Path) -> Path:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    completed = subprocess.run(
+        ["swift", str(VENDOR_VISION_OCR), str(image_path)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        message = completed.stderr.strip() or completed.stdout.strip() or "Vision OCR failed"
+        raise RuntimeError(message)
+    output_path.write_text(completed.stdout, encoding="utf-8")
+    return output_path
+
+
+def _default_text_renderer(ocr_path: Path, reference_path: Path, output_path: Path) -> Path:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        [sys.executable, str(VENDOR_TEXT_RENDERER), str(ocr_path), str(reference_path), str(output_path)],
+        check=True,
+    )
+    return output_path
+
+
+def _write_identity_registration(path: Path, page_number: int) -> Path:
+    return _write_json(
+        path,
+        {
+            "transform_id": f"TF-PAGE{page_number:03d}-IDENTITY",
+            "matrix": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+        },
+    )
+
+
+def _asset_dir(project: Path, pages_raw: str, page_number: int) -> Path:
+    return _editable_text_root(project, pages_raw) / "assets" / f"page_{page_number:03d}"
+
+
+def _ensure_editable_assets(
+    project: Path,
+    pages_raw: str,
+    page: dict[str, Any],
+    manifest_dir: Path,
+    input_mode: str,
+    *,
+    full_generator: FullGenerator,
+    background_generator: BackgroundGenerator,
+    ocr_generator: OcrGenerator,
+    text_renderer: TextRenderer,
+) -> dict[str, Any]:
     page_number = int(page.get("page_number", 0))
     if page_number <= 0:
-        raise ValueError("three-image pair is missing a positive page_number")
+        raise ValueError("editable-text pair is missing a positive page_number")
+    asset_dir = _asset_dir(project, pages_raw, page_number)
+    asset_dir.mkdir(parents=True, exist_ok=True)
+
+    full_role = page.get("full") if isinstance(page.get("full"), dict) else {}
+    full_path = _path_from_role_or_default(
+        full_role,
+        manifest_dir,
+        asset_dir / f"page_{page_number:03d}_full.png",
+    )
+    if not full_path.is_file():
+        prompt = full_role.get("prompt") if isinstance(full_role, dict) else None
+        if not isinstance(prompt, str) or not prompt:
+            raise ValueError(f"{input_mode} page {page_number} requires FULL image or full.prompt")
+        full_path.parent.mkdir(parents=True, exist_ok=True)
+        full_generator(prompt, full_path)
+    if not full_path.is_file():
+        raise ValueError(f"FULL image was not produced for page {page_number}: {full_path}")
+
+    background_path = _path_from_role_or_default(
+        page.get("background") if isinstance(page.get("background"), dict) else None,
+        manifest_dir,
+        asset_dir / f"page_{page_number:03d}_background.png",
+    )
+    if not background_path.is_file():
+        background_path.parent.mkdir(parents=True, exist_ok=True)
+        background_generator(full_path, background_path)
+    if not background_path.is_file():
+        raise ValueError(f"BACKGROUND image was not produced for page {page_number}: {background_path}")
+
+    ocr_path = _path_from_value(page.get("ocr"), manifest_dir) or asset_dir / f"page_{page_number:03d}_ocr.full.json"
+    if not ocr_path.is_file():
+        ocr_generator(full_path, ocr_path)
+    if not ocr_path.is_file():
+        raise ValueError(f"OCR JSON was not produced for page {page_number}: {ocr_path}")
+
+    registration_path = _path_from_value(page.get("registration"), manifest_dir) or asset_dir / f"page_{page_number:03d}_registration.json"
+    if not registration_path.is_file():
+        _write_identity_registration(registration_path, page_number)
+
+    prepared = {
+        **page,
+        "full": {**(full_role if isinstance(full_role, dict) else {}), "path": str(full_path)},
+        "background": {
+            **(page.get("background") if isinstance(page.get("background"), dict) else {}),
+            "path": str(background_path),
+        },
+        "ocr": str(ocr_path),
+        "registration": str(registration_path),
+    }
+    if input_mode == VENDOR_THREE_IMAGE_MODE:
+        text_path = _path_from_role_or_default(
+            page.get("text") if isinstance(page.get("text"), dict) else None,
+            manifest_dir,
+            asset_dir / f"page_{page_number:03d}_text.png",
+        )
+        if not text_path.is_file():
+            text_renderer(ocr_path, full_path, text_path)
+        if not text_path.is_file():
+            raise ValueError(f"TEXT image was not produced for page {page_number}: {text_path}")
+        prepared["text"] = {
+            **(page.get("text") if isinstance(page.get("text"), dict) else {}),
+            "path": str(text_path),
+        }
+    _write_json(
+        asset_dir / "asset_manifest.json",
+        {
+            "schema": "cyberppt.editable_text_assets.v1",
+            "page_number": page_number,
+            "input_mode": input_mode,
+            "full": str(full_path),
+            "background": str(background_path),
+            "ocr": str(ocr_path),
+            "registration": str(registration_path),
+            **({"text": str(prepared["text"]["path"])} if input_mode == VENDOR_THREE_IMAGE_MODE else {}),
+        },
+    )
+    return prepared
+
+
+def _editable_text_job(
+    project: Path,
+    page: dict[str, Any],
+    manifest_dir: Path,
+    input_mode: str,
+) -> dict[str, Any]:
+    page_number = int(page.get("page_number", 0))
+    if page_number <= 0:
+        raise ValueError("editable-text pair is missing a positive page_number")
     paths = {
         "full": _path_from_role(page.get("full"), manifest_dir),
         "background": _path_from_role(page.get("background"), manifest_dir),
-        "text": _path_from_role(page.get("text"), manifest_dir),
     }
+    if input_mode == VENDOR_THREE_IMAGE_MODE:
+        paths["text"] = _path_from_role(page.get("text"), manifest_dir)
     missing = [role.upper() for role, path in paths.items() if path is None]
     if missing:
-        raise ValueError(f"three-image page {page_number} requires: {', '.join(missing)}")
+        raise ValueError(f"{input_mode} page {page_number} requires: {', '.join(missing)}")
     resolved = {role: path for role, path in paths.items() if path is not None}
     width, height = _validate_image_set(resolved)
     output_dir = (
@@ -126,16 +306,15 @@ def _three_image_job(project: Path, page: dict[str, Any], manifest_dir: Path) ->
     ocr_path = _path_from_value(page.get("ocr"), manifest_dir)
     registration_path = _path_from_value(page.get("registration"), manifest_dir)
     if ocr_path is None or registration_path is None:
-        raise ValueError(f"three-image page {page_number} requires OCR and registration JSON")
+        raise ValueError(f"{input_mode} page {page_number} requires OCR and registration JSON")
     for role, path in (("OCR", ocr_path), ("registration", registration_path)):
         if not path.is_file():
             raise ValueError(f"{role} input is not readable: {path}")
-    return {
+    job = {
         "page_id": f"page-{page_number:03d}",
         "page_number": page_number,
         "full": str(resolved["full"]),
         "background": str(resolved["background"]),
-        "text": str(resolved["text"]),
         "ocr": str(ocr_path),
         "registration": str(registration_path),
         "output_dir": str(output_dir),
@@ -144,19 +323,35 @@ def _three_image_job(project: Path, page: dict[str, Any], manifest_dir: Path) ->
             for role, path in {
                 "full": resolved["full"],
                 "background": resolved["background"],
-                "text": resolved["text"],
                 "ocr": ocr_path,
                 "registration": registration_path,
             }.items()
         },
         "canvas": {"width_px": width, "height_px": height},
     }
+    if input_mode == VENDOR_THREE_IMAGE_MODE:
+        job["text"] = str(resolved["text"])
+        job["inputs"]["text"] = {"path": str(resolved["text"]), "sha256": _sha256(resolved["text"])}
+    return job
 
 
-def build_three_image_batch(project: Path, pages_raw: str, pairs_path: Path) -> dict[str, Any]:
+def build_editable_text_batch(
+    project: Path,
+    pages_raw: str,
+    pairs_path: Path,
+    *,
+    input_mode: str = VENDOR_TWO_IMAGE_MODE,
+    full_generator: FullGenerator | None = None,
+    background_generator: BackgroundGenerator | None = None,
+    ocr_generator: OcrGenerator | None = None,
+    text_renderer: TextRenderer | None = None,
+) -> dict[str, Any]:
     """Build a deterministic vendor batch manifest from approved page pairs."""
 
     manifest_path = pairs_path.expanduser().resolve()
+    if input_mode not in _SUPPORTED_VENDOR_INPUT_MODES:
+        supported = ", ".join(sorted(_SUPPORTED_VENDOR_INPUT_MODES))
+        raise ValueError(f"unsupported vendor input_mode: {input_mode}; expected one of {supported}")
     payload = _read_json(manifest_path)
     pairs = payload.get("pairs")
     if not isinstance(pairs, list):
@@ -165,12 +360,36 @@ def build_three_image_batch(project: Path, pages_raw: str, pairs_path: Path) -> 
     selected = [pair for pair in pairs if isinstance(pair, dict) and int(pair.get("page_number", 0)) in wanted]
     if {int(pair["page_number"]) for pair in selected} != wanted:
         raise ValueError("page image manifest does not contain every requested page")
-    jobs = [_three_image_job(project, pair, manifest_path.parent) for pair in sorted(selected, key=lambda item: int(item["page_number"]))]
+    jobs = [
+        _editable_text_job(
+            project,
+            _ensure_editable_assets(
+                project,
+                pages_raw,
+                pair,
+                manifest_path.parent,
+                input_mode,
+                full_generator=full_generator or _default_full_generator,
+                background_generator=background_generator or _default_background_generator,
+                ocr_generator=ocr_generator or _default_ocr_generator,
+                text_renderer=text_renderer or _default_text_renderer,
+            ),
+            manifest_path.parent,
+            input_mode,
+        )
+        for pair in sorted(selected, key=lambda item: int(item["page_number"]))
+    ]
     return {
         "schema": "cyberppt.editable_text_batch.v1",
-        "input_mode": "three-image",
+        "input_mode": input_mode,
         "pages": jobs,
     }
+
+
+def build_three_image_batch(project: Path, pages_raw: str, pairs_path: Path) -> dict[str, Any]:
+    """Backward-compatible wrapper for the default editable-text vendor batch."""
+
+    return build_editable_text_batch(project, pages_raw, pairs_path)
 
 
 def _find_pairs_manifest(project: Path, pages_raw: str) -> Path:
@@ -264,12 +483,17 @@ def _collect_vendor_results(project: Path, pages_raw: str, batch: dict[str, Any]
     return result
 
 
-def run_three_image_batch(project: Path, pages_raw: str) -> dict[str, Any]:
+def run_three_image_batch(
+    project: Path,
+    pages_raw: str,
+    *,
+    input_mode: str = VENDOR_TWO_IMAGE_MODE,
+) -> dict[str, Any]:
     """Run the vendored batch pipeline and collect authoritative page QA."""
 
     root = project.expanduser().resolve()
     pairs_path = _find_pairs_manifest(root, pages_raw)
-    batch = build_three_image_batch(root, pages_raw, pairs_path)
+    batch = build_editable_text_batch(root, pages_raw, pairs_path, input_mode=input_mode)
     batch_root = _editable_text_root(root, pages_raw)
     batch_path = _write_json(batch_root / "three_image_batch.json", batch)
     completed = subprocess.run(

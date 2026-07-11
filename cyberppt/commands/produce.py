@@ -14,6 +14,7 @@ from typing import Any
 from cyberppt.commands.analysis_expression_gate import assert_analysis_expression_ready
 from cyberppt.commands.editable_text_three_image import (
     EDITABLE_TEXT_MODE,
+    VENDOR_TWO_IMAGE_MODE,
     assert_editable_text_batch_ready,
     editable_text_result_path,
     get_production_mode,
@@ -616,14 +617,18 @@ def assemble_production(project: Path, pages_raw: str) -> dict[str, Any]:
     }
 
 
-def prepare_editable_text_production(project: Path, pages_raw: str) -> dict[str, Any]:
-    """Run the explicit three-image branch after shared speaker-note preparation."""
+def prepare_editable_text_production(
+    project: Path,
+    pages_raw: str,
+    input_mode: str = VENDOR_TWO_IMAGE_MODE,
+) -> dict[str, Any]:
+    """Run the editable-text branch after shared speaker-note preparation."""
 
     root = _project(project)
     if get_production_mode(root) != EDITABLE_TEXT_MODE:
         raise ValueError("project production_mode must be editable_text_three_image")
     assert_speaker_notes_review_ready(root, pages_raw)
-    result = run_three_image_batch(root, pages_raw)
+    result = run_three_image_batch(root, pages_raw, input_mode=input_mode)
     pending = stage_editable_text_review(root, pages_raw)
     result["review_pending_confirmation"] = str(pending)
     result["next_gate"] = "editable_text_review_approval_required" if result["status"] == "review_required" else "editable_text_assembly_ready"

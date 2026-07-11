@@ -383,7 +383,7 @@ def _produce_assemble_command(args: argparse.Namespace) -> int:
 
 def _produce_editable_text_command(args: argparse.Namespace) -> int:
     try:
-        result = prepare_editable_text_production(Path(args.project), args.pages)
+        result = prepare_editable_text_production(Path(args.project), args.pages, input_mode=args.input_mode)
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
@@ -705,10 +705,16 @@ def build_parser() -> argparse.ArgumentParser:
     produce_assemble_parser.add_argument("--pages", required=True, help="Page range, e.g. 7-8 or 7,8.")
     produce_assemble_parser.set_defaults(func=_produce_assemble_command)
     produce_editable_parser = produce_subparsers.add_parser(
-        "editable-text", help="Run the explicit three-image editable-body page pipeline."
+        "editable-text", help="Run the editable-body two-image or three-image page pipeline."
     )
     produce_editable_parser.add_argument("project", help="CyberPPT project directory.")
     produce_editable_parser.add_argument("--pages", required=True, help="Page range, e.g. 7-8 or 7,8.")
+    produce_editable_parser.add_argument(
+        "--input-mode",
+        choices=("two-image", "three-image"),
+        default="two-image",
+        help="Vendor input mode. Defaults to two-image; use three-image only when a TEXT image is required.",
+    )
     produce_editable_parser.set_defaults(func=_produce_editable_text_command)
     produce_verify_parser = produce_subparsers.add_parser(
         "verify", help="Run render QA, strict validation, and promote a deliverable PPTX."

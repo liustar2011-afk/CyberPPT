@@ -246,6 +246,13 @@ class ProduceTests(unittest.TestCase):
     def test_produce_editable_text_command_is_registered(self) -> None:
         args = build_parser().parse_args(["produce", "editable-text", "/tmp/project", "--pages", "1"])
         self.assertEqual("editable-text", args.produce_command)
+        self.assertEqual("two-image", args.input_mode)
+
+    def test_produce_editable_text_command_accepts_three_image_input_mode(self) -> None:
+        args = build_parser().parse_args(
+            ["produce", "editable-text", "/tmp/project", "--pages", "1", "--input-mode", "three-image"]
+        )
+        self.assertEqual("three-image", args.input_mode)
 
     def test_image_text_qa_readiness_blocks_without_current_summary(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -8,6 +8,7 @@ from PIL import Image
 
 from cyberppt.commands.editable_text_three_image import (
     assert_editable_text_batch_ready,
+    build_editable_text_batch,
     build_three_image_batch,
     get_production_mode,
     run_three_image_batch,
@@ -27,9 +28,20 @@ def test_default_production_mode_is_full_image_ppt(tmp_path: Path) -> None:
     assert get_production_mode(project) == "full_image_ppt"
 
 
-def test_three_image_batch_requires_full_background_and_text(tmp_path: Path) -> None:
+def test_default_editable_batch_uses_two_image_without_text(tmp_path: Path) -> None:
     pairs = tmp_path / "page_image_pairs.json"
     full = _write_image(tmp_path / "full.png")
+    background = _write_image(tmp_path / "background.png")
+    ocr = tmp_path / "ocr.json"
+    ocr.write_text(
+        json.dumps({"canonical": {"lines": [{"text": "测试", "bbox": [1, 1, 30, 20], "score": 0.99}]}}),
+        encoding="utf-8",
+    )
+    registration = tmp_path / "registration.json"
+    registration.write_text(
+        json.dumps({"transform_id": "TF-GLOBAL", "matrix": [[1, 0, 0], [0, 1, 0]]}),
+        encoding="utf-8",
+    )
     pairs.write_text(
         json.dumps(
             {
@@ -37,7 +49,9 @@ def test_three_image_batch_requires_full_background_and_text(tmp_path: Path) -> 
                     {
                         "page_number": 4,
                         "full": {"path": str(full)},
-                        "background": {"path": str(tmp_path / "background.png")},
+                        "background": {"path": str(background)},
+                        "ocr": str(ocr),
+                        "registration": str(registration),
                     }
                 ]
             }
@@ -45,8 +59,123 @@ def test_three_image_batch_requires_full_background_and_text(tmp_path: Path) -> 
         encoding="utf-8",
     )
 
-    with pytest.raises(ValueError, match="TEXT"):
-        build_three_image_batch(tmp_path, "4", pairs)
+    batch = build_three_image_batch(tmp_path, "4", pairs)
+
+    assert batch["input_mode"] == "two-image"
+    assert "text" not in batch["pages"][0]
+    assert set(batch["pages"][0]["inputs"]) == {"full", "background", "ocr", "registration"}
+
+
+def test_explicit_three_image_batch_prepares_text_when_missing(tmp_path: Path) -> None:
+    pairs = tmp_path / "page_image_pairs.json"
+    full = _write_image(tmp_path / "full.png")
+    background = _write_image(tmp_path / "background.png")
+    ocr = tmp_path / "ocr.json"
+    ocr.write_text(
+        json.dumps({"canonical": {"lines": [{"text": "测试", "bbox": [1, 1, 30, 20], "score": 0.99}]}}),
+        encoding="utf-8",
+    )
+    registration = tmp_path / "registration.json"
+    registration.write_text(
+        json.dumps({"transform_id": "TF-GLOBAL", "matrix": [[1, 0, 0], [0, 1, 0]]}),
+        encoding="utf-8",
+    )
+    pairs.write_text(
+        json.dumps(
+            {
+                "pairs": [
+                    {
+                        "page_number": 4,
+                        "full": {"path": str(full)},
+                        "background": {"path": str(background)},
+                        "ocr": str(ocr),
+                        "registration": str(registration),
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    calls: list[tuple[Path, Path, Path]] = []
+
+    def fake_text_renderer(ocr_path: Path, reference_path: Path, output_path: Path) -> Path:
+        calls.append((ocr_path, reference_path, output_path))
+        return _write_image(output_path)
+
+    batch = build_editable_text_batch(
+        tmp_path,
+        "4",
+        pairs,
+        input_mode="three-image",
+        text_renderer=fake_text_renderer,
+    )
+
+    assert batch["input_mode"] == "three-image"
+    assert Path(batch["pages"][0]["text"]).is_file()
+    assert batch["pages"][0]["inputs"]["text"]["path"] == batch["pages"][0]["text"]
+    assert calls == [(ocr, full, Path(batch["pages"][0]["text"]))]
+
+
+def test_build_batch_prepares_missing_two_image_assets(tmp_path: Path) -> None:
+    project = tmp_path / "project"
+    project.mkdir()
+    pairs = project / "page_image_pairs.json"
+    full = project / "expected_full.png"
+    pairs.write_text(
+        json.dumps(
+            {
+                "pairs": [
+                    {
+                        "page_number": 4,
+                        "full": {
+                            "path": str(full),
+                            "prompt": "FULL PROMPT MUST BE USED AS-IS",
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    calls: list[tuple[str, Path, Path | None, str | None]] = []
+
+    def fake_full_generator(prompt: str, output_path: Path) -> Path:
+        calls.append(("full", output_path, None, prompt))
+        assert prompt == "FULL PROMPT MUST BE USED AS-IS"
+        return _write_image(output_path)
+
+    def fake_background_generator(full_path: Path, output_path: Path) -> Path:
+        calls.append(("background", output_path, full_path, None))
+        return _write_image(output_path)
+
+    def fake_ocr_generator(image_path: Path, output_path: Path) -> Path:
+        calls.append(("ocr", output_path, image_path, None))
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            json.dumps({"canonical": {"lines": [{"text": "测试", "bbox": [1, 1, 30, 20], "score": 0.99}]}}),
+            encoding="utf-8",
+        )
+        return output_path
+
+    batch = build_editable_text_batch(
+        project,
+        "4",
+        pairs,
+        full_generator=fake_full_generator,
+        background_generator=fake_background_generator,
+        ocr_generator=fake_ocr_generator,
+    )
+
+    job = batch["pages"][0]
+    assert batch["input_mode"] == "two-image"
+    assert Path(job["full"]).is_file()
+    assert Path(job["background"]).is_file()
+    assert Path(job["ocr"]).is_file()
+    assert Path(job["registration"]).is_file()
+    assert "text" not in job
+    assert [call[0] for call in calls] == ["full", "background", "ocr"]
+    assert "line_corrections" not in json.loads(Path(job["registration"]).read_text(encoding="utf-8"))
 
 
 def _write_complete_pairs(project: Path, pages: list[int]) -> Path:
