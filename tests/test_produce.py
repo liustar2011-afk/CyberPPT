@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
-from cyberppt.cli import main
+from cyberppt.cli import build_parser, main
 from cyberppt.commands.analysis_expression_gate import approve_analysis_artifact, stage_analysis_artifact
 from cyberppt.commands.blueprint_gate import (
     approve_blueprint_image_review,
@@ -166,6 +166,28 @@ def _write_passed_image_text_qa(project: Path, pages_raw: str, pairs_path: Path)
 
 
 class ProduceTests(unittest.TestCase):
+    def test_editable_text_mode_stops_after_speaker_notes_for_vendor_assets(self) -> None:
+        project, temporary_directory = _approved_project()
+        with temporary_directory:
+            manifest = project / "manifest.yml"
+            manifest.write_text(
+                manifest.read_text(encoding="utf-8").replace(
+                    "production_mode: full_image_ppt", "production_mode: editable_text_three_image"
+                ),
+                encoding="utf-8",
+            )
+            prepare_production(project, "1")
+            approve_speaker_notes_review(project, "confirm_speaker_notes")
+
+            status = get_production_status(project, "1")
+
+            self.assertEqual("editable_text_assets_required", status["next_gate"])
+            self.assertIn("produce editable-text", status["next_command"])
+
+    def test_produce_editable_text_command_is_registered(self) -> None:
+        args = build_parser().parse_args(["produce", "editable-text", "/tmp/project", "--pages", "1"])
+        self.assertEqual("editable-text", args.produce_command)
+
     def test_image_text_qa_readiness_blocks_without_current_summary(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             with self.assertRaisesRegex(ValueError, "image-text QA"):

@@ -1369,6 +1369,15 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
     approved_image_region = manifest.get("approved_image_content_region")
     if not isinstance(approved_image_region, dict):
         approved_image_region = None
+    editable_pages: dict[int, dict] = {}
+    editable_manifest = manifest.get("editable_body_manifest")
+    if editable_manifest:
+        editable_page_numbers = [
+            int(task["page_number"])
+            for task in manifest["tasks"]
+            if task.get("editable_body") is True and task.get("page_number") is not None
+        ]
+        editable_pages = load_editable_body_pages(Path(str(editable_manifest)), editable_page_numbers)
     for task in manifest["tasks"]:
         stem = page_stem(task["page_number"], task["title"])
         if task.get("render_mode") == "brand-template" or page_template_name(task.get("page_role", "")):
@@ -1381,8 +1390,6 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
             image_path = Path(task["image_path"]).resolve()
             if not image_path.is_file():
                 raise FileNotFoundError(f"Missing content image: {image_path}")
-            target_image = project_path / "images" / f"{image_path.stem}_content_crop{image_path.suffix}"
-            crop_approved_content_image(image_path, target_image, approved_image_region)
             svg = [
                 f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_SIZE[0]}" height="{CANVAS_SIZE[1]}" viewBox="0 0 {CANVAS_SIZE[0]} {CANVAS_SIZE[1]}">',
                 f'<rect x="0" y="0" width="{CANVAS_SIZE[0]}" height="{CANVAS_SIZE[1]}" fill="#FFFFFF"/>',
@@ -1390,10 +1397,20 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
             svg.append(svg_text(header["x"], header["y"] + 30, task["slide_title"], 25, 700))
             if task.get("subtitle"):
                 svg.append(svg_text(header["x"], header["y"] + 56, task["subtitle"], 14, 400, "#60758A"))
-            svg.append(
-                f'<image x="{body["x"]}" y="{body["y"]}" width="{body["width"]}" height="{body["height"]}" '
-                f'href={quoteattr("../images/" + target_image.name)} xlink:href={quoteattr("../images/" + target_image.name)} preserveAspectRatio="xMidYMid meet"/>'
-            )
+            if task.get("editable_body") is True:
+                editable_page = editable_pages[int(task["page_number"])]
+                source_background = Path(editable_page["background_path"])
+                target_image = project_path / "images" / f"page_{int(task['page_number']):03d}_{source_background.name}"
+                shutil.copy2(source_background, target_image)
+                editable_page = {**editable_page, "background_path": target_image}
+                svg.append(render_editable_body_svg(editable_page, body, editable_page["canvas"]))
+            else:
+                target_image = project_path / "images" / f"{image_path.stem}_content_crop{image_path.suffix}"
+                crop_approved_content_image(image_path, target_image, approved_image_region)
+                svg.append(
+                    f'<image x="{body["x"]}" y="{body["y"]}" width="{body["width"]}" height="{body["height"]}" '
+                    f'href={quoteattr("../images/" + target_image.name)} xlink:href={quoteattr("../images/" + target_image.name)} preserveAspectRatio="xMidYMid meet"/>'
+                )
             svg.append("</svg>\n")
             svg_text_content = "\n".join(svg)
         (project_path / "svg_output" / f"{stem}.svg").write_text(svg_text_content, encoding="utf-8")
@@ -1524,6 +1541,20 @@ def command_run(args: argparse.Namespace) -> int:
     if rc != 0 or args.dry_run:
         return rc
     manifest = args.output_dir.resolve() / "template_image_manifest.json"
+    if getattr(args, "editable_body_manifest", None):
+        editable_manifest = args.editable_body_manifest.resolve()
+        manifest_data = json.loads(manifest.read_text(encoding="utf-8"))
+        content_pages = [
+            int(task["page_number"])
+            for task in manifest_data.get("tasks", [])
+            if isinstance(task, dict) and task.get("render_mode") == "content-image"
+        ]
+        load_editable_body_pages(editable_manifest, content_pages)
+        manifest_data["editable_body_manifest"] = str(editable_manifest)
+        for task in manifest_data["tasks"]:
+            if task.get("render_mode") == "content-image":
+                task["editable_body"] = True
+        write_json(manifest, manifest_data)
     if getattr(args, "project_production", False):
         return command_export(
             argparse.Namespace(manifest=manifest, output_dir=args.output_dir, name=args.name)
@@ -1563,6 +1594,7 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--project-production", action="store_true")
         p.add_argument("--template-text-lock", type=Path)
         p.add_argument("--page-image-manifest", type=Path)
+        p.add_argument("--editable-body-manifest", type=Path)
         p.set_defaults(func=command_plan_dispatch if name == "plan" else command_run)
     gen = sub.add_parser("generate")
     gen.add_argument("manifest", type=Path)

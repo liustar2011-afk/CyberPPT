@@ -12,6 +12,13 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.commands.analysis_expression_gate import assert_analysis_expression_ready
+from cyberppt.commands.editable_text_three_image import (
+    EDITABLE_TEXT_MODE,
+    assert_editable_text_batch_ready,
+    get_production_mode,
+    run_three_image_batch,
+    stage_editable_text_review,
+)
 from cyberppt.commands.blueprint_gate import (
     assert_blueprint_image_review_ready,
     assert_blueprint_input_ready,
@@ -326,6 +333,13 @@ def get_production_status(project: Path, pages_raw: str) -> dict[str, Any]:
         return result
     result["gates"].append("speaker_notes_approved")
     result["artifacts"]["speaker_notes_manifest"] = str(notes_manifest)
+    if get_production_mode(root) == EDITABLE_TEXT_MODE:
+        result.update(
+            status="speaker_notes_approved",
+            next_gate="editable_text_assets_required",
+            next_command=f"produce editable-text {root} --pages {pages_raw}",
+        )
+        return result
     assembly_path = _assembly_report_path(root, pages_raw)
     if assembly_path.is_file():
         assembly = _read_json(assembly_path)
@@ -401,6 +415,72 @@ def assemble_production(project: Path, pages_raw: str) -> dict[str, Any]:
     page_manifest = Path(str(prepared["page_image_pairs"])).resolve()
     template_text_lock = Path(str(prepared["template_text_lock"])).resolve()
     notes_manifest = assert_speaker_notes_review_ready(root, pages_raw)
+    if get_production_mode(root) == EDITABLE_TEXT_MODE:
+        editable_result = assert_editable_text_batch_ready(root, pages_raw)
+        pages = sorted(_page_numbers_from_raw(pages_raw))
+        pairs = _read_json(page_manifest)
+        approved_images = {
+            int(pair["page_number"]): str(Path(str(pair["full"]["path"])).expanduser().resolve())
+            for pair in pairs.get("pairs", [])
+            if isinstance(pair, dict)
+            and int(pair.get("page_number", 0)) in pages
+            and isinstance(pair.get("full"), dict)
+            and pair["full"].get("path")
+        }
+        output_dir = prepare_path.parent / "editable_text_ppt"
+        name = prepare_path.parent.name
+        command = [
+            sys.executable,
+            "-m",
+            "cyberppt",
+            "image-ppt",
+            "--project",
+            str(root),
+            "run",
+            "--project-production",
+            "--script",
+            str(script),
+            "--pages",
+            pages_raw,
+            "--template-text-lock",
+            str(template_text_lock),
+            "--page-image-manifest",
+            str(page_manifest),
+            "--speaker-notes-manifest",
+            str(notes_manifest),
+            "--editable-body-manifest",
+            str(editable_result),
+            "--output-dir",
+            str(output_dir),
+            "--name",
+            name,
+        ]
+        completed = subprocess.run(command, check=False)
+        if completed.returncode != 0:
+            raise RuntimeError(f"editable-text template assembly failed with exit code {completed.returncode}")
+        project_dir = output_dir / f"{name}_template_image_project"
+        exports = sorted((project_dir / "exports").glob("*.pptx"))
+        exported_pptx = exports[-1] if exports else output_dir / "missing.pptx"
+        bundle = {
+            "project": str(root),
+            "mode": EDITABLE_TEXT_MODE,
+            "exported_pptx": str(exported_pptx),
+            "editable_text_result": str(editable_result),
+            "template_image_manifest": str(output_dir / "template_image_manifest.json"),
+            "approved_images": approved_images,
+        }
+        report = validate_assembly_bundle(bundle, pages)
+        report["command"] = command
+        report_path = _write_json(output_dir / "assembly_report.json", report)
+        if not report["valid"]:
+            raise RuntimeError("assembly_artifact_missing: " + ", ".join(report["failures"]))
+        return {
+            "schema": "cyberppt.production_assemble_result.v1",
+            "status": "image_ppt_assembled",
+            "next_gate": "render_qa_required",
+            "next_command": f"produce verify {root} --pages {pages_raw}",
+            "artifacts": {**bundle, "assembly_report": str(report_path)},
+        }
     pairs = _read_json(page_manifest)
     assert_blueprint_image_review_ready(root, pairs)
     pages = [int(item["page_number"]) for item in pairs.get("pairs", []) if isinstance(item, dict) and "page_number" in item]
@@ -461,6 +541,21 @@ def assemble_production(project: Path, pages_raw: str) -> dict[str, Any]:
         "next_command": f"produce verify {root} --pages {pages_raw}",
         "artifacts": {**bundle, "assembly_report": str(report_path)},
     }
+
+
+def prepare_editable_text_production(project: Path, pages_raw: str) -> dict[str, Any]:
+    """Run the explicit three-image branch after shared speaker-note preparation."""
+
+    root = _project(project)
+    if get_production_mode(root) != EDITABLE_TEXT_MODE:
+        raise ValueError("project production_mode must be editable_text_three_image")
+    assert_speaker_notes_review_ready(root, pages_raw)
+    result = run_three_image_batch(root, pages_raw)
+    pending = stage_editable_text_review(root, pages_raw)
+    result["review_pending_confirmation"] = str(pending)
+    result["next_gate"] = "editable_text_review_approval_required" if result["status"] == "review_required" else "editable_text_assembly_ready"
+    result["next_command"] = f"produce assemble {root} --pages {pages_raw}"
+    return result
 
 
 def _approved_images_from_assembly(assembly: dict[str, Any]) -> dict[int, Path]:

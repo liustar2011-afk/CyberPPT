@@ -172,6 +172,60 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
             self.assertIn('name="text-4-T01-L01"', converted[0])
             self.assertIn('name="text-4-T01-L02"', converted[0])
 
+    def test_write_project_marks_editable_body_pages_without_changing_default_tasks(self) -> None:
+        module = load_template_image_ppt_export()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            full_path = root / "full.png"
+            background_path = root / "background.png"
+            Image.new("RGB", (320, 180), "#ffffff").save(full_path)
+            Image.new("RGB", (320, 180), "#12355b").save(background_path)
+            page_json = root / "page.json"
+            page_json.write_text(
+                json.dumps(
+                    {
+                        "page": {"page_id": "page-004", "width_px": 320, "height_px": 180},
+                        "images": {"background": {"path": str(background_path), "width_px": 320, "height_px": 180}},
+                        "text_lines": [{"line_id": "T01-L01", "text": "可编辑", "bbox": {"x": 10, "y": 20, "width": 80, "height": 18}}],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            editable_manifest = root / "editable_text_result.json"
+            editable_manifest.write_text(
+                json.dumps({"pages": {"4": {"page_number": 4, "status": "passed", "page_json": str(page_json), "background_path": str(background_path)}}}),
+                encoding="utf-8",
+            )
+            output = module.write_project(
+                {
+                    "canvas": {"width": 1280, "height": 720},
+                    "body_region": {"x": 20, "y": 104, "width": 1240, "height": 592},
+                    "tasks": [
+                        {
+                            "page_number": 4,
+                            "page_role": "content",
+                            "title": "测试页",
+                            "slide_title": "测试页",
+                            "subtitle": "",
+                            "body_text": "",
+                            "render_mode": "content-image",
+                            "editable_body": True,
+                            "image_path": str(full_path),
+                            "prompt": "正文",
+                            "size": "1240x592",
+                            "notes_text": "备注",
+                        }
+                    ],
+                    "editable_body_manifest": str(editable_manifest),
+                },
+                root / "output",
+                "editable",
+            )
+            svg_text = (output / "svg_output" / "page_004_测试页.svg").read_text(encoding="utf-8")
+            self.assertIn("data-pptx-name=\"text-4-T01-L01\"", svg_text)
+            self.assertIn("page_004_background.png", svg_text)
+
     def test_image_prompt_rejects_evidence_chain_text(self) -> None:
         module = load_template_image_ppt_export()
 
