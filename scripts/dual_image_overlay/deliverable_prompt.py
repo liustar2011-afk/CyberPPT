@@ -15,6 +15,7 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.dual_image_overlay.style_library import default_style_choices, load_style_lock
+from scripts.dual_image_overlay.prompt_policy import classify_forbidden_text
 
 
 PAGE_HEADING_RE = re.compile(
@@ -145,6 +146,8 @@ def _drop_line(line: str) -> bool:
         "——" in stripped or "标签" in stripped or "下方" in stripped or "主体" in stripped or "（" in stripped
     ):
         return True
+    if classify_forbidden_text(stripped):
+        return True
     if any(pattern.search(stripped) for pattern in DISALLOWED_LINE_PATTERNS):
         return True
     return stripped.startswith(("【", "目标语言", "用途"))
@@ -206,6 +209,8 @@ def layout_density_directives(page: PageBlock) -> list[str]:
             continue
         cleaned = _clean_structure_directive(stripped.removeprefix("组件：").removeprefix("关系："))
         if not cleaned:
+            continue
+        if classify_forbidden_text(cleaned):
             continue
         key = re.sub(r"\s+", "", cleaned)
         if key not in seen:
