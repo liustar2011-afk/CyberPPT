@@ -22,7 +22,13 @@ from cyberppt.commands.blueprint_gate import (
 )
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
-from cyberppt.commands.produce import assemble_production, get_production_status, prepare_production, verify_production
+from cyberppt.commands.produce import (
+    assemble_production,
+    assert_image_text_qa_ready,
+    get_production_status,
+    prepare_production,
+    verify_production,
+)
 
 
 OPTIONS = [
@@ -90,7 +96,81 @@ def _approved_project() -> tuple[Path, tempfile.TemporaryDirectory[str]]:
     return project, temporary_directory
 
 
+def _write_passed_image_text_qa(project: Path, pages_raw: str, pairs_path: Path) -> Path:
+    prepare_paths = sorted((project / "workbench/stages/02-blueprint-dual-image").glob("*/production_prepare.json"))
+    matching_prepare = next(
+        (
+            path
+            for path in prepare_paths
+            if json.loads(path.read_text(encoding="utf-8")).get("pages_raw") == pages_raw
+        ),
+        None,
+    )
+    stage_dir = matching_prepare.parent if matching_prepare else pairs_path.parent.parent
+    script = stage_dir / "imagegen_script.md"
+    script.write_text(
+        """## 第1页：测试
+
+【页面类型】
+本页类型：内容页。此信息只用于构图，不得作为页面可见文字。
+
+【内容锁定】
+- 真实业务内容
+
+【构图指令】
+生成正文内容区。
+
+【结构密度】
+- 正文区
+""",
+        encoding="utf-8",
+    )
+    pair_manifest = json.loads(pairs_path.read_text(encoding="utf-8"))
+    image_path = Path(pair_manifest["pairs"][0]["full"]["path"])
+    qa_dir = stage_dir / "image_text_qa"
+    qa_dir.mkdir(parents=True, exist_ok=True)
+    report_path = qa_dir / "page_001.json"
+    report_path.write_text(
+        json.dumps(
+            {
+                "schema": "cyberppt.image_text_qa.v1",
+                "page": 1,
+                "image_path": str(image_path),
+                "status": "passed",
+                "deliverable_allowed": True,
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    summary_path = qa_dir / "image_text_qa_summary.json"
+    summary_path.write_text(
+        json.dumps(
+            {
+                "schema": "cyberppt.image_text_qa_summary.v1",
+                "pages_raw": pages_raw,
+                "pages": [1],
+                "status": "passed",
+                "deliverable_allowed": True,
+                "imagegen_script": str(script),
+                "imagegen_script_sha256": _sha256_for_test(script),
+                "page_image_manifest": str(pairs_path),
+                "page_image_manifest_sha256": _sha256_for_test(pairs_path),
+                "reports": [{"page": 1, "path": str(report_path), "status": "passed"}],
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    return summary_path
+
+
 class ProduceTests(unittest.TestCase):
+    def test_image_text_qa_readiness_blocks_without_current_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(ValueError, "image-text QA"):
+                assert_image_text_qa_ready(Path(tmp), "1")
+
     def test_prepare_production_stages_inputs_and_speaker_notes_confirmation(self) -> None:
         project, temporary_directory = _approved_project()
         with temporary_directory:
@@ -229,6 +309,7 @@ class ProduceTests(unittest.TestCase):
             )
             stage_speaker_notes_review(project, manifest, "1")
             approve_speaker_notes_review(project, "confirm_speaker_notes")
+            _write_passed_image_text_qa(project, "1", pairs)
 
             with patch(
                 "cyberppt.commands.produce.render_and_compare",
@@ -444,6 +525,7 @@ class ProduceTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
+            _write_passed_image_text_qa(project, "1", pairs)
 
             with patch(
                 "cyberppt.commands.produce.render_and_compare",
@@ -500,6 +582,7 @@ class ProduceTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
+            _write_passed_image_text_qa(project, "1", pairs)
 
             with patch(
                 "cyberppt.commands.produce.render_and_compare",

@@ -71,7 +71,61 @@ def _pages_slug_from_raw(pages_raw: str) -> str:
 
 
 def _stage_dir(project: Path, pages_raw: str) -> Path:
+    prepared = _prepare_path(project, pages_raw)
+    if prepared is not None:
+        return prepared.parent
+    for summary_path in sorted((project / STAGE_ROOT).glob("*/image_text_qa/image_text_qa_summary.json")):
+        try:
+            if _read_json(summary_path).get("pages_raw") == pages_raw:
+                return summary_path.parent.parent
+        except (OSError, ValueError, json.JSONDecodeError):
+            continue
     return project / STAGE_ROOT / _pages_slug_from_raw(pages_raw)
+
+
+def _page_numbers_from_raw(pages_raw: str) -> set[int]:
+    pages: set[int] = set()
+    for part in pages_raw.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            start, end = [int(value.strip()) for value in part.split("-", 1)]
+            pages.update(range(start, end + 1))
+        else:
+            pages.add(int(part))
+    if not pages:
+        raise ValueError("at least one page is required")
+    return pages
+
+
+def assert_image_text_qa_ready(project: Path, pages_raw: str) -> Path:
+    """Require a current, passed generated-image text QA summary."""
+
+    root = _project(project)
+    summary_path = _stage_dir(root, pages_raw) / "image_text_qa" / "image_text_qa_summary.json"
+    if not summary_path.is_file():
+        raise ValueError(
+            f"image-text QA summary is required; run python3 -m cyberppt image-text-qa {root} --pages {pages_raw}"
+        )
+    summary = _read_json(summary_path)
+    if summary.get("status") != "passed" or summary.get("deliverable_allowed") is not True:
+        raise ValueError(f"image-text QA did not pass: {summary_path}")
+    expected_pages = _page_numbers_from_raw(pages_raw)
+    reported_pages = {int(page) for page in summary.get("pages", [])}
+    if reported_pages != expected_pages:
+        raise ValueError(f"image-text QA pages do not match requested pages: {summary_path}")
+    for item in summary.get("reports", []):
+        report_path = Path(str(item.get("path", ""))).expanduser().resolve()
+        if not report_path.is_file() or item.get("status") != "passed":
+            raise ValueError(f"image-text QA page report is missing or failed: {report_path}")
+    script_path = Path(str(summary.get("imagegen_script", ""))).expanduser().resolve()
+    if not script_path.is_file() or summary.get("imagegen_script_sha256") != _sha256(script_path):
+        raise ValueError("image-text QA is stale because imagegen_script.md changed")
+    manifest_path = Path(str(summary.get("page_image_manifest", ""))).expanduser().resolve()
+    if not manifest_path.is_file() or summary.get("page_image_manifest_sha256") != _sha256(manifest_path):
+        raise ValueError("image-text QA is stale because page_image_pairs.json changed")
+    return summary_path
 
 
 def _assembly_report_path(project: Path, pages_raw: str) -> Path:
@@ -505,6 +559,7 @@ def _readiness_required_dependencies(
     visual_report = Path(str(artifacts.get("production_visual_report", ""))).expanduser().resolve()
     strict_report = Path(str(artifacts.get("strict_validation_report", ""))).expanduser().resolve()
     delivery_manifest = Path(str(artifacts.get("full_image_delivery_manifest", ""))).expanduser().resolve()
+    image_text_qa = Path(str(artifacts.get("image_text_qa_summary", ""))).expanduser().resolve()
     assembly_artifacts = assembly.get("artifacts") if isinstance(assembly.get("artifacts"), dict) else {}
     exported_pptx = Path(str(assembly_artifacts.get("exported_pptx", ""))).expanduser().resolve()
     page_manifest = _recorded_path(_read_json(template_manifest), "page_image_manifest", base=template_manifest.parent)
@@ -517,6 +572,7 @@ def _readiness_required_dependencies(
         visual_report,
         strict_report,
         delivery_manifest,
+        image_text_qa,
         delivery_pptx.expanduser().resolve(),
         *[path.expanduser().resolve() for path in approved_images.values()],
     ]
@@ -616,6 +672,8 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
     notes_manifest = _assert_current_speaker_notes(root, pages_raw, template_manifest)
     approved_images = _approved_images_from_assembly(assembly)
     page_manifest, _ = _assert_current_blueprint_images(root, template_manifest, approved_images)
+    _template_text_lock_record(template_manifest)
+    image_text_qa_path = assert_image_text_qa_ready(root, pages_raw)
     pages = sorted(approved_images)
     if not pages:
         raise RuntimeError("assembly has no approved images")
@@ -655,6 +713,7 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
         visual_report_path,
         strict_report_path,
         delivery_manifest_path,
+        image_text_qa_path,
         delivery_pptx,
         *approved_images.values(),
     ]
@@ -674,6 +733,7 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
             "production_visual_report": str(visual_report_path),
             "strict_validation_report": str(strict_report_path),
             "full_image_delivery_manifest": str(delivery_manifest_path),
+            "image_text_qa_summary": str(image_text_qa_path),
             "delivery_pptx": str(delivery_pptx),
         },
     }
@@ -687,7 +747,7 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
                 "path": str(delivery_pptx),
                 "status": "deliverable_ready",
                 "sha256": readiness["delivery_pptx_sha256"],
-                "depends_on": [str(assembly_path), str(visual_report_path), str(strict_report_path)],
+                "depends_on": [str(assembly_path), str(visual_report_path), str(strict_report_path), str(image_text_qa_path)],
                 "updated_at": readiness["created_at"],
                 "resume_command": f"python3 -m cyberppt produce status {root} --pages {pages_raw} --json",
             }

@@ -27,8 +27,14 @@ from cyberppt.commands.blueprint_gate import (
     stage_visual_style_options,
 )
 from cyberppt.commands.final_script_pages import run_final_script_pages
+from cyberppt.commands.image_text_qa import run_project_image_text_qa
 from cyberppt.commands.init_project import init_project
-from cyberppt.commands.produce import assemble_production, get_production_status, prepare_production, verify_production
+from cyberppt.commands.produce import (
+    assemble_production,
+    get_production_status,
+    prepare_production,
+    verify_production,
+)
 from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script, status_as_json
 from cyberppt.commands.script_runner import _STAGE_2_PLUS_GENERATION_ALIASES, SCRIPT_ALIASES, run_script
 from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
@@ -390,6 +396,21 @@ def _produce_verify_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _image_text_qa_command(args: argparse.Namespace) -> int:
+    try:
+        result = run_project_image_text_qa(
+            Path(args.project),
+            args.pages,
+            ocr_json=Path(args.ocr_json) if args.ocr_json else None,
+            model=args.model,
+        )
+    except (FileNotFoundError, RuntimeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cyberppt", description="CyberPPT product tooling.")
     parser.add_argument("--version", action="version", version=f"cyberppt {__version__}")
@@ -659,6 +680,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Unsupported legacy option for old template-rebuild commands.",
     )
     final_script_pages_parser.set_defaults(func=_final_script_pages_command)
+
+    image_text_qa_parser = subparsers.add_parser(
+        "image-text-qa", help="Check generated full-image text against the approved page content."
+    )
+    image_text_qa_parser.add_argument("project", help="CyberPPT project directory.")
+    image_text_qa_parser.add_argument("--pages", required=True, help="Page range, e.g. 7-8 or 7,8.")
+    image_text_qa_parser.add_argument("--ocr-json", help="Offline OCR fixture JSON for deterministic review/tests.")
+    image_text_qa_parser.add_argument("--model", help="Optional Codex vision model for live OCR.")
+    image_text_qa_parser.set_defaults(func=_image_text_qa_command)
 
     produce_parser = subparsers.add_parser("produce", help="Run the project-scoped production state machine.")
     produce_subparsers = produce_parser.add_subparsers(dest="produce_command", required=True)

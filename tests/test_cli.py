@@ -55,6 +55,55 @@ class CliTests(unittest.TestCase):
 
         self.assertIn("stage-speaker-notes-review", help_text)
         self.assertIn("approve-speaker-notes-review", help_text)
+        self.assertIn("image-text-qa", help_text)
+
+    def test_image_text_qa_command_writes_summary_from_fixture_ocr(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stage = root / "workbench/stages/02-blueprint-dual-image/pages_001_001"
+            stage.mkdir(parents=True)
+            image = stage / "page_001_测试_full.png"
+            image.write_bytes(b"full-image")
+            script = stage / "imagegen_script.md"
+            script.write_text(
+                """## 第1页：测试
+
+【页面类型】
+本页类型：内容页。此信息只用于构图，不得作为页面可见文字。
+
+【内容锁定】
+- 资源保障
+- 风险管控
+
+【构图指令】
+生成正文内容区。
+
+【结构密度】
+- 两项并列
+""",
+                encoding="utf-8",
+            )
+            (stage / "page_image_pairs.json").write_text(
+                json.dumps(
+                    {
+                        "imagegen_script": str(script),
+                        "pairs": [{"page_number": 1, "full": {"path": str(image)}}],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            ocr = root / "ocr.json"
+            ocr.write_text(json.dumps({"1": "资源保障\n风险管控"}, ensure_ascii=False), encoding="utf-8")
+
+            output = io.StringIO()
+            with redirect_stdout(output):
+                code = main(["image-text-qa", str(root), "--pages", "1", "--ocr-json", str(ocr)])
+
+            summary_path = stage / "image_text_qa/image_text_qa_summary.json"
+            self.assertEqual(0, code)
+            self.assertTrue(summary_path.is_file())
+            self.assertEqual("passed", json.loads(summary_path.read_text(encoding="utf-8"))["status"])
 
     def test_speaker_notes_review_commands_print_record_paths(self) -> None:
         pending = Path("/tmp/speaker_notes_review.pending-confirmation.json")
