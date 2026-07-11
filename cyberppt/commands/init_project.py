@@ -16,8 +16,6 @@ PROJECT_DIRS = [
     "workbench/stages/01-analysis",
     "workbench/stages/01-analysis/model-runs",
     "workbench/stages/02-blueprint-dual-image",
-    "workbench/stages/03-overlay",
-    "workbench/stages/04-template-rebuild",
     "workbench/stages/05-qa-delivery",
     "workbench/locks",
     "workbench/locks/template_text",
@@ -55,8 +53,6 @@ directories:
   stage_analysis_model_runs: workbench/stages/01-analysis/model-runs
   stage_full_image_ppt: workbench/stages/02-blueprint-dual-image
   stage_02_path_note: historical path name; current production mode is full_image_ppt
-  stage_overlay: workbench/stages/03-overlay
-  stage_template_rebuild: workbench/stages/04-template-rebuild
   stage_qa_delivery: workbench/stages/05-qa-delivery
   artifact_ledger: workbench/artifact-ledger.json
   locks: workbench/locks
@@ -153,7 +149,6 @@ python3 -m cyberppt produce verify {project_name} --pages <range>
 
 `produce prepare` stops for speaker-notes approval. `produce assemble` consumes approved notes, template text lock, and full images without regenerating them. `produce verify` is the only step that can promote a file into `delivery/` and mark `deliverable_ready`.
 
-Legacy/Advanced editable rebuild paths are not the default mainline. Use them only when explicitly requested and record that delivery mode separately.
 """,
         encoding="utf-8",
     )

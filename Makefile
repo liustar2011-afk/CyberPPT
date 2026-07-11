@@ -1,7 +1,7 @@
 PYTHON ?= python3
 NPM ?= npm
 
-.PHONY: doctor test test-validate-pptx body-blueprint-prompts final-script-pages source-capture template-rebuild render-dual-image-overlay
+.PHONY: doctor test test-validate-pptx body-blueprint-prompts final-script-pages
 
 doctor:
 	$(PYTHON) -m cyberppt doctor
@@ -17,12 +17,3 @@ body-blueprint-prompts:
 
 final-script-pages:
 	$(PYTHON) -m cyberppt final-script-pages --help
-
-source-capture:
-	$(PYTHON) scripts/dual_image_overlay/source_capture.py --help
-
-template-rebuild:
-	$(PYTHON) scripts/dual_image_overlay/template_rebuild.py --help
-
-render-dual-image-overlay:
-	$(NPM) run render:dual-image-overlay -- --help

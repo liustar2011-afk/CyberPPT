@@ -1,1 +1,1 @@
-"""CyberPPT dual image editable overlay mode."""
+"""CyberPPT full-image production helpers."""
