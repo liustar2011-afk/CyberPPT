@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from scripts.dual_image_overlay.cyberppt_pair_manifest import main, require_generated
+from scripts.dual_image_overlay.deliverable_prompt import validate_imagegen_script
 
 
 class CyberpptPairManifestTests(unittest.TestCase):
@@ -141,6 +142,9 @@ class CyberpptPairManifestTests(unittest.TestCase):
 
 【构图指令】
 保留用户手工修改后的构图要求，不得重新归纳。
+
+【结构密度】
+- 保持正文区信息密度
 """,
                 encoding="utf-8",
             )
@@ -165,6 +169,31 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("人工追加的生图控制语句", prompt)
         self.assertIn("不得重新归纳", prompt)
+
+    def test_edited_imagegen_script_with_process_text_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            script = Path(tmp) / "imagegen_script.md"
+            script.write_text(
+                """## 第1页：人工修订页
+
+【页面类型】
+本页类型：内容页。此信息只用于构图，不得作为页面可见文字。
+
+【内容锁定】
+- 真实业务内容
+- 本页说明：请将内容放在左侧。
+
+【构图指令】
+生成正式内部汇报正文内容区。
+
+【结构密度】
+- 左侧正文区
+""",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "process_instruction"):
+                validate_imagegen_script(script, [1])
 
 
 if __name__ == "__main__":

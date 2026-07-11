@@ -15,7 +15,11 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.dual_image_overlay.style_library import default_style_choices, load_style_lock
-from scripts.dual_image_overlay.prompt_policy import classify_forbidden_text
+from scripts.dual_image_overlay.prompt_policy import (
+    DEFAULT_PROMPT_POLICY,
+    classify_forbidden_text,
+    validate_visible_text,
+)
 
 
 PAGE_HEADING_RE = re.compile(
@@ -351,6 +355,60 @@ def assert_deliverable_prompt(prompt: str) -> None:
     for pattern in forbidden:
         if re.search(pattern, prompt, re.I):
             raise ValueError(f"Deliverable prompt still contains forbidden marker: {pattern}")
+
+
+def _section_lines(page: PageBlock, section: str) -> list[str]:
+    lines = page.text.splitlines()
+    try:
+        start = next(index for index, line in enumerate(lines) if line.strip() == section) + 1
+    except StopIteration:
+        return []
+    end = len(lines)
+    for index in range(start, len(lines)):
+        if lines[index].strip().startswith("【"):
+            end = index
+            break
+    return [line.strip() for line in lines[start:end] if line.strip()]
+
+
+def validate_imagegen_script(script_path: Path, pages: Iterable[int]) -> dict[str, object]:
+    """Validate the human-edited prompt MD before manifest consumption.
+
+    Only content and layout sections are checked for page-visible pollution.
+    The composition-control section remains model-facing prompt metadata by design.
+    """
+
+    blocks = parse_page_blocks(script_path)
+    page_numbers = parse_pages(",".join(str(page) for page in pages), set(blocks))
+    missing_sections: list[dict[str, object]] = []
+    violations: list[dict[str, object]] = []
+    for page_number in page_numbers:
+        page = blocks[page_number]
+        present_sections = {line.strip() for line in page.text.splitlines() if line.strip().startswith("【")}
+        for section in DEFAULT_PROMPT_POLICY.required_sections:
+            if section not in present_sections:
+                missing_sections.append({"page": page_number, "section": section})
+        candidate_lines = _section_lines(page, "【内容锁定】") + _section_lines(page, "【结构密度】")
+        for violation in validate_visible_text(candidate_lines):
+            violations.append({"page": page_number, **violation})
+
+    report: dict[str, object] = {
+        "schema": "cyberppt.imagegen_script_validation.v1",
+        "script": str(script_path.expanduser().resolve()),
+        "pages": page_numbers,
+        "missing_sections": missing_sections,
+        "violations": violations,
+        "status": "passed" if not missing_sections and not violations else "failed",
+    }
+    if missing_sections:
+        raise ValueError(f"imagegen_script validation failed: missing section {missing_sections[0]}")
+    if violations:
+        first = violations[0]
+        raise ValueError(
+            "imagegen_script validation failed: "
+            f"page {first['page']} {first['class']}: {first['text']}"
+        )
+    return report
 
 
 def compile_pages(script_path: Path, pages: Iterable[int], style_lock_path: Path | None = None) -> str:

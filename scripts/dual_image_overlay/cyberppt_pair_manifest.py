@@ -30,6 +30,7 @@ from scripts.dual_image_overlay.deliverable_prompt import (
     compile_pages,
     parse_page_blocks,
     parse_pages,
+    validate_imagegen_script,
 )
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 
@@ -122,6 +123,8 @@ def build_manifest(
     else:
         compiled = compile_pages(script, page_numbers, style_lock_path=style_lock)
         compiled_script.write_text(compiled, encoding="utf-8")
+
+    validate_imagegen_script(compiled_script, page_numbers)
 
     # The reviewable MD is the source for image generation prompts; JSON is a
     # machine manifest compiled from this file.
