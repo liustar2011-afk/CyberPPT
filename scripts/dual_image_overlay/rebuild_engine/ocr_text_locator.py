@@ -173,10 +173,13 @@ def locate_text(
         if dry_run:
             layout = {"image_size": image_size(image_path), "items": []}
         else:
-            layout = normalize_layout(run_local_ocr(
-                image_path, runtime_dir=Path(__file__).resolve().parents[3] / "tools" / "paddleocr_runtime"
-                , scale=ocr_scale
-            ))
+            layout = normalize_layout(
+                run_local_ocr(
+                    image_path,
+                    runtime_dir=Path(__file__).resolve().parents[3] / "tools" / "paddleocr_runtime",
+                    scale=ocr_scale,
+                )
+            )
     elif backend in {"vision-json", "paddleocr-vl"}:
         if dry_run:
             layout = {"image_size": image_size(image_path), "items": []}
