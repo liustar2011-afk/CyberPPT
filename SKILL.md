@@ -39,6 +39,22 @@ python3 -m cyberppt produce verify <project> --pages <range>
 
 第二阶段生产路径为 `full_image_ppt`。正式第二阶段不得要求 full/background 双图资产，不再生成 no-text background，不再执行 OCR、overlay、semantic_plan、source_capture 或 `template_rebuild`。旧 `dual_image_editable_overlay`、OCR 和 `template_rebuild` 只可作为 legacy/advanced 路径，不属于主流程第二阶段。
 
+### Legacy/Advanced 文字取证与黄金基准
+
+只有用户明确要求正文对象级可编辑、进入 `dual_image_editable_overlay`/
+`template_rebuild`，或要求诊断图片文字时，才允许启用本地 OCR 文字取证。默认
+`full_image_ppt` 不调用 OCR，也不把 OCR 结果当作模板标题、副标题或正文事实来源。
+Legacy/Advanced 运行必须使用仓库锁定的离线 runtime 和模型 manifest，保存原始
+OCR、逐行几何/颜色/字形证据、受控纠错审计、质量门结果、失败叠框图和恢复命令。
+黄金 fixture 只能来自人工批准的 GPT 页面图；在批准样本缺失期间可以使用明确标记
+为 `synthetic` 的契约 fixture，但它不能宣称通过真实图片质量验收。
+
+契约验证命令为：
+
+```bash
+python3 -m pytest tests/test_ocr_golden_contract.py -q
+```
+
 含义如下：
 
 1. **脚本锁定**：逐页保存并确认脚本、内容锁定、模板文字层锁定、视觉锁定和必要的 ImageGen prompt。脚本是后续 full 图和模板文字层的 truth，不得把 ImageGen 图中文字或 OCR 当作最终标题层来源。

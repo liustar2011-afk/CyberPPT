@@ -23,6 +23,32 @@ assets, project workspaces, and generated artifacts.
 | `image2pptx_runs/` | Temporary or historical run workspaces | Allowed for ad hoc run captures and resume/debug sessions. New formal projects should prefer `projects/<name>/`. |
 | `images/` | Legacy root scratch images | Legacy only. Do not use as a default output target for new workflows. Move new image generation under a project workspace. |
 
+## Legacy OCR forensic artifacts
+
+OCR artifacts are a legacy/advanced contract for an explicitly requested
+editable rebuild or text-forensics diagnostic. They are not inputs to the
+default `full_image_ppt` mainline. The local adapter runs in the repository's
+locked offline runtime; before a run, verify the runtime manifest and model
+checksums without downloading from the network. A normal project records the
+following under `workbench/stages/03-overlay/` (or the corresponding legacy
+run directory):
+
+- the source page image and immutable input hash;
+- `analysis/ocr/page_<n>_text_forensics.json` with line boxes, reading order,
+  observed/final text, color and glyph evidence, and reversible correction
+  audit records;
+- the quality-gate report, overlay/叠框 evidence render, and a recovery command
+  when the gate refuses promotion;
+- runtime/model manifest provenance and the fixture or annotation used for
+  review.
+
+The canonical golden-fixture contract lives in `tests/fixtures/ocr_golden/`.
+Run `python3 -m pytest tests/test_ocr_golden_contract.py -q` offline. A fixture
+marked `synthetic` is only a schema contract until an approved GPT page image
+and human expected lines are added. Recovery must preserve the original OCR
+result and rerun with an approved local scale/review policy; it must never call
+a remote OCR service or silently fall back into `full_image_ppt`.
+
 ## Project Workspace Contract
 
 New project workspaces should be created with:
