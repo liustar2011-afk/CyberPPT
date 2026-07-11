@@ -28,6 +28,22 @@ class SkillContractTests(unittest.TestCase):
             self.assertIn("python3 -m cyberppt produce assemble", text)
             self.assertIn("python3 -m cyberppt produce verify", text)
 
+    def test_main_full_image_executor_is_codex_builtin_image_gen(self) -> None:
+        skill = SKILL.read_text(encoding="utf-8-sig")
+        self.assertIn("Codex 内置 `IMAGE_GEN`", skill)
+        self.assertIn("`full.prompt`", skill)
+        self.assertIn("`full.path`", skill)
+        self.assertIn("逐页", skill)
+        self.assertNotIn("主流程调用 `run_codex_image`", skill)
+
+    def test_executor_swap_does_not_add_receive_or_size_contracts(self) -> None:
+        skill = SKILL.read_text(encoding="utf-8-sig")
+        self.assertNotIn("--input-image", skill)
+        self.assertNotIn("--force", skill)
+        self.assertNotIn("居中留白", skill)
+        self.assertNotIn("居中裁切", skill)
+        self.assertNotIn("归一到 1680", skill)
+
 
 if __name__ == "__main__":
     unittest.main()
