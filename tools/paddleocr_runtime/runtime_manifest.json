@@ -1,0 +1,24 @@
+{
+  "python_version": "3.12",
+  "paddleocr_version": "3.7.0",
+  "paddle_version": "3.1.1",
+  "device": "cpu",
+  "sha256": {
+    "PP-OCRv5_mobile_det": "50446e5d01ac2a73d5319c89513281f6578414c888c602f9af13f93feefffc58",
+    "PP-OCRv5_mobile_rec": "566b9512b34e34a9f0db54d87b51fa5a0b9ed2cf1ab7e49728cc0b8b5a64f414"
+  },
+  "models": [
+    {
+      "name": "PP-OCRv5_mobile_det",
+      "kind": "detection",
+      "url": "https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv5_mobile_det_infer.tar",
+      "sha256": "50446e5d01ac2a73d5319c89513281f6578414c888c602f9af13f93feefffc58"
+    },
+    {
+      "name": "PP-OCRv5_mobile_rec",
+      "kind": "recognition",
+      "url": "https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/PP-OCRv5_mobile_rec_infer.tar",
+      "sha256": "566b9512b34e34a9f0db54d87b51fa5a0b9ed2cf1ab7e49728cc0b8b5a64f414"
+    }
+  ]
+}

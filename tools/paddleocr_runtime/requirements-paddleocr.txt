@@ -1,0 +1,4 @@
+# Repository-controlled PaddleOCR runtime (Python 3.12, CPU).
+paddlepaddle==3.1.1
+paddlex[ocr-core]==3.7.0
+paddleocr==3.7.0
