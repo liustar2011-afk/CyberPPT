@@ -319,3 +319,56 @@ git commit -m "docs: document high-fidelity OCR quality workflow"
 - Golden fixtures, render verification, and SKILL documentation are covered by Task 6.
 - The current `full_image_ppt` mainline is explicitly protected in Tasks 2 and 5.
 - No task relies on a remote OCR service or unversioned model files.
+
+---
+
+## Contract-alignment follow-up
+
+The original tasks delivered the runtime and legacy consumer. The following tasks align the implementation with the approved single-image extractor boundary.
+
+### Task 7: Add the single-image extractor facade
+
+**Files:**
+- Create: `scripts/dual_image_overlay/rebuild_engine/high_fidelity_text_extractor.py`
+- Test: `tests/test_high_fidelity_text_extractor.py`
+- Modify: `scripts/dual_image_overlay/rebuild_engine/text_forensics.py`
+
+**Interfaces:**
+- `extract_text_info(image_path: Path, *, backend: str = "paddleocr-local", runtime_dir: Path | None = None, scale: float = 1.0, correction: bool = True) -> dict[str, Any]`.
+- The facade accepts exactly one image and returns `image`, `lines`, `quality`, `artifacts`, `provenance`; it must not accept page pairs, scripts, manifests, or expected lines.
+
+- [ ] Write tests for one-image input, complete line output, and rejection of page-specific arguments.
+- [ ] Implement the facade by composing local OCR, line evidence, style evidence, and optional controlled correction.
+- [ ] Verify the facade never invokes full/background logic or remote Vision when using `paddleocr-local`.
+- [ ] Commit with `feat: add single-image high-fidelity text extractor`.
+
+### Task 8: Emit line-level visual attributes
+
+**Files:**
+- Create: `scripts/dual_image_overlay/rebuild_engine/text_style_evidence.py`
+- Modify: `scripts/dual_image_overlay/rebuild_engine/text_forensics.py`
+- Test: `tests/test_text_style_evidence.py`
+
+**Interfaces:**
+- `infer_line_style(image: Image.Image, line: dict[str, Any], *, font_catalog: Path | None = None) -> dict[str, Any]`.
+- Output includes `font_family`, `similar_fonts`, `font_size_px`, `font_size_pt`, `font_weight`, `color`, `line_height_px`, `letter_spacing_px`, and per-field confidence/evidence.
+
+- [ ] Test color, line height, weight proxy, and candidate-font output on a deterministic fixture.
+- [ ] Implement image-only estimates; return candidate fonts and confidence rather than claiming exact identity.
+- [ ] Attach style output to every line from the facade without changing raw OCR observations.
+- [ ] Commit with `feat: add line-level OCR style evidence`.
+
+### Task 9: Route legacy rebuild through the facade without expanding its contract
+
+**Files:**
+- Modify: `scripts/dual_image_overlay/rebuild_engine/editable_overlay_rebuild.py`
+- Modify: `scripts/dual_image_overlay/rebuild_engine/template_rebuild.py`
+- Test: `tests/test_high_fidelity_text_extractor_integration.py`
+
+**Interfaces:**
+- Legacy callers consume `extract_text_info()` for one selected image at a time; page pairing, background scans, script truth, and page-level gates remain in the caller.
+
+- [ ] Add an integration test proving the facade receives one image and the caller owns page-specific orchestration.
+- [ ] Replace direct composition of OCR/correction/style internals in the legacy path with the facade where practical.
+- [ ] Keep `full_image_ppt` unchanged and preserve explicit diagnostic `none` behavior.
+- [ ] Run the complete OCR/legacy suite and commit with `refactor: isolate single-image OCR component`.
