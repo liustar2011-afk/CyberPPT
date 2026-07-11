@@ -5,6 +5,8 @@ import sys
 import zipfile
 import xml.etree.ElementTree as ET
 
+from PIL import Image, ImageDraw, ImageFont
+
 PROJECT_ROOT = Path(__file__).parents[1]
 RENDERER = PROJECT_ROOT / "scripts" / "render_ppt.mjs"
 BACKGROUND = PROJECT_ROOT / "tests" / "fixtures" / "background.png"
@@ -375,3 +377,70 @@ def test_pipeline_preserves_mixed_runs_through_json_and_pptx(tmp_path):
     assert slide_xml.count("<a:r>") == 2
     assert "Arial" in slide_xml and "Calibri" in slide_xml
     assert "Mixed" in slide_xml and " style" in slide_xml
+
+
+def test_three_image_pipeline_enriches_page_json_with_style_and_layout(tmp_path, monkeypatch):
+    import scripts.run_pipeline as pipeline
+    from scripts.font_resolver import resolve_font_face
+
+    size = (320, 100)
+    full = Image.new("RGB", size, "#12355B")
+    background = Image.new("RGB", size, "#12355B")
+    text = Image.new("RGB", size, "#FFFFFF")
+    for weight in ("light", "regular", "bold"):
+        resolve_font_face("Microsoft YaHei", weight)
+    font = ImageFont.truetype(str(resolve_font_face("Microsoft YaHei", "bold")), 34)
+    ImageDraw.Draw(full).text((24, 20), "103682", font=font, fill="#FFFFFF")
+    ImageDraw.Draw(text).text((24, 20), "103682", font=font, fill="#101010")
+    full_path = tmp_path / "full.png"
+    background_path = tmp_path / "background.png"
+    text_path = tmp_path / "text.png"
+    full.save(full_path)
+    background.save(background_path)
+    text.save(text_path)
+    ocr = tmp_path / "ocr.json"
+    ocr.write_text(
+        json.dumps({"lines": [{"text": "103682", "bbox": [20, 12, 180, 58], "score": 0.99}]}),
+        encoding="utf-8",
+    )
+    registration = tmp_path / "registration.json"
+    registration.write_text(
+        '{"transform_id":"TF","matrix":[[1,0,0],[0,1,0]]}',
+        encoding="utf-8",
+    )
+    args = type(
+        "Args",
+        (),
+        {
+            "mode": "batch",
+            "input_mode": "three-image",
+            "full": full_path,
+            "background": background_path,
+            "text": text_path,
+            "ocr": ocr,
+            "registration": registration,
+            "output_dir": tmp_path,
+            "page_id": "page-004",
+        },
+    )()
+    calls = 0
+
+    def fake_run(*unused_args, **unused_kwargs):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            (tmp_path / "page.pptx").write_bytes(b"pptx")
+        elif calls == 2:
+            (tmp_path / "slide-1.png").write_bytes(b"png")
+        return subprocess.CompletedProcess([], 0, "ok", "")
+
+    monkeypatch.setattr(pipeline.subprocess, "run", fake_run)
+
+    assert pipeline.run(args) == 0
+    page = json.loads((tmp_path / "page.json").read_text(encoding="utf-8"))
+    line = page["text_lines"][0]
+    assert page["schema_version"] == "1.1"
+    assert line["layout"]["align"] in {"left", "center", "right"}
+    assert line["runs"][0]["style"]["color"] == "#FFFFFF"
+    assert line["runs"][0]["style"]["weight"] == "bold"
+    assert line["style_evidence"]["runs"][0]["color"]["method"] == "full_background_delta"

@@ -3,14 +3,15 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, replace
+from pathlib import Path
 import re
-from typing import Iterable
+from typing import Any, Iterable, Mapping, Sequence
 
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 from scripts.font_resolver import resolve_font_face
-from scripts.models import BBox, TextRun
+from scripts.models import BBox, TextLine, TextRun
 
 
 TEXT_MASK_THRESHOLD = 18
@@ -41,6 +42,12 @@ class RecoveredFont:
 class RecoveredAlignment:
     align: str
     confidence: float
+
+
+@dataclass(frozen=True)
+class StyleRecoveryResult:
+    lines: tuple[TextLine, ...]
+    review_items: tuple[Mapping[str, Any], ...]
 
 
 def _crop_box(bbox: BBox) -> tuple[int, int, int, int]:
@@ -283,10 +290,26 @@ def recover_mixed_runs(
 ) -> tuple[TextRun, ...]:
     """Recover numeric emphasis and surrounding text as independently styled runs."""
 
+    runs, _ = _recover_mixed_runs_with_evidence(
+        text, full_image, background_image, text_image, bbox, font_family
+    )
+    return runs
+
+
+def _recover_mixed_runs_with_evidence(
+    text: str,
+    full_image: Image.Image,
+    background_image: Image.Image,
+    text_image: Image.Image,
+    bbox: BBox,
+    font_family: str,
+) -> tuple[tuple[TextRun, ...], tuple[Mapping[str, Any], ...]]:
+
     spans = _semantic_spans(text)
     line_mask = build_text_mask(text_image, bbox)
     pixel_ranges = _span_pixel_ranges(line_mask, len(spans))
     runs: list[TextRun] = []
+    evidence: list[Mapping[str, Any]] = []
     for (start, end), (pixel_start, pixel_end) in zip(spans, pixel_ranges):
         run_text = text[start:end]
         run_bbox = BBox(
@@ -310,4 +333,96 @@ def recover_mixed_runs(
                 },
             )
         )
-    return tuple(runs)
+        evidence.append({"font": asdict(font), "color": asdict(color)})
+    return tuple(runs), tuple(evidence)
+
+
+def _bbox_from_mapping(value: Mapping[str, Any]) -> BBox | None:
+    try:
+        return BBox(
+            int(value["x"]),
+            int(value["y"]),
+            int(value["width"]),
+            int(value["height"]),
+        )
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+def _contains(container: BBox, line: BBox) -> bool:
+    return (
+        line.x >= container.x
+        and line.y >= container.y
+        and line.x + line.width <= container.x + container.width
+        and line.y + line.height <= container.y + container.height
+    )
+
+
+def _line_container(line: BBox, containers: Sequence[Mapping[str, Any]], page: BBox) -> BBox:
+    candidates: list[BBox] = []
+    for container in containers:
+        raw = container.get("safe_bbox")
+        bbox = _bbox_from_mapping(raw) if isinstance(raw, Mapping) else None
+        if bbox is not None and _contains(bbox, line):
+            candidates.append(bbox)
+    return min(candidates, key=lambda value: value.width * value.height) if candidates else page
+
+
+def recover_page_styles(
+    full_path: str | Path,
+    background_path: str | Path,
+    text_path: str | Path,
+    lines: Sequence[TextLine],
+    containers: Sequence[Mapping[str, Any]],
+    font_family: str = "Microsoft YaHei",
+) -> StyleRecoveryResult:
+    """Enrich normalized OCR lines using all three registered images."""
+
+    with Image.open(full_path).convert("RGB") as full_image, Image.open(background_path).convert(
+        "RGB"
+    ) as background_image, Image.open(text_path).convert("RGB") as text_image:
+        page = BBox(0, 0, background_image.width, background_image.height)
+        enriched: list[TextLine] = []
+        reviews: list[Mapping[str, Any]] = []
+        for line in lines:
+            runs, run_evidence = _recover_mixed_runs_with_evidence(
+                line.text,
+                full_image,
+                background_image,
+                text_image,
+                line.bbox,
+                font_family,
+            )
+            alignment = recover_alignment(line.bbox, _line_container(line.bbox, containers, page))
+            evidence = {
+                "runs": list(run_evidence),
+                "alignment": {"method": "container_geometry", **asdict(alignment)},
+            }
+            enriched.append(
+                replace(
+                    line,
+                    runs=runs,
+                    layout={
+                        "align": alignment.align,
+                        "valign": "top",
+                        "wrap": False,
+                        "margin_px": 0,
+                        "rotation_deg": 0,
+                    },
+                    style_evidence=evidence,
+                )
+            )
+            confidences = [alignment.confidence]
+            for item in run_evidence:
+                confidences.append(float(item["font"]["confidence"]))
+                confidences.append(float(item["color"]["confidence"]))
+            if min(confidences) < 0.70:
+                reviews.append(
+                    {
+                        "rule": "text_style_confidence",
+                        "line_id": line.line_id,
+                        "value": min(confidences),
+                        "message": "Recovered text style confidence is below 0.70",
+                    }
+                )
+    return StyleRecoveryResult(tuple(enriched), tuple(reviews))

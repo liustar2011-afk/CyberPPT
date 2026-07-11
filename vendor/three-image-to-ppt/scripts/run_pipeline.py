@@ -19,6 +19,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from scripts.build_page_json import build_page_spec, write_page_spec
 from scripts.map_text_coordinates import AffineTransform, map_lines
 from scripts.normalize_ocr import normalize_ocr
+from scripts.recover_text_styles import recover_page_styles
 from scripts.validate_inputs import validate_images
 
 DEFAULT_PRESENTATION_TOOLS = Path(
@@ -143,7 +144,8 @@ def run(args: argparse.Namespace) -> int:
     args.output_dir.mkdir(parents=True, exist_ok=True)
     _remove_stale_outputs(args.output_dir)
     try:
-        ocr_image = args.text if getattr(args, "input_mode", "two-image") == "three-image" else args.full
+        three_image_mode = getattr(args, "input_mode", "two-image") == "three-image"
+        ocr_image = args.text if three_image_mode else args.full
         validation = validate_images(args.full, args.background, ocr_image)
         if not validation.valid:
             qa = {
@@ -192,18 +194,34 @@ def run(args: argparse.Namespace) -> int:
                 "height": validation.height_px,
             },
         }
+        recovery = None
+        if three_image_mode:
+            recovery = recover_page_styles(
+                full_path=args.full,
+                background_path=args.background,
+                text_path=ocr_image,
+                lines=lines,
+                containers=[canvas_container],
+            )
+            lines = list(recovery.lines)
         spec = build_page_spec(
             args.page_id,
             ({"full": args.full, "background": args.background, "text": ocr_image}
-             if getattr(args, "input_mode", "two-image") == "three-image"
+             if three_image_mode
              else {"full": args.full, "background": args.background}),
             lines,
             transform,
             [canvas_container],
             line_corrections,
         )
+        if three_image_mode:
+            spec = replace(spec, schema_version="1.1")
         mapped = map_lines(lines, transform, [canvas_container], line_corrections)
         qa = _qa_for_lines(lines, mapped, validation.width_px, validation.height_px)
+        if recovery is not None and recovery.review_items:
+            qa["review_items"].extend(dict(item) for item in recovery.review_items)
+            if qa["status"] == "passed":
+                qa["status"] = "review"
         if args.mode == "review":
             qa["manual_review_items"] = [
                 {"checkpoint": "full_image", "status": "pending"},
