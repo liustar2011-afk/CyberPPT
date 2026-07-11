@@ -29,6 +29,7 @@ from cyberppt.commands.produce import (
     prepare_production,
     verify_production,
 )
+from scripts.validate_pptx import validate_manifest, validate_manifest_slide
 
 
 OPTIONS = [
@@ -166,6 +167,36 @@ def _write_passed_image_text_qa(project: Path, pages_raw: str, pairs_path: Path)
 
 
 class ProduceTests(unittest.TestCase):
+    def test_editable_text_delivery_manifest_is_a_strict_known_mode(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            lock = root / "template_text_lock.json"
+            visual = root / "visual.json"
+            lock.write_text("{}", encoding="utf-8")
+            visual.write_text("{}", encoding="utf-8")
+            manifest = {
+                "delivery_mode": "editable_text_three_image",
+                "body_content_editable": True,
+                "template_text_editable": True,
+                "speaker_notes_required": True,
+                "template_text_lock": {"path": str(lock), "sha256": _sha256_for_test(lock)},
+                "production_visual_report": {"path": str(visual), "passed": True},
+                "slides": [],
+            }
+            self.assertEqual([], validate_manifest(manifest))
+            self.assertEqual(
+                [],
+                validate_manifest_slide(
+                    {
+                        "delivery_mode": "editable_text_three_image",
+                        "body_image_required": True,
+                        "image_assets": [{"role": "approved_background", "path": str(lock)}],
+                    },
+                    {"pictures": 1, "native_text_shapes": 2, "text_content": "正文"},
+                    1,
+                ),
+            )
+
     def test_editable_text_mode_stops_after_speaker_notes_for_vendor_assets(self) -> None:
         project, temporary_directory = _approved_project()
         with temporary_directory:

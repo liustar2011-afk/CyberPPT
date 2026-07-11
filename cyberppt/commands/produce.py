@@ -15,6 +15,7 @@ from cyberppt.commands.analysis_expression_gate import assert_analysis_expressio
 from cyberppt.commands.editable_text_three_image import (
     EDITABLE_TEXT_MODE,
     assert_editable_text_batch_ready,
+    editable_text_result_path,
     get_production_mode,
     run_three_image_batch,
     stage_editable_text_review,
@@ -138,6 +139,10 @@ def assert_image_text_qa_ready(project: Path, pages_raw: str) -> Path:
 def _assembly_report_path(project: Path, pages_raw: str) -> Path:
     prepare_path = _prepare_path(project, pages_raw)
     if prepare_path is not None:
+        if get_production_mode(project) == EDITABLE_TEXT_MODE:
+            candidate = prepare_path.parent / "editable_text_ppt" / "assembly_report.json"
+            if candidate.is_file():
+                return candidate
         candidate = prepare_path.parent / "image_ppt" / "assembly_report.json"
         if candidate.is_file():
             return candidate
@@ -334,10 +339,78 @@ def get_production_status(project: Path, pages_raw: str) -> dict[str, Any]:
     result["gates"].append("speaker_notes_approved")
     result["artifacts"]["speaker_notes_manifest"] = str(notes_manifest)
     if get_production_mode(root) == EDITABLE_TEXT_MODE:
+        editable_result = editable_text_result_path(root, pages_raw)
+        if not editable_result.is_file():
+            result.update(
+                status="speaker_notes_approved",
+                next_gate="editable_text_assets_required",
+                next_command=f"produce editable-text {root} --pages {pages_raw}",
+            )
+            return result
+        try:
+            assert_editable_text_batch_ready(root, pages_raw)
+        except ValueError as exc:
+            result.update(
+                status="speaker_notes_approved",
+                next_gate="editable_text_review_approval_required",
+                next_command=f"produce editable-text {root} --pages {pages_raw}",
+            )
+            result["failures"].append(str(exc))
+            return result
+        assembly_path = _assembly_report_path(root, pages_raw)
+        if not assembly_path.is_file():
+            result.update(
+                status="speaker_notes_approved",
+                next_gate="editable_text_assembly_required",
+                next_command=f"produce assemble {root} --pages {pages_raw}",
+            )
+            return result
+        try:
+            assembly = _read_json(assembly_path)
+            pptx, template_manifest = _assert_current_assembly(assembly)
+        except (OSError, RuntimeError, ValueError, json.JSONDecodeError) as exc:
+            result.update(
+                status="speaker_notes_approved",
+                next_gate="editable_text_assembly_required",
+                next_command=f"produce assemble {root} --pages {pages_raw}",
+            )
+            result["failures"].append(str(exc))
+            return result
+        readiness_path = root / QA_STAGE_ROOT / _pages_slug_from_raw(pages_raw) / "production_readiness.json"
+        if readiness_path.is_file():
+            readiness = _read_json(readiness_path)
+            delivery_pptx = Path(str(readiness.get("delivery_pptx", ""))).expanduser().resolve()
+            try:
+                notes = assert_speaker_notes_review_ready(root, pages_raw)
+                approved = _approved_images_from_assembly(assembly)
+                required = _readiness_required_dependencies(
+                    assembly_path=assembly_path,
+                    assembly=assembly,
+                    template_manifest=template_manifest,
+                    notes_manifest=notes,
+                    approved_images=approved,
+                    readiness=readiness,
+                    delivery_pptx=delivery_pptx,
+                )
+            except (OSError, RuntimeError, ValueError, json.JSONDecodeError):
+                required = None
+            if (
+                readiness.get("status") == "deliverable_ready"
+                and delivery_pptx.is_file()
+                and readiness.get("delivery_pptx_sha256") == _sha256(delivery_pptx)
+                and isinstance(readiness.get("dependency_hashes"), dict)
+                and required is not None
+                and _dependencies_current(readiness["dependency_hashes"], required)
+            ):
+                result["gates"].extend(("editable_text_assembled", "render_qa_passed", "strict_qa_passed"))
+                result["artifacts"].update(readiness.get("artifacts", {}))
+                result.update(status="deliverable_ready", next_gate="none", next_command="")
+                return result
+        result["gates"].append("editable_text_assembled")
         result.update(
-            status="speaker_notes_approved",
-            next_gate="editable_text_assets_required",
-            next_command=f"produce editable-text {root} --pages {pages_raw}",
+            status="image_ppt_assembled",
+            next_gate="render_qa_required",
+            next_command=f"produce verify {root} --pages {pages_raw}",
         )
         return result
     assembly_path = _assembly_report_path(root, pages_raw)
@@ -640,6 +713,39 @@ def _template_text_lock_record(template_manifest: Path) -> dict[str, Any]:
     return {"path": str(path), "sha256": _sha256(path)}
 
 
+def _editable_result_dependencies(result_path: Path) -> list[Path]:
+    """Return all vendor inputs and page artifacts that make assembly current."""
+
+    result_path = result_path.expanduser().resolve()
+    result = _read_json(result_path)
+    dependencies = [result_path]
+    batch_path = Path(str(result.get("batch_manifest", ""))).expanduser().resolve()
+    if batch_path.is_file():
+        dependencies.append(batch_path)
+        batch = _read_json(batch_path)
+        for job in batch.get("pages", []):
+            if not isinstance(job, dict):
+                continue
+            inputs = job.get("inputs") if isinstance(job.get("inputs"), dict) else {}
+            for record in inputs.values():
+                if isinstance(record, dict) and record.get("path"):
+                    dependencies.append(Path(str(record["path"])).expanduser().resolve())
+    for record in (result.get("pages", {}) or {}).values():
+        if not isinstance(record, dict):
+            continue
+        for key in ("page_json", "qa", "render"):
+            raw_path = record.get(key)
+            if raw_path:
+                dependencies.append(Path(str(raw_path)).expanduser().resolve())
+    unique: list[Path] = []
+    seen: set[Path] = set()
+    for path in dependencies:
+        if path not in seen:
+            seen.add(path)
+            unique.append(path)
+    return unique
+
+
 def _readiness_required_dependencies(
     *,
     assembly_path: Path,
@@ -653,8 +759,16 @@ def _readiness_required_dependencies(
     artifacts = readiness.get("artifacts") if isinstance(readiness.get("artifacts"), dict) else {}
     visual_report = Path(str(artifacts.get("production_visual_report", ""))).expanduser().resolve()
     strict_report = Path(str(artifacts.get("strict_validation_report", ""))).expanduser().resolve()
-    delivery_manifest = Path(str(artifacts.get("full_image_delivery_manifest", ""))).expanduser().resolve()
+    editable_mode = assembly.get("mode") == EDITABLE_TEXT_MODE
+    delivery_manifest = Path(
+        str(
+            artifacts.get(
+                "editable_text_delivery_manifest" if editable_mode else "full_image_delivery_manifest", ""
+            )
+        )
+    ).expanduser().resolve()
     image_text_qa = Path(str(artifacts.get("image_text_qa_summary", ""))).expanduser().resolve()
+    editable_result = Path(str(assembly.get("artifacts", {}).get("editable_text_result", ""))).expanduser().resolve()
     assembly_artifacts = assembly.get("artifacts") if isinstance(assembly.get("artifacts"), dict) else {}
     exported_pptx = Path(str(assembly_artifacts.get("exported_pptx", ""))).expanduser().resolve()
     page_manifest = _recorded_path(_read_json(template_manifest), "page_image_manifest", base=template_manifest.parent)
@@ -667,10 +781,13 @@ def _readiness_required_dependencies(
         visual_report,
         strict_report,
         delivery_manifest,
-        image_text_qa,
         delivery_pptx.expanduser().resolve(),
         *[path.expanduser().resolve() for path in approved_images.values()],
     ]
+    if editable_mode:
+        required.extend(_editable_result_dependencies(editable_result))
+    else:
+        required.append(image_text_qa)
     template_text_lock = _template_text_lock_record(template_manifest)
     required.append(Path(template_text_lock["path"]).expanduser().resolve())
     if any(not path.is_file() for path in required):
@@ -755,6 +872,67 @@ def _full_image_delivery_manifest(
     }
 
 
+def _editable_text_delivery_manifest(
+    *,
+    project: Path,
+    pages: list[int],
+    template_manifest: Path,
+    approved_images: dict[int, Path],
+    editable_result: Path,
+    visual_report: dict[str, Any],
+    visual_report_path: Path,
+) -> dict[str, Any]:
+    template = _read_json(template_manifest)
+    template_text_lock = _template_text_lock_record(template_manifest)
+    native_text_requirements = _template_text_requirements(template_manifest, pages)
+    result = _read_json(editable_result)
+    result_pages = result.get("pages") if isinstance(result.get("pages"), dict) else {}
+    tasks = {
+        int(item["page_number"]): item
+        for item in template.get("tasks", [])
+        if isinstance(item, dict) and isinstance(item.get("page_number"), int)
+    }
+    slides: list[dict[str, Any]] = []
+    for index, page in enumerate(pages, start=1):
+        task = tasks.get(page, {})
+        role = str(task.get("page_role") or "content")
+        record = result_pages.get(str(page)) if isinstance(result_pages, dict) else None
+        line_count = 0
+        if isinstance(record, dict) and record.get("page_json"):
+            page_json = Path(str(record["page_json"])).expanduser().resolve()
+            if page_json.is_file():
+                payload = _read_json(page_json)
+                line_count = len(payload.get("text_lines", [])) if isinstance(payload.get("text_lines"), list) else 0
+        body_page = role not in {"cover", "agenda", "section", "ending"}
+        background = str(record.get("background_path") if isinstance(record, dict) else "")
+        slides.append(
+            {
+                "slide": index,
+                "source_page": page,
+                "delivery_mode": EDITABLE_TEXT_MODE,
+                "native_text_requirements": native_text_requirements.get(page, []),
+                "body_image_required": body_page,
+                "image_assets": ([{"role": "approved_background", "path": background}] if body_page and background else []),
+                "full_reference": str(approved_images.get(page, "")) if body_page else "",
+                "editable_text_line_count": line_count,
+                "notes_present": bool(str(task.get("notes_text") or "").strip()),
+            }
+        )
+    return {
+        "schema": "cyberppt.editable_text_delivery_manifest.v1",
+        "delivery_mode": EDITABLE_TEXT_MODE,
+        "body_content_editable": True,
+        "template_text_editable": True,
+        "speaker_notes_required": True,
+        "project": str(project),
+        "template_image_manifest": str(template_manifest),
+        "template_text_lock": template_text_lock,
+        "editable_text_result": {"path": str(editable_result), "sha256": _sha256(editable_result)},
+        "production_visual_report": {"path": str(visual_report_path), "passed": visual_report.get("passed") is True},
+        "slides": slides,
+    }
+
+
 def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
     """Run render, visual, strict, and delivery promotion gates for an assembled PPTX."""
 
@@ -768,7 +946,13 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
     approved_images = _approved_images_from_assembly(assembly)
     page_manifest, _ = _assert_current_blueprint_images(root, template_manifest, approved_images)
     _template_text_lock_record(template_manifest)
-    image_text_qa_path = assert_image_text_qa_ready(root, pages_raw)
+    editable_mode = get_production_mode(root) == EDITABLE_TEXT_MODE
+    editable_result = Path(str(assembly.get("artifacts", {}).get("editable_text_result", ""))).expanduser().resolve()
+    image_text_qa_path: Path | None = None
+    if editable_mode:
+        editable_result = assert_editable_text_batch_ready(root, pages_raw)
+    else:
+        image_text_qa_path = assert_image_text_qa_ready(root, pages_raw)
     pages = sorted(approved_images)
     if not pages:
         raise RuntimeError("assembly has no approved images")
@@ -781,15 +965,27 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
     if visual_report.get("passed") is not True:
         raise RuntimeError("render_qa_failed: " + ", ".join(visual_report.get("failures", [])))
 
-    delivery_manifest = _full_image_delivery_manifest(
-        project=root,
-        pages=pages,
-        template_manifest=template_manifest,
-        approved_images=approved_images,
-        visual_report=visual_report,
-        visual_report_path=visual_report_path,
-    )
-    delivery_manifest_path = _write_json(qa_dir / "full_image_delivery_manifest.json", delivery_manifest)
+    if editable_mode:
+        delivery_manifest = _editable_text_delivery_manifest(
+            project=root,
+            pages=pages,
+            template_manifest=template_manifest,
+            approved_images=approved_images,
+            editable_result=editable_result,
+            visual_report=visual_report,
+            visual_report_path=visual_report_path,
+        )
+        delivery_manifest_path = _write_json(qa_dir / "editable_text_delivery_manifest.json", delivery_manifest)
+    else:
+        delivery_manifest = _full_image_delivery_manifest(
+            project=root,
+            pages=pages,
+            template_manifest=template_manifest,
+            approved_images=approved_images,
+            visual_report=visual_report,
+            visual_report_path=visual_report_path,
+        )
+        delivery_manifest_path = _write_json(qa_dir / "full_image_delivery_manifest.json", delivery_manifest)
     strict_report = validate_pptx(pptx, manifest_path=delivery_manifest_path, strict=True)
     strict_report_path = _write_json(qa_dir / "strict_validation_report.json", strict_report)
     if strict_report.get("errors"):
@@ -808,10 +1004,13 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
         visual_report_path,
         strict_report_path,
         delivery_manifest_path,
-        image_text_qa_path,
         delivery_pptx,
         *approved_images.values(),
     ]
+    if editable_mode:
+        dependencies.extend(_editable_result_dependencies(editable_result))
+    elif image_text_qa_path is not None:
+        dependencies.append(image_text_qa_path)
     template_text_lock = _template_text_lock_record(template_manifest)
     dependencies.append(Path(template_text_lock["path"]))
     readiness = {
@@ -827,8 +1026,9 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
         "artifacts": {
             "production_visual_report": str(visual_report_path),
             "strict_validation_report": str(strict_report_path),
-            "full_image_delivery_manifest": str(delivery_manifest_path),
-            "image_text_qa_summary": str(image_text_qa_path),
+            ("editable_text_delivery_manifest" if editable_mode else "full_image_delivery_manifest"): str(delivery_manifest_path),
+            **({} if editable_mode else {"image_text_qa_summary": str(image_text_qa_path)}),
+            **({"editable_text_result": str(editable_result)} if editable_mode else {}),
             "delivery_pptx": str(delivery_pptx),
         },
     }
@@ -842,7 +1042,13 @@ def verify_production(project: Path, pages_raw: str) -> dict[str, Any]:
                 "path": str(delivery_pptx),
                 "status": "deliverable_ready",
                 "sha256": readiness["delivery_pptx_sha256"],
-                "depends_on": [str(assembly_path), str(visual_report_path), str(strict_report_path), str(image_text_qa_path)],
+                "depends_on": [
+                    str(assembly_path),
+                    str(visual_report_path),
+                    str(strict_report_path),
+                    str(delivery_manifest_path),
+                    *(str(path) for path in (_editable_result_dependencies(editable_result) if editable_mode else [image_text_qa_path] if image_text_qa_path else [])),
+                ],
                 "updated_at": readiness["created_at"],
                 "resume_command": f"python3 -m cyberppt produce status {root} --pages {pages_raw} --json",
             }

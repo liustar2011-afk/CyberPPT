@@ -203,6 +203,12 @@ def _result_path(project: Path, pages_raw: str) -> Path:
     return _editable_text_root(project, pages_raw) / "editable_text_result.json"
 
 
+def editable_text_result_path(project: Path, pages_raw: str) -> Path:
+    """Return the deterministic result manifest path for a page selection."""
+
+    return _result_path(project, pages_raw)
+
+
 def _collect_vendor_results(project: Path, pages_raw: str, batch: dict[str, Any], exit_code: int) -> dict[str, Any]:
     pages: dict[str, dict[str, Any]] = {}
     has_review = False
@@ -229,6 +235,9 @@ def _collect_vendor_results(project: Path, pages_raw: str, batch: dict[str, Any]
             "page_number": page_number,
             "status": status,
             "output_dir": str(output_dir),
+            "full_path": str(job.get("full", "")),
+            "background_path": str(job.get("background", "")),
+            "text_path": str(job.get("text", "")),
             "page_json": str(page_json),
             "qa": str(qa_path),
             "render": str(render_path),

@@ -107,6 +107,7 @@ VISUAL_QA_REQUIRED_FIELDS = (
 )
 DUAL_IMAGE_OVERLAY_MODE = "dual_image_editable_overlay"
 FULL_IMAGE_PPT_MODE = "full_image_ppt"
+EDITABLE_TEXT_THREE_IMAGE_MODE = "editable_text_three_image"
 DUAL_IMAGE_REQUIRED_QA = (
     "background_snapshot_editable_text",
     "background_has_no_text",
@@ -407,6 +408,10 @@ def is_full_image_ppt_entry(entry: dict[str, Any]) -> bool:
     return str(entry.get("delivery_mode") or "") == FULL_IMAGE_PPT_MODE
 
 
+def is_editable_text_three_image_entry(entry: dict[str, Any]) -> bool:
+    return str(entry.get("delivery_mode") or "") == EDITABLE_TEXT_THREE_IMAGE_MODE
+
+
 def dual_image_background_exception_allowed(entry: dict[str, Any]) -> bool:
     if not is_dual_image_overlay_entry(entry):
         return False
@@ -448,7 +453,7 @@ def apply_manifest_slide_warning_exceptions(
     for warning in warnings:
         if (
             entry is not None
-            and is_full_image_ppt_entry(entry)
+            and (is_full_image_ppt_entry(entry) or is_editable_text_three_image_entry(entry))
             and warning.get("code") in {"FULL_SLIDE_BACKGROUND_RISK", "LARGE_IMAGE_ASSET", "HIGH_TOTAL_IMAGE_AREA"}
         ):
             adjusted.append(
@@ -526,12 +531,30 @@ def validate_manifest(manifest: dict[str, Any] | None) -> list[dict[str, Any]]:
     high_fidelity = manifest_is_high_fidelity(manifest)
     delivery_mode = str(manifest.get("delivery_mode", "")).strip().lower()
 
-    if delivery_mode == FULL_IMAGE_PPT_MODE:
+    if delivery_mode in {FULL_IMAGE_PPT_MODE, EDITABLE_TEXT_THREE_IMAGE_MODE}:
+        expected_body_editable = delivery_mode == EDITABLE_TEXT_THREE_IMAGE_MODE
         if manifest.get("body_content_editable") is not False:
+            if expected_body_editable and manifest.get("body_content_editable") is True:
+                pass
+            elif expected_body_editable:
+                warnings.append(
+                    issue(
+                        "EDITABLE_TEXT_BODY_EDITABILITY_INVALID",
+                        "editable_text_three_image delivery must declare body_content_editable=true.",
+                    )
+                )
+            else:
+                warnings.append(
+                    issue(
+                        "FULL_IMAGE_BODY_EDITABILITY_INVALID",
+                        "full_image_ppt delivery must declare body_content_editable=false.",
+                    )
+                )
+        elif expected_body_editable:
             warnings.append(
                 issue(
-                    "FULL_IMAGE_BODY_EDITABILITY_INVALID",
-                    "full_image_ppt delivery must declare body_content_editable=false.",
+                    "EDITABLE_TEXT_BODY_EDITABILITY_INVALID",
+                    "editable_text_three_image delivery must declare body_content_editable=true.",
                 )
             )
         if manifest.get("template_text_editable") is not True:
@@ -764,7 +787,8 @@ def validate_manifest_slide(
             )
         ]
 
-    if entry.get("delivery_mode") == FULL_IMAGE_PPT_MODE:
+    if entry.get("delivery_mode") in {FULL_IMAGE_PPT_MODE, EDITABLE_TEXT_THREE_IMAGE_MODE}:
+        editable_text = entry.get("delivery_mode") == EDITABLE_TEXT_THREE_IMAGE_MODE
         body_image_required = entry.get("body_image_required") is not False
         image_assets = entry.get("image_assets")
         if body_image_required and (not isinstance(image_assets, list) or not image_assets):
@@ -777,27 +801,28 @@ def validate_manifest_slide(
             )
         elif body_image_required:
             for asset in image_assets:
-                if not isinstance(asset, dict) or asset.get("role") != "approved_full_image" or not manifest_ref_exists(asset.get("path"), manifest_dir):
+                expected_role = "approved_background" if editable_text else "approved_full_image"
+                if not isinstance(asset, dict) or asset.get("role") != expected_role or not manifest_ref_exists(asset.get("path"), manifest_dir):
                     warnings.append(
                         issue(
-                            "FULL_IMAGE_ASSET_MISSING",
-                            "full_image_ppt slide image_assets entries must include role=approved_full_image and an existing path.",
+                            "EDITABLE_TEXT_ASSET_MISSING" if editable_text else "FULL_IMAGE_ASSET_MISSING",
+                            f"{entry.get('delivery_mode')} slide image_assets entries must include role={expected_role} and an existing path.",
                             slide=slide_number,
                         )
                     )
         if body_image_required and metrics["pictures"] < 1:
             warnings.append(
                 issue(
-                    "FULL_IMAGE_BODY_IMAGE_MISSING",
-                    "full_image_ppt slide must include at least one picture for the approved body image.",
+                    "EDITABLE_TEXT_BODY_IMAGE_MISSING" if editable_text else "FULL_IMAGE_BODY_IMAGE_MISSING",
+                    f"{entry.get('delivery_mode')} slide must include at least one picture for the approved body image.",
                     slide=slide_number,
                 )
             )
         if metrics["native_text_shapes"] < 1:
             warnings.append(
                 issue(
-                    "FULL_IMAGE_NATIVE_TEMPLATE_TEXT_MISSING",
-                    "full_image_ppt slide must retain native title or template chrome text.",
+                    "EDITABLE_TEXT_NATIVE_TEXT_MISSING" if editable_text else "FULL_IMAGE_NATIVE_TEMPLATE_TEXT_MISSING",
+                    f"{entry.get('delivery_mode')} slide must retain native text.",
                     slide=slide_number,
                 )
             )
@@ -808,8 +833,8 @@ def validate_manifest_slide(
             if missing:
                 warnings.append(
                     issue(
-                        "FULL_IMAGE_NATIVE_TEMPLATE_TEXT_MISSING",
-                        "full_image_ppt native template text does not match the approved template text lock: "
+                        "EDITABLE_TEXT_NATIVE_TEXT_MISSING" if editable_text else "FULL_IMAGE_NATIVE_TEMPLATE_TEXT_MISSING",
+                        f"{entry.get('delivery_mode')} native template text does not match the approved template text lock: "
                         + ", ".join(missing),
                         slide=slide_number,
                     )
