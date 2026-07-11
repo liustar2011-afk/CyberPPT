@@ -43,7 +43,9 @@ def _agreement(candidate: dict[str, Any]) -> int:
     scales = candidate.get("scales")
     if isinstance(scales, (list, tuple, set)):
         return len(scales)
-    return 1
+    if isinstance(scales, dict):
+        return len(scales)
+    return 0
 
 
 def correct_lines(
@@ -70,6 +72,7 @@ def correct_lines(
         observed = str(source.get("observed_text", ""))
         text = observed
         changes: list[dict[str, Any]] = []
+        rejected = False
         blocked = _protected_spans(observed, terms)
         candidates = source.get("char_candidates", [])
         if not isinstance(candidates, list):
@@ -79,6 +82,7 @@ def correct_lines(
                 continue
             old, new = str(candidate.get("from", "")), str(candidate.get("to", ""))
             if len(old) != 1 or len(new) != 1:
+                rejected = True
                 continue
             try:
                 confidence = float(candidate.get("confidence", 0.0))
@@ -93,10 +97,13 @@ def correct_lines(
             except (TypeError, ValueError):
                 pos = -1
             if confidence < threshold or _agreement(candidate) < min_agreement:
+                rejected = True
                 continue
             if pos < 0 or pos >= len(text) or text[pos] != old:
+                rejected = True
                 continue
             if any(start <= pos < end for start, end, _ in blocked):
+                rejected = True
                 continue
             text = text[:pos] + new + text[pos + 1:]
             changes.append({"index": pos, "from": old, "to": new, "confidence": confidence})
@@ -109,6 +116,6 @@ def correct_lines(
             "confidence": min((item["confidence"] for item in changes), default=0.0),
             "reversible": True,
         }
-        line["review_required"] = bool(candidates) and not applied
+        line["review_required"] = rejected
         output.append(line)
     return output
