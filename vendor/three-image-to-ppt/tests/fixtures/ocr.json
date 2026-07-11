@@ -1,0 +1,25 @@
+{
+  "canonical": {
+    "lines": [
+      {"text": "bottom", "bbox": [30, 80, 90, 20], "score": 0.91},
+      {"text": "top-right", "bbox": [200, 10, 80, 20], "score": 0.92},
+      {"text": "top-left", "bbox": [10, 10, 80, 20], "score": 0.93}
+    ]
+  },
+  "paddleocr-vl": {
+    "rec_texts": ["bottom", "top-right", "top-left"],
+    "rec_polys": [
+      [[30, 80], [120, 80], [120, 100], [30, 100]],
+      [[200, 10], [280, 10], [280, 30], [200, 30]],
+      [[10, 10], [90, 10], [90, 30], [10, 30]]
+    ],
+    "rec_scores": [0.91, 0.92, 0.93]
+  },
+  "baidu": {
+    "words_result": [
+      {"words": "bottom", "location": {"left": 30, "top": 80, "width": 90, "height": 20}, "probability": {"average": 0.91}},
+      {"words": "top-right", "location": {"left": 200, "top": 10, "width": 80, "height": 20}, "probability": {"average": 0.92}},
+      {"words": "top-left", "location": {"left": 10, "top": 10, "width": 80, "height": 20}, "probability": {"average": 0.93}}
+    ]
+  }
+}

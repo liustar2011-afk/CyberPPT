@@ -1,0 +1,4 @@
+interface:
+  display_name: "生成三图转PPT"
+  short_description: "将FULL图、无字底图和文字图转换为文字可编辑PPT"
+  default_prompt: "按逐行文字和坐标映射流程，将三图转换为可编辑文字PPT。"

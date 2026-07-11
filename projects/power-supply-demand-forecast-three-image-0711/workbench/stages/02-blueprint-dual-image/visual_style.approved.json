@@ -1,0 +1,12 @@
+{
+  "schema": "cyberppt.visual_style.approval.v1",
+  "approved": true,
+  "approved_at": "2026-07-11T11:08:47+00:00",
+  "pending_confirmation": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/visual_style.pending-confirmation.json",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/visual_style_options.json",
+  "option_id": "style_4",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json",
+  "style_lock_sha256": "d67fbedbe1a0e7d668fb9e18504f08d2e82f0b415b62b75023a09fc4a38c5d8c",
+  "business_script_sha256": "3816af8df7fc470d4fa29e191ef4ade169dd6da92fcc58e623658ae35e527db9",
+  "note": "复用原项目已审批的象牙白 + 深蓝强调风格。"
+}

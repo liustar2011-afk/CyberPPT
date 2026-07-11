@@ -1,30 +1,18 @@
-# Task 4 Report
+# Task 4 report
 
-## Delivered
-
-- Registered all five analysis-expression stage/approve command pairs, plus status and adoption commands.
-- Added machine-readable status with per-gate state, pending recommendation, options, and next command.
-- Added assert_analysis_expression_ready(project) and invoked it before final-page style lock creation or output writes.
-- New initialized and adopted projects fail closed until every gate is approved; unadopted legacy projects remain compatible.
-- Updated generation tests to approve all valid gates before testing successful downstream behavior.
+Implemented controlled, deterministic OCR correction with repository policy and protected-term configuration.
 
 ## Verification
 
-python3 -m unittest tests.test_cli tests.test_final_script_pages tests.test_analysis_expression_gate -v
+- `python3 -m pytest tests/test_controlled_correction.py -q` -> `3 passed`
+- `python3 -m pytest tests/test_controlled_correction.py tests/test_text_forensics.py -q` -> `9 passed, 14 warnings` (existing Pillow deprecation warning only)
+- GitNexus `detect_changes({scope: "all"})` -> `risk_level: low`, `changed_count: 0` (index did not resolve the new symbols)
+- Commit: `ad5026a6 feat: add reversible OCR correction policy`
 
-Result: 44 tests passed.
+## Review follow-up
 
-## Commit Scope
+- `python3 -m pytest tests/test_controlled_correction.py tests/test_text_forensics.py -q` -> `11 passed, 14 warnings` (existing Pillow deprecation warning only)
+- Correction now requires explicit multi-scale agreement (`min_agreement: 2`); missing agreement is rejected.
+- Mixed accepted/rejected candidates preserve accepted changes but set `review_required: true`.
 
-- cyberppt/cli.py
-- cyberppt/commands/analysis_expression_gate.py
-- cyberppt/commands/final_script_pages.py
-- tests/test_cli.py
-- tests/test_final_script_pages.py
-- .superpowers/sdd/task-4-report.md
-
-## P1 Approval-Artifact Integrity Follow-up
-
-- Scope: generation readiness now compares the current SHA-256 of every approved gate artifact with its approval record before style-lock or output creation.
-- Regression coverage: an approved `drawing_script` modified after approval is rejected with a re-approval error, and no `visual_style_lock.json` is created.
-- Validation: `python3 -m unittest tests.test_analysis_expression_gate tests.test_final_script_pages -v` (35 tests passed)
+The correction path is local-only, threshold/agreement policy-driven, preserves `observed_text`, records exact reversible changes, blocks protected spans before replacement, and sets `review_required` for candidate sets that are not accepted.

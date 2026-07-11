@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "page.schema.json",
+  "title": "Three-image page",
+  "type": "object",
+  "required": [
+    "schema_version", "page", "images", "regions", "containers",
+    "text_lines", "registration", "qa", "manual_corrections"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "page": {
+      "type": "object",
+      "required": ["page_id", "width_px", "height_px"],
+      "properties": {
+        "page_id": {"type": "string", "minLength": 1},
+        "width_px": {"type": "integer", "minimum": 1},
+        "height_px": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "images": {"type": "object"},
+    "regions": {"type": "array"},
+    "containers": {"type": "array"},
+    "text_lines": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/text_line"}
+    },
+    "registration": {"type": "object"},
+    "qa": {"type": "object"},
+    "manual_corrections": {"type": "array"}
+  },
+  "$defs": {
+    "text_line": {
+      "type": "object",
+      "required": ["line_id", "text"],
+      "properties": {
+        "line_id": {"type": "string", "minLength": 1},
+        "group_id": {"type": "string"},
+        "line_index": {"type": "integer", "minimum": 0},
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$"
+        },
+        "bbox": {
+          "type": "object",
+          "required": ["x", "y", "width", "height"],
+          "properties": {
+            "x": {"type": "integer"},
+            "y": {"type": "integer"},
+            "width": {"type": "integer", "minimum": 0},
+            "height": {"type": "integer", "minimum": 0}
+          },
+          "additionalProperties": false
+        },
+        "polygon": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [{"type": "integer"}, {"type": "integer"}],
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "runs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["text"],
+            "properties": {
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$"
+              },
+              "style": {"type": "object"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "source": {
+          "type": "object",
+          "required": ["bbox"],
+          "properties": {"bbox": {"$ref": "#/$defs/bbox"}},
+          "additionalProperties": false
+        },
+        "mapping": {
+          "type": "object",
+          "required": ["transform_id", "mapped_bbox"],
+          "properties": {
+            "transform_id": {"type": "string"},
+            "mapped_bbox": {"$ref": "#/$defs/bbox"},
+            "container_id": {"type": "string"}
+          },
+          "additionalProperties": false
+        },
+        "automatic_correction": {"type": "object"},
+        "manual_correction": {"type": "object"},
+        "target": {
+          "type": "object",
+          "required": ["bbox_px", "bbox_in", "bbox_pt", "inside_safe_area"],
+          "properties": {
+            "bbox_px": {"$ref": "#/$defs/bbox"},
+            "bbox_in": {"$ref": "#/$defs/numeric_bbox"},
+            "bbox_pt": {"$ref": "#/$defs/numeric_bbox"},
+            "inside_safe_area": {"type": "boolean"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "bbox": {
+      "type": "object",
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": {"type": "integer"},
+        "y": {"type": "integer"},
+        "width": {"type": "integer", "minimum": 0},
+        "height": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "numeric_bbox": {
+      "type": "object",
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": {"type": "number"},
+        "y": {"type": "number"},
+        "width": {"type": "number", "minimum": 0},
+        "height": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

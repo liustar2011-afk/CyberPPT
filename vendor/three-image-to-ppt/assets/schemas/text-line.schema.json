@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "text-line.schema.json",
+  "title": "Visual text line",
+  "type": "object",
+  "required": ["line_id", "text"],
+  "properties": {
+    "line_id": {"type": "string", "minLength": 1},
+    "group_id": {"type": "string"},
+    "line_index": {"type": "integer", "minimum": 0},
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\r\\n]+$"
+    },
+    "bbox": {
+      "type": "object",
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": {"type": "integer"},
+        "y": {"type": "integer"},
+        "width": {"type": "integer", "minimum": 0},
+        "height": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "polygon": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "prefixItems": [{"type": "integer"}, {"type": "integer"}],
+        "minItems": 2,
+        "maxItems": 2
+      }
+    },
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[^\\r\\n]+$"
+          },
+          "style": {"type": "object"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

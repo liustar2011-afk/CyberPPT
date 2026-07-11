@@ -1,9 +1,0 @@
-{
-  "schema": "cyberppt.dual_image.background_text_scan.v1",
-  "valid": true,
-  "policy": "no readable primary text may remain in the no-text background",
-  "checked_layout": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/ocr/page_012_background_text_layout.json",
-  "issues": [],
-  "error_count": 0,
-  "page_number": 12
-}

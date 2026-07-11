@@ -1,0 +1,102 @@
+{
+  "schema": "cyberppt.artifact_ledger.v1",
+  "artifacts": [
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "1-19",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/imagegen_script.md",
+      "status": "ready_for_image_generation",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json",
+      "sha256": "26be902571326d8492a26727015fd9f987aea80cb854eb265173e1d03bf06f6f",
+      "updated_at": "2026-07-11T11:10:25+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "1-19",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json",
+      "status": "ready_for_image_generation",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/imagegen_script.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json",
+      "sha256": "fc65139261e0aa6eb74e906c70be02cc73577e4555c1ff7a975930659ecbf3a9",
+      "updated_at": "2026-07-11T11:10:25+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "1-19",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/imagegen_script.validation.json",
+      "status": "ready_for_image_generation",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/imagegen_script.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json",
+      "sha256": "54ee15eded807038672219c36d9c180f2bfffc1b224c9eda3610e67a5cda410f",
+      "updated_at": "2026-07-11T11:10:25+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "1-19",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/template_text/pages_001_019_template_text_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json",
+      "sha256": "6e9ed53dac49ec1555eeb1adc6902bfb5431e4f0c928717017eba41deb827a53",
+      "updated_at": "2026-07-11T11:10:25+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "1-19",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json",
+      "sha256": "d67fbedbe1a0e7d668fb9e18504f08d2e82f0b415b62b75023a09fc4a38c5d8c",
+      "updated_at": "2026-07-11T11:10:25+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "1-19",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/pages_001_019_final_script_pages_run.json",
+      "status": "ready_for_image_generation",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/imagegen_script.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/template_text/pages_001_019_template_text_lock.json",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json",
+      "sha256": "f855cd6dd10327468b457dc8f464d1e75266a69ab0680f519c743b60f688fc87",
+      "updated_at": "2026-07-11T11:10:25+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "1-19",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/speaker_notes/speaker_notes_manifest.json",
+      "status": "ready_for_review",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/analysis_expression/business_script.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json",
+      "sha256": "c29897d89f897e9967cc38cfee837b824071beb74d5ccba6cdc47376f7780d45",
+      "updated_at": "2026-07-11T11:10:25+00:00"
+    }
+  ],
+  "analysis_expression_contracts": []
+}

@@ -1,0 +1,3201 @@
+{
+  "schema": "cyberppt.phase1_source_bundle.v1",
+  "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+  "source_sha256": "d295f6f167113195fc173ce1e24d2b94d33d643d1d8afe373e559fbe0de65110",
+  "units": [
+    {
+      "unit_id": "U0001",
+      "kind": "paragraph",
+      "text": "# DOCX 文本抽取稿\n- source: `projects/power-supply-demand-forecast-0709/source/中电联电力供需形势预测工作整体方案汇报稿07091118.docx`\n- paragraphs: 240\n- tables: 63",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "DOCX 文本抽取稿",
+      "numbers": [
+        "0709",
+        "07091118",
+        "240",
+        "63"
+      ]
+    },
+    {
+      "unit_id": "U0002",
+      "kind": "paragraph",
+      "text": "## Paragraphs\n[1] (Normal) 关于开展电力供需形势预测工作的 整体方案",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 1",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0003",
+      "kind": "paragraph",
+      "text": "[2] (Normal) 牵头单位：中电联统计与数智部电力供需分析处",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 2",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0004",
+      "kind": "paragraph",
+      "text": "[3] (Normal) 2026年7月",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 3",
+      "numbers": [
+        "2026",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0005",
+      "kind": "paragraph",
+      "text": "[5] (Normal) 目 录",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 5",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0006",
+      "kind": "paragraph",
+      "text": "[6] (Normal) 工作摘要 3",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 6",
+      "numbers": [
+        "3"
+      ]
+    },
+    {
+      "unit_id": "U0007",
+      "kind": "paragraph",
+      "text": "[7] (Normal) 一、工作背景和总体判断 4",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 7",
+      "numbers": [
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0008",
+      "kind": "paragraph",
+      "text": "[8] (Normal) 二、建设必要性与问题导向 5",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 8",
+      "numbers": [
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0009",
+      "kind": "paragraph",
+      "text": "[9] (Normal) 三、总体思路、目标定位和建设原则 6",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 9",
+      "numbers": [
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0010",
+      "kind": "paragraph",
+      "text": "[10] (Normal) 四、业务体系设计 8",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 10",
+      "numbers": [
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0011",
+      "kind": "paragraph",
+      "text": "[11] (Normal) 五、数据资源与可信流通方案 9",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 11",
+      "numbers": [
+        "9"
+      ]
+    },
+    {
+      "unit_id": "U0012",
+      "kind": "paragraph",
+      "text": "[12] (Normal) 六、模型算法与智能化支撑方案 10",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 12",
+      "numbers": [
+        "10"
+      ]
+    },
+    {
+      "unit_id": "U0013",
+      "kind": "paragraph",
+      "text": "[13] (Normal) 七、平台架构与功能模块方案 13",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 13",
+      "numbers": [
+        "13"
+      ]
+    },
+    {
+      "unit_id": "U0014",
+      "kind": "paragraph",
+      "text": "[14] (Normal) 八、场景化实施方案 15",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 14",
+      "numbers": [
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0015",
+      "kind": "paragraph",
+      "text": "[15] (Normal) 九、组织机制与职责分工 34",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 15",
+      "numbers": [
+        "34"
+      ]
+    },
+    {
+      "unit_id": "U0016",
+      "kind": "paragraph",
+      "text": "[16] (Normal) 十、实施路径、阶段成果和近期安排 35",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 16",
+      "numbers": [
+        "35"
+      ]
+    },
+    {
+      "unit_id": "U0017",
+      "kind": "paragraph",
+      "text": "[17] (Normal) 十一、投资测算与资源保障 37",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 17",
+      "numbers": [
+        "37"
+      ]
+    },
+    {
+      "unit_id": "U0018",
+      "kind": "paragraph",
+      "text": "[18] (Normal) 十二、风险管控与保障措施 38",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 18",
+      "numbers": [
+        "38"
+      ]
+    },
+    {
+      "unit_id": "U0019",
+      "kind": "paragraph",
+      "text": "[19] (Normal) 十三、需请领导审定事项 40",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 19",
+      "numbers": [
+        "40"
+      ]
+    },
+    {
+      "unit_id": "U0020",
+      "kind": "paragraph",
+      "text": "[20] (Normal) 附件一：首期核心指标清单 40",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 20",
+      "numbers": [
+        "40"
+      ]
+    },
+    {
+      "unit_id": "U0021",
+      "kind": "paragraph",
+      "text": "[21] (Normal) 附件二：首期数据资源摸底清单 40",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 21",
+      "numbers": [
+        "40"
+      ]
+    },
+    {
+      "unit_id": "U0022",
+      "kind": "paragraph",
+      "text": "[22] (Normal) 附件三：平台功能清单 41",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 22",
+      "numbers": [
+        "41"
+      ]
+    },
+    {
+      "unit_id": "U0023",
+      "kind": "heading",
+      "text": "[24] (Heading 1) 工作摘要",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 24",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0024",
+      "kind": "paragraph",
+      "text": "[25] (Normal) 为进一步提升中电联电力供需形势分析预测工作的系统化、数字化、智能化水平，统计与数智部电力供需分析处拟在既有统计分析、行业会商和报告发布基础上，牵头构建面向全国、覆盖多时间尺度、支撑多场景研判的电力供需形势预测能力体系，围绕工作定位、业务体系、数据资源、模型路线、平台架构、组织机制、实施路径、风险保障和领导审定事项进行系统设计，形成完整工作闭环。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 25",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0025",
+      "kind": "paragraph",
+      "text": "[26] (Normal) 总体判断：电力供需形势预测工作已进入由经验研判、统计分析向可信数据支撑、多模型协同、场景化推演、自动化发布转变的新阶段。2025年全国全社会用电量达到103682亿千瓦时，同比增长5.0%；全国累计完成电力市场交易电量66394亿千瓦时，占全社会用电量64.0%；截至2025年底，全国可再生能源装机总量达到23.4亿千瓦，约占全国电力总装机的60%。电力供需平衡的影响因素已由传统的电量、负荷、装机、利用小时，扩展到新能源有效出力、跨省跨区交易、需求响应、虚拟电厂、储能、充电负荷、极端天气和市场规则等多维变量。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 26",
+      "numbers": [
+        "2025",
+        "103682",
+        "5.0",
+        "66394",
+        "64.0",
+        "2025",
+        "23.4",
+        "60"
+      ]
+    },
+    {
+      "unit_id": "U0026",
+      "kind": "paragraph",
+      "text": "[27] (Normal) 中电联电力供需形势预测工作定位为“行业级公共预测与预警能力建设工程”。该工程由统计与数智部电力供需分析处牵头，以中电联既有统计组织、行业协调、分析研究和报告发布能力为基础，与电网企业、发电集团、电力交易机构、气象机构、重点用能行业、新型经营主体等形成数据和业务协同，重点建设“数据接入—质量治理—模型预测—专家会商—自动成稿—审核发布—复盘校模”的闭环能力。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 27",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0027",
+      "kind": "paragraph",
+      "text": "[28] (Normal) 首期建议以“全国月度与季度供需形势分析+年度报告自动化”为突破口，优先形成统一指标口径、稳定数据链路、月度/季度滚动预测模型、报告自动化和领导驾驶舱。随后逐步拓展迎峰度夏度冬专题预警、新能源高占比区域供需风险分析、需求响应和虚拟电厂调节能力评估、储能与充电负荷影响评估等场景，形成“预测—预警—评估—建议”一体化能力。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 28",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0028",
+      "kind": "paragraph",
+      "text": "[29] (Normal) 一期建设聚焦“一个主闭环、两个支撑能力、三个可验收产品”：以全国月度与季度供需形势分析为主闭环，以数据资源目录与指标口径体系、报告自动化与审校发布体系为支撑能力，以月度供需分析报告、季度供需形势分析报告、年度报告自动化原型为可验收产品。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 29",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0029",
+      "kind": "paragraph",
+      "text": "[30] (Normal) 场景化实施按全国月度与季度供需形势分析、年度报告自动化、迎峰度夏度冬预测预警、新能源高占比区域供需风险分析、需求响应和虚拟电厂调节能力评估、储能与充电负荷影响评估、市场交易影响分析等场景展开，每类场景同步明确核心预测对象、字段级数据资源、数据来源与责任单位、数据可获得性、加工过程、服务产品、服务对象、验收指标和降级运行机制。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 30",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0030",
+      "kind": "paragraph",
+      "text": "[31] (Normal) 需请领导重点审定四个事项：一是明确统计与数智部电力供需分析处为牵头处室，建立跨部门工作专班和会商机制；二是同意将全国月度与季度供需形势分析及年度报告自动化作为首期建设场景；三是同意开展现有数据资源、系统能力、授权边界和发布流程的专项摸底；四是原则同意按“夯基、成型、扩围、运营”四阶段推进平台、模型、报告和场景建设。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 31",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0031",
+      "kind": "heading",
+      "text": "[32] (Heading 1) 一、工作背景和总体判断",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 32",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0032",
+      "kind": "heading",
+      "text": "[33] (Heading 2) （一）工作基础",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 33",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0033",
+      "kind": "paragraph",
+      "text": "[34] (Normal) 中电联长期承担电力行业统计、运行分析、供需形势研判和行业报告发布等工作，形成了较为稳定的统计报表、年报会审、月度分析、季度形势研判、年度供需预测和专题会商基础。统计与数智部电力供需分析处作为具体承担电力供需形势分析预测的专业处室，既掌握行业统计口径和供需分析逻辑，又具备组织行业数据汇聚、会商研判和报告形成的业务基础，是推进电力供需形势预测能力体系建设的适宜牵头单位。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 34",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0034",
+      "kind": "paragraph",
+      "text": "[35] (Normal) 综合判断，中电联具备行业组织、统计协调、标准化研究、报告发布和公共服务基础，适合建设跨主体、跨区域、跨口径的行业公共预测中枢。该项工作应聚焦中电联长期积累的统计分析能力升级，形成可信数据流通、多尺度预测、场景推演和自动化发布相结合的综合能力。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 35",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0035",
+      "kind": "heading",
+      "text": "[36] (Heading 2) （二）形势变化",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 36",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0036",
+      "kind": "paragraph",
+      "text": "[37] (Normal) 当前电力供需形势预测面临的外部环境发生显著变化。全国统一电力市场建设加快推进，新能源发电装机快速增长，跨省跨区交易和绿电交易规模持续扩大，需求响应、虚拟电厂、储能、充电设施、智能微电网等新型经营主体和调节资源进入系统运行和市场交易环节，极端天气和负荷尖峰对保供研判的影响持续增强。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 37",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0037",
+      "kind": "paragraph",
+      "text": "[38] (Normal) 在上述背景下，电力供需形势研判已经由“年度电量和负荷趋势判断”拓展为“电量、负荷、装机、有效容量、交易互济、调节资源、风险概率、政策情景”的综合判断。供需预测的成果也由单一报告扩展为月报、季报、年报、风险清单、区域热力图、专题专报、指标接口和会商支撑。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 38",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0038",
+      "kind": "heading",
+      "text": "[39] (Heading 2) （三）总体判断",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 39",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0039",
+      "kind": "paragraph",
+      "text": "[40] (Normal) 综合外部政策、行业变化、中电联职责和工作基础，可以形成四点总体判断。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 40",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0040",
+      "kind": "paragraph",
+      "text": "[41] (Normal) 1. 电力供需预测的对象正在扩展。未来预测既要判断用电量和最大负荷，也要同步判断新能源有效出力、跨区互济能力、市场化交易影响、需求侧可调节空间和极端事件风险。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 41",
+      "numbers": [
+        "1"
+      ]
+    },
+    {
+      "unit_id": "U0041",
+      "kind": "paragraph",
+      "text": "[42] (Normal) 2. 数据治理已经成为前置条件。供需预测的权威性取决于指标口径、数据来源、版本留痕、授权边界和发布审核，单纯依赖模型精度难以支撑行业级发布。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 42",
+      "numbers": [
+        "2"
+      ]
+    },
+    {
+      "unit_id": "U0042",
+      "kind": "paragraph",
+      "text": "[43] (Normal) 3. 模型体系应突出稳健、可解释和可复盘。中电联面向领导决策、行业沟通和公共发布，需要模型能说明变量贡献、误差来源、假设条件和情景变化。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 43",
+      "numbers": [
+        "3"
+      ]
+    },
+    {
+      "unit_id": "U0043",
+      "kind": "paragraph",
+      "text": "[44] (Normal) 4. 首期场景应围绕现有职责形成可交付成果。全国月度与季度供需形势分析、年度报告自动化与中电联现有工作衔接最顺畅，适合先搭底座、建机制、出成果。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 44",
+      "numbers": [
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0044",
+      "kind": "heading",
+      "text": "[46] (Heading 1) 二、建设必要性与问题导向",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 46",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0045",
+      "kind": "heading",
+      "text": "[47] (Heading 2) （一）适应国家政策和行业治理需要",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 47",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0046",
+      "kind": "paragraph",
+      "text": "[48] (Normal) 全国统一电力市场、新型电力系统建设、需求响应能力建设、虚拟电厂发展、新能源上网电价市场化改革和能源数据安全管理等政策持续推进，要求电力行业形成更加及时、准确、完整、可解释、可追溯的供需形势分析预测能力。供需预测工作既是行业运行研判基础，也是政策评估、保供会商、市场观察和行业服务的重要支撑。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 48",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0047",
+      "kind": "paragraph",
+      "text": "[49] (Normal) 中电联作为行业组织，需要在国家部委、监管机构、会员单位和社会公众之间提供统一、客观、可信的供需形势分析支撑。提升预测能力，有助于增强中电联在行业统计、运行研判、政策咨询、标准建设和公共服务中的影响力。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 49",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0048",
+      "kind": "heading",
+      "text": "[50] (Heading 2) （二）适应电力系统运行机理变化",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 50",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0049",
+      "kind": "paragraph",
+      "text": "[51] (Normal) 新能源高比例并网后，系统平衡由传统“电源装机和负荷需求”双变量判断，逐步转向“可用容量、气象条件、交易互济、灵活调节、需求响应、储能状态、市场机制”共同作用。尤其在迎峰度夏、迎峰度冬、极端高温、寒潮、来水偏枯、风光波动等场景下，单一历史趋势外推难以及时识别风险。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 51",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0050",
+      "kind": "paragraph",
+      "text": "[52] (Normal) 因此，供需形势预测必须从年度判断向月度滚动、季度校核、重大时段专题、事件化预警延伸；从单点预测向区间预测、概率判断、情景推演延伸；从人工汇总向数据自动接入、模型辅助分析、人工会商审校和自动成稿延伸。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 52",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0051",
+      "kind": "heading",
+      "text": "[53] (Heading 2) （三）适应中电联内部能力升级需要",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 53",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0052",
+      "kind": "paragraph",
+      "text": "[54] (Normal) 中电联现有工作基础较好，但从建设行业级预测能力的要求看，仍需要补齐四类短板。一是数据层面，需要形成统一数据资源目录、指标口径、字段标准、质量规则和授权台账；二是模型层面，需要形成可复用、可回测、可解释、可持续训练的生产模型体系；三是产品层面，需要把预测结果转化为领导驾驶舱、报告自动化、专题专报、风险清单和API服务；四是机制层面，需要建立跨部门、跨单位、跨数据源的常态化协同和发布审核机制。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 54",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0053",
+      "kind": "heading",
+      "text": "[56] (Heading 1) 三、总体思路、目标定位和建设原则",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 56",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0054",
+      "kind": "heading",
+      "text": "[57] (Heading 2) （一）总体思路",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 57",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0055",
+      "kind": "paragraph",
+      "text": "[58] (Normal) 坚持以中电联履职需要为牵引，以统计与数智部电力供需分析处为牵头，以可信数据流通和统一指标口径为基础，以多模型协同和场景化推演为支撑，以报告自动化、领导驾驶舱、专题会商和风险预警为主要产品，分阶段建设电力供需形势预测能力体系。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 58",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0056",
+      "kind": "paragraph",
+      "text": "[59] (Normal) 总体技术路线可概括为“治理先行、数据可信；平台承载、批流并举；模型驱动、稳健可释；场景闭环、持续运营”。其中，治理先行解决数据可用性、持续性和合规性问题；平台承载解决数据、模型、报告和服务工程化运行问题；模型驱动提升预测结果准确性、及时性和可解释性；场景闭环推动预测成果进入报告、会商、发布和复盘。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 59",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0057",
+      "kind": "heading",
+      "text": "[60] (Heading 2) （二）目标定位",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 60",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0058",
+      "kind": "paragraph",
+      "text": "[61] (Normal) 本项工作定位为中电联电力供需形势预测的行业级公共能力建设工程。其核心职责是支撑中电联形成全国、区域、省级和重点行业多层级供需形势研判，服务国家部委政策咨询、行业运行分析、会员单位服务、重点时段保供会商和中电联内部管理决策。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 61",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0059",
+      "kind": "heading",
+      "text": "[63] (Heading 2) （三）建设原则",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 63",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0060",
+      "kind": "paragraph",
+      "text": "[64] (Normal) 1. 职责牵引。围绕中电联供需形势分析预测、行业发布、政策咨询和会员服务职责开展建设，避免脱离业务需求建设纯技术平台。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 64",
+      "numbers": [
+        "1"
+      ]
+    },
+    {
+      "unit_id": "U0061",
+      "kind": "paragraph",
+      "text": "[65] (Normal) 2. 数据可信。优先建立数据目录、指标字典、口径主表、质量规则、授权台账和审计留痕，使每一项预测结果有来源、有版本、有解释。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 65",
+      "numbers": [
+        "2"
+      ]
+    },
+    {
+      "unit_id": "U0062",
+      "kind": "paragraph",
+      "text": "[66] (Normal) 3. 模型稳健。坚持统计模型、机器学习模型、深度时序模型和专家会商相结合，重视可解释性、区间预测、异常事件标注和误差复盘。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 66",
+      "numbers": [
+        "3"
+      ]
+    },
+    {
+      "unit_id": "U0063",
+      "kind": "paragraph",
+      "text": "[67] (Normal) 4. 场景先行。以全国月度与季度供需形势分析及年度报告自动化为首期场景，逐步扩展到迎峰保供、新能源消纳、需求侧资源和市场交易影响。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 67",
+      "numbers": [
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0064",
+      "kind": "paragraph",
+      "text": "[68] (Normal) 5. 安全合规。落实能源行业数据安全、网络安全、信息披露和保密管理要求，对敏感数据采用分级授权、脱敏汇聚、最小权限和全链条审计。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 68",
+      "numbers": [
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0065",
+      "kind": "paragraph",
+      "text": "[69] (Normal) 6. 分步实施。按照夯基、成型、扩围、运营四阶段推进，以可验证成果带动数据、模型、平台和机制逐步完善。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 69",
+      "numbers": [
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0066",
+      "kind": "heading",
+      "text": "[70] (Heading 2) （四）首期建设边界",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 70",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0067",
+      "kind": "paragraph",
+      "text": "[71] (Normal) 首期建设坚持“小切口、强闭环、可复盘”，以现有统计分析工作为主线，优先形成能够稳定运行、能够审校发布、能够按月复盘的最小可用能力。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 71",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0068",
+      "kind": "heading",
+      "text": "[72] (Heading 1) 四、业务体系设计",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 72",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0069",
+      "kind": "heading",
+      "text": "[73] (Heading 2) （一）预测对象体系",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 73",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0070",
+      "kind": "paragraph",
+      "text": "[74] (Normal) 电力供需形势预测对象应覆盖需求侧、供给侧、平衡侧、市场侧、调节侧和风险侧六类内容。首期重点围绕需求侧用电量、最大负荷、分产业用电、装机容量、利用小时、区域平衡、交易互济和气象扰动开展月度与季度预测；中长期逐步纳入新能源有效容量、需求响应资源、虚拟电厂可用容量、储能可调用状态、充电负荷冲击和市场机制影响。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 74",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0071",
+      "kind": "heading",
+      "text": "[76] (Heading 2) （二）时间尺度体系",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 76",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0072",
+      "kind": "paragraph",
+      "text": "[77] (Normal) 建议建立“年度判断、季度校核、月度滚动、重点时段专题、月内修正”的时间尺度体系。首期以月度和季度为主频，保持与中电联现有月报、季报、年度供需形势分析相衔接；在数据条件成熟后，引入日度负荷、天气异常、市场交易和重点行业高频指标，对当月和下月判断进行nowcast修正。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 77",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0073",
+      "kind": "heading",
+      "text": "[79] (Heading 2) （三）成果产品体系",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 79",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0074",
+      "kind": "paragraph",
+      "text": "[80] (Normal) 预测成果应由单一文字成果扩展为“报告、看板、专报、清单、接口、会商助手”六类产品，满足领导决策、处室日常分析、跨部门会商、会员单位服务和后续平台运营需要。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 80",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0075",
+      "kind": "paragraph",
+      "text": "[81] (Normal) 1. 报告类产品。包括月度供需形势分析、季度供需形势分析、年度供需形势预测报告、重点时段专题报告和年度模型评估报告。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 81",
+      "numbers": [
+        "1"
+      ]
+    },
+    {
+      "unit_id": "U0076",
+      "kind": "paragraph",
+      "text": "[82] (Normal) 2. 看板类产品。包括领导驾驶舱、全国总盘、区域供需热力图、关键指标趋势、风险等级分布和指标钻取。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 82",
+      "numbers": [
+        "2"
+      ]
+    },
+    {
+      "unit_id": "U0077",
+      "kind": "paragraph",
+      "text": "[83] (Normal) 3. 专报类产品。包括迎峰度夏度冬专报、极端天气影响专报、新能源高占比区域专报、需求响应资源评估专报。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 83",
+      "numbers": [
+        "3"
+      ]
+    },
+    {
+      "unit_id": "U0078",
+      "kind": "paragraph",
+      "text": "[84] (Normal) 4. 清单类产品。包括区域供需风险清单、重点省份风险清单、预测误差清单、口径修订清单和数据质量问题清单。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 84",
+      "numbers": [
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0079",
+      "kind": "paragraph",
+      "text": "[85] (Normal) 5. 接口类产品。包括指标查询、预测结果订阅、模型结果API、报告组件接口和供需分析数据服务。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 85",
+      "numbers": [
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0080",
+      "kind": "paragraph",
+      "text": "[86] (Normal) 6. 会商类产品。包括问题检索、历史案例调用、结论草拟、预测变化解释和会商纪要辅助形成。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 86",
+      "numbers": [
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0081",
+      "kind": "heading",
+      "text": "[87] (Heading 1) 五、数据资源与可信流通方案",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 87",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0082",
+      "kind": "heading",
+      "text": "[88] (Heading 2) （一）数据资源总体目录",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 88",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0083",
+      "kind": "paragraph",
+      "text": "[89] (Normal) 数据资源建设坚持“首期必需、逐步拓展、合规受控”的原则。首期围绕月度与季度供需形势分析，优先接入统计报表、装机、发电量、利用小时、市场交易、宏观经济、气象异常和重点行业指标；在条件具备后，再接入高频负荷、新能源出力、需求响应、储能、虚拟电厂、充电设施等数据。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 89",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0084",
+      "kind": "heading",
+      "text": "[91] (Heading 2) （二）数据接入机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 91",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0085",
+      "kind": "paragraph",
+      "text": "[92] (Normal) 建议采用批量接入、准实时接入、人工补录审校三类通道并行。批量接入服务于月报、季报、年度报告和历史训练样本；准实时接入服务于月内修正、重点时段预警和高频指标刷新；人工补录审校服务于口径修订、事件标注、异常解释和发布审校。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 92",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0086",
+      "kind": "heading",
+      "text": "[94] (Heading 2) （三）数据治理规则",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 94",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0087",
+      "kind": "paragraph",
+      "text": "[95] (Normal) 数据治理应作为平台建设的前置工作，重点形成指标字典、主数据、质量规则、元数据血缘、历史修订回放和安全分级。对外发布结果必须能够回答“用了哪一版数据、哪一版口径、哪一版模型、由谁审校、何时发布”。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 95",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0088",
+      "kind": "heading",
+      "text": "[97] (Heading 2) （四）可信数据流通机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 97",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0089",
+      "kind": "paragraph",
+      "text": "[98] (Normal) 可信数据流通机制建议分为规则层、合同层、技术层和价值层。规则层统一指标口径、时间粒度、编码规则和修订流程；合同层明确数据共享协议、委托处理、用途限定、保密要求和责任边界；技术层落实分级授权、脱敏、加密传输、日志审计和血缘追踪；价值层建立使用台账、成果回馈和共享评价机制。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 98",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0090",
+      "kind": "paragraph",
+      "text": "[99] (Normal) 对细粒度负荷、企业生产计划、市场报价、交易行为和新型主体运行信息等敏感数据，原则上优先采用汇总级、脱敏级、授权级或受控分析方式。对于确需跨主体协同建模的场景，可根据合规要求研究联邦学习、隐私计算、安全多方计算和可信执行环境等技术方案。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 99",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0091",
+      "kind": "heading",
+      "text": "[100] (Heading 1) 六、模型算法与智能化支撑方案",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 100",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0092",
+      "kind": "heading",
+      "text": "[101] (Heading 2) （一）模型体系总体设计",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 101",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0093",
+      "kind": "paragraph",
+      "text": "[102] (Normal) 模型体系宜采用多模型组合路线，按照“基线模型、机器学习修正、多步预测、层级一致性、区间预测、解释性输出”的生产化模型栈建设。基线模型提供可解释趋势和季节性判断，机器学习模型吸收非线性特征和变量交互，多步预测模型支撑月度和季度滚动判断，层级一致性校正保证全国、区域、省级和行业结果可汇总，区间预测输出风险边界，解释性输出服务报告和领导会商。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 102",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0094",
+      "kind": "paragraph",
+      "text": "[104] (Caption) 图1 模型训练与推理流程图",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 104",
+      "numbers": [
+        "1"
+      ]
+    },
+    {
+      "unit_id": "U0095",
+      "kind": "heading",
+      "text": "[106] (Heading 3) 模型分层建设路线",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 106",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0096",
+      "kind": "paragraph",
+      "text": "[107] (Normal) 模型建设按基础层、增强层、高阶层分步推进。首期不追求复杂模型全量上线，优先建设可解释、可回测、可审校、可发布的基础模型链路。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 107",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0097",
+      "kind": "heading",
+      "text": "[108] (Heading 2) （二）特征工程设计",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 108",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0098",
+      "kind": "paragraph",
+      "text": "[109] (Normal) 特征工程是供需预测能否解释业务变化的关键。建议构建历史序列、结构变量、气象日历、市场变量、供给侧变量、政策事件和高频修正七类特征，并形成可复用特征库。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 109",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0099",
+      "kind": "heading",
+      "text": "[111] (Heading 2) （三）训练、验证和上线流程",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 111",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0100",
+      "kind": "paragraph",
+      "text": "[112] (Normal) 模型训练验证建议采用扩展窗口滚动回测。以过去若干年历史样本为训练窗口，按月向前滚动，分别计算未来1个月、3个月、6个月预测误差，分季节、分区域、分天气类型、分预测步长评估模型表现。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 112",
+      "numbers": [
+        "1",
+        "3",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0101",
+      "kind": "paragraph",
+      "text": "[113] (Normal) 1. 读取最新“已发布视图”和“当前修订视图”，确认数据版本和指标口径。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 113",
+      "numbers": [
+        "1"
+      ]
+    },
+    {
+      "unit_id": "U0102",
+      "kind": "paragraph",
+      "text": "[114] (Normal) 2. 执行质量规则和异常检测，质量评分低于阈值时进入人工审校。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 114",
+      "numbers": [
+        "2"
+      ]
+    },
+    {
+      "unit_id": "U0103",
+      "kind": "paragraph",
+      "text": "[115] (Normal) 3. 生成基础特征、事件特征、高频修正特征和层级汇总特征。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 115",
+      "numbers": [
+        "3"
+      ]
+    },
+    {
+      "unit_id": "U0104",
+      "kind": "paragraph",
+      "text": "[116] (Normal) 4. 训练或更新基线模型、机器学习修正模型和多步预测模型。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 116",
+      "numbers": [
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0105",
+      "kind": "paragraph",
+      "text": "[117] (Normal) 5. 在滚动回测集上学习模型权重，生成基础预测结果。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 117",
+      "numbers": [
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0106",
+      "kind": "paragraph",
+      "text": "[118] (Normal) 6. 执行层级一致性校正，输出全国、区域、省级、行业层级预测。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 118",
+      "numbers": [
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0107",
+      "kind": "paragraph",
+      "text": "[119] (Normal) 7. 生成P10、P50、P90预测区间，形成风险概率和偏离解释。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 119",
+      "numbers": [
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0108",
+      "kind": "paragraph",
+      "text": "[120] (Normal) 8. 自动生成报告文本、图表、风险清单和看板结果，进入人工审校后发布。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 120",
+      "numbers": [
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0109",
+      "kind": "paragraph",
+      "text": "[121] (Normal) 9. 发布后进入误差复盘、漂移监测和再训练触发流程。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 121",
+      "numbers": [
+        "9"
+      ]
+    },
+    {
+      "unit_id": "U0110",
+      "kind": "heading",
+      "text": "[122] (Heading 2) （四）智能化辅助能力",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 122",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0111",
+      "kind": "paragraph",
+      "text": "[123] (Normal) 在模型预测基础上，可逐步建设智能会商助手和报告生成助手。其定位为辅助专家判断，重点服务于信息检索、历史案例比对、指标解释、偏离原因提示、报告段落拟制、会商纪要整理和问答检索。智能化工具使用的数据、模型和输出均应纳入权限控制、日志审计和人工审校流程。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 123",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0112",
+      "kind": "paragraph",
+      "text": "[125] (Caption) 图2 模型训练、发布、监控三位一体闭环图",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 125",
+      "numbers": [
+        "2"
+      ]
+    },
+    {
+      "unit_id": "U0113",
+      "kind": "heading",
+      "text": "[126] (Heading 1) 七、平台架构与功能模块方案",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 126",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0114",
+      "kind": "heading",
+      "text": "[127] (Heading 2) （一）总体架构",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 127",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0115",
+      "kind": "paragraph",
+      "text": "[128] (Normal) 平台总体架构建议按照“数据源层—数据接入与可信流通层—数据平台与计算层—特征工程与数据治理层—模型算法与MLOps层—业务应用与服务层”的纵向主链建设，并在左右两侧配置可信数据流通体系和安全运维保障体系。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 128",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0116",
+      "kind": "paragraph",
+      "text": "[130] (Caption) 图3 中电联电力供需预测平台信息化架构图",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 130",
+      "numbers": [
+        "3"
+      ]
+    },
+    {
+      "unit_id": "U0117",
+      "kind": "paragraph",
+      "text": "[131] (Normal) 该架构的核心价值在于，把分散数据、统计口径、模型训练、预测发布、复盘监控统一到一个可审计、可扩展、可运营的平台链路中。下方数据源经可信接入进入数据平台，经过质量治理和特征加工后进入模型层，最终形成报告、看板、API和会商服务；可信流通和安全运维能力贯穿全链条。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 131",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0118",
+      "kind": "heading",
+      "text": "[132] (Heading 2) （二）功能模块",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 132",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0119",
+      "kind": "heading",
+      "text": "[134] (Heading 2) （三）模块关系",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 134",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0120",
+      "kind": "paragraph",
+      "text": "[135] (Normal) 模型模块关系应体现数据接入、数据平台、特征平台、模型训练、模型注册、批量推理、准实时修正、业务服务和监控治理之间的系统链路。重点管理四类版本：数据版本、特征版本、模型版本、发布版本，确保任何一次发布均可回放、可解释、可追责。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 135",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0121",
+      "kind": "paragraph",
+      "text": "[137] (Caption) 图4 模型模块关系图",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 137",
+      "numbers": [
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0122",
+      "kind": "heading",
+      "text": "[138] (Heading 1) 八、场景化实施方案",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 138",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0123",
+      "kind": "heading",
+      "text": "[139] (Heading 2) （一）场景实施总链路",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 139",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0124",
+      "kind": "paragraph",
+      "text": "[140] (Normal) 场景化实施围绕“数据来源—数据资源—加工过程—服务产品—服务对象—反馈复盘”展开。每个场景同步明确业务边界、数据清单、加工规则、模型链路、产品形态、服务对象和验收成果，形成可建设、可运行、可审校、可复盘的闭环。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 140",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0125",
+      "kind": "heading",
+      "text": "[142] (Heading 2) （二）场景实施矩阵",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 142",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0126",
+      "kind": "paragraph",
+      "text": "[143] (Normal) 各类场景按照统一要素开展建设，首期重点保障月度、季度和年度成果稳定形成；二期强化重点时段风险预警；三期扩展新能源、需求侧、储能、充电负荷和市场交易影响分析。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 143",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0127",
+      "kind": "heading",
+      "text": "[145] (Heading 2) （三）首期场景：全国月度与季度供需形势分析",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 145",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0128",
+      "kind": "paragraph",
+      "text": "[146] (Normal) 全国月度与季度供需形势分析承担首期底座建设任务，重点形成稳定的数据链路、指标口径、预测模型、报告产品和复盘机制。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 146",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0129",
+      "kind": "paragraph",
+      "text": "[147] (Normal) 核心预测对象为全社会用电量、分产业用电量、重点行业用电量、最大负荷、区域供需风险等级和关键变量贡献。场景总体架构见图5。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 147",
+      "numbers": [
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0130",
+      "kind": "paragraph",
+      "text": "[149] (Caption) 图5 全国月度与季度供需形势分析场景总体架构图",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 149",
+      "numbers": [
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0131",
+      "kind": "paragraph",
+      "text": "[150] (Normal) 数据资源字段清单",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 150",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0132",
+      "kind": "paragraph",
+      "text": "[151] (Normal) 数据可获得性与责任配置",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 151",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0133",
+      "kind": "paragraph",
+      "text": "[153] (Normal) 关键点难点分析及应对措施",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 153",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0134",
+      "kind": "heading",
+      "text": "[156] (Heading 2) （四）首期场景：年度供需形势预测报告自动化",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 156",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0135",
+      "kind": "paragraph",
+      "text": "[157] (Normal) 年度报告自动化重点解决年度数据归集、指标解释、图表生成、章节成稿、审校流转和归档复盘的效率与一致性问题。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 157",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0136",
+      "kind": "paragraph",
+      "text": "[158] (Normal) 核心预测对象为年度用电量、最大负荷、装机结构、发电结构、区域供需格局和主要风险判断。场景总体架构见图6。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 158",
+      "numbers": [
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0137",
+      "kind": "paragraph",
+      "text": "[160] (Caption) 图6 年度报告自动化场景总体架构图",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 160",
+      "numbers": [
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0138",
+      "kind": "paragraph",
+      "text": "[161] (Normal) 数据资源字段清单",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 161",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0139",
+      "kind": "paragraph",
+      "text": "[162] (Normal) 数据可获得性与责任配置",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 162",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0140",
+      "kind": "paragraph",
+      "text": "[164] (Normal) 关键点难点分析及应对措施",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 164",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0141",
+      "kind": "heading",
+      "text": "[167] (Heading 2) （五）重点时段场景：迎峰度夏和迎峰度冬预测预警",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 167",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0142",
+      "kind": "paragraph",
+      "text": "[168] (Normal) 迎峰度夏和迎峰度冬预测预警围绕高温、寒潮、来水偏枯、风光低出力、机组检修和跨区通道受限等因素，形成重点时段供需风险识别能力。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 168",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0143",
+      "kind": "paragraph",
+      "text": "[169] (Normal) 核心预测对象为最大负荷区间、供给可用能力、供需缺口概率、重点省份风险等级和需求侧缓释空间。场景总体架构见图7。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 169",
+      "numbers": [
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0144",
+      "kind": "paragraph",
+      "text": "[171] (Caption) 图7 迎峰度夏度冬预测预警场景总体架构图",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 171",
+      "numbers": [
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0145",
+      "kind": "paragraph",
+      "text": "[172] (Normal) 数据资源字段清单",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 172",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0146",
+      "kind": "paragraph",
+      "text": "[173] (Normal) 数据可获得性与责任配置",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 173",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0147",
+      "kind": "paragraph",
+      "text": "[175] (Normal) 关键点难点分析及应对措施",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 175",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0148",
+      "kind": "heading",
+      "text": "[178] (Heading 2) （六）拓展场景：新能源高占比区域供需风险分析",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 178",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0149",
+      "kind": "paragraph",
+      "text": "[179] (Normal) 新能源高占比区域供需风险分析重点刻画风光出力波动、气象不确定性、有效容量、限电风险和消纳压力。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 179",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0150",
+      "kind": "paragraph",
+      "text": "[180] (Normal) 核心预测对象为风光可用出力、可信出力区间、有效容量、消纳压力、限电风险和区域互济需求。场景总体架构见图8。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 180",
+      "numbers": [
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0151",
+      "kind": "paragraph",
+      "text": "[182] (Caption) 图8 新能源高占比区域供需风险分析场景总体架构图",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 182",
+      "numbers": [
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0152",
+      "kind": "paragraph",
+      "text": "[183] (Normal) 数据资源字段清单",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 183",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0153",
+      "kind": "paragraph",
+      "text": "[184] (Normal) 数据可获得性与责任配置",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 184",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0154",
+      "kind": "paragraph",
+      "text": "[186] (Normal) 关键点难点分析及应对措施",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 186",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0155",
+      "kind": "heading",
+      "text": "[189] (Heading 2) （七）拓展场景：需求响应和虚拟电厂调节能力评估",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 189",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0156",
+      "kind": "paragraph",
+      "text": "[190] (Normal) 需求响应和虚拟电厂调节能力评估重点解决可调节资源“有多少、能不能调、调得准不准、履约是否稳定”的问题。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 190",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0157",
+      "kind": "paragraph",
+      "text": "[191] (Normal) 核心预测对象为申报容量、可调用容量、实际响应容量、稳定履约容量、履约率、响应可靠性和调用成本。场景总体架构见图9。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 191",
+      "numbers": [
+        "9"
+      ]
+    },
+    {
+      "unit_id": "U0158",
+      "kind": "paragraph",
+      "text": "[193] (Caption) 图9 需求响应与虚拟电厂调节能力评估场景总体架构图",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 193",
+      "numbers": [
+        "9"
+      ]
+    },
+    {
+      "unit_id": "U0159",
+      "kind": "paragraph",
+      "text": "[194] (Normal) 数据资源字段清单",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 194",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0160",
+      "kind": "paragraph",
+      "text": "[195] (Normal) 数据可获得性与责任配置",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 195",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0161",
+      "kind": "paragraph",
+      "text": "[197] (Normal) 关键点难点分析及应对措施",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 197",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0162",
+      "kind": "heading",
+      "text": "[200] (Heading 2) （八）拓展场景：储能与电动汽车充电负荷影响评估",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 200",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0163",
+      "kind": "paragraph",
+      "text": "[201] (Normal) 储能与电动汽车充电负荷影响评估重点分析峰谷变化、局部负荷冲击、削峰填谷能力和新型负荷增长趋势。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 201",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0164",
+      "kind": "paragraph",
+      "text": "[202] (Normal) 核心预测对象为峰谷影响、局部负荷冲击、削峰填谷能力、充电负荷增长和典型时段负荷变化。场景总体架构见图10。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 202",
+      "numbers": [
+        "10"
+      ]
+    },
+    {
+      "unit_id": "U0165",
+      "kind": "paragraph",
+      "text": "[204] (Caption) 图10 储能与充电负荷影响评估场景总体架构图",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 204",
+      "numbers": [
+        "10"
+      ]
+    },
+    {
+      "unit_id": "U0166",
+      "kind": "paragraph",
+      "text": "[205] (Normal) 数据资源字段清单",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 205",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0167",
+      "kind": "paragraph",
+      "text": "[206] (Normal) 数据可获得性与责任配置",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 206",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0168",
+      "kind": "paragraph",
+      "text": "[208] (Normal) 关键点难点分析及应对措施",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 208",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0169",
+      "kind": "heading",
+      "text": "[211] (Heading 2) （九）拓展场景：市场交易影响分析",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 211",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0170",
+      "kind": "paragraph",
+      "text": "[212] (Normal) 市场交易影响分析重点评估中长期交易、跨省跨区交易、绿电交易、现货运行和辅助服务对供需形势判断的影响。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 212",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0171",
+      "kind": "paragraph",
+      "text": "[213] (Normal) 核心预测对象为交易互济影响、绿电交易影响、价格敏感性、跨区依赖度和市场变量对供需判断的修正作用。场景总体架构见图11。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 213",
+      "numbers": [
+        "11"
+      ]
+    },
+    {
+      "unit_id": "U0172",
+      "kind": "paragraph",
+      "text": "[215] (Caption) 图11 市场交易影响分析场景总体架构图",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 215",
+      "numbers": [
+        "11"
+      ]
+    },
+    {
+      "unit_id": "U0173",
+      "kind": "paragraph",
+      "text": "[216] (Normal) 数据资源字段清单",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 216",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0174",
+      "kind": "paragraph",
+      "text": "[217] (Normal) 数据可获得性与责任配置",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 217",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0175",
+      "kind": "paragraph",
+      "text": "[219] (Normal) 关键点难点分析及应对措施",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 219",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0176",
+      "kind": "heading",
+      "text": "[222] (Heading 2) （十）场景推进顺序和成果验收",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 222",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0177",
+      "kind": "paragraph",
+      "text": "[223] (Normal) 场景推进按“首期可交付、二期可预警、三期可扩展”的节奏组织，所有场景均以数据、模型、产品和机制四类成果进行验收。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 223",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0178",
+      "kind": "heading",
+      "text": "[225] (Heading 2) （十一）数据责任、验收指标与降级运行",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 225",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0179",
+      "kind": "paragraph",
+      "text": "[226] (Normal) 各场景建设同步落实数据可获得性分级、数据责任配置、模型能力分层、验收指标和降级运行机制，保证首期可落地、二期可扩展、异常情况下可稳态运行。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 226",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0180",
+      "kind": "paragraph",
+      "text": "[227] (Normal) 数据可获得性分级表",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 227",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0181",
+      "kind": "paragraph",
+      "text": "[229] (Normal) 数据资源责任清单",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 229",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0182",
+      "kind": "paragraph",
+      "text": "[231] (Normal) 场景验收指标表",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 231",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0183",
+      "kind": "paragraph",
+      "text": "[233] (Normal) 首期上线范围表",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 233",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0184",
+      "kind": "paragraph",
+      "text": "[235] (Normal) 模型能力分层建设表",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 235",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0185",
+      "kind": "paragraph",
+      "text": "[237] (Normal) 数据缺失降级运行表",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 237",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0186",
+      "kind": "heading",
+      "text": "[239] (Heading 1) 九、组织机制与职责分工",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 239",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0187",
+      "kind": "heading",
+      "text": "[240] (Heading 2) （一）组织架构",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 240",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0188",
+      "kind": "paragraph",
+      "text": "[241] (Normal) 建议建立“领导统筹、处室牵头、专班推进、专家支撑、生态协同”的组织机制。由中电联领导统筹重大方向、外部协调和资源保障；统计与数智部电力供需分析处作为牵头处室，负责总体方案、业务体系、供需模型需求、报告成果和日常推进；相关部门和单位按职责参与数据治理、平台建设、信息安全、标准研究、对外合作和成果发布。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 241",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0189",
+      "kind": "paragraph",
+      "text": "[242] (Normal) 建议设立电力供需形势预测工作专班，下设业务研究组、数据治理组、模型算法组、平台建设组、安全合规组、报告发布组和外部协同组。各组建立月度例会、专项会商、版本评审和阶段验收机制。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 242",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0190",
+      "kind": "heading",
+      "text": "[244] (Heading 2) （二）工作机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 244",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0191",
+      "kind": "paragraph",
+      "text": "[245] (Normal) 1. 月度运行机制。每月形成数据接入、模型预测、人工审校、报告发布和误差复盘闭环。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 245",
+      "numbers": [
+        "1"
+      ]
+    },
+    {
+      "unit_id": "U0192",
+      "kind": "paragraph",
+      "text": "[246] (Normal) 2. 季度评审机制。每季度开展模型表现、数据质量、场景推进、平台运行和外部协同评估。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 246",
+      "numbers": [
+        "2"
+      ]
+    },
+    {
+      "unit_id": "U0193",
+      "kind": "paragraph",
+      "text": "[247] (Normal) 3. 重点时段会商机制。迎峰度夏、迎峰度冬、极端天气和重大事件期间启动专项会商和专题专报。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 247",
+      "numbers": [
+        "3"
+      ]
+    },
+    {
+      "unit_id": "U0194",
+      "kind": "paragraph",
+      "text": "[248] (Normal) 4. 版本发布机制。每次发布保留数据版本、特征版本、模型版本、报告版本和审批记录。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 248",
+      "numbers": [
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0195",
+      "kind": "paragraph",
+      "text": "[249] (Normal) 5. 外部协同机制。建立与电网企业、发电集团、交易中心、气象机构、地方协会和新型主体的数据与业务沟通机制。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 249",
+      "numbers": [
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0196",
+      "kind": "paragraph",
+      "text": "[250] (Normal) 6. 安全审计机制。定期开展数据授权、接口调用、敏感字段、模型结果和对外发布审计。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 250",
+      "numbers": [
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0197",
+      "kind": "heading",
+      "text": "[251] (Heading 1) 十、实施路径、阶段成果和近期安排",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 251",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0198",
+      "kind": "heading",
+      "text": "[252] (Heading 2) （一）总体推进路径",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 252",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0199",
+      "kind": "paragraph",
+      "text": "[253] (Normal) 建议按0—3个月、3—9个月、9—18个月、18—36个月四个阶段推进。该节奏既能快速形成阶段成果，又能避免在数据授权、系统建设和模型复杂度尚不清晰的情况下过度扩张。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 253",
+      "numbers": [
+        "0",
+        "3",
+        "3",
+        "9",
+        "9",
+        "18",
+        "18",
+        "36"
+      ]
+    },
+    {
+      "unit_id": "U0200",
+      "kind": "heading",
+      "text": "[255] (Heading 3) 首批试点范围",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 255",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0201",
+      "kind": "paragraph",
+      "text": "[256] (Normal) 首批试点采取“全国总盘+区域样板+重点省份+专题样板”组合方式，保留全国视野，同时形成可落地抓手。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 256",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0202",
+      "kind": "heading",
+      "text": "[257] (Heading 2) （三）前100天重点工作",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 257",
+      "numbers": [
+        "100"
+      ]
+    },
+    {
+      "unit_id": "U0203",
+      "kind": "paragraph",
+      "text": "[258] (Normal) 1. 完成领导审定和任务部署，明确统计与数智部电力供需分析处牵头职责。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 258",
+      "numbers": [
+        "1"
+      ]
+    },
+    {
+      "unit_id": "U0204",
+      "kind": "paragraph",
+      "text": "[259] (Normal) 2. 成立工作专班，明确业务、数据、模型、平台、安全、报告和外部协调责任人。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 259",
+      "numbers": [
+        "2"
+      ]
+    },
+    {
+      "unit_id": "U0205",
+      "kind": "paragraph",
+      "text": "[260] (Normal) 3. 开展数据资源摸底，形成首批数据清单、字段清单、责任清单和授权边界清单。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 260",
+      "numbers": [
+        "3"
+      ]
+    },
+    {
+      "unit_id": "U0206",
+      "kind": "paragraph",
+      "text": "[261] (Normal) 4. 完成全国月度与季度供需形势分析及年度报告自动化的首期业务流程设计。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 261",
+      "numbers": [
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0207",
+      "kind": "paragraph",
+      "text": "[262] (Normal) 5. 形成指标口径主表和报告模板库，明确月报、季报、年报的核心指标、图表和结论结构。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 262",
+      "numbers": [
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0208",
+      "kind": "paragraph",
+      "text": "[263] (Normal) 6. 建设最小可用原型，包括数据导入、质量校验、基线预测、报告文本生成和人工审校流程。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 263",
+      "numbers": [
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0209",
+      "kind": "paragraph",
+      "text": "[264] (Normal) 7. 开展外部数据协同沟通，优先对接电网、发电集团、交易中心、气象和宏观数据来源。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 264",
+      "numbers": [
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0210",
+      "kind": "paragraph",
+      "text": "[265] (Normal) 8. 形成一期建设任务书、采购需求、预算测算、验收指标和风险控制方案。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 265",
+      "numbers": [
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0211",
+      "kind": "heading",
+      "text": "[266] (Heading 2) （四）阶段成果表达",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 266",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0212",
+      "kind": "paragraph",
+      "text": "[267] (Normal) 阶段成果聚焦为四类：数据成果、模型成果、产品成果和机制成果。数据成果体现“有数可用、有口径可循”；模型成果体现“能预测、能解释、能复盘”；产品成果体现“能成稿、能看板、能服务”；机制成果体现“有人牵头、有流程闭环、有责任留痕”。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 267",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0213",
+      "kind": "heading",
+      "text": "[269] (Heading 1) 十一、投资测算与资源保障",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 269",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0214",
+      "kind": "heading",
+      "text": "[270] (Heading 2) （一）投资测算口径",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 270",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0215",
+      "kind": "paragraph",
+      "text": "[271] (Normal) 投资测算应在完成存量系统、数据资源、算力条件和采购边界摸底后最终确定。内部立项阶段可先采用三档方案作为测算参考，最终预算以后续专项论证和财务批复为准。后续应根据复用存量基础设施程度、是否新建湖仓平台、是否引入MLOps和安全能力、是否建设高可用与灾备、是否引入外部数据和技术服务等因素校正。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 271",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0216",
+      "kind": "heading",
+      "text": "[273] (Heading 3) 投资构成拆分",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 273",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0217",
+      "kind": "paragraph",
+      "text": "[274] (Normal) 投资测算同步区分原型建设、平台能力、外部数据、安全合规、运营维护和专家会商等费用，防止仅按软件开发费用测算。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 274",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0218",
+      "kind": "heading",
+      "text": "[275] (Heading 2) （三）人员和能力保障",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 275",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0219",
+      "kind": "paragraph",
+      "text": "[276] (Normal) 建议采用“核心能力内建、生态协作补位”的人员配置方式。供需分析、指标口径、报告发布、数据治理和安全合规能力应由中电联内部主导；平台开发、模型工程、MLOps、可视化和部分算法优化可通过外部专业团队协同完成，但数据、模型、代码、文档、规则和知识资产应纳入中电联统一管理。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 276",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0220",
+      "kind": "heading",
+      "text": "[278] (Heading 2) （四）资源保障措施",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 278",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0221",
+      "kind": "paragraph",
+      "text": "[279] (Normal) 1. 组织保障。明确牵头处室和工作专班，形成领导定期听取汇报、重大问题协调和阶段成果验收机制。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 279",
+      "numbers": [
+        "1"
+      ]
+    },
+    {
+      "unit_id": "U0222",
+      "kind": "paragraph",
+      "text": "[280] (Normal) 2. 数据保障。以中电联统计资源为基础，推动电网、发电、交易、气象、宏观和新型主体数据分级接入。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 280",
+      "numbers": [
+        "2"
+      ]
+    },
+    {
+      "unit_id": "U0223",
+      "kind": "paragraph",
+      "text": "[281] (Normal) 3. 技术保障。统筹存量系统复用和新增平台建设，优先形成湖仓一体、时序数据库、报告引擎和模型管理能力。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 281",
+      "numbers": [
+        "3"
+      ]
+    },
+    {
+      "unit_id": "U0224",
+      "kind": "paragraph",
+      "text": "[282] (Normal) 4. 安全保障。按照能源行业数据安全、网络安全和保密管理要求，建立分类分级、最小权限、日志审计和应急预案。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 282",
+      "numbers": [
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0225",
+      "kind": "paragraph",
+      "text": "[283] (Normal) 5. 资金保障。按照分阶段建设、分节点验收、分场景扩展原则安排预算，强化预算执行、成果验收和资金绩效联动。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 283",
+      "numbers": [
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0226",
+      "kind": "paragraph",
+      "text": "[284] (Normal) 6. 生态保障。与电网企业、发电集团、交易中心、气象机构、科研院所和技术企业建立稳定合作机制。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 284",
+      "numbers": [
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0227",
+      "kind": "heading",
+      "text": "[285] (Heading 1) 十二、风险管控与保障措施",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 285",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0228",
+      "kind": "heading",
+      "text": "[286] (Heading 2) （一）主要风险",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 286",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0229",
+      "kind": "paragraph",
+      "text": "[287] (Normal) 本项工作的主要风险来自数据授权、口径一致性、模型偏差、系统稳定、信息安全、组织协同和成果发布等方面。风险管控坚持治理先行、分步实施、专家会商、版本管理和安全审计，确保问题早识别、早处置、可追溯。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 287",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0230",
+      "kind": "heading",
+      "text": "[289] (Heading 2) （二）安全合规要求",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 289",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0231",
+      "kind": "paragraph",
+      "text": "[290] (Normal) 平台建设应同步落实数据安全法、网络安全法、个人信息保护法、网络数据安全管理条例、能源行业数据安全管理办法、电力市场信息披露基本规则等要求。对涉及重要数据、核心数据、市场敏感数据、企业经营数据和用户侧负荷数据的内容，应建立分类分级目录、访问审批、脱敏规则、日志审计和应急处置机制。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 290",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0232",
+      "kind": "paragraph",
+      "text": "[291] (Normal) 对外或对内发布的预测成果应统一标明数据口径、模型版本、预测区间、假设条件、适用范围和误差说明。涉及市场判断、投资判断、具体主体经营情况和敏感区域风险的内容，应执行更严格的审校和发布流程。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 291",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0233",
+      "kind": "heading",
+      "text": "[292] (Heading 2) （三）持续改进机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 292",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0234",
+      "kind": "paragraph",
+      "text": "[293] (Normal) 建议建立“月度复盘、季度校模、半年场景增补、年度重构”的持续改进机制。月度复盘重点分析数据异常、模型误差和报告反馈；季度校模重点调整特征、权重、阈值和情景假设；半年场景增补重点把新政策、新主体、新交易机制和新型负荷纳入；年度重构重点评估指标口径、平台架构、模型体系和发布产品。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 293",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0235",
+      "kind": "heading",
+      "text": "[294] (Heading 2) （四）预测成果分级发布机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 294",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0236",
+      "kind": "paragraph",
+      "text": "[295] (Normal) 预测成果按照内部测算、会商研判、领导参阅和对外发布分级管理，分别明确使用范围、内容边界和审核要求。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 295",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0237",
+      "kind": "heading",
+      "text": "[296] (Heading 1) 十三、需请领导审定事项",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 296",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0238",
+      "kind": "paragraph",
+      "text": "[297] (Normal) 为推动电力供需形势预测工作由能力建设进入实施推进，需请领导审定以下事项。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 297",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0239",
+      "kind": "heading",
+      "text": "[299] (Heading 1) 附件一：首期核心指标清单",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 299",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0240",
+      "kind": "heading",
+      "text": "[301] (Heading 1) 附件二：首期数据资源摸底清单",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 301",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0241",
+      "kind": "heading",
+      "text": "[303] (Heading 1) 附件三：平台功能清单",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "paragraph 303",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0242",
+      "kind": "paragraph",
+      "text": "## Tables\n### Table 1 (6 rows)",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Tables",
+      "numbers": [
+        "1",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0243",
+      "kind": "table",
+      "text": "判断维度 | 当前变化 | 对供需预测工作的要求\n政策环境 | 全国统一电力市场、新型电力系统、需求响应、虚拟电厂、能源数据安全等制度持续完善 | 预测体系需同时满足政策研判、市场分析、数据合规和信息发布要求\n行业运行 | 新能源装机占比提升，跨省跨区交易、绿电交易、新型负荷和极端天气影响增强 | 预测对象需由确定性电量判断扩展为区间预测、情景推演和风险识别\n数据基础 | 统计数据基础较好，高频运行数据、市场数据、气象数据和新型主体数据需进一步贯通 | 需要先建立数据目录、指标字典、授权边界和质量规则\n组织基础 | 中电联具备行业统计、报告发布和跨主体协调基础 | 需设立牵头处室、工作专班、专家会商和发布审核机制\n技术条件 | 湖仓一体、时序数据库、机器学习、MLOps、自动报告等技术可支撑生产化落地 | 需形成平台化、可复用、可审计、可运维的工程能力",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Tables",
+      "numbers": []
+    },
+    {
+      "unit_id": "U0244",
+      "kind": "table",
+      "text": "### Table 2 (6 rows)\n问题类别 | 主要表现 | 建设重点\n数据口径 | 同一指标在统计、运行、交易、报告等场景中可能存在口径差异，历史修订和版本留痕不足 | 建立指标字典、口径主表、版本管理和发布时点视图\n数据接入 | 现有月报、季报、年报基础较好，高频负荷、气象、市场交易和新型主体数据需要分步接入 | 形成必需、重要、拓展三层数据目录和分级授权机制\n模型能力 | 现有经验分析和模型能力需要与生产化平台、自动回测、漂移监测和可解释输出衔接 | 建设基线模型、机器学习修正、多步预测、区间预测和层级一致性校正\n发布链路 | 报告形成依赖人工汇总，自动成稿、审校流转、结果回放和复盘校模能力不足 | 建设报告引擎、发布工作台、审校流程、版本快照和复盘机制\n组织协同 | 统计、数据、模型、平台、安全、外部协调需要统一归口 | 设立领导机制、工作专班和处室牵头的日常推进机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 2 (6 rows)",
+      "numbers": [
+        "2",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0245",
+      "kind": "table",
+      "text": "### Table 3 (5 rows)\n目标层级 | 主要问题 | 时间尺度 | 主要输出 | 服务对象\n中长期供需研判 | 用电需求、装机结构、有效容量、区域平衡、产业变化、政策影响 | 月、季、年、三年、五年 | 年度报告、季度形势判断、区域风险清单、政策情景推演 | 中电联领导、国家部委、行业企业、专业条线\n重点时段预测预警 | 迎峰度夏、迎峰度冬、极端天气、春节错位、重要会议和重大活动期间供需风险 | 事件前7天至事件期 | 专题专报、风险清单、预警阈值、会商材料 | 保供会商、运行分析、相关专业部门\n月度和季度滚动分析 | 当月、下月、季度供需变化，电量负荷偏离原因和风险趋势 | 月、季 | 月报、季报、自动成稿、区域热力图 | 统计与数智部、中电联相关部门、会员单位\n场景化专题服务 | 新能源出力、需求响应、虚拟电厂、储能、充电负荷、市场交易影响 | 周、日、小时、专题周期 | 专题分析、评估报告、情景比较、API接口 | 专业部门、试点单位、合作机构",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 3 (5 rows)",
+      "numbers": [
+        "3",
+        "5",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0246",
+      "kind": "table",
+      "text": "### Table 4 (4 rows)\n边界类型 | 建设内容 | 验收成果\n一个主闭环 | 全国月度与季度供需形势分析闭环，覆盖数据接入、质量治理、预测研判、专家审校、报告发布和误差复盘。 | 月度供需分析报告、季度供需形势分析报告、误差复盘记录。\n两个支撑能力 | 数据资源目录与指标口径体系；报告自动化与审校发布体系。 | 数据资源目录、指标字典、口径主表、报告模板库、审校流程。\n三个可验收产品 | 月度供需分析报告、季度供需形势分析报告、年度报告自动化原型。 | 可自动成稿、可人工审校、可版本归档、可回放复盘。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 4 (4 rows)",
+      "numbers": [
+        "4",
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0247",
+      "kind": "table",
+      "text": "### Table 5 (7 rows)\n对象类别 | 核心指标 | 主要用途 | 首期纳入程度\n需求侧 | 全社会用电量、分产业用电量、重点行业用电、最大负荷、负荷率 | 判断需求增长、产业结构变化和尖峰负荷压力 | 重点纳入\n供给侧 | 装机容量、发电量、利用小时、可用容量、检修停运、新能源装机和出力 | 判断供给能力、有效容量和结构变化 | 重点纳入装机、发电量、利用小时\n平衡侧 | 全国、区域、省级供需平衡、跨省跨区互济、备用空间、风险区间 | 形成区域风险清单和保供会商支撑 | 重点纳入全国和区域平衡\n市场侧 | 市场化交易电量、绿电交易、跨省跨区交易、中长期和现货交易情况 | 判断市场机制对供需平衡和资源配置的影响 | 逐步纳入\n调节侧 | 需求响应、虚拟电厂、储能、充电设施、可调节负荷、辅助服务资源 | 判断可调节资源空间和缓释能力 | 作为拓展数据预留\n风险侧 | 极端高温、寒潮、来水偏枯、风光低出力、燃料扰动、政策变化 | 形成风险预警、情景推演和专题专报 | 先纳入气象和重大事件标签",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 5 (7 rows)",
+      "numbers": [
+        "5",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0248",
+      "kind": "table",
+      "text": "### Table 6 (6 rows)\n时间尺度 | 业务定位 | 主要输入 | 主要输出\n年度 | 形成年度全国电力供需形势分析预测报告和下一年度判断 | 历史年度数据、宏观经济、装机规划、政策情景、产业结构 | 年度报告、供需总体判断、装机结构分析、区域风险提示\n季度 | 对年度判断进行滚动校核，支撑季度形势分析 | 季度统计、月度用电、市场交易、气象偏离、产业景气 | 季度形势报告、风险变化说明、预测修订记录\n月度 | 形成月度供需总盘、分区域和分行业分析 | 月度报表、日度负荷、交易、装机、气象、宏观指标 | 月报、区域热力图、关键变量贡献分解\n重点时段 | 支撑迎峰度夏、迎峰度冬和重大事件专题 | 小时负荷、天气预报、机组可用、通道约束、需求响应资源 | 专题专报、风险清单、阈值预警、会商材料\n月内修正 | 基于已发生高频数据修正当前月和下月预测 | 日负荷、温度、节假日、重点行业高频数据 | nowcast修正结果、误差预警、人工审校提示",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 6 (6 rows)",
+      "numbers": [
+        "6",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0249",
+      "kind": "table",
+      "text": "### Table 7 (5 rows)\n数据层级 | 数据内容 | 主要用途 | 接入策略\n必需层 | 全社会用电量、分产业用电量、发电量、装机容量、利用小时、跨省跨区交易、绿电交易、宏观景气、气象月度指标 | 支撑全国月度、季度、年度供需形势分析 | 首期接入，形成稳定数据链路\n重要层 | 日负荷曲线、重点行业高频指标、气温异常、节假日、春节错位、重点区域运行数据 | 支撑月内修正、偏离解释和重点时段预警 | 分批接入，建立准实时接口\n拓展层 | 新能源场站出力、限电记录、需求响应执行、虚拟电厂资源、储能SOC、充电站负荷、现货交易数据 | 支撑新能源、需求侧和市场化专题分析 | 在授权和安全条件具备后纳入\n外部辅助层 | 国家统计、气象预报、水情、燃料价格、节假日、产业景气、算力中心投产等信息 | 增强预测解释性和情景推演能力 | 通过公开数据、协议数据和合作接口接入",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 7 (5 rows)",
+      "numbers": [
+        "7",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0250",
+      "kind": "table",
+      "text": "### Table 8 (4 rows)\n接入通道 | 适用数据 | 技术方式 | 管理要求\n批量接入 | 月报、季报、年报、装机、交易、宏观统计、历史样本 | 文件交换、批量API、定时调度、数据校验 | 明确字段定义、更新时间、迟到策略和责任人\n准实时接入 | 日负荷、小时负荷、天气预报、重点行业高频指标、市场运行指标 | API网关、消息总线、时序数据库、流式计算 | 设置数据质量阈值、接口SLA和异常告警\n人工补录审校 | 重大事件、春节错位、政策变化、异常解释、历史修订 | 工作台、表单流转、审批链、版本快照 | 形成审校记录、修改原因和责任留痕",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 8 (4 rows)",
+      "numbers": [
+        "8",
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0251",
+      "kind": "table",
+      "text": "### Table 9 (7 rows)\n治理类别 | 启动期规则 | 目标\n指标口径治理 | 建立全社会用电量、分产业用电、发电量、交易电量、装机容量、有效容量、利用小时等指标口径主表 | 解决同名不同义、同义不同口径问题\n主数据治理 | 统一地区、行业、企业、机组、市场主体、时间维表和资源编码 | 保证全国、区域、省级、行业层级可汇总\n质量治理 | 建立缺失、重复、迟到、异常波动、跨期修订、时钟漂移等规则 | 保证样本可训练、结果可解释、发布可审校\n版本治理 | 建立原始视图、当前视图、发布时视图，保留数据、特征、模型、报告四类版本 | 支持复盘回放和责任追溯\n事件治理 | 建立高温、寒潮、春节错位、重大设备停运、政策发布、价格机制变化等标签 | 支撑误差归因和情景分析\n安全治理 | 开展数据分类分级、最小权限、脱敏、访问水印、日志审计和授权台账 | 满足能源行业数据安全和内部保密要求",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 9 (7 rows)",
+      "numbers": [
+        "9",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0252",
+      "kind": "table",
+      "text": "### Table 10 (7 rows)\n模型层 | 推荐方法 | 主要作用 | 建设阶段\n基线层 | SARIMAX、动态线性模型、BSTS、回归模型 | 形成趋势、季节性、事件冲击和外生变量的可解释基线 | 首期\n机器学习修正层 | LightGBM、XGBoost、CatBoost | 吸收非线性关系、变量交互和结构特征，提高预测稳健性 | 首期\n多步预测层 | TFT、轻量级Transformer、TCN等 | 处理多变量、多步预测、月内nowcast修正 | 二期\n层级一致性层 | 全国—区域—省级、行业—总量层级一致性校正 | 解决分项预测与总量预测不一致问题 | 首期末至二期\n不确定性层 | 分位数回归、保覆盖校准、概率预测 | 输出P10/P50/P90区间和风险概率 | 二期\n解释层 | 贡献分解、弹性分析、SHAP、事件归因 | 把模型结果转化为报告可用的判断和原因解释 | 首期",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "P50",
+      "numbers": [
+        "10",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0253",
+      "kind": "table",
+      "text": "### Table 11 (4 rows)\n层级 | 模型能力 | 适用场景 | 建设阶段 | 验收重点\n基础层 | 同比环比、趋势外推、SARIMAX、回归模型、专家修正。 | 月度、季度、年度供需形势分析。 | 首期必须具备。 | 结果稳定、口径清楚、误差可复盘。\n增强层 | LightGBM、XGBoost、变量贡献分解、滚动回测、异常事件标签。 | 月度滚动预测、重点时段预警、新能源区域分析。 | 首期后半段至二期。 | 预测误差下降、变量贡献可解释、模型可回滚。\n高阶层 | TFT、Transformer、概率情景模拟、联邦学习和隐私计算。 | 高频预测、新型主体评估、跨主体协同建模。 | 二期以后按场景引入。 | 数据授权充分、算力可支撑、发布边界清晰。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 11 (4 rows)",
+      "numbers": [
+        "11",
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0254",
+      "kind": "table",
+      "text": "### Table 12 (8 rows)\n特征类别 | 典型变量 | 用途\n历史序列特征 | 滞后1、2、3、6、12个月；同比、环比；滚动均值；滚动波动率 | 捕捉季节性、惯性和周期性变化\n结构变量特征 | 一二三产业占比、重点行业用电占比、清洁能源占比、终端电气化指标 | 刻画中长期结构变化\n气象日历特征 | CDD、HDD、极端温度天数、春节错位、工作日天数、节假日 | 解释季节波动和节庆扰动\n市场变量特征 | 市场化交易占比、绿电交易、跨省跨区交易、中长期与现货交易 | 反映市场运行对供需平衡的影响\n供给侧特征 | 新增装机、利用小时、机组检修、来水偏离、新能源出力 | 刻画供给能力和有效容量\n政策事件特征 | 需求响应政策、虚拟电厂规则、新能源入市、价格机制调整、重大异常事件 | 处理制度变化和结构断点\n高频修正特征 | 当月已发生日负荷、短期天气预报、重点行业高频指标 | 用于修正当前月和下月预测",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 12 (8 rows)",
+      "numbers": [
+        "12",
+        "8",
+        "1",
+        "2",
+        "3",
+        "6",
+        "12"
+      ]
+    },
+    {
+      "unit_id": "U0255",
+      "kind": "table",
+      "text": "### Table 13 (8 rows)\n模块 | 主要功能 | 建设重点\n数据源管理 | 管理中电联统计、电网运行、发电装机、市场交易、气象宏观、新型主体等数据源 | 明确来源、责任人、字段、频率、授权边界\n数据接入与流通 | 支持批量接入、接口接入、准实时接入、人工补录、数据合同和共享回馈 | 建立可持续接入和审计留痕机制\n数据平台与计算 | 建设湖仓一体、时序数据库、对象存储、计算调度、API网关和数据沙箱 | 支撑历史分析、模型训练和准实时刷新\n治理与特征工程 | 建设特征库、样本库、指标字典、主数据、质量规则、血缘审计 | 保证口径一致、样本可复用、结果可追溯\n模型算法与MLOps | 管理基线模型、机器学习修正、多步预测、层级一致性、区间预测和模型注册 | 支持自动回测、灰度发布、漂移监测和版本回滚\n业务应用与服务 | 提供领导驾驶舱、报告自动化、预测分析、风险专题、API服务和智能会商助手 | 把模型结果转化为可发布、可解释、可调用产品\n安全运维保障 | 身份与密钥、安全防护、审计追溯、SLA与灾备、发布管控 | 保障平台可用、数据可信、发布可控",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 13 (8 rows)",
+      "numbers": [
+        "13",
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0256",
+      "kind": "table",
+      "text": "### Table 14 (8 rows)\n环节 | 核心任务 | 形成成果\n数据来源确认 | 明确数据提供主体、责任部门、更新频率、授权边界和敏感等级。 | 数据来源清单、责任清单、授权边界清单\n数据资源入湖入库 | 接入统计、运行、交易、气象、宏观、新型主体等数据，形成统一目录和字段标准。 | 数据资源目录、字段字典、主数据编码\n数据加工治理 | 开展口径统一、缺失处理、异常识别、版本管理、事件标注和质量评分。 | 质量规则库、发布时点视图、事件标签库\n模型计算分析 | 调用基线模型、机器学习修正、层级一致性、区间预测和情景推演能力。 | 预测结果、区间结果、变量贡献分解\n专家会商审校 | 结合统计口径、行业经验、政策变化和异常事件开展人工复核。 | 审校记录、修订说明、会商结论\n产品发布服务 | 形成报告、看板、专报、清单、接口和会商支撑服务。 | 月报季报、年度报告、风险热力图、API 服务\n反馈复盘校模 | 跟踪实际值、误差来源、数据质量和模型漂移，触发模型更新和口径修订。 | 误差复盘表、模型更新记录、发布版本快照",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 14 (8 rows)",
+      "numbers": [
+        "14",
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0257",
+      "kind": "table",
+      "text": "### Table 15 (8 rows)\n场景 | 数据来源 | 核心数据资源 | 加工过程 | 服务产品与对象\n全国月度与季度供需形势分析 | 中电联统计体系、电网企业、发电集团、交易机构、国家统计和气象机构。 | 全社会用电量、分产业用电、发电量、装机、利用小时、跨区交易、绿电交易、宏观景气、气象指标。 | 月度数据汇聚、口径校验、同比环比计算、异常识别、模型预测、专家审校、报告成稿。 | 月报、季报、区域热力图、风险清单；服务中电联领导、统计与数智部、相关专业部门、会员单位。\n年度供需报告自动化 | 中电联统计体系、国家能源主管部门公开数据、电网和发电企业、交易机构、宏观和政策信息。 | 年度电量、负荷、装机结构、电源新增、市场交易、区域平衡、政策事件、历史预测和实际偏差。 | 年度样本归集、口径冻结、章节模板调用、图表自动生成、结论草拟、人工审校、版本归档。 | 年度供需形势预测报告、图表包、审校底稿；服务中电联领导、国家部委沟通、行业发布。\n迎峰度夏和迎峰度冬预测预警 | 电网企业、发电集团、气象机构、交易机构、需求响应管理主体、地方协会。 | 小时负荷、最大负荷、机组可用率、检修停运、通道余量、风光预测、温度预报、需求响应资源。 | 重点时段窗口设定、极端天气识别、负荷区间预测、供给可用能力测算、缺口概率评估、会商审校。 | 专题专报、紧平衡风险清单、会商材料、预警阈值；服务保供会商、运行分析、相关专业部门。\n新能源高占比区域供需风险分析 | 新能源企业、电网企业、气象机构、交易机构、储能运营主体。 | 风光装机、实发出力、预测出力、NWP、限电记录、储能状态、区域负荷、跨区互济。 | 气象场景构造、风光出力概率预测、有效容量估算、消纳压力识别、区域平衡测算、风险分级。 | 新能源专题报告、消纳风险图、有效容量分析、区域互济建议；服务新能源研究、区域分析和专题会商。\n需求响应和虚拟电厂调节能力评估 | 负荷管理中心、虚拟电厂运营主体、园区和重点用户、电网企业、交易机构。 | 资源清单、基线负荷、可调容量、响应历史、履约率、合同价格、调用记录、行业负荷曲线。 | 资源入库、基线核算、可用容量校验、履约评分、调节能力聚合、成本收益测算、结果审校。 | 调节资源评估报告、可调用容量清单、履约评价、调用建议；服务需求侧管理、保供会商和新型主体研究。\n储能与电动汽车充电负荷影响评估 | 储能运营主体、充电运营商、电网企业、地方协会、价格和气象数据来源。 | 储能 SOC、可用功率、充放电策略、站级充电负荷、峰谷价格、地理分布、节假日出行特征。 | 负荷曲线清洗、峰谷特征识别、充电行为建模、储能可用性测算、局部冲击评估、削峰效果复盘。 | 充电负荷影响报告、储能调节能力评估、削峰填谷分析；服务专题研究、地方协会和重点会员单位。\n市场交易影响分析 | 北京和广州电力交易中心、省级交易机构、电网企业、发电集团、绿电交易和现货市场信息。 | 市场化交易电量、跨省跨区交易、绿电交易、中长期合同、现货出清、辅助服务、通道利用率。 | 交易数据归集、分区分品种统计、市场变量特征构建、供需平衡影响测算、价格和交易情景对比。 | 市场影响专题、交易互济分析、绿电交易观察、政策情景评估；服务市场分析、政策咨询和行业服务。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 15 (8 rows)",
+      "numbers": [
+        "15",
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0258",
+      "kind": "table",
+      "text": "### Table 16 (6 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n中电联统计报表 | 月度、季度统计报表 | period、region_code、province_name、industry_code、industry_name、total_electricity、primary_electricity、secondary_electricity、tertiary_electricity、residential_electricity、max_load、yoy_rate、mom_rate、reporting_unit、report_version | 月/季；全国、区域、省级、行业 | 月度、季度供需总盘、需求结构、偏离解释\n装机与发电数据 | 装机、发电量、利用小时数据 | period、region_code、power_type、installed_capacity、new_capacity、generation、utilization_hours、available_capacity、maintenance_capacity、capacity_factor | 月/季；区域、省级、电源类型 | 供给能力、有效容量、发电结构和利用水平判断\n市场交易机构 | 跨省跨区、绿电和市场化交易数据 | trade_period、market_type、sending_region、receiving_region、traded_energy、green_power_energy、cross_region_energy、transaction_ratio、contract_type、settlement_status | 月/季；送端、受端、交易类型 | 交易互济、绿电交易、市场化因素影响分析\n宏观与产业数据 | 宏观经济和重点行业景气数据 | period、province_code、GDP、industrial_added_value、PMI、sector_output_index、power_intensity、major_industry_tag、data_release_date | 月/季；全国、省级、行业 | 用电增长驱动因素、产业结构变化和弹性分析\n气象机构 | 气象历史和异常天气数据 | period、region_code、avg_temperature、max_temperature、min_temperature、CDD、HDD、extreme_hot_days、extreme_cold_days、precipitation、weather_event_tag | 日/月；区域、省级 | 气象扰动、季节偏离、极端天气影响解释",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 16 (6 rows)",
+      "numbers": [
+        "16",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0259",
+      "kind": "table",
+      "text": "### Table 17 (6 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n统计报表与指标数据 | 中电联统计体系、定期报表 | 月/季；全国、省级、行业 | 一般至重要；内部可控 | 首期直接纳入，形成发布时点视图\n装机、发电量、利用小时 | 中电联统计、电网企业、发电集团 | 月/季；电源类型、区域 | 一般至重要；内部协同 | 首期纳入，统一电源类型和地区编码\n交易互济数据 | 北京/广州电力交易中心、省级交易机构 | 月/日；省间、省内、绿电 | 重要；需授权 | 先接入汇总级数据，逐步扩展到日度曲线\n气象与宏观数据 | 气象机构、国家统计公开数据、行业景气数据 | 日/月；区域、行业 | 一般；公开或协议 | 作为外生变量和偏离解释变量纳入\n高频修正数据 | 电网企业、重点行业样本单位 | 日/小时；区域、行业 | 重要；需授权 | 首期作为试点数据，缺失时采用历史同类样本修正",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 17 (6 rows)",
+      "numbers": [
+        "17",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0260",
+      "kind": "table",
+      "text": "### Table 18 (5 rows)\n关键点/难点 | 影响 | 应对措施\n指标口径一致性 | 统计、运行、交易口径存在统计范围、时间粒度和修订规则差异 | 建立指标口径主表、口径责任人、发布时点视图和历史修订回灌机制\n历史数据修订 | 历史月份追溯修订会影响训练样本、回测结果和已发布判断 | 保留原始视图、当前视图、发布时视图，月度复盘同步记录修订原因\n区域层级汇总 | 省级、区域、全国结果存在分项加总与总量不一致风险 | 引入层级一致性校正，统一地区编码、行业编码和汇总矩阵\n变量解释要求高 | 领导汇报和行业发布需要说明预测变化原因和贡献来源 | 建设贡献分解、事件标签和专家会商机制，形成模型解释和人工研判并行输出",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 18 (5 rows)",
+      "numbers": [
+        "18",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0261",
+      "kind": "table",
+      "text": "### Table 19 (7 rows)\n实施要素 | 具体内容\n数据来源 | 中电联统计体系、电网企业、发电集团、电力交易机构、国家统计和气象机构、重点行业公开和协议数据。\n数据资源 | 全社会用电量、分产业用电量、重点行业用电、最大负荷、发电量、装机容量、利用小时、跨省跨区交易、绿电交易、平均气温、极端温度、宏观景气、节假日和政策事件。\n加工过程 | 按月归集数据，执行口径校验、缺失补齐、异常识别、历史修订标记、同比环比计算、气象偏离计算、区域汇总、行业分解和预测模型调用。预测结果进入人工审校和专家会商后，形成发布版本。\n服务产品 | 月度供需形势分析、季度供需形势分析、全国总盘看板、区域热力图、重点指标趋势、风险清单、预测修订说明、误差复盘表。\n服务对象 | 中电联领导、统计与数智部、相关专业部门、国家部委沟通支撑、会员单位和行业研究服务对象。\n验收成果 | 数据资源目录 v1、指标字典 v1、月度预测模型 v1、季度滚动预测模型 v1、自动月报模板、人工审校流程、发布版本快照。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 19 (7 rows)",
+      "numbers": [
+        "19",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0262",
+      "kind": "table",
+      "text": "### Table 20 (6 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n供需分析处 | 月度、季度分析结果库 | period、section_code、indicator_id、indicator_name、indicator_value、yoy_rate、mom_rate、region_code、conclusion_tag、risk_level、source_version | 月/季；指标、章节、地区 | 年度报告章节数据抽取、趋势判断和年度结论形成\n历史报告库 | 历年年度供需形势报告 | report_year、chapter_id、paragraph_id、topic_tag、text_block、chart_id、table_id、approved_conclusion、revision_version、archive_date | 年；章节、段落、图表 | 历史结构复用、同比口径衔接、报告模板沉淀\n指标数据库 | 年度核心指标和派生指标 | indicator_id、indicator_name、calculation_rule、unit、frequency、region_scope、industry_scope、valid_from、valid_to、owner_department | 指标级；年度、季度、月度 | 指标自动填充、口径校核、附表生成\n图表模板库 | 报告图表和版式模板 | template_id、chart_type、data_binding_rule、dimension_field、measure_field、display_order、style_code、applicable_chapter | 模板级；章节、图表类型 | 图表自动生成、章节编排和样式一致性控制\n审校流程记录 | 专家意见和审校结论 | review_id、reviewer、review_stage、comment_text、decision_type、resolved_status、responsible_person、approval_time、final_version_id | 流程级；章节、版本、审校人 | 人工审校、版本对比、签发前复核和归档留痕",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 20 (6 rows)",
+      "numbers": [
+        "20",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0263",
+      "kind": "table",
+      "text": "### Table 21 (5 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n年度预测指标结果 | 月度/季度模型结果、年度统计快报 | 年/季/月；全国、区域、省级 | 一般至重要；内部可控 | 首期直接纳入报告生成链路\n历史年度报告 | 中电联历年供需形势分析预测成果 | 年；章节、图表、结论 | 内部资料；授权使用 | 沉淀章节模板和表述口径\n指标数据库 | 统计与数智部指标库、模型结果库 | 年/月；指标、地区、行业 | 一般至重要；内部可控 | 统一指标编码和图表绑定关系\n图表模板和审校意见 | 报告模板库、专家审校记录 | 事件触发；章节、图表、结论 | 内部资料；权限控制 | 形成审校留痕、版本对比和归档机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 21 (5 rows)",
+      "numbers": [
+        "21",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0264",
+      "kind": "table",
+      "text": "### Table 22 (5 rows)\n关键点/难点 | 影响 | 应对措施\n报告口径稳定性 | 年度报告涉及长期口径、历史口径和最新口径衔接 | 建立年度报告指标字典、章节指标绑定关系和口径变更提示\n自动成稿准确性 | 模型结果、专家判断和文字表述之间可能出现不一致 | 设置关键结论白名单、人工审校流转和签发前复核流程\n图表与正文一致性 | 图表数值、正文判断和附表数据可能出现错位 | 建立图表数据绑定规则，报告生成后自动执行一致性校验\n版本归档复杂 | 多轮修订容易造成版本混乱和意见遗漏 | 保留章节版本、报告版本、审校意见和签发版本四类记录",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 22 (5 rows)",
+      "numbers": [
+        "22",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0265",
+      "kind": "table",
+      "text": "### Table 23 (7 rows)\n实施要素 | 具体内容\n数据来源 | 中电联统计体系、年度快报和年报、国家能源主管部门公开数据、电网和发电企业、交易机构、宏观经济和政策制度信息。\n数据资源 | 年度全社会用电量、最大负荷、分产业用电、装机结构、发电结构、可再生能源装机、市场交易、跨区互济、重点行业用电、历史预测误差和政策事件。\n加工过程 | 形成年度口径冻结、历史序列回填、年度预测基准、情景假设管理、图表自动生成、章节模板调用、结论草拟、人工审校、统一归档。\n服务产品 | 年度电力供需形势预测报告、年度图表包、数据底稿、关键判断摘要、领导审阅版、对外发布版和历史复盘报告。\n服务对象 | 中电联领导、国家部委沟通、行业发布、会员单位服务、内部专业部门和专业条线。\n验收成果 | 年度报告模板库、年度数据底稿库、图表组件库、自动成稿流程、审校记录和归档版本。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 23 (7 rows)",
+      "numbers": [
+        "23",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0266",
+      "kind": "table",
+      "text": "### Table 24 (7 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n电网运行数据 | 小时负荷和分区负荷曲线 | timestamp、region_code、load_mw、max_load_mw、min_load_mw、peak_hour、load_rate、forecast_load_mw、data_quality_flag | 15分钟/小时；区域、省级 | 最大负荷预测、尖峰识别、日内风险判断\n气象机构 | 天气实况和预报数据 | timestamp、region_code、forecast_temperature、max_temperature、min_temperature、humidity、wind_speed、solar_radiation、weather_warning_level、forecast_update_time | 小时/日；区域、省级 | 高温、寒潮、负荷弹性和极端天气场景识别\n发电企业/电网 | 机组可用率和检修停运数据 | date、plant_id、unit_id、power_type、installed_capacity、available_capacity、maintenance_capacity、forced_outage_capacity、fuel_status | 日/小时；机组、电源类型 | 供给可用能力、备用空间、供需缺口测算\n新能源运行数据 | 风光出力和预测数据 | timestamp、station_id、region_code、power_type、actual_output、forecast_output、installed_capacity、curtailment_flag、output_confidence | 15分钟/小时；场站、区域 | 新能源低出力风险和有效供给能力判断\n跨区通道数据 | 跨省跨区通道余量 | timestamp、channel_id、sending_region、receiving_region、transfer_limit、scheduled_power、available_margin、restriction_reason | 小时/日；通道、送受端 | 互济能力、通道约束和保供支撑分析\n需求响应资源 | 需求侧可调节资源数据 | resource_id、region_code、resource_type、declared_capacity、callable_capacity、response_time、contract_status、historical_performance_rate | 事件/日；资源、区域 | 需求响应空间、可调节能力和缓释措施判断",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 24 (7 rows)",
+      "numbers": [
+        "24",
+        "7",
+        "15",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0267",
+      "kind": "table",
+      "text": "### Table 25 (6 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n小时负荷与尖峰负荷 | 国家电网、南方电网、省级电网 | 小时/日；省级、区域 | 重要；需授权 | 先选重点区域试点，统一时钟和负荷口径\n天气预报与极端天气 | 气象机构、NWP预报服务 | 小时/日；城市、区域 | 一般；协议接入 | 建立高温、寒潮、降水和来水事件标签\n机组可用与检修信息 | 发电集团、电网调度侧汇总数据 | 日/小时；机组类型、区域 | 重要；需授权 | 首期采用汇总可用容量，敏感明细不集中复制\n新能源出力和通道余量 | 电网企业、新能源企业、交易机构 | 小时/日；区域、通道 | 重要；需授权 | 形成通道约束和低出力情景测算\n需求响应资源 | 负荷管理中心、聚合商、虚拟电厂主体 | 事件/小时；资源类型、容量 | 重要；需授权 | 先接入资源库和历史响应汇总，逐步做履约校验",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 25 (6 rows)",
+      "numbers": [
+        "25",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0268",
+      "kind": "table",
+      "text": "### Table 26 (5 rows)\n关键点/难点 | 影响 | 应对措施\n高频数据稳定接入 | 小时级和15分钟级数据对接口稳定性、时钟同步和质量校验要求高 | 优先接入重点区域数据，建立时钟对齐、接口监测和异常降级机制\n极端天气不确定性 | 高温、寒潮和突发天气会导致负荷弹性快速变化 | 引入多源气象预报、场景压力测试和专家会商修正\n供给可用能力判断 | 装机容量和可用容量存在差异，检修停运、燃料和来水影响较大 | 建立可用容量字段、机组状态标签和日度供给能力校核流程\n预警发布边界 | 风险预警容易被理解为调度指令或刚性结论 | 统一使用风险等级、预测区间、假设条件和发布审核机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 26 (5 rows)",
+      "numbers": [
+        "26",
+        "5",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0269",
+      "kind": "table",
+      "text": "### Table 27 (7 rows)\n实施要素 | 具体内容\n数据来源 | 电网企业、发电集团、气象机构、交易机构、需求响应管理主体、地方协会和重点省份相关单位。\n数据资源 | 小时负荷、日最大负荷、机组可用率、计划检修、非计划停运、跨区通道余量、风光预测、气温预报、来水偏离、需求响应资源、储能可用能力。\n加工过程 | 确定重点时段窗口，进行气象风险分级、负荷区间预测、供给可用能力计算、跨区互济依赖测算、需求侧缓释能力评估、缺口概率排序和专家会商审校。\n服务产品 | 迎峰度夏专题专报、迎峰度冬专题专报、重点省份紧平衡风险清单、风险等级分布、会商材料、预警阈值和应急情景对比。\n服务对象 | 中电联领导、保供会商机制、运行分析部门、相关专业部门、地方协会和重点会员单位。\n验收成果 | 重点时段风险模型、风险清单模板、专题专报模板、会商流程和预警复盘机制。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 27 (7 rows)",
+      "numbers": [
+        "27",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0270",
+      "kind": "table",
+      "text": "### Table 28 (6 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n新能源场站/电网 | 风电出力数据 | timestamp、station_id、region_code、installed_capacity、actual_output、forecast_output、wind_speed、availability_status、curtailment_flag | 15分钟/小时；场站、区域 | 风电功率预测、低出力风险和区域聚合\n新能源场站/电网 | 光伏出力数据 | timestamp、station_id、region_code、installed_capacity、actual_output、forecast_output、solar_radiation、cloud_cover、availability_status | 15分钟/小时；场站、区域 | 光伏功率预测、日内波动和区域出力评估\n气象机构 | NWP气象预报数据 | forecast_time、valid_time、grid_id、region_code、wind_speed、wind_direction、irradiance、temperature、cloud_cover、precipitation | 小时；气象网格、区域 | 新能源出力外生变量、气象情景模拟\n电网/调度侧 | 限电和消纳约束记录 | timestamp、region_code、station_id、curtailment_energy、curtailment_rate、constraint_type、constraint_reason、grid_limit_code | 小时/日；场站、区域 | 消纳压力识别、约束归因和专题分析\n电网/储能企业 | 并网约束和储能运行状态 | timestamp、node_id、grid_constraint、export_limit、storage_id、SOC、available_power、charge_discharge_status | 小时；节点、区域 | 区域互济、调节能力和有效容量分析",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 28 (6 rows)",
+      "numbers": [
+        "28",
+        "6",
+        "15",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0271",
+      "kind": "table",
+      "text": "### Table 29 (5 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n风光出力数据 | 新能源场站、发电集团、电网企业 | 15分钟/小时/日；场站、区域 | 重要；需授权 | 先使用区域聚合出力，逐步扩展场站级样本\nNWP气象预报 | 气象机构、商业气象服务 | 小时/日；网格、站点、区域 | 一般；协议接入 | 建立气象预报误差校正和版本留痕\n限电和消纳记录 | 电网企业、发电企业、调度汇总数据 | 日/月；区域、场站类型 | 重要；需授权 | 区分网架、调峰、负荷和市场机制影响\n并网约束和储能状态 | 电网企业、储能企业、新能源场站 | 小时/日；节点、区域 | 重要；需授权 | 首期采用区域级约束信息和典型样本",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 29 (5 rows)",
+      "numbers": [
+        "29",
+        "5",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0272",
+      "kind": "table",
+      "text": "### Table 30 (5 rows)\n关键点/难点 | 影响 | 应对措施\n气象预报误差传导 | NWP误差会直接影响风光出力和风险判断 | 采用多源气象预报、滚动校准和概率区间输出\n场站数据可得性 | 场站级数据涉及主体多、授权复杂、质量差异大 | 先按区域聚合接入，逐步建立场站编码、质量评分和授权分级\n有效容量口径 | 新能源装机、实际出力、可信出力和有效容量容易混用 | 建立有效容量计算规则、适用场景和审校流程\n消纳约束归因 | 限电可能由网架、负荷、市场、调峰能力等多因素共同导致 | 建立约束类型标签和专家会商机制，区分技术约束、市场约束和调节约束",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 30 (5 rows)",
+      "numbers": [
+        "30",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0273",
+      "kind": "table",
+      "text": "### Table 31 (7 rows)\n实施要素 | 具体内容\n数据来源 | 新能源发电企业、电网企业、气象机构、交易机构、储能运营主体和重点区域行业协会。\n数据资源 | 风电光伏装机、实发出力、预测出力、NWP、辐照、风速、限电记录、并网约束、储能 SOC、区域负荷、跨区交易和送受端通道利用率。\n加工过程 | 构造气象和出力情景，开展风光概率预测、有效容量估算、限电和消纳压力识别、区域供需平衡测算、跨区互济敏感性分析和风险分级。\n服务产品 | 新能源高占比区域专题报告、风光出力风险图、有效容量评估、消纳压力清单、区域互济建议和政策情景分析。\n服务对象 | 中电联领导、相关专业部门、新能源企业、地方协会、政策研究和行业服务对象。\n验收成果 | 区域新能源数据集、有效容量模型、消纳压力指标、专题看板和样板区域分析成果。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 31 (7 rows)",
+      "numbers": [
+        "31",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0274",
+      "kind": "table",
+      "text": "### Table 32 (6 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n负荷管理/聚合商 | 调节资源清单 | resource_id、subject_id、region_code、resource_type、industry_type、rated_capacity、declared_capacity、callable_capacity、response_duration、resource_status | 资源级；区域、主体、行业 | 资源画像、可调用容量和调节资源库建设\n电网/用户侧 | 基线负荷数据 | timestamp、resource_id、meter_id、baseline_load、actual_load、weather_adjustment_factor、working_day_flag、baseline_method | 15分钟/小时；用户、资源 | 基线计算、响应效果评估和履约核算\n需求响应平台 | 响应事件和执行记录 | event_id、resource_id、event_start、event_end、notice_time、target_reduction、actual_reduction、response_rate、rebound_load | 事件级；资源、区域 | 履约表现、响应稳定性和调节能力评估\n合同与结算系统 | 合同、价格和结算信息 | contract_id、subject_id、resource_id、contract_capacity、price_type、compensation_price、penalty_rule、settlement_amount、settlement_status | 合同级；主体、资源 | 调用成本、履约激励和收益测算\n虚拟电厂运营主体 | 聚合关系和调节策略 | aggregator_id、resource_id、aggregation_group、control_strategy、communication_status、dispatch_priority、available_window、performance_score | 聚合组级；主体、资源 | 聚合能力、可调窗口和调用策略分析",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 32 (6 rows)",
+      "numbers": [
+        "32",
+        "6",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0275",
+      "kind": "table",
+      "text": "### Table 33 (5 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n资源清单 | 负荷管理中心、虚拟电厂运营主体、聚合商 | 资源级；用户、设备、容量 | 重要；需授权 | 建立资源唯一编码，防止重复统计\n基线负荷数据 | 电网企业、聚合商、重点用户 | 15分钟/小时；用户、资源、区域 | 重要；需授权 | 统一基线算法和异常日剔除规则\n响应历史记录 | 需求响应平台、虚拟电厂平台、聚合商 | 事件/小时；响应量、时长 | 重要；需授权 | 核验实际响应能力和履约稳定性\n合同、价格和履约记录 | 交易机构、聚合商、虚拟电厂主体 | 事件/月；合同、价格、奖惩 | 重要；需授权 | 用于履约评价、成本测算和调用建议",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 33 (5 rows)",
+      "numbers": [
+        "33",
+        "5",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0276",
+      "kind": "table",
+      "text": "### Table 34 (5 rows)\n关键点/难点 | 影响 | 应对措施\n基线负荷争议 | 基线算法不同会直接影响响应量、履约率和结算结果 | 统一基线算法、适用条件、气象修正规则和人工复核机制\n资源重复统计 | 同一用户资源可能同时进入多个聚合关系或合同 | 建立资源唯一编码、聚合关系表和重复校验规则\n履约数据可信性 | 响应量、响应时长和反弹负荷需要可核验数据支撑 | 引入计量数据、事件记录、日志审计和第三方核验规则\n主体授权复杂 | 聚合商、用户、电网和平台之间数据边界复杂 | 建立授权台账、用途限定、分级开放和脱敏汇总输出机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 34 (5 rows)",
+      "numbers": [
+        "34",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0277",
+      "kind": "table",
+      "text": "### Table 35 (7 rows)\n实施要素 | 具体内容\n数据来源 | 负荷管理中心、虚拟电厂运营主体、园区和重点用户、电网企业、电力交易机构、地方协会。\n数据资源 | 资源清单、基线负荷、可调容量、响应历史、履约率、响应时长、合同价格、调用记录、行业负荷曲线、聚合商主体信息。\n加工过程 | 开展资源入库、基线负荷核算、可用容量校验、履约评分、聚合能力测算、调用成本估算、响应曲线复盘和异常主体标记。\n服务产品 | 调节资源评估报告、可调用容量清单、履约评价表、重点时段调用建议、需求侧资源库和专题看板。\n服务对象 | 需求侧管理相关部门、保供会商机制、虚拟电厂和聚合商、重点用能企业、地方协会和会员单位。\n验收成果 | 需求响应资源库、基线负荷模型、履约评分规则、可调用容量评估模板和样板场景分析成果。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 35 (7 rows)",
+      "numbers": [
+        "35",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0278",
+      "kind": "table",
+      "text": "### Table 36 (6 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n储能运营企业 | 储能设备运行数据 | timestamp、storage_id、region_code、SOC、rated_power、available_power、charge_power、discharge_power、energy_capacity、operation_mode、cycle_count | 15分钟/小时；设备、区域 | 可用功率、削峰填谷能力和运行策略评估\n充电运营商 | 充电站负荷数据 | timestamp、station_id、region_code、charging_load、charging_sessions、connector_count、utilization_rate、fast_charge_ratio、queue_status | 15分钟/小时；站点、区域 | 充电负荷聚合、尖峰冲击和区域压力分析\n价格和市场数据 | 峰谷电价和价格信号 | period、region_code、price_type、peak_price、flat_price、valley_price、spot_price、price_signal_level、effective_time | 时段/日；区域、价格类型 | 充放电策略、用户行为和峰谷变化分析\n设备和地理数据 | 站点、设备和空间分布信息 | station_id、storage_id、longitude、latitude、grid_node_id、capacity_scale、service_area、operation_status、owner_type | 设备/站点级；空间位置 | 空间映射、局部冲击和配网压力识别\n电网运行数据 | 区域负荷和局部节点负荷 | timestamp、region_code、node_id、regional_load、node_load、peak_load、transformer_load_rate、line_load_rate | 15分钟/小时；区域、节点 | 储能和充电负荷对峰谷、节点和局部负荷影响评估",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 36 (6 rows)",
+      "numbers": [
+        "36",
+        "6",
+        "15",
+        "15",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0279",
+      "kind": "table",
+      "text": "### Table 37 (5 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n储能SOC和运行策略 | 储能运营商、电网企业、用户侧储能主体 | 15分钟/小时；站点、区域 | 重要；需授权 | 先做区域和典型站点样本，敏感策略受控使用\n充电站负荷 | 充电运营商、电网企业 | 15分钟/小时；站点、区域、类型 | 重要；需授权 | 区分快充、慢充、园区和重卡补能类型\n峰谷电价和交易价格 | 价格主管部门、交易机构、电网企业 | 时段/月；区域、电价类型 | 一般至重要；公开或授权 | 用于行为响应和策略模拟\n地理和接入节点信息 | 充电运营商、电网企业、地方协会 | 站点/区域；坐标、接入容量 | 重要；需授权 | 首期用区域化信息，逐步引入节点影响评估",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 37 (5 rows)",
+      "numbers": [
+        "37",
+        "5",
+        "15",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0280",
+      "kind": "table",
+      "text": "### Table 38 (5 rows)\n关键点/难点 | 影响 | 应对措施\n多主体数据分散 | 储能和充电运营主体多，数据接口和字段标准差异大 | 建立统一设备编码、站点编码、接口模板和数据质量评分\n空间颗粒度不足 | 仅有区域汇总数据难以识别局部节点冲击 | 逐步接入站点位置、接入节点和配网负载率等空间字段\n运行策略敏感 | 储能充放电策略和充电运营策略涉及企业经营信息 | 采用策略标签化、汇总输出和敏感字段分级授权\n行为变化难预测 | 节假日、价格变化和充电习惯会造成负荷形态变化 | 建立典型日样本库、价格敏感性模型和事件标签库",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 38 (5 rows)",
+      "numbers": [
+        "38",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0281",
+      "kind": "table",
+      "text": "### Table 39 (7 rows)\n实施要素 | 具体内容\n数据来源 | 储能运营主体、充电运营商、电网企业、地方协会、价格信息、气象数据和节假日出行信息。\n数据资源 | 储能 SOC、可用功率、可用时长、充放电策略、站级充电负荷、区域充电负荷、峰谷电价、地理分布、节假日出行特征和温度变量。\n加工过程 | 清洗负荷曲线，识别峰谷特征，建立充电行为模型，测算储能可用能力，评估局部负荷冲击，开展削峰填谷模拟和实际效果复盘。\n服务产品 | 充电负荷影响报告、储能调节能力评估、区域峰荷贡献分析、削峰填谷效果测算、专题看板和策略模拟结果。\n服务对象 | 中电联相关专业部门、地方协会、储能和充电运营主体、重点会员单位和专题研究对象。\n验收成果 | 储能与充电负荷专题数据集、影响评估模型、区域样板分析、策略模拟模板和复盘机制。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 39 (7 rows)",
+      "numbers": [
+        "39",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0282",
+      "kind": "table",
+      "text": "### Table 40 (6 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n电力交易机构 | 中长期交易数据 | trade_date、contract_id、market_type、contract_type、buyer_region、seller_region、traded_energy、contract_price、delivery_period、participant_type | 日/月；合同、区域、主体类型 | 交易结构、合同曲线和供需平衡影响分析\n电力交易机构 | 现货交易数据 | trading_day、time_interval、node_or_zone、clearing_price、clearing_energy、bid_volume、offer_volume、congestion_flag、price_cap_flag | 15分钟/小时；节点、分区 | 价格敏感性、时段供需紧张和市场信号分析\n交易/调度机构 | 辅助服务和备用数据 | service_date、service_type、provider_type、cleared_capacity、cleared_price、response_time、availability_status、settlement_amount | 日/小时；服务类型、主体 | 调节资源、备用能力和保供支撑分析\n交易机构 | 跨省跨区和绿电交易数据 | trade_period、sending_region、receiving_region、channel_id、cross_region_energy、green_power_energy、green_certificate_flag、settlement_status | 日/月；通道、送受端 | 区域互济、绿电交易和外送受入依赖分析\n市场公开和内部分析 | 价格信号与市场特征数据 | period、region_code、price_index、peak_valley_spread、volatility_index、transaction_ratio、market_concentration、policy_event_tag | 日/月；区域、市场类型 | 市场化因素对需求、互济和风险判断的解释",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 40 (6 rows)",
+      "numbers": [
+        "40",
+        "6",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0283",
+      "kind": "table",
+      "text": "### Table 41 (5 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n中长期与现货交易数据 | 北京/广州电力交易中心、省级交易机构 | 小时/日/月；市场、区域、交易品种 | 重要；需授权 | 先接入汇总和脱敏数据，逐步增加曲线信息\n辅助服务和容量相关数据 | 交易机构、电网企业、辅助服务市场主体 | 小时/月；备用、调频、爬坡 | 重要；需授权 | 作为供需风险和灵活性修正变量\n跨省跨区和绿电交易 | 交易机构、电网企业 | 日/月；送端、受端、通道、品种 | 重要；需授权 | 区分合同电量、结算电量和实际输电约束\n价格信号和市场规则 | 交易机构、公开市场公告、政策文件 | 小时/月；价格、规则、事件 | 一般至重要；公开或授权 | 用于情景推演和敏感性分析，避免简单因果归因",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 41 (5 rows)",
+      "numbers": [
+        "41",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0284",
+      "kind": "table",
+      "text": "### Table 42 (5 rows)\n关键点/难点 | 影响 | 应对措施\n交易数据敏感性 | 交易主体、价格和合同信息具有较强商业敏感属性 | 采用汇总级接入、脱敏展示、分级授权和用途限定\n市场规则变化快 | 现货、辅助服务、绿电交易规则持续调整，历史样本可比性不足 | 建立市场规则版本表和政策事件标签，模型训练按规则阶段分层\n价格影响归因复杂 | 价格变化同时受负荷、新能源、燃料、通道和市场规则影响 | 采用情景推演、变量贡献分解和专家会商相结合\n跨区交易口径差异 | 送端、受端、合同、结算和实际输电口径可能不一致 | 统一交易口径、结算口径和物理互济口径，保留字段映射关系",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 42 (5 rows)",
+      "numbers": [
+        "42",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0285",
+      "kind": "table",
+      "text": "### Table 43 (7 rows)\n实施要素 | 具体内容\n数据来源 | 北京电力交易中心、广州电力交易中心、省级交易机构、电网企业、发电集团、绿电交易和市场公开信息。\n数据资源 | 市场化交易电量、跨省跨区交易电量、绿电交易电量、中长期合同曲线、现货出清价格和电量、辅助服务、通道利用率、送受端分布。\n加工过程 | 归集交易数据，按区域、品种、主体和时间粒度统计，构建市场化率、跨区依赖、绿电占比、交易价格和通道约束特征，测算市场变量对供需平衡的影响。\n服务产品 | 市场交易影响专题、跨区互济分析、绿电交易观察、现货运行影响评估、政策情景比较和指标接口。\n服务对象 | 中电联领导、市场分析相关部门、政策研究、会员单位、交易机构协同服务对象。\n验收成果 | 交易影响指标库、跨区互济测算模板、绿电交易观察模型、市场专题报告和 API 指标服务。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 43 (7 rows)",
+      "numbers": [
+        "43",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0286",
+      "kind": "table",
+      "text": "### Table 44 (4 rows)\n阶段 | 重点场景 | 数据成果 | 产品成果 | 验收重点\n首期 | 全国月度与季度供需形势分析、年度报告自动化。 | 核心指标口径、统计和交易数据链路、质量规则、发布时点视图。 | 月报、季报、年度报告模板、领导驾驶舱、风险热力图。 | 月度成果稳定形成，数据和模型版本可回放，人工审校流程可运行。\n二期 | 迎峰度夏度冬预测预警、新能源高占比区域供需风险分析。 | 小时负荷、气象预测、机组可用、新能源出力、通道余量和区域样本。 | 专题专报、风险清单、区域预警、消纳压力分析。 | 重点时段风险识别具备提前量，专题结果可进入会商。\n三期 | 需求响应、虚拟电厂、储能、充电负荷和市场交易影响分析。 | 新型主体资源、履约记录、储能状态、充电负荷、市场交易和价格数据。 | 调节能力评估、市场影响专题、接口服务、场景推演。 | 形成可复制场景包，支撑会员服务和持续运营。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 44 (4 rows)",
+      "numbers": [
+        "44",
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0287",
+      "kind": "table",
+      "text": "### Table 45 (4 rows)\n数据状态 | 典型数据 | 处理方式 | 建设要求\n已掌握数据 | 统计报表、月报季报、年度报告、历史指标库 | 直接纳入首期建设 | 统一口径、版本留痕、质量评分\n可协调数据 | 电网负荷、发电装机、交易互济、气象数据、重点行业样本 | 建立数据合作清单和授权边界 | 明确来源单位、字段、粒度、频率和责任人\n难获取数据 | 细粒度用户负荷、场站级风光出力、储能SOC、虚拟电厂资源、现货出清明细 | 先使用汇总级、脱敏级、样板区域数据 | 设置替代数据、降级模型和输出限制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 45 (4 rows)",
+      "numbers": [
+        "45",
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0288",
+      "kind": "table",
+      "text": "### Table 46 (8 rows)\n场景 | 关键数据项/字段 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n全国月度与季度分析 | 用电量、负荷、装机、发电量、交易电量、气象偏离 | 中电联统计体系、电网企业、交易机构、气象机构 | 月/季；全国/省级/行业 | 一般至重要；已掌握+可协调 | 直接纳入首期，缺口用公开和历史同类数据补足\n年度报告自动化 | 模型结果、历史报告、图表模板、指标附表、审校意见 | 供需分析处、统计数据系统、报告发布链路 | 年/月；章节/指标/图表 | 内部资料；权限控制 | 纳入模板治理和版本归档\n迎峰度夏度冬 | 小时负荷、天气、可用容量、新能源出力、通道余量、需求响应 | 电网企业、发电集团、气象机构、聚合商 | 小时/日；重点区域 | 重要；需授权 | 先做重点省份试点，建立降级运行机制\n新能源高占比区域 | 风光出力、NWP、限电、并网约束、储能状态 | 新能源企业、电网企业、气象机构、储能主体 | 15分钟/小时/日；区域/场站 | 重要；需授权 | 先接入区域聚合数据，逐步扩场站样本\n需求响应与虚拟电厂 | 资源清单、基线负荷、响应记录、合同价格、履约记录 | 负荷管理中心、聚合商、虚拟电厂主体、交易机构 | 资源/小时/事件 | 重要；需授权 | 先做资源库和履约核验\n储能与充电负荷 | SOC、充电站负荷、电价、运行策略、地理位置 | 储能企业、充电运营商、电网企业、地方协会 | 15分钟/小时；站点/区域 | 重要；需授权 | 先做典型区域和样本站点\n市场交易影响 | 中长期、现货、辅助服务、跨区交易、绿电、价格信号 | 交易机构、电网企业、市场公告 | 小时/日/月；市场/区域 | 重要；需授权 | 先汇总脱敏分析，审慎做影响归因",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 46 (8 rows)",
+      "numbers": [
+        "46",
+        "8",
+        "15",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0289",
+      "kind": "table",
+      "text": "### Table 47 (8 rows)\n场景 | 数据验收 | 模型验收 | 产品验收 | 机制验收\n全国月度与季度分析 | 核心指标口径覆盖率、数据质量评分、发布时点视图完整性 | 全国月度误差、省级误差、方向命中率、区间覆盖率 | 月报、季报、风险热力图、修订说明稳定生成 | 月度复盘、口径争议闭环、版本回放成功\n年度报告自动化 | 年度指标和图表模板绑定完整 | 关键结论一致性和异常提示准确 | 年度报告草稿、图表包、指标附表、归档版本形成 | 审校流转、版本对比、签发前复核闭环\n迎峰度夏度冬 | 小时负荷、天气、可用容量和通道数据稳定接入 | 最大负荷区间、缺口识别、风险等级命中率 | 重点时段专报、风险清单、告警提示、保供建议形成 | 应急会商、发布审核、日志审计可执行\n新能源高占比区域 | 风光出力、NWP、限电记录和约束数据匹配 | 风光功率预测、有效容量、消纳压力识别 | 区域专题、风险地图、有效容量分析、调节建议形成 | 专家校核、模型复盘、场景库迭代\n需求响应与虚拟电厂 | 资源唯一编码、基线负荷和履约记录可核验 | 可调用容量、履约率、响应潜力评估稳定 | 资源库、能力评估报告、履约评价、调用建议形成 | 授权台账、专家会商、结果审校闭环\n储能与充电负荷 | SOC、站点负荷、电价、地理信息可用 | 峰谷影响、局部冲击、削峰填谷测算可复盘 | 影响评估、峰谷变化图、冲击预警、削峰建议形成 | 模型校核、发布审核、数据安全可控\n市场交易影响 | 交易数据口径、时段映射、价格校验完成 | 市场影响、价格敏感性、互济测算结果可解释 | 市场专题、交易看板、互济分析、风险提示形成 | 敏感数据审查、发布口径、审计留痕到位",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 47 (8 rows)",
+      "numbers": [
+        "47",
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0290",
+      "kind": "table",
+      "text": "### Table 48 (6 rows)\n范围 | 首期纳入 | 暂缓纳入 | 原因\n业务场景 | 全国月度与季度供需形势分析、年度报告自动化 | 日前/日内缺口预警、实时调度级预警 | 首期以低敏、低频、强职责场景打底座\n数据资源 | 统计报表、装机发电、交易汇总、宏观气象、历史报告模板 | 用户侧细粒度负荷、场站级全量出力、储能全量SOC、现货明细 | 授权难度和敏感等级较高\n模型能力 | 趋势模型、回归模型、机器学习修正、滚动回测、贡献分解 | TFT/Transformer全量上线、联邦学习、实时概率预警 | 待样本规模、算力和运维能力成熟后推进\n服务产品 | 月报、季报、年度报告、领导驾驶舱、风险清单、修订说明 | 移动端订阅、外部API规模化开放、实时告警中心 | 先保障内部发布和会商支撑\n组织机制 | 牵头处室、工作专班、审校发布、月度复盘 | 全国多主体常态化运营中心 | 随数据合作和场景扩展逐步形成",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 48 (6 rows)",
+      "numbers": [
+        "48",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0291",
+      "kind": "table",
+      "text": "### Table 49 (5 rows)\n层级 | 模型能力 | 适用场景 | 建设阶段 | 治理要求\n基础层 | 同比环比、趋势外推、SARIMAX、回归模型 | 月度季度分析、年度报告 | 首期必须具备 | 保存数据版本、口径版本和回测结果\n增强层 | LightGBM、XGBoost、变量贡献分解、滚动权重集成 | 月度修正、重点时段预警、新能源专题 | 首期后半段至二期 | 建立模型注册、误差复盘和漂移监测\n高阶层 | TFT、Transformer、概率预测、情景模拟 | 高频预警、需求响应、储能充电和市场影响 | 二期以后按场景引入 | 实施灰度发布、专家校核和版本回滚\n协同层 | 联邦学习、隐私计算、安全多方计算、可信执行环境 | 跨主体高敏数据协同建模 | 重点场景试点引入 | 执行分级授权、用途限定和全链路审计",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 49 (5 rows)",
+      "numbers": [
+        "49",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0292",
+      "kind": "table",
+      "text": "### Table 50 (8 rows)\n场景 | 可能缺失数据 | 替代数据 | 降级模型 | 输出限制\n全国月度与季度分析 | 日负荷或重点行业高频指标 | 历史同月、三年同期、宏观和气象公开数据 | 趋势外推+回归修正 | 仅发布月度区间和偏离解释，弱化短期判断\n年度报告自动化 | 部分月度快报或审校意见 | 上一轮定稿、季度数据、历史报告模板 | 模板映射+人工审校 | 标注待修订章节，不自动生成最终结论\n迎峰度夏度冬 | 小时负荷、机组可用率、通道余量 | 日负荷峰值、历史同类天气、专家会商结果 | 历史相似日+区间预测 | 只发布风险等级和情景范围，不发布精确缺口\n新能源高占比区域 | 场站级出力或NWP细网格数据 | 区域聚合出力、公共气象、历史低出力样本 | 区域概率预测+情景模拟 | 不输出场站级判断，只输出区域风险\n需求响应与虚拟电厂 | 基线负荷或履约记录 | 申报容量、历史事件、样本用户数据 | 保守折减系数+履约评分 | 只输出可调用容量区间，不出精确调用建议\n储能与充电负荷 | SOC、站点级充电负荷、地理位置 | 区域负荷曲线、典型站点样本、公开电价 | 典型日聚类+峰谷影响评估 | 只输出区域影响和专题判断\n市场交易影响 | 现货出清明细、辅助服务明细 | 汇总交易电量、价格区间、市场公告 | 情景比较+敏感性分析 | 只输出影响方向和风险提示，避免强因果结论",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 50 (8 rows)",
+      "numbers": [
+        "50",
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0293",
+      "kind": "table",
+      "text": "### Table 51 (10 rows)\n组织单元 | 牵头/参与 | 主要职责\n领导协调机制 | 中电联领导统筹 | 审定工作定位、建设目标、重大资源协调、外部合作和阶段成果\n牵头处室 | 统计与数智部电力供需分析处 | 牵头工作设计、业务需求、指标口径、供需模型、报告成果、会商组织和日常推进\n业务研究组 | 电力供需分析处牵头，相关研究力量参与 | 负责供需形势判断、模型需求、专题场景、报告逻辑和专家会商\n数据治理组 | 统计与数据相关岗位参与 | 负责数据目录、指标字典、主数据、质量规则、版本管理和数据授权台账\n模型算法组 | 数据科学、算法和外部技术力量参与 | 负责模型训练、回测、集成、解释、漂移监测和持续优化\n平台建设组 | 信息化和技术实施力量参与 | 负责湖仓一体、时序数据库、API网关、报告引擎、驾驶舱和MLOps平台建设\n安全合规组 | 网络安全、数据安全、法务合规力量参与 | 负责数据分类分级、权限控制、日志审计、安全测评、保密审查和应急预案\n报告发布组 | 供需分析处牵头，相关处室配合 | 负责自动成稿、人工审校、发布审核、口径一致性和成果归档\n外部协同组 | 牵头处室会同相关部门 | 负责与电网、发电集团、交易中心、气象机构、地方协会和新型主体对接",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 51 (10 rows)",
+      "numbers": [
+        "51",
+        "10"
+      ]
+    },
+    {
+      "unit_id": "U0294",
+      "kind": "table",
+      "text": "### Table 52 (5 rows)\n阶段 | 重点任务 | 主要成果 | 验收重点\n0—3个月：夯基启动 | 成立工作专班，完成数据和系统摸底，形成数据目录、指标字典、口径主表、首期场景方案和原型设计 | 项目章程、数据资源目录v1、指标字典v1、场景方案、原型驾驶舱、报告模板 | 牵头机制明确；首批数据清单明确；统一编码和口径框架形成\n3—9个月：一期成型 | 建设数据接入、质量规则、样本仓、基线模型、机器学习修正模型和月报自动化流程 | 数据平台一期、月度预测模型v1、自动月报引擎、人工审校工作台、误差复盘机制 | 月报稳定自动成稿；全国和重点区域预测结果可解释；发布链路可回放\n9—18个月：能力扩展 | 形成季度滚动预测、层级一致性校正、区间预测、区域风险热力图、API服务和专题专报能力 | 季报模型v1、风险地图、API目录、专题专报模板、发布版本快照 | 季度预测稳定运行；风险清单可生成；报告和看板联动\n18—36个月：场景拓展 | 扩展迎峰度夏度冬、新能源高占比区域、需求响应、虚拟电厂、储能和充电负荷等场景 | 场景扩展包、情景推演模块、年度模型评估报告、标准化服务目录 | 场景产品可复用；模型持续迭代；形成常态化运营机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 52 (5 rows)",
+      "numbers": [
+        "52",
+        "5",
+        "0",
+        "3",
+        "3",
+        "9",
+        "9",
+        "18",
+        "18",
+        "36"
+      ]
+    },
+    {
+      "unit_id": "U0295",
+      "kind": "table",
+      "text": "### Table 53 (5 rows)\n试点类型 | 建议范围 | 选择原则 | 阶段目标\n全国总盘 | 全社会用电量、最大负荷、装机、发电量、利用小时、跨区交易等全国口径。 | 优先使用中电联统计体系和公开权威数据。 | 形成月度、季度、年度总盘分析能力。\n区域样板 | 选择1—2个典型区域，兼顾负荷增长快、新能源占比高、跨区互济频繁等特征。 | 数据基础较好，业务价值明显，可形成示范。 | 验证区域平衡、风险热力图和数据治理流程。\n重点省份 | 选择迎峰压力较大、新能源占比较高或数据基础较好的省份。 | 具备地方协会、电网企业或重点企业协同基础。 | 形成重点省份风险清单和专题会商样板。\n专题样板 | 新能源高占比区域、需求响应资源、储能与充电负荷择一先做。 | 数据可获得性较高，场景边界清晰。 | 形成可复制场景包和专题产品模板。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 53 (5 rows)",
+      "numbers": [
+        "53",
+        "5",
+        "1",
+        "2"
+      ]
+    },
+    {
+      "unit_id": "U0296",
+      "kind": "table",
+      "text": "### Table 54 (5 rows)\n成果类别 | 阶段表达 | 可检验成果\n数据成果 | 建立统一数据底座和指标口径体系 | 数据资源目录、指标字典、主数据编码、质量规则、授权台账\n模型成果 | 形成月度和季度滚动预测模型 | 基线模型、机器学习修正、回测报告、误差复盘、区间预测\n产品成果 | 形成可自动生成、可审校发布、可看板展示的业务产品 | 月报、季报、年度报告模板、驾驶舱、风险热力图、API服务\n机制成果 | 形成跨部门、跨主体、跨数据源的工作闭环 | 工作专班、会商机制、发布流程、审计留痕、阶段验收",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 54 (5 rows)",
+      "numbers": [
+        "54",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0297",
+      "kind": "table",
+      "text": "### Table 55 (4 rows)\n档位 | 三年新增预算参考 | 配置特点 | 适用情形\n精简版 | 约300万—450万元 | 复用存量系统为主，建设轻量数据底座、基础预测模型、报告自动化和少量专题场景 | 适合先做全国总盘、月报季报、年度报告自动化和基础看板\n中等版 | 约700万—0.1亿元 | 建设行业级平台一期和二期，覆盖数据治理、湖仓一体、时序数据库、MLOps、场景推演、API和可视化 | 建议作为主方案测算，兼顾首期落地和后续扩展\n全面版 | 约0.3亿—0.5亿元 | 增加区域边缘节点、双活容灾、联邦学习/隐私计算、全链路安全和规模化运营能力 | 适合面向全国多主体协同、高频运行预测和高可用运营",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 55 (4 rows)",
+      "numbers": [
+        "55",
+        "4",
+        "300",
+        "450",
+        "700",
+        "0.1",
+        "0.3",
+        "0.5"
+      ]
+    },
+    {
+      "unit_id": "U0298",
+      "kind": "table",
+      "text": "### Table 56 (7 rows)\n预算类型 | 主要内容 | 测算关注点\n一期原型建设费用 | 数据导入、指标字典、月度模型、报告自动化、原型驾驶舱、人工审校流程。 | 与首期可验收产品直接对应，优先保障可运行闭环。\n平台能力建设费用 | 湖仓一体、时序数据库、API网关、MLOps、看板系统、报告引擎。 | 区分存量复用和新增建设，避免重复投资。\n外部数据和接口费用 | 气象、市场、宏观、新能源、需求侧、储能和充电负荷等外部数据服务。 | 按数据来源、更新频率、授权方式和服务期限测算。\n安全合规费用 | 数据分类分级、等保测评、权限体系、日志审计、脱敏水印和应急演练。 | 作为平台建设硬约束，纳入一期任务边界。\n运营维护费用 | 模型迭代、接口维护、报告运营、SLA监控、故障处置和版本归档。 | 按年度持续运行费用单独安排。\n专家会商和标准化费用 | 专家评审、专题会商、指标口径论证、数据标准和场景验收。 | 保障模型结果与行业经验、发布口径保持一致。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 56 (7 rows)",
+      "numbers": [
+        "56",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0299",
+      "kind": "table",
+      "text": "### Table 57 (5 rows)\n阶段 | 建议人员配置 | 重点能力\n0—3个月 | 12—18人 | 业务专家、数据治理、架构设计、数据开发、信息安全、项目管理\n3—9个月 | 18—30人 | 算法工程、数据工程、前端看板、测试、MLOps、报告产品\n9—18个月 | 25—40人 | SRE、产品经理、报告运营、专题专家、API服务和安全运维\n18—36个月 | 30—50人 | 专家池、场景运营、外部合作、持续训练、用户服务和标准化输出",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 57 (5 rows)",
+      "numbers": [
+        "57",
+        "5",
+        "0",
+        "3",
+        "12",
+        "18",
+        "3",
+        "9",
+        "18",
+        "30",
+        "9",
+        "18",
+        "25",
+        "40",
+        "18",
+        "36",
+        "30",
+        "50"
+      ]
+    },
+    {
+      "unit_id": "U0300",
+      "kind": "table",
+      "text": "### Table 58 (8 rows)\n风险类别 | 典型表现 | 技术措施 | 管理措施\n数据合规风险 | 未经授权使用敏感数据、数据分级不清、共享越界 | 分类分级、最小权限、脱敏、密钥管理、访问水印、审计日志 | 数据合同、用途限定、授权台账、定期审计\n数据质量风险 | 缺失、延迟、口径不一、历史修订失控、样本污染 | 质量规则引擎、异常检测、版本视图、备用数据源 | 责任清单、人工审校、月度复盘、口径争议闭环\n模型偏差风险 | 极端天气、政策跃迁、春节错位、新型负荷突变导致预测失真 | 多模型集成、漂移监测、区间预测、事件标签、滚动重训 | 专家会商、灰度发布、重大事件人工复核\n系统可靠性风险 | 接口中断、作业失败、平台不可用、灾备失效 | SLA监控、自动重试、分区隔离、双环境发布、容灾备份 | 值班制度、应急预案、故障复盘、供应商考核\n网络和数据安全风险 | 越权访问、接口滥用、数据泄漏、勒索攻击 | 零信任、堡垒机、日志审计、渗透测试、安全态势感知 | 安全责任书、事件通报、应急演练、保密审查\n组织协同风险 | 多部门多单位职责不清，数据不到位，结果不被采信 | 统一工作台、口径版本库、流程化审校 | 牵头处室、RACI矩阵、联席机制、领导协调\n声誉与发布风险 | 预测结论被误读，报告边界表达不清，结果被不当引用 | 固定输出假设、区间、方法边界和误差说明 | 发布审核委员会、对外口径模板、快速澄清机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 58 (8 rows)",
+      "numbers": [
+        "58",
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0301",
+      "kind": "table",
+      "text": "### Table 59 (5 rows)\n成果层级 | 使用范围 | 内容边界 | 审核要求\n内部测算版 | 供需分析处、模型算法组、数据治理组。 | 原始预测、误差表现、模型解释、数据质量问题和敏感字段提示。 | 业务负责人和数据治理负责人审核。\n会商研判版 | 工作专班、专家会商机制、相关专业部门。 | 风险区间、情景判断、专家修正意见、需要协调的数据和口径问题。 | 专家会商确认，形成修订记录。\n领导参阅版 | 中电联领导和重大事项协调机制。 | 核心判断、重点风险、趋势变化、建议事项和需协调事项。 | 牵头处室审核，必要时提交领导审定。\n对外发布版 | 会员单位、行业公开、外部沟通。 | 审定结论、统一口径、必要假设说明和适用范围。 | 发布审核流程、保密审查和版本归档。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 59 (5 rows)",
+      "numbers": [
+        "59",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0302",
+      "kind": "table",
+      "text": "### Table 60 (8 rows)\n事项 | 建议审定内容 | 审定后推进动作\n工作定位 | 同意将电力供需形势预测工作定位为中电联行业级公共预测与预警能力建设工程 | 纳入中电联重点数字化和行业服务能力建设事项\n牵头机制 | 同意由统计与数智部电力供需分析处牵头，建立跨部门工作专班和专家会商机制 | 明确牵头处室、成员单位、职责分工和月度推进机制\n首期场景 | 同意以全国月度与季度供需形势分析及年度报告自动化作为首期建设场景 | 启动数据目录、指标口径、月报模型、报告引擎和原型驾驶舱建设\n摸底调研 | 同意开展现有数据资源、技术底座、授权边界、模型基础和发布流程专项摸底 | 形成专项摸底报告、需求清单和一期任务书\n外部协同 | 同意由中电联牵头与电网企业、发电集团、交易中心、气象机构等建立数据与业务协同机制 | 推动形成首批数据合作清单和沟通机制\n建设路径 | 原则同意按夯基、成型、扩围、运营四阶段推进 | 细化一期建设计划、预算测算、采购需求和验收标准\n安全要求 | 同意将数据安全、网络安全、发布审核和版本追溯作为平台建设硬约束 | 同步建设授权、审计、分级保护和应急预案",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 60 (8 rows)",
+      "numbers": [
+        "60",
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0303",
+      "kind": "table",
+      "text": "### Table 61 (7 rows)\n指标类别 | 首期核心指标 | 说明\n需求指标 | 全社会用电量、分产业用电量、重点行业用电量、最大负荷、负荷率、同比、环比 | 支撑需求增长、结构变化和尖峰压力判断\n供给指标 | 发电量、装机容量、利用小时、新增装机、可再生能源装机、发电结构 | 支撑供给能力和结构分析\n平衡指标 | 全国供需平衡、区域供需平衡、省级供需风险、有效容量、备用空间 | 支撑风险识别和会商研判\n市场指标 | 市场化交易电量、跨省跨区交易、绿电交易、中长期交易、现货交易 | 支撑市场化影响分析\n气象指标 | 平均气温、极端高温天数、极端低温天数、CDD、HDD、降水和来水偏离 | 支撑气象扰动和负荷弹性分析\n解释指标 | 宏观景气、产业结构、节假日、春节错位、政策事件、重点行业景气 | 支撑偏离解释和情景推演",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 61 (7 rows)",
+      "numbers": [
+        "61",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0304",
+      "kind": "table",
+      "text": "### Table 62 (7 rows)\n摸底内容 | 需确认事项 | 责任建议\n数据资源 | 字段名、粒度、历史长度、更新频率、责任部门、存量质量问题 | 数据治理组牵头\n授权边界 | 与电网、发电集团、交易中心、气象机构等数据授权现状和用途限制 | 外部协同组和安全合规组\n技术底座 | 数据库、数据湖、消息总线、API网关、算力、容灾、安全设施 | 平台建设组牵头\n模型基础 | 现有负荷预测、电量预测、供需平衡、情景分析模型及误差表现 | 模型算法组牵头\n发布流程 | 现有月报、季报、年度报告形成、审校、签发和归档流程 | 报告发布组牵头\n人员能力 | 供需分析、数据治理、算法、平台、安全、运维人员规模和缺口 | 项目办公室牵头",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 62 (7 rows)",
+      "numbers": [
+        "62",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0305",
+      "kind": "table",
+      "text": "### Table 63 (7 rows)\n功能域 | 一期功能 | 二期及以后功能\n数据接入 | 批量导入、字段校验、质量打分、人工补录 | 准实时接口、消息总线、数据沙箱、外部API管理\n数据治理 | 指标字典、主数据、质量规则、版本视图 | 血缘追踪、自动异常修复、分级授权、共享评价\n模型管理 | 基线模型、机器学习修正、滚动回测、模型注册 | 多步预测、区间预测、层级一致性、漂移监测\n报告产品 | 月报、季报、年度报告模板、自动成稿、人工审校 | 专题专报、智能会商助手、多语言/多版本发布\n看板服务 | 全国总盘、区域热力图、指标趋势、风险清单 | 场景推演、专题驾驶舱、订阅告警、移动端适配\n运维安全 | 用户权限、日志审计、备份、接口监控 | 零信任、应急切换、容灾演练、安全态势感知",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 63 (7 rows)",
+      "numbers": [
+        "63",
+        "7"
+      ]
+    }
+  ],
+  "chunks": [
+    {
+      "chunk_id": "C001",
+      "unit_ids": [
+        "U0001",
+        "U0002",
+        "U0003",
+        "U0004",
+        "U0005",
+        "U0006",
+        "U0007",
+        "U0008",
+        "U0009",
+        "U0010",
+        "U0011",
+        "U0012",
+        "U0013",
+        "U0014",
+        "U0015",
+        "U0016",
+        "U0017",
+        "U0018",
+        "U0019",
+        "U0020",
+        "U0021",
+        "U0022",
+        "U0023",
+        "U0024",
+        "U0025",
+        "U0026",
+        "U0027",
+        "U0028",
+        "U0029",
+        "U0030",
+        "U0031",
+        "U0032",
+        "U0033",
+        "U0034",
+        "U0035",
+        "U0036",
+        "U0037",
+        "U0038",
+        "U0039",
+        "U0040",
+        "U0041",
+        "U0042",
+        "U0043",
+        "U0044",
+        "U0045",
+        "U0046",
+        "U0047",
+        "U0048",
+        "U0049",
+        "U0050",
+        "U0051",
+        "U0052",
+        "U0053",
+        "U0054",
+        "U0055",
+        "U0056",
+        "U0057",
+        "U0058",
+        "U0059",
+        "U0060",
+        "U0061",
+        "U0062",
+        "U0063",
+        "U0064",
+        "U0065",
+        "U0066",
+        "U0067",
+        "U0068",
+        "U0069",
+        "U0070",
+        "U0071",
+        "U0072",
+        "U0073",
+        "U0074",
+        "U0075",
+        "U0076",
+        "U0077",
+        "U0078",
+        "U0079",
+        "U0080",
+        "U0081",
+        "U0082",
+        "U0083",
+        "U0084",
+        "U0085",
+        "U0086",
+        "U0087",
+        "U0088",
+        "U0089",
+        "U0090",
+        "U0091",
+        "U0092",
+        "U0093",
+        "U0094",
+        "U0095",
+        "U0096",
+        "U0097",
+        "U0098",
+        "U0099",
+        "U0100",
+        "U0101",
+        "U0102",
+        "U0103",
+        "U0104",
+        "U0105",
+        "U0106",
+        "U0107",
+        "U0108",
+        "U0109",
+        "U0110",
+        "U0111",
+        "U0112",
+        "U0113",
+        "U0114",
+        "U0115",
+        "U0116",
+        "U0117",
+        "U0118",
+        "U0119",
+        "U0120",
+        "U0121",
+        "U0122",
+        "U0123",
+        "U0124",
+        "U0125",
+        "U0126",
+        "U0127",
+        "U0128",
+        "U0129",
+        "U0130",
+        "U0131",
+        "U0132",
+        "U0133",
+        "U0134",
+        "U0135",
+        "U0136",
+        "U0137",
+        "U0138",
+        "U0139",
+        "U0140",
+        "U0141",
+        "U0142",
+        "U0143",
+        "U0144",
+        "U0145",
+        "U0146",
+        "U0147",
+        "U0148",
+        "U0149",
+        "U0150",
+        "U0151",
+        "U0152",
+        "U0153",
+        "U0154",
+        "U0155",
+        "U0156",
+        "U0157",
+        "U0158",
+        "U0159",
+        "U0160",
+        "U0161",
+        "U0162",
+        "U0163",
+        "U0164",
+        "U0165",
+        "U0166",
+        "U0167",
+        "U0168",
+        "U0169",
+        "U0170",
+        "U0171",
+        "U0172",
+        "U0173",
+        "U0174",
+        "U0175",
+        "U0176",
+        "U0177",
+        "U0178",
+        "U0179",
+        "U0180",
+        "U0181",
+        "U0182",
+        "U0183",
+        "U0184",
+        "U0185",
+        "U0186",
+        "U0187",
+        "U0188",
+        "U0189",
+        "U0190",
+        "U0191",
+        "U0192",
+        "U0193",
+        "U0194",
+        "U0195",
+        "U0196",
+        "U0197",
+        "U0198",
+        "U0199",
+        "U0200",
+        "U0201",
+        "U0202",
+        "U0203",
+        "U0204",
+        "U0205",
+        "U0206",
+        "U0207",
+        "U0208",
+        "U0209",
+        "U0210",
+        "U0211",
+        "U0212",
+        "U0213",
+        "U0214",
+        "U0215",
+        "U0216",
+        "U0217",
+        "U0218",
+        "U0219",
+        "U0220",
+        "U0221",
+        "U0222",
+        "U0223",
+        "U0224",
+        "U0225",
+        "U0226",
+        "U0227",
+        "U0228",
+        "U0229",
+        "U0230",
+        "U0231",
+        "U0232",
+        "U0233",
+        "U0234",
+        "U0235",
+        "U0236",
+        "U0237",
+        "U0238",
+        "U0239",
+        "U0240",
+        "U0241",
+        "U0242",
+        "U0243",
+        "U0244",
+        "U0245",
+        "U0246",
+        "U0247",
+        "U0248",
+        "U0249",
+        "U0250",
+        "U0251",
+        "U0252",
+        "U0253",
+        "U0254",
+        "U0255",
+        "U0256",
+        "U0257",
+        "U0258",
+        "U0259",
+        "U0260",
+        "U0261",
+        "U0262",
+        "U0263",
+        "U0264",
+        "U0265",
+        "U0266",
+        "U0267",
+        "U0268",
+        "U0269",
+        "U0270",
+        "U0271",
+        "U0272",
+        "U0273",
+        "U0274",
+        "U0275",
+        "U0276",
+        "U0277",
+        "U0278",
+        "U0279",
+        "U0280",
+        "U0281",
+        "U0282",
+        "U0283",
+        "U0284",
+        "U0285",
+        "U0286",
+        "U0287",
+        "U0288",
+        "U0289",
+        "U0290",
+        "U0291",
+        "U0292"
+      ],
+      "character_count": 39628
+    },
+    {
+      "chunk_id": "C002",
+      "unit_ids": [
+        "U0293",
+        "U0294",
+        "U0295",
+        "U0296",
+        "U0297",
+        "U0298",
+        "U0299",
+        "U0300",
+        "U0301",
+        "U0302",
+        "U0303",
+        "U0304",
+        "U0305"
+      ],
+      "character_count": 5202
+    }
+  ]
+}

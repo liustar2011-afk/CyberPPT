@@ -1,0 +1,11 @@
+{
+  "schema": "cyberppt.analysis_expression.approval.v1",
+  "gate": "page_design",
+  "approved": true,
+  "approved_at": "2026-07-10T07:47:43.198307+00:00",
+  "pending_confirmation": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/page_design.pending-confirmation.json",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/page_design.md",
+  "source_sha256": "1fc9805a09ff17987f559f48f40b7984ac5805e887ca47ce6cbec31f2c6d8922",
+  "option_id": "confirm_page_design",
+  "note": "用户确认补齐逐页表达任务的页面设计"
+}

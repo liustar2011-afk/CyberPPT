@@ -3,7 +3,7 @@
   "status": "pending_confirmation",
   "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/speaker_notes_review.json",
   "manifest": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/speaker_notes/speaker_notes_manifest.json",
-  "manifest_sha256": "61d287459c42e923a23ffe38a63c2323ad39c1264645c002ff907815d793b53f",
+  "manifest_sha256": "6f767a8349e245e4fdf1665f9255074cce1ab142a9ca2e54c021bbe57c311cac",
   "business_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/business_script.md",
   "business_script_sha256": "3816af8df7fc470d4fa29e191ef4ade169dd6da92fcc58e623658ae35e527db9",
   "pages_raw": "1-19",
@@ -19,5 +19,5 @@
       "label": "返回修改"
     }
   ],
-  "created_at": "2026-07-11T01:11:01+00:00"
+  "created_at": "2026-07-11T08:24:22+00:00"
 }

@@ -1,0 +1,13 @@
+{
+  "schema": "cyberppt.blueprint_input.approval.v1",
+  "approved": true,
+  "approved_at": "2026-07-11T11:08:54+00:00",
+  "pending_confirmation": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.pending-confirmation.json",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+  "source_sha256": "1954d570b6c804193c9eb9ef4fd642f501ef4775bcb0c6977b0e0129dec5d583",
+  "business_script_sha256": "3816af8df7fc470d4fa29e191ef4ade169dd6da92fcc58e623658ae35e527db9",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json",
+  "style_lock_sha256": "d67fbedbe1a0e7d668fb9e18504f08d2e82f0b415b62b75023a09fc4a38c5d8c",
+  "option_id": "confirm_blueprint_input",
+  "note": "风格锁定后复核通过；用户已确认仅内容页生图。"
+}

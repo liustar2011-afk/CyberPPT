@@ -1,0 +1,28 @@
+{
+  "schema": "cyberppt.imagegen_script_validation.v1",
+  "script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/imagegen_script.md",
+  "pages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "missing_sections": [],
+  "violations": [],
+  "status": "passed"
+}

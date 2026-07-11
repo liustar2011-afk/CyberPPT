@@ -1,0 +1,334 @@
+{
+  "schema": "cyberppt.template_text_lock.v1",
+  "created_at": "2026-07-11T11:08:55+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json",
+  "pages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "records": [
+    {
+      "page": 1,
+      "title": "封面",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 2,
+      "title": "目录",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 3,
+      "title": "第一章 建设背景与基础",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 4,
+      "title": "形势变化和工作要求",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 5,
+      "title": "工作基础和完善方向",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 6,
+      "title": "第二章 建设总体思路",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 7,
+      "title": "总体思路和目标定位",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 8,
+      "title": "建设原则和首期边界",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 9,
+      "title": "第三章 建设内容及实施方案",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 10,
+      "title": "业务体系和成果产品",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 11,
+      "title": "数据资源、治理与可信流通",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 12,
+      "title": "模型体系、生产流程与智能辅助",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 13,
+      "title": "平台架构、功能模块与版本关系",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 14,
+      "title": "场景体系、责任与验收闭环",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 15,
+      "title": "组织实施和阶段成果",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 16,
+      "title": "资源保障和风险管控",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 17,
+      "title": "第四章 需请领导审定事项",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 18,
+      "title": "需请领导审定事项",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    },
+    {
+      "page": 19,
+      "title": "封底",
+      "subtitle": "",
+      "section": "",
+      "template_variant": "default",
+      "page_badge_enabled": false,
+      "footer_enabled": false,
+      "source": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+      "approved": true,
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+        "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json"
+      ],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-three-image-0711/workbench/locks/visual_style_lock.json"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 name: power-supply-demand-forecast-0709
 workflow: cyberppt
 schema: cyberppt.project.v1
+production_mode: editable_text_three_image
 directories:
   source: source
   workbench: workbench

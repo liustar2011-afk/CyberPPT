@@ -13,6 +13,7 @@ from typing import Any, Callable
 from PIL import Image, UnidentifiedImageError
 
 from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_codex_image
+from scripts.dual_image_overlay.rebuild_engine.paddleocr_local import run_local_ocr
 
 
 FULL_IMAGE_MODE = "full_image_ppt"
@@ -21,22 +22,28 @@ VENDOR_TWO_IMAGE_MODE = "two-image"
 VENDOR_THREE_IMAGE_MODE = "three-image"
 _SUPPORTED_VENDOR_INPUT_MODES = {VENDOR_TWO_IMAGE_MODE, VENDOR_THREE_IMAGE_MODE}
 _SUPPORTED_MODES = {FULL_IMAGE_MODE, EDITABLE_TEXT_MODE}
+THREE_IMAGE_REQUIRES_EXPLICIT_INPUT_MODE = True
+AUTO_UPGRADE_TWO_IMAGE_TO_THREE_IMAGE_ON_QA = False
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 VENDOR_ROOT = _REPO_ROOT / "vendor" / "three-image-to-ppt"
 VENDOR_RUNNER = _REPO_ROOT / "vendor" / "three-image-to-ppt" / "scripts" / "run_pipeline.py"
-VENDOR_VISION_OCR = VENDOR_ROOT / "scripts" / "vision_ocr.swift"
-VENDOR_TEXT_RENDERER = VENDOR_ROOT / "scripts" / "render_text_image.py"
 
 FullGenerator = Callable[[str, Path], Path]
 BackgroundGenerator = Callable[[Path, Path], Path]
 OcrGenerator = Callable[[Path, Path], Path]
-TextRenderer = Callable[[Path, Path, Path], Path]
+TextGenerator = Callable[[Path, Path], Path]
 
 BACKGROUND_PROMPT = (
     "Edit the supplied slide image into a text-free background. Remove only letters, "
     "numbers, and punctuation. Preserve the canvas size, layout, containers, icons, "
     "arrows, borders, shadows, colors, spacing, and all non-text geometry exactly. "
     "Do not recenter or rebalance the composition."
+)
+TEXT_PROMPT = (
+    "Extract the text layer from the supplied slide image into a clean text-only image. "
+    "Preserve the original canvas size and the exact position, size, line breaks, "
+    "font weight, and color of every visible text element. Remove all non-text graphics, "
+    "containers, icons, borders, charts, decorative shapes, and background imagery."
 )
 
 
@@ -113,6 +120,44 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _ocr_json_uses_local_backend(path: Path) -> bool:
+    if not path.is_file():
+        return False
+    try:
+        payload = _read_json(path)
+    except (OSError, json.JSONDecodeError, ValueError):
+        return False
+    canonical = payload.get("canonical")
+    if not isinstance(canonical, dict):
+        return False
+    metadata = canonical.get("metadata")
+    return isinstance(metadata, dict) and metadata.get("backend") == "paddleocr-local"
+
+
+def _ocr_matches_current_source(
+    *,
+    ocr_path: Path,
+    asset_manifest_path: Path,
+    source_path: Path,
+    source_role: str,
+    source_sha256: str,
+) -> bool:
+    if not _ocr_json_uses_local_backend(ocr_path):
+        return False
+    if not asset_manifest_path.is_file():
+        return False
+    try:
+        manifest = _read_json(asset_manifest_path)
+    except (OSError, json.JSONDecodeError, ValueError):
+        return False
+    return (
+        manifest.get("ocr") == str(ocr_path)
+        and manifest.get("ocr_source_role") == source_role
+        and manifest.get("ocr_source_path") == str(source_path)
+        and manifest.get("ocr_source_sha256") == source_sha256
+    )
+
+
 def _validate_image_set(paths: dict[str, Path]) -> tuple[int, int]:
     sizes: dict[str, tuple[int, int]] = {}
     for role, path in paths.items():
@@ -146,27 +191,15 @@ def _default_background_generator(full_path: Path, output_path: Path) -> Path:
 
 
 def _default_ocr_generator(image_path: Path, output_path: Path) -> Path:
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    completed = subprocess.run(
-        ["swift", str(VENDOR_VISION_OCR), str(image_path)],
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    if completed.returncode != 0:
-        message = completed.stderr.strip() or completed.stdout.strip() or "Vision OCR failed"
-        raise RuntimeError(message)
-    output_path.write_text(completed.stdout, encoding="utf-8")
-    return output_path
+    return run_local_ocr(image_path, output_path=output_path)
 
 
-def _default_text_renderer(ocr_path: Path, reference_path: Path, output_path: Path) -> Path:
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        [sys.executable, str(VENDOR_TEXT_RENDERER), str(ocr_path), str(reference_path), str(output_path)],
-        check=True,
+def _default_text_generator(full_path: Path, output_path: Path) -> Path:
+    return run_codex_image(
+        prompt=TEXT_PROMPT,
+        output_path=output_path,
+        image_paths=[full_path],
     )
-    return output_path
 
 
 def _write_identity_registration(path: Path, page_number: int) -> Path:
@@ -193,7 +226,7 @@ def _ensure_editable_assets(
     full_generator: FullGenerator,
     background_generator: BackgroundGenerator,
     ocr_generator: OcrGenerator,
-    text_renderer: TextRenderer,
+    text_generator: TextGenerator,
 ) -> dict[str, Any]:
     page_number = int(page.get("page_number", 0))
     if page_number <= 0:
@@ -227,16 +260,6 @@ def _ensure_editable_assets(
     if not background_path.is_file():
         raise ValueError(f"BACKGROUND image was not produced for page {page_number}: {background_path}")
 
-    ocr_path = _path_from_value(page.get("ocr"), manifest_dir) or asset_dir / f"page_{page_number:03d}_ocr.full.json"
-    if not ocr_path.is_file():
-        ocr_generator(full_path, ocr_path)
-    if not ocr_path.is_file():
-        raise ValueError(f"OCR JSON was not produced for page {page_number}: {ocr_path}")
-
-    registration_path = _path_from_value(page.get("registration"), manifest_dir) or asset_dir / f"page_{page_number:03d}_registration.json"
-    if not registration_path.is_file():
-        _write_identity_registration(registration_path, page_number)
-
     prepared = {
         **page,
         "full": {**(full_role if isinstance(full_role, dict) else {}), "path": str(full_path)},
@@ -244,8 +267,6 @@ def _ensure_editable_assets(
             **(page.get("background") if isinstance(page.get("background"), dict) else {}),
             "path": str(background_path),
         },
-        "ocr": str(ocr_path),
-        "registration": str(registration_path),
     }
     if input_mode == VENDOR_THREE_IMAGE_MODE:
         text_path = _path_from_role_or_default(
@@ -254,15 +275,44 @@ def _ensure_editable_assets(
             asset_dir / f"page_{page_number:03d}_text.png",
         )
         if not text_path.is_file():
-            text_renderer(ocr_path, full_path, text_path)
+            text_generator(full_path, text_path)
         if not text_path.is_file():
             raise ValueError(f"TEXT image was not produced for page {page_number}: {text_path}")
         prepared["text"] = {
             **(page.get("text") if isinstance(page.get("text"), dict) else {}),
             "path": str(text_path),
         }
+        ocr_source = text_path
+        ocr_source_role = "text"
+        default_ocr_path = asset_dir / f"page_{page_number:03d}_ocr.text.json"
+    else:
+        ocr_source = full_path
+        ocr_source_role = "full"
+        default_ocr_path = asset_dir / f"page_{page_number:03d}_ocr.full.json"
+
+    ocr_path = _path_from_value(page.get("ocr"), manifest_dir) or default_ocr_path
+    asset_manifest_path = asset_dir / "asset_manifest.json"
+    ocr_source_sha256 = _sha256(ocr_source)
+    if not _ocr_matches_current_source(
+        ocr_path=ocr_path,
+        asset_manifest_path=asset_manifest_path,
+        source_path=ocr_source,
+        source_role=ocr_source_role,
+        source_sha256=ocr_source_sha256,
+    ):
+        ocr_generator(ocr_source, ocr_path)
+    if not ocr_path.is_file():
+        raise ValueError(f"OCR JSON was not produced for page {page_number}: {ocr_path}")
+
+    registration_path = _path_from_value(page.get("registration"), manifest_dir) or asset_dir / f"page_{page_number:03d}_registration.json"
+    if not registration_path.is_file():
+        _write_identity_registration(registration_path, page_number)
+
+    prepared["ocr"] = str(ocr_path)
+    prepared["registration"] = str(registration_path)
+
     _write_json(
-        asset_dir / "asset_manifest.json",
+        asset_manifest_path,
         {
             "schema": "cyberppt.editable_text_assets.v1",
             "page_number": page_number,
@@ -270,6 +320,9 @@ def _ensure_editable_assets(
             "full": str(full_path),
             "background": str(background_path),
             "ocr": str(ocr_path),
+            "ocr_source_role": ocr_source_role,
+            "ocr_source_path": str(ocr_source),
+            "ocr_source_sha256": ocr_source_sha256,
             "registration": str(registration_path),
             **({"text": str(prepared["text"]["path"])} if input_mode == VENDOR_THREE_IMAGE_MODE else {}),
         },
@@ -344,7 +397,7 @@ def build_editable_text_batch(
     full_generator: FullGenerator | None = None,
     background_generator: BackgroundGenerator | None = None,
     ocr_generator: OcrGenerator | None = None,
-    text_renderer: TextRenderer | None = None,
+    text_generator: TextGenerator | None = None,
 ) -> dict[str, Any]:
     """Build a deterministic vendor batch manifest from approved page pairs."""
 
@@ -372,7 +425,7 @@ def build_editable_text_batch(
                 full_generator=full_generator or _default_full_generator,
                 background_generator=background_generator or _default_background_generator,
                 ocr_generator=ocr_generator or _default_ocr_generator,
-                text_renderer=text_renderer or _default_text_renderer,
+                text_generator=text_generator or _default_text_generator,
             ),
             manifest_path.parent,
             input_mode,
@@ -430,6 +483,7 @@ def editable_text_result_path(project: Path, pages_raw: str) -> Path:
 
 def _collect_vendor_results(project: Path, pages_raw: str, batch: dict[str, Any], exit_code: int) -> dict[str, Any]:
     pages: dict[str, dict[str, Any]] = {}
+    input_mode = str(batch.get("input_mode") or VENDOR_TWO_IMAGE_MODE)
     has_review = False
     has_failed = False
     for job in batch["pages"]:
@@ -471,6 +525,11 @@ def _collect_vendor_results(project: Path, pages_raw: str, batch: dict[str, Any]
         "schema": "cyberppt.editable_text_result.v1",
         "project": str(project.expanduser().resolve()),
         "pages_raw": pages_raw,
+        "input_mode": input_mode,
+        "mode_policy": {
+            "three_image_requires_explicit_input_mode": THREE_IMAGE_REQUIRES_EXPLICIT_INPUT_MODE,
+            "auto_upgrade_two_image_to_three_image_on_qa": AUTO_UPGRADE_TWO_IMAGE_TO_THREE_IMAGE_ON_QA,
+        },
         "status": status,
         "vendor_exit_code": exit_code,
         "batch_manifest": str(_editable_text_root(project, pages_raw) / "three_image_batch.json"),
