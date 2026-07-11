@@ -35,7 +35,65 @@ from scripts.validate_pptx import validate_manifest, validate_manifest_slide
 OPTIONS = [
     {"id": "leadership_review", "label": "领导审定型"},
     {"id": "execution_alignment", "label": "执行对齐型"},
+    {"id": "scenario_implementation", "label": "场景实施型"},
+    {"id": "resource_risk", "label": "资源风险型"},
 ]
+
+REPORTING_DIRECTION = """## 方向一：领导审定型
+### 适用受众
+分管领导
+### 汇报目的
+审定工作安排
+### 内容重点
+供需研判
+### 证据
+预测数据
+### 优势
+基础扎实
+### 风险边界
+不替代执行方案
+## 方向二：执行对齐型
+### 适用受众
+业务处室
+### 汇报目的
+统一执行安排
+### 内容重点
+任务分工
+### 证据
+工作计划
+### 优势
+便于推进
+### 风险边界
+不扩大工作范围
+## 方向三：场景实施型
+### 适用受众
+项目专班
+### 汇报目的
+明确实施路径
+### 内容重点
+首期场景
+### 证据
+实施路线
+### 优势
+行动性强
+### 风险边界
+远期场景待验证
+## 方向四：资源风险型
+### 适用受众
+协调会议
+### 汇报目的
+明确资源保障
+### 内容重点
+预算、人员和安全
+### 证据
+资源测算
+### 优势
+边界清晰
+### 风险边界
+参考测算不等于批复
+## 推荐方向
+领导审定型
+"""
 
 CONTENT_PAGE = "4"
 CONTENT_PAGE_NUMBER = int(CONTENT_PAGE)
@@ -52,8 +110,7 @@ def _approve_analysis(project: Path) -> None:
         ),
         (
             "reporting_direction",
-            "## 汇报对象\n分管领导\n## 汇报目的\n审定工作安排\n## 内容重点\n供需研判\n"
-            "## 证据\n预测数据\n## 优势\n基础扎实\n## 边界\n不替代执行方案\n## 推荐方向\n领导审定型\n",
+            REPORTING_DIRECTION,
             "领导审定型",
         ),
         (

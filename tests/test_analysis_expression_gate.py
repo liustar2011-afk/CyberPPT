@@ -30,6 +30,8 @@ from cyberppt.commands.init_project import init_project
 OPTIONS = [
     {"id": "leadership_review", "label": "领导审定型"},
     {"id": "execution_alignment", "label": "执行对齐型"},
+    {"id": "scenario_implementation", "label": "场景实施型"},
+    {"id": "resource_risk", "label": "资源风险型"},
 ]
 
 SOURCE_ANALYSIS = """# 阶段一确认包
@@ -50,18 +52,58 @@ SOURCE_ANALYSIS = """# 阶段一确认包
 """
 
 DIRECTION = """# 汇报方向
-## 汇报对象
+## 方向一：领导审定型
+### 适用受众
 分管领导
-## 汇报目的
+### 汇报目的
 审定工作安排
-## 内容重点
+### 内容重点
 供需研判
-## 证据
+### 证据
 预测数据
-## 优势
+### 优势
 基础扎实
-## 边界
+### 风险边界
 不替代执行方案
+## 方向二：执行对齐型
+### 适用受众
+业务处室
+### 汇报目的
+统一执行安排
+### 内容重点
+任务分工
+### 证据
+工作计划
+### 优势
+便于推进
+### 风险边界
+不扩大工作范围
+## 方向三：场景实施型
+### 适用受众
+项目专班
+### 汇报目的
+明确实施路径
+### 内容重点
+首期场景
+### 证据
+实施路线
+### 优势
+行动性强
+### 风险边界
+远期场景待验证
+## 方向四：资源风险型
+### 适用受众
+协调会议
+### 汇报目的
+明确资源保障
+### 内容重点
+预算、人员和安全
+### 证据
+资源测算
+### 优势
+边界清晰
+### 风险边界
+参考测算不等于批复
 ## 推荐方向
 领导审定型
 """
@@ -381,6 +423,8 @@ class AnalysisExpressionGateTests(unittest.TestCase):
             self.assertEqual("领导审定型", data["recommendation"])
             self.assertEqual("leadership_review", data["options"][0]["id"])
             self.assertTrue((project / "workbench/analysis_expression/reporting_direction.md").is_file())
+            self.assertFalse((project / "workbench/analysis_expression/reporting_direction.approved.json").exists())
+            self.assertEqual("pending_confirmation", data["status"])
 
     def test_business_requires_evidence_units_on_each_content_page(self) -> None:
         second_page = BUSINESS_SCRIPT.replace("第1页", "第2页").replace("年度供需预测报告第3页", "")
@@ -464,7 +508,7 @@ class AnalysisExpressionGateTests(unittest.TestCase):
             init_project(project)
             self._approve_source_analysis(project)
 
-            with self.assertRaisesRegex(ValueError, "at least two"):
+            with self.assertRaisesRegex(ValueError, "at least four"):
                 stage_analysis_artifact(project, "reporting_direction", DIRECTION, "领导审定型", OPTIONS[:1])
             with self.assertRaisesRegex(ValueError, "non-empty label"):
                 stage_analysis_artifact(
@@ -476,6 +520,31 @@ class AnalysisExpressionGateTests(unittest.TestCase):
                 )
             with self.assertRaisesRegex(ValueError, "recommendation"):
                 stage_analysis_artifact(project, "reporting_direction", DIRECTION, "不存在的方向", OPTIONS)
+
+    def test_direction_requires_four_expanded_options_before_staging(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+            self._approve_source_analysis(project)
+
+            with self.assertRaisesRegex(ValueError, "four expanded direction sections"):
+                stage_analysis_artifact(project, "reporting_direction", """# 汇报方向
+## 方向一：领导审定型
+### 适用受众
+分管领导
+### 汇报目的
+审定建设方案
+### 内容重点
+工作基础和完善方向
+## 证据
+源材料证据
+### 优势
+适合领导审定
+### 风险边界
+不将条件写成既定事实
+## 推荐方向
+领导审定型
+""", "leadership_review", OPTIONS[:3])
 
     def test_invalid_direction_restage_preserves_existing_artifact_and_approval(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -526,23 +595,9 @@ class AnalysisExpressionGateTests(unittest.TestCase):
         self.assertIn("missing required heading: 汇报目的", errors)
 
     def test_direction_allows_formal_business_heading_aliases(self) -> None:
-        text = """# 汇报方向策略
-## 方向一：领导审定型建设方案
-### 适用受众
-分管领导
-### 汇报目的
-审定建设方案
-### 内容重点
-工作基础和完善方向
-### 证据支撑
-源材料和证据链
-### 优势
-适合领导审定
-### 风险边界
-不将条件写成既定事实
-## 推荐策略
-领导审定型建设方案
-"""
+        text = DIRECTION.replace("### 证据\n预测数据", "### 证据支撑\n源材料和证据链", 1).replace(
+            "## 推荐方向", "## 推荐策略", 1
+        )
 
         self.assertEqual([], validate_analysis_artifact("reporting_direction", text))
 

@@ -42,3 +42,11 @@ This project is indexed by GitNexus as **CyberPPT** (16147 symbols, 20113 relati
 | Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
 
 <!-- gitnexus:end -->
+
+## Workflow discipline
+
+- Before any state-changing action, report the current project state, the next legal gate, the exact files in scope, and the files explicitly out of scope.
+- Never auto-select a reporting direction, auto-approve a gate, call a model, copy an artifact, overwrite an existing project artifact, or advance across a confirmation gate without the user's explicit instruction.
+- `reporting_direction` must present at least four labeled alternatives, and each alternative must include its audience, purpose, content focus, strengths, and risk boundary before it can be staged.
+- Staging creates a `pending_confirmation` record only. Approval requires an explicit option ID and must remain absent until the user chooses.
+- Before commit, run the full test suite, `git diff --cached --check`, and GitNexus `detect_changes()`. Never include untracked project outputs unless the user names them explicitly.

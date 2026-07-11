@@ -75,6 +75,8 @@ _NUMBER_PATTERN = re.compile(r"\d+(?:\.\d+)?(?:[%％]|万千瓦|亿千瓦时|万
 _ALLOWED_CONCISE_FACTS = {"供需总体平衡": "供需平衡"}
 _CONTENT_PAGE_PATTERN = re.compile(r"^##\s*第\s*(?P<number>\d+)\s*页(?:[：:]|\s+)(?P<title>.+?)\s*$", re.MULTILINE)
 _NON_CONTENT_PAGE_TITLES = ("封面", "目录", "过渡", "封底", "结束", "感谢")
+_DIRECTION_HEADING_PATTERN = re.compile(r"^##\s*方向(?P<index>[一二三四1-4])(?:[：:\s]|$).*?$", re.MULTILINE)
+_DIRECTION_DETAIL_HEADINGS = ("适用受众", "汇报目的", "内容重点", "优势", "风险边界")
 
 
 @dataclass(frozen=True)
@@ -174,6 +176,16 @@ def _section_text(text: str, heading: str) -> str:
     following = re.search(r"^#+\s+", text[match.end() :], re.MULTILINE)
     end = match.end() + following.start() if following else len(text)
     return text[match.end() : end]
+
+
+def _direction_sections(text: str) -> tuple[tuple[str, str], ...]:
+    matches = list(_DIRECTION_HEADING_PATTERN.finditer(text))
+    sections: list[tuple[str, str]] = []
+    for index, match in enumerate(matches):
+        next_heading = re.search(r"^##\s+", text[match.end() :], re.MULTILINE)
+        end = match.end() + next_heading.start() if next_heading else len(text)
+        sections.append((match.group("index"), text[match.start() : end]))
+    return tuple(sections)
 
 
 def _has_heading(text: str, heading: str) -> bool:
@@ -427,6 +439,17 @@ def validate_analysis_artifact(gate: str, text: str) -> list[str]:
         if any(re.search(rf"^\s*{re.escape(field)}\s*[:：]\s*\S", text, re.MULTILINE) for field in _STRUCTURE_VISUAL_FIELDS):
             errors.append("report_structure must not contain visual form fields")
 
+    if gate == "reporting_direction":
+        direction_sections = _direction_sections(text)
+        if len(direction_sections) < 4:
+            errors.append("reporting_direction requires four expanded direction sections")
+        for index, section in direction_sections:
+            missing = [heading for heading in _DIRECTION_DETAIL_HEADINGS if not _has_heading(section, heading)]
+            if missing:
+                errors.append(
+                    f"reporting_direction direction {index} is missing detail headings: " + ", ".join(missing)
+                )
+
     if gate == "source_analysis" and not _evidence_ids(text):
         errors.append("source_analysis requires at least one evidence ID")
 
@@ -526,8 +549,8 @@ def stage_analysis_artifact(
 
     normalized_options = _normalize_options(options, require_labels=gate == "reporting_direction")
     if gate == "reporting_direction":
-        if len(normalized_options) < 2:
-            raise ValueError("reporting_direction requires at least two confirmation options")
+        if len(normalized_options) < 4:
+            raise ValueError("reporting_direction requires at least four confirmation options")
         option_values = {option["id"] for option in normalized_options} | {option["label"] for option in normalized_options}
         if recommendation not in option_values:
             raise ValueError("reporting_direction recommendation must match an option id or label")
