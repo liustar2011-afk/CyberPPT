@@ -2,50 +2,7 @@
 
 from __future__ import annotations
 
-from cyberppt.phase1.source_bundle import SourceBundle, SourceChunk, SourceUnit
-
-
-def _source_prompt_prefix(base_prompt: str) -> str:
-    return base_prompt.split("【参考规范】", 1)[0].rstrip()
-
-
-def build_source_analysis_chunk_prompt(
-    base_prompt: str,
-    chunk: SourceChunk,
-    units: dict[str, SourceUnit],
-) -> str:
-    source_units = "\n\n".join(
-        f"[{units[unit_id].unit_id}]\n{units[unit_id].text}"
-        for unit_id in chunk.unit_ids
-    )
-    return f"""{_source_prompt_prefix(base_prompt)}
-
-【当前阶段】分块证据抽取，仅处理当前材料块，不判断全文故事线。
-【输出字段】chunk_id、evidence、material_signals、open_questions。
-【evidence 字段】claim、support、source_unit_ids、numbers、caveat。
-【来源约束】source_unit_ids 只能使用当前材料块列出的单元 ID；不得使用页码或自造编号。
-【格式要求】只返回 JSON 对象，不返回 Markdown，不使用 E01 等最终证据编号。
-【chunk_id】{chunk.chunk_id}
-【材料块】
-{source_units}
-"""
-
-
-def build_source_analysis_aggregate_prompt(base_prompt: str, chunk_outputs: list[str]) -> str:
-    joined = "\n\n".join(
-        f"【分块结果 {index + 1}】\n{output}" for index, output in enumerate(chunk_outputs)
-    )
-    return f"""{_source_prompt_prefix(base_prompt)}
-
-【当前阶段】全局证据归并与 source_analysis 候选稿生成。
-【任务】只基于下方分块证据结果，完成全文材料类型、汇报任务、受众、故事线、物料池和确认问题判断。
-【输出字段】material_type、reporting_task、audience、evidence、storylines、material_pool、confirmation_questions。
-【evidence 字段】每条必须提供 claim、verbatim_support、source_unit_ids、numbers、confidence、caveat、meaning、visual。
-【事实边界】不得新增事实、数字、来源或外部知识；保留分块证据中的 source_unit_ids，并在跨块重复或冲突时合并说明。
-【格式要求】只返回 JSON 对象，不返回 Markdown，不使用 E01 等最终证据编号。
-【分块证据结果】
-{joined}
-"""
+from cyberppt.phase1.source_bundle import SourceBundle
 
 
 def build_source_analysis_prompt(bundle: SourceBundle, references: dict[str, str]) -> str:

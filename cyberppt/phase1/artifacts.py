@@ -38,7 +38,6 @@ class Phase1Run:
     prompt_path: str
     prompt_sha256: str
     dependency_hashes: dict[str, str]
-    input_path: str | None = None
     model: str | None = None
     raw_output_path: str | None = None
     candidate_path: str | None = None

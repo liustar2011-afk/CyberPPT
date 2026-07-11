@@ -40,8 +40,6 @@ from cyberppt.commands.produce import (
 from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script, status_as_json
 from cyberppt.commands.script_runner import _STAGE_2_PLUS_GENERATION_ALIASES, SCRIPT_ALIASES, run_script
 from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
-from cyberppt.phase1.critic import critique_phase1_candidate
-from cyberppt.phase1.workflow import get_phase1_status, prepare_phase1_prompt, stage_phase1_candidate
 
 
 def _doctor() -> int:
@@ -163,75 +161,6 @@ def _analysis_expression_status_command(args: argparse.Namespace) -> int:
             if failures:
                 print(f"  validation_failures: {json.dumps(failures, ensure_ascii=False)}")
     return 0 if status.adopted and status.next_gate is None else 3
-
-
-def _phase1_prepare_command(args: argparse.Namespace) -> int:
-    try:
-        input_path = Path(args.input) if args.input else None
-        if args.gate != "source_analysis" and input_path is not None:
-            raise ValueError("--input is only valid for source_analysis")
-        result = prepare_phase1_prompt(Path(args.project), args.gate, input_path)
-    except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(json.dumps(result, ensure_ascii=False, indent=2))
-    return 0
-
-
-def _phase1_generate_command(args: argparse.Namespace) -> int:
-    print(
-        json.dumps(
-            {
-                "status": "manual_confirmation_required",
-                "gate": args.gate,
-                "message": "主流程不自动调用模型；请在当前 Codex 会话生成候选稿后，用 stage-source-analysis 登记。",
-                "next_command": f"python3 -m cyberppt stage-source-analysis {Path(args.project).expanduser().resolve()}",
-            },
-            ensure_ascii=False,
-            indent=2,
-        )
-    )
-    return 3
-
-
-def _phase1_critique_command(args: argparse.Namespace) -> int:
-    try:
-        result = critique_phase1_candidate(Path(args.project), args.gate, model=args.model)
-    except (FileNotFoundError, RuntimeError, ValueError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(json.dumps(result, ensure_ascii=False, indent=2))
-    return 0
-
-
-def _phase1_stage_command(args: argparse.Namespace) -> int:
-    try:
-        options = json.loads(args.options_json)
-        if not isinstance(options, list):
-            raise ValueError("--options-json must decode to a JSON array")
-        pending = stage_phase1_candidate(
-            Path(args.project),
-            args.gate,
-            args.recommendation,
-            options,
-            args.question,
-        )
-    except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(f"pending_confirmation: {pending}")
-    return 0
-
-
-def _phase1_status_command(args: argparse.Namespace) -> int:
-    result = get_phase1_status(Path(args.project))
-    if args.json:
-        print(json.dumps(result, ensure_ascii=False, indent=2))
-    else:
-        print(f"project: {result['project']}")
-        for gate, data in result["gates"].items():
-            print(f"{gate}: {data['status']}")
-    return 0
 
 
 def _adopt_analysis_expression_contract_command(args: argparse.Namespace) -> int:
@@ -532,42 +461,6 @@ def build_parser() -> argparse.ArgumentParser:
     )
     adopt_analysis_parser.add_argument("project", help="CyberPPT project directory.")
     adopt_analysis_parser.set_defaults(func=_adopt_analysis_expression_contract_command)
-
-    phase1_parser = subparsers.add_parser(
-        "phase1",
-        help="Prepare, generate, critique, stage, and inspect Stage 1 model-assisted candidates.",
-    )
-    phase1_subparsers = phase1_parser.add_subparsers(dest="phase1_command", required=True)
-
-    phase1_prepare_parser = phase1_subparsers.add_parser("prepare", help="Write a reviewable Stage 1 prompt without calling a model.")
-    phase1_prepare_parser.add_argument("project", help="CyberPPT project directory.")
-    phase1_prepare_parser.add_argument("--gate", choices=GATE_ORDER, required=True, help="Stage 1 gate to prepare.")
-    phase1_prepare_parser.add_argument("--input", help="Normalized source extract; required for source_analysis.")
-    phase1_prepare_parser.set_defaults(func=_phase1_prepare_command)
-
-    phase1_generate_parser = phase1_subparsers.add_parser("generate", help="Show the manual candidate-staging entrypoint.")
-    phase1_generate_parser.add_argument("project", help="CyberPPT project directory.")
-    phase1_generate_parser.add_argument("--gate", choices=GATE_ORDER, required=True, help="Stage 1 gate to generate.")
-    phase1_generate_parser.set_defaults(func=_phase1_generate_command)
-
-    phase1_critique_parser = phase1_subparsers.add_parser("critique", help="Run the advisory second-pass model critic.")
-    phase1_critique_parser.add_argument("project", help="CyberPPT project directory.")
-    phase1_critique_parser.add_argument("--gate", choices=GATE_ORDER, required=True, help="Stage 1 gate to critique.")
-    phase1_critique_parser.add_argument("--model", help="Optional critic model.")
-    phase1_critique_parser.set_defaults(func=_phase1_critique_command)
-
-    phase1_stage_parser = phase1_subparsers.add_parser("stage", help="Stage a grounded candidate for existing human confirmation.")
-    phase1_stage_parser.add_argument("project", help="CyberPPT project directory.")
-    phase1_stage_parser.add_argument("--gate", choices=GATE_ORDER, required=True, help="Stage 1 gate to stage.")
-    phase1_stage_parser.add_argument("--recommendation", required=True, help="Recommended confirmation option.")
-    phase1_stage_parser.add_argument("--options-json", required=True, help="JSON array of selectable confirmation options.")
-    phase1_stage_parser.add_argument("--question", help="Question recorded in the pending confirmation.")
-    phase1_stage_parser.set_defaults(func=_phase1_stage_command)
-
-    phase1_status_parser = phase1_subparsers.add_parser("status", help="Show Stage 1 model-run status.")
-    phase1_status_parser.add_argument("project", help="CyberPPT project directory.")
-    phase1_status_parser.add_argument("--json", action="store_true", help="Emit machine-readable status.")
-    phase1_status_parser.set_defaults(func=_phase1_status_command)
 
     stage_visual_style_parser = subparsers.add_parser(
         "stage-visual-style",
