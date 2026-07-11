@@ -26,10 +26,22 @@
   "source_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/imagegen_script.md",
   "imagegen_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/imagegen_script.md",
   "imagegen_script_sha256": "26be902571326d8492a26727015fd9f987aea80cb854eb265173e1d03bf06f6f",
+  "prompt_contract": {
+    "schema": "cyberppt.prompt_contract.v1",
+    "visible_text_source": "content_lock",
+    "control_sections_non_visible": true,
+    "human_editable_source": true,
+    "policy_schema": "cyberppt.prompt_policy.v1"
+  },
+  "prompt_policy_report": {
+    "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/imagegen_script.validation.json",
+    "sha256": "78223e39ec0e142bb63c5089445f74afc84ce0752d9b46f5d225fae0e11c6db6",
+    "status": "passed"
+  },
   "original_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
   "style_lock": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/locks/visual_style_lock.json",
   "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019",
-  "created_at": "2026-07-11T01:28:56.296162+00:00",
+  "created_at": "2026-07-11T04:45:45.513539+00:00",
   "pairs": [
     {
       "page_number": 1,

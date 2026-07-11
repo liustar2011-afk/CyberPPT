@@ -1,0 +1,28 @@
+{
+  "schema": "cyberppt.image_text_qa.v1",
+  "page": 6,
+  "image_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_006_第二章_建设总体思路_full.png",
+  "allowed_text": [
+    "本页类型：章节过渡。此信息只用于构图，不得作为页面可见文字。",
+    "- 建设总体思路",
+    "- 02",
+    "生成正式内部汇报的正文内容区成稿图。",
+    "仅生成正文内容区；模板标题、页眉页脚、页码、Logo 和公共外框不绘制。",
+    "视觉锁定：象牙白 + 深蓝强调；背景#F7F6F0，标题#101820，正文#303030，强调#12355B。采用正式内部汇报语气、清晰层级、克制图形和紧凑信息密度；版式必须服从本页内容锁定和构图要求。",
+    "保持高信息密度，完整保留本页内容、关键数字、判断句、清单项和结构关系；不得擅自合并、删减或改写业务术语。",
+    "- 正文区中部，主标题与编号构成章节过渡",
+    "图形关系、容器和连接线边界清楚，文字清晰可读；页面类型不得改作通用内容页。"
+  ],
+  "observed_text": [
+    "02",
+    "建设总体思路"
+  ],
+  "forbidden_matches": [],
+  "unexpected_text": [],
+  "status": "passed",
+  "deliverable_allowed": true,
+  "ocr_source": "codex_vision_text",
+  "model": null,
+  "image_sha256": "75cc662a7faaf23484a072263a320906b8c59bf3d4bb29ec5bade34922b1b2ca",
+  "imagegen_script_sha256": "26be902571326d8492a26727015fd9f987aea80cb854eb265173e1d03bf06f6f"
+}
