@@ -531,6 +531,7 @@ def run_final_script_pages(
         "artifacts": {
             "compiled_deliverable_prompt": str(compiled_script),
             "imagegen_script": str(compiled_script),
+            "prompt_policy_report": str(manifest["prompt_policy_report"]["path"]),
             "page_image_pairs": str(manifest_path),
             "template_text_lock": str(lock_path),
             "visual_style_lock": str(style_lock),
@@ -578,6 +579,14 @@ def run_final_script_pages(
                 stage="02-blueprint-dual-image",
                 page=page_label,
                 path=manifest_path,
+                status="ready_for_image_generation",
+                depends_on=[compiled_script],
+                resume_command=resume_command,
+            ),
+            _artifact_record(
+                stage="02-blueprint-dual-image",
+                page=page_label,
+                path=Path(str(manifest["prompt_policy_report"]["path"])),
                 status="ready_for_image_generation",
                 depends_on=[compiled_script],
                 resume_command=resume_command,

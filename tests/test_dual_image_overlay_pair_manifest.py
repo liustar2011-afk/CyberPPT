@@ -87,12 +87,21 @@ class CyberpptPairManifestTests(unittest.TestCase):
             imagegen_script = Path(manifest["imagegen_script"])
             imagegen_script_exists = imagegen_script.is_file()
             imagegen_text = imagegen_script.read_text(encoding="utf-8")
+            policy_report = manifest["prompt_policy_report"]
+            policy_report_exists = Path(policy_report["path"]).is_file()
 
         self.assertEqual(code, 0)
         self.assertTrue(style_lock_exists)
         self.assertTrue(imagegen_script_exists)
         self.assertEqual(str(imagegen_script), manifest["source_script"])
         self.assertIn("imagegen_script_sha256", manifest)
+        self.assertEqual("content_lock", manifest["prompt_contract"]["visible_text_source"])
+        self.assertTrue(manifest["prompt_contract"]["control_sections_non_visible"])
+        self.assertTrue(manifest["prompt_contract"]["human_editable_source"])
+        report = manifest["prompt_policy_report"]
+        self.assertEqual("passed", report["status"])
+        self.assertTrue(policy_report_exists)
+        self.assertTrue(report["sha256"])
         self.assertIn("## 第3页：先生成全图，再由全图派生无文字底图", imagegen_text)
         self.assertEqual(pair["page_script"], pair["full"]["prompt"])
         self.assertIn(pair["full"]["prompt"], imagegen_text)

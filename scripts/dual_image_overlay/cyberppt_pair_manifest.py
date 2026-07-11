@@ -76,6 +76,11 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _write_json(path: Path, payload: dict[str, Any]) -> Path:
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return path
+
+
 def _background_prompt(page_number: int) -> str:
     return f"""请将输入图作为唯一视觉母版进行 image-to-image 编辑，只生成第【{page_number}】页正文内容区的无文字背景图。
 
@@ -124,7 +129,11 @@ def build_manifest(
         compiled = compile_pages(script, page_numbers, style_lock_path=style_lock)
         compiled_script.write_text(compiled, encoding="utf-8")
 
-    validate_imagegen_script(compiled_script, page_numbers)
+    validation = validate_imagegen_script(compiled_script, page_numbers)
+    validation_path = _write_json(
+        compiled_script.with_name("imagegen_script.validation.json"),
+        validation,
+    )
 
     # The reviewable MD is the source for image generation prompts; JSON is a
     # machine manifest compiled from this file.
@@ -170,6 +179,18 @@ def build_manifest(
         "source_script": str(compiled_script.resolve()),
         "imagegen_script": str(compiled_script.resolve()),
         "imagegen_script_sha256": _sha256_file(compiled_script),
+        "prompt_contract": {
+            "schema": "cyberppt.prompt_contract.v1",
+            "visible_text_source": "content_lock",
+            "control_sections_non_visible": True,
+            "human_editable_source": True,
+            "policy_schema": "cyberppt.prompt_policy.v1",
+        },
+        "prompt_policy_report": {
+            "path": str(validation_path.resolve()),
+            "sha256": _sha256_file(validation_path),
+            "status": validation["status"],
+        },
         "original_script": str(script.resolve()),
         "style_lock": str(style_lock.resolve()) if style_lock else None,
         "output_dir": str(output_dir.resolve()),
