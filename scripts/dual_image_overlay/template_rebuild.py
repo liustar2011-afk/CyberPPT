@@ -340,6 +340,12 @@ def run_vendor_rebuild(
     semantic_plan_dir: Path | None = None,
     visual_registry_dir: Path | None = None,
 ) -> None:
+    """Delegate template rebuild; the engine owns one-image OCR extraction.
+
+    This wrapper keeps manifest/page orchestration and the explicit ``none``
+    diagnostic backend in the legacy caller while the rebuild engine routes
+    local OCR through its single-image facade.
+    """
     command = [
         sys.executable,
         str(REBUILD_ENGINE),

@@ -40,6 +40,7 @@ from scripts.dual_image_overlay.text_block_group import build_text_block_group
 from scripts.dual_image_overlay.text_truth import verify_text_blocks_against_script
 from scripts.dual_image_overlay.rebuild_engine.ocr_quality_gate import evaluate_ocr_quality
 from scripts.dual_image_overlay.rebuild_engine.text_forensics import attach_correction_evidence, build_line_evidence
+from scripts.dual_image_overlay.rebuild_engine.high_fidelity_text_extractor import extract_text_info
 
 if __package__:
     from .ocr_text_locator import load_layout, locate_text
@@ -292,6 +293,28 @@ def _layout_for_page(
         ocr_scale=ocr_scale,
     )
     return layout_path, layout
+
+
+def _extract_legacy_page_text(
+    image_path: Path,
+    *,
+    ocr_backend: str,
+    ocr_scale: float,
+) -> dict[str, Any] | None:
+    """Use the single-image facade for the local legacy text path.
+
+    Page pairing, script truth, and page-level gates remain in the caller;
+    this helper deliberately forwards one selected image only.  Other OCR
+    backends retain their historical layout/forensics path.
+    """
+    if ocr_backend != "paddleocr-local":
+        return None
+    return extract_text_info(
+        image_path,
+        runtime_dir=REPO_ROOT / "tools" / "paddleocr_runtime",
+        scale=ocr_scale,
+        correction=True,
+    )
 
 
 def _prefetch_page_ocr_layouts(
@@ -845,21 +868,31 @@ def rebuild_from_manifest(
             layout_path, layout = full_future.result()
             background_layout_path, background_layout = background_future.result()
         # Preserve raw line-level evidence before any overlay boxes are built.
-        # A failed gate leaves this artifact behind for review/recovery.
+        # The local legacy path now consumes the single-image facade; page
+        # pairing, script truth, and page-level gates remain here.
         forensic_dir = ocr_dir / f"page_{page_number:03d}_text_forensics"
-        forensics = build_line_evidence(layout, full_image, evidence_dir=forensic_dir)
+        facade_forensics = _extract_legacy_page_text(
+            full_image,
+            ocr_backend=ocr_backend,
+            ocr_scale=ocr_scale,
+        )
+        if facade_forensics is not None:
+            forensics = facade_forensics
+        else:
+            forensics = build_line_evidence(layout, full_image, evidence_dir=forensic_dir)
+            forensics = attach_correction_evidence(
+                forensics,
+                policy_path=REPO_ROOT / "config/ocr/correction_policy.json",
+                protected_terms_path=REPO_ROOT / "config/ocr/protected_terms.json",
+                require_candidate_context=False,
+            )
         forensics["page_number"] = page_number
         forensics["expected_lines"] = expected_lines
         forensics["model"] = {"source": ocr_backend, "runtime_manifest": str(REPO_ROOT / "tools/paddleocr_runtime/runtime_manifest.json")}
-        forensics["artifacts"]["evidence"] = str(forensic_dir)
+        forensics.setdefault("artifacts", {})
+        forensics["artifacts"]["evidence"] = str(forensics["artifacts"].get("evidence_dir", forensic_dir))
         forensics["artifacts"]["correction_audit"] = str(ocr_dir / f"page_{page_number:03d}_correction_audit.json")
-        forensics["provenance"] = {"backend": ocr_backend, "policy": str(policy_path)}
-        forensics = attach_correction_evidence(
-            forensics,
-            policy_path=REPO_ROOT / "config/ocr/correction_policy.json",
-            protected_terms_path=REPO_ROOT / "config/ocr/protected_terms.json",
-            require_candidate_context=(ocr_backend == "paddleocr-local"),
-        )
+        forensics["provenance"] = {**dict(forensics.get("provenance") or {}), "backend": ocr_backend, "policy": str(policy_path)}
         correction_audit_path = ocr_dir / f"page_{page_number:03d}_correction_audit.json"
         _write_json(correction_audit_path, {"page_number": page_number, "lines": forensics.get("lines", []), "provenance": forensics.get("provenance", {})})
         quality_report = evaluate_ocr_quality(forensics, policy=forensic_policy)
