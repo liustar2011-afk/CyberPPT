@@ -102,9 +102,10 @@ def _contains_table_heading(block: list[str]) -> bool:
 
 def _locator(block: list[str], current_heading: str, start_line: int) -> str:
     text = "\n".join(block)
-    record = _RECORD_RE.match(block[0].strip()) if block else None
-    if record:
-        return f"paragraph {record.group('number')}"
+    for line in block:
+        record = _RECORD_RE.match(line.strip())
+        if record:
+            return f"paragraph {record.group('number')}"
     page = _PAGE_LOCATOR_RE.search(text)
     if page:
         return page.group(0).upper()

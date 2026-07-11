@@ -40,7 +40,8 @@ def test_source_bundle_keeps_table_rows_in_source_order(tmp_path: Path) -> None:
 def test_line_oriented_docx_extract_splits_paragraphs_but_keeps_tables(tmp_path: Path) -> None:
     source = tmp_path / "source_extract.md"
     source.write_text(
-        "# DOCX 文本抽取稿\n\n"
+        "# DOCX 文本抽取稿\n"
+        "- paragraphs: 4\n\n"
         "## Paragraphs\n\n"
         "[1] (Normal) 第一段事实。\n"
         "[2] (Normal) 第二段事实。\n"
