@@ -111,6 +111,67 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
         self.assertIn("有效内容整体宽度不少于画布宽度 90%", prompt)
         self.assertIn("不要把内容缩成居中的", prompt)
 
+    def test_editable_body_svg_uses_background_and_stable_line_names(self) -> None:
+        module = load_template_image_ppt_export()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            background_path = root / "background.png"
+            Image.new("RGB", (320, 180), "#12355b").save(background_path)
+            (root / "images").mkdir()
+            Image.new("RGB", (320, 180), "#12355b").save(root / "images" / "background.png")
+            page_json = root / "page.json"
+            page_json.write_text(
+                json.dumps(
+                    {
+                        "page": {"page_id": "page-004", "width_px": 320, "height_px": 180},
+                        "images": {"background": {"path": str(background_path), "width_px": 320, "height_px": 180}},
+                        "text_lines": [
+                            {"line_id": "T01-L01", "text": "第一行", "bbox": {"x": 10, "y": 20, "width": 80, "height": 18}},
+                            {"line_id": "T01-L02", "text": "第二行", "bbox": {"x": 10, "y": 50, "width": 80, "height": 18}},
+                        ],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            result_manifest = root / "editable_text_result.json"
+            result_manifest.write_text(
+                json.dumps(
+                    {
+                        "pages": {
+                            "4": {
+                                "page_number": 4,
+                                "status": "passed",
+                                "page_json": str(page_json),
+                                "background_path": str(background_path),
+                            }
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            pages = module.load_editable_body_pages(result_manifest, [4])
+            svg = module.render_editable_body_svg(
+                pages[4], {"x": 20, "y": 104, "width": 1240, "height": 592}, {"width": 1280, "height": 720}
+            )
+
+            self.assertIn('href="../images/background.png"', svg)
+            self.assertIn('data-pptx-name="text-4-T01-L01"', svg)
+            self.assertIn('data-pptx-name="text-4-T01-L02"', svg)
+
+            from svg_to_pptx.drawingml_converter import convert_svg_to_slide_shapes
+
+            (root / "svg_output").mkdir()
+            svg_path = root / "svg_output" / "page.svg"
+            svg_path.write_text(
+                f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="720">{svg}</svg>',
+                encoding="utf-8",
+            )
+            converted = convert_svg_to_slide_shapes(svg_path)
+            self.assertIn('name="text-4-T01-L01"', converted[0])
+            self.assertIn('name="text-4-T01-L02"', converted[0])
+
     def test_image_prompt_rejects_evidence_chain_text(self) -> None:
         module = load_template_image_ppt_export()
 

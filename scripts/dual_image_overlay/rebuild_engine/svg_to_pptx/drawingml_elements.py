@@ -1550,7 +1550,7 @@ def convert_text(elem: ET.Element, ctx: ConvertContext) -> ShapeResult | None:
 
     return ShapeResult(xml=f'''<p:sp>
 <p:nvSpPr>
-<p:cNvPr id="{shape_id}" name="TextBox {shape_id}"/>
+<p:cNvPr id="{shape_id}" name="{_xml_escape(elem.get('data-pptx-name') or f'TextBox {shape_id}')}"/>
 <p:cNvSpPr txBox="1"/><p:nvPr/>
 </p:nvSpPr>
 <p:spPr>

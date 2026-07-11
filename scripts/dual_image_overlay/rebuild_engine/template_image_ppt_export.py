@@ -862,6 +862,110 @@ def load_approved_full_images(
     return images
 
 
+def _resolve_editable_path(raw: object, base: Path, label: str) -> Path:
+    if not raw:
+        raise ValueError(f"{label} is missing")
+    path = Path(str(raw)).expanduser()
+    if not path.is_absolute():
+        path = base / path
+    path = path.resolve()
+    if not path.is_file():
+        raise FileNotFoundError(f"{label} is missing: {path}")
+    return path
+
+
+def load_editable_body_pages(result_manifest: Path, pages: list[int]) -> dict[int, dict]:
+    """Load passed vendor page JSON into a template-body rendering contract."""
+
+    result_path = Path(result_manifest).expanduser().resolve()
+    result = _read_json_object(result_path, "editable-text result manifest")
+    records = result.get("pages")
+    if not isinstance(records, dict):
+        raise ValueError("editable-text result manifest must contain pages{}")
+    result_pages: dict[int, dict] = {}
+    for page_number in pages:
+        raw_record = records.get(str(page_number))
+        if not isinstance(raw_record, dict):
+            raise ValueError(f"editable-text result is missing page {page_number}")
+        if raw_record.get("status") != "passed":
+            raise ValueError(f"editable-text page {page_number} is not passed")
+        page_json = _resolve_editable_path(raw_record.get("page_json"), result_path.parent, f"page JSON for page {page_number}")
+        payload = _read_json_object(page_json, f"page JSON for page {page_number}")
+        page_meta = payload.get("page") if isinstance(payload.get("page"), dict) else {}
+        width = int(page_meta.get("width_px", 0) or 0)
+        height = int(page_meta.get("height_px", 0) or 0)
+        if width <= 0 or height <= 0:
+            raise ValueError(f"page {page_number} has invalid source canvas")
+        images = payload.get("images") if isinstance(payload.get("images"), dict) else {}
+        background_meta = images.get("background") if isinstance(images.get("background"), dict) else {}
+        background = _resolve_editable_path(
+            raw_record.get("background_path") or background_meta.get("path"),
+            page_json.parent,
+            f"background image for page {page_number}",
+        )
+        lines = payload.get("text_lines")
+        if not isinstance(lines, list) or not lines:
+            raise ValueError(f"page {page_number} has no editable text lines")
+        normalized_lines: list[dict] = []
+        for line in lines:
+            if not isinstance(line, dict):
+                raise ValueError(f"page {page_number} contains an invalid text line")
+            text = str(line.get("text") or "")
+            if not text or "\n" in text or "\r" in text:
+                raise ValueError(f"page {page_number} contains newline or empty editable text")
+            target = line.get("target") if isinstance(line.get("target"), dict) else {}
+            bbox = target.get("bbox_px") if isinstance(target.get("bbox_px"), dict) else line.get("bbox")
+            if not isinstance(bbox, dict) or not all(key in bbox for key in ("x", "y", "width", "height")):
+                raise ValueError(f"page {page_number} line {line.get('line_id', '')} has no target bbox")
+            normalized_lines.append({**line, "text": text, "bbox_px": {key: float(bbox[key]) for key in ("x", "y", "width", "height")}})
+        result_pages[page_number] = {
+            "page_number": page_number,
+            "page_id": str(page_meta.get("page_id") or f"page-{page_number:03d}"),
+            "canvas": {"width": width, "height": height},
+            "background_path": background,
+            "text_lines": normalized_lines,
+        }
+    return result_pages
+
+
+def _map_editable_bbox(bbox: dict[str, float], canvas: dict[str, int], body: dict[str, int]) -> dict[str, float]:
+    scale = min(body["width"] / canvas["width"], body["height"] / canvas["height"])
+    offset_x = body["x"] + (body["width"] - canvas["width"] * scale) / 2
+    offset_y = body["y"] + (body["height"] - canvas["height"] * scale) / 2
+    return {
+        "x": offset_x + bbox["x"] * scale,
+        "y": offset_y + bbox["y"] * scale,
+        "width": bbox["width"] * scale,
+        "height": bbox["height"] * scale,
+    }
+
+
+def render_editable_body_svg(page: dict, body_region: dict[str, int], canvas: dict[str, int]) -> str:
+    """Render a background plus stable, native-convertible SVG text boxes."""
+
+    background = Path(page["background_path"])
+    if not background.is_file():
+        raise FileNotFoundError(f"editable background is missing: {background}")
+    image_href = "../images/" + background.name
+    body = body_region
+    parts = [
+        f'<image x="{body["x"]}" y="{body["y"]}" width="{body["width"]}" height="{body["height"]}" href={quoteattr(image_href)} xlink:href={quoteattr(image_href)} preserveAspectRatio="xMidYMid meet"/>',
+    ]
+    for line in page["text_lines"]:
+        mapped = _map_editable_bbox(line["bbox_px"], canvas, body)
+        font_size = max(6.5, mapped["height"] * 0.75)
+        line_id = str(line.get("line_id") or "line")
+        name = f'text-{page["page_number"]}-{line_id}'
+        parts.append(
+            f'<text id={quoteattr(name)} data-pptx-name={quoteattr(name)} '
+            f'x="{fmt(mapped["x"])}" y="{fmt(mapped["y"] + font_size * 0.85)}" '
+            f'data-pptx-width="{fmt(mapped["width"])}" font-family="Microsoft YaHei" '
+            f'font-size="{fmt(font_size)}" fill="#123B66" xml:space="preserve">'
+            f'{xml_escape(str(line["text"]))}</text>'
+        )
+    return "\n".join(parts)
+
+
 def approved_image_content_region(path: Path) -> dict[str, int] | None:
     data = _read_json_object(Path(path).expanduser().resolve(), "approved page image manifest")
     contract = data.get("generation_contract")
