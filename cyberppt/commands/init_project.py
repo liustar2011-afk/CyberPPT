@@ -43,6 +43,7 @@ def _project_manifest(name: str) -> str:
     return f"""name: {name}
 workflow: cyberppt
 schema: cyberppt.project.v1
+production_mode: full_image_ppt
 writing_style:
   default: internal_public_sector
   structure_strategy: source_and_task_adaptive
