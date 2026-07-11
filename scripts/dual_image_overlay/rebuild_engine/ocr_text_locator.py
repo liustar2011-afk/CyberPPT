@@ -150,6 +150,7 @@ def locate_text(
     timeout: int = 300,
     min_expected_items: int | None = None,
     quality_retries: int = DEFAULT_QUALITY_RETRIES,
+    ocr_scale: float = 1.0,
 ) -> dict[str, Any]:
     """Locate text in an image and optionally write the normalized JSON.
 
@@ -174,6 +175,7 @@ def locate_text(
         else:
             layout = normalize_layout(run_local_ocr(
                 image_path, runtime_dir=Path(__file__).resolve().parents[3] / "tools" / "paddleocr_runtime"
+                , scale=ocr_scale
             ))
     elif backend in {"vision-json", "paddleocr-vl"}:
         if dry_run:
@@ -216,6 +218,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--backend", choices=("vision-json", "paddleocr-vl", "paddleocr-local", "none"), default="vision-json")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--timeout", type=int, default=300)
+    parser.add_argument("--ocr-scale", type=float, default=1.0)
     return parser
 
 
@@ -228,6 +231,7 @@ def main(argv: list[str] | None = None) -> int:
             output_path=args.out,
             dry_run=args.dry_run,
             timeout=args.timeout,
+            ocr_scale=args.ocr_scale,
         )
     except Exception as exc:
         print(f"Error: {exc}", file=sys.stderr)

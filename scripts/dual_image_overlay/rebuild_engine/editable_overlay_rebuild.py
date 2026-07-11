@@ -277,6 +277,7 @@ def _layout_for_page(
     timeout: int,
     min_expected_items: int | None = None,
     variant: str = "full",
+    ocr_scale: float = 1.0,
 ) -> tuple[Path, dict[str, Any]]:
     suffix = "" if variant == "full" else f"_{variant}"
     layout_path = ocr_dir / f"page_{page_number:03d}{suffix}_text_layout.json"
@@ -288,6 +289,7 @@ def _layout_for_page(
         output_path=layout_path,
         timeout=timeout,
         min_expected_items=min_expected_items,
+        ocr_scale=ocr_scale,
     )
     return layout_path, layout
 
@@ -301,6 +303,7 @@ def _prefetch_page_ocr_layouts(
     force_ocr: bool,
     timeout: int,
     max_workers: int = 4,
+    ocr_scale: float = 1.0,
 ) -> None:
     """Warm the OCR cache for every page/variant concurrently before the main loop.
 
@@ -349,6 +352,7 @@ def _prefetch_page_ocr_layouts(
                 timeout=timeout,
                 min_expected_items=min_expected_items,
                 variant=variant,
+                ocr_scale=ocr_scale,
             )
             for page_number, image_path, variant, min_expected_items in indexed_tasks
         ]
@@ -726,6 +730,7 @@ def rebuild_from_manifest(
     editable_text_visibility: str = "visible",
     explicit_semantic_plan_dir: Path | None = None,
     visual_registry_dir: Path | None = None,
+    ocr_scale: float = 1.0,
 ) -> dict[str, Any]:
     """Create overlay SVG pages from generated full/background image pairs."""
     manifest_path = manifest_path.resolve()
@@ -803,6 +808,7 @@ def rebuild_from_manifest(
                 force_ocr=force_ocr,
                 timeout=timeout,
                 min_expected_items=min_expected_items,
+                ocr_scale=ocr_scale,
             )
             # SKILL.md's dual_image_editable_overlay contract requires a
             # no-text scan of the background: it must never carry readable
@@ -819,6 +825,7 @@ def rebuild_from_manifest(
                 force_ocr=force_ocr,
                 timeout=timeout,
                 variant="background",
+                ocr_scale=ocr_scale,
             )
             layout_path, layout = full_future.result()
             background_layout_path, background_layout = background_future.result()
@@ -837,7 +844,7 @@ def rebuild_from_manifest(
         forensics["quality"] = {**forensics.get("quality", {}), **quality_report["metrics"], "gate": quality_report}
         forensic_path = ocr_dir / f"page_{page_number:03d}_text_forensics.json"
         _write_json(forensic_path, forensics)
-        if ocr_backend != "none" and quality_report["status"] != "passed":
+        if quality_report["status"] != "passed":
             raise RuntimeError(
                 f"OCR quality gate failed for page {page_number}: {quality_report['failures']}. "
                 f"Raw evidence retained at {forensic_path}. Recovery: {quality_report['recovery_command']}"
@@ -1116,6 +1123,7 @@ def build_parser() -> argparse.ArgumentParser:
     rebuild.add_argument("manifest", type=Path)
     rebuild.add_argument("--ocr-backend", choices=("paddleocr-local", "vision-json", "none"), default="vision-json")
     rebuild.add_argument("--force-ocr", action="store_true")
+    rebuild.add_argument("--ocr-scale", type=float, default=1.0, help="Local OCR scale factor (for example 2.0 for recovery).")
     rebuild.add_argument("--timeout", type=int, default=300)
     rebuild.add_argument("--visible-image-variant", choices=("background", "full"), default="background")
     rebuild.add_argument("--editable-text-visibility", choices=("visible", "hidden"), default="visible")
@@ -1138,6 +1146,7 @@ def main(argv: list[str] | None = None) -> int:
             editable_text_visibility=args.editable_text_visibility,
             explicit_semantic_plan_dir=args.semantic_plan_dir.resolve() if args.semantic_plan_dir else None,
             visual_registry_dir=args.visual_registry_dir.resolve() if args.visual_registry_dir else None,
+            ocr_scale=args.ocr_scale,
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         if args.export:

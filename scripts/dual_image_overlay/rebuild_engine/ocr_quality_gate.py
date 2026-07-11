@@ -47,5 +47,5 @@ def evaluate_ocr_quality(forensics: dict[str, Any], *, policy: dict[str, Any]) -
         "line_count": len(lines),
         "expected_line_count": len(expected),
     }
-    recovery = str(policy.get("recovery_command") or "python3 -m scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild rebuild <manifest> --ocr-backend paddleocr-local --force-ocr  # rerun at 2x/region review")
+    recovery = str(policy.get("recovery_command") or "python3 -m scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild rebuild <manifest> --ocr-backend paddleocr-local --force-ocr --ocr-scale 2.0")
     return {"status": "passed" if not failures else "failed", "failures": failures, "metrics": metrics, "recovery_command": recovery}

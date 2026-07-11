@@ -23,3 +23,8 @@ def test_quality_gate_rejects_protected_replacement_failure():
     )
     assert report["status"] == "failed"
     assert "protected_replacement" in report["failures"]
+
+
+def test_quality_gate_recovery_command_has_executable_two_x_flag():
+    report = evaluate_ocr_quality({"quality": {"line_recall": .5}}, policy=POLICY)
+    assert "--ocr-scale 2.0" in report["recovery_command"]
