@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
 import sys
 import tempfile
 import unittest
@@ -40,6 +41,66 @@ def load_template_image_ppt_export():
 
 
 class DualImageTemplateBodyRegionTest(unittest.TestCase):
+    def test_mixed_template_range_exports_all_slides_with_only_content_full_image(self) -> None:
+        module = load_template_image_ppt_export()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            full_image = root / "page_004_full.png"
+            Image.new("RGB", (2480, 1184), "#12355b").save(full_image)
+            page_images = root / "page_image_pairs.json"
+            page_images.write_text(
+                json.dumps(
+                    {
+                        "requested_pages": [1, 2, 3, 4, 5],
+                        "pairs": [{"page_number": 4, "full": {"path": str(full_image)}}],
+                        "skipped_pages": [
+                            {"page_number": 1, "page_role": "cover"},
+                            {"page_number": 2, "page_role": "agenda"},
+                            {"page_number": 3, "page_role": "section"},
+                            {"page_number": 5, "page_role": "ending"},
+                        ],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            script = root / "imagegen_script.md"
+            script.write_text(
+                """## 第1页：首页
+【页面类型】
+本页类型：封面页。此信息只用于构图，不得作为页面可见文字。
+
+## 第2页：导航
+【页面类型】
+本页类型：目录页。此信息只用于构图，不得作为页面可见文字。
+
+## 第3页：工作回顾
+【页面类型】
+本页类型：章节过渡页。此信息只用于构图，不得作为页面可见文字。
+
+## 第4页：重点成果
+【页面类型】
+本页类型：内容页。此信息只用于构图，不得作为页面可见文字。
+
+## 第5页：致意
+【页面类型】
+本页类型：结束页。此信息只用于构图，不得作为页面可见文字。
+""",
+                encoding="utf-8",
+            )
+
+            approved = module.load_approved_full_images(page_images, [1, 2, 3, 4, 5])
+            pages = module.parse_page_blocks(script)
+            manifest = module.build_manifest(script, [1, 2, 3, 4, 5], pages, root)
+            Path(manifest["tasks"][3]["image_path"]).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(full_image, manifest["tasks"][3]["image_path"])
+            project = module.write_project(manifest, root, "mixed")
+            svg_count = len(list((project / "svg_output").glob("*.svg")))
+
+        self.assertEqual({4: full_image.resolve()}, approved)
+        self.assertEqual(["cover", "agenda", "section", "body", "ending"], [task["page_role"] for task in manifest["tasks"]])
+        self.assertEqual(5, svg_count)
+
     def test_expanded_body_region_stays_below_master_red_divider(self) -> None:
         module = load_template_image_ppt_export()
         brand_body_region = {"x": 58, "y": 122, "width": 1164, "height": 554}

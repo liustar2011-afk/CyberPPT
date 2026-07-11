@@ -27,6 +27,7 @@ from cyberppt.commands.blueprint_gate import (
     stage_visual_style_options,
 )
 from cyberppt.commands.final_script_pages import run_final_script_pages
+from cyberppt.commands.imagegen_run import run_imagegen_page
 from cyberppt.commands.image_text_qa import run_project_image_text_qa
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.produce import (
@@ -415,6 +416,16 @@ def _image_text_qa_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _imagegen_run_command(args: argparse.Namespace) -> int:
+    try:
+        result = run_imagegen_page(Path(args.project), args.pages, model=args.model)
+    except (FileNotFoundError, RuntimeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cyberppt", description="CyberPPT product tooling.")
     parser.add_argument("--version", action="version", version=f"cyberppt {__version__}")
@@ -670,6 +681,14 @@ def build_parser() -> argparse.ArgumentParser:
     image_text_qa_parser.add_argument("--ocr-json", help="Offline OCR fixture JSON for deterministic review/tests.")
     image_text_qa_parser.add_argument("--model", help="Optional Codex vision model for live OCR.")
     image_text_qa_parser.set_defaults(func=_image_text_qa_command)
+
+    imagegen_run_parser = subparsers.add_parser(
+        "imagegen-run", help="Generate exactly one approved content page from its current manifest."
+    )
+    imagegen_run_parser.add_argument("project", help="CyberPPT project directory.")
+    imagegen_run_parser.add_argument("--pages", required=True, help="Exactly one approved content-page number.")
+    imagegen_run_parser.add_argument("--model", help="Optional Codex image model.")
+    imagegen_run_parser.set_defaults(func=_imagegen_run_command)
 
     produce_parser = subparsers.add_parser("produce", help="Run the project-scoped production state machine.")
     produce_subparsers = produce_parser.add_subparsers(dest="produce_command", required=True)

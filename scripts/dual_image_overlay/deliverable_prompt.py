@@ -33,6 +33,7 @@ COMPONENT_PREFIX_RE = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九
 COMPONENT_PREFIX_SIMPLE_RE = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+[：:]\s*")
 COMPONENT_LINE_RE = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+")
 PAGE_TYPE_LINE_RE = re.compile(r"^页面类型\s*[:：]\s*(?P<page_type>.+?)\s*$")
+DECLARED_PAGE_TYPE_LINE_RE = re.compile(r"^本页类型\s*[:：]\s*(?P<page_type>[^。]+)")
 TITLE_REFERENCE_RE = re.compile(r"本页结论标题.*")
 TEMPLATE_TITLE_RE = re.compile(r"本页结论标题[^\"“”]*[\"“](?P<title>[^\"”]+)[\"”]")
 TEMPLATE_TITLE_MAX_CHARS = 42
@@ -228,6 +229,8 @@ def page_type_directive(page: PageBlock) -> str:
 
     for raw in page.text.splitlines():
         match = PAGE_TYPE_LINE_RE.match(raw.strip())
+        if not match:
+            match = DECLARED_PAGE_TYPE_LINE_RE.match(raw.strip())
         if match:
             return match.group("page_type").strip()
     return "内容页"

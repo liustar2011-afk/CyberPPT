@@ -63,6 +63,33 @@ class CliTests(unittest.TestCase):
         self.assertIn("approve-speaker-notes-review", help_text)
         self.assertIn("image-text-qa", help_text)
 
+    def test_imagegen_run_rejects_free_prompt(self) -> None:
+        with self.assertRaises(SystemExit) as raised, redirect_stderr(io.StringIO()):
+            main(["imagegen-run", "/tmp/project", "--pages", "4", "--prompt", "free text"])
+
+        self.assertEqual(2, raised.exception.code)
+
+    def test_imagegen_run_rejects_prompt_file(self) -> None:
+        with self.assertRaises(SystemExit) as raised, redirect_stderr(io.StringIO()):
+            main(["imagegen-run", "/tmp/project", "--pages", "4", "--prompt-file", "/tmp/prompt.txt"])
+
+        self.assertEqual(2, raised.exception.code)
+
+    def test_imagegen_run_rejects_output_override(self) -> None:
+        with self.assertRaises(SystemExit) as raised, redirect_stderr(io.StringIO()):
+            main(["imagegen-run", "/tmp/project", "--pages", "4", "--out", "/tmp/override.png"])
+
+        self.assertEqual(2, raised.exception.code)
+
+    def test_imagegen_run_rejects_multi_page_selection(self) -> None:
+        buffer = io.StringIO()
+
+        with redirect_stderr(buffer):
+            code = main(["imagegen-run", "/tmp/project", "--pages", "4-5"])
+
+        self.assertEqual(2, code)
+        self.assertIn("imagegen-run accepts exactly one page", buffer.getvalue())
+
     def test_image_text_qa_command_writes_summary_from_fixture_ocr(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

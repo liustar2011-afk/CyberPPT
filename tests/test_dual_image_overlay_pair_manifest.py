@@ -5,11 +5,170 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.dual_image_overlay import cyberppt_pair_manifest as module
 from scripts.dual_image_overlay.cyberppt_pair_manifest import main, require_generated
 from scripts.dual_image_overlay.deliverable_prompt import validate_imagegen_script
 
 
 class CyberpptPairManifestTests(unittest.TestCase):
+    def test_build_manifest_skips_template_only_pages_and_keeps_content_pages(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            script = root / "imagegen_script.md"
+            output_dir = root / "images"
+            script.write_text(
+                """## 第1页：封面
+【页面类型】
+本页类型：封面页。此信息只用于构图，不得作为页面可见文字。
+
+【内容锁定】
+- 年度工作汇报
+
+【构图指令】
+正式内部汇报封面。
+
+【结构密度】
+- 单一主标题
+
+## 第2页：目录
+【页面类型】
+本页类型：目录页。此信息只用于构图，不得作为页面可见文字。
+
+【内容锁定】
+- 一、工作回顾
+
+【构图指令】
+正式内部汇报目录。
+
+【结构密度】
+- 目录列表
+
+## 第3页：第一章 工作回顾
+【页面类型】
+本页类型：章节过渡页。此信息只用于构图，不得作为页面可见文字。
+
+【内容锁定】
+- 章节过渡
+
+【构图指令】
+正式内部汇报章节过渡页。
+
+【结构密度】
+- 单一章节标题
+
+## 第4页：重点成果
+【页面类型】
+本页类型：内容页。此信息只用于构图，不得作为页面可见文字。
+
+【内容锁定】
+- 完成年度重点任务。
+
+【构图指令】
+正式内部汇报正文内容区。
+
+【结构密度】
+- 一项重点成果
+
+## 第5页：感谢
+【页面类型】
+本页类型：结束页。此信息只用于构图，不得作为页面可见文字。
+
+【内容锁定】
+- 感谢聆听
+
+【构图指令】
+正式内部汇报结束页。
+
+【结构密度】
+- 单一结束语
+""",
+                encoding="utf-8",
+            )
+
+            manifest, *_ = module.build_manifest(
+                script=script,
+                pages_raw="1-5",
+                output_dir=output_dir,
+                project_path=None,
+                style_lock=None,
+            )
+
+        self.assertEqual([4], [pair["page_number"] for pair in manifest["pairs"]])
+        self.assertEqual([1, 2, 3, 4, 5], manifest["requested_pages"])
+        self.assertEqual(
+            [(1, "cover"), (2, "agenda"), (3, "section"), (5, "ending")],
+            [(item["page_number"], item["page_role"]) for item in manifest["skipped_pages"]],
+        )
+
+    def test_build_manifest_rejects_navigation_only_range(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            script = root / "imagegen_script.md"
+            script.write_text(
+                """## 第1页：封面
+【页面类型】
+本页类型：封面页。此信息只用于构图，不得作为页面可见文字。
+
+【内容锁定】
+- 年度工作汇报
+
+【构图指令】
+正式内部汇报封面。
+
+【结构密度】
+- 单一主标题
+
+## 第2页：目录
+【页面类型】
+本页类型：目录页。此信息只用于构图，不得作为页面可见文字。
+
+【内容锁定】
+- 一、工作回顾
+
+【构图指令】
+正式内部汇报目录。
+
+【结构密度】
+- 目录列表
+
+## 第3页：第一章 工作回顾
+【页面类型】
+本页类型：章节过渡页。此信息只用于构图，不得作为页面可见文字。
+
+【内容锁定】
+- 章节过渡
+
+【构图指令】
+正式内部汇报章节过渡页。
+
+【结构密度】
+- 单一章节标题
+
+## 第5页：感谢
+【页面类型】
+本页类型：结束页。此信息只用于构图，不得作为页面可见文字。
+
+【内容锁定】
+- 感谢聆听
+
+【构图指令】
+正式内部汇报结束页。
+
+【结构密度】
+- 单一结束语
+""",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "no content pages selected for image generation"):
+                module.build_manifest(
+                    script=script,
+                    pages_raw="1-3,5",
+                    output_dir=root / "images",
+                    project_path=None,
+                    style_lock=None,
+                )
+
     def test_promotes_approved_blueprint_to_full_image(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

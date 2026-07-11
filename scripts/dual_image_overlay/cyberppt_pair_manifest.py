@@ -108,6 +108,29 @@ def _mark_status(item: dict[str, Any], *, force_pending: bool = False) -> None:
             item["last_error"] = f"Missing expected CyberPPT image file: {path}"
 
 
+def classify_page_role(page_number: int, title: str, text: str) -> str:
+    declared = re.search(r"本页类型\s*[:：]\s*(封面|目录|章节过渡|内容|结束|封底)页", text)
+    if declared:
+        return {
+            "封面": "cover",
+            "目录": "agenda",
+            "章节过渡": "section",
+            "内容": "content",
+            "结束": "ending",
+            "封底": "ending",
+        }[declared.group(1)]
+    normalized = f"{title}\n{text}"
+    if page_number == 1 or "封面" in title:
+        return "cover"
+    if "目录" in title:
+        return "agenda"
+    if any(marker in title for marker in ("封底", "结束", "感谢")):
+        return "ending"
+    if "章节过渡" in normalized or re.match(r"第[一二三四五六七八九十]+章", title):
+        return "section"
+    return "content"
+
+
 def build_manifest(
     *,
     script: Path,
@@ -139,8 +162,21 @@ def build_manifest(
     # machine manifest compiled from this file.
     compiled_pages = parse_page_blocks(compiled_script)
     pairs: list[dict[str, Any]] = []
+    skipped_pages: list[dict[str, object]] = []
     for page_number in page_numbers:
         page = compiled_pages[page_number]
+        source_page = source_pages[page_number]
+        page_role = classify_page_role(page_number, source_page.title, source_page.text)
+        if page_role != "content":
+            skipped_pages.append(
+                {
+                    "page_number": page_number,
+                    "title": page.title,
+                    "page_role": page_role,
+                    "reason": "template_only_page",
+                }
+            )
+            continue
         stem = _page_stem(page_number, page.title)
         full_path = output_dir / f"{stem}_full.png"
         full = {
@@ -162,6 +198,11 @@ def build_manifest(
                 "page_script": page.text,
                 "full": full,
             }
+        )
+
+    if not pairs:
+        raise ValueError(
+            "no content pages selected for image generation; select at least one content page"
         )
 
     manifest = {
@@ -195,6 +236,8 @@ def build_manifest(
         "style_lock": str(style_lock.resolve()) if style_lock else None,
         "output_dir": str(output_dir.resolve()),
         "created_at": datetime.now(timezone.utc).isoformat(),
+        "requested_pages": page_numbers,
+        "skipped_pages": skipped_pages,
         "pairs": pairs,
     }
     manifest_path = output_dir / "page_image_pairs.json"

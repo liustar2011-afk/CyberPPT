@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import tempfile
 import unittest
@@ -86,9 +87,60 @@ def _approve_stage02_images(project: Path, script: Path, pages: str) -> Path:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     for pair in manifest["pairs"]:
         Path(pair["full"]["path"]).write_bytes(b"png")
+    _write_passed_controlled_imagegen_records(project, manifest_path)
     stage_blueprint_image_review(project, manifest_path)
     approve_blueprint_image_review(project, "confirm_blueprint_images")
     return Path(summary["artifacts"]["speaker_notes_manifest"])
+
+
+def _write_passed_controlled_imagegen_records(project: Path, manifest_path: Path) -> None:
+    """Create current passed ImageGen and image-text-QA records for manifest pairs."""
+
+    manifest_path = manifest_path.resolve()
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest_sha256 = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+    qa_dir = manifest_path.parent / "image_text_qa"
+    qa_dir.mkdir(parents=True, exist_ok=True)
+    run_dir = project / "imagegen_runs"
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    for pair in manifest["pairs"]:
+        page = pair["page_number"]
+        full = pair["full"]
+        output_path = Path(full["path"]).resolve()
+        output_sha256 = hashlib.sha256(output_path.read_bytes()).hexdigest()
+        qa_path = qa_dir / f"page_{page:03d}.json"
+        qa_path.write_text(
+            json.dumps(
+                {
+                    "schema": "cyberppt.image_text_qa.v1",
+                    "page": page,
+                    "image_path": str(output_path),
+                    "image_sha256": output_sha256,
+                    "status": "passed",
+                    "deliverable_allowed": True,
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        (run_dir / f"page_{page}.json").write_text(
+            json.dumps(
+                {
+                    "schema": "cyberppt.imagegen_run.v1",
+                    "page": page,
+                    "manifest": str(manifest_path),
+                    "manifest_sha256": manifest_sha256,
+                    "prompt_sha256": hashlib.sha256(full["prompt"].encode("utf-8")).hexdigest(),
+                    "output_path": str(output_path),
+                    "output_sha256": output_sha256,
+                    "status": "passed",
+                    "image_text_qa": str(qa_path),
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
 
 
 def _approve_stage02_speaker_notes(project: Path, manifest_path: Path, pages: str) -> None:
@@ -113,11 +165,14 @@ class FinalScriptPagesTests(unittest.TestCase):
             root = Path(tmp)
             project = root / "legacy-report"
             script = root / "script-final.md"
-            script.write_text("## 第1页：测试\n正文\n", encoding="utf-8")
+            script.write_text(
+                "## 第2页：测试\n【页面类型】\n本页类型：内容页。此信息只用于构图，不得作为页面可见文字。\n正文\n",
+                encoding="utf-8",
+            )
 
-            summary = run_final_script_pages(project=project, script=script, pages_raw="1", style_id=4)
+            summary = run_final_script_pages(project=project, script=script, pages_raw="2", style_id=4)
 
-        self.assertEqual([1], summary["pages"])
+        self.assertEqual([2], summary["pages"])
 
     def test_image_review_stages_generated_images_without_ocr_gate(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -153,6 +208,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "blueprint image review approval is required"):
                 assert_blueprint_image_review_ready(project, json.loads(manifest_path.read_text(encoding="utf-8")))
 
+            _write_passed_controlled_imagegen_records(project, manifest_path)
             approval = approve_blueprint_image_review(project, "confirm_blueprint_images")
 
             self.assertTrue(json.loads(approval.read_text(encoding="utf-8"))["approved"])
@@ -310,6 +366,47 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertIn(summary["artifacts"]["template_text_lock"], ledger_paths)
             self.assertIn(summary["artifacts"]["visual_style_lock"], ledger_paths)
 
+    def test_final_script_pages_records_template_only_pages_without_image_tasks(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            _approve_all_analysis_expression_gates(project)
+            script = root / "script-final.md"
+            script.write_text(
+                """## 第1页：封面
+【页面类型】
+本页类型：封面页。此信息只用于构图，不得作为页面可见文字。
+
+## 第2页：目录
+【页面类型】
+本页类型：目录页。此信息只用于构图，不得作为页面可见文字。
+
+## 第3页：第一章 工作回顾
+【页面类型】
+本页类型：章节过渡页。此信息只用于构图，不得作为页面可见文字。
+
+## 第4页：重点成果
+【页面类型】
+本页类型：内容页。此信息只用于构图，不得作为页面可见文字。
+
+## 第5页：感谢
+【页面类型】
+本页类型：结束页。此信息只用于构图，不得作为页面可见文字。
+""",
+                encoding="utf-8",
+            )
+            _approve_stage02_input(project, script)
+
+            summary = run_final_script_pages(project=project, script=script, pages_raw="1-5")
+            manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
+
+        self.assertEqual([1, 2, 3, 4, 5], summary["pages"])
+        self.assertEqual([4], [pair["page_number"] for pair in manifest["pairs"]])
+        self.assertEqual([1, 2, 3, 5], [item["page_number"] for item in manifest["skipped_pages"]])
+        self.assertEqual([4], summary["image_generation_pages"])
+        self.assertEqual([1, 2, 3, 5], summary["template_only_pages"])
+
     def test_requires_approved_visual_style_and_blueprint_input(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -329,13 +426,23 @@ class FinalScriptPagesTests(unittest.TestCase):
             init_project(project)
             _approve_all_analysis_expression_gates(project)
             script = root / "script-final.md"
-            script.write_text("## 第1页：测试\n组件A：内容\n", encoding="utf-8")
+            script.write_text(
+                "## 第2页：测试\n【页面类型】\n本页类型：内容页。此信息只用于构图，不得作为页面可见文字。\n组件A：内容\n",
+                encoding="utf-8",
+            )
             _approve_stage02_input(project, script)
-            _approve_stage02_images(project, script, "1")
+            summary = run_final_script_pages(project=project, script=script, pages_raw="2")
+            manifest_path = Path(summary["artifacts"]["page_image_pairs"])
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            for pair in manifest["pairs"]:
+                Path(pair["full"]["path"]).write_bytes(b"png")
+            _write_passed_controlled_imagegen_records(project, manifest_path)
+            stage_blueprint_image_review(project, manifest_path)
+            approve_blueprint_image_review(project, "confirm_blueprint_images")
             script.write_text(script.read_text(encoding="utf-8") + "\n<!-- post-approval edit -->\n", encoding="utf-8")
 
             with self.assertRaisesRegex(ValueError, "script must match the approved blueprint input"):
-                run_final_script_pages(project=project, script=script, pages_raw="1")
+                run_final_script_pages(project=project, script=script, pages_raw="2")
 
             self.assertTrue(any(project.rglob("visual_style_lock.json")))
 

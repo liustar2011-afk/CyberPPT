@@ -509,12 +509,16 @@ def run_final_script_pages(
     image_ppt_output_dir = target_dir / "image_ppt"
     image_ppt_name = slug
     speaker_notes_build = _run_speaker_notes_build(project=project, pages_raw=pages_raw, output_dir=target_dir)
+    generated_pages = [int(pair["page_number"]) for pair in manifest["pairs"]]
+    skipped_pages = [int(item["page_number"]) for item in manifest.get("skipped_pages", [])]
     run_summary = {
         "schema": "cyberppt.final_script_pages_run.v1",
         "created_at": _utc_now(),
         "project": str(project),
         "source_script": str(script),
         "pages": page_numbers,
+        "image_generation_pages": generated_pages,
+        "template_only_pages": skipped_pages,
         "stage": stage_name,
         "status": status,
         "artifacts": {

@@ -80,6 +80,37 @@ def _fixture_texts(path: Path | None) -> dict[str, str] | None:
     return result
 
 
+def _update_imagegen_run_qa_status(
+    root: Path,
+    manifest_path: Path,
+    page: int,
+    full: dict[str, Any],
+    image_path: Path,
+    report_path: Path,
+    status: str,
+) -> None:
+    """Attach the QA result only to the matching sealed generation record."""
+
+    run_path = root / "imagegen_runs" / f"page_{page}.json"
+    if not run_path.is_file():
+        return
+    run = _read_json(run_path)
+    prompt = full.get("prompt")
+    if not isinstance(prompt, str):
+        return
+    if (
+        run.get("manifest_sha256") != _sha256(manifest_path)
+        or run.get("prompt_sha256") != hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+        or run.get("output_sha256") != _sha256(image_path)
+        or Path(str(run.get("output_path", ""))).expanduser().resolve() != image_path
+    ):
+        return
+    run["status"] = status
+    run["image_text_qa"] = str(report_path.resolve())
+    run["image_text_qa_sha256"] = _sha256(report_path)
+    run_path.write_text(json.dumps(run, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def run_project_image_text_qa(
     project: Path,
     pages_raw: str,
@@ -140,6 +171,15 @@ def run_project_image_text_qa(
         report["image_sha256"] = _sha256(image_path)
         report["imagegen_script_sha256"] = str(manifest.get("imagegen_script_sha256") or _sha256(script_path))
         report_path = write_image_text_qa(report, qa_dir / f"page_{page:03d}.json")
+        _update_imagegen_run_qa_status(
+            root,
+            manifest_path,
+            page,
+            pair["full"],
+            image_path,
+            report_path,
+            str(report["status"]),
+        )
         reports.append({"page": page, "path": str(report_path), "status": report["status"]})
 
     statuses = [str(item["status"]) for item in reports]

@@ -134,6 +134,16 @@ def page_notes_text(block: PageBlock) -> str:
 
 
 def page_role(block: PageBlock) -> str:
+    declared = re.search(r"本页类型\s*[:：]\s*(封面|目录|章节过渡|内容|结束|封底)页", block.text)
+    if declared:
+        return {
+            "封面": "cover",
+            "目录": "agenda",
+            "章节过渡": "section",
+            "内容": "body",
+            "结束": "ending",
+            "封底": "ending",
+        }[declared.group(1)]
     if block.page_number == 1 or "封面" in block.title:
         return "cover"
     if "目录" in block.title:
@@ -837,9 +847,27 @@ def load_approved_full_images(
 ) -> dict[int, Path]:
     path = Path(path).expanduser().resolve()
     data = _read_json_object(path, "approved page image manifest")
+    requested_pages = data.get("requested_pages")
+    if requested_pages is not None:
+        if not isinstance(requested_pages, list):
+            raise ValueError("approved page image manifest requested_pages must be a list")
+        _assert_exact_page_set("approved page image manifest requested_pages", {int(page) for page in requested_pages}, pages)
+        skipped_records = data.get("skipped_pages", [])
+        if not isinstance(skipped_records, list):
+            raise ValueError("approved page image manifest skipped_pages must be a list")
+        skipped_pages = {
+            int(item["page_number"])
+            for item in skipped_records
+            if isinstance(item, dict) and "page_number" in item
+        }
+        if not skipped_pages.issubset(set(pages)):
+            raise ValueError("approved page image manifest skipped_pages contains an unrequested page")
+        image_pages = [page for page in pages if page not in skipped_pages]
+    else:
+        image_pages = pages
     pairs = data.get("pairs")
     pairs = _require_exact_page_records(
-        "approved page image manifest", pairs, pages, page_key="page_number"
+        "approved page image manifest", pairs, image_pages, page_key="page_number"
     )
     images: dict[int, Path] = {}
     for item in pairs:
@@ -858,7 +886,7 @@ def load_approved_full_images(
             )
         images[page_number] = image_path
     if project_root is not None:
-        _validate_blueprint_image_review(project_root, path, pages, images)
+        _validate_blueprint_image_review(project_root, path, image_pages, images)
     return images
 
 

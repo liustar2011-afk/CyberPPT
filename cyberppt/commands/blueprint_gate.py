@@ -427,6 +427,66 @@ def stage_blueprint_image_review(project: Path, manifest_path: Path) -> Path:
     return pending
 
 
+def assert_controlled_imagegen_ready(project: Path, manifest_path: Path) -> None:
+    """Require current, QA-passed sealed ImageGen records for every content pair."""
+
+    root = project.expanduser().resolve()
+    manifest_path = manifest_path.expanduser().resolve()
+    if not manifest_path.is_file():
+        raise FileNotFoundError(f"page image manifest not found: {manifest_path}")
+    manifest = _read_json(manifest_path)
+    manifest_sha256 = _sha256(manifest_path)
+    pairs = manifest.get("pairs")
+    if not isinstance(pairs, list) or not pairs:
+        raise ValueError("page image manifest contains no content pairs")
+    for pair in pairs:
+        if not isinstance(pair, dict) or not isinstance(pair.get("page_number"), int):
+            raise ValueError("page image manifest contains an invalid content pair")
+        page = pair["page_number"]
+        full = pair.get("full")
+        if not isinstance(full, dict):
+            raise ValueError(f"page {page} full image definition is required")
+        prompt = full.get("prompt")
+        path_value = full.get("path")
+        if not isinstance(prompt, str) or not prompt or not isinstance(path_value, str) or not path_value:
+            raise ValueError(f"page {page} full prompt and output path are required")
+        output_path = Path(path_value).expanduser()
+        if not output_path.is_absolute():
+            output_path = (manifest_path.parent / output_path).resolve()
+        else:
+            output_path = output_path.resolve()
+        run_path = root / "imagegen_runs" / f"page_{page}.json"
+        if not run_path.is_file():
+            raise ValueError(f"page {page} requires a controlled ImageGen run record")
+        run = _read_json(run_path)
+        if run.get("status") != "passed":
+            raise ValueError(f"page {page} controlled ImageGen run is not passed")
+        if run.get("manifest_sha256") != manifest_sha256:
+            raise ValueError(f"page {page} controlled ImageGen manifest hash is stale")
+        prompt_sha256 = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+        if run.get("prompt_sha256") != prompt_sha256:
+            raise ValueError(f"page {page} controlled ImageGen prompt hash is stale")
+        if not output_path.is_file():
+            raise ValueError(f"page {page} controlled ImageGen output is missing")
+        if Path(str(run.get("output_path", ""))).expanduser().resolve() != output_path:
+            raise ValueError(f"page {page} controlled ImageGen output path is stale")
+        output_sha256 = _sha256(output_path)
+        if run.get("output_sha256") != output_sha256:
+            raise ValueError(f"page {page} controlled ImageGen output hash is stale")
+        qa_path = Path(str(run.get("image_text_qa", ""))).expanduser()
+        if not qa_path.is_file():
+            raise ValueError(f"page {page} requires passed image-text QA")
+        qa = _read_json(qa_path)
+        if qa.get("status") != "passed" or qa.get("deliverable_allowed") is not True:
+            raise ValueError(f"page {page} image-text QA is not passed")
+        if qa.get("page") != page:
+            raise ValueError(f"page {page} image-text QA does not match the generated page")
+        if Path(str(qa.get("image_path", ""))).expanduser().resolve() != output_path:
+            raise ValueError(f"page {page} image-text QA does not match the generated output")
+        if qa.get("image_sha256") != output_sha256:
+            raise ValueError(f"page {page} image-text QA output hash is stale")
+
+
 def approve_blueprint_image_review(project: Path, option_id: str, note: str = "") -> Path:
     root = project.expanduser().resolve()
     pending = _stage_path(root, "blueprint_image_review.pending-confirmation.json")
@@ -439,6 +499,8 @@ def approve_blueprint_image_review(project: Path, option_id: str, note: str = ""
     artifact = Path(str(data["artifact"]))
     review = _read_json(artifact)
     approved = option_id == "confirm_blueprint_images"
+    if approved:
+        assert_controlled_imagegen_ready(root, Path(str(review.get("page_image_manifest", ""))))
     for image in review.get("images", []):
         path = Path(str(image.get("path", "")))
         if not path.is_file() or _sha256(path) != image.get("sha256"):
