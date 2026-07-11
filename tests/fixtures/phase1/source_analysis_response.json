@@ -1,0 +1,20 @@
+{
+  "material_type": "工作方案",
+  "reporting_task": "领导审定",
+  "audience": "分管领导",
+  "evidence": [
+    {
+      "claim": "供需总体平衡",
+      "verbatim_support": "供需总体平衡",
+      "source_unit_ids": ["U0001"],
+      "numbers": [],
+      "confidence": "high",
+      "caveat": "未提供计算底表",
+      "meaning": "说明当前判断",
+      "visual": "结论框"
+    }
+  ],
+  "storylines": [],
+  "material_pool": [],
+  "confirmation_questions": ["是否确认首期范围？"]
+}

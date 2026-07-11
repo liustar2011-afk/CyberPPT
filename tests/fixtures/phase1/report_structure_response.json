@@ -1,0 +1,7 @@
+{
+  "modules": [
+    {"title": "建设背景", "focus": "说明必要性", "evidence_ids": ["E01"]},
+    {"title": "实施安排", "focus": "说明路径", "evidence_ids": ["E01"]},
+    {"title": "审定事项", "focus": "形成决策请求", "evidence_ids": ["E01"]}
+  ]
+}

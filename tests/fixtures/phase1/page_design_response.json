@@ -1,0 +1,18 @@
+{
+  "pages": [
+    {
+      "page": 4,
+      "title": "形势变化与工作要求",
+      "role": "Complication",
+      "detail": "说明行业环境变化",
+      "evidence_ids": ["E01"],
+      "caveat": "沿用源材料口径",
+      "visual": "变量演进图",
+      "chart_plan": "供需研判对象变化",
+      "meaning": "说明建设必要性",
+      "transition": "进入工作基础",
+      "density": "五个信息区",
+      "components": ["变量地图", "说明栏"]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "audience": "分管领导",
+  "purpose": "审定工作安排",
+  "content_focus": "建设必要性和首期任务",
+  "evidence": ["E01"],
+  "strengths": ["具备行业组织基础"],
+  "boundaries": ["投资仍需专项论证"],
+  "options": [
+    {"id": "leadership", "label": "领导审定型", "reason": "适合当前任务"},
+    {"id": "execution", "label": "执行对齐型", "reason": "适合实施会"}
+  ],
+  "recommendation": "leadership"
+}

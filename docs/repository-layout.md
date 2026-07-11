@@ -40,6 +40,7 @@ delivery files:
 | `workbench/artifact-ledger.json` | Durable artifact index with dependencies, status, and resume commands. |
 | `workbench/analysis_expression/` | Project-level five-gate contract, staged confirmation records, approval records, and status metadata. It records source analysis, reporting direction, report structure, page design, and business script without replacing their source workspaces. |
 | `workbench/stages/01-analysis/` | Evidence tables, conflicts, SCR, storylines, page plans, density plans. |
+| `workbench/stages/01-analysis/model-runs/` | Prompt-first Stage 1 model runs: reviewable prompts, raw responses, candidates, grounding QA, critic reports, and run manifests. Model outputs are candidates only and must not be auto-approved. |
 | `workbench/stages/02-blueprint-dual-image/` | Historical path name for the current `full_image_ppt` mainline: style lock, template text lock, ImageGen full prompts/images, `page_image_pairs.json`, speaker notes, image-PPT assembly, and `assembly_report.json`. |
 | `workbench/stages/03-overlay/` | Legacy/Advanced editable rebuild artifacts only: overlay plans, semantic plans, text mapping, fit and layout QA. |
 | `workbench/stages/04-template-rebuild/` | Legacy/Advanced template rebuild jobs only: source capture, readiness records, normalized references. |
@@ -88,6 +89,22 @@ workspace, `adopt-analysis-expression-contract` creates only contract metadata.
 It does not overwrite existing business/page files or create a blueprint input.
 Use `analysis-expression-status --json` after adoption to identify the next
 gate, pending choices, and any missing upstream artifact.
+
+The optional model-assisted Stage 1 path is prompt-first and gate-by-gate:
+
+```bash
+python3 -m cyberppt phase1 prepare <project> --gate source_analysis --input <source_extract.md>
+python3 -m cyberppt phase1 generate <project> --gate source_analysis
+python3 -m cyberppt phase1 critique <project> --gate source_analysis
+python3 -m cyberppt phase1 stage <project> --gate source_analysis --recommendation <id> --options-json '<json>'
+python3 -m cyberppt approve-source-analysis <project> --option-id <id>
+```
+
+The prompt Markdown is a reviewable prompt and is editable before generation.
+Raw model responses, candidate Markdown, grounding reports, critic findings,
+model metadata, and hashes are recorded under `model-runs/`. Model output is
+never auto-approved，不得自动批准；the existing human confirmation record
+remains authoritative.
 
 ## Cleanup Rules
 
