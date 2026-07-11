@@ -83,9 +83,18 @@ class CyberpptPairManifestTests(unittest.TestCase):
             manifest = json.loads((output_dir / "page_image_pairs.json").read_text(encoding="utf-8"))
             pair = manifest["pairs"][0]
             style_lock_exists = Path(manifest["style_lock"]).is_file()
+            imagegen_script = Path(manifest["imagegen_script"])
+            imagegen_script_exists = imagegen_script.is_file()
+            imagegen_text = imagegen_script.read_text(encoding="utf-8")
 
         self.assertEqual(code, 0)
         self.assertTrue(style_lock_exists)
+        self.assertTrue(imagegen_script_exists)
+        self.assertEqual(str(imagegen_script), manifest["source_script"])
+        self.assertIn("imagegen_script_sha256", manifest)
+        self.assertIn("## 第3页：先生成全图，再由全图派生无文字底图", imagegen_text)
+        self.assertEqual(pair["page_script"], pair["full"]["prompt"])
+        self.assertIn(pair["full"]["prompt"], imagegen_text)
         self.assertEqual("cyberppt-full-image-only", manifest["mode"])
         self.assertEqual(["full"], manifest["output_variants"])
         self.assertEqual("text_to_image_generate_full", pair["full"]["generation_method"])
@@ -114,6 +123,48 @@ class CyberpptPairManifestTests(unittest.TestCase):
             }
 
             require_generated(manifest)
+
+    def test_edited_imagegen_script_recompiles_manifest_without_rewriting_prompt(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            output_dir = root / "images"
+            output_dir.mkdir()
+            script = output_dir / "imagegen_script.md"
+            script.write_text(
+                """## 第5页：人工修订页
+
+【页面类型】
+本页类型：内容页。此信息只用于构图，不得作为页面可见文字。
+
+【内容锁定】
+- 人工追加的生图控制语句
+
+【构图指令】
+保留用户手工修改后的构图要求，不得重新归纳。
+""",
+                encoding="utf-8",
+            )
+
+            code = main(
+                [
+                    "--script",
+                    str(script),
+                    "--pages",
+                    "5",
+                    "--output-dir",
+                    str(output_dir),
+                    "--project-path",
+                    str(root / "project"),
+                    "--style-id",
+                    "5",
+                ]
+            )
+            manifest = json.loads((output_dir / "page_image_pairs.json").read_text(encoding="utf-8"))
+            prompt = manifest["pairs"][0]["full"]["prompt"]
+
+        self.assertEqual(code, 0)
+        self.assertIn("人工追加的生图控制语句", prompt)
+        self.assertIn("不得重新归纳", prompt)
 
 
 if __name__ == "__main__":

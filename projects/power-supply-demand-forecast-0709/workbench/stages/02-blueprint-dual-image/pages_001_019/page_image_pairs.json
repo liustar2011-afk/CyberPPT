@@ -23,11 +23,13 @@
     "rule": "Generate full content-area images only; PPT title, subtitle and enterprise chrome are handled by template/export code. OCR, overlay, background derivation and template-rebuild are not part of Stage 02."
   },
   "project_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709",
-  "source_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/blueprint_input_cyberppt_deliverable_p1_p19.md",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/imagegen_script.md",
+  "imagegen_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/imagegen_script.md",
+  "imagegen_script_sha256": "26be902571326d8492a26727015fd9f987aea80cb854eb265173e1d03bf06f6f",
   "original_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
   "style_lock": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/locks/visual_style_lock.json",
   "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019",
-  "created_at": "2026-07-11T01:08:39.045820+00:00",
+  "created_at": "2026-07-11T01:28:56.296162+00:00",
   "pairs": [
     {
       "page_number": 1,

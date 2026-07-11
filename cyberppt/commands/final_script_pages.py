@@ -530,6 +530,7 @@ def run_final_script_pages(
         "status": status,
         "artifacts": {
             "compiled_deliverable_prompt": str(compiled_script),
+            "imagegen_script": str(compiled_script),
             "page_image_pairs": str(manifest_path),
             "template_text_lock": str(lock_path),
             "visual_style_lock": str(style_lock),
@@ -549,7 +550,7 @@ def run_final_script_pages(
             "semantic_plan_dir": str(semantic_plan_dir) if semantic_plan_dir else None,
         },
         "next_steps": [
-            "Generate each full image from the pair manifest full.prompt.",
+            "Review or edit imagegen_script.md, then generate each full image from the compiled pair manifest full.prompt.",
             "Run python3 -m cyberppt image-ppt run to assemble the full images into a template PPTX.",
             "Do not enter OCR, overlay, semantic-plan or template-rebuild from Stage 02.",
         ],

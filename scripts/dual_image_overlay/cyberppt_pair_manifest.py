@@ -14,6 +14,7 @@ external style preset system.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -39,6 +40,7 @@ GENERATION_SIZE = {"width": 1672, "height": 941}
 OUTPUT_VARIANTS = ["full"]
 FULL_GENERATION_METHOD = "text_to_image_generate_full"
 BACKGROUND_GENERATION_METHOD = "image_to_image_edit_from_full"
+IMAGEGEN_SCRIPT_FILENAME = "imagegen_script.md"
 BLUEPRINT_PATTERNS = (
     "slide-{page:03d}-blueprint.png",
     "slide-{page:02d}-blueprint.png",
@@ -58,9 +60,19 @@ def _page_stem(page_number: int, title: str) -> str:
 
 
 def _compiled_script_path(output_dir: Path, source: Path, pages: list[int]) -> Path:
-    first = pages[0]
-    last = pages[-1]
-    return output_dir / f"{source.stem}_cyberppt_deliverable_p{first}_p{last}.md"
+    return output_dir / IMAGEGEN_SCRIPT_FILENAME
+
+
+def _is_imagegen_script(path: Path, text: str) -> bool:
+    return path.name == IMAGEGEN_SCRIPT_FILENAME or ("【内容锁定】" in text and "【构图指令】" in text)
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _background_prompt(page_number: int) -> str:
@@ -103,9 +115,16 @@ def build_manifest(
     page_numbers = parse_pages(pages_raw, set(source_pages))
     output_dir.mkdir(parents=True, exist_ok=True)
     compiled_script = _compiled_script_path(output_dir, script, page_numbers)
-    compiled = compile_pages(script, page_numbers, style_lock_path=style_lock)
-    compiled_script.write_text(compiled, encoding="utf-8")
+    source_text = script.read_text(encoding="utf-8")
+    if _is_imagegen_script(script, source_text):
+        if script.resolve() != compiled_script.resolve():
+            compiled_script.write_text(source_text, encoding="utf-8")
+    else:
+        compiled = compile_pages(script, page_numbers, style_lock_path=style_lock)
+        compiled_script.write_text(compiled, encoding="utf-8")
 
+    # The reviewable MD is the source for image generation prompts; JSON is a
+    # machine manifest compiled from this file.
     compiled_pages = parse_page_blocks(compiled_script)
     pairs: list[dict[str, Any]] = []
     for page_number in page_numbers:
@@ -146,6 +165,8 @@ def build_manifest(
         },
         "project_path": str(project_path.resolve()) if project_path else "",
         "source_script": str(compiled_script.resolve()),
+        "imagegen_script": str(compiled_script.resolve()),
+        "imagegen_script_sha256": _sha256_file(compiled_script),
         "original_script": str(script.resolve()),
         "style_lock": str(style_lock.resolve()) if style_lock else None,
         "output_dir": str(output_dir.resolve()),

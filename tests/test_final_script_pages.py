@@ -281,10 +281,15 @@ class FinalScriptPagesTests(unittest.TestCase):
             lock = json.loads(Path(summary["artifacts"]["template_text_lock"]).read_text(encoding="utf-8"))
             visual_lock = json.loads(Path(summary["artifacts"]["visual_style_lock"]).read_text(encoding="utf-8"))
             prompt = Path(summary["artifacts"]["compiled_deliverable_prompt"]).read_text(encoding="utf-8")
+            imagegen_script = Path(summary["artifacts"]["imagegen_script"])
             ledger = json.loads((project / "workbench/artifact-ledger.json").read_text(encoding="utf-8"))
 
             self.assertEqual([7, 8], summary["pages"])
             self.assertEqual([7, 8], [pair["page_number"] for pair in manifest["pairs"]])
+            self.assertTrue(imagegen_script.exists())
+            self.assertEqual(imagegen_script.name, "imagegen_script.md")
+            self.assertEqual(str(imagegen_script), manifest["source_script"])
+            self.assertEqual(str(imagegen_script), manifest["imagegen_script"])
             self.assertEqual(4, visual_lock["style"]["id"])
             self.assertEqual(manifest["style_lock"], summary["artifacts"]["visual_style_lock"])
             self.assertIn("象牙白 + 深蓝强调", prompt)
@@ -297,6 +302,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertIn("--pages 7-8", summary["resume_command"])
             self.assertIn("--style-lock", summary["resume_command"])
             ledger_paths = {item["path"] for item in ledger["artifacts"]}
+            self.assertIn(summary["artifacts"]["imagegen_script"], ledger_paths)
             self.assertIn(summary["artifacts"]["page_image_pairs"], ledger_paths)
             self.assertIn(summary["artifacts"]["template_text_lock"], ledger_paths)
             self.assertIn(summary["artifacts"]["visual_style_lock"], ledger_paths)
