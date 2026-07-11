@@ -13,7 +13,6 @@ from cyberppt.paths import SCRIPTS_DIR
 SCRIPT_ALIASES: dict[str, str] = {
     "build-visual-qa": "build_visual_qa_gate.py",
     "body-blueprint-prompts": "body_blueprint_prompt.py",
-    "clean-stage": "dual_image_overlay/clean_stage.py",
     "compare-merged-render": "compare_merged_render.py",
     "compare-render": "compare_render.py",
     "component-signature": "build_component_signature.py",
@@ -24,14 +23,12 @@ SCRIPT_ALIASES: dict[str, str] = {
     "merge-pages": "merge_verified_pages.py",
     "pair-manifest": "dual_image_overlay/cyberppt_pair_manifest.py",
     "rework-report": "build_rework_report.py",
-    "source-capture": "dual_image_overlay/source_capture.py",
     "speaker-notes": "speaker_notes.py",
-    "template-rebuild": "dual_image_overlay/template_rebuild.py",
     "validate": "validate_pptx.py",
 }
 
 _STAGE_2_PLUS_GENERATION_ALIASES = frozenset(
-    {"body-blueprint-prompts", "image-ppt", "pair-manifest", "source-capture", "speaker-notes", "template-rebuild"}
+    {"body-blueprint-prompts", "image-ppt", "pair-manifest", "speaker-notes"}
 )
 _PROJECT_CONTEXT_ERROR = "production-capable aliases require exactly one --project <path>"
 

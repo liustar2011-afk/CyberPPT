@@ -11,8 +11,7 @@ assets, project workspaces, and generated artifacts.
 | `SKILL.md` | Canonical workflow contract | Keep phase gates, reference gates, and delivery rules here. Do not replace it with CLI-only behavior. |
 | `cyberppt/` | Installable Python package and CLI | Keep stable command routing, project scaffolding, and package helpers here. Do not put generated project artifacts here. |
 | `scripts/` | Repo-owned workflow tools | Keep runnable helper scripts here when docs and tests call them directly. Avoid storing one-off outputs under this tree. |
-| `scripts/dual_image_overlay/` | CyberPPT-owned dual-image pipeline | Keep overlay, template rebuild, scene graph, QA, and rebuild-mode logic together. |
-| `scripts/dual_image_overlay/rebuild_engine/` | Internalized dual-image rebuild runtime | Treat as a vendored runtime now owned by CyberPPT. Do not split it during layout cleanup. |
+| `scripts/dual_image_overlay/` | CyberPPT-owned full-image helpers | Keep prompt compilation, image-PPT assembly, and production QA helpers together. |
 | `references/` | Stage-specific workflow references | Keep required reads and QA contracts here. References should describe behavior, not store project outputs. |
 | `assets/` | Reusable public assets | Keep sample palettes and reusable icon libraries here. Generated slide images do not belong here. |
 | `docs/` | Repository documentation, specs, and plans | Keep repo layout docs, design specs, and implementation plans here. |
@@ -22,32 +21,6 @@ assets, project workspaces, and generated artifacts.
 | `projects/` | Named CyberPPT project workspaces | Preferred home for user-facing projects created by `python3 -m cyberppt init`. Source files, stage work, approvals, outputs, and delivery files live under each project. |
 | `image2pptx_runs/` | Temporary or historical run workspaces | Allowed for ad hoc run captures and resume/debug sessions. New formal projects should prefer `projects/<name>/`. |
 | `images/` | Legacy root scratch images | Legacy only. Do not use as a default output target for new workflows. Move new image generation under a project workspace. |
-
-## Legacy OCR forensic artifacts
-
-OCR artifacts are a legacy/advanced contract for an explicitly requested
-editable rebuild or text-forensics diagnostic. They are not inputs to the
-default `full_image_ppt` mainline. The local adapter runs in the repository's
-locked offline runtime; before a run, verify the runtime manifest and model
-checksums without downloading from the network. A normal project records the
-following under `workbench/stages/03-overlay/` (or the corresponding legacy
-run directory):
-
-- the source page image and immutable input hash;
-- `analysis/ocr/page_<n>_text_forensics.json` with line boxes, reading order,
-  observed/final text, color and glyph evidence, and reversible correction
-  audit records;
-- the quality-gate report, overlay/叠框 evidence render, and a recovery command
-  when the gate refuses promotion;
-- runtime/model manifest provenance and the fixture or annotation used for
-  review.
-
-The canonical golden-fixture contract lives in `tests/fixtures/ocr_golden/`.
-Run `python3 -m pytest tests/test_ocr_golden_contract.py -q` offline. A fixture
-marked `synthetic` is only a schema contract until an approved GPT page image
-and human expected lines are added. Recovery must preserve the original OCR
-result and rerun with an approved local scale/review policy; it must never call
-a remote OCR service or silently fall back into `full_image_ppt`.
 
 ## Project Workspace Contract
 
@@ -68,8 +41,6 @@ delivery files:
 | `workbench/stages/01-analysis/` | Evidence tables, conflicts, SCR, storylines, page plans, density plans. |
 | `workbench/stages/01-analysis/model-runs/` | Prompt-first Stage 1 model runs: reviewable prompts, raw responses, candidates, grounding QA, critic reports, and run manifests. Model outputs are candidates only and must not be auto-approved. |
 | `workbench/stages/02-blueprint-dual-image/` | Historical path name for the current `full_image_ppt` mainline: style lock, template text lock, human-editable `imagegen_script.md`, its `imagegen_script.validation.json`, ImageGen full images, `page_image_pairs.json`, `image_text_qa/page_*.json`, `image_text_qa/image_text_qa_summary.json`, speaker notes, image-PPT assembly, and `assembly_report.json`. The MD is the prompt source; its validation report and hash are recorded in the manifest. |
-| `workbench/stages/03-overlay/` | Legacy/Advanced editable rebuild artifacts only: overlay plans, semantic plans, text mapping, fit and layout QA. |
-| `workbench/stages/04-template-rebuild/` | Legacy/Advanced template rebuild jobs only: source capture, readiness records, normalized references. |
 | `workbench/stages/05-qa-delivery/` | Production visual report, full-image delivery manifest, strict validation report, production readiness, and delivery notes. |
 | `workbench/locks/` | Slide content locks, template text locks, visual locks, and related truth files. |
 | `workbench/prompts/` | Plaintext prompt artifacts that require review or reuse. |
@@ -110,7 +81,7 @@ python3 -m cyberppt produce verify <project> --pages <range>
 
 `produce prepare` stops for speaker-notes approval, `produce assemble` consumes only approved notes/template/full-image inputs, and `produce verify` is the only step that can promote a PPTX to `delivery/` and `deliverable_ready`.
 
-The Stage 02 prompt contract has three separate layers: `imagegen_script.md` is the human-editable prompt source; the compiler policy and control sections are model-facing internal instructions; and the page content lock remains the only source for page-visible text. After full-image generation, image-text QA writes per-page reports and `image_text_qa_summary.json`. A `failed` or `review_required` summary blocks `produce verify`; OCR is evidence for the check, not a source of page text and not a return to the legacy OCR/overlay mainline.
+The Stage 02 prompt contract has three separate layers: `imagegen_script.md` is the human-editable prompt source; the compiler policy and control sections are model-facing internal instructions; and the page content lock remains the only source for page-visible text. After full-image generation, image-text QA writes per-page reports and `image_text_qa_summary.json`. A `failed` or `review_required` summary blocks `produce verify`.
 
 New workspaces receive this contract during initialization. For an existing
 workspace, `adopt-analysis-expression-contract` creates only contract metadata.
@@ -142,7 +113,6 @@ remains authoritative.
   and QA files contain absolute paths, so migration needs a deliberate manifest
   rewrite.
 - Do not move `vendor/ppt_master_slide_image_rebuild/` or
-  `scripts/dual_image_overlay/rebuild_engine/` as part of routine hygiene.
 - Do not add new generated images, decks, QA renders, or source materials at the
   repository root. Put them under a project workspace and register durable
   artifacts in `workbench/artifact-ledger.json`.

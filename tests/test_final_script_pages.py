@@ -355,49 +355,5 @@ class FinalScriptPagesTests(unittest.TestCase):
                     production_build=True,
                 )
 
-    def test_run_rebuild_is_no_longer_supported_by_final_script_pages(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            project = root / "client-report"
-            init_project(project)
-            script = root / "script-final.md"
-            script.write_text(
-                """# 终稿脚本
-
-## 第7页：态势感知能力
-本页结论标题为“态势感知能力要从工具堆叠转向风险闭环”
-组件A（左侧主图）——三层能力链：
-数据接入、模型研判、处置反馈
-""",
-                encoding="utf-8",
-            )
-            with self.assertRaisesRegex(ValueError, "--run-rebuild is no longer supported"):
-                run_final_script_pages(
-                    project=project,
-                    script=script,
-                    pages_raw="7",
-                    style_id=5,
-                    run_rebuild=True,
-                )
-
-    def test_semantic_plan_dir_is_no_longer_supported_by_final_script_pages(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            project = root / "client-report"
-            init_project(project)
-            semantic_plan_dir = root / "semantic-plans"
-            semantic_plan_dir.mkdir()
-            script = root / "script-final.md"
-            script.write_text("## 第7页：态势感知能力\n正文\n", encoding="utf-8")
-
-            with self.assertRaisesRegex(ValueError, "--semantic-plan-dir is no longer supported"):
-                run_final_script_pages(
-                    project=project,
-                    script=script,
-                    pages_raw="7",
-                    style_id=5,
-                    semantic_plan_dir=semantic_plan_dir,
-                )
-
 if __name__ == "__main__":
     unittest.main()

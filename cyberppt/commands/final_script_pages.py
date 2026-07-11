@@ -17,7 +17,6 @@ from cyberppt.commands.blueprint_gate import (
 )
 from scripts.dual_image_overlay.cyberppt_pair_manifest import build_manifest, require_generated
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, parse_pages, template_title
-from scripts.dual_image_overlay.production_readiness import build_production_readiness
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 from scripts.speaker_notes import build_manifest as build_speaker_notes_manifest
 
@@ -67,8 +66,6 @@ def _ensure_project_dirs(project: Path) -> None:
     for relative in (
         STAGE_DIR,
         TEMPLATE_LOCK_DIR,
-        "workbench/stages/03-overlay",
-        "workbench/stages/04-template-rebuild",
         "workbench/stages/05-qa-delivery",
         "outputs/pages",
         "outputs/renders",
@@ -446,22 +443,14 @@ def run_final_script_pages(
     style_id: int | None = None,
     style_name: str | None = None,
     output_dir: Path | None = None,
-    semantic_plan_dir: Path | None = None,
     require_images: bool = False,
-    run_rebuild: bool = False,
-    rebuild_args: list[str] | None = None,
     production_build: bool = False,
 ) -> dict[str, Any]:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
     style_lock = style_lock.expanduser().resolve() if style_lock else None
-    semantic_plan_dir = semantic_plan_dir.expanduser().resolve() if semantic_plan_dir else None
     if not script.is_file():
         raise FileNotFoundError(f"final script not found: {script}")
-    if run_rebuild:
-        raise ValueError("--run-rebuild is no longer supported by final-script-pages; use image-ppt for Stage 02 production builds.")
-    if semantic_plan_dir is not None:
-        raise ValueError("--semantic-plan-dir is no longer supported by final-script-pages; Stage 02 no longer enters OCR/overlay/template-rebuild.")
     if production_build:
         raise ValueError(
             "--production-build is no longer supported by final-script-pages; "
@@ -548,12 +537,10 @@ def run_final_script_pages(
                 speaker_notes_build["speaker_notes_manifest"] if speaker_notes_build else None
             ),
             "speaker_notes_llm_prompt": speaker_notes_build["llm_prompt"] if speaker_notes_build else None,
-            "semantic_plan_dir": str(semantic_plan_dir) if semantic_plan_dir else None,
         },
         "next_steps": [
             "Review or edit imagegen_script.md, then generate each full image from the compiled pair manifest full.prompt.",
             "Run python3 -m cyberppt image-ppt run to assemble the full images into a template PPTX.",
-            "Do not enter OCR, overlay, semantic-plan or template-rebuild from Stage 02.",
         ],
         "resume_command": resume_command,
         "rebuild": None,

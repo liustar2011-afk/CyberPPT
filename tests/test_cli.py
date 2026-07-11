@@ -39,9 +39,15 @@ class CliTests(unittest.TestCase):
         self.assertIn("stage-script", help_text)
         self.assertIn("approve-script", help_text)
         self.assertIn("script-status", help_text)
-        self.assertIn("rebuild-dual-image", help_text)
         self.assertIn("final-script-pages", help_text)
         self.assertIn("produce", help_text)
+
+    def test_legacy_rebuild_is_not_registered(self) -> None:
+        help_text = build_parser().format_help()
+
+        self.assertNotIn("template-rebuild", SCRIPT_ALIASES)
+        self.assertNotIn("template-rebuild", help_text)
+        self.assertNotIn("rebuild-dual-image", help_text)
 
     def test_help_lists_analysis_expression_commands(self) -> None:
         help_text = build_parser().format_help()
@@ -172,9 +178,7 @@ class CliTests(unittest.TestCase):
             "body-blueprint-prompts",
             "image-ppt",
             "pair-manifest",
-            "source-capture",
             "speaker-notes",
-            "template-rebuild",
         ):
             with self.subTest(alias):
                 self.assertIn(f"{alias} requires --project <path>", help_text)
@@ -243,29 +247,6 @@ class CliTests(unittest.TestCase):
         self.assertEqual(2, code)
         self.assertIn("请选择一个 CyberPPT 默认视觉风格", buffer.getvalue())
         self.assertIn("4. 象牙白 + 深蓝强调", buffer.getvalue())
-
-    def test_rebuild_dual_image_routes_to_template_rebuild(self) -> None:
-        with patch("cyberppt.cli.run_script", return_value=3) as run_script:
-            code = main(["rebuild-dual-image", "--project", "/tmp/project", "page_image_pairs.json", "--no-export"])
-
-        self.assertEqual(3, code)
-        run_script.assert_called_once_with(
-            "template-rebuild",
-            ["--project", "/tmp/project", "page_image_pairs.json", "--no-export"],
-        )
-
-    def test_rebuild_dual_image_uses_project_for_real_generation_guard(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            project = Path(tmp) / "client-report"
-            init_project(project)
-            buffer = io.StringIO()
-
-            with redirect_stderr(buffer):
-                code = main(["rebuild-dual-image", "--project", str(project), "page_image_pairs.json"])
-
-        self.assertEqual(2, code)
-        self.assertIn("source_analysis approval is required", buffer.getvalue())
-        self.assertNotIn("Traceback", buffer.getvalue())
 
     def test_final_script_pages_rejects_blueprint_only_with_production_build(self) -> None:
         buffer = io.StringIO()

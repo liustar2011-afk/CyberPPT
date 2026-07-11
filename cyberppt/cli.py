@@ -113,10 +113,6 @@ def _script_status_command(args: argparse.Namespace) -> int:
     return 0 if status.ready_to_generate else 3
 
 
-def _rebuild_dual_image_command(args: argparse.Namespace) -> int:
-    return run_script("template-rebuild", ["--project", args.project, *args.rebuild_args])
-
-
 def _stage_analysis_expression_command(args: argparse.Namespace) -> int:
     try:
         options = json.loads(args.options_json)
@@ -340,10 +336,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             style_id=args.style_id,
             style_name=args.style_name,
             output_dir=Path(args.output_dir) if args.output_dir else None,
-            semantic_plan_dir=Path(args.semantic_plan_dir) if args.semantic_plan_dir else None,
             require_images=args.require_images,
-            run_rebuild=args.run_rebuild,
-            rebuild_args=args.rebuild_arg or [],
             production_build=args.production_build,
         )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
@@ -621,15 +614,6 @@ def build_parser() -> argparse.ArgumentParser:
     approve_speaker_notes_review_parser.add_argument("--note", default="", help="Optional approval note.")
     approve_speaker_notes_review_parser.set_defaults(func=_approve_speaker_notes_review_command)
 
-    rebuild_dual_image_parser = subparsers.add_parser(
-        "rebuild-dual-image",
-        add_help=False,
-        help="Run the dual-image rebuild flow with an explicit CyberPPT project context.",
-    )
-    rebuild_dual_image_parser.add_argument("--project", required=True, help="CyberPPT project directory.")
-    rebuild_dual_image_parser.add_argument("rebuild_args", nargs=argparse.REMAINDER)
-    rebuild_dual_image_parser.set_defaults(func=_rebuild_dual_image_command)
-
     final_script_pages_parser = subparsers.add_parser(
         "final-script-pages",
         help="Compile selected pages from a final script into traceable full-image PPT inputs.",
@@ -651,18 +635,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     final_script_pages_parser.add_argument("--output-dir", help="Optional output directory for page_image_pairs.json.")
     final_script_pages_parser.add_argument(
-        "--semantic-plan-dir",
-        help="Unsupported in the Stage 02 full-image path; kept only to fail closed for old commands.",
-    )
-    final_script_pages_parser.add_argument(
         "--require-images",
         action="store_true",
         help="Fail unless expected full image files already exist.",
-    )
-    final_script_pages_parser.add_argument(
-        "--run-rebuild",
-        action="store_true",
-        help="Unsupported in final-script-pages; Stage 02 now uses image-ppt instead of template-rebuild.",
     )
     final_script_pages_parser.add_argument(
         "--production-build",
@@ -673,11 +648,6 @@ def build_parser() -> argparse.ArgumentParser:
         "--blueprint-only",
         action="store_true",
         help="Only create full-image prompts and page_image_pairs.json; never report production_ready.",
-    )
-    final_script_pages_parser.add_argument(
-        "--rebuild-arg",
-        action="append",
-        help="Unsupported legacy option for old template-rebuild commands.",
     )
     final_script_pages_parser.set_defaults(func=_final_script_pages_command)
 
