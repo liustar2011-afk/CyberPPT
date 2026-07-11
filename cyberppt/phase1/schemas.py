@@ -64,6 +64,12 @@ class SourceAnalysisDraft:
     confirmation_questions: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class GateDraft:
+    gate: str
+    payload: dict[str, Any]
+
+
 def _json_payload(text: str) -> dict[str, Any]:
     value = text.strip()
     match = _FENCED_JSON_RE.match(value)
@@ -115,3 +121,37 @@ def parse_source_analysis_output(text: str) -> SourceAnalysisDraft:
         material_pool=tuple(material_pool),
         confirmation_questions=_strings(payload["confirmation_questions"], "confirmation_questions", required=False),
     )
+
+
+_GATE_FIELDS = {
+    "reporting_direction": {"audience", "purpose", "content_focus", "evidence", "strengths", "boundaries", "options", "recommendation"},
+    "report_structure": {"modules"},
+    "page_design": {"pages"},
+    "business_script": {"pages"},
+}
+
+
+def parse_gate_output(gate: str, text: str) -> GateDraft:
+    if gate not in _GATE_FIELDS:
+        raise ValueError(f"unsupported downstream gate: {gate}")
+    payload = _json_payload(text)
+    required = _GATE_FIELDS[gate]
+    missing = sorted(required - set(payload))
+    if missing:
+        raise ValueError(f"{gate} output is missing required fields: " + ", ".join(missing))
+    unknown = sorted(set(payload) - required - {"schema"})
+    if unknown:
+        raise ValueError(f"{gate} output contains unknown fields: " + ", ".join(unknown))
+    if gate == "reporting_direction":
+        for field in ("audience", "purpose", "content_focus", "recommendation"):
+            _text(payload[field], f"{gate}.{field}")
+        for field in ("evidence", "strengths", "boundaries", "options"):
+            if not isinstance(payload[field], list):
+                raise ValueError(f"{gate}.{field} must be an array")
+        if any(not isinstance(item, dict) for item in payload["options"]):
+            raise ValueError("reporting_direction.options must contain objects")
+    else:
+        items = payload["modules"] if gate == "report_structure" else payload["pages"]
+        if not isinstance(items, list) or any(not isinstance(item, dict) for item in items):
+            raise ValueError(f"{gate} items must be an array of objects")
+    return GateDraft(gate=gate, payload=payload)
