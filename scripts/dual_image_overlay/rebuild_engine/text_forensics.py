@@ -17,6 +17,24 @@ from PIL import Image
 SCHEMA_VERSION = "1.0"
 
 
+def attach_correction_evidence(
+    forensics: dict[str, Any],
+    *,
+    policy_path: Path,
+    protected_terms_path: Path,
+) -> dict[str, Any]:
+    """Return line evidence with deterministic correction decisions attached."""
+    from .controlled_correction import correct_lines
+
+    result = dict(forensics)
+    result["lines"] = correct_lines(
+        list(forensics.get("lines", [])),
+        policy_path=policy_path,
+        protected_terms_path=protected_terms_path,
+    )
+    return result
+
+
 def _bbox(item: dict[str, Any]) -> tuple[float, float, float, float]:
     values = item.get("bbox")
     if not isinstance(values, (list, tuple)) or len(values) != 4:
