@@ -323,9 +323,15 @@ def _layout_from_facade(info: dict[str, Any]) -> dict[str, Any]:
     for line in info.get("lines", []):
         if not isinstance(line, dict):
             continue
-        for item in line.get("items", []):
+        final_text = str(line.get("final_text") or line.get("observed_text") or "")
+        cursor = 0
+        line_items = line.get("items", [])
+        for item in line_items:
             if isinstance(item, dict) and str(item.get("text") or "").strip():
-                items.append({"text": item["text"], "bbox": item.get("bbox"), "confidence": line.get("confidence", 1.0)})
+                observed = str(item["text"])
+                replacement = final_text[cursor : cursor + len(observed)] if final_text else ""
+                cursor += len(observed)
+                items.append({"text": replacement or observed, "bbox": item.get("bbox"), "confidence": line.get("confidence", 1.0)})
     return {
         "image_size": {"width": int(image.get("width", 0)), "height": int(image.get("height", 0))},
         "items": items,

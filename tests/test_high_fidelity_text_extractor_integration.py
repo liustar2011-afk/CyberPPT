@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from PIL import Image
 
-from scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild import _extract_legacy_page_text, _full_layout_for_page
+from scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild import _extract_legacy_page_text, _full_layout_for_page, _layout_from_facade
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -92,3 +92,19 @@ def test_local_prefetch_is_disabled_to_prevent_duplicate_facade_ocr() -> None:
     source = inspect.getsource(module._prefetch_page_ocr_layouts)
     assert 'if ocr_backend == "paddleocr-local":' in source
     assert "return" in source
+
+
+def test_facade_final_text_reaches_overlay_layout_deterministically() -> None:
+    info = {
+        "image": {"width": 40, "height": 30},
+        "lines": [{
+            "observed_text": "甲乙",
+            "final_text": "甲丙",
+            "items": [
+                {"text": "甲", "bbox": [1, 1, 5, 8]},
+                {"text": "乙", "bbox": [6, 1, 10, 8]},
+            ],
+        }],
+    }
+    layout = _layout_from_facade(info)
+    assert [item["text"] for item in layout["items"]] == ["甲", "丙"]

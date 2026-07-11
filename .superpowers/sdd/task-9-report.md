@@ -53,3 +53,11 @@ main facade call remains the only OCR invocation per image.
 
 - Focused suite after blocker fix: 41 passed, 1 skipped.
 - OCR/overlay suite after blocker fix: 218 passed, 1 skipped, 346 deselected.
+
+Final-review correction mapping fix: `_layout_from_facade` now applies each
+line's accepted `final_text` to deterministic per-item slices while leaving
+`observed_text` untouched in the forensic result. Regression covers a
+multi-item corrected line; no OCR is re-run by the test.
+
+- Focused suite: 42 passed, 1 skipped.
+- OCR/overlay suite: 219 passed, 1 skipped, 346 deselected.
