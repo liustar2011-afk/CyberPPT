@@ -38,6 +38,8 @@ from scripts.dual_image_overlay.scene_graph.layout import build_layout_plan_from
 from scripts.dual_image_overlay.scene_graph.schema import scene_graph_to_dict
 from scripts.dual_image_overlay.text_block_group import build_text_block_group
 from scripts.dual_image_overlay.text_truth import verify_text_blocks_against_script
+from scripts.dual_image_overlay.rebuild_engine.ocr_quality_gate import evaluate_ocr_quality
+from scripts.dual_image_overlay.rebuild_engine.text_forensics import attach_correction_evidence, build_line_evidence
 
 if __package__:
     from .ocr_text_locator import load_layout, locate_text
@@ -756,6 +758,11 @@ def rebuild_from_manifest(
     quality_pages: list[dict[str, Any]] = []
     background_scan_pages: list[dict[str, Any]] = []
     typography_qa_pages: list[dict[str, Any]] = []
+    forensic_policy = {
+        "min_line_recall": 0.95,
+        "max_low_confidence_ratio": 0.10,
+        "max_protected_replacement_failures": 0,
+    }
 
     for pair in manifest.get("pairs", []):
         page_number = int(pair["page_number"])
@@ -815,6 +822,26 @@ def rebuild_from_manifest(
             )
             layout_path, layout = full_future.result()
             background_layout_path, background_layout = background_future.result()
+        # Preserve raw line-level evidence before any overlay boxes are built.
+        # A failed gate leaves this artifact behind for review/recovery.
+        forensic_dir = ocr_dir / f"page_{page_number:03d}_text_forensics"
+        forensics = build_line_evidence(layout, full_image, evidence_dir=forensic_dir)
+        forensics["page_number"] = page_number
+        forensics["expected_lines"] = expected_lines
+        forensics = attach_correction_evidence(
+            forensics,
+            policy_path=REPO_ROOT / "config/ocr/correction_policy.json",
+            protected_terms_path=REPO_ROOT / "config/ocr/protected_terms.json",
+        )
+        quality_report = evaluate_ocr_quality(forensics, policy=forensic_policy)
+        forensics["quality"] = {**forensics.get("quality", {}), **quality_report["metrics"], "gate": quality_report}
+        forensic_path = ocr_dir / f"page_{page_number:03d}_text_forensics.json"
+        _write_json(forensic_path, forensics)
+        if ocr_backend != "none" and quality_report["status"] != "passed":
+            raise RuntimeError(
+                f"OCR quality gate failed for page {page_number}: {quality_report['failures']}. "
+                f"Raw evidence retained at {forensic_path}. Recovery: {quality_report['recovery_command']}"
+            )
         background_scan_report = scan_background_text(background_layout_path)
         background_scan_report["page_number"] = page_number
         _write_json(
@@ -973,6 +1000,8 @@ def rebuild_from_manifest(
                     "scene_graph_gate": str(scene_graph_paths["gate"]),
                     "page_layout_plan": str(scene_graph_paths["layout"]),
                     "page_understanding": str(page_understanding_path.resolve()),
+                    "text_forensics": str(forensic_path.resolve()),
+                    "ocr_quality_gate": quality_report,
                     "semantic_source": semantic_source,
                     "editable_text_layout_source": editable_text_layout_source,
                     "visual_registry_source": visual_registry_source,
@@ -1029,6 +1058,8 @@ def rebuild_from_manifest(
                 "editable_text_layout_source": editable_text_layout_source,
                 "visual_registry_source": visual_registry_source,
                 "semantic_containers": str(containers_path),
+                "text_forensics": str(forensic_path.resolve()),
+                "ocr_quality_gate": quality_report,
                 "image_size_check": image_size_check,
                 "text_color_check": {
                     "white_text_boxes": sum(1 for box in boxes if box.fill.upper() == "#FFFFFF"),
@@ -1083,7 +1114,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     rebuild = sub.add_parser("rebuild", help="Rebuild overlay SVG pages from an existing page_image_pairs.json.")
     rebuild.add_argument("manifest", type=Path)
-    rebuild.add_argument("--ocr-backend", choices=("vision-json", "paddleocr-vl", "none"), default="vision-json")
+    rebuild.add_argument("--ocr-backend", choices=("paddleocr-local", "vision-json", "none"), default="vision-json")
     rebuild.add_argument("--force-ocr", action="store_true")
     rebuild.add_argument("--timeout", type=int, default=300)
     rebuild.add_argument("--visible-image-variant", choices=("background", "full"), default="background")
