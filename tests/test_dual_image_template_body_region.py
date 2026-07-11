@@ -41,6 +41,87 @@ def load_template_image_ppt_export():
 
 
 class DualImageTemplateBodyRegionTest(unittest.TestCase):
+    def test_editable_bbox_maps_to_full_body_region_without_letterboxing(self) -> None:
+        module = load_template_image_ppt_export()
+
+        mapped = module._map_editable_bbox(
+            {"x": 100, "y": 100, "width": 200, "height": 100},
+            {"width": 1000, "height": 500},
+            {"x": 10, "y": 20, "width": 900, "height": 300},
+        )
+
+        self.assertEqual(mapped, {"x": 100.0, "y": 80.0, "width": 180.0, "height": 60.0})
+
+    def test_editable_body_svg_uses_json_run_style(self) -> None:
+        module = load_template_image_ppt_export()
+        with tempfile.TemporaryDirectory() as tmp:
+            background = Path(tmp) / "background.png"
+            Image.new("RGB", (1000, 500), "white").save(background)
+            svg = module.render_editable_body_svg(
+                {
+                    "page_number": 4,
+                    "background_path": background,
+                    "canvas": {"width": 1000, "height": 500},
+                    "text_lines": [
+                        {
+                            "line_id": "L1",
+                            "text": "重点文字",
+                            "bbox_px": {"x": 100, "y": 100, "width": 200, "height": 100},
+                            "runs": [
+                                {
+                                    "text": "重点文字",
+                                    "style": {"font_size": 40, "bold": True, "color": "#FF0000"},
+                                }
+                            ],
+                        }
+                    ],
+                },
+                {"x": 10, "y": 20, "width": 900, "height": 300},
+                {"width": 1000, "height": 500},
+            )
+
+        self.assertIn('font-size="24"', svg)
+        self.assertIn('font-weight="700"', svg)
+        self.assertIn('fill="#FF0000"', svg)
+
+    def test_editable_body_svg_renders_mixed_runs_and_center_alignment(self) -> None:
+        module = load_template_image_ppt_export()
+        with tempfile.TemporaryDirectory() as tmp:
+            background = Path(tmp) / "background.png"
+            Image.new("RGB", (1000, 500), "white").save(background)
+            svg = module.render_editable_body_svg(
+                {
+                    "page_number": 4,
+                    "background_path": background,
+                    "canvas": {"width": 1000, "height": 500},
+                    "text_lines": [
+                        {
+                            "line_id": "L1",
+                            "text": "103682 亿千瓦时",
+                            "bbox_px": {"x": 100, "y": 100, "width": 400, "height": 100},
+                            "layout": {"align": "center", "valign": "top", "wrap": False, "margin_px": 0},
+                            "runs": [
+                                {
+                                    "text": "103682",
+                                    "style": {"font_size_px": 48, "weight": "bold", "color": "#12355B"},
+                                },
+                                {
+                                    "text": " 亿千瓦时",
+                                    "style": {"font_size_px": 22, "weight": "regular", "color": "#101820"},
+                                },
+                            ],
+                        }
+                    ],
+                },
+                {"x": 10, "y": 20, "width": 900, "height": 300},
+                {"width": 1000, "height": 500},
+            )
+
+        self.assertIn('text-anchor="middle"', svg)
+        self.assertEqual(svg.count("<tspan"), 2)
+        self.assertIn('fill="#12355B"', svg)
+        self.assertIn('fill="#101820"', svg)
+
     def test_mixed_template_range_exports_all_slides_with_only_content_full_image(self) -> None:
         module = load_template_image_ppt_export()
         with tempfile.TemporaryDirectory() as tmp:
@@ -297,6 +378,36 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
         module = load_template_image_ppt_export()
 
         module.validate_image_prompt_text(12, "输出 P10、P50、P90 区间和偏离解释。")
+
+    def test_image_body_visible_text_filters_raw_source_metadata_lines(self) -> None:
+        module = load_template_image_ppt_export()
+
+        visible = module.image_body_visible_text(
+            "组件A：七项需请领导审定事项。\n组件B：源材料收束为七项需请领导审定事项。\n组件C：安全要求。"
+        )
+
+        self.assertIn("七项需请领导审定事项", visible)
+        self.assertIn("安全要求", visible)
+        self.assertNotIn("源材料", visible)
+
+    def test_editable_body_svg_uses_installed_cjk_font(self) -> None:
+        module = load_template_image_ppt_export()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            background = Path(tmp) / "background.png"
+            Image.new("RGB", (1536, 1024), "white").save(background)
+            svg = module.render_editable_body_svg(
+                {
+                    "page_number": 4,
+                    "background_path": background,
+                    "canvas": {"width": 1536, "height": 1024},
+                    "text_lines": [{"line_id": "L1", "text": "中文", "bbox_px": {"x": 10, "y": 10, "width": 80, "height": 20}}],
+                },
+                {"x": 0, "y": 0, "width": 1280, "height": 720},
+                {"width": 1280, "height": 720},
+            )
+
+        self.assertIn("Source Han Sans CN", svg)
 
     def test_non_visible_evidence_sections_do_not_enter_content_prompt(self) -> None:
         module = load_template_image_ppt_export()

@@ -58,7 +58,7 @@ function runStyle(style = {}) {
   };
   const fontSizePt = style.fontSizePt !== undefined
     ? fontSizeInPoints(style.fontSizePt, "pt")
-    : fontSizeInPoints(style.font_size ?? style.fontSize);
+    : fontSizeInPoints(style.font_size_px ?? style.font_size ?? style.fontSize);
   if (fontSizePt !== undefined) normalized.fontSize = fontSizePt;
 
   for (const key of ["bold", "italic", "underline"]) {
@@ -104,15 +104,19 @@ async function main() {
     if (/\r|\n/.test(line.text) || line.runs?.some((run) => /\r|\n/.test(run.text))) {
       throw new Error(`Visual line ${line.line_id} must not contain a newline`);
     }
+    const align = { left: "left", center: "center", right: "right" }[line.layout?.align ?? "left"];
+    const valign = { top: "top", middle: "mid", bottom: "bottom" }[line.layout?.valign ?? "top"];
     slide.addText(textRuns(line), {
       ...linePosition(line, pageSpec.page),
       objectName: `text-${pageSpec.page.page_id}-${line.line_id}`,
       fontFace: DEFAULT_FONT,
       fontSize: DEFAULT_FONT_SIZE_PT,
-      margin: 0,
+      margin: fontSizeInPoints(line.layout?.margin_px ?? 0),
       fit: "none",
-      wrap: false,
-      valign: "top",
+      wrap: line.layout?.wrap ?? false,
+      align,
+      valign,
+      rotate: line.layout?.rotation_deg ?? 0,
     });
   }
 

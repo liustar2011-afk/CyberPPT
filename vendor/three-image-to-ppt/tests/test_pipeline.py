@@ -171,9 +171,17 @@ def test_review_pipeline_produces_json_pptx_render_and_qa(tmp_path):
 
 def test_renderer_creates_one_textbox_per_visual_line(tmp_path, sample_page_json):
     payload = json.loads(sample_page_json.read_text(encoding="utf-8"))
+    payload["schema_version"] = "1.1"
+    payload["text_lines"][0]["layout"] = {
+        "align": "center",
+        "valign": "top",
+        "wrap": False,
+        "margin_px": 0,
+        "rotation_deg": 0,
+    }
     payload["text_lines"][0]["runs"] = [
-        {"text": "103682", "style": {"bold": True, "fontSize": "24pt"}},
-        {"text": " 亿千瓦时，", "style": {"color": "#123456", "fontSizePt": 20}},
+        {"text": "103682", "style": {"weight": "bold", "color": "#12355B", "font_size_px": 48}},
+        {"text": " 亿千瓦时，", "style": {"weight": "regular", "color": "#101820", "font_size_px": 21.6}},
     ]
     payload["text_lines"][0]["target"] = {
         "bbox_px": {"x": 181, "y": 111, "width": 373, "height": 59},
@@ -207,7 +215,11 @@ def test_renderer_creates_one_textbox_per_visual_line(tmp_path, sample_page_json
     assert slide_xml.index("<p:pic>") < slide_xml.index("text-page_004-T02-L01")
     assert "103682" in slide_xml and "亿千瓦时" in slide_xml
     assert "Microsoft YaHei" in slide_xml
-    assert 'sz="2000"' in slide_xml
+    assert 'sz="3600"' in slide_xml
+    assert 'sz="1620"' in slide_xml
+    assert 'algn="ctr"' in slide_xml
+    assert 'val="12355B"' in slide_xml
+    assert 'val="101820"' in slide_xml
     assert "<a:br" not in slide_xml
     assert slide_xml.count("<a:r>") == 2
     assert 'wrap="none"' in slide_xml

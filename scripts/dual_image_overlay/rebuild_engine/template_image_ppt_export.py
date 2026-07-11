@@ -44,6 +44,7 @@ COMPOSITION_SECTION_RE = re.compile(r"【(?:构图指令|构图接口)】(?P<bod
 IMAGE_PROMPT_PROVENANCE_RE = re.compile(
     r"(证据链|来源位置|源材料|完整性校核|业务稿证据|重点对应|对应E\d+|\bE\d+\b|P(?!10\b|50\b|90\b)\d+|T\d+)"
 )
+IMAGE_PROMPT_METADATA_LINE_RE = re.compile(r"(证据链|来源位置|源材料|完整性校核|业务稿证据|重点对应|对应E\d+)")
 CANVAS_SIZE = (1280, 720)
 CONTENT_REGION_TOP_INSET = -18
 CONTENT_REGION_BOTTOM_INSET = -20
@@ -54,6 +55,7 @@ MIN_GENERATED_CONTENT_WIDTH_RATIO = 0.90
 MAX_GENERATED_SIDE_MARGIN_RATIO = 0.06
 GENERATED_CONTENT_BACKGROUND_DIFF_THRESHOLD = 18
 DEFAULT_STYLE_NAME = "cyberppt-full-image-default"
+EDITABLE_TEXT_FONT_FAMILY = "Source Han Sans CN, PingFang SC, sans-serif"
 DEFAULT_IMAGE_STYLE = {
     "name": DEFAULT_STYLE_NAME,
     "style_prompt": (
@@ -259,7 +261,7 @@ def image_body_visible_text(body: str) -> str:
     lines = []
     for line in body.splitlines():
         cleaned = strip_visual_structure_markers(line)
-        if cleaned:
+        if cleaned and not IMAGE_PROMPT_METADATA_LINE_RE.search(cleaned):
             lines.append(cleaned)
     return "\n".join(lines).strip()
 
@@ -957,15 +959,67 @@ def load_editable_body_pages(result_manifest: Path, pages: list[int]) -> dict[in
 
 
 def _map_editable_bbox(bbox: dict[str, float], canvas: dict[str, int], body: dict[str, int]) -> dict[str, float]:
-    scale = min(body["width"] / canvas["width"], body["height"] / canvas["height"])
-    offset_x = body["x"] + (body["width"] - canvas["width"] * scale) / 2
-    offset_y = body["y"] + (body["height"] - canvas["height"] * scale) / 2
+    scale_x = body["width"] / canvas["width"]
+    scale_y = body["height"] / canvas["height"]
     return {
-        "x": offset_x + bbox["x"] * scale,
-        "y": offset_y + bbox["y"] * scale,
-        "width": bbox["width"] * scale,
-        "height": bbox["height"] * scale,
+        "x": body["x"] + bbox["x"] * scale_x,
+        "y": body["y"] + bbox["y"] * scale_y,
+        "width": bbox["width"] * scale_x,
+        "height": bbox["height"] * scale_y,
     }
+
+
+def _editable_run_style(line: dict) -> dict:
+    runs = line.get("runs") if isinstance(line.get("runs"), list) else []
+    first = runs[0] if runs and isinstance(runs[0], dict) else {}
+    style = first.get("style") if isinstance(first.get("style"), dict) else {}
+    return style
+
+
+def _editable_style_font_size_px(style: dict, fallback: float) -> float:
+    raw = style.get(
+        "font_size_px",
+        style.get("font_size", style.get("fontSize", style.get("fontSizePt"))),
+    )
+    if raw is None:
+        return fallback
+    text = str(raw).strip().lower()
+    try:
+        value = float(text.removesuffix("pt"))
+    except ValueError:
+        return fallback
+    if text.endswith("pt") or "fontSizePt" in style:
+        value *= 96.0 / 72.0
+    return value if value > 0 else fallback
+
+
+def _editable_style_color(style: dict) -> str:
+    raw = style.get("color", style.get("fill", "#123B66"))
+    value = str(raw or "#123B66").strip()
+    if not value.startswith("#"):
+        value = f"#{value}"
+    return value
+
+
+def _editable_style_weight(style: dict) -> str:
+    weight = style.get("weight")
+    bold = style.get("bold") is True or (isinstance(weight, (int, float)) and weight >= 600) or weight == "bold"
+    if bold:
+        return "700"
+    if str(weight).lower() == "light":
+        return "300"
+    if str(weight).lower() in {"regular", "normal", "none"}:
+        return "400"
+    return str(weight or "400")
+
+
+def _editable_style_font_family(style: dict) -> str:
+    return str(
+        style.get("font_family")
+        or style.get("fontFamily")
+        or style.get("typeface")
+        or EDITABLE_TEXT_FONT_FAMILY
+    )
 
 
 def render_editable_body_svg(page: dict, body_region: dict[str, int], canvas: dict[str, int]) -> str:
@@ -977,19 +1031,41 @@ def render_editable_body_svg(page: dict, body_region: dict[str, int], canvas: di
     image_href = "../images/" + background.name
     body = body_region
     parts = [
-        f'<image x="{body["x"]}" y="{body["y"]}" width="{body["width"]}" height="{body["height"]}" href={quoteattr(image_href)} xlink:href={quoteattr(image_href)} preserveAspectRatio="xMidYMid meet"/>',
+        f'<image x="{body["x"]}" y="{body["y"]}" width="{body["width"]}" height="{body["height"]}" href={quoteattr(image_href)} xlink:href={quoteattr(image_href)} preserveAspectRatio="none"/>',
     ]
+    scale_y = body["height"] / canvas["height"]
     for line in page["text_lines"]:
         mapped = _map_editable_bbox(line["bbox_px"], canvas, body)
-        font_size = max(6.5, mapped["height"] * 0.75)
+        runs = [run for run in line.get("runs", []) if isinstance(run, dict)]
+        if not runs or "".join(str(run.get("text") or "") for run in runs) != str(line["text"]):
+            runs = [{"text": str(line["text"]), "style": _editable_run_style(line)}]
+        run_styles = [run.get("style") if isinstance(run.get("style"), dict) else {} for run in runs]
+        run_font_sizes = [
+            max(6.5, _editable_style_font_size_px(style, mapped["height"] * 0.75) * scale_y)
+            for style in run_styles
+        ]
+        font_size = max(run_font_sizes)
+        style = run_styles[0]
+        layout = line.get("layout") if isinstance(line.get("layout"), dict) else {}
+        align = str(layout.get("align") or "left")
+        anchor = {"center": "middle", "right": "end"}.get(align, "start")
+        text_x = mapped["x"] + (mapped["width"] / 2 if align == "center" else mapped["width"] if align == "right" else 0)
         line_id = str(line.get("line_id") or "line")
         name = f'text-{page["page_number"]}-{line_id}'
+        content = "".join(
+            f'<tspan font-family={quoteattr(_editable_style_font_family(run_style))} '
+            f'font-size="{fmt(run_size)}" font-weight="{_editable_style_weight(run_style)}" '
+            f'fill="{_editable_style_color(run_style)}">{xml_escape(str(run.get("text") or ""))}</tspan>'
+            for run, run_style, run_size in zip(runs, run_styles, run_font_sizes)
+        )
         parts.append(
             f'<text id={quoteattr(name)} data-pptx-name={quoteattr(name)} '
-            f'x="{fmt(mapped["x"])}" y="{fmt(mapped["y"] + font_size * 0.85)}" '
-            f'data-pptx-width="{fmt(mapped["width"])}" font-family="Microsoft YaHei" '
-            f'font-size="{fmt(font_size)}" fill="#123B66" xml:space="preserve">'
-            f'{xml_escape(str(line["text"]))}</text>'
+            f'x="{fmt(text_x)}" y="{fmt(mapped["y"] + font_size * 0.85)}" '
+            f'text-anchor="{anchor}" data-pptx-width="{fmt(mapped["width"])}" '
+            f'font-family={quoteattr(_editable_style_font_family(style))} '
+            f'font-size="{fmt(font_size)}" font-weight="{_editable_style_weight(style)}" '
+            f'fill="{_editable_style_color(style)}" xml:space="preserve">'
+            f'{content}</text>'
         )
     return "\n".join(parts)
 
