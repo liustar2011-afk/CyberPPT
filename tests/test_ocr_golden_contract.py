@@ -6,6 +6,7 @@ as a production fixture and must never contain credentials or service URLs.
 """
 
 import json
+import re
 from pathlib import Path
 
 
@@ -48,6 +49,11 @@ def test_golden_forensics_has_required_audit_fields():
             assert data["approved_image"] is False
             assert image.get("path") is None
             assert data["artifacts"].get("render_check") == "not_run_synthetic_fixture"
+        else:
+            assert data["approved_image"] is True
+            assert image.get("path")
+            assert re.fullmatch(r"[0-9a-f]{64}", str(image.get("sha256", "")))
+            assert image.get("provenance")
 
 
 def test_golden_fixture_contract_has_no_external_credentials_or_services():

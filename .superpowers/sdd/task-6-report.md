@@ -59,3 +59,30 @@ Result: `quality: passed`; artifacts were written to
 inspected for canvas, image, and text geometry; `rsvg-convert`/ImageMagick is
 not installed, so no raster visual claim is made. This remains synthetic and
 does not establish production OCR accuracy.
+
+## Final rework: committed executable harness
+
+Added `tests/run_synthetic_legacy_e2e.py`. It creates the synthetic page,
+runs line forensics and the legacy correction/quality path, writes the SVG,
+and rasterizes it with the repository-available `cairosvg` runtime. Missing
+`cairosvg` is a hard error.
+
+Command and result:
+
+```text
+out=$(mktemp -d /tmp/cyberppt-task6-final-XXXX)
+python3 tests/run_synthetic_legacy_e2e.py "$out"
+quality: passed
+```
+
+Artifacts:
+`/tmp/cyberppt-task6-final-XiTs/synthetic_page.png`,
+`/tmp/cyberppt-task6-final-XiTs/text_forensics.json`,
+`/tmp/cyberppt-task6-final-XiTs/legacy_rebuild.svg`,
+`/tmp/cyberppt-task6-final-XiTs/legacy_rebuild.png`, and
+`/tmp/cyberppt-task6-final-XiTs/evidence/line_001.png`.
+
+The raster output was visually inspected: the 1672x941 canvas contains the
+synthetic legacy title and expected `经营管理` text at the recorded line
+location. This is a synthetic smoke test only and does not establish
+production OCR accuracy.
