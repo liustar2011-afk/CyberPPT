@@ -17,6 +17,28 @@ from PIL import Image
 SCHEMA_VERSION = "1.0"
 
 
+def summarize_style_evidence(lines: list[dict[str, Any]]) -> dict[str, Any]:
+    """Summarize style observations already captured for each OCR line."""
+    fills = Counter(
+        str(line["dominant_fill"])
+        for line in lines
+        if isinstance(line, dict) and line.get("dominant_fill")
+    )
+    heights = [
+        float(line["line_height_px"])
+        for line in lines
+        if isinstance(line, dict) and isinstance(line.get("line_height_px"), (int, float))
+    ]
+    return {
+        "dominant_fills": dict(fills),
+        "line_height_px": {
+            "min": min(heights) if heights else None,
+            "max": max(heights) if heights else None,
+            "median": sorted(heights)[len(heights) // 2] if heights else None,
+        },
+    }
+
+
 def attach_correction_evidence(
     forensics: dict[str, Any],
     *,
