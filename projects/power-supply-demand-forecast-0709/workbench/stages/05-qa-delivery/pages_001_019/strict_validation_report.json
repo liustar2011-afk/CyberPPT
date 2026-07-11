@@ -1,0 +1,458 @@
+{
+  "file": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/image_ppt/pages_001_019_template_image_project/exports/pages_001_019_template_image_project_20260711_091218.pptx",
+  "summary": {
+    "slide_count": 19,
+    "width_emu": 12192000,
+    "height_emu": 6858000,
+    "aspect_ratio": 1.7778,
+    "native_text_shapes": 46,
+    "native_graphic_shapes": 65,
+    "pictures": 13,
+    "charts": 0,
+    "tables": 0
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 4
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 4
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 5
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 5
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 7
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 7
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 8
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 8
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 10
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 10
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 11
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 11
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 12
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 12
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 13
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 13
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 14
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 14
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 15
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 15
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 16
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 16
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 18
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 18
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 19
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 19
+    }
+  ],
+  "slides": [
+    {
+      "slide": 1,
+      "native_text_shapes": 4,
+      "native_graphic_shapes": 4,
+      "pictures": 0,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 4,
+      "coverage_ratio": 0.504,
+      "picture_area_ratio": 0,
+      "max_picture_area_ratio": 0.0,
+      "min_font_size_pt": 13.5,
+      "max_font_size_pt": 37.5,
+      "text_characters": 54,
+      "text_content": "关于开展电力供需形势预测工作的整体方案 中电联统计与数智部电力供需分析处 中国电力企业联合会 2026年7月"
+    },
+    {
+      "slide": 2,
+      "native_text_shapes": 11,
+      "native_graphic_shapes": 17,
+      "pictures": 0,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 17,
+      "coverage_ratio": 0.8623,
+      "picture_area_ratio": 0,
+      "max_picture_area_ratio": 0.0,
+      "min_font_size_pt": 12.0,
+      "max_font_size_pt": 34.5,
+      "text_characters": 67,
+      "text_content": "目录 汇报目录 第一章 建设背景与基础 第二章 建设总体思路 第三章 建设内容及实施方案 第四章 需请领导审定事项 中国电力企业联合会"
+    },
+    {
+      "slide": 3,
+      "native_text_shapes": 4,
+      "native_graphic_shapes": 7,
+      "pictures": 0,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 7,
+      "coverage_ratio": 0.8634,
+      "picture_area_ratio": 0,
+      "max_picture_area_ratio": 0.0,
+      "min_font_size_pt": 10.5,
+      "max_font_size_pt": 40.5,
+      "text_characters": 32,
+      "text_content": "第一章 建设背景与基础 围绕本章内容开展汇报 中国电力企业联合会"
+    },
+    {
+      "slide": 4,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.9019,
+      "picture_area_ratio": 0.7954,
+      "max_picture_area_ratio": 0.7954,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 9,
+      "text_content": "形势变化和工作要求"
+    },
+    {
+      "slide": 5,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.9019,
+      "picture_area_ratio": 0.7954,
+      "max_picture_area_ratio": 0.7954,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 9,
+      "text_content": "工作基础和完善方向"
+    },
+    {
+      "slide": 6,
+      "native_text_shapes": 4,
+      "native_graphic_shapes": 7,
+      "pictures": 0,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 7,
+      "coverage_ratio": 0.8634,
+      "picture_area_ratio": 0,
+      "max_picture_area_ratio": 0.0,
+      "min_font_size_pt": 10.5,
+      "max_font_size_pt": 40.5,
+      "text_characters": 31,
+      "text_content": "第二章 建设总体思路 围绕本章内容开展汇报 中国电力企业联合会"
+    },
+    {
+      "slide": 7,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.9019,
+      "picture_area_ratio": 0.7954,
+      "max_picture_area_ratio": 0.7954,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 9,
+      "text_content": "总体思路和目标定位"
+    },
+    {
+      "slide": 8,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.9019,
+      "picture_area_ratio": 0.7954,
+      "max_picture_area_ratio": 0.7954,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 9,
+      "text_content": "建设原则和首期边界"
+    },
+    {
+      "slide": 9,
+      "native_text_shapes": 4,
+      "native_graphic_shapes": 7,
+      "pictures": 0,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 7,
+      "coverage_ratio": 0.8634,
+      "picture_area_ratio": 0,
+      "max_picture_area_ratio": 0.0,
+      "min_font_size_pt": 10.5,
+      "max_font_size_pt": 40.5,
+      "text_characters": 34,
+      "text_content": "第三章 建设内容及实施方案 围绕本章内容开展汇报 中国电力企业联合会"
+    },
+    {
+      "slide": 10,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.9019,
+      "picture_area_ratio": 0.7954,
+      "max_picture_area_ratio": 0.7954,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 9,
+      "text_content": "业务体系和成果产品"
+    },
+    {
+      "slide": 11,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.9019,
+      "picture_area_ratio": 0.7954,
+      "max_picture_area_ratio": 0.7954,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 12,
+      "text_content": "数据资源、治理与可信流通"
+    },
+    {
+      "slide": 12,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.9019,
+      "picture_area_ratio": 0.7954,
+      "max_picture_area_ratio": 0.7954,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 14,
+      "text_content": "模型体系、生产流程与智能辅助"
+    },
+    {
+      "slide": 13,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.9019,
+      "picture_area_ratio": 0.7954,
+      "max_picture_area_ratio": 0.7954,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 14,
+      "text_content": "平台架构、功能模块与版本关系"
+    },
+    {
+      "slide": 14,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.9019,
+      "picture_area_ratio": 0.7954,
+      "max_picture_area_ratio": 0.7954,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 12,
+      "text_content": "场景体系、责任与验收闭环"
+    },
+    {
+      "slide": 15,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.9019,
+      "picture_area_ratio": 0.7954,
+      "max_picture_area_ratio": 0.7954,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 9,
+      "text_content": "组织实施和阶段成果"
+    },
+    {
+      "slide": 16,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.9019,
+      "picture_area_ratio": 0.7954,
+      "max_picture_area_ratio": 0.7954,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 9,
+      "text_content": "资源保障和风险管控"
+    },
+    {
+      "slide": 17,
+      "native_text_shapes": 4,
+      "native_graphic_shapes": 7,
+      "pictures": 0,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 7,
+      "coverage_ratio": 0.8634,
+      "picture_area_ratio": 0,
+      "max_picture_area_ratio": 0.0,
+      "min_font_size_pt": 10.5,
+      "max_font_size_pt": 40.5,
+      "text_characters": 33,
+      "text_content": "第四章 需请领导审定事项 围绕本章内容开展汇报 中国电力企业联合会"
+    },
+    {
+      "slide": 18,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.9019,
+      "picture_area_ratio": 0.7954,
+      "max_picture_area_ratio": 0.7954,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 8,
+      "text_content": "需请领导审定事项"
+    },
+    {
+      "slide": 19,
+      "native_text_shapes": 3,
+      "native_graphic_shapes": 4,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 5,
+      "coverage_ratio": 1.0,
+      "picture_area_ratio": 1.0,
+      "max_picture_area_ratio": 1.0,
+      "min_font_size_pt": 18.0,
+      "max_font_size_pt": 48.0,
+      "text_characters": 24,
+      "text_content": "感谢聆听 THANK YOU 中国电力企业联合会"
+    }
+  ],
+  "manifest": {
+    "file": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/05-qa-delivery/pages_001_019/full_image_delivery_manifest.json",
+    "loaded": true,
+    "slide_entries": 19
+  }
+}

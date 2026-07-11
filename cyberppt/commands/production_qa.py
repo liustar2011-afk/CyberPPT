@@ -56,6 +56,14 @@ def _body_crop_box(region: dict[str, Any], canvas: dict[str, Any], render_size: 
     )
 
 
+def _image_crop_box(region: dict[str, Any], image_size: tuple[int, int]) -> tuple[int, int, int, int]:
+    left = max(0, min(image_size[0], int(region.get("x", 0))))
+    top = max(0, min(image_size[1], int(region.get("y", 0))))
+    right = max(left + 1, min(image_size[0], left + int(region.get("width", image_size[0]))))
+    bottom = max(top + 1, min(image_size[1], top + int(region.get("height", image_size[1]))))
+    return left, top, right, bottom
+
+
 def validate_assembly_bundle(bundle: dict[str, Any], expected_pages: list[int]) -> dict[str, Any]:
     """Check that a successful exporter process actually produced a usable bundle."""
 
@@ -92,17 +100,23 @@ def validate_assembly_bundle(bundle: dict[str, Any], expected_pages: list[int]) 
     if not checks["page_set_matches"]:
         failures.append("page_set_mismatch")
     checks["notes_complete"] = len(tasks) == len(expected_pages) and all(
-        bool(str(item.get("notes_text") or "").strip()) for item in tasks
+        str(item.get("page_role") or "") == "section" or bool(str(item.get("notes_text") or "").strip())
+        for item in tasks
     )
     if not checks["notes_complete"]:
         failures.append("speaker_notes_missing")
 
     approved_images = {int(page): Path(path).expanduser().resolve() for page, path in bundle.get("approved_images", {}).items()}
+    content_image_tasks = [
+        (int(item["page_number"]), item)
+        for item in tasks
+        if "page_number" in item and str(item.get("render_mode") or "content-image") == "content-image"
+    ]
     checks["approved_images_match"] = all(
         page in approved_images
         and Path(str(item.get("image_path", ""))).expanduser().resolve() == approved_images[page]
         and approved_images[page].is_file()
-        for page, item in ((int(item["page_number"]), item) for item in tasks if "page_number" in item)
+        for page, item in content_image_tasks
     )
     if not checks["approved_images_match"]:
         failures.append("approved_images_mismatch")
@@ -157,25 +171,45 @@ def render_and_compare(
     }
     canvas = manifest.get("canvas") if isinstance(manifest.get("canvas"), dict) else {"width": 1280, "height": 720}
     body_region = manifest.get("body_region") if isinstance(manifest.get("body_region"), dict) else {"x": 0, "y": 0, "width": 1280, "height": 720}
+    approved_image_region = (
+        manifest.get("approved_image_content_region")
+        if isinstance(manifest.get("approved_image_content_region"), dict)
+        else None
+    )
     slides: list[dict[str, Any]] = []
     failures: list[str] = []
     for index, page in enumerate(expected_pages):
         if page not in tasks:
             failures.append(f"missing_manifest_task:{page}")
             continue
-        if page not in approved_images:
-            failures.append(f"missing_approved_image:{page}")
-            continue
         if index >= len(rendered):
             failures.append(f"missing_render:{page}")
             continue
         render_path = rendered[index]
+        if str(tasks[page].get("render_mode") or "content-image") != "content-image":
+            slides.append(
+                {
+                    "page": page,
+                    "rendered_page": str(render_path),
+                    "skipped": "brand-template",
+                    "passed": True,
+                }
+            )
+            continue
+        if page not in approved_images:
+            failures.append(f"missing_approved_image:{page}")
+            continue
         approved_path = approved_images[page]
         with Image.open(render_path).convert("RGB") as rendered_image:
             box = _body_crop_box(body_region, canvas, rendered_image.size)
             crop = rendered_image.crop(box)
         with Image.open(approved_path).convert("RGB") as approved_image:
-            resized = approved_image.resize(crop.size)
+            reference = (
+                approved_image.crop(_image_crop_box(approved_image_region, approved_image.size))
+                if approved_image_region
+                else approved_image
+            )
+            resized = reference.resize(crop.size)
         diff = ImageChops.difference(crop, resized)
         mean_abs_diff = round(sum(ImageStat.Stat(diff).mean) / 3.0, 4)
         passed = mean_abs_diff <= threshold

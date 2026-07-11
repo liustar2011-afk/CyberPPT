@@ -1,6 +1,6 @@
 {
   "schema": "cyberppt.final_script_pages_run.v1",
-  "created_at": "2026-07-10T07:59:43+00:00",
+  "created_at": "2026-07-11T01:10:07+00:00",
   "project": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709",
   "source_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
   "pages": [
@@ -36,6 +36,8 @@
     "template_image_manifest": null,
     "template_image_project": null,
     "exported_pptx": null,
+    "speaker_notes_manifest": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/speaker_notes/speaker_notes_manifest.json",
+    "speaker_notes_llm_prompt": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/speaker_notes/speaker_notes_llm_prompt.md",
     "semantic_plan_dir": null
   },
   "next_steps": [
@@ -45,6 +47,14 @@
   ],
   "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709 --script /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/blueprint_input.md --pages 1-19 --style-lock /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/locks/visual_style_lock.json",
   "rebuild": null,
+  "speaker_notes_build": {
+    "business_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/business_script.md",
+    "speaker_notes_manifest": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/speaker_notes/speaker_notes_manifest.json",
+    "llm_prompt": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/speaker_notes/speaker_notes_llm_prompt.md",
+    "llm_output": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/speaker_notes/speaker_notes_llm_output.json",
+    "llm_error": "",
+    "status": "ready_for_review"
+  },
   "image_ppt_build": null,
   "tool_consumption": {},
   "production_readiness": null

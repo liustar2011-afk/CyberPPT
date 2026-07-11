@@ -27,7 +27,7 @@ NOTE_PROVENANCE_RE = re.compile(
 )
 NOTE_FILLER_RE = re.compile(r"(围绕本章内容|本章内容开展汇报|作简要汇报|先对本章涉及)")
 NOTE_META_RE = re.compile(
-    r"(本页围绕|本页主要|页面中可以看到|如下图所示|汇报要点|核心提示|组件[A-Z]?|"
+    r"(这一页汇报|主要说明一是|本页围绕|本页主要|页面中可以看到|如下图所示|汇报要点|核心提示|组件[A-Z]?|"
     r"上屏文字|非上屏|页面表达框架|内容锁定|构图|绘制|草图|机器|生图)"
 )
 
@@ -138,6 +138,22 @@ def speech_points(items: list[str], limit: int = 4) -> str:
     return "；".join(parts) + "。"
 
 
+def paragraphized_rule_note(heading: str, points: list[str]) -> str:
+    selected = compress_items(points, 8)
+    if not selected:
+        return f"各位领导，下面汇报{heading}相关情况。"
+
+    paragraphs = [f"各位领导，下面汇报{heading}相关情况。"]
+    groups = [selected[:2], selected[2:4], selected[4:6], selected[6:8]]
+    leads = ("首先", "同时", "需要说明的是", "风险和后续管理方面")
+    for lead, group in zip(leads, groups):
+        if not group:
+            continue
+        body = "；".join(item.rstrip("。；;") for item in group)
+        paragraphs.append(f"{lead}，{body}。")
+    return "\n\n".join(paragraphs)
+
+
 def first_nonempty(*groups: Iterable[str]) -> list[str]:
     for group in groups:
         values = [item for item in group if item]
@@ -165,16 +181,22 @@ def join_items(items: list[str]) -> str:
 
 
 def sanitize_speech_note(text: str) -> str:
-    sentences = re.split(r"(?<=[。！？])", text)
-    kept: list[str] = []
-    for sentence in sentences:
-        stripped = sentence.strip()
-        if not stripped:
-            continue
-        if NOTE_PROVENANCE_RE.search(stripped) or NOTE_FILLER_RE.search(stripped) or NOTE_META_RE.search(stripped):
-            continue
-        kept.append(stripped)
-    return "".join(kept).strip()
+    paragraphs = re.split(r"\n\s*\n", text.strip())
+    cleaned_paragraphs: list[str] = []
+    for paragraph in paragraphs:
+        sentences = re.split(r"(?<=[。！？])", paragraph)
+        kept: list[str] = []
+        for sentence in sentences:
+            stripped = sentence.strip()
+            if not stripped:
+                continue
+            if NOTE_PROVENANCE_RE.search(stripped) or NOTE_FILLER_RE.search(stripped) or NOTE_META_RE.search(stripped):
+                continue
+            kept.append(stripped)
+        cleaned = "".join(kept).strip()
+        if cleaned:
+            cleaned_paragraphs.append(cleaned)
+    return "\n\n".join(cleaned_paragraphs).strip()
 
 
 def validate_speech_note_text(page_number: int, text: str) -> None:
@@ -188,6 +210,8 @@ def validate_speech_note_text(page_number: int, text: str) -> None:
             raise ValueError(
                 f"speaker note for page {page_number} contains {label} wording: {match.group(0)}"
             )
+    if len(text) >= 220 and "\n\n" not in text:
+        raise ValueError(f"speaker note for page {page_number} is too dense; split content into paragraphs")
 
 
 def page_role(page: NotePage) -> str:
@@ -237,12 +261,9 @@ def build_rule_note(page: NotePage, *, seconds: int) -> str:
         visible_business_lines(page),
     )
     points = compress_items(explicit, 8)
-    paragraphs: list[str] = [f"这一页汇报{heading}。"]
-    if points:
-        paragraphs.append(f"主要说明{speech_points(points)}")
-    note = "".join(paragraphs)
+    note = paragraphized_rule_note(heading, points)
     if seconds > 90:
-        note += "如需展开，可结合页面中的数据、机制和成果产品逐项说明。"
+        note += "\n\n如需展开，可结合页面中的数据、机制和成果产品逐项说明。"
     return sanitize_speech_note(note)
 
 
@@ -264,6 +285,9 @@ def build_llm_prompt(pages: list[NotePage], draft_notes: dict[int, str], *, seco
         "不得把证据链、来源位置、完整性校核、E编号、P页码、T表号或“业务稿证据支撑”等审稿说明写进演讲备注；"
         "封面、目录、章节过渡、封底只写简短串场；"
         f"内容页按约 {seconds} 秒可讲完控制篇幅。\n"
+        "内容页必须输出 3-5 个自然段，段落之间用空行分隔；每段承担一个表达任务，便于查看和照读。\n"
+        "第二、第三、第四阶段的内容页共同适用上述自然化和分段化要求，不允许只优化某一阶段。\n"
+        "禁止使用“这一页汇报”“本页围绕”“主要说明一是”这类机械开头；请改成自然承接、说明边界、提示风险或请示事项的汇报语言。\n"
         "请只返回 JSON，结构为：{\"notes\":[{\"page_number\":1,\"title\":\"...\",\"notes_text\":\"...\"}]}。\n\n"
         "输入如下：\n"
         + json.dumps(payload, ensure_ascii=False, indent=2)

@@ -565,8 +565,9 @@ Recorded narration:
             else:
                 print("  [warn] metadata.json ignored (top level is not an object)", file=sys.stderr)
 
-    from .master_chrome import read_master_chrome
+    from .master_chrome import read_cover_layout, read_master_chrome
     master_chrome = read_master_chrome(project_path)
+    cover_layout = read_cover_layout(project_path)
     logo_src = None
     if master_chrome:
         for candidate in (project_path / 'images').glob('*logo*'):
@@ -577,11 +578,15 @@ Recorded narration:
             n_excluded = len(master_chrome.get('excluded_pages', set()))
             print(f"  Brand chrome: master_chrome locked, {n_excluded} page(s) excluded "
                   f"(cover/ending templates), injected via slide layout (not per-page SVG)")
+    if cover_layout and verbose:
+        pages = ', '.join(f"P{page}" for page in sorted(cover_layout.get('pages', set())))
+        print(f"  Cover layout: {pages} public cover base injected via slide layout")
 
     shared_kwargs = dict(
         canvas_format=canvas_format,
         doc_metadata=doc_metadata,
         master_chrome=master_chrome,
+        cover_layout=cover_layout,
         logo_src=logo_src,
         verbose=verbose,
         transition=transition,

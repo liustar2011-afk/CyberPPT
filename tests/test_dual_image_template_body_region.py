@@ -117,6 +117,11 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "non-visual provenance"):
             module.validate_image_prompt_text(4, "请绘制供需形势，相关判断重点对应E01。")
 
+    def test_image_prompt_allows_prediction_quantiles(self) -> None:
+        module = load_template_image_ppt_export()
+
+        module.validate_image_prompt_text(12, "输出 P10、P50、P90 区间和偏离解释。")
+
     def test_non_visible_evidence_sections_do_not_enter_content_prompt(self) -> None:
         module = load_template_image_ppt_export()
         with tempfile.TemporaryDirectory() as tmp:
@@ -233,6 +238,39 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
         self.assertNotIn("汇报要点", section_notes)
         self.assertEqual("agenda", written_manifest["tasks"][0]["template"])
 
+    def test_write_project_crops_approved_full_image_to_content_region(self) -> None:
+        module = load_template_image_ppt_export()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            full = root / "page_004_full.png"
+            image = Image.new("RGB", (100, 60), "#12355b")
+            ImageDraw.Draw(image).rectangle((10, 20, 89, 49), fill="#f7f6f0")
+            image.save(full)
+            manifest = {
+                "mode": "template-image-ppt",
+                "canvas": {"width": 1280, "height": 720},
+                "body_region": {"x": 20, "y": 104, "width": 1240, "height": 592},
+                "approved_image_content_region": {"x": 10, "y": 20, "width": 80, "height": 30},
+                "tasks": [
+                    {
+                        "page_number": 4,
+                        "page_role": "body",
+                        "title": "内容页",
+                        "slide_title": "内容页",
+                        "render_mode": "content-image",
+                        "image_path": str(full),
+                        "notes_text": "notes",
+                    }
+                ],
+            }
+
+            project = module.write_project(manifest, root, "crop_test")
+            cropped = project / "images/page_004_full_content_crop.png"
+
+            self.assertTrue(cropped.is_file())
+            with Image.open(cropped) as cropped_image:
+                self.assertEqual((80, 30), cropped_image.size)
+
     def test_empty_speaker_note_manifest_record_disables_fallback(self) -> None:
         module = load_template_image_ppt_export()
         with tempfile.TemporaryDirectory() as tmp:
@@ -300,10 +338,38 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
         self.assertIn("关于开展电力供需形势预测工作的整体方案", cover_svg)
         self.assertIn("中电联统计与数智部电力供需分析处", cover_svg)
         self.assertIn("2026年7月", cover_svg)
+        self.assertNotIn("cover_bg.jpg", cover_svg)
+        self.assertNotIn("cover-decor", cover_svg)
+        self.assertIn("中国电力企业联合会</text>", cover_svg)
         self.assertNotIn(">封面</text>", cover_svg)
         self.assertTrue(cover_notes.startswith("# 关于开展电力供需形势预测工作的整体方案"))
         self.assertIn("本页围绕“关于开展电力供需形势预测工作的整体方案”展开。", cover_notes)
         self.assertIn("- 中电联统计与数智部电力供需分析处", cover_notes)
+
+    def test_cover_template_ignores_component_structure_lines(self) -> None:
+        module = load_template_image_ppt_export()
+        task = {
+            "page_number": 1,
+            "page_role": "cover",
+            "title": "封面",
+            "slide_title": "封面",
+            "body_text": "\n".join(
+                [
+                    "页面类型：封面",
+                    "组件A（正文区中部，主标题）——项目名称：",
+                    "关于开展电力供需形势预测工作的整体方案",
+                    "组件B（主标题下方，识别信息）——牵头单位与日期：",
+                    "中电联统计与数智部电力供需分析处",
+                    "2026 年 7 月",
+                ]
+            ),
+        }
+
+        title, author, date = module.cover_content_fields(task)
+
+        self.assertEqual("关于开展电力供需形势预测工作的整体方案", title)
+        self.assertEqual("中电联统计与数智部电力供需分析处", author)
+        self.assertEqual("2026年7月", date)
 
     def test_cover_date_textbox_keeps_pptx_width_from_template(self) -> None:
         module = load_template_image_ppt_export()
@@ -328,9 +394,16 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
 
             with zipfile.ZipFile(pptx) as package:
                 slide_xml = package.read("ppt/slides/slide1.xml").decode("utf-8")
+                slide_rels = package.read("ppt/slides/_rels/slide1.xml.rels").decode("utf-8")
+                layout_xml = package.read("ppt/slideLayouts/slideLayout7.xml").decode("utf-8")
+                layout_rels = package.read("ppt/slideLayouts/_rels/slideLayout7.xml.rels").decode("utf-8")
 
         self.assertIn("<a:t>2026年7月</a:t>", slide_xml)
+        self.assertIn("<a:t>中国电力企业联合会</a:t>", slide_xml)
         self.assertIn('<a:ext cx="2286000"', slide_xml)
+        self.assertIn("Target=\"../slideLayouts/slideLayout7.xml\"", slide_rels)
+        self.assertNotIn("CoverOrgText", layout_xml)
+        self.assertIn("rIdCoverLayoutBg", layout_rels)
 
     def test_speaker_notes_manifest_overrides_fallback_notes(self) -> None:
         module = load_template_image_ppt_export()

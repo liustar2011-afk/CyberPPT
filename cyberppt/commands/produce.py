@@ -20,6 +20,7 @@ from cyberppt.commands.blueprint_gate import (
 )
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.production_qa import render_and_compare, validate_assembly_bundle
+from scripts.dual_image_overlay.rebuild_engine.template_image_ppt_export import cover_content_fields
 from scripts.validate_pptx import validate_pptx
 
 
@@ -563,6 +564,17 @@ def _full_image_delivery_manifest(
         for item in template.get("tasks", [])
         if isinstance(item, dict) and isinstance(item.get("page_number"), int)
     }
+    def slide_text_requirements(page: int) -> list[str]:
+        task = tasks.get(page, {})
+        if str(task.get("template") or "") == "cover":
+            return [value for value in cover_content_fields(task) if value]
+        if str(task.get("template") or "") == "ending":
+            return []
+        return native_text_requirements.get(page, [])
+
+    def body_image_required(page: int) -> bool:
+        return str(tasks.get(page, {}).get("render_mode") or "content-image") == "content-image"
+
     return {
         "schema": "cyberppt.full_image_delivery_manifest.v1",
         "delivery_mode": "full_image_ppt",
@@ -578,8 +590,13 @@ def _full_image_delivery_manifest(
                 "slide": index,
                 "source_page": page,
                 "delivery_mode": "full_image_ppt",
-                "native_text_requirements": native_text_requirements.get(page, []),
-                "image_assets": [{"role": "approved_full_image", "path": str(approved_images[page])}],
+                "native_text_requirements": slide_text_requirements(page),
+                "body_image_required": body_image_required(page),
+                "image_assets": (
+                    [{"role": "approved_full_image", "path": str(approved_images[page])}]
+                    if body_image_required(page)
+                    else []
+                ),
                 "notes_present": bool(str(tasks.get(page, {}).get("notes_text") or "").strip()),
             }
             for index, page in enumerate(pages, start=1)

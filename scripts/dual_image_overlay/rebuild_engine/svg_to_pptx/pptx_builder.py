@@ -24,7 +24,7 @@ from pptx import Presentation
 from pptx.util import Emu
 
 from .drawingml_converter import convert_svg_to_slide_shapes
-from .master_chrome import inject_chrome_layout, strip_full_canvas_background
+from .master_chrome import inject_chrome_layout, inject_cover_layout, strip_full_canvas_background
 from .pptx_dimensions import (
     CANVAS_FORMATS,
     get_slide_dimensions, get_pixel_dimensions,
@@ -633,6 +633,7 @@ def create_pptx_with_native_svg(
     conversion_trace_path: Path | None = None,
     doc_metadata: dict[str, Any] | None = None,
     master_chrome: dict[str, Any] | None = None,
+    cover_layout: dict[str, Any] | None = None,
     logo_src: Path | None = None,
 ) -> bool:
     """Create a PPTX file with native SVG.
@@ -779,7 +780,9 @@ def create_pptx_with_native_svg(
         # "Blank" layout) at the .rels-rewrite site below — see `slide_num in
         # excluded_pages`.
         excluded_pages: set[int] = (master_chrome or {}).get('excluded_pages', set())
+        cover_pages: set[int] = set((cover_layout or {}).get('pages', set()))
         chrome_layout_partname = '/ppt/slideLayouts/slideLayout1.xml'
+        cover_layout_partname = '/ppt/slideLayouts/slideLayout7.xml'
 
         if master_chrome and chrome_layout_partname:
             master_chrome.setdefault('canvas_width', pixel_width)
@@ -794,6 +797,18 @@ def create_pptx_with_native_svg(
                     'gif': 'image/gif', 'bmp': 'image/bmp',
                 }.get(logo_ext, 'image/png')
                 ct_xml = _add_default_content_type(ct_xml, logo_ext, logo_content_type)
+                ct_path.write_text(ct_xml, encoding='utf-8')
+
+        if cover_layout and cover_layout_partname:
+            cover_ext = inject_cover_layout(extract_dir, cover_layout_partname, cover_layout)
+            if cover_ext:
+                ct_path = extract_dir / '[Content_Types].xml'
+                ct_xml = ct_path.read_text(encoding='utf-8')
+                cover_content_type = {
+                    'png': 'image/png', 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg',
+                    'gif': 'image/gif', 'bmp': 'image/bmp',
+                }.get(cover_ext, 'image/png')
+                ct_xml = _add_default_content_type(ct_xml, cover_ext, cover_content_type)
                 ct_path.write_text(ct_xml, encoding='utf-8')
 
         prerender_results: dict[int, bool] | None = None
@@ -961,7 +976,9 @@ def create_pptx_with_native_svg(
                         )
 
                     layout_target = 'slideLayout1.xml'
-                    if master_chrome and slide_num in excluded_pages:
+                    if slide_num in cover_pages:
+                        layout_target = 'slideLayout7.xml'
+                    elif master_chrome and slide_num in excluded_pages:
                         layout_target = 'slideLayout7.xml'
 
                     rels_xml = f'''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

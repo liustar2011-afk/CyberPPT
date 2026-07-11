@@ -42,7 +42,7 @@ IMAGEGEN_NON_VISIBLE_SECTION_RE = re.compile(
 )
 COMPOSITION_SECTION_RE = re.compile(r"【(?:构图指令|构图接口)】(?P<body>.*)$", re.S)
 IMAGE_PROMPT_PROVENANCE_RE = re.compile(
-    r"(证据链|来源位置|源材料|完整性校核|业务稿证据|重点对应|对应E\d+|\bE\d+\b|P\d+|T\d+)"
+    r"(证据链|来源位置|源材料|完整性校核|业务稿证据|重点对应|对应E\d+|\bE\d+\b|P(?!10\b|50\b|90\b)\d+|T\d+)"
 )
 CANVAS_SIZE = (1280, 720)
 CONTENT_REGION_TOP_INSET = -18
@@ -438,10 +438,18 @@ def cover_content_fields(task: dict) -> tuple[str, str, str]:
     """Extract cover title, author/unit, and date from script content before using role labels."""
 
     fallback_title = str(task.get("slide_title") or task.get("title") or "")
+    def is_structural_cover_line(line: str) -> bool:
+        return (
+            line.startswith("页面类型")
+            or line.startswith("本页类型")
+            or line.startswith("组件")
+            or "——" in line
+        )
+
     body_lines = [
         line.strip().lstrip("- ").strip()
         for line in str(task.get("body_text") or "").splitlines()
-        if line.strip()
+        if line.strip() and not is_structural_cover_line(line.strip().lstrip("- ").strip())
     ]
     content = PageContent(fallback_title, str(task.get("subtitle") or ""), str(task.get("body_text") or ""))
     title = page_meta_value(content, "汇报标题") or page_meta_value(content, "项目名称")
@@ -854,6 +862,20 @@ def load_approved_full_images(
     return images
 
 
+def approved_image_content_region(path: Path) -> dict[str, int] | None:
+    data = _read_json_object(Path(path).expanduser().resolve(), "approved page image manifest")
+    contract = data.get("generation_contract")
+    if not isinstance(contract, dict):
+        return None
+    region = contract.get("content_region")
+    if not isinstance(region, dict):
+        return None
+    required = ("x", "y", "width", "height")
+    if any(key not in region for key in required):
+        return None
+    return {key: int(region[key]) for key in required}
+
+
 def _load_approved_speaker_notes(
     path: Path, pages: list[int], *, project_root: Path | None = None
 ) -> dict[int, dict]:
@@ -1053,6 +1075,9 @@ def build_manifest(
         "speaker_notes_manifest": str(speaker_notes_manifest) if speaker_notes_manifest else None,
         "template_text_lock": str(template_text_lock) if template_text_lock else None,
         "page_image_manifest": str(page_image_manifest) if page_image_manifest else None,
+        "approved_image_content_region": (
+            approved_image_content_region(Path(page_image_manifest)) if page_image_manifest else None
+        ),
         "tasks": tasks,
     }
     validate_manifest_contract(manifest)
@@ -1090,12 +1115,31 @@ def copy_brand(project_path: Path, brand_dir: Path = DEFAULT_BRAND_DIR) -> None:
         shutil.copy2(source, target)
 
 
+def crop_approved_content_image(source: Path, target: Path, region: dict[str, int] | None) -> Path:
+    if not region:
+        shutil.copy2(source, target)
+        return target
+    with Image.open(source) as image:
+        width, height = image.size
+        left = max(0, min(width, int(region["x"])))
+        top = max(0, min(height, int(region["y"])))
+        right = max(left + 1, min(width, left + int(region["width"])))
+        bottom = max(top + 1, min(height, top + int(region["height"])))
+        image.convert("RGB").crop((left, top, right, bottom)).save(target)
+    return target
+
+
 def fmt(value: float | int) -> str:
     number = float(value)
     return str(int(number)) if number.is_integer() else f"{number:.2f}".rstrip("0").rstrip(".")
 
 
-def write_spec_lock(project_path: Path, rules: dict, pixel_size: tuple[int, int]) -> None:
+def write_spec_lock(
+    project_path: Path,
+    rules: dict,
+    pixel_size: tuple[int, int],
+    tasks: list[dict] | None = None,
+) -> None:
     width, height = pixel_size
 
     def sx(v: float | int) -> str:
@@ -1129,6 +1173,15 @@ def write_spec_lock(project_path: Path, rules: dict, pixel_size: tuple[int, int]
         lines.append(f"- footer_org_text: x={sx(org.get('x', 40))} y={sy(org.get('y', 712))} size={sy(org.get('font_size', 10))} fill={org.get('fill', '#FFFFFF')} text=\"{org.get('text', '中国电力企业联合会')}\"")
     if num:
         lines.append(f"- footer_page_num: x={sx(num.get('x', 1240))} y={sy(num.get('y', 712))} size={sy(num.get('font_size', 10))} fill={num.get('fill', '#FFFFFF')} mono dynamic")
+    page_layouts: list[str] = []
+    for task in tasks or []:
+        if task.get("render_mode") != "brand-template":
+            continue
+        template_name = task.get("template") or page_template_name(str(task.get("page_role") or ""))
+        if template_name:
+            page_layouts.append(f"- P{int(task['page_number'])}: {template_name}")
+    if page_layouts:
+        lines.extend(["", "## page_layouts", *page_layouts])
     (project_path / "spec_lock.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -1145,7 +1198,13 @@ def template_href_for_output(svg: str) -> str:
     )
 
 
-def render_brand_template_svg(task: dict, rules: dict) -> str:
+def cover_slide_svg_only(svg: str) -> str:
+    svg = re.sub(r'\s*<image\b[^>]*(?:xlink:href|href)="../images/cover_bg\.jpg"[^>]*/>', '', svg, count=1)
+    svg = re.sub(r'\s*<g id="cover-decor">.*?</g>', '', svg, flags=re.S, count=1)
+    return svg
+
+
+def render_brand_template_svg(task: dict, rules: dict, *, slide_layer_only: bool = False) -> str:
     template_name = task.get("template") or page_template_name(task.get("page_role", ""))
     templates = rules.get("brand_page_templates") or {}
     template_info = templates.get(template_name) or {}
@@ -1168,6 +1227,8 @@ def render_brand_template_svg(task: dict, rules: dict) -> str:
         }
         for placeholder, value in replacements.items():
             svg = svg.replace(placeholder, xml_escape(value))
+        if slide_layer_only:
+            svg = cover_slide_svg_only(svg)
     elif template_name == "agenda":
         items = task.get("agenda_items")
         svg = svg.replace("{{AGENDA_ITEMS}}", agenda_items_svg(items if isinstance(items, list) else []))
@@ -1187,7 +1248,12 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
         (project_path / sub).mkdir(parents=True, exist_ok=True)
     rules = load_brand_rules()
     copy_brand(project_path)
-    write_spec_lock(project_path, rules, (manifest["canvas"]["width"], manifest["canvas"]["height"]))
+    write_spec_lock(
+        project_path,
+        rules,
+        (manifest["canvas"]["width"], manifest["canvas"]["height"]),
+        manifest.get("tasks"),
+    )
     header = scale_region(rules["content_regions"]["body_header_region"], CANVAS_SIZE)
     body = manifest["body_region"]
     source_pages: dict[int, PageBlock] = {}
@@ -1196,16 +1262,23 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
         source_path = Path(source_script)
         if source_path.is_file():
             source_pages = parse_page_blocks(source_path)
+    approved_image_region = manifest.get("approved_image_content_region")
+    if not isinstance(approved_image_region, dict):
+        approved_image_region = None
     for task in manifest["tasks"]:
         stem = page_stem(task["page_number"], task["title"])
         if task.get("render_mode") == "brand-template" or page_template_name(task.get("page_role", "")):
-            svg_text_content = render_brand_template_svg(task, rules)
+            svg_text_content = render_brand_template_svg(
+                task,
+                rules,
+                slide_layer_only=(task.get("template") or page_template_name(task.get("page_role", ""))) == "cover",
+            )
         else:
             image_path = Path(task["image_path"]).resolve()
             if not image_path.is_file():
                 raise FileNotFoundError(f"Missing content image: {image_path}")
-            target_image = project_path / "images" / image_path.name
-            shutil.copy2(image_path, target_image)
+            target_image = project_path / "images" / f"{image_path.stem}_content_crop{image_path.suffix}"
+            crop_approved_content_image(image_path, target_image, approved_image_region)
             svg = [
                 f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_SIZE[0]}" height="{CANVAS_SIZE[1]}" viewBox="0 0 {CANVAS_SIZE[0]} {CANVAS_SIZE[1]}">',
                 f'<rect x="0" y="0" width="{CANVAS_SIZE[0]}" height="{CANVAS_SIZE[1]}" fill="#FFFFFF"/>',

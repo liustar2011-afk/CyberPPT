@@ -765,8 +765,9 @@ def validate_manifest_slide(
         ]
 
     if entry.get("delivery_mode") == FULL_IMAGE_PPT_MODE:
+        body_image_required = entry.get("body_image_required") is not False
         image_assets = entry.get("image_assets")
-        if not isinstance(image_assets, list) or not image_assets:
+        if body_image_required and (not isinstance(image_assets, list) or not image_assets):
             warnings.append(
                 issue(
                     "FULL_IMAGE_ASSET_MISSING",
@@ -774,7 +775,7 @@ def validate_manifest_slide(
                     slide=slide_number,
                 )
             )
-        else:
+        elif body_image_required:
             for asset in image_assets:
                 if not isinstance(asset, dict) or asset.get("role") != "approved_full_image" or not manifest_ref_exists(asset.get("path"), manifest_dir):
                     warnings.append(
@@ -784,7 +785,7 @@ def validate_manifest_slide(
                             slide=slide_number,
                         )
                     )
-        if metrics["pictures"] < 1:
+        if body_image_required and metrics["pictures"] < 1:
             warnings.append(
                 issue(
                     "FULL_IMAGE_BODY_IMAGE_MISSING",

@@ -7,7 +7,7 @@ import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
-from PIL import Image
+from PIL import Image, ImageDraw
 from pptx import Presentation
 from pptx.util import Inches
 
@@ -20,15 +20,16 @@ def _write_json(path: Path, payload: dict) -> Path:
     return path
 
 
-def _write_minimal_pptx(path: Path) -> Path:
+def _write_minimal_pptx(path: Path, *, slide_count: int = 1) -> Path:
     with zipfile.ZipFile(path, "w") as archive:
         archive.writestr("[Content_Types].xml", "<Types/>")
         archive.writestr(
             "ppt/presentation.xml",
             '<p:presentation xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:sldSz cx="12192000" cy="6858000"/></p:presentation>',
         )
-        archive.writestr("ppt/slides/slide1.xml", "<p:sld/>")
-        archive.writestr("ppt/notesSlides/notesSlide1.xml", "<p:notes/>")
+        for index in range(1, slide_count + 1):
+            archive.writestr(f"ppt/slides/slide{index}.xml", "<p:sld/>")
+            archive.writestr(f"ppt/notesSlides/notesSlide{index}.xml", "<p:notes/>")
     return path
 
 
@@ -44,6 +45,18 @@ def _write_full_image_pptx(path: Path, image_path: Path, *, notes: bool = True, 
     if notes:
         with zipfile.ZipFile(path, "a") as archive:
             archive.writestr("ppt/notesSlides/notesSlide1.xml", "<p:notes/>")
+    return path
+
+
+def _write_text_only_pptx(path: Path, *, text: str = "Native title") -> Path:
+    presentation = Presentation()
+    presentation.slide_width = Inches(13.333)
+    presentation.slide_height = Inches(7.5)
+    slide = presentation.slides.add_slide(presentation.slide_layouts[6])
+    slide.shapes.add_textbox(Inches(0.5), Inches(0.2), Inches(4.0), Inches(0.4)).text = text
+    presentation.save(path)
+    with zipfile.ZipFile(path, "a") as archive:
+        archive.writestr("ppt/notesSlides/notesSlide1.xml", "<p:notes/>")
     return path
 
 
@@ -72,6 +85,48 @@ class ProductionQaTests(unittest.TestCase):
         self.assertTrue(report["valid"])
         self.assertTrue(report["checks"]["pptx_readable"])
         self.assertTrue(report["checks"]["notes_complete"])
+
+    def test_validates_template_pages_without_approved_body_image(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            body_full = root / "page_001_full.png"
+            section_full = root / "page_002_full.png"
+            body_full.write_bytes(b"approved-body-image")
+            section_full.write_bytes(b"approved-section-image")
+            template_manifest = _write_json(
+                root / "template_image_manifest.json",
+                {
+                    "tasks": [
+                        {
+                            "page_number": 1,
+                            "render_mode": "content-image",
+                            "image_path": str(body_full),
+                            "notes_text": "approved notes",
+                        },
+                        {
+                            "page_number": 2,
+                            "page_role": "section",
+                            "render_mode": "brand-template",
+                            "notes_text": "",
+                        },
+                    ]
+                },
+            )
+            pptx = _write_minimal_pptx(root / "assembled.pptx", slide_count=2)
+
+            report = validate_assembly_bundle(
+                {
+                    "project": str(root),
+                    "exported_pptx": str(pptx),
+                    "template_image_manifest": str(template_manifest),
+                    "approved_images": {1: str(body_full), 2: str(section_full)},
+                },
+                [1, 2],
+            )
+
+        self.assertTrue(report["valid"])
+        self.assertTrue(report["checks"]["notes_complete"])
+        self.assertTrue(report["checks"]["approved_images_match"])
 
     def test_rejects_assembly_bundle_outside_project(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -133,6 +188,69 @@ class ProductionQaTests(unittest.TestCase):
         self.assertTrue(report["passed"])
         self.assertLessEqual(report["slides"][0]["mean_abs_diff"], 1.0)
 
+    def test_render_and_compare_uses_approved_image_content_region(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            approved = root / "full.png"
+            rendered = root / "rendered.jpg"
+            full = Image.new("RGB", (60, 40), "#12355b")
+            ImageDraw.Draw(full).rectangle((10, 12, 49, 31), fill="#f7f6f0")
+            full.save(approved)
+            Image.new("RGB", (40, 20), "#f7f6f0").save(rendered)
+            pptx = _write_minimal_pptx(root / "assembled.pptx")
+            manifest = _write_json(
+                root / "template_image_manifest.json",
+                {
+                    "canvas": {"width": 1280, "height": 720},
+                    "body_region": {"x": 0, "y": 0, "width": 1280, "height": 720},
+                    "approved_image_content_region": {"x": 10, "y": 12, "width": 40, "height": 20},
+                    "tasks": [{"page_number": 1, "image_path": str(approved), "notes_text": "notes"}],
+                },
+            )
+
+            with patch("cyberppt.commands.production_qa.render_to_png", return_value=[rendered]):
+                report = render_and_compare(pptx, manifest, {1: approved}, [1], root / "qa")
+
+        self.assertTrue(report["passed"])
+
+    def test_render_and_compare_skips_brand_template_pages(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            approved = root / "full.png"
+            rendered_content = root / "rendered-content.jpg"
+            rendered_template = root / "rendered-template.jpg"
+            Image.new("RGB", (40, 20), "#336699").save(approved)
+            Image.new("RGB", (40, 20), "#336699").save(rendered_content)
+            Image.new("RGB", (40, 20), "#ffffff").save(rendered_template)
+            pptx = _write_minimal_pptx(root / "assembled.pptx", slide_count=2)
+            manifest = _write_json(
+                root / "template_image_manifest.json",
+                {
+                    "canvas": {"width": 1280, "height": 720},
+                    "body_region": {"x": 0, "y": 0, "width": 1280, "height": 720},
+                    "tasks": [
+                        {
+                            "page_number": 1,
+                            "render_mode": "content-image",
+                            "image_path": str(approved),
+                            "notes_text": "notes",
+                        },
+                        {
+                            "page_number": 2,
+                            "render_mode": "brand-template",
+                            "template": "section",
+                            "notes_text": "",
+                        },
+                    ],
+                },
+            )
+
+            with patch("cyberppt.commands.production_qa.render_to_png", return_value=[rendered_content, rendered_template]):
+                report = render_and_compare(pptx, manifest, {1: approved, 2: approved}, [1, 2], root / "qa")
+
+        self.assertTrue(report["passed"])
+        self.assertEqual("brand-template", report["slides"][1]["skipped"])
+
     def test_render_and_compare_rejects_large_body_difference(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -191,6 +309,42 @@ class ProductionQaTests(unittest.TestCase):
             report = validate_pptx(pptx, manifest_path=manifest, strict=True)
 
         self.assertEqual([], report["errors"])
+
+    def test_strict_validator_allows_template_slide_without_body_image(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pptx = _write_text_only_pptx(root / "deck.pptx")
+            visual = _write_json(root / "production_visual_report.json", {"passed": True})
+            lock = _write_json(
+                root / "template_text_lock.json",
+                {"records": [{"page": 1, "title": "Native title", "approved": True}]},
+            )
+            manifest = _write_json(
+                root / "full_image_delivery_manifest.json",
+                {
+                    "schema": "cyberppt.full_image_delivery_manifest.v1",
+                    "delivery_mode": "full_image_ppt",
+                    "body_content_editable": False,
+                    "template_text_editable": True,
+                    "speaker_notes_required": True,
+                    "template_text_lock": {"path": str(lock), "sha256": _sha256_for_test(lock)},
+                    "production_visual_report": {"path": str(visual), "passed": True},
+                    "slides": [
+                        {
+                            "slide": 1,
+                            "delivery_mode": "full_image_ppt",
+                            "native_text_requirements": ["Native title"],
+                            "body_image_required": False,
+                            "image_assets": [],
+                        }
+                    ],
+                },
+            )
+
+            report = validate_pptx(pptx, manifest_path=manifest, strict=True)
+
+        self.assertNotIn("FULL_IMAGE_BODY_IMAGE_MISSING", {item["code"] for item in report["errors"]})
+        self.assertNotIn("FULL_IMAGE_ASSET_MISSING", {item["code"] for item in report["errors"]})
 
     def test_strict_validator_rejects_full_image_without_notes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

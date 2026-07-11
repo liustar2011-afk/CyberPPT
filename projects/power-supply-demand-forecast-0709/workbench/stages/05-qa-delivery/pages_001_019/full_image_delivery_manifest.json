@@ -1,0 +1,288 @@
+{
+  "schema": "cyberppt.full_image_delivery_manifest.v1",
+  "delivery_mode": "full_image_ppt",
+  "body_content_editable": false,
+  "template_text_editable": true,
+  "speaker_notes_required": true,
+  "project": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709",
+  "template_image_manifest": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/image_ppt/template_image_manifest.json",
+  "template_text_lock": {
+    "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/locks/template_text/pages_001_019_template_text_lock.json",
+    "sha256": "dcfd6bcb04dc5b0c5e2a1b50a4c284fea6f34ea4a206d8506c2d39d6d1ac05f8"
+  },
+  "production_visual_report": {
+    "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/05-qa-delivery/pages_001_019/production_visual_report.json",
+    "passed": true
+  },
+  "slides": [
+    {
+      "slide": 1,
+      "source_page": 1,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "关于开展电力供需形势预测工作的整体方案",
+        "中电联统计与数智部电力供需分析处",
+        "2026年7月"
+      ],
+      "body_image_required": false,
+      "image_assets": [],
+      "notes_present": true
+    },
+    {
+      "slide": 2,
+      "source_page": 2,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "目录"
+      ],
+      "body_image_required": false,
+      "image_assets": [],
+      "notes_present": true
+    },
+    {
+      "slide": 3,
+      "source_page": 3,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "第一章 建设背景与基础"
+      ],
+      "body_image_required": false,
+      "image_assets": [],
+      "notes_present": false
+    },
+    {
+      "slide": 4,
+      "source_page": 4,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "形势变化和工作要求"
+      ],
+      "body_image_required": true,
+      "image_assets": [
+        {
+          "role": "approved_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_004_形势变化和工作要求_full.png"
+        }
+      ],
+      "notes_present": true
+    },
+    {
+      "slide": 5,
+      "source_page": 5,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "工作基础和完善方向"
+      ],
+      "body_image_required": true,
+      "image_assets": [
+        {
+          "role": "approved_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_005_工作基础和完善方向_full.png"
+        }
+      ],
+      "notes_present": true
+    },
+    {
+      "slide": 6,
+      "source_page": 6,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "第二章 建设总体思路"
+      ],
+      "body_image_required": false,
+      "image_assets": [],
+      "notes_present": false
+    },
+    {
+      "slide": 7,
+      "source_page": 7,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "总体思路和目标定位"
+      ],
+      "body_image_required": true,
+      "image_assets": [
+        {
+          "role": "approved_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_007_总体思路和目标定位_full.png"
+        }
+      ],
+      "notes_present": true
+    },
+    {
+      "slide": 8,
+      "source_page": 8,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "建设原则和首期边界"
+      ],
+      "body_image_required": true,
+      "image_assets": [
+        {
+          "role": "approved_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_008_建设原则和首期边界_full.png"
+        }
+      ],
+      "notes_present": true
+    },
+    {
+      "slide": 9,
+      "source_page": 9,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "第三章 建设内容及实施方案"
+      ],
+      "body_image_required": false,
+      "image_assets": [],
+      "notes_present": false
+    },
+    {
+      "slide": 10,
+      "source_page": 10,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "业务体系和成果产品"
+      ],
+      "body_image_required": true,
+      "image_assets": [
+        {
+          "role": "approved_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_010_业务体系和成果产品_full.png"
+        }
+      ],
+      "notes_present": true
+    },
+    {
+      "slide": 11,
+      "source_page": 11,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "数据资源、治理与可信流通"
+      ],
+      "body_image_required": true,
+      "image_assets": [
+        {
+          "role": "approved_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_011_数据资源_治理与可信流通_full.png"
+        }
+      ],
+      "notes_present": true
+    },
+    {
+      "slide": 12,
+      "source_page": 12,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "模型体系、生产流程与智能辅助"
+      ],
+      "body_image_required": true,
+      "image_assets": [
+        {
+          "role": "approved_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_012_模型体系_生产流程与智能辅助_full.png"
+        }
+      ],
+      "notes_present": true
+    },
+    {
+      "slide": 13,
+      "source_page": 13,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "平台架构、功能模块与版本关系"
+      ],
+      "body_image_required": true,
+      "image_assets": [
+        {
+          "role": "approved_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_013_平台架构_功能模块与版本关系_full.png"
+        }
+      ],
+      "notes_present": true
+    },
+    {
+      "slide": 14,
+      "source_page": 14,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "场景体系、责任与验收闭环"
+      ],
+      "body_image_required": true,
+      "image_assets": [
+        {
+          "role": "approved_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_014_场景体系_责任与验收闭环_full.png"
+        }
+      ],
+      "notes_present": true
+    },
+    {
+      "slide": 15,
+      "source_page": 15,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "组织实施和阶段成果"
+      ],
+      "body_image_required": true,
+      "image_assets": [
+        {
+          "role": "approved_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_015_组织实施和阶段成果_full.png"
+        }
+      ],
+      "notes_present": true
+    },
+    {
+      "slide": 16,
+      "source_page": 16,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "资源保障和风险管控"
+      ],
+      "body_image_required": true,
+      "image_assets": [
+        {
+          "role": "approved_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_016_资源保障和风险管控_full.png"
+        }
+      ],
+      "notes_present": true
+    },
+    {
+      "slide": 17,
+      "source_page": 17,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "第四章 需请领导审定事项"
+      ],
+      "body_image_required": false,
+      "image_assets": [],
+      "notes_present": false
+    },
+    {
+      "slide": 18,
+      "source_page": 18,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [
+        "需请领导审定事项"
+      ],
+      "body_image_required": true,
+      "image_assets": [
+        {
+          "role": "approved_full_image",
+          "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_018_需请领导审定事项_full.png"
+        }
+      ],
+      "notes_present": true
+    },
+    {
+      "slide": 19,
+      "source_page": 19,
+      "delivery_mode": "full_image_ppt",
+      "native_text_requirements": [],
+      "body_image_required": false,
+      "image_assets": [],
+      "notes_present": true
+    }
+  ]
+}

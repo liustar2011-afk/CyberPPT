@@ -5,11 +5,8 @@
 
   <!-- 几何装饰 -->
   <g id="cover-decor">
-    <circle cx="80" cy="640" r="180" fill="none" stroke="#4AB3D6" stroke-width="1" stroke-opacity="0.12"/>
-    <circle cx="80" cy="640" r="120" fill="none" stroke="#4AB3D6" stroke-width="1" stroke-opacity="0.08"/>
-    <circle cx="1180" cy="120" r="4" fill="#8B0000" fill-opacity="0.25"/>
-    <circle cx="1210" cy="100" r="3" fill="#8B0000" fill-opacity="0.18"/>
-    <circle cx="1195" cy="145" r="2" fill="#8B0000" fill-opacity="0.12"/>
+    <circle cx="180" cy="640" r="180" fill="none" stroke="#4AB3D6" stroke-width="1" stroke-opacity="0.12"/>
+    <circle cx="120" cy="640" r="120" fill="none" stroke="#4AB3D6" stroke-width="1" stroke-opacity="0.08"/>
   </g>
 
   <!-- 上半浅色区域：标题 -->

@@ -364,11 +364,21 @@ def _run_speaker_notes_build(*, project: Path, pages_raw: str, output_dir: Path)
         return None
     notes_dir = output_dir / "speaker_notes"
     try:
-        manifest = build_speaker_notes_manifest(
-            business_script=business_script,
-            pages_raw=pages_raw,
-            output_dir=notes_dir,
-        )
+        llm_error = ""
+        try:
+            manifest = build_speaker_notes_manifest(
+                business_script=business_script,
+                pages_raw=pages_raw,
+                output_dir=notes_dir,
+                use_llm=True,
+            )
+        except Exception as exc:
+            llm_error = str(exc)
+            manifest = build_speaker_notes_manifest(
+                business_script=business_script,
+                pages_raw=pages_raw,
+                output_dir=notes_dir,
+            )
     except ValueError as exc:
         if "Pages not found" in str(exc):
             return None
@@ -379,6 +389,8 @@ def _run_speaker_notes_build(*, project: Path, pages_raw: str, output_dir: Path)
         "business_script": str(business_script),
         "speaker_notes_manifest": str(manifest_path),
         "llm_prompt": manifest.get("llm_prompt"),
+        "llm_output": manifest.get("llm_output"),
+        "llm_error": llm_error,
         "status": "ready_for_review",
     }
 

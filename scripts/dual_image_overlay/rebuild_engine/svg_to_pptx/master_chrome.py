@@ -243,6 +243,126 @@ def _picture_xml(shape_id: int, rel_id: str, geo: dict) -> str:
     )
 
 
+def _ellipse_xml(shape_id: int, name: str, geo: dict) -> str:
+    cx, cy, r = float(geo['cx']), float(geo['cy']), float(geo['r'])
+    x, y = _px_to_emu(cx - r), _px_to_emu(cy - r)
+    w = h = _px_to_emu(r * 2)
+    fill = str(geo.get('fill', 'none'))
+    stroke = str(geo.get('stroke', '#000000')).lstrip('#')
+    stroke_width = _px_to_emu(float(geo.get('stroke_width', 1)))
+    stroke_opacity = round(float(geo.get('stroke_opacity', 1)) * 100000)
+    fill_opacity = round(float(geo.get('fill_opacity', 1)) * 100000)
+    if fill.lower() == 'none':
+        fill_xml = '<a:noFill/>'
+    else:
+        fill_xml = (
+            f'<a:solidFill><a:srgbClr val="{fill.lstrip("#")}">'
+            f'<a:alpha val="{fill_opacity}"/></a:srgbClr></a:solidFill>'
+        )
+    if geo.get('stroke') and stroke_width > 0:
+        line_xml = (
+            f'<a:ln w="{stroke_width}"><a:solidFill><a:srgbClr val="{stroke}">'
+            f'<a:alpha val="{stroke_opacity}"/></a:srgbClr></a:solidFill></a:ln>'
+        )
+    else:
+        line_xml = '<a:ln><a:noFill/></a:ln>'
+    return (
+        f'<p:sp><p:nvSpPr><p:cNvPr id="{shape_id}" name="{escape(name)}"/>'
+        f'<p:cNvSpPr/><p:nvPr/></p:nvSpPr>'
+        f'<p:spPr><a:xfrm><a:off x="{x}" y="{y}"/><a:ext cx="{w}" cy="{h}"/></a:xfrm>'
+        f'<a:prstGeom prst="ellipse"><a:avLst/></a:prstGeom>{fill_xml}{line_xml}</p:spPr>'
+        f'<p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>'
+    )
+
+
+def _resolve_template_pages(project_path: Path, spec_lock_text: str, template_name: str) -> set[int]:
+    pages: set[int] = set()
+    m = re.search(r'^## page_layouts\n(.*?)(?=\n##|\Z)', spec_lock_text, re.S | re.M)
+    if not m:
+        return pages
+    for line in m.group(1).splitlines():
+        page_m = re.match(r'\s*-\s*P(\d+)\s*:\s*(\S+)', line.strip())
+        if page_m and page_m.group(2) == template_name:
+            pages.add(int(page_m.group(1)))
+    return pages
+
+
+def _project_image(project_path: Path, name: str) -> Path | None:
+    candidate = project_path / 'images' / name
+    return candidate if candidate.is_file() else None
+
+
+def read_cover_layout(project_path: Path) -> dict[str, Any] | None:
+    """Parse cover-template pages that should inherit the cover base from a layout."""
+    spec_lock = project_path / 'spec_lock.md'
+    if not spec_lock.exists():
+        return None
+    text = spec_lock.read_text(encoding='utf-8')
+    cover_pages = _resolve_template_pages(project_path, text, 'cover')
+    if not cover_pages:
+        return None
+    bg = _project_image(project_path, 'cover_bg.jpg')
+    if bg is None:
+        return None
+    return {
+        'pages': cover_pages,
+        'background': bg,
+        'decor': [
+            {'cx': 180, 'cy': 640, 'r': 180, 'fill': 'none', 'stroke': '#4AB3D6', 'stroke_opacity': 0.12},
+            {'cx': 120, 'cy': 640, 'r': 120, 'fill': 'none', 'stroke': '#4AB3D6', 'stroke_opacity': 0.08},
+        ],
+    }
+
+
+def inject_cover_layout(
+    extract_dir: Path,
+    layout_partname: str,
+    cover_layout: dict[str, Any],
+) -> str | None:
+    """Rewrite one blank layout so cover public elements come from the layout layer."""
+    layout_path = extract_dir / layout_partname.lstrip('/')
+    rels_path = layout_path.parent / '_rels' / f'{layout_path.name}.rels'
+    bg_src = cover_layout.get('background')
+    if not isinstance(bg_src, Path) or not bg_src.is_file():
+        return None
+
+    media_dir = extract_dir / 'ppt' / 'media'
+    media_dir.mkdir(parents=True, exist_ok=True)
+    dest_name = f'cover_layout_bg{bg_src.suffix}'
+    shutil.copyfile(bg_src, media_dir / dest_name)
+
+    shape_id = 199
+    shapes_xml = [
+        _picture_xml(shape_id, 'rIdCoverLayoutBg', {'x': 0, 'y': 0, 'w': 1280, 'h': 720})
+    ]
+    shape_id += 1
+    for idx, decor in enumerate(cover_layout.get('decor') or [], 1):
+        shapes_xml.append(_ellipse_xml(shape_id, f'CoverDecor{idx}', decor))
+        shape_id += 1
+    xml = layout_path.read_text(encoding='utf-8')
+    xml = xml.replace('</p:spTree>', ''.join(shapes_xml) + '</p:spTree>', 1)
+    layout_path.write_text(xml, encoding='utf-8')
+
+    if rels_path.exists():
+        rels_xml = rels_path.read_text(encoding='utf-8')
+    else:
+        rels_path.parent.mkdir(parents=True, exist_ok=True)
+        rels_xml = (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            '</Relationships>'
+        )
+    rels_xml = rels_xml.replace(
+        '</Relationships>',
+        f'<Relationship Id="rIdCoverLayoutBg" '
+        f'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" '
+        f'Target="../media/{dest_name}"/></Relationships>',
+        1,
+    )
+    rels_path.write_text(rels_xml, encoding='utf-8')
+    return bg_src.suffix.lstrip('.').lower()
+
+
 def inject_chrome_layout(
     extract_dir: Path,
     layout_partname: str,

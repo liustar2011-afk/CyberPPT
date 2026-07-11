@@ -17,22 +17,17 @@
       "height": 774
     },
     "generation_size": {
-      "width": 1680,
-      "height": 944
+      "width": 1672,
+      "height": 941
     },
-    "rule": "Generate full content-area images only; PPT title, subtitle and enterprise chrome are handled by template/export code. OCR, overlay, background derivation and template-rebuild are not part of Stage 02.",
-    "normalized_delivery_size": {
-      "width": 1680,
-      "height": 944
-    },
-    "normalization_rule": "Generated image is centered on 1680x944 ivory canvas without aspect-ratio distortion."
+    "rule": "Generate full content-area images only; PPT title, subtitle and enterprise chrome are handled by template/export code. OCR, overlay, background derivation and template-rebuild are not part of Stage 02."
   },
   "project_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709",
   "source_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/blueprint_input_cyberppt_deliverable_p1_p19.md",
   "original_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
   "style_lock": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/locks/visual_style_lock.json",
   "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019",
-  "created_at": "2026-07-10T07:59:43.054006+00:00",
+  "created_at": "2026-07-11T01:08:39.045820+00:00",
   "pairs": [
     {
       "page_number": 1,
@@ -49,24 +44,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_001_封面_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1672x941",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1677,
-            "height": 944
-          },
-          "offset": {
-            "x": 1,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:05.490376+00:00"
       }
     },
     {
@@ -84,24 +62,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_002_目录_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1672x941",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1677,
-            "height": 944
-          },
-          "offset": {
-            "x": 1,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:08.052853+00:00"
       }
     },
     {
@@ -119,24 +80,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_003_第一章_建设背景与基础_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1619x972",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1572,
-            "height": 944
-          },
-          "offset": {
-            "x": 54,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:09.277956+00:00"
       }
     },
     {
@@ -154,24 +98,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_004_形势变化和工作要求_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1536x1024",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1416,
-            "height": 944
-          },
-          "offset": {
-            "x": 132,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:10.325298+00:00"
       }
     },
     {
@@ -189,24 +116,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_005_工作基础和完善方向_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1536x1024",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1416,
-            "height": 944
-          },
-          "offset": {
-            "x": 132,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:11.373255+00:00"
       }
     },
     {
@@ -224,24 +134,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_006_第二章_建设总体思路_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1536x1024",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1416,
-            "height": 944
-          },
-          "offset": {
-            "x": 132,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:12.718610+00:00"
       }
     },
     {
@@ -259,24 +152,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_007_总体思路和目标定位_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1536x1024",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1416,
-            "height": 944
-          },
-          "offset": {
-            "x": 132,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:13.649486+00:00"
       }
     },
     {
@@ -294,24 +170,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_008_建设原则和首期边界_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1672x941",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1677,
-            "height": 944
-          },
-          "offset": {
-            "x": 1,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:15.035428+00:00"
       }
     },
     {
@@ -329,24 +188,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_009_第三章_建设内容及实施方案_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1536x1024",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1416,
-            "height": 944
-          },
-          "offset": {
-            "x": 132,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:17.061420+00:00"
       }
     },
     {
@@ -364,24 +206,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_010_业务体系和成果产品_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1536x1024",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1416,
-            "height": 944
-          },
-          "offset": {
-            "x": 132,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:19.553164+00:00"
       }
     },
     {
@@ -399,24 +224,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_011_数据资源_治理与可信流通_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1536x1024",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1416,
-            "height": 944
-          },
-          "offset": {
-            "x": 132,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:21.356817+00:00"
       }
     },
     {
@@ -434,24 +242,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_012_模型体系_生产流程与智能辅助_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1536x1024",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1416,
-            "height": 944
-          },
-          "offset": {
-            "x": 132,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:22.157918+00:00"
       }
     },
     {
@@ -469,24 +260,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_013_平台架构_功能模块与版本关系_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1536x1024",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1416,
-            "height": 944
-          },
-          "offset": {
-            "x": 132,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:23.908020+00:00"
       }
     },
     {
@@ -504,24 +278,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_014_场景体系_责任与验收闭环_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1536x1024",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1416,
-            "height": 944
-          },
-          "offset": {
-            "x": 132,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:26.392159+00:00"
       }
     },
     {
@@ -539,24 +296,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_015_组织实施和阶段成果_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1673x940",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "offset": {
-            "x": 0,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:27.510679+00:00"
       }
     },
     {
@@ -574,24 +314,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_016_资源保障和风险管控_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1536x1024",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1416,
-            "height": 944
-          },
-          "offset": {
-            "x": 132,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:28.651967+00:00"
       }
     },
     {
@@ -609,24 +332,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_017_第四章_需请领导审定事项_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1672x941",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1677,
-            "height": 944
-          },
-          "offset": {
-            "x": 1,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:29.716851+00:00"
       }
     },
     {
@@ -644,24 +350,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_018_需请领导审定事项_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1672x941",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1677,
-            "height": 944
-          },
-          "offset": {
-            "x": 1,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:30.760373+00:00"
       }
     },
     {
@@ -679,24 +368,7 @@
         "image_size": "2x-content-region",
         "canvas": "1672x941",
         "status": "Generated",
-        "last_error": "Missing expected CyberPPT image file: /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_019_封底_full.png",
-        "actual_size": "1680x944",
-        "normalized_from": "1536x1024",
-        "normalization": {
-          "method": "contain_center_on_ivory_canvas",
-          "target_size": {
-            "width": 1680,
-            "height": 944
-          },
-          "scaled_size": {
-            "width": 1416,
-            "height": 944
-          },
-          "offset": {
-            "x": 132,
-            "y": 0
-          }
-        }
+        "generated_at": "2026-07-10T08:52:31.737771+00:00"
       }
     }
   ]
