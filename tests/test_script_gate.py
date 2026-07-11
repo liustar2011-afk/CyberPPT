@@ -33,6 +33,7 @@ class ScriptGateTests(unittest.TestCase):
             self.assertIn("python3 -m cyberppt produce assemble", readme)
             self.assertIn("python3 -m cyberppt produce verify", readme)
             self.assertTrue((project / "workbench/stages/01-analysis").is_dir())
+            self.assertTrue((project / "workbench/stages/01-analysis/model-runs").is_dir())
             self.assertTrue((project / "workbench/stages/02-blueprint-dual-image").is_dir())
             self.assertTrue((project / "workbench/stages/03-overlay").is_dir())
             self.assertTrue((project / "workbench/stages/04-template-rebuild").is_dir())

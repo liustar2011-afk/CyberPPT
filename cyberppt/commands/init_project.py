@@ -14,6 +14,7 @@ PROJECT_DIRS = [
     "workbench/analysis_expression",
     "workbench/stages",
     "workbench/stages/01-analysis",
+    "workbench/stages/01-analysis/model-runs",
     "workbench/stages/02-blueprint-dual-image",
     "workbench/stages/03-overlay",
     "workbench/stages/04-template-rebuild",
@@ -51,6 +52,7 @@ directories:
   analysis_expression: workbench/analysis_expression
   stages: workbench/stages
   stage_analysis: workbench/stages/01-analysis
+  stage_analysis_model_runs: workbench/stages/01-analysis/model-runs
   stage_full_image_ppt: workbench/stages/02-blueprint-dual-image
   stage_02_path_note: historical path name; current production mode is full_image_ppt
   stage_overlay: workbench/stages/03-overlay
