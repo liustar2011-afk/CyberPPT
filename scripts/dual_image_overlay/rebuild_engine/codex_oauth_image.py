@@ -251,15 +251,14 @@ def _build_text_responses_body(
     prompt: str,
     image_paths: list[Path],
     model: str | None = None,
+    instructions: str | None = None,
 ) -> dict[str, Any]:
     """Build a Codex Responses request for text/JSON vision analysis."""
     return {
         "model": model or os.getenv("CODEX_RESPONSES_MODEL", DEFAULT_CODEX_RESPONSES_MODEL),
         "input": [{"role": "user", "content": _codex_content(prompt, image_paths)}],
-        "instructions": (
-            "You are a precise slide image analysis assistant. "
-            "Return only valid JSON when the user asks for JSON."
-        ),
+        "instructions": instructions
+        or "You are a precise slide image analysis assistant. Return only valid JSON when the user asks for JSON.",
         "stream": True,
         "store": False,
     }
@@ -630,15 +629,16 @@ def run_codex_multi_image_once(
     return output_paths
 
 
-def run_codex_vision_text(
+def _run_codex_text_response(
     *,
     prompt: str,
     image_paths: list[Path],
+    instructions: str,
     model: str | None = None,
     dry_run: bool = False,
     timeout: int = DEFAULT_TIMEOUT,
 ) -> str:
-    """Analyze images with Codex OAuth Responses and return text output."""
+    """Run one Codex Responses text request with caller-supplied instructions."""
     if dry_run:
         preview = {
             "backend": "codex-oauth-responses",
@@ -647,9 +647,15 @@ def run_codex_vision_text(
             "auth_file": str(_codex_auth_file()),
             "model": model or os.getenv("CODEX_RESPONSES_MODEL", DEFAULT_CODEX_RESPONSES_MODEL),
             "input_images": [str(path) for path in image_paths],
+            "instructions": instructions,
         }
         return json.dumps(preview, ensure_ascii=False, indent=2)
-    body = _build_text_responses_body(prompt=prompt, image_paths=image_paths, model=model)
+    body = _build_text_responses_body(
+        prompt=prompt,
+        image_paths=image_paths,
+        model=model,
+        instructions=instructions,
+    )
     print(
         f"Calling Codex OAuth Responses vision backend with {len(image_paths)} image(s).",
         file=sys.stderr,
@@ -660,6 +666,47 @@ def run_codex_vision_text(
     elapsed = time.time() - started
     print(f"Codex OAuth vision analysis completed in {elapsed:.1f}s.", file=sys.stderr)
     return output_text
+
+
+def run_codex_text(
+    *,
+    prompt: str,
+    instructions: str,
+    model: str | None = None,
+    dry_run: bool = False,
+    timeout: int = DEFAULT_TIMEOUT,
+) -> str:
+    """Run a text-only Codex Responses request with explicit instructions."""
+    return _run_codex_text_response(
+        prompt=prompt,
+        image_paths=[],
+        instructions=instructions,
+        model=model,
+        dry_run=dry_run,
+        timeout=timeout,
+    )
+
+
+def run_codex_vision_text(
+    *,
+    prompt: str,
+    image_paths: list[Path],
+    model: str | None = None,
+    dry_run: bool = False,
+    timeout: int = DEFAULT_TIMEOUT,
+) -> str:
+    """Analyze images with Codex OAuth Responses and return text output."""
+    return _run_codex_text_response(
+        prompt=prompt,
+        image_paths=image_paths,
+        instructions=(
+            "You are a precise slide image analysis assistant. "
+            "Return only valid JSON when the user asks for JSON."
+        ),
+        model=model,
+        dry_run=dry_run,
+        timeout=timeout,
+    )
 
 
 def _read_prompt(prompt: str | None, prompt_file: str | None) -> str:
