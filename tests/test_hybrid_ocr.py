@@ -14,7 +14,9 @@ def _line(text, bbox, score=0.99):
 
 
 def test_merge_uses_paddle_text_with_vision_geometry_one_to_one():
-    paddle = _payload(_line("亿千瓦时", [10, 10, 100, 30]))
+    paddle_line = _line("亿千瓦时", [10, 10, 100, 30])
+    paddle_line["polygon"] = [[10, 10], [110, 10], [110, 40], [10, 40]]
+    paddle = _payload(paddle_line)
     vision = _payload(_line("亿千面时", [12, 12, 94, 24], 0.3))
 
     result = merge_hybrid_ocr(paddle, vision, (200, 100))
@@ -22,6 +24,7 @@ def test_merge_uses_paddle_text_with_vision_geometry_one_to_one():
     merged = result["canonical"]["lines"]
     assert merged[0]["text"] == "亿千瓦时"
     assert merged[0]["bbox"] == [12, 12, 94, 24]
+    assert "polygon" not in merged[0]
     assert merged[0]["hybrid_evidence"]["match_type"] == "one_to_one"
     assert result["canonical"]["metadata"]["backend"] == "paddle-text+vision-geometry"
 

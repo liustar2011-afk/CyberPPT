@@ -148,6 +148,7 @@ def merge_hybrid_ocr(
         if len(candidates) == 1:
             line = dict(paddle_line)
             line["bbox"] = candidates[0]["bbox"]
+            line.pop("polygon", None)
             line["hybrid_evidence"] = _evidence(
                 paddle_line, candidates, "one_to_one", scores[0], False
             )
@@ -159,6 +160,7 @@ def merge_hybrid_ocr(
                 line = dict(paddle_line)
                 line["text"] = text
                 line["bbox"] = candidate["bbox"]
+                line.pop("polygon", None)
                 source_runs = paddle_line.get("runs")
                 if isinstance(source_runs, list) and source_runs:
                     split_run = dict(source_runs[0]) if isinstance(source_runs[0], dict) else {}
