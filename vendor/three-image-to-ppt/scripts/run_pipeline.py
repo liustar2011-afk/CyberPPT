@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
-from typing import Any
+from typing import Any, Mapping
 
 PROJECT_ROOT = Path(__file__).parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -20,7 +20,7 @@ from scripts.build_page_json import build_page_spec, write_page_spec
 from scripts.map_text_coordinates import AffineTransform, map_lines
 from scripts.normalize_ocr import normalize_ocr
 from scripts.qa_text_style import compare_page_text_styles
-from scripts.recover_text_styles import recover_page_styles
+from scripts.recover_text_styles import FONT_LIMITS_PT, classify_text_role, recover_page_styles
 from scripts.validate_inputs import validate_images
 
 DEFAULT_PRESENTATION_TOOLS = Path(
@@ -135,6 +135,40 @@ def _qa_for_lines(
     }
 
 
+def _qa_for_font_limits(lines: list[Any]) -> dict[str, Any]:
+    """Fail any native text run whose actual PPT size exceeds its semantic cap."""
+
+    failed_items: list[dict[str, Any]] = []
+    for line in lines:
+        for run_index, run in enumerate(line.runs):
+            style = run.style if isinstance(run.style, Mapping) else {}
+            raw_px = style.get("font_size_px")
+            raw_pt = style.get("fontSizePt")
+            if isinstance(raw_pt, (int, float)):
+                font_size_pt = float(raw_pt)
+            elif isinstance(raw_px, (int, float)):
+                font_size_pt = float(raw_px) * 72.0 / 96.0
+            else:
+                continue
+            text_role = classify_text_role(run.text, line.bbox)
+            maximum_pt = FONT_LIMITS_PT.get(text_role, (9.0, 18.0))[1]
+            if font_size_pt <= maximum_pt + 0.001:
+                continue
+            failed_items.append(
+                {
+                    "rule": "font_role_upper_limit",
+                    "line_id": line.line_id,
+                    "run_index": run_index,
+                    "text": run.text,
+                    "text_role": text_role,
+                    "font_size_pt": round(font_size_pt, 2),
+                    "maximum_pt": maximum_pt,
+                    "message": "editable text run exceeds its semantic font-size upper limit",
+                }
+            )
+    return {"status": "failed" if failed_items else "passed", "failed_items": failed_items}
+
+
 def run(args: argparse.Namespace) -> int:
     required = ("full", "background", "ocr", "registration", "output_dir")
     missing = [name for name in required if getattr(args, name, None) is None]
@@ -219,6 +253,14 @@ def run(args: argparse.Namespace) -> int:
             spec = replace(spec, schema_version="1.1")
         mapped = map_lines(lines, transform, [canvas_container], line_corrections)
         qa = _qa_for_lines(lines, mapped, validation.width_px, validation.height_px)
+        font_limit_qa = _qa_for_font_limits(lines)
+        qa["checks"]["font_role_limits"] = {
+            "passed": font_limit_qa["status"] == "passed",
+            "failure_count": len(font_limit_qa["failed_items"]),
+        }
+        if font_limit_qa["failed_items"]:
+            qa["failed_items"].extend(font_limit_qa["failed_items"])
+            qa["status"] = "failed"
         if recovery is not None and recovery.review_items:
             qa["review_items"].extend(dict(item) for item in recovery.review_items)
             if qa["status"] == "passed":

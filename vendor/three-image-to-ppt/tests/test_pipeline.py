@@ -39,6 +39,50 @@ def test_presentation_python_honors_environment_override(tmp_path, monkeypatch):
     assert pipeline._presentations_python() == str(interpreter)
 
 
+def test_font_role_limit_qa_fails_runs_above_semantic_cap():
+    import scripts.run_pipeline as pipeline
+    from scripts.models import BBox, TextLine, TextRun
+
+    line = TextLine(
+        line_id="L001",
+        group_id="G001",
+        line_index=1,
+        text="64.0%",
+        bbox=BBox(0, 0, 200, 80),
+        polygon=((0, 0), (200, 0), (200, 80), (0, 80)),
+        confidence=0.99,
+        runs=(TextRun(text="64.0%", style={"font_size_px": 48.0}),),
+    )
+
+    result = pipeline._qa_for_font_limits([line])
+
+    assert result["status"] == "failed"
+    assert result["failed_items"][0]["rule"] == "font_role_upper_limit"
+    assert result["failed_items"][0]["text_role"] == "percentage"
+    assert result["failed_items"][0]["font_size_pt"] == 36.0
+    assert result["failed_items"][0]["maximum_pt"] == 28.0
+
+
+def test_font_role_limit_qa_passes_runs_at_semantic_cap():
+    import scripts.run_pipeline as pipeline
+    from scripts.models import BBox, TextLine, TextRun
+
+    line = TextLine(
+        line_id="L001",
+        group_id="G001",
+        line_index=1,
+        text="103682",
+        bbox=BBox(0, 0, 240, 90),
+        polygon=((0, 0), (240, 0), (240, 90), (0, 90)),
+        confidence=0.99,
+        runs=(TextRun(text="103682", style={"font_size_px": 40 * 96 / 72}),),
+    )
+
+    result = pipeline._qa_for_font_limits([line])
+
+    assert result == {"status": "passed", "failed_items": []}
+
+
 def test_batch_page_command_isolates_each_page_process(tmp_path):
     import scripts.run_pipeline as pipeline
 
