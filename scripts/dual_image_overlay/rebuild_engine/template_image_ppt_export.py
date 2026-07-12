@@ -49,6 +49,7 @@ CANVAS_SIZE = (1280, 720)
 CONTENT_REGION_TOP_INSET = -18
 CONTENT_REGION_BOTTOM_INSET = -20
 CONTENT_REGION_SIDE_OUTSET = 38
+EDITABLE_BODY_MAX_REGION = {"x": 100, "y": 96, "width": 1080, "height": 608}
 IMAGE_GENERATION_SCALE = 2
 MAX_GENERATED_ASPECT_RATIO_DRIFT = 0.08
 MIN_GENERATED_CONTENT_WIDTH_RATIO = 0.90
@@ -958,14 +959,42 @@ def load_editable_body_pages(result_manifest: Path, pages: list[int]) -> dict[in
     return result_pages
 
 
-def _map_editable_bbox(bbox: dict[str, float], canvas: dict[str, int], body: dict[str, int]) -> dict[str, float]:
-    scale_x = body["width"] / canvas["width"]
-    scale_y = body["height"] / canvas["height"]
+def _editable_body_contain_placement(canvas: dict[str, int], body_region: dict[str, int]) -> dict[str, float]:
+    canvas_width = float(canvas.get("width", 0) or 0)
+    canvas_height = float(canvas.get("height", 0) or 0)
+    if canvas_width <= 0 or canvas_height <= 0:
+        raise ValueError("invalid editable canvas: width and height must be positive")
+    if float(body_region.get("width", 0) or 0) <= 0 or float(body_region.get("height", 0) or 0) <= 0:
+        raise ValueError("invalid editable body region: width and height must be positive")
+
+    max_region = {
+        "x": float(EDITABLE_BODY_MAX_REGION["x"]),
+        "y": float(EDITABLE_BODY_MAX_REGION["y"]),
+        "width": float(EDITABLE_BODY_MAX_REGION["width"]),
+        "height": float(EDITABLE_BODY_MAX_REGION["height"]),
+    }
+    if max_region["width"] <= 0 or max_region["height"] <= 0:
+        raise ValueError("invalid editable body region: width and height must be positive")
+
+    scale = min(max_region["width"] / canvas_width, max_region["height"] / canvas_height)
+    placed_width = canvas_width * scale
+    placed_height = canvas_height * scale
     return {
-        "x": body["x"] + bbox["x"] * scale_x,
-        "y": body["y"] + bbox["y"] * scale_y,
-        "width": bbox["width"] * scale_x,
-        "height": bbox["height"] * scale_y,
+        "x": max_region["x"] + (max_region["width"] - placed_width) / 2,
+        "y": max_region["y"] + (max_region["height"] - placed_height) / 2,
+        "width": placed_width,
+        "height": placed_height,
+        "scale": scale,
+    }
+
+
+def _map_editable_bbox(bbox: dict[str, float], placement: dict[str, float]) -> dict[str, float]:
+    scale = placement["scale"]
+    return {
+        "x": placement["x"] + bbox["x"] * scale,
+        "y": placement["y"] + bbox["y"] * scale,
+        "width": bbox["width"] * scale,
+        "height": bbox["height"] * scale,
     }
 
 
@@ -1029,19 +1058,22 @@ def render_editable_body_svg(page: dict, body_region: dict[str, int], canvas: di
     if not background.is_file():
         raise FileNotFoundError(f"editable background is missing: {background}")
     image_href = "../images/" + background.name
-    body = body_region
+    placement = _editable_body_contain_placement(canvas, body_region)
     parts = [
-        f'<image x="{body["x"]}" y="{body["y"]}" width="{body["width"]}" height="{body["height"]}" href={quoteattr(image_href)} xlink:href={quoteattr(image_href)} preserveAspectRatio="none"/>',
+        f'<image x="{fmt(placement["x"])}" y="{fmt(placement["y"])}" '
+        f'width="{fmt(placement["width"])}" height="{fmt(placement["height"])}" '
+        f'href={quoteattr(image_href)} xlink:href={quoteattr(image_href)} '
+        f'preserveAspectRatio="xMidYMid meet"/>',
     ]
-    scale_y = body["height"] / canvas["height"]
+    scale = placement["scale"]
     for line in page["text_lines"]:
-        mapped = _map_editable_bbox(line["bbox_px"], canvas, body)
+        mapped = _map_editable_bbox(line["bbox_px"], placement)
         runs = [run for run in line.get("runs", []) if isinstance(run, dict)]
         if not runs or "".join(str(run.get("text") or "") for run in runs) != str(line["text"]):
             runs = [{"text": str(line["text"]), "style": _editable_run_style(line)}]
         run_styles = [run.get("style") if isinstance(run.get("style"), dict) else {} for run in runs]
         run_font_sizes = [
-            max(6.5, _editable_style_font_size_px(style, mapped["height"] * 0.75) * scale_y)
+            max(6.5, _editable_style_font_size_px(style, mapped["height"] * 0.75) * scale)
             for style in run_styles
         ]
         font_size = max(run_font_sizes)

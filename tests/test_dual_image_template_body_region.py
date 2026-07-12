@@ -41,16 +41,55 @@ def load_template_image_ppt_export():
 
 
 class DualImageTemplateBodyRegionTest(unittest.TestCase):
-    def test_editable_bbox_maps_to_full_body_region_without_letterboxing(self) -> None:
+    def test_editable_body_contain_placement_uses_fixed_maximum_region(self) -> None:
         module = load_template_image_ppt_export()
 
-        mapped = module._map_editable_bbox(
-            {"x": 100, "y": 100, "width": 200, "height": 100},
-            {"width": 1000, "height": 500},
+        placement = module._editable_body_contain_placement(
+            {"width": 1680, "height": 944},
             {"x": 10, "y": 20, "width": 900, "height": 300},
         )
 
-        self.assertEqual(mapped, {"x": 100.0, "y": 80.0, "width": 180.0, "height": 60.0})
+        self.assertEqual(100.0, placement["x"])
+        self.assertAlmostEqual(96.5714285714, placement["y"], places=6)
+        self.assertEqual(1080.0, placement["width"])
+        self.assertAlmostEqual(606.8571428571, placement["height"], places=6)
+        self.assertAlmostEqual(1080 / 1680, placement["scale"], places=10)
+
+    def test_editable_bbox_maps_with_shared_uniform_contain_scale(self) -> None:
+        module = load_template_image_ppt_export()
+        placement = module._editable_body_contain_placement(
+            {"width": 1680, "height": 944},
+            {"x": 20, "y": 104, "width": 1240, "height": 592},
+        )
+
+        mapped = module._map_editable_bbox(
+            {"x": 100, "y": 120, "width": 300, "height": 80},
+            placement,
+        )
+
+        scale = 1080 / 1680
+        self.assertAlmostEqual(100.0 + 100 * scale, mapped["x"], places=6)
+        self.assertAlmostEqual(96.5714285714 + 120 * scale, mapped["y"], places=6)
+        self.assertAlmostEqual(300 * scale, mapped["width"], places=6)
+        self.assertAlmostEqual(80 * scale, mapped["height"], places=6)
+
+    def test_editable_body_contain_placement_rejects_invalid_full_canvas(self) -> None:
+        module = load_template_image_ppt_export()
+
+        with self.assertRaisesRegex(ValueError, "invalid editable canvas"):
+            module._editable_body_contain_placement(
+                {"width": 0, "height": 944},
+                {"x": 20, "y": 104, "width": 1240, "height": 592},
+            )
+
+    def test_editable_body_contain_placement_rejects_invalid_body_region(self) -> None:
+        module = load_template_image_ppt_export()
+
+        with self.assertRaisesRegex(ValueError, "invalid editable body region"):
+            module._editable_body_contain_placement(
+                {"width": 1680, "height": 944},
+                {"x": 20, "y": 104, "width": 0, "height": 592},
+            )
 
     def test_editable_body_svg_uses_json_run_style(self) -> None:
         module = load_template_image_ppt_export()
@@ -80,9 +119,46 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
                 {"width": 1000, "height": 500},
             )
 
-        self.assertIn('font-size="24"', svg)
+        self.assertIn('font-size="43.2"', svg)
         self.assertIn('font-weight="700"', svg)
         self.assertIn('fill="#FF0000"', svg)
+
+    def test_editable_body_svg_places_background_with_contain_not_stretch(self) -> None:
+        module = load_template_image_ppt_export()
+        with tempfile.TemporaryDirectory() as tmp:
+            background = Path(tmp) / "background.png"
+            Image.new("RGB", (1680, 944), "white").save(background)
+            svg = module.render_editable_body_svg(
+                {
+                    "page_number": 4,
+                    "background_path": background,
+                    "canvas": {"width": 1680, "height": 944},
+                    "text_lines": [
+                        {
+                            "line_id": "L1",
+                            "text": "对齐文字",
+                            "bbox_px": {"x": 100, "y": 120, "width": 300, "height": 80},
+                            "runs": [
+                                {
+                                    "text": "对齐文字",
+                                    "style": {"font_size_px": 40, "color": "#12355B"},
+                                }
+                            ],
+                        }
+                    ],
+                },
+                {"x": 20, "y": 104, "width": 1240, "height": 592},
+                {"width": 1680, "height": 944},
+            )
+
+        self.assertIn('x="100"', svg)
+        self.assertIn('y="96.57"', svg)
+        self.assertIn('width="1080"', svg)
+        self.assertIn('height="606.86"', svg)
+        self.assertNotIn('preserveAspectRatio="none"', svg)
+        self.assertIn('preserveAspectRatio="xMidYMid meet"', svg)
+        self.assertIn('data-pptx-width="192.86"', svg)
+        self.assertIn('font-size="25.71"', svg)
 
     def test_editable_body_svg_renders_mixed_runs_and_center_alignment(self) -> None:
         module = load_template_image_ppt_export()
@@ -367,6 +443,81 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
             svg_text = (output / "svg_output" / "page_004_测试页.svg").read_text(encoding="utf-8")
             self.assertIn("data-pptx-name=\"text-4-T01-L01\"", svg_text)
             self.assertIn("page_004_background.png", svg_text)
+
+    def test_write_project_editable_body_uses_fixed_contain_region(self) -> None:
+        module = load_template_image_ppt_export()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            full_path = root / "full.png"
+            background_path = root / "background.png"
+            Image.new("RGB", (1680, 944), "#ffffff").save(full_path)
+            Image.new("RGB", (1680, 944), "#12355b").save(background_path)
+            before_hash = full_path.read_bytes()
+            page_json = root / "page.json"
+            page_json.write_text(
+                json.dumps(
+                    {
+                        "page": {"page_id": "page-004", "width_px": 1680, "height_px": 944},
+                        "images": {"background": {"path": str(background_path), "width_px": 1680, "height_px": 944}},
+                        "text_lines": [
+                            {
+                                "line_id": "T01-L01",
+                                "text": "可编辑",
+                                "bbox": {"x": 100, "y": 120, "width": 300, "height": 80},
+                            }
+                        ],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            editable_manifest = root / "editable_text_result.json"
+            editable_manifest.write_text(
+                json.dumps(
+                    {
+                        "pages": {
+                            "4": {
+                                "page_number": 4,
+                                "status": "passed",
+                                "page_json": str(page_json),
+                                "background_path": str(background_path),
+                            }
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            output = module.write_project(
+                {
+                    "canvas": {"width": 1280, "height": 720},
+                    "body_region": {"x": 20, "y": 104, "width": 1240, "height": 592},
+                    "tasks": [
+                        {
+                            "page_number": 4,
+                            "page_role": "body",
+                            "title": "测试页",
+                            "slide_title": "测试页",
+                            "subtitle": "",
+                            "body_text": "",
+                            "render_mode": "content-image",
+                            "editable_body": True,
+                            "image_path": str(full_path),
+                            "prompt": "正文",
+                            "size": "1240x592",
+                            "notes_text": "备注",
+                        }
+                    ],
+                    "editable_body_manifest": str(editable_manifest),
+                },
+                root / "output",
+                "editable",
+            )
+            svg_text = (output / "svg_output" / "page_004_测试页.svg").read_text(encoding="utf-8")
+
+            self.assertEqual(before_hash, full_path.read_bytes())
+            self.assertIn('x="100"', svg_text)
+            self.assertIn('width="1080"', svg_text)
+            self.assertNotIn('preserveAspectRatio="none"', svg_text)
 
     def test_image_prompt_rejects_evidence_chain_text(self) -> None:
         module = load_template_image_ppt_export()
