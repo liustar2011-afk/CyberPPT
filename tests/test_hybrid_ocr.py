@@ -1,4 +1,8 @@
-from scripts.dual_image_overlay.rebuild_engine.hybrid_ocr import merge_hybrid_ocr
+import subprocess
+
+import pytest
+
+from scripts.dual_image_overlay.rebuild_engine.hybrid_ocr import merge_hybrid_ocr, run_vision_ocr
 
 
 def _payload(*lines):
@@ -62,3 +66,32 @@ def test_merge_preserves_unmatched_paddle_text_and_clips_bad_vision_box():
     assert [line["text"] for line in result["canonical"]["lines"]] == ["保留文字"]
     assert result["canonical"]["lines"][0]["bbox"] == [5, 5, 80, 20]
     assert result["canonical"]["lines"][0]["hybrid_evidence"]["requires_review"] is True
+
+
+def test_vision_adapter_parses_canonical_json(tmp_path, monkeypatch):
+    image = tmp_path / "text.png"
+    image.write_bytes(b"png")
+    script = tmp_path / "vision.swift"
+    script.write_text("// fixture", encoding="utf-8")
+
+    def fake_run(command, **kwargs):
+        assert command == ["swift", str(script), str(image.resolve())]
+        assert kwargs["timeout"] == 180
+        return subprocess.CompletedProcess(command, 0, '{"canonical":{"lines":[]}}', "")
+
+    monkeypatch.setattr("scripts.dual_image_overlay.rebuild_engine.hybrid_ocr.subprocess.run", fake_run)
+    assert run_vision_ocr(image, script_path=script) == {"canonical": {"lines": []}}
+
+
+def test_vision_adapter_rejects_invalid_output(tmp_path, monkeypatch):
+    image = tmp_path / "text.png"
+    image.write_bytes(b"png")
+    script = tmp_path / "vision.swift"
+    script.write_text("// fixture", encoding="utf-8")
+    monkeypatch.setattr(
+        "scripts.dual_image_overlay.rebuild_engine.hybrid_ocr.subprocess.run",
+        lambda *args, **kwargs: subprocess.CompletedProcess([], 1, "", "Vision failed"),
+    )
+
+    with pytest.raises(RuntimeError, match="Vision failed"):
+        run_vision_ocr(image, script_path=script)

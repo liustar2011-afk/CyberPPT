@@ -2,8 +2,45 @@
 
 from __future__ import annotations
 
+import json
 import re
+import subprocess
+from pathlib import Path
 from typing import Any
+
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_VISION_SCRIPT = REPO_ROOT / "vendor/three-image-to-ppt/scripts/vision_ocr.swift"
+
+
+def run_vision_ocr(
+    image_path: Path,
+    *,
+    script_path: Path | None = None,
+    timeout: int = 180,
+) -> dict[str, Any]:
+    """Run the repository macOS Vision script and validate canonical output."""
+
+    image = image_path.expanduser().resolve()
+    script = (script_path or DEFAULT_VISION_SCRIPT).expanduser().resolve()
+    completed = subprocess.run(
+        ["swift", str(script), str(image)],
+        text=True,
+        capture_output=True,
+        check=False,
+        timeout=timeout,
+    )
+    if completed.returncode != 0:
+        message = completed.stderr.strip() or completed.stdout.strip() or "macOS Vision OCR failed"
+        raise RuntimeError(message)
+    try:
+        payload = json.loads(completed.stdout)
+    except json.JSONDecodeError as error:
+        raise RuntimeError("macOS Vision OCR returned invalid JSON") from error
+    canonical = payload.get("canonical") if isinstance(payload, dict) else None
+    if not isinstance(canonical, dict) or not isinstance(canonical.get("lines"), list):
+        raise RuntimeError("macOS Vision OCR must return canonical.lines")
+    return payload
 
 
 def _normalized(text: object) -> str:
