@@ -13,6 +13,14 @@ Use inclusive boundaries as listed; when a value sits on a shared boundary, appl
 | Text-line completeness | ≥98% | 90%–<98% | <90% |
 | Non-text false recognition | ≤2% | >2%–5% | >5% |
 | Text-line coordinate error | ≤3 px | >3–8 px | >8 px |
+| Editable-text mask IoU | ≥0.55 | <0.55 | overflow |
+| Editable-text RGB distance | ≤24 | >24 | overflow |
+| Editable-text contrast ratio | ≥3.0 | <3.0 | overflow |
+
+Three-image mode writes `text_style_qa.json` after rendering. Each stable
+`line_id` records mask IoU against the FULL/BACKGROUND text delta, RGB color
+distance, contrast against BACKGROUND, and overflow state. Any non-overflow
+threshold miss is a review item; PowerPoint overflow remains a hard failure.
 
 All PowerPoint textboxes must remain in safe areas. `inside_safe_area: false`
 can never pass: use review for positive, on-slide geometry that is bounded and

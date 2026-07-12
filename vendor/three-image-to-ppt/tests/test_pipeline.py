@@ -108,7 +108,7 @@ def test_pipeline_removes_page_and_writes_standalone_qa_after_overflow(
         if calls == 1:
             (tmp_path / "page.pptx").write_bytes(b"pptx")
         elif calls == 2:
-            (tmp_path / "slide-1.png").write_bytes(b"png")
+            Image.open(FULL).save(tmp_path / "slide-1.png")
         return subprocess.CompletedProcess([], 1 if calls == 3 else 0, "overflow", "")
 
     monkeypatch.setattr(pipeline.subprocess, "run", fake_run)
@@ -443,7 +443,7 @@ def test_three_image_pipeline_enriches_page_json_with_style_and_layout(tmp_path,
         if calls == 1:
             (tmp_path / "page.pptx").write_bytes(b"pptx")
         elif calls == 2:
-            (tmp_path / "slide-1.png").write_bytes(b"png")
+            full.save(tmp_path / "slide-1.png")
         return subprocess.CompletedProcess([], 0, "ok", "")
 
     monkeypatch.setattr(pipeline.subprocess, "run", fake_run)
@@ -456,3 +456,6 @@ def test_three_image_pipeline_enriches_page_json_with_style_and_layout(tmp_path,
     assert line["runs"][0]["style"]["color"] == "#FFFFFF"
     assert line["runs"][0]["style"]["weight"] == "bold"
     assert line["style_evidence"]["runs"][0]["color"]["method"] == "full_background_delta"
+    style_qa = json.loads((tmp_path / "text_style_qa.json").read_text(encoding="utf-8"))
+    assert style_qa["checks"]["line_count"] == 1
+    assert style_qa["lines"][0]["line_id"] == line["line_id"]

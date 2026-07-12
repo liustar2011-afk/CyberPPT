@@ -19,6 +19,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from scripts.build_page_json import build_page_spec, write_page_spec
 from scripts.map_text_coordinates import AffineTransform, map_lines
 from scripts.normalize_ocr import normalize_ocr
+from scripts.qa_text_style import compare_page_text_styles
 from scripts.recover_text_styles import recover_page_styles
 from scripts.validate_inputs import validate_images
 
@@ -264,6 +265,39 @@ def run(args: argparse.Namespace) -> int:
             qa["failed_items"].append(
                 {"rule": "ppt_overflow", "message": "slides_test.py reported overflow"}
             )
+        if three_image_mode:
+            style_qa = compare_page_text_styles(
+                args.output_dir / "slide-1.png",
+                args.full,
+                args.background,
+                page_json,
+                args.output_dir / "text_style_qa.json",
+                overflow=overflow.returncode != 0,
+            )
+            qa["checks"]["text_style_qa"] = {
+                "status": style_qa["status"],
+                "report": "text_style_qa.json",
+                "line_count": style_qa["checks"]["line_count"],
+            }
+            for line in style_qa["lines"]:
+                if line["status"] == "passed":
+                    continue
+                finding = {
+                    "rule": "editable_text_visual_match",
+                    "line_id": line["line_id"],
+                    "value": {
+                        "mask_iou": line["mask_iou"],
+                        "color_distance_rgb": line["color_distance_rgb"],
+                        "contrast_ratio": line["contrast_ratio"],
+                    },
+                    "message": "editable text differs from FULL/BACKGROUND evidence",
+                }
+                target = qa["failed_items"] if line["status"] == "failed" else qa["review_items"]
+                target.append(finding)
+            if style_qa["status"] == "failed":
+                qa["status"] = "failed"
+            elif style_qa["status"] == "review" and qa["status"] == "passed":
+                qa["status"] = "review"
         if qa["status"] == "failed":
             _remove_stale_outputs(args.output_dir)
         else:
