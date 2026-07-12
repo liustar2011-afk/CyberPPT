@@ -1,0 +1,4284 @@
+{
+  "schema_version": "1.1",
+  "page": {
+    "page_id": "page-015",
+    "width_px": 1693,
+    "height_px": 929
+  },
+  "images": {
+    "full": {
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_015_实施节奏与阶段成果_full.png",
+      "width_px": 1693,
+      "height_px": 929
+    },
+    "background": {
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_015/page_015_background.png",
+      "width_px": 1693,
+      "height_px": 929
+    },
+    "text": {
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_015/page_015_text.png",
+      "width_px": 1693,
+      "height_px": 929
+    }
+  },
+  "regions": [],
+  "containers": [
+    {
+      "container_id": "canvas",
+      "safe_bbox": {
+        "x": 0,
+        "y": 0,
+        "width": 1693,
+        "height": 929
+      }
+    }
+  ],
+  "text_lines": [
+    {
+      "line_id": "L001",
+      "group_id": "G001",
+      "line_index": 0,
+      "text": "实施按四阶段推进。",
+      "bbox": {
+        "x": 628,
+        "y": 75,
+        "width": 436,
+        "height": 51
+      },
+      "polygon": [
+        [
+          628,
+          75
+        ],
+        [
+          1064,
+          75
+        ],
+        [
+          1064,
+          126
+        ],
+        [
+          628,
+          126
+        ]
+      ],
+      "confidence": 0.999974250793457,
+      "runs": [
+        {
+          "text": "实施按四阶段推进。",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 47,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 47,
+              "weight": "bold",
+              "confidence": 0.8255183726780927,
+              "mask_iou": 0.6987734737717414,
+              "width_similarity": 0.9814385150812065,
+              "height_similarity": 0.9791666666666666
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.38433937924215705,
+              "method": "full_background_delta",
+              "sample_count": 4928
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 628,
+          "y": 75,
+          "width": 436,
+          "height": 51
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 628,
+          "y": 75,
+          "width": 436,
+          "height": 51
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 628,
+          "y": 75,
+          "width": 436,
+          "height": 51
+        },
+        "bbox_in": {
+          "x": 4.94585535971648,
+          "y": 0.6054897739504844,
+          "width": 3.4337467147076195,
+          "height": 0.4117330462863294
+        },
+        "bbox_pt": {
+          "x": 356.10158589958655,
+          "y": 43.59526372443488,
+          "width": 247.2297634589486,
+          "height": 29.644779332615716
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L002",
+      "group_id": "G002",
+      "line_index": 1,
+      "text": "01",
+      "bbox": {
+        "x": 185,
+        "y": 208,
+        "width": 68,
+        "height": 57
+      },
+      "polygon": [
+        [
+          185,
+          208
+        ],
+        [
+          253,
+          208
+        ],
+        [
+          253,
+          265
+        ],
+        [
+          185,
+          265
+        ]
+      ],
+      "confidence": 0.9999976754188538,
+      "runs": [
+        {
+          "text": "01",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 42,
+            "weight": "bold",
+            "bold": true,
+            "color": "#FFFFFF"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 42,
+              "weight": "bold",
+              "confidence": 0.8566720584711239,
+              "mask_iou": 0.8208722741433022,
+              "width_similarity": 0.9807692307692307,
+              "height_similarity": 0.8
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.2548705839496777,
+              "method": "full_background_delta",
+              "sample_count": 279
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 185,
+          "y": 208,
+          "width": 68,
+          "height": 57
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 185,
+          "y": 208,
+          "width": 68,
+          "height": 57
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 185,
+          "y": 208,
+          "width": 68,
+          "height": 57
+        },
+        "bbox_in": {
+          "x": 1.4569796839929121,
+          "y": 1.6792249730893434,
+          "width": 0.535538478440638,
+          "height": 0.46017222820236814
+        },
+        "bbox_pt": {
+          "x": 104.90253724748968,
+          "y": 120.90419806243273,
+          "width": 38.558770447725934,
+          "height": 33.132400430570506
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L003",
+      "group_id": "G003",
+      "line_index": 2,
+      "text": "02",
+      "bbox": {
+        "x": 588,
+        "y": 207,
+        "width": 73,
+        "height": 59
+      },
+      "polygon": [
+        [
+          588,
+          207
+        ],
+        [
+          661,
+          207
+        ],
+        [
+          661,
+          266
+        ],
+        [
+          588,
+          266
+        ]
+      ],
+      "confidence": 0.9999984502792358,
+      "runs": [
+        {
+          "text": "02",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 48,
+            "weight": "bold",
+            "bold": true,
+            "color": "#F7F8F9"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 48,
+              "weight": "bold",
+              "confidence": 0.879616902716508,
+              "mask_iou": 0.8315068493150685,
+              "width_similarity": 0.9491525423728814,
+              "height_similarity": 0.925
+            },
+            "color": {
+              "hex_color": "#F7F8F9",
+              "confidence": 0.34526985331125587,
+              "method": "full_background_delta",
+              "sample_count": 515
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 588,
+          "y": 207,
+          "width": 73,
+          "height": 59
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 588,
+          "y": 207,
+          "width": 73,
+          "height": 59
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 588,
+          "y": 207,
+          "width": 73,
+          "height": 59
+        },
+        "bbox_in": {
+          "x": 4.6308327253396335,
+          "y": 1.6711517761033368,
+          "width": 0.5749163077377436,
+          "height": 0.4763186221743811
+        },
+        "bbox_pt": {
+          "x": 333.4199562244536,
+          "y": 120.32292787944024,
+          "width": 41.39397415711754,
+          "height": 34.29494079655544
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L004",
+      "group_id": "G004",
+      "line_index": 3,
+      "text": "03",
+      "bbox": {
+        "x": 1014,
+        "y": 207,
+        "width": 73,
+        "height": 59
+      },
+      "polygon": [
+        [
+          1014,
+          207
+        ],
+        [
+          1087,
+          207
+        ],
+        [
+          1087,
+          266
+        ],
+        [
+          1014,
+          266
+        ]
+      ],
+      "confidence": 0.999997615814209,
+      "runs": [
+        {
+          "text": "03",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 47,
+            "weight": "bold",
+            "bold": true,
+            "color": "#F8F8FA"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 47,
+              "weight": "bold",
+              "confidence": 0.8703969255209795,
+              "mask_iou": 0.8163956639566395,
+              "width_similarity": 0.9655172413793104,
+              "height_similarity": 0.9
+            },
+            "color": {
+              "hex_color": "#F8F8FA",
+              "confidence": 0.28777395295467584,
+              "method": "full_background_delta",
+              "sample_count": 420
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 1014,
+          "y": 207,
+          "width": 73,
+          "height": 59
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 1014,
+          "y": 207,
+          "width": 73,
+          "height": 59
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 1014,
+          "y": 207,
+          "width": 73,
+          "height": 59
+        },
+        "bbox_in": {
+          "x": 7.985823781453042,
+          "y": 1.6711517761033368,
+          "width": 0.5749163077377436,
+          "height": 0.4763186221743811
+        },
+        "bbox_pt": {
+          "x": 574.979312264619,
+          "y": 120.32292787944024,
+          "width": 41.39397415711754,
+          "height": 34.29494079655544
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L005",
+      "group_id": "G005",
+      "line_index": 4,
+      "text": "04",
+      "bbox": {
+        "x": 1446,
+        "y": 208,
+        "width": 76,
+        "height": 58
+      },
+      "polygon": [
+        [
+          1446,
+          208
+        ],
+        [
+          1522,
+          208
+        ],
+        [
+          1522,
+          266
+        ],
+        [
+          1446,
+          266
+        ]
+      ],
+      "confidence": 0.9999983906745911,
+      "runs": [
+        {
+          "text": "04",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 51,
+            "weight": "bold",
+            "bold": true,
+            "color": "#FFFFFF"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 51,
+              "weight": "bold",
+              "confidence": 0.9045124274099885,
+              "mask_iou": 0.8785454545454545,
+              "width_similarity": 0.9047619047619048,
+              "height_similarity": 0.975609756097561
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.286064156403289,
+              "method": "full_background_delta",
+              "sample_count": 387
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 1446,
+          "y": 208,
+          "width": 76,
+          "height": 58
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 1446,
+          "y": 208,
+          "width": 76,
+          "height": 58
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 1446,
+          "y": 208,
+          "width": 76,
+          "height": 58
+        },
+        "bbox_in": {
+          "x": 11.388068232722977,
+          "y": 1.6792249730893434,
+          "width": 0.5985430053160071,
+          "height": 0.4682454251883746
+        },
+        "bbox_pt": {
+          "x": 819.9409127560543,
+          "y": 120.90419806243273,
+          "width": 43.095096382752516,
+          "height": 33.71367061356297
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L006",
+      "group_id": "G006",
+      "line_index": 5,
+      "text": "0-3个月",
+      "bbox": {
+        "x": 125,
+        "y": 439,
+        "width": 177,
+        "height": 50
+      },
+      "polygon": [
+        [
+          125,
+          439
+        ],
+        [
+          302,
+          439
+        ],
+        [
+          302,
+          489
+        ],
+        [
+          125,
+          489
+        ]
+      ],
+      "confidence": 0.9996525049209595,
+      "runs": [
+        {
+          "text": "0",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 46,
+            "weight": "bold",
+            "bold": true,
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "text": "-",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 55,
+            "weight": "light",
+            "bold": false,
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "text": "3",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 53,
+            "weight": "bold",
+            "bold": true,
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "text": "个月",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 38,
+            "weight": "bold",
+            "bold": true,
+            "color": "#FFFFFF"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 46,
+              "weight": "bold",
+              "confidence": 0.5719578889800383,
+              "mask_iou": 0.37325676784249384,
+              "width_similarity": 0.6666666666666666,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.2457283297802024,
+              "method": "full_background_delta",
+              "sample_count": 163
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 55,
+              "weight": "light",
+              "confidence": 0.5285328185328185,
+              "mask_iou": 0.46872586872586874,
+              "width_similarity": 0.6486486486486487,
+              "height_similarity": 0.5428571428571428
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.24368027026463412,
+              "method": "full_background_delta",
+              "sample_count": 158
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 53,
+              "weight": "bold",
+              "confidence": 0.6356791338582677,
+              "mask_iou": 0.3375984251968504,
+              "width_similarity": 1.0,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.20639809545065657,
+              "method": "full_background_delta",
+              "sample_count": 103
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 38,
+              "weight": "bold",
+              "confidence": 0.5617219848553553,
+              "mask_iou": 0.4419568822553897,
+              "width_similarity": 0.5526315789473685,
+              "height_similarity": 0.9024390243902439
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.36423351832389944,
+              "method": "full_background_delta",
+              "sample_count": 358
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 125,
+          "y": 439,
+          "width": 177,
+          "height": 50
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 125,
+          "y": 439,
+          "width": 177,
+          "height": 50
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 125,
+          "y": 439,
+          "width": 177,
+          "height": 50
+        },
+        "bbox_in": {
+          "x": 0.9844457324276432,
+          "y": 3.5441334768568353,
+          "width": 1.3939751571175427,
+          "height": 0.40365984930032295
+        },
+        "bbox_pt": {
+          "x": 70.88009273479031,
+          "y": 255.17761033369214,
+          "width": 100.36621131246308,
+          "height": 29.06350914962325
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L007",
+      "group_id": "G007",
+      "line_index": 6,
+      "text": "18-36 个月",
+      "bbox": {
+        "x": 1363,
+        "y": 441,
+        "width": 221,
+        "height": 46
+      },
+      "polygon": [
+        [
+          1363,
+          441
+        ],
+        [
+          1584,
+          441
+        ],
+        [
+          1584,
+          487
+        ],
+        [
+          1363,
+          487
+        ]
+      ],
+      "confidence": 0.968775749206543,
+      "runs": [
+        {
+          "text": "18",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 43,
+            "weight": "bold",
+            "bold": true,
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "text": "-",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 55,
+            "weight": "light",
+            "bold": false,
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "text": "36",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 44,
+            "weight": "bold",
+            "bold": true,
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "text": " 个月",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 31,
+            "weight": "bold",
+            "bold": true,
+            "color": "#FFFFFF"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 43,
+              "weight": "bold",
+              "confidence": 0.7469106736425173,
+              "mask_iou": 0.5690343176376695,
+              "width_similarity": 0.9814814814814815,
+              "height_similarity": 0.9428571428571428
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.2775520729721565,
+              "method": "full_background_delta",
+              "sample_count": 281
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 55,
+              "weight": "light",
+              "confidence": 0.42775132275132277,
+              "mask_iou": 0.3783068783068783,
+              "width_similarity": 0.4444444444444444,
+              "height_similarity": 0.5428571428571428
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.40723922783803024,
+              "method": "full_background_delta",
+              "sample_count": 334
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 44,
+              "weight": "bold",
+              "confidence": 0.5946781278180179,
+              "mask_iou": 0.3323152107513745,
+              "width_similarity": 1.0,
+              "height_similarity": 0.8095238095238095
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.18044605018445684,
+              "method": "full_background_delta",
+              "sample_count": 156
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 31,
+              "weight": "bold",
+              "confidence": 0.6015431470253982,
+              "mask_iou": 0.42287581699346405,
+              "width_similarity": 0.8709677419354839,
+              "height_similarity": 0.7560975609756098
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.20352997889466373,
+              "method": "full_background_delta",
+              "sample_count": 221
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 1363,
+          "y": 441,
+          "width": 221,
+          "height": 46
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 1363,
+          "y": 441,
+          "width": 221,
+          "height": 46
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 1363,
+          "y": 441,
+          "width": 221,
+          "height": 46
+        },
+        "bbox_in": {
+          "x": 10.734396266391022,
+          "y": 3.5602798708288486,
+          "width": 1.7405000549320733,
+          "height": 0.37136706135629705
+        },
+        "bbox_pt": {
+          "x": 772.8765311801535,
+          "y": 256.3401506996771,
+          "width": 125.31600395510928,
+          "height": 26.738428417653388
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L008",
+      "group_id": "G008",
+      "line_index": 7,
+      "text": "3-9个月",
+      "bbox": {
+        "x": 535,
+        "y": 441,
+        "width": 176,
+        "height": 47
+      },
+      "polygon": [
+        [
+          535,
+          441
+        ],
+        [
+          711,
+          441
+        ],
+        [
+          711,
+          488
+        ],
+        [
+          535,
+          488
+        ]
+      ],
+      "confidence": 0.9997764825820923,
+      "runs": [
+        {
+          "text": "3",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 48,
+            "weight": "bold",
+            "bold": true,
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "text": "-",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 55,
+            "weight": "light",
+            "bold": false,
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "text": "9",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 53,
+            "weight": "bold",
+            "bold": true,
+            "color": "#F6F7F9"
+          }
+        },
+        {
+          "text": "个月",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 33,
+            "weight": "bold",
+            "bold": true,
+            "color": "#FFFFFF"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 48,
+              "weight": "bold",
+              "confidence": 0.5824557951946487,
+              "mask_iou": 0.3903548680618744,
+              "width_similarity": 0.7142857142857143,
+              "height_similarity": 0.9459459459459459
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.15074504442925496,
+              "method": "full_background_delta",
+              "sample_count": 95
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 55,
+              "weight": "light",
+              "confidence": 0.5576587301587301,
+              "mask_iou": 0.5134920634920634,
+              "width_similarity": 0.6666666666666666,
+              "height_similarity": 0.5428571428571428
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.29729291321713314,
+              "method": "full_background_delta",
+              "sample_count": 202
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 53,
+              "weight": "bold",
+              "confidence": 0.646952380952381,
+              "mask_iou": 0.3580952380952381,
+              "width_similarity": 1.0,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#F6F7F9",
+              "confidence": 0.2071944011313776,
+              "method": "full_background_delta",
+              "sample_count": 109
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 33,
+              "weight": "bold",
+              "confidence": 0.567758685943532,
+              "mask_iou": 0.4521232306411324,
+              "width_similarity": 0.6363636363636364,
+              "height_similarity": 0.8
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.34352498061371445,
+              "method": "full_background_delta",
+              "sample_count": 354
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 535,
+          "y": 441,
+          "width": 176,
+          "height": 47
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 535,
+          "y": 441,
+          "width": 176,
+          "height": 47
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 535,
+          "y": 441,
+          "width": 176,
+          "height": 47
+        },
+        "bbox_in": {
+          "x": 4.213427734790312,
+          "y": 3.5602798708288486,
+          "width": 1.3860995912581215,
+          "height": 0.37944025834230355
+        },
+        "bbox_pt": {
+          "x": 303.3667969049025,
+          "y": 256.3401506996771,
+          "width": 99.79917057058475,
+          "height": 27.319698600645857
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L009",
+      "group_id": "G009",
+      "line_index": 8,
+      "text": "9-18个月",
+      "bbox": {
+        "x": 949,
+        "y": 441,
+        "width": 200,
+        "height": 47
+      },
+      "polygon": [
+        [
+          949,
+          441
+        ],
+        [
+          1149,
+          441
+        ],
+        [
+          1149,
+          488
+        ],
+        [
+          949,
+          488
+        ]
+      ],
+      "confidence": 0.9995670318603516,
+      "runs": [
+        {
+          "text": "9",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 46,
+            "weight": "bold",
+            "bold": true,
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "text": "-",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 37,
+            "weight": "light",
+            "bold": false,
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "text": "18",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 26,
+            "weight": "light",
+            "bold": false,
+            "color": "#FFFFFF"
+          }
+        },
+        {
+          "text": "个月",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 39,
+            "weight": "bold",
+            "bold": true,
+            "color": "#FFFFFF"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 46,
+              "weight": "bold",
+              "confidence": 0.555859553123575,
+              "mask_iou": 0.3974630021141649,
+              "width_similarity": 0.5490196078431373,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.39209500986289764,
+              "method": "full_background_delta",
+              "sample_count": 322
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 37,
+              "weight": "light",
+              "confidence": 0.6621323529411764,
+              "mask_iou": 0.6102941176470589,
+              "width_similarity": 1.0,
+              "height_similarity": 0.38235294117647056
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.2671071382303407,
+              "method": "full_background_delta",
+              "sample_count": 93
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 26,
+              "weight": "light",
+              "confidence": 0.5883003128258604,
+              "mask_iou": 0.4072992700729927,
+              "width_similarity": 1.0,
+              "height_similarity": 0.5714285714285714
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.3711003367003367,
+              "method": "full_background_delta",
+              "sample_count": 250
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 39,
+              "weight": "bold",
+              "confidence": 0.8448930216223907,
+              "mask_iou": 0.7845873786407767,
+              "width_similarity": 0.9487179487179487,
+              "height_similarity": 0.8809523809523809
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.3873851460361613,
+              "method": "full_background_delta",
+              "sample_count": 625
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 949,
+          "y": 441,
+          "width": 200,
+          "height": 47
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 949,
+          "y": 441,
+          "width": 200,
+          "height": 47
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 949,
+          "y": 441,
+          "width": 200,
+          "height": 47
+        },
+        "bbox_in": {
+          "x": 7.473912000590667,
+          "y": 3.5602798708288486,
+          "width": 1.5751131718842293,
+          "height": 0.37944025834230355
+        },
+        "bbox_pt": {
+          "x": 538.1216640425281,
+          "y": 256.3401506996771,
+          "width": 113.40814837566451,
+          "height": 27.319698600645857
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L010",
+      "group_id": "G010",
+      "line_index": 9,
+      "text": "根据数据、模型和",
+      "bbox": {
+        "x": 1306,
+        "y": 533,
+        "width": 306,
+        "height": 37
+      },
+      "polygon": [
+        [
+          1306,
+          533
+        ],
+        [
+          1612,
+          533
+        ],
+        [
+          1612,
+          570
+        ],
+        [
+          1306,
+          570
+        ]
+      ],
+      "confidence": 0.9999448657035828,
+      "runs": [
+        {
+          "text": "根据数据、模型和",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 37,
+            "weight": "bold",
+            "bold": true,
+            "color": "#00184F"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 37,
+              "weight": "bold",
+              "confidence": 0.7022034549040354,
+              "mask_iou": 0.48983200707338637,
+              "width_similarity": 0.976897689768977,
+              "height_similarity": 0.9428571428571428
+            },
+            "color": {
+              "hex_color": "#00184F",
+              "confidence": 0.2379808459321237,
+              "method": "full_background_delta",
+              "sample_count": 1643
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 1306,
+          "y": 533,
+          "width": 306,
+          "height": 37
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 1306,
+          "y": 533,
+          "width": 306,
+          "height": 37
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 1306,
+          "y": 533,
+          "width": 306,
+          "height": 37
+        },
+        "bbox_in": {
+          "x": 10.285489012404016,
+          "y": 4.303013993541442,
+          "width": 2.409923152982871,
+          "height": 0.29870828848223896
+        },
+        "bbox_pt": {
+          "x": 740.5552088930891,
+          "y": 309.8170075349838,
+          "width": 173.5144670147667,
+          "height": 21.506996770721205
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L011",
+      "group_id": "G011",
+      "line_index": 10,
+      "text": "扩展重点时段和",
+      "bbox": {
+        "x": 911,
+        "y": 534,
+        "width": 249,
+        "height": 37
+      },
+      "polygon": [
+        [
+          911,
+          534
+        ],
+        [
+          1160,
+          534
+        ],
+        [
+          1160,
+          571
+        ],
+        [
+          911,
+          571
+        ]
+      ],
+      "confidence": 0.9997376203536987,
+      "runs": [
+        {
+          "text": "扩展重点时段和",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 33,
+            "weight": "bold",
+            "bold": true,
+            "color": "#001850"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 33,
+              "weight": "bold",
+              "confidence": 0.8320892956330839,
+              "mask_iou": 0.7006109979633401,
+              "width_similarity": 0.987012987012987,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#001850",
+              "confidence": 0.3360172443625784,
+              "method": "full_background_delta",
+              "sample_count": 1898
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 911,
+          "y": 534,
+          "width": 249,
+          "height": 37
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 911,
+          "y": 534,
+          "width": 249,
+          "height": 37
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 911,
+          "y": 534,
+          "width": 249,
+          "height": 37
+        },
+        "bbox_in": {
+          "x": 7.174640497932663,
+          "y": 4.311087190527449,
+          "width": 1.9610158989958653,
+          "height": 0.29870828848223896
+        },
+        "bbox_pt": {
+          "x": 516.5741158511518,
+          "y": 310.39827771797627,
+          "width": 141.1931447277023,
+          "height": 21.506996770721205
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L012",
+      "group_id": "G012",
+      "line_index": 11,
+      "text": "形成首期原型和",
+      "bbox": {
+        "x": 460,
+        "y": 536,
+        "width": 272,
+        "height": 34
+      },
+      "polygon": [
+        [
+          460,
+          536
+        ],
+        [
+          732,
+          536
+        ],
+        [
+          732,
+          570
+        ],
+        [
+          460,
+          570
+        ]
+      ],
+      "confidence": 0.9999504685401917,
+      "runs": [
+        {
+          "text": "形成首期原型和",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 37,
+            "weight": "bold",
+            "bold": true,
+            "color": "#001850"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 37,
+              "weight": "bold",
+              "confidence": 0.7042406312541901,
+              "mask_iou": 0.4999325145093805,
+              "width_similarity": 0.9628252788104089,
+              "height_similarity": 0.9428571428571428
+            },
+            "color": {
+              "hex_color": "#001850",
+              "confidence": 0.2593886220708884,
+              "method": "full_background_delta",
+              "sample_count": 1672
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 0.8249655443985038
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 460,
+          "y": 536,
+          "width": 272,
+          "height": 34
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 460,
+          "y": 536,
+          "width": 272,
+          "height": 34
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 460,
+          "y": 536,
+          "width": 272,
+          "height": 34
+        },
+        "bbox_in": {
+          "x": 3.6227602953337272,
+          "y": 4.327233584499462,
+          "width": 2.142153913762552,
+          "height": 0.2744886975242196
+        },
+        "bbox_pt": {
+          "x": 260.8387412640284,
+          "y": 311.56081808396124,
+          "width": 154.23508179090373,
+          "height": 19.763186221743812
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L013",
+      "group_id": "G013",
+      "line_index": 12,
+      "text": "完成摸底、口径和",
+      "bbox": {
+        "x": 44,
+        "y": 535,
+        "width": 310,
+        "height": 37
+      },
+      "polygon": [
+        [
+          44,
+          535
+        ],
+        [
+          354,
+          535
+        ],
+        [
+          354,
+          572
+        ],
+        [
+          44,
+          572
+        ]
+      ],
+      "confidence": 0.9997372627258301,
+      "runs": [
+        {
+          "text": "完成摸底、口径和",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 38,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000F40"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 38,
+              "weight": "bold",
+              "confidence": 0.6605671669374896,
+              "mask_iou": 0.43366716970777885,
+              "width_similarity": 0.9934640522875817,
+              "height_similarity": 0.868421052631579
+            },
+            "color": {
+              "hex_color": "#000F40",
+              "confidence": 0.23768422783779486,
+              "method": "full_background_delta",
+              "sample_count": 1460
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 44,
+          "y": 535,
+          "width": 310,
+          "height": 37
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 44,
+          "y": 535,
+          "width": 310,
+          "height": 37
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 44,
+          "y": 535,
+          "width": 310,
+          "height": 37
+        },
+        "bbox_in": {
+          "x": 0.3465248978145304,
+          "y": 4.319160387513455,
+          "width": 2.441425416420555,
+          "height": 0.29870828848223896
+        },
+        "bbox_pt": {
+          "x": 24.949792642646187,
+          "y": 310.9795479009688,
+          "width": 175.78262998227996,
+          "height": 21.506996770721205
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L014",
+      "group_id": "G014",
+      "line_index": 13,
+      "text": "首期方案准备",
+      "bbox": {
+        "x": 86,
+        "y": 579,
+        "width": 200,
+        "height": 38
+      },
+      "polygon": [
+        [
+          86,
+          579
+        ],
+        [
+          286,
+          579
+        ],
+        [
+          286,
+          617
+        ],
+        [
+          86,
+          617
+        ]
+      ],
+      "confidence": 0.9999852180480957,
+      "runs": [
+        {
+          "text": "首期方案准备",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 32,
+            "weight": "bold",
+            "bold": true,
+            "color": "#001850"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 32,
+              "weight": "bold",
+              "confidence": 0.8428179124637807,
+              "mask_iou": 0.7257510729613734,
+              "width_similarity": 0.9746192893401016,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#001850",
+              "confidence": 0.2833286085518545,
+              "method": "full_background_delta",
+              "sample_count": 1411
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 86,
+          "y": 579,
+          "width": 200,
+          "height": 38
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 86,
+          "y": 579,
+          "width": 200,
+          "height": 38
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 86,
+          "y": 579,
+          "width": 200,
+          "height": 38
+        },
+        "bbox_in": {
+          "x": 0.6772986639102185,
+          "y": 4.67438105489774,
+          "width": 1.5751131718842293,
+          "height": 0.3067814854682454
+        },
+        "bbox_pt": {
+          "x": 48.765503801535736,
+          "y": 336.55543595263725,
+          "width": 113.40814837566451,
+          "height": 22.08826695371367
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L015",
+      "group_id": "G015",
+      "line_index": 14,
+      "text": "试运行闭环",
+      "bbox": {
+        "x": 499,
+        "y": 579,
+        "width": 169,
+        "height": 38
+      },
+      "polygon": [
+        [
+          499,
+          579
+        ],
+        [
+          668,
+          579
+        ],
+        [
+          668,
+          617
+        ],
+        [
+          499,
+          617
+        ]
+      ],
+      "confidence": 0.9998683929443359,
+      "runs": [
+        {
+          "text": "试运行闭环",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 32,
+            "weight": "bold",
+            "bold": true,
+            "color": "#001041"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 32,
+              "weight": "bold",
+              "confidence": 0.8299715534952326,
+              "mask_iou": 0.7019438444924406,
+              "width_similarity": 0.975609756097561,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#001041",
+              "confidence": 0.2953330607980741,
+              "method": "full_background_delta",
+              "sample_count": 1129
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 0.9293167946446151
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 499,
+          "y": 579,
+          "width": 169,
+          "height": 38
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 499,
+          "y": 579,
+          "width": 169,
+          "height": 38
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 499,
+          "y": 579,
+          "width": 169,
+          "height": 38
+        },
+        "bbox_in": {
+          "x": 3.9299073638511515,
+          "y": 4.67438105489774,
+          "width": 1.3309706302421738,
+          "height": 0.3067814854682454
+        },
+        "bbox_pt": {
+          "x": 282.9533301972829,
+          "y": 336.55543595263725,
+          "width": 95.82988537743651,
+          "height": 22.08826695371367
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L016",
+      "group_id": "G016",
+      "line_index": 15,
+      "text": "预警场景",
+      "bbox": {
+        "x": 926,
+        "y": 577,
+        "width": 138,
+        "height": 42
+      },
+      "polygon": [
+        [
+          926,
+          577
+        ],
+        [
+          1064,
+          577
+        ],
+        [
+          1064,
+          619
+        ],
+        [
+          926,
+          619
+        ]
+      ],
+      "confidence": 0.9997996091842651,
+      "runs": [
+        {
+          "text": "预警场景",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 32,
+            "weight": "bold",
+            "bold": true,
+            "color": "#001048"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 32,
+              "weight": "bold",
+              "confidence": 0.8576364835889823,
+              "mask_iou": 0.7446808510638298,
+              "width_similarity": 0.9922480620155039,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#001048",
+              "confidence": 0.47396739130434784,
+              "method": "full_background_delta",
+              "sample_count": 1725
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 926,
+          "y": 577,
+          "width": 138,
+          "height": 42
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 926,
+          "y": 577,
+          "width": 138,
+          "height": 42
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 926,
+          "y": 577,
+          "width": 138,
+          "height": 42
+        },
+        "bbox_in": {
+          "x": 7.292773985823982,
+          "y": 4.658234660925727,
+          "width": 1.086828088600118,
+          "height": 0.33907427341227125
+        },
+        "bbox_pt": {
+          "x": 525.0797269793267,
+          "y": 335.39289558665234,
+          "width": 78.2516223792085,
+          "height": 24.41334768568353
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L017",
+      "group_id": "G017",
+      "line_index": 16,
+      "text": "机制成熟度逐步扩围",
+      "bbox": {
+        "x": 1348,
+        "y": 581,
+        "width": 296,
+        "height": 34
+      },
+      "polygon": [
+        [
+          1348,
+          581
+        ],
+        [
+          1644,
+          581
+        ],
+        [
+          1644,
+          615
+        ],
+        [
+          1348,
+          615
+        ]
+      ],
+      "confidence": 0.9998250603675842,
+      "runs": [
+        {
+          "text": "机制成熟度逐步扩围",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 33,
+            "weight": "bold",
+            "bold": true,
+            "color": "#001148"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 33,
+              "weight": "bold",
+              "confidence": 0.8315783397197973,
+              "mask_iou": 0.7090653548840478,
+              "width_similarity": 0.98989898989899,
+              "height_similarity": 0.9705882352941176
+            },
+            "color": {
+              "hex_color": "#001148",
+              "confidence": 0.3002553852452985,
+              "method": "full_background_delta",
+              "sample_count": 2245
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 1348,
+          "y": 581,
+          "width": 296,
+          "height": 34
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 1348,
+          "y": 581,
+          "width": 296,
+          "height": 34
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 1348,
+          "y": 581,
+          "width": 296,
+          "height": 34
+        },
+        "bbox_in": {
+          "x": 10.616262778499705,
+          "y": 4.690527448869752,
+          "width": 2.331167494388659,
+          "height": 0.2744886975242196
+        },
+        "bbox_pt": {
+          "x": 764.3709200519787,
+          "y": 337.71797631862216,
+          "width": 167.84405959598345,
+          "height": 19.763186221743812
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L018",
+      "group_id": "G018",
+      "line_index": 17,
+      "text": "• 完成系统原型与核心功能开发",
+      "bbox": {
+        "x": 454,
+        "y": 666,
+        "width": 342,
+        "height": 30
+      },
+      "polygon": [
+        [
+          454,
+          666
+        ],
+        [
+          796,
+          666
+        ],
+        [
+          796,
+          696
+        ],
+        [
+          454,
+          696
+        ]
+      ],
+      "confidence": 0.9404295682907104,
+      "runs": [
+        {
+          "text": "• 完成系统原型与核心功能开发",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 24,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 24,
+              "weight": "bold",
+              "confidence": 0.6947426597200352,
+              "mask_iou": 0.4692131398013751,
+              "width_similarity": 0.9763313609467456,
+              "height_similarity": 0.9629629629629629
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.3238120411160059,
+              "method": "full_background_delta",
+              "sample_count": 1816
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 0.9155345540460719
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 454,
+          "y": 666,
+          "width": 342,
+          "height": 30
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 454,
+          "y": 666,
+          "width": 342,
+          "height": 30
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 454,
+          "y": 666,
+          "width": 342,
+          "height": 30
+        },
+        "bbox_in": {
+          "x": 3.5755069001771997,
+          "y": 5.376749192680301,
+          "width": 2.693443523922032,
+          "height": 0.24219590958019374
+        },
+        "bbox_pt": {
+          "x": 257.4364968127584,
+          "y": 387.1259418729817,
+          "width": 193.92793372238629,
+          "height": 17.43810548977395
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L019",
+      "group_id": "G019",
+      "line_index": 18,
+      "text": "• 扩展重点时段覆盖范围",
+      "bbox": {
+        "x": 881,
+        "y": 666,
+        "width": 268,
+        "height": 30
+      },
+      "polygon": [
+        [
+          881,
+          666
+        ],
+        [
+          1149,
+          666
+        ],
+        [
+          1149,
+          696
+        ],
+        [
+          881,
+          696
+        ]
+      ],
+      "confidence": 0.9414548277854919,
+      "runs": [
+        {
+          "text": "• 扩展重点时段覆盖范围",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 25,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 25,
+              "weight": "bold",
+              "confidence": 0.7234891842599314,
+              "mask_iou": 0.5040373228063879,
+              "width_similarity": 0.9850746268656716,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.4201501245466944,
+              "method": "full_background_delta",
+              "sample_count": 2047
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 881,
+          "y": 666,
+          "width": 268,
+          "height": 30
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 881,
+          "y": 666,
+          "width": 268,
+          "height": 30
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 881,
+          "y": 666,
+          "width": 268,
+          "height": 30
+        },
+        "bbox_in": {
+          "x": 6.938373522150029,
+          "y": 5.376749192680301,
+          "width": 2.110651650324867,
+          "height": 0.24219590958019374
+        },
+        "bbox_pt": {
+          "x": 499.5628935948021,
+          "y": 387.1259418729817,
+          "width": 151.96691882339044,
+          "height": 17.43810548977395
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L020",
+      "group_id": "G020",
+      "line_index": 19,
+      "text": " 完成现状摸底与需求梳理",
+      "bbox": {
+        "x": 37,
+        "y": 667,
+        "width": 291,
+        "height": 30
+      },
+      "polygon": [
+        [
+          37,
+          667
+        ],
+        [
+          328,
+          667
+        ],
+        [
+          328,
+          697
+        ],
+        [
+          37,
+          697
+        ]
+      ],
+      "confidence": 0.9615628123283386,
+      "runs": [
+        {
+          "text": " 完成现状摸底与需求梳理",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 26,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 26,
+              "weight": "bold",
+              "confidence": 0.7106998696204823,
+              "mask_iou": 0.4921862413404221,
+              "width_similarity": 0.9896193771626297,
+              "height_similarity": 0.9629629629629629
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.3861216065096043,
+              "method": "full_background_delta",
+              "sample_count": 2037
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 37,
+          "y": 667,
+          "width": 291,
+          "height": 30
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 37,
+          "y": 667,
+          "width": 291,
+          "height": 30
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 37,
+          "y": 667,
+          "width": 291,
+          "height": 30
+        },
+        "bbox_in": {
+          "x": 0.2913959367985824,
+          "y": 5.384822389666308,
+          "width": 2.291789665091553,
+          "height": 0.24219590958019374
+        },
+        "bbox_pt": {
+          "x": 20.98050744949793,
+          "y": 387.7072120559742,
+          "width": 165.00885588659182,
+          "height": 17.43810548977395
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L021",
+      "group_id": "G021",
+      "line_index": 20,
+      "text": "• 基于数据、模型和机制成熟度",
+      "bbox": {
+        "x": 1300,
+        "y": 667,
+        "width": 339,
+        "height": 30
+      },
+      "polygon": [
+        [
+          1300,
+          667
+        ],
+        [
+          1639,
+          667
+        ],
+        [
+          1639,
+          697
+        ],
+        [
+          1300,
+          697
+        ]
+      ],
+      "confidence": 0.9496363401412964,
+      "runs": [
+        {
+          "text": "• 基于数据、模型和机制成熟度",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 25,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 25,
+              "weight": "bold",
+              "confidence": 0.7238938254244378,
+              "mask_iou": 0.505940005940006,
+              "width_similarity": 0.9825072886297376,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.3458286915443367,
+              "method": "full_background_delta",
+              "sample_count": 2013
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 1300,
+          "y": 667,
+          "width": 339,
+          "height": 30
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 1300,
+          "y": 667,
+          "width": 339,
+          "height": 30
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 1300,
+          "y": 667,
+          "width": 339,
+          "height": 30
+        },
+        "bbox_in": {
+          "x": 10.238235617247488,
+          "y": 5.384822389666308,
+          "width": 2.6698168263437685,
+          "height": 0.24219590958019374
+        },
+        "bbox_pt": {
+          "x": 737.1529644418191,
+          "y": 387.7072120559742,
+          "width": 192.22681149675134,
+          "height": 17.43810548977395
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L022",
+      "group_id": "G022",
+      "line_index": 21,
+      "text": " 丰富预警场景与规则库",
+      "bbox": {
+        "x": 881,
+        "y": 726,
+        "width": 268,
+        "height": 30
+      },
+      "polygon": [
+        [
+          881,
+          726
+        ],
+        [
+          1149,
+          726
+        ],
+        [
+          1149,
+          756
+        ],
+        [
+          881,
+          756
+        ]
+      ],
+      "confidence": 0.9631856679916382,
+      "runs": [
+        {
+          "text": " 丰富预警场景与规则库",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 27,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 27,
+              "weight": "bold",
+              "confidence": 0.7122343110686009,
+              "mask_iou": 0.5003586800573888,
+              "width_similarity": 0.9777777777777777,
+              "height_similarity": 0.9629629629629629
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.3433861869942503,
+              "method": "full_background_delta",
+              "sample_count": 1628
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 881,
+          "y": 726,
+          "width": 268,
+          "height": 30
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 881,
+          "y": 726,
+          "width": 268,
+          "height": 30
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 881,
+          "y": 726,
+          "width": 268,
+          "height": 30
+        },
+        "bbox_in": {
+          "x": 6.938373522150029,
+          "y": 5.861141011840689,
+          "width": 2.110651650324867,
+          "height": 0.24219590958019374
+        },
+        "bbox_pt": {
+          "x": 499.5628935948021,
+          "y": 422.0021528525296,
+          "width": 151.96691882339044,
+          "height": 17.43810548977395
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L023",
+      "group_id": "G023",
+      "line_index": 22,
+      "text": "统一指标口径与数据标准",
+      "bbox": {
+        "x": 37,
+        "y": 727,
+        "width": 290,
+        "height": 30
+      },
+      "polygon": [
+        [
+          37,
+          727
+        ],
+        [
+          327,
+          727
+        ],
+        [
+          327,
+          757
+        ],
+        [
+          37,
+          757
+        ]
+      ],
+      "confidence": 0.999850332736969,
+      "runs": [
+        {
+          "text": "统一指标口径与数据标准",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 25,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 25,
+              "weight": "bold",
+              "confidence": 0.66838869162367,
+              "mask_iou": 0.4175880251743494,
+              "width_similarity": 0.9548611111111112,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.28605940168644933,
+              "method": "full_background_delta",
+              "sample_count": 1290
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 37,
+          "y": 727,
+          "width": 290,
+          "height": 30
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 37,
+          "y": 727,
+          "width": 290,
+          "height": 30
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 37,
+          "y": 727,
+          "width": 290,
+          "height": 30
+        },
+        "bbox_in": {
+          "x": 0.2913959367985824,
+          "y": 5.869214208826696,
+          "width": 2.283914099232132,
+          "height": 0.24219590958019374
+        },
+        "bbox_pt": {
+          "x": 20.98050744949793,
+          "y": 422.5834230355221,
+          "width": 164.4418151447135,
+          "height": 17.43810548977395
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L024",
+      "group_id": "G024",
+      "line_index": 23,
+      "text": "开展试运行验证与问题修正",
+      "bbox": {
+        "x": 458,
+        "y": 729,
+        "width": 314,
+        "height": 27
+      },
+      "polygon": [
+        [
+          458,
+          729
+        ],
+        [
+          772,
+          729
+        ],
+        [
+          772,
+          756
+        ],
+        [
+          458,
+          756
+        ]
+      ],
+      "confidence": 0.9999680519104004,
+      "runs": [
+        {
+          "text": "开展试运行验证与问题修正",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 25,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 25,
+              "weight": "bold",
+              "confidence": 0.6894328461903527,
+              "mask_iou": 0.4542113323124043,
+              "width_similarity": 0.9584664536741214,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.26830384226907916,
+              "method": "full_background_delta",
+              "sample_count": 1385
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 0.8919078558771409
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 458,
+          "y": 729,
+          "width": 314,
+          "height": 27
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 458,
+          "y": 729,
+          "width": 314,
+          "height": 27
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 458,
+          "y": 729,
+          "width": 314,
+          "height": 27
+        },
+        "bbox_in": {
+          "x": 3.6070091636148844,
+          "y": 5.885360602798708,
+          "width": 2.47292767985824,
+          "height": 0.21797631862217437
+        },
+        "bbox_pt": {
+          "x": 259.7046597802717,
+          "y": 423.74596340150697,
+          "width": 178.05079294979328,
+          "height": 15.694294940796555
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L025",
+      "group_id": "G025",
+      "line_index": 24,
+      "text": "逐步扩大覆盖范围与应用深度",
+      "bbox": {
+        "x": 1301,
+        "y": 729,
+        "width": 337,
+        "height": 27
+      },
+      "polygon": [
+        [
+          1301,
+          729
+        ],
+        [
+          1638,
+          729
+        ],
+        [
+          1638,
+          756
+        ],
+        [
+          1301,
+          756
+        ]
+      ],
+      "confidence": 0.9999198913574219,
+      "runs": [
+        {
+          "text": "逐步扩大覆盖范围与应用深度",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 25,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 25,
+              "weight": "bold",
+              "confidence": 0.6990467324863461,
+              "mask_iou": 0.467693193265218,
+              "width_similarity": 0.9672619047619048,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.283166247371504,
+              "method": "full_background_delta",
+              "sample_count": 1598
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 1301,
+          "y": 729,
+          "width": 337,
+          "height": 27
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 1301,
+          "y": 729,
+          "width": 337,
+          "height": 27
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 1301,
+          "y": 729,
+          "width": 337,
+          "height": 27
+        },
+        "bbox_in": {
+          "x": 10.24611118310691,
+          "y": 5.885360602798708,
+          "width": 2.654065694624926,
+          "height": 0.21797631862217437
+        },
+        "bbox_pt": {
+          "x": 737.7200051836975,
+          "y": 423.74596340150697,
+          "width": 191.09273001299468,
+          "height": 15.694294940796555
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L026",
+      "group_id": "G026",
+      "line_index": 25,
+      "text": " 提升预警准确性与处置效率",
+      "bbox": {
+        "x": 883,
+        "y": 788,
+        "width": 312,
+        "height": 27
+      },
+      "polygon": [
+        [
+          883,
+          788
+        ],
+        [
+          1195,
+          788
+        ],
+        [
+          1195,
+          815
+        ],
+        [
+          883,
+          815
+        ]
+      ],
+      "confidence": 0.9699386954307556,
+      "runs": [
+        {
+          "text": " 提升预警准确性与处置效率",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 24,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 24,
+              "weight": "bold",
+              "confidence": 0.7071465535726578,
+              "mask_iou": 0.5011550900970275,
+              "width_similarity": 0.9260450160771704,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.1006600438135772,
+              "method": "full_background_delta",
+              "sample_count": 515
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 883,
+          "y": 788,
+          "width": 312,
+          "height": 27
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 883,
+          "y": 788,
+          "width": 312,
+          "height": 27
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 883,
+          "y": 788,
+          "width": 312,
+          "height": 27
+        },
+        "bbox_in": {
+          "x": 6.954124653868871,
+          "y": 6.36167922497309,
+          "width": 2.4571765481393975,
+          "height": 0.21797631862217437
+        },
+        "bbox_pt": {
+          "x": 500.69697507855875,
+          "y": 458.04090419806244,
+          "width": 176.91671146603662,
+          "height": 15.694294940796555
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L027",
+      "group_id": "G027",
+      "line_index": 26,
+      "text": " 形成首期建设方案与计划",
+      "bbox": {
+        "x": 36,
+        "y": 787,
+        "width": 291,
+        "height": 30
+      },
+      "polygon": [
+        [
+          36,
+          787
+        ],
+        [
+          327,
+          787
+        ],
+        [
+          327,
+          817
+        ],
+        [
+          36,
+          817
+        ]
+      ],
+      "confidence": 0.9602859020233154,
+      "runs": [
+        {
+          "text": " 形成首期建设方案与计划",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 26,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 26,
+              "weight": "bold",
+              "confidence": 0.6994200173930838,
+              "mask_iou": 0.47011551983927674,
+              "width_similarity": 0.9930555555555556,
+              "height_similarity": 0.9629629629629629
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.09923702098551059,
+              "method": "full_background_delta",
+              "sample_count": 408
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 36,
+          "y": 787,
+          "width": 291,
+          "height": 30
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 36,
+          "y": 787,
+          "width": 291,
+          "height": 30
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 36,
+          "y": 787,
+          "width": 291,
+          "height": 30
+        },
+        "bbox_in": {
+          "x": 0.2835203709391612,
+          "y": 6.353606027987083,
+          "width": 2.291789665091553,
+          "height": 0.24219590958019374
+        },
+        "bbox_pt": {
+          "x": 20.41346670761961,
+          "y": 457.45963401507,
+          "width": 165.00885588659182,
+          "height": 17.43810548977395
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L028",
+      "group_id": "G028",
+      "line_index": 27,
+      "text": "形成试运行闭环与评估报告",
+      "bbox": {
+        "x": 454,
+        "y": 787,
+        "width": 318,
+        "height": 30
+      },
+      "polygon": [
+        [
+          454,
+          787
+        ],
+        [
+          772,
+          787
+        ],
+        [
+          772,
+          817
+        ],
+        [
+          454,
+          817
+        ]
+      ],
+      "confidence": 0.9916930794715881,
+      "runs": [
+        {
+          "text": "形成试运行闭环与评估报告",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 26,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 26,
+              "weight": "bold",
+              "confidence": 0.6874104923149509,
+              "mask_iou": 0.448018648018648,
+              "width_similarity": 0.9936305732484076,
+              "height_similarity": 0.9629629629629629
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.08169900162163218,
+              "method": "full_background_delta",
+              "sample_count": 329
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 0.86828115770821
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 454,
+          "y": 787,
+          "width": 318,
+          "height": 30
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 454,
+          "y": 787,
+          "width": 318,
+          "height": 30
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 454,
+          "y": 787,
+          "width": 318,
+          "height": 30
+        },
+        "bbox_in": {
+          "x": 3.5755069001771997,
+          "y": 6.353606027987083,
+          "width": 2.5044299432959245,
+          "height": 0.24219590958019374
+        },
+        "bbox_pt": {
+          "x": 257.4364968127584,
+          "y": 457.45963401507,
+          "width": 180.31895591730657,
+          "height": 17.43810548977395
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L029",
+      "group_id": "G029",
+      "line_index": 28,
+      "text": "• 实现常态化运营与持续优化",
+      "bbox": {
+        "x": 1300,
+        "y": 787,
+        "width": 315,
+        "height": 30
+      },
+      "polygon": [
+        [
+          1300,
+          787
+        ],
+        [
+          1615,
+          787
+        ],
+        [
+          1615,
+          817
+        ],
+        [
+          1300,
+          817
+        ]
+      ],
+      "confidence": 0.9365022778511047,
+      "runs": [
+        {
+          "text": "• 实现常态化运营与持续优化",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 25,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 25,
+              "weight": "bold",
+              "confidence": 0.7001200721807583,
+              "mask_iou": 0.4619107087105838,
+              "width_similarity": 0.9842767295597484,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.09661376968071915,
+              "method": "full_background_delta",
+              "sample_count": 434
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 1300,
+          "y": 787,
+          "width": 315,
+          "height": 30
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE015-IDENTITY",
+        "mapped_bbox": {
+          "x": 1300,
+          "y": 787,
+          "width": 315,
+          "height": 30
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 1300,
+          "y": 787,
+          "width": 315,
+          "height": 30
+        },
+        "bbox_in": {
+          "x": 10.238235617247488,
+          "y": 6.353606027987083,
+          "width": 2.480803245717661,
+          "height": 0.24219590958019374
+        },
+        "bbox_pt": {
+          "x": 737.1529644418191,
+          "y": 457.45963401507,
+          "width": 178.6178336916716,
+          "height": 17.43810548977395
+        },
+        "inside_safe_area": true
+      }
+    }
+  ],
+  "registration": {
+    "transform_id": "TF-PAGE015-IDENTITY",
+    "matrix": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "qa": {
+    "status": "review",
+    "review_items": [
+      {
+        "rule": "ocr_line_confidence",
+        "line_id": "L018",
+        "value": 0.9404295682907104,
+        "message": "OCR confidence is below the 0.95 pass threshold"
+      },
+      {
+        "rule": "ocr_line_confidence",
+        "line_id": "L019",
+        "value": 0.9414548277854919,
+        "message": "OCR confidence is below the 0.95 pass threshold"
+      },
+      {
+        "rule": "ocr_line_confidence",
+        "line_id": "L021",
+        "value": 0.9496363401412964,
+        "message": "OCR confidence is below the 0.95 pass threshold"
+      },
+      {
+        "rule": "ocr_line_confidence",
+        "line_id": "L029",
+        "value": 0.9365022778511047,
+        "message": "OCR confidence is below the 0.95 pass threshold"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L001",
+        "value": 0.38433937924215705,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L002",
+        "value": 0.2548705839496777,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L003",
+        "value": 0.34526985331125587,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L004",
+        "value": 0.28777395295467584,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L005",
+        "value": 0.286064156403289,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L006",
+        "value": 0.20639809545065657,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L007",
+        "value": 0.18044605018445684,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L008",
+        "value": 0.15074504442925496,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L009",
+        "value": 0.2671071382303407,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L010",
+        "value": 0.2379808459321237,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L011",
+        "value": 0.3360172443625784,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L012",
+        "value": 0.2593886220708884,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L013",
+        "value": 0.23768422783779486,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L014",
+        "value": 0.2833286085518545,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L015",
+        "value": 0.2953330607980741,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L016",
+        "value": 0.47396739130434784,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L017",
+        "value": 0.3002553852452985,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L018",
+        "value": 0.3238120411160059,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L019",
+        "value": 0.4201501245466944,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L020",
+        "value": 0.3861216065096043,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L021",
+        "value": 0.3458286915443367,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L022",
+        "value": 0.3433861869942503,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L023",
+        "value": 0.28605940168644933,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L024",
+        "value": 0.26830384226907916,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L025",
+        "value": 0.283166247371504,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L026",
+        "value": 0.1006600438135772,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L027",
+        "value": 0.09923702098551059,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L028",
+        "value": 0.08169900162163218,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L029",
+        "value": 0.09661376968071915,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L001",
+        "value": {
+          "mask_iou": 0.749,
+          "color_distance_rgb": 111.4316,
+          "contrast_ratio": 5.0541
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L002",
+        "value": {
+          "mask_iou": 0.7012,
+          "color_distance_rgb": 104.2785,
+          "contrast_ratio": 4.0939
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L003",
+        "value": {
+          "mask_iou": 0.7581,
+          "color_distance_rgb": 118.4145,
+          "contrast_ratio": 4.587
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L004",
+        "value": {
+          "mask_iou": 0.7636,
+          "color_distance_rgb": 109.6403,
+          "contrast_ratio": 4.435
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L005",
+        "value": {
+          "mask_iou": 0.6978,
+          "color_distance_rgb": 104.8475,
+          "contrast_ratio": 2.6527
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L006",
+        "value": {
+          "mask_iou": 0.4895,
+          "color_distance_rgb": 106.2309,
+          "contrast_ratio": 3.4799
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L007",
+        "value": {
+          "mask_iou": 0.3749,
+          "color_distance_rgb": 44.2832,
+          "contrast_ratio": 2.5187
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L008",
+        "value": {
+          "mask_iou": 0.4477,
+          "color_distance_rgb": 77.2205,
+          "contrast_ratio": 3.1627
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L009",
+        "value": {
+          "mask_iou": 0.5783,
+          "color_distance_rgb": 85.7205,
+          "contrast_ratio": 3.6757
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L010",
+        "value": {
+          "mask_iou": 0.6844,
+          "color_distance_rgb": 135.0741,
+          "contrast_ratio": 3.9897
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L011",
+        "value": {
+          "mask_iou": 0.7356,
+          "color_distance_rgb": 129.9461,
+          "contrast_ratio": 3.9897
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L012",
+        "value": {
+          "mask_iou": 0.7193,
+          "color_distance_rgb": 136.1286,
+          "contrast_ratio": 4.4682
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L013",
+        "value": {
+          "mask_iou": 0.5931,
+          "color_distance_rgb": 141.8238,
+          "contrast_ratio": 4.0655
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L014",
+        "value": {
+          "mask_iou": 0.9166,
+          "color_distance_rgb": 145.1516,
+          "contrast_ratio": 5.0874
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L015",
+        "value": {
+          "mask_iou": 0.94,
+          "color_distance_rgb": 127.2989,
+          "contrast_ratio": 4.319
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L016",
+        "value": {
+          "mask_iou": 0.9368,
+          "color_distance_rgb": 104.795,
+          "contrast_ratio": 4.1752
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L017",
+        "value": {
+          "mask_iou": 0.8624,
+          "color_distance_rgb": 110.1136,
+          "contrast_ratio": 4.015
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L018",
+        "value": {
+          "mask_iou": 0.7961,
+          "color_distance_rgb": 137.9891,
+          "contrast_ratio": 3.9987
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L019",
+        "value": {
+          "mask_iou": 0.8076,
+          "color_distance_rgb": 139.1438,
+          "contrast_ratio": 4.2921
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L020",
+        "value": {
+          "mask_iou": 0.7718,
+          "color_distance_rgb": 139.7212,
+          "contrast_ratio": 4.1053
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L021",
+        "value": {
+          "mask_iou": 0.7547,
+          "color_distance_rgb": 146.6492,
+          "contrast_ratio": 4.4811
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L022",
+        "value": {
+          "mask_iou": 0.7756,
+          "color_distance_rgb": 141.4532,
+          "contrast_ratio": 4.354
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L023",
+        "value": {
+          "mask_iou": 0.7839,
+          "color_distance_rgb": 142.0282,
+          "contrast_ratio": 3.8305
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L024",
+        "value": {
+          "mask_iou": 0.8035,
+          "color_distance_rgb": 142.6079,
+          "contrast_ratio": 4.0553
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L025",
+        "value": {
+          "mask_iou": 0.7886,
+          "color_distance_rgb": 145.4991,
+          "contrast_ratio": 4.1842
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L026",
+        "value": {
+          "mask_iou": 0.8311,
+          "color_distance_rgb": 184.182,
+          "contrast_ratio": 3.9987
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L027",
+        "value": {
+          "mask_iou": 0.7734,
+          "color_distance_rgb": 182.45,
+          "contrast_ratio": 3.8305
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L028",
+        "value": {
+          "mask_iou": 0.7755,
+          "color_distance_rgb": 179.5689,
+          "contrast_ratio": 3.7412
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L029",
+        "value": {
+          "mask_iou": 0.8327,
+          "color_distance_rgb": 178.986,
+          "contrast_ratio": 3.7821
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      }
+    ],
+    "failed_items": [],
+    "checks": {
+      "visual_line_count": 29,
+      "newline_count": 0,
+      "overflow_check": {
+        "passed": true,
+        "output": "Test passed. No overflow detected."
+      },
+      "text_style_qa": {
+        "status": "review",
+        "report": "text_style_qa.json",
+        "line_count": 29
+      }
+    }
+  },
+  "manual_corrections": []
+}

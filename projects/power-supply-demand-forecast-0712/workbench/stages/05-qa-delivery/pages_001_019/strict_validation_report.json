@@ -1,0 +1,463 @@
+{
+  "file": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/editable_text_ppt/pages_001_019_template_image_project/exports/pages_001_019_template_image_project_20260712_070713.pptx",
+  "summary": {
+    "slide_count": 19,
+    "width_emu": 12192000,
+    "height_emu": 6858000,
+    "aspect_ratio": 1.7778,
+    "native_text_shapes": 875,
+    "native_graphic_shapes": 894,
+    "pictures": 13,
+    "charts": 0,
+    "tables": 0
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 4
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 4
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 5
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 5
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 7
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 7
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 8
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 8
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 10
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 10
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 11
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 11
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 12
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 12
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 13
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 13
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 14
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 14
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 15
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 15
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 16
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 16
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 18
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 18
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 19
+    },
+    {
+      "code": "DECLARED_FULL_IMAGE_BODY",
+      "message": "Large approved body image is allowed for full_image_ppt mode.",
+      "slide": 19
+    },
+    {
+      "code": "EDITABLE_TEXT_NATIVE_TEXT_MISSING",
+      "message": "editable_text_three_image native template text does not match the approved template text lock: 封底",
+      "slide": 19
+    }
+  ],
+  "slides": [
+    {
+      "slide": 1,
+      "native_text_shapes": 2,
+      "native_graphic_shapes": 2,
+      "pictures": 0,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.1141,
+      "picture_area_ratio": 0,
+      "max_picture_area_ratio": 0.0,
+      "min_font_size_pt": 21.0,
+      "max_font_size_pt": 37.5,
+      "text_characters": 12,
+      "text_content": "封面 中国电力企业联合会"
+    },
+    {
+      "slide": 2,
+      "native_text_shapes": 11,
+      "native_graphic_shapes": 17,
+      "pictures": 0,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 17,
+      "coverage_ratio": 0.8623,
+      "picture_area_ratio": 0,
+      "max_picture_area_ratio": 0.0,
+      "min_font_size_pt": 12.0,
+      "max_font_size_pt": 34.5,
+      "text_characters": 70,
+      "text_content": "目录 汇报目录 第一章 建设背景与基础 第二章 总体方案与首期边界 第三章 建设内容与实施保障 第四章 需请领导审定事项 中国电力企业联合会"
+    },
+    {
+      "slide": 3,
+      "native_text_shapes": 4,
+      "native_graphic_shapes": 7,
+      "pictures": 0,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 7,
+      "coverage_ratio": 0.8634,
+      "picture_area_ratio": 0,
+      "max_picture_area_ratio": 0.0,
+      "min_font_size_pt": 10.5,
+      "max_font_size_pt": 40.5,
+      "text_characters": 32,
+      "text_content": "第一章 建设背景与基础 围绕本章内容开展汇报 中国电力企业联合会"
+    },
+    {
+      "slide": 4,
+      "native_text_shapes": 25,
+      "native_graphic_shapes": 25,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 26,
+      "coverage_ratio": 0.9032,
+      "picture_area_ratio": 0.7965,
+      "max_picture_area_ratio": 0.7965,
+      "min_font_size_pt": 11.1,
+      "max_font_size_pt": 37.1,
+      "text_characters": 225,
+      "text_content": "形势变化和工作要求 2025年全国全社会用电量 供需预测对象和成果形态正在扩展 103682亿千瓦时 同比增长 5.0% 新能源 跨区 需求侧 极端事件 交易 有效出力 互济 调节 风险 全国累计完成电力市场交易电量 66394 亿千瓦时 预测工作需要兼顾新能源有效出力、跨区互济、交易、 占全社会用电量 64.0% 需求侧调节和极端事件风险 全国可再生能源装机 23.4亿千瓦 电力运行规模、市场交易和新能源装机 结构发生变化。 约占总装机 60%"
+    },
+    {
+      "slide": 5,
+      "native_text_shapes": 52,
+      "native_graphic_shapes": 52,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 53,
+      "coverage_ratio": 0.9032,
+      "picture_area_ratio": 0.7965,
+      "max_picture_area_ratio": 0.7965,
+      "min_font_size_pt": 6.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 635,
+      "text_content": "工作基础和完善方向 中电联具备行业组织、统计协调、研究和报告发布基础 行业组织 统计协调 研究支撑 报告发布 覆盖发电、电网、售电、 长期开展行业统计与数据 持续开展行业重大问题 定期发布行业发展报告、 一、已有基础 电力建设等全行业会员 报送组织 研究 运行分析等权威报告 形成政策建议与研究成果 具备行业动员、沟通协调 建立覆盖全行业的统计 形成行业信息发布与 传播影响力 和共识凝聚能力 指标体系与工作机制 支撑行业管理决策 中电联已有行业服务和报告发布基础。 现有工作仍需围绕数据、模型、产品和机制系统完善 数据 模型 产品 机制 二、现状判断 产品体系需丰富和标准化 协同机制、分工机制和 数据覆盖、颗粒度、质量 行业通用模型体系不完备 和时效性需进一步提升 激励约束机制需健全 模型稳定性、可解释性和 产品易用性、可视化和 数据标准、口径与治理体 数据共享与安全机制需 服务能力需提升 应用适配性需加强 系需系统完善 规范 建设判断：具备牵头基础，但不能把待摸底条件写成既成事实 三、建设判断 中电联具备行业组织、统计协调、研究和报告发布等基础，具备牵头开展相关工作的条件与能力基础。 ● 关于数据覆盖、模型适配、产品形态和机制建设等关键条件，需通过摸底调研、试点验证和评估论证后确认， 不宜在方案中预设或表述为既成事实。 中电联已有行业服务和报告发布基础，具备牵头基础，但需围绕数据、模型、产品和机制系统完善， 结论 通过摸底调研与试点验证，稳妥推进建设。"
+    },
+    {
+      "slide": 6,
+      "native_text_shapes": 4,
+      "native_graphic_shapes": 7,
+      "pictures": 0,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 7,
+      "coverage_ratio": 0.8634,
+      "picture_area_ratio": 0,
+      "max_picture_area_ratio": 0.0,
+      "min_font_size_pt": 10.5,
+      "max_font_size_pt": 40.5,
+      "text_characters": 34,
+      "text_content": "第二章 总体方案与首期边界 围绕本章内容开展汇报 中国电力企业联合会"
+    },
+    {
+      "slide": 7,
+      "native_text_shapes": 88,
+      "native_graphic_shapes": 88,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 89,
+      "coverage_ratio": 0.9032,
+      "picture_area_ratio": 0.7965,
+      "max_picture_area_ratio": 0.7965,
+      "min_font_size_pt": 7.0,
+      "max_font_size_pt": 18.8,
+      "text_characters": 955,
+      "text_content": "总体思路和目标定位 行业公共能力建设总体方案 定位 以行业公共能力建设为定位，构建可共享、可复用、可持续演进的供需形势研判基础设施。 主闭环 1 可信数据 → → → 2多模型协同 3 场景推演 4 自动化发布 能力体系 组合·校准·协同·增效 汇聚·清洗·治理·可信 假设·推演·评估·洞察 审核·发布·分发·闭环 • 统计/计量/时间序列模型 • 宏观与行业情景库 •多源数据汇聚（政务、行业、企业、 • 自动化报告生成与可视化 以可信数据、 互联网等） • 机器学习/深度学习模型 • 政策/事件/外部冲击模拟 • 多渠道分发（平台/API/订阅） 多模型协同、 • 标准化治理与质量控制 • 因果/机理/知识图谱模型 • 供需平衡与缺口推演 • 权限管控与版本留痕 场景推演和 • 模型评估与动态加权融合 • 数据血缘与版本管理 · 敏感性与不确定性分析 ·反馈回流与迭代优化 自动化发布 • 可信存证与安全合规 · 基准对齐与持续学习 • 结论解释与研判建议 形成主闭环 区域层面 省级层面 重点行业层面 全国层面 服务层级 宏观统筹·趋势研判·政策支撑 区域联动·比较分析·协同发展 精准施策·风险防控·资源配置 行业洞察·供需平衡·经营决策 • 区域供需形势对比分析 · 行业供需结构与趋势分析 • 全国供需总体态势研判 · 省域供需精准研判 服务全国、区域、 省级和重点行业 · 重大趋势与风险预警 · 区域波动与协同发展建议 · 重点领域风险监测预警 • 细分领域供需平衡研判 等不同层级的 · 企业经营与投资决策支持 · 跨区域资源优化配置建议 • 跨区域流动与平衡评估 • 资源配置与保供建议 供需形势研判 · 支撑宏观决策与政策制定 • 区域政策协同支撑 · 支撑省级决策与调度 • 行业运行监测与预警 可解释 可审核 可发布 公共预测能力 总体方案强调 构建面向行业公共服务的预测能力， 模型逻辑透明、结论可追溯， 全流程留痕可追溯，审核机制完备， 标准化输出与多渠道分发， 开放共享、普惠可用、持续迭代。 支持指标拆解与影响因子分析。 确保研判结果客观可信。 安全可控、及时触达、闭环优化。 统一标准与规范 安全合规与隐私保护 权限与分级管理 质量监控与持续运营 开放生态与共建共享"
+    },
+    {
+      "slide": 8,
+      "native_text_shapes": 53,
+      "native_graphic_shapes": 53,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 54,
+      "coverage_ratio": 0.9032,
+      "picture_area_ratio": 0.7965,
+      "max_picture_area_ratio": 0.7965,
+      "min_font_size_pt": 6.5,
+      "max_font_size_pt": 18.8,
+      "text_characters": 497,
+      "text_content": "建设原则和首期边界 六项原则 模型稳健 分步实施 职责牵引 数据可信 场景先行 安全合规 明确业务与数据 统一数据标准与 选择可解释、可复现 聚焦核心业务场景， 落实安全管理与 阶段目标清晰， 质量管控，保障 的模型方法，持续 合规要求，确保 迭代推进，持续 职责，形成端到端 先解决关键问题， 数据真实可信 验证与优化 再扩展延伸 责任闭环 数据与系统安全 交付价值 一个主闭环 全国月度与季度供需形势分析 → 数据采集与治理 供需监测与分析→形势研判与结论→报告输出与反馈 → 决策支撑与跟踪 两个支撑能力 数据口径与治理 报告自动化审核 统一口径、规范指标、血缘管理、质量监控， 自动化逻辑校验、指标校验、内容审核， 保障数据一致、可比、可追溯 提升报告质量与效率 三个可验收产品 季报原型 月报原型 年度报告自动化原型 实现全国供需形势月度监测与分析， 实现全国供需形势季度分析与研判， 实现年度供需形势系统化分析， 自动生成月度报告原型 自动生成季度报告原型 自动生成年度报告原型 首期不承诺 远期场景、高敏数据和未经验证的技术能力 首期范围由一个主闭环、两个支撑能力和三个产品构成。"
+    },
+    {
+      "slide": 9,
+      "native_text_shapes": 4,
+      "native_graphic_shapes": 7,
+      "pictures": 0,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 7,
+      "coverage_ratio": 0.8634,
+      "picture_area_ratio": 0,
+      "max_picture_area_ratio": 0.0,
+      "min_font_size_pt": 10.5,
+      "max_font_size_pt": 40.5,
+      "text_characters": 34,
+      "text_content": "第三章 建设内容与实施保障 围绕本章内容开展汇报 中国电力企业联合会"
+    },
+    {
+      "slide": 10,
+      "native_text_shapes": 49,
+      "native_graphic_shapes": 49,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 50,
+      "coverage_ratio": 0.9032,
+      "picture_area_ratio": 0.7965,
+      "max_picture_area_ratio": 0.7965,
+      "min_font_size_pt": 6.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 437,
+      "text_content": "业务体系和成果产品 首期聚焦月度、季度供需形势分析和年度报告自动化 业务对象、时间尺度和产品出口形成完整业务体系。 五类运行节奏 六类成果产品 六类预测对象 需求 年度 报告 分析用能需求变化趋势与结构特征 年度预测与报告编制 标准化报告自动生成 供给 季度 看板 评估电源、电网及资源供给能力 季度形势分析与跟踪 可视化看板实时呈现 专报 平衡 月度 测算供需平衡状况与缺口风险 月度供需形势分析（首期聚焦） 专题深度分析与研判 市场 清单 重点时段 重大节假日、极端天气等 任务清单与措施建议 研判电力市场运行与价格趋势 重点时段专项预测 调节 接口 月内修正 数据与服务接口输出 评估调节能力与灵活性资源配置 基于最新数据开展月内修正 风险 会商助手 与滚动更新 识别风险因素并评估影响程度 会商辅助与决策支持 时间尺度（五类） 业务对象（六类） 产品出口（六类） 覆盖供需全链条关键维度 多周期协同，滚动预测与跟踪 多形态输出，支撑业务与决策 闭环驱动，持续迭代优化"
+    },
+    {
+      "slide": 11,
+      "native_text_shapes": 65,
+      "native_graphic_shapes": 65,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 66,
+      "coverage_ratio": 0.9032,
+      "picture_area_ratio": 0.7965,
+      "max_picture_area_ratio": 0.7965,
+      "min_font_size_pt": 6.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 562,
+      "text_content": "数据资源、治理与可信流通 四层数据资源 重点治理：八项治理控制 高敏数据运行边界处理 高敏数据按以下方式处理， 1. 指标字典 2. 口径主表 必需层 确保安全合规、最小可用： 统一指标定义、算法、 固化业务口径与计算口径， 支撑核心业务与 维度与度量，确保理解 形成权威口径基线。 预测模型的基础数据 汇总 一致。 仅输出汇总结果， 不暴露明细数据。 重要层 3. 质量规则 4.元数据血缘 2 梳理数据来源、加工链路 建立数据质量规则与阀值， 提升预测精度与维度的 脱敏 与依赖关系，支持影响 持续监控与预警。 关键数据 对敏感字段进行脱敏， 分析。 防止身份识别。 拓展层 5. 修订回放 6. 版本留痕 3 授权 记录口径与规则修订 版本全生命周期管理， 增强分析广度与深度的 基于最小权限原则， 过程，支持变更回放 留存版本差异与历史 扩展数据 按需授权访问。 与验证。 记录。 7. 授权台账 降级 8. 发布审核 外部辅助层 4 在必要时降低数据粒度 记录数据授权范围、对象、 发布前多维度审核与签批， 外部来源的辅助数据， 或精度，减少敏感风险。 条件与有效期，确保可追溯。 确保数据对外发布合规、 用于补充与校验 准确、可用。 数据口径、质量、版本和授权是预测权威性的前置条件。 八项治理控制 四层数据资源"
+    },
+    {
+      "slide": 12,
+      "native_text_shapes": 86,
+      "native_graphic_shapes": 86,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 87,
+      "coverage_ratio": 0.9032,
+      "picture_area_ratio": 0.7965,
+      "max_picture_area_ratio": 0.7965,
+      "min_font_size_pt": 6.5,
+      "max_font_size_pt": 18.8,
+      "text_characters": 834,
+      "text_content": "模型体系、生产流程与智能辅助 模型运行流程（必须闭环） 六层模型能力 基线 ·基于统计与业务规则构建稳定基线 ·确保覆盖完整、口径一致、可复现 4. 发布 5. 复盘 2. 训练验证 3. 人工审核 1. 数据版本 机器学习修正 业务合理性审查 发布版本固化 运行效果评估 特征工程与建模 数据采集与清洗 2 异常与敏感性分析 部署与权限控制 偏差归因分析 交叉验证与回测 版本管理与留痕 ·利用机器学习捕捉非线性与复杂关系 ·对基线结果进行偏差修正与精度提升 监控与告警配置 经验沉淀与改进 口径与规则锁定 风险识别与校正 效果评估与对比 发布说明与通知 审核记录留痕 闭环优化迭代 过拟合与稳健性检验 数据质量校验 多步预测 3 ·支持多期滚动预测与多情景推演 形成持续改进的闭环 ·刻画趋势演化与关键拐点 层级一致性 4 ·在总量与分项、上级与下级间保持一致 智能辅助（不替代人工责任） ·通过约束与分摊确保加总平衡 区间预测 风险清单 报告文本 图表生成 会商准备 5 ·输出预测区间与置信水平 ·识别潜在风险与异常信号 ·生成会商材料与问题清单 ·生成要点摘要与结构化文本·自动生成图表与可视化看板 ·量化不确定性，支撑风险判断 ·提炼关键信息与结论建议 ·支持多维分析与动态展示 ·模拟情景与关键议题梳理 ·生成风险清单与分级提示 解释层 ·支持多版本对比与润色 ·统一风格与规范输出 ·跟踪风险处置与状态更新 ·提升会商效率与质量 6 ·提供特征重要性与影响路径 ·支持可解释分析与业务归因 智能辅助用于提升效率与质量，需人工审阅、判断与决策，人工责任不可替代。 可发布 稳健 可解释 可回测 可审核 模型路线 全过程留痕、可追溯 抗噪声、抗波动、抗过拟合 透明可理解，提供影响路径 历史回测与模拟推演验证 标准化发布与权限管控 核心原则 在复杂环境下保持稳定表现 支撑业务沟通与决策信任 支持独立审查与合规要求 量化效果并持续改进 确保安全、稳定、可用"
+    },
+    {
+      "slide": 13,
+      "native_text_shapes": 137,
+      "native_graphic_shapes": 137,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 138,
+      "coverage_ratio": 0.9032,
+      "picture_area_ratio": 0.7965,
+      "max_picture_area_ratio": 0.7965,
+      "min_font_size_pt": 6.5,
+      "max_font_size_pt": 18.8,
+      "text_characters": 1073,
+      "text_content": "平台架构、模块关系与版本留痕 业务应用与服务（平台服务出口） 四类版本管理（全链路版本化） 平台核心职责 6 业务应用 风险评估 精准营销 运营优化 客户洞察 智能决策 更多应用 与服务 数据版本 能力承载 API/SDK/服务化接口/批量服务/实时服务 保障数据可重复、可追溯 提供稳定、弹性、安全的 ·快照管理 基础能力支撑 ·变更记录 模型与生产管理 ·计算与存储 5 ·血缘追踪 模型与生产 · 服务化能力 部署发布 监控告警 模型开发 训练与调优 评估与验证 模型注册 回滚下线 ·回放复现 管理 ·安全与合规 ·监控与运维 资源调度 任务编排实验管理|模型治理成本与配额管理 特征版本 保障特征可复用、可追溯 特征工程与治理 4 ·特征定义版本 特征工程 版本管理 ·计算逻鯛版本 特征监控 数据探索 特征加工 特征存储 特征服务 特征提取 特征质量 与治理 四类版本全链路管理， ·依赖数据版本 支撑可追溯与可回放 ·特征变更记录 特征标准化 特征复用与共享特征血缘特征质量管理 ·统一版本体系 ·版本生命周期管理 模型版本 数据平台与计算（能力承载与治理底座） 3 ·版本关联与血缘 保障模型可评估、可回溯 数据平台 ·版本回退与复现 数据治理 存储与管理 计算引擎 数据服务 ·模型结构版本 与计算 批处理|流计算| SQL 数据湖|数仓| 元数据 数据目录 | API | 服务网格 数据标准|质量|安全 ·训练数据版本 ·超参与配置版本 统一资源管理 弹性伸缩|多租户隔离|安全合规 ·评估结果版本 业务服务出口 2 可靠接入与流通 可靠接入 统一服务化出口，支撑 发布版本 与流通 接入管理 数据脱敏 合规审查 隐私计算 身份与权限 数据交换 流通审计 业务高效接入与扩展 保障发布可管控、可回滚 ·标准化接口 访问控制 数据水印 流通留痕 传输加密 ·发布包版本 ·多协议支持 ·环境配置版本 · 鉴权与限流 ·流量策略版本 内部数据 外部数据 第三方数据 设备与IoT数据 ·服务SLA保障 ·发布审计记录 数据源 业务库|日志|行为数据 公开数据|行业数据|合作数据 征信|地图|支付|社交 设备日志|传感器|物联网 全链路可追溯 可审校与留痕 合规与安全 可回放与复现 平台既承载业务服务，也保障全链路 数据→特征→模型→发布 任意历史版本一键回放 操作留痕|审批记录|变更日志 安全策略|访问审计|合规报表 可追溯、可回放和可审校记录 结果复现与对比 全链路血缘与版本关联 满足内外部审计要求 满足监管与合规要求"
+    },
+    {
+      "slide": 14,
+      "native_text_shapes": 122,
+      "native_graphic_shapes": 122,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 123,
+      "coverage_ratio": 0.9032,
+      "picture_area_ratio": 0.7965,
+      "max_picture_area_ratio": 0.7965,
+      "min_font_size_pt": 6.5,
+      "max_font_size_pt": 18.8,
+      "text_characters": 1238,
+      "text_content": "场景体系、责任与验收闭环 统一场景链 数据来源 数据资源 加工过程 服务产品 服务对象 反馈复盘 ·数据接入与汇聚 ·内部系统（调度、营销、财务等） · 数据清洗与标准化 ·分析报告与可视化看板 ·公司管理层/决策部门 ·服务效果评估与满意度 ·业务部门（调度、营销等） ·预警信息与响应建议 ·外部数据（气象、宏观、行业） · 数据治理与质量管控 · 指标计算与建模分析 ·业务反馈与需求迭代 ·市场数据（交易、价格、负荷） ·模型与规则优化 ·元数据与标准管理 ·规则引擎与算法模型 · 数据服务与接口/API ·区域/基层单位 ·用户反馈与业务填报 ·主题库/标签库/指标库 ·结果校验与版本管理 ·定制化服务与订阅推送 ·外部合作方(政府、市场主体) ·复盘沉淀与知识库积累 各场景同步明确：数据责任|验收指标|降级运行机制 首期：两项核心场景（先行稳定运行） 后续：七类拓展场景（逐步扩围） 要点说明 维度 示例 3 5 4 4 市场交易 重点时段预警 需求响应 储能应用 · 数据提供方/责任部门 明确数据提供方、 月度、季度供需形势分析 数据责任 数据口径、更新频率、 • 数据口径与标准 市场交易策略建议、价格 对极端天气、节假日等 提供需求响应策略与 储能配置优化、调用策略 形成月度、季度供需形势分析报告 质量责任人。 · 更新频率与时效要求 重点时段供需风险预警。 执行效果评估。 与收益评估。 预测与交易复盘。 支撑经营决策与资源配置。 • 准确率 ≥ 95% 围绕准确性、时效性、 • 报告/预警准时率≥95% 完整性、可用性等 验收指标 9 7 8 • 数据完整率 ≥ 98% 专项分析 区域对标 经营预测 设定量化指标。 2 年度报告自动化 • 用户满意度 ≥90% 中短期负荷、购电、成本、 重大项目、专项课题等 区域供需对标分析， 实现年度报告自动生成、校验与发布， •数据降级（使用备份/近似数据） 数据异常或系统故障时， 效益等经营预测。 发现差距与改进方向。 定制化分析服务。 提升效率与一致性。 ·功能降级（核心功能先） 降级运行机制 保障关键服务可用的 ·人工干预与应急处置流程 降级方案。 · 核复与补救机制 3 场景扩展（6-12个月） 2 能力巩固（3-6个月） 4 生态深化（12个月及以后） 1 首期建设（0-3个月） ·逐步上线七类拓展场景 ·完成两项核心场景建设与上线 · 优化数据质量与模型算法 ·深化与市场、政府、合作方协同 四阶段 ·建立数据链路与基础加工能力 ·完善监控告警与运维体系 ·拓展市场交易与生态合作 → → ·场景联动与服务集成 → 建设路径 ·形成验收指标与降级机制 ·提升服务性能与用户体验 · 强化预警与响应闭环 ·持续迭代优化，形成数据资产沉淀 ·实现稳定运行并输出价值 ·扩充数据资源与指标体系 ·形成规模化应用能力 ·构建可持续运营与创新机制 从首期稳定运行，逐步扩围建设，持续创造价值"
+    },
+    {
+      "slide": 15,
+      "native_text_shapes": 30,
+      "native_graphic_shapes": 30,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 31,
+      "coverage_ratio": 0.9032,
+      "picture_area_ratio": 0.7965,
+      "max_picture_area_ratio": 0.7965,
+      "min_font_size_pt": 9.7,
+      "max_font_size_pt": 21.2,
+      "text_characters": 281,
+      "text_content": "实施节奏与阶段成果 实施按四阶段推进。 01 02 03 04 0-3个月 18-36 个月 3-9个月 9-18个月 根据数据、模型和 扩展重点时段和 形成首期原型和 完成摸底、口径和 首期方案准备 试运行闭环 预警场景 机制成熟度逐步扩围 • 完成系统原型与核心功能开发 • 扩展重点时段覆盖范围 完成现状摸底与需求梳理 • 基于数据、模型和机制成熟度 丰富预警场景与规则库 统一指标口径与数据标准 开展试运行验证与问题修正 逐步扩大覆盖范围与应用深度 提升预警准确性与处置效率 形成首期建设方案与计划 形成试运行闭环与评估报告 • 实现常态化运营与持续优化"
+    },
+    {
+      "slide": 16,
+      "native_text_shapes": 69,
+      "native_graphic_shapes": 69,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 70,
+      "coverage_ratio": 0.9032,
+      "picture_area_ratio": 0.7965,
+      "max_picture_area_ratio": 0.7965,
+      "min_font_size_pt": 6.5,
+      "max_font_size_pt": 18.8,
+      "text_characters": 570,
+      "text_content": "组织机制、资源与安全保障 组织机制 处室牵头 专班推进 专家支撑 生态协同 领导统筹 组建专项工作专班， 高位推动，统筹决策， 明确责任处室牵头， 引入内外部专家团队， 联动内外部生态伙伴， 明确方向与资源保障。 对接业务需求，组织 项目化管理，确保 提供技术咨询与评估 共建共享，形成协同 协调落地。 任务闭环。 指导。 合力。 人员配置参考 预算参考 精简档 中等档 全面档 逐步增长至 • 关键能力完善 • 全能力体系建设 • 核心能力建设 30-50人 12-18人 • 主流工具与服务 • 高阶工具与服务 • 轻量化工具与服务 根据项目阶段和规模逐步扩充，保障能力持续提升。 • 适用于常规应用 • 适用于规模化应用 • 适用于试点探索 安全边界（七类风险同步纳入） 质量 系统可靠 网络安全 发布审核 人员与权限 数据合规 模型偏差 遵守法律法规与制度 保障数据与输出结果 识别与监测模型偏差 保障系统稳定可用、 防范网络攻击与入侵， 建立发布审核机制， 明确角色与权限，落 要求，确保数据采集、 的准确性、完整性和 与不公平风险，持续 容灾备份与业务连续 保障网络与数据安全 确保内容合规、可控、 实最小权限与审计 优化与校正。 可追溯。 存储、使用合规。 一致性。 防护到位。 性。 追踪。 组织、资源和风险是实施保障条件。"
+    },
+    {
+      "slide": 17,
+      "native_text_shapes": 4,
+      "native_graphic_shapes": 7,
+      "pictures": 0,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 7,
+      "coverage_ratio": 0.8634,
+      "picture_area_ratio": 0,
+      "max_picture_area_ratio": 0.0,
+      "min_font_size_pt": 10.5,
+      "max_font_size_pt": 40.5,
+      "text_characters": 33,
+      "text_content": "第四章 需请领导审定事项 围绕本章内容开展汇报 中国电力企业联合会"
+    },
+    {
+      "slide": 18,
+      "native_text_shapes": 67,
+      "native_graphic_shapes": 67,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 68,
+      "coverage_ratio": 0.9032,
+      "picture_area_ratio": 0.7965,
+      "max_picture_area_ratio": 0.7965,
+      "min_font_size_pt": 6.5,
+      "max_font_size_pt": 18.9,
+      "text_characters": 954,
+      "text_content": "需请领导审定事项清单 • 定位：面向业务赋能的数字化能力底座与应用平台 本次审定事项（七项） • 目标：支撑业务提质增效、风险可控、合规可溯 工作定位 ·原则：统筹规划、试点先行、分步推进、持续迭代 1 工作定位 · 牵头部门：XXX部门(作为项目牵头单位） 2 牵头机制 •协同部门：XXX、XXX、XXX(按职能协同配合) 2 牵头机制 • 机制安排：成立工作专班，明确职责分工与决策流程 3 首期场景 •例会机制：周例会+月度推进会，重大事项及时上报 4 摸底调研 •首期范围：聚焦高价值、可落地、见效快的典型场景 3 首期场景 •场景清单(建议)：场景A、场景B、场景C、场景D 5 外部协同 ·预期成效：形成可复制、可推广的样板、验证模式与价值 6 建设路径 • 调研范围：覆盖相关业务条线与基层单位 •重点内容：现状梳理、需求收集、痛点问题、数据资源、系统现状 7 安全要求 4 摸底调研 · 时间安排：计划自启动起4周内完成 • 交付成果：调研报告(含需求清单与问题清单） •协同对象：上级主管单位、行业主管部门、兄弟单位、合作伙伴 后续专项论证事项（建议） 5 •协同内容：政策对接、标准衔接、数据共享、能力协同、资源整合 外部协同 • 协同方式：定期沟通、联合推进、共建共享 • 资金投入与预算方案论证 • 目标：争取政策支持，形成合力，降低建设成本 • 技术路线与架构方案论证 •总体思路：总体规划、分阶段实施、试点先行、逐步推广 • 实施阶段(建议)： 6 建设路径 • 数据治理与共享方案论证 阶段一 阶段二 阶段三 阶段四 (9-18个月) (18个月后) (0-3个月) (3-9个月) • 运营模式与绩效评估方案论证 推广应用与优化 规模化与生态建设 顶层设计与试点准备 试点建设与验证 • 合规性与法律风险论证 • 关键里程碑：需求确认→方案评审→试点上线→评估复盘→推广落地 • 供应商选择与采购方案论证 •遵循要求：合规合法、最小必要、权责清晰、全程可控 7 安全要求 •安全措施：分级分类管理、访问控制、数据脱敏、加密存储、操作审计 • 人员组织与能力建设方案论证 ·风险管控：建立风险评估与应急响应机制，定期开展安全评测与演练 •目标：确保数据安全、系统安全、业务连续"
+    },
+    {
+      "slide": 19,
+      "native_text_shapes": 3,
+      "native_graphic_shapes": 4,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 5,
+      "coverage_ratio": 1.0,
+      "picture_area_ratio": 1.0,
+      "max_picture_area_ratio": 1.0,
+      "min_font_size_pt": 18.0,
+      "max_font_size_pt": 48.0,
+      "text_characters": 24,
+      "text_content": "感谢聆听 THANK YOU 中国电力企业联合会"
+    }
+  ],
+  "manifest": {
+    "file": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/editable_text_delivery_manifest.json",
+    "loaded": true,
+    "slide_entries": 19
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "cyberppt.analysis_expression.pending_confirmation.v1",
+  "gate": "source_analysis",
+  "status": "pending_confirmation",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/analysis_expression/source_analysis.md",
+  "source_sha256": "3e697b8e6469de86c4cfaa75f7173c087b8a5011a22833168022bb2e06e29f5f",
+  "recommendation": "confirm_source_analysis",
+  "question": "是否确认本源材料分析候选稿作为后续汇报方向和结构设计的事实依据？",
+  "options": [
+    {
+      "id": "confirm_source_analysis",
+      "label": "确认源分析"
+    },
+    {
+      "id": "revise_source_analysis",
+      "label": "返回修改"
+    }
+  ],
+  "created_at": "2026-07-11T17:09:01.185101+00:00"
+}

@@ -13,6 +13,7 @@ from typing import Any, Callable
 from PIL import Image, UnidentifiedImageError
 
 from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_codex_image
+from scripts.dual_image_overlay.rebuild_engine.hybrid_ocr import merge_hybrid_ocr, run_vision_ocr
 from scripts.dual_image_overlay.rebuild_engine.paddleocr_local import run_local_ocr
 
 
@@ -21,6 +22,7 @@ EDITABLE_TEXT_MODE = "editable_text_three_image"
 VENDOR_TWO_IMAGE_MODE = "two-image"
 VENDOR_THREE_IMAGE_MODE = "three-image"
 _SUPPORTED_VENDOR_INPUT_MODES = {VENDOR_TWO_IMAGE_MODE, VENDOR_THREE_IMAGE_MODE}
+_SUPPORTED_OCR_BACKENDS = {"paddle", "hybrid"}
 _SUPPORTED_MODES = {FULL_IMAGE_MODE, EDITABLE_TEXT_MODE}
 THREE_IMAGE_REQUIRES_EXPLICIT_INPUT_MODE = True
 AUTO_UPGRADE_TWO_IMAGE_TO_THREE_IMAGE_ON_QA = False
@@ -120,7 +122,7 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _ocr_json_uses_local_backend(path: Path) -> bool:
+def _ocr_json_uses_backend(path: Path, ocr_backend: str) -> bool:
     if not path.is_file():
         return False
     try:
@@ -131,7 +133,8 @@ def _ocr_json_uses_local_backend(path: Path) -> bool:
     if not isinstance(canonical, dict):
         return False
     metadata = canonical.get("metadata")
-    return isinstance(metadata, dict) and metadata.get("backend") == "paddleocr-local"
+    expected = "paddle-text+vision-geometry" if ocr_backend == "hybrid" else "paddleocr-local"
+    return isinstance(metadata, dict) and metadata.get("backend") == expected
 
 
 def _ocr_matches_current_source(
@@ -141,8 +144,9 @@ def _ocr_matches_current_source(
     source_path: Path,
     source_role: str,
     source_sha256: str,
+    ocr_backend: str,
 ) -> bool:
-    if not _ocr_json_uses_local_backend(ocr_path):
+    if not _ocr_json_uses_backend(ocr_path, ocr_backend):
         return False
     if not asset_manifest_path.is_file():
         return False
@@ -155,6 +159,7 @@ def _ocr_matches_current_source(
         and manifest.get("ocr_source_role") == source_role
         and manifest.get("ocr_source_path") == str(source_path)
         and manifest.get("ocr_source_sha256") == source_sha256
+        and manifest.get("ocr_backend", "paddle") == ocr_backend
     )
 
 
@@ -182,24 +187,48 @@ def _default_full_generator(prompt: str, output_path: Path) -> Path:
     return run_codex_image(prompt=prompt, output_path=output_path)
 
 
+def _normalize_generated_image_to_match(reference_path: Path, generated_path: Path) -> Path:
+    with Image.open(reference_path) as reference, Image.open(generated_path) as generated:
+        if generated.size != reference.size:
+            generated.convert("RGB").resize(reference.size, Image.Resampling.LANCZOS).save(generated_path)
+    return generated_path
+
+
 def _default_background_generator(full_path: Path, output_path: Path) -> Path:
-    return run_codex_image(
+    generated = run_codex_image(
         prompt=BACKGROUND_PROMPT,
         output_path=output_path,
         image_paths=[full_path],
     )
+    return _normalize_generated_image_to_match(full_path, generated)
 
 
 def _default_ocr_generator(image_path: Path, output_path: Path) -> Path:
     return run_local_ocr(image_path, output_path=output_path)
 
 
+def run_hybrid_ocr(image_path: Path, output_path: Path) -> Path:
+    """Write Paddle text merged with macOS Vision geometry."""
+
+    paddle_path = output_path.with_name(f"{output_path.stem}.paddle.json")
+    run_local_ocr(image_path, output_path=paddle_path)
+    paddle = _read_json(paddle_path)
+    vision = run_vision_ocr(image_path)
+    with Image.open(image_path) as image:
+        payload = merge_hybrid_ocr(paddle, vision, image.size)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    paddle_path.unlink(missing_ok=True)
+    return output_path
+
+
 def _default_text_generator(full_path: Path, output_path: Path) -> Path:
-    return run_codex_image(
+    generated = run_codex_image(
         prompt=TEXT_PROMPT,
         output_path=output_path,
         image_paths=[full_path],
     )
+    return _normalize_generated_image_to_match(full_path, generated)
 
 
 def _write_identity_registration(path: Path, page_number: int) -> Path:
@@ -227,6 +256,7 @@ def _ensure_editable_assets(
     background_generator: BackgroundGenerator,
     ocr_generator: OcrGenerator,
     text_generator: TextGenerator,
+    ocr_backend: str,
 ) -> dict[str, Any]:
     page_number = int(page.get("page_number", 0))
     if page_number <= 0:
@@ -299,6 +329,7 @@ def _ensure_editable_assets(
         source_path=ocr_source,
         source_role=ocr_source_role,
         source_sha256=ocr_source_sha256,
+        ocr_backend=ocr_backend,
     ):
         ocr_generator(ocr_source, ocr_path)
     if not ocr_path.is_file():
@@ -323,6 +354,7 @@ def _ensure_editable_assets(
             "ocr_source_role": ocr_source_role,
             "ocr_source_path": str(ocr_source),
             "ocr_source_sha256": ocr_source_sha256,
+            "ocr_backend": ocr_backend,
             "registration": str(registration_path),
             **({"text": str(prepared["text"]["path"])} if input_mode == VENDOR_THREE_IMAGE_MODE else {}),
         },
@@ -398,6 +430,7 @@ def build_editable_text_batch(
     background_generator: BackgroundGenerator | None = None,
     ocr_generator: OcrGenerator | None = None,
     text_generator: TextGenerator | None = None,
+    ocr_backend: str = "paddle",
 ) -> dict[str, Any]:
     """Build a deterministic vendor batch manifest from approved page pairs."""
 
@@ -405,13 +438,27 @@ def build_editable_text_batch(
     if input_mode not in _SUPPORTED_VENDOR_INPUT_MODES:
         supported = ", ".join(sorted(_SUPPORTED_VENDOR_INPUT_MODES))
         raise ValueError(f"unsupported vendor input_mode: {input_mode}; expected one of {supported}")
+    if ocr_backend not in _SUPPORTED_OCR_BACKENDS:
+        supported = ", ".join(sorted(_SUPPORTED_OCR_BACKENDS))
+        raise ValueError(f"unsupported ocr_backend: {ocr_backend}; expected one of {supported}")
+    selected_ocr_generator = ocr_generator or (run_hybrid_ocr if ocr_backend == "hybrid" else _default_ocr_generator)
     payload = _read_json(manifest_path)
     pairs = payload.get("pairs")
     if not isinstance(pairs, list):
         raise ValueError(f"page image manifest must contain pairs[]: {manifest_path}")
     wanted = set(_parse_pages(pages_raw))
-    selected = [pair for pair in pairs if isinstance(pair, dict) and int(pair.get("page_number", 0)) in wanted]
-    if {int(pair["page_number"]) for pair in selected} != wanted:
+    skipped_pages = {
+        int(item["page_number"])
+        for item in payload.get("skipped_pages", [])
+        if isinstance(item, dict) and str(item.get("page_number", "")).isdigit()
+    }
+    content_pages = wanted - skipped_pages
+    selected = [
+        pair
+        for pair in pairs
+        if isinstance(pair, dict) and int(pair.get("page_number", 0)) in content_pages
+    ]
+    if {int(pair["page_number"]) for pair in selected} != content_pages:
         raise ValueError("page image manifest does not contain every requested page")
     jobs = [
         _editable_text_job(
@@ -424,8 +471,9 @@ def build_editable_text_batch(
                 input_mode,
                 full_generator=full_generator or _default_full_generator,
                 background_generator=background_generator or _default_background_generator,
-                ocr_generator=ocr_generator or _default_ocr_generator,
+                ocr_generator=selected_ocr_generator,
                 text_generator=text_generator or _default_text_generator,
+                ocr_backend=ocr_backend,
             ),
             manifest_path.parent,
             input_mode,
@@ -435,6 +483,7 @@ def build_editable_text_batch(
     return {
         "schema": "cyberppt.editable_text_batch.v1",
         "input_mode": input_mode,
+        "ocr_backend": ocr_backend,
         "pages": jobs,
     }
 
@@ -547,12 +596,13 @@ def run_three_image_batch(
     pages_raw: str,
     *,
     input_mode: str = VENDOR_TWO_IMAGE_MODE,
+    ocr_backend: str = "paddle",
 ) -> dict[str, Any]:
     """Run the vendored batch pipeline and collect authoritative page QA."""
 
     root = project.expanduser().resolve()
     pairs_path = _find_pairs_manifest(root, pages_raw)
-    batch = build_editable_text_batch(root, pages_raw, pairs_path, input_mode=input_mode)
+    batch = build_editable_text_batch(root, pages_raw, pairs_path, input_mode=input_mode, ocr_backend=ocr_backend)
     batch_root = _editable_text_root(root, pages_raw)
     batch_path = _write_json(batch_root / "three_image_batch.json", batch)
     completed = subprocess.run(
@@ -588,6 +638,19 @@ def approve_editable_text_review(project: Path, pages_raw: str) -> Path:
     result_path = _result_path(project, pages_raw)
     if not result_path.is_file():
         raise ValueError("editable-text result is required before approval")
+    result = _read_json(result_path)
+    pages = result.get("pages")
+    if not isinstance(pages, dict) or not pages:
+        raise ValueError("editable-text result contains no page results")
+    if any(isinstance(item, dict) and item.get("status") == "failed" for item in pages.values()):
+        raise ValueError("cannot approve editable-text result with failed pages")
+    if result.get("status") == "review_required":
+        for item in pages.values():
+            if isinstance(item, dict) and item.get("status") == "review":
+                item["status"] = "passed"
+        result["status"] = "passed"
+        result["review_approved"] = True
+        _write_json(result_path, result)
     return _write_json(
         _approval_path(project, pages_raw),
         {

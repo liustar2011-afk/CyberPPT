@@ -318,7 +318,9 @@ def _produce_assemble_command(args: argparse.Namespace) -> int:
 
 def _produce_editable_text_command(args: argparse.Namespace) -> int:
     try:
-        result = prepare_editable_text_production(Path(args.project), args.pages, input_mode=args.input_mode)
+        result = prepare_editable_text_production(
+            Path(args.project), args.pages, input_mode=args.input_mode, ocr_backend=args.ocr_backend
+        )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
@@ -611,6 +613,12 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("two-image", "three-image"),
         default="two-image",
         help="Vendor input mode. Defaults to two-image; use three-image only when a TEXT image is required.",
+    )
+    produce_editable_parser.add_argument(
+        "--ocr-backend",
+        choices=("paddle", "hybrid"),
+        default="paddle",
+        help="OCR backend. Hybrid keeps Paddle text and uses macOS Vision geometry.",
     )
     produce_editable_parser.set_defaults(func=_produce_editable_text_command)
     produce_verify_parser = produce_subparsers.add_parser(

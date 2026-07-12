@@ -1,0 +1,22 @@
+{
+  "schema": "cyberppt.phase1_run.v1",
+  "gate": "source_analysis",
+  "status": "prompt_ready",
+  "prompt_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/model-runs/source_analysis/prompts/source_analysis_prompt.md",
+  "prompt_sha256": "65f53d30bc092c3b984cce2407e685a57a119b46d9eef343ffd41eafb7eb043f",
+  "dependency_hashes": {
+    "/Volumes/DOC/CyberPPT/references/source-analysis.md": "9dcedcc58308e8fee83d42cd5f2876d2a54342e4f6662a0a2c8ea200c980bd4c",
+    "/Volumes/DOC/CyberPPT/references/storyline.md": "0956af69816ae49d1a78537eecd323c41376b0156d573324a4307584148f1b82",
+    "/Volumes/DOC/CyberPPT/references/internal-reporting-style.md": "91400910aff80097ea589b5c3c4343cb531ac75f72917652c7016a2b659e0f83",
+    "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md": "5bc4041631719596ed3dd41cdd02053de11a3084d7e259310b1a6ab4ca03af65",
+    "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/model-runs/source_analysis/source_bundle.json": "a97b181aa5e5bc5f8c4de56aff729081651d5e6a6faf895a89510691f8b478ed"
+  },
+  "input_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+  "model": null,
+  "raw_output_path": null,
+  "candidate_path": null,
+  "grounding_report_path": null,
+  "error": null,
+  "created_at": "2026-07-11T17:01:27+00:00",
+  "resume_command": "python3 -m cyberppt phase1 generate /Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712"
+}

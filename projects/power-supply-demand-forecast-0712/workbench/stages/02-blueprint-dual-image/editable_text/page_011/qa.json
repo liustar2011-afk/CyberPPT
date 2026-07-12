@@ -1,0 +1,1055 @@
+{
+  "status": "review",
+  "review_items": [
+    {
+      "rule": "ocr_line_confidence",
+      "line_id": "L006",
+      "value": 0.9360488057136536,
+      "message": "OCR confidence is below the 0.95 pass threshold"
+    },
+    {
+      "rule": "ocr_line_confidence",
+      "line_id": "L048",
+      "value": 0.9456244111061096,
+      "message": "OCR confidence is below the 0.95 pass threshold"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L001",
+      "value": 0.32176729812954963,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L002",
+      "value": 0.2992171407367018,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L003",
+      "value": 0.30054308599861296,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L004",
+      "value": 0.04919751827794122,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L005",
+      "value": 0.16890566888312863,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L006",
+      "value": 0.09146612008680975,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L007",
+      "value": 0.045381507806330115,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L008",
+      "value": 0.13266946191474493,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L009",
+      "value": 0.08823592724141643,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L010",
+      "value": 0.23370350895327638,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L011",
+      "value": 0.0271794298490777,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L012",
+      "value": 0.1587108654871044,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L013",
+      "value": 0.21482529032732545,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L014",
+      "value": 0.15295238095238095,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L015",
+      "value": 0.09309582863585118,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L016",
+      "value": 0.45,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L017",
+      "value": 0.15440979375046535,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L018",
+      "value": 0.23436764926680345,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L019",
+      "value": 0.14265346697001371,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L020",
+      "value": 0.08794893053741784,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L021",
+      "value": 0.09356810631229237,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L022",
+      "value": 0.3705343647194808,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L023",
+      "value": 0.16921499805003065,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L024",
+      "value": 0.15176493161026872,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L025",
+      "value": 0.3159762591798177,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L026",
+      "value": 0.05392394822006473,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L027",
+      "value": 0.17717126623376625,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L028",
+      "value": 0.1767386523095672,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L029",
+      "value": 0.12773727844482563,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L030",
+      "value": 0.15183124836051487,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L031",
+      "value": 0.45,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L032",
+      "value": 0.11488430268918076,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L033",
+      "value": 0.04834559848358143,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L034",
+      "value": 0.15087105899396064,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L035",
+      "value": 0.22705032134608522,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L036",
+      "value": 0.19301461377870563,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L037",
+      "value": 0.03322607198982265,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L038",
+      "value": 0.1729261482844324,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L039",
+      "value": 0.20635688127867988,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L040",
+      "value": 0.09462285287528005,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L041",
+      "value": 0.11017560450971667,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L042",
+      "value": 0.08847442573977637,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L043",
+      "value": 0.09294426500302347,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L044",
+      "value": 0.45,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L045",
+      "value": 0.174404734261698,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L046",
+      "value": 0.45,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L047",
+      "value": 0.45,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L048",
+      "value": 0.1114298276201883,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L049",
+      "value": 0.05966397789562815,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L050",
+      "value": 0.1369141293191926,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L051",
+      "value": 0.11991142703098431,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L052",
+      "value": 0.45,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L053",
+      "value": 0.28210137310776373,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L054",
+      "value": 0.16973817594834545,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L055",
+      "value": 0.211947440188422,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L056",
+      "value": 0.05911013053870197,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L057",
+      "value": 0.15153788098693757,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L058",
+      "value": 0.45,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L059",
+      "value": 0.11508442499022002,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L060",
+      "value": 0.19973111460605752,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L061",
+      "value": 0.45,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L062",
+      "value": 0.3126022947209337,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L063",
+      "value": 0.12670811022593706,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "text_style_confidence",
+      "line_id": "L064",
+      "value": 0.17277767193751192,
+      "message": "Recovered text style confidence is below 0.70"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L001",
+      "value": {
+        "mask_iou": 0.889,
+        "color_distance_rgb": 99.7647,
+        "contrast_ratio": 3.8385
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L002",
+      "value": {
+        "mask_iou": 0.7794,
+        "color_distance_rgb": 102.1421,
+        "contrast_ratio": 3.8526
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L003",
+      "value": {
+        "mask_iou": 0.8987,
+        "color_distance_rgb": 103.8557,
+        "contrast_ratio": 4.0758
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L004",
+      "value": {
+        "mask_iou": 0.7351,
+        "color_distance_rgb": 189.3938,
+        "contrast_ratio": 3.5522
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L005",
+      "value": {
+        "mask_iou": 0.4495,
+        "color_distance_rgb": 141.2409,
+        "contrast_ratio": 2.5535
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L006",
+      "value": {
+        "mask_iou": 0.3126,
+        "color_distance_rgb": 122.7273,
+        "contrast_ratio": 2.2079
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L007",
+      "value": {
+        "mask_iou": 0.7469,
+        "color_distance_rgb": 11.0454,
+        "contrast_ratio": 1.1194
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L008",
+      "value": {
+        "mask_iou": 0.6801,
+        "color_distance_rgb": 145.5129,
+        "contrast_ratio": 3.1919
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L009",
+      "value": {
+        "mask_iou": 0.739,
+        "color_distance_rgb": 70.3278,
+        "contrast_ratio": 1.921
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L010",
+      "value": {
+        "mask_iou": 0.8246,
+        "color_distance_rgb": 90.1443,
+        "contrast_ratio": 2.5926
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L011",
+      "value": {
+        "mask_iou": 0.7593,
+        "color_distance_rgb": 172.9769,
+        "contrast_ratio": 3.3639
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L012",
+      "value": {
+        "mask_iou": 0.8004,
+        "color_distance_rgb": 79.2528,
+        "contrast_ratio": 1.3068
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L013",
+      "value": {
+        "mask_iou": 0.8385,
+        "color_distance_rgb": 86.8907,
+        "contrast_ratio": 2.5712
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L014",
+      "value": {
+        "mask_iou": 0.8246,
+        "color_distance_rgb": 159.3549,
+        "contrast_ratio": 3.8727
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L015",
+      "value": {
+        "mask_iou": 0.8405,
+        "color_distance_rgb": 48.1975,
+        "contrast_ratio": 1.3858
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L016",
+      "value": {
+        "mask_iou": 0.6859,
+        "color_distance_rgb": 97.0052,
+        "contrast_ratio": 1.8694
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L017",
+      "value": {
+        "mask_iou": 0.7081,
+        "color_distance_rgb": 34.641,
+        "contrast_ratio": 1.049
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L018",
+      "value": {
+        "mask_iou": 0.7587,
+        "color_distance_rgb": 148.9564,
+        "contrast_ratio": 3.6858
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L019",
+      "value": {
+        "mask_iou": 0.8105,
+        "color_distance_rgb": 92.7685,
+        "contrast_ratio": 3.0906
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L020",
+      "value": {
+        "mask_iou": 0.4905,
+        "color_distance_rgb": 89.7274,
+        "contrast_ratio": 2.0718
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L021",
+      "value": {
+        "mask_iou": 0.3702,
+        "color_distance_rgb": 82.8855,
+        "contrast_ratio": 1.8628
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L022",
+      "value": {
+        "mask_iou": 0.6836,
+        "color_distance_rgb": 53.1789,
+        "contrast_ratio": 1.9889
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L023",
+      "value": {
+        "mask_iou": 0.8511,
+        "color_distance_rgb": 156.0449,
+        "contrast_ratio": 4.196
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L024",
+      "value": {
+        "mask_iou": 0.8756,
+        "color_distance_rgb": 107.536,
+        "contrast_ratio": 3.034
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L025",
+      "value": {
+        "mask_iou": 0.8575,
+        "color_distance_rgb": 104.0769,
+        "contrast_ratio": 3.4947
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L026",
+      "value": {
+        "mask_iou": 0.9258,
+        "color_distance_rgb": 130.1192,
+        "contrast_ratio": 2.485
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L027",
+      "value": {
+        "mask_iou": 0.7742,
+        "color_distance_rgb": 95.0684,
+        "contrast_ratio": 2.8477
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L028",
+      "value": {
+        "mask_iou": 0.9324,
+        "color_distance_rgb": 79.806,
+        "contrast_ratio": 2.4759
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L029",
+      "value": {
+        "mask_iou": 0.9024,
+        "color_distance_rgb": 99.4233,
+        "contrast_ratio": 2.8675
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L030",
+      "value": {
+        "mask_iou": 0.6417,
+        "color_distance_rgb": 42.1545,
+        "contrast_ratio": 1.117
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L031",
+      "value": {
+        "mask_iou": 0.6866,
+        "color_distance_rgb": 158.8049,
+        "contrast_ratio": 2.545
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L032",
+      "value": {
+        "mask_iou": 0.7602,
+        "color_distance_rgb": 129.329,
+        "contrast_ratio": 2.7548
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L033",
+      "value": {
+        "mask_iou": 0.808,
+        "color_distance_rgb": 121.6717,
+        "contrast_ratio": 2.943
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L034",
+      "value": {
+        "mask_iou": 0.5489,
+        "color_distance_rgb": 33.5261,
+        "contrast_ratio": 1.6372
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L035",
+      "value": {
+        "mask_iou": 0.4775,
+        "color_distance_rgb": 49.1223,
+        "contrast_ratio": 2.003
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L036",
+      "value": {
+        "mask_iou": 0.5653,
+        "color_distance_rgb": 4.6904,
+        "contrast_ratio": 1.2182
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L037",
+      "value": {
+        "mask_iou": 0.8313,
+        "color_distance_rgb": 13.7477,
+        "contrast_ratio": 1.0709
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L038",
+      "value": {
+        "mask_iou": 0.9197,
+        "color_distance_rgb": 115.9569,
+        "contrast_ratio": 3.3968
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L039",
+      "value": {
+        "mask_iou": 0.8918,
+        "color_distance_rgb": 138.6795,
+        "contrast_ratio": 3.9684
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L040",
+      "value": {
+        "mask_iou": 0.7271,
+        "color_distance_rgb": 85.557,
+        "contrast_ratio": 2.0646
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L041",
+      "value": {
+        "mask_iou": 0.7409,
+        "color_distance_rgb": 39.4208,
+        "contrast_ratio": 1.4787
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L042",
+      "value": {
+        "mask_iou": 0.7792,
+        "color_distance_rgb": 152.427,
+        "contrast_ratio": 3.3305
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L043",
+      "value": {
+        "mask_iou": 0.7614,
+        "color_distance_rgb": 5.4772,
+        "contrast_ratio": 1.1625
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L044",
+      "value": {
+        "mask_iou": 0.8832,
+        "color_distance_rgb": 148.0743,
+        "contrast_ratio": 3.1284
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L045",
+      "value": {
+        "mask_iou": 0.7869,
+        "color_distance_rgb": 139.7212,
+        "contrast_ratio": 3.2245
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L046",
+      "value": {
+        "mask_iou": 0.8117,
+        "color_distance_rgb": 180.1555,
+        "contrast_ratio": 2.9787
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L047",
+      "value": {
+        "mask_iou": 0.7293,
+        "color_distance_rgb": 151.2944,
+        "contrast_ratio": 2.4331
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L048",
+      "value": {
+        "mask_iou": 0.6348,
+        "color_distance_rgb": 52.0288,
+        "contrast_ratio": 1.7689
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L049",
+      "value": {
+        "mask_iou": 0.8709,
+        "color_distance_rgb": 7.0711,
+        "contrast_ratio": 1.0459
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L050",
+      "value": {
+        "mask_iou": 0.582,
+        "color_distance_rgb": 50.8134,
+        "contrast_ratio": 1.8101
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L051",
+      "value": {
+        "mask_iou": 0.7961,
+        "color_distance_rgb": 179.1815,
+        "contrast_ratio": 3.9501
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L052",
+      "value": {
+        "mask_iou": 0.668,
+        "color_distance_rgb": 130.7899,
+        "contrast_ratio": 2.2356
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L053",
+      "value": {
+        "mask_iou": 0.8436,
+        "color_distance_rgb": 112.6188,
+        "contrast_ratio": 3.1104
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L054",
+      "value": {
+        "mask_iou": 0.8383,
+        "color_distance_rgb": 119.0378,
+        "contrast_ratio": 3.3804
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L055",
+      "value": {
+        "mask_iou": 0.917,
+        "color_distance_rgb": 117.9915,
+        "contrast_ratio": 3.48
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L056",
+      "value": {
+        "mask_iou": 0.805,
+        "color_distance_rgb": 11.7473,
+        "contrast_ratio": 1.0375
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L057",
+      "value": {
+        "mask_iou": 0.6906,
+        "color_distance_rgb": 9.9499,
+        "contrast_ratio": 1.2099
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L058",
+      "value": {
+        "mask_iou": 0.8299,
+        "color_distance_rgb": 197.469,
+        "contrast_ratio": 3.368
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L059",
+      "value": {
+        "mask_iou": 0.8476,
+        "color_distance_rgb": 135.7092,
+        "contrast_ratio": 2.695
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L060",
+      "value": {
+        "mask_iou": 0.8403,
+        "color_distance_rgb": 39.0512,
+        "contrast_ratio": 1.2013
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L061",
+      "value": {
+        "mask_iou": 0.7957,
+        "color_distance_rgb": 173.8074,
+        "contrast_ratio": 2.8705
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L062",
+      "value": {
+        "mask_iou": 0.6809,
+        "color_distance_rgb": 115.2259,
+        "contrast_ratio": 4.9692
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L063",
+      "value": {
+        "mask_iou": 0.7439,
+        "color_distance_rgb": 3.7417,
+        "contrast_ratio": 1.3291
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    },
+    {
+      "rule": "editable_text_visual_match",
+      "line_id": "L064",
+      "value": {
+        "mask_iou": 0.7145,
+        "color_distance_rgb": 97.0052,
+        "contrast_ratio": 1.4967
+      },
+      "message": "editable text differs from FULL/BACKGROUND evidence"
+    }
+  ],
+  "failed_items": [],
+  "checks": {
+    "visual_line_count": 64,
+    "newline_count": 0,
+    "overflow_check": {
+      "passed": true,
+      "output": "Test passed. No overflow detected."
+    },
+    "text_style_qa": {
+      "status": "review",
+      "report": "text_style_qa.json",
+      "line_count": 64
+    }
+  }
+}

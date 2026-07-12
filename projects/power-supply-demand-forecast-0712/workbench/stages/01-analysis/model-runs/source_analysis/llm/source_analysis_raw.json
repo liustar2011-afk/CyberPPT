@@ -1,0 +1,9 @@
+{
+  "backend": "codex-oauth-responses",
+  "endpoint": "https://chatgpt.com/backend-api/codex/responses",
+  "operation": "vision-text",
+  "auth_file": "/Users/liuxing/.codex/auth.json",
+  "model": "gpt-5.5",
+  "input_images": [],
+  "instructions": "You are a precise CyberPPT internal-reporting analysis assistant. Return only valid JSON when requested. Do not add facts, numbers, sources, or external knowledge."
+}

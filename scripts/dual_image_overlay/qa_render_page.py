@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -135,10 +136,21 @@ def render_to_png(pptx_path: Path, out_dir: Path, *, dpi: int = 150) -> list[Pat
         )
         return []
     out_dir.mkdir(parents=True, exist_ok=True)
+    render_env = os.environ.copy()
+    if not render_env.get("FONTCONFIG_FILE"):
+        for candidate in (
+            Path("/opt/homebrew/etc/fonts/fonts.conf"),
+            Path("/usr/local/etc/fonts/fonts.conf"),
+            Path("/etc/fonts/fonts.conf"),
+        ):
+            if candidate.is_file():
+                render_env["FONTCONFIG_FILE"] = str(candidate)
+                break
     subprocess.run(
         [soffice, "--headless", "--convert-to", "pdf", "--outdir", str(out_dir), str(pptx_path)],
         check=True,
         capture_output=True,
+        env=render_env,
     )
     pdf_path = out_dir / (pptx_path.stem + ".pdf")
     subprocess.run(

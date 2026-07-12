@@ -1,0 +1,13 @@
+{
+  "schema": "cyberppt.blueprint_input.approval.v1",
+  "approved": true,
+  "approved_at": "2026-07-11T18:04:38+00:00",
+  "pending_confirmation": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/blueprint_input.pending-confirmation.json",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+  "source_sha256": "7a753d824ed692924b8e5046f9f08139deb9f5b06c344ab49a99f2ab37dc696c",
+  "business_script_sha256": "ed621cf2655c8b6bd2b23b827d3d8d415fcabfbb206bb572e58e7060310c3f15",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/locks/visual_style_lock.json",
+  "style_lock_sha256": "f99b5f3189ea1c28bea7a89d6fe079e39765c4ea8916fa9900d157caf23fc8d5",
+  "option_id": "confirm_blueprint_input",
+  "note": ""
+}

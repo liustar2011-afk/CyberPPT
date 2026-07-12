@@ -1,0 +1,206 @@
+{
+  "schema": "cyberppt.editable_text_result.v1",
+  "project": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712",
+  "pages_raw": "1-19",
+  "input_mode": "three-image",
+  "mode_policy": {
+    "three_image_requires_explicit_input_mode": true,
+    "auto_upgrade_two_image_to_three_image_on_qa": false
+  },
+  "status": "failed",
+  "vendor_exit_code": -15,
+  "batch_manifest": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/three_image_batch.json",
+  "pages": {
+    "4": {
+      "page_number": 4,
+      "status": "review",
+      "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_004",
+      "full_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_004_形势变化和工作要求_full.png",
+      "background_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_004/page_004_background.png",
+      "text_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_004/page_004_text.png",
+      "page_json": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_004/page.json",
+      "qa": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_004/qa.json",
+      "render": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_004/slide-1.png",
+      "artifacts_sha256": {
+        "page_json": "b1cc8271688ce8e9fdd1218d6cc166e5cac16cf5098fb07c60efa47dfa6413fb",
+        "qa": "48a4c8c3b11d06a8995a984bbb6ccf2340e3bebc8a9eb70fda77093ea2029868",
+        "render": "c230417e3decb69b9d5d4d6106070a73ed266075df46d8d7d56dfee365acbc64"
+      }
+    },
+    "5": {
+      "page_number": 5,
+      "status": "review",
+      "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_005",
+      "full_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_005_工作基础和完善方向_full.png",
+      "background_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_005/page_005_background.png",
+      "text_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_005/page_005_text.png",
+      "page_json": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_005/page.json",
+      "qa": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_005/qa.json",
+      "render": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_005/slide-1.png",
+      "artifacts_sha256": {
+        "page_json": "e9acb51d31efecb775f2f7fa0fcdd13b713e0d059ffd0c0e9a16596470620039",
+        "qa": "91c47643fffd4676389af033398cce4a021d9a7554689738800eab1980a684d6",
+        "render": "965951de786b6260d8ca617662137038d8dfa2d4835b53d74749d52f73206822"
+      }
+    },
+    "7": {
+      "page_number": 7,
+      "status": "review",
+      "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_007",
+      "full_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_007_总体思路和目标定位_full.png",
+      "background_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_007/page_007_background.png",
+      "text_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_007/page_007_text.png",
+      "page_json": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_007/page.json",
+      "qa": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_007/qa.json",
+      "render": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_007/slide-1.png",
+      "artifacts_sha256": {
+        "page_json": "13e5b54ba2b3e760711d2286727aafc72bb4ad1ce2f33e9dec1ae9fff7414ccd",
+        "qa": "1843319e6d678504d357b04ca0e62d9d14a2e5ef96bb2434b306f4eb29f8b7d2",
+        "render": "d82b43cebfbbde6aac52d326d4d6858691f16748251dff644f558c31ac30acca"
+      }
+    },
+    "8": {
+      "page_number": 8,
+      "status": "review",
+      "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_008",
+      "full_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_008_建设原则和首期边界_full.png",
+      "background_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_008/page_008_background.png",
+      "text_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_008/page_008_text.png",
+      "page_json": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_008/page.json",
+      "qa": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_008/qa.json",
+      "render": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_008/slide-1.png",
+      "artifacts_sha256": {
+        "page_json": "83b22062e5a21f24643748526c60add8951fd4d29aea5312ca629d881926a754",
+        "qa": "227cfa432a0a288c6e870a07435189a09c077726d6984584cbf7bd76f2402ee2",
+        "render": "aaaa0eb9d8284abb90deeb88081900b9c5d0582871525782577d11aa5183eb0e"
+      }
+    },
+    "10": {
+      "page_number": 10,
+      "status": "review",
+      "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_010",
+      "full_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_010_业务体系和成果产品_full.png",
+      "background_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_010/page_010_background.png",
+      "text_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_010/page_010_text.png",
+      "page_json": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_010/page.json",
+      "qa": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_010/qa.json",
+      "render": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_010/slide-1.png",
+      "artifacts_sha256": {
+        "page_json": "7d0ca4201d14bac4be380b51449575fadc40115f4d5d08339c5f8467be77aede",
+        "qa": "15903875fc4c528b737dbec7e3c860edb79c55249b4c40d037ecb09f861b42fd",
+        "render": "6247e6cdc4def94fd071abbe021bea47fe2f18a8eeb8de348b8fde2cd164ae3b"
+      }
+    },
+    "11": {
+      "page_number": 11,
+      "status": "review",
+      "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_011",
+      "full_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_011_数据资源_治理与可信流通_full.png",
+      "background_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_011/page_011_background.png",
+      "text_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_011/page_011_text.png",
+      "page_json": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_011/page.json",
+      "qa": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_011/qa.json",
+      "render": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_011/slide-1.png",
+      "artifacts_sha256": {
+        "page_json": "f52a11b9f65fef56d3cb8f79a4d3991e376e813f77ba0f1713d6b9e55f4cc007",
+        "qa": "0c3d5dc586eefe0f646271422ad4d73a2396b56771998e3c84caf6130af9b87d",
+        "render": "e9c1ce8b079b213465cf5d856d363e1a5a04bacae04c878e2ad65fd9526eb2a5"
+      }
+    },
+    "12": {
+      "page_number": 12,
+      "status": "review",
+      "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_012",
+      "full_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_012_模型体系_生产流程与智能辅助_full.png",
+      "background_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_012/page_012_background.png",
+      "text_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_012/page_012_text.png",
+      "page_json": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_012/page.json",
+      "qa": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_012/qa.json",
+      "render": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_012/slide-1.png",
+      "artifacts_sha256": {
+        "page_json": "9cd0b22f7699398999d6f652cb372bc24ebf74675cfd9194c08c174c6880aa58",
+        "qa": "9b343ed340a9ec39bf2391f963e87e0967439b69ef6fc1ce1005067158723c7b",
+        "render": "fdfaf4dad8942577ff5786348477a44688b564297e102e47ba5010f83a284ff8"
+      }
+    },
+    "13": {
+      "page_number": 13,
+      "status": "review",
+      "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_013",
+      "full_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_013_平台架构_模块关系与版本留痕_full.png",
+      "background_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_013/page_013_background.png",
+      "text_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_013/page_013_text.png",
+      "page_json": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_013/page.json",
+      "qa": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_013/qa.json",
+      "render": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_013/slide-1.png",
+      "artifacts_sha256": {
+        "page_json": "67eaa4105da60bd3d7fd1643ab008bbf004e9ef76b8c70c7a8c7d8f341f63062",
+        "qa": "303c59d24d9e2b7680932d012b1bde1d367f53774339b357a96d6f4c1b79ffb5",
+        "render": "bfb15fb63c923ac668a9797bec55a02a777ffdec7569ddd0ac38065e29137616"
+      }
+    },
+    "14": {
+      "page_number": 14,
+      "status": "review",
+      "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_014",
+      "full_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_014_场景体系_责任与验收闭环_full.png",
+      "background_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_014/page_014_background.png",
+      "text_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_014/page_014_text.png",
+      "page_json": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_014/page.json",
+      "qa": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_014/qa.json",
+      "render": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_014/slide-1.png",
+      "artifacts_sha256": {
+        "page_json": "cae5bda040d3a6a86a575072792d11b1363f2e1ccf1f0aa7f43127f16d6852d9",
+        "qa": "ab23ff935948e00ee52d6c9eeb20f046ba3ca36ec94520aa5d20e28ed58435b9",
+        "render": "915a240adbe4b43218340fa943af51463b72410641ebf257a7ba6d6870b37ccb"
+      }
+    },
+    "15": {
+      "page_number": 15,
+      "status": "review",
+      "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_015",
+      "full_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_015_实施节奏与阶段成果_full.png",
+      "background_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_015/page_015_background.png",
+      "text_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_015/page_015_text.png",
+      "page_json": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_015/page.json",
+      "qa": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_015/qa.json",
+      "render": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_015/slide-1.png",
+      "artifacts_sha256": {
+        "page_json": "a7276e8301e8005cfadb717c85ddc1f55b5964de8fef1b7db61fa10ec3efb929",
+        "qa": "53798ec21c6d41b1880cbffc6c0520e535b221e6650739fe2dc9b1c0ab7167c4",
+        "render": "dddad1cc2a5ba4bf6bd16b8454606038b6fa46b177ce38b3749e67fd8ec13479"
+      }
+    },
+    "16": {
+      "page_number": 16,
+      "status": "review",
+      "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_016",
+      "full_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_016_组织机制_资源与安全保障_full.png",
+      "background_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_016/page_016_background.png",
+      "text_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_016/page_016_text.png",
+      "page_json": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_016/page.json",
+      "qa": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_016/qa.json",
+      "render": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_016/slide-1.png",
+      "artifacts_sha256": {
+        "page_json": "aea4a951f8b3b368a8e0fc725c4256fc639de8f2ac8053ea92a1033e1effdc07",
+        "qa": "9fbf537a4f60113e58e7010cc320beccfe4d49f849a0bed8da02abbda7a9cc77",
+        "render": "4da030d7ffb199071a5a5125385fa61f8f9541cbf66311088d5dad3073f804a6"
+      }
+    },
+    "18": {
+      "page_number": 18,
+      "status": "failed",
+      "output_dir": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_018",
+      "full_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_018_需请领导审定事项清单_full.png",
+      "background_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_018/page_018_background.png",
+      "text_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_018/page_018_text.png",
+      "page_json": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_018/page.json",
+      "qa": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_018/qa.json",
+      "render": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/page_018/slide-1.png",
+      "artifacts_sha256": {
+        "qa": "f3e21c7a728133b987021b5b7b35f85fc694e3ead663eea260d11fa6353a16f0"
+      }
+    }
+  },
+  "result_manifest": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/editable_text_result.json"
+}

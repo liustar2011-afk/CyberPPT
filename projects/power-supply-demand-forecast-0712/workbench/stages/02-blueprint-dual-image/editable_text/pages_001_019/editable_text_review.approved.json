@@ -1,0 +1,7 @@
+{
+  "schema": "cyberppt.editable_text_review_approval.v1",
+  "approved": true,
+  "result_manifest": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/editable_text_result.json",
+  "result_sha256": "11e182bf06825fa0fc01f2ee7416b49b62ee631bb9e22c7ea98807cbf499f86c",
+  "option_id": "confirm_editable_text"
+}

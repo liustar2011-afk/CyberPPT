@@ -1,0 +1,22 @@
+{
+  "schema": "cyberppt.analysis_expression.pending_confirmation.v1",
+  "gate": "report_structure",
+  "status": "pending_confirmation",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/analysis_expression/report_structure.md",
+  "source_sha256": "b87437faa313a1f1e7491dbc3cb55c7cae25f0f867808ca4cb258ec8dded6f6b",
+  "recommendation": "confirm_report_structure",
+  "question": "是否确认采用该六模块汇报结构？确认后再进入页面设计。",
+  "options": [
+    {
+      "id": "confirm_report_structure",
+      "label": "确认该汇报结构",
+      "reason": "与已确认的领导审定型主线一致。"
+    },
+    {
+      "id": "revise_report_structure",
+      "label": "返回调整结构",
+      "reason": "需要调整模块顺序、范围或重点。"
+    }
+  ],
+  "created_at": "2026-07-11T17:53:40.993673+00:00"
+}

@@ -123,6 +123,41 @@ class ImagegenRunTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "image-text QA"):
             approve_blueprint_image_review(project, "confirm_blueprint_images")
 
+    def test_editable_text_approval_uses_editable_batch_readiness(self) -> None:
+        project, manifest = self._project_with_manifest()
+        (project / "manifest.yml").write_text("production_mode: editable_text_three_image\n", encoding="utf-8")
+        full = Path(str(manifest["pairs"][0]["full"]["path"]))
+        full.parent.mkdir(parents=True, exist_ok=True)
+        Image.new("RGB", (1680, 944), "white").save(full)
+        manifest_path = project / "workbench/stages/02-blueprint-dual-image/pages_004_004/page_image_pairs.json"
+        editable_root = project / "workbench/stages/02-blueprint-dual-image/editable_text/pages_004_004"
+        editable_root.mkdir(parents=True, exist_ok=True)
+        result_path = editable_root / "editable_text_result.json"
+        result_path.write_text(
+            json.dumps(
+                {
+                    "status": "review_required",
+                    "pages": {"4": {"page_number": 4, "status": "review"}},
+                }
+            ),
+            encoding="utf-8",
+        )
+        (editable_root / "editable_text_review.approved.json").write_text(
+            json.dumps(
+                {
+                    "approved": True,
+                    "result_manifest": str(result_path),
+                    "result_sha256": hashlib.sha256(result_path.read_bytes()).hexdigest(),
+                }
+            ),
+            encoding="utf-8",
+        )
+        stage_blueprint_image_review(project, manifest_path)
+
+        approval = approve_blueprint_image_review(project, "confirm_blueprint_images")
+
+        self.assertTrue(approval.is_file())
+
     def test_controlled_readiness_accepts_current_passed_run_and_qa(self) -> None:
         project, manifest = self._project_with_manifest()
         manifest_path = self._write_approved_run_and_qa(project, manifest)

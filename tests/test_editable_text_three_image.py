@@ -8,11 +8,13 @@ from PIL import Image
 
 from cyberppt.commands.editable_text_three_image import (
     assert_editable_text_batch_ready,
+    approve_editable_text_review,
     build_editable_text_batch,
     build_three_image_batch,
     get_production_mode,
     run_three_image_batch,
 )
+from cyberppt.commands.editable_text_three_image import _default_background_generator, _default_text_generator
 from cyberppt.commands.init_project import init_project
 
 
@@ -89,6 +91,68 @@ def test_default_editable_batch_uses_two_image_without_text(tmp_path: Path, monk
     assert set(batch["pages"][0]["inputs"]) == {"full", "background", "ocr", "registration"}
     assert calls == [(full, ocr)]
     assert json.loads(ocr.read_text(encoding="utf-8"))["canonical"]["metadata"]["backend"] == "paddleocr-local"
+
+
+def test_editable_batch_ignores_template_only_pages_in_requested_range(tmp_path: Path, monkeypatch) -> None:
+    _install_fake_local_ocr(monkeypatch)
+    pairs = tmp_path / "page_image_pairs.json"
+    full = _write_image(tmp_path / "full.png")
+    background = _write_image(tmp_path / "background.png")
+    pairs.write_text(
+        json.dumps(
+            {
+                "pairs": [
+                    {
+                        "page_number": 4,
+                        "full": {"path": str(full)},
+                        "background": {"path": str(background)},
+                    }
+                ],
+                "skipped_pages": [
+                    {"page_number": 1, "page_role": "cover"},
+                    {"page_number": 2, "page_role": "agenda"},
+                    {"page_number": 3, "page_role": "section"},
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    batch = build_three_image_batch(tmp_path, "1-4", pairs)
+
+    assert [page["page_number"] for page in batch["pages"]] == [4]
+
+
+def test_default_background_generator_matches_full_dimensions(tmp_path: Path, monkeypatch) -> None:
+    full = _write_image(tmp_path / "full.png", size=(1693, 929))
+    output = tmp_path / "background.png"
+
+    def fake_run_codex_image(*, prompt, output_path, image_paths):
+        _write_image(output_path, size=(1692, 929))
+        return output_path
+
+    monkeypatch.setattr("cyberppt.commands.editable_text_three_image.run_codex_image", fake_run_codex_image)
+
+    _default_background_generator(full, output)
+
+    with Image.open(output) as image:
+        assert image.size == (1693, 929)
+
+
+def test_default_text_generator_matches_full_dimensions(tmp_path: Path, monkeypatch) -> None:
+    full = _write_image(tmp_path / "full.png", size=(1693, 929))
+    output = tmp_path / "text.png"
+
+    def fake_run_codex_image(*, prompt, output_path, image_paths):
+        _write_image(output_path, size=(1692, 929))
+        return output_path
+
+    monkeypatch.setattr("cyberppt.commands.editable_text_three_image.run_codex_image", fake_run_codex_image)
+
+    _default_text_generator(full, output)
+
+    with Image.open(output) as image:
+        assert image.size == (1693, 929)
 
 
 def test_explicit_three_image_batch_prepares_text_when_missing(tmp_path: Path, monkeypatch) -> None:
@@ -351,6 +415,38 @@ def test_default_ocr_generator_uses_local_paddleocr_backend(tmp_path: Path, monk
     assert json.loads(Path(batch["pages"][0]["ocr"]).read_text(encoding="utf-8"))["canonical"]["metadata"]["backend"] == "paddleocr-local"
 
 
+def test_hybrid_backend_uses_paddle_text_and_vision_geometry(tmp_path: Path, monkeypatch) -> None:
+    project = tmp_path / "project"
+    project.mkdir()
+    full = _write_image(project / "full.png")
+    background = _write_image(project / "background.png")
+    text = _write_image(project / "text.png")
+    pairs = project / "page_image_pairs.json"
+    pairs.write_text(
+        json.dumps({"pairs": [{"page_number": 4, "full": {"path": str(full)}, "background": {"path": str(background)}, "text": {"path": str(text)}}]}),
+        encoding="utf-8",
+    )
+
+    def fake_paddle(image_path: Path, *, output_path: Path) -> Path:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps({"canonical": {"metadata": {"backend": "paddleocr-local"}, "lines": [{"text": "同比增长 5.0%", "bbox": [1, 1, 80, 20], "score": 0.99}]}}), encoding="utf-8")
+        return output_path
+
+    monkeypatch.setattr("cyberppt.commands.editable_text_three_image.run_local_ocr", fake_paddle)
+    monkeypatch.setattr(
+        "cyberppt.commands.editable_text_three_image.run_vision_ocr",
+        lambda image_path: {"canonical": {"lines": [{"text": "同比增长", "bbox": [1, 5, 45, 12], "score": 1.0}, {"text": "5.0%", "bbox": [50, 1, 30, 18], "score": 0.5}]}},
+    )
+
+    batch = build_editable_text_batch(project, "4", pairs, input_mode="three-image", ocr_backend="hybrid")
+    ocr_path = Path(batch["pages"][0]["ocr"])
+    payload = json.loads(ocr_path.read_text(encoding="utf-8"))
+    assert payload["canonical"]["metadata"]["backend"] == "paddle-text+vision-geometry"
+    assert [line["text"] for line in payload["canonical"]["lines"]] == ["同比增长", "5.0%"]
+    asset_manifest = json.loads((project / "workbench/stages/02-blueprint-dual-image/editable_text/pages_004_004/assets/page_004/asset_manifest.json").read_text(encoding="utf-8"))
+    assert asset_manifest["ocr_backend"] == "hybrid"
+
+
 def _write_complete_pairs(project: Path, pages: list[int]) -> Path:
     image_dir = project / "inputs"
     image_dir.mkdir(parents=True, exist_ok=True)
@@ -397,6 +493,32 @@ def test_review_result_requires_explicit_approval(tmp_path: Path, monkeypatch) -
     assert result["status"] == "review_required"
     with pytest.raises(ValueError, match="editable-text review approval"):
         assert_editable_text_batch_ready(project, "4")
+
+
+def test_editable_text_approval_promotes_review_pages_for_assembly(tmp_path: Path, monkeypatch) -> None:
+    project = tmp_path / "project"
+    init_project(project)
+    _write_complete_pairs(project, [4])
+    _install_fake_local_ocr(monkeypatch)
+
+    def fake_vendor_run(command, check=False, **kwargs):
+        output_dir = Path(json.loads(Path(command[-1]).read_text(encoding="utf-8"))["pages"][0]["output_dir"])
+        output_dir.mkdir(parents=True, exist_ok=True)
+        (output_dir / "page.json").write_text(json.dumps({"text_lines": [{"line_id": "T01-L01", "text": "测试"}]}), encoding="utf-8")
+        (output_dir / "qa.json").write_text(json.dumps({"status": "review"}), encoding="utf-8")
+        (output_dir / "slide-1.png").write_bytes(b"render")
+        return type("Completed", (), {"returncode": 0})()
+
+    monkeypatch.setattr("cyberppt.commands.editable_text_three_image.subprocess.run", fake_vendor_run)
+    result = run_three_image_batch(project, "4")
+    assert result["status"] == "review_required"
+
+    approve_editable_text_review(project, "4")
+
+    result_after = json.loads(Path(result["result_manifest"]).read_text(encoding="utf-8"))
+    assert result_after["status"] == "passed"
+    assert result_after["pages"]["4"]["status"] == "passed"
+    assert_editable_text_batch_ready(project, "4")
 
 
 def test_two_image_review_does_not_auto_upgrade_to_three_image(tmp_path: Path, monkeypatch) -> None:

@@ -38,7 +38,7 @@ EA_FONTS = {
     'Hiragino Mincho Pro',
     'Noto Sans SC', 'Noto Sans TC', 'Noto Serif SC', 'Noto Serif TC',
     'Noto Sans JP', 'Noto Serif JP', 'Noto Sans CJK JP',
-    'Source Han Sans SC', 'Source Han Sans TC',
+    'Source Han Sans CN', 'Source Han Sans SC', 'Source Han Sans TC',
     'Source Han Serif SC', 'Source Han Serif TC',
     'Source Han Sans JP', 'Source Han Serif JP',
     'WenQuanYi Micro Hei', 'WenQuanYi Zen Hei',
@@ -86,6 +86,7 @@ FONT_FALLBACK_WIN = {
     # 'Noto Sans JP': → keep as 'Noto Sans JP' (do not map)
     # 'メイリオ': → keep as 'メイリオ' (Meiryo alias)
     'メイリオ': 'Meiryo',
+    'Source Han Sans CN': 'Source Han Sans CN',
     'Source Han Sans SC': 'Microsoft YaHei',
     'Source Han Sans TC': 'Microsoft JhengHei',
     'Source Han Serif SC': 'SimSun',

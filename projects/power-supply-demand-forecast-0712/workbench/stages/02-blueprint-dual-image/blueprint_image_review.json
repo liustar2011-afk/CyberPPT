@@ -1,0 +1,68 @@
+{
+  "schema": "cyberppt.blueprint_image_review.v1",
+  "created_at": "2026-07-11T22:20:35+00:00",
+  "page_image_manifest": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json",
+  "page_image_manifest_sha256": "8bb7b24cb21936d39c064a34483d2d41352d18ae42b89d3c9a6d2fc29357ebd1",
+  "images": [
+    {
+      "page": 4,
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_004_形势变化和工作要求_full.png",
+      "sha256": "522eba22affa5ed69872ed65330a8fe84c2d09df1ba4993cfd283a714a04e404"
+    },
+    {
+      "page": 5,
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_005_工作基础和完善方向_full.png",
+      "sha256": "4119d2aa5a29d40851f73cf6c4d4f7c994977dde701a39dda69f7d78781ddd47"
+    },
+    {
+      "page": 7,
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_007_总体思路和目标定位_full.png",
+      "sha256": "c457a8551136702ab63889b04289ec40621418e73357615d3c1d6f59ac041d93"
+    },
+    {
+      "page": 8,
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_008_建设原则和首期边界_full.png",
+      "sha256": "9690d34954abbfe456e3f390856306fd5ee6fd92cd80aba112709cfe18506ef9"
+    },
+    {
+      "page": 10,
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_010_业务体系和成果产品_full.png",
+      "sha256": "4a94ca2297b91380335424636a772ebb9a6bddcd54fce0390176a2da2ee29d46"
+    },
+    {
+      "page": 11,
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_011_数据资源_治理与可信流通_full.png",
+      "sha256": "9bc7c60bfddff2eb166c2c6762d0a378282dc9ac65623cafa0809556748b50fb"
+    },
+    {
+      "page": 12,
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_012_模型体系_生产流程与智能辅助_full.png",
+      "sha256": "505e410f98295a0c0d5af53339a3d09e75aa95833e888e179ea53141300fbe3d"
+    },
+    {
+      "page": 13,
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_013_平台架构_模块关系与版本留痕_full.png",
+      "sha256": "5f250ddd9259d6220beee7674b5badef11aca3d8f3fe3b20e03cd349a5b942cc"
+    },
+    {
+      "page": 14,
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_014_场景体系_责任与验收闭环_full.png",
+      "sha256": "c6e1921e061c3d7c3fb6ee10b3fbc170797bb6d96e333ab119d2b37bb6164381"
+    },
+    {
+      "page": 15,
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_015_实施节奏与阶段成果_full.png",
+      "sha256": "aaba2c803ea52a5a80c22a9dd7676f5ba116f63ba42af0e1546ad89e10e90598"
+    },
+    {
+      "page": 16,
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_016_组织机制_资源与安全保障_full.png",
+      "sha256": "6a14ad70f6ca0b60d9d305dd87ad1db6b28f7e12d6cf50a20719b97773685e9b"
+    },
+    {
+      "page": 18,
+      "path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_018_需请领导审定事项清单_full.png",
+      "sha256": "35619706df4d1ef0c2707670a0968cd91f4ffcb3f202e1e4168e74a3be53ba60"
+    }
+  ]
+}

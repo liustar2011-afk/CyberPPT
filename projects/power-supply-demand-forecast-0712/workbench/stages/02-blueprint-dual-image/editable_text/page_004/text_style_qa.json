@@ -1,0 +1,249 @@
+{
+  "schema": "three-image.text-style-qa.v1",
+  "status": "review",
+  "checks": {
+    "line_count": 24
+  },
+  "lines": [
+    {
+      "line_id": "L001",
+      "status": "review",
+      "mask_iou": 0.5969,
+      "color_distance_rgb": 194.6407,
+      "contrast_ratio": 3.7978,
+      "reference_color": "#F2F1ED",
+      "rendered_color": "#7F7F81",
+      "overflow": false
+    },
+    {
+      "line_id": "L002",
+      "status": "review",
+      "mask_iou": 0.798,
+      "color_distance_rgb": 111.2385,
+      "contrast_ratio": 4.3055,
+      "reference_color": "#4F6680",
+      "rendered_color": "#95A7B9",
+      "overflow": false
+    },
+    {
+      "line_id": "L003",
+      "status": "review",
+      "mask_iou": 0.5103,
+      "color_distance_rgb": 156.6461,
+      "contrast_ratio": 4.8062,
+      "reference_color": "#C4CBD1",
+      "rendered_color": "#586E90",
+      "overflow": false
+    },
+    {
+      "line_id": "L004",
+      "status": "review",
+      "mask_iou": 0.5454,
+      "color_distance_rgb": 130.3419,
+      "contrast_ratio": 3.3728,
+      "reference_color": "#D2D5D6",
+      "rendered_color": "#808993",
+      "overflow": false
+    },
+    {
+      "line_id": "L005",
+      "status": "review",
+      "mask_iou": 0.912,
+      "color_distance_rgb": 163.9695,
+      "contrast_ratio": 4.3922,
+      "reference_color": "#CBCDD0",
+      "rendered_color": "#6C6E72",
+      "overflow": false
+    },
+    {
+      "line_id": "L006",
+      "status": "review",
+      "mask_iou": 0.7909,
+      "color_distance_rgb": 145.4923,
+      "contrast_ratio": 3.639,
+      "reference_color": "#CDCFD3",
+      "rendered_color": "#797B7F",
+      "overflow": false
+    },
+    {
+      "line_id": "L007",
+      "status": "review",
+      "mask_iou": 0.8741,
+      "color_distance_rgb": 137.9891,
+      "contrast_ratio": 3.7426,
+      "reference_color": "#C7C9CC",
+      "rendered_color": "#77797D",
+      "overflow": false
+    },
+    {
+      "line_id": "L008",
+      "status": "review",
+      "mask_iou": 0.8778,
+      "color_distance_rgb": 132.2157,
+      "contrast_ratio": 3.8662,
+      "reference_color": "#C2C5C7",
+      "rendered_color": "#76787B",
+      "overflow": false
+    },
+    {
+      "line_id": "L009",
+      "status": "review",
+      "mask_iou": 0.692,
+      "color_distance_rgb": 124.7157,
+      "contrast_ratio": 3.0575,
+      "reference_color": "#CDD0D3",
+      "rendered_color": "#85878C",
+      "overflow": false
+    },
+    {
+      "line_id": "L010",
+      "status": "review",
+      "mask_iou": 0.7702,
+      "color_distance_rgb": 140.2961,
+      "contrast_ratio": 4.5889,
+      "reference_color": "#BFC1C2",
+      "rendered_color": "#6E7071",
+      "overflow": false
+    },
+    {
+      "line_id": "L011",
+      "status": "review",
+      "mask_iou": 0.8099,
+      "color_distance_rgb": 146.0719,
+      "contrast_ratio": 4.1108,
+      "reference_color": "#CACBCD",
+      "rendered_color": "#767778",
+      "overflow": false
+    },
+    {
+      "line_id": "L012",
+      "status": "review",
+      "mask_iou": 0.6817,
+      "color_distance_rgb": 98.1529,
+      "contrast_ratio": 3.2608,
+      "reference_color": "#BFC0C2",
+      "rendered_color": "#868889",
+      "overflow": false
+    },
+    {
+      "line_id": "L013",
+      "status": "review",
+      "mask_iou": 0.7945,
+      "color_distance_rgb": 98.1529,
+      "contrast_ratio": 3.6587,
+      "reference_color": "#B7B8BA",
+      "rendered_color": "#7E8081",
+      "overflow": false
+    },
+    {
+      "line_id": "L014",
+      "status": "review",
+      "mask_iou": 0.7359,
+      "color_distance_rgb": 121.2436,
+      "contrast_ratio": 4.3213,
+      "reference_color": "#BCBCBB",
+      "rendered_color": "#767675",
+      "overflow": false
+    },
+    {
+      "line_id": "L015",
+      "status": "review",
+      "mask_iou": 0.5636,
+      "color_distance_rgb": 114.8825,
+      "contrast_ratio": 4.2244,
+      "reference_color": "#B1BCC6",
+      "rendered_color": "#627A93",
+      "overflow": false
+    },
+    {
+      "line_id": "L016",
+      "status": "review",
+      "mask_iou": 0.7623,
+      "color_distance_rgb": 132.9286,
+      "contrast_ratio": 4.4669,
+      "reference_color": "#BEC5CF",
+      "rendered_color": "#697392",
+      "overflow": false
+    },
+    {
+      "line_id": "L017",
+      "status": "review",
+      "mask_iou": 0.7236,
+      "color_distance_rgb": 90.4102,
+      "contrast_ratio": 4.7332,
+      "reference_color": "#536B87",
+      "rendered_color": "#8CA0B5",
+      "overflow": false
+    },
+    {
+      "line_id": "L018",
+      "status": "review",
+      "mask_iou": 0.4679,
+      "color_distance_rgb": 128.3667,
+      "contrast_ratio": 3.3812,
+      "reference_color": "#D0D2D4",
+      "rendered_color": "#81888F",
+      "overflow": false
+    },
+    {
+      "line_id": "L019",
+      "status": "review",
+      "mask_iou": 0.8484,
+      "color_distance_rgb": 115.1086,
+      "contrast_ratio": 4.9137,
+      "reference_color": "#45607F",
+      "rendered_color": "#90A3B7",
+      "overflow": false
+    },
+    {
+      "line_id": "L020",
+      "status": "review",
+      "mask_iou": 0.7774,
+      "color_distance_rgb": 136.832,
+      "contrast_ratio": 4.4972,
+      "reference_color": "#C3C2C1",
+      "rendered_color": "#747372",
+      "overflow": false
+    },
+    {
+      "line_id": "L021",
+      "status": "review",
+      "mask_iou": 0.4555,
+      "color_distance_rgb": 126.8779,
+      "contrast_ratio": 3.2532,
+      "reference_color": "#CCD2D7",
+      "rendered_color": "#7489A0",
+      "overflow": false
+    },
+    {
+      "line_id": "L022",
+      "status": "review",
+      "mask_iou": 0.7365,
+      "color_distance_rgb": 101.0495,
+      "contrast_ratio": 4.3209,
+      "reference_color": "#B0B1B1",
+      "rendered_color": "#757678",
+      "overflow": false
+    },
+    {
+      "line_id": "L023",
+      "status": "review",
+      "mask_iou": 0.7236,
+      "color_distance_rgb": 121.2683,
+      "contrast_ratio": 4.3034,
+      "reference_color": "#BDBDBD",
+      "rendered_color": "#767679",
+      "overflow": false
+    },
+    {
+      "line_id": "L024",
+      "status": "review",
+      "mask_iou": 0.5366,
+      "color_distance_rgb": 125.5747,
+      "contrast_ratio": 3.4126,
+      "reference_color": "#CED1D3",
+      "rendered_color": "#808891",
+      "overflow": false
+    }
+  ]
+}

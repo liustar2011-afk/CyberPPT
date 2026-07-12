@@ -27,6 +27,8 @@ from cyberppt.commands.produce import (
     assert_image_text_qa_ready,
     get_production_status,
     prepare_production,
+    _verification_pages,
+    _editable_visual_review_acceptable,
     verify_production,
 )
 from scripts.validate_pptx import validate_manifest, validate_manifest_slide
@@ -38,6 +40,29 @@ OPTIONS = [
     {"id": "scenario_implementation", "label": "场景实施型"},
     {"id": "resource_risk", "label": "资源风险型"},
 ]
+
+
+def test_editable_verification_uses_full_rendered_page_order() -> None:
+    manifest = {"tasks": [{"page_number": 1}, {"page_number": 4}, {"page_number": 5}]}
+
+    assert _verification_pages(manifest, {4: Path("full.png"), 5: Path("full5.png")}, True) == [1, 4, 5]
+
+
+def test_editable_visual_review_accepts_bounded_visual_error() -> None:
+    assert _editable_visual_review_acceptable(
+        {
+            "passed": False,
+            "failures": ["visual_diff_exceeds_threshold:4"],
+            "slides": [{"page": 4, "mean_abs_diff": 69.0}],
+        }
+    ) is True
+    assert _editable_visual_review_acceptable(
+        {
+            "passed": False,
+            "failures": ["visual_diff_exceeds_threshold:4"],
+            "slides": [{"page": 4, "mean_abs_diff": 91.0}],
+        }
+    ) is False
 
 REPORTING_DIRECTION = """## 方向一：领导审定型
 ### 适用受众
@@ -310,6 +335,15 @@ class ProduceTests(unittest.TestCase):
             ["produce", "editable-text", "/tmp/project", "--pages", "1", "--input-mode", "three-image"]
         )
         self.assertEqual("three-image", args.input_mode)
+
+    def test_produce_editable_text_command_accepts_hybrid_ocr_backend(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "produce", "editable-text", "/tmp/project", "--pages", "4",
+                "--input-mode", "three-image", "--ocr-backend", "hybrid",
+            ]
+        )
+        self.assertEqual("hybrid", args.ocr_backend)
 
     def test_image_text_qa_readiness_blocks_without_current_summary(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

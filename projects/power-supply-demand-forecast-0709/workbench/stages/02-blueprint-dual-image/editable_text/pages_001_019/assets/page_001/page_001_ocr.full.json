@@ -1,0 +1,155 @@
+{
+  "canonical": {
+    "metadata": {
+      "backend": "paddleocr-local",
+      "image_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/pages_001_019/page_001_封面_full.png",
+      "image_size": {
+        "width": 1680,
+        "height": 944
+      },
+      "runtime_dir": "/Volumes/DOC/CyberPPT/tools/paddleocr_runtime"
+    },
+    "lines": [
+      {
+        "text": "关于开展电力供需形势",
+        "bbox": [
+          379,
+          176,
+          949,
+          111
+        ],
+        "score": 0.9999096989631653,
+        "runs": [
+          {
+            "text": "关于开展电力供需形势",
+            "font_size": 83.25,
+            "bold": false
+          }
+        ],
+        "polygon": [
+          [
+            379,
+            176
+          ],
+          [
+            1328,
+            176
+          ],
+          [
+            1328,
+            287
+          ],
+          [
+            379,
+            287
+          ]
+        ]
+      },
+      {
+        "text": "预测工作的整体方案",
+        "bbox": [
+          408,
+          297,
+          911,
+          114
+        ],
+        "score": 0.999981164932251,
+        "runs": [
+          {
+            "text": "预测工作的整体方案",
+            "font_size": 85.5,
+            "bold": false
+          }
+        ],
+        "polygon": [
+          [
+            408,
+            297
+          ],
+          [
+            1319,
+            297
+          ],
+          [
+            1319,
+            411
+          ],
+          [
+            408,
+            411
+          ]
+        ]
+      },
+      {
+        "text": "中电联统计与数智部电力供需分析处",
+        "bbox": [
+          621,
+          502,
+          547,
+          43
+        ],
+        "score": 0.9999812841415405,
+        "runs": [
+          {
+            "text": "中电联统计与数智部电力供需分析处",
+            "font_size": 32.25,
+            "bold": false
+          }
+        ],
+        "polygon": [
+          [
+            621,
+            504
+          ],
+          [
+            1168,
+            502
+          ],
+          [
+            1168,
+            543
+          ],
+          [
+            621,
+            545
+          ]
+        ]
+      },
+      {
+        "text": "2026年7月",
+        "bbox": [
+          624,
+          600,
+          208,
+          41
+        ],
+        "score": 0.9999637603759766,
+        "runs": [
+          {
+            "text": "2026年7月",
+            "font_size": 30.75,
+            "bold": false
+          }
+        ],
+        "polygon": [
+          [
+            624,
+            600
+          ],
+          [
+            832,
+            600
+          ],
+          [
+            832,
+            641
+          ],
+          [
+            624,
+            641
+          ]
+        ]
+      }
+    ]
+  }
+}

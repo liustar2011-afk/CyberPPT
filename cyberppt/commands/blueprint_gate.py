@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -43,6 +44,35 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 def _stage_path(project: Path, name: str) -> Path:
     return project.expanduser().resolve() / STAGE_ROOT / name
+
+
+def _editable_text_review_is_current(project: Path) -> bool:
+    manifest = project.expanduser().resolve() / "manifest.yml"
+    if not manifest.is_file() or not re.search(
+        r"^production_mode:\s*editable_text_three_image\s*$",
+        manifest.read_text(encoding="utf-8"),
+        re.MULTILINE,
+    ):
+        return False
+    review_files = sorted(
+        (project.expanduser().resolve() / STAGE_ROOT / "editable_text").glob(
+            "*/editable_text_review.approved.json"
+        )
+    )
+    for review_path in review_files:
+        try:
+            approval = _read_json(review_path)
+            result_path = Path(str(approval.get("result_manifest", ""))).expanduser().resolve()
+            if not result_path.is_file() or approval.get("result_sha256") != _sha256(result_path):
+                continue
+            result = _read_json(result_path)
+        except (OSError, ValueError, json.JSONDecodeError):
+            continue
+        pages = result.get("pages")
+        if approval.get("approved") is True and isinstance(pages, dict) and pages:
+            if all(isinstance(item, dict) and item.get("status") != "failed" for item in pages.values()):
+                return True
+    return False
 
 
 def _analysis_approval(project: Path, gate: str) -> dict[str, Any]:
@@ -500,7 +530,12 @@ def approve_blueprint_image_review(project: Path, option_id: str, note: str = ""
     review = _read_json(artifact)
     approved = option_id == "confirm_blueprint_images"
     if approved:
-        assert_controlled_imagegen_ready(root, Path(str(review.get("page_image_manifest", ""))))
+        manifest_path = Path(str(review.get("page_image_manifest", "")))
+        if _editable_text_review_is_current(root):
+            if not manifest_path.is_file():
+                raise FileNotFoundError(f"page image manifest not found: {manifest_path}")
+        else:
+            assert_controlled_imagegen_ready(root, manifest_path)
     for image in review.get("images", []):
         path = Path(str(image.get("path", "")))
         if not path.is_file() or _sha256(path) != image.get("sha256"):

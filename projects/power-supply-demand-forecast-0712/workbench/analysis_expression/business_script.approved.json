@@ -1,0 +1,12 @@
+{
+  "schema": "cyberppt.analysis_expression.approval.v1",
+  "gate": "business_script",
+  "approved": true,
+  "approved_at": "2026-07-11T18:00:01.563011+00:00",
+  "pending_confirmation": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/analysis_expression/business_script.pending-confirmation.json",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/analysis_expression/business_script.md",
+  "source_sha256": "ed621cf2655c8b6bd2b23b827d3d8d415fcabfbb206bb572e58e7060310c3f15",
+  "option_id": "confirm_business_script",
+  "note": "",
+  "source_analysis_sha256": "3e697b8e6469de86c4cfaa75f7173c087b8a5011a22833168022bb2e06e29f5f"
+}

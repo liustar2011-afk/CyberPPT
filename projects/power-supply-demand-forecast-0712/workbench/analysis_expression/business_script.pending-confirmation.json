@@ -1,0 +1,23 @@
+{
+  "schema": "cyberppt.analysis_expression.pending_confirmation.v1",
+  "gate": "business_script",
+  "status": "pending_confirmation",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/analysis_expression/business_script.md",
+  "source_sha256": "ed621cf2655c8b6bd2b23b827d3d8d415fcabfbb206bb572e58e7060310c3f15",
+  "recommendation": "confirm_business_script",
+  "question": "是否确认该页面业务稿作为后续生图与装配的业务内容底稿？确认后才进入视觉样式和生产准备。",
+  "options": [
+    {
+      "id": "confirm_business_script",
+      "label": "确认页面业务稿",
+      "reason": "页面文字、证据链、来源和边界已分离。"
+    },
+    {
+      "id": "revise_business_script",
+      "label": "返回调整业务稿",
+      "reason": "需要调整上屏文字、证据或页面承接。"
+    }
+  ],
+  "created_at": "2026-07-11T17:59:28.508921+00:00",
+  "source_analysis_sha256": "3e697b8e6469de86c4cfaa75f7173c087b8a5011a22833168022bb2e06e29f5f"
+}

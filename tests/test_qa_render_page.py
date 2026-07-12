@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from pptx import Presentation
 from pptx.util import Emu, Inches
 
-from scripts.dual_image_overlay.qa_render_page import check_pptx_geometry
+from scripts.dual_image_overlay.qa_render_page import check_pptx_geometry, render_to_png
 
 
 def _add_textbox(slide: object, text: str, *, left_in: float, top_in: float, w_in: float, h_in: float) -> None:
@@ -78,3 +79,20 @@ def test_ignores_empty_text_shapes() -> None:
 
         assert report["slides"][0]["text_box_count"] == 0
         assert report["valid"] is True
+
+
+def test_render_to_png_passes_fontconfig_to_soffice() -> None:
+    with TemporaryDirectory() as directory:
+        root = Path(directory)
+        pptx_path = root / "deck.pptx"
+        pptx_path.write_bytes(b"placeholder")
+        out_dir = root / "rendered"
+
+        with patch(
+            "scripts.dual_image_overlay.qa_render_page.shutil.which",
+            side_effect=lambda name: "/bundled/soffice" if name == "soffice" else "/usr/bin/pdftoppm",
+        ), patch("scripts.dual_image_overlay.qa_render_page.subprocess.run") as run:
+            render_to_png(pptx_path, out_dir)
+
+        soffice_call = run.call_args_list[0]
+        assert soffice_call.kwargs["env"]["FONTCONFIG_FILE"] == "/opt/homebrew/etc/fonts/fonts.conf"

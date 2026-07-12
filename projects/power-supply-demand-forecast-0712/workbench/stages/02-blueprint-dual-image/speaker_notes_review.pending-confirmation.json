@@ -1,0 +1,23 @@
+{
+  "schema": "cyberppt.speaker_notes_review.pending_confirmation.v1",
+  "status": "pending_confirmation",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/speaker_notes_review.json",
+  "manifest": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/speaker_notes/speaker_notes_manifest.json",
+  "manifest_sha256": "f8c3ae1d9ad29e97b845ece2deebe3e474cc4962c1fdc10c7fe3fbd03ad91693",
+  "business_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/analysis_expression/business_script.md",
+  "business_script_sha256": "ed621cf2655c8b6bd2b23b827d3d8d415fcabfbb206bb572e58e7060310c3f15",
+  "pages_raw": "1-19",
+  "option_id": null,
+  "question": "是否确认本轮演讲者备注，并进入图片版 PPT 组装？",
+  "options": [
+    {
+      "id": "confirm_speaker_notes",
+      "label": "确认备注"
+    },
+    {
+      "id": "revise_speaker_notes",
+      "label": "返回修改"
+    }
+  ],
+  "created_at": "2026-07-11T18:07:17+00:00"
+}

@@ -1,0 +1,57 @@
+{
+  "schema": "cyberppt.visual_style_options.v1",
+  "created_at": "2026-07-11T18:00:08+00:00",
+  "business_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/analysis_expression/business_script.md",
+  "business_script_sha256": "ed621cf2655c8b6bd2b23b827d3d8d415fcabfbb206bb572e58e7060310c3f15",
+  "style_library": "/Volumes/DOC/CyberPPT/scripts/dual_image_overlay/style_presets/cyberppt_default_styles.json",
+  "options": [
+    {
+      "id": "style_1",
+      "style_id": 1,
+      "label": "经典深红咨询风",
+      "description": "战略、竞品分析、行业研究、商业计划"
+    },
+    {
+      "id": "style_2",
+      "style_id": 2,
+      "label": "冷灰 + 勃艮第红",
+      "description": "财务、投研、咨询、风险分析"
+    },
+    {
+      "id": "style_3",
+      "style_id": 3,
+      "label": "暖象牙白 + 暗酒红",
+      "description": "品牌战略、消费品、电商、用户研究"
+    },
+    {
+      "id": "style_4",
+      "style_id": 4,
+      "label": "象牙白 + 深蓝强调",
+      "description": "科技、SaaS、B2B、企业数字化、AI Agent 报告"
+    },
+    {
+      "id": "style_5",
+      "style_id": 5,
+      "label": "浅灰白 + 墨绿",
+      "description": "可持续、海外市场、增长战略、长期趋势"
+    },
+    {
+      "id": "style_6",
+      "style_id": 6,
+      "label": "纸张米色 + 铜棕",
+      "description": "消费、零售、奢侈品、商业模式分析"
+    },
+    {
+      "id": "style_7",
+      "style_id": 7,
+      "label": "纯净浅灰 + 黑金",
+      "description": "高管汇报、融资材料、年度战略、董事会材料"
+    },
+    {
+      "id": "style_8",
+      "style_id": 8,
+      "label": "冷白灰 + 深紫",
+      "description": "AI、技术趋势、产品战略、创新研究"
+    }
+  ]
+}

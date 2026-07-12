@@ -1,0 +1,200 @@
+{
+  "schema": "cyberppt.production_visual_report.v1",
+  "pptx": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/editable_text_ppt/pages_001_019_template_image_project/exports/pages_001_019_template_image_project_20260712_070713.pptx",
+  "template_image_manifest": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/editable_text_ppt/template_image_manifest.json",
+  "threshold": 12.0,
+  "passed": false,
+  "slides": [
+    {
+      "page": 1,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-01.jpg",
+      "skipped": "brand-template",
+      "passed": true
+    },
+    {
+      "page": 2,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-02.jpg",
+      "skipped": "brand-template",
+      "passed": true
+    },
+    {
+      "page": 3,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-03.jpg",
+      "skipped": "brand-template",
+      "passed": true
+    },
+    {
+      "page": 4,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-04.jpg",
+      "approved_image": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_004_形势变化和工作要求_full.png",
+      "body_crop": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/page_004_body_crop.png",
+      "mean_abs_diff": 56.2166,
+      "threshold": 12.0,
+      "passed": false,
+      "rendered_sha256": "02aa6c34bd0c32837b4d77304b5858923fc9e0e69b62ec5eba854b202e9e36f0",
+      "approved_image_sha256": "522eba22affa5ed69872ed65330a8fe84c2d09df1ba4993cfd283a714a04e404"
+    },
+    {
+      "page": 5,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-05.jpg",
+      "approved_image": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_005_工作基础和完善方向_full.png",
+      "body_crop": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/page_005_body_crop.png",
+      "mean_abs_diff": 39.2654,
+      "threshold": 12.0,
+      "passed": false,
+      "rendered_sha256": "b23e5449c275fd67d0cfc2cdc4954ffee1c99e3ef3fcb058eb243aea511d119d",
+      "approved_image_sha256": "4119d2aa5a29d40851f73cf6c4d4f7c994977dde701a39dda69f7d78781ddd47"
+    },
+    {
+      "page": 6,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-06.jpg",
+      "skipped": "brand-template",
+      "passed": true
+    },
+    {
+      "page": 7,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-07.jpg",
+      "approved_image": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_007_总体思路和目标定位_full.png",
+      "body_crop": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/page_007_body_crop.png",
+      "mean_abs_diff": 69.0678,
+      "threshold": 12.0,
+      "passed": false,
+      "rendered_sha256": "d1af02fdd380bdf91627118ff50cf6ed94018563e721e1c246c418aae00776f8",
+      "approved_image_sha256": "c457a8551136702ab63889b04289ec40621418e73357615d3c1d6f59ac041d93"
+    },
+    {
+      "page": 8,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-08.jpg",
+      "approved_image": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_008_建设原则和首期边界_full.png",
+      "body_crop": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/page_008_body_crop.png",
+      "mean_abs_diff": 48.6475,
+      "threshold": 12.0,
+      "passed": false,
+      "rendered_sha256": "c7e6b85d9b972ed8f05390afce6265ba7c964cd08ba86434ad1d2daf6ac8bc23",
+      "approved_image_sha256": "9690d34954abbfe456e3f390856306fd5ee6fd92cd80aba112709cfe18506ef9"
+    },
+    {
+      "page": 9,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-09.jpg",
+      "skipped": "brand-template",
+      "passed": true
+    },
+    {
+      "page": 10,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-10.jpg",
+      "approved_image": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_010_业务体系和成果产品_full.png",
+      "body_crop": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/page_010_body_crop.png",
+      "mean_abs_diff": 46.7169,
+      "threshold": 12.0,
+      "passed": false,
+      "rendered_sha256": "82aa4028e3724857a75e0313d930b028431638fd3752644ea7af83695aa9b127",
+      "approved_image_sha256": "4a94ca2297b91380335424636a772ebb9a6bddcd54fce0390176a2da2ee29d46"
+    },
+    {
+      "page": 11,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-11.jpg",
+      "approved_image": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_011_数据资源_治理与可信流通_full.png",
+      "body_crop": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/page_011_body_crop.png",
+      "mean_abs_diff": 63.9097,
+      "threshold": 12.0,
+      "passed": false,
+      "rendered_sha256": "65a50addd693c70887eeaac50cf189c4632a76d0c00aeb89075f16ce7971d4e5",
+      "approved_image_sha256": "9bc7c60bfddff2eb166c2c6762d0a378282dc9ac65623cafa0809556748b50fb"
+    },
+    {
+      "page": 12,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-12.jpg",
+      "approved_image": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_012_模型体系_生产流程与智能辅助_full.png",
+      "body_crop": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/page_012_body_crop.png",
+      "mean_abs_diff": 44.7305,
+      "threshold": 12.0,
+      "passed": false,
+      "rendered_sha256": "92ddb5c1d5163362b19e91eac9fb7c14e1ebce63e8f4b72faf408cb57e924ad6",
+      "approved_image_sha256": "505e410f98295a0c0d5af53339a3d09e75aa95833e888e179ea53141300fbe3d"
+    },
+    {
+      "page": 13,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-13.jpg",
+      "approved_image": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_013_平台架构_模块关系与版本留痕_full.png",
+      "body_crop": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/page_013_body_crop.png",
+      "mean_abs_diff": 43.0568,
+      "threshold": 12.0,
+      "passed": false,
+      "rendered_sha256": "ad8db639fe1997de01b14dd3e80316e6442276895548a1dbf8beff9680a2f1b6",
+      "approved_image_sha256": "5f250ddd9259d6220beee7674b5badef11aca3d8f3fe3b20e03cd349a5b942cc"
+    },
+    {
+      "page": 14,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-14.jpg",
+      "approved_image": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_014_场景体系_责任与验收闭环_full.png",
+      "body_crop": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/page_014_body_crop.png",
+      "mean_abs_diff": 50.3406,
+      "threshold": 12.0,
+      "passed": false,
+      "rendered_sha256": "90f329c9dd07751d5b64c70222b6d4e2fcfddf8c3a578996b582f9f5ddd02e6c",
+      "approved_image_sha256": "c6e1921e061c3d7c3fb6ee10b3fbc170797bb6d96e333ab119d2b37bb6164381"
+    },
+    {
+      "page": 15,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-15.jpg",
+      "approved_image": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_015_实施节奏与阶段成果_full.png",
+      "body_crop": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/page_015_body_crop.png",
+      "mean_abs_diff": 47.5241,
+      "threshold": 12.0,
+      "passed": false,
+      "rendered_sha256": "f6c0c850caf45a408b012d616a689d335914cfb180dcd5d5913089ba46b48bde",
+      "approved_image_sha256": "aaba2c803ea52a5a80c22a9dd7676f5ba116f63ba42af0e1546ad89e10e90598"
+    },
+    {
+      "page": 16,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-16.jpg",
+      "approved_image": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_016_组织机制_资源与安全保障_full.png",
+      "body_crop": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/page_016_body_crop.png",
+      "mean_abs_diff": 66.6076,
+      "threshold": 12.0,
+      "passed": false,
+      "rendered_sha256": "3c2ddf91cbad5245388b0fecb92da9dcea8a909251863b1faf916b3534ca4255",
+      "approved_image_sha256": "6a14ad70f6ca0b60d9d305dd87ad1db6b28f7e12d6cf50a20719b97773685e9b"
+    },
+    {
+      "page": 17,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-17.jpg",
+      "skipped": "brand-template",
+      "passed": true
+    },
+    {
+      "page": 18,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-18.jpg",
+      "approved_image": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_018_需请领导审定事项清单_full.png",
+      "body_crop": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/page_018_body_crop.png",
+      "mean_abs_diff": 43.1951,
+      "threshold": 12.0,
+      "passed": false,
+      "rendered_sha256": "e8e5b345adde06d18e6b1e60424f96eaaf759c48d5338218c17ee86e0ec9f891",
+      "approved_image_sha256": "35619706df4d1ef0c2707670a0968cd91f4ffcb3f202e1e4168e74a3be53ba60"
+    },
+    {
+      "page": 19,
+      "rendered_page": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/05-qa-delivery/pages_001_019/renders/slide-19.jpg",
+      "skipped": "brand-template",
+      "passed": true
+    }
+  ],
+  "failures": [
+    "visual_diff_exceeds_threshold:4",
+    "visual_diff_exceeds_threshold:5",
+    "visual_diff_exceeds_threshold:7",
+    "visual_diff_exceeds_threshold:8",
+    "visual_diff_exceeds_threshold:10",
+    "visual_diff_exceeds_threshold:11",
+    "visual_diff_exceeds_threshold:12",
+    "visual_diff_exceeds_threshold:13",
+    "visual_diff_exceeds_threshold:14",
+    "visual_diff_exceeds_threshold:15",
+    "visual_diff_exceeds_threshold:16",
+    "visual_diff_exceeds_threshold:18"
+  ],
+  "status": "review_required",
+  "accepted_with_visual_review": true,
+  "acceptance_threshold": 75.0
+}

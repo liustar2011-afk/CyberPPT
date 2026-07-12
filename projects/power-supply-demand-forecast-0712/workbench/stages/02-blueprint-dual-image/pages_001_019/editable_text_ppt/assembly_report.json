@@ -1,0 +1,62 @@
+{
+  "schema": "cyberppt.assembly_report.v1",
+  "valid": true,
+  "checks": {
+    "output_inside_project": true,
+    "pptx_exists": true,
+    "manifest_exists": true,
+    "pptx_readable": true,
+    "page_set_matches": true,
+    "notes_complete": true,
+    "approved_images_match": true
+  },
+  "artifacts": {
+    "exported_pptx": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/editable_text_ppt/pages_001_019_template_image_project/exports/pages_001_019_template_image_project_20260712_070713.pptx",
+    "template_image_manifest": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/editable_text_ppt/template_image_manifest.json"
+  },
+  "approved_images": {
+    "4": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_004_形势变化和工作要求_full.png",
+    "5": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_005_工作基础和完善方向_full.png",
+    "7": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_007_总体思路和目标定位_full.png",
+    "8": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_008_建设原则和首期边界_full.png",
+    "10": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_010_业务体系和成果产品_full.png",
+    "11": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_011_数据资源_治理与可信流通_full.png",
+    "12": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_012_模型体系_生产流程与智能辅助_full.png",
+    "13": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_013_平台架构_模块关系与版本留痕_full.png",
+    "14": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_014_场景体系_责任与验收闭环_full.png",
+    "15": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_015_实施节奏与阶段成果_full.png",
+    "16": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_016_组织机制_资源与安全保障_full.png",
+    "18": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_018_需请领导审定事项清单_full.png"
+  },
+  "artifacts_sha256": {
+    "exported_pptx": "5580a3acffced7cd748d15896d5b30eaf95148673d6503030f2d28b1c3578740",
+    "template_image_manifest": "2d762d4045ca28d4e449e555f1fced5317d9d40bc7f259841575882ff1076016"
+  },
+  "failures": [],
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "cyberppt",
+    "image-ppt",
+    "--project",
+    "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712",
+    "run",
+    "--project-production",
+    "--script",
+    "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+    "--pages",
+    "1-19",
+    "--template-text-lock",
+    "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/locks/template_text/pages_001_019_template_text_lock.json",
+    "--page-image-manifest",
+    "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_image_pairs.json",
+    "--speaker-notes-manifest",
+    "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/speaker_notes/speaker_notes_manifest.json",
+    "--editable-body-manifest",
+    "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/editable_text_result.json",
+    "--output-dir",
+    "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/editable_text_ppt",
+    "--name",
+    "pages_001_019"
+  ]
+}

@@ -1,0 +1,469 @@
+{
+  "schema": "cyberppt.phase1_source_chunk.v1",
+  "chunk_id": "C002",
+  "unit_ids": [
+    "U0256",
+    "U0257",
+    "U0258",
+    "U0259",
+    "U0260",
+    "U0261",
+    "U0262",
+    "U0263",
+    "U0264",
+    "U0265",
+    "U0266",
+    "U0267",
+    "U0268",
+    "U0269",
+    "U0270",
+    "U0271",
+    "U0272",
+    "U0273",
+    "U0274",
+    "U0275",
+    "U0276",
+    "U0277",
+    "U0278",
+    "U0279",
+    "U0280",
+    "U0281",
+    "U0282",
+    "U0283",
+    "U0284",
+    "U0285",
+    "U0286",
+    "U0287",
+    "U0288",
+    "U0289",
+    "U0290",
+    "U0291",
+    "U0292"
+  ],
+  "character_count": 19855,
+  "units": [
+    {
+      "unit_id": "U0256",
+      "kind": "table",
+      "text": "### Table 14 (8 rows)\n环节 | 核心任务 | 形成成果\n数据来源确认 | 明确数据提供主体、责任部门、更新频率、授权边界和敏感等级。 | 数据来源清单、责任清单、授权边界清单\n数据资源入湖入库 | 接入统计、运行、交易、气象、宏观、新型主体等数据，形成统一目录和字段标准。 | 数据资源目录、字段字典、主数据编码\n数据加工治理 | 开展口径统一、缺失处理、异常识别、版本管理、事件标注和质量评分。 | 质量规则库、发布时点视图、事件标签库\n模型计算分析 | 调用基线模型、机器学习修正、层级一致性、区间预测和情景推演能力。 | 预测结果、区间结果、变量贡献分解\n专家会商审校 | 结合统计口径、行业经验、政策变化和异常事件开展人工复核。 | 审校记录、修订说明、会商结论\n产品发布服务 | 形成报告、看板、专报、清单、接口和会商支撑服务。 | 月报季报、年度报告、风险热力图、API 服务\n反馈复盘校模 | 跟踪实际值、误差来源、数据质量和模型漂移，触发模型更新和口径修订。 | 误差复盘表、模型更新记录、发布版本快照",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 14 (8 rows)",
+      "numbers": [
+        "14",
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0257",
+      "kind": "table",
+      "text": "### Table 15 (8 rows)\n场景 | 数据来源 | 核心数据资源 | 加工过程 | 服务产品与对象\n全国月度与季度供需形势分析 | 中电联统计体系、电网企业、发电集团、交易机构、国家统计和气象机构。 | 全社会用电量、分产业用电、发电量、装机、利用小时、跨区交易、绿电交易、宏观景气、气象指标。 | 月度数据汇聚、口径校验、同比环比计算、异常识别、模型预测、专家审校、报告成稿。 | 月报、季报、区域热力图、风险清单；服务中电联领导、统计与数智部、相关专业部门、会员单位。\n年度供需报告自动化 | 中电联统计体系、国家能源主管部门公开数据、电网和发电企业、交易机构、宏观和政策信息。 | 年度电量、负荷、装机结构、电源新增、市场交易、区域平衡、政策事件、历史预测和实际偏差。 | 年度样本归集、口径冻结、章节模板调用、图表自动生成、结论草拟、人工审校、版本归档。 | 年度供需形势预测报告、图表包、审校底稿；服务中电联领导、国家部委沟通、行业发布。\n迎峰度夏和迎峰度冬预测预警 | 电网企业、发电集团、气象机构、交易机构、需求响应管理主体、地方协会。 | 小时负荷、最大负荷、机组可用率、检修停运、通道余量、风光预测、温度预报、需求响应资源。 | 重点时段窗口设定、极端天气识别、负荷区间预测、供给可用能力测算、缺口概率评估、会商审校。 | 专题专报、紧平衡风险清单、会商材料、预警阈值；服务保供会商、运行分析、相关专业部门。\n新能源高占比区域供需风险分析 | 新能源企业、电网企业、气象机构、交易机构、储能运营主体。 | 风光装机、实发出力、预测出力、NWP、限电记录、储能状态、区域负荷、跨区互济。 | 气象场景构造、风光出力概率预测、有效容量估算、消纳压力识别、区域平衡测算、风险分级。 | 新能源专题报告、消纳风险图、有效容量分析、区域互济建议；服务新能源研究、区域分析和专题会商。\n需求响应和虚拟电厂调节能力评估 | 负荷管理中心、虚拟电厂运营主体、园区和重点用户、电网企业、交易机构。 | 资源清单、基线负荷、可调容量、响应历史、履约率、合同价格、调用记录、行业负荷曲线。 | 资源入库、基线核算、可用容量校验、履约评分、调节能力聚合、成本收益测算、结果审校。 | 调节资源评估报告、可调用容量清单、履约评价、调用建议；服务需求侧管理、保供会商和新型主体研究。\n储能与电动汽车充电负荷影响评估 | 储能运营主体、充电运营商、电网企业、地方协会、价格和气象数据来源。 | 储能 SOC、可用功率、充放电策略、站级充电负荷、峰谷价格、地理分布、节假日出行特征。 | 负荷曲线清洗、峰谷特征识别、充电行为建模、储能可用性测算、局部冲击评估、削峰效果复盘。 | 充电负荷影响报告、储能调节能力评估、削峰填谷分析；服务专题研究、地方协会和重点会员单位。\n市场交易影响分析 | 北京和广州电力交易中心、省级交易机构、电网企业、发电集团、绿电交易和现货市场信息。 | 市场化交易电量、跨省跨区交易、绿电交易、中长期合同、现货出清、辅助服务、通道利用率。 | 交易数据归集、分区分品种统计、市场变量特征构建、供需平衡影响测算、价格和交易情景对比。 | 市场影响专题、交易互济分析、绿电交易观察、政策情景评估；服务市场分析、政策咨询和行业服务。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 15 (8 rows)",
+      "numbers": [
+        "15",
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0258",
+      "kind": "table",
+      "text": "### Table 16 (6 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n中电联统计报表 | 月度、季度统计报表 | period、region_code、province_name、industry_code、industry_name、total_electricity、primary_electricity、secondary_electricity、tertiary_electricity、residential_electricity、max_load、yoy_rate、mom_rate、reporting_unit、report_version | 月/季；全国、区域、省级、行业 | 月度、季度供需总盘、需求结构、偏离解释\n装机与发电数据 | 装机、发电量、利用小时数据 | period、region_code、power_type、installed_capacity、new_capacity、generation、utilization_hours、available_capacity、maintenance_capacity、capacity_factor | 月/季；区域、省级、电源类型 | 供给能力、有效容量、发电结构和利用水平判断\n市场交易机构 | 跨省跨区、绿电和市场化交易数据 | trade_period、market_type、sending_region、receiving_region、traded_energy、green_power_energy、cross_region_energy、transaction_ratio、contract_type、settlement_status | 月/季；送端、受端、交易类型 | 交易互济、绿电交易、市场化因素影响分析\n宏观与产业数据 | 宏观经济和重点行业景气数据 | period、province_code、GDP、industrial_added_value、PMI、sector_output_index、power_intensity、major_industry_tag、data_release_date | 月/季；全国、省级、行业 | 用电增长驱动因素、产业结构变化和弹性分析\n气象机构 | 气象历史和异常天气数据 | period、region_code、avg_temperature、max_temperature、min_temperature、CDD、HDD、extreme_hot_days、extreme_cold_days、precipitation、weather_event_tag | 日/月；区域、省级 | 气象扰动、季节偏离、极端天气影响解释",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 16 (6 rows)",
+      "numbers": [
+        "16",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0259",
+      "kind": "table",
+      "text": "### Table 17 (6 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n统计报表与指标数据 | 中电联统计体系、定期报表 | 月/季；全国、省级、行业 | 一般至重要；内部可控 | 首期直接纳入，形成发布时点视图\n装机、发电量、利用小时 | 中电联统计、电网企业、发电集团 | 月/季；电源类型、区域 | 一般至重要；内部协同 | 首期纳入，统一电源类型和地区编码\n交易互济数据 | 北京/广州电力交易中心、省级交易机构 | 月/日；省间、省内、绿电 | 重要；需授权 | 先接入汇总级数据，逐步扩展到日度曲线\n气象与宏观数据 | 气象机构、国家统计公开数据、行业景气数据 | 日/月；区域、行业 | 一般；公开或协议 | 作为外生变量和偏离解释变量纳入\n高频修正数据 | 电网企业、重点行业样本单位 | 日/小时；区域、行业 | 重要；需授权 | 首期作为试点数据，缺失时采用历史同类样本修正",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 17 (6 rows)",
+      "numbers": [
+        "17",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0260",
+      "kind": "table",
+      "text": "### Table 18 (5 rows)\n关键点/难点 | 影响 | 应对措施\n指标口径一致性 | 统计、运行、交易口径存在统计范围、时间粒度和修订规则差异 | 建立指标口径主表、口径责任人、发布时点视图和历史修订回灌机制\n历史数据修订 | 历史月份追溯修订会影响训练样本、回测结果和已发布判断 | 保留原始视图、当前视图、发布时视图，月度复盘同步记录修订原因\n区域层级汇总 | 省级、区域、全国结果存在分项加总与总量不一致风险 | 引入层级一致性校正，统一地区编码、行业编码和汇总矩阵\n变量解释要求高 | 领导汇报和行业发布需要说明预测变化原因和贡献来源 | 建设贡献分解、事件标签和专家会商机制，形成模型解释和人工研判并行输出",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 18 (5 rows)",
+      "numbers": [
+        "18",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0261",
+      "kind": "table",
+      "text": "### Table 19 (7 rows)\n实施要素 | 具体内容\n数据来源 | 中电联统计体系、电网企业、发电集团、电力交易机构、国家统计和气象机构、重点行业公开和协议数据。\n数据资源 | 全社会用电量、分产业用电量、重点行业用电、最大负荷、发电量、装机容量、利用小时、跨省跨区交易、绿电交易、平均气温、极端温度、宏观景气、节假日和政策事件。\n加工过程 | 按月归集数据，执行口径校验、缺失补齐、异常识别、历史修订标记、同比环比计算、气象偏离计算、区域汇总、行业分解和预测模型调用。预测结果进入人工审校和专家会商后，形成发布版本。\n服务产品 | 月度供需形势分析、季度供需形势分析、全国总盘看板、区域热力图、重点指标趋势、风险清单、预测修订说明、误差复盘表。\n服务对象 | 中电联领导、统计与数智部、相关专业部门、国家部委沟通支撑、会员单位和行业研究服务对象。\n验收成果 | 数据资源目录 v1、指标字典 v1、月度预测模型 v1、季度滚动预测模型 v1、自动月报模板、人工审校流程、发布版本快照。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 19 (7 rows)",
+      "numbers": [
+        "19",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0262",
+      "kind": "table",
+      "text": "### Table 20 (6 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n供需分析处 | 月度、季度分析结果库 | period、section_code、indicator_id、indicator_name、indicator_value、yoy_rate、mom_rate、region_code、conclusion_tag、risk_level、source_version | 月/季；指标、章节、地区 | 年度报告章节数据抽取、趋势判断和年度结论形成\n历史报告库 | 历年年度供需形势报告 | report_year、chapter_id、paragraph_id、topic_tag、text_block、chart_id、table_id、approved_conclusion、revision_version、archive_date | 年；章节、段落、图表 | 历史结构复用、同比口径衔接、报告模板沉淀\n指标数据库 | 年度核心指标和派生指标 | indicator_id、indicator_name、calculation_rule、unit、frequency、region_scope、industry_scope、valid_from、valid_to、owner_department | 指标级；年度、季度、月度 | 指标自动填充、口径校核、附表生成\n图表模板库 | 报告图表和版式模板 | template_id、chart_type、data_binding_rule、dimension_field、measure_field、display_order、style_code、applicable_chapter | 模板级；章节、图表类型 | 图表自动生成、章节编排和样式一致性控制\n审校流程记录 | 专家意见和审校结论 | review_id、reviewer、review_stage、comment_text、decision_type、resolved_status、responsible_person、approval_time、final_version_id | 流程级；章节、版本、审校人 | 人工审校、版本对比、签发前复核和归档留痕",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 20 (6 rows)",
+      "numbers": [
+        "20",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0263",
+      "kind": "table",
+      "text": "### Table 21 (5 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n年度预测指标结果 | 月度/季度模型结果、年度统计快报 | 年/季/月；全国、区域、省级 | 一般至重要；内部可控 | 首期直接纳入报告生成链路\n历史年度报告 | 中电联历年供需形势分析预测成果 | 年；章节、图表、结论 | 内部资料；授权使用 | 沉淀章节模板和表述口径\n指标数据库 | 统计与数智部指标库、模型结果库 | 年/月；指标、地区、行业 | 一般至重要；内部可控 | 统一指标编码和图表绑定关系\n图表模板和审校意见 | 报告模板库、专家审校记录 | 事件触发；章节、图表、结论 | 内部资料；权限控制 | 形成审校留痕、版本对比和归档机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 21 (5 rows)",
+      "numbers": [
+        "21",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0264",
+      "kind": "table",
+      "text": "### Table 22 (5 rows)\n关键点/难点 | 影响 | 应对措施\n报告口径稳定性 | 年度报告涉及长期口径、历史口径和最新口径衔接 | 建立年度报告指标字典、章节指标绑定关系和口径变更提示\n自动成稿准确性 | 模型结果、专家判断和文字表述之间可能出现不一致 | 设置关键结论白名单、人工审校流转和签发前复核流程\n图表与正文一致性 | 图表数值、正文判断和附表数据可能出现错位 | 建立图表数据绑定规则，报告生成后自动执行一致性校验\n版本归档复杂 | 多轮修订容易造成版本混乱和意见遗漏 | 保留章节版本、报告版本、审校意见和签发版本四类记录",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 22 (5 rows)",
+      "numbers": [
+        "22",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0265",
+      "kind": "table",
+      "text": "### Table 23 (7 rows)\n实施要素 | 具体内容\n数据来源 | 中电联统计体系、年度快报和年报、国家能源主管部门公开数据、电网和发电企业、交易机构、宏观经济和政策制度信息。\n数据资源 | 年度全社会用电量、最大负荷、分产业用电、装机结构、发电结构、可再生能源装机、市场交易、跨区互济、重点行业用电、历史预测误差和政策事件。\n加工过程 | 形成年度口径冻结、历史序列回填、年度预测基准、情景假设管理、图表自动生成、章节模板调用、结论草拟、人工审校、统一归档。\n服务产品 | 年度电力供需形势预测报告、年度图表包、数据底稿、关键判断摘要、领导审阅版、对外发布版和历史复盘报告。\n服务对象 | 中电联领导、国家部委沟通、行业发布、会员单位服务、内部专业部门和专业条线。\n验收成果 | 年度报告模板库、年度数据底稿库、图表组件库、自动成稿流程、审校记录和归档版本。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 23 (7 rows)",
+      "numbers": [
+        "23",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0266",
+      "kind": "table",
+      "text": "### Table 24 (7 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n电网运行数据 | 小时负荷和分区负荷曲线 | timestamp、region_code、load_mw、max_load_mw、min_load_mw、peak_hour、load_rate、forecast_load_mw、data_quality_flag | 15分钟/小时；区域、省级 | 最大负荷预测、尖峰识别、日内风险判断\n气象机构 | 天气实况和预报数据 | timestamp、region_code、forecast_temperature、max_temperature、min_temperature、humidity、wind_speed、solar_radiation、weather_warning_level、forecast_update_time | 小时/日；区域、省级 | 高温、寒潮、负荷弹性和极端天气场景识别\n发电企业/电网 | 机组可用率和检修停运数据 | date、plant_id、unit_id、power_type、installed_capacity、available_capacity、maintenance_capacity、forced_outage_capacity、fuel_status | 日/小时；机组、电源类型 | 供给可用能力、备用空间、供需缺口测算\n新能源运行数据 | 风光出力和预测数据 | timestamp、station_id、region_code、power_type、actual_output、forecast_output、installed_capacity、curtailment_flag、output_confidence | 15分钟/小时；场站、区域 | 新能源低出力风险和有效供给能力判断\n跨区通道数据 | 跨省跨区通道余量 | timestamp、channel_id、sending_region、receiving_region、transfer_limit、scheduled_power、available_margin、restriction_reason | 小时/日；通道、送受端 | 互济能力、通道约束和保供支撑分析\n需求响应资源 | 需求侧可调节资源数据 | resource_id、region_code、resource_type、declared_capacity、callable_capacity、response_time、contract_status、historical_performance_rate | 事件/日；资源、区域 | 需求响应空间、可调节能力和缓释措施判断",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 24 (7 rows)",
+      "numbers": [
+        "24",
+        "7",
+        "15",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0267",
+      "kind": "table",
+      "text": "### Table 25 (6 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n小时负荷与尖峰负荷 | 国家电网、南方电网、省级电网 | 小时/日；省级、区域 | 重要；需授权 | 先选重点区域试点，统一时钟和负荷口径\n天气预报与极端天气 | 气象机构、NWP预报服务 | 小时/日；城市、区域 | 一般；协议接入 | 建立高温、寒潮、降水和来水事件标签\n机组可用与检修信息 | 发电集团、电网调度侧汇总数据 | 日/小时；机组类型、区域 | 重要；需授权 | 首期采用汇总可用容量，敏感明细不集中复制\n新能源出力和通道余量 | 电网企业、新能源企业、交易机构 | 小时/日；区域、通道 | 重要；需授权 | 形成通道约束和低出力情景测算\n需求响应资源 | 负荷管理中心、聚合商、虚拟电厂主体 | 事件/小时；资源类型、容量 | 重要；需授权 | 先接入资源库和历史响应汇总，逐步做履约校验",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 25 (6 rows)",
+      "numbers": [
+        "25",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0268",
+      "kind": "table",
+      "text": "### Table 26 (5 rows)\n关键点/难点 | 影响 | 应对措施\n高频数据稳定接入 | 小时级和15分钟级数据对接口稳定性、时钟同步和质量校验要求高 | 优先接入重点区域数据，建立时钟对齐、接口监测和异常降级机制\n极端天气不确定性 | 高温、寒潮和突发天气会导致负荷弹性快速变化 | 引入多源气象预报、场景压力测试和专家会商修正\n供给可用能力判断 | 装机容量和可用容量存在差异，检修停运、燃料和来水影响较大 | 建立可用容量字段、机组状态标签和日度供给能力校核流程\n预警发布边界 | 风险预警容易被理解为调度指令或刚性结论 | 统一使用风险等级、预测区间、假设条件和发布审核机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 26 (5 rows)",
+      "numbers": [
+        "26",
+        "5",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0269",
+      "kind": "table",
+      "text": "### Table 27 (7 rows)\n实施要素 | 具体内容\n数据来源 | 电网企业、发电集团、气象机构、交易机构、需求响应管理主体、地方协会和重点省份相关单位。\n数据资源 | 小时负荷、日最大负荷、机组可用率、计划检修、非计划停运、跨区通道余量、风光预测、气温预报、来水偏离、需求响应资源、储能可用能力。\n加工过程 | 确定重点时段窗口，进行气象风险分级、负荷区间预测、供给可用能力计算、跨区互济依赖测算、需求侧缓释能力评估、缺口概率排序和专家会商审校。\n服务产品 | 迎峰度夏专题专报、迎峰度冬专题专报、重点省份紧平衡风险清单、风险等级分布、会商材料、预警阈值和应急情景对比。\n服务对象 | 中电联领导、保供会商机制、运行分析部门、相关专业部门、地方协会和重点会员单位。\n验收成果 | 重点时段风险模型、风险清单模板、专题专报模板、会商流程和预警复盘机制。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 27 (7 rows)",
+      "numbers": [
+        "27",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0270",
+      "kind": "table",
+      "text": "### Table 28 (6 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n新能源场站/电网 | 风电出力数据 | timestamp、station_id、region_code、installed_capacity、actual_output、forecast_output、wind_speed、availability_status、curtailment_flag | 15分钟/小时；场站、区域 | 风电功率预测、低出力风险和区域聚合\n新能源场站/电网 | 光伏出力数据 | timestamp、station_id、region_code、installed_capacity、actual_output、forecast_output、solar_radiation、cloud_cover、availability_status | 15分钟/小时；场站、区域 | 光伏功率预测、日内波动和区域出力评估\n气象机构 | NWP气象预报数据 | forecast_time、valid_time、grid_id、region_code、wind_speed、wind_direction、irradiance、temperature、cloud_cover、precipitation | 小时；气象网格、区域 | 新能源出力外生变量、气象情景模拟\n电网/调度侧 | 限电和消纳约束记录 | timestamp、region_code、station_id、curtailment_energy、curtailment_rate、constraint_type、constraint_reason、grid_limit_code | 小时/日；场站、区域 | 消纳压力识别、约束归因和专题分析\n电网/储能企业 | 并网约束和储能运行状态 | timestamp、node_id、grid_constraint、export_limit、storage_id、SOC、available_power、charge_discharge_status | 小时；节点、区域 | 区域互济、调节能力和有效容量分析",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 28 (6 rows)",
+      "numbers": [
+        "28",
+        "6",
+        "15",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0271",
+      "kind": "table",
+      "text": "### Table 29 (5 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n风光出力数据 | 新能源场站、发电集团、电网企业 | 15分钟/小时/日；场站、区域 | 重要；需授权 | 先使用区域聚合出力，逐步扩展场站级样本\nNWP气象预报 | 气象机构、商业气象服务 | 小时/日；网格、站点、区域 | 一般；协议接入 | 建立气象预报误差校正和版本留痕\n限电和消纳记录 | 电网企业、发电企业、调度汇总数据 | 日/月；区域、场站类型 | 重要；需授权 | 区分网架、调峰、负荷和市场机制影响\n并网约束和储能状态 | 电网企业、储能企业、新能源场站 | 小时/日；节点、区域 | 重要；需授权 | 首期采用区域级约束信息和典型样本",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 29 (5 rows)",
+      "numbers": [
+        "29",
+        "5",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0272",
+      "kind": "table",
+      "text": "### Table 30 (5 rows)\n关键点/难点 | 影响 | 应对措施\n气象预报误差传导 | NWP误差会直接影响风光出力和风险判断 | 采用多源气象预报、滚动校准和概率区间输出\n场站数据可得性 | 场站级数据涉及主体多、授权复杂、质量差异大 | 先按区域聚合接入，逐步建立场站编码、质量评分和授权分级\n有效容量口径 | 新能源装机、实际出力、可信出力和有效容量容易混用 | 建立有效容量计算规则、适用场景和审校流程\n消纳约束归因 | 限电可能由网架、负荷、市场、调峰能力等多因素共同导致 | 建立约束类型标签和专家会商机制，区分技术约束、市场约束和调节约束",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 30 (5 rows)",
+      "numbers": [
+        "30",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0273",
+      "kind": "table",
+      "text": "### Table 31 (7 rows)\n实施要素 | 具体内容\n数据来源 | 新能源发电企业、电网企业、气象机构、交易机构、储能运营主体和重点区域行业协会。\n数据资源 | 风电光伏装机、实发出力、预测出力、NWP、辐照、风速、限电记录、并网约束、储能 SOC、区域负荷、跨区交易和送受端通道利用率。\n加工过程 | 构造气象和出力情景，开展风光概率预测、有效容量估算、限电和消纳压力识别、区域供需平衡测算、跨区互济敏感性分析和风险分级。\n服务产品 | 新能源高占比区域专题报告、风光出力风险图、有效容量评估、消纳压力清单、区域互济建议和政策情景分析。\n服务对象 | 中电联领导、相关专业部门、新能源企业、地方协会、政策研究和行业服务对象。\n验收成果 | 区域新能源数据集、有效容量模型、消纳压力指标、专题看板和样板区域分析成果。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 31 (7 rows)",
+      "numbers": [
+        "31",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0274",
+      "kind": "table",
+      "text": "### Table 32 (6 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n负荷管理/聚合商 | 调节资源清单 | resource_id、subject_id、region_code、resource_type、industry_type、rated_capacity、declared_capacity、callable_capacity、response_duration、resource_status | 资源级；区域、主体、行业 | 资源画像、可调用容量和调节资源库建设\n电网/用户侧 | 基线负荷数据 | timestamp、resource_id、meter_id、baseline_load、actual_load、weather_adjustment_factor、working_day_flag、baseline_method | 15分钟/小时；用户、资源 | 基线计算、响应效果评估和履约核算\n需求响应平台 | 响应事件和执行记录 | event_id、resource_id、event_start、event_end、notice_time、target_reduction、actual_reduction、response_rate、rebound_load | 事件级；资源、区域 | 履约表现、响应稳定性和调节能力评估\n合同与结算系统 | 合同、价格和结算信息 | contract_id、subject_id、resource_id、contract_capacity、price_type、compensation_price、penalty_rule、settlement_amount、settlement_status | 合同级；主体、资源 | 调用成本、履约激励和收益测算\n虚拟电厂运营主体 | 聚合关系和调节策略 | aggregator_id、resource_id、aggregation_group、control_strategy、communication_status、dispatch_priority、available_window、performance_score | 聚合组级；主体、资源 | 聚合能力、可调窗口和调用策略分析",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 32 (6 rows)",
+      "numbers": [
+        "32",
+        "6",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0275",
+      "kind": "table",
+      "text": "### Table 33 (5 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n资源清单 | 负荷管理中心、虚拟电厂运营主体、聚合商 | 资源级；用户、设备、容量 | 重要；需授权 | 建立资源唯一编码，防止重复统计\n基线负荷数据 | 电网企业、聚合商、重点用户 | 15分钟/小时；用户、资源、区域 | 重要；需授权 | 统一基线算法和异常日剔除规则\n响应历史记录 | 需求响应平台、虚拟电厂平台、聚合商 | 事件/小时；响应量、时长 | 重要；需授权 | 核验实际响应能力和履约稳定性\n合同、价格和履约记录 | 交易机构、聚合商、虚拟电厂主体 | 事件/月；合同、价格、奖惩 | 重要；需授权 | 用于履约评价、成本测算和调用建议",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 33 (5 rows)",
+      "numbers": [
+        "33",
+        "5",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0276",
+      "kind": "table",
+      "text": "### Table 34 (5 rows)\n关键点/难点 | 影响 | 应对措施\n基线负荷争议 | 基线算法不同会直接影响响应量、履约率和结算结果 | 统一基线算法、适用条件、气象修正规则和人工复核机制\n资源重复统计 | 同一用户资源可能同时进入多个聚合关系或合同 | 建立资源唯一编码、聚合关系表和重复校验规则\n履约数据可信性 | 响应量、响应时长和反弹负荷需要可核验数据支撑 | 引入计量数据、事件记录、日志审计和第三方核验规则\n主体授权复杂 | 聚合商、用户、电网和平台之间数据边界复杂 | 建立授权台账、用途限定、分级开放和脱敏汇总输出机制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 34 (5 rows)",
+      "numbers": [
+        "34",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0277",
+      "kind": "table",
+      "text": "### Table 35 (7 rows)\n实施要素 | 具体内容\n数据来源 | 负荷管理中心、虚拟电厂运营主体、园区和重点用户、电网企业、电力交易机构、地方协会。\n数据资源 | 资源清单、基线负荷、可调容量、响应历史、履约率、响应时长、合同价格、调用记录、行业负荷曲线、聚合商主体信息。\n加工过程 | 开展资源入库、基线负荷核算、可用容量校验、履约评分、聚合能力测算、调用成本估算、响应曲线复盘和异常主体标记。\n服务产品 | 调节资源评估报告、可调用容量清单、履约评价表、重点时段调用建议、需求侧资源库和专题看板。\n服务对象 | 需求侧管理相关部门、保供会商机制、虚拟电厂和聚合商、重点用能企业、地方协会和会员单位。\n验收成果 | 需求响应资源库、基线负荷模型、履约评分规则、可调用容量评估模板和样板场景分析成果。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 35 (7 rows)",
+      "numbers": [
+        "35",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0278",
+      "kind": "table",
+      "text": "### Table 36 (6 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n储能运营企业 | 储能设备运行数据 | timestamp、storage_id、region_code、SOC、rated_power、available_power、charge_power、discharge_power、energy_capacity、operation_mode、cycle_count | 15分钟/小时；设备、区域 | 可用功率、削峰填谷能力和运行策略评估\n充电运营商 | 充电站负荷数据 | timestamp、station_id、region_code、charging_load、charging_sessions、connector_count、utilization_rate、fast_charge_ratio、queue_status | 15分钟/小时；站点、区域 | 充电负荷聚合、尖峰冲击和区域压力分析\n价格和市场数据 | 峰谷电价和价格信号 | period、region_code、price_type、peak_price、flat_price、valley_price、spot_price、price_signal_level、effective_time | 时段/日；区域、价格类型 | 充放电策略、用户行为和峰谷变化分析\n设备和地理数据 | 站点、设备和空间分布信息 | station_id、storage_id、longitude、latitude、grid_node_id、capacity_scale、service_area、operation_status、owner_type | 设备/站点级；空间位置 | 空间映射、局部冲击和配网压力识别\n电网运行数据 | 区域负荷和局部节点负荷 | timestamp、region_code、node_id、regional_load、node_load、peak_load、transformer_load_rate、line_load_rate | 15分钟/小时；区域、节点 | 储能和充电负荷对峰谷、节点和局部负荷影响评估",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 36 (6 rows)",
+      "numbers": [
+        "36",
+        "6",
+        "15",
+        "15",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0279",
+      "kind": "table",
+      "text": "### Table 37 (5 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n储能SOC和运行策略 | 储能运营商、电网企业、用户侧储能主体 | 15分钟/小时；站点、区域 | 重要；需授权 | 先做区域和典型站点样本，敏感策略受控使用\n充电站负荷 | 充电运营商、电网企业 | 15分钟/小时；站点、区域、类型 | 重要；需授权 | 区分快充、慢充、园区和重卡补能类型\n峰谷电价和交易价格 | 价格主管部门、交易机构、电网企业 | 时段/月；区域、电价类型 | 一般至重要；公开或授权 | 用于行为响应和策略模拟\n地理和接入节点信息 | 充电运营商、电网企业、地方协会 | 站点/区域；坐标、接入容量 | 重要；需授权 | 首期用区域化信息，逐步引入节点影响评估",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 37 (5 rows)",
+      "numbers": [
+        "37",
+        "5",
+        "15",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0280",
+      "kind": "table",
+      "text": "### Table 38 (5 rows)\n关键点/难点 | 影响 | 应对措施\n多主体数据分散 | 储能和充电运营主体多，数据接口和字段标准差异大 | 建立统一设备编码、站点编码、接口模板和数据质量评分\n空间颗粒度不足 | 仅有区域汇总数据难以识别局部节点冲击 | 逐步接入站点位置、接入节点和配网负载率等空间字段\n运行策略敏感 | 储能充放电策略和充电运营策略涉及企业经营信息 | 采用策略标签化、汇总输出和敏感字段分级授权\n行为变化难预测 | 节假日、价格变化和充电习惯会造成负荷形态变化 | 建立典型日样本库、价格敏感性模型和事件标签库",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 38 (5 rows)",
+      "numbers": [
+        "38",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0281",
+      "kind": "table",
+      "text": "### Table 39 (7 rows)\n实施要素 | 具体内容\n数据来源 | 储能运营主体、充电运营商、电网企业、地方协会、价格信息、气象数据和节假日出行信息。\n数据资源 | 储能 SOC、可用功率、可用时长、充放电策略、站级充电负荷、区域充电负荷、峰谷电价、地理分布、节假日出行特征和温度变量。\n加工过程 | 清洗负荷曲线，识别峰谷特征，建立充电行为模型，测算储能可用能力，评估局部负荷冲击，开展削峰填谷模拟和实际效果复盘。\n服务产品 | 充电负荷影响报告、储能调节能力评估、区域峰荷贡献分析、削峰填谷效果测算、专题看板和策略模拟结果。\n服务对象 | 中电联相关专业部门、地方协会、储能和充电运营主体、重点会员单位和专题研究对象。\n验收成果 | 储能与充电负荷专题数据集、影响评估模型、区域样板分析、策略模拟模板和复盘机制。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 39 (7 rows)",
+      "numbers": [
+        "39",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0282",
+      "kind": "table",
+      "text": "### Table 40 (6 rows)\n数据来源 | 数据资源 | 关键字段颗粒度 | 数据粒度 | 场景用途\n电力交易机构 | 中长期交易数据 | trade_date、contract_id、market_type、contract_type、buyer_region、seller_region、traded_energy、contract_price、delivery_period、participant_type | 日/月；合同、区域、主体类型 | 交易结构、合同曲线和供需平衡影响分析\n电力交易机构 | 现货交易数据 | trading_day、time_interval、node_or_zone、clearing_price、clearing_energy、bid_volume、offer_volume、congestion_flag、price_cap_flag | 15分钟/小时；节点、分区 | 价格敏感性、时段供需紧张和市场信号分析\n交易/调度机构 | 辅助服务和备用数据 | service_date、service_type、provider_type、cleared_capacity、cleared_price、response_time、availability_status、settlement_amount | 日/小时；服务类型、主体 | 调节资源、备用能力和保供支撑分析\n交易机构 | 跨省跨区和绿电交易数据 | trade_period、sending_region、receiving_region、channel_id、cross_region_energy、green_power_energy、green_certificate_flag、settlement_status | 日/月；通道、送受端 | 区域互济、绿电交易和外送受入依赖分析\n市场公开和内部分析 | 价格信号与市场特征数据 | period、region_code、price_index、peak_valley_spread、volatility_index、transaction_ratio、market_concentration、policy_event_tag | 日/月；区域、市场类型 | 市场化因素对需求、互济和风险判断的解释",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 40 (6 rows)",
+      "numbers": [
+        "40",
+        "6",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0283",
+      "kind": "table",
+      "text": "### Table 41 (5 rows)\n数据项 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n中长期与现货交易数据 | 北京/广州电力交易中心、省级交易机构 | 小时/日/月；市场、区域、交易品种 | 重要；需授权 | 先接入汇总和脱敏数据，逐步增加曲线信息\n辅助服务和容量相关数据 | 交易机构、电网企业、辅助服务市场主体 | 小时/月；备用、调频、爬坡 | 重要；需授权 | 作为供需风险和灵活性修正变量\n跨省跨区和绿电交易 | 交易机构、电网企业 | 日/月；送端、受端、通道、品种 | 重要；需授权 | 区分合同电量、结算电量和实际输电约束\n价格信号和市场规则 | 交易机构、公开市场公告、政策文件 | 小时/月；价格、规则、事件 | 一般至重要；公开或授权 | 用于情景推演和敏感性分析，避免简单因果归因",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 41 (5 rows)",
+      "numbers": [
+        "41",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0284",
+      "kind": "table",
+      "text": "### Table 42 (5 rows)\n关键点/难点 | 影响 | 应对措施\n交易数据敏感性 | 交易主体、价格和合同信息具有较强商业敏感属性 | 采用汇总级接入、脱敏展示、分级授权和用途限定\n市场规则变化快 | 现货、辅助服务、绿电交易规则持续调整，历史样本可比性不足 | 建立市场规则版本表和政策事件标签，模型训练按规则阶段分层\n价格影响归因复杂 | 价格变化同时受负荷、新能源、燃料、通道和市场规则影响 | 采用情景推演、变量贡献分解和专家会商相结合\n跨区交易口径差异 | 送端、受端、合同、结算和实际输电口径可能不一致 | 统一交易口径、结算口径和物理互济口径，保留字段映射关系",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 42 (5 rows)",
+      "numbers": [
+        "42",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0285",
+      "kind": "table",
+      "text": "### Table 43 (7 rows)\n实施要素 | 具体内容\n数据来源 | 北京电力交易中心、广州电力交易中心、省级交易机构、电网企业、发电集团、绿电交易和市场公开信息。\n数据资源 | 市场化交易电量、跨省跨区交易电量、绿电交易电量、中长期合同曲线、现货出清价格和电量、辅助服务、通道利用率、送受端分布。\n加工过程 | 归集交易数据，按区域、品种、主体和时间粒度统计，构建市场化率、跨区依赖、绿电占比、交易价格和通道约束特征，测算市场变量对供需平衡的影响。\n服务产品 | 市场交易影响专题、跨区互济分析、绿电交易观察、现货运行影响评估、政策情景比较和指标接口。\n服务对象 | 中电联领导、市场分析相关部门、政策研究、会员单位、交易机构协同服务对象。\n验收成果 | 交易影响指标库、跨区互济测算模板、绿电交易观察模型、市场专题报告和 API 指标服务。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 43 (7 rows)",
+      "numbers": [
+        "43",
+        "7"
+      ]
+    },
+    {
+      "unit_id": "U0286",
+      "kind": "table",
+      "text": "### Table 44 (4 rows)\n阶段 | 重点场景 | 数据成果 | 产品成果 | 验收重点\n首期 | 全国月度与季度供需形势分析、年度报告自动化。 | 核心指标口径、统计和交易数据链路、质量规则、发布时点视图。 | 月报、季报、年度报告模板、领导驾驶舱、风险热力图。 | 月度成果稳定形成，数据和模型版本可回放，人工审校流程可运行。\n二期 | 迎峰度夏度冬预测预警、新能源高占比区域供需风险分析。 | 小时负荷、气象预测、机组可用、新能源出力、通道余量和区域样本。 | 专题专报、风险清单、区域预警、消纳压力分析。 | 重点时段风险识别具备提前量，专题结果可进入会商。\n三期 | 需求响应、虚拟电厂、储能、充电负荷和市场交易影响分析。 | 新型主体资源、履约记录、储能状态、充电负荷、市场交易和价格数据。 | 调节能力评估、市场影响专题、接口服务、场景推演。 | 形成可复制场景包，支撑会员服务和持续运营。",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 44 (4 rows)",
+      "numbers": [
+        "44",
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0287",
+      "kind": "table",
+      "text": "### Table 45 (4 rows)\n数据状态 | 典型数据 | 处理方式 | 建设要求\n已掌握数据 | 统计报表、月报季报、年度报告、历史指标库 | 直接纳入首期建设 | 统一口径、版本留痕、质量评分\n可协调数据 | 电网负荷、发电装机、交易互济、气象数据、重点行业样本 | 建立数据合作清单和授权边界 | 明确来源单位、字段、粒度、频率和责任人\n难获取数据 | 细粒度用户负荷、场站级风光出力、储能SOC、虚拟电厂资源、现货出清明细 | 先使用汇总级、脱敏级、样板区域数据 | 设置替代数据、降级模型和输出限制",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 45 (4 rows)",
+      "numbers": [
+        "45",
+        "4"
+      ]
+    },
+    {
+      "unit_id": "U0288",
+      "kind": "table",
+      "text": "### Table 46 (8 rows)\n场景 | 关键数据项/字段 | 来源与责任单位 | 粒度与频率 | 敏感等级/授权状态 | 首期处理方式\n全国月度与季度分析 | 用电量、负荷、装机、发电量、交易电量、气象偏离 | 中电联统计体系、电网企业、交易机构、气象机构 | 月/季；全国/省级/行业 | 一般至重要；已掌握+可协调 | 直接纳入首期，缺口用公开和历史同类数据补足\n年度报告自动化 | 模型结果、历史报告、图表模板、指标附表、审校意见 | 供需分析处、统计数据系统、报告发布链路 | 年/月；章节/指标/图表 | 内部资料；权限控制 | 纳入模板治理和版本归档\n迎峰度夏度冬 | 小时负荷、天气、可用容量、新能源出力、通道余量、需求响应 | 电网企业、发电集团、气象机构、聚合商 | 小时/日；重点区域 | 重要；需授权 | 先做重点省份试点，建立降级运行机制\n新能源高占比区域 | 风光出力、NWP、限电、并网约束、储能状态 | 新能源企业、电网企业、气象机构、储能主体 | 15分钟/小时/日；区域/场站 | 重要；需授权 | 先接入区域聚合数据，逐步扩场站样本\n需求响应与虚拟电厂 | 资源清单、基线负荷、响应记录、合同价格、履约记录 | 负荷管理中心、聚合商、虚拟电厂主体、交易机构 | 资源/小时/事件 | 重要；需授权 | 先做资源库和履约核验\n储能与充电负荷 | SOC、充电站负荷、电价、运行策略、地理位置 | 储能企业、充电运营商、电网企业、地方协会 | 15分钟/小时；站点/区域 | 重要；需授权 | 先做典型区域和样本站点\n市场交易影响 | 中长期、现货、辅助服务、跨区交易、绿电、价格信号 | 交易机构、电网企业、市场公告 | 小时/日/月；市场/区域 | 重要；需授权 | 先汇总脱敏分析，审慎做影响归因",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 46 (8 rows)",
+      "numbers": [
+        "46",
+        "8",
+        "15",
+        "15"
+      ]
+    },
+    {
+      "unit_id": "U0289",
+      "kind": "table",
+      "text": "### Table 47 (8 rows)\n场景 | 数据验收 | 模型验收 | 产品验收 | 机制验收\n全国月度与季度分析 | 核心指标口径覆盖率、数据质量评分、发布时点视图完整性 | 全国月度误差、省级误差、方向命中率、区间覆盖率 | 月报、季报、风险热力图、修订说明稳定生成 | 月度复盘、口径争议闭环、版本回放成功\n年度报告自动化 | 年度指标和图表模板绑定完整 | 关键结论一致性和异常提示准确 | 年度报告草稿、图表包、指标附表、归档版本形成 | 审校流转、版本对比、签发前复核闭环\n迎峰度夏度冬 | 小时负荷、天气、可用容量和通道数据稳定接入 | 最大负荷区间、缺口识别、风险等级命中率 | 重点时段专报、风险清单、告警提示、保供建议形成 | 应急会商、发布审核、日志审计可执行\n新能源高占比区域 | 风光出力、NWP、限电记录和约束数据匹配 | 风光功率预测、有效容量、消纳压力识别 | 区域专题、风险地图、有效容量分析、调节建议形成 | 专家校核、模型复盘、场景库迭代\n需求响应与虚拟电厂 | 资源唯一编码、基线负荷和履约记录可核验 | 可调用容量、履约率、响应潜力评估稳定 | 资源库、能力评估报告、履约评价、调用建议形成 | 授权台账、专家会商、结果审校闭环\n储能与充电负荷 | SOC、站点负荷、电价、地理信息可用 | 峰谷影响、局部冲击、削峰填谷测算可复盘 | 影响评估、峰谷变化图、冲击预警、削峰建议形成 | 模型校核、发布审核、数据安全可控\n市场交易影响 | 交易数据口径、时段映射、价格校验完成 | 市场影响、价格敏感性、互济测算结果可解释 | 市场专题、交易看板、互济分析、风险提示形成 | 敏感数据审查、发布口径、审计留痕到位",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 47 (8 rows)",
+      "numbers": [
+        "47",
+        "8"
+      ]
+    },
+    {
+      "unit_id": "U0290",
+      "kind": "table",
+      "text": "### Table 48 (6 rows)\n范围 | 首期纳入 | 暂缓纳入 | 原因\n业务场景 | 全国月度与季度供需形势分析、年度报告自动化 | 日前/日内缺口预警、实时调度级预警 | 首期以低敏、低频、强职责场景打底座\n数据资源 | 统计报表、装机发电、交易汇总、宏观气象、历史报告模板 | 用户侧细粒度负荷、场站级全量出力、储能全量SOC、现货明细 | 授权难度和敏感等级较高\n模型能力 | 趋势模型、回归模型、机器学习修正、滚动回测、贡献分解 | TFT/Transformer全量上线、联邦学习、实时概率预警 | 待样本规模、算力和运维能力成熟后推进\n服务产品 | 月报、季报、年度报告、领导驾驶舱、风险清单、修订说明 | 移动端订阅、外部API规模化开放、实时告警中心 | 先保障内部发布和会商支撑\n组织机制 | 牵头处室、工作专班、审校发布、月度复盘 | 全国多主体常态化运营中心 | 随数据合作和场景扩展逐步形成",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 48 (6 rows)",
+      "numbers": [
+        "48",
+        "6"
+      ]
+    },
+    {
+      "unit_id": "U0291",
+      "kind": "table",
+      "text": "### Table 49 (5 rows)\n层级 | 模型能力 | 适用场景 | 建设阶段 | 治理要求\n基础层 | 同比环比、趋势外推、SARIMAX、回归模型 | 月度季度分析、年度报告 | 首期必须具备 | 保存数据版本、口径版本和回测结果\n增强层 | LightGBM、XGBoost、变量贡献分解、滚动权重集成 | 月度修正、重点时段预警、新能源专题 | 首期后半段至二期 | 建立模型注册、误差复盘和漂移监测\n高阶层 | TFT、Transformer、概率预测、情景模拟 | 高频预警、需求响应、储能充电和市场影响 | 二期以后按场景引入 | 实施灰度发布、专家校核和版本回滚\n协同层 | 联邦学习、隐私计算、安全多方计算、可信执行环境 | 跨主体高敏数据协同建模 | 重点场景试点引入 | 执行分级授权、用途限定和全链路审计",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 49 (5 rows)",
+      "numbers": [
+        "49",
+        "5"
+      ]
+    },
+    {
+      "unit_id": "U0292",
+      "kind": "table",
+      "text": "### Table 50 (8 rows)\n场景 | 可能缺失数据 | 替代数据 | 降级模型 | 输出限制\n全国月度与季度分析 | 日负荷或重点行业高频指标 | 历史同月、三年同期、宏观和气象公开数据 | 趋势外推+回归修正 | 仅发布月度区间和偏离解释，弱化短期判断\n年度报告自动化 | 部分月度快报或审校意见 | 上一轮定稿、季度数据、历史报告模板 | 模板映射+人工审校 | 标注待修订章节，不自动生成最终结论\n迎峰度夏度冬 | 小时负荷、机组可用率、通道余量 | 日负荷峰值、历史同类天气、专家会商结果 | 历史相似日+区间预测 | 只发布风险等级和情景范围，不发布精确缺口\n新能源高占比区域 | 场站级出力或NWP细网格数据 | 区域聚合出力、公共气象、历史低出力样本 | 区域概率预测+情景模拟 | 不输出场站级判断，只输出区域风险\n需求响应与虚拟电厂 | 基线负荷或履约记录 | 申报容量、历史事件、样本用户数据 | 保守折减系数+履约评分 | 只输出可调用容量区间，不出精确调用建议\n储能与充电负荷 | SOC、站点级充电负荷、地理位置 | 区域负荷曲线、典型站点样本、公开电价 | 典型日聚类+峰谷影响评估 | 只输出区域影响和专题判断\n市场交易影响 | 现货出清明细、辅助服务明细 | 汇总交易电量、价格区间、市场公告 | 情景比较+敏感性分析 | 只输出影响方向和风险提示，避免强因果结论",
+      "source_path": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/01-analysis/source_extract.md",
+      "locator": "Table 50 (8 rows)",
+      "numbers": [
+        "50",
+        "8"
+      ]
+    }
+  ]
+}

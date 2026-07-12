@@ -1,0 +1,17 @@
+{
+  "schema": "cyberppt.blueprint_image_review.pending_confirmation.v1",
+  "status": "pending_confirmation",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/blueprint_image_review.json",
+  "question": "是否确认本轮逐页蓝图图片，并进入图片版 PPT 组装？",
+  "options": [
+    {
+      "id": "confirm_blueprint_images",
+      "label": "确认图片"
+    },
+    {
+      "id": "revise_blueprint_images",
+      "label": "返回调整"
+    }
+  ],
+  "created_at": "2026-07-11T22:20:35+00:00"
+}

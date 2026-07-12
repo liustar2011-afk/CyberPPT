@@ -1,0 +1,3645 @@
+{
+  "schema_version": "1.1",
+  "page": {
+    "page_id": "page-004-hybrid",
+    "width_px": 1536,
+    "height_px": 1024
+  },
+  "images": {
+    "full": {
+      "path": "projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/pages_001_019/page_004_形势变化和工作要求_full.png",
+      "width_px": 1536,
+      "height_px": 1024
+    },
+    "background": {
+      "path": "projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_004/page_004_background.png",
+      "width_px": 1536,
+      "height_px": 1024
+    },
+    "text": {
+      "path": "projects/power-supply-demand-forecast-0712/workbench/stages/02-blueprint-dual-image/editable_text/pages_001_019/assets/page_004/page_004_text.png",
+      "width_px": 1536,
+      "height_px": 1024
+    }
+  },
+  "regions": [],
+  "containers": [
+    {
+      "container_id": "canvas",
+      "safe_bbox": {
+        "x": 0,
+        "y": 0,
+        "width": 1536,
+        "height": 1024
+      }
+    }
+  ],
+  "text_lines": [
+    {
+      "line_id": "L001",
+      "group_id": "G001",
+      "line_index": 0,
+      "text": "2025年全国全社会用电量",
+      "bbox": {
+        "x": 214,
+        "y": 61,
+        "width": 337,
+        "height": 34
+      },
+      "polygon": [
+        [
+          214,
+          61
+        ],
+        [
+          551,
+          61
+        ],
+        [
+          551,
+          95
+        ],
+        [
+          214,
+          95
+        ]
+      ],
+      "confidence": 0.9999939799308777,
+      "runs": [
+        {
+          "text": "2025",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 34,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000018"
+          }
+        },
+        {
+          "text": "年全国全社会用电量",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 30,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 34,
+              "weight": "bold",
+              "confidence": 0.8509607478985908,
+              "mask_iou": 0.8290676416819013,
+              "width_similarity": 0.8095238095238095,
+              "height_similarity": 0.9629629629629629
+            },
+            "color": {
+              "hex_color": "#000018",
+              "confidence": 0.45,
+              "method": "text_fallback",
+              "sample_count": 983
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 30,
+              "weight": "bold",
+              "confidence": 0.8121317144858407,
+              "mask_iou": 0.7171809384699653,
+              "width_similarity": 0.9481481481481482,
+              "height_similarity": 0.9032258064516129
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.060010757173278306,
+              "method": "full_background_delta",
+              "sample_count": 164
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 0.744357638888889
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 214,
+          "y": 61,
+          "width": 337,
+          "height": 34
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 214,
+          "y": 61,
+          "width": 337,
+          "height": 34
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 214,
+          "y": 61,
+          "width": 337,
+          "height": 34
+        },
+        "bbox_in": {
+          "x": 1.8576388424479164,
+          "y": 0.44677734375,
+          "width": 2.9253471490885414,
+          "height": 0.2490234375
+        },
+        "bbox_pt": {
+          "x": 133.74999665624998,
+          "y": 32.16796875,
+          "width": 210.62499473437498,
+          "height": 17.9296875
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L002",
+      "group_id": "G002",
+      "line_index": 1,
+      "text": "供需预测对象和成果形态正在扩展",
+      "bbox": {
+        "x": 709,
+        "y": 49,
+        "width": 740,
+        "height": 58
+      },
+      "polygon": [
+        [
+          709,
+          49
+        ],
+        [
+          1449,
+          49
+        ],
+        [
+          1449,
+          107
+        ],
+        [
+          709,
+          107
+        ]
+      ],
+      "confidence": 0.9999635219573975,
+      "runs": [
+        {
+          "text": "供需预测对象和成果形态正在扩展",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 49,
+            "weight": "bold",
+            "bold": true,
+            "color": "#F8F8F9"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 49,
+              "weight": "bold",
+              "confidence": 0.7884032003743853,
+              "mask_iou": 0.6555655565556555,
+              "width_similarity": 0.998641304347826,
+              "height_similarity": 0.8909090909090909
+            },
+            "color": {
+              "hex_color": "#F8F8F9",
+              "confidence": 0.33284124033640367,
+              "method": "full_background_delta",
+              "sample_count": 7290
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 0.9722222222222223
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 709,
+          "y": 49,
+          "width": 740,
+          "height": 58
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 709,
+          "y": 49,
+          "width": 740,
+          "height": 58
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 709,
+          "y": 49,
+          "width": 740,
+          "height": 58
+        },
+        "bbox_in": {
+          "x": 6.1545137350260415,
+          "y": 0.35888671875,
+          "width": 6.423610950520833,
+          "height": 0.4248046875
+        },
+        "bbox_pt": {
+          "x": 443.124988921875,
+          "y": 25.83984375,
+          "width": 462.49998843749995,
+          "height": 30.5859375
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L003",
+      "group_id": "G003",
+      "line_index": 2,
+      "text": "103682亿千瓦时",
+      "bbox": {
+        "x": 195,
+        "y": 114,
+        "width": 431,
+        "height": 114
+      },
+      "polygon": [
+        [
+          197,
+          114
+        ],
+        [
+          626,
+          123
+        ],
+        [
+          624,
+          228
+        ],
+        [
+          195,
+          219
+        ]
+      ],
+      "confidence": 0.9992389678955078,
+      "runs": [
+        {
+          "text": "103682",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 92,
+            "weight": "bold",
+            "bold": true,
+            "color": "#002158"
+          }
+        },
+        {
+          "text": "亿千瓦时",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 88,
+            "weight": "bold",
+            "bold": true,
+            "color": "#083967"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 92,
+              "weight": "bold",
+              "confidence": 0.4567767701139862,
+              "mask_iou": 0.4321074964639321,
+              "width_similarity": 0.07647058823529412,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#002158",
+              "confidence": 0.45,
+              "method": "text_fallback",
+              "sample_count": 1085
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 88,
+              "weight": "bold",
+              "confidence": 0.5914835196284419,
+              "mask_iou": 0.2995866659509367,
+              "width_similarity": 0.9915492957746479,
+              "height_similarity": 0.8941176470588236
+            },
+            "color": {
+              "hex_color": "#083967",
+              "confidence": 0.38580056373224425,
+              "method": "full_background_delta",
+              "sample_count": 4859
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 0.705295138888889
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 195,
+          "y": 114,
+          "width": 431,
+          "height": 114
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 195,
+          "y": 114,
+          "width": 431,
+          "height": 114
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 195,
+          "y": 114,
+          "width": 431,
+          "height": 114
+        },
+        "bbox_in": {
+          "x": 1.692708291015625,
+          "y": 0.8349609375,
+          "width": 3.741319350911458,
+          "height": 0.8349609375
+        },
+        "bbox_pt": {
+          "x": 121.874996953125,
+          "y": 60.1171875,
+          "width": 269.374993265625,
+          "height": 60.1171875
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L004",
+      "group_id": "G004",
+      "line_index": 3,
+      "text": "同比增长",
+      "bbox": {
+        "x": 204,
+        "y": 254,
+        "width": 263,
+        "height": 67
+      },
+      "polygon": [
+        [
+          204,
+          254
+        ],
+        [
+          467,
+          254
+        ],
+        [
+          467,
+          321
+        ],
+        [
+          204,
+          321
+        ]
+      ],
+      "confidence": 0.9670181274414062,
+      "runs": [
+        {
+          "text": "同比增长",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 58,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 58,
+              "weight": "bold",
+              "confidence": 0.582245703037299,
+              "mask_iou": 0.29703300366707414,
+              "width_similarity": 0.9469387755102041,
+              "height_similarity": 0.9107142857142857
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.23931601770289207,
+              "method": "full_background_delta",
+              "sample_count": 1147
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 0.9917534722222221
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 204,
+          "y": 254,
+          "width": 263,
+          "height": 67
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 204,
+          "y": 254,
+          "width": 263,
+          "height": 67
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 204,
+          "y": 254,
+          "width": 263,
+          "height": 67
+        },
+        "bbox_in": {
+          "x": 1.7708332890625,
+          "y": 1.8603515625,
+          "width": 2.2829860540364586,
+          "height": 0.49072265625
+        },
+        "bbox_pt": {
+          "x": 127.4999968125,
+          "y": 133.9453125,
+          "width": 164.37499589062503,
+          "height": 35.33203125
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L005",
+      "group_id": "G005",
+      "line_index": 4,
+      "text": "5.0%",
+      "bbox": {
+        "x": 204,
+        "y": 254,
+        "width": 263,
+        "height": 67
+      },
+      "polygon": [
+        [
+          204,
+          254
+        ],
+        [
+          467,
+          254
+        ],
+        [
+          467,
+          321
+        ],
+        [
+          204,
+          321
+        ]
+      ],
+      "confidence": 0.9670181274414062,
+      "runs": [
+        {
+          "text": "5.0%",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 76,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 76,
+              "weight": "bold",
+              "confidence": 0.5051840862886512,
+              "mask_iou": 0.25910329452563785,
+              "width_similarity": 0.7591836734693878,
+              "height_similarity": 0.864406779661017
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.23931601770289207,
+              "method": "full_background_delta",
+              "sample_count": 1147
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 0.9917534722222221
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 204,
+          "y": 254,
+          "width": 263,
+          "height": 67
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 204,
+          "y": 254,
+          "width": 263,
+          "height": 67
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 204,
+          "y": 254,
+          "width": 263,
+          "height": 67
+        },
+        "bbox_in": {
+          "x": 1.7708332890625,
+          "y": 1.8603515625,
+          "width": 2.2829860540364586,
+          "height": 0.49072265625
+        },
+        "bbox_pt": {
+          "x": 127.4999968125,
+          "y": 133.9453125,
+          "width": 164.37499589062503,
+          "height": 35.33203125
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L006",
+      "group_id": "G006",
+      "line_index": 5,
+      "text": "新能源",
+      "bbox": {
+        "x": 696,
+        "y": 337,
+        "width": 93,
+        "height": 45
+      },
+      "polygon": [
+        [
+          696,
+          337
+        ],
+        [
+          789,
+          337
+        ],
+        [
+          789,
+          382
+        ],
+        [
+          696,
+          382
+        ]
+      ],
+      "confidence": 0.9999739527702332,
+      "runs": [
+        {
+          "text": "新能源",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 28,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 28,
+              "weight": "bold",
+              "confidence": 0.8134232195807376,
+              "mask_iou": 0.726491646778043,
+              "width_similarity": 0.9523809523809523,
+              "height_similarity": 0.8787878787878788
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.19454584480832968,
+              "method": "full_background_delta",
+              "sample_count": 323
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 696,
+          "y": 337,
+          "width": 93,
+          "height": 45
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 696,
+          "y": 337,
+          "width": 93,
+          "height": 45
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 696,
+          "y": 337,
+          "width": 93,
+          "height": 45
+        },
+        "bbox_in": {
+          "x": 6.041666515625,
+          "y": 2.46826171875,
+          "width": 0.807291646484375,
+          "height": 0.32958984375
+        },
+        "bbox_pt": {
+          "x": 434.99998912499996,
+          "y": 177.71484375,
+          "width": 58.124998546875,
+          "height": 23.73046875
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L007",
+      "group_id": "G007",
+      "line_index": 6,
+      "text": "跨区",
+      "bbox": {
+        "x": 882,
+        "y": 337,
+        "width": 65,
+        "height": 45
+      },
+      "polygon": [
+        [
+          882,
+          337
+        ],
+        [
+          947,
+          337
+        ],
+        [
+          947,
+          382
+        ],
+        [
+          882,
+          382
+        ]
+      ],
+      "confidence": 0.9999902844429016,
+      "runs": [
+        {
+          "text": "跨区",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 25,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 25,
+              "weight": "bold",
+              "confidence": 0.8111431211828993,
+              "mask_iou": 0.7450819672131147,
+              "width_similarity": 0.9803921568627451,
+              "height_similarity": 0.78125
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.17184726710053247,
+              "method": "full_background_delta",
+              "sample_count": 172
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 882,
+          "y": 337,
+          "width": 65,
+          "height": 45
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 882,
+          "y": 337,
+          "width": 65,
+          "height": 45
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 882,
+          "y": 337,
+          "width": 65,
+          "height": 45
+        },
+        "bbox_in": {
+          "x": 7.65624980859375,
+          "y": 2.46826171875,
+          "width": 0.5642360970052084,
+          "height": 0.32958984375
+        },
+        "bbox_pt": {
+          "x": 551.24998621875,
+          "y": 177.71484375,
+          "width": 40.624998984375004,
+          "height": 23.73046875
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L008",
+      "group_id": "G008",
+      "line_index": 7,
+      "text": "需求侧",
+      "bbox": {
+        "x": 1193,
+        "y": 337,
+        "width": 90,
+        "height": 45
+      },
+      "polygon": [
+        [
+          1193,
+          337
+        ],
+        [
+          1283,
+          337
+        ],
+        [
+          1283,
+          382
+        ],
+        [
+          1193,
+          382
+        ]
+      ],
+      "confidence": 0.9999482035636902,
+      "runs": [
+        {
+          "text": "需求侧",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 26,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 26,
+              "weight": "bold",
+              "confidence": 0.8266479672828047,
+              "mask_iou": 0.7360965372507869,
+              "width_similarity": 0.9871794871794872,
+              "height_similarity": 0.875
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.1835454180374086,
+              "method": "full_background_delta",
+              "sample_count": 307
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 0.9418402777777778
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 1193,
+          "y": 337,
+          "width": 90,
+          "height": 45
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 1193,
+          "y": 337,
+          "width": 90,
+          "height": 45
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 1193,
+          "y": 337,
+          "width": 90,
+          "height": 45
+        },
+        "bbox_in": {
+          "x": 10.355902518880209,
+          "y": 2.46826171875,
+          "width": 0.7812499804687499,
+          "height": 0.32958984375
+        },
+        "bbox_pt": {
+          "x": 745.624981359375,
+          "y": 177.71484375,
+          "width": 56.24999859374999,
+          "height": 23.73046875
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L009",
+      "group_id": "G009",
+      "line_index": 8,
+      "text": "极端事件",
+      "bbox": {
+        "x": 1346,
+        "y": 338,
+        "width": 114,
+        "height": 43
+      },
+      "polygon": [
+        [
+          1346,
+          338
+        ],
+        [
+          1460,
+          338
+        ],
+        [
+          1460,
+          381
+        ],
+        [
+          1346,
+          381
+        ]
+      ],
+      "confidence": 0.9999783039093018,
+      "runs": [
+        {
+          "text": "极端事件",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 26,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 26,
+              "weight": "bold",
+              "confidence": 0.8183393364448053,
+              "mask_iou": 0.751171875,
+              "width_similarity": 0.9904761904761905,
+              "height_similarity": 0.7878787878787878
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.20558506110696612,
+              "method": "full_background_delta",
+              "sample_count": 451
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 1346,
+          "y": 338,
+          "width": 114,
+          "height": 43
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 1346,
+          "y": 338,
+          "width": 114,
+          "height": 43
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 1346,
+          "y": 338,
+          "width": 114,
+          "height": 43
+        },
+        "bbox_in": {
+          "x": 11.684027485677083,
+          "y": 2.4755859375,
+          "width": 0.98958330859375,
+          "height": 0.31494140625
+        },
+        "bbox_pt": {
+          "x": 841.2499789687499,
+          "y": 178.2421875,
+          "width": 71.24999821875,
+          "height": 22.67578125
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L010",
+      "group_id": "G010",
+      "line_index": 9,
+      "text": "交易",
+      "bbox": {
+        "x": 1042,
+        "y": 336,
+        "width": 68,
+        "height": 48
+      },
+      "polygon": [
+        [
+          1042,
+          336
+        ],
+        [
+          1110,
+          336
+        ],
+        [
+          1110,
+          384
+        ],
+        [
+          1042,
+          384
+        ]
+      ],
+      "confidence": 0.9999961256980896,
+      "runs": [
+        {
+          "text": "交易",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 24,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 24,
+              "weight": "bold",
+              "confidence": 0.8014708374124557,
+              "mask_iou": 0.727859778597786,
+              "width_similarity": 0.9795918367346939,
+              "height_similarity": 0.78125
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.16827842355045053,
+              "method": "full_background_delta",
+              "sample_count": 134
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 0.5121527777777778
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 1042,
+          "y": 336,
+          "width": 68,
+          "height": 48
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 1042,
+          "y": 336,
+          "width": 68,
+          "height": 48
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 1042,
+          "y": 336,
+          "width": 68,
+          "height": 48
+        },
+        "bbox_in": {
+          "x": 9.045138662760415,
+          "y": 2.4609375,
+          "width": 0.5902777630208333,
+          "height": 0.3515625
+        },
+        "bbox_pt": {
+          "x": 651.24998371875,
+          "y": 177.1875,
+          "width": 42.4999989375,
+          "height": 25.3125
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L011",
+      "group_id": "G011",
+      "line_index": 10,
+      "text": "有效出力",
+      "bbox": {
+        "x": 688,
+        "y": 384,
+        "width": 114,
+        "height": 40
+      },
+      "polygon": [
+        [
+          688,
+          384
+        ],
+        [
+          802,
+          384
+        ],
+        [
+          802,
+          424
+        ],
+        [
+          688,
+          424
+        ]
+      ],
+      "confidence": 0.9999321699142456,
+      "runs": [
+        {
+          "text": "有效出力",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 31,
+            "weight": "bold",
+            "bold": true,
+            "color": "#070709"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 31,
+              "weight": "bold",
+              "confidence": 0.7842720824185104,
+              "mask_iou": 0.7001427891480247,
+              "width_similarity": 0.8467741935483871,
+              "height_similarity": 0.9375
+            },
+            "color": {
+              "hex_color": "#070709",
+              "confidence": 0.21134389627293437,
+              "method": "full_background_delta",
+              "sample_count": 386
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 688,
+          "y": 384,
+          "width": 114,
+          "height": 40
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 688,
+          "y": 384,
+          "width": 114,
+          "height": 40
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 688,
+          "y": 384,
+          "width": 114,
+          "height": 40
+        },
+        "bbox_in": {
+          "x": 5.972222072916667,
+          "y": 2.8125,
+          "width": 0.98958330859375,
+          "height": 0.29296875
+        },
+        "bbox_pt": {
+          "x": 429.99998925,
+          "y": 202.5,
+          "width": 71.24999821875,
+          "height": 21.09375
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L012",
+      "group_id": "G012",
+      "line_index": 11,
+      "text": "互济",
+      "bbox": {
+        "x": 881,
+        "y": 382,
+        "width": 66,
+        "height": 44
+      },
+      "polygon": [
+        [
+          881,
+          382
+        ],
+        [
+          947,
+          382
+        ],
+        [
+          947,
+          426
+        ],
+        [
+          881,
+          426
+        ]
+      ],
+      "confidence": 0.9996358156204224,
+      "runs": [
+        {
+          "text": "互济",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 29,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 29,
+              "weight": "bold",
+              "confidence": 0.8053646767656635,
+              "mask_iou": 0.7350674373795761,
+              "width_similarity": 0.8793103448275862,
+              "height_similarity": 0.90625
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.16530307029119382,
+              "method": "full_background_delta",
+              "sample_count": 135
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 881,
+          "y": 382,
+          "width": 66,
+          "height": 44
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 881,
+          "y": 382,
+          "width": 66,
+          "height": 44
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 881,
+          "y": 382,
+          "width": 66,
+          "height": 44
+        },
+        "bbox_in": {
+          "x": 7.647569253255209,
+          "y": 2.7978515625,
+          "width": 0.57291665234375,
+          "height": 0.322265625
+        },
+        "bbox_pt": {
+          "x": 550.624986234375,
+          "y": 201.4453125,
+          "width": 41.24999896875,
+          "height": 23.203125
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L013",
+      "group_id": "G013",
+      "line_index": 12,
+      "text": "调节",
+      "bbox": {
+        "x": 1205,
+        "y": 380,
+        "width": 68,
+        "height": 48
+      },
+      "polygon": [
+        [
+          1205,
+          380
+        ],
+        [
+          1273,
+          380
+        ],
+        [
+          1273,
+          428
+        ],
+        [
+          1205,
+          428
+        ]
+      ],
+      "confidence": 0.9999563097953796,
+      "runs": [
+        {
+          "text": "调节",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 25,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 25,
+              "weight": "bold",
+              "confidence": 0.832133848234254,
+              "mask_iou": 0.7718832891246684,
+              "width_similarity": 0.9803921568627451,
+              "height_similarity": 0.8125
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.24041242028726387,
+              "method": "full_background_delta",
+              "sample_count": 255
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 0.9027777777777778
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 1205,
+          "y": 380,
+          "width": 68,
+          "height": 48
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 1205,
+          "y": 380,
+          "width": 68,
+          "height": 48
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 1205,
+          "y": 380,
+          "width": 68,
+          "height": 48
+        },
+        "bbox_in": {
+          "x": 10.460069182942709,
+          "y": 2.783203125,
+          "width": 0.5902777630208333,
+          "height": 0.3515625
+        },
+        "bbox_pt": {
+          "x": 753.124981171875,
+          "y": 200.390625,
+          "width": 42.4999989375,
+          "height": 25.3125
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L014",
+      "group_id": "G014",
+      "line_index": 13,
+      "text": "风险",
+      "bbox": {
+        "x": 1371,
+        "y": 382,
+        "width": 65,
+        "height": 45
+      },
+      "polygon": [
+        [
+          1371,
+          382
+        ],
+        [
+          1436,
+          382
+        ],
+        [
+          1436,
+          427
+        ],
+        [
+          1371,
+          427
+        ]
+      ],
+      "confidence": 0.9999926686286926,
+      "runs": [
+        {
+          "text": "风险",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 26,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 26,
+              "weight": "bold",
+              "confidence": 0.8513738011352516,
+              "mask_iou": 0.8040712468193384,
+              "width_similarity": 0.9615384615384616,
+              "height_similarity": 0.84375
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.30859213250517603,
+              "method": "full_background_delta",
+              "sample_count": 345
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 1371,
+          "y": 382,
+          "width": 65,
+          "height": 45
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 1371,
+          "y": 382,
+          "width": 65,
+          "height": 45
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 1371,
+          "y": 382,
+          "width": 65,
+          "height": 45
+        },
+        "bbox_in": {
+          "x": 11.901041369140625,
+          "y": 2.7978515625,
+          "width": 0.5642360970052084,
+          "height": 0.32958984375
+        },
+        "bbox_pt": {
+          "x": 856.874978578125,
+          "y": 201.4453125,
+          "width": 40.624998984375004,
+          "height": 23.73046875
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L015",
+      "group_id": "G015",
+      "line_index": 14,
+      "text": "全国累计完成电力市场交易电量",
+      "bbox": {
+        "x": 211,
+        "y": 393,
+        "width": 389,
+        "height": 37
+      },
+      "polygon": [
+        [
+          211,
+          393
+        ],
+        [
+          600,
+          393
+        ],
+        [
+          600,
+          430
+        ],
+        [
+          211,
+          430
+        ]
+      ],
+      "confidence": 0.9999850392341614,
+      "runs": [
+        {
+          "text": "全国累计完成电力市场交易电量",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 31,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 31,
+              "weight": "bold",
+              "confidence": 0.8138716275387181,
+              "mask_iou": 0.7129044254369654,
+              "width_similarity": 0.8870967741935484,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.34093286752390806,
+              "method": "full_background_delta",
+              "sample_count": 2622
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 0.6575520833333334
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 211,
+          "y": 393,
+          "width": 389,
+          "height": 37
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 211,
+          "y": 393,
+          "width": 389,
+          "height": 37
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 211,
+          "y": 393,
+          "width": 389,
+          "height": 37
+        },
+        "bbox_in": {
+          "x": 1.8315971764322916,
+          "y": 2.87841796875,
+          "width": 3.376736026692708,
+          "height": 0.27099609375
+        },
+        "bbox_pt": {
+          "x": 131.874996703125,
+          "y": 207.24609375,
+          "width": 243.12499392187496,
+          "height": 19.51171875
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L016",
+      "group_id": "G016",
+      "line_index": 15,
+      "text": "66394",
+      "bbox": {
+        "x": 201,
+        "y": 455,
+        "width": 257,
+        "height": 97
+      },
+      "polygon": [
+        [
+          201,
+          455
+        ],
+        [
+          458,
+          455
+        ],
+        [
+          458,
+          552
+        ],
+        [
+          201,
+          552
+        ]
+      ],
+      "confidence": 0.9999983906745911,
+      "runs": [
+        {
+          "text": "66394",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 75,
+            "weight": "bold",
+            "bold": true,
+            "color": "#073159"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 75,
+              "weight": "bold",
+              "confidence": 0.8571372713107863,
+              "mask_iou": 0.8217270194986073,
+              "width_similarity": 0.9914163090128756,
+              "height_similarity": 0.7866666666666666
+            },
+            "color": {
+              "hex_color": "#073159",
+              "confidence": 0.36549621673602845,
+              "method": "full_background_delta",
+              "sample_count": 3791
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 201,
+          "y": 455,
+          "width": 257,
+          "height": 97
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 201,
+          "y": 455,
+          "width": 257,
+          "height": 97
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 201,
+          "y": 455,
+          "width": 257,
+          "height": 97
+        },
+        "bbox_in": {
+          "x": 1.744791623046875,
+          "y": 3.33251953125,
+          "width": 2.2309027220052084,
+          "height": 0.71044921875
+        },
+        "bbox_pt": {
+          "x": 125.624996859375,
+          "y": 239.94140625,
+          "width": 160.624995984375,
+          "height": 51.15234375
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L017",
+      "group_id": "G017",
+      "line_index": 16,
+      "text": "亿千瓦时",
+      "bbox": {
+        "x": 450,
+        "y": 501,
+        "width": 127,
+        "height": 45
+      },
+      "polygon": [
+        [
+          451,
+          501
+        ],
+        [
+          577,
+          503
+        ],
+        [
+          576,
+          546
+        ],
+        [
+          450,
+          544
+        ]
+      ],
+      "confidence": 0.9998062252998352,
+      "runs": [
+        {
+          "text": "亿千瓦时",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 32,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000F48"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 32,
+              "weight": "bold",
+              "confidence": 0.7972934985850011,
+              "mask_iou": 0.695446735395189,
+              "width_similarity": 0.90625,
+              "height_similarity": 0.9411764705882353
+            },
+            "color": {
+              "hex_color": "#000F48",
+              "confidence": 0.21833372255290062,
+              "method": "full_background_delta",
+              "sample_count": 481
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 0.8485243055555557
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 450,
+          "y": 501,
+          "width": 127,
+          "height": 45
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 450,
+          "y": 501,
+          "width": 127,
+          "height": 45
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 450,
+          "y": 501,
+          "width": 127,
+          "height": 45
+        },
+        "bbox_in": {
+          "x": 3.90624990234375,
+          "y": 3.66943359375,
+          "width": 1.1024305279947917,
+          "height": 0.32958984375
+        },
+        "bbox_pt": {
+          "x": 281.24999296875,
+          "y": 264.19921875,
+          "width": 79.374998015625,
+          "height": 23.73046875
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L018",
+      "group_id": "G018",
+      "line_index": 17,
+      "text": "预测工作需要兼顾新能源有效出力、跨区互济、交易、",
+      "bbox": {
+        "x": 732,
+        "y": 550,
+        "width": 683,
+        "height": 41
+      },
+      "polygon": [
+        [
+          732,
+          550
+        ],
+        [
+          1415,
+          550
+        ],
+        [
+          1415,
+          591
+        ],
+        [
+          732,
+          591
+        ]
+      ],
+      "confidence": 0.9999668002128601,
+      "runs": [
+        {
+          "text": "预测工作需要兼顾新能源有效出力、跨区互济、交易、",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 29,
+            "weight": "bold",
+            "bold": true,
+            "color": "#FFFFFF"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 29,
+              "weight": "bold",
+              "confidence": 0.7237952948577797,
+              "mask_iou": 0.5777080991539963,
+              "width_similarity": 0.9755747126436781,
+              "height_similarity": 0.8108108108108109
+            },
+            "color": {
+              "hex_color": "#FFFFFF",
+              "confidence": 0.4772920584810151,
+              "method": "full_background_delta",
+              "sample_count": 7037
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 0.8007812499999999
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 732,
+          "y": 550,
+          "width": 683,
+          "height": 41
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 732,
+          "y": 550,
+          "width": 683,
+          "height": 41
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 732,
+          "y": 550,
+          "width": 683,
+          "height": 41
+        },
+        "bbox_in": {
+          "x": 6.3541665078125,
+          "y": 4.0283203125,
+          "width": 5.928819296223958,
+          "height": 0.30029296875
+        },
+        "bbox_pt": {
+          "x": 457.4999885625,
+          "y": 290.0390625,
+          "width": 426.87498932812497,
+          "height": 21.62109375
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L019",
+      "group_id": "G019",
+      "line_index": 18,
+      "text": "占全社会用电量 64.0%",
+      "bbox": {
+        "x": 199,
+        "y": 582,
+        "width": 382,
+        "height": 68
+      },
+      "polygon": [
+        [
+          199,
+          584
+        ],
+        [
+          581,
+          582
+        ],
+        [
+          581,
+          648
+        ],
+        [
+          199,
+          650
+        ]
+      ],
+      "confidence": 0.9654184579849243,
+      "runs": [
+        {
+          "text": "占全社会用电量 ",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 32,
+            "weight": "bold",
+            "bold": true,
+            "color": "#060709"
+          }
+        },
+        {
+          "text": "64.0%",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 53,
+            "weight": "bold",
+            "bold": true,
+            "color": "#08325F"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 32,
+              "weight": "bold",
+              "confidence": 0.8203173437096358,
+              "mask_iou": 0.7483854301214157,
+              "width_similarity": 0.8348214285714286,
+              "height_similarity": 1.0
+            },
+            "color": {
+              "hex_color": "#060709",
+              "confidence": 0.10788847644806185,
+              "method": "full_background_delta",
+              "sample_count": 367
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 53,
+              "weight": "bold",
+              "confidence": 0.6223647420084709,
+              "mask_iou": 0.41953698475437606,
+              "width_similarity": 0.9325153374233128,
+              "height_similarity": 0.7924528301886793
+            },
+            "color": {
+              "hex_color": "#08325F",
+              "confidence": 0.15533370892483836,
+              "method": "full_background_delta",
+              "sample_count": 548
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 0.7769097222222223
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 199,
+          "y": 582,
+          "width": 382,
+          "height": 68
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 199,
+          "y": 582,
+          "width": 382,
+          "height": 68
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 199,
+          "y": 582,
+          "width": 382,
+          "height": 68
+        },
+        "bbox_in": {
+          "x": 1.7274305123697915,
+          "y": 4.2626953125,
+          "width": 3.3159721393229167,
+          "height": 0.498046875
+        },
+        "bbox_pt": {
+          "x": 124.37499689062498,
+          "y": 306.9140625,
+          "width": 238.74999403125,
+          "height": 35.859375
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L020",
+      "group_id": "G020",
+      "line_index": 19,
+      "text": "需求侧调节和极端事件风险",
+      "bbox": {
+        "x": 881,
+        "y": 605,
+        "width": 356,
+        "height": 41
+      },
+      "polygon": [
+        [
+          881,
+          605
+        ],
+        [
+          1237,
+          605
+        ],
+        [
+          1237,
+          646
+        ],
+        [
+          881,
+          646
+        ]
+      ],
+      "confidence": 0.9999837279319763,
+      "runs": [
+        {
+          "text": "需求侧调节和极端事件风险",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 28,
+            "weight": "bold",
+            "bold": true,
+            "color": "#F8F8F9"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 28,
+              "weight": "bold",
+              "confidence": 0.7822890067158241,
+              "mask_iou": 0.6923829186134955,
+              "width_similarity": 0.9572649572649573,
+              "height_similarity": 0.8108108108108109
+            },
+            "color": {
+              "hex_color": "#F8F8F9",
+              "confidence": 0.3438479300901834,
+              "method": "full_background_delta",
+              "sample_count": 2857
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 0.034722222222222286
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 881,
+          "y": 605,
+          "width": 356,
+          "height": 41
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 881,
+          "y": 605,
+          "width": 356,
+          "height": 41
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 881,
+          "y": 605,
+          "width": 356,
+          "height": 41
+        },
+        "bbox_in": {
+          "x": 7.647569253255209,
+          "y": 4.43115234375,
+          "width": 3.0902777005208333,
+          "height": 0.30029296875
+        },
+        "bbox_pt": {
+          "x": 550.624986234375,
+          "y": 319.04296875,
+          "width": 222.4999944375,
+          "height": 21.62109375
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L021",
+      "group_id": "G021",
+      "line_index": 20,
+      "text": "全国可再生能源装机",
+      "bbox": {
+        "x": 209,
+        "y": 708,
+        "width": 270,
+        "height": 38
+      },
+      "polygon": [
+        [
+          209,
+          708
+        ],
+        [
+          479,
+          708
+        ],
+        [
+          479,
+          746
+        ],
+        [
+          209,
+          746
+        ]
+      ],
+      "confidence": 0.999988317489624,
+      "runs": [
+        {
+          "text": "全国可再生能源装机",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 31,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 31,
+              "weight": "bold",
+              "confidence": 0.7931539742712048,
+              "mask_iou": 0.6655052264808362,
+              "width_similarity": 0.956989247311828,
+              "height_similarity": 0.9393939393939394
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.3294232534728499,
+              "method": "full_background_delta",
+              "sample_count": 1826
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 0.9331597222222223
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 209,
+          "y": 708,
+          "width": 270,
+          "height": 38
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 209,
+          "y": 708,
+          "width": 270,
+          "height": 38
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 209,
+          "y": 708,
+          "width": 270,
+          "height": 38
+        },
+        "bbox_in": {
+          "x": 1.8142360657552083,
+          "y": 5.185546875,
+          "width": 2.34374994140625,
+          "height": 0.2783203125
+        },
+        "bbox_pt": {
+          "x": 130.624996734375,
+          "y": 373.359375,
+          "width": 168.74999578125002,
+          "height": 20.0390625
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L022",
+      "group_id": "G022",
+      "line_index": 21,
+      "text": "23.4亿千瓦",
+      "bbox": {
+        "x": 193,
+        "y": 758,
+        "width": 294,
+        "height": 113
+      },
+      "polygon": [
+        [
+          196,
+          758
+        ],
+        [
+          487,
+          766
+        ],
+        [
+          484,
+          871
+        ],
+        [
+          193,
+          863
+        ]
+      ],
+      "confidence": 0.9997783899307251,
+      "runs": [
+        {
+          "text": "23.4",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 74,
+            "weight": "bold",
+            "bold": true,
+            "color": "#073158"
+          }
+        },
+        {
+          "text": "亿千瓦",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 32,
+            "weight": "bold",
+            "bold": true,
+            "color": "#08285F"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 74,
+              "weight": "bold",
+              "confidence": 0.8362745633883335,
+              "mask_iou": 0.7885446685878963,
+              "width_similarity": 0.9746835443037974,
+              "height_similarity": 0.7945205479452054
+            },
+            "color": {
+              "hex_color": "#073158",
+              "confidence": 0.24836618050663323,
+              "method": "full_background_delta",
+              "sample_count": 1285
+            }
+          },
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 32,
+              "weight": "bold",
+              "confidence": 0.804697996253645,
+              "mask_iou": 0.6985383678440926,
+              "width_similarity": 0.90625,
+              "height_similarity": 0.9696969696969697
+            },
+            "color": {
+              "hex_color": "#08285F",
+              "confidence": 0.27278642436889544,
+              "method": "full_background_delta",
+              "sample_count": 424
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 193,
+          "y": 758,
+          "width": 294,
+          "height": 113
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 193,
+          "y": 758,
+          "width": 294,
+          "height": 113
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 193,
+          "y": 758,
+          "width": 294,
+          "height": 113
+        },
+        "bbox_in": {
+          "x": 1.6753471803385416,
+          "y": 5.5517578125,
+          "width": 2.55208326953125,
+          "height": 0.82763671875
+        },
+        "bbox_pt": {
+          "x": 120.62499698437499,
+          "y": 399.7265625,
+          "width": 183.74999540624998,
+          "height": 59.58984375
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L023",
+      "group_id": "G023",
+      "line_index": 22,
+      "text": "电力运行规模、市场交易和新能源装机",
+      "bbox": {
+        "x": 839,
+        "y": 805,
+        "width": 604,
+        "height": 44
+      },
+      "polygon": [
+        [
+          839,
+          805
+        ],
+        [
+          1443,
+          805
+        ],
+        [
+          1443,
+          849
+        ],
+        [
+          839,
+          849
+        ]
+      ],
+      "confidence": 0.9999783635139465,
+      "runs": [
+        {
+          "text": "电力运行规模、市场交易和新能源装机",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 35,
+            "weight": "bold",
+            "bold": true,
+            "color": "#07090F"
+          }
+        }
+      ],
+      "layout": {
+        "align": "right",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 35,
+              "weight": "bold",
+              "confidence": 0.7798459271168275,
+              "mask_iou": 0.639871382636656,
+              "width_similarity": 0.9916666666666667,
+              "height_similarity": 0.9
+            },
+            "color": {
+              "hex_color": "#07090F",
+              "confidence": 0.3357930356521542,
+              "method": "full_background_delta",
+              "sample_count": 4849
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "right",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 839,
+          "y": 805,
+          "width": 604,
+          "height": 44
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 839,
+          "y": 805,
+          "width": 604,
+          "height": 44
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 839,
+          "y": 805,
+          "width": 604,
+          "height": 44
+        },
+        "bbox_in": {
+          "x": 7.2829859290364585,
+          "y": 5.89599609375,
+          "width": 5.2430554244791665,
+          "height": 0.322265625
+        },
+        "bbox_pt": {
+          "x": 524.374986890625,
+          "y": 424.51171875,
+          "width": 377.4999905625,
+          "height": 23.203125
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L024",
+      "group_id": "G024",
+      "line_index": 23,
+      "text": "结构发生变化。",
+      "bbox": {
+        "x": 837,
+        "y": 866,
+        "width": 238,
+        "height": 51
+      },
+      "polygon": [
+        [
+          837,
+          866
+        ],
+        [
+          1075,
+          868
+        ],
+        [
+          1075,
+          917
+        ],
+        [
+          837,
+          915
+        ]
+      ],
+      "confidence": 0.9999831914901733,
+      "runs": [
+        {
+          "text": "结构发生变化。",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 35,
+            "weight": "bold",
+            "bold": true,
+            "color": "#07090F"
+          }
+        }
+      ],
+      "layout": {
+        "align": "center",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 35,
+              "weight": "bold",
+              "confidence": 0.7201129494113905,
+              "mask_iou": 0.5534521158129176,
+              "width_similarity": 0.9428571428571428,
+              "height_similarity": 0.9
+            },
+            "color": {
+              "hex_color": "#07090F",
+              "confidence": 0.2918279195672368,
+              "method": "full_background_delta",
+              "sample_count": 1534
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "center",
+          "confidence": 1.0
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 837,
+          "y": 866,
+          "width": 238,
+          "height": 51
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 837,
+          "y": 866,
+          "width": 238,
+          "height": 51
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 837,
+          "y": 866,
+          "width": 238,
+          "height": 51
+        },
+        "bbox_in": {
+          "x": 7.265624818359375,
+          "y": 6.3427734375,
+          "width": 2.0659721705729166,
+          "height": 0.37353515625
+        },
+        "bbox_pt": {
+          "x": 523.124986921875,
+          "y": 456.6796875,
+          "width": 148.74999628125,
+          "height": 26.89453125
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L025",
+      "group_id": "G025",
+      "line_index": 24,
+      "text": "约占总装机",
+      "bbox": {
+        "x": 201,
+        "y": 885,
+        "width": 274,
+        "height": 66
+      },
+      "polygon": [
+        [
+          201,
+          885
+        ],
+        [
+          475,
+          887
+        ],
+        [
+          475,
+          951
+        ],
+        [
+          201,
+          949
+        ]
+      ],
+      "confidence": 0.9725995659828186,
+      "runs": [
+        {
+          "text": "约占总装机",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 52,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 52,
+              "weight": "bold",
+              "confidence": 0.6389167058622311,
+              "mask_iou": 0.3539744302390217,
+              "width_similarity": 0.9923076923076923,
+              "height_similarity": 0.9807692307692307
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.20282758096923503,
+              "method": "full_background_delta",
+              "sample_count": 1103
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 0.9939236111111113
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 201,
+          "y": 885,
+          "width": 274,
+          "height": 66
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 201,
+          "y": 885,
+          "width": 274,
+          "height": 66
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 201,
+          "y": 885,
+          "width": 274,
+          "height": 66
+        },
+        "bbox_in": {
+          "x": 1.744791623046875,
+          "y": 6.48193359375,
+          "width": 2.3784721627604166,
+          "height": 0.4833984375
+        },
+        "bbox_pt": {
+          "x": 125.624996859375,
+          "y": 466.69921875,
+          "width": 171.24999571875,
+          "height": 34.8046875
+        },
+        "inside_safe_area": true
+      }
+    },
+    {
+      "line_id": "L026",
+      "group_id": "G026",
+      "line_index": 25,
+      "text": "60%",
+      "bbox": {
+        "x": 201,
+        "y": 885,
+        "width": 274,
+        "height": 66
+      },
+      "polygon": [
+        [
+          201,
+          885
+        ],
+        [
+          475,
+          887
+        ],
+        [
+          475,
+          951
+        ],
+        [
+          201,
+          949
+        ]
+      ],
+      "confidence": 0.9725995659828186,
+      "runs": [
+        {
+          "text": "60%",
+          "style": {
+            "font_family": "Microsoft YaHei",
+            "font_size_px": 72,
+            "weight": "bold",
+            "bold": true,
+            "color": "#000000"
+          }
+        }
+      ],
+      "layout": {
+        "align": "left",
+        "valign": "top",
+        "wrap": false,
+        "margin_px": 0,
+        "rotation_deg": 0
+      },
+      "style_evidence": {
+        "runs": [
+          {
+            "font": {
+              "font_family": "Microsoft YaHei",
+              "font_size_px": 72,
+              "weight": "bold",
+              "confidence": 0.5090015540895497,
+              "mask_iou": 0.31295359577743564,
+              "width_similarity": 0.6046511627906976,
+              "height_similarity": 0.9285714285714286
+            },
+            "color": {
+              "hex_color": "#000000",
+              "confidence": 0.20282758096923503,
+              "method": "full_background_delta",
+              "sample_count": 1103
+            }
+          }
+        ],
+        "alignment": {
+          "method": "container_geometry",
+          "align": "left",
+          "confidence": 0.9939236111111113
+        }
+      },
+      "source": {
+        "bbox": {
+          "x": 201,
+          "y": 885,
+          "width": 274,
+          "height": 66
+        }
+      },
+      "mapping": {
+        "transform_id": "TF-PAGE004-IDENTITY",
+        "mapped_bbox": {
+          "x": 201,
+          "y": 885,
+          "width": 274,
+          "height": 66
+        },
+        "container_id": "canvas"
+      },
+      "automatic_correction": {},
+      "manual_correction": {},
+      "target": {
+        "bbox_px": {
+          "x": 201,
+          "y": 885,
+          "width": 274,
+          "height": 66
+        },
+        "bbox_in": {
+          "x": 1.744791623046875,
+          "y": 6.48193359375,
+          "width": 2.3784721627604166,
+          "height": 0.4833984375
+        },
+        "bbox_pt": {
+          "x": 125.624996859375,
+          "y": 466.69921875,
+          "width": 171.24999571875,
+          "height": 34.8046875
+        },
+        "inside_safe_area": true
+      }
+    }
+  ],
+  "registration": {
+    "transform_id": "TF-PAGE004-IDENTITY",
+    "matrix": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "qa": {
+    "status": "review",
+    "review_items": [
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L001",
+        "value": 0.060010757173278306,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L002",
+        "value": 0.33284124033640367,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L003",
+        "value": 0.38580056373224425,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L004",
+        "value": 0.23931601770289207,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L005",
+        "value": 0.23931601770289207,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L006",
+        "value": 0.19454584480832968,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L007",
+        "value": 0.17184726710053247,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L008",
+        "value": 0.1835454180374086,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L009",
+        "value": 0.20558506110696612,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L010",
+        "value": 0.16827842355045053,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L011",
+        "value": 0.21134389627293437,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L012",
+        "value": 0.16530307029119382,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L013",
+        "value": 0.24041242028726387,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L014",
+        "value": 0.30859213250517603,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L015",
+        "value": 0.34093286752390806,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L016",
+        "value": 0.36549621673602845,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L017",
+        "value": 0.21833372255290062,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L018",
+        "value": 0.4772920584810151,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L019",
+        "value": 0.10788847644806185,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L020",
+        "value": 0.034722222222222286,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L021",
+        "value": 0.3294232534728499,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L022",
+        "value": 0.24836618050663323,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L023",
+        "value": 0.3357930356521542,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L024",
+        "value": 0.2918279195672368,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L025",
+        "value": 0.20282758096923503,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "text_style_confidence",
+        "line_id": "L026",
+        "value": 0.20282758096923503,
+        "message": "Recovered text style confidence is below 0.70"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L001",
+        "value": {
+          "mask_iou": 0.5969,
+          "color_distance_rgb": 194.6407,
+          "contrast_ratio": 3.7978
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L002",
+        "value": {
+          "mask_iou": 0.798,
+          "color_distance_rgb": 111.2385,
+          "contrast_ratio": 4.3055
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L003",
+        "value": {
+          "mask_iou": 0.5103,
+          "color_distance_rgb": 156.6461,
+          "contrast_ratio": 4.8062
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L004",
+        "value": {
+          "mask_iou": 0.722,
+          "color_distance_rgb": 239.0523,
+          "contrast_ratio": 8.3944
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L005",
+        "value": {
+          "mask_iou": 0.722,
+          "color_distance_rgb": 239.0523,
+          "contrast_ratio": 8.3944
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L006",
+        "value": {
+          "mask_iou": 0.912,
+          "color_distance_rgb": 163.9695,
+          "contrast_ratio": 4.3922
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L007",
+        "value": {
+          "mask_iou": 0.7909,
+          "color_distance_rgb": 145.4923,
+          "contrast_ratio": 3.639
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L008",
+        "value": {
+          "mask_iou": 0.8741,
+          "color_distance_rgb": 137.9891,
+          "contrast_ratio": 3.7426
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L009",
+        "value": {
+          "mask_iou": 0.8778,
+          "color_distance_rgb": 132.2157,
+          "contrast_ratio": 3.8662
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L010",
+        "value": {
+          "mask_iou": 0.692,
+          "color_distance_rgb": 124.7157,
+          "contrast_ratio": 3.0575
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L011",
+        "value": {
+          "mask_iou": 0.7702,
+          "color_distance_rgb": 140.2961,
+          "contrast_ratio": 4.5889
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L012",
+        "value": {
+          "mask_iou": 0.8099,
+          "color_distance_rgb": 146.0719,
+          "contrast_ratio": 4.1108
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L013",
+        "value": {
+          "mask_iou": 0.6817,
+          "color_distance_rgb": 98.1529,
+          "contrast_ratio": 3.2608
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L014",
+        "value": {
+          "mask_iou": 0.7945,
+          "color_distance_rgb": 98.1529,
+          "contrast_ratio": 3.6587
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L015",
+        "value": {
+          "mask_iou": 0.7359,
+          "color_distance_rgb": 121.2436,
+          "contrast_ratio": 4.3213
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L016",
+        "value": {
+          "mask_iou": 0.5636,
+          "color_distance_rgb": 114.8825,
+          "contrast_ratio": 4.2244
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L017",
+        "value": {
+          "mask_iou": 0.7623,
+          "color_distance_rgb": 132.9286,
+          "contrast_ratio": 4.4669
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L018",
+        "value": {
+          "mask_iou": 0.7236,
+          "color_distance_rgb": 90.4102,
+          "contrast_ratio": 4.7332
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L019",
+        "value": {
+          "mask_iou": 0.4679,
+          "color_distance_rgb": 128.3667,
+          "contrast_ratio": 3.3812
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L020",
+        "value": {
+          "mask_iou": 0.8484,
+          "color_distance_rgb": 115.1086,
+          "contrast_ratio": 4.9137
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L021",
+        "value": {
+          "mask_iou": 0.7774,
+          "color_distance_rgb": 136.832,
+          "contrast_ratio": 4.4972
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L022",
+        "value": {
+          "mask_iou": 0.4555,
+          "color_distance_rgb": 126.8779,
+          "contrast_ratio": 3.2532
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L023",
+        "value": {
+          "mask_iou": 0.7365,
+          "color_distance_rgb": 101.0495,
+          "contrast_ratio": 4.3209
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L024",
+        "value": {
+          "mask_iou": 0.7236,
+          "color_distance_rgb": 121.2683,
+          "contrast_ratio": 4.3034
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L025",
+        "value": {
+          "mask_iou": 0.7346,
+          "color_distance_rgb": 213.6633,
+          "contrast_ratio": 7.0617
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      },
+      {
+        "rule": "editable_text_visual_match",
+        "line_id": "L026",
+        "value": {
+          "mask_iou": 0.7346,
+          "color_distance_rgb": 213.6633,
+          "contrast_ratio": 7.0617
+        },
+        "message": "editable text differs from FULL/BACKGROUND evidence"
+      }
+    ],
+    "failed_items": [],
+    "checks": {
+      "visual_line_count": 26,
+      "newline_count": 0,
+      "overflow_check": {
+        "passed": true,
+        "output": "Test passed. No overflow detected."
+      },
+      "text_style_qa": {
+        "status": "review",
+        "report": "text_style_qa.json",
+        "line_count": 26
+      }
+    }
+  },
+  "manual_corrections": []
+}
