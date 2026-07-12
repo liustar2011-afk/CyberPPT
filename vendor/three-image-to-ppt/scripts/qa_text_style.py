@@ -7,7 +7,7 @@ import math
 from pathlib import Path
 from typing import Any, Mapping
 
-from PIL import Image, ImageChops
+from PIL import Image, ImageChops, ImageStat
 
 
 MASK_THRESHOLD = 1
@@ -39,19 +39,15 @@ def _foreground_mask(image: Image.Image, background: Image.Image) -> Image.Image
 
 
 def _iou(first: Image.Image, second: Image.Image) -> float:
-    first_values = list(first.get_flattened_data())
-    second_values = list(second.get_flattened_data())
-    intersection = sum(1 for left, right in zip(first_values, second_values) if left and right)
-    union = sum(1 for left, right in zip(first_values, second_values) if left or right)
+    intersection = ImageChops.multiply(first, second).histogram()[255]
+    union = ImageChops.lighter(first, second).histogram()[255]
     return intersection / union if union else 0.0
 
 
 def _mean_rgb(image: Image.Image, mask: Image.Image | None = None) -> tuple[int, int, int]:
-    pixels = list(image.convert("RGB").get_flattened_data())
-    if mask is not None:
-        selected = [pixel for pixel, value in zip(pixels, mask.get_flattened_data()) if value]
-        pixels = selected or pixels
-    return tuple(int(round(sum(pixel[index] for pixel in pixels) / max(1, len(pixels)))) for index in range(3))
+    rgb = image.convert("RGB")
+    effective_mask = mask if mask is not None and mask.getbbox() is not None else None
+    return tuple(int(round(value)) for value in ImageStat.Stat(rgb, effective_mask).mean)
 
 
 def _color_distance(first: tuple[int, int, int], second: tuple[int, int, int]) -> float:

@@ -344,17 +344,31 @@ def _remove_stale_outputs(output_dir: Path) -> None:
             path.unlink()
 
 
+def _batch_page_command(page: dict[str, Any], input_mode: str) -> list[str]:
+    """Build an isolated page command so image/render resources cannot accumulate."""
+
+    command = [sys.executable, str(Path(__file__).resolve()), "--mode", "batch"]
+    for name in ("full", "background", "text", "ocr", "registration", "output_dir"):
+        value = page.get(name)
+        if value:
+            command.extend((f"--{name.replace('_', '-')}", str(value)))
+    command.extend(("--page-id", str(page.get("page_id") or "page")))
+    command.extend(("--input-mode", input_mode))
+    return command
+
+
 if __name__ == "__main__":
     args = parse_args()
     if args.manifest:
         payload = json.loads(args.manifest.read_text(encoding="utf-8"))
-        results = []
-        for page in payload["pages"]:
-            page_args = argparse.Namespace(**{
-                "mode": "batch", "input_mode": payload.get("input_mode", "two-image"),
-                "text": None, **{key: Path(value) if key in {"full", "background", "text", "ocr", "registration", "output_dir"} and value else value for key, value in page.items()},
-            })
-            results.append({"page_id": page_args.page_id, "exit_code": run(page_args)})
+        input_mode = str(payload.get("input_mode", "two-image"))
+        results = [
+            {
+                "page_id": str(page.get("page_id") or "page"),
+                "exit_code": subprocess.run(_batch_page_command(page, input_mode), check=False).returncode,
+            }
+            for page in payload["pages"]
+        ]
         print(json.dumps({"pages": results}, ensure_ascii=False))
         raise SystemExit(0 if all(item["exit_code"] == 0 for item in results) else 1)
     raise SystemExit(run(args))

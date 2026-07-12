@@ -39,6 +39,26 @@ def test_presentation_python_honors_environment_override(tmp_path, monkeypatch):
     assert pipeline._presentations_python() == str(interpreter)
 
 
+def test_batch_page_command_isolates_each_page_process(tmp_path):
+    import scripts.run_pipeline as pipeline
+
+    command = pipeline._batch_page_command(
+        {
+            "page_id": "page-005",
+            "full": tmp_path / "full.png",
+            "background": tmp_path / "background.png",
+            "text": tmp_path / "text.png",
+            "ocr": tmp_path / "ocr.json",
+            "registration": tmp_path / "registration.json",
+            "output_dir": tmp_path / "output",
+        },
+        "three-image",
+    )
+
+    assert "--manifest" not in command
+    assert command[-4:] == ["--page-id", "page-005", "--input-mode", "three-image"]
+
+
 def test_pipeline_fails_empty_ocr_with_qa(tmp_path):
     import scripts.run_pipeline as pipeline
 
