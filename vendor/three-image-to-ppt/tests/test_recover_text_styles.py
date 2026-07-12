@@ -91,6 +91,44 @@ def test_font_fit_recovers_yahei_size_and_weight(weight):
 
 
 @pytest.mark.parametrize(
+    ("text", "bbox", "expected"),
+    [
+        ("103682", (0, 0, 240, 90), "headline_number"),
+        ("64.0%", (0, 0, 140, 70), "percentage"),
+        ("新能源", (0, 0, 90, 40), "label"),
+        ("预测工作需要兼顾新能源有效出力、跨区互济", (0, 0, 600, 48), "body"),
+        ("全国累计完成电力市场交易电量", (0, 0, 390, 40), "section_title"),
+    ],
+)
+def test_classify_text_role_uses_generic_text_and_geometry(text, bbox, expected):
+    from scripts.models import BBox
+    from scripts.recover_text_styles import classify_text_role
+
+    assert classify_text_role(text, BBox(*bbox)) == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "bbox", "maximum_pt"),
+    [
+        ("103682", (0, 0, 500, 150), 40),
+        ("64.0%", (0, 0, 500, 150), 28),
+        ("普通正文", (0, 0, 500, 150), 18),
+    ],
+)
+def test_font_fit_respects_semantic_point_size_caps(text, bbox, maximum_pt):
+    from scripts.models import BBox
+    from scripts.recover_text_styles import fit_font_style
+
+    box = BBox(*bbox)
+    mask = Image.new("L", (box.width, box.height), 0)
+    ImageDraw.Draw(mask).rectangle((1, 1, box.width - 2, box.height - 2), fill=255)
+
+    result = fit_font_style(text, mask, box, "Microsoft YaHei")
+
+    assert result.font_size_px * 72 / 96 <= maximum_pt
+
+
+@pytest.mark.parametrize(
     ("bbox", "container", "expected"),
     [
         ((110, 20, 80, 20), (0, 0, 300, 80), "center"),

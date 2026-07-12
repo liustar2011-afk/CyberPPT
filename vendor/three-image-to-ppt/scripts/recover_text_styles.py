@@ -17,6 +17,16 @@ from scripts.models import BBox, TextLine, TextRun
 TEXT_MASK_THRESHOLD = 18
 FULL_BACKGROUND_DELTA_THRESHOLD = 18
 MIN_COLOR_PIXELS = 20
+FONT_LIMITS_PT = {
+    "page_title": (20.0, 26.0),
+    "section_title": (14.0, 18.0),
+    "headline_number": (28.0, 40.0),
+    "percentage": (20.0, 28.0),
+    "card_title": (13.0, 18.0),
+    "body": (10.5, 18.0),
+    "label": (9.0, 12.0),
+    "footer_conclusion": (16.0, 22.0),
+}
 
 
 @dataclass(frozen=True)
@@ -30,7 +40,7 @@ class RecoveredColor:
 @dataclass(frozen=True)
 class RecoveredFont:
     font_family: str
-    font_size_px: int
+    font_size_px: float
     weight: str
     confidence: float
     mask_iou: float
@@ -181,6 +191,28 @@ def _dimension_similarity(first: int, second: int) -> float:
     return min(first, second) / max(1, max(first, second))
 
 
+def classify_text_role(text: str, bbox: BBox) -> str:
+    """Classify a visual line without page-specific wording."""
+
+    compact = re.sub(r"\s+", "", text)
+    if re.fullmatch(r"[+-]?\d+(?:[.,]\d+)?%", compact):
+        return "percentage"
+    numeric_count = sum(character.isdigit() for character in compact)
+    if numeric_count >= 3 and (numeric_count / max(1, len(compact)) >= 0.45 or bbox.height >= 55):
+        return "headline_number"
+    if len(compact) <= 5 and bbox.height <= 50:
+        return "label"
+    if 8 <= len(compact) <= 18 and bbox.height <= 52:
+        return "section_title"
+    return "body"
+
+
+def _pt_candidates(role: str) -> list[float]:
+    minimum, maximum = FONT_LIMITS_PT.get(role, (9.0, 18.0))
+    count = int(round((maximum - minimum) * 2))
+    return [maximum - index * 0.5 for index in range(count + 1)]
+
+
 def fit_font_style(
     text: str,
     source_mask: Image.Image,
@@ -191,26 +223,40 @@ def fit_font_style(
 
     source = _trimmed(source_mask)
     source_width, source_height = source.size
-    minimum = max(6, int(round(source_height * 0.75)))
-    maximum = max(minimum, int(round(source_height * 1.60)))
-    best: tuple[float, int, str, float, float, float] | None = None
+    role = classify_text_role(text, bbox)
+    candidates_pt = _pt_candidates(role)
+    best: tuple[float, float, str, float, float, float] | None = None
     for weight in ("light", "regular", "bold"):
         font_path = resolve_font_face(font_family, weight)
-        for size in range(minimum, maximum + 1):
-            font = ImageFont.truetype(str(font_path), size)
+        for size_pt in candidates_pt:
+            measured_px = max(1, round(size_pt * 96.0 / 72.0))
+            font = ImageFont.truetype(str(font_path), measured_px)
             candidate = _render_text_mask(text, font)
+            if candidate.width > bbox.width * 0.90 or candidate.height > bbox.height * 0.82:
+                continue
             width_similarity = _dimension_similarity(source_width, candidate.width)
             height_similarity = _dimension_similarity(source_height, candidate.height)
             mask_iou = _mask_iou(source, candidate)
             score = 0.55 * mask_iou + 0.25 * width_similarity + 0.20 * height_similarity
             if best is None or score > best[0]:
-                best = (score, size, weight, mask_iou, width_similarity, height_similarity)
+                best = (score, size_pt, weight, mask_iou, width_similarity, height_similarity)
     if best is None:
-        raise ValueError("font fitting produced no candidates")
-    score, size, weight, mask_iou, width_similarity, height_similarity = best
+        minimum_pt = FONT_LIMITS_PT.get(role, (9.0, 18.0))[0]
+        weight = "regular"
+        font = ImageFont.truetype(str(resolve_font_face(font_family, weight)), round(minimum_pt * 96 / 72))
+        candidate = _render_text_mask(text, font)
+        best = (
+            0.0,
+            minimum_pt,
+            weight,
+            _mask_iou(source, candidate),
+            _dimension_similarity(source_width, candidate.width),
+            _dimension_similarity(source_height, candidate.height),
+        )
+    score, size_pt, weight, mask_iou, width_similarity, height_similarity = best
     return RecoveredFont(
         font_family=font_family,
-        font_size_px=size,
+        font_size_px=round(size_pt * 96.0 / 72.0, 3),
         weight=weight,
         confidence=score,
         mask_iou=mask_iou,
