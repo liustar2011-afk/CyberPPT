@@ -93,7 +93,7 @@ def _candidate_score(first: dict[str, Any], second: dict[str, Any]) -> float:
         return 0.0
     first_area = first_box[2] * first_box[3]
     second_area = second_box[2] * second_box[3]
-    if max(first_area, second_area) / min(first_area, second_area) > 4.0:
+    if max(first_area, second_area) / min(first_area, second_area) > 5.0:
         return 0.0
     return _intersection_ratio(first, second)
 
@@ -159,6 +159,11 @@ def merge_hybrid_ocr(
                 line = dict(paddle_line)
                 line["text"] = text
                 line["bbox"] = candidate["bbox"]
+                source_runs = paddle_line.get("runs")
+                if isinstance(source_runs, list) and source_runs:
+                    split_run = dict(source_runs[0]) if isinstance(source_runs[0], dict) else {}
+                    split_run["text"] = text
+                    line["runs"] = [split_run]
                 line["hybrid_evidence"] = _evidence(
                     paddle_line, candidates, "one_to_many", score, False
                 )

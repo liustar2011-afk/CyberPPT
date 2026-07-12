@@ -27,7 +27,9 @@ def test_merge_uses_paddle_text_with_vision_geometry_one_to_one():
 
 
 def test_merge_splits_paddle_line_when_vision_supports_exact_substrings():
-    paddle = _payload(_line("同比增长 5.0%", [10, 10, 180, 40]))
+    paddle_line = _line("同比增长 5.0%", [10, 10, 180, 40])
+    paddle_line["runs"] = [{"text": "同比增长 5.0%", "font_size": 30, "bold": True}]
+    paddle = _payload(paddle_line)
     vision = _payload(
         _line("同比增长", [10, 16, 90, 24]),
         _line("5.0%", [112, 8, 70, 36]),
@@ -38,6 +40,7 @@ def test_merge_splits_paddle_line_when_vision_supports_exact_substrings():
     merged = result["canonical"]["lines"]
     assert [line["text"] for line in merged] == ["同比增长", "5.0%"]
     assert [line["bbox"] for line in merged] == [[10, 16, 90, 24], [112, 8, 70, 36]]
+    assert [[run["text"] for run in line["runs"]] for line in merged] == [["同比增长"], ["5.0%"]]
     assert {line["hybrid_evidence"]["match_type"] for line in merged} == {"one_to_many"}
 
 
