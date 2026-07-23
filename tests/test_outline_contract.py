@@ -95,6 +95,53 @@ class OutlineContractTests(unittest.TestCase):
         )
         self.assertIn("METHOD_PAGE_OVERPROMOTED", [item.code for item in audit_outline(payload)])
 
+    def test_strict_outline_requires_source_truth(self) -> None:
+        payload = outline(
+            page(1, "content", "工作基础", message="已有统计基础"),
+            argument_contract_mode="strict",
+        )
+
+        self.assertIn(
+            "SOURCE_TRUTH_REQUIRED",
+            [item.code for item in audit_outline(payload)],
+        )
+
+    def test_strict_outline_includes_argument_flow_issues(self) -> None:
+        content = page(
+            1,
+            "content",
+            "工作基础",
+            message="首期建议从全国总盘入手",
+            refs=["S006R"],
+        )
+        content.update(
+            {
+                "argument_role": "foundation",
+                "allowed_claim_roles": ["fact"],
+                "forbidden_claim_roles": ["recommendation"],
+                "prerequisite_pages": [],
+                "main_claim_status": "confirmed",
+            }
+        )
+        payload = outline(content, argument_contract_mode="strict")
+        truth = {
+            "argument_contract_mode": "strict",
+            "records": [
+                {
+                    "id": "S006R",
+                    "claim_role": "recommendation",
+                    "page_refs": ["p01"],
+                    "depends_on": [],
+                    "status": "首期建议",
+                }
+            ],
+        }
+
+        self.assertIn(
+            "PREMATURE_SOLUTION_CLAIM",
+            [item.code for item in audit_outline(payload, truth)],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

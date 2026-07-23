@@ -6,6 +6,8 @@ import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from cyberppt.argument_flow_contract import CLAIM_ROLES, PAGE_ARGUMENT_ROLES
+
 
 SCHEMA = "cyberppt.source_truth.v1"
 EVIDENCE_TYPES = frozenset({"F", "J", "R", "B", "U"})
@@ -148,6 +150,80 @@ def _record_issues(records: list[dict[str, object]]) -> list[SourceTruthIssue]:
     return issues
 
 
+def _semantic_record_issues(
+    records: list[dict[str, object]],
+    *,
+    strict: bool,
+) -> list[SourceTruthIssue]:
+    if not strict:
+        return []
+    issues: list[SourceTruthIssue] = []
+    record_ids = {str(record.get("id") or "") for record in records}
+    for record in records:
+        source_id = str(record.get("id") or "")
+        ids = (source_id,) if source_id else ()
+        claim_role = str(record.get("claim_role") or "")
+        raw_units = record.get("semantic_units")
+        units = (
+            [unit for unit in raw_units if isinstance(unit, dict)]
+            if isinstance(raw_units, list)
+            else []
+        )
+        unit_roles = {str(unit.get("claim_role") or "") for unit in units}
+        if claim_role not in CLAIM_ROLES or not units or "" in unit_roles:
+            issues.append(
+                SourceTruthIssue(
+                    "SOURCE_SEMANTIC_FIELDS_MISSING",
+                    "Strict evidence records need a valid claim role and semantic units.",
+                    ids,
+                    "split_semantic_units",
+                )
+            )
+        if len(unit_roles) > 1 or (unit_roles and claim_role not in unit_roles):
+            issues.append(
+                SourceTruthIssue(
+                    "SOURCE_RECORD_MIXED_CLAIMS",
+                    "Each evidence record must contain semantic units with one claim role.",
+                    ids,
+                    "split_semantic_units",
+                )
+            )
+        if record.get("type") == "F" and any(role != "fact" for role in unit_roles):
+            issues.append(
+                SourceTruthIssue(
+                    "SOURCE_FACT_CONTAINS_RECOMMENDATION",
+                    "Fact records cannot carry judgments, recommendations, or boundaries.",
+                    ids,
+                    "split_semantic_units",
+                )
+            )
+        dependencies = _refs(record, "depends_on")
+        if any(dependency not in record_ids for dependency in dependencies):
+            issues.append(
+                SourceTruthIssue(
+                    "SOURCE_DEPENDENCY_MISSING",
+                    "Claim dependencies must resolve to another evidence record.",
+                    ids,
+                    "rebuild_claim_dependencies",
+                )
+            )
+        allowed = set(_refs(record, "allowed_page_roles"))
+        forbidden = set(_refs(record, "forbidden_page_roles"))
+        if (
+            any(role not in PAGE_ARGUMENT_ROLES for role in allowed | forbidden)
+            or bool(allowed & forbidden)
+        ):
+            issues.append(
+                SourceTruthIssue(
+                    "SOURCE_PAGE_ROLE_INCOMPATIBLE",
+                    "Evidence page-role permissions must be valid and non-overlapping.",
+                    ids,
+                    "reassign_claim_page_role",
+                )
+            )
+    return issues
+
+
 def _coverage_issues(
     targets: list[dict[str, object]],
     record_ids: set[str],
@@ -231,6 +307,12 @@ def audit_source_truth(payload: dict[str, object]) -> list[SourceTruthIssue]:
     pages = _items(payload, "pages")
     record_ids = {str(item.get("id") or "") for item in records}
     issues = _record_issues(records)
+    issues.extend(
+        _semantic_record_issues(
+            records,
+            strict=payload.get("argument_contract_mode", "legacy") == "strict",
+        )
+    )
     issues.extend(_coverage_issues(_items(payload, "coverage_targets"), record_ids))
     issues.extend(_traceability_issues(records, conclusions, pages))
     return sorted(issues, key=lambda item: (item.code, item.source_ids[:1]))
@@ -241,13 +323,29 @@ def source_truth_retry_directive(
     previous_strategy: str = "",
 ) -> dict[str, object]:
     preferred = [issue.retry_strategy for issue in issues]
-    if "traceability_rebuild" in preferred:
+    semantic_progression = (
+        "split_semantic_units",
+        "rebuild_claim_dependencies",
+        "reassign_claim_page_role",
+    )
+    if "split_semantic_units" in preferred:
+        strategy = "split_semantic_units"
+    elif "rebuild_claim_dependencies" in preferred:
+        strategy = "rebuild_claim_dependencies"
+    elif "reassign_claim_page_role" in preferred:
+        strategy = "reassign_claim_page_role"
+    elif "traceability_rebuild" in preferred:
         strategy = "traceability_rebuild"
     elif "structured_fact_sweep" in preferred:
         strategy = "structured_fact_sweep"
     else:
         strategy = "section_sweep"
-    progression = ("section_sweep", "structured_fact_sweep", "traceability_rebuild")
+    progression = (
+        "section_sweep",
+        "structured_fact_sweep",
+        "traceability_rebuild",
+        *semantic_progression,
+    )
     if strategy == previous_strategy:
         index = progression.index(strategy) if strategy in progression else -1
         strategy = progression[min(index + 1, len(progression) - 1)]

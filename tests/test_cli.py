@@ -62,6 +62,20 @@ class CliTests(unittest.TestCase):
         self.assertEqual(4, code)
         self.assertIn('"status": "rewrite_required"', buffer.getvalue())
 
+    def test_outline_audit_accepts_source_truth_option(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "outline-audit",
+                "project",
+                "--input",
+                "outline.json",
+                "--source-truth",
+                "source-truth.json",
+            ]
+        )
+
+        self.assertEqual("source-truth.json", args.source_truth)
+
     def test_outline_audit_returns_rewrite_exit_code(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -46,6 +46,7 @@ def _outline_audit_command(args: argparse.Namespace) -> int:
             Path(args.project),
             Path(args.input),
             max_attempts=args.max_attempts,
+            source_truth_path=Path(args.source_truth) if args.source_truth else None,
         )
     except (FileNotFoundError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -165,6 +166,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     outline_audit.add_argument("project", help="CyberPPT project directory.")
     outline_audit.add_argument("--input", required=True, help="Outline JSON file to audit.")
+    outline_audit.add_argument(
+        "--source-truth",
+        help="Optional Source Truth JSON; defaults to the project Stage 01 artifact.",
+    )
     outline_audit.add_argument(
         "--max-attempts",
         type=int,

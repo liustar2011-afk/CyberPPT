@@ -5,7 +5,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from cyberppt.argument_flow_contract import (
+    argument_graph_summary,
+    audit_argument_flow,
+)
 from cyberppt.outline_contract import audit_outline, load_outline, retry_directive
+from cyberppt.source_truth_contract import load_source_truth
 
 
 def _write_json(path: Path, payload: object) -> None:
@@ -27,6 +32,7 @@ def run_outline_audit(
     project: Path,
     input_path: Path,
     max_attempts: int = 3,
+    source_truth_path: Path | None = None,
 ) -> tuple[int, dict[str, object]]:
     if not 1 <= max_attempts <= 5:
         raise ValueError("max_attempts must be between 1 through 5")
@@ -34,13 +40,34 @@ def run_outline_audit(
     if not project.exists():
         raise FileNotFoundError(f"project does not exist: {project}")
     payload = load_outline(input_path.expanduser().resolve())
+    resolved_source_truth = (
+        source_truth_path.expanduser().resolve()
+        if source_truth_path is not None
+        else project
+        / "workbench"
+        / "stages"
+        / "01-analysis"
+        / "source-truth.json"
+    )
+    source_truth = (
+        load_source_truth(resolved_source_truth)
+        if resolved_source_truth.exists()
+        else None
+    )
+    if source_truth_path is not None and source_truth is None:
+        raise FileNotFoundError(f"source truth does not exist: {resolved_source_truth}")
     retry = payload.get("retry") if isinstance(payload.get("retry"), dict) else {}
     attempt = int(retry.get("attempt", 1))
     effective_max = int(retry.get("max_attempts", max_attempts))
     if not 1 <= effective_max <= 5:
         raise ValueError("retry.max_attempts must be between 1 through 5")
     stage = project / "workbench" / "stages" / "01-analysis"
-    issues = audit_outline(payload)
+    argument_issues = (
+        audit_argument_flow(payload, source_truth)
+        if source_truth is not None
+        else []
+    )
+    issues = audit_outline(payload, source_truth)
     directive = retry_directive(issues, str(retry.get("strategy") or ""))
     report: dict[str, object] = {
         "schema": "cyberppt.outline_audit.v1",
@@ -50,6 +77,26 @@ def run_outline_audit(
         "remaining_attempts": max(0, effective_max - attempt),
         "issues": [issue.to_dict() for issue in issues],
         "retry_directive": directive,
+        "argument_contract_mode": str(
+            payload.get("argument_contract_mode") or "legacy"
+        ),
+        "checked_source_truth": (
+            str(resolved_source_truth) if source_truth is not None else None
+        ),
+        "argument_graph": argument_graph_summary(payload, source_truth),
+        "failed_edges": [
+            list(edge)
+            for issue in argument_issues
+            for edge in issue.failed_edges
+        ],
+        "retry_scope": sorted(
+            {
+                page
+                for issue in argument_issues
+                for page in issue.pages
+                if page
+            }
+        ),
     }
     _write_json(stage / "outline-contract.json", payload)
     _write_json(stage / "outline-audit.json", report)

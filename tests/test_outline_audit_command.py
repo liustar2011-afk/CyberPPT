@@ -43,6 +43,53 @@ class OutlineAuditCommandTests(unittest.TestCase):
             self.assertTrue((stage / "outline-audit.json").exists())
             self.assertTrue((stage / "outline-attempts" / "attempt-01.json").exists())
 
+    def test_strict_audit_loads_explicit_source_truth_and_reports_graph(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "project"
+            project.mkdir()
+            payload = invalid_outline(1, "source_native")
+            payload.update(
+                {
+                    "architecture_mode": "solution",
+                    "argument_contract_mode": "strict",
+                }
+            )
+            source_truth = root / "source-truth.json"
+            source_truth.write_text(
+                json.dumps(
+                    {
+                        "schema": "cyberppt.source_truth.v1",
+                        "argument_contract_mode": "strict",
+                        "sources": [],
+                        "coverage_targets": [],
+                        "records": [],
+                        "conclusions": [],
+                        "pages": [],
+                        "retry": {
+                            "attempt": 1,
+                            "max_attempts": 3,
+                            "strategy": "section_sweep",
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            code, report = run_outline_audit(
+                project,
+                self._write(root, payload),
+                source_truth_path=source_truth,
+            )
+
+            self.assertEqual(0, code)
+            self.assertEqual("strict", report["argument_contract_mode"])
+            self.assertEqual(str(source_truth.resolve()), report["checked_source_truth"])
+            self.assertEqual([], report["argument_graph"]["edges"])
+            self.assertEqual([], report["failed_edges"])
+            self.assertEqual([], report["retry_scope"])
+
     def test_third_failure_escalates_instead_of_abandoning(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -77,8 +124,13 @@ class OutlineAuditCommandTests(unittest.TestCase):
                     / "source-truth-attempts"
                 ).is_dir()
             )
-            self.assertIn("outline-audit", (project / "README.md").read_text(encoding="utf-8"))
-            self.assertIn("source-truth-audit", (project / "README.md").read_text(encoding="utf-8"))
+            readme = (project / "README.md").read_text(encoding="utf-8")
+            self.assertIn("outline-audit", readme)
+            self.assertIn("source-truth-audit", readme)
+            self.assertIn("argument_contract_mode: strict", readme)
+            self.assertIn("foundation → change → gap → necessity", readme)
+            self.assertIn("--source-truth", readme)
+            self.assertIn("not a mandatory chapter template", readme)
 
 
 if __name__ == "__main__":

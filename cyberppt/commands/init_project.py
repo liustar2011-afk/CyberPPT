@@ -123,15 +123,17 @@ CyberPPT project workspace.
 
 1. Put source materials in `source/`.
 2. Use solution architecture by default for research, construction, implementation, and initiation materials; use consulting architecture only when explicitly selected.
-3. Build `source-truth.json`, then run `python -m cyberppt source-truth-audit <project> --input <source-truth.json>`. The JSON is authoritative; the command renders `00-source-analysis.md`, preserves attempts, and changes extraction direction when coverage is incomplete.
-4. Only after Source Truth passes or reaches documented escalation, audit the Stage 01 outline with `python -m cyberppt outline-audit <project> --input <outline.json>`.
-5. Before any ImageGen or PPTX generation, save the current slide script or prompt in `workbench/scripts/drafts/` or `workbench/prompts/imagegen/`.
-6. Stop for user review. Do not generate images or PPTX until an approval record exists in `workbench/approvals/`.
-7. Store title/subtitle truth for template assembly in `workbench/locks/template_text/`; if dual images are supplied mid-pipeline, create this lock before template rebuild.
-8. Store stage outputs under `workbench/stages/` and register every durable artifact in `workbench/artifact-ledger.json`.
-9. Store page-specific attempts and resumable intermediate runs in `workbench/runs/`; use `workbench/tmp/` only for disposable scratch files.
-10. Store final scripts in `workbench/scripts/final/`, QA reports in `workbench/qa/`, renders in `outputs/renders/`, and delivery files in `delivery/`.
-11. Do not write new generated images or pair manifests to the repository root `images/`; keep them inside this project workspace.
+3. New formal solution projects use `argument_contract_mode: strict` in Source Truth and Outline. Classify evidence claims and content-page argument roles explicitly.
+4. Build `source-truth.json`, then run `python -m cyberppt source-truth-audit <project> --input <source-truth.json>`. The JSON is authoritative; the command renders `00-source-analysis.md`, preserves attempts, and changes extraction direction when coverage is incomplete.
+5. A common dependency chain is `foundation → change → gap → necessity`; it is an argument example, not a mandatory chapter template.
+6. Only after Source Truth passes or reaches documented escalation, audit the Stage 01 outline with `python -m cyberppt outline-audit <project> --input <outline.json> --source-truth <source-truth.json>`.
+7. Before any ImageGen or PPTX generation, save the current slide script or prompt in `workbench/scripts/drafts/` or `workbench/prompts/imagegen/`.
+8. Stop for user review. Do not generate images or PPTX until an approval record exists in `workbench/approvals/`.
+9. Store title/subtitle truth for template assembly in `workbench/locks/template_text/`; if dual images are supplied mid-pipeline, create this lock before template rebuild.
+10. Store stage outputs under `workbench/stages/` and register every durable artifact in `workbench/artifact-ledger.json`.
+11. Store page-specific attempts and resumable intermediate runs in `workbench/runs/`; use `workbench/tmp/` only for disposable scratch files.
+12. Store final scripts in `workbench/scripts/final/`, QA reports in `workbench/qa/`, renders in `outputs/renders/`, and delivery files in `delivery/`.
+13. Do not write new generated images or pair manifests to the repository root `images/`; keep them inside this project workspace.
 """,
         encoding="utf-8",
     )

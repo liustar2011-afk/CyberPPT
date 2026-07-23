@@ -8,6 +8,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+from cyberppt.argument_flow_contract import audit_argument_flow
+
 
 SOLUTION_MATERIAL_TERMS = (
     "方案",
@@ -197,7 +199,10 @@ def _weight_issues(outline: dict[str, object], pages: list[dict[str, object]]) -
     ]
 
 
-def audit_outline(outline: dict[str, object]) -> list[AuditIssue]:
+def audit_outline(
+    outline: dict[str, object],
+    source_truth: dict[str, object] | None = None,
+) -> list[AuditIssue]:
     issues: list[AuditIssue] = []
     if (
         outline.get("architecture_mode") == "consulting"
@@ -215,6 +220,25 @@ def audit_outline(outline: dict[str, object]) -> list[AuditIssue]:
     issues.extend(_template_issues(pages))
     issues.extend(_content_issues(pages))
     issues.extend(_weight_issues(outline, pages))
+    if outline.get("argument_contract_mode", "legacy") == "strict":
+        if source_truth is None:
+            issues.append(
+                AuditIssue(
+                    "SOURCE_TRUTH_REQUIRED",
+                    "Strict outline audits require the authoritative Source Truth artifact.",
+                    retry_strategy="reconcile_page_evidence_mapping",
+                )
+            )
+        else:
+            issues.extend(
+                AuditIssue(
+                    issue.code,
+                    issue.message,
+                    issue.pages,
+                    issue.retry_strategy,
+                )
+                for issue in audit_argument_flow(outline, source_truth)
+            )
     return sorted(issues, key=lambda item: ((item.pages or ("",))[0], item.code))
 
 

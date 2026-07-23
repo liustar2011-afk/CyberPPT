@@ -15,6 +15,7 @@ from cyberppt.source_truth_contract import (
 def valid_payload() -> dict[str, object]:
     return {
         "schema": "cyberppt.source_truth.v1",
+        "argument_contract_mode": "strict",
         "project": {"title": "测试项目", "material_type": "前期研究方案", "audience": "内部讨论"},
         "sources": [
             {
@@ -49,6 +50,13 @@ def valid_payload() -> dict[str, object]:
                     "paragraph": 3,
                 },
                 "status": "现状",
+                "claim_role": "fact",
+                "semantic_units": [
+                    {"text": "已形成月度统计基础。", "claim_role": "fact"}
+                ],
+                "allowed_page_roles": ["foundation", "necessity"],
+                "forbidden_page_roles": ["solution"],
+                "depends_on": [],
                 "conditions": ["仅说明统计基础"],
                 "supports": ["C001"],
                 "page_refs": ["p04"],
@@ -147,6 +155,35 @@ class SourceTruthContractTests(unittest.TestCase):
         payload["records"][0]["status"] = "待摸底"
         codes = {item.code for item in audit_source_truth(payload)}
         self.assertNotIn("SOURCE_TYPE_STATUS_CONFLICT", codes)
+
+    def test_flags_mixed_semantic_claims(self) -> None:
+        payload = valid_payload()
+        payload["records"][0]["semantic_units"] = [
+            {"text": "已经形成统计基础。", "claim_role": "fact"},
+            {"text": "首期建议从全国总盘入手。", "claim_role": "recommendation"},
+        ]
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertIn("SOURCE_RECORD_MIXED_CLAIMS", codes)
+
+    def test_fact_record_cannot_carry_recommendation_unit(self) -> None:
+        payload = valid_payload()
+        payload["records"][0]["semantic_units"] = [
+            {"text": "首期建议从全国总盘入手。", "claim_role": "recommendation"}
+        ]
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertIn("SOURCE_FACT_CONTAINS_RECOMMENDATION", codes)
+
+    def test_recommendation_requires_resolvable_dependency(self) -> None:
+        payload = valid_payload()
+        record = payload["records"][0]
+        record["type"] = "R"
+        record["claim_role"] = "recommendation"
+        record["semantic_units"] = [
+            {"text": "建议从全国总盘入手。", "claim_role": "recommendation"}
+        ]
+        record["depends_on"] = ["S404"]
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertIn("SOURCE_DEPENDENCY_MISSING", codes)
 
     def test_valid_contract_has_no_issues(self) -> None:
         self.assertEqual([], audit_source_truth(valid_payload()))
