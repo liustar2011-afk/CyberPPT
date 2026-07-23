@@ -44,6 +44,13 @@ DEFAULT_ALLOWED_CLAIMS = {
     "assurance": frozenset({"fact", "judgment", "recommendation", "boundary"}),
     "decision": frozenset({"fact", "judgment", "boundary", "unresolved"}),
 }
+EVIDENCE_TYPE_TO_CLAIM_ROLE = {
+    "F": "fact",
+    "J": "judgment",
+    "R": "recommendation",
+    "B": "boundary",
+    "U": "unresolved",
+}
 
 
 @dataclass(frozen=True)
@@ -197,7 +204,17 @@ def audit_argument_flow(
         explicit_allowed = set(_string_list(page, "allowed_claim_roles"))
         allowed = explicit_allowed or set(DEFAULT_ALLOWED_CLAIMS.get(argument_role, ()))
         forbidden = set(_string_list(page, "forbidden_claim_roles"))
-        for source_id in _string_list(page, "source_refs"):
+        source_refs = _string_list(page, "source_refs")
+        if not source_refs:
+            issues.append(
+                ArgumentFlowIssue(
+                    "PAGE_EVIDENCE_MISSING",
+                    "Strict content pages must cite at least one Source Truth record.",
+                    (page_id,),
+                    retry_strategy="reconcile_page_evidence_mapping",
+                )
+            )
+        for source_id in source_refs:
             record = record_index.get(source_id)
             if record is None:
                 issues.append(
@@ -210,7 +227,10 @@ def audit_argument_flow(
                     )
                 )
                 continue
-            claim_role = str(record.get("claim_role") or "")
+            claim_role = str(
+                record.get("claim_role")
+                or EVIDENCE_TYPE_TO_CLAIM_ROLE.get(str(record.get("type") or ""), "")
+            )
             if claim_role not in allowed or claim_role in forbidden:
                 issues.append(
                     ArgumentFlowIssue(

@@ -189,6 +189,34 @@ class ArgumentFlowContractTests(unittest.TestCase):
             {issue.code for issue in issues},
         )
 
+    def test_strict_outline_can_read_legacy_typed_source_record(self) -> None:
+        legacy_truth = {
+            "argument_contract_mode": "legacy",
+            "records": [
+                {
+                    "id": "S004",
+                    "type": "F",
+                    "page_refs": ["p04"],
+                    "depends_on": [],
+                    "status": "现状",
+                }
+            ],
+        }
+        issues = audit_argument_flow(
+            strict_outline(
+                content_page(
+                    "p04",
+                    4,
+                    "foundation",
+                    refs=["S004"],
+                    allowed=["fact"],
+                )
+            ),
+            legacy_truth,
+        )
+
+        self.assertEqual([], issues)
+
     def test_page_evidence_mapping_must_match_in_both_directions(self) -> None:
         issues = audit_argument_flow(
             strict_outline(
@@ -223,6 +251,14 @@ class ArgumentFlowContractTests(unittest.TestCase):
         )
 
         self.assertIn("PAGE_SOURCE_MISSING", {issue.code for issue in issues})
+
+    def test_strict_content_page_requires_evidence(self) -> None:
+        issues = audit_argument_flow(
+            strict_outline(content_page("p14", 14, "solution")),
+            strict_truth(),
+        )
+
+        self.assertIn("PAGE_EVIDENCE_MISSING", {issue.code for issue in issues})
 
     def test_boundary_cannot_be_upgraded_to_confirmed(self) -> None:
         issues = audit_argument_flow(
