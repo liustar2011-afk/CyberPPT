@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import json
 import subprocess
 import sys
 import tempfile
@@ -38,6 +39,36 @@ class CliTests(unittest.TestCase):
         self.assertIn("script-status", help_text)
         self.assertIn("rebuild-dual-image", help_text)
         self.assertIn("final-script-pages", help_text)
+        self.assertIn("outline-audit", help_text)
+
+    def test_outline_audit_returns_rewrite_exit_code(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "project"
+            project.mkdir()
+            outline = root / "outline.json"
+            outline.write_text(
+                json.dumps(
+                    {
+                        "schema": "cyberppt.outline.v1",
+                        "material_type": "建设方案",
+                        "audience": "项目组内部讨论",
+                        "architecture_mode": "consulting",
+                        "architecture_reason": "default",
+                        "user_requested_architecture": False,
+                        "source_section_weights": {},
+                        "pages": [],
+                        "retry": {"attempt": 1, "max_attempts": 3, "strategy": "consulting_default"},
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            buffer = io.StringIO()
+            with redirect_stdout(buffer):
+                code = main(["outline-audit", str(project), "--input", str(outline)])
+        self.assertEqual(4, code)
+        self.assertIn('"status": "rewrite_required"', buffer.getvalue())
 
     def test_final_script_pages_requires_explicit_style_choice(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

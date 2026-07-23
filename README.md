@@ -2,11 +2,11 @@
 
 [简体中文](README.md) | [繁體中文](README.zh-TW.md) | [English](README.en.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Français](README.fr.md) | [Português](README.pt.md) | [Español](README.es.md) | [العربية](README.ar.md)
 
-CyberPPT 是一个 Codex Skill，用于把文档、研究材料和业务数据转化为高密度、可编辑、咨询风格的 PowerPoint 演示文稿。
+CyberPPT 是一个 Codex Skill，用于把文档、研究材料、方案材料和业务数据转化为结构合宜、高密度、可审计的 PowerPoint 演示文稿。
 
 适用场景：咨询风格 PPT，高信息密度，包括行业研究、消费品分析、品牌战略、电商分析、用户研究、高管汇报、董事会材料、客户提案和项目复盘。 不适用场景：字少的低信息密度风格，包括演讲、个人风格表达、叙事、分享、观点类 PPT。
 
-CyberPPT 的核心不是“套模板”，而是把源材料先转成可审计证据链，再通过 SCR 论证、页面密度规划、视觉蓝图和严格门禁，生成可编辑且高保真的咨询式 PPTX。
+CyberPPT 的核心不是“套模板”，而是把源材料先转成可审计证据链，再按材料类型选择方案型或咨询型架构，通过页面密度规划、视觉蓝图和严格门禁生成 PPTX。方案、研究、建设、实施和立项材料默认使用 `solution`；`consulting` 与 SCR 仅在明确选用时启用。
 
 ## 核心能力
 
@@ -92,11 +92,14 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 ```bash
 python3 -m cyberppt doctor
 python3 -m cyberppt init projects/example
+python3 -m cyberppt outline-audit projects/example --input projects/example/workbench/stages/01-analysis/outline.json
 python3 -m cyberppt stage-script projects/example --slide 1 --kind imagegen --phase draft --source prompt.md
 python3 -m cyberppt approve-script projects/example --slide 1 --kind imagegen
 python3 -m cyberppt script-status projects/example --slide 1 --kind imagegen
 python3 -m cyberppt final-script-pages projects/example --script workbench/scripts/final/script-final.md --pages 7-8
 ```
+
+`outline-audit` 返回 `0` 表示通过，`4` 表示生成代理必须读取 `retry_directive` 后换方向重写，`5` 表示默认三次尝试已耗尽、需要用户在升级报告的 2-3 个选项中决策，输入错误返回 `2`。审计合同、最新报告、逐次尝试和升级报告写入 `workbench/stages/01-analysis/`；CLI 不代替生成代理重写大纲。
 
 常用开发检查：
 

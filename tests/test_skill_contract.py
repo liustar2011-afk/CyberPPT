@@ -9,6 +9,29 @@ SKILL = ROOT / "SKILL.md"
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_stage01_defaults_to_solution_architecture(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("`solution` 是方案、研究、建设、实施和立项类材料的默认架构", text)
+        self.assertIn("`consulting` 仅在用户明确要求或材料明确属于咨询论证时启用", text)
+        self.assertIn("SOLUTION_ARCHITECTURE_REQUIRED", text)
+
+    def test_solution_outline_preserves_continuous_page_sequence(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("封面、目录、章节页、内容页和封底必须位于同一连续页面序列", text)
+        self.assertIn("章节页只写“第X章：XXX”", text)
+        self.assertIn("`title` 与 `main_message` 必须分开", text)
+
+    def test_page_aggregation_and_retry_contract_are_explicit(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("一个完整业务问题和一个视觉中心", text)
+        self.assertIn("不得把源材料每个小节或列表项机械拆成单页", text)
+        self.assertIn("默认最多 3 次", text)
+        self.assertIn("换方向重写", text)
+        self.assertIn("不得直接放弃任务", text)
+
     def test_full_image_ppt_is_default_stage02_production_mode(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 

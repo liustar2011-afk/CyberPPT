@@ -10,6 +10,7 @@ from pathlib import Path
 from cyberppt import __version__
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
+from cyberppt.commands.outline_audit import run_outline_audit
 from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script, status_as_json
 from cyberppt.commands.script_runner import SCRIPT_ALIASES, run_script
 from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
@@ -36,6 +37,20 @@ def _init_command(args: argparse.Namespace) -> int:
     print(f"initialized CyberPPT project: {Path(args.path).expanduser().resolve()}")
     print(f"created_or_updated: {len(created)}")
     return 0
+
+
+def _outline_audit_command(args: argparse.Namespace) -> int:
+    try:
+        code, report = run_outline_audit(
+            Path(args.project),
+            Path(args.input),
+            max_attempts=args.max_attempts,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return code
 
 
 def _stage_script_command(args: argparse.Namespace) -> int:
@@ -128,6 +143,20 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("path", help="Target project directory.")
     init.add_argument("--force", action="store_true", help="Overwrite generated project manifest and README.")
     init.set_defaults(func=_init_command)
+
+    outline_audit = subparsers.add_parser(
+        "outline-audit",
+        help="Audit a Stage 01 outline and direct rewrite or escalation.",
+    )
+    outline_audit.add_argument("project", help="CyberPPT project directory.")
+    outline_audit.add_argument("--input", required=True, help="Outline JSON file to audit.")
+    outline_audit.add_argument(
+        "--max-attempts",
+        type=int,
+        default=3,
+        help="Maximum changed-direction attempts (1-5; default: 3).",
+    )
+    outline_audit.set_defaults(func=_outline_audit_command)
 
     stage_script_parser = subparsers.add_parser(
         "stage-script",
