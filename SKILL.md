@@ -15,6 +15,8 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 `solution` 是方案、研究、建设、实施和立项类材料的默认架构。它应保留正式工作顺序：现状与需求；定位、目标与边界；建设内容与应用；实施、投资、风险与保障；判断、审批条件与下一步。`consulting` 仅在用户明确要求或材料明确属于咨询论证时启用；SCR 只服务该路线，不是全仓库默认结构。证据表可以继续采用 MBB 标准，但不得据此把方案材料改写成咨询报告。
 
+`source-truth.json` 是 Source Truth 的唯一结构化事实源，`00-source-analysis.md` 只是由其生成的可读视图。第一阶段必须先执行 `source-truth-audit`，按 F（事实）、J（判断）、R（建议）、B（边界）、U（待核）拆分原子证据，精确定位到段落、表格行或单元格，并完成 P0/P1、数字、表格、状态边界和双向追溯审计。未通过时必须按 `section_sweep -> structured_fact_sweep -> traceability_rebuild` 换方向补抽；达到次数上限后保留当前最佳底稿和缺口清单，不得直接放弃。Source Truth 通过或形成有记录的升级项后，才能进入章节与逐页大纲设计。
+
 第一阶段必须生成结构化逐页大纲并执行 `outline-audit`。若方案类材料未经明确授权采用 `consulting`，审计必须以 `SOLUTION_ARCHITECTURE_REQUIRED` 失败。封面、目录、章节页、内容页和封底必须位于同一连续页面序列，不得把模板页抽离后另列；章节页只写“第X章：XXX”，不承载论点、模块或方法内容。内容页的短 `title` 与 `main_message` 必须分开，不能把整句结论塞进页标题。
 
 页面聚合以一个完整业务问题和一个视觉中心为单位。不得把源材料每个小节或列表项机械拆成单页，也不得预设页数后硬塞内容；页数随业务问题完整性和页面密度自然确定。方法论、筛选原则和评价维度只能支持源材料的实质内容，不能抢占主体篇幅。
@@ -25,7 +27,7 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 | 阶段 | 必须产出 | 停止条件 | 读取 |
 |---|---|---|---|
-| 1. 分析 | 可追溯证据表、架构路由、冲突记录、内容脑暴、方案型章节或咨询型 SCR、连续逐页大纲、审计记录、图表计划、页面信息密度和组件清单 | 第一次确认：用户批准架构、章节逻辑、页数、大纲、每页信息结构和密度目标 | `references/source-analysis.md`, `references/storyline.md` |
+| 1. 分析 | `source-truth.json`、Source Truth 审计与可读视图、架构路由、冲突记录、内容脑暴、方案型章节或咨询型 SCR、连续逐页大纲、审计记录、图表计划、页面信息密度和组件清单 | 第一次确认：Source Truth 已通过或有记录地升级，且用户批准架构、章节逻辑、页数、大纲、每页信息结构和密度目标 | `references/source-analysis.md`, `references/storyline.md` |
 | 2. 蓝图与 full 图 PPT 生产 | 8 种视觉风格、选定风格、逐页正文区 ImageGen 蓝图、脚本锁定记录、ImageGen full 图、`page_image_pairs.json`、`template_image_manifest.json`、套模板后的图片型 PPTX | 第二次确认：用户批准视觉方向、全部页面正文区 full 图和进入图片型 PPT 组装的脚本/图像资产 | `references/visual-system.md` |
 | 3. 渲染 QA 与交付 | 对 `template_image_ppt_export.py` 组装出的 PPTX 做渲染检查、模板层检查、交付说明和必要返工；正文区主要内容以 full 图承载，标题、副标题、Logo、页脚、页码和公共模板元素由 PPT 管线生成 | 最终确认：用户批准套模板后的图片型 PPT | `references/ppt-production.md`, `references/quality-assurance.md` |
 

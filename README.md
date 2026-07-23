@@ -92,12 +92,15 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 ```bash
 python3 -m cyberppt doctor
 python3 -m cyberppt init projects/example
+python3 -m cyberppt source-truth-audit projects/example --input projects/example/workbench/stages/01-analysis/source-truth.json
 python3 -m cyberppt outline-audit projects/example --input projects/example/workbench/stages/01-analysis/outline.json
 python3 -m cyberppt stage-script projects/example --slide 1 --kind imagegen --phase draft --source prompt.md
 python3 -m cyberppt approve-script projects/example --slide 1 --kind imagegen
 python3 -m cyberppt script-status projects/example --slide 1 --kind imagegen
 python3 -m cyberppt final-script-pages projects/example --script workbench/scripts/final/script-final.md --pages 7-8
 ```
+
+`source-truth.json` 是第一阶段证据底稿的结构化事实源。`source-truth-audit` 在大纲设计之前检查原子证据、精确定位、P0/P1、数字、表格、状态边界和双向追溯，生成 `00-source-analysis.md`；审计失败时依次切换章节扫描、结构化事实扫描和追溯重建，并保留每次尝试。
 
 `outline-audit` 返回 `0` 表示通过，`4` 表示生成代理必须读取 `retry_directive` 后换方向重写，`5` 表示默认三次尝试已耗尽、需要用户在升级报告的 2-3 个选项中决策，输入错误返回 `2`。审计合同、最新报告、逐次尝试和升级报告写入 `workbench/stages/01-analysis/`；CLI 不代替生成代理重写大纲。
 

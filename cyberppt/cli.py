@@ -13,6 +13,7 @@ from cyberppt.commands.init_project import init_project
 from cyberppt.commands.outline_audit import run_outline_audit
 from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script, status_as_json
 from cyberppt.commands.script_runner import SCRIPT_ALIASES, run_script
+from cyberppt.commands.source_truth_audit import run_source_truth_audit
 from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
 
 
@@ -42,6 +43,20 @@ def _init_command(args: argparse.Namespace) -> int:
 def _outline_audit_command(args: argparse.Namespace) -> int:
     try:
         code, report = run_outline_audit(
+            Path(args.project),
+            Path(args.input),
+            max_attempts=args.max_attempts,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return code
+
+
+def _source_truth_audit_command(args: argparse.Namespace) -> int:
+    try:
+        code, report = run_source_truth_audit(
             Path(args.project),
             Path(args.input),
             max_attempts=args.max_attempts,
@@ -157,6 +172,20 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum changed-direction attempts (1-5; default: 3).",
     )
     outline_audit.set_defaults(func=_outline_audit_command)
+
+    source_truth_audit = subparsers.add_parser(
+        "source-truth-audit",
+        help="Audit Stage 01 source evidence, change extraction direction, and render Markdown.",
+    )
+    source_truth_audit.add_argument("project", help="CyberPPT project directory.")
+    source_truth_audit.add_argument("--input", required=True, help="Source Truth JSON file to audit.")
+    source_truth_audit.add_argument(
+        "--max-attempts",
+        type=int,
+        default=3,
+        help="Maximum changed-direction attempts (1-5; default: 3).",
+    )
+    source_truth_audit.set_defaults(func=_source_truth_audit_command)
 
     stage_script_parser = subparsers.add_parser(
         "stage-script",

@@ -40,6 +40,27 @@ class CliTests(unittest.TestCase):
         self.assertIn("rebuild-dual-image", help_text)
         self.assertIn("final-script-pages", help_text)
         self.assertIn("outline-audit", help_text)
+        self.assertIn("source-truth-audit", help_text)
+
+    def test_source_truth_audit_returns_audit_exit_code(self) -> None:
+        buffer = io.StringIO()
+        with (
+            patch(
+                "cyberppt.cli.run_source_truth_audit",
+                return_value=(4, {"status": "rewrite_required"}),
+            ),
+            redirect_stdout(buffer),
+        ):
+            code = main(
+                [
+                    "source-truth-audit",
+                    "project",
+                    "--input",
+                    "source-truth.json",
+                ]
+            )
+        self.assertEqual(4, code)
+        self.assertIn('"status": "rewrite_required"', buffer.getvalue())
 
     def test_outline_audit_returns_rewrite_exit_code(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

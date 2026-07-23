@@ -6,9 +6,20 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "SKILL.md"
+SOURCE_ANALYSIS = ROOT / "references" / "source-analysis.md"
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_source_truth_contract_precedes_outline(self) -> None:
+        skill = SKILL.read_text(encoding="utf-8-sig")
+        reference = SOURCE_ANALYSIS.read_text(encoding="utf-8-sig")
+
+        self.assertIn("`source-truth.json` 是 Source Truth 的唯一结构化事实源", skill)
+        self.assertIn("`source-truth-audit`", skill)
+        self.assertIn("F / J / R / B / U", reference)
+        self.assertIn("structured_fact_sweep", reference)
+        self.assertIn("traceability_rebuild", reference)
+
     def test_stage01_defaults_to_solution_architecture(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 

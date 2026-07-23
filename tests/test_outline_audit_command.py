@@ -68,7 +68,17 @@ class OutlineAuditCommandTests(unittest.TestCase):
             project = Path(tmp) / "project"
             init_project(project)
             self.assertTrue((project / "workbench" / "stages" / "01-analysis" / "outline-attempts").is_dir())
+            self.assertTrue(
+                (
+                    project
+                    / "workbench"
+                    / "stages"
+                    / "01-analysis"
+                    / "source-truth-attempts"
+                ).is_dir()
+            )
             self.assertIn("outline-audit", (project / "README.md").read_text(encoding="utf-8"))
+            self.assertIn("source-truth-audit", (project / "README.md").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
