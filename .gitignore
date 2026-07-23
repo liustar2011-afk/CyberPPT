@@ -59,3 +59,4 @@ validation/
 Thumbs.db
 .idea/
 .vscode/
+.worktrees/
