@@ -7,9 +7,30 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SKILL = ROOT / "SKILL.md"
 SOURCE_ANALYSIS = ROOT / "references" / "source-analysis.md"
+SCRIPT_QUALITY = ROOT / "references" / "script-quality.md"
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_native_script_audit_gate_precedes_stage02(self) -> None:
+        skill = SKILL.read_text(encoding="utf-8-sig")
+        reference = SCRIPT_QUALITY.read_text(encoding="utf-8-sig")
+
+        self.assertIn("`script-audit`", skill)
+        self.assertIn(
+            "脚本审计未通过时不得批准脚本或进入 Stage 02",
+            skill,
+        )
+        self.assertIn("章内推进", reference)
+        self.assertIn("上屏结构与语义图同构", reference)
+        self.assertIn("跨页重复", reference)
+        self.assertIn("状态升级", reference)
+
+    def test_old_ppt_script_runtime_is_not_required(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertNotIn("scripts/project_manager.py", text)
+        self.assertNotIn("context-pack", text)
+
     def test_source_truth_contract_precedes_outline(self) -> None:
         skill = SKILL.read_text(encoding="utf-8-sig")
         reference = SOURCE_ANALYSIS.read_text(encoding="utf-8-sig")

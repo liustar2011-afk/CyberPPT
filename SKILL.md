@@ -23,11 +23,23 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 审计失败后必须按 `retry_directive` 换方向重写，不能沿原策略只做措辞修补。默认最多 3 次，每次保留审计问题和新策略；仍未通过时输出 2-3 个可决策选项请求用户选择，不得直接放弃任务。CLI 只负责审计、记录和给出重试方向，实际重写由生成代理完成。
 
+## 原生脚本质量审计
+
+Outline 通过并获得用户批准后，逐批编写脚本并运行：
+
+```powershell
+python -m cyberppt script-audit <project> --input <script.md>
+```
+
+`script-audit` 复用 Outline 和 Source Truth，检查页面合同、来源状态、章内推进、跨页重复、上屏结构与语义图同构、页面密度。脚本审计未通过时不得批准脚本或进入 Stage 02；必须读取 `retry_scope` 和 `retry_directive`，换方向重写失败页面。批次通过后仍需在完整脚本形成时执行全稿审计。
+
+详细规则读取 `references/script-quality.md`。不得调用个人目录中的旧 `ppt-script`、旧项目管理运行时或旧项目生命周期替代本仓库流程。
+
 ## 强制流程
 
 | 阶段 | 必须产出 | 停止条件 | 读取 |
 |---|---|---|---|
-| 1. 分析 | `source-truth.json`、Source Truth 审计与可读视图、架构路由、冲突记录、内容脑暴、方案型章节或咨询型 SCR、连续逐页大纲、审计记录、图表计划、页面信息密度和组件清单 | 第一次确认：Source Truth 已通过或有记录地升级，且用户批准架构、章节逻辑、页数、大纲、每页信息结构和密度目标 | `references/source-analysis.md`, `references/storyline.md` |
+| 1. 分析 | `source-truth.json`、Source Truth 审计与可读视图、架构路由、冲突记录、内容脑暴、方案型章节或咨询型 SCR、连续逐页大纲、脚本及审计记录、图表计划、页面信息密度和组件清单 | 第一次确认：Source Truth 与 Outline 已通过或有记录地升级，用户批准架构、章节逻辑、页数和大纲；脚本审计通过后才能批准脚本 | `references/source-analysis.md`, `references/storyline.md`, `references/script-quality.md` |
 | 2. 蓝图与 full 图 PPT 生产 | 8 种视觉风格、选定风格、逐页正文区 ImageGen 蓝图、脚本锁定记录、ImageGen full 图、`page_image_pairs.json`、`template_image_manifest.json`、套模板后的图片型 PPTX | 第二次确认：用户批准视觉方向、全部页面正文区 full 图和进入图片型 PPT 组装的脚本/图像资产 | `references/visual-system.md` |
 | 3. 渲染 QA 与交付 | 对 `template_image_ppt_export.py` 组装出的 PPTX 做渲染检查、模板层检查、交付说明和必要返工；正文区主要内容以 full 图承载，标题、副标题、Logo、页脚、页码和公共模板元素由 PPT 管线生成 | 最终确认：用户批准套模板后的图片型 PPT | `references/ppt-production.md`, `references/quality-assurance.md` |
 
@@ -86,7 +98,7 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 - 阶段开始前必须读取对应 reference 的完整内容；如果终端显示乱码，改用 UTF-8 方式重读，不得跳过。
 - reference 中的具体清单优先于本文件中的摘要描述；如果二者冲突，先停下说明冲突并请求用户确认。
-- 第一阶段必须读取 `source-analysis.md` 和 `storyline.md` 后再完成材料路由，并产出证据表、内容脑暴、方案型章节或咨询型 SCR、逐页大纲和页面信息密度清单。
+- 第一阶段必须读取 `source-analysis.md` 和 `storyline.md` 后再完成材料路由，并产出证据表、内容脑暴、方案型章节或咨询型 SCR、逐页大纲和页面信息密度清单；进入逐页脚本时必须读取 `script-quality.md` 并运行 `script-audit`。
 - 第二阶段必须读取 `visual-system.md` 后再生成风格样张；默认必须逐项使用固定 8 种 CyberPPT 视觉风格，不得用扩展风格替代，除非用户明确要求替换。
 - 第二阶段的逐页正文区蓝图子阶段即使已经选好风格，也必须重新对照 `visual-system.md`，声明锁定的风格编号、色板、正文区网格、正文区图表语言和信息密度规则，防止逐页生成时风格漂移。
 - 第三阶段必须读取 `ppt-production.md` 和 `quality-assurance.md` 后再生成 PPTX 和渲染检查。
