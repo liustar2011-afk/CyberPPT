@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
 import unittest
 
 from cyberppt.script_quality_contract import (
@@ -7,6 +9,10 @@ from cyberppt.script_quality_contract import (
     parse_script_markdown,
     text_similarity,
 )
+
+ROOT = Path(__file__).resolve().parents[1]
+POWER_PROJECT = ROOT / "projects" / "power-supply-demand-forecast-early-warning"
+SCRIPT_AUDIT_FIXTURES = ROOT / "tests" / "fixtures" / "script_audit"
 
 
 SCRIPT = """# 第8—9页脚本审稿稿
@@ -67,6 +73,49 @@ class ScriptMarkdownParserTests(unittest.TestCase):
 
 
 class ScriptContractAuditTests(unittest.TestCase):
+    def test_power_foundation_regression_is_blocked(self) -> None:
+        script = parse_script_markdown(
+            (SCRIPT_AUDIT_FIXTURES / "power_foundation_premature_scope.md").read_text(
+                encoding="utf-8"
+            )
+        )
+        outline = json.loads(
+            (POWER_PROJECT / "workbench/stages/01-analysis/outline.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        truth = json.loads(
+            (
+                POWER_PROJECT / "workbench/stages/01-analysis/source-truth.json"
+            ).read_text(encoding="utf-8")
+        )
+
+        codes = {issue.code for issue in audit_script_quality(script, outline, truth)}
+
+        self.assertIn("PREMATURE_SCOPE_CLAIM", codes)
+
+    def test_power_scene_matrix_is_not_treated_as_isolated_method_page(self) -> None:
+        script = parse_script_markdown(
+            (SCRIPT_AUDIT_FIXTURES / "power_scene_matrix.md").read_text(
+                encoding="utf-8"
+            )
+        )
+        outline = json.loads(
+            (POWER_PROJECT / "workbench/stages/01-analysis/outline.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        truth = json.loads(
+            (
+                POWER_PROJECT / "workbench/stages/01-analysis/source-truth.json"
+            ).read_text(encoding="utf-8")
+        )
+
+        codes = {issue.code for issue in audit_script_quality(script, outline, truth)}
+
+        self.assertNotIn("MATRIX_AXES_MISSING", codes)
+        self.assertNotIn("MULTIPLE_PAGE_MISSIONS", codes)
+
     def test_partial_batch_does_not_require_absent_outline_pages(self) -> None:
         outline = strict_outline(
             {
