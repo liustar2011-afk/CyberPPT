@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import re
+import unicodedata
 
 
 PAGE_HEADING_RE = re.compile(r"^##\s+第(\d+)页[：:](.+?)\s*$", re.MULTILINE)
@@ -131,6 +132,20 @@ SCOPE_TERMS = ("首期", "一期", "建设范围", "交付范围", "投资", "�
 IMPLEMENTATION_TERMS = ("实施路线", "建设周期", "前100天", "组织组建", "预算")
 COMPLETED_TERMS = ("已经建成", "已建成", "已经形成完整", "已完成建设", "正式确定")
 CONDITIONAL_STATUSES = ("拟", "建议", "待", "暂缓", "后续验证", "条件成熟")
+COUNT_WORDS = {
+    "二": 2,
+    "两": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+}
+ORDER_SIGNALS = ("①", "②", "③", "④", "⑤", "→", "随后", "再", "最后")
+LOOP_SIGNALS = ("回流", "反馈", "复盘", "闭环", "持续校正")
+MATRIX_SIGNALS = ("|---", "×", "矩阵", "行", "列")
+LAYER_SIGNALS = ("自下而上", "自上而下", "底座", "层", "贯穿")
 
 
 def _dict_items(
@@ -190,6 +205,134 @@ def _issue(
         evidence=evidence,
         suggested_action=action,
     )
+
+
+def normalized_tokens(text: str) -> tuple[str, ...]:
+    normalized = unicodedata.normalize("NFKC", text).lower()
+    normalized = re.sub(r"S\d{3}", " ", normalized)
+    normalized = re.sub(r"[^\w\u4e00-\u9fff]+", " ", normalized)
+    compact = "".join(normalized.split())
+    if len(compact) < 3:
+        return tuple(compact)
+    return tuple(
+        compact[index : index + 3]
+        for index in range(len(compact) - 2)
+    )
+
+
+def text_similarity(left: str, right: str) -> float:
+    left_set = set(normalized_tokens(left))
+    right_set = set(normalized_tokens(right))
+    if not left_set or not right_set:
+        return 0.0
+    return len(left_set & right_set) / len(left_set | right_set)
+
+
+def _declared_count(text: str) -> int | None:
+    match = re.search(r"([二两三四五六七八])(?:类|项|步|层)", text)
+    return COUNT_WORDS.get(match.group(1)) if match else None
+
+
+def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
+    issues: list[ScriptQualityIssue] = []
+    full_text = _page_text(page)
+    visual = page.visual_structure
+    if "路径" in visual and not any(
+        signal in page.onscreen_text for signal in ORDER_SIGNALS
+    ):
+        issues.append(
+            _issue(
+                "PATH_ORDER_SIGNAL_MISSING",
+                page,
+                "Path visual lacks an on-screen order signal.",
+                "Add numbered steps, arrows, or explicit sequence words matching the path.",
+            )
+        )
+    if "闭环" in visual and not any(
+        signal in full_text for signal in LOOP_SIGNALS
+    ):
+        issues.append(
+            _issue(
+                "LOOP_RETURN_SIGNAL_MISSING",
+                page,
+                "Loop visual lacks an on-screen return or feedback relation.",
+                "Name the feedback, review, or correction link on screen.",
+            )
+        )
+    if "矩阵" in visual and not any(
+        signal in page.onscreen_text for signal in MATRIX_SIGNALS
+    ):
+        issues.append(
+            _issue(
+                "MATRIX_AXES_MISSING",
+                page,
+                "Matrix visual lacks identifiable rows and columns.",
+                "Provide the row objects and column dimensions in the on-screen structure.",
+            )
+        )
+    if ("分层" in visual or "架构" in visual) and not any(
+        signal in full_text for signal in LAYER_SIGNALS
+    ):
+        issues.append(
+            _issue(
+                "LAYER_HIERARCHY_MISSING",
+                page,
+                "Layered visual lacks an explicit hierarchy relation.",
+                "Name the layers, support relation, or top-to-bottom reading order.",
+            )
+        )
+    count = _declared_count(page.main_message + "\n" + page.onscreen_text)
+    if (
+        count is not None
+        and page.module_titles
+        and len(page.module_titles) != count
+    ):
+        issues.append(
+            _issue(
+                "DECLARED_COUNT_MISMATCH",
+                page,
+                (
+                    f"Declared count {count} does not match "
+                    f"{len(page.module_titles)} on-screen modules."
+                ),
+                "Align the declared count and the visible module structure.",
+                evidence=(str(count), str(len(page.module_titles))),
+            )
+        )
+    visible_chars = len(re.sub(r"\s+", "", page.onscreen_text))
+    if (
+        page.page_type == "content"
+        and (visible_chars < 30 or len(page.module_titles) < 2)
+    ):
+        issues.append(
+            _issue(
+                "CONTENT_PAGE_TOO_SPARSE",
+                page,
+                "Content page lacks enough evidence-bearing on-screen structure.",
+                "Add source-supported modules or merge this page with the adjacent business question.",
+                evidence=(
+                    f"chars={visible_chars}",
+                    f"modules={len(page.module_titles)}",
+                ),
+            )
+        )
+    if (
+        page.page_type == "content"
+        and len(page.module_titles) > 5
+        and not any(
+            signal in page.onscreen_text
+            for signal in ORDER_SIGNALS + LAYER_SIGNALS
+        )
+    ):
+        issues.append(
+            _issue(
+                "MODULE_HIERARCHY_MISSING",
+                page,
+                "More than five modules are presented without grouping or hierarchy.",
+                "Group modules under explicit stages or layers, or split independent conclusions.",
+            )
+        )
+    return issues
 
 
 def audit_script_quality(
@@ -344,6 +487,27 @@ def audit_script_quality(
                     "Restore proposed, conditional, pending, or deferred wording from Source Truth.",
                     conditional_sources,
                     completed,
+                )
+            )
+        issues.extend(_presentation_issues(page))
+    for left, right in zip(script.pages, script.pages[1:]):
+        similarity = text_similarity(left.main_message, right.main_message)
+        if left.main_message and right.main_message and similarity >= 0.82:
+            issues.append(
+                ScriptQualityIssue(
+                    "ADJACENT_MAIN_MESSAGE_DUPLICATE",
+                    "error",
+                    "Adjacent pages repeat substantially the same main judgment.",
+                    (left.page_id, right.page_id),
+                    evidence=(
+                        left.main_message,
+                        right.main_message,
+                        f"similarity={similarity:.3f}",
+                    ),
+                    suggested_action=(
+                        "Keep the complete argument on one page and make the "
+                        "adjacent page advance a different business question."
+                    ),
                 )
             )
     return issues

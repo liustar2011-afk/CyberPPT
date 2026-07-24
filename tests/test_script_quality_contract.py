@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import unittest
 
-from cyberppt.script_quality_contract import audit_script_quality, parse_script_markdown
+from cyberppt.script_quality_contract import (
+    audit_script_quality,
+    parse_script_markdown,
+    text_similarity,
+)
 
 
 SCRIPT = """# 第8—9页脚本审稿稿
@@ -200,6 +204,182 @@ class ScriptContractAuditTests(unittest.TestCase):
         codes = {issue.code for issue in audit_script_quality(script, outline, truth)}
 
         self.assertIn("SOURCE_STATE_UPGRADED", codes)
+
+    def test_adjacent_pages_with_same_main_message_are_rejected(self) -> None:
+        duplicate = """## 第14页：业务体系
+- 页面类型：内容页
+- 页面标题：业务体系
+- 主判断：统一数据和模型支撑报告生产与审核发布。
+- 上屏文字：
+  **业务对象**
+  - 覆盖供需研判与成果生产。
+  **运行关系**
+  - 数据、模型与报告相互衔接。
+- 证据：S017
+- 边界：拟建议。
+- 视觉结构：业务关系图。
+
+## 第15页：成果闭环
+- 页面类型：内容页
+- 页面标题：成果闭环
+- 主判断：统一数据和模型支撑报告生产与审核发布。
+- 上屏文字：
+  **成果生产**
+  - 覆盖报告生产与审核发布。
+  **运行关系**
+  - 数据、模型与报告相互衔接。
+- 证据：S020
+- 边界：拟建议。
+- 视觉结构：成果关系图。
+"""
+        issues = audit_script_quality(
+            parse_script_markdown(duplicate),
+            strict_outline(
+                {
+                    "page_id": "p14",
+                    "sequence": 14,
+                    "page_type": "content",
+                    "title": "业务体系",
+                    "argument_role": "solution",
+                    "source_refs": ["S017"],
+                    "prerequisite_pages": [],
+                },
+                {
+                    "page_id": "p15",
+                    "sequence": 15,
+                    "page_type": "content",
+                    "title": "成果闭环",
+                    "argument_role": "solution",
+                    "source_refs": ["S020"],
+                    "prerequisite_pages": ["p14"],
+                },
+            ),
+            source_truth(
+                {"id": "S017", "type": "R", "status": "拟建议", "statement": "业务体系。"},
+                {"id": "S020", "type": "R", "status": "拟建议", "statement": "成果产品。"},
+            ),
+        )
+
+        self.assertIn(
+            "ADJACENT_MAIN_MESSAGE_DUPLICATE",
+            {issue.code for issue in issues},
+        )
+
+    def test_short_bridge_does_not_trigger_full_text_duplicate(self) -> None:
+        self.assertLess(
+            text_similarity("承接前页的数据治理基础", "数据治理提供可信输入"),
+            0.72,
+        )
+
+    def test_path_visual_requires_order_signal(self) -> None:
+        script = parse_script_markdown(
+            """## 第12页：研究任务
+- 页面类型：内容页
+- 页面标题：研究任务
+- 主判断：四项任务形成研究证据。
+- 上屏文字：
+  **资源摸底**
+  - 形成资源清单和责任清单。
+  **问题量化**
+  - 形成现状基线和问题清单。
+  **首期设计**
+  - 形成首期业务与技术方案。
+  **原型验证**
+  - 形成验证结果和测算依据。
+- 证据：S014
+- 边界：不决定投资。
+- 视觉结构：四步任务路径图。
+"""
+        )
+        issues = audit_script_quality(
+            script,
+            strict_outline(
+                {
+                    "page_id": "p12",
+                    "sequence": 12,
+                    "page_type": "content",
+                    "title": "研究任务",
+                    "argument_role": "decision",
+                    "source_refs": ["S014"],
+                    "prerequisite_pages": [],
+                }
+            ),
+            source_truth(
+                {
+                    "id": "S014",
+                    "type": "U",
+                    "status": "待确认",
+                    "statement": "四项研究任务。",
+                }
+            ),
+        )
+
+        self.assertIn("PATH_ORDER_SIGNAL_MISSING", {issue.code for issue in issues})
+
+    def test_declared_count_must_match_modules(self) -> None:
+        text = SCRIPT.replace(
+            "初步定位为面向行业的公共能力。",
+            "形成五类能力。",
+        )
+        issues = audit_script_quality(
+            parse_script_markdown(text),
+            strict_outline(
+                {
+                    "page_id": "p08",
+                    "sequence": 8,
+                    "page_type": "chapter",
+                    "title": "第二章：定位、目标与研究边界",
+                },
+                {
+                    "page_id": "p09",
+                    "sequence": 9,
+                    "page_type": "content",
+                    "title": "总体定位",
+                    "argument_role": "solution",
+                    "source_refs": ["S015", "S026", "S059"],
+                    "prerequisite_pages": [],
+                },
+            ),
+            source_truth(
+                {"id": "S015", "type": "R", "status": "拟建议", "statement": "能力。"},
+                {"id": "S026", "type": "B", "status": "研究边界", "statement": "边界。"},
+                {"id": "S059", "type": "B", "status": "研究边界", "statement": "边界。"},
+            ),
+        )
+
+        self.assertIn("DECLARED_COUNT_MISMATCH", {issue.code for issue in issues})
+
+    def test_content_page_with_one_short_module_is_too_sparse(self) -> None:
+        sparse = """## 第10页：能力框架
+- 页面类型：内容页
+- 页面标题：能力框架
+- 主判断：形成能力。
+- 上屏文字：
+  **能力**
+  - 提升研判。
+- 证据：S017
+- 边界：拟建议。
+- 视觉结构：能力图。
+"""
+        issues = audit_script_quality(
+            parse_script_markdown(sparse),
+            strict_outline(
+                {
+                    "page_id": "p10",
+                    "sequence": 10,
+                    "page_type": "content",
+                    "title": "能力框架",
+                    "argument_role": "solution",
+                    "source_refs": ["S017"],
+                    "prerequisite_pages": [],
+                }
+            ),
+            source_truth(
+                {"id": "S017", "type": "R", "status": "拟建议", "statement": "能力。"}
+            ),
+        )
+
+        self.assertIn("CONTENT_PAGE_TOO_SPARSE", {issue.code for issue in issues})
 
 
 if __name__ == "__main__":
