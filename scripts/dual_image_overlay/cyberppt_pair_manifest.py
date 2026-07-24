@@ -243,7 +243,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--project-path", type=Path)
     parser.add_argument("--style-lock", type=Path)
-    parser.add_argument("--style-id", type=int, choices=range(1, 9), metavar="1-8")
+    parser.add_argument("--style-id", type=int, choices=range(1, 10), metavar="1-9")
     parser.add_argument("--style-name")
     parser.add_argument("--resume", action="store_true", help="Reuse existing images in output-dir if present.")
     parser.add_argument("--force", action="store_true", help="Mark images pending and overwrite copied cache images.")

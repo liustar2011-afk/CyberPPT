@@ -19,10 +19,14 @@ from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
 
 
 def _doctor() -> int:
+    required_palette_samples = [
+        ASSETS_DIR / "palette-samples" / f"palette-{style_id:02d}.png"
+        for style_id in range(1, 9)
+    ]
     checks = {
         "skill": SKILL_FILE.exists(),
         "references": REFERENCES_DIR.exists() and any(REFERENCES_DIR.glob("*.md")),
-        "palette_samples": len(list((ASSETS_DIR / "palette-samples").glob("palette-*.png"))) == 8,
+        "palette_samples": all(sample.exists() for sample in required_palette_samples),
         "scripts": all((SCRIPTS_DIR / name).exists() for name in SCRIPT_ALIASES.values()),
     }
     for name, passed in checks.items():
@@ -320,9 +324,12 @@ def build_parser() -> argparse.ArgumentParser:
     final_script_pages_parser.add_argument(
         "--style-id",
         type=int,
-        choices=range(1, 9),
-        metavar="1-8",
-        help="Required unless --style-lock or --style-name is provided; user-selected CyberPPT default visual style id.",
+        choices=range(1, 10),
+        metavar="1-9",
+        help=(
+            "Required unless --style-lock or --style-name is provided; "
+            "styles 1-8 are default choices and style 9 is an explicit extension."
+        ),
     )
     final_script_pages_parser.add_argument(
         "--style-name",

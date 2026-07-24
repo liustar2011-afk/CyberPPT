@@ -15,6 +15,7 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.dual_image_overlay.style_library import default_style_choices, load_style_lock
+from scripts.dual_image_overlay.visual_grammar import default_visual_grammar
 
 
 PAGE_HEADING_RE = re.compile(
@@ -298,6 +299,7 @@ def style_contract(style_lock_path: Path | None) -> str:
 def render_prompt(page: PageBlock, *, style_lock_path: Path | None = None) -> str:
     body = "\n".join(f"- {line}" for line in visible_deliverable_lines(page))
     layout_directives = "\n".join(f"- {line}" for line in layout_density_directives(page))
+    visual_grammar = default_visual_grammar().render()
     return f"""## 第{page.page_number}页：{template_title(page)}
 
 【内容锁定】
@@ -311,6 +313,9 @@ def render_prompt(page: PageBlock, *, style_lock_path: Path | None = None) -> st
 不得出现证据编号、来源编号、过程性注释、脚注、口径说明、参考来源、调试标记、占位符、乱码、水印，或任何面向制作过程而非最终受众的文字。
 
 {style_contract(style_lock_path)}
+
+【视觉组织原则】
+{visual_grammar}
 
 【结构密度】
 必须保持高信息密度，不能把页面简化成少量留白卡片。保留原脚本组件数量、组件关系、网格/流程/卡片结构；如果原脚本包含底部 SO WHAT 区则保留，否则不得为了套用风格强行新增。下列正文内容必须完整、可读地进入画面，但不包含页面标题、副标题、Logo、页脚、页码或公共模板元素；不得遗漏关键数字、判断句、清单项或行动链。

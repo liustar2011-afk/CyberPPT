@@ -35,6 +35,8 @@ def default_style_choices(path: Path = STYLE_LIBRARY_PATH) -> str:
     library = load_style_library(path)
     choices: list[str] = []
     for style in library["styles"]:
+        if style.get("extension_only"):
+            continue
         choices.append(f"{style['id']}. {style['name']} - {style['scenario']}")
     return "\n".join(choices)
 
@@ -82,7 +84,8 @@ def write_project_style_lock(
         "source_script": str(source_script) if source_script else None,
         "style": style,
         "policy": {
-            "selected_from_default_8": True,
+            "selected_from_default_8": not bool(style.get("extension_only")),
+            "selected_from_extension": bool(style.get("extension_only")),
             "prompt_must_use_style_lock": True,
             "do_not_substitute_external_preset": True,
             "samples_are_required_for_user_confirmation": True,
