@@ -146,6 +146,13 @@ ORDER_SIGNALS = ("①", "②", "③", "④", "⑤", "→", "随后", "再", "最
 LOOP_SIGNALS = ("回流", "反馈", "复盘", "闭环", "持续校正")
 MATRIX_SIGNALS = ("|---", "×", "矩阵", "行", "列")
 LAYER_SIGNALS = ("自下而上", "自上而下", "底座", "层", "贯穿")
+STRATEGY_ORDER = (
+    "mission_restructure",
+    "source_state_rebuild",
+    "cross_page_dedup",
+    "semantic_diagram_realign",
+    "density_recompose",
+)
 
 
 def _dict_items(
@@ -226,6 +233,66 @@ def text_similarity(left: str, right: str) -> float:
     if not left_set or not right_set:
         return 0.0
     return len(left_set & right_set) / len(left_set | right_set)
+
+
+def script_retry_directive(
+    issues: list[ScriptQualityIssue],
+    previous_strategy: str = "",
+) -> dict[str, object]:
+    codes = sorted({issue.code for issue in issues})
+    if any(
+        code
+        in {
+            "SOURCE_STATE_UPGRADED",
+            "BOUNDARY_DROPPED",
+            "UNRESOLVED_AS_CONFIRMED",
+        }
+        for code in codes
+    ):
+        preferred = "source_state_rebuild"
+    elif any(
+        "DUPLICATE" in code or "REEXPANDED" in code
+        for code in codes
+    ):
+        preferred = "cross_page_dedup"
+    elif any(
+        code
+        in {
+            "PATH_ORDER_SIGNAL_MISSING",
+            "LOOP_RETURN_SIGNAL_MISSING",
+            "MATRIX_AXES_MISSING",
+            "LAYER_HIERARCHY_MISSING",
+            "DECLARED_COUNT_MISMATCH",
+            "SEMANTIC_DIAGRAM_MISMATCH",
+        }
+        for code in codes
+    ):
+        preferred = "semantic_diagram_realign"
+    elif any(
+        code
+        in {
+            "CONTENT_PAGE_TOO_SPARSE",
+            "CONTENT_PAGE_TOO_FRAGMENTED",
+            "MODULE_HIERARCHY_MISSING",
+        }
+        for code in codes
+    ):
+        preferred = "density_recompose"
+    else:
+        preferred = "mission_restructure"
+    strategy = preferred
+    if strategy == previous_strategy:
+        index = (STRATEGY_ORDER.index(strategy) + 1) % len(STRATEGY_ORDER)
+        strategy = STRATEGY_ORDER[index]
+    return {
+        "required": bool(issues),
+        "issue_codes": codes,
+        "strategy": strategy,
+        "instruction": (
+            "Rewrite only the failed pages using the new strategy; preserve "
+            "valid evidence, states, and page contracts."
+        ),
+    }
 
 
 def _declared_count(text: str) -> int | None:
