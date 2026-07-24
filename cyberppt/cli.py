@@ -11,6 +11,7 @@ from cyberppt import __version__
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.outline_audit import run_outline_audit
+from cyberppt.commands.script_audit import run_script_audit
 from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script, status_as_json
 from cyberppt.commands.script_runner import SCRIPT_ALIASES, run_script
 from cyberppt.commands.source_truth_audit import run_source_truth_audit
@@ -63,6 +64,25 @@ def _source_truth_audit_command(args: argparse.Namespace) -> int:
             max_attempts=args.max_attempts,
         )
     except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return code
+
+
+def _script_audit_command(args: argparse.Namespace) -> int:
+    try:
+        code, report = run_script_audit(
+            Path(args.project),
+            Path(args.input),
+            outline_path=Path(args.outline) if args.outline else None,
+            source_truth_path=(
+                Path(args.source_truth) if args.source_truth else None
+            ),
+            attempt=args.attempt,
+            max_attempts=args.max_attempts,
+        )
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
     print(json.dumps(report, ensure_ascii=False, indent=2))
@@ -191,6 +211,43 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum changed-direction attempts (1-5; default: 3).",
     )
     source_truth_audit.set_defaults(func=_source_truth_audit_command)
+
+    script_audit = subparsers.add_parser(
+        "script-audit",
+        help=(
+            "Audit PPT scripts against Outline, Source Truth, composition, "
+            "and argument order."
+        ),
+    )
+    script_audit.add_argument(
+        "project",
+        help="CyberPPT project directory.",
+    )
+    script_audit.add_argument(
+        "--input",
+        required=True,
+        help="Markdown page script to audit.",
+    )
+    script_audit.add_argument(
+        "--outline",
+        help="Outline JSON; defaults to the project Stage 01 artifact.",
+    )
+    script_audit.add_argument(
+        "--source-truth",
+        help="Source Truth JSON; defaults to the project Stage 01 artifact.",
+    )
+    script_audit.add_argument(
+        "--attempt",
+        type=int,
+        help="Explicit attempt number; defaults to the next persisted attempt.",
+    )
+    script_audit.add_argument(
+        "--max-attempts",
+        type=int,
+        default=3,
+        help="Maximum changed-direction attempts (1-5; default: 3).",
+    )
+    script_audit.set_defaults(func=_script_audit_command)
 
     stage_script_parser = subparsers.add_parser(
         "stage-script",

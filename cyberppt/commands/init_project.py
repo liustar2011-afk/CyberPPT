@@ -25,6 +25,8 @@ PROJECT_DIRS = [
     "workbench/scripts",
     "workbench/scripts/drafts",
     "workbench/scripts/final",
+    "workbench/scripts/audits",
+    "workbench/scripts/audits/attempts",
     "workbench/approvals",
     "workbench/runs",
     "workbench/archive",
@@ -61,6 +63,7 @@ directories:
   scripts: workbench/scripts
   script_drafts: workbench/scripts/drafts
   final_scripts: workbench/scripts/final
+  script_audits: workbench/scripts/audits
   approvals: workbench/approvals
   runs: workbench/runs
   archive: workbench/archive
@@ -127,13 +130,14 @@ CyberPPT project workspace.
 4. Build `source-truth.json`, then run `python -m cyberppt source-truth-audit <project> --input <source-truth.json>`. The JSON is authoritative; the command renders `00-source-analysis.md`, preserves attempts, and changes extraction direction when coverage is incomplete.
 5. A common dependency chain is `foundation → change → gap → necessity`; it is an argument example, not a mandatory chapter template.
 6. Only after Source Truth passes or reaches documented escalation, audit the Stage 01 outline with `python -m cyberppt outline-audit <project> --input <outline.json> --source-truth <source-truth.json>`.
-7. Before any ImageGen or PPTX generation, save the current slide script or prompt in `workbench/scripts/drafts/` or `workbench/prompts/imagegen/`.
-8. Stop for user review. Do not generate images or PPTX until an approval record exists in `workbench/approvals/`.
-9. Store title/subtitle truth for template assembly in `workbench/locks/template_text/`; if dual images are supplied mid-pipeline, create this lock before template rebuild.
-10. Store stage outputs under `workbench/stages/` and register every durable artifact in `workbench/artifact-ledger.json`.
-11. Store page-specific attempts and resumable intermediate runs in `workbench/runs/`; use `workbench/tmp/` only for disposable scratch files.
-12. Store final scripts in `workbench/scripts/final/`, QA reports in `workbench/qa/`, renders in `outputs/renders/`, and delivery files in `delivery/`.
-13. Do not write new generated images or pair manifests to the repository root `images/`; keep them inside this project workspace.
+7. Draft batch or full scripts under `workbench/scripts/drafts/`, then run `python -m cyberppt script-audit <project> --input <script.md>`.
+8. A failed script audit blocks final script approval; rewrite only `retry_scope` pages with the changed `retry_directive` strategy.
+9. Stop for user review after the script audit passes. Do not generate images or PPTX until an approval record exists in `workbench/approvals/`.
+10. Store title/subtitle truth for template assembly in `workbench/locks/template_text/`; if dual images are supplied mid-pipeline, create this lock before template rebuild.
+11. Store stage outputs under `workbench/stages/` and register every durable artifact in `workbench/artifact-ledger.json`.
+12. Store page-specific attempts and resumable intermediate runs in `workbench/runs/`; use `workbench/tmp/` only for disposable scratch files.
+13. Store final scripts in `workbench/scripts/final/`, QA reports in `workbench/qa/`, renders in `outputs/renders/`, and delivery files in `delivery/`.
+14. Do not write new generated images or pair manifests to the repository root `images/`; keep them inside this project workspace.
 """,
         encoding="utf-8",
     )

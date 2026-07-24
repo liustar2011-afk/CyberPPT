@@ -41,6 +41,42 @@ class CliTests(unittest.TestCase):
         self.assertIn("final-script-pages", help_text)
         self.assertIn("outline-audit", help_text)
         self.assertIn("source-truth-audit", help_text)
+        self.assertIn("script-audit", help_text)
+
+    def test_script_audit_accepts_contract_options(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "script-audit",
+                "project",
+                "--input",
+                "script.md",
+                "--outline",
+                "outline.json",
+                "--source-truth",
+                "source-truth.json",
+                "--attempt",
+                "2",
+            ]
+        )
+
+        self.assertEqual("outline.json", args.outline)
+        self.assertEqual("source-truth.json", args.source_truth)
+        self.assertEqual(2, args.attempt)
+
+    def test_script_audit_input_error_returns_two(self) -> None:
+        buffer = io.StringIO()
+        with redirect_stderr(buffer):
+            code = main(
+                [
+                    "script-audit",
+                    "missing-project",
+                    "--input",
+                    "missing-script.md",
+                ]
+            )
+
+        self.assertEqual(2, code)
+        self.assertIn("project does not exist", buffer.getvalue())
 
     def test_source_truth_audit_returns_audit_exit_code(self) -> None:
         buffer = io.StringIO()

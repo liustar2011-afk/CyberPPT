@@ -22,6 +22,7 @@ class ScriptGateTests(unittest.TestCase):
             self.assertEqual([], ledger["artifacts"])
             manifest = (project / "manifest.yml").read_text(encoding="utf-8")
             self.assertIn("template_text_locks: workbench/locks/template_text", manifest)
+            self.assertIn("script_audits: workbench/scripts/audits", manifest)
             self.assertTrue((project / "workbench/stages/01-analysis").is_dir())
             self.assertTrue((project / "workbench/stages/02-blueprint-dual-image").is_dir())
             self.assertTrue((project / "workbench/stages/03-overlay").is_dir())
@@ -31,6 +32,17 @@ class ScriptGateTests(unittest.TestCase):
             self.assertTrue((project / "workbench/archive").is_dir())
             self.assertTrue((project / "workbench/tmp").is_dir())
             self.assertTrue((project / "workbench/locks/template_text").is_dir())
+            self.assertTrue(
+                (
+                    project
+                    / "workbench"
+                    / "scripts"
+                    / "audits"
+                    / "attempts"
+                ).is_dir()
+            )
+            readme = (project / "README.md").read_text(encoding="utf-8")
+            self.assertIn("python -m cyberppt script-audit", readme)
 
     def test_stage_script_saves_draft_and_manifest_without_approval(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
