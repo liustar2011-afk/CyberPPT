@@ -35,7 +35,7 @@ python -m cyberppt script-audit <project> --input <script.md>
 
 完整文字稿是内容表达权威层：对齐源材料中本页主题的主体内容，写成小文章/小章节；禁止上屏颗粒度；必须是章节正文口吻，禁止“本页只确认/首先需要确认…”一类分析旁白（旁白进取舍说明或边界）。上屏文字是完整文字稿的概括化、图形化表达，禁止与文字稿并列各写一套，禁止各自从 Source Truth 分头摘取。审稿时先审文字稿取舍与论证，再审上屏是否忠实压缩。该要求为仓库默认合同。封面、目录、章节页和封底除外。设计见 `docs/superpowers/specs/2026-07-24-page-full-prose-from-source-design.md`。
 
-详细规则读取 `references/script-quality.md`。不得调用个人目录中的旧 `ppt-script`、旧项目管理运行时或旧项目生命周期替代本仓库流程。
+详细规则读取 `references/script-quality.md`。上屏构图纪律（构图原语、视觉结构句式、反卡片墙）已吸收进 `references/script-quality.md` 与 `script-audit`；不得改用 `vendor/ppt-script-visual-redesign` 或个人目录中的旧 `ppt-script`、旧项目管理运行时或旧项目生命周期替代本仓库流程。
 
 ## 强制流程
 

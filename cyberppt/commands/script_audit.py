@@ -252,13 +252,14 @@ def run_script_audit(
                     previous_directive.get("strategy") or ""
                 )
     issues = audit_script_quality(document, outline, source_truth)
-    directive = script_retry_directive(issues, previous_strategy)
+    errors = [issue for issue in issues if issue.severity == "error"]
+    directive = script_retry_directive(errors, previous_strategy)
     failed_pages = sorted(
-        {page for issue in issues for page in issue.pages}
+        {page for issue in errors for page in issue.pages}
     )
     report: dict[str, object] = {
         "schema": "cyberppt.script_audit.v1",
-        "status": "passed" if not issues else "rewrite_required",
+        "status": "passed" if not errors else "rewrite_required",
         "attempt": effective_attempt,
         "max_attempts": max_attempts,
         "remaining_attempts": max(0, max_attempts - effective_attempt),
@@ -276,7 +277,7 @@ def run_script_audit(
         "retry_directive": directive,
         "reference_gate": snapshot_reference_gate("script"),
     }
-    if issues and effective_attempt >= max_attempts:
+    if errors and effective_attempt >= max_attempts:
         report["status"] = "user_decision_required"
         report["options"] = _escalation_options()
     latest_json = audit_dir / "script-audit.json"
@@ -304,7 +305,7 @@ def run_script_audit(
         outline_path,
         source_truth_path,
     )
-    if not issues:
+    if not errors:
         return 0, report
     if report["status"] == "user_decision_required":
         return 5, report

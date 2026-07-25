@@ -22,8 +22,11 @@ class SkillContractTests(unittest.TestCase):
         )
         self.assertIn("章内推进", reference)
         self.assertIn("上屏结构与语义图同构", reference)
+        self.assertIn("构图原语", reference)
+        self.assertIn("VISUAL_STRUCTURE_STYLE_ONLY", reference)
         self.assertIn("跨页重复", reference)
         self.assertIn("状态升级", reference)
+        self.assertIn("vendor/ppt-script-visual-redesign", skill)
 
     def test_old_ppt_script_runtime_is_not_required(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")

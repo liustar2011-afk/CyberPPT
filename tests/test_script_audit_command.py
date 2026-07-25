@@ -4,8 +4,10 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from cyberppt.commands.script_audit import run_script_audit
+from cyberppt.script_quality_contract import ScriptQualityIssue
 
 
 VALID_SCRIPT = """## 第8页：第二章：定位、目标与研究边界
@@ -254,6 +256,31 @@ class ScriptAuditCommandTests(unittest.TestCase):
             self.assertEqual("user_decision_required", report["status"])
             self.assertGreaterEqual(len(report["options"]), 2)
             self.assertLessEqual(len(report["options"]), 3)
+
+    def test_warnings_only_still_pass(self) -> None:
+        warning = ScriptQualityIssue(
+            code="VISUAL_STRUCTURE_TOO_THIN",
+            severity="warning",
+            message="thin visual",
+            pages=("p09",),
+            suggested_action="expand visual structure",
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, script = _build_project(Path(temp_dir))
+            with patch(
+                "cyberppt.commands.script_audit.audit_script_quality",
+                return_value=[warning],
+            ):
+                code, report = run_script_audit(project, script)
+
+            self.assertEqual(0, code)
+            self.assertEqual("passed", report["status"])
+            self.assertEqual([], report["failed_pages"])
+            self.assertEqual(
+                ["VISUAL_STRUCTURE_TOO_THIN"],
+                [item["code"] for item in report["issues"]],
+            )
+            self.assertFalse(report["retry_directive"]["required"])
 
 
 if __name__ == "__main__":
