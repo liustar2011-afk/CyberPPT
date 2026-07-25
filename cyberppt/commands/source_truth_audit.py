@@ -10,6 +10,7 @@ from cyberppt.source_truth_contract import (
     load_source_truth,
     source_truth_retry_directive,
 )
+from cyberppt.stage01_controls import snapshot_reference_gate
 
 
 def _write_json(path: Path, payload: object) -> None:
@@ -206,6 +207,7 @@ def run_source_truth_audit(
         "coverage": _coverage_summary(payload),
         "issues": [issue.to_dict() for issue in issues],
         "retry_directive": directive,
+        "reference_gate": snapshot_reference_gate("source_truth"),
     }
     stage = project / "workbench" / "stages" / "01-analysis"
     _write_json(stage / "source-truth.json", payload)

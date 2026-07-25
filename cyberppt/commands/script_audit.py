@@ -13,6 +13,10 @@ from cyberppt.script_quality_contract import (
     script_retry_directive,
 )
 from cyberppt.source_truth_contract import load_source_truth
+from cyberppt.stage01_controls import (
+    assert_escalation_resolved,
+    snapshot_reference_gate,
+)
 
 
 def _write_json(path: Path, payload: object) -> None:
@@ -190,6 +194,7 @@ def run_script_audit(
         raise FileNotFoundError(f"project does not exist: {project}")
     if not input_path.exists():
         raise FileNotFoundError(f"script does not exist: {input_path}")
+    assert_escalation_resolved(project, "outline")
     outline_path = (
         outline_path.expanduser().resolve()
         if outline_path is not None
@@ -269,6 +274,7 @@ def run_script_audit(
         "failed_pages": failed_pages,
         "retry_scope": failed_pages,
         "retry_directive": directive,
+        "reference_gate": snapshot_reference_gate("script"),
     }
     if issues and effective_attempt >= max_attempts:
         report["status"] = "user_decision_required"

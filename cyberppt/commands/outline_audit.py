@@ -11,6 +11,10 @@ from cyberppt.argument_flow_contract import (
 )
 from cyberppt.outline_contract import audit_outline, load_outline, retry_directive
 from cyberppt.source_truth_contract import load_source_truth
+from cyberppt.stage01_controls import (
+    assert_escalation_resolved,
+    snapshot_reference_gate,
+)
 
 
 def _write_json(path: Path, payload: object) -> None:
@@ -39,6 +43,7 @@ def run_outline_audit(
     project = project.expanduser().resolve()
     if not project.exists():
         raise FileNotFoundError(f"project does not exist: {project}")
+    assert_escalation_resolved(project, "source_truth")
     payload = load_outline(input_path.expanduser().resolve())
     resolved_source_truth = (
         source_truth_path.expanduser().resolve()
@@ -97,6 +102,7 @@ def run_outline_audit(
                 if page
             }
         ),
+        "reference_gate": snapshot_reference_gate("outline"),
     }
     _write_json(stage / "outline-contract.json", payload)
     _write_json(stage / "outline-audit.json", report)

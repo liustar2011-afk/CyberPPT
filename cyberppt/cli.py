@@ -16,6 +16,11 @@ from cyberppt.commands.script_gate import approve_script, get_script_status, sta
 from cyberppt.commands.script_runner import SCRIPT_ALIASES, run_script
 from cyberppt.commands.source_truth_audit import run_source_truth_audit
 from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
+from cyberppt.stage01_controls import (
+    write_confirmation_request,
+    write_escalation_decision,
+    write_stage01_approval,
+)
 
 
 def _doctor() -> int:
@@ -118,6 +123,45 @@ def _approve_script_command(args: argparse.Namespace) -> int:
         print(str(exc), file=sys.stderr)
         return 2
     print(f"approval_recorded: {path}")
+    return 0
+
+
+def _resolve_escalation_command(args: argparse.Namespace) -> int:
+    try:
+        path = write_escalation_decision(
+            Path(args.project),
+            gate=args.gate,
+            option_id=args.option,
+            note=args.note,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"escalation_decision_recorded: {path}")
+    return 0
+
+
+def _confirmation_request_command(args: argparse.Namespace) -> int:
+    try:
+        path = write_confirmation_request(Path(args.project), args.kind)
+    except (FileNotFoundError, RuntimeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"confirmation_request: {path}")
+    return 0
+
+
+def _approve_stage01_command(args: argparse.Namespace) -> int:
+    try:
+        path = write_stage01_approval(
+            Path(args.project),
+            kind=args.kind,
+            note=args.note,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"stage01_approval_recorded: {path}")
     return 0
 
 
@@ -252,6 +296,52 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum changed-direction attempts (1-5; default: 3).",
     )
     script_audit.set_defaults(func=_script_audit_command)
+
+    resolve_escalation = subparsers.add_parser(
+        "resolve-escalation",
+        help="Record a user decision for an open Stage 01 exit-5 escalation.",
+    )
+    resolve_escalation.add_argument("project", help="CyberPPT project directory.")
+    resolve_escalation.add_argument(
+        "--gate",
+        required=True,
+        choices=["source_truth", "outline", "script"],
+        help="Which escalation gate to resolve.",
+    )
+    resolve_escalation.add_argument(
+        "--option",
+        required=True,
+        help="option_id from the escalation JSON options list.",
+    )
+    resolve_escalation.add_argument("--note", default="", help="Optional decision note.")
+    resolve_escalation.set_defaults(func=_resolve_escalation_command)
+
+    confirmation_request = subparsers.add_parser(
+        "confirmation-request",
+        help="Generate a Stage 01 confirmation request with audit summary and open questions.",
+    )
+    confirmation_request.add_argument("project", help="CyberPPT project directory.")
+    confirmation_request.add_argument(
+        "--kind",
+        required=True,
+        choices=["outline", "script"],
+        help="Outline confirmation or script confirmation.",
+    )
+    confirmation_request.set_defaults(func=_confirmation_request_command)
+
+    approve_stage01 = subparsers.add_parser(
+        "approve-stage01",
+        help="Record Stage 01 outline/script approval after a valid confirmation request.",
+    )
+    approve_stage01.add_argument("project", help="CyberPPT project directory.")
+    approve_stage01.add_argument(
+        "--kind",
+        required=True,
+        choices=["outline", "script"],
+        help="Approve outline or script.",
+    )
+    approve_stage01.add_argument("--note", default="", help="Optional approval note.")
+    approve_stage01.set_defaults(func=_approve_stage01_command)
 
     stage_script_parser = subparsers.add_parser(
         "stage-script",

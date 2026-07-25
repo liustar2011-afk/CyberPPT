@@ -31,7 +31,9 @@ Outline 通过并获得用户批准后，逐批编写脚本并运行：
 python -m cyberppt script-audit <project> --input <script.md>
 ```
 
-`script-audit` 复用 Outline 和 Source Truth，检查页面合同、来源状态、章内推进、跨页重复、上屏结构与语义图同构、页面密度。脚本审计未通过时不得批准脚本或进入 Stage 02；必须读取 `retry_scope` 和 `retry_directive`，换方向重写失败页面。批次通过后仍需在完整脚本形成时执行全稿审计。
+`script-audit` 复用 Outline 和 Source Truth，检查页面合同、来源状态、章内推进、跨页重复、上屏结构与语义图同构、页面密度，以及内容页强制的完整文字稿链路（完整文字稿、文字稿取舍说明、证据映射，且完整文字稿必须在上屏文字之前）。脚本审计未通过时不得批准脚本或进入 Stage 02；必须读取 `retry_scope` 和 `retry_directive`，换方向重写失败页面。批次通过后仍需在完整脚本形成时执行全稿审计。
+
+完整文字稿是内容表达权威层：对齐源材料中本页主题的主体内容，写成小文章/小章节；禁止上屏颗粒度；必须是章节正文口吻，禁止“本页只确认/首先需要确认…”一类分析旁白（旁白进取舍说明或边界）。上屏文字是完整文字稿的概括化、图形化表达，禁止与文字稿并列各写一套，禁止各自从 Source Truth 分头摘取。审稿时先审文字稿取舍与论证，再审上屏是否忠实压缩。该要求为仓库默认合同。封面、目录、章节页和封底除外。设计见 `docs/superpowers/specs/2026-07-24-page-full-prose-from-source-design.md`。
 
 详细规则读取 `references/script-quality.md`。不得调用个人目录中的旧 `ppt-script`、旧项目管理运行时或旧项目生命周期替代本仓库流程。
 
@@ -96,9 +98,20 @@ python -m cyberppt script-audit <project> --input <script.md>
 
 每个阶段开始前必须读取上表“读取”列中的全部 reference 文件，并把该阶段关键约束转成执行清单后再行动。不得只根据主文件摘要、记忆、既有脚本或上一轮经验执行。
 
+Stage 01 的 `source-truth-audit` / `outline-audit` / `script-audit` 会在报告与 attempt 中写入 `reference_gate`（references 路径与 sha256），使 Reference Gate 可观测；缺少必需 reference 时标记 `missing_references`。
+
+### Stage 01 控制点补强（强制）
+
+1. **exit 5 未决策阻断下游**：存在未关闭升级（`*-escalation.json` 且最新审计非 `passed`、也无决策文件）时：
+   - `source_truth` 未决 → 阻断 `outline-audit`
+   - `outline` 未决 → 阻断 `script-audit`
+   - `script` 未决 → 阻断 `approve-stage01 --kind script`、`approve-script --kind analysis`、`final-script-pages`
+   - 记录决策：`python -m cyberppt resolve-escalation <project> --gate <source_truth|outline|script> --option <option_id>`
+2. **确认请求必须含审计摘要与开放问题**：生成用 `python -m cyberppt confirmation-request <project> --kind outline|script`；批准用 `python -m cyberppt approve-stage01 <project> --kind outline|script`（校验确认请求章节，并检查升级是否已决）。
+
 - 阶段开始前必须读取对应 reference 的完整内容；如果终端显示乱码，改用 UTF-8 方式重读，不得跳过。
 - reference 中的具体清单优先于本文件中的摘要描述；如果二者冲突，先停下说明冲突并请求用户确认。
-- 第一阶段必须读取 `source-analysis.md` 和 `storyline.md` 后再完成材料路由，并产出证据表、内容脑暴、方案型章节或咨询型 SCR、逐页大纲和页面信息密度清单；进入逐页脚本时必须读取 `script-quality.md` 并运行 `script-audit`。
+- 第一阶段必须读取 `source-analysis.md` 和 `storyline.md` 后再完成材料路由，并产出证据表、内容脑暴、方案型章节或咨询型 SCR、逐页大纲和页面信息密度清单；进入逐页脚本时必须读取 `script-quality.md` 并运行 `script-audit`。内容页必须按页证据包写出完整文字稿（小文章/小章节完整性，禁止上屏颗粒度），并强制填写 `文字稿取舍说明` 与 `证据映射`，然后再写上屏文字。
 - 第二阶段必须读取 `visual-system.md` 后再生成风格样张；默认必须逐项使用固定 8 种 CyberPPT 视觉风格，不得用扩展风格替代，除非用户明确要求替换。
 - 第二阶段的逐页正文区蓝图子阶段即使已经选好风格，也必须重新对照 `visual-system.md`，声明锁定的风格编号、色板、正文区网格、正文区图表语言和信息密度规则，防止逐页生成时风格漂移。
 - 第三阶段必须读取 `ppt-production.md` 和 `quality-assurance.md` 后再生成 PPTX 和渲染检查。
@@ -194,9 +207,10 @@ python -m cyberppt script-audit <project> --input <script.md>
 1. 直接通过当前对话发送 8 张固定样张图片，并在图片外列出编号、名称、色板、语气、优势和风险。
 2. 等待用户选择或要求替换风格。
 3. 锁定视觉系统：页面尺寸、安全边距、正文区网格、字体层级、图表语言、表格样式、模板层元素、强调色和密度规则。
-4. 基于第一步确认的逐页计划，使用 `scripts/body_blueprint_prompt.py` 为每页编译正文内容区 prompt，再为每页生成一张正文区 ImageGen 蓝图；除非用户明确跳过 ImageGen，不得用脚本绘图、PPT、HTML、SVG、canvas 或低保真 mockup 替代。
-5. 每页蓝图前先生成 `slide_content_lock`；每页蓝图确认后冻结 `blueprint_component_signature` 和 `visual_element_registry`，并记录路径、SHA-256、页面角色、复杂视觉资产区域、可编辑文本区域、原生组件清单、证据 ID 和预期信息密度。
-6. 检查风格漂移、信息密度下降、封面过密、内容页过稀和生成文字污染。
+4. **生图前送图脚本门禁（强制）**：先把将送入 ImageGen 的明文 prompt 编译并落盘到 `workbench/prompts/imagegen/`，在当前对话中展示；只编入主判断、上屏文字、视觉结构与清洗后的边界，不得编入完整文字稿、取舍说明、证据映射、证据编号或讲解提示。封面/目录/章节/封底不生成正文区 ImageGen。用户可修改或批准；**未经批准不得调用 ImageGen**。可用 `scripts/dual_image_overlay/imagegen_handoff.py` 与 `python -m cyberppt stage-script / approve-script --kind imagegen`。
+5. 基于已批准的送图脚本，为每页生成一张正文区 ImageGen 蓝图/full 候选图；除非用户明确跳过 ImageGen，不得用脚本绘图、PPT、HTML、SVG、canvas 或低保真 mockup 替代。
+6. 每页蓝图前先生成 `slide_content_lock`；每页蓝图确认后冻结 `blueprint_component_signature` 和 `visual_element_registry`，并记录路径、SHA-256、页面角色、复杂视觉资产区域、可编辑文本区域、原生组件清单、证据 ID 和预期信息密度。
+7. 检查风格漂移、信息密度下降、封面过密、内容页过稀和生成文字污染。
 
 ### 第二步确认输出
 
@@ -1054,6 +1068,7 @@ manifest 中必须按需记录：
 - 默认展示 8 个固定 CyberPPT 视觉风格。可以根据材料类型推荐一个，但最终让用户选择。
 - 视觉样张必须是独立完整的 16:9 页面；不得使用拼图、缩略图墙或压缩多页画布。
 - 风格样张确认前必须直接通过当前对话发送 8 张独立 16:9 图片。优先使用内置样张 `assets/palette-samples/palette-01.png` 到 `palette-08.png`，或生成新的 8 张真实图片。
+- ImageGen 调用前必须先把送图明文脚本落盘并在对话中展示，经用户修改或批准；送图脚本不得夹带完整文字稿/证据编号等后台字段。
 - 不得只生成 Markdown、文本列表、表格、样式说明、网页、HTML、URL、文件夹路径、文件列表或 `stage2_style_options.md` 作为第二阶段交付；这些只能作为图片旁的辅助说明，不能替代当前对话中的 8 张独立样张图片。
 - 如果使用网页辅助，网页只能作为附加浏览方式；不得把网页作为风格确认的唯一依据。
 - 只用源文件不等于跳过视觉样张；“只用源文件”只约束事实、数据、文字和结论来源，不取消固定 8 张视觉样张展示。

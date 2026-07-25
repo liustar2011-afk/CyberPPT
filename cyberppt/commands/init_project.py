@@ -129,10 +129,10 @@ CyberPPT project workspace.
 3. New formal solution projects use `argument_contract_mode: strict` in Source Truth and Outline. Classify evidence claims and content-page argument roles explicitly.
 4. Build `source-truth.json`, then run `python -m cyberppt source-truth-audit <project> --input <source-truth.json>`. The JSON is authoritative; the command renders `00-source-analysis.md`, preserves attempts, and changes extraction direction when coverage is incomplete.
 5. A common dependency chain is `foundation → change → gap → necessity`; it is an argument example, not a mandatory chapter template.
-6. Only after Source Truth passes or reaches documented escalation, audit the Stage 01 outline with `python -m cyberppt outline-audit <project> --input <outline.json> --source-truth <source-truth.json>`.
-7. Draft batch or full scripts under `workbench/scripts/drafts/`, then run `python -m cyberppt script-audit <project> --input <script.md>`.
+6. Only after Source Truth passes or a recorded escalation decision (`resolve-escalation --gate source_truth`), audit the Stage 01 outline with `python -m cyberppt outline-audit <project> --input <outline.json> --source-truth <source-truth.json>`.
+7. Draft batch or full scripts under `workbench/scripts/drafts/`, then run `python -m cyberppt script-audit <project> --input <script.md>`. Content pages must include short-article `完整文字稿` (source-topic completeness, not on-screen granularity), mandatory `文字稿取舍说明` and `证据映射`, then `上屏文字`. This is a repository-wide contract. Open exit-5 escalations without `resolve-escalation` block the next Stage 01 command.
 8. A failed script audit blocks final script approval; rewrite only `retry_scope` pages with the changed `retry_directive` strategy.
-9. Stop for user review after the script audit passes. Do not generate images or PPTX until an approval record exists in `workbench/approvals/`.
+9. Before human confirmation, run `confirmation-request --kind outline|script` (must include audit summary + open questions), then `approve-stage01 --kind outline|script`. Do not generate images or PPTX until Stage 01 approval exists in `workbench/approvals/`.
 10. Store title/subtitle truth for template assembly in `workbench/locks/template_text/`; if dual images are supplied mid-pipeline, create this lock before template rebuild.
 11. Store stage outputs under `workbench/stages/` and register every durable artifact in `workbench/artifact-ledger.json`.
 12. Store page-specific attempts and resumable intermediate runs in `workbench/runs/`; use `workbench/tmp/` only for disposable scratch files.
