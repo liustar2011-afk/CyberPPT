@@ -95,6 +95,50 @@ def _mark_status(item: dict[str, Any], *, force_pending: bool = False) -> None:
             item["last_error"] = f"Missing expected CyberPPT image file: {path}"
 
 
+def _relationship_aware_canonical_prompts(
+    *,
+    script: Path,
+    project_path: Path,
+    style_lock: Path,
+    page_numbers: list[int],
+) -> dict[int, str]:
+    """Compile strict prompts through the same page-intent path used for approval."""
+
+    from cyberppt.script_quality_contract import parse_script_markdown
+    from scripts.dual_image_overlay.imagegen_handoff import (
+        _page_missions,
+        _page_visual_contexts,
+        _page_visual_intent_overrides,
+        build_page_prompt,
+    )
+
+    document = parse_script_markdown(script.read_text(encoding="utf-8"))
+    pages = {
+        int(page.page_id[1:]): page
+        for page in document.pages
+        if page.page_type == "content"
+    }
+    missions = _page_missions(project_path)
+    contexts = _page_visual_contexts(project_path)
+    overrides = _page_visual_intent_overrides(project_path)
+    return {
+        page_number: build_page_prompt(
+            pages[page_number],
+            style_lock,
+            page_mission=missions.get(pages[page_number].page_id, ""),
+            visual_context=contexts.get(pages[page_number].page_id),
+            visual_intent_override=overrides.get(pages[page_number].page_id),
+        )
+        for page_number in page_numbers
+        if page_number in pages
+        and (
+            pages[page_number].page_id in missions
+            or pages[page_number].page_id in contexts
+            or pages[page_number].page_id in overrides
+        )
+    }
+
+
 def build_manifest(
     *,
     script: Path,
@@ -107,35 +151,70 @@ def build_manifest(
 ) -> tuple[dict[str, Any], Path, Path, list[int]]:
     source_pages = parse_page_blocks(script)
     page_numbers = parse_pages(pages_raw, set(source_pages))
+    from cyberppt.script_quality_contract import parse_script_markdown
+
+    script_pages = {
+        int(page.page_id[1:]): page
+        for page in parse_script_markdown(script.read_text(encoding="utf-8")).pages
+    }
+    role_aliases = {
+        "cover": "cover",
+        "contents": "agenda",
+        "agenda": "agenda",
+        "chapter": "section",
+        "section": "section",
+        "closing": "ending",
+        "ending": "ending",
+    }
+    page_roles = {
+        number: role_aliases.get(
+            script_pages.get(number).page_type if number in script_pages else "",
+            "content",
+        )
+        for number in page_numbers
+    }
+    content_page_numbers = [
+        number for number in page_numbers if page_roles[number] == "content"
+    ]
     output_dir.mkdir(parents=True, exist_ok=True)
     compiled_script = _compiled_script_path(output_dir, script, page_numbers)
     approved_prompts: dict[int, tuple[str, Path]] = {}
+    relationship_aware_prompts: dict[int, str] = {}
     if require_approved_prompts:
         if project_path is None:
             raise ValueError("per-slide prompt approval requires --project-path")
-        for page_number in page_numbers:
+        if style_lock is None:
+            raise ValueError("per-slide prompt approval requires a visual style lock")
+        relationship_aware_prompts = _relationship_aware_canonical_prompts(
+            script=script,
+            project_path=project_path,
+            style_lock=style_lock,
+            page_numbers=content_page_numbers,
+        )
+        for page_number in content_page_numbers:
             approved_path = assert_approved_final_script(project_path, page_number, "imagegen")
             approved_prompts[page_number] = (
                 approved_path.read_text(encoding="utf-8-sig"),
                 approved_path,
             )
         compiled = "\n\n".join(
-            approved_prompts[page_number][0].strip() for page_number in page_numbers
+            approved_prompts[page_number][0].strip()
+            for page_number in content_page_numbers
         ) + "\n"
     else:
-        compiled = compile_pages(script, page_numbers, style_lock_path=style_lock)
+        compiled = compile_pages(script, content_page_numbers, style_lock_path=style_lock)
     compiled_script.write_text(compiled, encoding="utf-8")
 
     # Compiled prompts no longer carry "## 第N页：" headers; use source page
     # metadata + per-page render_prompt for pair entries.
     pairs: list[dict[str, Any]] = []
-    for page_number in page_numbers:
+    for page_number in content_page_numbers:
         page = source_pages[page_number]
         prompt = render_prompt(page, style_lock_path=style_lock)
         approval_path: Path | None = None
         if page_number in approved_prompts:
             approved_prompt, approval_path = approved_prompts[page_number]
-            canonical_prompt = prompt.strip()
+            canonical_prompt = relationship_aware_prompts.get(page_number, prompt).strip()
             if approved_prompt.strip() != canonical_prompt:
                 raise ValueError(
                     f"approved ImageGen prompt is stale for page {page_number}; "
@@ -168,6 +247,19 @@ def build_manifest(
 
     manifest = {
         "mode": "cyberppt-full-image-only",
+        "requested_pages": page_numbers,
+        "content_page_numbers": content_page_numbers,
+        "skipped_pages": [
+            {
+                "page_number": number,
+                "page_role": page_roles[number],
+                "render_mode": "template",
+                "status": "skipped",
+                "reason": "template_only_page",
+            }
+            for number in page_numbers
+            if page_roles[number] != "content"
+        ],
         "output_variants": OUTPUT_VARIANTS,
         "generation_contract": {
             "mode": "full-image-only",

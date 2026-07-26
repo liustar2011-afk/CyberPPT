@@ -270,12 +270,13 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "them into a software stack unless the content explicitly defines one."
         ),
         "recommended_composition": (
-            "Use a relationship-led capability composition with business value as the outcome "
-            "and supporting capabilities in unequal roles."
+            "Use one integrated business-work composition with business value as the outcome. "
+            "Weave supporting capabilities into that shared context in unequal roles; do not "
+            "assign a separate picture, panel, quadrant, layer, or numbered visual unit to each capability."
         ),
         "avoid_on_this_page": (
             "A generic architecture stack, center-satellite nodes, equal capability cards, "
-            "or a software-module diagram."
+            "a five-part picture wall, one image per capability, or a software-module diagram."
         ),
     },
     "judgment_evidence": {
@@ -494,17 +495,12 @@ def build_page_prompt(
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
 ) -> str:
-    prompt_text = "\n".join(
-        (
-            content_lock_text(page, page_mission=page_mission).rstrip(),
-            "",
-            build_page_visual_intent(
-                page,
-                page_mission,
-                context=visual_context,
-                override=visual_intent_override,
-            ),
-        )
+    prompt_text = content_lock_text(page, page_mission=page_mission).rstrip()
+    visual_intent = build_page_visual_intent(
+        page,
+        page_mission,
+        context=visual_context,
+        override=visual_intent_override,
     )
     block = PageBlock(
         page_number=int(page.page_id[1:]),
@@ -512,6 +508,15 @@ def build_page_prompt(
         text=prompt_text,
     )
     prompt = render_prompt(block, style_lock_path=style_lock)
+    prompt = "\n\n".join(
+        (
+            prompt.rstrip(),
+            "[Final composition priority] The following page-specific visual intent "
+            "takes precedence over generic style guidance whenever they conflict. "
+            "Do not render this instruction or its field names.",
+            visual_intent,
+        )
+    ) + "\n"
     assert_deliverable_prompt(prompt)
     if EVIDENCE_ID_RE.search(prompt):
         raise ValueError(f"{page.page_id} ImageGen prompt still contains evidence IDs")

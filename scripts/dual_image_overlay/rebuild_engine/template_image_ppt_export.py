@@ -491,12 +491,21 @@ def build_manifest(
     output_dir: Path,
     *,
     image_style_name: str | None = None,
+    page_image_manifest: Path | None = None,
 ) -> dict:
     rules = load_brand_rules()
     brand_body_region = scale_region(rules["content_regions"]["body_pages"], CANVAS_SIZE)
     body_region = inset_content_region(brand_body_region)
     generation_size = generation_size_for_region(body_region)
     image_style = load_image_style(image_style_name)
+    approved_images: dict[int, Path] = {}
+    if page_image_manifest is not None:
+        pair_payload = json.loads(page_image_manifest.read_text(encoding="utf-8"))
+        approved_images = {
+            int(pair["page_number"]): Path(pair["full"]["path"]).resolve()
+            for pair in pair_payload.get("pairs", [])
+            if isinstance(pair, dict) and isinstance(pair.get("full"), dict)
+        }
     tasks = []
     for number in page_numbers:
         page = pages[number]
@@ -522,17 +531,53 @@ def build_manifest(
                 }
             )
         else:
-            image_path = output_dir / "images" / f"{stem}_content.png"
+            image_path = approved_images.get(number)
+            if page_image_manifest is not None and image_path is None:
+                raise ValueError(
+                    f"Approved page image manifest has no content image for page {number}"
+                )
+            if image_path is None:
+                image_path = output_dir / "images" / f"{stem}_content.png"
+            if page_image_manifest is not None and not image_path.is_file():
+                raise FileNotFoundError(f"Missing approved content image: {image_path}")
             task.update(
                 {
                     "render_mode": "content-image",
                     "image_path": str(image_path),
-                    "prompt": content_prompt(page, content, body_region, generation_size, role, image_style),
+                    **(
+                        {}
+                        if page_image_manifest is not None
+                        else {
+                            "prompt": content_prompt(
+                                page,
+                                content,
+                                body_region,
+                                generation_size,
+                                role,
+                                image_style,
+                            )
+                        }
+                    ),
                     "size": f"{generation_size['width']}x{generation_size['height']}",
-                    "status": "Pending",
+                    "status": "Generated" if page_image_manifest is not None else "Pending",
                 }
             )
         tasks.append(task)
+    section_tasks = [task for task in tasks if task["page_role"] == "section"]
+    agenda_items: list[dict[str, str]] = []
+    for index, task in enumerate(section_tasks, start=1):
+        section_title = re.sub(
+            r"^第[一二三四五六七八九十0-9]+章\s*[:：]?\s*",
+            "",
+            task["slide_title"] or task["title"],
+        ).strip()
+        task["section_no"] = f"{index:02d}"
+        task["section_title"] = section_title
+        task["section_subtitle"] = task.get("subtitle", "")
+        agenda_items.append({"number": f"{index:02d}", "title": section_title})
+    for task in tasks:
+        if task["page_role"] == "agenda":
+            task["agenda_items"] = agenda_items
     return {
         "mode": "template-image-ppt",
         "source_script": str(script_path),
@@ -655,6 +700,36 @@ def render_brand_template_svg(task: dict, rules: dict) -> str:
         }
         for placeholder, value in replacements.items():
             svg = svg.replace(placeholder, xml_escape(value))
+    elif template_name == "agenda":
+        items = task.get("agenda_items") or []
+        if not items:
+            raise ValueError("Agenda template requires section-derived agenda items")
+        rows: list[str] = []
+        for index, item in enumerate(items):
+            y = 236 + index * 82
+            rows.extend(
+                [
+                    f'<text x="82" y="{y}" font-family="Microsoft YaHei, Arial, sans-serif" '
+                    f'font-size="28" font-weight="700" fill="#8B0000">'
+                    f'{xml_escape(item["number"])}</text>',
+                    f'<text x="154" y="{y}" font-family="Microsoft YaHei, Arial, sans-serif" '
+                    f'font-size="27" font-weight="600" fill="#123B66">'
+                    f'{xml_escape(item["title"])}</text>',
+                    f'<line x1="154" y1="{y + 18}" x2="690" y2="{y + 18}" '
+                    f'stroke="#B7C4D1" stroke-width="1"/>',
+                ]
+            )
+        svg = svg.replace("{{AGENDA_ITEMS}}", "\n    ".join(rows))
+    elif template_name == "section":
+        replacements = {
+            "{{SECTION_NO}}": str(task.get("section_no") or ""),
+            "{{SECTION_TITLE}}": str(task.get("section_title") or task.get("slide_title") or ""),
+            "{{SECTION_SUBTITLE}}": str(task.get("section_subtitle") or ""),
+        }
+        for placeholder, value in replacements.items():
+            svg = svg.replace(placeholder, xml_escape(value))
+    if re.search(r"\{\{[A-Z0-9_]+\}\}", svg):
+        raise ValueError(f"Unresolved template placeholder in {template_name}")
     return svg
 
 
@@ -757,12 +832,24 @@ def command_plan(args: argparse.Namespace) -> int:
     pages = parse_page_blocks(script)
     nums = parse_page_selection(args.pages, set(pages))
     output_dir = args.output_dir.resolve()
-    manifest = build_manifest(script, nums, pages, output_dir, image_style_name=args.image_style)
+    manifest = build_manifest(
+        script,
+        nums,
+        pages,
+        output_dir,
+        image_style_name=args.image_style,
+        page_image_manifest=getattr(args, "page_image_manifest", None),
+    )
     write_json(output_dir / "template_image_manifest.json", manifest)
     prompt_blocks = []
     for task in manifest["tasks"]:
         if task.get("render_mode") == "brand-template":
             prompt_blocks.append(f"## 第{task['page_number']}页：{task['title']}\n\n套用品牌模板：`{task['template']}`\n")
+        elif "prompt" not in task:
+            prompt_blocks.append(
+                f"## 第{task['page_number']}页：{task['title']}\n\n"
+                f"复用已批准内容图：`{task['image_path']}`\n"
+            )
         else:
             prompt_blocks.append(f"## 第{task['page_number']}页：{task['title']}\n\n保存到：`{task['image_path']}`\n\n{task['prompt']}")
     (output_dir / "template_image_prompts.md").write_text("\n\n".join(prompt_blocks) + "\n", encoding="utf-8")
@@ -846,6 +933,11 @@ def build_parser() -> argparse.ArgumentParser:
         p.add_argument("--force", action="store_true")
         p.add_argument("--dry-run", action="store_true")
         p.add_argument("--image-style", default=DEFAULT_STYLE_NAME, help="Image style preset name or style JSON/Markdown path.")
+        p.add_argument(
+            "--page-image-manifest",
+            type=Path,
+            help="Use approved content images from page_image_pairs.json; do not regenerate them.",
+        )
         p.set_defaults(func=command_plan if name == "plan" else command_run)
     gen = sub.add_parser("generate")
     gen.add_argument("manifest", type=Path)

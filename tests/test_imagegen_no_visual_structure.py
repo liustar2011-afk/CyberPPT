@@ -250,7 +250,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertIn("Use one evidence-led editorial composition.", intent)
         self.assertIn("Avoid on this page:", intent)
 
-    def test_page_prompt_places_visual_intent_after_onscreen_before_style(self) -> None:
+    def test_page_prompt_places_visual_intent_after_global_style_as_final_priority(self) -> None:
         page = parse_script_markdown(SCRIPT_WITH_VISUAL_STRUCTURE).pages[0]
         with TemporaryDirectory() as directory:
             lock = write_project_style_lock(project=Path(directory), style_id=9)
@@ -264,8 +264,12 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
             )
         self.assertLess(prompt.index("上屏文字"), prompt.index("Page-specific visual intent"))
         self.assertLess(
-            prompt.index("Page-specific visual intent"),
             prompt.index("Industry scene and imagery:"),
+            prompt.index("Page-specific visual intent"),
+        )
+        self.assertIn(
+            "takes precedence over generic style guidance whenever they conflict",
+            prompt,
         )
         self.assertIn("Explain the approved page-specific decision.", prompt)
         self.assertIn("do not render field names or instruction text", prompt)

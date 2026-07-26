@@ -341,7 +341,14 @@ def _image_ppt_artifacts(output_dir: Path, name: str) -> dict[str, str | None]:
     }
 
 
-def _run_image_ppt_build(*, script: Path, pages_raw: str, output_dir: Path, name: str) -> dict[str, Any]:
+def _run_image_ppt_build(
+    *,
+    script: Path,
+    pages_raw: str,
+    output_dir: Path,
+    name: str,
+    page_image_manifest: Path,
+) -> dict[str, Any]:
     command = [
         sys.executable,
         "-m",
@@ -356,6 +363,8 @@ def _run_image_ppt_build(*, script: Path, pages_raw: str, output_dir: Path, name
         str(output_dir),
         "--name",
         name,
+        "--page-image-manifest",
+        str(page_image_manifest),
     ]
     completed = subprocess.run(command, check=False)
     status = "completed" if completed.returncode == 0 else "failed"
@@ -455,6 +464,7 @@ def run_final_script_pages(
             pages_raw=pages_raw,
             output_dir=image_ppt_output_dir,
             name=image_ppt_name,
+            page_image_manifest=manifest_path,
         )
         status = "production_ready"
     run_summary = {

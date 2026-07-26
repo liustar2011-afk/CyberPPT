@@ -102,6 +102,37 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
             module.page_notes_text(block),
         )
 
+    def test_agenda_and_section_templates_replace_derived_fields(self) -> None:
+        module = load_template_image_ppt_export()
+        rules = module.load_brand_rules()
+
+        agenda = module.render_brand_template_svg(
+            {
+                "page_role": "agenda",
+                "agenda_items": [
+                    {"number": "01", "title": "现状基础与能力需求"},
+                    {"number": "02", "title": "定位、目标与研究安排"},
+                ],
+            },
+            rules,
+        )
+        section = module.render_brand_template_svg(
+            {
+                "page_role": "section",
+                "section_no": "02",
+                "section_title": "定位、目标与研究安排",
+                "section_subtitle": "",
+            },
+            rules,
+        )
+
+        self.assertIn("现状基础与能力需求", agenda)
+        self.assertIn("定位、目标与研究安排", agenda)
+        self.assertNotIn("{{AGENDA_ITEMS}}", agenda)
+        self.assertIn(">02</text>", section)
+        self.assertIn("定位、目标与研究安排", section)
+        self.assertNotIn("{{SECTION_", section)
+
 
 if __name__ == "__main__":
     unittest.main()
