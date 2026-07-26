@@ -16,13 +16,13 @@
 
 ### Task 1: Contract and preparation
 
-- [ ] Add and validate `boundary_refs`.
-- [ ] Split `evidence_text` from `boundary_constraints`.
-- [ ] Include `boundary_refs` in hidden receipts.
+- [x] Add and validate `boundary_refs`.
+- [x] Split `evidence_text` from `boundary_constraints`.
+- [x] Include `boundary_refs` in hidden receipts.
 
 ### Task 2: Current project
 
-- [ ] Remove S059 from P09 Outline, Source Truth mapping, prose, and script evidence.
-- [ ] Regenerate inputs and canonical script.
-- [ ] Run focused tests and Stage 01 audits.
-- [ ] Commit the validated scope.
+- [x] Remove S059 from P09 Outline, Source Truth mapping, prose, and script evidence.
+- [x] Regenerate inputs and canonical script.
+- [x] Run focused tests and Stage 01 audits.
+- [x] Commit the validated scope.

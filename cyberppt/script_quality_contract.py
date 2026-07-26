@@ -1257,6 +1257,7 @@ def audit_script_quality(
                         "new_value_vs_previous",
                         "reserved_for_later",
                         "proof_points",
+                        "boundary_refs",
                     )
                     mismatched = tuple(
                         field

@@ -51,6 +51,7 @@ class PrepareStage01InputTests(unittest.TestCase):
                                     "consumption": "primary",
                                 }
                             ],
+                            "boundary_refs": ["S002"],
                         }
                     ]
                 },
@@ -76,6 +77,9 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("- page_job: 说明为什么现在可以启动", text)
         self.assertIn("- main_message: 已有基础支持启动", text)
         self.assertIn("[primary] 统计基础已经具备 (S001)", text)
+        self.assertIn("- evidence_text:", text)
+        self.assertIn("- boundary_refs: S002", text)
+        self.assertIn("- boundary_constraints:", text)
         self.assertIn("S002: 原文证据二", text)
         self.assertIn("cyberppt-page-contract", text)
         self.assertIn('"new_value_realized":true', text)

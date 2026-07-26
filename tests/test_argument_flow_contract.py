@@ -117,6 +117,15 @@ class ArgumentFlowContractTests(unittest.TestCase):
             {issue.code for issue in validate_page_role_fields(strict_outline(page))},
         )
 
+    def test_boundary_refs_must_not_overlap_proof_points(self) -> None:
+        page = content_page("p04", 4, "positioning", refs=["S001"])
+        page["boundary_refs"] = ["S001"]
+
+        self.assertIn(
+            "BOUNDARY_REFS_INVALID",
+            {issue.code for issue in validate_page_role_fields(strict_outline(page))},
+        )
+
     def test_adjacent_same_job_and_sources_are_rejected(self) -> None:
         first = content_page("p04", 4, "solution", refs=["S001"])
         second = content_page("p05", 5, "solution", refs=["S001"])

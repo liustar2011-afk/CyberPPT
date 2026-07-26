@@ -106,9 +106,31 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             if isinstance(point, dict):
                 refs = ", ".join(str(item) for item in point.get("source_refs", []))
                 lines.append(f"  - [{point.get('consumption', 'supporting')}] {point.get('claim', '')} ({refs})")
-        lines.append("- Evidence text:")
-        for source_id in page.get("source_refs", []):
+        proof_source_ids = list(
+            dict.fromkeys(
+                str(source_id)
+                for point in page.get("proof_points", [])
+                if isinstance(point, dict)
+                for source_id in point.get("source_refs", [])
+            )
+        )
+        boundary_source_ids = [
+            str(source_id) for source_id in page.get("boundary_refs", [])
+        ]
+        lines.append("- evidence_text:")
+        for source_id in proof_source_ids:
             lines.append(f"  - {source_id}: {records.get(str(source_id), {}).get('statement', '')}")
+        lines.append("- boundary_refs: " + (
+            ", ".join(boundary_source_ids) if boundary_source_ids else "[]"
+        ))
+        lines.append("- boundary_constraints:")
+        if boundary_source_ids:
+            for source_id in boundary_source_ids:
+                lines.append(
+                    f"  - {source_id}: {records.get(source_id, {}).get('statement', '')}"
+                )
+        else:
+            lines.append("  - none")
         receipt = {
             "schema": "cyberppt.page_contract_receipt.v1",
             "page_id": page.get("page_id"),
@@ -118,6 +140,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             "new_value_vs_previous": page.get("new_value_vs_previous"),
             "reserved_for_later": page.get("reserved_for_later"),
             "proof_points": page.get("proof_points", []),
+            "boundary_refs": page.get("boundary_refs", []),
             "new_value_realized": True,
             "reserved_for_later_respected": True,
         }

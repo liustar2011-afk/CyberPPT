@@ -120,6 +120,8 @@ def validate_page_role_fields(
             )
         proof_points = raw_page.get("proof_points")
         page_sources = set(_string_list(raw_page, "source_refs"))
+        boundary_sources = set(_string_list(raw_page, "boundary_refs"))
+        proof_sources: set[str] = set()
         if isinstance(proof_points, list):
             invalid = False
             for point in proof_points:
@@ -127,6 +129,7 @@ def validate_page_role_fields(
                     invalid = True
                     break
                 refs = _string_list(point, "source_refs")
+                proof_sources.update(refs)
                 consumption = str(point.get("consumption") or "")
                 if (
                     not refs
@@ -145,6 +148,19 @@ def validate_page_role_fields(
                         retry_strategy="reconcile_page_proof_points",
                     )
                 )
+        if (
+            not boundary_sources.issubset(page_sources)
+            or boundary_sources & proof_sources
+        ):
+            issues.append(
+                ArgumentFlowIssue(
+                    "BOUNDARY_REFS_INVALID",
+                    "boundary_refs must cite page sources and must not overlap proof_points.",
+                    (page_id,) if page_id else (),
+                    tuple(sorted(boundary_sources & proof_sources)),
+                    retry_strategy="separate_page_proof_and_boundary",
+                )
+            )
         role = raw_page.get("argument_role")
         if role is not None and role not in PAGE_ARGUMENT_ROLES:
             issues.append(
