@@ -68,6 +68,10 @@ VISUAL_INTENT_SIGNALS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("decision_admission", ("筛选", "选择", "首期", "后续", "准入")),
     ("comparison", ("对比", "比较", "差异", "优劣", "高于", "低于", "相较")),
     ("scenario_application", ("场景", "应用", "应用方向", "推进条件")),
+    (
+        "multi_semantic_foundation",
+        ("工作基础", "现实基础", "已有基础", "共同基础", "持续性工作基础"),
+    ),
     ("causal", ("问题", "原因", "影响", "需求", "为什么")),
     ("closed_loop", ("输入", "处理", "输出", "反馈", "复盘", "闭环")),
     ("phase", ("当前", "近期", "中长期", "阶段", "分期")),
@@ -125,6 +129,24 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
         "avoid_on_this_page": (
             "A product-feature showcase, scenario thumbnail wall, decorative industry photo, "
             "or unrelated technology interface."
+        ),
+    },
+    "multi_semantic_foundation": {
+        "visual_thesis": (
+            "Show how several concrete work foundations jointly support the page judgment."
+        ),
+        "decision_relationship": (
+            "Distinct foundations reinforce one another and combine into a sustainable working basis."
+        ),
+        "recommended_composition": (
+            "Use integrated picture-text analytical units. Bind each semantically matched "
+            "real-world image to its corresponding foundation, vary image weight by hierarchy, "
+            "and use a concise synthesis area for their combined support."
+        ),
+        "avoid_on_this_page": (
+            "One generic office, meeting-room, control-room, or industry image carrying all "
+            "meanings; a separate text zone plus photo zone; equal image cards; or unrelated "
+            "decorative imagery."
         ),
     },
     "causal": {
@@ -229,7 +251,6 @@ def build_page_visual_intent(
             page_mission,
             page.main_message,
             "\n".join(page.module_titles),
-            page.onscreen_text,
         )
     )
     relation = "judgment_evidence"

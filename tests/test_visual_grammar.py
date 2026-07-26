@@ -10,6 +10,9 @@ _SHORT_LINES = (
     "- No body text on busy/high-contrast imagery.",
     "- No connectors through/under text; no fake flow lines; one connector style.",
     "- Unequal visual weight by hierarchy — not an equal card wall.",
+    "- Bind each real-world image to one specific nearby business meaning.",
+    "- Multiple images are allowed when they carry distinct and necessary semantic roles.",
+    "- Do not use one generic industry scene to represent several unrelated meanings.",
 )
 
 _OLD_CHINESE_FRAGMENTS = (
@@ -59,19 +62,19 @@ def test_deliverable_prompt_renders_visual_grammar_once_for_style_nine() -> None
     assert "Visual hierarchy should follow the importance of the message" in prompt
     assert "Do not force every page to have a single hero image" in prompt
     assert "Do not apply one visual template to all pages" in prompt
-    assert "People are supporting contextual elements only" in prompt
+    assert "People may appear when professional activity is part of the business meaning" in prompt
     assert "Avoid front-facing portraits" in prompt
     assert "Prefer side views, back views, three-quarter views" in prompt
     assert "highest-contrast or largest visual element" in prompt
     assert "naturally engaged in professional work" in prompt
     assert "Visual priority: page message and business logic" in prompt
-    assert "Screens, charts, and data interfaces are supporting evidence only" in prompt
+    assert "Screens, charts, and data interfaces may carry nearby analytical context" in prompt
     assert "Avoid control-room hero shots" in prompt
     assert "smart city exhibition style" in prompt
     assert "Consulting research" not in prompt
     assert "Industry scene and imagery:" in prompt
-    assert "Images are supporting evidence, not mandatory decoration" in prompt
-    assert "Use images only when they improve understanding" in prompt
+    assert "Actively use semantically relevant real-world imagery" in prompt
+    assert "Multiple images are welcome when each carries a distinct and necessary semantic role" in prompt
     assert "Prefer: architecture" not in prompt
     assert "capability evolution map" not in prompt
     assert "software-architecture look" in prompt
@@ -92,7 +95,7 @@ def test_deliverable_prompt_renders_visual_grammar_once_for_style_nine() -> None
     assert "photo-inspired editorial industry illustration" in prompt
     assert "secondary point-art" not in prompt
     assert "Enhance the message" in prompt
-    assert "宁少勿滥" in prompt
+    assert "semantically necessary images" in prompt
     assert "One dominant visual narrative" not in prompt
     assert "One visual center" not in prompt
     assert "visual anchor" not in prompt

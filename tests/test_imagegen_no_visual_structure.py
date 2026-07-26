@@ -118,6 +118,25 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
             )
             self.assertIn(marker, build_page_visual_intent(page, mission))
 
+    def test_visual_intent_classifies_multiple_work_foundations(self) -> None:
+        page, mission = _visual_intent_page(
+            "中电联已经形成覆盖多类工作的持续性工作基础",
+            "中电联已经形成哪些现实工作基础",
+            """  **统计数据｜长期积累**
+  - 形成行业统计基础。
+  **形势研判｜持续开展**
+  - 支撑模型需求提出。
+  **报告发布｜稳定输出**
+  - 形成公开成果。
+  **行业协调｜连接主体**
+  - 支撑协同研判。""",
+        )
+        intent = build_page_visual_intent(page, mission)
+        self.assertIn("several concrete work foundations", intent)
+        self.assertIn("integrated picture-text analytical units", intent)
+        self.assertIn("One generic office", intent)
+        self.assertNotIn("cause-and-effect", intent)
+
     def test_visual_intent_uses_safe_fallback_and_partial_override(self) -> None:
         page, mission = _visual_intent_page(
             "形成稳定的行业公共能力",

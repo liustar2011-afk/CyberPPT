@@ -59,7 +59,7 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert style_nine["colors"] == STYLE_FOUR_CONTRACT["colors"]
     assert "icon_rule" in style_nine
     assert "people_rule" in style_nine
-    assert "supporting contextual elements only" in style_nine["people_rule"]
+    assert "People may appear when professional activity is part of the business meaning" in style_nine["people_rule"]
     assert "Avoid front-facing portraits" in style_nine["people_rule"]
     assert "direct eye contact" in style_nine["people_rule"]
     assert "highest-contrast or largest visual element" in style_nine["people_rule"]
@@ -79,11 +79,11 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "conclusion, relationship, comparison, business scenario, or supporting evidence" in style_nine["prompt_contract"]
     assert "Do not apply one visual template to all pages" in style_nine["prompt_contract"]
     assert "Industry scene and imagery:" in style_nine["prompt_contract"]
-    assert "used selectively to strengthen business context and credibility" in style_nine["prompt_contract"]
-    assert "Images are supporting evidence, not mandatory decoration" in style_nine["prompt_contract"]
-    assert "Use images only when they improve understanding" in style_nine["prompt_contract"]
+    assert "translates concrete business meaning into visible real-world context" in style_nine["prompt_contract"]
+    assert "Actively use semantically relevant real-world imagery" in style_nine["prompt_contract"]
+    assert "Multiple images are welcome when each carries a distinct and necessary semantic role" in style_nine["prompt_contract"]
     assert "power grid operation" in style_nine["prompt_contract"]
-    assert "supporting evidence only" in style_nine["prompt_contract"]
+    assert "may carry nearby analytical context" in style_nine["prompt_contract"]
     assert "Avoid control-room hero shots" in style_nine["prompt_contract"]
     assert "smart city exhibition style" in style_nine["prompt_contract"]
     assert "control/dispatch rooms" not in style_nine["prompt_contract"]
@@ -115,11 +115,10 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "dashboard UI" in style_nine["prompt_contract"]
     assert "card wall" in style_nine["prompt_contract"]
     assert "Moderate-to-high information density" in style_nine["density_rule"]
-    assert "宁少勿滥" in style_nine["density_rule"]
+    assert "semantically necessary images" in style_nine["density_rule"]
     assert "领导汇报" in style_nine["scenario"]
     assert "演讲辅助" in style_nine["scenario"]
-    assert "实景插画" in style_nine["scenario"]
-    assert "按需使用" in style_nine["scenario"]
+    assert "语义实景图文融合" in style_nine["scenario"]
     assert "视觉结构" in style_nine["scope_rule"]
     assert "视觉结构" not in style_nine["icon_rule"]
     assert "supporting evidence, not mandatory decoration" not in style_nine["icon_rule"]
@@ -137,12 +136,12 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
             style_nine["icon_rule"],
         )
     )
-    assert len(style_nine["prompt_contract"]) < 3200
+    assert len(style_nine["prompt_contract"]) < 3600
     assert len(style_nine["scope_rule"]) < 300
     assert len(style_nine["icon_rule"]) < 220
-    assert combined_contract.count(
-        "Images are supporting evidence, not mandatory decoration."
-    ) == 1
+    assert "Images are supporting evidence, not mandatory decoration." not in combined_contract
+    assert "Use images only when they improve understanding" not in combined_contract
+    assert "宁少勿滥" not in style_nine["density_rule"]
     assert combined_contract.count("Do not introduce new visual relationships") == 1
     assert combined_contract.count("Do not force") == 1
     assert "请以【视觉结构】为构图思考起点" not in style_nine["prompt_contract"]
