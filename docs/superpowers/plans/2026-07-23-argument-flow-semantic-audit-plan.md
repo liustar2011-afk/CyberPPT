@@ -10,9 +10,6 @@
 
 ## Global Constraints
 
-- Run GitNexus `impact({target, direction: "upstream"})` before modifying every existing function, class, or method named in a task.
-- Warn and stop for user confirmation if GitNexus reports HIGH or CRITICAL risk.
-- Run GitNexus `detect_changes({scope: "staged"})` before every commit.
 - Do not hard-code the power-supply project or reject words such as “首期” by themselves.
 - New formal solution projects default to `argument_contract_mode: "strict"`.
 - Legacy projects may use `argument_contract_mode: "legacy"` and retain the prior audit behavior.
@@ -147,7 +144,6 @@ git commit -m "feat: add argument role contract"
 
 - [ ] **Step 1: Run upstream impact analysis**
 
-Run GitNexus:
 
 ```text
 impact({target: "_record_issues", direction: "upstream"})
@@ -262,7 +258,6 @@ Expected: PASS.
 
 - [ ] **Step 8: Commit**
 
-Run staged GitNexus detection; expected affected flow is Source Truth audit only.
 
 ```powershell
 git add cyberppt/source_truth_contract.py tests/test_source_truth_contract.py
@@ -283,7 +278,6 @@ git commit -m "feat: audit source truth semantic claims"
 
 - [ ] **Step 1: Run upstream impact analysis**
 
-Run GitNexus impact for `validate_page_role_fields` before editing it. Stop for HIGH/CRITICAL risk.
 
 - [ ] **Step 2: Write failing ordering and role tests**
 
@@ -392,7 +386,6 @@ Run `detect_changes({scope: "staged"})` first; expected scope remains isolated t
 
 - [ ] **Step 1: Impact-check `audit_argument_flow`**
 
-Run GitNexus upstream impact and report risk before editing.
 
 - [ ] **Step 2: Add failing cross-stage tests**
 
@@ -606,7 +599,6 @@ Run staged detect-changes first; review CLI and audit execution flows.
 
 - [ ] **Step 1: Impact-check `init_project`**
 
-Run GitNexus upstream impact. Prior evidence rated this symbol MEDIUM; report the current result before editing.
 
 - [ ] **Step 2: Add failing scaffold tests**
 
@@ -770,4 +762,3 @@ git commit -m "feat: enforce semantic argument flow audits"
 - [ ] New projects default to strict mode.
 - [ ] Legacy mode preserves historical behavior.
 - [ ] No unrelated working-tree files are staged or committed.
-- [ ] GitNexus staged detection reports no unexpected execution flows.

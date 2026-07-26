@@ -19,8 +19,6 @@
 - Strict Outline mode requires Source Truth and fails closed when it is missing.
 - Preserve formal states such as `拟建议`, `首期建议`, `待确认`, `待摸底`, `待基线`, `暂缓`, `后续验证`, and conditional wording.
 - Do not migrate `project_manager.py`, dual-reading workspaces, editor/red-team runtimes, case libraries, old assemble/handoff commands, or old directory layouts.
-- Before modifying any existing function, class, or method, run `gitnexus impact <symbol> --direction upstream`; warn before HIGH or CRITICAL edits.
-- Before every commit, run `gitnexus detect-changes --scope staged`.
 - Preserve unrelated dirty-worktree files and stage only files owned by the current task.
 
 ---
@@ -264,17 +262,14 @@ python -m pytest tests/test_script_quality_contract.py -q
 
 Expected: all parser tests PASS.
 
-- [ ] **Step 6: Stage, inspect with GitNexus, and commit**
 
 Run:
 
 ```powershell
 git add -- cyberppt/script_quality_contract.py tests/test_script_quality_contract.py
-gitnexus detect-changes --scope staged
 git commit -m "feat: parse CyberPPT page scripts"
 ```
 
-Expected: only the new parser and parser tests are staged; GitNexus risk is low or no indexed changes.
 
 ---
 
@@ -316,7 +311,6 @@ class ScriptQualityIssue:
 Run:
 
 ```powershell
-gitnexus impact parse_script_markdown --direction upstream
 ```
 
 Expected: direct callers are tests only at this point. If risk is HIGH or CRITICAL, stop and warn the user before editing.
@@ -607,7 +601,6 @@ Run:
 
 ```powershell
 git add -- cyberppt/script_quality_contract.py tests/test_script_quality_contract.py
-gitnexus detect-changes --scope staged
 git commit -m "feat: audit script contracts and argument order"
 ```
 
@@ -635,7 +628,6 @@ def text_similarity(left: str, right: str) -> float: ...
 Run:
 
 ```powershell
-gitnexus impact audit_script_quality --direction upstream
 ```
 
 Expected: callers are the focused tests. Warn before editing if risk is HIGH or CRITICAL.
@@ -903,7 +895,6 @@ Run:
 
 ```powershell
 git add -- cyberppt/script_quality_contract.py tests/test_script_quality_contract.py
-gitnexus detect-changes --scope staged
 git commit -m "feat: audit script composition and repetition"
 ```
 
@@ -1016,7 +1007,6 @@ Expected: FAIL because `cyberppt.commands.script_audit` does not exist.
 Before editing, run:
 
 ```powershell
-gitnexus impact audit_script_quality --direction upstream
 ```
 
 Then add:
@@ -1293,7 +1283,6 @@ Run:
 
 ```powershell
 git add -- cyberppt/script_quality_contract.py cyberppt/commands/script_audit.py tests/test_script_audit_command.py
-gitnexus detect-changes --scope staged
 git commit -m "feat: persist script quality audits"
 ```
 
@@ -1324,8 +1313,6 @@ Expected: affected flows are limited to the new script-audit command and pure co
 Run:
 
 ```powershell
-gitnexus impact build_parser --direction upstream
-gitnexus impact init_project --direction upstream
 ```
 
 Expected: `build_parser` affects CLI help/dispatch tests; `init_project` affects initialization flow. Warn before edits if either risk is HIGH or CRITICAL.
@@ -1459,13 +1446,11 @@ Run:
 
 ```powershell
 git add -- cyberppt/cli.py cyberppt/commands/init_project.py tests/test_cli.py tests/test_init_project.py
-gitnexus detect-changes --scope staged
 git commit -m "feat: expose native script audit command"
 ```
 
 If `tests/test_init_project.py` does not exist, omit it from `git add`.
 
-Expected: GitNexus reports only CLI and initialization flows.
 
 ---
 
@@ -1579,10 +1564,8 @@ Create `references/script-quality.md` with these exact sections:
 Before editing, run:
 
 ```powershell
-gitnexus impact "CyberPPT" --direction upstream
 ```
 
-If GitNexus cannot index the Markdown heading as a symbol, record “no indexed symbol” and proceed with the file-level Skill edit.
 
 In `SKILL.md`, add a section after the Outline audit rules:
 
@@ -1619,7 +1602,6 @@ Run:
 
 ```powershell
 git add -- SKILL.md references/script-quality.md tests/test_skill_contract.py
-gitnexus detect-changes --scope staged
 git commit -m "docs: integrate native script audit into CyberPPT skill"
 ```
 
@@ -1764,7 +1746,6 @@ python -m pytest -q
 
 Expected: no new failures in script-quality, Source Truth, Outline, CLI, initialization, or Skill tests. Record existing unrelated image/platform failures separately; do not weaken the new tests to hide them.
 
-- [ ] **Step 7: Stage only feature-owned files and run final GitNexus verification**
 
 Run:
 
@@ -1782,7 +1763,6 @@ git add -- `
   references/script-quality.md `
   SKILL.md
 
-gitnexus detect-changes --scope staged
 git diff --cached --check
 ```
 
@@ -1814,7 +1794,6 @@ Report:
 
 - focused test count and result;
 - full-suite result with unrelated failures separated;
-- GitNexus final affected flows and risk;
 - commit hashes;
 - any remaining intentionally deferred scope.
 

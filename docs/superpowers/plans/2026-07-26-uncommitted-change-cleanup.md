@@ -6,14 +6,11 @@
 
 **Architecture:** Keep the existing CyberPPT CLI and Stage 01/02 modules. Split work by responsibility: prompt grammar, workspace hygiene, Stage 01 manuscript/audit, and Stage 02 image/template export. No new framework, service, or workflow engine is introduced.
 
-**Tech Stack:** Python 3, pytest, Git, GitNexus, existing CyberPPT CLI.
 
 ## Global Constraints
 
 - Do not overwrite or discard files with real content differences.
 - Do not add `scripts/format_procurement_docx.py` or project run artifacts.
-- Every commit must pass its focused tests, `git diff --cached --check`, and GitNexus staged change detection.
-- Run GitNexus upstream impact before editing an existing function, class, or method.
 
 ---
 

@@ -20,7 +20,6 @@
 - Audit failure returns a changed planning direction; retrying the same strategy is invalid.
 - Default retry limit is 3; valid configured range is 1 through 5.
 - Exhausted retries create an escalation report with 2–3 options instead of abandoning the task.
-- Run GitNexus impact analysis before editing every existing function, class, or method.
 
 ---
 
@@ -173,7 +172,6 @@ git commit -m "feat: add bounded outline audit retries"
 - Adds CLI: `outline-audit PROJECT --input FILE [--max-attempts N]`
 - Consumes: `run_outline_audit()` from Task 3.
 
-- [ ] **Step 1: Run GitNexus impact analysis for `build_parser`, `main`, and `init_project`**
 
 Record direct callers, affected processes, and risk level in the implementation log. Stop and warn the user before editing if any result is HIGH or CRITICAL.
 
@@ -255,7 +253,6 @@ git add SKILL.md references/source-analysis.md references/storyline.md README.md
 git commit -m "docs: make solution architecture the default"
 ```
 
-### Task 6: Full Verification and GitNexus Change Detection
 
 **Files:**
 - Verify only; modify prior task files only when a failing test identifies a defect.
@@ -285,7 +282,6 @@ Expected: all checks report `ok`.
 
 Confirm exit codes `0` and `4`, inspect written UTF-8 JSON, then run failures to exhaustion and confirm exit code `5` with 2–3 escalation options.
 
-- [ ] **Step 5: Run GitNexus `detect_changes({scope: "compare", base_ref: "main"})`**
 
 Confirm only the outline planning flow, CLI registration, scaffold, and workflow contracts are affected. Report any unexpected execution flow before committing further changes.
 

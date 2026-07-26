@@ -63,4 +63,3 @@
 - [ ] Generate a standalone 16:9 sample using the migrated visual grammar and save it as `palette-09.png`.
 - [ ] Document style9 as an extension, not a ninth default choice.
 - [ ] Run focused tests, repository doctor, and visual asset dimension checks.
-- [ ] Run GitNexus staged change detection before any commit.

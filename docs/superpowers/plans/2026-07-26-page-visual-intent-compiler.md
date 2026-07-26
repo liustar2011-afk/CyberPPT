@@ -17,8 +17,6 @@
 - Page mission, core judgment, and page visual intent are prompt context only and must not be rendered.
 - Do not call ImageGen; stop at the existing Stage 02 script approval gate.
 - Preserve unrelated dirty-worktree changes and commit only files named by each task.
-- Before modifying an existing function, run GitNexus upstream impact analysis and warn before proceeding if the result is HIGH or CRITICAL.
-- Before every commit, run GitNexus `detect_changes` on the staged scope.
 
 ---
 
@@ -217,7 +215,6 @@ Before committing:
 
 ```bash
 git add -- scripts/dual_image_overlay/imagegen_handoff.py tests/test_imagegen_no_visual_structure.py
-node .gitnexus/run.cjs detect_changes -r CyberPPT --scope staged
 git diff --cached --check
 ```
 
@@ -239,13 +236,10 @@ git commit -m "feat(imagegen): compile page visual intent"
 - Consumes: `build_page_visual_intent(...)` from Task 1.
 - Produces: `build_page_prompt(page, style_lock, page_mission="", visual_intent_override=None) -> str` and `_page_visual_intent_overrides(project: Path) -> dict[str, dict[str, str]]`.
 
-- [ ] **Step 1: Run GitNexus impact analysis before editing existing symbols**
 
 Run:
 
 ```bash
-node .gitnexus/run.cjs impact build_page_prompt -r CyberPPT -f scripts/dual_image_overlay/imagegen_handoff.py -d upstream
-node .gitnexus/run.cjs impact write_chapter_handoff -r CyberPPT -f scripts/dual_image_overlay/imagegen_handoff.py -d upstream
 ```
 
 Record direct callers and affected processes. If either result is HIGH or CRITICAL, warn before editing.
@@ -397,7 +391,6 @@ Before committing:
 
 ```bash
 git add -- scripts/dual_image_overlay/imagegen_handoff.py tests/test_imagegen_no_visual_structure.py
-node .gitnexus/run.cjs detect_changes -r CyberPPT --scope staged
 git diff --cached --check
 ```
 
@@ -423,14 +416,10 @@ git commit -m "feat(imagegen): hand off page visual intent"
 - Consumes: extended `build_page_prompt(...)` and optional Outline `visual_intent`.
 - Produces: 24 refreshed content prompts and two 32-page review/compiled scripts.
 
-- [ ] **Step 1: Run GitNexus impact analysis on the three project entry points**
 
 Run:
 
 ```bash
-node .gitnexus/run.cjs impact main -r CyberPPT -f projects/power-supply-forecast-warning-prestudy-20260724/workbench/stages/02-blueprint-dual-image/_refresh_style09_prompts.py -d upstream
-node .gitnexus/run.cjs impact main -r CyberPPT -f projects/power-supply-forecast-warning-prestudy-20260724/workbench/stages/02-blueprint-dual-image/_batch_regen_style09.py -d upstream
-node .gitnexus/run.cjs impact main -r CyberPPT -f projects/power-supply-forecast-warning-prestudy-20260724/workbench/stages/02-blueprint-dual-image/_regen_page12.py -d upstream
 ```
 
 Warn before editing if any result is HIGH or CRITICAL.
@@ -561,7 +550,6 @@ Expected: the checker prints its success line, and the final search returns no I
 Stage only the global handoff, focused tests, the three current-project scripts, and regenerated Markdown prompts named above. Then run:
 
 ```bash
-node .gitnexus/run.cjs detect_changes -r CyberPPT --scope staged
 git diff --cached --check
 git diff --cached --stat
 ```

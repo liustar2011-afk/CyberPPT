@@ -38,7 +38,5 @@
 
 ## 验证与提交约束
 
-- 修改任何已有函数前先运行 GitNexus upstream impact。
 - 每个提交只包含一个上述分组。
-- 提交前运行对应测试、`git diff --cached --check` 和 GitNexus `detect_changes --scope staged`。
 - 保留用户已有的其他真实修改，不覆盖、不回退、不混入提交。

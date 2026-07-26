@@ -15,7 +15,6 @@
 - Completeness is determined by coverage targets, precise locators, atomicity, and traceability—not by a fixed Source ID count.
 - Audit failure changes extraction direction and preserves the best current result; it never silently abandons the task.
 - Existing unrelated working-tree changes must not be modified or reverted.
-- Before editing an existing function, run or document the best available GitNexus upstream impact check.
 
 ---
 
@@ -277,7 +276,6 @@ Expected: all command and renderer tests pass.
 - Produces: CLI command `source-truth-audit`
 - Produces: scaffold directory `workbench/stages/01-analysis/source-truth-attempts`
 
-- [ ] **Step 1: Run GitNexus impact checks before editing existing symbols**
 
 Targets:
 
@@ -488,9 +486,7 @@ python -m cyberppt source-truth-audit --help
 
 Expected: both return exit `0` and show the new command/options.
 
-- [ ] **Step 4: Run GitNexus change detection**
 
-Run `detect_changes({scope: "compare", base_ref: "main"})` when the MCP tool is available. Confirm only Source Truth, CLI initialization, documentation contracts, and the named project flow are affected. If unavailable, report that limitation and use explicit file/symbol diff plus focused regression results; do not claim GitNexus verification occurred.
 
 - [ ] **Step 5: Inspect the final diff**
 

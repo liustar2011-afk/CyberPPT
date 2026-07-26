@@ -17,8 +17,6 @@
 - Do **not** change `imagegen_handoff` content-lock field set in this plan.
 - New composition checks default to `warning` except `VISUAL_STRUCTURE_STYLE_ONLY` which is `error`.
 - Preserve complete-prose authority chain and existing fidelity audits.
-- Before editing any existing symbol, run GitNexus `impact` upstream and warn on HIGH/CRITICAL.
-- Before every commit, run GitNexus `detect_changes`; stage only files owned by the current task.
 - Prefer UTF-8; do not touch unrelated dirty-worktree files.
 
 ---

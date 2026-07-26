@@ -280,7 +280,6 @@ Regression tests retain:
 
 ## 9. Implementation Guardrails
 
-Before editing any function, class, or method, run GitNexus upstream impact analysis and report direct callers, affected processes, and risk. Warn before proceeding on HIGH or CRITICAL results.
 
 During implementation:
 
@@ -292,7 +291,6 @@ During implementation:
 Before any implementation commit:
 
 - run focused and end-to-end tests;
-- run GitNexus `detect_changes()` against `main`;
 - confirm only the expected symbols and execution flows changed;
 - stage only files belonging to this task.
 

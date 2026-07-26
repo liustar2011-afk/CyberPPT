@@ -6,7 +6,6 @@
 
 **Architecture:** Keep `final-script-pages` as the sole production orchestrator. Port Stage2's role partition and native-template assembly into the current mainline, while preserving current prompt compilation, style 9, speaker notes, and artifact structures. `page_image_pairs.json` remains the sole content-image authority; template pages remain in the ordered page set as explicit skipped records.
 
-**Tech Stack:** Python 3.11+, pytest, JSON manifests, SVG brand templates, existing CyberPPT CLI and PPTX export pipeline, GitNexus impact/change analysis.
 
 ## Global Constraints
 
@@ -17,8 +16,6 @@
 - Template roles are exactly `cover`, `agenda`, `section`, and `ending`; input aliases normalize at boundaries.
 - Template pages have no prompt, image path, or `full` image record.
 - OCR, overlay reconstruction, background derivation, and legacy template rebuild remain excluded.
-- Before editing every function, class, or method, run `node .gitnexus/run.cjs impact "<symbol>" --direction upstream`, report direct callers, affected processes, and risk, and stop for user confirmation on HIGH or CRITICAL.
-- Before every commit, run `node .gitnexus/run.cjs detect-changes --scope staged`; before final handoff also run `node .gitnexus/run.cjs detect-changes --scope compare --base-ref main`.
 - Stage only task-owned files; preserve all unrelated dirty-worktree changes.
 
 ## File Map
@@ -53,10 +50,8 @@
 Run:
 
 ```powershell
-node .gitnexus/run.cjs impact "build_manifest" --direction upstream
 ```
 
-Expected: a report listing callers and affected flows. Record the result in the implementation commentary. If resolution is ambiguous, rerun with the file-qualified symbol reported by GitNexus.
 
 - [ ] **Step 2: Add failing role-classification and partition tests**
 
@@ -216,7 +211,6 @@ Run:
 
 ```powershell
 git add -- scripts/dual_image_overlay/cyberppt_pair_manifest.py tests/test_dual_image_overlay_pair_manifest.py
-node .gitnexus/run.cjs detect-changes --scope staged
 git commit -m "feat: skip native template pages in image manifest"
 ```
 
@@ -321,7 +315,6 @@ Run:
 
 ```powershell
 git add -- tests/test_brand_templates.py scripts/dual_image_overlay/rebuild_engine/templates/brands/中电联公共元素_轻量版/02_agenda.svg scripts/dual_image_overlay/rebuild_engine/templates/brands/中电联公共元素_轻量版/03_section.svg scripts/dual_image_overlay/rebuild_engine/templates/brands/中电联公共元素_轻量版/brand_rules.json
-node .gitnexus/run.cjs detect-changes --scope staged
 git commit -m "feat: add agenda and section brand templates"
 ```
 
@@ -349,9 +342,6 @@ Expected: LOW risk and no Python execution-flow changes, because this task conta
 Run:
 
 ```powershell
-node .gitnexus/run.cjs impact "page_role" --direction upstream
-node .gitnexus/run.cjs impact "page_template_name" --direction upstream
-node .gitnexus/run.cjs impact "render_brand_template_svg" --direction upstream
 ```
 
 Expected: callers are concentrated in exporter manifest/render paths. Report risks before editing.
@@ -457,7 +447,6 @@ Run:
 
 ```powershell
 git add -- scripts/dual_image_overlay/rebuild_engine/template_image_ppt_export.py tests/test_brand_templates.py
-node .gitnexus/run.cjs detect-changes --scope staged
 git commit -m "feat: render all native template page roles"
 ```
 
@@ -483,11 +472,8 @@ Expected: changes affect exporter role classification and brand-template renderi
 Run:
 
 ```powershell
-node .gitnexus/run.cjs impact "build_manifest" --direction upstream
-node .gitnexus/run.cjs impact "run_export" --direction upstream
 ```
 
-Disambiguate `build_manifest` to `template_image_ppt_export.py` using the GitNexus candidate UID if required.
 
 - [ ] **Step 2: Write failing approved-input tests**
 
@@ -590,7 +576,6 @@ Run:
 
 ```powershell
 git add -- scripts/dual_image_overlay/rebuild_engine/template_image_ppt_export.py tests/test_template_image_ppt_production.py
-node .gitnexus/run.cjs detect-changes --scope staged
 git commit -m "feat: consume approved images in project production"
 ```
 
@@ -614,8 +599,6 @@ Expected: affected flows are limited to image-ppt manifest construction and expo
 Run:
 
 ```powershell
-node .gitnexus/run.cjs impact "_run_image_ppt_build" --direction upstream
-node .gitnexus/run.cjs impact "run_final_script_pages" --direction upstream
 ```
 
 Expected: direct impact on final-script CLI/tests and Stage 02 production flow.
@@ -690,7 +673,6 @@ Run:
 
 ```powershell
 git add -- cyberppt/commands/final_script_pages.py tests/test_final_script_pages.py
-node .gitnexus/run.cjs detect-changes --scope staged
 git commit -m "feat: pass approved inputs to PPT production"
 ```
 
@@ -780,7 +762,6 @@ Run:
 
 ```powershell
 git add -- tests/test_template_image_ppt_production.py tests/test_final_script_pages.py
-node .gitnexus/run.cjs detect-changes --scope staged
 git commit -m "test: cover complete manifest-driven PPT assembly"
 ```
 
@@ -836,13 +817,10 @@ git diff main...HEAD -- scripts/dual_image_overlay/cyberppt_pair_manifest.py scr
 
 Expected: only the approved migration surface and tests appear; no style-4/9 contract changes.
 
-- [ ] **Step 5: Run final GitNexus scope detection**
 
 Run:
 
 ```powershell
-node .gitnexus/run.cjs analyze
-node .gitnexus/run.cjs detect-changes --scope compare --base-ref main
 ```
 
 Expected: affected processes are confined to pair-manifest creation, final-script production orchestration, and image-ppt assembly. Investigate any unrelated flow before completion.

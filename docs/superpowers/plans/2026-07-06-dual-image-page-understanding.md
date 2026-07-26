@@ -1110,10 +1110,8 @@ python3 -m pytest tests/test_dual_image_overlay_page_understanding.py tests/test
 
 Expected: PASS.
 
-- [ ] Run GitNexus change detection before commit or PR:
 
 ```text
-mcp__gitnexus.detect_changes(repo="CyberPPT", scope="all")
 ```
 
 Expected: risk is not HIGH/CRITICAL. If HIGH/CRITICAL, pause and review affected processes before continuing.
