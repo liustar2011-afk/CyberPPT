@@ -36,6 +36,11 @@ VALID_SCRIPT = """## 第8页：第二章：定位、目标与研究边界
 - 证据：S015、S026、S059
 - 边界：正式范围经摸底验证后确定。
 - 视觉结构：公共能力定位与职责边界图。
+- 讲解提示：先说定位，再说职责分工。
+
+【演讲者备注】
+
+各位同事，先把建设定位说清楚：面向行业的电力供需形势预测与预警公共能力，覆盖主要对象与多类成果，并由数据、模型、会商和成果生产支撑；同时明确不替代调度、出清和企业计划等专业系统。
 """
 
 
@@ -281,6 +286,31 @@ class ScriptAuditCommandTests(unittest.TestCase):
                 [item["code"] for item in report["issues"]],
             )
             self.assertFalse(report["retry_directive"]["required"])
+
+    def test_final_path_rejects_draft_batch_wording(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, script = _build_project(Path(temp_dir))
+            final = project / "workbench" / "scripts" / "final" / "script-final.md"
+            final.parent.mkdir(parents=True, exist_ok=True)
+            final.write_text(
+                "# 第8—9页脚本草稿\n\n"
+                "> 批次：p08–p09\n\n"
+                + script.read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+
+            code, report = run_script_audit(project, final)
+
+            self.assertEqual(4, code)
+            self.assertEqual("rewrite_required", report["status"])
+            self.assertIn(
+                "FINAL_MANUSCRIPT_DRAFT_BANNER",
+                [item["code"] for item in report["issues"]],
+            )
+            self.assertEqual(
+                "manuscript_form_cleanup",
+                report["retry_directive"]["strategy"],
+            )
 
 
 if __name__ == "__main__":

@@ -8,6 +8,8 @@ from cyberppt.script_quality_contract import (
     ScriptPage,
     _issue,
     audit_script_quality,
+    build_communication_review,
+    extract_speaker_notes,
     parse_script_markdown,
     text_similarity,
 )
@@ -45,6 +47,11 @@ SCRIPT = """# 第8—9页脚本审稿稿
 - 证据：S015、S026、S059
 - 边界：正式范围待后续确定。
 - 视觉结构：判断证据支撑——中央公共能力定位，两侧职责边界托举。
+- 讲解提示：先说定位再说边界。
+
+【演讲者备注】
+
+各位同事，先把建设定位说清楚：面向行业的公共能力，服务履职与行业共用；同时明确与专业系统的职责分工，不替代调度、出清和企业计划。
 """
 
 
@@ -78,6 +85,68 @@ class ScriptMarkdownParserTests(unittest.TestCase):
 
 
 class ScriptContractAuditTests(unittest.TestCase):
+    def test_communication_review_tracks_mission_and_lead(self) -> None:
+        script = parse_script_markdown(
+            """## 第9页：总体定位
+- 页面类型：内容页
+- 页面标题：总体定位
+- 主判断：公共能力定位支撑行业研判。
+- 上屏文字：
+
+  公共能力定位支撑行业研判。
+
+  **服务对象**
+
+  - 服务行业公共研判。
+
+- 视觉结构：判断证据支撑。
+
+【演讲者备注】
+
+各位同事，先说明定位，再说明服务对象和职责边界，便于后续展开。
+"""
+        )
+        review = build_communication_review(
+            script,
+            {
+                "pages": [
+                    {
+                        "page_id": "p09",
+                        "business_question": "拟建什么性质的能力",
+                    }
+                ]
+            },
+        )
+
+        self.assertEqual(1, review["content_pages"])
+        self.assertEqual(1, review["mission_coverage"])
+        self.assertEqual(1, review["lead_match_count"])
+        page = review["pages"][0]
+        self.assertEqual("拟建什么性质的能力", page["mission"])
+        self.assertTrue(page["lead_matches_main_message"])
+        self.assertEqual("manual_review", page["review_questions"]["single_mission"])
+
+    def test_communication_review_warns_when_lead_is_not_main_message(self) -> None:
+        script = parse_script_markdown(
+            """## 第9页：总体定位
+- 页面类型：内容页
+- 页面标题：总体定位
+- 主判断：公共能力定位支撑行业研判。
+- 上屏文字：
+
+  **服务对象**
+
+  - 服务行业公共研判。
+"""
+        )
+        review = build_communication_review(
+            script,
+            {"pages": [{"page_id": "p09", "business_question": "拟建什么能力"}]},
+        )
+
+        codes = {item["code"] for item in review["pages"][0]["findings"]}
+        self.assertIn("MAIN_MESSAGE_NOT_FIRST_ONSCREEN_LINE", codes)
+
     def test_power_foundation_regression_is_blocked(self) -> None:
         script = parse_script_markdown(
             (SCRIPT_AUDIT_FIXTURES / "power_foundation_premature_scope.md").read_text(
@@ -584,7 +653,7 @@ class ScriptContractAuditTests(unittest.TestCase):
             title="示例",
             main_message="判断",
             full_prose="x" * 100,
-            selection_notes="取舍",
+            selection_notes="取舍说明足够长",
             evidence_map="点→S001",
             evidence_map_refs=("S001",),
             source_refs=("S001",),
@@ -592,6 +661,7 @@ class ScriptContractAuditTests(unittest.TestCase):
             visual_structure="业务关系图。",
             onscreen_text="**模块A**\n- a\n**模块B**\n- b",
             module_titles=("模块A", "模块B"),
+            speaker_notes="各位同事，先把建设方向说清楚，再说明与专业系统的职责分工。",
         )
         issue = _issue(
             "VISUAL_STRUCTURE_TOO_THIN",
@@ -793,6 +863,103 @@ class ScriptContractAuditTests(unittest.TestCase):
         ]
         self.assertTrue(mismatch)
         self.assertEqual("warning", mismatch[0].severity)
+
+
+class SpeakerNotesContractTests(unittest.TestCase):
+    def test_extracts_bracket_speaker_notes(self) -> None:
+        body = (
+            "- 讲解提示：短提醒。\n\n"
+            "【演讲者备注】\n\n"
+            "各位同事，先把方向说清楚，再说明职责分工。\n"
+        )
+        self.assertIn("各位同事", extract_speaker_notes(body))
+
+    def test_rejects_slide_meta_speech(self) -> None:
+        prose = "建设方向定位为面向行业的公共能力，明确研究对象与服务边界。" * 4
+        script = parse_script_markdown(
+            f"""## 第9页：总体定位
+- 页面类型：内容页
+- 页面标题：总体定位
+- 主判断：初步定位为面向行业的公共能力。
+- 完整文字稿：{prose}
+- 文字稿取舍说明：不展开邻页细节。
+- 证据映射：定位→S015
+- 上屏文字：
+  **行业公共能力**
+  - 服务行业研判。
+  **专业系统边界**
+  - 保留专业边界。
+- 证据：S015
+- 边界：正式范围待定。
+- 视觉结构：双侧协同——左右对照。
+- 讲解提示：短提醒。
+
+【演讲者备注】
+
+各位同事，这一页我们先说定位，下一页再谈范围。
+"""
+        )
+        issues = audit_script_quality(
+            script,
+            strict_outline(
+                {
+                    "page_id": "p09",
+                    "sequence": 9,
+                    "page_type": "content",
+                    "title": "总体定位",
+                    "argument_role": "positioning",
+                    "source_refs": ["S015"],
+                    "prerequisite_pages": [],
+                }
+            ),
+            source_truth(
+                {"id": "S015", "type": "B", "status": "拟建议", "statement": "初步定位。"}
+            ),
+        )
+        codes = {issue.code for issue in issues}
+        self.assertIn("SPEAKER_NOTES_SLIDE_META", codes)
+
+    def test_requires_speaker_notes_on_content_pages(self) -> None:
+        prose = "建设方向定位为面向行业的公共能力，明确研究对象与服务边界。" * 4
+        script = parse_script_markdown(
+            f"""## 第9页：总体定位
+- 页面类型：内容页
+- 页面标题：总体定位
+- 主判断：初步定位为面向行业的公共能力。
+- 完整文字稿：{prose}
+- 文字稿取舍说明：不展开邻页细节。
+- 证据映射：定位→S015
+- 上屏文字：
+  **行业公共能力**
+  - 服务行业研判。
+  **专业系统边界**
+  - 保留专业边界。
+- 证据：S015
+- 边界：正式范围待定。
+- 视觉结构：双侧协同——左右对照。
+"""
+        )
+        issues = audit_script_quality(
+            script,
+            strict_outline(
+                {
+                    "page_id": "p09",
+                    "sequence": 9,
+                    "page_type": "content",
+                    "title": "总体定位",
+                    "argument_role": "positioning",
+                    "source_refs": ["S015"],
+                    "prerequisite_pages": [],
+                }
+            ),
+            source_truth(
+                {"id": "S015", "type": "B", "status": "拟建议", "statement": "初步定位。"}
+            ),
+        )
+        self.assertIn(
+            "CONTENT_SPEAKER_NOTES_MISSING",
+            {issue.code for issue in issues},
+        )
 
 
 if __name__ == "__main__":

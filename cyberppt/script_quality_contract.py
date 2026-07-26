@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 import re
 import unicodedata
 
@@ -11,6 +12,16 @@ PAGE_HEADING_RE = re.compile(r"^##\s+第(\d+)页[：:](.+?)\s*$", re.MULTILINE)
 FIELD_RE = re.compile(r"^-\s*([^：:\n]+)[：:]\s*(.*)$")
 MODULE_RE = re.compile(r"^\s*\*\*(.+?)\*\*\s*$")
 SOURCE_RE = re.compile(r"S\d{3}")
+
+
+SPEAKER_SECTION_RE = re.compile(
+    r"【(?:演讲者备注|演讲稿|讲稿|备注)】\s*(?P<body>.*)$",
+    re.S,
+)
+SPEAKER_SLIDE_META_RE = re.compile(
+    r"(这一页|下一页|上一页|本页我们|本页先|本页把|本页只|看这一页|从这一页)"
+)
+SPEAKER_NOTES_MIN_CHARS = 60
 
 
 @dataclass(frozen=True)
@@ -31,6 +42,7 @@ class ScriptPage:
     onscreen_text: str
     module_titles: tuple[str, ...]
     field_order: tuple[str, ...] = ()
+    speaker_notes: str = ""
 
 
 @dataclass(frozen=True)
@@ -112,6 +124,16 @@ def _field_order(body: str) -> tuple[str, ...]:
     return tuple(ordered)
 
 
+def extract_speaker_notes(body: str) -> str:
+    """Prefer 【演讲者备注】 section, then `- 演讲者备注：` field."""
+
+    section = SPEAKER_SECTION_RE.search(body)
+    if section:
+        return re.sub(r"\n-{3,}\s*$", "", section.group("body").strip()).strip()
+    fields = _field_blocks(body)
+    return fields.get("演讲者备注", "").strip()
+
+
 def parse_script_markdown(text: str) -> ScriptDocument:
     pages: list[ScriptPage] = []
     for sequence, heading, body in _page_sections(text):
@@ -140,6 +162,7 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                 onscreen_text=onscreen,
                 module_titles=modules,
                 field_order=_field_order(body),
+                speaker_notes=extract_speaker_notes(body),
             )
         )
     if not pages:
@@ -226,6 +249,8 @@ STRATEGY_ORDER = (
     "cross_page_dedup",
     "semantic_diagram_realign",
     "density_recompose",
+    "manuscript_form_cleanup",
+    "speaker_notes_naturalize",
 )
 
 PROSE_MIN_CHARS = 80
@@ -290,6 +315,146 @@ def _nontable_compact_len(text: str) -> int:
         if not line.strip().startswith("|")
     ]
     return _compact_len("\n".join(lines))
+
+
+def _onscreen_content_lines(text: str) -> tuple[str, ...]:
+    """Return drawable on-screen lines without Markdown module headings."""
+
+    lines: list[str] = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or MODULE_RE.match(line):
+            continue
+        if line.startswith("-"):
+            line = line[1:].strip()
+        line = line.strip("* ")
+        if line:
+            lines.append(line)
+    return tuple(lines)
+
+
+def build_communication_review(
+    script: ScriptDocument,
+    outline: dict[str, object],
+) -> dict[str, object]:
+    """Build a deterministic editorial review alongside the structural audit.
+
+    The review reuses the existing Outline and script fields. It deliberately
+    marks semantic questions as manual review instead of pretending that a
+    lexical rule can decide whether every module shares one business dimension.
+    """
+
+    pages_by_id = _outline_pages(outline)
+    page_reviews: list[dict[str, object]] = []
+    warning_count = 0
+    content_count = 0
+    mission_count = 0
+    lead_match_count = 0
+    authoring_field_count = 0
+    for page in script.pages:
+        if page.page_type != "content":
+            continue
+        content_count += 1
+        contract = pages_by_id.get(page.page_id, {})
+        mission = str(contract.get("business_question") or "").strip()
+        if mission:
+            mission_count += 1
+        lines = _onscreen_content_lines(page.onscreen_text)
+        lead = lines[0] if lines else ""
+        lead_matches = bool(page.main_message and lead == page.main_message)
+        if lead_matches:
+            lead_match_count += 1
+        authoring_field_only = bool(page.visual_structure and not lead_matches)
+        if authoring_field_only:
+            authoring_field_count += 1
+        findings: list[dict[str, object]] = []
+        if not mission:
+            findings.append(
+                {
+                    "code": "MISSING_BUSINESS_QUESTION",
+                    "severity": "warning",
+                    "message": "Outline does not provide the page mission.",
+                    "suggested_action": "Add business_question to the approved Outline.",
+                }
+            )
+        if page.main_message and not lead_matches and not authoring_field_only:
+            findings.append(
+                {
+                    "code": "MAIN_MESSAGE_NOT_FIRST_ONSCREEN_LINE",
+                    "severity": "warning",
+                    "message": "The page judgment is not the first drawable on-screen line.",
+                    "suggested_action": "Put main_message into the first on-screen line before supporting modules.",
+                    "evidence": [page.main_message, lead],
+                }
+            )
+        long_modules = [
+            title for title in page.module_titles if _compact_len(title) > 24
+        ]
+        if long_modules:
+            findings.append(
+                {
+                    "code": "MODULE_TITLE_TOO_LONG",
+                    "severity": "warning",
+                    "message": "One or more module titles are longer than a short phrase.",
+                    "suggested_action": "Rewrite module titles as concise labels; keep the judgment in the lead or body.",
+                    "evidence": long_modules,
+                }
+            )
+        long_bullets = [line for line in lines if _compact_len(line) > 72]
+        if long_bullets:
+            findings.append(
+                {
+                    "code": "ONSCREEN_BULLET_TOO_LONG",
+                    "severity": "warning",
+                    "message": "One or more on-screen items combine too much information.",
+                    "suggested_action": "Split into one judgment, action, or result per item.",
+                    "evidence": long_bullets,
+                }
+            )
+        warning_count += len(findings)
+        page_reviews.append(
+            {
+                "page_id": page.page_id,
+                "sequence": page.sequence,
+                "title": page.title,
+                "mission": mission,
+                "main_message": page.main_message,
+                "lead": lead,
+                "lead_matches_main_message": lead_matches,
+                "lead_status": (
+                    "pass"
+                    if lead_matches
+                    else "authoring_field_only"
+                    if authoring_field_only
+                    else "warning"
+                ),
+                "module_titles": list(page.module_titles),
+                "numeric_lines": [line for line in lines if re.search(r"\d", line)],
+                "findings": findings,
+                "review_questions": {
+                    "single_mission": "manual_review",
+                    "module_same_dimension": "manual_review",
+                    "nonessential_information_removed": "manual_review",
+                    "leadership_expandability": (
+                        "pass" if page.speaker_notes else "check"
+                    ),
+                    "visual_expression_ready": (
+                        "pass" if page.visual_structure else "check"
+                    ),
+                },
+            }
+        )
+    return {
+        "schema": "cyberppt.communication_review.v1",
+        "content_pages": content_count,
+        "mission_coverage": mission_count,
+        "lead_match_count": lead_match_count,
+        "authoring_field_count": authoring_field_count,
+        "lead_coverage_count": lead_match_count + authoring_field_count,
+        "warning_count": warning_count,
+        "manual_review_required": True,
+        "pages": page_reviews,
+    }
 
 
 _ANALYTICAL_VOICE_PATTERNS: tuple[str, ...] = (
@@ -437,6 +602,18 @@ def script_retry_directive(
         for code in codes
     ):
         preferred = "cross_page_dedup"
+    elif any(code == "FINAL_MANUSCRIPT_DRAFT_BANNER" for code in codes):
+        preferred = "manuscript_form_cleanup"
+    elif any(
+        code
+        in {
+            "CONTENT_SPEAKER_NOTES_MISSING",
+            "CONTENT_SPEAKER_NOTES_TOO_THIN",
+            "SPEAKER_NOTES_SLIDE_META",
+        }
+        for code in codes
+    ):
+        preferred = "speaker_notes_naturalize"
     elif any(
         code
         in {
@@ -470,14 +647,28 @@ def script_retry_directive(
     if strategy == previous_strategy:
         index = (STRATEGY_ORDER.index(strategy) + 1) % len(STRATEGY_ORDER)
         strategy = STRATEGY_ORDER[index]
+    instruction = (
+        "Rewrite only the failed pages using the new strategy; preserve "
+        "valid evidence, states, and page contracts."
+    )
+    if "FINAL_MANUSCRIPT_DRAFT_BANNER" in codes:
+        instruction = (
+            "Remove every draft/batch banner and the words 草稿/批次 from the "
+            "final manuscript (prefer `assemble-final-script`), then re-audit."
+        )
+    elif any(
+        code.startswith("CONTENT_SPEAKER_NOTES") or code == "SPEAKER_NOTES_SLIDE_META"
+        for code in codes
+    ):
+        instruction = (
+            "Rewrite 【演讲者备注】 as natural spoken narration for delivery; "
+            "do not use slide-meta phrases such as 这一页/下一页/本页我们."
+        )
     return {
         "required": bool(issues),
         "issue_codes": codes,
         "strategy": strategy,
-        "instruction": (
-            "Rewrite only the failed pages using the new strategy; preserve "
-            "valid evidence, states, and page contracts."
-        ),
+        "instruction": instruction,
     }
 
 
@@ -608,6 +799,40 @@ def _prose_issues(
                     "Evidence map does not cover all Source IDs assigned by the Outline.",
                     "Map every Outline-assigned Source ID to a support point in 证据映射.",
                     missing,
+                )
+            )
+    notes = page.speaker_notes.strip()
+    if not notes:
+        issues.append(
+            _issue(
+                "CONTENT_SPEAKER_NOTES_MISSING",
+                page,
+                "Content page must include 【演讲者备注】 for PPT speaker notes.",
+                "Add a natural spoken narration block after 讲解提示, consumed by assembly.",
+            )
+        )
+    else:
+        if _compact_len(notes) < SPEAKER_NOTES_MIN_CHARS:
+            issues.append(
+                _issue(
+                    "CONTENT_SPEAKER_NOTES_TOO_THIN",
+                    page,
+                    "Speaker notes are too thin to serve as deliverable narration.",
+                    "Write about 1–2 minutes of natural speech covering the page thesis.",
+                    evidence=(f"chars={_compact_len(notes)}",),
+                )
+            )
+        meta_hits = tuple(
+            sorted({match.group(0) for match in SPEAKER_SLIDE_META_RE.finditer(notes)})
+        )
+        if meta_hits:
+            issues.append(
+                _issue(
+                    "SPEAKER_NOTES_SLIDE_META",
+                    page,
+                    "Speaker notes use slide-meta coaching instead of natural speech.",
+                    "Remove 这一页/下一页/本页我们 and speak the business content aloud.",
+                    evidence=meta_hits,
                 )
             )
     return issues
@@ -832,6 +1057,67 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
             )
         )
     return issues
+
+
+FINAL_BATCH_HEADING_RE = re.compile(
+    r"^#\s+第\s*\d+\s*[—\-~～－]+\s*\d+\s*页"
+)
+FINAL_DRAFT_HEADING_RE = re.compile(r"^#\s+.*草稿")
+FINAL_BATCH_META_RE = re.compile(r"^>\s*批次\s*[：:]")
+FINAL_DRAFT_STATUS_RE = re.compile(r"^>\s*状态\s*[：:].*草稿")
+FINAL_PENDING_AUDIT_RE = re.compile(
+    r"待\s*`?script-audit`?\s*通过后审稿"
+)
+
+
+def is_final_script_path(path: Path) -> bool:
+    """True when the path is under workbench/scripts/final/."""
+
+    parts = [part.lower() for part in Path(path).parts]
+    try:
+        scripts_index = parts.index("scripts")
+    except ValueError:
+        return False
+    return scripts_index + 1 < len(parts) and parts[scripts_index + 1] == "final"
+
+
+def audit_final_manuscript_form(text: str) -> list[ScriptQualityIssue]:
+    """Reject draft/batch wording that must not appear in final manuscripts."""
+
+    evidence: list[str] = []
+    for index, raw_line in enumerate(text.splitlines(), start=1):
+        line = raw_line.strip()
+        if not line:
+            continue
+        banner_hit = (
+            FINAL_DRAFT_HEADING_RE.match(line)
+            or FINAL_BATCH_HEADING_RE.match(line)
+            or FINAL_BATCH_META_RE.match(line)
+            or FINAL_DRAFT_STATUS_RE.match(line)
+            or FINAL_PENDING_AUDIT_RE.search(line)
+        )
+        token_hit = "草稿" in line or "批次" in line
+        if banner_hit or token_hit:
+            evidence.append(f"L{index}:{line[:100]}")
+    if not evidence:
+        return []
+    return [
+        ScriptQualityIssue(
+            code="FINAL_MANUSCRIPT_DRAFT_BANNER",
+            severity="error",
+            message=(
+                "Final manuscript must not contain draft/batch banners or the "
+                "words 草稿/批次."
+            ),
+            pages=(),
+            evidence=tuple(evidence[:12]),
+            suggested_action=(
+                "Run `python -m cyberppt assemble-final-script <project>` or "
+                "remove every 草稿/批次 label before auditing files under "
+                "workbench/scripts/final/."
+            ),
+        )
+    ]
 
 
 def audit_script_quality(

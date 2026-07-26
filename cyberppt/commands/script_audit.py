@@ -8,7 +8,10 @@ from pathlib import Path
 
 from cyberppt.outline_contract import load_outline
 from cyberppt.script_quality_contract import (
+    audit_final_manuscript_form,
     audit_script_quality,
+    build_communication_review,
+    is_final_script_path,
     parse_script_markdown,
     script_retry_directive,
 )
@@ -88,6 +91,44 @@ def _render_markdown(report: dict[str, object]) -> str:
                 "",
             ]
         )
+    communication = (
+        report.get("communication_review")
+        if isinstance(report.get("communication_review"), dict)
+        else {}
+    )
+    communication_pages = communication.get("pages")
+    lines.extend(
+        [
+            "## 上屏文字六问",
+            "",
+            f"- 页面使命覆盖：{communication.get('mission_coverage', 0)} / {communication.get('content_pages', 0)}",
+            f"- 主判断承载覆盖：{communication.get('lead_coverage_count', 0)} / {communication.get('content_pages', 0)}（上屏首句匹配 {communication.get('lead_match_count', 0)}；作者字段承载 {communication.get('authoring_field_count', 0)}）",
+            f"- 自动提醒：{communication.get('warning_count', 0)} 条；模块同维度、信息取舍仍需人工复核。",
+            "",
+        ]
+    )
+    if isinstance(communication_pages, list):
+        for page in communication_pages:
+            if not isinstance(page, dict):
+                continue
+            findings = page.get("findings")
+            finding_codes = [
+                str(item.get("code"))
+                for item in findings
+                if isinstance(item, dict) and item.get("code")
+            ] if isinstance(findings, list) else []
+            lines.extend(
+                [
+                    f"### 第{page.get('sequence', '')}页：{page.get('title', '')}",
+                    "",
+                    f"- 页面使命：{page.get('mission') or '未提供'}",
+                    f"- 核心判断：{page.get('main_message') or '未提供'}",
+                    f"- 主判断上屏状态：{page.get('lead_status', 'check')}",
+                    f"- 六问状态：单一使命=人工复核；模块同维度=人工复核；信息取舍=人工复核；领导展开={'通过' if page.get('review_questions', {}).get('leadership_expandability') == 'pass' else '待检查'}；视觉表达={'通过' if page.get('review_questions', {}).get('visual_expression_ready') == 'pass' else '待检查'}",
+                    f"- 自动提醒：{'、'.join(finding_codes) or '无'}",
+                    "",
+                ]
+            )
     directive = (
         report.get("retry_directive")
         if isinstance(report.get("retry_directive"), dict)
@@ -228,9 +269,8 @@ def run_script_audit(
             f"source truth does not exist: {source_truth_path}"
         )
     source_truth = load_source_truth(source_truth_path)
-    document = parse_script_markdown(
-        input_path.read_text(encoding="utf-8-sig")
-    )
+    script_text = input_path.read_text(encoding="utf-8-sig")
+    document = parse_script_markdown(script_text)
     audit_dir = project / "workbench" / "scripts" / "audits"
     attempts_dir = audit_dir / "attempts"
     effective_attempt = (
@@ -252,6 +292,9 @@ def run_script_audit(
                     previous_directive.get("strategy") or ""
                 )
     issues = audit_script_quality(document, outline, source_truth)
+    if is_final_script_path(input_path):
+        issues.extend(audit_final_manuscript_form(script_text))
+    communication_review = build_communication_review(document, outline)
     errors = [issue for issue in issues if issue.severity == "error"]
     directive = script_retry_directive(errors, previous_strategy)
     failed_pages = sorted(
@@ -272,6 +315,7 @@ def run_script_audit(
             "last_page": document.pages[-1].page_id,
         },
         "issues": [issue.to_dict() for issue in issues],
+        "communication_review": communication_review,
         "failed_pages": failed_pages,
         "retry_scope": failed_pages,
         "retry_directive": directive,

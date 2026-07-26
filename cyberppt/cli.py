@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 from cyberppt import __version__
+from cyberppt.commands.assemble_final_script import assemble_final_script
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.outline_audit import run_outline_audit
@@ -96,6 +97,21 @@ def _script_audit_command(args: argparse.Namespace) -> int:
         return 2
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return code
+
+
+def _assemble_final_script_command(args: argparse.Namespace) -> int:
+    try:
+        report = assemble_final_script(
+            Path(args.project),
+            drafts_dir=Path(args.drafts_dir) if args.drafts_dir else None,
+            output_path=Path(args.output) if args.output else None,
+            title=args.title or "",
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return 0
 
 
 def _stage_script_command(args: argparse.Namespace) -> int:
@@ -296,6 +312,29 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum changed-direction attempts (1-5; default: 3).",
     )
     script_audit.set_defaults(func=_script_audit_command)
+
+    assemble_final = subparsers.add_parser(
+        "assemble-final-script",
+        help=(
+            "Merge draft batch scripts into a clean final manuscript under "
+            "workbench/scripts/final/ (no 草稿/批次 wording)."
+        ),
+    )
+    assemble_final.add_argument("project", help="CyberPPT project directory.")
+    assemble_final.add_argument(
+        "--drafts-dir",
+        help="Draft directory; defaults to workbench/scripts/drafts.",
+    )
+    assemble_final.add_argument(
+        "--output",
+        help="Output path; defaults to workbench/scripts/final/script-final.md.",
+    )
+    assemble_final.add_argument(
+        "--title",
+        default="",
+        help="Optional document title for the final manuscript header.",
+    )
+    assemble_final.set_defaults(func=_assemble_final_script_command)
 
     resolve_escalation = subparsers.add_parser(
         "resolve-escalation",

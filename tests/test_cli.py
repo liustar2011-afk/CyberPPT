@@ -149,7 +149,15 @@ class CliTests(unittest.TestCase):
             script.write_text("## 第3页：测试页\n组件A：内容\n", encoding="utf-8")
             buffer = io.StringIO()
 
-            with redirect_stderr(buffer):
+            with (
+                patch(
+                    "cyberppt.stage01_controls.assert_escalation_resolved"
+                ),
+                patch(
+                    "cyberppt.stage01_controls.assert_stage01_script_approval"
+                ),
+                redirect_stderr(buffer),
+            ):
                 code = main(
                     [
                         "final-script-pages",

@@ -301,6 +301,28 @@ def _open_questions_from_audits(project: Path, kind: str) -> list[str]:
             for option in options:
                 if isinstance(option, dict) and option.get("label"):
                     questions.append(f"待决选项：{option.get('label')}")
+        communication = report.get("communication_review")
+        if isinstance(communication, dict):
+            content_pages = int(communication.get("content_pages") or 0)
+            mission_coverage = int(communication.get("mission_coverage") or 0)
+            lead_coverage_count = int(
+                communication.get("lead_coverage_count")
+                or communication.get("lead_match_count")
+                or 0
+            )
+            warning_count = int(communication.get("warning_count") or 0)
+            if mission_coverage < content_pages:
+                questions.append(
+                    f"上屏文字审阅：页面使命覆盖 {mission_coverage}/{content_pages}，需补齐 Outline business_question。"
+                )
+            if lead_coverage_count < content_pages:
+                questions.append(
+                    f"上屏文字审阅：主判断上屏覆盖 {lead_coverage_count}/{content_pages}，需确认主判断是否进入上屏或作者字段。"
+                )
+            if warning_count:
+                questions.append(
+                    f"上屏文字审阅：有 {warning_count} 条自动提醒；模块同维度、信息取舍等仍需人工复核。"
+                )
     if not questions:
         questions.append("无未关闭审计问题；请确认架构/页数/边界是否仍符合业务意图。")
     # de-dupe while preserving order
