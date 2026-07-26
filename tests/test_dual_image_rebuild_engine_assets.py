@@ -22,6 +22,11 @@ class DualImageRebuildEngineAssetsTest(unittest.TestCase):
             "svg_finalize/__init__.py",
             "templates/brands/中电联公共元素_轻量版/brand_rules.json",
             "templates/brands/中电联公共元素_轻量版/master_elements.svg",
+            "templates/brands/中电联公共元素_轻量版/02_agenda.svg",
+            "templates/brands/中电联公共元素_轻量版/03_section.svg",
+            "templates/brands/中电联公共元素_轻量版/agenda_bg.png",
+            "templates/brands/中电联公共元素_轻量版/section_bg.png",
+            "templates/brands/中电联公共元素_轻量版/body_bg.png",
         ]
 
         missing = [path for path in required if not (ENGINE / path).is_file()]

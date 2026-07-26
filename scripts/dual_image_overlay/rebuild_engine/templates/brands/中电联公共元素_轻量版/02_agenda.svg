@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="720" viewBox="0 0 1280 720" data-brand-template="02_agenda">
+  <!-- Chrome (red line / logo / blue footer / org / page#) comes from slide layout. -->
+  <defs>
+    <linearGradient id="agendaLeftWash" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F7F9FC" stop-opacity="0.92"/>
+      <stop offset="52%" stop-color="#F7F9FC" stop-opacity="0.78"/>
+      <stop offset="78%" stop-color="#F7F9FC" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#F7F9FC" stop-opacity="0.04"/>
+    </linearGradient>
+  </defs>
+  <!-- Light atmosphere band between chrome; edge softness should live in the PNG itself. -->
+  <image x="0" y="87" width="1280" height="611" href="agenda_bg.png" xlink:href="agenda_bg.png" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="0" y="87" width="1280" height="611" fill="url(#agendaLeftWash)"/>
+  <text x="74" y="148" font-family="Microsoft YaHei, Arial, sans-serif" font-size="42" font-weight="700" fill="#123B66">目录</text>
+  <rect x="74" y="168" width="72" height="4" fill="#8B0000"/>
+  <g id="agenda-items">
+    {{AGENDA_ITEMS}}
+  </g>
+</svg>

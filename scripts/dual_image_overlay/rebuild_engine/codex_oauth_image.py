@@ -22,7 +22,7 @@ from urllib import error, request
 
 
 DEFAULT_MODEL = "gpt-image-2"
-DEFAULT_SIZE = "1672x941"
+DEFAULT_SIZE = "1680x944"
 DEFAULT_QUALITY = "high"
 DEFAULT_OUTPUT_FORMAT = "png"
 DEFAULT_TIMEOUT = 600
@@ -169,7 +169,7 @@ def validate_gpt_image_2_size(size: str) -> None:
         return
     parsed = _parse_size(size)
     if parsed is None:
-        _die("size must be auto or WIDTHxHEIGHT, for example 1672x941.")
+        _die("size must be auto or WIDTHxHEIGHT, for example 1680x944.")
     width, height = parsed
     max_edge = max(width, height)
     min_edge = min(width, height)
@@ -488,23 +488,65 @@ def _extract_responses_text(body: str) -> str:
     return text
 
 
-def _write_image(image_b64: str, output_path: Path, *, force: bool) -> None:
+def ensure_output_size(output_path: Path, size: str) -> tuple[int, int]:
+    """Force an on-disk image to the requested WIDTHxHEIGHT (ingest normalization)."""
+
+    if size == "auto":
+        return (-1, -1)
+    parsed = _parse_size(size)
+    if parsed is None:
+        return (-1, -1)
+    target_width, target_height = parsed
+    try:
+        from PIL import Image
+    except ImportError as exc:
+        _die("Pillow is required to normalize image size on ingest. Install pillow and retry.")
+        raise SystemExit(1) from exc
+    with Image.open(output_path) as image:
+        actual = image.size
+        if actual == (target_width, target_height):
+            return actual
+        resized = image.convert("RGBA").resize(
+            (target_width, target_height),
+            Image.Resampling.LANCZOS,
+        )
+        suffix = output_path.suffix.lower()
+        if suffix in {".jpg", ".jpeg"}:
+            resized.convert("RGB").save(output_path, format="JPEG", quality=95)
+        else:
+            resized.save(output_path, format="PNG")
+    print(
+        f"Normalized image size {actual[0]}x{actual[1]} -> {target_width}x{target_height}: {output_path}",
+        file=sys.stderr,
+    )
+    return (target_width, target_height)
+
+
+def _write_image(image_b64: str, output_path: Path, *, force: bool, size: str | None = None) -> None:
     if len(image_b64) > MAX_CODEX_BASE64_CHARS:
         _die("Image payload exceeded size limit.")
     if output_path.exists() and not force:
         _die(f"Output already exists: {output_path} (use --force to overwrite)")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_bytes(base64.b64decode(image_b64))
+    if size:
+        ensure_output_size(output_path, size)
 
 
-def _write_images(payloads: list[str], output_paths: list[Path], *, force: bool) -> None:
+def _write_images(
+    payloads: list[str],
+    output_paths: list[Path],
+    *,
+    force: bool,
+    size: str | None = None,
+) -> None:
     if len(payloads) < len(output_paths):
         _die(
             f"Codex returned {len(payloads)} image(s), but {len(output_paths)} independent image(s) were required. "
             "Do not accept a stitched comparison image as a substitute."
         )
     for payload, output_path in zip(payloads, output_paths):
-        _write_image(payload, output_path, force=force)
+        _write_image(payload, output_path, force=force, size=size)
         print(f"Wrote {output_path}")
 
 
@@ -572,7 +614,7 @@ def run_codex_image(
         endpoint_label = "responses"
     elapsed = time.time() - started
     print(f"Codex OAuth image completed via {endpoint_label} in {elapsed:.1f}s.", file=sys.stderr)
-    _write_image(payloads[0], output_path, force=force)
+    _write_image(payloads[0], output_path, force=force, size=size)
     print(f"Wrote {output_path}")
     return output_path
 
@@ -626,7 +668,7 @@ def run_codex_multi_image_once(
     payloads = _extract_responses_payloads(response_text)
     elapsed = time.time() - started
     print(f"Codex OAuth multi-image request completed in {elapsed:.1f}s.", file=sys.stderr)
-    _write_images(payloads, output_paths, force=force)
+    _write_images(payloads, output_paths, force=force, size=size)
     return output_paths
 
 

@@ -32,9 +32,10 @@ IMAGEGEN_NON_VISIBLE_SECTION_RE = re.compile(
 )
 COMPOSITION_SECTION_RE = re.compile(r"【(?:构图指令|构图接口)】(?P<body>.*)$", re.S)
 CANVAS_SIZE = (1280, 720)
-CONTENT_REGION_TOP_INSET = -18
-CONTENT_REGION_BOTTOM_INSET = -20
-CONTENT_REGION_SIDE_OUTSET = 38
+# Brand body_pages is already the maximized 1680:944 slot between chrome bars.
+CONTENT_REGION_TOP_INSET = 0
+CONTENT_REGION_BOTTOM_INSET = 0
+CONTENT_REGION_SIDE_OUTSET = 0
 IMAGE_GENERATION_SCALE = 2
 DEFAULT_STYLE_NAME = "cyberppt-full-image-default"
 DEFAULT_IMAGE_STYLE = {
@@ -98,11 +99,17 @@ class PageContent:
 
 
 def page_notes_text(block: PageBlock) -> str:
-    """Build speaker notes from the page content, not from image prompt instructions."""
-    explicit = re.search(r"【(?:演讲者备注|演讲稿|讲稿|备注)】(?P<body>.*)$", block.text, re.S)
+    """Build speaker notes from script 【演讲者备注】 (assembly consumer).
+
+    Prefer the dedicated speaker-notes block/field. Only fall back to a
+    content dump when the script has not yet provided narration.
+    """
+
+    from cyberppt.script_quality_contract import extract_speaker_notes
+
+    explicit = extract_speaker_notes(block.text)
     if explicit:
-        text = explicit.group("body").strip()
-        return re.sub(r"\n-{3,}\s*$", "", text).strip()
+        return explicit
     content = extract_content(block)
     lines = [line.strip() for line in content.body.splitlines() if line.strip()]
     notes: list[str] = []
@@ -117,9 +124,23 @@ def page_notes_text(block: PageBlock) -> str:
 
 
 def page_role(block: PageBlock) -> str:
+    declared = re.search(r"页面类型\s*[:：]\s*(封面|目录|章节过渡|内容|结束|封底)页", block.text)
+    if declared:
+        return {
+            "封面": "cover",
+            "目录": "agenda",
+            "章节过渡": "section",
+            "内容": "body",
+            "结束": "ending",
+            "封底": "ending",
+        }[declared.group(1)]
     if block.page_number == 1 or "封面" in block.title:
         return "cover"
-    if any(keyword in block.title for keyword in ("封底", "结束", "感谢")):
+    if "目录" in block.title:
+        return "agenda"
+    if re.search(r"第[一二三四五六七八九十]+章", block.title):
+        return "section"
+    if any(keyword in block.title for keyword in ("封底", "结束", "感谢", "汇报完毕")):
         return "ending"
     return "body"
 
@@ -315,20 +336,28 @@ def content_prompt(
 
 
 def page_template_name(role: str) -> str | None:
-    if role == "cover":
-        return "cover"
-    if role == "ending":
-        return "ending"
+    if role in {"cover", "agenda", "section", "ending"}:
+        return role
     return None
 
 
 def page_meta_value(content: PageContent, label: str) -> str:
-    pattern = re.compile(rf"^{re.escape(label)}[:：]\s*(?P<value>.+?)\s*$")
+    pattern = re.compile(rf"^(?:[-*•]\s*)?{re.escape(label)}[:：]\s*(?P<value>.+?)\s*$")
     for line in content.body.splitlines():
         match = pattern.match(line.strip())
         if match:
             return match.group("value").strip()
     return ""
+
+
+def strip_cover_field_label(text: str) -> str:
+    """Remove script field labels so cover never paints 主标题/副标题 prefixes."""
+
+    return re.sub(
+        r"^(?:[-*•]\s*)?(?:主标题|副标题|日期|汇报标题|项目名称|汇报单位|编制单位|汇报日期)[:：]\s*",
+        "",
+        (text or "").strip(),
+    ).strip()
 
 
 def cover_author(content: PageContent) -> str:
@@ -337,6 +366,28 @@ def cover_author(content: PageContent) -> str:
 
 def cover_date(content: PageContent) -> str:
     return page_meta_value(content, "汇报日期") or page_meta_value(content, "日期")
+
+
+def cover_content_fields(task: dict) -> tuple[str, str, str]:
+    """Extract cover title, subtitle/author, and date without field-label prefixes."""
+
+    fallback_title = str(task.get("slide_title") or task.get("title") or "")
+    content_body = str(task.get("body_text") or "")
+    content = PageContent(fallback_title, str(task.get("subtitle") or ""), content_body)
+    title = (
+        page_meta_value(content, "主标题")
+        or page_meta_value(content, "汇报标题")
+        or page_meta_value(content, "项目名称")
+        or fallback_title
+    )
+    subtitle = page_meta_value(content, "副标题")
+    author = cover_author(content) or subtitle
+    date = cover_date(content)
+    return (
+        strip_cover_field_label(title),
+        strip_cover_field_label(author),
+        re.sub(r"\s+", "", strip_cover_field_label(date)),
+    )
 
 
 def char_width_units(char: str) -> float:
@@ -569,9 +620,16 @@ def svg_text(x: int, y: int, text: str, size: int, weight: int = 400, fill: str 
 
 
 def template_href_for_output(svg: str) -> str:
-    return svg.replace('xlink:href="cover_bg.jpg"', 'xlink:href="../images/cover_bg.jpg"').replace(
-        'href="cover_bg.jpg"', 'href="../images/cover_bg.jpg"'
+    replacements = (
+        ("cover_bg.jpg", "../images/cover_bg.jpg"),
+        ("agenda_bg.png", "../images/agenda_bg.png"),
+        ("section_bg.png", "../images/section_bg.png"),
     )
+    for src, dst in replacements:
+        svg = svg.replace(f'xlink:href="{src}"', f'xlink:href="{dst}"').replace(
+            f'href="{src}"', f'href="{dst}"'
+        )
+    return svg
 
 
 def render_brand_template_svg(task: dict, rules: dict) -> str:
@@ -584,8 +642,7 @@ def render_brand_template_svg(task: dict, rules: dict) -> str:
     svg = (DEFAULT_BRAND_DIR / template_file).read_text(encoding="utf-8")
     svg = template_href_for_output(svg)
     if template_name == "cover":
-        content = PageContent(task.get("slide_title", ""), task.get("subtitle", ""), task.get("body_text", ""))
-        title = task.get("slide_title") or task.get("title", "")
+        title, author, date = cover_content_fields(task)
         svg = re.sub(
             r'\s*<text[^>]*>\{\{TITLE\}\}</text>',
             "\n" + cover_title_svg(title),
@@ -593,8 +650,8 @@ def render_brand_template_svg(task: dict, rules: dict) -> str:
             count=1,
         )
         replacements = {
-            "{{AUTHOR}}": cover_author(content),
-            "{{DATE}}": cover_date(content),
+            "{{AUTHOR}}": author,
+            "{{DATE}}": date,
         }
         for placeholder, value in replacements.items():
             svg = svg.replace(placeholder, xml_escape(value))
@@ -628,9 +685,39 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
                 raise FileNotFoundError(f"Missing content image: {image_path}")
             target_image = project_path / "images" / image_path.name
             shutil.copy2(image_path, target_image)
+            # Atmosphere-only soft join against chrome; never feather the content image.
+            band_y, band_h, fade_h = 90, 605, 16
+            paper = "#F7F6F0"
+            body_bg = DEFAULT_BRAND_DIR / "body_bg.png"
+            if body_bg.is_file():
+                target_bg = project_path / "images" / body_bg.name
+                if not target_bg.is_file():
+                    shutil.copy2(body_bg, target_bg)
+                backdrop = (
+                    f'<defs>'
+                    f'<linearGradient id="bodySoftTop" x1="0" y1="0" x2="0" y2="1">'
+                    f'<stop offset="0%" stop-color="{paper}" stop-opacity="0.96"/>'
+                    f'<stop offset="100%" stop-color="{paper}" stop-opacity="0"/>'
+                    f'</linearGradient>'
+                    f'<linearGradient id="bodySoftBot" x1="0" y1="1" x2="0" y2="0">'
+                    f'<stop offset="0%" stop-color="{paper}" stop-opacity="0.96"/>'
+                    f'<stop offset="100%" stop-color="{paper}" stop-opacity="0"/>'
+                    f'</linearGradient>'
+                    f'</defs>'
+                    f'<image x="0" y="{band_y}" width="{CANVAS_SIZE[0]}" height="{band_h}" '
+                    f'href={quoteattr("../images/" + body_bg.name)} '
+                    f'xlink:href={quoteattr("../images/" + body_bg.name)} '
+                    f'preserveAspectRatio="xMidYMid slice"/>'
+                    f'<rect x="0" y="{band_y}" width="{CANVAS_SIZE[0]}" height="{fade_h}" fill="url(#bodySoftTop)"/>'
+                    f'<rect x="0" y="{band_y + band_h - fade_h}" width="{CANVAS_SIZE[0]}" height="{fade_h}" fill="url(#bodySoftBot)"/>'
+                )
+            else:
+                backdrop = (
+                    f'<rect x="0" y="{band_y}" width="{CANVAS_SIZE[0]}" height="{band_h}" fill="#F7F6F0"/>'
+                )
             svg = [
                 f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_SIZE[0]}" height="{CANVAS_SIZE[1]}" viewBox="0 0 {CANVAS_SIZE[0]} {CANVAS_SIZE[1]}">',
-                f'<rect x="0" y="0" width="{CANVAS_SIZE[0]}" height="{CANVAS_SIZE[1]}" fill="#FFFFFF"/>',
+                backdrop,
             ]
             svg.append(svg_text(header["x"], header["y"] + 30, task["slide_title"], 25, 700))
             if task.get("subtitle"):
