@@ -30,6 +30,22 @@ SPEAKER_HOST_META_RE = re.compile(
     r"(各位同事|先把.{0,18}说清楚|先说明|先谈|先讲规则|"
     r"综合起来|接下来看|到这里收一下|全篇收在|请.{0,12}听|请先记住)"
 )
+DEFENSIVE_BOUNDARY_COACHING_RE = re.compile(
+    r"(反复区分|避免(?:听众)?.{0,12}(?:误解|听成|当成)|"
+    r"不要.{0,12}讲成|不是.{0,8}承诺|不构成.{0,8}承诺|"
+    r"防止.{0,12}误解|以免.{0,12}误解)"
+)
+CONSTRAINT_THEME_TERMS = (
+    "范围",
+    "边界",
+    "准入",
+    "投资",
+    "预算",
+    "验收",
+    "决策条件",
+    "立项条件",
+    "职责分工",
+)
 SPEAKER_NOTES_MIN_CHARS = 60
 
 
@@ -52,6 +68,7 @@ class ScriptPage:
     onscreen_text: str
     module_titles: tuple[str, ...]
     field_order: tuple[str, ...] = ()
+    coaching_tip: str = ""
     speaker_notes: str = ""
     contract_receipt: dict[str, object] | None = None
 
@@ -192,6 +209,12 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                 onscreen_text=onscreen,
                 module_titles=modules,
                 field_order=_field_order(body),
+                coaching_tip=(
+                    fields.get("讲解提示", "")
+                    .split("<!--", 1)[0]
+                    .split("【", 1)[0]
+                    .strip()
+                ),
                 speaker_notes=extract_speaker_notes(body),
                 contract_receipt=extract_page_contract_receipt(body),
             )
@@ -641,6 +664,9 @@ def script_retry_directive(
             "CONTENT_SPEAKER_NOTES_MISSING",
             "CONTENT_SPEAKER_NOTES_TOO_THIN",
             "SPEAKER_NOTES_SLIDE_META",
+            "SPEAKER_NOTES_HOST_META",
+            "NARRATION_BOUNDARY_COACHING",
+            "NARRATION_INTERNAL_BOUNDARY_LEAK",
         }
         for code in codes
     ):
@@ -688,12 +714,19 @@ def script_retry_directive(
             "final manuscript (prefer `assemble-final-script`), then re-audit."
         )
     elif any(
-        code.startswith("CONTENT_SPEAKER_NOTES") or code == "SPEAKER_NOTES_SLIDE_META"
+        code.startswith("CONTENT_SPEAKER_NOTES")
+        or code
+        in {
+            "SPEAKER_NOTES_SLIDE_META",
+            "SPEAKER_NOTES_HOST_META",
+            "NARRATION_BOUNDARY_COACHING",
+            "NARRATION_INTERNAL_BOUNDARY_LEAK",
+        }
         for code in codes
     ):
         instruction = (
-            "Rewrite 【演讲者备注】 as natural spoken narration for delivery; "
-            "do not use slide-meta phrases such as 这一页/下一页/本页我们."
+            "Rewrite 讲解提示 and 【演讲者备注】 as direct business narration; "
+            "keep internal boundaries and defensive coaching out of both fields."
         )
     return {
         "required": bool(issues),
@@ -882,6 +915,71 @@ def _prose_issues(
                     evidence=host_hits,
                 )
             )
+    return issues
+
+
+def _narration_boundary_issues(
+    page: ScriptPage,
+    contract: dict[str, object],
+) -> list[ScriptQualityIssue]:
+    if page.page_type != "content":
+        return []
+    issues: list[ScriptQualityIssue] = []
+    coaching_hits = tuple(
+        sorted(
+            {
+                match.group(0)
+                for match in DEFENSIVE_BOUNDARY_COACHING_RE.finditer(
+                    page.coaching_tip
+                )
+            }
+        )
+    )
+    note_hits = tuple(
+        sorted(
+            {
+                match.group(0)
+                for match in DEFENSIVE_BOUNDARY_COACHING_RE.finditer(
+                    page.speaker_notes
+                )
+            }
+        )
+    )
+    if coaching_hits or note_hits:
+        issues.append(
+            _issue(
+                "NARRATION_BOUNDARY_COACHING",
+                page,
+                "Coaching tips and speaker notes must not contain defensive "
+                "boundary coaching.",
+                "State the page's business judgment and support directly; keep "
+                "misunderstanding prevention and commitment-state reminders in "
+                "internal controls only.",
+                evidence=coaching_hits + note_hits,
+            )
+        )
+    theme = "\n".join(
+        str(contract.get(field) or "")
+        for field in ("page_job", "business_question", "main_message")
+    )
+    constraint_is_subject = any(term in theme for term in CONSTRAINT_THEME_TERMS)
+    if (
+        not constraint_is_subject
+        and page.boundary
+        and page.speaker_notes
+        and text_similarity(page.boundary, page.speaker_notes) >= 0.12
+    ):
+        issues.append(
+            _issue(
+                "NARRATION_INTERNAL_BOUNDARY_LEAK",
+                page,
+                "Speaker notes repeat an internal boundary that is not the page's "
+                "declared business subject.",
+                "Remove the internal boundary from speaker notes and narrate the "
+                "main judgment, support, and implication.",
+                evidence=(page.boundary,),
+            )
+        )
     return issues
 
 
@@ -1251,6 +1349,7 @@ def audit_script_quality(
             issues.extend(
                 _prose_issues(page, expected_source_refs=expected_proof_refs)
             )
+            issues.extend(_narration_boundary_issues(page, contract))
             if outline.get("page_contract_receipt_mode") == "required":
                 receipt = page.contract_receipt
                 if receipt is None:

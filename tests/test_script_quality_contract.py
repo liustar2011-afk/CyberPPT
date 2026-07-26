@@ -72,6 +72,7 @@ class ScriptMarkdownParserTests(unittest.TestCase):
         self.assertEqual("总体定位", document.pages[1].title)
         self.assertEqual(("S015", "S026", "S059"), document.pages[1].source_refs)
         self.assertEqual(("行业公共能力", "专业系统边界"), document.pages[1].module_titles)
+        self.assertEqual("先说定位再说边界。", document.pages[1].coaching_tip)
 
     def test_rejects_document_without_pages(self) -> None:
         with self.assertRaisesRegex(ValueError, "no page headings"):
@@ -933,6 +934,133 @@ class SpeakerNotesContractTests(unittest.TestCase):
             "建设方向与职责分工需要同步明确。\n"
         )
         self.assertIn("建设方向", extract_speaker_notes(body))
+
+    def test_rejects_defensive_boundary_coaching(self) -> None:
+        script = parse_script_markdown(
+            SCRIPT.replace(
+                "先说定位再说边界。",
+                "反复区分方向和首期，避免听众把完整蓝图听成一期承诺。",
+            )
+        )
+        issues = audit_script_quality(
+            script,
+            strict_outline(
+                {
+                    "page_id": "p08",
+                    "sequence": 8,
+                    "page_type": "chapter",
+                    "title": "第二章：定位、目标与研究边界",
+                },
+                {
+                    "page_id": "p09",
+                    "sequence": 9,
+                    "page_type": "content",
+                    "title": "总体定位",
+                    "argument_role": "positioning",
+                    "page_job": "说明总体定位",
+                    "business_question": "拟建什么能力",
+                    "main_message": "定位为行业公共能力",
+                    "source_refs": ["S015", "S026", "S059"],
+                    "prerequisite_pages": [],
+                },
+            ),
+            source_truth(
+                {"id": "S015", "type": "B", "status": "拟建议", "statement": "初步定位。"},
+                {"id": "S026", "type": "B", "status": "边界", "statement": "专业边界。"},
+                {"id": "S059", "type": "B", "status": "边界", "statement": "正式范围待定。"},
+            ),
+        )
+
+        self.assertIn(
+            "NARRATION_BOUNDARY_COACHING",
+            {issue.code for issue in issues},
+        )
+
+    def test_rejects_internal_boundary_repeated_in_ordinary_speaker_notes(self) -> None:
+        script = parse_script_markdown(
+            SCRIPT.replace(
+                "建设定位是面向行业的公共能力，服务履职与行业共用；同时明确与专业系统的职责分工，不替代调度、出清和企业计划。正式范围仍需结合资源摸底和原型验证进一步确定，当前阶段不提前锁定实施参数。",
+                "建设定位是面向行业的公共能力，服务履职与行业共用。正式范围待后续确定，当前阶段不提前锁定实施参数。相关能力建设由业务体系持续支撑。",
+            )
+        )
+        issues = audit_script_quality(
+            script,
+            strict_outline(
+                {
+                    "page_id": "p08",
+                    "sequence": 8,
+                    "page_type": "chapter",
+                    "title": "第二章：定位、目标与研究边界",
+                },
+                {
+                    "page_id": "p09",
+                    "sequence": 9,
+                    "page_type": "content",
+                    "title": "能力定位",
+                    "argument_role": "solution",
+                    "page_job": "说明能力组成",
+                    "business_question": "形成哪些业务能力",
+                    "main_message": "形成行业公共预测能力",
+                    "source_refs": ["S015", "S026", "S059"],
+                    "prerequisite_pages": [],
+                },
+            ),
+            source_truth(
+                {"id": "S015", "type": "B", "status": "拟建议", "statement": "初步定位。"},
+                {"id": "S026", "type": "B", "status": "边界", "statement": "专业边界。"},
+                {"id": "S059", "type": "B", "status": "边界", "statement": "正式范围待定。"},
+            ),
+        )
+
+        self.assertIn(
+            "NARRATION_INTERNAL_BOUNDARY_LEAK",
+            {issue.code for issue in issues},
+        )
+
+    def test_scope_page_may_state_substantive_scope_without_defensive_coaching(self) -> None:
+        script = parse_script_markdown(
+            SCRIPT.replace(
+                "先说定位再说边界。",
+                "先说明首期业务，再说明数据和模型安排。",
+            ).replace(
+                "建设定位是面向行业的公共能力，服务履职与行业共用；同时明确与专业系统的职责分工，不替代调度、出清和企业计划。正式范围仍需结合资源摸底和原型验证进一步确定，当前阶段不提前锁定实施参数。",
+                "首期聚焦月度季度分析和年度报告自动化，数据采用现有统计与稳定来源，模型采用可解释基线和滚动回测，形成能够验证的业务闭环。",
+            )
+        )
+        issues = audit_script_quality(
+            script,
+            strict_outline(
+                {
+                    "page_id": "p08",
+                    "sequence": 8,
+                    "page_type": "chapter",
+                    "title": "第二章：定位、目标与研究边界",
+                },
+                {
+                    "page_id": "p09",
+                    "sequence": 9,
+                    "page_type": "content",
+                    "title": "首期范围",
+                    "argument_role": "scope",
+                    "page_job": "明确首期范围",
+                    "business_question": "首期聚焦哪些业务",
+                    "main_message": "首期聚焦月季分析和年报自动化",
+                    "source_refs": ["S015", "S026", "S059"],
+                    "prerequisite_pages": [],
+                },
+            ),
+            source_truth(
+                {"id": "S015", "type": "B", "status": "拟建议", "statement": "初步定位。"},
+                {"id": "S026", "type": "B", "status": "边界", "statement": "专业边界。"},
+                {"id": "S059", "type": "B", "status": "边界", "statement": "正式范围待定。"},
+            ),
+        )
+
+        narration_codes = {
+            "NARRATION_BOUNDARY_COACHING",
+            "NARRATION_INTERNAL_BOUNDARY_LEAK",
+        }
+        self.assertFalse(narration_codes & {issue.code for issue in issues})
 
     def test_rejects_slide_meta_speech(self) -> None:
         prose = "建设方向定位为面向行业的公共能力，明确研究对象与服务边界。" * 4

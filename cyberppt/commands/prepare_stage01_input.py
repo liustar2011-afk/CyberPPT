@@ -97,7 +97,14 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
     ]
     if page_id and not pages:
         raise ValueError(f"content page not found: {page_id}")
-    lines = ["# Page script authoring input", "", "Write full prose first; derive on-screen text from it.", ""]
+    lines = [
+        "# Page script authoring input",
+        "",
+        "Write full prose first; derive on-screen text from it.",
+        "`reserved_for_later`, `boundary_refs`, and `boundary_constraints` are internal controls only.",
+        "They must not be copied into coaching tips or speaker notes. State a constraint only when it is the page's declared business subject.",
+        "",
+    ]
     for page in pages:
         lines += [
             f"## {page.get('page_id')} {page.get('title')}",

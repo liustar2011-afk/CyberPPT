@@ -84,6 +84,8 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("- boundary_refs: S002", text)
         self.assertIn("- boundary_constraints:", text)
         self.assertIn("S002: 原文证据二", text)
+        self.assertIn("internal controls only", text)
+        self.assertIn("must not be copied into coaching tips or speaker notes", text)
         self.assertIn("cyberppt-page-contract", text)
         self.assertIn('"new_value_realized":true', text)
         self.assertTrue(output.name.endswith("-p04.md"))
