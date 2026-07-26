@@ -46,6 +46,7 @@ class ScriptPage:
     evidence_map: str
     evidence_map_refs: tuple[str, ...]
     source_refs: tuple[str, ...]
+    boundary_source_refs: tuple[str, ...]
     boundary: str
     visual_structure: str
     onscreen_text: str
@@ -177,7 +178,15 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                 selection_notes=fields.get("文字稿取舍说明", "").strip(),
                 evidence_map=fields.get("证据映射", "").strip(),
                 evidence_map_refs=tuple(SOURCE_RE.findall(fields.get("证据映射", ""))),
-                source_refs=tuple(SOURCE_RE.findall(fields.get("证据", ""))),
+                source_refs=tuple(
+                    dict.fromkeys(
+                        SOURCE_RE.findall(fields.get("证据", ""))
+                        + SOURCE_RE.findall(fields.get("边界依据", ""))
+                    )
+                ),
+                boundary_source_refs=tuple(
+                    SOURCE_RE.findall(fields.get("边界依据", ""))
+                ),
                 boundary=fields.get("边界", "").strip(),
                 visual_structure=fields.get("视觉结构", "").strip(),
                 onscreen_text=onscreen,
@@ -1228,7 +1237,20 @@ def audit_script_quality(
                 for item in contract.get("source_refs", [])
                 if item
             )
-            issues.extend(_prose_issues(page, expected_source_refs=expected_refs))
+            expected_boundary_refs = tuple(
+                str(item) for item in contract.get("boundary_refs", []) if item
+            )
+            expected_proof_refs = tuple(
+                dict.fromkeys(
+                    str(source_id)
+                    for point in contract.get("proof_points", [])
+                    if isinstance(point, dict)
+                    for source_id in point.get("source_refs", [])
+                )
+            )
+            issues.extend(
+                _prose_issues(page, expected_source_refs=expected_proof_refs)
+            )
             if outline.get("page_contract_receipt_mode") == "required":
                 receipt = page.contract_receipt
                 if receipt is None:
@@ -1301,6 +1323,21 @@ def audit_script_quality(
                         "Script does not cite all Source IDs assigned by the Outline.",
                         "Restore the assigned Source IDs or revise the approved Outline contract.",
                         missing,
+                    )
+                )
+            if set(page.boundary_source_refs) != set(expected_boundary_refs):
+                issues.append(
+                    _issue(
+                        "SCRIPT_BOUNDARY_REF_MISMATCH",
+                        page,
+                        "Script boundary evidence must match Outline boundary_refs.",
+                        "Keep boundary-only sources under 边界依据 and out of the main evidence map.",
+                        evidence=tuple(
+                            sorted(
+                                set(page.boundary_source_refs)
+                                ^ set(expected_boundary_refs)
+                            )
+                        ),
                     )
                 )
         unknown = tuple(

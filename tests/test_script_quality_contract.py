@@ -716,6 +716,7 @@ class ScriptContractAuditTests(unittest.TestCase):
             evidence_map="点→S001",
             evidence_map_refs=("S001",),
             source_refs=("S001",),
+            boundary_source_refs=(),
             boundary="",
             visual_structure="业务关系图。",
             onscreen_text="**模块A**\n- a\n**模块B**\n- b",
