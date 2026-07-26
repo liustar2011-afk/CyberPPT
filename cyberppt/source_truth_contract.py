@@ -416,6 +416,30 @@ def audit_source_truth(payload: dict[str, object]) -> list[SourceTruthIssue]:
     return sorted(issues, key=lambda item: (item.code, item.source_ids[:1]))
 
 
+def source_truth_atomicity_warnings(
+    payload: dict[str, object],
+) -> list[SourceTruthIssue]:
+    """Flag likely compound evidence records without blocking Stage 01."""
+
+    warnings: list[SourceTruthIssue] = []
+    for record in _items(payload, "records"):
+        statement = str(record.get("statement") or record.get("quote") or "").strip()
+        semantic_units = _refs(record, "semantic_units")
+        clause_count = sum(statement.count(mark) for mark in ("；", ";", "。"))
+        if len(statement) >= 100 and clause_count >= 3 and len(semantic_units) <= 1:
+            source_id = str(record.get("id") or "")
+            warnings.append(
+                SourceTruthIssue(
+                    "SOURCE_RECORD_ATOMICITY_WARNING",
+                    "This evidence record may contain multiple independent claims; "
+                    "split it when those claims support different page jobs.",
+                    (source_id,) if source_id else (),
+                    "split_semantic_units",
+                )
+            )
+    return warnings
+
+
 def source_truth_retry_directive(
     issues: list[SourceTruthIssue],
     previous_strategy: str = "",

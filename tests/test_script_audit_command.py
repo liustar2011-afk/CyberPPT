@@ -54,16 +54,31 @@ def _write_json(path: Path, payload: object) -> None:
 
 
 def _approve_content_review(project: Path, script: Path) -> None:
+    outline = json.loads(
+        (project / "workbench/stages/01-analysis/outline.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    page_ids = [
+        item["page_id"]
+        for item in outline["pages"]
+        if item.get("page_type") == "content"
+    ]
+    decisions = {
+        "single_mission": True,
+        "module_same_dimension": True,
+        "nonessential_information_removed": True,
+        "cross_page_new_value": True,
+    }
     _write_json(
         project / "workbench" / "scripts" / "audits" / "content-review.json",
         {
             "schema": "cyberppt.content_review.v1",
             "script_sha256": hashlib.sha256(script.read_bytes()).hexdigest().upper(),
-            "decisions": {
-                "single_mission": True,
-                "module_same_dimension": True,
-                "nonessential_information_removed": True,
-                "cross_page_new_value": True,
+            "decisions": decisions,
+            "pages": {
+                page_id: {**decisions, "note": "Page contribution reviewed."}
+                for page_id in page_ids
             },
         },
     )

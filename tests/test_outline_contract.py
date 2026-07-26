@@ -32,7 +32,7 @@ def page(
         "source_weight": source_weight,
         "page_job": question or message or title,
         "proof_points": [
-            {"claim": message or title, "source_refs": refs or []}
+            {"claim": message or title, "source_refs": refs or [], "consumption": "primary"}
         ] if refs else [{"claim": message or title, "source_refs": []}],
         "new_value_vs_previous": message or title,
         "reserved_for_later": "后续页面按各自职责展开。",
@@ -129,7 +129,7 @@ class OutlineContractTests(unittest.TestCase):
                 "main_claim_status": "confirmed",
                 "page_job": "陈述既有工作事实基础",
                 "proof_points": [
-                    {"claim": "已有工作基础", "source_refs": ["S006R"]}
+                    {"claim": "已有工作基础", "source_refs": ["S006R"], "consumption": "primary"}
                 ],
                 "new_value_vs_previous": "首次建立现状基础",
                 "reserved_for_later": "首期建议留给范围页。",

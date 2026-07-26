@@ -63,11 +63,46 @@ def _collect_draft_pages(drafts_dir: Path) -> dict[int, str]:
     return pages
 
 
+def _merge_missing_enrichments(
+    pages: dict[int, str],
+    enrichment_source: Path | None,
+) -> dict[int, str]:
+    if enrichment_source is None:
+        return pages
+    enrichments = _extract_pages(
+        enrichment_source.expanduser().resolve().read_text(encoding="utf-8-sig")
+    )
+    merged = dict(pages)
+    for number, block in pages.items():
+        source_block = enrichments.get(number, "")
+        visual_line = next(
+            (
+                line
+                for line in source_block.splitlines()
+                if line.startswith("- 视觉结构：")
+            ),
+            "",
+        )
+        marker = "- 讲解提示："
+        if visual_line and "- 视觉结构：" not in block:
+            block = (
+                block.replace(marker, f"{visual_line}\n{marker}", 1)
+                if marker in block
+                else block.rstrip() + f"\n{visual_line}\n"
+            )
+        if "【演讲者备注】" not in block and "【演讲者备注】" in source_block:
+            notes = source_block.split("【演讲者备注】", 1)[1].strip()
+            block = block.rstrip() + f"\n【演讲者备注】\n\n{notes}\n"
+        merged[number] = block
+    return merged
+
+
 def assemble_final_script(
     project: Path,
     drafts_dir: Path | None = None,
     output_path: Path | None = None,
     title: str = "",
+    enrichment_source: Path | None = None,
 ) -> dict[str, object]:
     """Merge draft batches into a clean final manuscript under scripts/final/."""
 
@@ -84,7 +119,10 @@ def assemble_final_script(
         if output_path is not None
         else project / "workbench" / "scripts" / "final" / "script-final.md"
     )
-    pages = _collect_draft_pages(drafts)
+    pages = _merge_missing_enrichments(
+        _collect_draft_pages(drafts),
+        enrichment_source,
+    )
     numbers = sorted(pages)
     expected = list(range(numbers[0], numbers[0] + len(numbers)))
     if numbers != expected:
@@ -97,10 +135,10 @@ def assemble_final_script(
     last = numbers[-1]
     header = (
         f"# {doc_title}\n\n"
-        f"> 项目：`{project.name}`  \n"
-        f"> 页数：{len(numbers)}（p{first:02d}–p{last:02d}）  \n"
-        f"> 状态：**最终全稿**  \n"
-        f"> 来源：`workbench/scripts/drafts/` 合稿  \n"
+        f"> 项目：`{project.name}`\n"
+        f"> 页数：{len(numbers)}（p{first:02d}–p{last:02d}）\n"
+        f"> 状态：**最终全稿**\n"
+        f"> 来源：`workbench/scripts/drafts/` 合稿\n"
         f"> 下一步：`python -m cyberppt script-audit {project} --input {output}`\n\n"
         "---\n\n"
     )

@@ -104,6 +104,33 @@ class AssembleFinalScriptTests(unittest.TestCase):
             self.assertNotIn("批次", text)
             self.assertEqual([], audit_final_manuscript_form(text))
 
+    def test_restores_missing_visual_structure_from_enrichment_source(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "demo"
+            drafts = project / "workbench/scripts/drafts"
+            drafts.mkdir(parents=True)
+            (drafts / "batch.md").write_text(
+                "## 第1页：内容页\n"
+                "- 页面类型：内容\n"
+                "- 上屏文字：正文\n"
+                "- 讲解提示：按正文讲解。\n",
+                encoding="utf-8",
+            )
+            enrichment = project / "old-full.md"
+            enrichment.write_text(
+                "## 第1页：内容页\n"
+                "- 视觉结构：左侧证据、右侧判断。\n"
+                "【演讲者备注】\n\n这是自然讲解内容。\n",
+                encoding="utf-8",
+            )
+
+            report = assemble_final_script(project, enrichment_source=enrichment)
+            text = Path(str(report["output"])).read_text(encoding="utf-8")
+
+            self.assertIn("- 视觉结构：左侧证据、右侧判断。", text)
+            self.assertIn("【演讲者备注】\n\n这是自然讲解内容。", text)
+            self.assertLess(text.index("- 视觉结构："), text.index("- 讲解提示："))
+
 
 if __name__ == "__main__":
     unittest.main()

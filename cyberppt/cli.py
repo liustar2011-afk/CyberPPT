@@ -12,6 +12,10 @@ from cyberppt.commands.assemble_final_script import assemble_final_script
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.outline_audit import run_outline_audit
+from cyberppt.commands.prepare_stage01_input import (
+    prepare_outline_input,
+    prepare_page_script_input,
+)
 from cyberppt.commands.script_audit import run_script_audit
 from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script, status_as_json
 from cyberppt.commands.script_runner import SCRIPT_ALIASES, run_script
@@ -106,11 +110,32 @@ def _assemble_final_script_command(args: argparse.Namespace) -> int:
             drafts_dir=Path(args.drafts_dir) if args.drafts_dir else None,
             output_path=Path(args.output) if args.output else None,
             title=args.title or "",
+            enrichment_source=(
+                Path(args.enrichment_source) if args.enrichment_source else None
+            ),
         )
     except (FileNotFoundError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
     print(json.dumps(report, ensure_ascii=False, indent=2))
+    return 0
+
+
+def _prepare_outline_input_command(args: argparse.Namespace) -> int:
+    try:
+        print(prepare_outline_input(Path(args.project)))
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    return 0
+
+
+def _prepare_page_script_input_command(args: argparse.Namespace) -> int:
+    try:
+        print(prepare_page_script_input(Path(args.project), args.page or ""))
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
     return 0
 
 
@@ -334,7 +359,27 @@ def build_parser() -> argparse.ArgumentParser:
         default="",
         help="Optional document title for the final manuscript header.",
     )
+    assemble_final.add_argument(
+        "--enrichment-source",
+        default="",
+        help="Optional prior full script used only to restore missing visual-structure lines.",
+    )
     assemble_final.set_defaults(func=_assemble_final_script_command)
+
+    prepare_outline = subparsers.add_parser(
+        "prepare-outline-input",
+        help="Compile deterministic Outline authoring input.",
+    )
+    prepare_outline.add_argument("project")
+    prepare_outline.set_defaults(func=_prepare_outline_input_command)
+
+    prepare_page = subparsers.add_parser(
+        "prepare-page-script-input",
+        help="Compile deterministic page-script authoring input.",
+    )
+    prepare_page.add_argument("project")
+    prepare_page.add_argument("--page")
+    prepare_page.set_defaults(func=_prepare_page_script_input_command)
 
     resolve_escalation = subparsers.add_parser(
         "resolve-escalation",

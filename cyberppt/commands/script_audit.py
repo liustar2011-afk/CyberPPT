@@ -52,13 +52,34 @@ def _content_review_status(project: Path, script_sha256: str) -> dict[str, objec
         return {"status": "invalid", "path": str(path), "decisions": {}}
     decisions = payload.get("decisions")
     decision_map = decisions if isinstance(decisions, dict) else {}
+    page_reviews = payload.get("pages")
+    page_map = page_reviews if isinstance(page_reviews, dict) else {}
+    outline_path = project / "workbench/stages/01-analysis/outline.json"
+    outline = json.loads(outline_path.read_text(encoding="utf-8-sig"))
+    required_pages = [
+        str(item.get("page_id"))
+        for item in outline.get("pages", [])
+        if isinstance(item, dict) and item.get("page_type") == "content"
+    ]
+    pages_approved = all(
+        isinstance(page_map.get(page_id), dict)
+        and all(page_map[page_id].get(key) is True for key in CONTENT_REVIEW_DECISIONS)
+        and bool(str(page_map[page_id].get("note") or "").strip())
+        for page_id in required_pages
+    )
     if str(payload.get("script_sha256") or "").upper() != script_sha256.upper():
         status = "stale"
-    elif not all(decision_map.get(key) is True for key in CONTENT_REVIEW_DECISIONS):
+    elif not all(decision_map.get(key) is True for key in CONTENT_REVIEW_DECISIONS) or not pages_approved:
         status = "incomplete"
     else:
         status = "approved"
-    return {"status": status, "path": str(path), "decisions": decision_map}
+    return {
+        "status": status,
+        "path": str(path),
+        "decisions": decision_map,
+        "reviewed_pages": len(page_map),
+        "required_pages": len(required_pages),
+    }
 
 
 def _next_attempt(attempts_dir: Path) -> int:
@@ -157,6 +178,22 @@ def _render_markdown(report: dict[str, object]) -> str:
                     "",
                 ]
             )
+    lines.extend(["## 页面质量表", "", "| 页面 | 唯一任务 | 新增价值 | 状态 |", "|---|---|---|---|"])
+    outline_path = report.get("outline")
+    if isinstance(outline_path, str) and Path(outline_path).exists():
+        outline = json.loads(Path(outline_path).read_text(encoding="utf-8-sig"))
+        review_status = (
+            report.get("content_review", {}).get("status", "missing")
+            if isinstance(report.get("content_review"), dict)
+            else "missing"
+        )
+        for page in outline.get("pages", []):
+            if isinstance(page, dict) and page.get("page_type") == "content":
+                lines.append(
+                    f"| {page.get('page_id')} | {page.get('page_job', '')} | "
+                    f"{page.get('new_value_vs_previous', '')} | {review_status} |"
+                )
+    lines.append("")
     directive = (
         report.get("retry_directive")
         if isinstance(report.get("retry_directive"), dict)

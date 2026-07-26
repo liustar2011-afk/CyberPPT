@@ -48,7 +48,7 @@ def content_page(
         "main_claim_status": status,
         "page_job": f"{page_id}唯一页面任务",
         "proof_points": [
-            {"claim": f"{page_id}支撑点", "source_refs": refs or []}
+            {"claim": f"{page_id}支撑点", "source_refs": refs or [], "consumption": "primary"}
         ],
         "new_value_vs_previous": f"{page_id}新增判断",
         "reserved_for_later": "后续内容由后页展开。",
@@ -110,7 +110,7 @@ class ArgumentFlowContractTests(unittest.TestCase):
 
     def test_proof_points_must_use_page_sources(self) -> None:
         page = content_page("p04", 4, "foundation", refs=["S001"])
-        page["proof_points"] = [{"claim": "越界证据", "source_refs": ["S999"]}]
+        page["proof_points"] = [{"claim": "越界证据", "source_refs": ["S999"], "consumption": "primary"}]
 
         self.assertIn(
             "PROOF_POINT_INVALID",
@@ -128,6 +128,27 @@ class ArgumentFlowContractTests(unittest.TestCase):
         )
 
         self.assertIn("PAGE_CONTRIBUTION_OVERLAP", {issue.code for issue in issues})
+
+    def test_nonadjacent_partial_evidence_overlap_is_rejected(self) -> None:
+        first = content_page("p04", 4, "solution", refs=["S001", "S002"])
+        middle = content_page("p05", 5, "solution", refs=["S003"])
+        last = content_page("p06", 6, "solution", refs=["S001", "S002", "S004"])
+        first["page_job"] = last["page_job"] = "说明总体能力建设框架"
+        for page in (first, middle, last):
+            page["proof_points"][0]["consumption"] = "supporting"
+
+        issues = audit_argument_flow(
+            strict_outline(first, middle, last),
+            strict_truth(
+                record("S001", "recommendation", pages=["p04", "p06"]),
+                record("S002", "recommendation", pages=["p04", "p06"]),
+                record("S003", "recommendation", pages=["p05"]),
+                record("S004", "recommendation", pages=["p06"]),
+            ),
+        )
+
+        overlaps = [issue for issue in issues if issue.code == "PAGE_CONTRIBUTION_OVERLAP"]
+        self.assertEqual([("p04", "p06")], [issue.pages for issue in overlaps])
 
     def test_foundation_page_rejects_recommendation_claim(self) -> None:
         issues = audit_argument_flow(

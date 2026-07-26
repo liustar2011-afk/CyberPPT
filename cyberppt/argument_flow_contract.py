@@ -127,7 +127,12 @@ def validate_page_role_fields(
                     invalid = True
                     break
                 refs = _string_list(point, "source_refs")
-                if not refs or not set(refs).issubset(page_sources):
+                consumption = str(point.get("consumption") or "")
+                if (
+                    not refs
+                    or not set(refs).issubset(page_sources)
+                    or consumption not in {"overview", "primary", "supporting"}
+                ):
                     invalid = True
                     break
             if invalid:
@@ -331,9 +336,25 @@ def audit_argument_flow(
                 )
 
     actual_pages_by_source: dict[str, set[str]] = {}
+    primary_pages_by_source: dict[str, set[str]] = {}
     for page_id, page in page_index.items():
         for source_id in _string_list(page, "source_refs"):
             actual_pages_by_source.setdefault(source_id, set()).add(page_id)
+        for point in page.get("proof_points", []):
+            if isinstance(point, dict) and point.get("consumption") == "primary":
+                for source_id in _string_list(point, "source_refs"):
+                    primary_pages_by_source.setdefault(source_id, set()).add(page_id)
+    for source_id, owners in primary_pages_by_source.items():
+        if len(owners) > 1:
+            issues.append(
+                ArgumentFlowIssue(
+                    "EVIDENCE_PRIMARY_CONSUMPTION_CONFLICT",
+                    "One Source record may have only one primary consumption page.",
+                    tuple(sorted(owners)),
+                    (source_id,),
+                    retry_strategy="assign_single_primary_evidence_owner",
+                )
+            )
     for source_id, record in record_index.items():
         declared = set(_string_list(record, "page_refs"))
         actual = actual_pages_by_source.get(source_id, set())
@@ -401,25 +422,35 @@ def audit_argument_flow(
         page_index.values(),
         key=lambda item: int(item.get("sequence") or 0),
     )
-    for previous, current in zip(ordered_pages, ordered_pages[1:]):
-        previous_sources = set(_string_list(previous, "source_refs"))
-        current_sources = set(_string_list(current, "source_refs"))
-        if (
-            previous_sources
-            and previous_sources == current_sources
-            and _normalized_similarity(previous.get("page_job"), current.get("page_job"))
-            >= 0.75
-        ):
+    for previous_index, previous in enumerate(ordered_pages):
+        for current in ordered_pages[previous_index + 1 :]:
+            previous_sources = set(_string_list(previous, "source_refs"))
+            current_sources = set(_string_list(current, "source_refs"))
+            shared_sources = previous_sources & current_sources
+            source_overlap = (
+                len(shared_sources) / min(len(previous_sources), len(current_sources))
+                if previous_sources and current_sources
+                else 0.0
+            )
+            job_similarity = _normalized_similarity(
+                previous.get("page_job"), current.get("page_job")
+            )
+            value_similarity = _normalized_similarity(
+                previous.get("new_value_vs_previous"),
+                current.get("new_value_vs_previous"),
+            )
+            if source_overlap < 0.6 or max(job_similarity, value_similarity) < 0.75:
+                continue
             issues.append(
                 ArgumentFlowIssue(
                     "PAGE_CONTRIBUTION_OVERLAP",
-                    "Adjacent pages use the same evidence for substantially the same page job; "
+                    "Pages reuse substantially the same evidence for the same page job or new value; "
                     "merge them or redefine their unique contribution.",
                     (
                         str(previous.get("page_id") or ""),
                         str(current.get("page_id") or ""),
                     ),
-                    tuple(sorted(current_sources)),
+                    tuple(sorted(shared_sources)),
                     retry_strategy="separate_page_contributions",
                 )
             )

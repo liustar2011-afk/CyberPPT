@@ -8,6 +8,7 @@ from pathlib import Path
 from cyberppt.source_truth_contract import (
     audit_source_receipts,
     audit_source_truth,
+    source_truth_atomicity_warnings,
     collect_source_receipts,
     load_source_truth,
     source_truth_retry_directive,
@@ -216,6 +217,7 @@ def run_source_truth_audit(
     receipt_roots = (project, project / "source", input_path.expanduser().resolve().parent)
     receipts = collect_source_receipts(payload, receipt_roots)
     issues = audit_source_truth(payload)
+    warnings = source_truth_atomicity_warnings(payload)
     issues.extend(
         audit_source_receipts(
             receipts,
@@ -232,6 +234,7 @@ def run_source_truth_audit(
         "remaining_attempts": max(0, effective_max - attempt),
         "coverage": _coverage_summary(payload),
         "issues": [issue.to_dict() for issue in issues],
+        "warnings": [warning.to_dict() for warning in warnings],
         "retry_directive": directive,
         "reference_gate": snapshot_reference_gate("source_truth"),
         "source_receipts": receipts,

@@ -8,6 +8,7 @@ from pathlib import Path
 from cyberppt.source_truth_contract import (
     audit_source_receipts,
     audit_source_truth,
+    source_truth_atomicity_warnings,
     collect_source_receipts,
     load_source_truth,
     source_truth_retry_directive,
@@ -208,6 +209,28 @@ class SourceTruthContractTests(unittest.TestCase):
 
     def test_valid_contract_has_no_issues(self) -> None:
         self.assertEqual([], audit_source_truth(valid_payload()))
+
+    def test_compound_record_is_warning_not_audit_failure(self) -> None:
+        payload = valid_payload()
+        payload["records"][0]["statement"] = (
+            "现有材料已经形成全国电力供需统计基础；同时具备分区域观察条件；"
+            "后续还需要结合气象、产业和重大项目数据形成综合研判能力，"
+            "并根据实际数据授权情况分阶段推进相关能力建设；"
+            "各类结论还需经过业务人员、数据人员和专家共同复核后发布，"
+            "同时保留版本记录和证据来源以供后续追溯。"
+        )
+        payload["records"][0]["semantic_units"] = [
+            {
+                "text": payload["records"][0]["statement"],
+                "claim_role": payload["records"][0]["claim_role"],
+            }
+        ]
+
+        self.assertEqual([], audit_source_truth(payload))
+        self.assertEqual(
+            ["SOURCE_RECORD_ATOMICITY_WARNING"],
+            [item.code for item in source_truth_atomicity_warnings(payload)],
+        )
 
     def test_retry_changes_direction_for_repeated_strategy(self) -> None:
         payload = valid_payload()
