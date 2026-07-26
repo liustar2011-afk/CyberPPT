@@ -73,6 +73,12 @@ def prepare_outline_input(project: Path) -> Path:
         "- `new_value_vs_previous`",
         "- `reserved_for_later`",
         "- `proof_points`: claim, source_refs, consumption",
+        "",
+        "Before creating `proof_points`, screen each candidate against `page_job`, `business_question`, and `main_message`.",
+        "- Keep a candidate only when it directly establishes the page judgment or a necessary step in answering the page question.",
+        "- Boundary or unresolved records default to `boundary_refs`; use them as primary proof only when the page itself defines positioning, scope, assurance conditions, or a decision.",
+        "- When several records establish one implication, consolidate them into one proof point instead of listing each record as an independent direction.",
+        "- Keep at most three primary proof directions on one page; move unrelated material to its actual topic page or reserve it for later.",
     ]
     output = project / "workbench/stages/01-analysis/outline-authoring-input.md"
     output.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")

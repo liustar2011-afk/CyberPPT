@@ -58,6 +58,10 @@ EVIDENCE_TYPE_TO_CLAIM_ROLE = {
     "B": "boundary",
     "U": "unresolved",
 }
+PRIMARY_PROOF_DIRECTION_LIMIT = 3
+BOUNDARY_PRIMARY_ARGUMENT_ROLES = frozenset(
+    {"positioning", "scope", "assurance", "decision"}
+)
 
 
 @dataclass(frozen=True)
@@ -188,6 +192,40 @@ def _normalized_similarity(left: object, right: object) -> float:
     return len(left_tokens & right_tokens) / len(left_tokens | right_tokens)
 
 
+def _theme_similarity(page: dict[str, object], claim: object) -> float:
+    theme_fields = (
+        page.get("page_job"),
+        page.get("business_question"),
+        page.get("main_message"),
+    )
+    return max(
+        (
+            _topic_similarity(claim, field)
+            for field in theme_fields
+            if _text_value(field)
+        ),
+        default=0.0,
+    )
+
+
+def _text_value(value: object) -> str:
+    return str(value or "").strip()
+
+
+def _topic_similarity(left: object, right: object) -> float:
+    def bigrams(value: object) -> set[str]:
+        compact = re.sub(r"[^\w\u4e00-\u9fff]+", "", str(value or "")).lower()
+        if len(compact) < 2:
+            return {compact} if compact else set()
+        return {compact[index : index + 2] for index in range(len(compact) - 1)}
+
+    left_tokens = bigrams(left)
+    right_tokens = bigrams(right)
+    if not left_tokens or not right_tokens:
+        return 0.0
+    return len(left_tokens & right_tokens) / len(left_tokens | right_tokens)
+
+
 def _dict_items(payload: dict[str, object], field: str) -> list[dict[str, object]]:
     raw = payload.get(field)
     if not isinstance(raw, list):
@@ -287,6 +325,72 @@ def audit_argument_flow(
         allowed = explicit_allowed or set(DEFAULT_ALLOWED_CLAIMS.get(argument_role, ()))
         forbidden = set(_string_list(page, "forbidden_claim_roles"))
         source_refs = _string_list(page, "source_refs")
+        proof_points = [
+            point
+            for point in page.get("proof_points", [])
+            if isinstance(point, dict)
+        ]
+        primary_points = [
+            point for point in proof_points if point.get("consumption") == "primary"
+        ]
+        if len(primary_points) > PRIMARY_PROOF_DIRECTION_LIMIT:
+            issues.append(
+                ArgumentFlowIssue(
+                    "PRIMARY_PROOF_DIRECTIONS_EXCESSIVE",
+                    "A single-theme page may contain at most three independent primary "
+                    "proof directions; consolidate records that establish one implication.",
+                    (page_id,),
+                    tuple(
+                        dict.fromkeys(
+                            source_id
+                            for point in primary_points
+                            for source_id in _string_list(point, "source_refs")
+                        )
+                    ),
+                    retry_strategy="refocus_page_evidence",
+                )
+            )
+        for point in primary_points:
+            point_sources = _string_list(point, "source_refs")
+            boundary_primary_sources = [
+                source_id
+                for source_id in point_sources
+                if str(
+                    record_index.get(source_id, {}).get("claim_role")
+                    or EVIDENCE_TYPE_TO_CLAIM_ROLE.get(
+                        str(record_index.get(source_id, {}).get("type") or ""),
+                        "",
+                    )
+                )
+                in {"boundary", "unresolved"}
+            ]
+            if (
+                boundary_primary_sources
+                and argument_role not in BOUNDARY_PRIMARY_ARGUMENT_ROLES
+            ):
+                issues.append(
+                    ArgumentFlowIssue(
+                        "BOUNDARY_USED_AS_PRIMARY_PROOF",
+                        "Boundary or unresolved evidence cannot be primary proof unless "
+                        "the page itself defines positioning, scope, assurance conditions, "
+                        "or a decision.",
+                        (page_id,),
+                        tuple(boundary_primary_sources),
+                        retry_strategy="refocus_page_evidence",
+                    )
+                )
+            claim = point.get("claim")
+            if claim and _theme_similarity(page, claim) == 0.0:
+                issues.append(
+                    ArgumentFlowIssue(
+                        "PROOF_POINT_OFF_TOPIC",
+                        "A primary proof claim must share a concrete topic with page_job, "
+                        "business_question, or main_message.",
+                        (page_id,),
+                        tuple(point_sources),
+                        retry_strategy="refocus_page_evidence",
+                    )
+                )
         if not source_refs:
             issues.append(
                 ArgumentFlowIssue(

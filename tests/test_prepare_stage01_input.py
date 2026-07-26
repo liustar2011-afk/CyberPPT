@@ -70,6 +70,9 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("`page_job`", text)
         self.assertIn("S001 [", text)
         self.assertIn("原文证据一", text)
+        self.assertIn("screen each candidate against `page_job`, `business_question`, and `main_message`", text)
+        self.assertIn("Boundary or unresolved records default to `boundary_refs`", text)
+        self.assertIn("consolidate them into one proof point", text)
 
     def test_prepare_page_script_input_contains_consumption_and_evidence(self) -> None:
         output = prepare_page_script_input(self.project, "p04")

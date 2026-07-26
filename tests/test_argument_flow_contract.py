@@ -15,6 +15,7 @@ def record(
     pages: list[str] | None = None,
     depends_on: list[str] | None = None,
     status: str = "现状",
+    statement: str = "",
 ) -> dict[str, object]:
     return {
         "id": source_id,
@@ -22,6 +23,7 @@ def record(
         "page_refs": pages or [],
         "depends_on": depends_on or [],
         "status": status,
+        "statement": statement,
     }
 
 
@@ -47,6 +49,8 @@ def content_page(
         "prerequisite_pages": prerequisites or [],
         "main_claim_status": status,
         "page_job": f"{page_id}唯一页面任务",
+        "business_question": f"{page_id}需要回答什么",
+        "main_message": f"{page_id}支撑点",
         "proof_points": [
             {"claim": f"{page_id}支撑点", "source_refs": refs or [], "consumption": "primary"}
         ],
@@ -125,6 +129,103 @@ class ArgumentFlowContractTests(unittest.TestCase):
             "BOUNDARY_REFS_INVALID",
             {issue.code for issue in validate_page_role_fields(strict_outline(page))},
         )
+
+    def test_off_topic_primary_proof_is_rejected(self) -> None:
+        page = content_page("p09", 9, "positioning", refs=["S059"])
+        page["page_job"] = "明确平台的总体定位"
+        page["business_question"] = "拟建设什么性质的平台"
+        page["main_message"] = "平台定位为行业公共预测能力"
+        page["proof_points"] = [
+            {
+                "claim": "采购方式和投资规模需要后续确定",
+                "source_refs": ["S059"],
+                "consumption": "primary",
+            }
+        ]
+
+        issues = audit_argument_flow(
+            strict_outline(page),
+            strict_truth(
+                record(
+                    "S059",
+                    "boundary",
+                    pages=["p09"],
+                    statement="采购方式和投资规模需要后续确定",
+                )
+            ),
+        )
+
+        self.assertIn("PROOF_POINT_OFF_TOPIC", {issue.code for issue in issues})
+
+    def test_boundary_record_cannot_be_primary_proof_on_solution_page(self) -> None:
+        page = content_page("p12", 12, "solution", refs=["S027"])
+        page["proof_points"] = [
+            {
+                "claim": "正式投资规模需要后续确定",
+                "source_refs": ["S027"],
+                "consumption": "primary",
+            }
+        ]
+
+        issues = audit_argument_flow(
+            strict_outline(page),
+            strict_truth(record("S027", "boundary", pages=["p12"])),
+        )
+
+        self.assertIn("BOUNDARY_USED_AS_PRIMARY_PROOF", {issue.code for issue in issues})
+
+    def test_too_many_primary_proof_directions_are_rejected(self) -> None:
+        page = content_page("p20", 20, "solution", refs=["S001", "S002", "S003", "S004"])
+        page["proof_points"] = [
+            {
+                "claim": f"能力主题支撑方向{index}",
+                "source_refs": [source_id],
+                "consumption": "primary",
+            }
+            for index, source_id in enumerate(page["source_refs"], start=1)
+        ]
+
+        issues = audit_argument_flow(
+            strict_outline(page),
+            strict_truth(
+                *[
+                    record(source_id, "recommendation", pages=["p20"])
+                    for source_id in page["source_refs"]
+                ]
+            ),
+        )
+
+        self.assertIn("PRIMARY_PROOF_DIRECTIONS_EXCESSIVE", {issue.code for issue in issues})
+
+    def test_consolidated_primary_proof_passes_focus_audit(self) -> None:
+        page = content_page("p20", 20, "solution", refs=["S001", "S002", "S003", "S004"])
+        page["page_job"] = "说明核心能力如何形成统一研判"
+        page["business_question"] = "哪些能力共同支撑统一研判"
+        page["main_message"] = "四类能力共同形成统一研判"
+        page["proof_points"] = [
+            {
+                "claim": "四类能力共同支撑统一研判",
+                "source_refs": ["S001", "S002", "S003", "S004"],
+                "consumption": "primary",
+            }
+        ]
+
+        issues = audit_argument_flow(
+            strict_outline(page),
+            strict_truth(
+                *[
+                    record(source_id, "recommendation", pages=["p20"])
+                    for source_id in page["source_refs"]
+                ]
+            ),
+        )
+
+        focus_codes = {
+            "PROOF_POINT_OFF_TOPIC",
+            "BOUNDARY_USED_AS_PRIMARY_PROOF",
+            "PRIMARY_PROOF_DIRECTIONS_EXCESSIVE",
+        }
+        self.assertFalse(focus_codes & {issue.code for issue in issues})
 
     def test_adjacent_same_job_and_sources_are_rejected(self) -> None:
         first = content_page("p04", 4, "solution", refs=["S001"])
