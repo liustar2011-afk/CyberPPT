@@ -17,19 +17,19 @@
 
 ### Task 1: Preparation inputs
 
-- [ ] Make Outline input independent of `outline.json`.
-- [ ] Emit hidden page-contract receipt templates from page-script input.
-- [ ] Update preparation tests.
+- [x] Make Outline input independent of `outline.json`.
+- [x] Emit hidden page-contract receipt templates from page-script input.
+- [x] Update preparation tests.
 
 ### Task 2: Script contract audit
 
-- [ ] Parse hidden receipts on content pages.
-- [ ] Validate receipt fields and declared consumption in strict mode.
-- [ ] Add focused audit tests.
+- [x] Parse hidden receipts on content pages.
+- [x] Validate receipt fields and declared consumption in strict mode.
+- [x] Add focused audit tests.
 
 ### Task 3: Current project
 
-- [ ] Add receipts to all 24 content pages and draft batches.
-- [ ] Rebuild canonical script and refresh audit receipts.
-- [ ] Run focused tests and project audits.
-- [ ] Commit the validated scope.
+- [x] Add receipts to all 24 content pages and draft batches.
+- [x] Rebuild canonical script and refresh audit receipts.
+- [x] Run focused tests and project audits.
+- [x] Commit the validated scope.

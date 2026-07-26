@@ -63,16 +63,22 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.temporary.cleanup()
 
     def test_prepare_outline_input_contains_page_job_and_evidence(self) -> None:
+        (self.project / "workbench/stages/01-analysis/outline.json").unlink()
         output = prepare_outline_input(self.project)
         text = output.read_text(encoding="utf-8")
-        self.assertIn("Page job: 说明为什么现在可以启动", text)
-        self.assertIn("S001 [现状]: 原文证据一", text)
+        self.assertIn("`page_job`", text)
+        self.assertIn("S001 [", text)
+        self.assertIn("原文证据一", text)
 
     def test_prepare_page_script_input_contains_consumption_and_evidence(self) -> None:
         output = prepare_page_script_input(self.project, "p04")
         text = output.read_text(encoding="utf-8")
+        self.assertIn("- page_job: 说明为什么现在可以启动", text)
+        self.assertIn("- main_message: 已有基础支持启动", text)
         self.assertIn("[primary] 统计基础已经具备 (S001)", text)
         self.assertIn("S002: 原文证据二", text)
+        self.assertIn("cyberppt-page-contract", text)
+        self.assertIn('"new_value_realized":true', text)
         self.assertTrue(output.name.endswith("-p04.md"))
 
     def test_prepare_page_script_input_rejects_unknown_page(self) -> None:

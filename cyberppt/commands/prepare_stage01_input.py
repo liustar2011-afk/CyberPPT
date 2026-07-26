@@ -26,24 +26,54 @@ def _records(project: Path) -> dict[str, dict[str, object]]:
 
 def prepare_outline_input(project: Path) -> Path:
     project = project.expanduser().resolve()
-    outline = _load(project / "workbench/stages/01-analysis/outline.json")
-    records = _records(project)
-    lines = ["# Outline authoring input", "", "Use only assigned evidence.", ""]
-    for page in outline.get("pages", []):
-        if not isinstance(page, dict) or page.get("page_type") != "content":
+    truth = _load(project / "workbench/stages/01-analysis/source-truth.json")
+    records = {
+        str(item.get("id")): item
+        for item in truth.get("records", [])
+        if isinstance(item, dict) and item.get("id")
+    }
+    lines = [
+        "# Outline authoring input",
+        "",
+        "Create the Outline from Source Truth. Use canonical field names:",
+        "`page_job`, `business_question`, `main_message`, "
+        "`new_value_vs_previous`, `reserved_for_later`, `proof_points`.",
+        "",
+        "## coverage_targets",
+        "",
+    ]
+    for target in truth.get("coverage_targets", []):
+        if not isinstance(target, dict):
             continue
-        lines += [
-            f"## {page.get('page_id')} {page.get('title')}",
-            f"- Page job: {page.get('page_job', '')}",
-            f"- Business question: {page.get('business_question', '')}",
-            f"- New value: {page.get('new_value_vs_previous', '')}",
-            f"- Reserved for later: {page.get('reserved_for_later', '')}",
-            "- Evidence:",
-        ]
-        for source_id in page.get("source_refs", []):
-            record = records.get(str(source_id), {})
-            lines.append(f"  - {source_id} [{record.get('status', '')}]: {record.get('statement', '')}")
-        lines.append("")
+        refs = ", ".join(str(item) for item in target.get("record_refs", []))
+        lines.append(
+            f"- {target.get('id')} [{target.get('priority', '')}] "
+            f"{target.get('label', '')}: {refs}"
+        )
+    lines += ["", "## evidence_records", ""]
+    for source_id, record in records.items():
+        lines.append(
+            f"- {source_id} [{record.get('claim_role') or record.get('type', '')}; "
+            f"{record.get('status', '')}]: {record.get('statement', '')}"
+        )
+    lines += ["", "## conclusions", ""]
+    for conclusion in truth.get("conclusions", []):
+        if isinstance(conclusion, dict):
+            lines.append(f"- {json.dumps(conclusion, ensure_ascii=False)}")
+    if not truth.get("conclusions"):
+        lines.append("- none")
+    lines += [
+        "",
+        "## required_content_page_contract",
+        "",
+        "Each content page must define:",
+        "- `page_job`",
+        "- `business_question`",
+        "- `main_message`",
+        "- `new_value_vs_previous`",
+        "- `reserved_for_later`",
+        "- `proof_points`: claim, source_refs, consumption",
+    ]
     output = project / "workbench/stages/01-analysis/outline-authoring-input.md"
     output.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
     return output
@@ -65,12 +95,12 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
     for page in pages:
         lines += [
             f"## {page.get('page_id')} {page.get('title')}",
-            f"- Page job: {page.get('page_job', '')}",
-            f"- Business question: {page.get('business_question', '')}",
-            f"- Main message: {page.get('main_message', '')}",
-            f"- New value versus previous: {page.get('new_value_vs_previous', '')}",
-            f"- Reserved for later: {page.get('reserved_for_later', '')}",
-            "- Proof points:",
+            f"- page_job: {page.get('page_job', '')}",
+            f"- business_question: {page.get('business_question', '')}",
+            f"- main_message: {page.get('main_message', '')}",
+            f"- new_value_vs_previous: {page.get('new_value_vs_previous', '')}",
+            f"- reserved_for_later: {page.get('reserved_for_later', '')}",
+            "- proof_points:",
         ]
         for point in page.get("proof_points", []):
             if isinstance(point, dict):
@@ -79,6 +109,22 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         lines.append("- Evidence text:")
         for source_id in page.get("source_refs", []):
             lines.append(f"  - {source_id}: {records.get(str(source_id), {}).get('statement', '')}")
+        receipt = {
+            "schema": "cyberppt.page_contract_receipt.v1",
+            "page_id": page.get("page_id"),
+            "page_job": page.get("page_job"),
+            "business_question": page.get("business_question"),
+            "main_message": page.get("main_message"),
+            "new_value_vs_previous": page.get("new_value_vs_previous"),
+            "reserved_for_later": page.get("reserved_for_later"),
+            "proof_points": page.get("proof_points", []),
+            "new_value_realized": True,
+            "reserved_for_later_respected": True,
+        }
+        lines += [
+            "- page_contract_receipt (copy unchanged into the completed page):",
+            f"  <!-- cyberppt-page-contract {json.dumps(receipt, ensure_ascii=False, separators=(',', ':'))} -->",
+        ]
         lines.append("")
     suffix = f"-{page_id}" if page_id else ""
     output = project / "workbench/scripts" / f"page-script-authoring-input{suffix}.md"

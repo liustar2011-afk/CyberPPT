@@ -85,6 +85,65 @@ class ScriptMarkdownParserTests(unittest.TestCase):
 
 
 class ScriptContractAuditTests(unittest.TestCase):
+    def test_required_page_contract_receipt_must_be_present(self) -> None:
+        outline = strict_outline(
+            {
+                "page_id": "p09",
+                "sequence": 9,
+                "page_type": "content",
+                "title": "总体定位",
+                "argument_role": "positioning",
+                "source_refs": ["S015", "S026", "S059"],
+                "prerequisite_pages": [],
+            }
+        )
+        outline["page_contract_receipt_mode"] = "required"
+        truth = source_truth(
+            {"id": "S015", "type": "B", "status": "拟建议", "statement": "初步定位。"},
+            {"id": "S026", "type": "B", "status": "研究边界", "statement": "专业边界。"},
+            {"id": "S059", "type": "B", "status": "研究边界", "statement": "正式范围待定。"},
+        )
+
+        codes = {
+            issue.code
+            for issue in audit_script_quality(parse_script_markdown(SCRIPT), outline, truth)
+        }
+
+        self.assertIn("PAGE_CONTRACT_RECEIPT_MISSING", codes)
+
+    def test_matching_page_contract_receipt_passes(self) -> None:
+        outline = strict_outline(
+            {
+                "page_id": "p09",
+                "sequence": 9,
+                "page_type": "content",
+                "title": "总体定位",
+                "argument_role": "positioning",
+                "source_refs": ["S015", "S026", "S059"],
+                "prerequisite_pages": [],
+                "main_message": "初步定位为面向行业的公共能力。",
+            }
+        )
+        outline["page_contract_receipt_mode"] = "required"
+        receipt = (
+            '<!-- cyberppt-page-contract {"schema":"cyberppt.page_contract_receipt.v1",'
+            '"page_id":"p09","main_message":"初步定位为面向行业的公共能力。",'
+            '"new_value_realized":true,"reserved_for_later_respected":true} -->\n'
+        )
+        script = SCRIPT.replace("【演讲者备注】", receipt + "【演讲者备注】")
+        truth = source_truth(
+            {"id": "S015", "type": "B", "status": "拟建议", "statement": "初步定位。"},
+            {"id": "S026", "type": "B", "status": "研究边界", "statement": "专业边界。"},
+            {"id": "S059", "type": "B", "status": "研究边界", "statement": "正式范围待定。"},
+        )
+
+        codes = {
+            issue.code
+            for issue in audit_script_quality(parse_script_markdown(script), outline, truth)
+        }
+
+        self.assertFalse(any(code.startswith("PAGE_CONTRACT_") for code in codes))
+
     def test_communication_review_tracks_mission_and_lead(self) -> None:
         script = parse_script_markdown(
             """## 第9页：总体定位

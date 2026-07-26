@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 from pathlib import Path
 import re
 import unicodedata
@@ -12,6 +13,10 @@ PAGE_HEADING_RE = re.compile(r"^##\s+第(\d+)页[：:](.+?)\s*$", re.MULTILINE)
 FIELD_RE = re.compile(r"^-\s*([^：:\n]+)[：:]\s*(.*)$")
 MODULE_RE = re.compile(r"^\s*\*\*(.+?)\*\*\s*$")
 SOURCE_RE = re.compile(r"S\d{3}")
+PAGE_CONTRACT_RECEIPT_RE = re.compile(
+    r"<!--\s*cyberppt-page-contract\s+(?P<payload>\{.*?\})\s*-->",
+    re.S,
+)
 
 
 SPEAKER_SECTION_RE = re.compile(
@@ -47,6 +52,7 @@ class ScriptPage:
     module_titles: tuple[str, ...]
     field_order: tuple[str, ...] = ()
     speaker_notes: str = ""
+    contract_receipt: dict[str, object] | None = None
 
 
 @dataclass(frozen=True)
@@ -138,6 +144,17 @@ def extract_speaker_notes(body: str) -> str:
     return fields.get("演讲者备注", "").strip()
 
 
+def extract_page_contract_receipt(body: str) -> dict[str, object] | None:
+    match = PAGE_CONTRACT_RECEIPT_RE.search(body)
+    if not match:
+        return None
+    try:
+        payload = json.loads(match.group("payload"))
+    except json.JSONDecodeError:
+        return {"_invalid": True}
+    return payload if isinstance(payload, dict) else {"_invalid": True}
+
+
 def parse_script_markdown(text: str) -> ScriptDocument:
     pages: list[ScriptPage] = []
     for sequence, heading, body in _page_sections(text):
@@ -167,6 +184,7 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                 module_titles=modules,
                 field_order=_field_order(body),
                 speaker_notes=extract_speaker_notes(body),
+                contract_receipt=extract_page_contract_receipt(body),
             )
         )
     if not pages:
@@ -677,7 +695,10 @@ def script_retry_directive(
 
 
 def _declared_count(text: str) -> int | None:
-    match = re.search(r"([二两三四五六七八])(?:类|项|步|层)", text)
+    match = re.search(
+        r"([二两三四五六七八])(?:类能力|类任务|类断点|项任务|个模块|步|层)",
+        text,
+    )
     return COUNT_WORDS.get(match.group(1)) if match else None
 
 
@@ -1208,6 +1229,66 @@ def audit_script_quality(
                 if item
             )
             issues.extend(_prose_issues(page, expected_source_refs=expected_refs))
+            if outline.get("page_contract_receipt_mode") == "required":
+                receipt = page.contract_receipt
+                if receipt is None:
+                    issues.append(
+                        _issue(
+                            "PAGE_CONTRACT_RECEIPT_MISSING",
+                            page,
+                            "Strict content pages must retain the hidden page-contract receipt.",
+                            "Copy the cyberppt-page-contract comment from page-script-authoring-input.",
+                        )
+                    )
+                elif receipt.get("_invalid") is True:
+                    issues.append(
+                        _issue(
+                            "PAGE_CONTRACT_RECEIPT_INVALID",
+                            page,
+                            "The hidden page-contract receipt is not valid JSON.",
+                            "Regenerate the receipt from page-script-authoring-input.",
+                        )
+                    )
+                else:
+                    canonical_fields = (
+                        "page_job",
+                        "business_question",
+                        "main_message",
+                        "new_value_vs_previous",
+                        "reserved_for_later",
+                        "proof_points",
+                    )
+                    mismatched = tuple(
+                        field
+                        for field in canonical_fields
+                        if receipt.get(field) != contract.get(field)
+                    )
+                    if (
+                        receipt.get("page_id") != page.page_id
+                        or receipt.get("main_message") != page.main_message
+                        or mismatched
+                    ):
+                        issues.append(
+                            _issue(
+                                "PAGE_CONTRACT_RECEIPT_MISMATCH",
+                                page,
+                                "The hidden receipt does not match the approved Outline or script judgment.",
+                                "Regenerate the page from the current page-script-authoring-input.",
+                                evidence=mismatched,
+                            )
+                        )
+                    if (
+                        receipt.get("new_value_realized") is not True
+                        or receipt.get("reserved_for_later_respected") is not True
+                    ):
+                        issues.append(
+                            _issue(
+                                "PAGE_CONTRACT_CONSUMPTION_UNCONFIRMED",
+                                page,
+                                "The page does not confirm new-value realization and reserved-content discipline.",
+                                "Review the page and set both receipt decisions to true only after confirmation.",
+                            )
+                        )
             missing = tuple(
                 item for item in expected_refs if item not in page.source_refs
             )
