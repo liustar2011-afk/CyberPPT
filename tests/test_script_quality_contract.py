@@ -51,7 +51,7 @@ SCRIPT = """# 第8—9页脚本审稿稿
 
 【演讲者备注】
 
-各位同事，先把建设定位说清楚：面向行业的公共能力，服务履职与行业共用；同时明确与专业系统的职责分工，不替代调度、出清和企业计划。
+建设定位是面向行业的公共能力，服务履职与行业共用；同时明确与专业系统的职责分工，不替代调度、出清和企业计划。正式范围仍需结合资源摸底和原型验证进一步确定，当前阶段不提前锁定实施参数。
 """
 
 
@@ -103,7 +103,7 @@ class ScriptContractAuditTests(unittest.TestCase):
 
 【演讲者备注】
 
-各位同事，先说明定位，再说明服务对象和职责边界，便于后续展开。
+建设定位、服务对象和职责边界共同构成本阶段的基本判断。
 """
         )
         review = build_communication_review(
@@ -661,7 +661,7 @@ class ScriptContractAuditTests(unittest.TestCase):
             visual_structure="业务关系图。",
             onscreen_text="**模块A**\n- a\n**模块B**\n- b",
             module_titles=("模块A", "模块B"),
-            speaker_notes="各位同事，先把建设方向说清楚，再说明与专业系统的职责分工。",
+            speaker_notes="建设方向应与专业系统的职责分工同时明确，避免能力边界交叉。",
         )
         issue = _issue(
             "VISUAL_STRUCTURE_TOO_THIN",
@@ -870,9 +870,9 @@ class SpeakerNotesContractTests(unittest.TestCase):
         body = (
             "- 讲解提示：短提醒。\n\n"
             "【演讲者备注】\n\n"
-            "各位同事，先把方向说清楚，再说明职责分工。\n"
+            "建设方向与职责分工需要同步明确。\n"
         )
-        self.assertIn("各位同事", extract_speaker_notes(body))
+        self.assertIn("建设方向", extract_speaker_notes(body))
 
     def test_rejects_slide_meta_speech(self) -> None:
         prose = "建设方向定位为面向行业的公共能力，明确研究对象与服务边界。" * 4
@@ -918,6 +918,7 @@ class SpeakerNotesContractTests(unittest.TestCase):
         )
         codes = {issue.code for issue in issues}
         self.assertIn("SPEAKER_NOTES_SLIDE_META", codes)
+        self.assertIn("SPEAKER_NOTES_HOST_META", codes)
 
     def test_requires_speaker_notes_on_content_pages(self) -> None:
         prose = "建设方向定位为面向行业的公共能力，明确研究对象与服务边界。" * 4

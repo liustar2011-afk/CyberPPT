@@ -21,6 +21,10 @@ SPEAKER_SECTION_RE = re.compile(
 SPEAKER_SLIDE_META_RE = re.compile(
     r"(这一页|下一页|上一页|本页我们|本页先|本页把|本页只|看这一页|从这一页)"
 )
+SPEAKER_HOST_META_RE = re.compile(
+    r"(各位同事|先把.{0,18}说清楚|先说明|先谈|先讲规则|"
+    r"综合起来|接下来看|到这里收一下|全篇收在|请.{0,12}听|请先记住)"
+)
 SPEAKER_NOTES_MIN_CHARS = 60
 
 
@@ -833,6 +837,19 @@ def _prose_issues(
                     "Speaker notes use slide-meta coaching instead of natural speech.",
                     "Remove 这一页/下一页/本页我们 and speak the business content aloud.",
                     evidence=meta_hits,
+                )
+            )
+        host_hits = tuple(
+            sorted({match.group(0) for match in SPEAKER_HOST_META_RE.finditer(notes)})
+        )
+        if host_hits:
+            issues.append(
+                _issue(
+                    "SPEAKER_NOTES_HOST_META",
+                    page,
+                    "Speaker notes use host-style framing instead of formal briefing narration.",
+                    "Start with the judgment, then state its support and implication directly.",
+                    evidence=host_hits,
                 )
             )
     return issues

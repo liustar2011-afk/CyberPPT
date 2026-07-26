@@ -2,7 +2,13 @@
 
 ## 执行时点
 
-在 Outline 通过并获得用户批准后编写批次脚本。每个批次完成后运行 `script-audit`；完整脚本形成后再运行一次全稿审计。脚本审计未通过时不得批准脚本或进入 Stage 02。
+在 Outline 通过并获得用户批准后编写批次脚本。每个批次完成后对 `workbench/scripts/drafts/` 下的批次稿运行 `script-audit`。全稿定稿前先运行：
+
+```bash
+python -m cyberppt assemble-final-script <project>
+```
+
+再对 `workbench/scripts/final/script-final.md` 做全稿 `script-audit`。定稿文件不得出现「草稿」「批次」字样或批次横幅；`script-audit` 对 `scripts/final/` 路径会以 `FINAL_MANUSCRIPT_DRAFT_BANNER`（error）拦截。脚本审计未通过时不得批准脚本或进入 Stage 02。
 
 审稿优先级：先审**完整文字稿**是否把本页业务说清且取舍正确；再审上屏是否忠实压缩；最后才进入 Stage 02。完整文字稿是内容表达权威层，不是上屏附属字段。详细设计见 `docs/superpowers/specs/2026-07-24-page-full-prose-from-source-design.md`。
 
@@ -10,7 +16,7 @@
 
 - 封面、目录、章节过渡页和封底使用模板页结构。
 - 章节过渡页只写“第X章：XXX”。
-- 内容页保留：页面标题、主判断、完整文字稿、文字稿取舍说明、证据映射、上屏文字、证据、边界和视觉结构。
+- 内容页保留：页面标题、主判断、完整文字稿、文字稿取舍说明、证据映射、上屏文字、证据、边界、视觉结构、讲解提示，以及 **`【演讲者备注】`**（组装写入 PPT 备注）。
 - 一页只回答一个完整业务问题，并由一个视觉中心承载。
 
 ## 完整文字稿（内容页强制 · 仓库默认）
@@ -35,7 +41,34 @@ Source Truth → Outline 页合同 → 完整文字稿 → 上屏文字 → Stag
 → 证据映射
 → 上屏文字
 → 证据 / 边界 / 视觉结构 / 讲解提示
+→ 【演讲者备注】
 ```
+
+## 演讲者备注（内容页强制 · 仓库默认）
+
+内容页必须提供可上台照讲的演讲词，供 Stage 02 组装写入 PPT 备注。正式写法：
+
+```markdown
+【演讲者备注】
+
+中电联已经具备开展相关研究的现实基础。……（正式汇报讲稿，约 1–2 分钟）
+```
+
+也兼容字段写法 `- 演讲者备注：`。组装入口 `page_notes_text` **优先消费**该区块；送图 ImageGen **不编入**演讲词。
+
+### 正式汇报讲稿纪律（代码审计）
+
+- 直接从本页核心判断或事实结论起笔，不称呼听众，不说明“现在准备讲什么”。
+- 使用适合朗读的完整书面句，按“判断—依据—含义或边界”组织，避免主持式串场。
+- **禁止**翻页元话语：`这一页` / `下一页` / `上一页` / `本页我们` / `本页先` / `本页把` / `本页只` / `看这一页` / `从这一页`。
+- **禁止**主持式元话语：`各位同事` / `先把……说清楚` / `先说明` / `先谈` / `综合起来` / `接下来看` / `请先记住`。
+- 页面承接依靠内容本身的因果、递进和边界，不单独编写转场口号。
+- 强度与讨论稿一致，不升格成已立项、已建成。
+
+### 审计级别
+
+- `CONTENT_SPEAKER_NOTES_MISSING` / `CONTENT_SPEAKER_NOTES_TOO_THIN` / `SPEAKER_NOTES_SLIDE_META` / `SPEAKER_NOTES_HOST_META` → **error**
+- 重试策略：`speaker_notes_naturalize`
 
 ### 摘取：页证据包
 
@@ -170,6 +203,12 @@ foundation / change / gap / necessity 不得提前写入首期范围、投资、
 - 只有标题和口号的页面应补足证据或与相邻业务问题合并。
 - 筛选条件、评价方法和工作方法只用于解释实际业务取舍，不独立抢占主体页面。
 
+## 定稿形态
+
+- `workbench/scripts/drafts/`：允许批次标题、`> 批次：`、草稿状态等过程标记。
+- `workbench/scripts/final/`：只接受连续全稿；不得含「草稿」「批次」字样，也不得含「待 script-audit 通过后审稿」类过程提示。
+- 合稿入口：`python -m cyberppt assemble-final-script <project>`；合稿失败或仍含过程标记时不得进入全稿批准。
+
 ## 失败重试
 
-读取 `retry_scope` 和 `retry_directive`，只重写失败页面并保留有效来源、状态和页面合同。文字稿类失败优先 `business_prose_first`。同一问题再次失败时更换重构方向；达到上限后保留最佳稿、缺口清单和决策选项。
+读取 `retry_scope` 和 `retry_directive`，只重写失败页面并保留有效来源、状态和页面合同。文字稿类失败优先 `business_prose_first`；定稿形态失败优先 `manuscript_form_cleanup`（先合稿去横幅）。同一问题再次失败时更换重构方向；达到上限后保留最佳稿、缺口清单和决策选项。

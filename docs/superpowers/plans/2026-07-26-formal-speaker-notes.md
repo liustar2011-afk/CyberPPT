@@ -16,12 +16,12 @@
 
 ### Task 1: Global contract
 
-- [ ] Update the speaker-notes writing reference.
-- [ ] Add host-style meta-language audit and tests.
+- [x] Update the speaker-notes writing reference.
+- [x] Add host-style meta-language audit and tests.
 
 ### Task 2: Current project
 
-- [ ] Rewrite all 24 content-page notes.
-- [ ] Rebuild `script-final.md` and refresh the review receipt.
-- [ ] Run focused tests and project audit.
-- [ ] Commit only this task's files.
+- [x] Rewrite all 24 content-page notes.
+- [x] Rebuild `script-final.md` and refresh the review receipt.
+- [x] Run focused tests and project audit.
+- [x] Commit only this task's files.
