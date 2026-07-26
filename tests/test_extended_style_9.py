@@ -59,12 +59,21 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert style_nine["colors"] == STYLE_FOUR_CONTRACT["colors"]
     assert "icon_rule" in style_nine
     assert "people_rule" in style_nine
-    assert "should not be used to imply specific events, organizations, or historical facts" in style_nine["people_rule"]
+    assert "Do not use identifiable people to imply a specific event, organization, role assignment, endorsement, or historical fact" in style_nine["people_rule"]
     assert "small-scale anonymous professional figures" in style_nine["people_rule"]
-    assert "Avoid identifiable faces, front-facing views, meeting scenes" in style_nine["people_rule"]
-    assert "documentary-style human activities" in style_nine["people_rule"]
-    assert "only support abstract capability expression" in style_nine["people_rule"]
+    assert "never use portraits, leaders, name badges, uniforms" in style_nine["people_rule"]
+    assert "documentary-style activities" in style_nine["people_rule"]
     assert "professional activity is part of the business meaning" not in style_nine["people_rule"]
+    assert "factuality_rule" in style_nine
+    assert "organization names, logos, seals, signage" in style_nine["factuality_rule"]
+    assert "editable text layer only" in style_nine["factuality_rule"]
+    assert "non-evidentiary" in style_nine["factuality_rule"]
+    assert "Generic, non-location-specific facilities" in style_nine["factuality_rule"]
+    assert "content_visual_rule" in style_nine
+    assert "文字逻辑与业务流程是页面主体" in style_nine["content_visual_rule"]
+    assert "图像是把已锁定内容空间化、形象化和关系化的表达工具" in style_nine["content_visual_rule"]
+    assert "不得生成独立图片区、照片条、照片拼贴" in style_nine["content_visual_rule"]
+    assert "不预设或改变页面的内容关系、模块数量、模块顺序或版式骨架" in style_nine["content_visual_rule"]
     assert "leadership briefing" in style_nine["prompt_contract"]
     assert "speech-support" in style_nine["prompt_contract"]
     assert "not a process infographic" in style_nine["prompt_contract"]
@@ -78,10 +87,13 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "Do not force every page to have a single hero image" in style_nine["prompt_contract"]
     assert "conclusion, relationship, comparison, business scenario, or supporting evidence" in style_nine["prompt_contract"]
     assert "Do not apply one visual template to all pages" in style_nine["prompt_contract"]
+    assert "Image-text fusion:" in style_nine["prompt_contract"]
+    assert "must not prescribe or replace page-specific content relationships" in style_nine["prompt_contract"]
+    assert "Do not create photo strips, photo galleries, detached photo columns" in style_nine["prompt_contract"]
     assert "Industry scene and imagery:" in style_nine["prompt_contract"]
     assert "translates concrete business meaning into visible real-world context" in style_nine["prompt_contract"]
-    assert "Actively use semantically relevant real-world imagery" in style_nine["prompt_contract"]
-    assert "Multiple images are welcome when each carries a distinct and necessary semantic role" in style_nine["prompt_contract"]
+    assert "Use semantically relevant real-world imagery selectively" in style_nine["prompt_contract"]
+    assert "Use only the number of images needed for the page's dynamic content" in style_nine["prompt_contract"]
     assert "power grid operation" in style_nine["prompt_contract"]
     assert "may carry nearby analytical context" in style_nine["prompt_contract"]
     assert "Avoid control-room hero shots" in style_nine["prompt_contract"]
@@ -136,7 +148,7 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
             style_nine["icon_rule"],
         )
     )
-    assert len(style_nine["prompt_contract"]) < 3600
+    assert len(style_nine["prompt_contract"]) < 4200
     assert len(style_nine["scope_rule"]) < 300
     assert len(style_nine["icon_rule"]) < 220
     assert "Images are supporting evidence, not mandatory decoration." not in combined_contract

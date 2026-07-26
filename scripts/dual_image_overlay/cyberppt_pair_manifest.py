@@ -238,6 +238,7 @@ def build_manifest(
         pairs.append(
             {
                 "page_number": page_number,
+                "page_code": f"P{page_number:02d}",
                 "title": page.title,
                 "page_script": prompt,
                 **({"prompt_approval": str(approval_path.resolve())} if approval_path else {}),

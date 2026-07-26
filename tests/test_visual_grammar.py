@@ -49,6 +49,8 @@ def test_deliverable_prompt_renders_visual_grammar_once_for_style_nine() -> None
         )
 
     assert prompt.count("【视觉组织原则】") == 1
+    assert "【页面编码】P09｜测试" in prompt
+    assert "不得在生成图中渲染页面编码或页面标题" in prompt
     for line in _SHORT_LINES:
         assert line in prompt
     for fragment in _OLD_CHINESE_FRAGMENTS:
@@ -62,19 +64,24 @@ def test_deliverable_prompt_renders_visual_grammar_once_for_style_nine() -> None
     assert "Visual hierarchy should follow the importance of the message" in prompt
     assert "Do not force every page to have a single hero image" in prompt
     assert "Do not apply one visual template to all pages" in prompt
-    assert "should not be used to imply specific events, organizations, or historical facts" in prompt
+    assert "Do not use identifiable people to imply a specific event, organization, role assignment, endorsement, or historical fact" in prompt
     assert "small-scale anonymous professional figures" in prompt
-    assert "Avoid identifiable faces, front-facing views, meeting scenes" in prompt
-    assert "documentary-style human activities" in prompt
-    assert "only support abstract capability expression" in prompt
+    assert "never use portraits, leaders, name badges, uniforms" in prompt
+    assert "documentary-style activities" in prompt
     assert "professional activity is part of the business meaning" not in prompt
+    assert "organization names, logos, seals, signage" in prompt
+    assert "editable text layer only" in prompt
+    assert "non-evidentiary" in prompt
+    assert "Generic, non-location-specific facilities" in prompt
+    assert "文字逻辑与业务流程是页面主体" in prompt
+    assert "图像是把已锁定内容空间化、形象化和关系化的表达工具" in prompt
     assert "Screens, charts, and data interfaces may carry nearby analytical context" in prompt
     assert "Avoid control-room hero shots" in prompt
     assert "smart city exhibition style" in prompt
     assert "Consulting research" not in prompt
     assert "Industry scene and imagery:" in prompt
-    assert "Actively use semantically relevant real-world imagery" in prompt
-    assert "Multiple images are welcome when each carries a distinct and necessary semantic role" in prompt
+    assert "Use semantically relevant real-world imagery selectively" in prompt
+    assert "Use only the number of images needed for the page's dynamic content" in prompt
     assert "Prefer: architecture" not in prompt
     assert "capability evolution map" not in prompt
     assert "software-architecture look" in prompt
@@ -82,7 +89,7 @@ def test_deliverable_prompt_renders_visual_grammar_once_for_style_nine() -> None
     assert "Do not introduce new visual relationships" in prompt
     assert "clarify the content, not redefine the content" in prompt
     assert "lifecycle circles with isolated nodes" in prompt
-    assert "Documentary / editorial photography" in prompt
+    assert "non-documentary, non-location-specific editorial scenes" not in prompt
     assert "numbered step cards" in prompt
     assert "请先理解" not in prompt
     assert "页面使命" not in prompt

@@ -25,6 +25,22 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
+    def test_style_nine_safety_rules_are_injected_into_imagegen_prompt(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            script = root / "script.md"
+            style = write_project_style_lock(project=root / "project", style_id=9)
+            script.write_text("## 第1页：测试\n组件A：业务内容\n", encoding="utf-8")
+
+            prompt = compile_pages(script, [1], style_lock_path=style)
+
+        self.assertIn("Do not use identifiable people to imply a specific event", prompt)
+        self.assertIn("organization names, logos, seals, signage", prompt)
+        self.assertIn("editable text layer only", prompt)
+        self.assertIn("non-evidentiary", prompt)
+        self.assertIn("文字逻辑与业务流程是页面主体", prompt)
+        self.assertIn("图像是把已锁定内容空间化、形象化和关系化的表达工具", prompt)
+
     def test_compile_pages_uses_only_onscreen_block_from_final_manuscript(self) -> None:
         with TemporaryDirectory() as directory:
             root = Path(directory)
@@ -37,6 +53,7 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
             prompt = compile_pages(script, [1], style_lock_path=style)
         self.assertIn("可画模块", prompt)
         self.assertIn("可画要点", prompt)
+        self.assertIn("【页面编码】P01｜测试", prompt)
         self.assertNotIn("完整文字稿", prompt)
         self.assertNotIn("不可送图", prompt)
     def test_parse_supports_p_style_and_chinese_page_headings(self) -> None:

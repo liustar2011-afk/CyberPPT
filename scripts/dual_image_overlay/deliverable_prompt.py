@@ -330,6 +330,8 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
         return None
     prompt_contract = _strip_visual_structure_meta(_collapse_text(style.get("prompt_contract")))
     people_rule = _strip_visual_structure_meta(_collapse_text(style.get("people_rule")))
+    factuality_rule = _strip_visual_structure_meta(_collapse_text(style.get("factuality_rule")))
+    content_visual_rule = _strip_visual_structure_meta(_collapse_text(style.get("content_visual_rule")))
     icon_rule = _strip_visual_structure_meta(_collapse_text(style.get("icon_rule")))
     density_rule = _collapse_text(style.get("density_rule"))
     # scope_rule / sample / lock boilerplate stay in the lock JSON for humans;
@@ -337,6 +339,10 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
     parts = [prompt_contract]
     if people_rule:
         parts.append(people_rule)
+    if factuality_rule:
+        parts.append(factuality_rule)
+    if content_visual_rule:
+        parts.append(content_visual_rule)
     if icon_rule:
         parts.append(icon_rule)
     if density_rule:
@@ -370,6 +376,9 @@ def render_prompt(page: PageBlock, *, style_lock_path: Path | None = None) -> st
     layout_directives = layout_density_directives(page)
     visual_grammar = default_visual_grammar().render()
     parts = [
+        f"【页面编码】P{page.page_number:02d}｜{page.title}",
+        "以上为提示词元数据，仅用于按页追踪；不得在生成图中渲染页面编码或页面标题。",
+        "",
         "【内容锁定】",
         body,
         "",

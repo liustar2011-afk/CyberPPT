@@ -144,6 +144,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertEqual([1, 2, 3], manifest["requested_pages"])
         self.assertEqual([2], manifest["content_page_numbers"])
         self.assertEqual([2], [pair["page_number"] for pair in manifest["pairs"]])
+        self.assertEqual(["P02"], [pair["page_code"] for pair in manifest["pairs"]])
         self.assertEqual(
             {1: "cover", 3: "ending"},
             {
