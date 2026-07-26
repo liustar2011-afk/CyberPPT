@@ -38,8 +38,13 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertIn("organization names, logos, seals, signage", prompt)
         self.assertIn("editable text layer only", prompt)
         self.assertIn("non-evidentiary", prompt)
-        self.assertIn("文字逻辑与业务流程是页面主体", prompt)
-        self.assertIn("图像是把已锁定内容空间化、形象化和关系化的表达工具", prompt)
+        self.assertIn("locked on-screen text faithfully in the main composition", prompt)
+        self.assertIn("may use a small amount of clear Chinese labels", prompt)
+        self.assertIn("dense pseudo-Chinese", prompt)
+        self.assertIn("不得成为主构图、中央视觉或留白装饰", prompt)
+        self.assertIn("贴近已锁定文字模块或必要业务关系的小型辅助标记", prompt)
+        self.assertIn("是否使用模块内的小型标记，由页面内容与构图自行决定", prompt)
+        self.assertIn("孤立、重复或装饰图标", prompt)
 
     def test_compile_pages_uses_only_onscreen_block_from_final_manuscript(self) -> None:
         with TemporaryDirectory() as directory:
@@ -96,7 +101,7 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
             prompt = compile_pages(script, [2], style_lock_path=style)
 
         self.assertIn("只生成正文内容区成稿图", prompt)
-        self.assertIn("1680×944", prompt)
+        self.assertIn("2048×1024", prompt)
         self.assertIn("No evidence IDs, watermarks, debug marks, or placeholders.", prompt)
         self.assertNotIn("不得出现证据编号", prompt)
         self.assertIn("【内容锁定】", prompt)

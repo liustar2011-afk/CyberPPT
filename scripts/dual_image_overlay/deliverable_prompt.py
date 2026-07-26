@@ -331,6 +331,9 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
     prompt_contract = _strip_visual_structure_meta(_collapse_text(style.get("prompt_contract")))
     people_rule = _strip_visual_structure_meta(_collapse_text(style.get("people_rule")))
     factuality_rule = _strip_visual_structure_meta(_collapse_text(style.get("factuality_rule")))
+    semantic_image_text_rule = _strip_visual_structure_meta(
+        _collapse_text(style.get("semantic_image_text_rule"))
+    )
     content_visual_rule = _strip_visual_structure_meta(_collapse_text(style.get("content_visual_rule")))
     icon_rule = _strip_visual_structure_meta(_collapse_text(style.get("icon_rule")))
     density_rule = _collapse_text(style.get("density_rule"))
@@ -341,6 +344,8 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
         parts.append(people_rule)
     if factuality_rule:
         parts.append(factuality_rule)
+    if semantic_image_text_rule:
+        parts.append(semantic_image_text_rule)
     if content_visual_rule:
         parts.append(content_visual_rule)
     if icon_rule:
