@@ -10,10 +10,12 @@ from tempfile import TemporaryDirectory
 from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.dual_image_overlay.deliverable_prompt import PageBlock, render_prompt
 from scripts.dual_image_overlay.imagegen_handoff import (
+    _page_visual_contexts,
     _page_visual_intent_overrides,
     build_page_prompt,
     build_page_visual_intent,
     content_lock_text,
+    select_page_visual_intent_type,
 )
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 
@@ -61,6 +63,102 @@ def _visual_intent_page(
 
 
 class ImageGenNoVisualStructureTests(unittest.TestCase):
+    def test_visual_intent_collision_rules_prevent_generic_word_hijacking(self) -> None:
+        cases = [
+            (
+                "目标能力由哪些部分组成",
+                "数据、模型、产品、平台和机制共同形成业务能力",
+                "业务应用层",
+                {"argument_role": "solution", "page_job": "说明能力组成"},
+                "capability_relationship",
+            ),
+            (
+                "首期业务主闭环如何运行",
+                "首期形成输入、处理、输出、反馈闭环",
+                "首期业务",
+                {"argument_role": "scope", "page_job": "说明业务闭环"},
+                "closed_loop",
+            ),
+            (
+                "首期聚焦哪些业务、数据、模型与产品",
+                "首期范围由业务价值和成熟度共同确定",
+                "能力范围",
+                {"argument_role": "scope", "page_job": "明确首期范围"},
+                "decision_admission",
+            ),
+            (
+                "建设按什么节奏推进",
+                "先开展试点，再拓展更多业务场景",
+                "场景拓展",
+                {"argument_role": "implementation", "page_job": "说明分期推进"},
+                "phase",
+            ),
+            (
+                "供需预测业务需要覆盖什么",
+                "覆盖供给、需求、平衡和风险等预测对象",
+                "需求预测",
+                {"argument_role": "solution", "page_job": "说明业务覆盖维度"},
+                "judgment_evidence",
+            ),
+        ]
+        for mission, message, module_title, context, expected in cases:
+            page, _ = _visual_intent_page(
+                message,
+                mission,
+                f"  **{module_title}**\n  - 支撑内容。",
+            )
+            self.assertEqual(
+                expected,
+                select_page_visual_intent_type(page, mission, context=context),
+            )
+
+    def test_visual_intent_explicit_type_wins_and_is_visible_in_prompt(self) -> None:
+        page, mission = _visual_intent_page(
+            "首期形成输入、处理、输出、反馈闭环",
+            "首期业务主闭环如何运行",
+            "  **首期业务**\n  - 支撑内容。",
+        )
+        intent = build_page_visual_intent(
+            page,
+            mission,
+            override={"visual_intent_type": "phase"},
+        )
+        self.assertIn("- Selected visual intent type: phase", intent)
+        self.assertIn("stage progression", intent)
+
+    def test_page_visual_context_loader_preserves_routing_fields(self) -> None:
+        with TemporaryDirectory() as directory:
+            project = Path(directory)
+            outline = project / "workbench/stages/01-analysis/outline.json"
+            outline.parent.mkdir(parents=True)
+            outline.write_text(
+                json.dumps(
+                    {
+                        "pages": [
+                            {
+                                "page_id": "p10",
+                                "argument_role": "solution",
+                                "page_job": "说明能力组成",
+                                "business_question": "目标能力由哪些部分组成",
+                                "visual_intent_type": "capability_relationship",
+                            }
+                        ]
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            contexts = _page_visual_contexts(project)
+        self.assertEqual(
+            {
+                "argument_role": "solution",
+                "page_job": "说明能力组成",
+                "business_question": "目标能力由哪些部分组成",
+                "visual_intent_type": "capability_relationship",
+            },
+            contexts["p10"],
+        )
+
     def test_visual_intent_classifies_decision_and_admission(self) -> None:
         page, mission = _visual_intent_page(
             "首期场景由成熟度条件共同决定",
@@ -184,6 +282,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
                             {
                                 "page_id": "p19",
                                 "visual_intent": {
+                                    "visual_intent_type": "comparison",
                                     "visual_thesis": "  Approved thesis.  ",
                                     "decision_relationship": "",
                                     "unknown_field": "ignored",
@@ -198,7 +297,12 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
             )
             overrides = _page_visual_intent_overrides(project)
         self.assertEqual(
-            {"p19": {"visual_thesis": "Approved thesis."}},
+            {
+                "p19": {
+                    "visual_intent_type": "comparison",
+                    "visual_thesis": "Approved thesis.",
+                }
+            },
             overrides,
         )
 

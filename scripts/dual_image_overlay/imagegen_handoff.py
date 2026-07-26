@@ -64,21 +64,92 @@ ONSCREEN_ASIDE_RE = re.compile(
     r")"
 )
 
-VISUAL_INTENT_SIGNALS: tuple[tuple[str, tuple[str, ...]], ...] = (
-    ("decision_admission", ("筛选", "选择", "首期", "后续", "准入")),
-    ("comparison", ("对比", "比较", "差异", "优劣", "高于", "低于", "相较")),
-    ("scenario_application", ("场景", "应用", "应用方向", "推进条件")),
-    (
-        "multi_semantic_foundation",
-        ("工作基础", "现实基础", "已有基础", "共同基础", "持续性工作基础"),
+VISUAL_INTENT_SIGNALS: dict[str, tuple[tuple[str, int], ...]] = {
+    "decision_admission": (
+        ("准入", 8),
+        ("筛选依据", 8),
+        ("如何选定", 7),
+        ("首期聚焦", 8),
+        ("选择条件", 7),
+        ("成熟度条件", 6),
+        ("后续纳入", 5),
     ),
-    ("causal", ("问题", "原因", "影响", "需求", "为什么")),
-    ("closed_loop", ("输入", "处理", "输出", "反馈", "复盘", "闭环")),
-    ("phase", ("当前", "近期", "中长期", "阶段", "分期")),
-    (
-        "capability_relationship",
-        ("能力协同", "协同支撑", "共同支撑", "能力关系", "能力体系", "能力底座"),
+    "comparison": (
+        ("对比", 7),
+        ("比较", 7),
+        ("差异", 6),
+        ("优劣", 6),
+        ("高于", 4),
+        ("低于", 4),
+        ("相较", 4),
     ),
+    "scenario_application": (
+        ("重点场景", 6),
+        ("业务场景", 5),
+        ("应用方向", 7),
+        ("应用场景", 7),
+        ("推进条件", 4),
+        ("业务价值", 3),
+    ),
+    "multi_semantic_foundation": (
+        ("工作基础", 8),
+        ("现实基础", 8),
+        ("已有基础", 7),
+        ("共同基础", 7),
+        ("持续性工作基础", 9),
+    ),
+    "causal": (
+        ("为什么", 7),
+        ("原因", 7),
+        ("导致", 6),
+        ("带来", 4),
+        ("不匹配", 7),
+        ("不足", 5),
+        ("变化如何改变", 8),
+        ("问题与影响", 6),
+    ),
+    "closed_loop": (
+        ("闭环", 9),
+        ("输入、处理、输出", 9),
+        ("输入、结果、验证、反馈", 9),
+        ("反馈与复盘", 7),
+        ("持续校正", 6),
+        ("稳定生产能力", 5),
+    ),
+    "phase": (
+        ("分期推进", 9),
+        ("分阶段", 8),
+        ("建设节奏", 8),
+        ("按什么节奏", 8),
+        ("当前、近期和中长期", 9),
+        ("近期首先", 6),
+        ("先开展", 4),
+        ("再拓展", 4),
+    ),
+    "capability_relationship": (
+        ("能力协同", 8),
+        ("协同支撑", 8),
+        ("共同支撑", 7),
+        ("能力关系", 8),
+        ("能力体系", 7),
+        ("能力底座", 7),
+        ("能力组成", 8),
+        ("由哪些部分组成", 8),
+        ("平台稳定承载", 7),
+        ("共性能力", 5),
+    ),
+}
+
+VISUAL_INTENT_PRIORITY = (
+    "multi_semantic_foundation",
+    "comparison",
+    "closed_loop",
+    "phase",
+    "capability_relationship",
+    "decision_admission",
+    "scenario_application",
+    "causal",
+    "judgment_evidence",
 )
 
 VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
@@ -237,27 +308,80 @@ def _clean_onscreen_for_imagegen(text: str) -> str:
     return "\n".join(cleaned_lines).strip()
 
 
-def build_page_visual_intent(
+def select_page_visual_intent_type(
     page: ScriptPage,
     page_mission: str,
+    context: dict[str, str] | None = None,
     override: dict[str, str] | None = None,
 ) -> str:
-    """Compile deterministic, non-rendering page-specific composition guidance."""
+    """Select a page relationship without allowing one generic noun to hijack it."""
 
     if page.page_type != "content":
         raise ValueError(f"page {page.page_id} is {page.page_type}; no visual intent")
+    context = context if isinstance(context, dict) else {}
+    explicit = (
+        (override or {}).get("visual_intent_type")
+        or context.get("visual_intent_type")
+        or ""
+    ).strip()
+    if explicit in VISUAL_INTENT_TEMPLATES:
+        return explicit
+
     signal_text = "\n".join(
         (
             page_mission,
+            context.get("business_question", ""),
+            context.get("page_job", ""),
             page.main_message,
             "\n".join(page.module_titles),
         )
     )
-    relation = "judgment_evidence"
-    for candidate, signals in VISUAL_INTENT_SIGNALS:
-        if any(signal in signal_text for signal in signals):
-            relation = candidate
-            break
+    # These are field or object names, not page relationships.
+    score_text = (
+        signal_text.replace("业务应用层", "")
+        .replace("平台应用层", "")
+        .replace("需求预测", "")
+        .replace("负荷需求", "")
+    )
+    scores = {
+        intent_type: sum(
+            weight for phrase, weight in signals if phrase in score_text
+        )
+        for intent_type, signals in VISUAL_INTENT_SIGNALS.items()
+    }
+    role = context.get("argument_role", "").strip()
+    if role == "foundation":
+        scores["multi_semantic_foundation"] += 8
+    elif role in {"change", "gap", "necessity"}:
+        scores["causal"] += 3
+    elif role == "implementation" and any(
+        phrase in score_text for phrase in ("近期", "阶段", "节奏", "先开展", "再拓展")
+    ):
+        scores["phase"] += 4
+
+    best_score = max(scores.values(), default=0)
+    if best_score < 5:
+        return "judgment_evidence"
+    for intent_type in VISUAL_INTENT_PRIORITY:
+        if scores.get(intent_type) == best_score:
+            return intent_type
+    return "judgment_evidence"
+
+
+def build_page_visual_intent(
+    page: ScriptPage,
+    page_mission: str,
+    override: dict[str, str] | None = None,
+    context: dict[str, str] | None = None,
+) -> str:
+    """Compile deterministic, non-rendering page-specific composition guidance."""
+
+    relation = select_page_visual_intent_type(
+        page,
+        page_mission,
+        context=context,
+        override=override,
+    )
     values = dict(VISUAL_INTENT_TEMPLATES[relation])
     if isinstance(override, dict):
         for key in values:
@@ -268,6 +392,7 @@ def build_page_visual_intent(
         (
             "[Prompt context] Page-specific visual intent "
             "(composition guidance only; do not render field names or instruction text)",
+            f"- Selected visual intent type: {relation}",
             f"- Visual thesis: {values['visual_thesis']}",
             f"- Decision relationship: {values['decision_relationship']}",
             f"- Recommended composition: {values['recommended_composition']}",
@@ -308,6 +433,31 @@ def _page_missions(project: Path) -> dict[str, str]:
     }
 
 
+def _page_visual_contexts(project: Path) -> dict[str, dict[str, str]]:
+    outline_path = project / "workbench" / "stages" / "01-analysis" / "outline.json"
+    if not outline_path.is_file():
+        return {}
+    payload = json.loads(outline_path.read_text(encoding="utf-8-sig"))
+    pages = payload.get("pages") if isinstance(payload, dict) else None
+    if not isinstance(pages, list):
+        return {}
+    fields = (
+        "argument_role",
+        "page_job",
+        "business_question",
+        "visual_intent_type",
+    )
+    return {
+        str(item["page_id"]): {
+            field: str(item.get(field) or "").strip()
+            for field in fields
+            if str(item.get(field) or "").strip()
+        }
+        for item in pages
+        if isinstance(item, dict) and item.get("page_id")
+    }
+
+
 def _page_visual_intent_overrides(project: Path) -> dict[str, dict[str, str]]:
     outline_path = project / "workbench" / "stages" / "01-analysis" / "outline.json"
     if not outline_path.is_file():
@@ -316,7 +466,10 @@ def _page_visual_intent_overrides(project: Path) -> dict[str, dict[str, str]]:
     pages = payload.get("pages") if isinstance(payload, dict) else None
     if not isinstance(pages, list):
         return {}
-    allowed = VISUAL_INTENT_TEMPLATES["judgment_evidence"].keys()
+    allowed = {
+        "visual_intent_type",
+        *VISUAL_INTENT_TEMPLATES["judgment_evidence"].keys(),
+    }
     result: dict[str, dict[str, str]] = {}
     for item in pages:
         if not isinstance(item, dict) or not item.get("page_id"):
@@ -338,6 +491,7 @@ def build_page_prompt(
     page: ScriptPage,
     style_lock: Path,
     page_mission: str = "",
+    visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
 ) -> str:
     prompt_text = "\n".join(
@@ -347,6 +501,7 @@ def build_page_prompt(
             build_page_visual_intent(
                 page,
                 page_mission,
+                context=visual_context,
                 override=visual_intent_override,
             ),
         )
@@ -382,6 +537,7 @@ def write_chapter_handoff(
     document = parse_script_markdown(script.read_text(encoding="utf-8"))
     by_num = {int(page.page_id[1:]): page for page in document.pages}
     missions = _page_missions(project)
+    visual_contexts = _page_visual_contexts(project)
     visual_intent_overrides = _page_visual_intent_overrides(project)
     out_dir = project / "workbench" / "prompts" / "imagegen"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -422,6 +578,7 @@ def write_chapter_handoff(
             page,
             style_lock,
             page_mission=missions.get(page.page_id, ""),
+            visual_context=visual_contexts.get(page.page_id),
             visual_intent_override=visual_intent_overrides.get(page.page_id),
         )
         content_prompts.append(prompt)
