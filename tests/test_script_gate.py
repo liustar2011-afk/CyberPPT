@@ -6,7 +6,12 @@ import unittest
 from pathlib import Path
 
 from cyberppt.commands.init_project import init_project
-from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script
+from cyberppt.commands.script_gate import (
+    approve_script,
+    assert_approved_final_script,
+    get_script_status,
+    stage_script,
+)
 
 
 class ScriptGateTests(unittest.TestCase):
@@ -89,3 +94,18 @@ class ScriptGateTests(unittest.TestCase):
 
             self.assertEqual((project / "workbench/prompts/imagegen/slide-02-imagegen-draft.md").resolve(), target)
             self.assertIn("中文提示词", target.read_text(encoding="utf-8"))
+
+    def test_approved_final_script_rejects_post_approval_edits(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+            source = Path(temp) / "slide-02-prompt.md"
+            source.write_text("首版提示词\n", encoding="utf-8")
+            stage_script(project, slide=2, kind="imagegen", phase="final", source=source)
+            approve_script(project, slide=2, kind="imagegen")
+
+            approved = assert_approved_final_script(project, slide=2, kind="imagegen")
+            self.assertTrue(approved.exists())
+            approved.write_text("修改后的提示词\n", encoding="utf-8")
+            with self.assertRaisesRegex(PermissionError, "changed after approval"):
+                assert_approved_final_script(project, slide=2, kind="imagegen")

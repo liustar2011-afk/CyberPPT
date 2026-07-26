@@ -139,6 +139,8 @@ def _drop_line(line: str) -> bool:
         return True
     if FENCE_RE.match(stripped):
         return True
+    if stripped.startswith("页面角色"):
+        return True
     if re.match(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+", stripped) and (
         "——" in stripped or "标签" in stripped or "下方" in stripped or "主体" in stripped or "（" in stripped
     ):
@@ -155,15 +157,92 @@ def _clean_line(line: str) -> str:
     line = EVIDENCE_LABEL_RE.sub("", line)
     line = COMPONENT_PREFIX_RE.sub("", line)
     line = COMPONENT_PREFIX_SIMPLE_RE.sub("", line)
+    # Strip parenthetical noise on 上屏文字 headers only.
+    line = re.sub(r"^上屏文字（[^）]+）", "上屏文字", line)
+    line = re.sub(r"^上屏文字\([^)]+\)", "上屏文字", line)
     line = re.sub(r"——\s*", "", line)
     line = re.sub(r"\s+", " ", line)
     return line.strip(" ：:")
 
 
+# Boundary / 禁止项 are authoring + human-QA fields only. ImageGen prompts must not
+# receive invisible boundary prose — rely on well-authored 上屏文字 instead.
+_BOUNDARY_HEADER_RE = re.compile(
+    r"^(?:Boundary\s*\(do not show on slide\)|禁止项)",
+    re.I,
+)
+_CONTENT_FIELD_STARTERS = ("核心判断", "上屏文字", "禁止项", "Boundary")
+
+
+def _filter_imagegen_content_lines(lines: list[str]) -> list[str]:
+    """Keep drawable 上屏 lines; drop thesis-field and boundary/constraint blocks.
+
+    Thesis belongs in script-final 上屏文字 (lead). Boundary stays in script-final /
+    human QA parsing — never inject Boundary/禁止项 into ImageGen prompts.
+    """
+
+    content: list[str] = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if line.startswith("核心判断"):
+            i += 1
+            continue
+        if not _BOUNDARY_HEADER_RE.match(line):
+            content.append(line)
+            i += 1
+            continue
+        # Drop labeled boundary line, or header-only + following body until next field.
+        if re.search(r"[：:]\s*\S", line):
+            i += 1
+            continue
+        i += 1
+        while i < len(lines) and not lines[i].startswith(_CONTENT_FIELD_STARTERS):
+            i += 1
+    return content
+
+
+def _strip_visual_structure_meta(text: str) -> str:
+    """Remove composition-meta asides; keep actionable icon/style guidance."""
+
+    cleaned = text
+    cleaned = re.sub(
+        r"\s*Do not rely on 「视觉结构」 fields\.?",
+        "",
+        cleaned,
+        flags=re.I,
+    )
+    cleaned = re.sub(
+        r"\s*Do not use 「视觉结构」 or backend layout fields as composition input\.?",
+        "",
+        cleaned,
+        flags=re.I,
+    )
+    cleaned = re.sub(r"\s*请勿依赖「视觉结构」[^。]*。?", "", cleaned)
+    return cleaned.strip()
+
+
 def visible_deliverable_lines(page: PageBlock) -> list[str]:
+    # Final manuscripts carry authoring fields around the drawable layer.  When
+    # this compiler receives a full manuscript, select the explicit 上屏文字
+    # block rather than trying to delete every non-drawable field line-by-line.
+    raw_lines = page.text.splitlines()
+    onscreen_start = next(
+        (index for index, line in enumerate(raw_lines) if re.match(r"^\s*-\s*上屏文字[：:]?\s*$", line)),
+        None,
+    )
+    if onscreen_start is not None:
+        selected: list[str] = []
+        for raw in raw_lines[onscreen_start + 1 :]:
+            if re.match(r"^\s*-\s*(?:证据|边界|视觉结构|讲解提示|演讲者备注)[：:]", raw):
+                break
+            if raw.strip().startswith("【演讲者备注】"):
+                break
+            selected.append(raw)
+        raw_lines = selected
     lines: list[str] = []
     seen: set[str] = set()
-    for raw in page.text.splitlines():
+    for raw in raw_lines:
         if _drop_line(raw):
             continue
         cleaned = _clean_line(raw)
@@ -249,26 +328,17 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
     style = payload.get("style")
     if not isinstance(style, dict):
         return None
-    prompt_contract = _collapse_text(style.get("prompt_contract"))
+    prompt_contract = _strip_visual_structure_meta(_collapse_text(style.get("prompt_contract")))
+    icon_rule = _strip_visual_structure_meta(_collapse_text(style.get("icon_rule")))
     density_rule = _collapse_text(style.get("density_rule"))
-    sample = _collapse_text(style.get("sample"))
-    scope_rule = _collapse_text(
-        style.get("scope_rule")
-        or "风格只约束色彩、材质、线条、图标克制度和视觉语气；风格中提到的矩阵、右侧栏、SO WHAT、摘要条等仅作为可选视觉语言，不得覆盖【内容锁定】中的版式、组件数量、箭头关系和框内文字。"
-    )
-    parts = [
-        "沿用项目视觉锁定，不使用外部风格 preset。",
-        scope_rule,
-        prompt_contract,
-    ]
+    # scope_rule / sample / lock boilerplate stay in the lock JSON for humans;
+    # do not inject them into ImageGen payloads.
+    parts = [prompt_contract]
+    if icon_rule:
+        parts.append(icon_rule)
     if density_rule:
-        parts.append(
-            "信息密度规则：在不改变【内容锁定】结构、组件数量、箭头关系和文字清单的前提下，"
-            f"{density_rule}"
-        )
-    if sample:
-        parts.append(f"确认样张：{sample}")
-    return "".join(parts)
+        parts.append(density_rule)
+    return "\n\n".join(part for part in parts if part)
 
 
 def style_contract(style_lock_path: Path | None) -> str:
@@ -288,41 +358,48 @@ def style_contract(style_lock_path: Path | None) -> str:
     text = style_lock_path.read_text(encoding="utf-8")
     colors = _extract_hex_colors(text)
     color_text = "、".join(colors[:8]) if colors else "以该视觉锁定文件为准"
-    return (
-        "沿用项目视觉锁定，不使用外部风格 preset。"
-        f"核心色板：{color_text}。"
-        "页面应严格沿用该视觉锁定文件中的风格名称、色板、图表语言、信息密度规则和禁用项。"
-        "风格只约束视觉表达，不得覆盖【内容锁定】中的版式、组件数量、箭头关系和框内文字。"
-    )
+    return f"核心色板：{color_text}。"
 
 
 def render_prompt(page: PageBlock, *, style_lock_path: Path | None = None) -> str:
-    body = "\n".join(f"- {line}" for line in visible_deliverable_lines(page))
-    layout_directives = "\n".join(f"- {line}" for line in layout_density_directives(page))
+    content_lines = _filter_imagegen_content_lines(visible_deliverable_lines(page))
+    body = "\n".join(f"- {line}" for line in content_lines)
+    layout_directives = layout_density_directives(page)
     visual_grammar = default_visual_grammar().render()
-    return f"""## 第{page.page_number}页：{template_title(page)}
-
-【内容锁定】
-{body}
-
-【构图指令】
-生成一张面向最终客户交付的 PPT 正文内容区成稿图，不是蓝图、草稿、过程说明页、复刻中间产物或调试预览图。
-
-只生成正文内容区画面。不要生成页面标题、副标题、Logo、页脚、页码、母版红线、公共元素、临时占位元素或任何完整 PPT 外框；这些由 PPT 模板/母版和可编辑文字层生成。上方 Markdown 页标题只供模板层提取，不属于图片内容。
-
-不得出现证据编号、来源编号、过程性注释、脚注、口径说明、参考来源、调试标记、占位符、乱码、水印，或任何面向制作过程而非最终受众的文字。
-
-{style_contract(style_lock_path)}
-
-【视觉组织原则】
-{visual_grammar}
-
-【结构密度】
-必须保持高信息密度，不能把页面简化成少量留白卡片。保留原脚本组件数量、组件关系、网格/流程/卡片结构；如果原脚本包含底部 SO WHAT 区则保留，否则不得为了套用风格强行新增。下列正文内容必须完整、可读地进入画面，但不包含页面标题、副标题、Logo、页脚、页码或公共模板元素；不得遗漏关键数字、判断句、清单项或行动链。
-{layout_directives}
-
-把正文内容组织为正式汇报页的信息图结构，严格服从【内容锁定】中的页面定位、版式草图、框位置说明、框内文字、箭头关系和组件清单。不得把原脚本指定的页面类型改成通用结论页或通用卡片页；不得合并模块、抽象成少量图标、只保留栏目标题、删减清单项、近义替换框内文字、改写业务术语或生成不可读伪文字；图形关系、容器、图标和连接线应边界清楚，文字应清晰可读。
-""".strip() + "\n"
+    parts = [
+        "【内容锁定】",
+        body,
+        "",
+        "【构图指令】",
+        "画布 1680×944（约 16:9）。只生成正文内容区成稿图。",
+        "不要生成页面标题、副标题、Logo、页脚、页码或任何页面外框。",
+        "No evidence IDs, watermarks, debug marks, or placeholders.",
+        "Do not invent section labels like meta headers; only render 上屏文字 modules.",
+    ]
+    parts.extend(
+        [
+            "",
+            style_contract(style_lock_path),
+            "",
+            "【视觉组织原则】",
+            visual_grammar,
+        ]
+    )
+    if layout_directives:
+        parts.extend(
+            [
+                "",
+                "【结构密度】",
+                "\n".join(f"- {line}" for line in layout_directives),
+            ]
+        )
+    parts.extend(
+        [
+            "",
+            "忠实于【内容锁定】：核心模块、关键数字与业务术语须可读；不得近义替换或生成伪文字。",
+        ]
+    )
+    return "\n".join(parts).strip() + "\n"
 
 
 def assert_deliverable_prompt(prompt: str) -> None:

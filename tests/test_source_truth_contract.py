@@ -6,7 +6,9 @@ import unittest
 from pathlib import Path
 
 from cyberppt.source_truth_contract import (
+    audit_source_receipts,
     audit_source_truth,
+    collect_source_receipts,
     load_source_truth,
     source_truth_retry_directive,
 )
@@ -86,6 +88,25 @@ class SourceTruthContractTests(unittest.TestCase):
     def test_loads_valid_contract(self) -> None:
         payload = load_source_truth(self._write(valid_payload()))
         self.assertEqual("cyberppt.source_truth.v1", payload["schema"])
+
+    def test_source_receipt_records_sha256_and_required_missing_file(self) -> None:
+        payload = valid_payload()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source_file = root / "source.docx"
+            source_file.write_bytes(b"source material")
+            receipts = collect_source_receipts(payload, (root,))
+            self.assertTrue(receipts[0]["present"])
+            self.assertEqual(64, len(str(receipts[0]["sha256"])))
+            self.assertEqual([], audit_source_receipts(receipts, required=True))
+
+            missing = collect_source_receipts(payload, (root / "missing",))
+            codes = {issue.code for issue in audit_source_receipts(missing, required=True)}
+            self.assertIn("SOURCE_MATERIAL_RECEIPT_MISSING", codes)
+
+            changed = {"source_id": "DOC01", "sha256": "0" * 64}
+            codes = {issue.code for issue in audit_source_receipts(receipts, expected=[changed])}
+            self.assertIn("SOURCE_MATERIAL_RECEIPT_CHANGED", codes)
 
     def test_rejects_unknown_schema(self) -> None:
         payload = valid_payload()

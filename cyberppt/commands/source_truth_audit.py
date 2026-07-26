@@ -6,7 +6,9 @@ import json
 from pathlib import Path
 
 from cyberppt.source_truth_contract import (
+    audit_source_receipts,
     audit_source_truth,
+    collect_source_receipts,
     load_source_truth,
     source_truth_retry_directive,
 )
@@ -157,6 +159,21 @@ def render_source_truth_markdown(
     for page in pages if isinstance(pages, list) else []:
         if isinstance(page, dict):
             lines.append(f"- 页面 `{_escape(page.get('id'))}` ← {_escape(page.get('source_refs'))}")
+    receipts = report.get("source_receipts")
+    if isinstance(receipts, list):
+        lines.extend(["", "## 源材料凭据", "", "| 来源ID | 文件 | 状态 | 字节数 | SHA-256 |", "|---|---|---|---:|---|"])
+        for receipt in receipts:
+            if not isinstance(receipt, dict):
+                continue
+            lines.append(
+                "| {source_id} | {declared_file} | {status} | {bytes} | {sha256} |".format(
+                    source_id=_escape(receipt.get("source_id")),
+                    declared_file=_escape(receipt.get("declared_file")),
+                    status=_escape(receipt.get("status")),
+                    bytes=_escape(receipt.get("bytes")),
+                    sha256=_escape(receipt.get("sha256")),
+                )
+            )
     return "\n".join(lines).rstrip() + "\n"
 
 
@@ -196,7 +213,16 @@ def run_source_truth_audit(
     effective_max = int(retry.get("max_attempts", max_attempts))
     if not 1 <= effective_max <= 5:
         raise ValueError("retry.max_attempts must be between 1 through 5")
+    receipt_roots = (project, project / "source", input_path.expanduser().resolve().parent)
+    receipts = collect_source_receipts(payload, receipt_roots)
     issues = audit_source_truth(payload)
+    issues.extend(
+        audit_source_receipts(
+            receipts,
+            required=payload.get("source_receipt_policy") == "required",
+            expected=payload.get("source_receipts"),
+        )
+    )
     directive = source_truth_retry_directive(issues, str(retry.get("strategy") or ""))
     report: dict[str, object] = {
         "schema": "cyberppt.source_truth_audit.v1",
@@ -208,6 +234,7 @@ def run_source_truth_audit(
         "issues": [issue.to_dict() for issue in issues],
         "retry_directive": directive,
         "reference_gate": snapshot_reference_gate("source_truth"),
+        "source_receipts": receipts,
     }
     stage = project / "workbench" / "stages" / "01-analysis"
     _write_json(stage / "source-truth.json", payload)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import shutil
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
@@ -60,6 +61,14 @@ def _ensure_plaintext(source: Path) -> None:
         source.read_text(encoding="utf-8")
     except UnicodeDecodeError as exc:
         raise ValueError(f"script must be UTF-8 plaintext: {source}") from exc
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest().lower()
 
 
 def _script_dir(project: Path, kind: str, phase: str) -> Path:
@@ -159,10 +168,45 @@ def approve_script(project: Path, slide: int, kind: str, note: str = "") -> Path
             "approved": True,
             "approved_at": _utc_now(),
             "approved_artifacts": status.final_paths,
+            "approved_hashes": {
+                artifact: _sha256(Path(artifact)) for artifact in status.final_paths
+            },
             "note": note,
         },
     )
     return path
+
+
+def assert_approved_final_script(project: Path, slide: int, kind: str) -> Path:
+    """Return the approved final artifact, rejecting stale or incomplete approvals."""
+
+    root = _project_root(project)
+    kind = _validate_kind(kind)
+    status = get_script_status(root, slide, kind)
+    if not status.final_paths:
+        raise FileNotFoundError(
+            f"no final {kind} script saved for {_slide_slug(slide)}; stage a final script before generation"
+        )
+    approval_path = Path(status.approval_path)
+    if not approval_path.is_file():
+        raise PermissionError(
+            f"missing user approval for final {kind} script on {_slide_slug(slide)}: {approval_path}"
+        )
+    approval = json.loads(approval_path.read_text(encoding="utf-8-sig"))
+    if approval.get("approved") is not True:
+        raise PermissionError(f"final {kind} script approval is not affirmative: {approval_path}")
+    approved_hashes = approval.get("approved_hashes")
+    if not isinstance(approved_hashes, dict):
+        raise PermissionError(
+            f"final {kind} script approval is not hash-bound; reapprove before generation: {approval_path}"
+        )
+    for artifact in status.final_paths:
+        expected = approved_hashes.get(artifact)
+        if not expected or expected != _sha256(Path(artifact)):
+            raise PermissionError(
+                f"final {kind} script changed after approval; reapprove before generation: {artifact}"
+            )
+    return Path(status.final_paths[0])
 
 
 def get_script_status(project: Path, slide: int, kind: str) -> ScriptStatus:

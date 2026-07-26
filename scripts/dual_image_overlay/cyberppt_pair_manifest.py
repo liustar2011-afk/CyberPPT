@@ -29,13 +29,18 @@ from scripts.dual_image_overlay.deliverable_prompt import (
     compile_pages,
     parse_page_blocks,
     parse_pages,
+    render_prompt,
 )
+from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import ensure_output_size
 from scripts.dual_image_overlay.style_library import write_project_style_lock
+from cyberppt.commands.script_gate import assert_approved_final_script
 
 
 CANVAS = {"width": 1672, "height": 941}
 CONTENT_REGION = {"x": 26, "y": 136, "width": 1619, "height": 774}
-GENERATION_SIZE = {"width": 1672, "height": 941}
+# API-valid 16-multiple canvas used for ImageGen request + full-image ingest resize.
+GENERATION_SIZE = {"width": 1680, "height": 944}
+GENERATION_SIZE_TEXT = f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}"
 OUTPUT_VARIANTS = ["full"]
 FULL_GENERATION_METHOD = "text_to_image_generate_full"
 BACKGROUND_GENERATION_METHOD = "image_to_image_edit_from_full"
@@ -98,24 +103,51 @@ def build_manifest(
     project_path: Path | None,
     style_lock: Path | None,
     force_pending: bool = False,
+    require_approved_prompts: bool = False,
 ) -> tuple[dict[str, Any], Path, Path, list[int]]:
     source_pages = parse_page_blocks(script)
     page_numbers = parse_pages(pages_raw, set(source_pages))
     output_dir.mkdir(parents=True, exist_ok=True)
     compiled_script = _compiled_script_path(output_dir, script, page_numbers)
-    compiled = compile_pages(script, page_numbers, style_lock_path=style_lock)
+    approved_prompts: dict[int, tuple[str, Path]] = {}
+    if require_approved_prompts:
+        if project_path is None:
+            raise ValueError("per-slide prompt approval requires --project-path")
+        for page_number in page_numbers:
+            approved_path = assert_approved_final_script(project_path, page_number, "imagegen")
+            approved_prompts[page_number] = (
+                approved_path.read_text(encoding="utf-8-sig"),
+                approved_path,
+            )
+        compiled = "\n\n".join(
+            approved_prompts[page_number][0].strip() for page_number in page_numbers
+        ) + "\n"
+    else:
+        compiled = compile_pages(script, page_numbers, style_lock_path=style_lock)
     compiled_script.write_text(compiled, encoding="utf-8")
 
-    compiled_pages = parse_page_blocks(compiled_script)
+    # Compiled prompts no longer carry "## 第N页：" headers; use source page
+    # metadata + per-page render_prompt for pair entries.
     pairs: list[dict[str, Any]] = []
     for page_number in page_numbers:
-        page = compiled_pages[page_number]
+        page = source_pages[page_number]
+        prompt = render_prompt(page, style_lock_path=style_lock)
+        approval_path: Path | None = None
+        if page_number in approved_prompts:
+            approved_prompt, approval_path = approved_prompts[page_number]
+            canonical_prompt = prompt.strip()
+            if approved_prompt.strip() != canonical_prompt:
+                raise ValueError(
+                    f"approved ImageGen prompt is stale for page {page_number}; "
+                    "restage and reapprove the canonical prompt before manifest creation"
+                )
+            prompt = approved_prompt
         stem = _page_stem(page_number, page.title)
         full_path = output_dir / f"{stem}_full.png"
         full = {
             "filename": full_path.name,
             "path": str(full_path),
-            "prompt": page.text,
+            "prompt": prompt,
             "generation_method": FULL_GENERATION_METHOD,
             "operation": "generate",
             "output_role": "full_textual_visual_reference",
@@ -128,7 +160,8 @@ def build_manifest(
             {
                 "page_number": page_number,
                 "title": page.title,
-                "page_script": page.text,
+                "page_script": prompt,
+                **({"prompt_approval": str(approval_path.resolve())} if approval_path else {}),
                 "full": full,
             }
         )
@@ -186,6 +219,12 @@ def require_generated(manifest: dict[str, Any]) -> None:
         )
 
 
+def _normalize_ingest_image(path: Path) -> None:
+    """Resize a stored full/background image to the project generation canvas."""
+
+    ensure_output_size(path, GENERATION_SIZE_TEXT)
+
+
 def _copy_existing_images(existing_manifest: Path, output_dir: Path, *, force: bool = False) -> None:
     data = json.loads(existing_manifest.read_text(encoding="utf-8"))
     for pair in data.get("pairs", []):
@@ -200,7 +239,9 @@ def _copy_existing_images(existing_manifest: Path, output_dir: Path, *, force: b
             target = output_dir / f"{stem}_{variant}.png"
             if target.exists() and not force:
                 continue
+            output_dir.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, target)
+            _normalize_ingest_image(target)
 
 
 def _find_blueprint_image(blueprint_dir: Path, page_number: int) -> Path | None:
@@ -234,6 +275,7 @@ def _copy_full_images_from_blueprints(
             continue
         output_dir.mkdir(parents=True, exist_ok=True)
         shutil.copy2(blueprint, target)
+        _normalize_ingest_image(target)
 
 
 def main(argv: Sequence[str] | None = None) -> int:

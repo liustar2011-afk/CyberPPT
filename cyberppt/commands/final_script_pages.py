@@ -395,9 +395,10 @@ def run_final_script_pages(
     semantic_plan_dir = semantic_plan_dir.expanduser().resolve() if semantic_plan_dir else None
     if not script.is_file():
         raise FileNotFoundError(f"final script not found: {script}")
-    from cyberppt.stage01_controls import assert_escalation_resolved
+    from cyberppt.stage01_controls import assert_escalation_resolved, assert_stage01_script_approval
 
     assert_escalation_resolved(project, "script")
+    assert_stage01_script_approval(project, script)
     if run_rebuild:
         raise ValueError("--run-rebuild is no longer supported by final-script-pages; use image-ppt for Stage 02 production builds.")
     if semantic_plan_dir is not None:
@@ -424,6 +425,7 @@ def run_final_script_pages(
         output_dir=target_dir,
         project_path=project,
         style_lock=style_lock,
+        require_approved_prompts=True,
     )
     lock_path = _template_text_lock(
         project=project,

@@ -55,6 +55,55 @@ def _sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest().lower()
 
 
+def _sha256_path(path: Path) -> str:
+    return _sha256_bytes(path.read_bytes())
+
+
+def _approval_fields(path: Path) -> dict[str, str]:
+    return {
+        key.strip(): value.strip()
+        for line in path.read_text(encoding="utf-8-sig").splitlines()
+        if line.startswith("- ") and ":" in line
+        for key, value in [line[2:].split(":", 1)]
+    }
+
+
+def assert_stage01_script_approval(project: Path, script: Path) -> Path:
+    project = project.expanduser().resolve()
+    approval = project / APPROVAL_FILES["script"]
+    if not approval.is_file():
+        raise FileNotFoundError(f"missing Stage 01 script approval: {approval}")
+    fields = _approval_fields(approval)
+    audit = _read_json(project / LATEST_AUDIT_FILES["script"])
+    if audit.get("status") != "passed":
+        raise ValueError("current Stage 01 script audit is not passed; rerun audit before Stage 02")
+    for artifact_key, label in (
+        ("input", "script"),
+        ("outline", "outline"),
+        ("source_truth", "source truth"),
+    ):
+        artifact_value = audit.get(artifact_key)
+        if not artifact_value:
+            raise ValueError(f"Stage 01 script audit is missing its {label} path")
+        artifact_path = Path(str(artifact_value)).expanduser().resolve()
+        if not artifact_path.is_file():
+            raise FileNotFoundError(f"Stage 01 script audit artifact does not exist: {artifact_path}")
+        expected = fields.get(f"{label.replace(' ', '_')}_sha256")
+        if not expected:
+            raise ValueError(
+                "Stage 01 script approval is not hash-bound; reapprove the current final script and its inputs"
+            )
+        if expected != _sha256_path(artifact_path):
+            raise ValueError(
+                f"Stage 01 script approval does not match the current {label}; "
+                "rerun Stage 01 audit and reapprove before Stage 02"
+            )
+    current_script = script.expanduser().resolve()
+    if fields.get("script") and Path(fields["script"]).expanduser().resolve() != current_script:
+        raise ValueError("Stage 01 script approval points to a different final script")
+    return approval
+
+
 def _read_json(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8-sig"))
     if not isinstance(payload, dict):
@@ -372,6 +421,10 @@ def write_stage01_approval(
             raise FileNotFoundError(
                 f"script approval requires outline approval first: {outline_approval}"
             )
+        audit = _read_json(project / LATEST_AUDIT_FILES["script"])
+        if audit.get("status") != "passed":
+            raise ValueError("script approval requires a passed script audit")
+        script_path = Path(str(audit["input"])).expanduser().resolve()
     path = project / APPROVAL_FILES[kind]
     path.parent.mkdir(parents=True, exist_ok=True)
     label = "Outline" if kind == "outline" else "Script"
@@ -384,6 +437,12 @@ def write_stage01_approval(
             f"- decision: approve_{kind}",
             f"- confirmation_request: {request_path.as_posix()}",
             f"- notes: {note or 'User approved Stage 01 ' + kind + '.'}",
+            *([
+                f"- script: {script_path}",
+                f"- script_sha256: {_sha256_path(script_path)}",
+                f"- outline_sha256: {_sha256_path(Path(str(audit['outline'])).expanduser().resolve())}",
+                f"- source_truth_sha256: {_sha256_path(Path(str(audit['source_truth'])).expanduser().resolve())}",
+            ] if kind == "script" else []),
             (
                 "- next: draft scripts by chapter batches and run script-audit"
                 if kind == "outline"

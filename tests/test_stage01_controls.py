@@ -9,6 +9,7 @@ from cyberppt.commands.outline_audit import run_outline_audit
 from cyberppt.stage01_controls import (
     assert_confirmation_request_ready,
     assert_escalation_resolved,
+    assert_stage01_script_approval,
     snapshot_reference_gate,
     validate_confirmation_request,
     write_confirmation_request,
@@ -131,6 +132,37 @@ class Stage01ControlsTests(unittest.TestCase):
             )
             self.assertTrue(approval.is_file())
             self.assertIn("approve_outline", approval.read_text(encoding="utf-8"))
+
+    def test_script_approval_is_bound_to_script_outline_and_source_hashes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory) / "project"
+            analysis = project / "workbench" / "stages" / "01-analysis"
+            script = Path(directory) / "final-script.md"
+            script.write_text("## 第1页：测试\n正文\n", encoding="utf-8")
+            outline = analysis / "outline.json"
+            source_truth = analysis / "source-truth.json"
+            analysis.mkdir(parents=True, exist_ok=True)
+            outline.write_text("outline\n", encoding="utf-8")
+            source_truth.write_text("source\n", encoding="utf-8")
+            _write_json(
+                project / "workbench/scripts/audits/script-audit.json",
+                {
+                    "status": "passed",
+                    "input": str(script),
+                    "outline": str(outline),
+                    "source_truth": str(source_truth),
+                },
+            )
+            write_confirmation_request(project, "script")
+            approvals = project / "workbench/approvals"
+            approvals.mkdir(parents=True, exist_ok=True)
+            (approvals / "stage01-outline-approved.md").write_text("# approved\n", encoding="utf-8")
+            write_stage01_approval(project, kind="script")
+
+            assert_stage01_script_approval(project, script)
+            script.write_text("## 第1页：测试\n内容已改\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "does not match the current script"):
+                assert_stage01_script_approval(project, script)
 
     def test_outline_audit_blocked_by_open_source_truth_escalation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

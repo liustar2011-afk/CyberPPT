@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -27,6 +28,103 @@ class SourceTruthIssue:
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest().lower()
+
+
+def collect_source_receipts(
+    payload: dict[str, object],
+    roots: tuple[Path, ...] = (),
+) -> list[dict[str, object]]:
+    """Create lightweight, reproducible receipts for declared source files."""
+
+    receipts: list[dict[str, object]] = []
+    for source in _items(payload, "sources"):
+        source_id = str(source.get("id") or "")
+        declared = str(source.get("file") or "")
+        candidates = [Path(declared).expanduser()] if Path(declared).is_absolute() else [
+            root.expanduser().resolve() / declared for root in roots
+        ]
+        resolved = next((candidate for candidate in candidates if candidate.is_file()), None)
+        receipt: dict[str, object] = {
+            "source_id": source_id,
+            "declared_file": declared,
+            "present": resolved is not None,
+        }
+        if resolved is None:
+            receipt["status"] = "missing"
+        else:
+            raw = resolved.read_bytes()
+            receipt.update(
+                {
+                    "status": "verified",
+                    "path": str(resolved),
+                    "bytes": len(raw),
+                    "sha256": _sha256_file(resolved),
+                }
+            )
+        receipts.append(receipt)
+    return receipts
+
+
+def audit_source_receipts(
+    receipts: list[dict[str, object]],
+    *,
+    required: bool = False,
+    expected: object = None,
+) -> list[SourceTruthIssue]:
+    """Validate receipt shape and optionally fail when a declared file is absent."""
+
+    issues: list[SourceTruthIssue] = []
+    expected_by_id = {
+        str(item.get("source_id")): str(item.get("sha256") or "")
+        for item in expected
+        if isinstance(item, dict) and item.get("source_id")
+    } if isinstance(expected, list) else {}
+    for receipt in receipts:
+        source_id = str(receipt.get("source_id") or "")
+        ids = (source_id,) if source_id else ()
+        present = receipt.get("present") is True
+        digest = str(receipt.get("sha256") or "")
+        if required and not present:
+            issues.append(
+                SourceTruthIssue(
+                    "SOURCE_MATERIAL_RECEIPT_MISSING",
+                    "Declared source material is unavailable; record a verified file receipt before relying on it.",
+                    ids,
+                    "request_missing_inputs",
+                )
+            )
+        if present and (
+            len(digest) != 64
+            or digest != digest.lower()
+            or any(char not in "0123456789abcdef" for char in digest)
+            ):
+            issues.append(
+                SourceTruthIssue(
+                    "SOURCE_MATERIAL_RECEIPT_INVALID",
+                    "A present source receipt must contain a lowercase SHA-256 digest.",
+                    ids,
+                    "structured_fact_sweep",
+                )
+            )
+        expected_digest = expected_by_id.get(source_id)
+        if present and expected_digest and expected_digest != digest:
+            issues.append(
+                SourceTruthIssue(
+                    "SOURCE_MATERIAL_RECEIPT_CHANGED",
+                    "Source material hash differs from the previously recorded receipt; refresh Source Truth before proceeding.",
+                    ids,
+                    "section_sweep",
+                )
+            )
+    return issues
 
 
 def load_source_truth(path: Path) -> dict[str, object]:

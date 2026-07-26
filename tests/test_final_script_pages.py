@@ -8,9 +8,47 @@ from unittest.mock import Mock, patch
 
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
+from cyberppt.stage01_controls import write_confirmation_request, write_stage01_approval
+from cyberppt.commands.script_gate import stage_script
+from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, render_prompt
+from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
 class FinalScriptPagesTests(unittest.TestCase):
+    def _approve_inputs_and_prompts(self, project: Path, script: Path, style_id: int = 4) -> None:
+        analysis = project / "workbench" / "stages" / "01-analysis"
+        outline = analysis / "outline.json"
+        source_truth = analysis / "source-truth.json"
+        outline.write_text("{}\n", encoding="utf-8")
+        source_truth.write_text("{}\n", encoding="utf-8")
+        audit = project / "workbench" / "scripts" / "audits" / "script-audit.json"
+        audit.parent.mkdir(parents=True, exist_ok=True)
+        audit.write_text(
+            json.dumps(
+                {
+                    "status": "passed",
+                    "input": str(script.resolve()),
+                    "outline": str(outline.resolve()),
+                    "source_truth": str(source_truth.resolve()),
+                }
+            ),
+            encoding="utf-8",
+        )
+        write_confirmation_request(project, "script")
+        approvals = project / "workbench" / "approvals"
+        approvals.mkdir(parents=True, exist_ok=True)
+        (approvals / "stage01-outline-approved.md").write_text("# approved\n", encoding="utf-8")
+        write_stage01_approval(project, kind="script", note="test")
+        style_lock = write_project_style_lock(project=project, style_id=style_id, source_script=script)
+        for page_number, page in parse_page_blocks(script).items():
+            prompt = project / f"prompt-{page_number}.md"
+            prompt.write_text(render_prompt(page, style_lock_path=style_lock), encoding="utf-8")
+            stage_script(project, page_number, "imagegen", "final", prompt)
+        for page_number in parse_page_blocks(script):
+            from cyberppt.commands.script_gate import approve_script
+
+            approve_script(project, page_number, "imagegen", note="test")
+
     def test_compiles_pages_7_8_from_final_script_with_traceable_artifacts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -32,6 +70,7 @@ class FinalScriptPagesTests(unittest.TestCase):
 """,
                 encoding="utf-8",
             )
+            self._approve_inputs_and_prompts(project, script)
 
             summary = run_final_script_pages(project=project, script=script, pages_raw="7-8", style_id=4)
 
@@ -66,6 +105,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             init_project(project)
             script = root / "script-final.md"
             script.write_text("## 第7页：态势感知能力\n组件A：内容\n", encoding="utf-8")
+            self._approve_inputs_and_prompts(project, script)
 
             with self.assertRaisesRegex(ValueError, "请选择一个 CyberPPT 默认视觉风格"):
                 run_final_script_pages(project=project, script=script, pages_raw="7")
@@ -77,6 +117,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             init_project(project)
             script = root / "script-final.md"
             script.write_text("## 第1页：测试\n正文\n", encoding="utf-8")
+            self._approve_inputs_and_prompts(project, script)
 
             with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
                 run.return_value = Mock(returncode=0)
@@ -122,6 +163,7 @@ class FinalScriptPagesTests(unittest.TestCase):
 """,
                 encoding="utf-8",
             )
+            self._approve_inputs_and_prompts(project, script)
 
             with self.assertRaisesRegex(ValueError, "--run-rebuild is no longer supported"):
                 run_final_script_pages(
@@ -141,6 +183,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             semantic_plan_dir.mkdir()
             script = root / "script-final.md"
             script.write_text("## 第7页：态势感知能力\n正文\n", encoding="utf-8")
+            self._approve_inputs_and_prompts(project, script)
 
             with self.assertRaisesRegex(ValueError, "--semantic-plan-dir is no longer supported"):
                 run_final_script_pages(
@@ -167,6 +210,7 @@ class FinalScriptPagesTests(unittest.TestCase):
 """,
                 encoding="utf-8",
             )
+            self._approve_inputs_and_prompts(project, script, style_id=5)
 
             with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
                 run.return_value = Mock(returncode=3)

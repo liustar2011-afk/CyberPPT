@@ -7,12 +7,14 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from scripts.dual_image_overlay.deliverable_prompt import (
+    PageBlock,
     compile_page_blocks,
     compile_pages,
     fit_template_title,
     layout_density_directives,
     parse_content_locks,
     parse_page_blocks,
+    render_prompt,
     template_title,
     visible_deliverable_lines,
 )
@@ -23,6 +25,20 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
+    def test_compile_pages_uses_only_onscreen_block_from_final_manuscript(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            script = root / "script-final.md"
+            style = write_project_style_lock(project=root / "project", style_id=4)
+            script.write_text(
+                "## 第1页：测试\n- 页面类型：内容页\n- 完整文字稿：不可送图\n- 上屏文字：\n\n  **可画模块**\n\n  - 可画要点\n\n- 证据：S001\n- 边界：不可送图\n【演讲者备注】\n不可送图\n",
+                encoding="utf-8",
+            )
+            prompt = compile_pages(script, [1], style_lock_path=style)
+        self.assertIn("可画模块", prompt)
+        self.assertIn("可画要点", prompt)
+        self.assertNotIn("完整文字稿", prompt)
+        self.assertNotIn("不可送图", prompt)
     def test_parse_supports_p_style_and_chinese_page_headings(self) -> None:
         with TemporaryDirectory() as directory:
             script = Path(directory) / "script.md"
@@ -62,23 +78,32 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
 
             prompt = compile_pages(script, [2], style_lock_path=style)
 
-        self.assertIn("面向最终客户交付", prompt)
+        self.assertIn("只生成正文内容区成稿图", prompt)
+        self.assertIn("1680×944", prompt)
+        self.assertIn("No evidence IDs, watermarks, debug marks, or placeholders.", prompt)
+        self.assertNotIn("不得出现证据编号", prompt)
         self.assertIn("【内容锁定】", prompt)
-        self.assertIn("## 第2页：建议由中电联牵头", prompt)
+        self.assertNotIn("## 第2页：", prompt)
         self.assertNotIn("\n标题：", prompt)
         self.assertNotIn("\n副标题：", prompt)
         self.assertIn("【构图指令】", prompt)
+        self.assertNotIn("【设计目标与叙事】", prompt)
+        self.assertNotIn("请先理解", prompt)
+        self.assertNotIn("页面使命", prompt)
+        self.assertNotIn("母版", prompt)
+        self.assertNotIn("可编辑文字层", prompt)
         self.assertIn("【结构密度】", prompt)
         self.assertIn("七点结论清单", prompt)
         self.assertIn("底部墨绿通栏", prompt)
-        self.assertIn("不使用外部风格 preset", prompt)
-        self.assertIn("风格只约束视觉表达", prompt)
-        self.assertIn("不得覆盖【内容锁定】中的版式、组件数量、箭头关系和框内文字", prompt)
-        self.assertIn("必须完整、可读地进入画面", prompt)
-        self.assertIn("不得把原脚本指定的页面类型改成通用结论页或通用卡片页", prompt)
-        self.assertIn("近义替换框内文字", prompt)
+        self.assertNotIn("不使用外部风格 preset", prompt)
+        self.assertNotIn("风格只约束视觉表达", prompt)
+        self.assertNotIn("确认样张", prompt)
+        self.assertNotIn("密度：不改变【内容锁定】结构/组件/箭头/文字清单", prompt)
+        self.assertNotIn("页面角色", prompt)
+        self.assertIn("近义替换", prompt)
+        self.assertIn("忠实于【内容锁定】", prompt)
         self.assertNotIn("可被后续 PPT 文本层覆盖", prompt)
-        self.assertNotIn("适合作为无字背景保留", prompt)
+        self.assertNotIn("适合作为可字背景保留", prompt)
         self.assertIn("#F2F3EF", prompt)
         self.assertIn("电力产业链企业出海能力证明体系建设已具备推进必要性", prompt)
         self.assertIn("补齐企业能力可信表达短板", prompt)
@@ -242,15 +267,51 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
             blocks = parse_content_locks(locks)
             prompt = compile_page_blocks(blocks, [4], style_lock_path=style_lock)
 
-        self.assertIn("## 第4页：统一入口、统一证据、统一评价和统一结果应用体系", prompt)
+        self.assertNotIn("## 第4页：", prompt)
         self.assertIn("中心定位框", prompt)
         self.assertIn("左右两侧信息通过短箭头指向中心定位框", prompt)
         self.assertIn("中心定位框1个", prompt)
-        self.assertIn("风格只约束色彩、材质、线条、图标克制度和视觉语气", prompt)
-        self.assertIn("在不改变原脚本结构的前提下", prompt)
+        self.assertNotIn("风格只约束色彩、材质、线条、图标克制度和视觉语气", prompt)
+        self.assertNotIn("密度：不改变【内容锁定】结构/组件/箭头/文字清单", prompt)
+        self.assertNotIn("确认样张", prompt)
+        self.assertNotIn("不使用外部风格 preset", prompt)
+        self.assertNotIn("【设计目标与叙事】", prompt)
+        self.assertNotIn("页面角色", prompt)
+        self.assertIn("浅灰白 + 墨绿", prompt)
+        self.assertIn("忠实于【内容锁定】", prompt)
         self.assertNotIn("E05", prompt)
         self.assertNotIn("【用途】", prompt)
         self.assertNotIn("目标语言", prompt)
+
+    def test_render_prompt_omits_core_judgment_and_boundary(self) -> None:
+        with TemporaryDirectory() as directory:
+            style_lock = write_project_style_lock(project=Path(directory) / "project", style_id=9)
+            prompt = render_prompt(
+                PageBlock(
+                    page_number=5,
+                    title="研判变化",
+                    text=(
+                        "核心判断：供需分析已扩展到综合判断\n"
+                        "上屏文字\n"
+                        "**关键变化**\n"
+                        "- 全社会用电量增长。\n"
+                        "Boundary (do not show on slide): 三项数字保留2025年、全国口径"
+                    ),
+                ),
+                style_lock_path=style_lock,
+            )
+
+        self.assertNotIn("核心判断", prompt)
+        self.assertNotIn("供需分析已扩展到综合判断", prompt)
+        self.assertNotIn("禁止项", prompt)
+        self.assertNotIn("Boundary (do not show on slide)", prompt)
+        self.assertNotIn("三项数字保留2025年、全国口径", prompt)
+        self.assertNotIn("Boundary text must not appear on the slide", prompt)
+        self.assertIn("上屏文字", prompt)
+        self.assertIn("关键变化", prompt)
+        self.assertIn("不要生成页面标题、副标题、Logo、页脚", prompt)
+        self.assertIn("No evidence IDs, watermarks, debug marks, or placeholders.", prompt)
+        self.assertNotIn("不得出现证据编号", prompt)
 
 
 if __name__ == "__main__":

@@ -62,6 +62,7 @@ class SourceTruthAuditCommandTests(unittest.TestCase):
         self.assertIn("# 源材料分析与 Source Truth Map", rendered)
         self.assertIn("| Source ID | 类型 | 优先级 |", rendered)
         self.assertIn("## 覆盖与审计结论", rendered)
+        self.assertIn("## 源材料凭据", rendered)
         self.assertIn("S001", rendered)
 
     def test_max_attempts_must_be_bounded(self) -> None:
