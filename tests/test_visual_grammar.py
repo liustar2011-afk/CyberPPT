@@ -6,16 +6,35 @@ from scripts.dual_image_overlay.deliverable_prompt import PageBlock, render_prom
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 from scripts.dual_image_overlay.visual_grammar import default_visual_grammar
 
+_SHORT_LINES = (
+    "- No body text on busy/high-contrast imagery.",
+    "- No connectors through/under text; no fake flow lines; one connector style.",
+    "- Unequal visual weight by hierarchy — not an equal card wall.",
+)
+
+_OLD_CHINESE_FRAGMENTS = (
+    "允许使用文字框、标签、卡片、侧栏、色块和分区",
+    "每个容器必须承担明确的业务语义",
+    "不得为了版式整齐复制无语义容器",
+    "箭头、路径和连接线采用细线或色带",
+    "不得穿过、遮挡或托载正文文字",
+    "正文必须位于干净、稳定、对比充足的区域",
+    "不同层级不得被处理成完全等权",
+)
+
 
 def test_open_visual_grammar_allows_expression_with_business_boundaries() -> None:
     contract = default_visual_grammar()
+    rendered = contract.render()
 
-    assert "文字框、标签、卡片、侧栏、色块和分区" in contract.container_rule
-    assert "明确的业务语义" in contract.container_rule
-    assert "细线、色带、渐变、光流、空间轨迹或轻微立体效果" in contract.connector_rule
-    assert "不得穿过、遮挡或托载正文文字" in contract.connector_rule
-    assert "干净、稳定、对比充足" in contract.image_text_rule
-    assert "不同层级不得被处理成完全等权" in contract.hierarchy_rule
+    for line in _SHORT_LINES:
+        assert line in rendered
+    assert rendered == "\n".join(_SHORT_LINES)
+    for fragment in _OLD_CHINESE_FRAGMENTS:
+        assert fragment not in rendered
+    assert "光流" not in rendered
+    assert "空间轨迹" not in rendered
+    assert "轻微立体效果" not in rendered
 
 
 def test_deliverable_prompt_renders_visual_grammar_once_for_style_nine() -> None:
@@ -27,5 +46,75 @@ def test_deliverable_prompt_renders_visual_grammar_once_for_style_nine() -> None
         )
 
     assert prompt.count("【视觉组织原则】") == 1
-    assert "允许使用文字框、标签、卡片、侧栏、色块和分区" in prompt
-    assert "不得穿过、遮挡或托载正文文字" in prompt
+    for line in _SHORT_LINES:
+        assert line in prompt
+    for fragment in _OLD_CHINESE_FRAGMENTS:
+        assert fragment not in prompt
+    assert "【设计目标与叙事】" not in prompt
+    assert "leadership briefing" in prompt.lower()
+    assert "speech-support" in prompt
+    assert "not a process infographic" in prompt
+    assert "Not a consulting deliverable" in prompt
+    assert "Business capability formation is the narrative center" in prompt
+    assert "relationship between people, business processes, and analytical capability" in prompt
+    assert "People are supporting contextual elements only" in prompt
+    assert "Avoid front-facing portraits" in prompt
+    assert "Prefer side views, back views, three-quarter views" in prompt
+    assert "highest-contrast or largest visual element" in prompt
+    assert "naturally engaged in professional work" in prompt
+    assert "Visual priority: business capability logic" in prompt
+    assert "Screens, charts, and data interfaces are supporting evidence only" in prompt
+    assert "Avoid control-room hero shots" in prompt
+    assert "smart city exhibition style" in prompt
+    assert "Consulting research" not in prompt
+    assert "Industry scene anchor:" in prompt
+    assert "real-world industry scenes as the visual foundation" in prompt
+    assert "Prefer: architecture" not in prompt
+    assert "capability evolution map" not in prompt
+    assert "scenario-anchored capability demonstration" in prompt
+    assert "software-architecture look" in prompt
+    assert "Visual logic:" in prompt
+    assert "derived from the text logic" in prompt
+    assert "integrated narrative" in prompt
+    assert "business capability evolution" in prompt
+    assert "lifecycle circles with isolated nodes" in prompt
+    assert "result / value / capability" in prompt
+    assert "Documentary / editorial photography" in prompt
+    assert "numbered step cards" in prompt
+    assert "请先理解" not in prompt
+    assert "页面使命" not in prompt
+    assert "母版" not in prompt
+    assert "可编辑文字层" not in prompt
+    assert "光流" not in prompt
+    assert "空间轨迹" not in prompt
+    assert "实景彩色插画" in prompt
+    assert "key high-end craft" in prompt
+    assert "industry credibility foundation" in prompt
+    assert "visual anchor" in prompt
+    assert "Text mainline unchanged" in prompt
+    assert "场景辅助" not in prompt
+    assert "photo-inspired editorial industry illustration" in prompt
+    assert "secondary point-art" not in prompt
+    assert "Enhance the message" in prompt
+    assert "宁少勿滥" in prompt
+    assert "文主线" in prompt
+    assert "不使用外部风格 preset" not in prompt
+    assert "确认样张" not in prompt
+    assert "密度：不改变【内容锁定】" not in prompt
+    assert "Style constrains color" not in prompt
+    assert "Do not rely on 「视觉结构」" not in prompt
+    assert "视觉结构" not in prompt
+    assert "请以【视觉结构】为构图思考起点" not in prompt
+    assert "视觉结构：" not in prompt
+    assert "图不是装饰" not in prompt
+    assert "图多字少" not in prompt
+    assert "## 第9页：" not in prompt
+    assert "忠实于【内容锁定】" in prompt
+    assert "核心判断" not in prompt
+    assert "禁止项" not in prompt
+    assert "Boundary (do not show on slide)" not in prompt
+    assert "Boundary text must not appear on the slide" not in prompt
+    assert (
+        "Do not invent section labels like meta headers; only render 上屏文字 modules."
+        in prompt
+    )

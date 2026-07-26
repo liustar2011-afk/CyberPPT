@@ -54,7 +54,86 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     style_nine = resolve_default_style(style_id=9)
     assert style_nine["slug"] == "ivory_deep_blue_scene"
     assert style_nine["extension_only"] is True
+    assert style_nine["name"] == "象牙白 + 深蓝领导汇报"
     assert resolve_default_style(style_name="ivory_deep_blue_scene")["id"] == 9
+    assert style_nine["colors"] == STYLE_FOUR_CONTRACT["colors"]
+    assert "icon_rule" in style_nine
+    assert "people_rule" in style_nine
+    assert "supporting contextual elements only" in style_nine["people_rule"]
+    assert "Avoid front-facing portraits" in style_nine["people_rule"]
+    assert "direct eye contact" in style_nine["people_rule"]
+    assert "highest-contrast or largest visual element" in style_nine["people_rule"]
+    assert "naturally engaged in professional work" in style_nine["people_rule"]
+    assert "leadership briefing" in style_nine["prompt_contract"]
+    assert "speech-support" in style_nine["prompt_contract"]
+    assert "not a process infographic" in style_nine["prompt_contract"]
+    assert "Not a consulting deliverable" in style_nine["prompt_contract"]
+    assert "Consulting research" not in style_nine["prompt_contract"]
+    assert "Microsoft YaHei" in style_nine["prompt_contract"] or "Source Han Sans" in style_nine["prompt_contract"]
+    assert "Industry scene anchor:" in style_nine["prompt_contract"]
+    assert "real-world industry scenes as the visual foundation" in style_nine["prompt_contract"]
+    assert "Do not visualize only through icons, nodes and arrows" in style_nine["prompt_contract"]
+    assert "power grid operation" in style_nine["prompt_contract"]
+    assert "Business capability formation is the narrative center" in style_nine["prompt_contract"]
+    assert "strategic capability and business value" in style_nine["prompt_contract"]
+    assert "relationship between people, business processes, and analytical capability" in style_nine["prompt_contract"]
+    assert "supporting evidence only" in style_nine["prompt_contract"]
+    assert "Avoid control-room hero shots" in style_nine["prompt_contract"]
+    assert "smart city exhibition style" in style_nine["prompt_contract"]
+    assert "control/dispatch rooms" not in style_nine["prompt_contract"]
+    assert "Prefer: architecture" not in style_nine["prompt_contract"]
+    assert "capability evolution map" not in style_nine["prompt_contract"]
+    assert "scenario-anchored capability demonstration" in style_nine["prompt_contract"]
+    assert "closed-loop improvement in operational context" in style_nine["prompt_contract"]
+    assert "software-architecture look" in style_nine["prompt_contract"]
+    assert "center module + satellite nodes" in style_nine["prompt_contract"]
+    assert "Visual logic:" in style_nine["prompt_contract"]
+    assert "derived from the text logic" in style_nine["prompt_contract"]
+    assert "integrated narrative" in style_nine["prompt_contract"]
+    assert "business capability evolution" in style_nine["prompt_contract"]
+    assert "lifecycle circles with isolated nodes" in style_nine["prompt_contract"]
+    assert "result / value / capability" in style_nine["prompt_contract"]
+    assert "numbered step cards" in style_nine["prompt_contract"]
+    assert "equal-weight modules" in style_nine["prompt_contract"]
+    assert "mechanical process flow templates" in style_nine["prompt_contract"]
+    assert "实景彩色插画" in style_nine["prompt_contract"]
+    assert "key high-end craft" in style_nine["prompt_contract"]
+    assert "industry credibility foundation" in style_nine["prompt_contract"]
+    assert "visual anchor" in style_nine["prompt_contract"]
+    assert "Text mainline unchanged" in style_nine["prompt_contract"]
+    assert "logic overlays lightly" in style_nine["prompt_contract"]
+    assert "场景辅助" not in style_nine["prompt_contract"]
+    assert "photo-inspired editorial industry illustration" in style_nine["prompt_contract"]
+    assert "Documentary / editorial photography" in style_nine["prompt_contract"]
+    assert "card-per-module" in style_nine["prompt_contract"]
+    assert "process infographic" in style_nine["scope_rule"]
+    assert "industry credibility foundation" in style_nine["scope_rule"]
+    assert "Enhance the message" in style_nine["prompt_contract"]
+    assert "#F7F6F0" in style_nine["prompt_contract"]
+    assert "#12355B" in style_nine["prompt_contract"]
+    assert "dashboard UI" in style_nine["prompt_contract"]
+    assert "card wall" in style_nine["prompt_contract"]
+    assert "Moderate-to-high information density" in style_nine["density_rule"]
+    assert "宁少勿滥" in style_nine["density_rule"]
+    assert "文主线" in style_nine["density_rule"] or "文主线" in style_nine["scenario"] or "文主线" in style_nine["icon_rule"]
+    assert "文主线" in style_nine["scenario"]
+    assert "领导汇报" in style_nine["scenario"]
+    assert "演讲辅助" in style_nine["scenario"]
+    assert "实景插画" in style_nine["scenario"]
+    assert "行业可信度基础" in style_nine["scenario"] or "visual anchor" in style_nine["scope_rule"]
+    assert "视觉结构" in style_nine["scope_rule"]
+    assert "视觉结构" in style_nine["icon_rule"]
+    assert "请以【视觉结构】为构图思考起点" not in style_nine["prompt_contract"]
+    assert "主动思考与发挥" not in style_nine["scope_rule"]
+    assert "图不是装饰" not in style_nine["prompt_contract"]
+    assert "图多字少" not in style_nine["density_rule"]
+    assert "文字字面保真" not in style_nine["prompt_contract"]
+    assert "secondary point-art" not in style_nine["prompt_contract"]
+    assert "never the page hero" not in style_nine["prompt_contract"]
+    # Negative overload / design-essay walls removed
+    assert "勿为塞入每一句牺牲设计" not in style_nine["prompt_contract"]
+    assert "禁止两条极端" not in style_nine["prompt_contract"]
+    assert "非对称编辑式报告布局" not in style_nine["prompt_contract"]
 
 
 def test_default_style_choices_still_show_only_original_eight() -> None:
@@ -71,6 +150,7 @@ def test_style_nine_lock_records_extension_selection() -> None:
         payload = json.loads(lock.read_text(encoding="utf-8"))
 
     assert payload["style"]["id"] == 9
+    assert payload["style"]["name"] == "象牙白 + 深蓝领导汇报"
     assert payload["policy"]["selected_from_default_8"] is False
     assert payload["policy"]["selected_from_extension"] is True
 

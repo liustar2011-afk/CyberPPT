@@ -14,5 +14,11 @@ def test_style_nine_sample_and_reference_are_available() -> None:
     assert sample.exists()
     with Image.open(sample) as image:
         assert image.width / image.height == 16 / 9
-    assert "扩展风格9：象牙白 + 深蓝场景叙事" in reference
+    assert "扩展风格9：象牙白 + 深蓝领导汇报" in reference
     assert "默认8种风格仍保持1—8不变" in reference
+    assert "演讲辅助" in reference
+    assert "实景彩色插画" in reference
+    assert "Visual logic" in reference
+    assert "business capability logic" in reference
+    assert "Style 9 people-expression constraint" in reference
+    assert "People are supporting contextual elements only" in reference

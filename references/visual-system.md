@@ -49,6 +49,7 @@
 ### 逐页蓝图子阶段
 
 - 用户选定风格后，不再重新发散风格；先声明锁定风格编号、名称、色板、网格、标题层级、图表语言和信息密度规则。
+- **送图脚本门禁**：调用 ImageGen 前，必须把将送入生图工具的明文 prompt 落盘到 `workbench/prompts/imagegen/`，在对话中展示，并等待用户修改或批准。送图内容只含主判断、上屏文字、视觉结构与清洗后的边界；禁止夹带完整文字稿、取舍说明、证据映射、证据编号、讲解提示。
 - 每一页蓝图都必须沿用同一视觉系统，允许因页面角色调整密度，但不能改变配色、网格、标题层级、图表语言或页脚体系。
 - 每一页蓝图提示词都必须包含锁定风格编号和名称，避免 ImageGen 默认漂移到其他审美方向。
 - 蓝图生成后逐页检查风格漂移：如果出现深色驾驶舱、瑞士网格、杂志海报、科技蓝图等未被选定的扩展风格，必须重做该页。
@@ -319,10 +320,12 @@
 
 直接通过当前对话发送 8 张独立图片，并简要比较语气、密度、优势和风险。需要时给出推荐风格。网页、拼图或总览图只能作为辅助浏览，不能作为确认依据。停止并请求第二次确认，然后再进入混合还原 PPTX。
 
-## 扩展风格9：象牙白 + 深蓝场景叙事
+## 扩展风格9：象牙白 + 深蓝领导汇报
 
 默认8种风格仍保持1—8不变。风格9是仅供显式选择的扩展风格，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用，不进入默认候选。
 
-风格9迁移 Stage2 对开放式视觉语法的验证成果：围绕业务语义组织容器，以渐变、光流、空间轨迹和表达性连接线呈现关系；允许低饱和真实图片与语义插图，使用浅景深、克制阴影和非均等视觉层级增强场景感。其使用仍须满足可读性、业务语义、来源边界和状态边界要求。
+风格9面向政企**领导汇报**与**演讲辅助**（非咨询交付件、非学术论文、非产品宣传）：色板与风格4同为象牙白 + 深蓝（#F7F6F0 / #12355B）。视觉身份是 senior leadership briefing / speech-support（不是 process infographic）。单一视觉中心应表达结果/价值/能力（非泛化图表图标）。要求 **Industry scene anchor**：真实行业场景为视觉基础，其上轻叠加业务逻辑关系；观众先感知“正在建设的真实行业能力”，再理解“如何运转”；忌仅用图标/节点/箭头表达；优先电网运行、调度控制室、预测分析工作环境、专业决策氛围；忌 AI 芯片、抽象网络节点、科技蓝光、泛互联网技术场景、扁平图标主视觉、卡通与抽象科技符号。要求 Visual logic：图元从文本逻辑派生，把因果/输入输出/依赖/反馈/演进关系视觉化，形成文图一体叙事；Prefer 场景锚定的能力演示、真实工作语境中的业务能力关系、分层能力含义（非软件栈图）、行业实景中的价值路径、运行语境中的闭环改进；忌软件架构图观感、中心模块+卫星节点+图标箭头整页、技术规格图审美、孤立节点生命周期环、泛化流程箭头、图标步骤图。忌等权模块、编号步骤卡、时间线、机械流程模板、四栏咨询排版、卡片墙、SaaS/仪表盘与库存会议照。**实景彩色插画 / 编辑式行业插画**是高端关键工艺——行业可信度基础与视觉锚点（双层：实景 + 轻逻辑叠加）；文主线不变，可含纪实/编辑摄影；宁少勿滥，禁止一模块一图刷屏或大照片海报。禁止以「视觉结构」或任何后端构图字段作为构图起点。原风格4保持不变，既有使用风格4生成的项目成果无需迁移或覆盖。
 
-原风格4保持不变，既有使用风格4生成的项目成果无需迁移或覆盖。
+### Style 9 people-expression constraint
+
+People are supporting contextual elements only, not the main visual subject. Avoid front-facing portraits, posed meeting-photo compositions, direct eye contact with the camera, and hero-style human compositions. Prefer side views, back views, three-quarter views, distant group working scenes, or small-scale human presence integrated into the business environment. Do not let human faces become the highest-contrast or largest visual element on the page. People should appear naturally engaged in professional work, supporting business capability, decision-making, validation, coordination, or operational improvement. Avoid smiling portraits, handshakes, conference-table group photos, people pointing at screens, and corporate promotional photography. Visual priority: business capability logic, real industry scene, professional work state, then supporting people.

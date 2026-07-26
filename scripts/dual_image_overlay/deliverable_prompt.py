@@ -329,11 +329,14 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
     if not isinstance(style, dict):
         return None
     prompt_contract = _strip_visual_structure_meta(_collapse_text(style.get("prompt_contract")))
+    people_rule = _strip_visual_structure_meta(_collapse_text(style.get("people_rule")))
     icon_rule = _strip_visual_structure_meta(_collapse_text(style.get("icon_rule")))
     density_rule = _collapse_text(style.get("density_rule"))
     # scope_rule / sample / lock boilerplate stay in the lock JSON for humans;
     # do not inject them into ImageGen payloads.
     parts = [prompt_contract]
+    if people_rule:
+        parts.append(people_rule)
     if icon_rule:
         parts.append(icon_rule)
     if density_rule:
