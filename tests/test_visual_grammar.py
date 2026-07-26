@@ -55,30 +55,30 @@ def test_deliverable_prompt_renders_visual_grammar_once_for_style_nine() -> None
     assert "speech-support" in prompt
     assert "not a process infographic" in prompt
     assert "Not a consulting deliverable" in prompt
-    assert "Business capability formation is the narrative center" in prompt
-    assert "relationship between people, business processes, and analytical capability" in prompt
+    assert "Prefer editorial simplicity and business clarity" in prompt
+    assert "Visual hierarchy should follow the importance of the message" in prompt
+    assert "Do not force every page to have a single hero image" in prompt
+    assert "Do not apply one visual template to all pages" in prompt
     assert "People are supporting contextual elements only" in prompt
     assert "Avoid front-facing portraits" in prompt
     assert "Prefer side views, back views, three-quarter views" in prompt
     assert "highest-contrast or largest visual element" in prompt
     assert "naturally engaged in professional work" in prompt
-    assert "Visual priority: business capability logic" in prompt
+    assert "Visual priority: page message and business logic" in prompt
     assert "Screens, charts, and data interfaces are supporting evidence only" in prompt
     assert "Avoid control-room hero shots" in prompt
     assert "smart city exhibition style" in prompt
     assert "Consulting research" not in prompt
-    assert "Industry scene anchor:" in prompt
-    assert "real-world industry scenes as the visual foundation" in prompt
+    assert "Industry scene and imagery:" in prompt
+    assert "Images are supporting evidence, not mandatory decoration" in prompt
+    assert "Use images only when they improve understanding" in prompt
     assert "Prefer: architecture" not in prompt
     assert "capability evolution map" not in prompt
-    assert "scenario-anchored capability demonstration" in prompt
     assert "software-architecture look" in prompt
-    assert "Visual logic:" in prompt
-    assert "derived from the text logic" in prompt
-    assert "integrated narrative" in prompt
-    assert "business capability evolution" in prompt
+    assert "Content fidelity and visual logic:" in prompt
+    assert "Do not introduce new visual relationships" in prompt
+    assert "clarify the content, not redefine the content" in prompt
     assert "lifecycle circles with isolated nodes" in prompt
-    assert "result / value / capability" in prompt
     assert "Documentary / editorial photography" in prompt
     assert "numbered step cards" in prompt
     assert "请先理解" not in prompt
@@ -88,16 +88,15 @@ def test_deliverable_prompt_renders_visual_grammar_once_for_style_nine() -> None
     assert "光流" not in prompt
     assert "空间轨迹" not in prompt
     assert "实景彩色插画" in prompt
-    assert "key high-end craft" in prompt
-    assert "industry credibility foundation" in prompt
-    assert "visual anchor" in prompt
-    assert "Text mainline unchanged" in prompt
     assert "场景辅助" not in prompt
     assert "photo-inspired editorial industry illustration" in prompt
     assert "secondary point-art" not in prompt
     assert "Enhance the message" in prompt
     assert "宁少勿滥" in prompt
-    assert "文主线" in prompt
+    assert "One dominant visual narrative" not in prompt
+    assert "One visual center" not in prompt
+    assert "visual anchor" not in prompt
+    assert "Business capability formation is the narrative center" not in prompt
     assert "不使用外部风格 preset" not in prompt
     assert "确认样张" not in prompt
     assert "密度：不改变【内容锁定】" not in prompt

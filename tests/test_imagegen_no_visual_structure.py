@@ -122,7 +122,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertLess(prompt.index("上屏文字"), prompt.index("Page-specific visual intent"))
         self.assertLess(
             prompt.index("Page-specific visual intent"),
-            prompt.index("Industry scene anchor:"),
+            prompt.index("Industry scene and imagery:"),
         )
         self.assertIn("Explain the approved page-specific decision.", prompt)
         self.assertIn("do not render field names or instruction text", prompt)
