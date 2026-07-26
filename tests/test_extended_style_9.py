@@ -105,10 +105,10 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "photo-inspired editorial industry illustration" in style_nine["prompt_contract"]
     assert "Documentary / editorial photography" in style_nine["prompt_contract"]
     assert "card-per-module" in style_nine["prompt_contract"]
-    assert "process infographic" in style_nine["scope_rule"]
+    assert "process infographic" in style_nine["prompt_contract"]
     assert "must not override 【内容锁定】 or [Prompt context] Page-specific visual intent" in style_nine["scope_rule"]
-    assert "Do not force a hero image" in style_nine["scope_rule"]
-    assert "Do not introduce visual relationships not supported" in style_nine["scope_rule"]
+    assert "Do not force every page to have a single hero image" in style_nine["prompt_contract"]
+    assert "Do not introduce new visual relationships" in style_nine["prompt_contract"]
     assert "Enhance the message" in style_nine["prompt_contract"]
     assert "#F7F6F0" in style_nine["prompt_contract"]
     assert "#12355B" in style_nine["prompt_contract"]
@@ -121,8 +121,8 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "实景插画" in style_nine["scenario"]
     assert "按需使用" in style_nine["scenario"]
     assert "视觉结构" in style_nine["scope_rule"]
-    assert "视觉结构" in style_nine["icon_rule"]
-    assert "supporting evidence, not mandatory decoration" in style_nine["icon_rule"]
+    assert "视觉结构" not in style_nine["icon_rule"]
+    assert "supporting evidence, not mandatory decoration" not in style_nine["icon_rule"]
     assert "one icon per bullet" in style_nine["icon_rule"]
     assert "One dominant visual narrative" not in style_nine["prompt_contract"]
     assert "One visual center" not in style_nine["prompt_contract"]
@@ -130,6 +130,21 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "key high-end craft" not in style_nine["prompt_contract"]
     assert "Business capability formation is the narrative center" not in style_nine["prompt_contract"]
     assert "real-world industry scenes as the visual foundation" not in style_nine["prompt_contract"]
+    combined_contract = "\n".join(
+        (
+            style_nine["scope_rule"],
+            style_nine["prompt_contract"],
+            style_nine["icon_rule"],
+        )
+    )
+    assert len(style_nine["prompt_contract"]) < 3200
+    assert len(style_nine["scope_rule"]) < 300
+    assert len(style_nine["icon_rule"]) < 220
+    assert combined_contract.count(
+        "Images are supporting evidence, not mandatory decoration."
+    ) == 1
+    assert combined_contract.count("Do not introduce new visual relationships") == 1
+    assert combined_contract.count("Do not force") == 1
     assert "请以【视觉结构】为构图思考起点" not in style_nine["prompt_contract"]
     assert "主动思考与发挥" not in style_nine["scope_rule"]
     assert "图不是装饰" not in style_nine["prompt_contract"]

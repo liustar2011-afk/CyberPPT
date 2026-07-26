@@ -92,6 +92,32 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
             )
             self.assertIn(marker, build_page_visual_intent(page, mission))
 
+    def test_visual_intent_classifies_comparison_scenario_and_capability(self) -> None:
+        cases = [
+            (
+                "不同建设方案有何差异",
+                "通过同一维度比较识别差异与优先级",
+                "differences and priorities",
+            ),
+            (
+                "重点场景如何应用并具备什么条件",
+                "场景连接业务价值、当前阶段和推进条件",
+                "application direction, current stage, and entry conditions",
+            ),
+            (
+                "各项能力如何协同支撑业务价值",
+                "数据、模型、产品和机制能力共同支撑业务判断",
+                "capabilities work together to create business value",
+            ),
+        ]
+        for mission, message, marker in cases:
+            page, _ = _visual_intent_page(
+                message,
+                mission,
+                "  **支撑模块**\n  - 支撑内容。",
+            )
+            self.assertIn(marker, build_page_visual_intent(page, mission))
+
     def test_visual_intent_uses_safe_fallback_and_partial_override(self) -> None:
         page, mission = _visual_intent_page(
             "形成稳定的行业公共能力",

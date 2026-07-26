@@ -65,10 +65,16 @@ ONSCREEN_ASIDE_RE = re.compile(
 )
 
 VISUAL_INTENT_SIGNALS: tuple[tuple[str, tuple[str, ...]], ...] = (
-    ("decision_admission", ("筛选", "选择", "首期", "后续", "准入", "条件")),
+    ("decision_admission", ("筛选", "选择", "首期", "后续", "准入")),
+    ("comparison", ("对比", "比较", "差异", "优劣", "高于", "低于", "相较")),
+    ("scenario_application", ("场景", "应用", "应用方向", "推进条件")),
     ("causal", ("问题", "原因", "影响", "需求", "为什么")),
     ("closed_loop", ("输入", "处理", "输出", "反馈", "复盘", "闭环")),
     ("phase", ("当前", "近期", "中长期", "阶段", "分期")),
+    (
+        "capability_relationship",
+        ("能力协同", "协同支撑", "共同支撑", "能力关系", "能力体系", "能力底座"),
+    ),
 )
 
 VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
@@ -88,6 +94,37 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
         "avoid_on_this_page": (
             "Five equal-weight criterion cards, a generic three-step flow, timeline, "
             "or scenario thumbnail wall."
+        ),
+    },
+    "comparison": {
+        "visual_thesis": "Make differences and priorities immediately visible.",
+        "decision_relationship": (
+            "Compared items share a common dimension; show contrast and priority "
+            "without inventing a ranking not supported by the content."
+        ),
+        "recommended_composition": (
+            "Use an aligned comparison structure with one clear basis, visible differences, "
+            "and unequal emphasis where the content establishes priority."
+        ),
+        "avoid_on_this_page": (
+            "Unaligned cards, decorative versus symbols, invented scores, or a comparison "
+            "without a shared dimension."
+        ),
+    },
+    "scenario_application": {
+        "visual_thesis": (
+            "Show where the business scenario occurs, what value it creates, "
+            "and what conditions enable it."
+        ),
+        "decision_relationship": (
+            "Business context connects application direction, current stage, and entry conditions."
+        ),
+        "recommended_composition": (
+            "Use one integrated real-work context with compact business-value and readiness evidence."
+        ),
+        "avoid_on_this_page": (
+            "A product-feature showcase, scenario thumbnail wall, decorative industry photo, "
+            "or unrelated technology interface."
         ),
     },
     "causal": {
@@ -131,6 +168,21 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
         ),
         "avoid_on_this_page": (
             "An equal-weight timeline, generic roadmap arrows, or milestone decoration."
+        ),
+    },
+    "capability_relationship": {
+        "visual_thesis": "Explain how capabilities work together to create business value.",
+        "decision_relationship": (
+            "Capabilities form a support relationship around the page judgment; do not turn "
+            "them into a software stack unless the content explicitly defines one."
+        ),
+        "recommended_composition": (
+            "Use a relationship-led capability composition with business value as the outcome "
+            "and supporting capabilities in unequal roles."
+        ),
+        "avoid_on_this_page": (
+            "A generic architecture stack, center-satellite nodes, equal capability cards, "
+            "or a software-module diagram."
         ),
     },
     "judgment_evidence": {
