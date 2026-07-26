@@ -59,12 +59,12 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert style_nine["colors"] == STYLE_FOUR_CONTRACT["colors"]
     assert "icon_rule" in style_nine
     assert "people_rule" in style_nine
-    assert "People may appear when professional activity is part of the business meaning" in style_nine["people_rule"]
-    assert "Avoid front-facing portraits" in style_nine["people_rule"]
-    assert "direct eye contact" in style_nine["people_rule"]
-    assert "highest-contrast or largest visual element" in style_nine["people_rule"]
-    assert "naturally engaged in professional work" in style_nine["people_rule"]
-    assert "page message and business logic" in style_nine["people_rule"]
+    assert "should not be used to imply specific events, organizations, or historical facts" in style_nine["people_rule"]
+    assert "small-scale anonymous professional figures" in style_nine["people_rule"]
+    assert "Avoid identifiable faces, front-facing views, meeting scenes" in style_nine["people_rule"]
+    assert "documentary-style human activities" in style_nine["people_rule"]
+    assert "only support abstract capability expression" in style_nine["people_rule"]
+    assert "professional activity is part of the business meaning" not in style_nine["people_rule"]
     assert "leadership briefing" in style_nine["prompt_contract"]
     assert "speech-support" in style_nine["prompt_contract"]
     assert "not a process infographic" in style_nine["prompt_contract"]

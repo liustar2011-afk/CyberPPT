@@ -62,12 +62,12 @@ def test_deliverable_prompt_renders_visual_grammar_once_for_style_nine() -> None
     assert "Visual hierarchy should follow the importance of the message" in prompt
     assert "Do not force every page to have a single hero image" in prompt
     assert "Do not apply one visual template to all pages" in prompt
-    assert "People may appear when professional activity is part of the business meaning" in prompt
-    assert "Avoid front-facing portraits" in prompt
-    assert "Prefer side views, back views, three-quarter views" in prompt
-    assert "highest-contrast or largest visual element" in prompt
-    assert "naturally engaged in professional work" in prompt
-    assert "Visual priority: page message and business logic" in prompt
+    assert "should not be used to imply specific events, organizations, or historical facts" in prompt
+    assert "small-scale anonymous professional figures" in prompt
+    assert "Avoid identifiable faces, front-facing views, meeting scenes" in prompt
+    assert "documentary-style human activities" in prompt
+    assert "only support abstract capability expression" in prompt
+    assert "professional activity is part of the business meaning" not in prompt
     assert "Screens, charts, and data interfaces may carry nearby analytical context" in prompt
     assert "Avoid control-room hero shots" in prompt
     assert "smart city exhibition style" in prompt
