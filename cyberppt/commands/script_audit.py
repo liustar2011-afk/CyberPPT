@@ -34,6 +34,33 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest().upper()
 
 
+CONTENT_REVIEW_DECISIONS = (
+    "single_mission",
+    "module_same_dimension",
+    "nonessential_information_removed",
+    "cross_page_new_value",
+)
+
+
+def _content_review_status(project: Path, script_sha256: str) -> dict[str, object]:
+    path = project / "workbench" / "scripts" / "audits" / "content-review.json"
+    if not path.exists():
+        return {"status": "missing", "path": str(path), "decisions": {}}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (json.JSONDecodeError, OSError):
+        return {"status": "invalid", "path": str(path), "decisions": {}}
+    decisions = payload.get("decisions")
+    decision_map = decisions if isinstance(decisions, dict) else {}
+    if str(payload.get("script_sha256") or "").upper() != script_sha256.upper():
+        status = "stale"
+    elif not all(decision_map.get(key) is True for key in CONTENT_REVIEW_DECISIONS):
+        status = "incomplete"
+    else:
+        status = "approved"
+    return {"status": status, "path": str(path), "decisions": decision_map}
+
+
 def _next_attempt(attempts_dir: Path) -> int:
     numbers = [
         int(path.stem.split("-")[-1])
@@ -61,6 +88,7 @@ def _render_markdown(report: dict[str, object]) -> str:
         f"- 尝试：{report.get('attempt', '')} / {report.get('max_attempts', '')}",
         f"- 页面：{coverage.get('page_count', 0)}",
         f"- 问题：{len(issue_items)}",
+        f"- 内容复核：{report.get('content_review', {}).get('status', 'missing') if isinstance(report.get('content_review'), dict) else 'missing'}",
         "",
         "## 失败页面",
         "",
@@ -270,6 +298,7 @@ def run_script_audit(
         )
     source_truth = load_source_truth(source_truth_path)
     script_text = input_path.read_text(encoding="utf-8-sig")
+    script_sha256 = _sha256(input_path)
     document = parse_script_markdown(script_text)
     audit_dir = project / "workbench" / "scripts" / "audits"
     attempts_dir = audit_dir / "attempts"
@@ -296,13 +325,20 @@ def run_script_audit(
         issues.extend(audit_final_manuscript_form(script_text))
     communication_review = build_communication_review(document, outline)
     errors = [issue for issue in issues if issue.severity == "error"]
+    content_review = _content_review_status(project, script_sha256)
     directive = script_retry_directive(errors, previous_strategy)
     failed_pages = sorted(
         {page for issue in errors for page in issue.pages}
     )
     report: dict[str, object] = {
         "schema": "cyberppt.script_audit.v1",
-        "status": "passed" if not errors else "rewrite_required",
+        "status": (
+            "rewrite_required"
+            if errors
+            else "passed"
+            if content_review["status"] == "approved"
+            else "content_review_required"
+        ),
         "attempt": effective_attempt,
         "max_attempts": max_attempts,
         "remaining_attempts": max(0, max_attempts - effective_attempt),
@@ -316,6 +352,7 @@ def run_script_audit(
         },
         "issues": [issue.to_dict() for issue in issues],
         "communication_review": communication_review,
+        "content_review": content_review,
         "failed_pages": failed_pages,
         "retry_scope": failed_pages,
         "retry_directive": directive,
@@ -334,7 +371,7 @@ def run_script_audit(
     latest_md.write_text(_render_markdown(report), encoding="utf-8")
     _write_json(
         attempt_json,
-        {"script_sha256": _sha256(input_path), "audit": report},
+        {"script_sha256": script_sha256, "audit": report},
     )
     artifact_paths = [latest_json, latest_md, attempt_json]
     if report["status"] == "user_decision_required":
@@ -349,8 +386,10 @@ def run_script_audit(
         outline_path,
         source_truth_path,
     )
-    if not errors:
+    if not errors and report["status"] == "passed":
         return 0, report
+    if not errors:
+        return 4, report
     if report["status"] == "user_decision_required":
         return 5, report
     return 4, report

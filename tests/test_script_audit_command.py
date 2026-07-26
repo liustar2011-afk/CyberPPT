@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import unittest
@@ -49,6 +50,22 @@ def _write_json(path: Path, payload: object) -> None:
     path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
+    )
+
+
+def _approve_content_review(project: Path, script: Path) -> None:
+    _write_json(
+        project / "workbench" / "scripts" / "audits" / "content-review.json",
+        {
+            "schema": "cyberppt.content_review.v1",
+            "script_sha256": hashlib.sha256(script.read_bytes()).hexdigest().upper(),
+            "decisions": {
+                "single_mission": True,
+                "module_same_dimension": True,
+                "nonessential_information_removed": True,
+                "cross_page_new_value": True,
+            },
+        },
     )
 
 
@@ -208,6 +225,7 @@ class ScriptAuditCommandTests(unittest.TestCase):
     def test_persists_passed_reports_and_ledger(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             project, script = _build_project(Path(temp_dir))
+            _approve_content_review(project, script)
 
             code, report = run_script_audit(project, script)
 
@@ -229,6 +247,28 @@ class ScriptAuditCommandTests(unittest.TestCase):
                     for item in ledger["artifacts"]
                 )
             )
+
+    def test_structural_success_requires_content_review(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, script = _build_project(Path(temp_dir))
+
+            code, report = run_script_audit(project, script)
+
+            self.assertEqual(4, code)
+            self.assertEqual("content_review_required", report["status"])
+            self.assertEqual("missing", report["content_review"]["status"])
+
+    def test_stale_content_review_is_not_accepted(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, script = _build_project(Path(temp_dir))
+            _approve_content_review(project, script)
+            script.write_text(script.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+
+            code, report = run_script_audit(project, script)
+
+            self.assertEqual(4, code)
+            self.assertEqual("content_review_required", report["status"])
+            self.assertEqual("stale", report["content_review"]["status"])
 
     def test_attempts_auto_increment_and_change_strategy(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -272,6 +312,7 @@ class ScriptAuditCommandTests(unittest.TestCase):
         )
         with tempfile.TemporaryDirectory() as temp_dir:
             project, script = _build_project(Path(temp_dir))
+            _approve_content_review(project, script)
             with patch(
                 "cyberppt.commands.script_audit.audit_script_quality",
                 return_value=[warning],

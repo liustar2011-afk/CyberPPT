@@ -46,6 +46,12 @@ def content_page(
         "forbidden_claim_roles": forbidden or [],
         "prerequisite_pages": prerequisites or [],
         "main_claim_status": status,
+        "page_job": f"{page_id}唯一页面任务",
+        "proof_points": [
+            {"claim": f"{page_id}支撑点", "source_refs": refs or []}
+        ],
+        "new_value_vs_previous": f"{page_id}新增判断",
+        "reserved_for_later": "后续内容由后页展开。",
     }
 
 
@@ -81,6 +87,47 @@ class ArgumentFlowContractTests(unittest.TestCase):
         }
 
         self.assertEqual([], validate_page_role_fields(payload))
+
+    def test_strict_content_page_requires_contribution_fields(self) -> None:
+        payload = {
+            "argument_contract_mode": "strict",
+            "pages": [
+                {
+                    "page_id": "p04",
+                    "page_type": "content",
+                    "argument_role": "foundation",
+                    "allowed_claim_roles": ["fact"],
+                    "forbidden_claim_roles": ["recommendation"],
+                    "prerequisite_pages": [],
+                }
+            ],
+        }
+
+        self.assertIn(
+            "PAGE_CONTRIBUTION_FIELDS_MISSING",
+            {issue.code for issue in validate_page_role_fields(payload)},
+        )
+
+    def test_proof_points_must_use_page_sources(self) -> None:
+        page = content_page("p04", 4, "foundation", refs=["S001"])
+        page["proof_points"] = [{"claim": "越界证据", "source_refs": ["S999"]}]
+
+        self.assertIn(
+            "PROOF_POINT_INVALID",
+            {issue.code for issue in validate_page_role_fields(strict_outline(page))},
+        )
+
+    def test_adjacent_same_job_and_sources_are_rejected(self) -> None:
+        first = content_page("p04", 4, "solution", refs=["S001"])
+        second = content_page("p05", 5, "solution", refs=["S001"])
+        first["page_job"] = second["page_job"] = "说明总体能力建设框架"
+
+        issues = audit_argument_flow(
+            strict_outline(first, second),
+            strict_truth(record("S001", "recommendation", pages=["p04", "p05"])),
+        )
+
+        self.assertIn("PAGE_CONTRIBUTION_OVERLAP", {issue.code for issue in issues})
 
     def test_foundation_page_rejects_recommendation_claim(self) -> None:
         issues = audit_argument_flow(

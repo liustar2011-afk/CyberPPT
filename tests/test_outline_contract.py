@@ -30,6 +30,12 @@ def page(
         "visual_center": visual,
         "modules": modules or [],
         "source_weight": source_weight,
+        "page_job": question or message or title,
+        "proof_points": [
+            {"claim": message or title, "source_refs": refs or []}
+        ] if refs else [{"claim": message or title, "source_refs": []}],
+        "new_value_vs_previous": message or title,
+        "reserved_for_later": "后续页面按各自职责展开。",
     }
 
 
@@ -121,6 +127,12 @@ class OutlineContractTests(unittest.TestCase):
                 "forbidden_claim_roles": ["recommendation"],
                 "prerequisite_pages": [],
                 "main_claim_status": "confirmed",
+                "page_job": "陈述既有工作事实基础",
+                "proof_points": [
+                    {"claim": "已有工作基础", "source_refs": ["S006R"]}
+                ],
+                "new_value_vs_previous": "首次建立现状基础",
+                "reserved_for_later": "首期建议留给范围页。",
             }
         )
         payload = outline(content, argument_contract_mode="strict")

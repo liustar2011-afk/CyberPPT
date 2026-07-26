@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import re
 
 
 CLAIM_ROLES = frozenset(
@@ -44,6 +45,12 @@ DEFAULT_ALLOWED_CLAIMS = {
     "assurance": frozenset({"fact", "judgment", "recommendation", "boundary"}),
     "decision": frozenset({"fact", "judgment", "boundary", "unresolved"}),
 }
+PAGE_CONTRIBUTION_FIELDS = (
+    "page_job",
+    "proof_points",
+    "new_value_vs_previous",
+    "reserved_for_later",
+)
 EVIDENCE_TYPE_TO_CLAIM_ROLE = {
     "F": "fact",
     "J": "judgment",
@@ -93,6 +100,46 @@ def validate_page_role_fields(
                     retry_strategy="complete_argument_contract",
                 )
             )
+        missing_contribution = [
+            field
+            for field in PAGE_CONTRIBUTION_FIELDS
+            if field not in raw_page
+            or raw_page.get(field) is None
+            or raw_page.get(field) == ""
+            or raw_page.get(field) == []
+        ]
+        if missing_contribution:
+            issues.append(
+                ArgumentFlowIssue(
+                    "PAGE_CONTRIBUTION_FIELDS_MISSING",
+                    "Strict content pages must declare page_job, proof_points, "
+                    "new_value_vs_previous, and reserved_for_later.",
+                    (page_id,) if page_id else (),
+                    retry_strategy="complete_page_contribution_contract",
+                )
+            )
+        proof_points = raw_page.get("proof_points")
+        page_sources = set(_string_list(raw_page, "source_refs"))
+        if isinstance(proof_points, list):
+            invalid = False
+            for point in proof_points:
+                if not isinstance(point, dict) or not str(point.get("claim") or "").strip():
+                    invalid = True
+                    break
+                refs = _string_list(point, "source_refs")
+                if not refs or not set(refs).issubset(page_sources):
+                    invalid = True
+                    break
+            if invalid:
+                issues.append(
+                    ArgumentFlowIssue(
+                        "PROOF_POINT_INVALID",
+                        "Each proof point must contain a claim and cite only Source IDs "
+                        "assigned to the page.",
+                        (page_id,) if page_id else (),
+                        retry_strategy="reconcile_page_proof_points",
+                    )
+                )
         role = raw_page.get("argument_role")
         if role is not None and role not in PAGE_ARGUMENT_ROLES:
             issues.append(
@@ -104,6 +151,20 @@ def validate_page_role_fields(
                 )
             )
     return issues
+
+
+def _normalized_similarity(left: object, right: object) -> float:
+    def tokens(value: object) -> set[str]:
+        compact = re.sub(r"[^\w\u4e00-\u9fff]+", "", str(value or "")).lower()
+        if len(compact) < 3:
+            return {compact} if compact else set()
+        return {compact[index : index + 3] for index in range(len(compact) - 2)}
+
+    left_tokens = tokens(left)
+    right_tokens = tokens(right)
+    if not left_tokens or not right_tokens:
+        return 0.0
+    return len(left_tokens & right_tokens) / len(left_tokens | right_tokens)
 
 
 def _dict_items(payload: dict[str, object], field: str) -> list[dict[str, object]]:
@@ -336,6 +397,32 @@ def audit_argument_flow(
                 failed_edges=cycle,
             )
         )
+    ordered_pages = sorted(
+        page_index.values(),
+        key=lambda item: int(item.get("sequence") or 0),
+    )
+    for previous, current in zip(ordered_pages, ordered_pages[1:]):
+        previous_sources = set(_string_list(previous, "source_refs"))
+        current_sources = set(_string_list(current, "source_refs"))
+        if (
+            previous_sources
+            and previous_sources == current_sources
+            and _normalized_similarity(previous.get("page_job"), current.get("page_job"))
+            >= 0.75
+        ):
+            issues.append(
+                ArgumentFlowIssue(
+                    "PAGE_CONTRIBUTION_OVERLAP",
+                    "Adjacent pages use the same evidence for substantially the same page job; "
+                    "merge them or redefine their unique contribution.",
+                    (
+                        str(previous.get("page_id") or ""),
+                        str(current.get("page_id") or ""),
+                    ),
+                    tuple(sorted(current_sources)),
+                    retry_strategy="separate_page_contributions",
+                )
+            )
     return sorted(issues, key=lambda issue: ((issue.pages or ("",))[0], issue.code))
 
 
