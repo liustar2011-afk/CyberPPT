@@ -152,6 +152,15 @@ VISUAL_INTENT_PRIORITY = (
     "judgment_evidence",
 )
 
+TEXT_IN_COMPOSITION_RULE = (
+    "Treat all required text as calm in-composition panels, annotations, or labels attached "
+    "to the dominant visual structure; do not place the complete text layer in a detached "
+    "left/right column or top/bottom rail."
+)
+DETACHED_TEXT_RAIL_AVOID = (
+    "a detached full-height text column, text rail, or a separate text zone plus image zone"
+)
+
 VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
     "decision_admission": {
         "visual_thesis": (
@@ -163,8 +172,9 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "not an implementation process."
         ),
         "recommended_composition": (
-            "Give the selected initial scope dominant visual weight; use compact criteria "
-            "evidence to support it, and place later scope in a secondary gated-entry area."
+            "Use a weighted decision field: give the selected initial scope dominant visual "
+            "weight, bind compact criteria to that choice, and place later scope behind a "
+            "secondary gated-entry area."
         ),
         "avoid_on_this_page": (
             "Five equal-weight criterion cards, a generic three-step flow, timeline, "
@@ -178,7 +188,7 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "without inventing a ranking not supported by the content."
         ),
         "recommended_composition": (
-            "Use an aligned comparison structure with one clear basis, visible differences, "
+            "Use one aligned comparison field with a shared basis, directly opposed evidence, "
             "and unequal emphasis where the content establishes priority."
         ),
         "avoid_on_this_page": (
@@ -195,7 +205,8 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "Business context connects application direction, current stage, and entry conditions."
         ),
         "recommended_composition": (
-            "Use one integrated real-work context with compact business-value and readiness evidence."
+            "Use one integrated real-work scene with business-value and readiness evidence "
+            "embedded in the relevant parts of that scene."
         ),
         "avoid_on_this_page": (
             "A product-feature showcase, scenario thumbnail wall, decorative industry photo, "
@@ -210,14 +221,15 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "Distinct foundations reinforce one another and combine into a sustainable working basis."
         ),
         "recommended_composition": (
-            "Use integrated picture-text analytical units. Bind each semantically matched "
-            "real-world image to its corresponding foundation, vary image weight by hierarchy, "
-            "and use a concise synthesis area for their combined support."
+            "Use one dominant integrated visual carrier for the shared support relationship. "
+            "Use images only where they clarify the relationship; their number, placement, and "
+            "association with a module are determined by the page visual structure, not by the "
+            "count of foundations."
         ),
         "avoid_on_this_page": (
             "One generic office, meeting-room, control-room, or industry image carrying all "
-            "meanings; a separate text zone plus photo zone; equal image cards; or unrelated "
-            "decorative imagery."
+            "meanings; one image per foundation; a row-by-row text-and-photo correspondence; "
+            "a separate text zone plus photo zone; equal image cards; or unrelated decorative imagery."
         ),
     },
     "causal": {
@@ -228,7 +240,8 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "Causes or changes lead to a business consequence and explain the need for action."
         ),
         "recommended_composition": (
-            "Use one dominant consequence supported by compact causal evidence."
+            "Use one directional cause-to-consequence path, with the business consequence as "
+            "the dominant anchor and compact causal evidence attached along the path."
         ),
         "avoid_on_this_page": (
             "A list of unrelated facts, equal cards, or decorative trend arrows."
@@ -242,7 +255,8 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "Use a closed-loop relationship with explicit input, result, validation, and feedback."
         ),
         "recommended_composition": (
-            "Use one integrated operational loop anchored in a real work context."
+            "Use one integrated operational loop anchored in a real work context, with input, "
+            "result, validation, and feedback attached to their places in the loop."
         ),
         "avoid_on_this_page": (
             "A software workflow, lifecycle icon circle, or numbered administration steps."
@@ -257,7 +271,8 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "readiness conditions."
         ),
         "recommended_composition": (
-            "Give the current or near-term decision primary weight and later stages secondary weight."
+            "Use a weighted stage trajectory: give the current or near-term decision primary "
+            "weight and place later stages as secondary, conditional progression."
         ),
         "avoid_on_this_page": (
             "An equal-weight timeline, generic roadmap arrows, or milestone decoration."
@@ -270,8 +285,8 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "them into a software stack unless the content explicitly defines one."
         ),
         "recommended_composition": (
-            "Use one integrated business-work composition with business value as the outcome. "
-            "Weave supporting capabilities into that shared context in unequal roles; do not "
+            "Use one integrated business-work composition with business value as the dominant "
+            "outcome. Weave supporting capabilities into that shared context in unequal roles; do not "
             "assign a separate picture, panel, quadrant, layer, or numbered visual unit to each capability."
         ),
         "avoid_on_this_page": (
@@ -285,14 +300,14 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "Supporting modules jointly explain or substantiate the core judgment."
         ),
         "recommended_composition": (
-            "Use one dominant judgment area with compact, unequal-weight supporting evidence."
+            "Use one dominant judgment anchor with compact, unequal-weight supporting evidence "
+            "attached directly to that anchor."
         ),
         "avoid_on_this_page": (
             "An equal card wall, one icon per bullet, or an unrelated decorative scene."
         ),
     },
 }
-
 
 def _clean_onscreen_for_imagegen(text: str) -> str:
     """Keep theme bullets; strip boundary asides that dilute the page mission."""
@@ -389,6 +404,12 @@ def build_page_visual_intent(
             value = override.get(key)
             if isinstance(value, str) and value.strip():
                 values[key] = value.strip()
+    values["recommended_composition"] = (
+        f"{values['recommended_composition']} {TEXT_IN_COMPOSITION_RULE}"
+    )
+    values["avoid_on_this_page"] = (
+        f"{values['avoid_on_this_page']} Avoid {DETACHED_TEXT_RAIL_AVOID}."
+    )
     return "\n".join(
         (
             "[Prompt context] Page-specific visual intent "
@@ -495,28 +516,23 @@ def build_page_prompt(
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
 ) -> str:
-    prompt_text = content_lock_text(page, page_mission=page_mission).rstrip()
     visual_intent = build_page_visual_intent(
         page,
         page_mission,
         context=visual_context,
         override=visual_intent_override,
     )
+    prompt_text = content_lock_text(page, page_mission=page_mission).rstrip()
     block = PageBlock(
         page_number=int(page.page_id[1:]),
         title=page.title or page.page_id,
         text=prompt_text,
     )
-    prompt = render_prompt(block, style_lock_path=style_lock)
-    prompt = "\n\n".join(
-        (
-            prompt.rstrip(),
-            "[Final composition priority] The following page-specific visual intent "
-            "takes precedence over generic style guidance whenever they conflict. "
-            "Do not render this instruction or its field names.",
-            visual_intent,
-        )
-    ) + "\n"
+    prompt = render_prompt(
+        block,
+        style_lock_path=style_lock,
+        composition_guidance=visual_intent,
+    )
     assert_deliverable_prompt(prompt)
     if EVIDENCE_ID_RE.search(prompt):
         raise ValueError(f"{page.page_id} ImageGen prompt still contains evidence IDs")

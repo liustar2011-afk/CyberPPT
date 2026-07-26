@@ -370,7 +370,12 @@ def style_contract(style_lock_path: Path | None) -> str:
     return f"核心色板：{color_text}。"
 
 
-def render_prompt(page: PageBlock, *, style_lock_path: Path | None = None) -> str:
+def render_prompt(
+    page: PageBlock,
+    *,
+    style_lock_path: Path | None = None,
+    composition_guidance: str = "",
+) -> str:
     content_lines = _filter_imagegen_content_lines(visible_deliverable_lines(page))
     body = "\n".join(f"- {line}" for line in content_lines)
     layout_directives = layout_density_directives(page)
@@ -379,15 +384,28 @@ def render_prompt(page: PageBlock, *, style_lock_path: Path | None = None) -> st
         f"【页面编码】P{page.page_number:02d}｜{page.title}",
         "以上为提示词元数据，仅用于按页追踪；不得在生成图中渲染页面编码或页面标题。",
         "",
+    ]
+    if composition_guidance.strip():
+        parts.extend(
+            [
+                "[Mandatory composition guidance] Apply this layout guidance before placing "
+                "any on-screen text. Do not render its field names or instruction text.",
+                composition_guidance.strip(),
+                "",
+            ]
+        )
+    parts.extend(
+        [
         "【内容锁定】",
         body,
         "",
         "【构图指令】",
-        "画布 1680×944（约 16:9）。只生成正文内容区成稿图。",
+        "画布 2048×1024（2:1）。只生成正文内容区成稿图。",
         "不要生成页面标题、副标题、Logo、页脚、页码或任何页面外框。",
         "No evidence IDs, watermarks, debug marks, or placeholders.",
         "Do not invent section labels like meta headers; only render 上屏文字 modules.",
-    ]
+        ]
+    )
     parts.extend(
         [
             "",

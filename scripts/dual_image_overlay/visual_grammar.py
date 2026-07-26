@@ -31,7 +31,11 @@ def default_visual_grammar() -> VisualGrammarContract:
     """Return compact ImageGen layout hygiene rules."""
 
     return VisualGrammarContract(
-        image_text_rule="- No body text on busy/high-contrast imagery.",
+        image_text_rule=(
+            "- Treat readable text modules as elements inside the dominant composition, "
+            "using calm in-composition panels or annotations rather than a separate text "
+            "column or rail. No body text on busy/high-contrast imagery."
+        ),
         connector_rule=(
             "- No connectors through/under text; no fake flow lines; one connector style."
         ),

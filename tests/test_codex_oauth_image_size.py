@@ -32,7 +32,7 @@ def load_codex_oauth_image():
 def test_default_size_matches_slide_content_ratio() -> None:
     module = load_codex_oauth_image()
 
-    assert module.DEFAULT_SIZE == "1680x944"
+    assert module.DEFAULT_SIZE == "2048x1024"
 
 
 def test_ensure_output_size_normalizes_png(tmp_path: Path) -> None:
@@ -40,11 +40,11 @@ def test_ensure_output_size_normalizes_png(tmp_path: Path) -> None:
     output = tmp_path / "generated.png"
     Image.new("RGB", (320, 180), "navy").save(output)
 
-    result = module.ensure_output_size(output, "1680x944")
+    result = module.ensure_output_size(output, "2048x1024")
 
-    assert result == (1680, 944)
+    assert result == (2048, 1024)
     with Image.open(output) as normalized:
-        assert normalized.size == (1680, 944)
+        assert normalized.size == (2048, 1024)
 
 
 def test_ensure_output_size_leaves_auto_unchanged(tmp_path: Path) -> None:

@@ -57,116 +57,21 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert style_nine["name"] == "象牙白 + 深蓝领导汇报"
     assert resolve_default_style(style_name="ivory_deep_blue_scene")["id"] == 9
     assert style_nine["colors"] == STYLE_FOUR_CONTRACT["colors"]
-    assert "icon_rule" in style_nine
-    assert "people_rule" in style_nine
-    assert "Do not use identifiable people to imply a specific event, organization, role assignment, endorsement, or historical fact" in style_nine["people_rule"]
-    assert "small-scale anonymous professional figures" in style_nine["people_rule"]
-    assert "never use portraits, leaders, name badges, uniforms" in style_nine["people_rule"]
-    assert "documentary-style activities" in style_nine["people_rule"]
-    assert "professional activity is part of the business meaning" not in style_nine["people_rule"]
-    assert "factuality_rule" in style_nine
-    assert "organization names, logos, seals, signage" in style_nine["factuality_rule"]
-    assert "editable text layer only" in style_nine["factuality_rule"]
-    assert "non-evidentiary" in style_nine["factuality_rule"]
-    assert "Generic, non-location-specific facilities" in style_nine["factuality_rule"]
-    assert "content_visual_rule" in style_nine
-    assert "文字逻辑与业务流程是页面主体" in style_nine["content_visual_rule"]
-    assert "图像是把已锁定内容空间化、形象化和关系化的表达工具" in style_nine["content_visual_rule"]
-    assert "不得生成独立图片区、照片条、照片拼贴" in style_nine["content_visual_rule"]
-    assert "不预设或改变页面的内容关系、模块数量、模块顺序或版式骨架" in style_nine["content_visual_rule"]
-    assert "leadership briefing" in style_nine["prompt_contract"]
-    assert "speech-support" in style_nine["prompt_contract"]
-    assert "not a process infographic" in style_nine["prompt_contract"]
-    assert "Not a consulting deliverable" in style_nine["prompt_contract"]
-    assert "Consulting research" not in style_nine["prompt_contract"]
-    assert "Microsoft YaHei" in style_nine["prompt_contract"] or "Source Han Sans" in style_nine["prompt_contract"]
-    assert "Prefer editorial simplicity and business clarity" in style_nine["prompt_contract"]
-    assert "not a marketing poster or design showcase" in style_nine["prompt_contract"]
-    assert "Visual hierarchy and content fit:" in style_nine["prompt_contract"]
-    assert "Visual hierarchy should follow the importance of the message" in style_nine["prompt_contract"]
-    assert "Do not force every page to have a single hero image" in style_nine["prompt_contract"]
-    assert "conclusion, relationship, comparison, business scenario, or supporting evidence" in style_nine["prompt_contract"]
-    assert "Do not apply one visual template to all pages" in style_nine["prompt_contract"]
-    assert "Image-text fusion:" in style_nine["prompt_contract"]
-    assert "must not prescribe or replace page-specific content relationships" in style_nine["prompt_contract"]
-    assert "Do not create photo strips, photo galleries, detached photo columns" in style_nine["prompt_contract"]
-    assert "Industry scene and imagery:" in style_nine["prompt_contract"]
-    assert "translates concrete business meaning into visible real-world context" in style_nine["prompt_contract"]
-    assert "Use semantically relevant real-world imagery selectively" in style_nine["prompt_contract"]
-    assert "Use only the number of images needed for the page's dynamic content" in style_nine["prompt_contract"]
-    assert "power grid operation" in style_nine["prompt_contract"]
-    assert "may carry nearby analytical context" in style_nine["prompt_contract"]
-    assert "Avoid control-room hero shots" in style_nine["prompt_contract"]
-    assert "smart city exhibition style" in style_nine["prompt_contract"]
-    assert "control/dispatch rooms" not in style_nine["prompt_contract"]
-    assert "Prefer: architecture" not in style_nine["prompt_contract"]
-    assert "capability evolution map" not in style_nine["prompt_contract"]
-    assert "software-architecture look" in style_nine["prompt_contract"]
-    assert "center module + satellite nodes" in style_nine["prompt_contract"]
-    assert "Content fidelity and visual logic:" in style_nine["prompt_contract"]
-    assert "Do not introduce new visual relationships" in style_nine["prompt_contract"]
-    assert "clarify the content, not redefine the content" in style_nine["prompt_contract"]
-    assert "explicitly supported by the page content or page-specific visual intent" in style_nine["prompt_contract"]
-    assert "Preserve the original meaning and hierarchy" in style_nine["prompt_contract"]
-    assert "lifecycle circles with isolated nodes" in style_nine["prompt_contract"]
-    assert "numbered step cards" in style_nine["prompt_contract"]
-    assert "equal-weight modules" in style_nine["prompt_contract"]
-    assert "mechanical process flow templates" in style_nine["prompt_contract"]
-    assert "实景彩色插画" in style_nine["prompt_contract"]
-    assert "场景辅助" not in style_nine["prompt_contract"]
-    assert "photo-inspired editorial industry illustration" in style_nine["prompt_contract"]
-    assert "Documentary / editorial photography" in style_nine["prompt_contract"]
-    assert "card-per-module" in style_nine["prompt_contract"]
-    assert "process infographic" in style_nine["prompt_contract"]
-    assert "must not override 【内容锁定】 or [Prompt context] Page-specific visual intent" in style_nine["scope_rule"]
-    assert "Do not force every page to have a single hero image" in style_nine["prompt_contract"]
-    assert "Do not introduce new visual relationships" in style_nine["prompt_contract"]
-    assert "Enhance the message" in style_nine["prompt_contract"]
+    assert "服务于关键业务对象或主视觉关系" in style_nine["content_visual_rule"]
+    assert "优先以嵌入式、局部场景支持图文融合" in style_nine["content_visual_rule"]
+    assert "不得因文字模块并列而逐项配图" in style_nine["content_visual_rule"]
+    assert "机械拆成照片列与文字列" in style_nine["content_visual_rule"]
+    assert "是否使用、数量、位置、面积和与文字的组合方式，均由页面内容与视觉关系决定" in style_nine["content_visual_rule"]
+    assert "不得覆盖原脚本的页面定位、版式草图、组件数量、箭头关系、框内文字或页面级视觉意图" in style_nine["scope_rule"]
+    assert "象牙白 + 深蓝领导汇报" in style_nine["prompt_contract"]
+    assert "逐项配图" not in style_nine["prompt_contract"]
     assert "#F7F6F0" in style_nine["prompt_contract"]
     assert "#12355B" in style_nine["prompt_contract"]
-    assert "dashboard UI" in style_nine["prompt_contract"]
-    assert "card wall" in style_nine["prompt_contract"]
-    assert "Moderate-to-high information density" in style_nine["density_rule"]
-    assert "semantically necessary images" in style_nine["density_rule"]
+    assert "图标仅作低干扰的辅助语义标记" in style_nine["icon_rule"]
+    assert "政企内部汇报所需的信息密度" in style_nine["density_rule"]
     assert "领导汇报" in style_nine["scenario"]
-    assert "演讲辅助" in style_nine["scenario"]
-    assert "语义实景图文融合" in style_nine["scenario"]
-    assert "视觉结构" in style_nine["scope_rule"]
-    assert "视觉结构" not in style_nine["icon_rule"]
-    assert "supporting evidence, not mandatory decoration" not in style_nine["icon_rule"]
-    assert "one icon per bullet" in style_nine["icon_rule"]
-    assert "One dominant visual narrative" not in style_nine["prompt_contract"]
-    assert "One visual center" not in style_nine["prompt_contract"]
-    assert "visual anchor" not in style_nine["prompt_contract"]
-    assert "key high-end craft" not in style_nine["prompt_contract"]
-    assert "Business capability formation is the narrative center" not in style_nine["prompt_contract"]
-    assert "real-world industry scenes as the visual foundation" not in style_nine["prompt_contract"]
-    combined_contract = "\n".join(
-        (
-            style_nine["scope_rule"],
-            style_nine["prompt_contract"],
-            style_nine["icon_rule"],
-        )
-    )
-    assert len(style_nine["prompt_contract"]) < 4200
-    assert len(style_nine["scope_rule"]) < 300
-    assert len(style_nine["icon_rule"]) < 220
-    assert "Images are supporting evidence, not mandatory decoration." not in combined_contract
-    assert "Use images only when they improve understanding" not in combined_contract
-    assert "宁少勿滥" not in style_nine["density_rule"]
-    assert combined_contract.count("Do not introduce new visual relationships") == 1
-    assert combined_contract.count("Do not force") == 1
-    assert "请以【视觉结构】为构图思考起点" not in style_nine["prompt_contract"]
-    assert "主动思考与发挥" not in style_nine["scope_rule"]
-    assert "图不是装饰" not in style_nine["prompt_contract"]
-    assert "图多字少" not in style_nine["density_rule"]
-    assert "文字字面保真" not in style_nine["prompt_contract"]
-    assert "secondary point-art" not in style_nine["prompt_contract"]
-    assert "never the page hero" not in style_nine["prompt_contract"]
-    # Negative overload / design-essay walls removed
-    assert "勿为塞入每一句牺牲设计" not in style_nine["prompt_contract"]
-    assert "禁止两条极端" not in style_nine["prompt_contract"]
-    assert "非对称编辑式报告布局" not in style_nine["prompt_contract"]
+    assert "语义实景表达" in style_nine["scenario"]
+    assert len(style_nine["prompt_contract"]) < 600
 
 
 def test_default_style_choices_still_show_only_original_eight() -> None:

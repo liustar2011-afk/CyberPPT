@@ -10,6 +10,7 @@ from tempfile import TemporaryDirectory
 from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.dual_image_overlay.deliverable_prompt import PageBlock, render_prompt
 from scripts.dual_image_overlay.imagegen_handoff import (
+    VISUAL_INTENT_TEMPLATES,
     _page_visual_contexts,
     _page_visual_intent_overrides,
     build_page_prompt,
@@ -231,9 +232,25 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         )
         intent = build_page_visual_intent(page, mission)
         self.assertIn("several concrete work foundations", intent)
-        self.assertIn("integrated picture-text analytical units", intent)
+        self.assertIn("Use one dominant integrated visual carrier", intent)
+        self.assertIn("one image per foundation", intent)
         self.assertIn("One generic office", intent)
         self.assertNotIn("cause-and-effect", intent)
+
+    def test_every_visual_intent_type_gets_shared_text_integration_guardrail(self) -> None:
+        page, mission = _visual_intent_page(
+            "测试主判断",
+            "测试页面关系",
+            "  **测试模块**\n  - 测试内容。",
+        )
+        for intent_type in VISUAL_INTENT_TEMPLATES:
+            intent = build_page_visual_intent(
+                page,
+                mission,
+                {"visual_intent_type": intent_type},
+            )
+            self.assertIn("Treat all required text as calm in-composition panels", intent)
+            self.assertIn("Avoid a detached full-height text column", intent)
 
     def test_visual_intent_uses_safe_fallback_and_partial_override(self) -> None:
         page, mission = _visual_intent_page(
@@ -262,13 +279,13 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
                     "visual_thesis": "Explain the approved page-specific decision."
                 },
             )
-        self.assertLess(prompt.index("上屏文字"), prompt.index("Page-specific visual intent"))
+        self.assertLess(prompt.index("Page-specific visual intent"), prompt.index("上屏文字"))
         self.assertLess(
-            prompt.index("Industry scene and imagery:"),
             prompt.index("Page-specific visual intent"),
+            prompt.index("视觉风格使用象牙白 + 深蓝领导汇报"),
         )
         self.assertIn(
-            "takes precedence over generic style guidance whenever they conflict",
+            "Apply this layout guidance before placing any on-screen text",
             prompt,
         )
         self.assertIn("Explain the approved page-specific decision.", prompt)

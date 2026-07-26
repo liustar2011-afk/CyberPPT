@@ -32,7 +32,8 @@ IMAGEGEN_NON_VISIBLE_SECTION_RE = re.compile(
 )
 COMPOSITION_SECTION_RE = re.compile(r"【(?:构图指令|构图接口)】(?P<body>.*)$", re.S)
 CANVAS_SIZE = (1280, 720)
-# Brand body_pages is already the maximized 1680:944 slot between chrome bars.
+# Brand body_pages is a 2:1 body-image slot; title, chrome, and slide canvas
+# remain template-owned and retain their 16:9 presentation format.
 CONTENT_REGION_TOP_INSET = 0
 CONTENT_REGION_BOTTOM_INSET = 0
 CONTENT_REGION_SIDE_OUTSET = 0
@@ -452,17 +453,20 @@ def cover_title_svg(title: str) -> str:
 
 
 def round_up_16(value: int) -> int:
-    return ((value + 15) // 16) * 16
+    return int(((int(value) + 15) // 16) * 16)
 
 
 def generation_size_for_region(region: dict[str, int]) -> dict[str, int]:
-    width = round_up_16(region["width"] * IMAGE_GENERATION_SCALE)
     height = round_up_16(region["height"] * IMAGE_GENERATION_SCALE)
+    # Round one dimension first, then derive the other from the body-region
+    # ratio.  Independent rounding would turn a 2:1 region into 2160x1088.
+    width = round_up_16(height * region["width"] / max(1, region["height"]))
     while width * height < 655_360:
         if width / max(1, height) < region["width"] / max(1, region["height"]):
             width += 16
         else:
             height += 16
+            width = round_up_16(height * region["width"] / max(1, region["height"]))
     return {"width": width, "height": height}
 
 
@@ -760,36 +764,12 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
                 raise FileNotFoundError(f"Missing content image: {image_path}")
             target_image = project_path / "images" / image_path.name
             shutil.copy2(image_path, target_image)
-            # Atmosphere-only soft join against chrome; never feather the content image.
-            band_y, band_h, fade_h = 90, 605, 16
-            paper = "#F7F6F0"
-            body_bg = DEFAULT_BRAND_DIR / "body_bg.png"
-            if body_bg.is_file():
-                target_bg = project_path / "images" / body_bg.name
-                if not target_bg.is_file():
-                    shutil.copy2(body_bg, target_bg)
-                backdrop = (
-                    f'<defs>'
-                    f'<linearGradient id="bodySoftTop" x1="0" y1="0" x2="0" y2="1">'
-                    f'<stop offset="0%" stop-color="{paper}" stop-opacity="0.96"/>'
-                    f'<stop offset="100%" stop-color="{paper}" stop-opacity="0"/>'
-                    f'</linearGradient>'
-                    f'<linearGradient id="bodySoftBot" x1="0" y1="1" x2="0" y2="0">'
-                    f'<stop offset="0%" stop-color="{paper}" stop-opacity="0.96"/>'
-                    f'<stop offset="100%" stop-color="{paper}" stop-opacity="0"/>'
-                    f'</linearGradient>'
-                    f'</defs>'
-                    f'<image x="0" y="{band_y}" width="{CANVAS_SIZE[0]}" height="{band_h}" '
-                    f'href={quoteattr("../images/" + body_bg.name)} '
-                    f'xlink:href={quoteattr("../images/" + body_bg.name)} '
-                    f'preserveAspectRatio="xMidYMid slice"/>'
-                    f'<rect x="0" y="{band_y}" width="{CANVAS_SIZE[0]}" height="{fade_h}" fill="url(#bodySoftTop)"/>'
-                    f'<rect x="0" y="{band_y + band_h - fade_h}" width="{CANVAS_SIZE[0]}" height="{fade_h}" fill="url(#bodySoftBot)"/>'
-                )
-            else:
-                backdrop = (
-                    f'<rect x="0" y="{band_y}" width="{CANVAS_SIZE[0]}" height="{band_h}" fill="#F7F6F0"/>'
-                )
+            # Content pages use a clean paper surface.  The body illustration is
+            # the only visual layer in this region; do not place a template
+            # atmosphere image or feathered overlay behind it.
+            backdrop = (
+                f'<rect x="0" y="87" width="{CANVAS_SIZE[0]}" height="611" fill="#F7F6F0"/>'
+            )
             svg = [
                 f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_SIZE[0]}" height="{CANVAS_SIZE[1]}" viewBox="0 0 {CANVAS_SIZE[0]} {CANVAS_SIZE[1]}">',
                 backdrop,

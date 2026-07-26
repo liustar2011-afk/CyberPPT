@@ -35,16 +35,27 @@ def load_template_image_ppt_export():
 
 
 class DualImageTemplateBodyRegionTest(unittest.TestCase):
-    def test_body_region_keeps_1680_944_slot_below_master_red_divider(self) -> None:
+    def test_body_region_uses_centered_two_to_one_slot(self) -> None:
         module = load_template_image_ppt_export()
-        brand_body_region = {"x": 100, "y": 89, "width": 1080, "height": 607}
+        brand_body_region = {"x": 33, "y": 89, "width": 1214, "height": 607}
 
         adjusted = module.inset_content_region(brand_body_region)
 
         self.assertEqual(brand_body_region, adjusted)
-        self.assertEqual(adjusted["y"] - 87, 2)  # 2px below red bottom (84+3)
+        self.assertEqual(adjusted["y"] - 87, 2)
         self.assertEqual(698 - (adjusted["y"] + adjusted["height"]), 2)
-        self.assertAlmostEqual(adjusted["width"] / adjusted["height"], 1680 / 944, delta=0.002)
+        self.assertAlmostEqual(adjusted["width"] / adjusted["height"], 2.0, delta=0.002)
+        generation_size = module.generation_size_for_region(adjusted)
+        self.assertEqual({"width": 2432, "height": 1216}, generation_size)
+        self.assertEqual(2.0, generation_size["width"] / generation_size["height"])
+
+    def test_body_page_surface_has_no_template_image_overlay(self) -> None:
+        module = load_template_image_ppt_export()
+        rules = module.load_brand_rules()
+
+        surface = rules["body_page_surface"]
+        self.assertIsNone(surface["background"])
+        self.assertEqual("solid-paper-content-surface", surface["policy"])
 
     def test_page_role_prefers_declared_template_roles(self) -> None:
         module = load_template_image_ppt_export()

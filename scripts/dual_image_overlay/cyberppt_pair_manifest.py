@@ -36,10 +36,12 @@ from scripts.dual_image_overlay.style_library import write_project_style_lock
 from cyberppt.commands.script_gate import assert_approved_final_script
 
 
-CANVAS = {"width": 1672, "height": 941}
-CONTENT_REGION = {"x": 26, "y": 136, "width": 1619, "height": 774}
+# Stage 02 images are body-only assets.  Their native contract is 2:1; the
+# 16:9 slide canvas and chrome are supplied later by the PPT template.
+CANVAS = {"width": 2048, "height": 1024}
+CONTENT_REGION = {"x": 0, "y": 0, "width": 2048, "height": 1024}
 # API-valid 16-multiple canvas used for ImageGen request + full-image ingest resize.
-GENERATION_SIZE = {"width": 1680, "height": 944}
+GENERATION_SIZE = {"width": 2048, "height": 1024}
 GENERATION_SIZE_TEXT = f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}"
 OUTPUT_VARIANTS = ["full"]
 FULL_GENERATION_METHOD = "text_to_image_generate_full"

@@ -14,7 +14,7 @@
     "margin_left": 100,
     "margin_right": 100,
     "content_width": 1080,
-    "body_aspect_ratio": "1680:944",
+    "body_aspect_ratio": "2:1",
     "chrome_gap_px": 2
   },
   "master_elements": {
@@ -64,12 +64,12 @@
   ],
   "content_regions": {
     "body_pages": {
-      "x": 100,
+      "x": 33,
       "y": 89,
-      "width": 1080,
+      "width": 1214,
       "height": 607,
-      "aspect_ratio": "1680:944",
-      "description": "Body content region locked to 1680:944, maximized between chrome with a 2px gap below the red divider and above the blue footer. Title/subtitle stay in the header region above the red line."
+      "aspect_ratio": "2:1",
+      "description": "Body content region locked to 2:1, enlarged to fill the safe space between the red divider and blue footer with a 2px vertical chrome gap. Title/subtitle stay in the header region above the red line; slide chrome remains template-owned."
     },
     "body_header_region": {
       "x": 58,
@@ -138,20 +138,15 @@
     "cover_background": "cover_bg.jpg",
     "agenda_background": "agenda_bg.png",
     "section_background": "section_bg.png",
-    "body_background": "body_bg.png",
     "cover_template": "01_cover.svg",
     "agenda_template": "02_agenda.svg",
     "section_template": "03_section.svg",
     "ending_template": "04_ending.svg"
   },
   "body_page_surface": {
-    "background": "body_bg.png",
-    "policy": "atmosphere-edge-soft-join-only",
-    "band": {"y": 90, "height": 605, "chrome_inset_px": 3},
-    "edge_fade_px": 16,
-    "edge_fade_color": "#F7F6F0",
-    "soften_content_image": false,
-    "usage": "Soften only the outer ivory atmosphere band against red/blue chrome (~16px paper-tone fades). Do NOT feather or blur the body content-image panel; keep content art sharp. Body panel keeps a separate 2px gap from chrome."
+    "background": null,
+    "policy": "solid-paper-content-surface",
+    "usage": "Use a clean solid ivory surface behind the body image. Do not place a template atmosphere image, texture, gradient, or edge fade behind the content panel. Body panel keeps a separate 2px gap from chrome."
   },
   "runtime_policy": {
     "locks": [
