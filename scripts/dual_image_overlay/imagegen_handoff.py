@@ -35,6 +35,11 @@ from scripts.dual_image_overlay.deliverable_prompt import (
     assert_deliverable_prompt,
     render_prompt,
 )
+from scripts.dual_image_overlay.prompt_diagnostics import (
+    PagePromptDiagnostics,
+    analyze_prompt,
+    write_batch_diagnostics,
+)
 
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
 # Status asides that must not be painted as core on-screen claims.
@@ -580,6 +585,7 @@ def write_chapter_handoff(
     ]
     outputs: dict[str, Path] = {}
     content_prompts: list[str] = []
+    diagnostics: list[PagePromptDiagnostics] = []
 
     for page_number in pages:
         page = by_num[page_number]
@@ -603,6 +609,13 @@ def write_chapter_handoff(
             visual_intent_override=visual_intent_overrides.get(page.page_id),
         )
         content_prompts.append(prompt)
+        diagnostics.append(
+            PagePromptDiagnostics(
+                page_id=page.page_id,
+                title=page.title or page.page_id,
+                metrics=analyze_prompt(prompt, onscreen_text=page.onscreen_text),
+            )
+        )
         draft_source = out_dir / f"_tmp_slide-{page_number:02d}-imagegen.md"
         draft_source.write_text(prompt, encoding="utf-8")
         staged = stage_script(
@@ -623,6 +636,13 @@ def write_chapter_handoff(
     else:
         batch_path.write_text("\n".join(review_parts).rstrip() + "\n", encoding="utf-8")
     outputs["batch"] = batch_path
+    diagnostics_path = out_dir / f"{batch_name}-imagegen-diagnostics.json"
+    write_batch_diagnostics(
+        diagnostics_path,
+        diagnostics,
+        batch_name=batch_name,
+    )
+    outputs["diagnostics"] = diagnostics_path
 
     gate = project / "workbench" / "stages" / "02-blueprint-dual-image" / f"{batch_name}-imagegen-script-gate.md"
     gate.parent.mkdir(parents=True, exist_ok=True)
@@ -672,6 +692,7 @@ def main(argv: list[str] | None = None) -> int:
         batch_name=args.batch_name,
     )
     print(f"batch_review={outputs['batch']}")
+    print(f"diagnostics={outputs['diagnostics']}")
     print(f"gate={outputs['gate']}")
     for key, path in sorted(outputs.items()):
         if key.startswith("p"):
