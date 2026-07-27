@@ -49,7 +49,8 @@ STYLE_FOUR_CONTRACT = {
 def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     styles = load_style_library()["styles"]
 
-    assert [style["id"] for style in styles] == list(range(1, 10))
+    assert [style["id"] for style in styles[:9]] == list(range(1, 10))
+    assert len(styles) >= 9
     assert next(style for style in styles if style["id"] == 4) == STYLE_FOUR_CONTRACT
     style_nine = resolve_default_style(style_id=9)
     assert style_nine["slug"] == "ivory_deep_blue_scene"

@@ -329,6 +329,11 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
     if not isinstance(style, dict):
         return None
     prompt_contract = _strip_visual_structure_meta(_collapse_text(style.get("prompt_contract")))
+    scope_rule = _strip_visual_structure_meta(_collapse_text(style.get("scope_rule")))
+    semantic_structure_rule = _strip_visual_structure_meta(
+        _collapse_text(style.get("semantic_structure_rule"))
+    )
+    scene_layer_rule = _strip_visual_structure_meta(_collapse_text(style.get("scene_layer_rule")))
     people_rule = _strip_visual_structure_meta(_collapse_text(style.get("people_rule")))
     factuality_rule = _strip_visual_structure_meta(_collapse_text(style.get("factuality_rule")))
     semantic_image_text_rule = _strip_visual_structure_meta(
@@ -337,9 +342,11 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
     content_visual_rule = _strip_visual_structure_meta(_collapse_text(style.get("content_visual_rule")))
     icon_rule = _strip_visual_structure_meta(_collapse_text(style.get("icon_rule")))
     density_rule = _collapse_text(style.get("density_rule"))
-    # scope_rule / sample / lock boilerplate stay in the lock JSON for humans;
-    # do not inject them into ImageGen payloads.
     parts = [prompt_contract]
+    # Styles with an explicit two-layer contract must send that priority into
+    # ImageGen. Legacy styles keep their existing prompt behavior unchanged.
+    if semantic_structure_rule:
+        parts.extend(part for part in (scope_rule, semantic_structure_rule, scene_layer_rule) if part)
     if people_rule:
         parts.append(people_rule)
     if factuality_rule:

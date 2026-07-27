@@ -122,7 +122,7 @@ Stage 01 的 `source-truth-audit` / `outline-audit` / `script-audit` 会在报�
 - 阶段开始前必须读取对应 reference 的完整内容；如果终端显示乱码，改用 UTF-8 方式重读，不得跳过。
 - reference 中的具体清单优先于本文件中的摘要描述；如果二者冲突，先停下说明冲突并请求用户确认。
 - 第一阶段必须读取 `source-analysis.md` 和 `storyline.md` 后再完成材料路由，并产出证据表、内容脑暴、方案型章节或咨询型 SCR、逐页大纲和页面信息密度清单；进入逐页脚本时必须读取 `script-quality.md` 并运行 `script-audit`。内容页必须按页证据包写出完整文字稿（小文章/小章节完整性，禁止上屏颗粒度），并强制填写 `文字稿取舍说明` 与 `证据映射`，然后再写上屏文字。
-- 第二阶段必须读取 `visual-system.md` 后再生成风格样张；默认必须逐项使用固定 8 种 CyberPPT 视觉风格，不得用扩展风格替代，除非用户明确要求替换。
+- 第二阶段必须读取 `visual-system.md` 后再生成风格样张；默认必须逐项使用固定 8 种 CyberPPT 视觉风格，不得用扩展风格替代，除非用户明确要求替换。显式选择风格10时，必须执行“语义结构优先、行业场景辅助”的双层合同；不得用场景替代页面视觉意图或锁定业务关系。
 - 第二阶段的逐页正文区蓝图子阶段即使已经选好风格，也必须重新对照 `visual-system.md`，声明锁定的风格编号、色板、正文区网格、正文区图表语言和信息密度规则，防止逐页生成时风格漂移。
 - 第三阶段必须读取 `ppt-production.md` 和 `quality-assurance.md` 后再生成 PPTX 和渲染检查。
 - 第二阶段默认模式 `full-image` 不进入 OCR、overlay、semantic_plan、source_capture 或 `template-rebuild`；可编辑模式按合同进入这些步骤。所有模式的正式入口均为 `python -m cyberppt final-script-pages`。

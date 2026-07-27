@@ -505,11 +505,11 @@ def build_parser() -> argparse.ArgumentParser:
     final_script_pages_parser.add_argument(
         "--style-id",
         type=int,
-        choices=range(1, 10),
-        metavar="1-9",
+        choices=range(1, 11),
+        metavar="1-10",
         help=(
             "Required unless --style-lock or --style-name is provided; "
-            "styles 1-8 are default choices and style 9 is an explicit extension."
+            "styles 1-8 are default choices; styles 9-10 are explicit extensions."
         ),
     )
     final_script_pages_parser.add_argument(

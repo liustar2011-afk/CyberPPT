@@ -170,6 +170,32 @@
       "prompt_contract": "视觉风格使用象牙白 + 深蓝领导汇报：背景 #F7F6F0，标题 #101820，正文 #303030，次级文字 #6F7275，线条 #C9CDD1，强调色 #12355B。适合政企领导汇报、演讲辅助和企业内部决策沟通；采用正式内部汇报气质、编辑式克制、清晰业务表达、深蓝页内强调与细线分隔。不得生成完整 PPT 页面、Logo、页脚、页码、水印或伪文字。",
       "icon_rule": "图标不得成为主构图、中央视觉或留白装饰。图标只能作为贴近已锁定文字模块或必要业务关系的小型辅助标记；不得使用没有对应文字、关系或业务对象的孤立、重复或装饰图标，不得替代业务内容或形成图标墙。是否使用模块内的小型标记，由页面内容与构图自行决定；实景或具象视觉已经清楚表达含义时，不再额外叠加图标。",
       "density_rule": "保持政企内部汇报所需的信息密度；在不改变原脚本结构的前提下，可使用细线分隔和克制图标，避免空泛大字页或装饰性拼贴。"
+    },
+    {
+      "id": 10,
+      "slug": "ivory_deep_blue_semantic_scene",
+      "name": "象牙白 + 深蓝双层语义汇报",
+      "extension_only": true,
+      "colors": {
+        "background": "#F7F6F0",
+        "title": "#101820",
+        "body": "#303030",
+        "secondary": "#6F7275",
+        "divider": "#C9CDD1",
+        "accent": "#12355B"
+      },
+      "scenario": "政企领导汇报、方案型汇报、内部决策沟通；语义结构优先，行业场景作为有限视觉锚点",
+      "sample": "assets/palette-samples/palette-10.png",
+      "scope_rule": "双层风格合同：第一层是页面语义结构，拥有构图最高优先级；必须忠实保留页面视觉意图及因果、输入输出、依赖、反馈、演进、范围、对比、分层等锁定关系。第二层才是色彩、材质、光影与行业场景；不得用控制室、圆台、盾牌、人物、设备或大屏替代业务结构。风格不得覆盖原脚本的页面定位、组件数量、箭头关系、框内文字或页面级视觉意图。",
+      "semantic_structure_rule": "Layer 1 — semantic structure is mandatory and must be designed first. Derive the composition skeleton from the page-specific visual intent and locked business relationships. Preserve the exact relationship type and reading order. Process, timeline, architecture, comparison, matrix, hierarchy, scope, responsibility, and quantitative layouts are allowed whenever they are the clearest truthful form; do not suppress them merely to appear scenic. The largest or highest-contrast visual element must express the page's core judgment or business relationship.",
+      "scene_layer_rule": "Layer 2 — industry scene is optional supporting context, never the information skeleton. Use one restrained embedded or background scene anchor only when it clarifies a specific business object. On structure-heavy pages, keep scene imagery subordinate and normally within about one third of the content area; reduce it further or omit it when it competes with labels, connectors, comparison, sequence, scope, or hierarchy. Larger scene-led compositions are reserved for chapter, vision, positioning, value-summary, and call-to-action pages.",
+      "people_rule": "Do not use identifiable people to imply a specific event, organization, role assignment, endorsement, or historical fact. When the page-specific visual intent benefits from human presence, use small-scale anonymous professional figures in side/back view or as distant silhouettes; never use portraits, leaders, name badges, uniforms, handshakes, boardroom meetings, or documentary-style activities. Human presence supports the business meaning but never serves as evidence of an actual person, unit, site, or event.",
+      "factuality_rule": "Do not depict organization names, logos, seals, signage, recognizable headquarters or landmarks. Keep real organization and person names in the editable text layer only. Generic, non-location-specific facilities, layered workspaces, control consoles, equipment rooms, and industrial scenes may be used as illustrative carriers when they map to the locked content. Schematic screens, charts, maps, and interface labels may organize the composition, but generated values are non-evidentiary; factual numbers and labels must be verified and remain editable.",
+      "semantic_image_text_rule": "Render the page's locked on-screen text faithfully in the main composition. Auxiliary semantic imagery may use a small amount of clear Chinese labels, interface text, chart labels, or document wording when it directly clarifies the nearby business object or relationship. Do not add unrelated decorative text, dense pseudo-Chinese, invented names, logos, seals, signage, or text that pretends to be factual evidence; keep supporting text subordinate to the page's locked on-screen text.",
+      "content_visual_rule": "先用清晰的语义图形建立业务骨架，再决定是否加入实景编辑式插画。流程、体系、范围、治理、路线、职责、投入和指标页优先保证结构可读；场景只能嵌入结构或退居背景，不得成为默认中央主视觉。章节、愿景、定位、价值总结和行动倡议页可适度扩大场景，但仍须让主判断保持第一视觉层级。",
+      "prompt_contract": "视觉风格使用象牙白 + 深蓝双层语义汇报：背景 #F7F6F0，标题 #101820，正文 #303030，次级文字 #6F7275，线条 #C9CDD1，强调色 #12355B。第一层以页面语义结构准确表达业务关系，第二层以克制的行业实景、编辑式材质和轻微空间层次增强可信度。结构优先于场景，场景不得替代结构。不得生成完整 PPT 页面、Logo、页脚、页码、水印或伪文字。",
+      "icon_rule": "图标只能作为语义结构中的小型辅助标记，不得成为主构图、中央视觉、图标墙或留白装饰；已有清晰文字、关系或实景表达时不重复叠加图标。",
+      "density_rule": "保持政企方案汇报所需的中高信息密度。优先保障主判断、关键模块、关系线、范围边界和阅读顺序；不得为了扩大场景而缩小正文、删减关系或把结构拆成难以扫描的装饰拼贴。"
     }
   ]
 }

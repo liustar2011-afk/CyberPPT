@@ -329,3 +329,14 @@
 ### Style 9 people-expression constraint
 
 People are supporting contextual elements only, not the main visual subject. Avoid front-facing portraits, posed meeting-photo compositions, direct eye contact with the camera, and hero-style human compositions. Prefer side views, back views, three-quarter views, distant group working scenes, or small-scale human presence integrated into the business environment. Do not let human faces become the highest-contrast or largest visual element on the page. People should appear naturally engaged in professional work, supporting business capability, decision-making, validation, coordination, or operational improvement. Avoid smiling portraits, handshakes, conference-table group photos, people pointing at screens, and corporate promotional photography. Visual priority: business capability logic, real industry scene, professional work state, then supporting people.
+
+## 扩展风格10：象牙白 + 深蓝双层语义汇报
+
+风格10复制风格9的色板、编辑式质感、行业可信度与人物/事实约束，但改变构图优先级。它通过 ID `10` 或 slug `ivory_deep_blue_semantic_scene` 显式选择，不进入默认8种候选。
+
+风格10采用强制双层合同：
+
+1. **第一层：页面语义结构。** 先从页面视觉意图和锁定业务关系建立构图骨架。因果、输入输出、依赖、反馈、演进、范围、对比、分层、职责和数量关系必须保持原类型与阅读顺序。流程、时间线、架构、矩阵、层级图、范围图和对比图在其最清晰时均可使用，不得为了“场景化”而禁止。页面最大或最高对比元素必须表达主判断或核心业务关系。
+2. **第二层：行业场景与视觉皮肤。** 象牙白、深蓝、编辑式材质、轻微立体层次和行业实景只用于增强可信度。结构型页面的场景通常不超过正文区约三分之一；若与文字、连接、顺序、范围或层级竞争，应进一步缩小或省略。章节、愿景、定位、价值总结和行动倡议页才允许扩大场景。
+
+禁止用控制室、圆台、盾牌、人物、设备或大屏替代业务结构。流程、体系、范围、治理、路线、职责、投入和指标页优先保证语义图清晰；场景只能嵌入结构或退居背景。风格10的目标是“以语义结构为骨架，以行业场景为有限视觉锚点”，兼顾咨询交付的自解释能力与领导汇报的视觉质感。
