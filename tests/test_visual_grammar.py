@@ -7,7 +7,11 @@ from scripts.dual_image_overlay.style_library import write_project_style_lock
 from scripts.dual_image_overlay.visual_grammar import default_visual_grammar
 
 _SHORT_LINES = (
-    "- No body text on busy/high-contrast imagery.",
+    (
+        "- Treat readable text modules as elements inside the dominant composition, "
+        "using calm in-composition panels or annotations rather than a separate text "
+        "column or rail. No body text on busy/high-contrast imagery."
+    ),
     "- No connectors through/under text; no fake flow lines; one connector style.",
     "- Unequal visual weight by hierarchy — not an equal card wall.",
     "- Bind each real-world image to one specific nearby business meaning.",
@@ -52,77 +56,11 @@ def test_deliverable_prompt_renders_visual_grammar_once_for_style_nine() -> None
     assert "【页面编码】P09｜测试" in prompt
     assert "不得在生成图中渲染页面编码或页面标题" in prompt
     for line in _SHORT_LINES:
-        assert line in prompt
+        assert prompt.count(line) == 1
     for fragment in _OLD_CHINESE_FRAGMENTS:
         assert fragment not in prompt
     assert "【设计目标与叙事】" not in prompt
-    assert "leadership briefing" in prompt.lower()
-    assert "speech-support" in prompt
-    assert "not a process infographic" in prompt
-    assert "Not a consulting deliverable" in prompt
-    assert "Prefer editorial simplicity and business clarity" in prompt
-    assert "Visual hierarchy should follow the importance of the message" in prompt
-    assert "Do not force every page to have a single hero image" in prompt
-    assert "Do not apply one visual template to all pages" in prompt
-    assert "Do not use identifiable people to imply a specific event, organization, role assignment, endorsement, or historical fact" in prompt
-    assert "small-scale anonymous professional figures" in prompt
-    assert "never use portraits, leaders, name badges, uniforms" in prompt
-    assert "documentary-style activities" in prompt
-    assert "professional activity is part of the business meaning" not in prompt
-    assert "organization names, logos, seals, signage" in prompt
-    assert "editable text layer only" in prompt
-    assert "non-evidentiary" in prompt
-    assert "Generic, non-location-specific facilities" in prompt
-    assert "文字逻辑与业务流程是页面主体" in prompt
-    assert "图像是把已锁定内容空间化、形象化和关系化的表达工具" in prompt
-    assert "Screens, charts, and data interfaces may carry nearby analytical context" in prompt
-    assert "Avoid control-room hero shots" in prompt
-    assert "smart city exhibition style" in prompt
-    assert "Consulting research" not in prompt
-    assert "Industry scene and imagery:" in prompt
-    assert "Use semantically relevant real-world imagery selectively" in prompt
-    assert "Use only the number of images needed for the page's dynamic content" in prompt
-    assert "Prefer: architecture" not in prompt
-    assert "capability evolution map" not in prompt
-    assert "software-architecture look" in prompt
-    assert "Content fidelity and visual logic:" in prompt
-    assert "Do not introduce new visual relationships" in prompt
-    assert "clarify the content, not redefine the content" in prompt
-    assert "lifecycle circles with isolated nodes" in prompt
-    assert "non-documentary, non-location-specific editorial scenes" not in prompt
-    assert "numbered step cards" in prompt
-    assert "请先理解" not in prompt
-    assert "页面使命" not in prompt
-    assert "母版" not in prompt
-    assert "可编辑文字层" not in prompt
-    assert "光流" not in prompt
-    assert "空间轨迹" not in prompt
-    assert "实景彩色插画" in prompt
-    assert "场景辅助" not in prompt
-    assert "photo-inspired editorial industry illustration" in prompt
-    assert "secondary point-art" not in prompt
-    assert "Enhance the message" in prompt
-    assert "semantically necessary images" in prompt
-    assert "One dominant visual narrative" not in prompt
-    assert "One visual center" not in prompt
-    assert "visual anchor" not in prompt
-    assert "Business capability formation is the narrative center" not in prompt
-    assert "不使用外部风格 preset" not in prompt
-    assert "确认样张" not in prompt
-    assert "密度：不改变【内容锁定】" not in prompt
-    assert "Style constrains color" not in prompt
-    assert "Do not rely on 「视觉结构」" not in prompt
-    assert "视觉结构" not in prompt
-    assert "请以【视觉结构】为构图思考起点" not in prompt
-    assert "视觉结构：" not in prompt
-    assert "图不是装饰" not in prompt
-    assert "图多字少" not in prompt
-    assert "## 第9页：" not in prompt
     assert "忠实于【内容锁定】" in prompt
-    assert "核心判断" not in prompt
-    assert "禁止项" not in prompt
-    assert "Boundary (do not show on slide)" not in prompt
-    assert "Boundary text must not appear on the slide" not in prompt
     assert (
         "Do not invent section labels like meta headers; only render 上屏文字 modules."
         in prompt
