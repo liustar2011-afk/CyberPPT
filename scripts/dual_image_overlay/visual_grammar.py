@@ -52,3 +52,22 @@ def default_visual_grammar() -> VisualGrammarContract:
             "- Do not use one generic industry scene to represent several unrelated meanings."
         ),
     )
+
+
+def creative_brief_visual_grammar() -> str:
+    """Return only universal hygiene rules for the creative-brief compiler.
+
+    Page-specific failure modes belong in the creative brief.  Keeping them out
+    of this shared contract prevents every page from inheriting the same visual
+    anxieties and converging on one defensive layout.
+    """
+
+    return "\n".join(
+        (
+            "- Keep all locked body text clear and readable; do not place it over busy or "
+            "high-contrast imagery.",
+            "- Do not run connectors, decorative lines, or image details through body text.",
+            "- Do not generate any text, number, chart label, interface label, or factual "
+            "annotation beyond the locked on-screen text.",
+        )
+    )

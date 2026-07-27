@@ -11,7 +11,7 @@ import json
 import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable
 
 
 _EXACT_NUMBER_RE = re.compile(
@@ -53,6 +53,8 @@ class PromptMetrics:
     conflicts: tuple[str, ...]
     onscreen_chars: int
     exact_number_count: int
+    locked_text_preserved: bool
+    exact_facts_preserved: bool
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -63,15 +65,19 @@ class PagePromptDiagnostics:
     page_id: str
     title: str
     metrics: PromptMetrics
+    build_metadata: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, object]:
-        return {
+        payload: dict[str, object] = {
             "page_id": self.page_id,
             "title": self.title,
             **self.metrics.to_dict(),
             "duplicate_rule_count": len(self.metrics.duplicate_rules),
             "conflict_count": len(self.metrics.conflicts),
         }
+        if self.build_metadata is not None:
+            payload["build_metadata"] = self.build_metadata
+        return payload
 
 
 def _section(text: str, start: str, end: str | None = None) -> str:
@@ -123,6 +129,23 @@ def _known_conflicts(prompt: str) -> tuple[str, ...]:
     if "remain editable" in lower or "保持可编辑" in prompt:
         conflicts.append("editable_text_in_bitmap")
 
+    requires_exact_text = (
+        "locked wording is exact" in lower
+        or "不得近义替换" in prompt
+        or "do not delete, summarize, paraphrase" in lower
+    )
+    allows_text_compression = (
+        "允许根据画面容量压缩、取舍和重组文字" in prompt
+        or bool(
+            re.search(
+                r"\b(?:may|can)\s+(?:compress|shorten|summarize|paraphrase)\b",
+                lower,
+            )
+        )
+    )
+    if requires_exact_text and allows_text_compression:
+        conflicts.append("locked_text_vs_allowed_compression")
+
     locks_to_onscreen = (
         "only render 上屏文字" in prompt
         or "only render the locked on-screen text" in lower
@@ -151,6 +174,13 @@ def analyze_prompt(prompt: str, *, onscreen_text: str = "") -> PromptMetrics:
     global_rule_chars = max(total_chars - page_specific_chars, 0)
     ratio = round(page_specific_chars / total_chars, 4) if total_chars else 0.0
     onscreen = onscreen_text.strip()
+    normalized_prompt = re.sub(r"\s+", "", prompt)
+    locked_lines = [
+        re.sub(r"\s+", "", line).strip("-*•")
+        for line in onscreen.splitlines()
+        if re.sub(r"\s+", "", line).strip("-*•")
+    ]
+    exact_facts = _EXACT_NUMBER_RE.findall(onscreen)
 
     return PromptMetrics(
         total_chars=total_chars,
@@ -160,7 +190,9 @@ def analyze_prompt(prompt: str, *, onscreen_text: str = "") -> PromptMetrics:
         duplicate_rules=_exact_duplicate_rules(prompt),
         conflicts=_known_conflicts(prompt),
         onscreen_chars=_meaningful_chars(onscreen),
-        exact_number_count=len(_EXACT_NUMBER_RE.findall(onscreen)),
+        exact_number_count=len(exact_facts),
+        locked_text_preserved=all(line in normalized_prompt for line in locked_lines),
+        exact_facts_preserved=all(value in prompt for value in exact_facts),
     )
 
 
@@ -176,7 +208,7 @@ def write_batch_diagnostics(
     prompt_chars = [page.metrics.total_chars for page in page_list]
     ratios = [page.metrics.page_specific_ratio for page in page_list]
     payload = {
-        "schema": "cyberppt.imagegen_prompt_diagnostics.v1",
+        "schema": "cyberppt.imagegen_prompt_diagnostics.v2",
         "batch_name": batch_name,
         "mode": "warning_only",
         "summary": {
@@ -193,6 +225,79 @@ def write_batch_diagnostics(
             "pages_with_conflicts": sum(bool(page.metrics.conflicts) for page in page_list),
         },
         "pages": [page.to_dict() for page in page_list],
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+def compare_page_diagnostics(
+    baseline: PagePromptDiagnostics,
+    candidate: PagePromptDiagnostics,
+) -> dict[str, object]:
+    """Compare two compiler results for the same page."""
+
+    if baseline.page_id != candidate.page_id:
+        raise ValueError(
+            f"cannot compare different pages: {baseline.page_id} != {candidate.page_id}"
+        )
+    old = baseline.metrics
+    new = candidate.metrics
+    return {
+        "page_id": baseline.page_id,
+        "title": baseline.title,
+        "baseline": baseline.to_dict(),
+        "candidate": candidate.to_dict(),
+        "delta": {
+            "total_chars": new.total_chars - old.total_chars,
+            "global_rule_chars": new.global_rule_chars - old.global_rule_chars,
+            "page_specific_ratio": round(
+                new.page_specific_ratio - old.page_specific_ratio,
+                4,
+            ),
+            "duplicate_rule_count": (
+                len(new.duplicate_rules) - len(old.duplicate_rules)
+            ),
+            "conflict_count": len(new.conflicts) - len(old.conflicts),
+            "onscreen_chars_preserved": new.onscreen_chars == old.onscreen_chars,
+            "locked_text_preserved": new.locked_text_preserved,
+            "exact_facts_preserved": new.exact_facts_preserved,
+        },
+    }
+
+
+def write_compiler_comparison(
+    path: Path,
+    comparisons: Iterable[
+        tuple[PagePromptDiagnostics, PagePromptDiagnostics]
+    ],
+    *,
+    batch_name: str,
+) -> Path:
+    rows = [compare_page_diagnostics(old, new) for old, new in comparisons]
+    payload = {
+        "schema": "cyberppt.imagegen_prompt_compiler_comparison.v1",
+        "batch_name": batch_name,
+        "mode": "warning_only",
+        "summary": {
+            "page_count": len(rows),
+            "pages_with_fewer_duplicates": sum(
+                row["delta"]["duplicate_rule_count"] < 0 for row in rows
+            ),
+            "pages_with_fewer_conflicts": sum(
+                row["delta"]["conflict_count"] < 0 for row in rows
+            ),
+            "pages_preserving_locked_text": sum(
+                row["delta"]["locked_text_preserved"] for row in rows
+            ),
+            "pages_preserving_exact_facts": sum(
+                row["delta"]["exact_facts_preserved"] for row in rows
+            ),
+        },
+        "pages": rows,
     }
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(

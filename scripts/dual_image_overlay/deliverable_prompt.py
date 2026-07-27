@@ -15,7 +15,10 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.dual_image_overlay.style_library import default_style_choices, load_style_lock
-from scripts.dual_image_overlay.visual_grammar import default_visual_grammar
+from scripts.dual_image_overlay.visual_grammar import (
+    creative_brief_visual_grammar,
+    default_visual_grammar,
+)
 
 
 PAGE_HEADING_RE = re.compile(
@@ -255,6 +258,23 @@ def visible_deliverable_lines(page: PageBlock) -> list[str]:
     return lines
 
 
+def exact_visible_deliverable_lines(page: PageBlock) -> list[str]:
+    """Preserve controlled handoff text exactly for creative-brief compilation.
+
+    ``imagegen_handoff.content_lock_text`` has already removed backend-only
+    fields.  The legacy cleaner performs useful compatibility normalization but
+    also removes meaningful punctuation such as ``——``.  The new compiler keeps
+    every non-empty controlled line verbatim.
+    """
+
+    lines: list[str] = []
+    for raw in page.text.splitlines():
+        line = raw.strip()
+        if line and not FENCE_RE.match(line):
+            lines.append(line)
+    return lines
+
+
 def _clean_structure_directive(line: str) -> str:
     line = line.strip()
     line = TITLE_REFERENCE_RE.sub("", line)
@@ -328,6 +348,9 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
     style = payload.get("style")
     if not isinstance(style, dict):
         return None
+    style_prompt_v2 = _collapse_text(style.get("style_prompt_v2"))
+    if style_prompt_v2:
+        return style_prompt_v2
     prompt_contract = _strip_visual_structure_meta(_collapse_text(style.get("prompt_contract")))
     scope_rule = _strip_visual_structure_meta(_collapse_text(style.get("scope_rule")))
     semantic_structure_rule = _strip_visual_structure_meta(
@@ -382,22 +405,94 @@ def style_contract(style_lock_path: Path | None) -> str:
     return f"核心色板：{color_text}。"
 
 
+def _creative_brief_style_contract(style_lock_path: Path | None) -> str:
+    """Remove bitmap-inapplicable or text-expanding clauses for the new compiler."""
+
+    contract = style_contract(style_lock_path)
+    contract = re.sub(
+        r"允许根据画面容量压缩、取舍和重组文字，但不得改变原意，?",
+        "完整、准确呈现锁定的上屏文字，不得压缩、删减、改写或重组，",
+        contract,
+    )
+    contract = re.sub(
+        r"(?:may|can)\s+(?:compress|shorten|summarize|paraphrase)[^.]*\.",
+        (
+            "Render the locked on-screen text completely and exactly; do not compress, "
+            "shorten, summarize, paraphrase, or reorganize it."
+        ),
+        contract,
+        flags=re.I,
+    )
+    contract = re.sub(
+        r"factual numbers and labels must be verified and remain editable\.?",
+        (
+            "Only factual numbers and labels present in the locked on-screen text may appear; "
+            "do not invent additional values."
+        ),
+        contract,
+        flags=re.I,
+    )
+    contract = re.sub(
+        r"Auxiliary semantic imagery may use a small amount of clear Chinese labels,"
+        r"\s*interface text, chart labels, or document wording when it directly clarifies"
+        r"\s*the nearby business object or relationship\.",
+        (
+            "Auxiliary imagery must remain text-free; do not generate interface text, chart "
+            "labels, document wording, or factual annotations beyond the locked on-screen text."
+        ),
+        contract,
+        flags=re.I,
+    )
+    contract = re.sub(
+        r"Auxiliary imagery may use only a small amount of clear supporting text when it "
+        r"directly clarifies a nearby business object\.",
+        (
+            "Auxiliary imagery must remain text-free beyond the locked on-screen text."
+        ),
+        contract,
+        flags=re.I,
+    )
+    return contract
+
+
+def uses_compact_style_contract(style_lock_path: Path | None) -> bool:
+    if style_lock_path is None or not style_lock_path.is_file():
+        return False
+    try:
+        payload = json.loads(style_lock_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    style = payload.get("style")
+    return isinstance(style, dict) and bool(_collapse_text(style.get("style_prompt_v2")))
+
+
 def render_prompt(
     page: PageBlock,
     *,
     style_lock_path: Path | None = None,
     composition_guidance: str = "",
+    compiler_version: str = "legacy",
 ) -> str:
-    content_lines = _filter_imagegen_content_lines(visible_deliverable_lines(page))
+    creative_brief = compiler_version == "creative-brief-v1"
+    content_lines = (
+        exact_visible_deliverable_lines(page)
+        if creative_brief
+        else _filter_imagegen_content_lines(visible_deliverable_lines(page))
+    )
     body = "\n".join(f"- {line}" for line in content_lines)
-    layout_directives = layout_density_directives(page)
-    visual_grammar = default_visual_grammar().render()
+    compact_style = uses_compact_style_contract(style_lock_path)
+    layout_directives = [] if compact_style else layout_density_directives(page)
+    visual_grammar = (
+        creative_brief_visual_grammar()
+        if creative_brief
+        else ("" if compact_style else default_visual_grammar().render())
+    )
     parts = [
         f"【页面编码】P{page.page_number:02d}｜{page.title}",
         "以上为提示词元数据，仅用于按页追踪；不得在生成图中渲染页面编码或页面标题。",
         "",
     ]
-    if composition_guidance.strip():
+    if composition_guidance.strip() and (not compact_style or creative_brief):
         parts.extend(
             [
                 "[Mandatory composition guidance] Apply this layout guidance before placing "
@@ -421,7 +516,11 @@ def render_prompt(
     parts.extend(
         [
             "",
-            style_contract(style_lock_path),
+            (
+                _creative_brief_style_contract(style_lock_path)
+                if creative_brief
+                else style_contract(style_lock_path)
+            ),
             "",
             "【视觉组织原则】",
             visual_grammar,

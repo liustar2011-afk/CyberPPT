@@ -23,13 +23,20 @@ import argparse
 import json
 import re
 import sys
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from cyberppt.commands.script_gate import stage_script
 from cyberppt.script_quality_contract import ScriptPage, parse_script_markdown
+from scripts.dual_image_overlay.creative_brief import (
+    CreativeBrief,
+    build_creative_brief,
+    render_creative_brief,
+)
 from scripts.dual_image_overlay.deliverable_prompt import (
     PageBlock,
     assert_deliverable_prompt,
@@ -39,9 +46,11 @@ from scripts.dual_image_overlay.prompt_diagnostics import (
     PagePromptDiagnostics,
     analyze_prompt,
     write_batch_diagnostics,
+    write_compiler_comparison,
 )
 
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
+PROMPT_COMPILERS = ("legacy", "creative-brief-v1")
 # Status asides that must not be painted as core on-screen claims.
 # Planning decks argue the proposed solution; do not restamp "not yet fact" on every page.
 ONSCREEN_ASIDE_RE = re.compile(
@@ -428,6 +437,49 @@ def build_page_visual_intent(
     )
 
 
+@dataclass(frozen=True)
+class CompiledPagePrompt:
+    prompt: str
+    compiler_version: str
+    relation: str
+    creative_brief: CreativeBrief | None = None
+    injected_rule_ids: tuple[str, ...] = ()
+
+    def build_metadata(self) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "compiler_version": self.compiler_version,
+            "relation": self.relation,
+            "injected_rule_ids": list(self.injected_rule_ids),
+        }
+        if self.creative_brief is not None:
+            payload["creative_brief"] = self.creative_brief.to_dict()
+        return payload
+
+
+def build_page_creative_brief(
+    page: ScriptPage,
+    page_mission: str,
+    override: dict[str, str] | None = None,
+    context: dict[str, str] | None = None,
+) -> CreativeBrief:
+    """Build semantic invariants and creative freedom using the existing router."""
+
+    relation = select_page_visual_intent_type(
+        page,
+        page_mission,
+        context=context,
+        override=override,
+    )
+    return build_creative_brief(
+        relation=relation,
+        page_purpose=page_mission or page.main_message,
+        core_judgment=page.main_message,
+        required_meanings=page.module_titles,
+        onscreen_text=_clean_onscreen_for_imagegen(page.onscreen_text),
+        override=override,
+    )
+
+
 def content_lock_text(page: ScriptPage, page_mission: str = "") -> str:
     """Build prompt context followed by the drawable 上屏文字 layer."""
 
@@ -514,19 +566,54 @@ def _page_visual_intent_overrides(project: Path) -> dict[str, dict[str, str]]:
     return result
 
 
-def build_page_prompt(
+def compile_page_prompt(
     page: ScriptPage,
     style_lock: Path,
     page_mission: str = "",
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
-) -> str:
-    visual_intent = build_page_visual_intent(
+    prompt_compiler: str = "legacy",
+) -> CompiledPagePrompt:
+    if prompt_compiler not in PROMPT_COMPILERS:
+        raise ValueError(
+            f"unsupported prompt compiler: {prompt_compiler}; "
+            f"choose one of {', '.join(PROMPT_COMPILERS)}"
+        )
+    relation = select_page_visual_intent_type(
         page,
         page_mission,
         context=visual_context,
         override=visual_intent_override,
     )
+    creative_brief: CreativeBrief | None = None
+    if prompt_compiler == "creative-brief-v1":
+        creative_brief = build_page_creative_brief(
+            page,
+            page_mission,
+            context=visual_context,
+            override=visual_intent_override,
+        )
+        visual_intent = render_creative_brief(creative_brief)
+        injected_rule_ids = (
+            "creative.semantic_contract",
+            "creative.freedom_envelope",
+            "text.no_additional_text",
+            *(
+                f"creative.page_avoid.{index}"
+                for index, _ in enumerate(
+                    creative_brief.page_specific_avoids,
+                    start=1,
+                )
+            ),
+        )
+    else:
+        visual_intent = build_page_visual_intent(
+            page,
+            page_mission,
+            context=visual_context,
+            override=visual_intent_override,
+        )
+        injected_rule_ids = ("legacy.visual_intent", "legacy.visual_grammar")
     prompt_text = content_lock_text(page, page_mission=page_mission).rstrip()
     block = PageBlock(
         page_number=int(page.page_id[1:]),
@@ -537,6 +624,7 @@ def build_page_prompt(
         block,
         style_lock_path=style_lock,
         composition_guidance=visual_intent,
+        compiler_version=prompt_compiler,
     )
     assert_deliverable_prompt(prompt)
     if EVIDENCE_ID_RE.search(prompt):
@@ -549,7 +637,33 @@ def build_page_prompt(
     # Field injection form only — style presets may still mention the concept as guidance.
     if "视觉结构：" in prompt or re.search(r"(?m)^-?\s*视觉结构\b", prompt):
         raise ValueError(f"{page.page_id} ImageGen prompt still contains backend field: 视觉结构")
-    return prompt
+    return CompiledPagePrompt(
+        prompt=prompt,
+        compiler_version=prompt_compiler,
+        relation=relation,
+        creative_brief=creative_brief,
+        injected_rule_ids=tuple(injected_rule_ids),
+    )
+
+
+def build_page_prompt(
+    page: ScriptPage,
+    style_lock: Path,
+    page_mission: str = "",
+    visual_context: dict[str, str] | None = None,
+    visual_intent_override: dict[str, str] | None = None,
+    prompt_compiler: str = "legacy",
+) -> str:
+    """Backward-compatible string API over the versioned prompt compiler."""
+
+    return compile_page_prompt(
+        page,
+        style_lock,
+        page_mission=page_mission,
+        visual_context=visual_context,
+        visual_intent_override=visual_intent_override,
+        prompt_compiler=prompt_compiler,
+    ).prompt
 
 
 def write_chapter_handoff(
@@ -559,7 +673,11 @@ def write_chapter_handoff(
     style_lock: Path,
     pages: list[int],
     batch_name: str,
+    prompt_compiler: str = "legacy",
+    compare_with: str | None = None,
 ) -> dict[str, Path]:
+    if compare_with is not None and compare_with not in PROMPT_COMPILERS:
+        raise ValueError(f"unsupported comparison compiler: {compare_with}")
     document = parse_script_markdown(script.read_text(encoding="utf-8"))
     by_num = {int(page.page_id[1:]): page for page in document.pages}
     missions = _page_missions(project)
@@ -574,6 +692,7 @@ def write_chapter_handoff(
         "> 状态：等待用户修改或批准。未经批准不得进入 ImageGen。",
         f"> 源脚本：`{script.as_posix()}`",
         f"> 风格锁定：`{style_lock.as_posix()}`",
+        f"> Prompt compiler: `{prompt_compiler}`",
         "",
         "## 编入规则",
         "",
@@ -586,6 +705,9 @@ def write_chapter_handoff(
     outputs: dict[str, Path] = {}
     content_prompts: list[str] = []
     diagnostics: list[PagePromptDiagnostics] = []
+    comparison_diagnostics: list[
+        tuple[PagePromptDiagnostics, PagePromptDiagnostics]
+    ] = []
 
     for page_number in pages:
         page = by_num[page_number]
@@ -601,21 +723,49 @@ def write_chapter_handoff(
             )
             continue
 
-        prompt = build_page_prompt(
+        compiled = compile_page_prompt(
             page,
             style_lock,
             page_mission=missions.get(page.page_id, ""),
             visual_context=visual_contexts.get(page.page_id),
             visual_intent_override=visual_intent_overrides.get(page.page_id),
+            prompt_compiler=prompt_compiler,
         )
+        prompt = compiled.prompt
         content_prompts.append(prompt)
-        diagnostics.append(
-            PagePromptDiagnostics(
+        selected_diagnostics = PagePromptDiagnostics(
+            page_id=page.page_id,
+            title=page.title or page.page_id,
+            metrics=analyze_prompt(prompt, onscreen_text=page.onscreen_text),
+            build_metadata=compiled.build_metadata(),
+        )
+        diagnostics.append(selected_diagnostics)
+        if compare_with and compare_with != prompt_compiler:
+            comparison = compile_page_prompt(
+                page,
+                style_lock,
+                page_mission=missions.get(page.page_id, ""),
+                visual_context=visual_contexts.get(page.page_id),
+                visual_intent_override=visual_intent_overrides.get(page.page_id),
+                prompt_compiler=compare_with,
+            )
+            comparison_page = PagePromptDiagnostics(
                 page_id=page.page_id,
                 title=page.title or page.page_id,
-                metrics=analyze_prompt(prompt, onscreen_text=page.onscreen_text),
+                metrics=analyze_prompt(
+                    comparison.prompt,
+                    onscreen_text=page.onscreen_text,
+                ),
+                build_metadata=comparison.build_metadata(),
             )
-        )
+            if prompt_compiler == "legacy":
+                comparison_diagnostics.append(
+                    (selected_diagnostics, comparison_page)
+                )
+            else:
+                comparison_diagnostics.append(
+                    (comparison_page, selected_diagnostics)
+                )
         draft_source = out_dir / f"_tmp_slide-{page_number:02d}-imagegen.md"
         draft_source.write_text(prompt, encoding="utf-8")
         staged = stage_script(
@@ -643,6 +793,14 @@ def write_chapter_handoff(
         batch_name=batch_name,
     )
     outputs["diagnostics"] = diagnostics_path
+    if comparison_diagnostics:
+        comparison_path = out_dir / f"{batch_name}-imagegen-compiler-comparison.json"
+        write_compiler_comparison(
+            comparison_path,
+            comparison_diagnostics,
+            batch_name=batch_name,
+        )
+        outputs["comparison"] = comparison_path
 
     gate = project / "workbench" / "stages" / "02-blueprint-dual-image" / f"{batch_name}-imagegen-script-gate.md"
     gate.parent.mkdir(parents=True, exist_ok=True)
@@ -675,6 +833,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--style-lock", type=Path, required=True)
     parser.add_argument("--pages", required=True, help="e.g. 1-7")
     parser.add_argument("--batch-name", default="chapter01")
+    parser.add_argument(
+        "--prompt-compiler",
+        choices=PROMPT_COMPILERS,
+        default="legacy",
+    )
+    parser.add_argument(
+        "--compare-with",
+        choices=PROMPT_COMPILERS,
+    )
     args = parser.parse_args(argv)
 
     raw = args.pages.strip()
@@ -690,9 +857,13 @@ def main(argv: list[str] | None = None) -> int:
         style_lock=args.style_lock.resolve(),
         pages=pages,
         batch_name=args.batch_name,
+        prompt_compiler=args.prompt_compiler,
+        compare_with=args.compare_with,
     )
     print(f"batch_review={outputs['batch']}")
     print(f"diagnostics={outputs['diagnostics']}")
+    if "comparison" in outputs:
+        print(f"comparison={outputs['comparison']}")
     print(f"gate={outputs['gate']}")
     for key, path in sorted(outputs.items()):
         if key.startswith("p"):

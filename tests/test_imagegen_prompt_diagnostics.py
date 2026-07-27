@@ -7,7 +7,9 @@ from tempfile import TemporaryDirectory
 from scripts.dual_image_overlay.prompt_diagnostics import (
     PagePromptDiagnostics,
     analyze_prompt,
+    compare_page_diagnostics,
     write_batch_diagnostics,
+    write_compiler_comparison,
 )
 
 
@@ -70,9 +72,48 @@ def test_write_batch_diagnostics_uses_warning_only_schema() -> None:
         )
         payload = json.loads(path.read_text(encoding="utf-8"))
 
-    assert payload["schema"] == "cyberppt.imagegen_prompt_diagnostics.v1"
+    assert payload["schema"] == "cyberppt.imagegen_prompt_diagnostics.v2"
     assert payload["mode"] == "warning_only"
     assert payload["summary"]["page_count"] == 1
     assert payload["summary"]["pages_with_conflicts"] == 1
     assert payload["pages"][0]["page_id"] == "p18"
     assert payload["pages"][0]["conflict_count"] == 2
+
+
+def test_compare_compilers_reports_metric_deltas() -> None:
+    legacy = PagePromptDiagnostics(
+        page_id="p18",
+        title="测试页",
+        metrics=analyze_prompt(PROMPT, onscreen_text="2025年完成率 95%。"),
+        build_metadata={"compiler_version": "legacy"},
+    )
+    candidate_prompt = PROMPT.replace(" and remain editable", "").replace(
+        "Auxiliary semantic imagery may use a small amount of clear Chinese labels.",
+        "Auxiliary imagery must remain text-free.",
+    )
+    candidate = PagePromptDiagnostics(
+        page_id="p18",
+        title="测试页",
+        metrics=analyze_prompt(
+            candidate_prompt,
+            onscreen_text="2025年完成率 95%。",
+        ),
+        build_metadata={"compiler_version": "creative-brief-v1"},
+    )
+
+    result = compare_page_diagnostics(legacy, candidate)
+    assert result["delta"]["conflict_count"] < 0
+    assert result["delta"]["locked_text_preserved"] is True
+    assert result["delta"]["exact_facts_preserved"] is True
+
+    with TemporaryDirectory() as directory:
+        path = write_compiler_comparison(
+            Path(directory) / "comparison.json",
+            [(legacy, candidate)],
+            batch_name="test-batch",
+        )
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    assert payload["summary"]["page_count"] == 1
+    assert payload["pages"][0]["candidate"]["build_metadata"] == {
+        "compiler_version": "creative-brief-v1"
+    }
