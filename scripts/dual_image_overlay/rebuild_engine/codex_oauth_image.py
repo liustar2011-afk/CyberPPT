@@ -15,6 +15,7 @@ import mimetypes
 import os
 from pathlib import Path
 import re
+import shutil
 import sys
 import time
 from typing import Any
@@ -522,15 +523,44 @@ def ensure_output_size(output_path: Path, size: str) -> tuple[int, int]:
     return (target_width, target_height)
 
 
+def raw_output_path(output_path: Path) -> Path:
+    """Return the sibling path used to preserve the backend's unmodified PNG."""
+
+    return output_path.with_name(f"{output_path.stem}_raw.png")
+
+
 def _write_image(image_b64: str, output_path: Path, *, force: bool, size: str | None = None) -> None:
     if len(image_b64) > MAX_CODEX_BASE64_CHARS:
         _die("Image payload exceeded size limit.")
-    if output_path.exists() and not force:
-        _die(f"Output already exists: {output_path} (use --force to overwrite)")
+    raw_path = raw_output_path(output_path)
+    existing = [path for path in (output_path, raw_path) if path.exists()]
+    if existing and not force:
+        _die(
+            "Output already exists: "
+            + ", ".join(str(path) for path in existing)
+            + " (use --force to overwrite)"
+        )
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_bytes(base64.b64decode(image_b64))
+    raw_path.write_bytes(base64.b64decode(image_b64))
+    shutil.copyfile(raw_path, output_path)
+    try:
+        from PIL import Image
+
+        with Image.open(raw_path) as raw_image:
+            raw_size = raw_image.size
+        print(
+            f"Wrote raw backend image {raw_size[0]}x{raw_size[1]}: {raw_path}",
+            file=sys.stderr,
+        )
+    except ImportError:
+        print(f"Wrote raw backend image: {raw_path}", file=sys.stderr)
     if size:
-        ensure_output_size(output_path, size)
+        final_size = ensure_output_size(output_path, size)
+        if final_size != (-1, -1):
+            print(
+                f"Final output image {final_size[0]}x{final_size[1]}: {output_path}",
+                file=sys.stderr,
+            )
 
 
 def _write_images(

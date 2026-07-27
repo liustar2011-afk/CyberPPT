@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import base64
 import importlib.util
+import io
 import sys
 from pathlib import Path
 
@@ -57,3 +59,41 @@ def test_ensure_output_size_leaves_auto_unchanged(tmp_path: Path) -> None:
     assert result == (-1, -1)
     with Image.open(output) as unchanged:
         assert unchanged.size == (320, 180)
+
+
+def test_write_image_preserves_raw_backend_dimensions(tmp_path: Path) -> None:
+    module = load_codex_oauth_image()
+    output = tmp_path / "generated.png"
+    buffer = io.BytesIO()
+    Image.new("RGB", (320, 180), "navy").save(buffer, format="PNG")
+
+    module._write_image(
+        base64.b64encode(buffer.getvalue()).decode("ascii"),
+        output,
+        force=False,
+        size="2048x1024",
+    )
+
+    raw = tmp_path / "generated_raw.png"
+    assert raw.is_file()
+    with Image.open(raw) as raw_image:
+        assert raw_image.size == (320, 180)
+    with Image.open(output) as normalized:
+        assert normalized.size == (2048, 1024)
+
+
+def test_write_image_preserves_raw_even_when_size_matches(tmp_path: Path) -> None:
+    module = load_codex_oauth_image()
+    output = tmp_path / "generated.png"
+    buffer = io.BytesIO()
+    Image.new("RGB", (2048, 1024), "navy").save(buffer, format="PNG")
+
+    module._write_image(
+        base64.b64encode(buffer.getvalue()).decode("ascii"),
+        output,
+        force=False,
+        size="2048x1024",
+    )
+
+    raw = tmp_path / "generated_raw.png"
+    assert raw.read_bytes() == output.read_bytes()
