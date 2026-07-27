@@ -111,6 +111,30 @@ def page_notes_text(block: PageBlock) -> str:
     explicit = extract_speaker_notes(block.text)
     if explicit:
         return explicit
+    role = page_role(block)
+    if role == "cover":
+        title_match = re.search(r"(?:主标题|页面标题)\s*[:：]\s*(.+)", block.text)
+        report_title = title_match.group(1).strip() if title_match else block.title
+        return f"下面汇报《{report_title}》。汇报内容将按照既定目录展开。"
+    if role == "agenda":
+        chapter_titles = [
+            match.group(1).strip()
+            for match in re.finditer(
+                r"第[一二三四五六七八九十]+章\s*[｜|、:：]\s*(.+)",
+                block.text,
+            )
+        ]
+        if chapter_titles:
+            return (
+                f"本次汇报分为{len(chapter_titles)}个部分，依次介绍"
+                + "、".join(chapter_titles)
+                + "。"
+            )
+        return "本次汇报将按照目录顺序，依次说明各部分的核心判断与工作安排。"
+    if role == "section":
+        return f"下面汇报“{block.title}”，重点说明本章的核心判断、主要依据和相关安排。"
+    if role == "ending":
+        return "以上为本次汇报的主要内容，请审议。"
     content = extract_content(block)
     lines = [line.strip() for line in content.body.splitlines() if line.strip()]
     notes: list[str] = []

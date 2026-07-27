@@ -113,6 +113,50 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
             module.page_notes_text(block),
         )
 
+    def test_template_page_notes_use_role_aware_formal_narration(self) -> None:
+        module = load_template_image_ppt_export()
+        cases = [
+            (
+                module.PageBlock(
+                    1,
+                    "封面",
+                    "- 页面类型：封面页\n- 主标题：电力供需预测预警能力建设研究",
+                ),
+                "下面汇报《电力供需预测预警能力建设研究》。汇报内容将按照既定目录展开。",
+            ),
+            (
+                module.PageBlock(
+                    2,
+                    "目录",
+                    (
+                        "- 页面类型：目录页\n- 上屏文字：\n"
+                        "- 第一章｜现状基础与能力需求\n"
+                        "- 第二章｜定位、目标与研究安排"
+                    ),
+                ),
+                "本次汇报分为2个部分，依次介绍现状基础与能力需求、定位、目标与研究安排。",
+            ),
+            (
+                module.PageBlock(
+                    3,
+                    "第一章：现状基础与能力需求",
+                    "- 页面类型：章节过渡页",
+                ),
+                "下面汇报“第一章：现状基础与能力需求”，重点说明本章的核心判断、主要依据和相关安排。",
+            ),
+            (
+                module.PageBlock(32, "汇报完毕，请审议", "- 页面类型：封底页"),
+                "以上为本次汇报的主要内容，请审议。",
+            ),
+        ]
+
+        for block, expected in cases:
+            with self.subTest(title=block.title):
+                notes = module.page_notes_text(block)
+                self.assertEqual(expected, notes)
+                self.assertNotIn("本页围绕", notes)
+                self.assertNotIn("汇报要点", notes)
+
     def test_agenda_and_section_templates_replace_derived_fields(self) -> None:
         module = load_template_image_ppt_export()
         rules = module.load_brand_rules()
