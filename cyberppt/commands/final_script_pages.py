@@ -10,9 +10,18 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
-from scripts.dual_image_overlay.cyberppt_pair_manifest import build_manifest, require_generated
+from scripts.dual_image_overlay.cyberppt_pair_manifest import (
+    DUAL_IMAGE_MODE,
+    FULL_IMAGE_MODE,
+    PRODUCTION_MODES,
+    TRIPLE_IMAGE_MODE,
+    build_manifest,
+    output_variants_for_mode,
+    require_generated,
+)
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, parse_pages, template_title
 from scripts.dual_image_overlay.production_readiness import build_production_readiness
+from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_codex_image
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
@@ -383,6 +392,80 @@ def _run_image_ppt_build(
     return result
 
 
+def _generate_manifest_images(
+    manifest: dict[str, Any],
+    *,
+    model: str,
+    quality: str,
+    timeout: int,
+    force: bool,
+    dry_run: bool,
+) -> dict[str, Any]:
+    production_mode = str(manifest.get("production_mode") or FULL_IMAGE_MODE)
+    variants = output_variants_for_mode(production_mode)
+    generated: list[str] = []
+    skipped: list[str] = []
+    for pair in manifest.get("pairs", []):
+        full_path = Path(str((pair.get("full") or {}).get("path", "")))
+        for variant in variants:
+            item = pair.get(variant) or {}
+            output_path = Path(str(item.get("path", "")))
+            if output_path.is_file() and not force:
+                item["status"] = "Generated"
+                skipped.append(str(output_path))
+                continue
+            input_images = [] if variant == "full" else [full_path]
+            if input_images and not full_path.is_file() and not dry_run:
+                raise FileNotFoundError(
+                    f"page {pair.get('page_number')} {variant} requires full image: {full_path}"
+                )
+            run_codex_image(
+                prompt=str(item.get("prompt", "")),
+                output_path=output_path,
+                image_paths=input_images,
+                model=model,
+                size=str(item.get("canvas") or "2048x1024"),
+                quality=quality,
+                timeout=timeout,
+                force=True,
+                dry_run=dry_run,
+            )
+            if not dry_run:
+                item["status"] = "Generated"
+                item["generated_at"] = _utc_now()
+            generated.append(str(output_path))
+    return {
+        "backend": "codex_oauth_image",
+        "production_mode": production_mode,
+        "generated": generated,
+        "skipped": skipped,
+        "dry_run": dry_run,
+    }
+
+
+def _run_editable_rebuild(
+    *,
+    project: Path,
+    manifest_path: Path,
+    semantic_plan_dir: Path | None,
+    rebuild_args: list[str] | None,
+) -> dict[str, Any]:
+    command = [sys.executable, "-m", "cyberppt", "template-rebuild", str(manifest_path)]
+    if semantic_plan_dir is not None:
+        command.extend(["--semantic-plan-dir", str(semantic_plan_dir)])
+    command.extend(rebuild_args or [])
+    completed = subprocess.run(command, check=False)
+    result = {
+        "command": command,
+        "returncode": completed.returncode,
+        "status": "completed" if completed.returncode == 0 else "failed",
+        "artifacts": _template_rebuild_artifacts(project),
+    }
+    if completed.returncode != 0:
+        raise RuntimeError(_template_rebuild_failure_message(project, completed.returncode))
+    return result
+
+
 def run_final_script_pages(
     *,
     project: Path,
@@ -397,6 +480,13 @@ def run_final_script_pages(
     run_rebuild: bool = False,
     rebuild_args: list[str] | None = None,
     production_build: bool = False,
+    production_mode: str = FULL_IMAGE_MODE,
+    generate_images: bool = False,
+    image_model: str = "gpt-image-2",
+    image_quality: str = "high",
+    image_timeout: int = 600,
+    force_images: bool = False,
+    dry_run_images: bool = False,
 ) -> dict[str, Any]:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
@@ -408,10 +498,15 @@ def run_final_script_pages(
 
     assert_escalation_resolved(project, "script")
     assert_stage01_script_approval(project, script)
-    if run_rebuild:
-        raise ValueError("--run-rebuild is no longer supported by final-script-pages; use image-ppt for Stage 02 production builds.")
-    if semantic_plan_dir is not None:
-        raise ValueError("--semantic-plan-dir is no longer supported by final-script-pages; Stage 02 no longer enters OCR/overlay/template-rebuild.")
+    if production_mode not in PRODUCTION_MODES:
+        raise ValueError(
+            f"unsupported production mode: {production_mode}; "
+            f"expected one of {', '.join(PRODUCTION_MODES)}"
+        )
+    if run_rebuild and production_mode == FULL_IMAGE_MODE:
+        raise ValueError("--run-rebuild requires an editable-overlay production mode")
+    if semantic_plan_dir is not None and production_mode == FULL_IMAGE_MODE:
+        raise ValueError("--semantic-plan-dir requires an editable-overlay production mode")
     _ensure_project_dirs(project)
     if style_lock is not None and (style_id is not None or style_name):
         raise ValueError("--style-lock cannot be combined with --style-id or --style-name")
@@ -435,6 +530,7 @@ def run_final_script_pages(
         project_path=project,
         style_lock=style_lock,
         require_approved_prompts=True,
+        production_mode=production_mode,
     )
     lock_path = _template_text_lock(
         project=project,
@@ -444,21 +540,37 @@ def run_final_script_pages(
         style_lock=style_lock,
         manifest_path=manifest_path,
     )
-    if require_images:
+    image_generation = None
+    if generate_images:
+        image_generation = _generate_manifest_images(
+            manifest,
+            model=image_model,
+            quality=image_quality,
+            timeout=image_timeout,
+            force=force_images,
+            dry_run=dry_run_images,
+        )
+        _write_json(manifest_path, manifest)
+    if require_images or (
+        production_mode != FULL_IMAGE_MODE
+        and (production_build or run_rebuild)
+        and not dry_run_images
+    ):
         require_generated(manifest)
 
     resume_command = (
         f"python3 -m cyberppt final-script-pages {project} --script {script} "
-        f"--pages {pages_raw} --style-lock {style_lock}"
+        f"--pages {pages_raw} --style-lock {style_lock} --production-mode {production_mode}"
     )
     production_readiness = None
     tool_consumption: dict[str, Any] = {}
     stage_name = "02-production-build" if production_build else "02-blueprint-dual-image"
     status = "ready_for_image_generation" if not require_images else "image_assets_verified"
     image_ppt_build: dict[str, Any] | None = None
+    rebuild_status: dict[str, Any] | None = None
     image_ppt_output_dir = target_dir / "image_ppt"
     image_ppt_name = slug
-    if production_build:
+    if production_build and production_mode == FULL_IMAGE_MODE:
         image_ppt_build = _run_image_ppt_build(
             script=script,
             pages_raw=pages_raw,
@@ -467,6 +579,20 @@ def run_final_script_pages(
             page_image_manifest=manifest_path,
         )
         status = "production_ready"
+    elif production_build or run_rebuild:
+        rebuild_status = _run_editable_rebuild(
+            project=project,
+            manifest_path=manifest_path,
+            semantic_plan_dir=semantic_plan_dir,
+            rebuild_args=rebuild_args,
+        )
+        production_readiness = build_production_readiness(
+            stage=stage_name,
+            artifacts=_stage02_production_artifacts(project),
+            reports=_stage02_production_reports(_stage02_production_artifacts(project)),
+        )
+        tool_consumption = production_readiness["tool_consumption"]
+        status = production_readiness["status"]
     run_summary = {
         "schema": "cyberppt.final_script_pages_run.v1",
         "created_at": _utc_now(),
@@ -475,6 +601,7 @@ def run_final_script_pages(
         "pages": page_numbers,
         "stage": stage_name,
         "status": status,
+        "production_mode": production_mode,
         "artifacts": {
             "compiled_deliverable_prompt": str(compiled_script),
             "page_image_pairs": str(manifest_path),
@@ -492,13 +619,21 @@ def run_final_script_pages(
             "semantic_plan_dir": str(semantic_plan_dir) if semantic_plan_dir else None,
         },
         "next_steps": [
-            "Generate each full image from the pair manifest full.prompt.",
-            "Run python3 -m cyberppt image-ppt run to assemble the full images into a template PPTX.",
-            "Do not enter OCR, overlay, semantic-plan or template-rebuild from Stage 02.",
+            (
+                "Generate the full image and assemble it through image-ppt."
+                if production_mode == FULL_IMAGE_MODE
+                else "Generate full/background assets, then rebuild editable text through OCR and semantic overlay."
+            ),
+            (
+                "Optionally generate text_reference as an OCR-only third image."
+                if production_mode == TRIPLE_IMAGE_MODE
+                else "Use the selected production branch without mixing its artifacts with another branch."
+            ),
         ],
         "resume_command": resume_command,
-        "rebuild": None,
+        "rebuild": rebuild_status,
         "image_ppt_build": image_ppt_build,
+        "image_generation": image_generation,
         "tool_consumption": tool_consumption,
         "production_readiness": production_readiness,
     }

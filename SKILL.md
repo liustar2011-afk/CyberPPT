@@ -29,9 +29,11 @@ Outline 通过并获得用户批准后，逐批编写脚本并运行：
 
 ```powershell
 python -m cyberppt script-audit <project> --input <script.md>
+python -m cyberppt assemble-final-script <project>
+python -m cyberppt script-audit <project> --input <project>/workbench/scripts/final/script-final.md
 ```
 
-`script-audit` 复用 Outline 和 Source Truth，检查页面合同、来源状态、章内推进、跨页重复、上屏结构与语义图同构、页面密度，以及内容页强制的完整文字稿链路（完整文字稿、文字稿取舍说明、证据映射，且完整文字稿必须在上屏文字之前）。脚本审计未通过时不得批准脚本或进入 Stage 02；必须读取 `retry_scope` 和 `retry_directive`，换方向重写失败页面。批次通过后仍需在完整脚本形成时执行全稿审计。
+`script-audit` 复用 Outline 和 Source Truth，检查页面合同、来源状态、章内推进、跨页重复、上屏结构与语义图同构、页面密度，以及内容页强制的完整文字稿链路（完整文字稿、文字稿取舍说明、证据映射，且完整文字稿必须在上屏文字之前）。内容页还须提供自然口语的 `【演讲者备注】`（禁「这一页/下一页」等翻页腔），供组装写入 PPT 备注。对 `workbench/scripts/final/` 还会拦截「草稿」「批次」字样与批次横幅。脚本审计未通过时不得批准脚本或进入 Stage 02；必须读取 `retry_scope` 和 `retry_directive`，换方向重写失败页面。批次通过后须先 `assemble-final-script` 合出干净全稿，再执行全稿审计。
 
 完整文字稿是内容表达权威层：对齐源材料中本页主题的主体内容，写成小文章/小章节；禁止上屏颗粒度；必须是章节正文口吻，禁止“本页只确认/首先需要确认…”一类分析旁白（旁白进取舍说明或边界）。上屏文字是完整文字稿的概括化、图形化表达，禁止与文字稿并列各写一套，禁止各自从 Source Truth 分头摘取。审稿时先审文字稿取舍与论证，再审上屏是否忠实压缩。该要求为仓库默认合同。封面、目录、章节页和封底除外。设计见 `docs/superpowers/specs/2026-07-24-page-full-prose-from-source-design.md`。
 
@@ -42,25 +44,33 @@ python -m cyberppt script-audit <project> --input <script.md>
 | 阶段 | 必须产出 | 停止条件 | 读取 |
 |---|---|---|---|
 | 1. 分析 | `source-truth.json`、Source Truth 审计与可读视图、架构路由、冲突记录、内容脑暴、方案型章节或咨询型 SCR、连续逐页大纲、脚本及审计记录、图表计划、页面信息密度和组件清单 | 第一次确认：Source Truth 与 Outline 已通过或有记录地升级，用户批准架构、章节逻辑、页数和大纲；脚本审计通过后才能批准脚本 | `references/source-analysis.md`, `references/storyline.md`, `references/script-quality.md` |
-| 2. 蓝图与 full 图 PPT 生产 | 8 种视觉风格、选定风格、逐页正文区 ImageGen 蓝图、脚本锁定记录、ImageGen full 图、`page_image_pairs.json`、`template_image_manifest.json`、套模板后的图片型 PPTX | 第二次确认：用户批准视觉方向、全部页面正文区 full 图和进入图片型 PPT 组装的脚本/图像资产 | `references/visual-system.md` |
-| 3. 渲染 QA 与交付 | 对 `template_image_ppt_export.py` 组装出的 PPTX 做渲染检查、模板层检查、交付说明和必要返工；正文区主要内容以 full 图承载，标题、副标题、Logo、页脚、页码和公共模板元素由 PPT 管线生成 | 最终确认：用户批准套模板后的图片型 PPT | `references/ppt-production.md`, `references/quality-assurance.md` |
+| 2. 蓝图、生图与 PPT 生产 | 8 种视觉风格、选定风格、逐页正文区 ImageGen 蓝图、脚本锁定记录、所选生产模式需要的图片资产、`page_image_pairs.json`、生产 manifest、PPTX | 第二次确认：用户批准视觉方向、生产模式和进入组装/重建的脚本与图像资产 | `references/visual-system.md` |
+| 3. 渲染 QA 与交付 | 对 `final-script-pages` 所选分支输出的 PPTX 做渲染检查、模板层检查、可编辑性检查（适用时）、交付说明和必要返工 | 最终确认：用户批准最终 PPT | `references/ppt-production.md`, `references/quality-assurance.md` |
 
 未经确认不要跨过确认门。用户要求修改时，回到对应阶段修订并重新确认。
 
 ## 主流水线合同
 
-默认生产主线必须按以下顺序推进：
+正式生产必须由 `python -m cyberppt final-script-pages` 统一编排，按以下顺序推进：
 
-`脚本锁定 -> 正文区 ImageGen full 图 -> template_image_ppt_export -> 渲染 QA -> 交付`
+`脚本锁定 -> final-script-pages -> 所选生图分支 -> 所选 PPT 分支 -> 渲染 QA -> 交付`
 
-第二阶段生产路径为 `full_image_ppt`。正式第二阶段不得要求 full/background 双图资产，不再生成 no-text background，不再执行 OCR、overlay、semantic_plan、source_capture 或 `template_rebuild`。旧 `dual_image_editable_overlay`、OCR 和 `template_rebuild` 只可作为 legacy/advanced 路径，不属于主流程第二阶段。
+`final-script-pages` 是脚本锁定后的唯一正式编排入口。禁止把直接调用 `codex_oauth_image.py`、`template_image_ppt_export.py`、`python -m cyberppt image-ppt run` 或 `template-rebuild` 当作正式主流程；这些命令只可用于主链内部、故障诊断或明确记录的恢复操作。
+
+必须显式选择或沿用一种生产模式：
+
+1. `full-image`（默认）：生成 full 图，经 `image-ppt` 套模板；正文区文字通常不可编辑。
+2. `editable-overlay`：生成 full 图，再从 full 派生无字底图，经 OCR、语义绑定、overlay 和 `template-rebuild` 输出主要文字可编辑的 PPT。
+3. `editable-overlay-text-reference`：在双图模式上再从 full 派生纯文字 OCR 参考图。该图只供 OCR 使用，禁止作为可见 PPT 图层。
+
+只有用户明确要求主要正文可编辑、对象级还原、双图法或三图法时，才选择可编辑分支；选择后它属于 `final-script-pages` 主链的正式分支，不再称为旁路或临时 legacy 调用。
 
 含义如下：
 
 1. **脚本锁定**：逐页保存并确认脚本、内容锁定、模板文字层锁定、视觉锁定和必要的 ImageGen prompt。脚本是后续 full 图和模板文字层的 truth，不得把 ImageGen 图中文字或 OCR 当作最终标题层来源。
-2. **正文区 ImageGen full 图**：只生成正文区 ImageGen full 图；full 图不包含标题、副标题、Logo、页码、页脚、蓝线或公共模板元素。
-3. **template_image_ppt_export**：使用 `scripts/dual_image_overlay/rebuild_engine/template_image_ppt_export.py` 将 full 图放入模板正文区，并由 PPT 管线生成标题、副标题、Logo、页脚、页码、蓝线和公共元素。
-4. **渲染 QA 与交付**：最终验收对象是套模板后的 PPTX 渲染结果，不是单独的 full 图片资产。正文区主要内容以 full 图承载；需要可编辑正文层时必须另行启用 legacy/advanced 路径并显式记录交付模式。
+2. **统一生图后端**：通过 `final-script-pages --generate-images` 调用 Codex OAuth 生图后端。不得由导出器临时发起正式生图，也不得在主链外逐页调用后端后冒充主链产物。
+3. **分支组装**：`full-image` 由主链调用 `image-ppt`；可编辑模式由主链调用 OCR、语义层和 `template-rebuild`。无字底图与纯文字图必须从同页 full 图派生，不得独立文生图。
+4. **渲染 QA 与交付**：最终验收对象是 PPTX 渲染和结构结果，不是单独图片。可编辑模式还必须通过文字层、背景无字和可编辑性质量门。
 
 允许用户手工指定走到哪一步，例如只到脚本、只到 ImageGen full、只到图片型 PPT 组装或只做 QA。手工停点必须记录当前停点、已完成工件、未执行后续步骤和恢复命令；不得把停点产物冒充最终交付物。
 
@@ -70,7 +80,7 @@ python -m cyberppt script-audit <project> --input <script.md>
 
 模板文字层必须有独立 truth。默认从脚本锁定阶段生成 `template_text_lock`，至少记录每页 `page`、`title`、`subtitle`、`section`、`template_variant`、`page_badge_enabled`、`footer_enabled`、`source`、`approved`、`depends_on` 和 `resume_command`。该锁定文件必须登记进 `artifact-ledger.json`，并作为 `template_image_ppt_export` 的模板层输入。
 
-不得从 full 图或 OCR 猜测标题和副标题。第二阶段不得进入 OCR；如果 full 图中误画了标题、副标题、页码或 Logo，应标记为正文区图像污染，要求重新生成 full 图，而不是把这些像素识别成可靠标题层。
+不得从 full 图或 OCR 猜测标题和副标题。可编辑分支的 OCR 只用于正文信息层，模板标题和副标题仍以 `template_text_lock` 为准；如果 full 图中误画了标题、副标题、页码或 Logo，应标记为正文区图像污染并重新生成，不得把这些像素提升为模板 truth。
 
 中途接入 full 图时必须提供 `template_text_lock` 或等价标题层 metadata。等价 metadata 必须能覆盖 `template_image_ppt_export` 所需的标题、副标题、模板开关和来源追踪，并登记到 ledger；不能只提供 full 图后让后续脚本猜标题。
 
@@ -85,9 +95,9 @@ python -m cyberppt script-audit <project> --input <script.md>
 | 阶段 | 目录 | 典型成果物 |
 |---|---|---|
 | 分析 | `workbench/stages/01-analysis/` | 证据表、冲突记录、issue tree、SCR、逐页大纲、页面密度和组件清单 |
-| 蓝图与 full 图 PPT 生产 | `workbench/stages/02-blueprint-dual-image/` | 风格锁定、`slide_content_lock`、`template_text_lock`、ImageGen prompt、full 图、`page_image_pairs.json`、`template_image_manifest.json`、图片型 PPTX |
-| Legacy overlay 转换（非主线） | `workbench/stages/03-overlay/` | 仅 legacy/advanced 路径使用的 semantic_plan、text mapping、office_textbox_fit、overlay PPTX、overlay render、局部 QA |
-| Legacy 套模板（非主线） | `workbench/stages/04-template-rebuild/` | 仅 legacy/advanced 路径使用的 template PPTX、template_rebuild_readiness、source_capture、template-normalized reference、模板层 QA |
+| 蓝图、生图与分支生产 | `workbench/stages/02-blueprint-dual-image/` | 风格锁定、`slide_content_lock`、`template_text_lock`、ImageGen prompt、full/background/text-reference（按模式）、`page_image_pairs.json`、生产 manifest、图片型 PPTX |
+| 可编辑 overlay 分支 | `workbench/stages/03-overlay/` | 可编辑模式使用的 semantic_plan、text mapping、office_textbox_fit、overlay PPTX、overlay render、局部 QA |
+| 可编辑 template-rebuild 分支 | `workbench/stages/04-template-rebuild/` | 可编辑模式使用的 template PPTX、template_rebuild_readiness、source_capture、template-normalized reference、模板层 QA |
 | QA 与交付 | `workbench/stages/05-qa-delivery/` | visual_qa_gate、slide_manifest、side-by-side、局部裁图、最终 deck、交付说明 |
 
 项目必须维护 `artifact-ledger.json`。每个成果物必须记录 `stage`、`page`、`path`、`status`、`depends_on`、`supersedes` 和 `resume_command`；能计算 hash 时还必须记录 SHA-256。`depends_on` 指向上游成果物，`supersedes` 指向被本次返工替代的旧成果物。这样套模板后发现问题时，可以沿 `depends_on` 反查到脚本、full 图或模板层中真正需要修改的来源。
@@ -115,7 +125,7 @@ Stage 01 的 `source-truth-audit` / `outline-audit` / `script-audit` 会在报�
 - 第二阶段必须读取 `visual-system.md` 后再生成风格样张；默认必须逐项使用固定 8 种 CyberPPT 视觉风格，不得用扩展风格替代，除非用户明确要求替换。
 - 第二阶段的逐页正文区蓝图子阶段即使已经选好风格，也必须重新对照 `visual-system.md`，声明锁定的风格编号、色板、正文区网格、正文区图表语言和信息密度规则，防止逐页生成时风格漂移。
 - 第三阶段必须读取 `ppt-production.md` 和 `quality-assurance.md` 后再生成 PPTX 和渲染检查。
-- 第二阶段不得进入 OCR、overlay、semantic_plan、source_capture 或 `template_rebuild`；默认生产入口是 `template_image_ppt_export.py` / `python3 -m cyberppt image-ppt run`。
+- 第二阶段默认模式 `full-image` 不进入 OCR、overlay、semantic_plan、source_capture 或 `template-rebuild`；可编辑模式按合同进入这些步骤。所有模式的正式入口均为 `python -m cyberppt final-script-pages`。
 
 ## 默认页面结构策略（页眉页脚 / 页码徽章 / 保密声明）
 
@@ -257,17 +267,30 @@ Stage 01 的 `source-truth-audit` / `outline-audit` / `script-audit` 会在报�
 10. 已批准正文区蓝图是正文区视觉验收基准，不是灵感图或内容结构参考。正文区底色、表面系统、SO WHAT、分栏关系、主图形态、图标锚点、密度和留白节奏都必须逐项对照；模板层标题、副标题、页眉页脚、页码、Logo 和蓝线另按模板 QA 检查。
 11. 每页生成 PPTX 前必须先写 `blueprint_reconstruction_plan`，拆解蓝图的版式、密度、表面系统和锚点。没有该记录不得生成该页。
 
-### 默认模式：full 图 + 模板组装 PPT
+### 统一入口与生产模式
 
-第二阶段生产路径为 `full_image_ppt`。该模式只生成正文区 ImageGen full 图，并通过 `template_image_ppt_export.py` 放入 PPT 模板正文区；标题、副标题、Logo、页脚、页码、蓝线和公共模板元素由模板层生成。
+脚本批准后必须进入 `python -m cyberppt final-script-pages`，不得把生图后端或导出器作为常规入口。默认模式为 `full-image`：只生成正文区 ImageGen full 图，并由主链调用 `image-ppt` 放入 PPT 模板正文区；标题、副标题、Logo、页脚、页码、蓝线和公共模板元素由模板层生成。
 
-第二阶段不得进入 OCR、overlay、semantic_plan、source_capture 或 `template_rebuild`，不得生成 no-text background，也不得把 background 作为必需资产。正文区主要内容以 full 图承载；这意味着正文区文字通常不可编辑，必须在交付说明中如实标记。
+默认 `full-image` 不进入 OCR、overlay、semantic_plan、source_capture 或 `template-rebuild`，不得把 background 作为必需资产。正文区文字通常不可编辑，必须在交付说明中如实标记。
 
-旧 `dual_image_editable_overlay`、OCR、semantic_plan、source_capture 和 `template_rebuild` 只可作为 legacy/advanced 路径。只有用户明确要求恢复主要正文可编辑、要求对象级还原，或明确点名 legacy overlay/rebuild 时，才允许启用，并必须在 run summary、ledger 和交付说明中标记该路径不是第二阶段主线。
+用户明确要求主要正文可编辑、对象级还原、双图法或三图法时，必须在同一入口选择 `editable-overlay` 或 `editable-overlay-text-reference`。主链负责生成/复用所需图片、调用 OCR 与语义层、执行 `template-rebuild`，并把生产模式写入 run summary、ledger 和交付说明。
+
+正式命令形态：
+
+```powershell
+python -m cyberppt final-script-pages <project> `
+  --script <final-script.md> `
+  --pages <range> `
+  --production-mode <full-image|editable-overlay|editable-overlay-text-reference> `
+  --generate-images `
+  --production-build
+```
+
+恢复已有图片时可省略 `--generate-images` 并使用 `--require-images`；强制重生仅使用 `--force-images`。不得直接调用 `codex_oauth_image.py` 代替上述入口。
 
 已批准的第二阶段正文区 ImageGen 蓝图默认晋升为 `full` 候选图，不得无理由从零重新 text-to-image 生成另一张 full 图。只有当蓝图未达到最终交付质量或用户要求重做时，才允许基于已批准蓝图做定向重绘，并必须记录原因。
 
-full 图生成前必须先用 `scripts/dual_image_overlay/deliverable_prompt.py` 或 `template_image_ppt_export.py` 把项目脚本编译成最终交付 prompt。该 prompt 必须使用项目自身视觉锁定，不得用外部仓库 style preset 覆盖项目风格；生成图必须面向最终客户交付，不得画入证据编号、来源编号、caveat、脚注、口径说明、标题占位条、页码、Logo、页脚、公共元素或调试标记。
+full 图生成前必须由 `final-script-pages` 调用项目 prompt 编译链生成最终交付 prompt。该 prompt 必须使用项目自身视觉锁定，不得用外部仓库 style preset 覆盖项目风格；生成图必须面向最终客户交付，不得画入证据编号、来源编号、caveat、脚注、口径说明、标题占位条、页码、Logo、页脚、公共元素或调试标记。
 
 ### 手工停点与阶段恢复
 
@@ -291,8 +314,8 @@ full 图生成前必须先用 `scripts/dual_image_overlay/deliverable_prompt.py`
 
 1. 模板阶段可以暴露正文区问题，但不能成为正文区修补点。
 2. 只重跑受影响页面和受影响阶段；不得无理由重跑全 deck。
-3. 如果问题来自脚本或内容 truth，回到脚本锁定；如果问题来自 full 图，回到 full 图生成；如果问题来自模板层，回到 `template_image_ppt_export`。
-4. 重新生成 full 图后必须重新执行 `template_image_ppt_export`，并重新渲染套模板后的页面。
+3. 如果问题来自脚本或内容 truth，回到脚本锁定；如果问题来自 full 图，回到主链生图步骤；如果问题来自模板层，回到 `final-script-pages` 对应组装分支。
+4. 重新生成图片资产后必须通过 `final-script-pages` 重新执行所选生产分支，并重新渲染页面。
 5. 最终 deck 只能合并通过 QA 的最新 image-ppt page，不得混用旧 full 图、旧 template page 或旧截图。
 
 ### 第三阶段用户确认提示

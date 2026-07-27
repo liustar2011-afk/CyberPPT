@@ -147,7 +147,7 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertEqual({}, summary["tool_consumption"])
         self.assertIsNone(summary["production_readiness"])
 
-    def test_run_rebuild_is_no_longer_supported_by_final_script_pages(self) -> None:
+    def test_run_rebuild_requires_editable_overlay_mode(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "client-report"
@@ -165,7 +165,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             )
             self._approve_inputs_and_prompts(project, script)
 
-            with self.assertRaisesRegex(ValueError, "--run-rebuild is no longer supported"):
+            with self.assertRaisesRegex(ValueError, "--run-rebuild requires an editable-overlay"):
                 run_final_script_pages(
                     project=project,
                     script=script,
@@ -174,7 +174,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                     run_rebuild=True,
                 )
 
-    def test_semantic_plan_dir_is_no_longer_supported_by_final_script_pages(self) -> None:
+    def test_semantic_plan_dir_requires_editable_overlay_mode(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "client-report"
@@ -185,7 +185,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             script.write_text("## 第7页：态势感知能力\n正文\n", encoding="utf-8")
             self._approve_inputs_and_prompts(project, script)
 
-            with self.assertRaisesRegex(ValueError, "--semantic-plan-dir is no longer supported"):
+            with self.assertRaisesRegex(ValueError, "--semantic-plan-dir requires an editable-overlay"):
                 run_final_script_pages(
                     project=project,
                     script=script,
@@ -193,6 +193,60 @@ class FinalScriptPagesTests(unittest.TestCase):
                     style_id=5,
                     semantic_plan_dir=semantic_plan_dir,
                 )
+
+    def test_triple_image_mode_builds_full_background_and_ocr_reference_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            script = root / "script-final.md"
+            script.write_text("## 第7页：测试\n正文\n", encoding="utf-8")
+            self._approve_inputs_and_prompts(project, script)
+
+            summary = run_final_script_pages(
+                project=project,
+                script=script,
+                pages_raw="7",
+                style_id=4,
+                production_mode="editable-overlay-text-reference",
+            )
+
+            manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
+            pair = manifest["pairs"][0]
+
+        self.assertEqual("editable-overlay-text-reference", summary["production_mode"])
+        self.assertEqual(["full", "background", "text_reference"], manifest["output_variants"])
+        self.assertEqual("edit", pair["background"]["operation"])
+        self.assertEqual("edit", pair["text_reference"]["operation"])
+        self.assertFalse(pair["text_reference"]["visible_in_ppt"])
+
+    def test_main_chain_routes_all_triple_image_variants_through_codex_oauth(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            script = root / "script-final.md"
+            script.write_text("## 第7页：测试\n正文\n", encoding="utf-8")
+            self._approve_inputs_and_prompts(project, script)
+
+            with patch("cyberppt.commands.final_script_pages.run_codex_image") as generate:
+                summary = run_final_script_pages(
+                    project=project,
+                    script=script,
+                    pages_raw="7",
+                    style_id=4,
+                    production_mode="editable-overlay-text-reference",
+                    generate_images=True,
+                    dry_run_images=True,
+                )
+
+            calls = generate.call_args_list
+
+        self.assertEqual(3, len(calls))
+        self.assertEqual([], calls[0].kwargs["image_paths"])
+        self.assertEqual(1, len(calls[1].kwargs["image_paths"]))
+        self.assertEqual(1, len(calls[2].kwargs["image_paths"]))
+        self.assertEqual("codex_oauth_image", summary["image_generation"]["backend"])
 
     def test_production_build_failure_reports_image_ppt_command(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

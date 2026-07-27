@@ -329,7 +329,15 @@ def _prefetch_page_ocr_layouts(
         except ValueError:
             expected_lines = []
         min_expected_items = max(1, round(len(expected_lines) * 0.6)) if expected_lines else None
-        indexed_tasks.append((page_number, _require_image(pair["full"], "full"), "full", min_expected_items))
+        ocr_variant = "text_reference" if "text_reference" in pair else "full"
+        indexed_tasks.append(
+            (
+                page_number,
+                _require_image(pair[ocr_variant], ocr_variant),
+                ocr_variant,
+                min_expected_items,
+            )
+        )
         indexed_tasks.append((page_number, _require_image(pair["background"], "background"), "background", None))
 
     if len(indexed_tasks) <= 1:
@@ -763,6 +771,11 @@ def rebuild_from_manifest(
             raise ValueError(f"Page {page_number} has no background variant. Run with --dual-image first.")
         source_full_image = _require_image(pair["full"], "full")
         source_background_image = _require_image(pair["background"], "background")
+        source_text_image = (
+            _require_image(pair["text_reference"], "text_reference")
+            if "text_reference" in pair
+            else source_full_image
+        )
         normalized_full, normalized_background, image_size_check = _prepare_page_images(
             full_image=source_full_image,
             background_image=source_background_image,
@@ -789,13 +802,14 @@ def rebuild_from_manifest(
         with ThreadPoolExecutor(max_workers=2) as ocr_pool:
             full_future = ocr_pool.submit(
                 _layout_for_page,
-                full_image=source_full_image,
+                full_image=source_text_image,
                 ocr_dir=ocr_dir,
                 page_number=page_number,
                 ocr_backend=ocr_backend,
                 force_ocr=force_ocr,
                 timeout=timeout,
                 min_expected_items=min_expected_items,
+                variant="text_reference" if "text_reference" in pair else "full",
             )
             # SKILL.md's dual_image_editable_overlay contract requires a
             # no-text scan of the background: it must never carry readable

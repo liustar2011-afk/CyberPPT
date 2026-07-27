@@ -248,6 +248,13 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             run_rebuild=args.run_rebuild,
             rebuild_args=args.rebuild_arg or [],
             production_build=args.production_build,
+            production_mode=args.production_mode,
+            generate_images=args.generate_images,
+            image_model=args.image_model,
+            image_quality=args.image_quality,
+            image_timeout=args.image_timeout,
+            force_images=args.force_images,
+            dry_run_images=args.dry_run_images,
         )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -511,8 +518,28 @@ def build_parser() -> argparse.ArgumentParser:
     )
     final_script_pages_parser.add_argument("--output-dir", help="Optional output directory for page_image_pairs.json.")
     final_script_pages_parser.add_argument(
+        "--production-mode",
+        choices=("full-image", "editable-overlay", "editable-overlay-text-reference"),
+        default="full-image",
+        help="Select the full-image deck path or the restored editable overlay branch.",
+    )
+    final_script_pages_parser.add_argument(
+        "--generate-images",
+        action="store_true",
+        help="Generate pending image variants through the Codex OAuth image backend.",
+    )
+    final_script_pages_parser.add_argument("--image-model", default="gpt-image-2")
+    final_script_pages_parser.add_argument(
+        "--image-quality",
+        choices=("low", "medium", "high", "auto"),
+        default="high",
+    )
+    final_script_pages_parser.add_argument("--image-timeout", type=int, default=600)
+    final_script_pages_parser.add_argument("--force-images", action="store_true")
+    final_script_pages_parser.add_argument("--dry-run-images", action="store_true")
+    final_script_pages_parser.add_argument(
         "--semantic-plan-dir",
-        help="Unsupported in the Stage 02 full-image path; kept only to fail closed for old commands.",
+        help="Optional semantic plan directory for an editable-overlay production mode.",
     )
     final_script_pages_parser.add_argument(
         "--require-images",
@@ -522,12 +549,12 @@ def build_parser() -> argparse.ArgumentParser:
     final_script_pages_parser.add_argument(
         "--run-rebuild",
         action="store_true",
-        help="Unsupported in final-script-pages; Stage 02 now uses image-ppt instead of template-rebuild.",
+        help="Run template-rebuild for an editable-overlay production mode.",
     )
     final_script_pages_parser.add_argument(
         "--production-build",
         action="store_true",
-        help="Run Stage 02 as a full-image PPT build through image-ppt.",
+        help="Run the selected production branch: image-ppt or editable template-rebuild.",
     )
     final_script_pages_parser.add_argument(
         "--blueprint-only",
@@ -537,7 +564,7 @@ def build_parser() -> argparse.ArgumentParser:
     final_script_pages_parser.add_argument(
         "--rebuild-arg",
         action="append",
-        help="Unsupported legacy option for old template-rebuild commands.",
+        help="Additional argument forwarded to template-rebuild in editable-overlay mode.",
     )
     final_script_pages_parser.set_defaults(func=_final_script_pages_command)
 

@@ -22,6 +22,11 @@ from xml.sax.saxutils import quoteattr
 
 from PIL import Image
 
+try:
+    from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_codex_image
+except ModuleNotFoundError:  # Direct script execution through the CyberPPT dispatcher.
+    from codex_oauth_image import run_codex_image
+
 SCRIPTS_DIR = Path(__file__).resolve().parent
 DEFAULT_BRAND_DIR = SCRIPTS_DIR / "templates" / "brands" / "中电联公共元素_轻量版"
 PAGE_HEADING_RE = re.compile(r"^##\s*第(?P<num>\d+)页[:：](?P<title>.+?)\s*$", re.M)

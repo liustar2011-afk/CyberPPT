@@ -70,27 +70,30 @@ class SkillContractTests(unittest.TestCase):
     def test_full_image_ppt_is_default_stage02_production_mode(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
-        self.assertIn("第二阶段生产路径为 `full_image_ppt`", text)
+        self.assertIn("`full-image`（默认）", text)
         self.assertIn("只生成正文区 ImageGen full 图", text)
-        self.assertIn("不再生成 no-text background", text)
+        self.assertIn("不得把 background 作为必需资产", text)
 
-    def test_ocr_overlay_and_template_rebuild_are_not_stage02_mainline(self) -> None:
+    def test_ocr_overlay_and_template_rebuild_are_explicit_mainline_branches(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
-        self.assertIn("第二阶段不得进入 OCR、overlay、semantic_plan、source_capture 或 `template_rebuild`", text)
-        self.assertIn("`template_image_ppt_export.py`", text)
+        self.assertIn("`editable-overlay`", text)
+        self.assertIn("`editable-overlay-text-reference`", text)
+        self.assertIn("可编辑模式按合同进入这些步骤", text)
 
-    def test_main_pipeline_names_script_full_image_and_image_ppt_export(self) -> None:
+    def test_main_pipeline_names_final_script_pages_as_the_orchestrator(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
-        self.assertIn("脚本锁定 -> 正文区 ImageGen full 图 -> template_image_ppt_export -> 渲染 QA -> 交付", text)
-        self.assertIn("正文区主要内容以 full 图承载", text)
+        self.assertIn("脚本锁定 -> final-script-pages -> 所选生图分支 -> 所选 PPT 分支 -> 渲染 QA -> 交付", text)
+        self.assertIn("`final-script-pages` 是脚本锁定后的唯一正式编排入口", text)
+        self.assertIn("`final-script-pages --generate-images` 调用 Codex OAuth 生图后端", text)
 
-    def test_ppt_generation_uses_full_image_stage02_not_dual_image_stage(self) -> None:
+    def test_ppt_generation_keeps_full_image_default_and_editable_branches(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
-        self.assertIn("正式第二阶段不得要求 full/background 双图资产", text)
-        self.assertIn("旧 `dual_image_editable_overlay`、OCR 和 `template_rebuild` 只可作为 legacy/advanced 路径", text)
+        self.assertIn("默认模式为 `full-image`", text)
+        self.assertIn("用户明确要求主要正文可编辑、对象级还原、双图法或三图法时", text)
+        self.assertIn("选择 `editable-overlay` 或 `editable-overlay-text-reference`", text)
 
     def test_manual_stop_points_are_allowed_but_must_record_state(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
@@ -103,7 +106,7 @@ class SkillContractTests(unittest.TestCase):
         text = SKILL.read_text(encoding="utf-8-sig")
 
         self.assertIn("套模板后发现正文区问题，必须回到对应页的 full 图或脚本锁定返工", text)
-        self.assertIn("重新生成 full 图后必须重新执行 `template_image_ppt_export`", text)
+        self.assertIn("重新生成图片资产后必须通过 `final-script-pages` 重新执行所选生产分支", text)
 
     def test_each_stage_must_persist_traceable_artifacts(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")

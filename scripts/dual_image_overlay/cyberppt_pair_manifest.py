@@ -43,9 +43,13 @@ CONTENT_REGION = {"x": 0, "y": 0, "width": 2048, "height": 1024}
 # API-valid 16-multiple canvas used for ImageGen request + full-image ingest resize.
 GENERATION_SIZE = {"width": 2048, "height": 1024}
 GENERATION_SIZE_TEXT = f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}"
-OUTPUT_VARIANTS = ["full"]
+FULL_IMAGE_MODE = "full-image"
+DUAL_IMAGE_MODE = "editable-overlay"
+TRIPLE_IMAGE_MODE = "editable-overlay-text-reference"
+PRODUCTION_MODES = (FULL_IMAGE_MODE, DUAL_IMAGE_MODE, TRIPLE_IMAGE_MODE)
 FULL_GENERATION_METHOD = "text_to_image_generate_full"
 BACKGROUND_GENERATION_METHOD = "image_to_image_edit_from_full"
+TEXT_REFERENCE_GENERATION_METHOD = "image_to_image_edit_from_full"
 BLUEPRINT_PATTERNS = (
     "slide-{page:03d}-blueprint.png",
     "slide-{page:02d}-blueprint.png",
@@ -82,6 +86,28 @@ def _background_prompt(page_number: int) -> str:
 
 禁止：新增任何文字、数字、乱码、符号、水印；禁止生成完整 PPT 页面、页眉、页脚、中电联公共元素；禁止改变图形语义关系；禁止出现模糊补丁、涂抹块、局部重绘错位、重复元素或新装饰。
 """
+
+
+def _text_reference_prompt(page_number: int) -> str:
+    return f"""Edit the supplied full content image for page {page_number} into an OCR reference.
+Keep the exact canvas, text positions, line breaks, font scale hierarchy, and reading order.
+Remove every non-text visual element, photograph, icon, chart mark, connector, texture, decoration, shadow, and background scene.
+Render all readable text and numbers in high-contrast dark text on a plain white background.
+Do not add, rewrite, translate, summarize, correct, or omit any text. Do not generate slide chrome, logo, title bar, footer, or page number.
+This image is only an OCR aid; it will never be used as the visible PowerPoint background."""
+
+
+def output_variants_for_mode(production_mode: str) -> list[str]:
+    if production_mode == FULL_IMAGE_MODE:
+        return ["full"]
+    if production_mode == DUAL_IMAGE_MODE:
+        return ["full", "background"]
+    if production_mode == TRIPLE_IMAGE_MODE:
+        return ["full", "background", "text_reference"]
+    raise ValueError(
+        f"unsupported production mode: {production_mode}; "
+        f"expected one of {', '.join(PRODUCTION_MODES)}"
+    )
 
 
 def _mark_status(item: dict[str, Any], *, force_pending: bool = False) -> None:
@@ -150,7 +176,9 @@ def build_manifest(
     style_lock: Path | None,
     force_pending: bool = False,
     require_approved_prompts: bool = False,
+    production_mode: str = FULL_IMAGE_MODE,
 ) -> tuple[dict[str, Any], Path, Path, list[int]]:
+    output_variants = output_variants_for_mode(production_mode)
     source_pages = parse_page_blocks(script)
     page_numbers = parse_pages(pages_raw, set(source_pages))
     from cyberppt.script_quality_contract import parse_script_markdown
@@ -237,6 +265,44 @@ def build_manifest(
             "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
         }
         _mark_status(full, force_pending=force_pending)
+        variants: dict[str, dict[str, Any]] = {"full": full}
+        if "background" in output_variants:
+            background_path = output_dir / f"{stem}_background.png"
+            background = {
+                "filename": background_path.name,
+                "path": str(background_path),
+                "prompt": _background_prompt(page_number),
+                "generation_method": BACKGROUND_GENERATION_METHOD,
+                "operation": "edit",
+                "input_variant": "full",
+                "depends_on_full_path": str(full_path),
+                "requires_input_image": True,
+                "output_role": "no_text_visible_background",
+                "aspect_ratio": "content-region",
+                "image_size": "2x-content-region",
+                "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
+            }
+            _mark_status(background, force_pending=force_pending)
+            variants["background"] = background
+        if "text_reference" in output_variants:
+            text_reference_path = output_dir / f"{stem}_text_reference.png"
+            text_reference = {
+                "filename": text_reference_path.name,
+                "path": str(text_reference_path),
+                "prompt": _text_reference_prompt(page_number),
+                "generation_method": TEXT_REFERENCE_GENERATION_METHOD,
+                "operation": "edit",
+                "input_variant": "full",
+                "depends_on_full_path": str(full_path),
+                "requires_input_image": True,
+                "output_role": "ocr_only_text_reference",
+                "visible_in_ppt": False,
+                "aspect_ratio": "content-region",
+                "image_size": "2x-content-region",
+                "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
+            }
+            _mark_status(text_reference, force_pending=force_pending)
+            variants["text_reference"] = text_reference
         pairs.append(
             {
                 "page_number": page_number,
@@ -244,12 +310,17 @@ def build_manifest(
                 "title": page.title,
                 "page_script": prompt,
                 **({"prompt_approval": str(approval_path.resolve())} if approval_path else {}),
-                "full": full,
+                **variants,
             }
         )
 
     manifest = {
-        "mode": "cyberppt-full-image-only",
+        "mode": (
+            "cyberppt-full-image-only"
+            if production_mode == FULL_IMAGE_MODE
+            else "cyberppt-dual-image-pair"
+        ),
+        "production_mode": production_mode,
         "requested_pages": page_numbers,
         "content_page_numbers": content_page_numbers,
         "skipped_pages": [
@@ -263,14 +334,18 @@ def build_manifest(
             for number in page_numbers
             if page_roles[number] != "content"
         ],
-        "output_variants": OUTPUT_VARIANTS,
+        "output_variants": output_variants,
         "generation_contract": {
-            "mode": "full-image-only",
+            "mode": "full-image-only" if production_mode == FULL_IMAGE_MODE else production_mode,
             "owner": "CyberPPT",
             "slide_canvas": CANVAS,
             "content_region": CONTENT_REGION,
             "generation_size": GENERATION_SIZE,
-            "rule": "Generate full content-area images only; PPT title, subtitle and enterprise chrome are handled by template/export code. OCR, overlay, background derivation and template-rebuild are not part of Stage 02.",
+            "rule": (
+                "Generate full content-area images only; PPT title, subtitle and enterprise chrome are handled by template/export code."
+                if production_mode == FULL_IMAGE_MODE
+                else "Generate a full reference plus a derived no-text background; rebuild editable text through OCR/semantic overlay."
+            ),
         },
         "project_path": str(project_path.resolve()) if project_path else "",
         "source_script": str(compiled_script.resolve()),
@@ -288,6 +363,8 @@ def build_manifest(
 def require_generated(manifest: dict[str, Any]) -> None:
     missing: list[str] = []
     contract_errors: list[str] = []
+    production_mode = str(manifest.get("production_mode") or FULL_IMAGE_MODE)
+    output_variants = output_variants_for_mode(production_mode)
     for pair in manifest.get("pairs", []):
         page_number = pair.get("page_number", "?")
         full_item = pair.get("full") or {}
@@ -296,20 +373,36 @@ def require_generated(manifest: dict[str, Any]) -> None:
             contract_errors.append(
                 f"page {page_number} full.generation_method must be {FULL_GENERATION_METHOD}"
             )
-        for variant in OUTPUT_VARIANTS:
+        if "background" in output_variants:
+            background_item = pair.get("background") or {}
+            if background_item.get("generation_method") != BACKGROUND_GENERATION_METHOD:
+                contract_errors.append(
+                    f"page {page_number} background.generation_method must be {BACKGROUND_GENERATION_METHOD}"
+                )
+            if background_item.get("operation") != "edit":
+                contract_errors.append(f"page {page_number} background.operation must be edit")
+            if str(background_item.get("depends_on_full_path", "")) != full_path_value:
+                contract_errors.append(f"page {page_number} background must depend on full.path")
+        if "text_reference" in output_variants:
+            text_item = pair.get("text_reference") or {}
+            if text_item.get("visible_in_ppt") is not False:
+                contract_errors.append(f"page {page_number} text_reference.visible_in_ppt must be false")
+            if str(text_item.get("depends_on_full_path", "")) != full_path_value:
+                contract_errors.append(f"page {page_number} text_reference must depend on full.path")
+        for variant in output_variants:
             item = pair.get(variant) or {}
             path = Path(str(item.get("path", "")))
             if not path.is_file() or path.stat().st_size <= 0:
                 missing.append(str(path))
     if contract_errors:
         raise ValueError(
-            "CyberPPT full-image contract violation. Stage 02 only accepts generated full images.\n"
+            "CyberPPT image contract violation.\n"
             + "\n".join(contract_errors)
         )
     if missing:
         raise FileNotFoundError(
-            "CyberPPT full image files are not generated yet. Generate each full image from the "
-            "manifest full.prompt, then rerun with --require-images.\nMissing:\n"
+            "CyberPPT image files are not generated yet. Generate the pending manifest variants, "
+            "then rerun with --require-images.\nMissing:\n"
             + "\n".join(missing)
         )
 
@@ -322,11 +415,12 @@ def _normalize_ingest_image(path: Path) -> None:
 
 def _copy_existing_images(existing_manifest: Path, output_dir: Path, *, force: bool = False) -> None:
     data = json.loads(existing_manifest.read_text(encoding="utf-8"))
+    variants = output_variants_for_mode(str(data.get("production_mode") or FULL_IMAGE_MODE))
     for pair in data.get("pairs", []):
         page_number = int(pair["page_number"])
         title = str(pair.get("title") or f"page_{page_number}")
         stem = _page_stem(page_number, title)
-        for variant in OUTPUT_VARIANTS:
+        for variant in variants:
             item = pair.get(variant) or {}
             source = Path(str(item.get("path", ""))).expanduser()
             if not source.is_file():
@@ -382,6 +476,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--style-lock", type=Path)
     parser.add_argument("--style-id", type=int, choices=range(1, 10), metavar="1-9")
     parser.add_argument("--style-name")
+    parser.add_argument("--production-mode", choices=PRODUCTION_MODES, default=FULL_IMAGE_MODE)
     parser.add_argument("--resume", action="store_true", help="Reuse existing images in output-dir if present.")
     parser.add_argument("--force", action="store_true", help="Mark images pending and overwrite copied cache images.")
     parser.add_argument("--require-generated", action="store_true", help="Fail if full/background images are missing.")
@@ -424,6 +519,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         project_path=args.project_path.resolve() if args.project_path else None,
         style_lock=style_lock,
         force_pending=bool(args.force and not args.resume),
+        production_mode=args.production_mode,
     )
     if args.require_generated:
         require_generated(manifest)

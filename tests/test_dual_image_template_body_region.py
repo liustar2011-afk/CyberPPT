@@ -35,6 +35,11 @@ def load_template_image_ppt_export():
 
 
 class DualImageTemplateBodyRegionTest(unittest.TestCase):
+    def test_generation_helper_is_wired(self) -> None:
+        module = load_template_image_ppt_export()
+
+        self.assertTrue(callable(module.run_codex_image))
+
     def test_body_region_uses_centered_two_to_one_slot(self) -> None:
         module = load_template_image_ppt_export()
         brand_body_region = {"x": 33, "y": 89, "width": 1214, "height": 607}
