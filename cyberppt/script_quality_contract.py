@@ -48,6 +48,7 @@ CONSTRAINT_THEME_TERMS = (
 )
 SPEAKER_NOTES_MIN_CHARS = 60
 VISIBLE_JUDGMENT_MIN_SIMILARITY = 0.04
+VISIBLE_JUDGMENT_TERMINAL_PUNCTUATION = "。；，：？！.!?;,:"
 
 
 @dataclass(frozen=True)
@@ -1382,6 +1383,18 @@ def audit_script_quality(
                         )
                     )
                 else:
+                    if page.onscreen_judgment.endswith(
+                        tuple(VISIBLE_JUDGMENT_TERMINAL_PUNCTUATION)
+                    ):
+                        issues.append(
+                            _issue(
+                                "ONSCREEN_JUDGMENT_TERMINAL_PUNCTUATION",
+                                page,
+                                "上屏结论 must not end with standard sentence punctuation.",
+                                "Remove the final period, comma, semicolon, colon, question mark, or exclamation mark.",
+                                evidence=(page.onscreen_judgment,),
+                            )
+                        )
                     expected_judgment = str(
                         contract.get("onscreen_judgment") or ""
                     ).strip()

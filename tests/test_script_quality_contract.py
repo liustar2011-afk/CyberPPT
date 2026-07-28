@@ -239,7 +239,7 @@ class ScriptContractAuditTests(unittest.TestCase):
         revised = SCRIPT.replace(
             "- 主判断：初步定位为面向行业的公共能力。\n",
             "- 主判断：初步定位为面向行业的公共能力。\n"
-            "- 上屏结论：面向行业的公共能力定位支撑行业研判。\n",
+            "- 上屏结论：面向行业的公共能力定位支撑行业研判\n",
             1,
         )
         revised_codes = {
@@ -252,6 +252,23 @@ class ScriptContractAuditTests(unittest.TestCase):
         }
         self.assertFalse(
             any(code.startswith("ONSCREEN_JUDGMENT_") for code in revised_codes)
+        )
+
+        punctuated = revised.replace(
+            "- 上屏结论：面向行业的公共能力定位支撑行业研判\n",
+            "- 上屏结论：面向行业的公共能力定位支撑行业研判。\n",
+        )
+        punctuated_codes = {
+            issue.code
+            for issue in audit_script_quality(
+                parse_script_markdown(punctuated),
+                outline,
+                truth,
+            )
+        }
+        self.assertIn(
+            "ONSCREEN_JUDGMENT_TERMINAL_PUNCTUATION",
+            punctuated_codes,
         )
 
     def test_power_foundation_regression_is_blocked(self) -> None:
