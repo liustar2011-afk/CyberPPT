@@ -55,18 +55,17 @@ DEFAULT_PROMPT_COMPILER = "content-first-v1"
 CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【输出要求】
 画布尺寸为 2048×1024（2:1）。
 【语义理解】
-完整覆盖【必须上屏文字】中的信息要点和逻辑关系，模块名称、关键数字、单位和业务术语须准确；不得改变原意、遗漏关键结论或新增事实。
+【必须上屏文字】必须完整、准确、清晰地呈现，不得再次摘要、删减、改变原意或新增事实；模块名称、关键数字、单位和业务术语须准确。
 根据页面任务、核心判断、完整内容语义和必须上屏文字，自主决定构图、视觉载体、信息层级和图文组合；并根据本页最重要的业务关系，必须从流程主链、汇聚、分发、闭环、层级、并列、对照等关系形式中选择一种作为主导表达。
 【视觉表达】
-在表达页面文字段落时，优先使用彩色化、具象化、语义化、场景化的行业插图，将业务对象、动作过程和主导关系转化为可识别的视觉结构。
+优先将业务对象、动作过程和主导关系转化为可识别的视觉结构；可根据所选视觉风格和页面语义，采用彩色化、具象化、语义化或场景化的行业表达。
 避免把业务含义处理成圆形图标、图标墙、线性符号、扁平界面组件或等距三维小组件。
-场景化插图中的人物、标牌、屏幕文字和数字仅作为环境质感，应采用远景、侧背面、浅景深、低对比或适度虚化处理，不能清晰地出现组织机构名称、人员名称和文件名称。中文字体统一采用微软雅黑或与微软雅黑字形特征接近的现代无衬线黑体，文字清晰且优雅排版，高端平面设计。
+场景化插图中的人物、标牌、屏幕文字和数字仅作为环境质感，应采用远景、侧背面、浅景深、低对比或适度虚化处理，不能清晰地出现组织机构名称、人员名称和文件名称。本限制仅适用于插图内部的环境文字，不适用于【必须上屏文字】；必须上屏的组织名称、业务术语和数字仍须准确、清晰地呈现。中文字体统一采用微软雅黑或与微软雅黑字形特征接近的现代无衬线黑体，文字清晰且优雅排版，高端平面设计。
 不得生成页面标题、副标题、Logo、页脚、页码。"""
 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【独立阅读约束｜仅供执行，不上屏】
-【必须上屏文字】是已经审定的完整可见信息层，必须全部呈现，不得再次摘要、删减或只保留模块标题与关键词。
 【必须上屏文字】中的第一段是正文区结论句，不是页面标题或副标题；应作为正文内容的结论锚点呈现，不得按页面标题样式处理，不得与 PPT 模板层标题争夺视觉层级。
 页面应在脱离演讲者讲解时仍可独立阅读，并保留支撑结论所需的事实或数字、解释关系、因果传导以及推论或页面承接。
-允许调整换行、分组和文字层级，但不得改变原意、合并掉关键语义或用插图替代必须上屏文字。"""
+允许调整换行、分组和文字层级，但不得用插图替代必须上屏文字。"""
 # Status asides that must not be painted as core on-screen claims.
 # Planning decks argue the proposed solution; do not restamp "not yet fact" on every page.
 ONSCREEN_ASIDE_RE = re.compile(
@@ -593,10 +592,7 @@ def render_content_first_style_contract(style_lock: Path) -> str:
     scenario = str(style.get("scenario") or "").split("；", 1)[0].strip()
     lines = [
         "【视觉风格】",
-        (
-            f"使用项目已选择的视觉风格「{str(style['name']).strip()}」"
-            f"（ID {style.get('id', 'custom')}，{style.get('slug', 'custom')}）。"
-        ),
+        f"采用项目已选择的视觉风格「{str(style['name']).strip()}」。",
     ]
     if scenario:
         lines.append(f"风格适用语境：{scenario}。")
@@ -604,13 +600,8 @@ def render_content_first_style_contract(style_lock: Path) -> str:
         [
             f"色彩角色：{'；'.join(color_parts)}。",
             (
-                "只继承该风格的色彩、材质、线条、排版气质和画面质感；"
-                "不得从风格锁引入固定构图、模块数量、文字删减、图片数量、"
-                "后期叠字或可编辑文字层规则。"
-            ),
-            (
-                "页面构图和信息组织仍由页面任务、核心判断、完整内容语义、"
-                "必须上屏文字与主导业务关系共同决定。"
+                "整体呈现与所选风格、适用语境和上述配色一致的现代中文高端平面设计气质。"
+                "视觉风格只约束色彩、线条、字体气质和画面质感，不预设页面构图与信息组织。"
             ),
         ]
     )
@@ -627,9 +618,6 @@ def render_content_first_prompt(
 
     onscreen = diagnostic_onscreen_text(page, "content-first-v1")
     parts = [
-        f"【页面编码】{page.page_id.upper()}｜{page.title or page.page_id}",
-        "以上仅用于按页追踪，不得在图中渲染页面编码。",
-        "",
         "【页面任务｜仅供理解，不上屏】",
         page_mission.strip() or page.main_message.strip(),
         "",
@@ -646,7 +634,6 @@ def render_content_first_prompt(
         "",
         "【事实与范围边界｜仅供约束，不上屏】",
         page.boundary.strip() or "不得扩大原文的事实范围或结论强度。",
-        "不得新增原文不存在的数字、组织名称、责任主体、事实、结论或口号。",
         "",
         CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT,
         "",
@@ -878,6 +865,19 @@ def write_chapter_handoff(
     out_dir = project / "workbench" / "prompts" / "imagegen"
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    if prompt_compiler == "content-first-v1":
+        compilation_rules = [
+            "- 送入：页面任务、核心判断、完整内容语义、必须上屏文字、事实与范围边界，以及所选风格的名称、适用语境和配色。",
+            "- 不送入：证据编号、视觉结构、讲解提示，以及风格锁中的固定构图、文字取舍、图片数量或后期制作规则。",
+            "- 页面任务、核心判断、完整内容语义和事实边界只用于理解与约束；画面中的可见正文以“必须上屏文字”为准。",
+        ]
+    else:
+        compilation_rules = [
+            "- 送入：页面使命、核心判断、上屏文字，以及页面级视觉意图。",
+            "- 不送入：边界/Boundary/禁止项、完整文字稿、取舍说明、证据映射、证据编号、视觉结构、讲解提示。",
+            "- 页面使命、核心判断与页面级视觉意图只作为理解和构图上下文；不要把字段名或说明文字渲染到画面，正文文字以“上屏文字”为准。",
+        ]
+
     review_parts: list[str] = [
         f"# ImageGen 送图脚本审阅稿 · {batch_name}",
         "",
@@ -888,9 +888,7 @@ def write_chapter_handoff(
         "",
         "## 编入规则",
         "",
-        "- 送入：页面使命、核心判断、上屏文字，以及页面级视觉意图。",
-        "- 不送入：边界/Boundary/禁止项、完整文字稿、取舍说明、证据映射、证据编号、视觉结构、讲解提示。",
-        "- 页面使命、核心判断与页面级视觉意图只作为理解和构图上下文；不要把字段名或说明文字渲染到画面，正文文字以“上屏文字”为准。",
+        *compilation_rules,
         "- 封面/目录/章节过渡/封底：不生成正文区 ImageGen，由模板层承载。",
         "",
     ]
@@ -979,7 +977,14 @@ def write_chapter_handoff(
         )
         draft_source.unlink(missing_ok=True)
         outputs[page.page_id] = staged
-        review_parts.extend([prompt, ""])
+        review_parts.extend(
+            [
+                f"## 第{page_number}页：{page.title or page.page_id}",
+                "",
+                prompt,
+                "",
+            ]
+        )
 
     batch_path = out_dir / f"{batch_name}-imagegen-review.md"
     if content_prompts:

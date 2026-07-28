@@ -374,7 +374,8 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertNotIn("Boundary text must not appear on the slide", prompt)
         self.assertIn("上屏文字", prompt)
         self.assertIn("不得生成页面标题、副标题、Logo、页脚、页码。", prompt)
-        self.assertIn("不得新增原文不存在的数字", prompt)
+        self.assertIn("不得再次摘要、删减、改变原意或新增事实", prompt)
+        self.assertNotIn("不得新增原文不存在的数字", prompt)
         self.assertNotIn("不得出现证据编号", prompt)
 
     def test_render_prompt_template_omits_visual_structure(self) -> None:

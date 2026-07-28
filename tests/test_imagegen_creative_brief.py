@@ -59,7 +59,7 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert implicit != legacy
     assert "【完整内容语义｜仅供理解，不要求逐字上屏】" in implicit
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT in implicit
-    assert "必须全部呈现，不得再次摘要、删减" in implicit
+    assert "必须完整、准确、清晰地呈现，不得再次摘要、删减" in implicit
     assert "【事实与范围边界｜仅供约束，不上屏】" in implicit
     assert CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT in implicit
     assert "【视觉风格】" in implicit
@@ -91,7 +91,12 @@ def test_content_first_uses_the_selected_style_lock_instead_of_fixed_colors() ->
     assert red.prompt != purple.prompt
     assert red.build_metadata()["style_selection"]["id"] == 1
     assert purple.build_metadata()["style_selection"]["id"] == 8
-    assert "不得从风格锁引入固定构图" in red.prompt
+    assert "不预设页面构图与信息组织" in red.prompt
+    assert "风格锁" not in red.prompt
+    assert "后期叠字" not in red.prompt
+    assert "可编辑文字层" not in red.prompt
+    assert "ID 1" not in red.prompt
+    assert "classic_red_consulting" not in red.prompt
 
 
 def test_content_first_diagnostics_use_the_compiled_locked_text() -> None:
@@ -124,6 +129,34 @@ def test_content_first_treats_visible_judgment_as_body_conclusion_without_font_s
     assert "字号" not in prompt
     assert "1.6—1.8倍" not in prompt
     assert "1.25—1.4倍" not in prompt
+
+
+def test_content_first_omits_tracking_metadata_and_avoids_repeated_rules() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert "【页面编码】" not in prompt
+    assert "P18" not in prompt
+    assert "以上仅用于按页追踪" not in prompt
+    assert page.title not in prompt
+    assert prompt.count("再次摘要、删减") == 1
+    assert prompt.count("改变原意") == 1
+    assert prompt.count("新增事实") == 1
+    assert prompt.count("自主决定构图") == 1
+    assert "页面构图和信息组织仍由" not in prompt
+
+
+def test_content_first_scene_text_rule_does_not_hide_locked_names_or_numbers() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert "本限制仅适用于插图内部的环境文字" in prompt
+    assert "不适用于【必须上屏文字】" in prompt
+    assert "必须上屏的组织名称、业务术语和数字仍须准确、清晰地呈现" in prompt
 
 
 def test_creative_brief_preserves_semantics_but_does_not_prescribe_layout() -> None:
