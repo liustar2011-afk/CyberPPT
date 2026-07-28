@@ -619,6 +619,11 @@ def render_content_first_prompt(
 ) -> str:
     """Render a complete-content prompt without translating meaning into layout."""
 
+    if page.page_type == "content" and not page.onscreen_judgment.strip():
+        raise ValueError(
+            f"{page.page_id} is missing 上屏结论; repair and reapprove the final "
+            "script before compiling an ImageGen prompt"
+        )
     onscreen = diagnostic_onscreen_text(page, "content-first-v1")
     parts = [
         "【页面任务｜仅供理解，不上屏】",

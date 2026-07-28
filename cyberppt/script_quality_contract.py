@@ -1747,7 +1747,11 @@ def audit_script_quality(
                         "proof_points",
                         "boundary_refs",
                     )
-                    if visible_judgment_required:
+                    if (
+                        visible_judgment_required
+                        and receipt.get("schema")
+                        != "cyberppt.page_contract_receipt.v1"
+                    ):
                         canonical_fields = (
                             *canonical_fields[:3],
                             "onscreen_judgment",

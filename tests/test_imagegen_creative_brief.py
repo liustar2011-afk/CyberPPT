@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
+
+import pytest
 
 from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.dual_image_overlay.imagegen_handoff import (
@@ -128,6 +131,14 @@ def test_content_first_prompt_places_visible_judgment_before_support_modules() -
 
     required = prompt.split("【必须上屏文字】", 1)[1]
     assert required.index(page.onscreen_judgment) < required.index("数据治理")
+
+
+def test_content_first_rejects_content_page_without_visible_judgment() -> None:
+    page = replace(_page(), onscreen_judgment="")
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        with pytest.raises(ValueError, match="missing 上屏结论"):
+            build_page_prompt(page, lock)
 
 
 def test_content_first_treats_visible_judgment_as_body_conclusion_without_font_sizes() -> None:

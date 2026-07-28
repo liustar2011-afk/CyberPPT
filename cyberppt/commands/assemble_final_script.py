@@ -14,6 +14,9 @@ from cyberppt.script_quality_contract import (
 )
 
 PAGE_START_RE = re.compile(r"^##\s+第(\d+)页[：:]", re.MULTILINE)
+PAGE_CONTRACT_RECEIPT_RE = re.compile(
+    r"<!--\s*cyberppt-page-contract\s+(\{.*?\})\s*-->",
+)
 DRAFT_NOISE_RE = re.compile(
     r"^(?:"
     r"#\s+.*草稿|"
@@ -97,6 +100,60 @@ def _merge_missing_enrichments(
     return merged
 
 
+def _merge_missing_onscreen_judgments(
+    pages: dict[int, str],
+    project: Path,
+) -> dict[int, str]:
+    outline_path = project / "workbench" / "stages" / "01-analysis" / "outline.json"
+    if not outline_path.is_file():
+        return pages
+    payload = json.loads(outline_path.read_text(encoding="utf-8-sig"))
+    outline_pages = payload.get("pages") if isinstance(payload, dict) else None
+    if not isinstance(outline_pages, list):
+        return pages
+    judgments = {
+        int(str(item.get("page_id") or "").removeprefix("p")): str(
+            item.get("onscreen_judgment") or ""
+        ).strip()
+        for item in outline_pages
+        if isinstance(item, dict)
+        and str(item.get("page_id") or "").removeprefix("p").isdigit()
+    }
+    merged = dict(pages)
+    for number, block in pages.items():
+        if not re.search(r"^- 页面类型：内容(?:页)?\s*$", block, re.MULTILINE):
+            continue
+        judgment = judgments.get(number, "")
+        if not judgment:
+            raise ValueError(
+                f"content page p{number:02d} has no 上屏结论 in drafts or outline"
+            )
+        marker = "- 上屏文字："
+        if marker not in block:
+            raise ValueError(f"content page p{number:02d} has no 上屏文字 field")
+        if "- 上屏结论：" not in block:
+            merged[number] = block.replace(
+                marker,
+                f"- 上屏结论：{judgment}\n{marker}",
+                1,
+            )
+        receipt_match = PAGE_CONTRACT_RECEIPT_RE.search(merged[number])
+        if receipt_match:
+            receipt = json.loads(receipt_match.group(1))
+            receipt["onscreen_judgment"] = judgment
+            receipt_text = json.dumps(
+                receipt,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+            merged[number] = (
+                merged[number][: receipt_match.start(1)]
+                + receipt_text
+                + merged[number][receipt_match.end(1) :]
+            )
+    return merged
+
+
 def assemble_final_script(
     project: Path,
     drafts_dir: Path | None = None,
@@ -119,9 +176,12 @@ def assemble_final_script(
         if output_path is not None
         else project / "workbench" / "scripts" / "final" / "script-final.md"
     )
-    pages = _merge_missing_enrichments(
-        _collect_draft_pages(drafts),
-        enrichment_source,
+    pages = _merge_missing_onscreen_judgments(
+        _merge_missing_enrichments(
+            _collect_draft_pages(drafts),
+            enrichment_source,
+        ),
+        project,
     )
     numbers = sorted(pages)
     expected = list(range(numbers[0], numbers[0] + len(numbers)))

@@ -131,6 +131,47 @@ class AssembleFinalScriptTests(unittest.TestCase):
             self.assertIn("【演讲者备注】\n\n这是自然讲解内容。", text)
             self.assertLess(text.index("- 视觉结构："), text.index("- 讲解提示："))
 
+    def test_restores_missing_onscreen_judgment_from_outline(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "demo"
+            drafts = project / "workbench/scripts/drafts"
+            drafts.mkdir(parents=True)
+            outline_dir = project / "workbench/stages/01-analysis"
+            outline_dir.mkdir(parents=True)
+            outline_dir.joinpath("outline.json").write_text(
+                json.dumps(
+                    {
+                        "pages": [
+                            {
+                                "page_id": "p01",
+                                "onscreen_judgment": "结论先行并由正文证据支撑",
+                            }
+                        ]
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            drafts.joinpath("batch.md").write_text(
+                "## 第1页：内容页\n"
+                "- 页面类型：内容页\n"
+                "- 上屏文字：\n\n"
+                "  **证据模块**\n\n"
+                "  - 支撑事实\n"
+                '<!-- cyberppt-page-contract {"page_id":"p01"} -->\n',
+                encoding="utf-8",
+            )
+
+            report = assemble_final_script(project)
+            text = Path(str(report["output"])).read_text(encoding="utf-8")
+
+            self.assertIn("- 上屏结论：结论先行并由正文证据支撑", text)
+            self.assertLess(text.index("- 上屏结论："), text.index("- 上屏文字："))
+            self.assertIn(
+                '"onscreen_judgment":"结论先行并由正文证据支撑"',
+                text,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
