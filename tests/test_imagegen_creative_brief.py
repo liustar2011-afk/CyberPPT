@@ -63,9 +63,15 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "【事实与范围边界｜仅供约束，不上屏】" in implicit
     assert CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT in implicit
     assert "【视觉风格】" in implicit
-    assert "象牙白 + 深蓝领导汇报" in implicit
+    assert "象牙白 + 深蓝领导汇报" not in implicit
+    assert "风格适用语境" not in implicit
+    assert "整体呈现现代中文高端平面设计气质。" in implicit
     assert "style.selected_lock" in (
         implicit_compiled.build_metadata()["injected_rule_ids"]
+    )
+    assert (
+        implicit_compiled.build_metadata()["style_selection"]["name"]
+        == "象牙白 + 深蓝领导汇报"
     )
 
 
@@ -83,15 +89,18 @@ def test_content_first_uses_the_selected_style_lock_instead_of_fixed_colors() ->
         red = compile_page_prompt(page, red_lock)
         purple = compile_page_prompt(page, purple_lock)
 
-    assert "经典深红咨询风" in red.prompt
+    assert "经典深红咨询风" not in red.prompt
     assert "#8B1E1E" in red.prompt
     assert "#12355B" not in red.prompt
-    assert "冷白灰 + 深紫" in purple.prompt
+    assert "冷白灰 + 深紫" not in purple.prompt
     assert "#4B2E83" in purple.prompt
     assert red.prompt != purple.prompt
     assert red.build_metadata()["style_selection"]["id"] == 1
     assert purple.build_metadata()["style_selection"]["id"] == 8
-    assert "不预设页面构图与信息组织" in red.prompt
+    assert red.build_metadata()["style_selection"]["name"] == "经典深红咨询风"
+    assert purple.build_metadata()["style_selection"]["name"] == "冷白灰 + 深紫"
+    assert "整体呈现现代中文高端平面设计气质。" in red.prompt
+    assert "不预设页面构图与信息组织" not in red.prompt
     assert "风格锁" not in red.prompt
     assert "后期叠字" not in red.prompt
     assert "可编辑文字层" not in red.prompt
@@ -157,6 +166,20 @@ def test_content_first_scene_text_rule_does_not_hide_locked_names_or_numbers() -
     assert "本限制仅适用于插图内部的环境文字" in prompt
     assert "不适用于【必须上屏文字】" in prompt
     assert "必须上屏的组织名称、业务术语和数字仍须准确、清晰地呈现" in prompt
+
+
+def test_content_first_uses_the_approved_scene_illustration_wording() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert (
+        "优先将业务对象、动作过程和主导关系转化为可识别的视觉结构；"
+        "可根据所选视觉风格和页面语义，采用彩色化、具象化、语义化的场景化插画。"
+        in prompt
+    )
+    assert "彩色化、具象化、语义化或场景化的行业表达" not in prompt
 
 
 def test_creative_brief_preserves_semantics_but_does_not_prescribe_layout() -> None:
