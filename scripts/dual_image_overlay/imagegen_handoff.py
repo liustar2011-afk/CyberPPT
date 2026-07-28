@@ -47,6 +47,7 @@ from scripts.dual_image_overlay.prompt_diagnostics import (
     write_batch_diagnostics,
     write_compiler_comparison,
 )
+from scripts.dual_image_overlay.style_library import load_style_lock
 
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
 PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
@@ -60,9 +61,7 @@ CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【输出要求】
 在表达页面文字段落时，优先使用彩色化、具象化、语义化、场景化的行业插图，将业务对象、动作过程和主导关系转化为可识别的视觉结构。
 避免把业务含义处理成圆形图标、图标墙、线性符号、扁平界面组件或等距三维小组件。
 场景化插图中的人物、标牌、屏幕文字和数字仅作为环境质感，应采用远景、侧背面、浅景深、低对比或适度虚化处理，不能清晰地出现组织机构名称、人员名称和文件名称。中文字体统一采用微软雅黑或与微软雅黑字形特征接近的现代无衬线黑体，文字清晰且优雅排版，高端平面设计。字号层级控制在4—5级以内，以正文为基准，页面主标题约为正文的1.6—1.8倍，一级模块标题约为正文的1.25—1.4倍，二级标题约为正文的1.1—1.2倍，注释约为正文的0.8—0.9倍。
-不得生成页面标题、副标题、Logo、页脚、页码。
-【视觉风格】
-使用以下色彩气质：#F7F6F0、#12355B、#101820、#303030、#6F7275、#C9CDD1。整体正式、严谨、克制，具有高质量汇报和演讲质感。"""
+不得生成页面标题、副标题、Logo、页脚、页码。"""
 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【独立阅读约束｜仅供执行，不上屏】
 【必须上屏文字】是已经审定的完整可见信息层，必须全部呈现，不得再次摘要、删减或只保留模块标题与关键词。
 页面应在脱离演讲者讲解时仍可独立阅读，并保留支撑结论所需的事实或数字、解释关系、因果传导以及推论或页面承接。
@@ -460,6 +459,7 @@ class CompiledPagePrompt:
     relation: str
     creative_brief: CreativeBrief | None = None
     injected_rule_ids: tuple[str, ...] = ()
+    style_selection: dict[str, Any] | None = None
 
     def build_metadata(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -469,6 +469,8 @@ class CompiledPagePrompt:
         }
         if self.creative_brief is not None:
             payload["creative_brief"] = self.creative_brief.to_dict()
+        if self.style_selection is not None:
+            payload["style_selection"] = dict(self.style_selection)
         return payload
 
 
@@ -545,6 +547,75 @@ def diagnostic_onscreen_text(
     return page.onscreen_text
 
 
+STYLE_COLOR_LABELS = (
+    ("background", "背景"),
+    ("title", "主文字"),
+    ("body", "正文"),
+    ("secondary", "次级文字"),
+    ("divider", "线条与分隔"),
+    ("accent", "强调色"),
+)
+
+
+def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
+    """Load the selected style without importing its layout or text-density rules."""
+
+    payload = load_style_lock(style_lock)
+    style = payload.get("style")
+    if not isinstance(style, dict):
+        raise ValueError(f"visual style lock has no selected style: {style_lock}")
+    name = str(style.get("name") or "").strip()
+    colors = style.get("colors")
+    if not name or not isinstance(colors, dict) or not colors:
+        raise ValueError(
+            f"visual style lock must provide style name and colors: {style_lock}"
+        )
+    return style
+
+
+def render_content_first_style_contract(style_lock: Path) -> str:
+    """Render tone-only style guidance from the project's selected style lock."""
+
+    style = _selected_content_first_style(style_lock)
+    colors = style["colors"]
+    color_parts = [
+        f"{label} {str(colors[key]).strip()}"
+        for key, label in STYLE_COLOR_LABELS
+        if str(colors.get(key) or "").strip()
+    ]
+    known_keys = {key for key, _ in STYLE_COLOR_LABELS}
+    color_parts.extend(
+        f"{key} {str(value).strip()}"
+        for key, value in colors.items()
+        if key not in known_keys and str(value).strip()
+    )
+    scenario = str(style.get("scenario") or "").split("；", 1)[0].strip()
+    lines = [
+        "【视觉风格】",
+        (
+            f"使用项目已选择的视觉风格「{str(style['name']).strip()}」"
+            f"（ID {style.get('id', 'custom')}，{style.get('slug', 'custom')}）。"
+        ),
+    ]
+    if scenario:
+        lines.append(f"风格适用语境：{scenario}。")
+    lines.extend(
+        [
+            f"色彩角色：{'；'.join(color_parts)}。",
+            (
+                "只继承该风格的色彩、材质、线条、排版气质和画面质感；"
+                "不得从风格锁引入固定构图、模块数量、文字删减、图片数量、"
+                "后期叠字或可编辑文字层规则。"
+            ),
+            (
+                "页面构图和信息组织仍由页面任务、核心判断、完整内容语义、"
+                "必须上屏文字与主导业务关系共同决定。"
+            ),
+        ]
+    )
+    return "\n".join(lines)
+
+
 def render_content_first_prompt(
     page: ScriptPage,
     *,
@@ -577,6 +648,8 @@ def render_content_first_prompt(
         "不得新增原文不存在的数字、组织名称、责任主体、事实、结论或口号。",
         "",
         CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT,
+        "",
+        render_content_first_style_contract(style_lock),
     ]
     return "\n".join(parts).strip() + "\n"
 
@@ -664,6 +737,7 @@ def compile_page_prompt(
             f"choose one of {', '.join(PROMPT_COMPILERS)}"
         )
     if prompt_compiler == "content-first-v1":
+        selected_style = _selected_content_first_style(style_lock)
         prompt = render_content_first_prompt(
             page,
             style_lock=style_lock,
@@ -683,8 +757,16 @@ def compile_page_prompt(
                 "content.locked_onscreen",
                 "content.independent_reading",
                 "fact.source_boundary",
+                "style.selected_lock",
                 "style.tone_only",
             ),
+            style_selection={
+                "id": selected_style.get("id"),
+                "slug": selected_style.get("slug"),
+                "name": selected_style.get("name"),
+                "colors": dict(selected_style.get("colors") or {}),
+                "style_lock": str(style_lock),
+            },
         )
 
     relation = select_page_visual_intent_type(

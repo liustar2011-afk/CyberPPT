@@ -54,13 +54,44 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
             page_mission="平台如何稳定支撑业务",
             prompt_compiler="legacy",
         )
+        implicit_compiled = compile_page_prompt(page, lock)
     assert implicit == explicit
     assert implicit != legacy
     assert "【完整内容语义｜仅供理解，不要求逐字上屏】" in implicit
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT in implicit
     assert "必须全部呈现，不得再次摘要、删减" in implicit
     assert "【事实与范围边界｜仅供约束，不上屏】" in implicit
-    assert implicit.endswith(CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT + "\n")
+    assert CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT in implicit
+    assert "【视觉风格】" in implicit
+    assert "象牙白 + 深蓝领导汇报" in implicit
+    assert "style.selected_lock" in (
+        implicit_compiled.build_metadata()["injected_rule_ids"]
+    )
+
+
+def test_content_first_uses_the_selected_style_lock_instead_of_fixed_colors() -> None:
+    page = _page()
+    with TemporaryDirectory() as red_directory, TemporaryDirectory() as purple_directory:
+        red_lock = write_project_style_lock(
+            project=Path(red_directory),
+            style_id=1,
+        )
+        purple_lock = write_project_style_lock(
+            project=Path(purple_directory),
+            style_id=8,
+        )
+        red = compile_page_prompt(page, red_lock)
+        purple = compile_page_prompt(page, purple_lock)
+
+    assert "经典深红咨询风" in red.prompt
+    assert "#8B1E1E" in red.prompt
+    assert "#12355B" not in red.prompt
+    assert "冷白灰 + 深紫" in purple.prompt
+    assert "#4B2E83" in purple.prompt
+    assert red.prompt != purple.prompt
+    assert red.build_metadata()["style_selection"]["id"] == 1
+    assert purple.build_metadata()["style_selection"]["id"] == 8
+    assert "不得从风格锁引入固定构图" in red.prompt
 
 
 def test_content_first_diagnostics_use_the_compiled_locked_text() -> None:
