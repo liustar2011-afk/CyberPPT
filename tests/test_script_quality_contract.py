@@ -184,6 +184,11 @@ class ScriptContractAuditTests(unittest.TestCase):
         page = review["pages"][0]
         self.assertEqual("拟建什么性质的能力", page["mission"])
         self.assertTrue(page["lead_matches_main_message"])
+        self.assertIn("semantic_coverage", page)
+        self.assertEqual(
+            {"conclusion", "evidence", "explanation", "implication"},
+            set(page["story_roles"]),
+        )
         self.assertEqual("manual_review", page["review_questions"]["single_mission"])
 
     def test_communication_review_warns_when_lead_is_not_main_message(self) -> None:
@@ -626,25 +631,81 @@ class ScriptContractAuditTests(unittest.TestCase):
 - 边界：拟建议。
 - 视觉结构：能力图。
 """
+        outline = strict_outline(
+            {
+                "page_id": "p10",
+                "sequence": 10,
+                "page_type": "content",
+                "title": "能力框架",
+                "argument_role": "solution",
+                "source_refs": ["S017"],
+                "prerequisite_pages": [],
+            }
+        )
+        outline["visible_judgment_mode"] = "required"
         issues = audit_script_quality(
             parse_script_markdown(sparse),
-            strict_outline(
-                {
-                    "page_id": "p10",
-                    "sequence": 10,
-                    "page_type": "content",
-                    "title": "能力框架",
-                    "argument_role": "solution",
-                    "source_refs": ["S017"],
-                    "prerequisite_pages": [],
-                }
-            ),
+            outline,
             source_truth(
                 {"id": "S017", "type": "R", "status": "拟建议", "statement": "能力。"}
             ),
         )
 
-        self.assertIn("CONTENT_PAGE_TOO_SPARSE", {issue.code for issue in issues})
+        codes = {issue.code for issue in issues}
+        self.assertIn("CONTENT_PAGE_TOO_SPARSE", codes)
+        self.assertIn("ONSCREEN_STORY_DENSITY_LOW", codes)
+
+    def test_onscreen_layer_must_preserve_full_prose_semantics(self) -> None:
+        script = parse_script_markdown(
+            """## 第10页：数据断点
+- 页面类型：内容页
+- 页面标题：数据断点
+- 主判断：数据接入与治理尚未贯通。
+- 上屏结论：数据接入与治理尚未贯通
+- 完整文字稿：供需预测依赖统一指标口径、稳定数据来源、版本留痕、授权边界和发布审核。当前数据分散在统计报表、业务系统、外部公开来源与合作单位，不同数据在统计范围、时间粒度、更新周期和历史修订方式上存在差异。高频负荷、气象、市场交易和新型主体数据仍需建立稳定接入渠道。数据不可控会削弱模型可信，进一步放大发布风险，因此数据治理是端到端研判能力的前置条件。
+- 文字稿取舍说明：只讨论数据断点；模型细节和建设安排留后页。
+- 证据映射：数据断点→S017
+- 上屏文字：
+  **组织保障**
+  - 建立专项工作组并完善会议安排。
+  **实施节奏**
+  - 分阶段推进培训、宣传、考核和日常协调。
+- 证据：S017
+- 边界：不提前给出建设方案。
+- 视觉结构：判断证据支撑。
+"""
+        )
+        outline = strict_outline(
+            {
+                "page_id": "p10",
+                "sequence": 10,
+                "page_type": "content",
+                "title": "数据断点",
+                "argument_role": "diagnosis",
+                "source_refs": ["S017"],
+                "prerequisite_pages": [],
+                "main_message": "数据接入与治理尚未贯通。",
+                "onscreen_judgment": "数据接入与治理尚未贯通",
+            }
+        )
+        outline["visible_judgment_mode"] = "required"
+        issues = audit_script_quality(
+            script,
+            outline,
+            source_truth(
+                {
+                    "id": "S017",
+                    "type": "F",
+                    "status": "现状",
+                    "statement": "数据接入与治理尚未贯通。",
+                }
+            ),
+        )
+
+        self.assertIn(
+            "ONSCREEN_SEMANTIC_COVERAGE_LOW",
+            {issue.code for issue in issues},
+        )
 
     def test_content_page_requires_full_prose_before_onscreen(self) -> None:
         missing = """## 第9页：总体定位

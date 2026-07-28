@@ -76,6 +76,9 @@ def prepare_outline_input(project: Path) -> Path:
         "- `onscreen_judgment`: one concise body-level conclusion derived from "
         "`main_message`; it is not a page title or subtitle and must not end "
         "with standard sentence punctuation",
+        "- `上屏文字` must remain independently readable after compression: preserve "
+        "the page's essential evidence, explanatory relation, causal chain, and "
+        "implication or handoff instead of reducing the prose to labels and keywords",
         "- `new_value_vs_previous`",
         "- `reserved_for_later`",
         "- `proof_points`: claim, source_refs, consumption",
@@ -114,6 +117,9 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "Write full prose first; derive on-screen text from it.",
         "Every content page must place `上屏结论` before `上屏文字`; the conclusion carries the visible story, while modules support it.",
         "Emit `onscreen_judgment` in the completed Chinese script as `- 上屏结论：...` without terminal punctuation.",
+        "The visible layer must be independently readable without speaker narration.",
+        "Write `上屏文字` as a closed story: conclusion → source-supported evidence → explanation or causal relation → implication or handoff.",
+        "Do not compress the full prose into module labels plus keywords. Preserve every fact, number, relation, and limitation needed to understand why the conclusion follows; concise rewriting is allowed, semantic omission is not.",
         "`reserved_for_later`, `boundary_refs`, and `boundary_constraints` are internal controls only.",
         "They must not be copied into coaching tips or speaker notes. State a constraint only when it is the page's declared business subject.",
         "",

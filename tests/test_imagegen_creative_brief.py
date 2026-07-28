@@ -6,6 +6,7 @@ from tempfile import TemporaryDirectory
 from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.dual_image_overlay.imagegen_handoff import (
     CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT,
+    CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
     build_page_creative_brief,
     build_page_prompt,
     compile_page_prompt,
@@ -56,6 +57,8 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert implicit == explicit
     assert implicit != legacy
     assert "【完整内容语义｜仅供理解，不要求逐字上屏】" in implicit
+    assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT in implicit
+    assert "必须全部呈现，不得再次摘要、删减" in implicit
     assert "【事实与范围边界｜仅供约束，不上屏】" in implicit
     assert implicit.endswith(CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT + "\n")
 

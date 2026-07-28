@@ -74,6 +74,7 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("screen each candidate against `page_job`, `business_question`, and `main_message`", text)
         self.assertIn("Boundary or unresolved records default to `boundary_refs`", text)
         self.assertIn("consolidate them into one proof point", text)
+        self.assertIn("independently readable after compression", text)
 
     def test_prepare_page_script_input_contains_consumption_and_evidence(self) -> None:
         output = prepare_page_script_input(self.project, "p04")
@@ -82,6 +83,12 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("- main_message: 已有基础支持启动", text)
         self.assertIn("- onscreen_judgment: 现有基础足以支持项目启动", text)
         self.assertIn("must place `上屏结论` before `上屏文字`", text)
+        self.assertIn("independently readable without speaker narration", text)
+        self.assertIn(
+            "conclusion → source-supported evidence → explanation or causal relation → implication or handoff",
+            text,
+        )
+        self.assertIn("semantic omission is not", text)
         self.assertIn("[primary] 统计基础已经具备 (S001)", text)
         self.assertIn("- evidence_text:", text)
         self.assertIn("- boundary_refs: S002", text)

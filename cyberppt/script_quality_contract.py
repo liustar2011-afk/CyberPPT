@@ -312,6 +312,39 @@ STRATEGY_ORDER = (
 )
 
 PROSE_MIN_CHARS = 80
+ONSCREEN_SEMANTIC_COVERAGE_MIN = 0.16
+ONSCREEN_STORY_EXPLANATION_SIGNALS = (
+    "说明",
+    "表明",
+    "反映",
+    "意味着",
+    "对应",
+    "取决于",
+    "关键是",
+    "使",
+    "成为",
+    "支撑",
+    "难以",
+    "不足以",
+    "并非",
+)
+ONSCREEN_STORY_IMPLICATION_SIGNALS = (
+    "因此",
+    "由此",
+    "进而",
+    "从而",
+    "转向",
+    "需要",
+    "推动",
+    "形成",
+    "暴露",
+    "导致",
+    "削弱",
+    "放大",
+    "共同作用",
+    "待建",
+    "尚未贯通",
+)
 
 
 def _dict_items(
@@ -498,6 +531,44 @@ def build_communication_review(
                     "evidence": long_bullets,
                 }
             )
+        semantic_coverage = onscreen_semantic_coverage(page)
+        story_roles = onscreen_story_roles(page)
+        if (
+            _compact_len(page.full_prose) >= PROSE_MIN_CHARS * 2
+            and semantic_coverage < ONSCREEN_SEMANTIC_COVERAGE_MIN
+        ):
+            findings.append(
+                {
+                    "code": "ONSCREEN_SEMANTIC_COVERAGE_LOW",
+                    "severity": "warning",
+                    "message": "On-screen text omits too much meaning from the full prose.",
+                    "suggested_action": (
+                        "Restore essential facts, explanatory relations, causal links, "
+                        "and the page implication."
+                    ),
+                    "evidence": [
+                        f"coverage={semantic_coverage:.3f}",
+                        f"min={ONSCREEN_SEMANTIC_COVERAGE_MIN:.3f}",
+                    ],
+                }
+            )
+        missing_story_roles = [
+            role
+            for role, present in story_roles.items()
+            if not present
+        ]
+        if page.onscreen_judgment and missing_story_roles:
+            findings.append(
+                {
+                    "code": "ONSCREEN_STORY_CHAIN_INCOMPLETE",
+                    "severity": "warning",
+                    "message": "On-screen text is not yet a closed readable argument.",
+                    "suggested_action": (
+                        "Complete the conclusion-evidence-explanation-implication chain."
+                    ),
+                    "evidence": missing_story_roles,
+                }
+            )
         warning_count += len(findings)
         page_reviews.append(
             {
@@ -523,6 +594,8 @@ def build_communication_review(
                 ),
                 "module_titles": list(page.module_titles),
                 "numeric_lines": [line for line in lines if re.search(r"\d", line)],
+                "semantic_coverage": round(semantic_coverage, 3),
+                "story_roles": story_roles,
                 "findings": findings,
                 "review_questions": {
                     "single_mission": "manual_review",
@@ -657,6 +730,47 @@ def text_similarity(left: str, right: str) -> float:
     return len(left_set & right_set) / len(left_set | right_set)
 
 
+def onscreen_semantic_coverage(page: ScriptPage) -> float:
+    """Measure how much full-prose meaning survives in the drawable text layer."""
+
+    prose_tokens = set(normalized_tokens(page.full_prose))
+    if not prose_tokens:
+        return 1.0
+    visible = "\n".join(
+        part
+        for part in (page.onscreen_judgment, page.onscreen_text)
+        if part.strip()
+    )
+    visible_tokens = set(normalized_tokens(visible))
+    return len(prose_tokens & visible_tokens) / len(prose_tokens)
+
+
+def onscreen_story_roles(page: ScriptPage) -> dict[str, bool]:
+    """Return the minimum roles needed for an independently readable slide."""
+
+    visible = "\n".join(
+        part
+        for part in (page.onscreen_judgment, page.onscreen_text)
+        if part.strip()
+    )
+    content_lines = _onscreen_content_lines(page.onscreen_text)
+    return {
+        "conclusion": bool(page.onscreen_judgment.strip()),
+        "evidence": bool(
+            len(content_lines) >= 2
+            or re.search(r"\d", visible)
+        ),
+        "explanation": any(
+            signal in visible
+            for signal in ONSCREEN_STORY_EXPLANATION_SIGNALS
+        ),
+        "implication": any(
+            signal in visible
+            for signal in ONSCREEN_STORY_IMPLICATION_SIGNALS
+        ),
+    }
+
+
 def script_retry_directive(
     issues: list[ScriptQualityIssue],
     previous_strategy: str = "",
@@ -733,6 +847,8 @@ def script_retry_directive(
             "CONTENT_PAGE_TOO_SPARSE",
             "CONTENT_PAGE_TOO_FRAGMENTED",
             "MODULE_HIERARCHY_MISSING",
+            "ONSCREEN_STORY_DENSITY_LOW",
+            "ONSCREEN_SEMANTIC_COVERAGE_LOW",
         }
         for code in codes
     ):
@@ -787,6 +903,7 @@ def _prose_issues(
     page: ScriptPage,
     *,
     expected_source_refs: tuple[str, ...] = (),
+    independent_reading_required: bool = False,
 ) -> list[ScriptQualityIssue]:
     if page.page_type != "content":
         return []
@@ -853,6 +970,72 @@ def _prose_issues(
                 ),
             )
         )
+    if page.onscreen_text and independent_reading_required:
+        visible_story_chars = (
+            onscreen_chars + _compact_len(page.onscreen_judgment)
+        )
+        min_story_chars = min(
+            220,
+            max(90, int(prose_chars * 0.24)),
+        )
+        coverage = onscreen_semantic_coverage(page)
+        if visible_story_chars < min_story_chars:
+            issues.append(
+                _issue(
+                    "ONSCREEN_STORY_DENSITY_LOW",
+                    page,
+                    "On-screen text is too compressed to support independent reading.",
+                    (
+                        "Rewrite 上屏文字 as a closed conclusion-evidence-explanation-"
+                        "implication story; retain the facts and relations needed to "
+                        "understand the page without narration."
+                    ),
+                    evidence=(
+                        f"visible_chars={visible_story_chars}",
+                        f"min={min_story_chars}",
+                    ),
+                )
+            )
+        if (
+            prose_chars >= PROSE_MIN_CHARS * 2
+            and coverage < ONSCREEN_SEMANTIC_COVERAGE_MIN
+        ):
+            issues.append(
+                _issue(
+                    "ONSCREEN_SEMANTIC_COVERAGE_LOW",
+                    page,
+                    "Too little of the full prose meaning survives in the on-screen layer.",
+                    (
+                        "Restore the essential facts, numbers, explanatory relations, "
+                        "causal links, and page implication from 完整文字稿; concise "
+                        "rewriting is allowed, semantic omission is not."
+                    ),
+                    evidence=(
+                        f"coverage={coverage:.3f}",
+                        f"min={ONSCREEN_SEMANTIC_COVERAGE_MIN:.3f}",
+                    ),
+                )
+            )
+        roles = onscreen_story_roles(page)
+        missing_roles = tuple(
+            role
+            for role, present in roles.items()
+            if not present
+        )
+        if page.onscreen_judgment and missing_roles:
+            issues.append(
+                _issue(
+                    "ONSCREEN_STORY_CHAIN_INCOMPLETE",
+                    page,
+                    "On-screen text does not form a complete readable argument.",
+                    (
+                        "Keep the visible conclusion, then add evidence, explanation, "
+                        "and implication or page-to-page handoff as needed."
+                    ),
+                    evidence=missing_roles,
+                    severity="warning",
+                )
+            )
     analytical_hits = _analytical_voice_hits(prose)
     if analytical_hits:
         issues.append(
@@ -1470,7 +1653,11 @@ def audit_script_quality(
                 )
             )
             issues.extend(
-                _prose_issues(page, expected_source_refs=expected_proof_refs)
+                _prose_issues(
+                    page,
+                    expected_source_refs=expected_proof_refs,
+                    independent_reading_required=visible_judgment_required,
+                )
             )
             issues.extend(_narration_boundary_issues(page, contract))
             if outline.get("page_contract_receipt_mode") == "required":

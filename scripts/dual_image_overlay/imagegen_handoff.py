@@ -63,6 +63,10 @@ CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【输出要求】
 不得生成页面标题、副标题、Logo、页脚、页码。
 【视觉风格】
 使用以下色彩气质：#F7F6F0、#12355B、#101820、#303030、#6F7275、#C9CDD1。整体正式、严谨、克制，具有高质量汇报和演讲质感。"""
+CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【独立阅读约束｜仅供执行，不上屏】
+【必须上屏文字】是已经审定的完整可见信息层，必须全部呈现，不得再次摘要、删减或只保留模块标题与关键词。
+页面应在脱离演讲者讲解时仍可独立阅读，并保留支撑结论所需的事实或数字、解释关系、因果传导以及推论或页面承接。
+允许调整换行、分组和文字层级，但不得改变原意、合并掉关键语义或用插图替代必须上屏文字。"""
 # Status asides that must not be painted as core on-screen claims.
 # Planning decks argue the proposed solution; do not restamp "not yet fact" on every page.
 ONSCREEN_ASIDE_RE = re.compile(
@@ -566,6 +570,8 @@ def render_content_first_prompt(
         "【必须上屏文字】",
         onscreen,
         "",
+        CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
+        "",
         "【事实与范围边界｜仅供约束，不上屏】",
         page.boundary.strip() or "不得扩大原文的事实范围或结论强度。",
         "不得新增原文不存在的数字、组织名称、责任主体、事实、结论或口号。",
@@ -675,6 +681,7 @@ def compile_page_prompt(
                 "content.core_judgment",
                 "content.full_semantics",
                 "content.locked_onscreen",
+                "content.independent_reading",
                 "fact.source_boundary",
                 "style.tone_only",
             ),
