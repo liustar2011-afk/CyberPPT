@@ -5,9 +5,11 @@ from tempfile import TemporaryDirectory
 
 from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.dual_image_overlay.imagegen_handoff import (
+    CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT,
     build_page_creative_brief,
     build_page_prompt,
     compile_page_prompt,
+    diagnostic_onscreen_text,
 )
 from scripts.dual_image_overlay.prompt_diagnostics import analyze_prompt
 from scripts.dual_image_overlay.style_library import write_project_style_lock
@@ -18,6 +20,7 @@ SCRIPT = """## 第18页：平台支撑与安全运行
 - 页面类型：内容页
 - 页面标题：平台支撑与安全运行
 - 主判断：数据、模型、产品和安全能力共同支撑稳定业务运行。
+- 上屏结论：统一底座让数据、模型、产品和安全能力共同支撑稳定运行。
 - 上屏文字：
 
   **数据治理｜质量与授权**
@@ -33,7 +36,7 @@ def _page():
     return parse_script_markdown(SCRIPT).pages[0]
 
 
-def test_default_compiler_remains_byte_identical_to_explicit_legacy() -> None:
+def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     page = _page()
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
@@ -42,9 +45,37 @@ def test_default_compiler_remains_byte_identical_to_explicit_legacy() -> None:
             page,
             lock,
             page_mission="平台如何稳定支撑业务",
+            prompt_compiler="content-first-v1",
+        )
+        legacy = build_page_prompt(
+            page,
+            lock,
+            page_mission="平台如何稳定支撑业务",
             prompt_compiler="legacy",
         )
     assert implicit == explicit
+    assert implicit != legacy
+    assert "【完整内容语义｜仅供理解，不要求逐字上屏】" in implicit
+    assert "【事实与范围边界｜仅供约束，不上屏】" in implicit
+    assert implicit.endswith(CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT + "\n")
+
+
+def test_content_first_diagnostics_use_the_compiled_locked_text() -> None:
+    page = _page()
+    locked = diagnostic_onscreen_text(page)
+    assert locked.startswith(page.onscreen_judgment)
+    assert "**数据治理｜质量与授权**" in locked
+    assert diagnostic_onscreen_text(page, "legacy") == page.onscreen_text
+
+
+def test_content_first_prompt_places_visible_judgment_before_support_modules() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    required = prompt.split("【必须上屏文字】", 1)[1]
+    assert required.index(page.onscreen_judgment) < required.index("数据治理")
 
 
 def test_creative_brief_preserves_semantics_but_does_not_prescribe_layout() -> None:
@@ -61,6 +92,12 @@ def test_creative_brief_preserves_semantics_but_does_not_prescribe_layout() -> N
         "数据治理｜质量与授权",
         "模型生产｜验证与复盘",
         "安全运行｜权限与日志",
+    )
+    assert "many-to-one support argument" not in (
+        brief.semantic_contract.relationship_invariant
+    )
+    assert "must not degrade into unrelated peer modules" in (
+        brief.semantic_contract.relationship_invariant
     )
     assert "2025年" in brief.semantic_contract.exact_facts
     assert "95%" in brief.semantic_contract.exact_facts
@@ -94,7 +131,11 @@ def test_creative_compiler_uses_existing_prompt_path_and_clears_known_conflicts(
     assert "2025年完成率 95%" in prompt
     assert "共同保障运行——不得省略" in prompt
     assert "remain editable" not in prompt
-    assert "Auxiliary semantic imagery may use" not in prompt
+    assert "Auxiliary imagery may use clear supporting words" in prompt
+    assert "does not need to duplicate the locked wording" in prompt
+    assert "Every visual carrier must explain" not in prompt
+    assert "Visual hierarchy:" not in prompt
+    assert "Evidence bindings:" not in prompt
     assert metrics.conflicts == ()
     assert metrics.locked_text_preserved is True
     assert metrics.exact_facts_preserved is True
@@ -117,4 +158,41 @@ def test_creative_brief_is_included_for_compact_style_contract() -> None:
 
     assert "[Page-specific creative brief" in prompt
     assert "【视觉组织原则】" in prompt
-    assert "Do not generate any text, number, chart label" in prompt
+    assert "Auxiliary text may appear" in prompt
+    assert "one-to-one mapping" in prompt
+    assert "Do not generate any text, number, chart label" not in prompt
+
+
+def test_foundation_relation_is_locked_as_many_to_one_without_prescribing_layout() -> None:
+    page = _page()
+    brief = build_page_creative_brief(
+        page,
+        "现有基础如何支撑稳定业务运行",
+        override={"visual_intent_type": "multi_semantic_foundation"},
+    )
+
+    invariant = brief.semantic_contract.relationship_invariant
+    assert "many-to-one support argument" in invariant
+    assert "all 3 required meanings" in invariant
+    assert "single core judgment" in invariant
+    assert "not a required diagram layout" in invariant
+
+
+def test_creative_prompt_cleans_full_image_legacy_language_globally() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(
+            page,
+            lock,
+            page_mission="平台如何稳定支撑业务",
+            prompt_compiler="creative-brief-v1",
+        )
+
+    assert "editable text layer only" not in prompt
+    assert "Do not introduce organization or person names beyond" in prompt
+    assert "Generic, non-location-specific facilities" not in prompt
+    assert "supporting labels may organize the composition freely" in prompt
+    assert "不要求沿用原始列表、卡片、栏位或段落排布形式" in prompt
+    assert "整体构图、视觉隐喻和辅助表达均可自由发挥" in prompt
+    assert "equal cards, equal columns, or equal stacked sections" not in prompt

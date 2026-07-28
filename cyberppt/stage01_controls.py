@@ -317,7 +317,7 @@ def _open_questions_from_audits(project: Path, kind: str) -> list[str]:
                 )
             if lead_coverage_count < content_pages:
                 questions.append(
-                    f"上屏文字审阅：主判断上屏覆盖 {lead_coverage_count}/{content_pages}，需确认主判断是否进入上屏或作者字段。"
+                    f"上屏文字审阅：可见结论覆盖 {lead_coverage_count}/{content_pages}，需补齐并对齐上屏结论。"
                 )
             if warning_count:
                 questions.append(

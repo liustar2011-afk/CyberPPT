@@ -11,6 +11,8 @@ from cyberppt.commands.init_project import init_project
 from cyberppt.stage01_controls import write_confirmation_request, write_stage01_approval
 from cyberppt.commands.script_gate import stage_script
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, render_prompt
+from scripts.dual_image_overlay.imagegen_handoff import build_page_prompt
+from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
@@ -40,9 +42,16 @@ class FinalScriptPagesTests(unittest.TestCase):
         (approvals / "stage01-outline-approved.md").write_text("# approved\n", encoding="utf-8")
         write_stage01_approval(project, kind="script", note="test")
         style_lock = write_project_style_lock(project=project, style_id=style_id, source_script=script)
-        for page_number, page in parse_page_blocks(script).items():
+        script_pages = {
+            int(page.page_id[1:]): page
+            for page in parse_script_markdown(script.read_text(encoding="utf-8")).pages
+        }
+        for page_number in parse_page_blocks(script):
             prompt = project / f"prompt-{page_number}.md"
-            prompt.write_text(render_prompt(page, style_lock_path=style_lock), encoding="utf-8")
+            prompt.write_text(
+                build_page_prompt(script_pages[page_number], style_lock),
+                encoding="utf-8",
+            )
             stage_script(project, page_number, "imagegen", "final", prompt)
         for page_number in parse_page_blocks(script):
             from cyberppt.commands.script_gate import approve_script
@@ -84,8 +93,8 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertEqual([7, 8], [pair["page_number"] for pair in manifest["pairs"]])
             self.assertEqual(4, visual_lock["style"]["id"])
             self.assertEqual(manifest["style_lock"], summary["artifacts"]["visual_style_lock"])
-            self.assertIn("象牙白 + 深蓝强调", prompt)
             self.assertIn("#12355B", prompt)
+            self.assertIn("【完整内容语义｜仅供理解，不要求逐字上屏】", prompt)
             self.assertEqual("态势感知能力要从工具堆叠转向风险闭环", lock["records"][0]["title"])
             self.assertEqual("运营保障机制需要责任、流程和审计同时落地", lock["records"][1]["title"])
             self.assertTrue(Path(summary["artifacts"]["compiled_deliverable_prompt"]).exists())

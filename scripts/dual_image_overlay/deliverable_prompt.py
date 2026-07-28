@@ -426,8 +426,9 @@ def _creative_brief_style_contract(style_lock_path: Path | None) -> str:
     contract = re.sub(
         r"factual numbers and labels must be verified and remain editable\.?",
         (
-            "Only factual numbers and labels present in the locked on-screen text may appear; "
-            "do not invent additional values."
+            "Keep every locked factual number and label exact. Auxiliary visuals may contain "
+            "supporting words or non-evidentiary labels, but must not present invented numbers "
+            "or claims as locked facts."
         ),
         contract,
         flags=re.I,
@@ -437,8 +438,10 @@ def _creative_brief_style_contract(style_lock_path: Path | None) -> str:
         r"\s*interface text, chart labels, or document wording when it directly clarifies"
         r"\s*the nearby business object or relationship\.",
         (
-            "Auxiliary imagery must remain text-free; do not generate interface text, chart "
-            "labels, document wording, or factual annotations beyond the locked on-screen text."
+            "Auxiliary imagery may use clear supporting words, interface text, chart labels, "
+            "or document-like wording when it improves the visual idea. This auxiliary text "
+            "does not need to duplicate the locked wording, but must not masquerade as a new "
+            "factual number, organization claim, or unsupported conclusion."
         ),
         contract,
         flags=re.I,
@@ -447,10 +450,47 @@ def _creative_brief_style_contract(style_lock_path: Path | None) -> str:
         r"Auxiliary imagery may use only a small amount of clear supporting text when it "
         r"directly clarifies a nearby business object\.",
         (
-            "Auxiliary imagery must remain text-free beyond the locked on-screen text."
+            "Auxiliary imagery may use concise supporting text when it improves the overall "
+            "visual idea. It does not need a one-to-one mapping to the locked modules."
         ),
         contract,
         flags=re.I,
+    )
+    contract = re.sub(
+        r"Keep real organization and person names in the editable text layer only\.",
+        "Do not introduce organization or person names beyond the locked on-screen text.",
+        contract,
+        flags=re.I,
+    )
+    contract = re.sub(
+        r"Generic, non-location-specific facilities, layered workspaces, control consoles, "
+        r"equipment rooms, and industrial scenes may be used as (?:restrained )?illustrative "
+        r"carriers when they map to the locked content\.",
+        (
+            "Choose scenes, visual metaphors, facilities, workspaces, control environments, "
+            "industrial imagery, or abstract editorial forms freely according to the strongest "
+            "overall composition."
+        ),
+        contract,
+        flags=re.I,
+    )
+    contract = re.sub(
+        r"Schematic screens, charts, maps, and interface labels may organize the composition, "
+        r"but generated values are non-evidentiary;",
+        (
+            "Schematic screens, charts, maps, time bands, interface-like structures, and their "
+            "supporting labels may organize the composition freely;"
+        ),
+        contract,
+        flags=re.I,
+    )
+    contract = re.sub(
+        r"在不改变原脚本结构的前提下，",
+        (
+            "只需保持锁定上屏文字完整准确；不要求沿用原始列表、卡片、栏位或段落"
+            "排布形式，整体构图、视觉隐喻和辅助表达均可自由发挥；"
+        ),
+        contract,
     )
     return contract
 

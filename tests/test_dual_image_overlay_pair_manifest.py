@@ -185,9 +185,9 @@ class CyberpptPairManifestTests(unittest.TestCase):
             script = root / "script.md"
             script.write_text("## 第2页：严格审批\n正文模块\n", encoding="utf-8")
             style_lock = write_project_style_lock(project=project, style_id=4, source_script=script)
-            page = parse_page_blocks(script)[2]
+            page = parse_script_markdown(script.read_text(encoding="utf-8")).pages[0]
             prompt = root / "prompt.md"
-            prompt.write_text(render_prompt(page, style_lock_path=style_lock), encoding="utf-8")
+            prompt.write_text(build_page_prompt(page, style_lock), encoding="utf-8")
             stage_script(project, 2, "imagegen", "final", prompt)
             approve_script(project, 2, "imagegen")
             approved_prompt_text = (project / "workbench/prompts/imagegen/slide-02-imagegen-final.md").read_text(encoding="utf-8")
@@ -207,7 +207,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
             approved_prompt_text,
         )
 
-    def test_strict_manifest_uses_relationship_aware_canonical_prompt(self) -> None:
+    def test_strict_manifest_uses_content_first_canonical_prompt(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "project"
@@ -275,10 +275,10 @@ class CyberpptPairManifestTests(unittest.TestCase):
                 require_approved_prompts=True,
             )
 
-        self.assertIn(
-            "Selected visual intent type: capability_relationship",
-            manifest["pairs"][0]["full"]["prompt"],
-        )
+        prompt = manifest["pairs"][0]["full"]["prompt"]
+        self.assertIn("【完整内容语义｜仅供理解，不要求逐字上屏】", prompt)
+        self.assertIn("【必须上屏文字】", prompt)
+        self.assertNotIn("Selected visual intent type:", prompt)
 
 
 if __name__ == "__main__":

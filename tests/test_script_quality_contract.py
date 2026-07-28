@@ -207,6 +207,53 @@ class ScriptContractAuditTests(unittest.TestCase):
         codes = {item["code"] for item in review["pages"][0]["findings"]}
         self.assertIn("MAIN_MESSAGE_NOT_FIRST_ONSCREEN_LINE", codes)
 
+    def test_visible_judgment_is_required_by_explicit_strict_mode(self) -> None:
+        outline = strict_outline(
+            {
+                "page_id": "p09",
+                "sequence": 9,
+                "page_type": "content",
+                "title": "总体定位",
+                "argument_role": "positioning",
+                "source_refs": ["S015", "S026", "S059"],
+                "prerequisite_pages": [],
+            }
+        )
+        outline["visible_judgment_mode"] = "required"
+        truth = source_truth(
+            {"id": "S015", "type": "B", "status": "拟建议", "statement": "初步定位。"},
+            {"id": "S026", "type": "B", "status": "研究边界", "statement": "专业边界。"},
+            {"id": "S059", "type": "B", "status": "研究边界", "statement": "正式范围待定。"},
+        )
+
+        missing_codes = {
+            issue.code
+            for issue in audit_script_quality(
+                parse_script_markdown(SCRIPT),
+                outline,
+                truth,
+            )
+        }
+        self.assertIn("ONSCREEN_JUDGMENT_MISSING", missing_codes)
+
+        revised = SCRIPT.replace(
+            "- 主判断：初步定位为面向行业的公共能力。\n",
+            "- 主判断：初步定位为面向行业的公共能力。\n"
+            "- 上屏结论：面向行业的公共能力定位支撑行业研判。\n",
+            1,
+        )
+        revised_codes = {
+            issue.code
+            for issue in audit_script_quality(
+                parse_script_markdown(revised),
+                outline,
+                truth,
+            )
+        }
+        self.assertFalse(
+            any(code.startswith("ONSCREEN_JUDGMENT_") for code in revised_codes)
+        )
+
     def test_power_foundation_regression_is_blocked(self) -> None:
         script = parse_script_markdown(
             (SCRIPT_AUDIT_FIXTURES / "power_foundation_premature_scope.md").read_text(

@@ -44,8 +44,8 @@ _RELATION_CREATIVE_LANGUAGE: dict[str, tuple[str, str]] = {
         "business reality rather than isolated capabilities.",
     ),
     "causal": (
-        "The stated causes or changes must remain connected to the business consequence and "
-        "the need for action.",
+        "The stated causes or changes must remain connected to the insufficiency, consequence, "
+        "or resulting judgment that is explicitly present in the locked content.",
         "Find a visually convincing way to make change and consequence feel connected in one "
         "coherent business world.",
     ),
@@ -89,6 +89,7 @@ _RELATION_AVOIDS: dict[str, tuple[str, ...]] = {
 class SemanticContract:
     core_judgment: str
     required_meanings: tuple[str, ...]
+    relationship_invariant: str
     exact_facts: tuple[str, ...]
     forbidden_inferences: tuple[str, ...]
 
@@ -150,13 +151,36 @@ def extract_exact_facts(text: str) -> tuple[str, ...]:
 
 def build_semantic_contract(
     *,
+    relation: str,
     core_judgment: str,
     required_meanings: Iterable[str],
     onscreen_text: str,
 ) -> SemanticContract:
+    meanings = _clean_meanings(required_meanings)
+    if relation == "multi_semantic_foundation":
+        relationship_invariant = (
+            f"This is a many-to-one support argument: all {len(meanings)} required meanings "
+            "are distinct existing foundations, and together they support the single core "
+            "judgment. They are not peer outcomes, a sequence, or four unrelated categories. "
+            "This describes the business logic, not a required diagram layout."
+        )
+    elif relation == "causal":
+        relationship_invariant = (
+            "This is a change-to-judgment argument: the stated changes or facts must explain "
+            "why the old judgment basis is insufficient and why the new business judgment is "
+            "needed. They are not unrelated peer facts. This describes the business logic, "
+            "not a required diagram layout."
+        )
+    else:
+        relationship_invariant = (
+            "The required meanings must visibly perform their stated logical role in relation "
+            "to the core judgment; they must not degrade into unrelated peer modules or "
+            "decorative examples. This describes business logic, not diagram topology."
+        )
     return SemanticContract(
         core_judgment=core_judgment.strip(),
-        required_meanings=_clean_meanings(required_meanings),
+        required_meanings=meanings,
+        relationship_invariant=relationship_invariant,
         exact_facts=extract_exact_facts(onscreen_text),
         forbidden_inferences=(
             "Do not add facts, numbers, organization claims, or conclusions that are not "
@@ -179,8 +203,8 @@ def _freedom_for(*, onscreen_text: str, exact_fact_count: int) -> CreativeFreedo
         text_guidance += " Preserve every locked number and unit exactly; generate no extra values."
     return CreativeFreedom(
         semantic=(
-            "The required meanings and their business relationship are fixed; their visual "
-            "representation is open."
+            "Use the page purpose and business meanings as creative context, not as a prescribed "
+            "diagram. Only the locked on-screen wording is mandatory."
         ),
         text=text_guidance,
         composition=(
@@ -201,6 +225,7 @@ def build_creative_brief(
     override: dict[str, str] | None = None,
 ) -> CreativeBrief:
     contract = build_semantic_contract(
+        relation=relation,
         core_judgment=core_judgment,
         required_meanings=required_meanings,
         onscreen_text=onscreen_text,
@@ -243,10 +268,15 @@ def render_creative_brief(brief: CreativeBrief) -> str:
     lines = [
         "[Page-specific creative brief — context only; do not render these labels or instructions]",
         f"Purpose: {brief.page_purpose or brief.semantic_contract.core_judgment}",
-        f"Visual message: {brief.visual_message}",
+        f"Creative direction: {brief.visual_message}",
         (
-            "Meanings that must remain recognizable: "
-            f"{meanings}. Their wording and business meaning are fixed."
+            "Useful meanings already present in the locked on-screen text: "
+            f"{meanings}. Use them as creative material rather than a required visual checklist."
+        ),
+        (
+            "Creative context: "
+            f"{brief.semantic_contract.relationship_invariant} Treat this as inspiration, "
+            "not a required visual structure."
         ),
     ]
     lines.extend(
@@ -255,7 +285,9 @@ def render_creative_brief(brief: CreativeBrief) -> str:
             brief.freedom.text,
             brief.freedom.composition,
             brief.freedom.scene,
-            "Avoid on this page: " + "; ".join(brief.page_specific_avoids) + ".",
+            "Potential generic defaults to avoid when a stronger idea is available: "
+            + "; ".join(brief.page_specific_avoids)
+            + ".",
         )
     )
     return "\n".join(lines)

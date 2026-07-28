@@ -35,8 +35,10 @@ def prepare_outline_input(project: Path) -> Path:
     lines = [
         "# Outline authoring input",
         "",
+        "Set root `visible_judgment_mode` to `required` for formal projects.",
         "Create the Outline from Source Truth. Use canonical field names:",
         "`page_job`, `business_question`, `main_message`, "
+        "`onscreen_judgment`, "
         "`new_value_vs_previous`, `reserved_for_later`, `proof_points`, "
         "`visual_intent_type`.",
         "",
@@ -71,6 +73,8 @@ def prepare_outline_input(project: Path) -> Path:
         "- `page_job`",
         "- `business_question`",
         "- `main_message`",
+        "- `onscreen_judgment`: one concise body-level conclusion derived from "
+        "`main_message`; it is not a page title or subtitle",
         "- `new_value_vs_previous`",
         "- `reserved_for_later`",
         "- `proof_points`: claim, source_refs, consumption",
@@ -107,6 +111,8 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "# Page script authoring input",
         "",
         "Write full prose first; derive on-screen text from it.",
+        "Every content page must place `上屏结论` before `上屏文字`; the conclusion carries the visible story, while modules support it.",
+        "Emit `onscreen_judgment` in the completed Chinese script as `- 上屏结论：...`.",
         "`reserved_for_later`, `boundary_refs`, and `boundary_constraints` are internal controls only.",
         "They must not be copied into coaching tips or speaker notes. State a constraint only when it is the page's declared business subject.",
         "",
@@ -117,6 +123,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             f"- page_job: {page.get('page_job', '')}",
             f"- business_question: {page.get('business_question', '')}",
             f"- main_message: {page.get('main_message', '')}",
+            f"- onscreen_judgment: {page.get('onscreen_judgment', '')}",
             f"- new_value_vs_previous: {page.get('new_value_vs_previous', '')}",
             f"- reserved_for_later: {page.get('reserved_for_later', '')}",
             f"- visual_intent_type: {page.get('visual_intent_type') or 'auto'}",
@@ -152,11 +159,12 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         else:
             lines.append("  - none")
         receipt = {
-            "schema": "cyberppt.page_contract_receipt.v1",
+            "schema": "cyberppt.page_contract_receipt.v2",
             "page_id": page.get("page_id"),
             "page_job": page.get("page_job"),
             "business_question": page.get("business_question"),
             "main_message": page.get("main_message"),
+            "onscreen_judgment": page.get("onscreen_judgment"),
             "new_value_vs_previous": page.get("new_value_vs_previous"),
             "reserved_for_later": page.get("reserved_for_later"),
             "visual_intent_type": page.get("visual_intent_type"),

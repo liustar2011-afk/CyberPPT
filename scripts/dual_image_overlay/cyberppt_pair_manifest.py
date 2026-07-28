@@ -159,11 +159,6 @@ def _relationship_aware_canonical_prompts(
         )
         for page_number in page_numbers
         if page_number in pages
-        and (
-            pages[page_number].page_id in missions
-            or pages[page_number].page_id in contexts
-            or pages[page_number].page_id in overrides
-        )
     }
 
 

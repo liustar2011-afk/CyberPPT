@@ -67,7 +67,10 @@ def creative_brief_visual_grammar() -> str:
             "- Keep all locked body text clear and readable; do not place it over busy or "
             "high-contrast imagery.",
             "- Do not run connectors, decorative lines, or image details through body text.",
-            "- Do not generate any text, number, chart label, interface label, or factual "
-            "annotation beyond the locked on-screen text.",
+            "- Supporting imagery, charts, interface-like forms, and concise auxiliary labels "
+            "are allowed when they improve the overall visual idea. They do not need a "
+            "one-to-one mapping to every locked module.",
+            "- Auxiliary text may appear. Keep it brief and coherent, and do not use it to "
+            "invent new factual numbers, organization claims, or unsupported conclusions.",
         )
     )

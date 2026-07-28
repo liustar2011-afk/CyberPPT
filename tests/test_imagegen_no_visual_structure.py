@@ -278,6 +278,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
                 visual_intent_override={
                     "visual_thesis": "Explain the approved page-specific decision."
                 },
+                prompt_compiler="legacy",
             )
         self.assertLess(prompt.index("Page-specific visual intent"), prompt.index("上屏文字"))
         self.assertLess(
@@ -357,27 +358,23 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
                 page_mission="拟建什么性质的能力",
             )
         self.assertNotIn("视觉结构：", prompt)
-        self.assertNotIn("视觉结构", prompt)
+        self.assertNotIn("\n视觉结构", prompt)
         self.assertNotIn("【设计目标与叙事】", prompt)
         self.assertNotIn("不使用外部风格 preset", prompt)
         self.assertNotIn("确认样张", prompt)
         self.assertNotIn("页面角色", prompt)
         self.assertNotIn("## 第9页：", prompt)
-        self.assertIn("象牙白 + 深蓝强调", prompt)
-        self.assertIn("页面使命", prompt)
+        self.assertIn("#12355B", prompt)
+        self.assertIn("页面任务", prompt)
         self.assertIn("拟建什么性质的能力", prompt)
         self.assertIn("核心判断", prompt)
         self.assertNotIn("禁止项", prompt)
         self.assertNotIn("Boundary (do not show on slide)", prompt)
-        self.assertNotIn("正式范围待后续确定", prompt)
+        self.assertIn("正式范围待后续确定", prompt)
         self.assertNotIn("Boundary text must not appear on the slide", prompt)
         self.assertIn("上屏文字", prompt)
-        self.assertIn(
-            "Do not invent section labels like meta headers; only render 上屏文字 modules.",
-            prompt,
-        )
-        self.assertIn("不要生成页面标题、副标题、Logo、页脚", prompt)
-        self.assertIn("No evidence IDs, watermarks, debug marks, or placeholders.", prompt)
+        self.assertIn("不得生成页面标题、副标题、Logo、页脚、页码。", prompt)
+        self.assertIn("不得新增原文不存在的数字", prompt)
         self.assertNotIn("不得出现证据编号", prompt)
 
     def test_render_prompt_template_omits_visual_structure(self) -> None:

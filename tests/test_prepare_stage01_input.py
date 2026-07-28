@@ -41,6 +41,7 @@ class PrepareStage01InputTests(unittest.TestCase):
                             "page_job": "说明为什么现在可以启动",
                             "business_question": "基础是否具备",
                             "main_message": "已有基础支持启动",
+                            "onscreen_judgment": "现有基础足以支持项目启动。",
                             "new_value_vs_previous": "形成启动判断",
                             "reserved_for_later": "实施步骤留后页",
                             "source_refs": ["S001", "S002"],
@@ -79,6 +80,8 @@ class PrepareStage01InputTests(unittest.TestCase):
         text = output.read_text(encoding="utf-8")
         self.assertIn("- page_job: 说明为什么现在可以启动", text)
         self.assertIn("- main_message: 已有基础支持启动", text)
+        self.assertIn("- onscreen_judgment: 现有基础足以支持项目启动。", text)
+        self.assertIn("must place `上屏结论` before `上屏文字`", text)
         self.assertIn("[primary] 统计基础已经具备 (S001)", text)
         self.assertIn("- evidence_text:", text)
         self.assertIn("- boundary_refs: S002", text)
@@ -88,6 +91,7 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("must not be copied into coaching tips or speaker notes", text)
         self.assertIn("cyberppt-page-contract", text)
         self.assertIn('"new_value_realized":true', text)
+        self.assertIn('"onscreen_judgment":"现有基础足以支持项目启动。"', text)
         self.assertTrue(output.name.endswith("-p04.md"))
 
     def test_prepare_page_script_input_rejects_unknown_page(self) -> None:

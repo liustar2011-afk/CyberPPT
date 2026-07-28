@@ -47,6 +47,7 @@ CONSTRAINT_THEME_TERMS = (
     "职责分工",
 )
 SPEAKER_NOTES_MIN_CHARS = 60
+VISIBLE_JUDGMENT_MIN_SIMILARITY = 0.04
 
 
 @dataclass(frozen=True)
@@ -67,6 +68,7 @@ class ScriptPage:
     visual_structure: str
     onscreen_text: str
     module_titles: tuple[str, ...]
+    onscreen_judgment: str = ""
     field_order: tuple[str, ...] = ()
     coaching_tip: str = ""
     speaker_notes: str = ""
@@ -208,6 +210,7 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                 visual_structure=fields.get("视觉结构", "").strip(),
                 onscreen_text=onscreen,
                 module_titles=modules,
+                onscreen_judgment=fields.get("上屏结论", "").strip(),
                 field_order=_field_order(body),
                 coaching_tip=(
                     fields.get("讲解提示", "")
@@ -345,6 +348,7 @@ def _page_text(page: ScriptPage) -> str:
         (
             page.title,
             page.main_message,
+            page.onscreen_judgment,
             page.full_prose,
             page.onscreen_text,
             page.boundary,
@@ -354,7 +358,13 @@ def _page_text(page: ScriptPage) -> str:
 
 def _claim_text(page: ScriptPage) -> str:
     return "\n".join(
-        (page.title, page.main_message, page.full_prose, page.onscreen_text)
+        (
+            page.title,
+            page.main_message,
+            page.onscreen_judgment,
+            page.full_prose,
+            page.onscreen_text,
+        )
     )
 
 
@@ -414,11 +424,33 @@ def build_communication_review(
         if mission:
             mission_count += 1
         lines = _onscreen_content_lines(page.onscreen_text)
-        lead = lines[0] if lines else ""
-        lead_matches = bool(page.main_message and lead == page.main_message)
+        lead = page.onscreen_judgment or (lines[0] if lines else "")
+        lead_matches = bool(
+            page.main_message
+            and lead
+            and (
+                lead == page.main_message
+                or text_similarity(lead, page.main_message)
+                >= VISIBLE_JUDGMENT_MIN_SIMILARITY
+            )
+        )
         if lead_matches:
             lead_match_count += 1
-        authoring_field_only = bool(page.visual_structure and not lead_matches)
+        visible_judgment_precedes_modules = bool(
+            page.onscreen_judgment
+            and "上屏结论" in page.field_order
+            and "上屏文字" in page.field_order
+            and page.field_order.index("上屏结论")
+            < page.field_order.index("上屏文字")
+        )
+        visible_judgment_required = (
+            outline.get("visible_judgment_mode") == "required"
+        )
+        authoring_field_only = bool(
+            not visible_judgment_required
+            and page.visual_structure
+            and not lead_matches
+        )
         if authoring_field_only:
             authoring_field_count += 1
         findings: list[dict[str, object]] = []
@@ -473,6 +505,12 @@ def build_communication_review(
                 "title": page.title,
                 "mission": mission,
                 "main_message": page.main_message,
+                "onscreen_judgment": page.onscreen_judgment,
+                "visible_judgment_present": bool(page.onscreen_judgment),
+                "visible_judgment_aligned": lead_matches,
+                "visible_judgment_precedes_modules": (
+                    visible_judgment_precedes_modules
+                ),
                 "lead": lead,
                 "lead_matches_main_message": lead_matches,
                 "lead_status": (
@@ -1317,6 +1355,9 @@ def audit_script_quality(
                 )
             )
         if expected_type == "content":
+            visible_judgment_required = (
+                outline.get("visible_judgment_mode") == "required"
+            )
             if (
                 not page.main_message
                 or not page.source_refs
@@ -1330,6 +1371,75 @@ def audit_script_quality(
                         "Restore the missing backend fields before review.",
                     )
                 )
+            if visible_judgment_required:
+                if not page.onscreen_judgment:
+                    issues.append(
+                        _issue(
+                            "ONSCREEN_JUDGMENT_MISSING",
+                            page,
+                            "Content page requires a visible body-level judgment before supporting modules.",
+                            "Add 上屏结论 and make it state the page conclusion in one concise sentence.",
+                        )
+                    )
+                else:
+                    expected_judgment = str(
+                        contract.get("onscreen_judgment") or ""
+                    ).strip()
+                    if (
+                        expected_judgment
+                        and page.onscreen_judgment != expected_judgment
+                    ):
+                        issues.append(
+                            _issue(
+                                "ONSCREEN_JUDGMENT_CONTRACT_MISMATCH",
+                                page,
+                                "上屏结论 does not match the approved Outline contract.",
+                                "Restore the approved onscreen_judgment or revise and re-approve the Outline.",
+                                evidence=(
+                                    expected_judgment,
+                                    page.onscreen_judgment,
+                                ),
+                            )
+                        )
+                    judgment_index = (
+                        page.field_order.index("上屏结论")
+                        if "上屏结论" in page.field_order
+                        else -1
+                    )
+                    onscreen_index = (
+                        page.field_order.index("上屏文字")
+                        if "上屏文字" in page.field_order
+                        else -1
+                    )
+                    if (
+                        judgment_index < 0
+                        or onscreen_index < 0
+                        or judgment_index > onscreen_index
+                    ):
+                        issues.append(
+                            _issue(
+                                "ONSCREEN_JUDGMENT_ORDER_INVALID",
+                                page,
+                                "上屏结论 must appear before 上屏文字.",
+                                "Move 上屏结论 immediately before the supporting 上屏文字 modules.",
+                            )
+                        )
+                    if text_similarity(
+                        page.onscreen_judgment,
+                        page.main_message,
+                    ) < VISIBLE_JUDGMENT_MIN_SIMILARITY:
+                        issues.append(
+                            _issue(
+                                "ONSCREEN_JUDGMENT_MISALIGNED",
+                                page,
+                                "The visible judgment is not sufficiently aligned with the page main judgment.",
+                                "Rewrite 上屏结论 as a concise audience-facing version of 主判断.",
+                                evidence=(
+                                    page.main_message,
+                                    page.onscreen_judgment,
+                                ),
+                            )
+                        )
             expected_refs = tuple(
                 str(item)
                 for item in contract.get("source_refs", [])
@@ -1380,6 +1490,12 @@ def audit_script_quality(
                         "proof_points",
                         "boundary_refs",
                     )
+                    if visible_judgment_required:
+                        canonical_fields = (
+                            *canonical_fields[:3],
+                            "onscreen_judgment",
+                            *canonical_fields[3:],
+                        )
                     mismatched = tuple(
                         field
                         for field in canonical_fields
@@ -1531,6 +1647,32 @@ def audit_script_quality(
                     suggested_action=(
                         "Keep the complete argument on one page and make the "
                         "adjacent page advance a different business question."
+                    ),
+                )
+            )
+        visible_similarity = text_similarity(
+            left.onscreen_judgment,
+            right.onscreen_judgment,
+        )
+        if (
+            outline.get("visible_judgment_mode") == "required"
+            and left.onscreen_judgment
+            and right.onscreen_judgment
+            and visible_similarity >= 0.82
+        ):
+            issues.append(
+                ScriptQualityIssue(
+                    "ADJACENT_ONSCREEN_JUDGMENT_DUPLICATE",
+                    "error",
+                    "Adjacent pages repeat substantially the same visible judgment.",
+                    (left.page_id, right.page_id),
+                    evidence=(
+                        left.onscreen_judgment,
+                        right.onscreen_judgment,
+                        f"similarity={visible_similarity:.3f}",
+                    ),
+                    suggested_action=(
+                        "Make the later page advance the chapter argument instead of restating the prior conclusion."
                     ),
                 )
             )

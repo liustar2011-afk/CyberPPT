@@ -151,7 +151,7 @@ def _render_markdown(report: dict[str, object]) -> str:
             "## 上屏文字六问",
             "",
             f"- 页面使命覆盖：{communication.get('mission_coverage', 0)} / {communication.get('content_pages', 0)}",
-            f"- 主判断承载覆盖：{communication.get('lead_coverage_count', 0)} / {communication.get('content_pages', 0)}（上屏首句匹配 {communication.get('lead_match_count', 0)}；作者字段承载 {communication.get('authoring_field_count', 0)}）",
+            f"- 可见结论覆盖：{communication.get('lead_coverage_count', 0)} / {communication.get('content_pages', 0)}（与主判断对齐 {communication.get('lead_match_count', 0)}；旧稿作者字段兼容 {communication.get('authoring_field_count', 0)}）",
             f"- 自动提醒：{communication.get('warning_count', 0)} 条；模块同维度、信息取舍仍需人工复核。",
             "",
         ]

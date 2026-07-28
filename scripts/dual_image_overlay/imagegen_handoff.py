@@ -2,19 +2,18 @@
 """Build reviewable ImageGen handoff prompts from approved final scripts.
 
 Before any ImageGen call, CyberPPT must:
-1. extract only drawable layers from the final script (上屏文字);
-2. compile plaintext prompts with the project visual lock;
+1. preserve the approved page meaning and drawable layer;
+2. compile plaintext prompts with a tone-only visual contract;
 3. save them under workbench/prompts/imagegen/;
 4. wait for user modify-or-approve.
 
 Page mission and thesis (页面使命 / 主判断 / 核心判断) are passed before 上屏文字
 so the model can understand the page question and organize the visual mainline.
 They are context fields, not extra labels to render; the drawable text layer remains 上屏文字.
-Page-specific visual intent is compiled after 上屏文字 and before the global style
-contract. It explains the page relationship and composition without adding drawable text.
-Boundary / 边界 is authoring + human QA only; do not send invisible boundary prose to ImageGen —
-rely on well-authored 上屏文字. 完整文字稿、取舍说明、证据映射、证据编号、视觉结构与讲解提示
-must not enter ImageGen prompts.
+The default content-first compiler sends the page task, core judgment, full semantic prose,
+locked on-screen copy, and factual boundary. It deliberately ignores 视觉结构, visual-intent
+routing, and creative-brief layout advice so ImageGen can design the page from the content.
+Legacy compilers remain available for comparison and rollback.
 """
 
 from __future__ import annotations
@@ -50,7 +49,20 @@ from scripts.dual_image_overlay.prompt_diagnostics import (
 )
 
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
-PROMPT_COMPILERS = ("legacy", "creative-brief-v1")
+PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
+DEFAULT_PROMPT_COMPILER = "content-first-v1"
+CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【输出要求】
+画布尺寸为 2048×1024（2:1）。
+【语义理解】
+完整覆盖【必须上屏文字】中的信息要点和逻辑关系，模块名称、关键数字、单位和业务术语须准确；不得改变原意、遗漏关键结论或新增事实。
+根据页面任务、核心判断和完整内容语义，自主决定构图、视觉载体、信息层级和图文组合；并根据本页最重要的业务关系，从流程、汇聚、分发、闭环、层级、对照等关系形式中选择一种作为主导表达。
+【视觉表达】
+在表达页面文字段落时，优先使用彩色化、具象化、语义化、场景化的行业插图，将业务对象、动作过程和主导关系转化为可识别的视觉结构。
+避免把业务含义处理成圆形图标、图标墙、线性符号、扁平界面组件或等距三维小组件。
+场景化插图中的人物、标牌、屏幕文字和数字仅作为环境质感，应采用远景、侧背面、浅景深、低对比或适度虚化处理。
+不得生成页面标题、副标题、Logo、页脚、页码。
+【视觉风格】
+使用以下色彩气质：#F7F6F0、#12355B、#101820、#303030、#6F7275、#C9CDD1。整体正式、严谨、克制，具有高质量汇报和演讲质感。"""
 # Status asides that must not be painted as core on-screen claims.
 # Planning decks argue the proposed solution; do not restamp "not yet fact" on every page.
 ONSCREEN_ASIDE_RE = re.compile(
@@ -497,6 +509,72 @@ def content_lock_text(page: ScriptPage, page_mission: str = "") -> str:
     return "\n".join(context).strip() + "\n"
 
 
+def _flatten_markdown_tables(text: str) -> str:
+    """Preserve table cell meanings without prescribing a rendered table."""
+
+    output: list[str] = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if re.fullmatch(r"\|?(?:\s*:?-+:?\s*\|)+\s*:?-+:?\s*\|?", line):
+            continue
+        if line.startswith("|") and line.endswith("|"):
+            cells = [cell.strip() for cell in line.strip("|").split("|")]
+            output.append(" · ".join(cell for cell in cells if cell))
+        else:
+            output.append(raw)
+    return "\n".join(output).strip()
+
+
+def diagnostic_onscreen_text(
+    page: ScriptPage,
+    prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
+) -> str:
+    """Return the text layer the selected compiler is required to preserve."""
+
+    if prompt_compiler == "content-first-v1":
+        body = _flatten_markdown_tables(
+            _clean_onscreen_for_imagegen(page.onscreen_text)
+        )
+        return "\n\n".join(
+            part for part in (page.onscreen_judgment.strip(), body) if part
+        )
+    return page.onscreen_text
+
+
+def render_content_first_prompt(
+    page: ScriptPage,
+    *,
+    style_lock: Path,
+    page_mission: str = "",
+) -> str:
+    """Render a complete-content prompt without translating meaning into layout."""
+
+    onscreen = diagnostic_onscreen_text(page, "content-first-v1")
+    parts = [
+        f"【页面编码】{page.page_id.upper()}｜{page.title or page.page_id}",
+        "以上仅用于按页追踪，不得在图中渲染页面编码。",
+        "",
+        "【页面任务｜仅供理解，不上屏】",
+        page_mission.strip() or page.main_message.strip(),
+        "",
+        "【核心判断｜仅供理解】",
+        page.main_message.strip(),
+        "",
+        "【完整内容语义｜仅供理解，不要求逐字上屏】",
+        page.full_prose.strip() or onscreen,
+        "",
+        "【必须上屏文字】",
+        onscreen,
+        "",
+        "【事实与范围边界｜仅供约束，不上屏】",
+        page.boundary.strip() or "不得扩大原文的事实范围或结论强度。",
+        "不得新增原文不存在的数字、组织名称、责任主体、事实、结论或口号。",
+        "",
+        CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT,
+    ]
+    return "\n".join(parts).strip() + "\n"
+
+
 def _page_missions(project: Path) -> dict[str, str]:
     outline_path = project / "workbench" / "stages" / "01-analysis" / "outline.json"
     if not outline_path.is_file():
@@ -572,13 +650,36 @@ def compile_page_prompt(
     page_mission: str = "",
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
-    prompt_compiler: str = "legacy",
+    prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
 ) -> CompiledPagePrompt:
     if prompt_compiler not in PROMPT_COMPILERS:
         raise ValueError(
             f"unsupported prompt compiler: {prompt_compiler}; "
             f"choose one of {', '.join(PROMPT_COMPILERS)}"
         )
+    if prompt_compiler == "content-first-v1":
+        prompt = render_content_first_prompt(
+            page,
+            style_lock=style_lock,
+            page_mission=page_mission,
+        )
+        assert_deliverable_prompt(prompt)
+        if EVIDENCE_ID_RE.search(prompt):
+            raise ValueError(f"{page.page_id} ImageGen prompt still contains evidence IDs")
+        return CompiledPagePrompt(
+            prompt=prompt,
+            compiler_version=prompt_compiler,
+            relation="model_decides_from_complete_content",
+            injected_rule_ids=(
+                "content.page_task",
+                "content.core_judgment",
+                "content.full_semantics",
+                "content.locked_onscreen",
+                "fact.source_boundary",
+                "style.tone_only",
+            ),
+        )
+
     relation = select_page_visual_intent_type(
         page,
         page_mission,
@@ -595,9 +696,10 @@ def compile_page_prompt(
         )
         visual_intent = render_creative_brief(creative_brief)
         injected_rule_ids = (
-            "creative.semantic_contract",
+            "creative.context",
             "creative.freedom_envelope",
-            "text.no_additional_text",
+            "text.locked_onscreen_exact",
+            "text.auxiliary_allowed",
             *(
                 f"creative.page_avoid.{index}"
                 for index, _ in enumerate(
@@ -652,7 +754,7 @@ def build_page_prompt(
     page_mission: str = "",
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
-    prompt_compiler: str = "legacy",
+    prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
 ) -> str:
     """Backward-compatible string API over the versioned prompt compiler."""
 
@@ -673,7 +775,7 @@ def write_chapter_handoff(
     style_lock: Path,
     pages: list[int],
     batch_name: str,
-    prompt_compiler: str = "legacy",
+    prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
     compare_with: str | None = None,
 ) -> dict[str, Path]:
     if compare_with is not None and compare_with not in PROMPT_COMPILERS:
@@ -736,7 +838,13 @@ def write_chapter_handoff(
         selected_diagnostics = PagePromptDiagnostics(
             page_id=page.page_id,
             title=page.title or page.page_id,
-            metrics=analyze_prompt(prompt, onscreen_text=page.onscreen_text),
+            metrics=analyze_prompt(
+                prompt,
+                onscreen_text=diagnostic_onscreen_text(
+                    page,
+                    prompt_compiler,
+                ),
+            ),
             build_metadata=compiled.build_metadata(),
         )
         diagnostics.append(selected_diagnostics)
@@ -754,7 +862,10 @@ def write_chapter_handoff(
                 title=page.title or page.page_id,
                 metrics=analyze_prompt(
                     comparison.prompt,
-                    onscreen_text=page.onscreen_text,
+                    onscreen_text=diagnostic_onscreen_text(
+                        page,
+                        compare_with,
+                    ),
                 ),
                 build_metadata=comparison.build_metadata(),
             )
@@ -836,7 +947,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--prompt-compiler",
         choices=PROMPT_COMPILERS,
-        default="legacy",
+        default=DEFAULT_PROMPT_COMPILER,
     )
     parser.add_argument(
         "--compare-with",
