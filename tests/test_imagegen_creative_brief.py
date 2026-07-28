@@ -112,6 +112,20 @@ def test_content_first_prompt_places_visible_judgment_before_support_modules() -
     assert required.index(page.onscreen_judgment) < required.index("数据治理")
 
 
+def test_content_first_treats_visible_judgment_as_body_conclusion_without_font_sizes() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert "第一段是正文区结论句，不是页面标题或副标题" in prompt
+    assert "不得按页面标题样式处理" in prompt
+    assert "不得与 PPT 模板层标题争夺视觉层级" in prompt
+    assert "字号" not in prompt
+    assert "1.6—1.8倍" not in prompt
+    assert "1.25—1.4倍" not in prompt
+
+
 def test_creative_brief_preserves_semantics_but_does_not_prescribe_layout() -> None:
     page = _page()
     brief = build_page_creative_brief(
