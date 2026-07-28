@@ -89,6 +89,8 @@ class PrepareStage01InputTests(unittest.TestCase):
             text,
         )
         self.assertIn("semantic omission is not", text)
+        self.assertIn("hard minimum of 220", text)
+        self.assertIn("at least two evidence-bearing on-screen lines", text)
         self.assertIn("[primary] 统计基础已经具备 (S001)", text)
         self.assertIn("- evidence_text:", text)
         self.assertIn("- boundary_refs: S002", text)

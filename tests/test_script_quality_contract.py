@@ -10,6 +10,9 @@ from cyberppt.script_quality_contract import (
     audit_script_quality,
     build_communication_review,
     extract_speaker_notes,
+    meaningful_char_count,
+    onscreen_effective_char_target,
+    onscreen_story_roles,
     parse_script_markdown,
     text_similarity,
 )
@@ -186,10 +189,31 @@ class ScriptContractAuditTests(unittest.TestCase):
         self.assertTrue(page["lead_matches_main_message"])
         self.assertIn("semantic_coverage", page)
         self.assertEqual(
-            {"conclusion", "evidence", "explanation", "implication"},
+            {"conclusion", "evidence", "relation", "closure"},
             set(page["story_roles"]),
         )
         self.assertEqual("manual_review", page["review_questions"]["single_mission"])
+
+    def test_effective_density_ignores_markdown_and_uses_adaptive_target(self) -> None:
+        page = parse_script_markdown(
+            """## 第9页：密度测试
+- 页面类型：内容页
+- 主判断：形成完整判断。
+- 上屏结论：形成完整判断
+- 完整文字稿：这是用于测试动态密度目标的完整文字稿，持续补充业务事实、证据关系和页面结论，使正文长度足以触发最低有效字符门槛。
+- 上屏文字：
+  **证据模块**
+  - 事实一支撑判断。
+  - 事实二解释关系。
+"""
+        ).pages[0]
+
+        self.assertEqual(
+            len("形成完整判断证据模块事实一支撑判断事实二解释关系"),
+            meaningful_char_count(page.onscreen_judgment + page.onscreen_text),
+        )
+        self.assertEqual(220, onscreen_effective_char_target(page))
+        self.assertTrue(onscreen_story_roles(page)["relation"])
 
     def test_communication_review_warns_when_lead_is_not_main_message(self) -> None:
         script = parse_script_markdown(

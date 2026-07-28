@@ -80,6 +80,142 @@ class PagePromptDiagnostics:
         return payload
 
 
+@dataclass(frozen=True)
+class GeneratedTextFidelity:
+    locked_effective_chars: int
+    ocr_effective_chars: int
+    character_retention_ratio: float
+    text_coverage_ratio: float
+    required_phrase_count: int
+    missing_phrases: tuple[str, ...]
+    exact_number_count: int
+    missing_numbers: tuple[str, ...]
+    passed: bool
+    issue_codes: tuple[str, ...]
+
+    def to_dict(self) -> dict[str, object]:
+        return asdict(self)
+
+
+def _visible_text_key(text: str) -> str:
+    return "".join(re.findall(r"[\u4e00-\u9fffA-Za-z0-9]", text)).lower()
+
+
+def _char_ngrams(text: str, size: int = 3) -> set[str]:
+    key = _visible_text_key(text)
+    if len(key) < size:
+        return {key} if key else set()
+    return {key[index : index + size] for index in range(len(key) - size + 1)}
+
+
+def _locked_required_phrases(locked_text: str) -> tuple[str, ...]:
+    lines = [
+        re.sub(r"^\s*[-*•]\s*", "", line).strip("* ").strip()
+        for line in locked_text.splitlines()
+        if line.strip()
+    ]
+    lead = lines[0] if lines else ""
+    module_titles = re.findall(r"\*\*(.+?)\*\*", locked_text)
+    return tuple(dict.fromkeys(part for part in (lead, *module_titles) if part))
+
+
+def analyze_generated_text_fidelity(
+    locked_text: str,
+    ocr_text: str,
+    *,
+    required_phrases: Iterable[str] = (),
+    minimum_ratio: float = 0.85,
+) -> GeneratedTextFidelity:
+    """Compare existing OCR output with the locked ImageGen text contract."""
+
+    locked_key = _visible_text_key(locked_text)
+    ocr_key = _visible_text_key(ocr_text)
+    locked_ngrams = _char_ngrams(locked_text)
+    ocr_ngrams = _char_ngrams(ocr_text)
+    retention = (
+        min(len(ocr_key) / len(locked_key), 1.0)
+        if locked_key
+        else 1.0
+    )
+    coverage = (
+        len(locked_ngrams & ocr_ngrams) / len(locked_ngrams)
+        if locked_ngrams
+        else 1.0
+    )
+    phrases = tuple(
+        dict.fromkeys(
+            str(item).strip()
+            for item in (
+                *tuple(required_phrases),
+                *_locked_required_phrases(locked_text),
+            )
+            if str(item).strip()
+        )
+    )
+    missing_phrases = tuple(
+        phrase
+        for phrase in phrases
+        if _visible_text_key(phrase) not in ocr_key
+    )
+    numbers = tuple(dict.fromkeys(_EXACT_NUMBER_RE.findall(locked_text)))
+    missing_numbers = tuple(value for value in numbers if value not in ocr_text)
+    issues: list[str] = []
+    if retention < minimum_ratio:
+        issues.append("generated_text_character_retention_low")
+    if coverage < minimum_ratio:
+        issues.append("generated_text_coverage_low")
+    if missing_phrases:
+        issues.append("generated_text_required_phrase_missing")
+    if missing_numbers:
+        issues.append("generated_text_exact_number_missing")
+    return GeneratedTextFidelity(
+        locked_effective_chars=len(locked_key),
+        ocr_effective_chars=len(ocr_key),
+        character_retention_ratio=round(retention, 4),
+        text_coverage_ratio=round(coverage, 4),
+        required_phrase_count=len(phrases),
+        missing_phrases=missing_phrases,
+        exact_number_count=len(numbers),
+        missing_numbers=missing_numbers,
+        passed=not issues,
+        issue_codes=tuple(issues),
+    )
+
+
+def write_generated_text_fidelity(
+    path: Path,
+    *,
+    page_id: str,
+    locked_text: str,
+    ocr_text: str,
+    required_phrases: Iterable[str] = (),
+    minimum_ratio: float = 0.85,
+) -> Path:
+    result = analyze_generated_text_fidelity(
+        locked_text,
+        ocr_text,
+        required_phrases=required_phrases,
+        minimum_ratio=minimum_ratio,
+    )
+    payload = {
+        "schema": "cyberppt.imagegen_text_fidelity.v1",
+        "page_id": page_id,
+        "minimum_ratio": minimum_ratio,
+        "result": result.to_dict(),
+        "next_action": (
+            "accept"
+            if result.passed
+            else "retry_once_with_same_prompt_and_stronger_text_preservation_no_reference_image"
+        ),
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return path
+
+
 def _section(text: str, start: str, end: str | None = None) -> str:
     if start not in text:
         return ""

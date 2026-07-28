@@ -120,6 +120,8 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "The visible layer must be independently readable without speaker narration.",
         "Write `上屏文字` as a closed story: conclusion → source-supported evidence → explanation or causal relation → implication or handoff.",
         "Do not compress the full prose into module labels plus keywords. Preserve every fact, number, relation, and limitation needed to understand why the conclusion follows; concise rewriting is allowed, semantic omission is not.",
+        "Count only Chinese, Latin, and numeric characters: target roughly 50% of the full prose, with a hard minimum of 220 and a cap target of 320 visible characters.",
+        "Use at least two evidence-bearing on-screen lines. The visible conclusion may also carry the implication or handoff; do not add formulaic 因此/由此 wording only to satisfy the contract.",
         "`reserved_for_later`, `boundary_refs`, and `boundary_constraints` are internal controls only.",
         "They must not be copied into coaching tips or speaker notes. State a constraint only when it is the page's declared business subject.",
         "",

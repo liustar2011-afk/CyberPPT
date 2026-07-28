@@ -6,10 +6,12 @@ from tempfile import TemporaryDirectory
 
 from scripts.dual_image_overlay.prompt_diagnostics import (
     PagePromptDiagnostics,
+    analyze_generated_text_fidelity,
     analyze_prompt,
     compare_page_diagnostics,
     write_batch_diagnostics,
     write_compiler_comparison,
+    write_generated_text_fidelity,
 )
 
 
@@ -58,6 +60,46 @@ def test_analyze_prompt_is_read_only() -> None:
     original = PROMPT
     analyze_prompt(PROMPT, onscreen_text="正文")
     assert PROMPT == original
+
+
+def test_generated_text_fidelity_requires_phrases_numbers_and_85_percent() -> None:
+    locked = """供需研判转向多维综合判断
+**关键变化**
+- 2025年全社会用电量同比增长5.0%
+**综合判断**
+- 结构、区域、时段和市场共同作用
+"""
+    passed = analyze_generated_text_fidelity(locked, locked)
+    failed = analyze_generated_text_fidelity(
+        locked,
+        "供需研判转向综合判断\n关键变化\n2025年全社会用电量增长",
+    )
+
+    assert passed.passed is True
+    assert passed.character_retention_ratio == 1.0
+    assert passed.text_coverage_ratio == 1.0
+    assert failed.passed is False
+    assert "generated_text_character_retention_low" in failed.issue_codes
+    assert "generated_text_required_phrase_missing" in failed.issue_codes
+    assert "generated_text_exact_number_missing" in failed.issue_codes
+
+
+def test_generated_text_fidelity_writer_requests_one_no_reference_retry() -> None:
+    with TemporaryDirectory() as directory:
+        path = write_generated_text_fidelity(
+            Path(directory) / "fidelity.json",
+            page_id="p05",
+            locked_text="结论\n**模块**\n2025年完成率95%",
+            ocr_text="结论",
+        )
+        payload = json.loads(path.read_text(encoding="utf-8"))
+
+    assert payload["schema"] == "cyberppt.imagegen_text_fidelity.v1"
+    assert payload["result"]["passed"] is False
+    assert (
+        payload["next_action"]
+        == "retry_once_with_same_prompt_and_stronger_text_preservation_no_reference_image"
+    )
 
 
 def test_write_batch_diagnostics_uses_warning_only_schema() -> None:
