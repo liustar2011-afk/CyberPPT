@@ -65,6 +65,10 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "【视觉风格】" in implicit
     assert "象牙白 + 深蓝领导汇报" not in implicit
     assert "风格适用语境" not in implicit
+    assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" in implicit
+    assert "实景编辑式插画或具象行业场景应服务于关键业务对象" in implicit
+    assert "图标不得成为主构图、中央视觉或留白装饰" in implicit
+    assert "段落正文留在 PPT 可编辑文字层" not in implicit
     assert "整体呈现现代中文高端平面设计气质。" in implicit
     assert "style.selected_lock" in (
         implicit_compiled.build_metadata()["injected_rule_ids"]

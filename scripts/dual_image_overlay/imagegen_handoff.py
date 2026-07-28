@@ -556,9 +556,15 @@ STYLE_COLOR_LABELS = (
     ("accent", "强调色"),
 )
 
+CONTENT_FIRST_STYLE_RULE_FIELDS = (
+    "scope_rule",
+    "content_visual_rule",
+    "icon_rule",
+)
+
 
 def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
-    """Load the selected style without importing its layout or text-density rules."""
+    """Load the selected style without importing conflicting text-layer rules."""
 
     payload = load_style_lock(style_lock)
     style = payload.get("style")
@@ -574,7 +580,7 @@ def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
 
 
 def render_content_first_style_contract(style_lock: Path) -> str:
-    """Render tone-only style guidance from the project's selected style lock."""
+    """Render colors and compatible visual conventions from the selected style."""
 
     style = _selected_content_first_style(style_lock)
     colors = style["colors"]
@@ -593,6 +599,14 @@ def render_content_first_style_contract(style_lock: Path) -> str:
         "【视觉风格】",
         f"色彩角色：{'；'.join(color_parts)}。",
     ]
+    style_rules = [
+        str(style.get(field) or "").strip()
+        for field in CONTENT_FIRST_STYLE_RULE_FIELDS
+        if str(style.get(field) or "").strip()
+    ]
+    if style_rules:
+        lines.append("风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）：")
+        lines.extend(f"- {rule}" for rule in style_rules)
     lines.append("整体呈现现代中文高端平面设计气质。")
     return "\n".join(lines)
 
