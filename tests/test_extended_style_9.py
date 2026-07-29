@@ -59,17 +59,19 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert resolve_default_style(style_name="ivory_deep_blue_scene")["id"] == 9
     assert style_nine["colors"] == STYLE_FOUR_CONTRACT["colors"]
     assert "先保证锁定上屏文字完整、舒展、清晰" in style_nine["content_visual_rule"]
-    assert "再根据具体文字选择少量局部语义配图" in style_nine["content_visual_rule"]
-    assert "不得占据约半幅页面" in style_nine["content_visual_rule"]
-    assert "不得形成全高照片区、大面积连续实景区或左右图文二分" in style_nine["content_visual_rule"]
+    assert "再根据具体内容选择语义实景、编辑式插画" in style_nine["content_visual_rule"]
+    assert "语义视觉可成为页面主体" in style_nine["content_visual_rule"]
+    assert "不得占据约半幅页面" not in style_nine["content_visual_rule"]
     assert "不得因文字模块并列而逐项配图" in style_nine["content_visual_rule"]
     assert "机械拆成照片区域、文字区域或重复卡片阵列" in style_nine["content_visual_rule"]
-    assert "配图的数量、位置和面积由其对文字的解释价值决定" in style_nine["content_visual_rule"]
+    assert "其数量、位置和面积由解释价值决定" in style_nine["content_visual_rule"]
+    assert "不得形成与业务判断无关的连续背景" in style_nine["content_visual_rule"]
     assert "locked on-screen text faithfully in the main composition" in style_nine["semantic_image_text_rule"]
     assert "may use a small amount of clear Chinese labels" in style_nine["semantic_image_text_rule"]
     assert "dense pseudo-Chinese" in style_nine["semantic_image_text_rule"]
-    assert "文字是页面主体" in style_nine["scope_rule"]
-    assert "编辑式插画仅作为从具体文字含义中生长出来的辅助视觉语言" in style_nine["scope_rule"]
+    assert "文字与语义视觉共同承担表达" in style_nine["scope_rule"]
+    assert "由页面内容决定何者成为视觉中心" in style_nine["scope_rule"]
+    assert "文字是页面主体" not in style_nine["scope_rule"]
     assert "线性图标仅为内容无法通过具象载体表达时的末级辅助语言" in style_nine["scope_rule"]
     assert "Do not show frontal faces" in style_nine["people_rule"]
     assert "three-quarter frontal faces" in style_nine["people_rule"]
@@ -90,7 +92,8 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert len(style_nine["imagegen_signature"]) == 3
     assert "禁止霓虹蓝" in style_nine["imagegen_signature"][0]
     assert "只设一个视觉中心" in style_nine["imagegen_signature"][1]
-    assert "只使用一种一致的编辑式视觉媒介" in style_nine["imagegen_signature"][2]
+    assert "允许为承载核心业务关系使用克制、低起伏的半平面或浅层空间结构" in style_nine["imagegen_signature"][2]
+    assert "不得使用夸张三维装置" in style_nine["imagegen_signature"][2]
 
 
 def test_default_style_choices_still_show_only_original_eight() -> None:

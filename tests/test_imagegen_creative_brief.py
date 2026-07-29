@@ -166,8 +166,10 @@ def test_style_nine_content_first_rejects_stale_scene_first_lock_wording() -> No
     assert "允许轻微立体层次、浅阴影和扩大场景" not in prompt
     assert "允许场景感成为主叙事" not in prompt
     assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" in prompt
-    assert "文字是页面主体" in prompt
-    assert "不得占据约半幅页面" in prompt
+    assert "文字与语义视觉共同承担表达" in prompt
+    assert "语义视觉可成为页面主体" in prompt
+    assert "文字是页面主体" not in prompt
+    assert "不得占据约半幅页面" not in prompt
     assert "图标不是默认视觉载体" in prompt
 
 
@@ -370,7 +372,7 @@ def test_style_nine_compiles_short_refinement_signature() -> None:
     assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" in prompt
     assert "只设一个视觉中心" in prompt
     assert "禁止等宽分栏、圆角卡片阵列、图标墙" in prompt
-    assert "全页只使用一种一致的编辑式视觉媒介" in prompt
+    assert "允许为承载核心业务关系使用克制、低起伏的半平面或浅层空间结构" in prompt
 
 
 def test_locked_judgment_is_not_repeated_in_complete_page_semantics() -> None:
