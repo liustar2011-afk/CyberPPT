@@ -52,15 +52,17 @@ from scripts.dual_image_overlay.style_library import load_style_lock
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
 PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
 DEFAULT_PROMPT_COMPILER = "content-first-v1"
-CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【文字与视觉要求｜不上屏】
-只允许出现【必须上屏文字】中的文字，不得新增、摘要、删减或改写；模块名称、数字、单位和业务术语必须准确。
-以【页面逻辑】组织空间，不使用等权卡片、通用图标流程或逐项配图；关系应先于模块被看见。
+CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【内容与视觉要求｜不上屏】
+必须由文字与画面共同完整表达【完整页面内容】中的核心判断、业务对象、逻辑关系和关键限定，不得捏造事实或改变判断强度。
+【锁定上屏文字】必须逐字准确；数字、单位、专有名词、业务术语和否定边界必须准确。其他说明文字允许在不损失语义的前提下调整语序、合并重复、拆分为场景标签或适度压缩。
+不得新增未经页面内容支持的上屏文字；允许增加不带文字的行业场景、业务动作、环境细节和视觉隐喻，让视觉关系承担解释责任。
+以【页面逻辑】组织空间，不使用等权卡片、通用图标流程或逐项配图；先展开业务场景及其关系，再让必要文字附着于场景。
 中文使用清晰的现代无衬线黑体。不得生成额外页面标题、Logo、页脚或页码。
 【输出要求｜不上屏】
 画布尺寸为 2048×1024（2:1）。"""
 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【结论句要求｜不上屏】
-【必须上屏文字】第一段是正文结论句，不是页面标题；不得通栏放大或添加标题竖线、横线等装饰。
-允许调整换行和文字层级，但不得用插图替代必须文字。"""
+【锁定上屏文字】第一段是正文结论句，不是页面标题；不得通栏放大或添加标题竖线、横线等装饰。
+允许调整换行和文字层级；画面必须参与表达页面逻辑，不得退化为文字排版加装饰图片。"""
 # Status asides that must not be painted as core on-screen claims.
 # Planning decks argue the proposed solution; do not restamp "not yet fact" on every page.
 ONSCREEN_ASIDE_RE = re.compile(
@@ -611,6 +613,21 @@ def diagnostic_onscreen_text(
     return page.onscreen_text
 
 
+def locked_onscreen_text(page: ScriptPage) -> str:
+    """Return only verbatim-critical visible copy; keep the rest semantically flexible."""
+
+    locked: list[str] = []
+    if page.onscreen_judgment.strip():
+        locked.append(page.onscreen_judgment.strip())
+    for raw in _clean_onscreen_for_imagegen(page.onscreen_text).splitlines():
+        line = raw.strip()
+        if not line or line in locked:
+            continue
+        if re.search(r"\d", line):
+            locked.append(line)
+    return "\n".join(locked).strip()
+
+
 STYLE_COLOR_LABELS = (
     ("background", "背景"),
     ("title", "主文字"),
@@ -740,6 +757,7 @@ def render_content_first_prompt(
             "script before compiling an ImageGen prompt"
         )
     onscreen = diagnostic_onscreen_text(page, "content-first-v1")
+    locked = locked_onscreen_text(page)
     relation, logic_contract = render_page_logic_contract(
         page,
         page_mission=page_mission,
@@ -755,7 +773,10 @@ def render_content_first_prompt(
         "",
         logic_contract,
         "",
-        "【必须上屏文字】",
+        "【锁定上屏文字】",
+        locked,
+        "",
+        "【完整页面内容｜用于视觉叙事】",
         onscreen,
         "",
         CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
@@ -873,7 +894,8 @@ def compile_page_prompt(
                 "content.core_judgment",
                 "content.full_semantics",
                 "content.page_logic_contract",
-                "content.locked_onscreen",
+                "content.locked_key_copy",
+                "content.complete_page_semantics",
                 "content.independent_reading",
                 "fact.source_boundary",
                 "style.selected_lock",
@@ -906,7 +928,7 @@ def compile_page_prompt(
         injected_rule_ids = (
             "creative.context",
             "creative.freedom_envelope",
-            "text.locked_onscreen_exact",
+            "text.locked_key_copy_exact",
             "text.auxiliary_allowed",
             *(
                 f"creative.page_avoid.{index}"
@@ -999,10 +1021,10 @@ def write_chapter_handoff(
     if prompt_compiler == "content-first-v1":
         compilation_rules = [
             "- 每页独立完整，可直接送入 ImageGen，不依赖批次级公共提示。",
-            "- 送入：页面任务、核心判断、精简页面逻辑、必须上屏文字、短文字视觉规则，以及所选风格的适用语境和配色。",
-            "- 不送入：完整内容语义、事实边界、源页面全文或重复设计理论。",
+            "- 送入：页面任务、核心判断、精简页面逻辑、锁定关键文字、完整页面语义、短文字视觉规则，以及所选风格的适用语境和配色。",
+            "- 不送入：源材料全文、完整事实边界或重复设计理论。",
             "- 不送入：证据编号、讲解提示、文字取舍、图片数量或后期制作规则。",
-            "- 页面任务、核心判断和页面逻辑只用于理解与构图；画面中的可见正文以“必须上屏文字”为准。",
+            "- 页面任务、核心判断和页面逻辑只用于理解与构图；锁定文字逐字准确，其余页面内容允许在语义完整前提下重组并与场景融合。",
         ]
     else:
         compilation_rules = [

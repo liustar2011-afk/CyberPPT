@@ -14,6 +14,7 @@ from scripts.dual_image_overlay.imagegen_handoff import (
     build_page_prompt,
     compile_page_prompt,
     diagnostic_onscreen_text,
+    locked_onscreen_text,
     select_page_visual_intent_type,
 )
 from scripts.dual_image_overlay.prompt_diagnostics import analyze_prompt
@@ -63,7 +64,8 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert implicit != legacy
     assert "【完整内容语义｜仅供理解，不要求逐字上屏】" not in implicit
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT in implicit
-    assert "不得新增、摘要、删减或改写" in implicit
+    assert "其他说明文字允许在不损失语义的前提下" in implicit
+    assert "允许增加不带文字的行业场景、业务动作、环境细节和视觉隐喻" in implicit
     assert "【事实与范围边界｜仅供约束，不上屏】" not in implicit
     assert CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT in implicit
     assert "【输出与风格｜不上屏】" in implicit
@@ -131,8 +133,12 @@ def test_content_first_prompt_places_visible_judgment_before_support_modules() -
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    required = prompt.split("【必须上屏文字】", 1)[1]
-    assert required.index(page.onscreen_judgment) < required.index("数据治理")
+    locked = prompt.split("【锁定上屏文字】", 1)[1].split(
+        "【完整页面内容｜用于视觉叙事】", 1
+    )[0]
+    semantics = prompt.split("【完整页面内容｜用于视觉叙事】", 1)[1]
+    assert page.onscreen_judgment in locked
+    assert "数据治理" in semantics
 
 
 def test_content_first_rejects_content_page_without_visible_judgment() -> None:
@@ -167,7 +173,7 @@ def test_content_first_omits_tracking_metadata_and_avoids_repeated_rules() -> No
     assert "P18" not in prompt
     assert "以上仅用于按页追踪" not in prompt
     assert page.title not in prompt
-    assert prompt.count("不得新增、摘要、删减或改写") == 1
+    assert prompt.count("其他说明文字允许在不损失语义的前提下") == 1
     assert prompt.count("【页面逻辑｜不上屏】") == 1
     assert prompt.count("以【页面逻辑】组织空间") == 1
     assert "页面构图和信息组织仍由" not in prompt
@@ -179,8 +185,17 @@ def test_content_first_text_rule_keeps_locked_names_and_numbers_authoritative() 
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "只允许出现【必须上屏文字】中的文字" in prompt
-    assert "模块名称、数字、单位和业务术语必须准确" in prompt
+    assert "【锁定上屏文字】必须逐字准确" in prompt
+    assert "数字、单位、专有名词、业务术语和否定边界必须准确" in prompt
+    assert "不得新增未经页面内容支持的上屏文字" in prompt
+
+
+def test_content_first_locks_only_conclusion_and_numeric_fact_lines() -> None:
+    page = _page()
+    locked = locked_onscreen_text(page)
+    assert page.onscreen_judgment in locked
+    assert "2025年完成率 95%" in locked
+    assert "保持滚动验证和误差复盘" not in locked
 
 
 def test_content_first_uses_the_compact_visual_wording() -> None:

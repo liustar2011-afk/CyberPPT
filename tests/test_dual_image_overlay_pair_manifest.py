@@ -276,8 +276,10 @@ class CyberpptPairManifestTests(unittest.TestCase):
             )
 
         prompt = manifest["pairs"][0]["full"]["prompt"]
-        self.assertIn("【完整内容语义｜仅供理解，不要求逐字上屏】", prompt)
-        self.assertIn("【必须上屏文字】", prompt)
+        self.assertNotIn("【完整内容语义｜仅供理解，不要求逐字上屏】", prompt)
+        self.assertIn("【页面逻辑｜不上屏】", prompt)
+        self.assertIn("【锁定上屏文字】", prompt)
+        self.assertIn("【完整页面内容｜用于视觉叙事】", prompt)
         self.assertNotIn("Selected visual intent type:", prompt)
 
 
