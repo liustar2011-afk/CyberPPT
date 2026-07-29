@@ -119,11 +119,25 @@ def _merge_missing_onscreen_judgments(
         if isinstance(item, dict)
         and str(item.get("page_id") or "").removeprefix("p").isdigit()
     }
+    judgment_modes = {
+        int(str(item.get("page_id") or "").removeprefix("p")): str(
+            item.get("onscreen_judgment_mode") or "locked"
+        ).strip()
+        for item in outline_pages
+        if isinstance(item, dict)
+        and str(item.get("page_id") or "").removeprefix("p").isdigit()
+    }
     merged = dict(pages)
     for number, block in pages.items():
         if not re.search(r"^- 页面类型：内容(?:页)?\s*$", block, re.MULTILINE):
             continue
         judgment = judgments.get(number, "")
+        judgment_mode = judgment_modes.get(number, "locked")
+        if judgment_mode not in ("locked", "semantic_only"):
+            raise ValueError(
+                f"content page p{number:02d} has unsupported "
+                f"onscreen_judgment_mode={judgment_mode!r}"
+            )
         if not judgment:
             raise ValueError(
                 f"content page p{number:02d} has no 上屏结论 in drafts or outline"
@@ -134,13 +148,23 @@ def _merge_missing_onscreen_judgments(
         if "- 上屏结论：" not in block:
             merged[number] = block.replace(
                 marker,
-                f"- 上屏结论：{judgment}\n{marker}",
+                (
+                    f"- 上屏结论模式：{judgment_mode}\n"
+                    f"- 上屏结论：{judgment}\n{marker}"
+                ),
+                1,
+            )
+        elif "- 上屏结论模式：" not in block:
+            merged[number] = merged[number].replace(
+                "- 上屏结论：",
+                f"- 上屏结论模式：{judgment_mode}\n- 上屏结论：",
                 1,
             )
         receipt_match = PAGE_CONTRACT_RECEIPT_RE.search(merged[number])
         if receipt_match:
             receipt = json.loads(receipt_match.group(1))
             receipt["onscreen_judgment"] = judgment
+            receipt["onscreen_judgment_mode"] = judgment_mode
             receipt_text = json.dumps(
                 receipt,
                 ensure_ascii=False,

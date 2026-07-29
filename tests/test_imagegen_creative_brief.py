@@ -15,6 +15,7 @@ from scripts.dual_image_overlay.imagegen_handoff import (
     compile_page_prompt,
     diagnostic_onscreen_text,
     locked_onscreen_text,
+    resolve_onscreen_judgment_mode,
     select_page_visual_intent_type,
 )
 from scripts.dual_image_overlay.prompt_diagnostics import analyze_prompt
@@ -196,6 +197,28 @@ def test_content_first_locks_only_conclusion_and_numeric_fact_lines() -> None:
     assert page.onscreen_judgment in locked
     assert "2025年完成率 95%" in locked
     assert "保持滚动验证和误差复盘" not in locked
+
+
+def test_semantic_only_keeps_judgment_in_semantics_but_not_locked_copy() -> None:
+    page = replace(_page(), onscreen_judgment_mode="semantic_only")
+    locked = locked_onscreen_text(page)
+    assert page.onscreen_judgment not in locked
+    assert "2025年完成率 95%" in locked
+    assert page.onscreen_judgment in diagnostic_onscreen_text(page)
+    assert resolve_onscreen_judgment_mode(page) == "semantic_only"
+
+
+def test_outline_context_can_select_semantic_only_without_page_specific_code() -> None:
+    page = _page()
+    context = {"onscreen_judgment_mode": "semantic_only"}
+    assert page.onscreen_judgment not in locked_onscreen_text(page, context)
+    assert resolve_onscreen_judgment_mode(page, context) == "semantic_only"
+
+
+def test_invalid_onscreen_judgment_mode_fails_compilation() -> None:
+    page = replace(_page(), onscreen_judgment_mode="sometimes")
+    with pytest.raises(ValueError, match="unsupported onscreen_judgment_mode"):
+        locked_onscreen_text(page)
 
 
 def test_content_first_uses_the_compact_visual_wording() -> None:

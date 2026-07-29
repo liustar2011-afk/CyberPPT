@@ -49,6 +49,7 @@ CONSTRAINT_THEME_TERMS = (
 SPEAKER_NOTES_MIN_CHARS = 60
 VISIBLE_JUDGMENT_MIN_SIMILARITY = 0.04
 VISIBLE_JUDGMENT_TERMINAL_PUNCTUATION = "。；，：？！.!?;,:"
+ONSCREEN_JUDGMENT_MODES = ("locked", "semantic_only")
 
 
 @dataclass(frozen=True)
@@ -70,6 +71,7 @@ class ScriptPage:
     onscreen_text: str
     module_titles: tuple[str, ...]
     onscreen_judgment: str = ""
+    onscreen_judgment_mode: str = "locked"
     field_order: tuple[str, ...] = ()
     coaching_tip: str = ""
     speaker_notes: str = ""
@@ -212,6 +214,9 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                 onscreen_text=onscreen,
                 module_titles=modules,
                 onscreen_judgment=fields.get("上屏结论", "").strip(),
+                onscreen_judgment_mode=(
+                    fields.get("上屏结论模式", "locked").strip() or "locked"
+                ),
                 field_order=_field_order(body),
                 coaching_tip=(
                     fields.get("讲解提示", "")
@@ -1541,6 +1546,51 @@ def _preflight_semantic_issues(
     records_by_id: dict[str, dict[str, object]],
 ) -> list[ScriptQualityIssue]:
     issues: list[ScriptQualityIssue] = []
+    judgment_mode = str(
+        contract.get("onscreen_judgment_mode")
+        or page.onscreen_judgment_mode
+        or "locked"
+    ).strip()
+    if judgment_mode not in ONSCREEN_JUDGMENT_MODES:
+        issues.append(
+            _issue(
+                "ONSCREEN_JUDGMENT_MODE_INVALID",
+                page,
+                f"Unsupported onscreen_judgment_mode: {judgment_mode}.",
+                "Use locked or semantic_only in the approved page contract.",
+                evidence=(judgment_mode,),
+                severity="error",
+            )
+        )
+    if judgment_mode == "semantic_only":
+        if not page.onscreen_judgment.strip():
+            issues.append(
+                _issue(
+                    "SEMANTIC_JUDGMENT_LOST",
+                    page,
+                    "A semantic-only page has no judgment to carry into the complete page semantics.",
+                    "Provide the approved judgment even though it is not locked for display.",
+                    severity="error",
+                )
+            )
+    if (
+        judgment_mode == "locked"
+        and len(re.sub(r"\s+", "", page.onscreen_judgment)) > 34
+        and any(
+            term in page.onscreen_judgment
+            for term in ("定位", "分工", "协同", "边界", "面向", "支撑", "服务")
+        )
+    ):
+        issues.append(
+            _issue(
+                "ONSCREEN_JUDGMENT_LOCK_REVIEW",
+                page,
+                "A long relationship or positioning judgment is locked for verbatim display.",
+                "Consider semantic_only so the judgment governs composition without becoming a second title.",
+                evidence=(page.onscreen_judgment,),
+                severity="warning",
+            )
+        )
     visible = "\n".join((page.main_message, page.onscreen_judgment, page.onscreen_text))
     conditional_sources = tuple(
         ref for ref in page.source_refs

@@ -93,3 +93,25 @@ def test_preflight_detects_long_visible_line() -> None:
         question="现有基础能否支持继续研究",
     )
     assert "ONSCREEN_LINE_TOO_LONG" in codes
+
+
+def test_preflight_reviews_long_locked_relationship_judgment() -> None:
+    script_text = """## 第1页：定位
+- 页面类型：内容页
+- 页面标题：定位
+- 主判断：公共能力与专业系统形成边界清晰的协同关系
+- 完整文字稿：公共能力服务行业共性需求，专业系统负责运行执行。
+- 文字稿取舍说明：保留关系判断。
+- 证据映射：定位→S001。
+- 上屏结论：建设方向面向行业公共能力并与多个专业运行系统保持清晰边界和职责分工协同
+- 上屏文字：
+  **公共能力**
+  - 服务行业共性需求
+  **专业系统**
+  - 负责专业运行执行
+- 证据：S001。
+- 边界：协同但不替代。
+- 视觉结构：中心能力与外围系统形成边界关系。
+"""
+    codes = _audit(script_text, question="公共能力与专业系统如何分工")
+    assert "ONSCREEN_JUDGMENT_LOCK_REVIEW" in codes

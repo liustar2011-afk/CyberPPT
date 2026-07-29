@@ -613,11 +613,37 @@ def diagnostic_onscreen_text(
     return page.onscreen_text
 
 
-def locked_onscreen_text(page: ScriptPage) -> str:
+ONSCREEN_JUDGMENT_MODES = ("locked", "semantic_only")
+
+
+def resolve_onscreen_judgment_mode(
+    page: ScriptPage,
+    visual_context: dict[str, str] | None = None,
+) -> str:
+    mode = str(
+        (visual_context or {}).get("onscreen_judgment_mode")
+        or page.onscreen_judgment_mode
+        or "locked"
+    ).strip()
+    if mode not in ONSCREEN_JUDGMENT_MODES:
+        raise ValueError(
+            f"{page.page_id} has unsupported onscreen_judgment_mode={mode!r}; "
+            f"choose one of {', '.join(ONSCREEN_JUDGMENT_MODES)}"
+        )
+    return mode
+
+
+def locked_onscreen_text(
+    page: ScriptPage,
+    visual_context: dict[str, str] | None = None,
+) -> str:
     """Return only verbatim-critical visible copy; keep the rest semantically flexible."""
 
     locked: list[str] = []
-    if page.onscreen_judgment.strip():
+    if (
+        resolve_onscreen_judgment_mode(page, visual_context) == "locked"
+        and page.onscreen_judgment.strip()
+    ):
         locked.append(page.onscreen_judgment.strip())
     for raw in _clean_onscreen_for_imagegen(page.onscreen_text).splitlines():
         line = raw.strip()
@@ -757,7 +783,7 @@ def render_content_first_prompt(
             "script before compiling an ImageGen prompt"
         )
     onscreen = diagnostic_onscreen_text(page, "content-first-v1")
-    locked = locked_onscreen_text(page)
+    locked = locked_onscreen_text(page, visual_context)
     relation, logic_contract = render_page_logic_contract(
         page,
         page_mission=page_mission,
@@ -818,6 +844,7 @@ def _page_visual_contexts(project: Path) -> dict[str, dict[str, str]]:
         "visual_center",
         "visual_proof",
         "visual_intent_type",
+        "onscreen_judgment_mode",
     )
     return {
         str(item["page_id"]): {

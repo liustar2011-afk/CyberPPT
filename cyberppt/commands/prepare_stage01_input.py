@@ -39,6 +39,7 @@ def prepare_outline_input(project: Path) -> Path:
         "Create the Outline from Source Truth. Use canonical field names:",
         "`page_job`, `business_question`, `main_message`, "
         "`onscreen_judgment`, "
+        "`onscreen_judgment_mode`, "
         "`new_value_vs_previous`, `reserved_for_later`, `proof_points`, "
         "`visual_intent_type`.",
         "",
@@ -119,6 +120,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "",
         "Write full prose first; derive on-screen text from it.",
         "Every content page must place `上屏结论` before `上屏文字`; the conclusion carries the visible story, while modules support it.",
+        "Set `onscreen_judgment_mode` to `locked` by default. Use `semantic_only` when a positioning or relationship judgment should govern visual composition but should not be forced on screen verbatim.",
         "Emit `onscreen_judgment` in the completed Chinese script as `- 上屏结论：...` without terminal punctuation.",
         "The visible layer must be independently readable without speaker narration.",
         "Write `上屏文字` as a closed story: conclusion → source-supported evidence → explanation or causal relation → implication or handoff.",
@@ -136,6 +138,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             f"- business_question: {page.get('business_question', '')}",
             f"- main_message: {page.get('main_message', '')}",
             f"- onscreen_judgment: {page.get('onscreen_judgment', '')}",
+            f"- onscreen_judgment_mode: {page.get('onscreen_judgment_mode', 'locked')}",
             f"- new_value_vs_previous: {page.get('new_value_vs_previous', '')}",
             f"- reserved_for_later: {page.get('reserved_for_later', '')}",
             f"- visual_intent_type: {page.get('visual_intent_type') or 'auto'}",
@@ -178,6 +181,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             "business_question": page.get("business_question"),
             "main_message": page.get("main_message"),
             "onscreen_judgment": page.get("onscreen_judgment"),
+            "onscreen_judgment_mode": page.get("onscreen_judgment_mode", "locked"),
             "new_value_vs_previous": page.get("new_value_vs_previous"),
             "reserved_for_later": page.get("reserved_for_later"),
             "visual_intent_type": page.get("visual_intent_type"),
