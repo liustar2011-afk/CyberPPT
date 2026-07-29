@@ -145,7 +145,7 @@ class AssembleFinalScriptTests(unittest.TestCase):
                             {
                                 "page_id": "p01",
                                 "onscreen_judgment": "结论先行并由正文证据支撑",
-                                "onscreen_judgment_mode": "semantic_only",
+                                "judgment_role": "relationship",
                             }
                         ]
                     },
@@ -168,12 +168,14 @@ class AssembleFinalScriptTests(unittest.TestCase):
 
             self.assertIn("- 上屏结论：结论先行并由正文证据支撑", text)
             self.assertIn("- 上屏结论模式：semantic_only", text)
+            self.assertIn("- 判断角色：relationship", text)
             self.assertLess(text.index("- 上屏结论："), text.index("- 上屏文字："))
             self.assertIn(
                 '"onscreen_judgment":"结论先行并由正文证据支撑"',
                 text,
             )
             self.assertIn('"onscreen_judgment_mode":"semantic_only"', text)
+            self.assertIn('"judgment_role":"relationship"', text)
 
 
 if __name__ == "__main__":

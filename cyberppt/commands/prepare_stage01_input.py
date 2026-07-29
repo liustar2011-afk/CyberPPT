@@ -39,6 +39,7 @@ def prepare_outline_input(project: Path) -> Path:
         "Create the Outline from Source Truth. Use canonical field names:",
         "`page_job`, `business_question`, `main_message`, "
         "`onscreen_judgment`, "
+        "`judgment_role`, "
         "`onscreen_judgment_mode`, "
         "`new_value_vs_previous`, `reserved_for_later`, `proof_points`, "
         "`visual_intent_type`.",
@@ -77,6 +78,10 @@ def prepare_outline_input(project: Path) -> Path:
         "- `onscreen_judgment`: one concise body-level conclusion derived from "
         "`main_message`; it is not a page title or subtitle and must not end "
         "with standard sentence punctuation",
+        "- `judgment_role`: use `relationship`, `positioning`, `boundary`, or "
+        "`mechanism` when the judgment should normally be proven visually; use "
+        "`fact`, `metric`, `milestone`, `acceptance`, or `prohibition` when it "
+        "should normally remain verbatim-visible",
         "- `上屏文字` must remain independently readable after compression: preserve "
         "the page's essential evidence, explanatory relation, causal chain, and "
         "implication or handoff instead of reducing the prose to labels and keywords",
@@ -120,7 +125,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "",
         "Write full prose first; derive on-screen text from it.",
         "Every content page must place `上屏结论` before `上屏文字`; the conclusion carries the visible story, while modules support it.",
-        "Set `onscreen_judgment_mode` to `locked` by default. Use `semantic_only` when a positioning or relationship judgment should govern visual composition but should not be forced on screen verbatim.",
+        "Derive the default display policy from `judgment_role`: relationship/positioning/boundary/mechanism become `semantic_only`; fact/metric/milestone/acceptance/prohibition become `locked`. Use `onscreen_judgment_mode` only as an explicit override.",
         "Emit `onscreen_judgment` in the completed Chinese script as `- 上屏结论：...` without terminal punctuation.",
         "The visible layer must be independently readable without speaker narration.",
         "Write `上屏文字` as a closed story: conclusion → source-supported evidence → explanation or causal relation → implication or handoff.",
@@ -138,7 +143,8 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             f"- business_question: {page.get('business_question', '')}",
             f"- main_message: {page.get('main_message', '')}",
             f"- onscreen_judgment: {page.get('onscreen_judgment', '')}",
-            f"- onscreen_judgment_mode: {page.get('onscreen_judgment_mode', 'locked')}",
+            f"- judgment_role: {page.get('judgment_role', '')}",
+            f"- onscreen_judgment_mode: {page.get('onscreen_judgment_mode', 'auto')}",
             f"- new_value_vs_previous: {page.get('new_value_vs_previous', '')}",
             f"- reserved_for_later: {page.get('reserved_for_later', '')}",
             f"- visual_intent_type: {page.get('visual_intent_type') or 'auto'}",
@@ -181,7 +187,8 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             "business_question": page.get("business_question"),
             "main_message": page.get("main_message"),
             "onscreen_judgment": page.get("onscreen_judgment"),
-            "onscreen_judgment_mode": page.get("onscreen_judgment_mode", "locked"),
+            "judgment_role": page.get("judgment_role"),
+            "onscreen_judgment_mode": page.get("onscreen_judgment_mode"),
             "new_value_vs_previous": page.get("new_value_vs_previous"),
             "reserved_for_later": page.get("reserved_for_later"),
             "visual_intent_type": page.get("visual_intent_type"),

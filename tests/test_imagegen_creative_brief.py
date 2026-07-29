@@ -11,6 +11,7 @@ from scripts.dual_image_overlay.imagegen_handoff import (
     CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT,
     CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
     CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT,
+    CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT,
     build_page_creative_brief,
     build_page_prompt,
     compile_page_prompt,
@@ -187,7 +188,7 @@ def test_content_first_text_rule_keeps_locked_names_and_numbers_authoritative() 
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "【锁定上屏文字】必须逐字准确" in prompt
+    assert "【锁定上屏文字】中的每一项都必须出现在画面中并逐字准确" in prompt
     assert "数字、单位、专有名词、业务术语和否定边界必须准确" in prompt
     assert "不得新增未经页面内容支持的上屏文字" in prompt
 
@@ -196,6 +197,7 @@ def test_content_first_locks_only_conclusion_and_numeric_fact_lines() -> None:
     page = _page()
     locked = locked_onscreen_text(page)
     assert page.onscreen_judgment in locked
+    assert all(title in locked for title in page.module_titles)
     assert "2025年完成率 95%" in locked
     assert "保持滚动验证和误差复盘" not in locked
 
@@ -213,7 +215,8 @@ def test_semantic_only_with_no_numeric_facts_omits_empty_locked_section() -> Non
     page = replace(
         _page(),
         onscreen_judgment_mode="semantic_only",
-        onscreen_text="**公共能力**\n- 服务行业共性需求",
+        onscreen_text="- 服务行业共性需求",
+        module_titles=(),
     )
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
@@ -223,6 +226,23 @@ def test_semantic_only_with_no_numeric_facts_omits_empty_locked_section() -> Non
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT not in prompt
     assert CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT in prompt
     assert "不得从【页面任务】【核心判断】【页面逻辑】或【完整页面内容】中自行抽取整句" in prompt
+
+
+def test_semantic_only_still_locks_business_module_labels() -> None:
+    page = replace(
+        _page(),
+        onscreen_judgment_mode="semantic_only",
+        onscreen_text="**行业公共能力**\n- 服务行业共性需求",
+        module_titles=("行业公共能力",),
+    )
+    locked = locked_onscreen_text(page)
+    assert page.onscreen_judgment not in locked
+    assert "行业公共能力" in locked
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+    assert CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT in prompt
+    assert "中的每一项都必须出现在画面中并逐字准确" in prompt
 
 
 def test_semantic_only_numeric_fact_is_locked_but_not_called_a_conclusion() -> None:
@@ -238,7 +258,7 @@ def test_semantic_only_numeric_fact_is_locked_but_not_called_a_conclusion() -> N
     assert "【锁定上屏文字】" in prompt
     assert "2025年完成率 95%" in prompt
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT not in prompt
-    assert CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT in prompt
+    assert CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT in prompt
 
 
 def test_outline_context_can_select_semantic_only_without_page_specific_code() -> None:
@@ -246,6 +266,36 @@ def test_outline_context_can_select_semantic_only_without_page_specific_code() -
     context = {"onscreen_judgment_mode": "semantic_only"}
     assert page.onscreen_judgment not in locked_onscreen_text(page, context)
     assert resolve_onscreen_judgment_mode(page, context) == "semantic_only"
+
+
+@pytest.mark.parametrize(
+    ("role", "expected"),
+    [
+        ("relationship", "semantic_only"),
+        ("positioning", "semantic_only"),
+        ("boundary", "semantic_only"),
+        ("mechanism", "semantic_only"),
+        ("fact", "locked"),
+        ("metric", "locked"),
+        ("milestone", "locked"),
+        ("acceptance", "locked"),
+        ("prohibition", "locked"),
+    ],
+)
+def test_judgment_role_derives_default_display_mode(role: str, expected: str) -> None:
+    page = replace(_page(), onscreen_judgment_mode="")
+    assert resolve_onscreen_judgment_mode(page, {"judgment_role": role}) == expected
+
+
+def test_explicit_display_mode_overrides_judgment_role() -> None:
+    page = replace(_page(), onscreen_judgment_mode="")
+    assert resolve_onscreen_judgment_mode(
+        page,
+        {
+            "judgment_role": "relationship",
+            "onscreen_judgment_mode": "locked",
+        },
+    ) == "locked"
 
 
 def test_invalid_onscreen_judgment_mode_fails_compilation() -> None:

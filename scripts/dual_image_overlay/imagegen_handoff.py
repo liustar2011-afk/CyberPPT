@@ -30,7 +30,11 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from cyberppt.commands.script_gate import stage_script
-from cyberppt.script_quality_contract import ScriptPage, parse_script_markdown
+from cyberppt.script_quality_contract import (
+    ScriptPage,
+    parse_script_markdown,
+    resolve_judgment_mode,
+)
 from scripts.dual_image_overlay.creative_brief import (
     CreativeBrief,
     build_creative_brief,
@@ -54,7 +58,7 @@ PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
 DEFAULT_PROMPT_COMPILER = "content-first-v1"
 CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【内容与视觉要求｜不上屏】
 必须由文字与画面共同完整表达【完整页面内容】中的核心判断、业务对象、逻辑关系和关键限定，不得捏造事实或改变判断强度。
-【锁定上屏文字】必须逐字准确；数字、单位、专有名词、业务术语和否定边界必须准确。其他说明文字允许在不损失语义的前提下调整语序、合并重复、拆分为场景标签或适度压缩。
+【锁定上屏文字】中的每一项都必须出现在画面中并逐字准确；数字、单位、专有名词、业务术语和否定边界必须准确。其他说明文字允许在不损失语义的前提下调整语序、合并重复、拆分为场景标签或适度压缩。
 不得新增未经页面内容支持的上屏文字；允许增加不带文字的行业场景、业务动作、环境细节和视觉隐喻，让视觉关系承担解释责任。
 以【页面逻辑】组织空间，不使用等权卡片、通用图标流程或逐项配图；先展开业务场景及其关系，再让必要文字附着于场景。
 中文使用清晰的现代无衬线黑体。不得生成额外页面标题、Logo、页脚或页码。
@@ -74,6 +78,9 @@ CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【结论句要求｜不上屏】
 CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT = """【结论表达要求｜不上屏】
 本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心判断】【页面逻辑】或【完整页面内容】中自行抽取整句作为页面标题或通栏结论。
 用业务场景、对象关系和空间组织表达核心判断；仅在确有必要时使用由页面内容支持的短场景标签。"""
+CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT = """【结论表达要求｜不上屏】
+本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心判断】【页面逻辑】或【完整页面内容】中自行抽取整句作为页面标题或通栏结论。
+【锁定上屏文字】中的业务标签和关键事实必须全部上屏；用业务场景、对象关系和空间组织表达核心判断。除锁定项之外，仅在确有必要时使用由页面内容支持的短场景标签。"""
 # Status asides that must not be painted as core on-screen claims.
 # Planning decks argue the proposed solution; do not restamp "not yet fact" on every page.
 ONSCREEN_ASIDE_RE = re.compile(
@@ -634,14 +641,17 @@ def resolve_onscreen_judgment_mode(
     mode = str(
         (visual_context or {}).get("onscreen_judgment_mode")
         or page.onscreen_judgment_mode
-        or "locked"
     ).strip()
-    if mode not in ONSCREEN_JUDGMENT_MODES:
+    role = str(
+        (visual_context or {}).get("judgment_role")
+        or page.judgment_role
+    ).strip()
+    try:
+        return resolve_judgment_mode(mode, role)
+    except ValueError as exc:
         raise ValueError(
-            f"{page.page_id} has unsupported onscreen_judgment_mode={mode!r}; "
-            f"choose one of {', '.join(ONSCREEN_JUDGMENT_MODES)}"
-        )
-    return mode
+            f"{page.page_id} has invalid judgment display policy: {exc}"
+        ) from exc
 
 
 def locked_onscreen_text(
@@ -656,6 +666,10 @@ def locked_onscreen_text(
         and page.onscreen_judgment.strip()
     ):
         locked.append(page.onscreen_judgment.strip())
+    for title in page.module_titles:
+        label = title.strip()
+        if label and label not in locked:
+            locked.append(label)
     for raw in _clean_onscreen_for_imagegen(page.onscreen_text).splitlines():
         line = raw.strip()
         if not line or line in locked:
@@ -817,7 +831,11 @@ def render_content_first_prompt(
         (
             CONTENT_FIRST_ONSCREEN_STORY_CONTRACT
             if judgment_mode == "locked"
-            else CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT
+            else (
+                CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT
+                if locked
+                else CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT
+            )
         ),
         "",
         (
@@ -869,6 +887,7 @@ def _page_visual_contexts(project: Path) -> dict[str, dict[str, str]]:
         "visual_proof",
         "visual_intent_type",
         "onscreen_judgment_mode",
+        "judgment_role",
     )
     return {
         str(item["page_id"]): {

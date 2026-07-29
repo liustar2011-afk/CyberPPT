@@ -11,6 +11,7 @@ from cyberppt.script_quality_contract import (
     PAGE_HEADING_RE,
     audit_final_manuscript_form,
     parse_script_markdown,
+    resolve_judgment_mode,
 )
 
 PAGE_START_RE = re.compile(r"^##\s+第(\d+)页[：:]", re.MULTILINE)
@@ -119,9 +120,17 @@ def _merge_missing_onscreen_judgments(
         if isinstance(item, dict)
         and str(item.get("page_id") or "").removeprefix("p").isdigit()
     }
-    judgment_modes = {
+    explicit_modes = {
         int(str(item.get("page_id") or "").removeprefix("p")): str(
-            item.get("onscreen_judgment_mode") or "locked"
+            item.get("onscreen_judgment_mode") or ""
+        ).strip()
+        for item in outline_pages
+        if isinstance(item, dict)
+        and str(item.get("page_id") or "").removeprefix("p").isdigit()
+    }
+    judgment_roles = {
+        int(str(item.get("page_id") or "").removeprefix("p")): str(
+            item.get("judgment_role") or ""
         ).strip()
         for item in outline_pages
         if isinstance(item, dict)
@@ -132,12 +141,16 @@ def _merge_missing_onscreen_judgments(
         if not re.search(r"^- 页面类型：内容(?:页)?\s*$", block, re.MULTILINE):
             continue
         judgment = judgments.get(number, "")
-        judgment_mode = judgment_modes.get(number, "locked")
-        if judgment_mode not in ("locked", "semantic_only"):
-            raise ValueError(
-                f"content page p{number:02d} has unsupported "
-                f"onscreen_judgment_mode={judgment_mode!r}"
+        judgment_role = judgment_roles.get(number, "")
+        try:
+            judgment_mode = resolve_judgment_mode(
+                explicit_modes.get(number, ""),
+                judgment_role,
             )
+        except ValueError as exc:
+            raise ValueError(
+                f"content page p{number:02d} has invalid judgment policy: {exc}"
+            ) from exc
         if not judgment:
             raise ValueError(
                 f"content page p{number:02d} has no 上屏结论 in drafts or outline"
@@ -149,6 +162,7 @@ def _merge_missing_onscreen_judgments(
             merged[number] = block.replace(
                 marker,
                 (
+                    f"- 判断角色：{judgment_role}\n"
                     f"- 上屏结论模式：{judgment_mode}\n"
                     f"- 上屏结论：{judgment}\n{marker}"
                 ),
@@ -160,11 +174,18 @@ def _merge_missing_onscreen_judgments(
                 f"- 上屏结论模式：{judgment_mode}\n- 上屏结论：",
                 1,
             )
+        if judgment_role and "- 判断角色：" not in merged[number]:
+            merged[number] = merged[number].replace(
+                "- 上屏结论模式：",
+                f"- 判断角色：{judgment_role}\n- 上屏结论模式：",
+                1,
+            )
         receipt_match = PAGE_CONTRACT_RECEIPT_RE.search(merged[number])
         if receipt_match:
             receipt = json.loads(receipt_match.group(1))
             receipt["onscreen_judgment"] = judgment
             receipt["onscreen_judgment_mode"] = judgment_mode
+            receipt["judgment_role"] = judgment_role
             receipt_text = json.dumps(
                 receipt,
                 ensure_ascii=False,

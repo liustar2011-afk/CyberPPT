@@ -50,6 +50,35 @@ SPEAKER_NOTES_MIN_CHARS = 60
 VISIBLE_JUDGMENT_MIN_SIMILARITY = 0.04
 VISIBLE_JUDGMENT_TERMINAL_PUNCTUATION = "。；，：？！.!?;,:"
 ONSCREEN_JUDGMENT_MODES = ("locked", "semantic_only")
+SEMANTIC_ONLY_JUDGMENT_ROLES = {
+    "relationship",
+    "positioning",
+    "boundary",
+    "mechanism",
+}
+LOCKED_JUDGMENT_ROLES = {
+    "fact",
+    "metric",
+    "milestone",
+    "acceptance",
+    "prohibition",
+}
+
+
+def resolve_judgment_mode(explicit_mode: str = "", judgment_role: str = "") -> str:
+    """Resolve display policy from an explicit override, then semantic role."""
+
+    mode = explicit_mode.strip()
+    role = judgment_role.strip()
+    if mode:
+        if mode not in ONSCREEN_JUDGMENT_MODES:
+            raise ValueError(f"unsupported onscreen_judgment_mode: {mode}")
+        return mode
+    if role in SEMANTIC_ONLY_JUDGMENT_ROLES:
+        return "semantic_only"
+    if role in LOCKED_JUDGMENT_ROLES or not role:
+        return "locked"
+    raise ValueError(f"unsupported judgment_role: {role}")
 
 
 @dataclass(frozen=True)
@@ -71,7 +100,8 @@ class ScriptPage:
     onscreen_text: str
     module_titles: tuple[str, ...]
     onscreen_judgment: str = ""
-    onscreen_judgment_mode: str = "locked"
+    judgment_role: str = ""
+    onscreen_judgment_mode: str = ""
     field_order: tuple[str, ...] = ()
     coaching_tip: str = ""
     speaker_notes: str = ""
@@ -214,9 +244,8 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                 onscreen_text=onscreen,
                 module_titles=modules,
                 onscreen_judgment=fields.get("上屏结论", "").strip(),
-                onscreen_judgment_mode=(
-                    fields.get("上屏结论模式", "locked").strip() or "locked"
-                ),
+                judgment_role=fields.get("判断角色", "").strip(),
+                onscreen_judgment_mode=fields.get("上屏结论模式", "").strip(),
                 field_order=_field_order(body),
                 coaching_tip=(
                     fields.get("讲解提示", "")
@@ -1546,22 +1575,26 @@ def _preflight_semantic_issues(
     records_by_id: dict[str, dict[str, object]],
 ) -> list[ScriptQualityIssue]:
     issues: list[ScriptQualityIssue] = []
-    judgment_mode = str(
-        contract.get("onscreen_judgment_mode")
-        or page.onscreen_judgment_mode
-        or "locked"
+    explicit_mode = str(
+        contract.get("onscreen_judgment_mode") or page.onscreen_judgment_mode
     ).strip()
-    if judgment_mode not in ONSCREEN_JUDGMENT_MODES:
+    judgment_role = str(
+        contract.get("judgment_role") or page.judgment_role
+    ).strip()
+    try:
+        judgment_mode = resolve_judgment_mode(explicit_mode, judgment_role)
+    except ValueError as exc:
         issues.append(
             _issue(
                 "ONSCREEN_JUDGMENT_MODE_INVALID",
                 page,
-                f"Unsupported onscreen_judgment_mode: {judgment_mode}.",
-                "Use locked or semantic_only in the approved page contract.",
-                evidence=(judgment_mode,),
+                str(exc),
+                "Use a supported judgment_role or explicitly set locked/semantic_only.",
+                evidence=tuple(part for part in (explicit_mode, judgment_role) if part),
                 severity="error",
             )
         )
+        judgment_mode = "locked"
     if judgment_mode == "semantic_only":
         if not page.onscreen_judgment.strip():
             issues.append(

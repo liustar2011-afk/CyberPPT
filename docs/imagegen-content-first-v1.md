@@ -29,4 +29,11 @@ CyberPPT 从完整页面脚本生成单图提示词时，默认使用 `content-f
 
 该模式由上游页面合同显式选择，编译器不根据项目、页码或具体句子做特判。含数字的关键事实仍独立锁定。
 
+页面合同也可使用 `judgment_role` 推导默认模式：
+
+- `relationship`、`positioning`、`boundary`、`mechanism` → `semantic_only`
+- `fact`、`metric`、`milestone`、`acceptance`、`prohibition` → `locked`
+
+显式 `onscreen_judgment_mode` 的优先级高于角色推导；没有角色和显式模式时回退为 `locked`。
+
 本流程只负责编译和暂存提示词脚本，不执行 ImageGen，也不修改生图调用参数。
