@@ -11,8 +11,8 @@ Page mission and thesis (页面使命 / 主判断 / 核心判断) are passed bef
 so the model can understand the page question and organize the visual mainline.
 They are context fields, not extra labels to render; the drawable text layer remains 上屏文字.
 The default content-first compiler sends the page task, core judgment, full semantic prose,
-locked on-screen copy, and factual boundary. It deliberately ignores 视觉结构, visual-intent
-routing, and creative-brief layout advice so ImageGen can design the page from the content.
+locked on-screen copy, factual boundary, and a compact page logic contract. The logic contract
+preserves the approved relationship without copying backend layout instructions into the prompt.
 Legacy compilers remain available for comparison and rollback.
 """
 
@@ -56,13 +56,13 @@ CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【输出要求】
 画布尺寸为 2048×1024（2:1）。
 【语义理解】
 【必须上屏文字】必须完整、准确、清晰地呈现，不得再次摘要、删减、改变原意或新增事实；模块名称、关键数字、单位和业务术语须准确。
-根据页面任务、核心判断、完整内容语义和必须上屏文字，自主决定构图、视觉载体、信息层级和图文组合；并根据本页最重要的业务关系，必须从流程主链、汇聚、分发、闭环、层级、并列、对照等关系形式中选择一种作为主导表达。
 【视觉表达】
-先依据【必须上屏文字】建立完整、舒展、可独立阅读的文字主构图，保证结论、模块名称、事实、数字和解释关系均有稳定的可读空间；不得为了容纳插图而压缩、缩小、截断或拥挤文字。
-再从具体文字中识别业务对象、参与主体、动作过程、作用关系、状态变化和结果，为需要视觉解释的内容配置少量语义化、场景化、实景化或编辑式局部插画。配图必须由相邻文字的具体含义推导，并贴近、嵌入或围绕对应文字呈现，承担解释、举证或强化关系的作用。
-文字是页面主体，插图是从属于文字的辅助表达。不得使用占据约半幅页面的完整照片区、全高实景区、大面积连续场景或“左图右文／左文右图”的二分构图；不得先划出独立图片区，再把剩余空间留给文字。可使用局部场景切片、物件特写、浅景叠底、边缘嵌入或与文字模块融合的编辑式插画。
+严格以【页面逻辑契约】建立全页唯一的逻辑主链，再将【必须上屏文字】按其逻辑角色挂载为起点、过程、结果、支撑条件或边界说明。不得先排成若干独立文字块，再用线条、序号、图片或图标补关系。
+文字必须完整、舒展、可独立阅读，但页面不是若干文字模块及其配图的集合。模块之间的因果、递进、转化、汇聚、支撑、范围收敛或边界关系必须先于模块自身被看见；不得把具有不同角色的模块处理成等权卡片、等高行列或平级清单。
+优先使用一个贯穿页面、低对比、概念化的连续关系场承载主链。该关系场可以跨越多个文字模块，并通过对象的位置、方向、传递、聚合、分离、前后状态和空间层次表达关系；它不是独立照片区，也不是复杂流程图。
+只在关键节点嵌入少量语义化、场景化、实景化或编辑式局部插画。单个视觉对象可以解释两个或多个模块之间的传递、转化、约束或支撑关系；不要求每个模块都有配图。不得逐行配图、逐项配图，或把实景切成与文字行数对应的照片条带。
+不得使用占据约半幅页面的完整照片区、全高实景区、大面积独立实景区或“左图右文／左文右图”的二分构图；不得先划出独立图片区，再把剩余空间留给文字。连续的低对比概念关系场不属于独立照片区。
 不得把抽象名词直接翻译成通用图标或符号；也不得只把实景作为装饰背景，再在前景叠加图标卡片。
-流程主链、汇聚、分发、闭环、层级、并列和对照等关系，应优先通过对象的位置、数量、方向、动作、传递、聚合、分离、前后状态和空间层次呈现，而不是依赖箭头、图标或重复模块完成表达。
 只有当业务含义无法通过场景、行为、真实物件、材料或空间关系清楚呈现时，才允许使用少量抽象符号作为辅助。避免圆形图标、图标墙、线性符号、徽章、功能卡片、扁平界面组件和等距三维小组件成为主要视觉语言。
 场景化插图中的人物、标牌、屏幕文字和数字仅作为环境质感，应采用远景、侧背面、浅景深、低对比或适度虚化处理，不能清晰地出现组织机构名称、人员名称和文件名称。本限制仅适用于插图内部的环境文字，不适用于【必须上屏文字】；必须上屏的组织名称、业务术语和数字仍须准确、清晰地呈现。中文字体统一采用微软雅黑或与微软雅黑字形特征接近的现代无衬线黑体，文字清晰且优雅排版，高端平面设计。
 不得生成页面标题、副标题、Logo、页脚、页码。"""
@@ -560,12 +560,7 @@ STYLE_COLOR_LABELS = (
     ("accent", "强调色"),
 )
 
-CONTENT_FIRST_STYLE_RULE_FIELDS = (
-    "scope_rule",
-    "people_rule",
-    "content_visual_rule",
-    "icon_rule",
-)
+CONTENT_FIRST_STYLE_RULE_FIELDS = ("people_rule",)
 
 
 def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
@@ -602,6 +597,7 @@ def render_content_first_style_contract(style_lock: Path) -> str:
     )
     lines = [
         "【视觉风格】",
+        f"适用语境：{str(style.get('scenario') or '').strip()}。",
         f"色彩角色：{'；'.join(color_parts)}。",
     ]
     style_rules = [
@@ -616,12 +612,59 @@ def render_content_first_style_contract(style_lock: Path) -> str:
     return "\n".join(lines)
 
 
+def render_page_logic_contract(
+    page: ScriptPage,
+    *,
+    page_mission: str = "",
+    visual_context: dict[str, str] | None = None,
+    visual_intent_override: dict[str, str] | None = None,
+) -> tuple[str, str]:
+    """Render one explicit relationship contract before text and imagery are arranged."""
+
+    relation = select_page_visual_intent_type(
+        page,
+        page_mission,
+        context=visual_context,
+        override=visual_intent_override,
+    )
+    values = dict(VISUAL_INTENT_TEMPLATES[relation])
+    if isinstance(visual_intent_override, dict):
+        for key in values:
+            value = visual_intent_override.get(key)
+            if isinstance(value, str) and value.strip():
+                values[key] = value.strip()
+    relation_labels = {
+        "decision_admission": "决策准入",
+        "comparison": "对照",
+        "scenario_application": "场景应用",
+        "multi_semantic_foundation": "共同支撑",
+        "causal": "因果传导",
+        "closed_loop": "闭环",
+        "phase": "阶段递进",
+        "capability_relationship": "能力协同",
+        "judgment_evidence": "判断—证据",
+    }
+    contract = "\n".join(
+        (
+            "【页面逻辑契约｜仅供构图，不上屏】",
+            f"主导关系：{relation_labels[relation]}。",
+            f"逻辑主链：{values['decision_relationship']}",
+            f"空间组织：{values['recommended_composition']}",
+            f"禁止误读：{values['avoid_on_this_page']}",
+            "执行优先级：先建立上述唯一主链，再把完整上屏文字挂载到主链，最后决定是否需要少量局部视觉载体。",
+        )
+    )
+    return relation, contract
+
+
 def render_content_first_prompt(
     page: ScriptPage,
     *,
     style_lock: Path,
     page_mission: str = "",
-) -> str:
+    visual_context: dict[str, str] | None = None,
+    visual_intent_override: dict[str, str] | None = None,
+) -> tuple[str, str]:
     """Render a complete-content prompt without translating meaning into layout."""
 
     if page.page_type == "content" and not page.onscreen_judgment.strip():
@@ -630,6 +673,12 @@ def render_content_first_prompt(
             "script before compiling an ImageGen prompt"
         )
     onscreen = diagnostic_onscreen_text(page, "content-first-v1")
+    relation, logic_contract = render_page_logic_contract(
+        page,
+        page_mission=page_mission,
+        visual_context=visual_context,
+        visual_intent_override=visual_intent_override,
+    )
     parts = [
         "【页面任务｜仅供理解，不上屏】",
         page_mission.strip() or page.main_message.strip(),
@@ -639,6 +688,8 @@ def render_content_first_prompt(
         "",
         "【完整内容语义｜仅供理解，不要求逐字上屏】",
         page.full_prose.strip() or onscreen,
+        "",
+        logic_contract,
         "",
         "【必须上屏文字】",
         onscreen,
@@ -652,7 +703,7 @@ def render_content_first_prompt(
         "",
         render_content_first_style_contract(style_lock),
     ]
-    return "\n".join(parts).strip() + "\n"
+    return relation, "\n".join(parts).strip() + "\n"
 
 
 def _page_missions(project: Path) -> dict[str, str]:
@@ -739,10 +790,12 @@ def compile_page_prompt(
         )
     if prompt_compiler == "content-first-v1":
         selected_style = _selected_content_first_style(style_lock)
-        prompt = render_content_first_prompt(
+        relation, prompt = render_content_first_prompt(
             page,
             style_lock=style_lock,
             page_mission=page_mission,
+            visual_context=visual_context,
+            visual_intent_override=visual_intent_override,
         )
         assert_deliverable_prompt(prompt)
         if EVIDENCE_ID_RE.search(prompt):
@@ -750,11 +803,12 @@ def compile_page_prompt(
         return CompiledPagePrompt(
             prompt=prompt,
             compiler_version=prompt_compiler,
-            relation="model_decides_from_complete_content",
+            relation=relation,
             injected_rule_ids=(
                 "content.page_task",
                 "content.core_judgment",
                 "content.full_semantics",
+                "content.page_logic_contract",
                 "content.locked_onscreen",
                 "content.independent_reading",
                 "fact.source_boundary",
@@ -880,8 +934,9 @@ def write_chapter_handoff(
 
     if prompt_compiler == "content-first-v1":
         compilation_rules = [
-            "- 送入：页面任务、核心判断、完整内容语义、必须上屏文字、事实与范围边界，以及所选风格的名称、适用语境和配色。",
-            "- 不送入：证据编号、视觉结构、讲解提示，以及风格锁中的固定构图、文字取舍、图片数量或后期制作规则。",
+            "- 送入：页面任务、核心判断、完整内容语义、页面逻辑契约、必须上屏文字、事实与范围边界，以及所选风格的名称、适用语境和配色。",
+            "- 页面逻辑契约只保留主导关系、逻辑主链、空间组织和禁止误读，不直接复制后台视觉结构或固定版式。",
+            "- 不送入：证据编号、讲解提示、文字取舍、图片数量或后期制作规则。",
             "- 页面任务、核心判断、完整内容语义和事实边界只用于理解与约束；画面中的可见正文以“必须上屏文字”为准。",
         ]
     else:

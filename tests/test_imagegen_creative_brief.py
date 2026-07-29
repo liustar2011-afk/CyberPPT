@@ -69,9 +69,9 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "象牙白 + 深蓝领导汇报" not in implicit
     assert "风格适用语境" not in implicit
     assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" in implicit
-    assert "先保证锁定上屏文字完整、舒展、清晰" in implicit
-    assert "不得占据约半幅页面" in implicit
-    assert "图标不是默认视觉载体" in implicit
+    assert "先建立上述唯一主链，再把完整上屏文字挂载到主链" in implicit
+    assert "不得使用占据约半幅页面的完整照片区" in implicit
+    assert "不得把抽象名词直接翻译成通用图标或符号" in implicit
     assert "Do not show frontal faces" in implicit
     assert "段落正文留在 PPT 可编辑文字层" not in implicit
     assert "整体呈现现代中文高端平面设计气质。" in implicit
@@ -170,7 +170,8 @@ def test_content_first_omits_tracking_metadata_and_avoids_repeated_rules() -> No
     assert prompt.count("再次摘要、删减") == 1
     assert prompt.count("改变原意") == 1
     assert prompt.count("新增事实") == 1
-    assert prompt.count("自主决定构图") == 1
+    assert prompt.count("【页面逻辑契约｜仅供构图，不上屏】") == 1
+    assert prompt.count("严格以【页面逻辑契约】建立全页唯一的逻辑主链") == 1
     assert "页面构图和信息组织仍由" not in prompt
 
 
@@ -191,9 +192,12 @@ def test_content_first_uses_the_approved_scene_illustration_wording() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "先依据【必须上屏文字】建立完整、舒展、可独立阅读的文字主构图" in prompt
-    assert "为需要视觉解释的内容配置少量语义化、场景化、实景化或编辑式局部插画" in prompt
+    assert "【页面逻辑契约｜仅供构图，不上屏】" in prompt
+    assert "先建立上述唯一主链，再把完整上屏文字挂载到主链" in prompt
+    assert "严格以【页面逻辑契约】建立全页唯一的逻辑主链" in prompt
+    assert "只在关键节点嵌入少量语义化、场景化、实景化或编辑式局部插画" in prompt
     assert "不得使用占据约半幅页面的完整照片区" in prompt
+    assert "不得逐行配图、逐项配图" in prompt
     assert "不得只把实景作为装饰背景，再在前景叠加图标卡片" in prompt
     assert "不得把抽象名词直接翻译成通用图标或符号" in prompt
 
