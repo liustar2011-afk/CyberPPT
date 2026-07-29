@@ -87,6 +87,10 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "领导汇报" in style_nine["scenario"]
     assert "语义实景表达" in style_nine["scenario"]
     assert len(style_nine["prompt_contract"]) < 600
+    assert len(style_nine["imagegen_signature"]) == 3
+    assert "禁止霓虹蓝" in style_nine["imagegen_signature"][0]
+    assert "只设一个视觉中心" in style_nine["imagegen_signature"][1]
+    assert "只使用一种一致的编辑式视觉媒介" in style_nine["imagegen_signature"][2]
 
 
 def test_default_style_choices_still_show_only_original_eight() -> None:

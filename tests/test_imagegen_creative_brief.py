@@ -243,6 +243,29 @@ def test_semantic_only_still_locks_business_module_labels() -> None:
         prompt = build_page_prompt(page, lock)
     assert CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT in prompt
     assert "中的每一项都必须出现在画面中并逐字准确" in prompt
+    assert "不得生成完整陈述句、总结句或口号" in prompt
+
+
+def test_style_nine_compiles_short_refinement_signature() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert "审美签名：" in prompt
+    assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" in prompt
+    assert "只设一个视觉中心" in prompt
+    assert "禁止等宽分栏、圆角卡片阵列、图标墙" in prompt
+    assert "全页只使用一种一致的编辑式视觉媒介" in prompt
+
+
+def test_locked_judgment_is_not_repeated_in_complete_page_semantics() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert prompt.count(page.onscreen_judgment.strip()) == 1
 
 
 def test_semantic_only_numeric_fact_is_locked_but_not_called_a_conclusion() -> None:

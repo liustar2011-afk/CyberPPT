@@ -29,6 +29,7 @@ SCRIPT_WITH_VISUAL_STRUCTURE = """## 第9页：总体定位
 - 完整文字稿：建设方向初步定位为面向行业的公共能力。
 - 文字稿取舍说明：不展开细节。
 - 证据映射：公共能力定位→S015
+- 上屏结论：初步定位为面向行业的公共能力。
 - 上屏文字：
 
   初步定位为面向行业的公共能力。
@@ -370,11 +371,12 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertIn("核心判断", prompt)
         self.assertNotIn("禁止项", prompt)
         self.assertNotIn("Boundary (do not show on slide)", prompt)
-        self.assertIn("正式范围待后续确定", prompt)
+        self.assertNotIn("正式范围待后续确定", prompt)
         self.assertNotIn("Boundary text must not appear on the slide", prompt)
         self.assertIn("上屏文字", prompt)
-        self.assertIn("不得生成页面标题、副标题、Logo、页脚、页码。", prompt)
-        self.assertIn("不得再次摘要、删减、改变原意或新增事实", prompt)
+        self.assertIn("不得生成额外页面标题、Logo、页脚或页码。", prompt)
+        self.assertIn("不得捏造事实或改变判断强度", prompt)
+        self.assertIn("不得新增未经页面内容支持的上屏文字", prompt)
         self.assertNotIn("不得新增原文不存在的数字", prompt)
         self.assertNotIn("不得出现证据编号", prompt)
 

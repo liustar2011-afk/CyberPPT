@@ -77,10 +77,10 @@ CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【结论句要求｜不上屏】
 允许调整换行和文字层级；画面必须参与表达页面逻辑，不得退化为文字排版加装饰图片。"""
 CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT = """【结论表达要求｜不上屏】
 本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心判断】【页面逻辑】或【完整页面内容】中自行抽取整句作为页面标题或通栏结论。
-用业务场景、对象关系和空间组织表达核心判断；仅在确有必要时使用由页面内容支持的短场景标签。"""
+用业务场景、对象关系和空间组织表达核心判断；画面可见文字只允许使用必要的短场景标签，不得生成完整陈述句、总结句或口号。"""
 CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT = """【结论表达要求｜不上屏】
 本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心判断】【页面逻辑】或【完整页面内容】中自行抽取整句作为页面标题或通栏结论。
-【锁定上屏文字】中的业务标签和关键事实必须全部上屏；用业务场景、对象关系和空间组织表达核心判断。除锁定项之外，仅在确有必要时使用由页面内容支持的短场景标签。"""
+【锁定上屏文字】中的业务标签和关键事实必须全部上屏；用业务场景、对象关系和空间组织表达核心判断。除锁定项之外，可见文字只允许使用必要的短场景标签，不得生成完整陈述句、总结句或口号。"""
 # Status asides that must not be painted as core on-screen claims.
 # Planning decks argue the proposed solution; do not restamp "not yet fact" on every page.
 ONSCREEN_ASIDE_RE = re.compile(
@@ -736,6 +736,16 @@ def render_content_first_style_contract(style_lock: Path) -> str:
     if style_rules:
         lines.append("风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）：")
         lines.extend(f"- {rule}" for rule in style_rules)
+    signature = style.get("imagegen_signature")
+    if isinstance(signature, list):
+        compact_signature = [
+            str(rule).strip()
+            for rule in signature
+            if isinstance(rule, str) and rule.strip()
+        ]
+        if compact_signature:
+            lines.append("审美签名：")
+            lines.extend(f"- {rule}" for rule in compact_signature)
     lines.append("整体呈现现代中文高端政企汇报设计气质，编辑式克制、业务清晰。")
     lines.append("如出现人物，仅使用远景、背影或局部，不出现可识别面孔。")
     return "\n".join(lines)
@@ -807,8 +817,21 @@ def render_content_first_prompt(
             f"{page.page_id} is missing 上屏结论; repair and reapprove the final "
             "script before compiling an ImageGen prompt"
         )
-    onscreen = diagnostic_onscreen_text(page, "content-first-v1")
     judgment_mode = resolve_onscreen_judgment_mode(page, visual_context)
+    onscreen = diagnostic_onscreen_text(page, "content-first-v1")
+    onscreen_body = _flatten_markdown_tables(
+        _clean_onscreen_for_imagegen(page.onscreen_text)
+    )
+    complete_semantics = "\n\n".join(
+        part
+        for part in (
+            page.onscreen_judgment.strip()
+            if judgment_mode == "semantic_only"
+            else "",
+            onscreen_body,
+        )
+        if part
+    )
     locked = locked_onscreen_text(page, visual_context)
     relation, logic_contract = render_page_logic_contract(
         page,
@@ -826,7 +849,7 @@ def render_content_first_prompt(
         logic_contract,
         "",
         "【完整页面内容｜用于视觉叙事】",
-        onscreen,
+        complete_semantics,
         "",
         (
             CONTENT_FIRST_ONSCREEN_STORY_CONTRACT

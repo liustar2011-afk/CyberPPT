@@ -20,6 +20,13 @@ _EXACT_NUMBER_RE = re.compile(
 _CONTENT_START = "【内容锁定】"
 _CONTENT_END = "【构图指令】"
 _COMPOSITION_START = "[Mandatory composition guidance]"
+_CONTENT_FIRST_START = "【页面任务｜"
+_CONTENT_FIRST_ENDS = (
+    "【结论句要求｜",
+    "【结论表达要求｜",
+    "【内容与视觉要求｜",
+    "【输出与风格｜",
+)
 _SEMANTIC_RULE_GROUPS: dict[str, tuple[str, ...]] = {
     "detached_text_zone": (
         "detached full-height text column",
@@ -225,6 +232,22 @@ def _section(text: str, start: str, end: str | None = None) -> str:
     return value.strip()
 
 
+def _content_first_page_section(text: str) -> str:
+    """Return page-specific content from a content-first-v1 prompt."""
+
+    if _CONTENT_FIRST_START not in text:
+        return ""
+    value = text.split(_CONTENT_FIRST_START, 1)[1]
+    end_positions = [
+        value.index(marker)
+        for marker in _CONTENT_FIRST_ENDS
+        if marker in value
+    ]
+    if end_positions:
+        value = value[: min(end_positions)]
+    return value.strip()
+
+
 def _meaningful_chars(text: str) -> int:
     return len(re.sub(r"\s+", "", text))
 
@@ -301,6 +324,8 @@ def analyze_prompt(prompt: str, *, onscreen_text: str = "") -> PromptMetrics:
     """Measure a compiled prompt without modifying it."""
 
     content = _section(prompt, _CONTENT_START, _CONTENT_END)
+    if not content:
+        content = _content_first_page_section(prompt)
     composition = ""
     if _COMPOSITION_START in prompt and _CONTENT_START in prompt:
         composition = prompt.split(_COMPOSITION_START, 1)[1].split(_CONTENT_START, 1)[0]

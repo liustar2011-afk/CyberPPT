@@ -33,6 +33,31 @@ Avoid a detached full-height text column or text rail.
 Treat text as in-composition panels, not a detached left/right column.
 """
 
+CONTENT_FIRST_PROMPT = """【页面任务｜仅供理解，不上屏】
+解释为什么先做试点
+
+【核心判断｜仅供理解】
+先验证再推广
+
+【页面逻辑｜不上屏】
+主导关系：阶段递进。
+
+【锁定上屏文字】
+先验证再推广
+
+【完整页面内容｜用于视觉叙事】
+试点验证通过后再推广
+
+【结论句要求｜不上屏】
+第一段是正文结论句。
+
+【内容与视觉要求｜不上屏】
+不得捏造事实。
+
+【输出与风格｜不上屏】
+象牙白与深蓝。
+"""
+
 
 def test_analyze_prompt_reports_metrics_duplicates_and_known_conflicts() -> None:
     metrics = analyze_prompt(
@@ -60,6 +85,17 @@ def test_analyze_prompt_is_read_only() -> None:
     original = PROMPT
     analyze_prompt(PROMPT, onscreen_text="正文")
     assert PROMPT == original
+
+
+def test_analyze_prompt_measures_content_first_page_sections() -> None:
+    metrics = analyze_prompt(
+        CONTENT_FIRST_PROMPT,
+        onscreen_text="先验证再推广",
+    )
+
+    assert metrics.page_content_chars > 0
+    assert metrics.global_rule_chars > 0
+    assert 0 < metrics.page_specific_ratio < 1
 
 
 def test_generated_text_fidelity_requires_phrases_numbers_and_85_percent() -> None:

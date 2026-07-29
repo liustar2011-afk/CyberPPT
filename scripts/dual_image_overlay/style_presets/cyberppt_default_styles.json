@@ -162,6 +162,11 @@
       },
       "scenario": "政企领导汇报、演讲辅助、企业内部决策沟通；编辑式克制与业务清晰；语义实景表达",
       "sample": "assets/palette-samples/palette-09.png",
+      "imagegen_signature": [
+        "材质：象牙白哑光纸感、深蓝墨色、浅灰发丝线；禁止霓虹蓝、透明玻璃、发光底座、HUD 面板、金属高光和科技光流。",
+        "节奏：只设一个视觉中心，形成两到三级层次并保留大块安静留白；禁止等宽分栏、圆角卡片阵列、图标墙、粗箭头流程和底部口号条。",
+        "媒介：全页只使用一种一致的编辑式视觉媒介，最多一个低对比行业场景锚点；禁止照片、三维装置、UI 面板和线性图标混搭。"
+      ],
       "scope_rule": "本风格只约束色彩、材质、线条、字形、场景质感、图标克制度和编辑式视觉语气，不覆盖页面内容与主导关系。文字是页面主体；语义实景、局部行业场景和编辑式插画仅作为从具体文字含义中生长出来的辅助视觉语言。线性图标仅为内容无法通过具象载体表达时的末级辅助语言。",
       "people_rule": "Do not show frontal faces, three-quarter frontal faces, portrait-like framing, eye contact with the camera, or any clearly recognizable facial features. People must never become the visual center. When human presence is necessary, use anonymous professionals only as rear views, distant small figures, cropped hands or partial bodies, soft-focus silhouettes, or figures whose faces are fully turned away or obscured by the working context. Do not use identifiable people to imply a specific event, organization, role assignment, endorsement, or historical fact. Never use portraits, leaders, name badges, uniforms, handshakes, staged boardroom meetings, or documentary-style activities. Human presence may support the business meaning but never serves as evidence of an actual person, unit, site, or event.",
       "factuality_rule": "Do not depict organization names, logos, seals, signage, recognizable headquarters or landmarks. Keep real organization and person names in the editable text layer only. Generic, non-location-specific facilities, layered workspaces, control consoles, equipment rooms, and industrial scenes may be used as illustrative carriers when they map to the locked content. Schematic screens, charts, maps, and interface labels may organize the composition, but generated values are non-evidentiary; factual numbers and labels must be verified and remain editable.",
