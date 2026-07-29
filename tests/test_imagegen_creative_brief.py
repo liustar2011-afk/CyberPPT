@@ -289,7 +289,31 @@ def test_content_first_records_presentation_and_editable_body() -> None:
     }
     assert metadata["image_locked_text"] == select_image_locked_text(page)
     assert metadata["editable_body_text"] == page.onscreen_text.strip()
-    assert "【版式与场景策略｜不上屏】" in compiled.prompt
+    assert "【版式与场景策略｜不上屏】" not in compiled.prompt
+
+
+def test_auto_presentation_decision_stays_in_metadata_only() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        compiled = compile_page_prompt(page, lock)
+
+    assert compiled.presentation is not None
+    assert compiled.presentation.source == "auto"
+    assert compiled.presentation.layout_motif not in compiled.prompt
+    assert compiled.presentation.scene_role not in compiled.prompt
+    assert "【版式与场景策略｜不上屏】" not in compiled.prompt
+
+
+def test_explicit_presentation_override_reaches_prompt() -> None:
+    page = replace(_page(), layout_motif="process_atlas", scene_role="no_scene")
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        compiled = compile_page_prompt(page, lock)
+
+    assert "【人工版式覆盖｜不上屏】" in compiled.prompt
+    assert "process_atlas" in compiled.prompt
+    assert "no_scene" in compiled.prompt
 
 
 def test_semantic_only_keeps_judgment_in_semantics_but_not_locked_copy() -> None:

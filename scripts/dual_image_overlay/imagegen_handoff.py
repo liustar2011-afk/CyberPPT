@@ -732,14 +732,18 @@ def select_image_locked_text(
     return "\n".join(selected).strip()
 
 
-def render_presentation_contract(decision: PresentationDecision) -> str:
+def render_presentation_contract(
+    page: ScriptPage,
+    decision: PresentationDecision,
+) -> str:
+    if decision.source != "script":
+        return ""
     return "\n".join(
         (
-            "【版式与场景策略｜不上屏】",
-            f"版式母题：{decision.layout_motif}。",
-            f"场景角色：{decision.scene_role}。",
-            "保持本页内容关系优先；Style 09 只约束优雅、沉稳、正式的气质，不复用固定页面模板。",
-            "不得因沿用上一页构图而削弱本页的主导关系、文字可读性或业务边界。",
+            "【人工版式覆盖｜不上屏】",
+            f"版式母题：{page.layout_motif.strip() or decision.layout_motif}。",
+            f"场景角色：{page.scene_role.strip() or decision.scene_role}。",
+            "该覆盖只约束本页表达方式，不得删除完整上屏内容或改变业务关系。",
         )
     )
 
@@ -1022,7 +1026,7 @@ def render_content_first_prompt(
         "",
         logic_contract,
         "",
-        render_presentation_contract(presentation),
+        render_presentation_contract(page, presentation),
         "",
         "【完整上屏内容】",
         complete_semantics,
