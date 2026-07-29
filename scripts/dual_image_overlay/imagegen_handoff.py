@@ -960,7 +960,8 @@ def render_page_logic_contract(
             f"主导关系：{relation_labels[relation]}。",
             "视觉证明："
             + str(
-                (visual_intent_override or {}).get("visual_proof")
+                page.visual_proof
+                or (visual_intent_override or {}).get("visual_proof")
                 or (visual_context or {}).get("visual_proof")
                 or VISUAL_PROOF_FALLBACKS[relation]
             ).strip(),

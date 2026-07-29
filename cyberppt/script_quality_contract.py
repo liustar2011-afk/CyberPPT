@@ -99,6 +99,7 @@ class ScriptPage:
     visual_structure: str
     onscreen_text: str
     module_titles: tuple[str, ...]
+    visual_proof: str = ""
     onscreen_judgment: str = ""
     judgment_role: str = ""
     onscreen_judgment_mode: str = ""
@@ -246,6 +247,7 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                 visual_structure=fields.get("视觉结构", "").strip(),
                 onscreen_text=onscreen,
                 module_titles=modules,
+                visual_proof=fields.get("视觉证明", "").strip(),
                 onscreen_judgment=fields.get("上屏结论", "").strip(),
                 judgment_role=fields.get("判断角色", "").strip(),
                 onscreen_judgment_mode=fields.get("上屏结论模式", "").strip(),

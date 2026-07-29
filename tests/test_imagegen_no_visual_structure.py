@@ -375,7 +375,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertNotIn("Boundary text must not appear on the slide", prompt)
         self.assertIn("上屏文字", prompt)
         self.assertIn("不得生成额外页面标题、Logo、页脚或页码。", prompt)
-        self.assertIn("不得捏造事实或改变判断强度", prompt)
+        self.assertIn("不得捏造事实、改变判断强度", prompt)
         self.assertIn("不得新增未经页面内容支持的上屏文字", prompt)
         self.assertNotIn("不得新增原文不存在的数字", prompt)
         self.assertNotIn("不得出现证据编号", prompt)

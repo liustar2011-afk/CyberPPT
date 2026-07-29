@@ -96,11 +96,16 @@ class ScriptMarkdownParserTests(unittest.TestCase):
 - 版式母题：process_atlas
 - 场景角色：no_scene
 - 生图锁定文字：短标签
+- 视觉证明：供需信息经过数据治理、模型推演和专家会商形成行业研判成果
 """
         ).pages[0]
         self.assertEqual("process_atlas", page.layout_motif)
         self.assertEqual("no_scene", page.scene_role)
         self.assertEqual("短标签", page.image_locked_text)
+        self.assertEqual(
+            "供需信息经过数据治理、模型推演和专家会商形成行业研判成果",
+            page.visual_proof,
+        )
 
         legacy = parse_script_markdown(
             """## 第2页：旧页
@@ -112,6 +117,7 @@ class ScriptMarkdownParserTests(unittest.TestCase):
         self.assertEqual("", legacy.layout_motif)
         self.assertEqual("", legacy.scene_role)
         self.assertEqual("", legacy.image_locked_text)
+        self.assertEqual("", legacy.visual_proof)
 
 
 class ScriptContractAuditTests(unittest.TestCase):

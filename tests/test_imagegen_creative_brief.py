@@ -478,6 +478,30 @@ def test_visual_proof_prefers_page_context_and_new_relations_are_selectable() ->
     assert "如出现人物，仅使用远景、背影或局部" in prompt
 
 
+def test_explicit_script_visual_proof_reaches_page_logic_contract() -> None:
+    page = replace(
+        _page(),
+        visual_proof=(
+            "供需信息经过数据治理、模型推演和专家会商形成行业研判成果，"
+            "再服务履职与行业共用"
+        ),
+    )
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(
+            page,
+            lock,
+            visual_context={"visual_proof": "自动生成的通用视觉证明"},
+        )
+
+    assert (
+        "视觉证明：供需信息经过数据治理、模型推演和专家会商形成行业研判成果，"
+        "再服务履职与行业共用"
+    ) in prompt
+    assert "自动生成的通用视觉证明" not in prompt
+    assert "视觉结构：" not in prompt
+
+
 def test_creative_brief_preserves_semantics_but_does_not_prescribe_layout() -> None:
     page = _page()
     brief = build_page_creative_brief(
