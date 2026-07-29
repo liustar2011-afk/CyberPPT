@@ -10,6 +10,7 @@ from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.dual_image_overlay.imagegen_handoff import (
     CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT,
     CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
+    CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT,
     build_page_creative_brief,
     build_page_prompt,
     compile_page_prompt,
@@ -206,6 +207,38 @@ def test_semantic_only_keeps_judgment_in_semantics_but_not_locked_copy() -> None
     assert "2025年完成率 95%" in locked
     assert page.onscreen_judgment in diagnostic_onscreen_text(page)
     assert resolve_onscreen_judgment_mode(page) == "semantic_only"
+
+
+def test_semantic_only_with_no_numeric_facts_omits_empty_locked_section() -> None:
+    page = replace(
+        _page(),
+        onscreen_judgment_mode="semantic_only",
+        onscreen_text="**公共能力**\n- 服务行业共性需求",
+    )
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert "【锁定上屏文字】" not in prompt
+    assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT not in prompt
+    assert CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT in prompt
+    assert "不得从【页面任务】【核心判断】【页面逻辑】或【完整页面内容】中自行抽取整句" in prompt
+
+
+def test_semantic_only_numeric_fact_is_locked_but_not_called_a_conclusion() -> None:
+    page = replace(
+        _page(),
+        onscreen_judgment_mode="semantic_only",
+        onscreen_text="**公共能力**\n- 2025年完成率 95%",
+    )
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert "【锁定上屏文字】" in prompt
+    assert "2025年完成率 95%" in prompt
+    assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT not in prompt
+    assert CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT in prompt
 
 
 def test_outline_context_can_select_semantic_only_without_page_specific_code() -> None:
