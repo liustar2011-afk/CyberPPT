@@ -10,9 +10,9 @@ Before any ImageGen call, CyberPPT must:
 Page mission and thesis (页面使命 / 主判断 / 核心判断) are passed before 上屏文字
 so the model can understand the page question and organize the visual mainline.
 They are context fields, not extra labels to render; the drawable text layer remains 上屏文字.
-The default content-first compiler sends the page task, core judgment, full semantic prose,
-locked on-screen copy, factual boundary, and a compact page logic contract. The logic contract
-preserves the approved relationship without copying backend layout instructions into the prompt.
+The default content-first compiler sends the page task, core judgment, locked on-screen copy,
+and a compact page logic contract. Each page remains a standalone ImageGen prompt, while source
+prose and repeated design theory stay out of the model context.
 Legacy compilers remain available for comparison and rollback.
 """
 
@@ -52,24 +52,15 @@ from scripts.dual_image_overlay.style_library import load_style_lock
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
 PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
 DEFAULT_PROMPT_COMPILER = "content-first-v1"
-CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【输出要求】
-画布尺寸为 2048×1024（2:1）。
-【语义理解】
-【必须上屏文字】必须完整、准确、清晰地呈现，不得再次摘要、删减、改变原意或新增事实；模块名称、关键数字、单位和业务术语须准确。
-【视觉表达】
-严格以【页面逻辑契约】建立全页唯一的逻辑主链，再将【必须上屏文字】按其逻辑角色挂载为起点、过程、结果、支撑条件或边界说明。不得先排成若干独立文字块，再用线条、序号、图片或图标补关系。
-文字必须完整、舒展、可独立阅读，但页面不是若干文字模块及其配图的集合。模块之间的因果、递进、转化、汇聚、支撑、范围收敛或边界关系必须先于模块自身被看见；不得把具有不同角色的模块处理成等权卡片、等高行列或平级清单。
-优先使用一个贯穿页面、低对比、概念化的连续关系场承载主链。该关系场可以跨越多个文字模块，并通过对象的位置、方向、传递、聚合、分离、前后状态和空间层次表达关系；它不是独立照片区，也不是复杂流程图。
-只在关键节点嵌入少量语义化、场景化、实景化或编辑式局部插画。单个视觉对象可以解释两个或多个模块之间的传递、转化、约束或支撑关系；不要求每个模块都有配图。不得逐行配图、逐项配图，或把实景切成与文字行数对应的照片条带。
-不得使用占据约半幅页面的完整照片区、全高实景区、大面积独立实景区或“左图右文／左文右图”的二分构图；不得先划出独立图片区，再把剩余空间留给文字。连续的低对比概念关系场不属于独立照片区。
-不得把抽象名词直接翻译成通用图标或符号；也不得只把实景作为装饰背景，再在前景叠加图标卡片。
-只有当业务含义无法通过场景、行为、真实物件、材料或空间关系清楚呈现时，才允许使用少量抽象符号作为辅助。避免圆形图标、图标墙、线性符号、徽章、功能卡片、扁平界面组件和等距三维小组件成为主要视觉语言。
-场景化插图中的人物、标牌、屏幕文字和数字仅作为环境质感，应采用远景、侧背面、浅景深、低对比或适度虚化处理，不能清晰地出现组织机构名称、人员名称和文件名称。本限制仅适用于插图内部的环境文字，不适用于【必须上屏文字】；必须上屏的组织名称、业务术语和数字仍须准确、清晰地呈现。中文字体统一采用微软雅黑或与微软雅黑字形特征接近的现代无衬线黑体，文字清晰且优雅排版，高端平面设计。
-不得生成页面标题、副标题、Logo、页脚、页码。"""
-CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【独立阅读约束｜仅供执行，不上屏】
-【必须上屏文字】中的第一段是正文区结论句，不是页面标题或副标题；应作为正文内容的结论锚点呈现，不得按页面标题样式处理，不得与 PPT 模板层标题争夺视觉层级。
-页面应在脱离演讲者讲解时仍可独立阅读，并保留支撑结论所需的事实或数字、解释关系、因果传导以及推论或页面承接。
-允许调整换行、分组和文字层级，但不得用插图替代必须上屏文字。"""
+CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【文字与视觉要求｜不上屏】
+只允许出现【必须上屏文字】中的文字，不得新增、摘要、删减或改写；模块名称、数字、单位和业务术语必须准确。
+以【页面逻辑】组织空间，不使用等权卡片、通用图标流程或逐项配图；关系应先于模块被看见。
+中文使用清晰的现代无衬线黑体。不得生成额外页面标题、Logo、页脚或页码。
+【输出要求｜不上屏】
+画布尺寸为 2048×1024（2:1）。"""
+CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【结论句要求｜不上屏】
+【必须上屏文字】第一段是正文结论句，不是页面标题；不得通栏放大或添加标题竖线、横线等装饰。
+允许调整换行和文字层级，但不得用插图替代必须文字。"""
 # Status asides that must not be painted as core on-screen claims.
 # Planning decks argue the proposed solution; do not restamp "not yet fact" on every page.
 ONSCREEN_ASIDE_RE = re.compile(
@@ -98,6 +89,23 @@ ONSCREEN_ASIDE_RE = re.compile(
 )
 
 VISUAL_INTENT_SIGNALS: dict[str, tuple[tuple[str, int], ...]] = {
+    "boundary_guardrail": (
+        ("边界护栏", 10),
+        ("职责边界", 9),
+        ("不替代", 9),
+        ("不承担", 8),
+        ("范围边界", 8),
+        ("非目标", 7),
+    ),
+    "hierarchy_support": (
+        ("分层支撑", 10),
+        ("上下依赖", 9),
+        ("支撑底座", 9),
+        ("贯穿保障", 8),
+        ("需求牵引层", 7),
+        ("可信底座", 7),
+        ("五层", 5),
+    ),
     "decision_admission": (
         ("准入", 8),
         ("筛选依据", 8),
@@ -174,6 +182,8 @@ VISUAL_INTENT_SIGNALS: dict[str, tuple[tuple[str, int], ...]] = {
 }
 
 VISUAL_INTENT_PRIORITY = (
+    "boundary_guardrail",
+    "hierarchy_support",
     "multi_semantic_foundation",
     "comparison",
     "closed_loop",
@@ -195,6 +205,42 @@ DETACHED_TEXT_RAIL_AVOID = (
 )
 
 VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
+    "boundary_guardrail": {
+        "visual_thesis": (
+            "Use the relationship between the core capability and its guardrails to prove "
+            "that scope and responsibility are clear."
+        ),
+        "decision_relationship": (
+            "The core capability occupies the defined scope, while non-goals and constraints "
+            "form a secondary guardrail rather than another peer module."
+        ),
+        "recommended_composition": (
+            "Give the core capability dominant visual weight and compress boundaries into a "
+            "peripheral, bottom, or side guardrail that clearly remains subordinate."
+        ),
+        "avoid_on_this_page": (
+            "A fifty-fifty can-versus-cannot comparison, warning-card wall, or boundaries "
+            "presented as peer service objects."
+        ),
+    },
+    "hierarchy_support": {
+        "visual_thesis": (
+            "Use vertical dependency to prove that upper-level business results rely on "
+            "lower-level capabilities and shared assurance."
+        ),
+        "decision_relationship": (
+            "Upper-level results depend on lower-level capabilities; shared assurance acts "
+            "as a foundation or cross-cutting support, not as a software technology stack."
+        ),
+        "recommended_composition": (
+            "Make the upper-level business result the visual center, organize lower-level "
+            "capabilities as unequal support, and treat cross-cutting assurance as a base or guardrail."
+        ),
+        "avoid_on_this_page": (
+            "A software architecture stack, equal-height layer bars, one card per layer, "
+            "or an isolated capability inventory."
+        ),
+    },
     "decision_admission": {
         "visual_thesis": (
             "Explain why the initial selection is justified and how later items qualify for entry."
@@ -340,6 +386,20 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "An equal card wall, one icon per bullet, or an unrelated decorative scene."
         ),
     },
+}
+
+VISUAL_PROOF_FALLBACKS: dict[str, str] = {
+    "boundary_guardrail": "用主体能力与外围护栏的关系证明范围和职责清晰。",
+    "hierarchy_support": "用上层业务结果与下层支撑能力的依赖关系证明体系能够成立。",
+    "decision_admission": "用选择依据与后续准入条件证明当前决策合理。",
+    "comparison": "用共同维度下的差异和主次证明本页判断。",
+    "scenario_application": "用真实业务场景、业务价值与进入条件证明应用方向。",
+    "multi_semantic_foundation": "用多项现实基础共同支撑本页判断。",
+    "causal": "用原因到业务后果的传导关系证明行动必要性。",
+    "closed_loop": "用输入、结果、验证与反馈的闭环证明业务能够持续改进。",
+    "phase": "用阶段目的与准入条件的递进证明实施节奏。",
+    "capability_relationship": "用多项能力共同作用于同一业务结果证明协同关系。",
+    "judgment_evidence": "用主判断与支撑证据的直接关系完成证明。",
 }
 
 def _clean_onscreen_for_imagegen(text: str) -> str:
@@ -560,7 +620,7 @@ STYLE_COLOR_LABELS = (
     ("accent", "强调色"),
 )
 
-CONTENT_FIRST_STYLE_RULE_FIELDS = ("people_rule",)
+CONTENT_FIRST_STYLE_RULE_FIELDS: tuple[str, ...] = ()
 
 
 def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
@@ -580,7 +640,7 @@ def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
 
 
 def render_content_first_style_contract(style_lock: Path) -> str:
-    """Render colors and compatible visual conventions from the selected style."""
+    """Render a compact, self-contained style contract from the selected style."""
 
     style = _selected_content_first_style(style_lock)
     colors = style["colors"]
@@ -596,7 +656,7 @@ def render_content_first_style_contract(style_lock: Path) -> str:
         if key not in known_keys and str(value).strip()
     )
     lines = [
-        "【视觉风格】",
+        "【输出与风格｜不上屏】",
         f"适用语境：{str(style.get('scenario') or '').strip()}。",
         f"色彩角色：{'；'.join(color_parts)}。",
     ]
@@ -608,7 +668,8 @@ def render_content_first_style_contract(style_lock: Path) -> str:
     if style_rules:
         lines.append("风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）：")
         lines.extend(f"- {rule}" for rule in style_rules)
-    lines.append("整体呈现现代中文高端平面设计气质。")
+    lines.append("整体呈现现代中文高端政企汇报设计气质，编辑式克制、业务清晰。")
+    lines.append("如出现人物，仅使用远景、背影或局部，不出现可识别面孔。")
     return "\n".join(lines)
 
 
@@ -634,6 +695,8 @@ def render_page_logic_contract(
             if isinstance(value, str) and value.strip():
                 values[key] = value.strip()
     relation_labels = {
+        "boundary_guardrail": "边界护栏",
+        "hierarchy_support": "分层支撑",
         "decision_admission": "决策准入",
         "comparison": "对照",
         "scenario_application": "场景应用",
@@ -646,12 +709,16 @@ def render_page_logic_contract(
     }
     contract = "\n".join(
         (
-            "【页面逻辑契约｜仅供构图，不上屏】",
+            "【页面逻辑｜不上屏】",
             f"主导关系：{relation_labels[relation]}。",
-            f"逻辑主链：{values['decision_relationship']}",
+            "视觉证明："
+            + str(
+                (visual_intent_override or {}).get("visual_proof")
+                or (visual_context or {}).get("visual_proof")
+                or VISUAL_PROOF_FALLBACKS[relation]
+            ).strip(),
             f"空间组织：{values['recommended_composition']}",
-            f"禁止误读：{values['avoid_on_this_page']}",
-            "执行优先级：先建立上述唯一主链，再把完整上屏文字挂载到主链，最后决定是否需要少量局部视觉载体。",
+            f"本页避免：{values['avoid_on_this_page']}",
         )
     )
     return relation, contract
@@ -686,18 +753,12 @@ def render_content_first_prompt(
         "【核心判断｜仅供理解】",
         page.main_message.strip(),
         "",
-        "【完整内容语义｜仅供理解，不要求逐字上屏】",
-        page.full_prose.strip() or onscreen,
-        "",
         logic_contract,
         "",
         "【必须上屏文字】",
         onscreen,
         "",
         CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
-        "",
-        "【事实与范围边界｜仅供约束，不上屏】",
-        page.boundary.strip() or "不得扩大原文的事实范围或结论强度。",
         "",
         CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT,
         "",
@@ -733,6 +794,8 @@ def _page_visual_contexts(project: Path) -> dict[str, dict[str, str]]:
         "argument_role",
         "page_job",
         "business_question",
+        "visual_center",
+        "visual_proof",
         "visual_intent_type",
     )
     return {
@@ -756,6 +819,7 @@ def _page_visual_intent_overrides(project: Path) -> dict[str, dict[str, str]]:
         return {}
     allowed = {
         "visual_intent_type",
+        "visual_proof",
         *VISUAL_INTENT_TEMPLATES["judgment_evidence"].keys(),
     }
     result: dict[str, dict[str, str]] = {}
@@ -934,10 +998,11 @@ def write_chapter_handoff(
 
     if prompt_compiler == "content-first-v1":
         compilation_rules = [
-            "- 送入：页面任务、核心判断、完整内容语义、页面逻辑契约、必须上屏文字、事实与范围边界，以及所选风格的名称、适用语境和配色。",
-            "- 页面逻辑契约只保留主导关系、逻辑主链、空间组织和禁止误读，不直接复制后台视觉结构或固定版式。",
+            "- 每页独立完整，可直接送入 ImageGen，不依赖批次级公共提示。",
+            "- 送入：页面任务、核心判断、精简页面逻辑、必须上屏文字、短文字视觉规则，以及所选风格的适用语境和配色。",
+            "- 不送入：完整内容语义、事实边界、源页面全文或重复设计理论。",
             "- 不送入：证据编号、讲解提示、文字取舍、图片数量或后期制作规则。",
-            "- 页面任务、核心判断、完整内容语义和事实边界只用于理解与约束；画面中的可见正文以“必须上屏文字”为准。",
+            "- 页面任务、核心判断和页面逻辑只用于理解与构图；画面中的可见正文以“必须上屏文字”为准。",
         ]
     else:
         compilation_rules = [

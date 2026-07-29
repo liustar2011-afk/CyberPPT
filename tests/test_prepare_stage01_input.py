@@ -44,6 +44,8 @@ class PrepareStage01InputTests(unittest.TestCase):
                             "onscreen_judgment": "现有基础足以支持项目启动",
                             "new_value_vs_previous": "形成启动判断",
                             "reserved_for_later": "实施步骤留后页",
+                            "visual_intent_type": "hierarchy_support",
+                            "visual_proof": "用既有基础托住启动判断",
                             "source_refs": ["S001", "S002"],
                             "proof_points": [
                                 {
@@ -94,6 +96,8 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("[primary] 统计基础已经具备 (S001)", text)
         self.assertIn("- evidence_text:", text)
         self.assertIn("- boundary_refs: S002", text)
+        self.assertIn("- visual_intent_type: hierarchy_support", text)
+        self.assertIn("- visual_proof: 用既有基础托住启动判断", text)
         self.assertIn("- boundary_constraints:", text)
         self.assertIn("S002: 原文证据二", text)
         self.assertIn("internal controls only", text)
@@ -101,6 +105,7 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("cyberppt-page-contract", text)
         self.assertIn('"new_value_realized":true', text)
         self.assertIn('"onscreen_judgment":"现有基础足以支持项目启动"', text)
+        self.assertIn('"visual_proof":"用既有基础托住启动判断"', text)
         self.assertTrue(output.name.endswith("-p04.md"))
 
     def test_prepare_page_script_input_rejects_unknown_page(self) -> None:

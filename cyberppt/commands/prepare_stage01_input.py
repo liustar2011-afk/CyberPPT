@@ -83,10 +83,13 @@ def prepare_outline_input(project: Path) -> Path:
         "- `reserved_for_later`",
         "- `proof_points`: claim, source_refs, consumption",
         "- `visual_intent_type`: optional explicit ImageGen relationship type. Use one of "
-        "`judgment_evidence`, `decision_admission`, `comparison`, "
+        "`judgment_evidence`, `boundary_guardrail`, `hierarchy_support`, "
+        "`decision_admission`, `comparison`, "
         "`scenario_application`, `multi_semantic_foundation`, `causal`, "
         "`closed_loop`, `phase`, `capability_relationship`; omit it when the "
         "relationship is not yet clear.",
+        "- `visual_proof`: optional one-sentence statement of how the visual relationship "
+        "proves `main_message`; omit it when the relationship template is sufficient.",
         "",
         "Before creating `proof_points`, screen each candidate against `page_job`, `business_question`, and `main_message`.",
         "- Keep a candidate only when it directly establishes the page judgment or a necessary step in answering the page question.",
@@ -136,6 +139,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             f"- new_value_vs_previous: {page.get('new_value_vs_previous', '')}",
             f"- reserved_for_later: {page.get('reserved_for_later', '')}",
             f"- visual_intent_type: {page.get('visual_intent_type') or 'auto'}",
+            f"- visual_proof: {page.get('visual_proof') or 'auto'}",
             "- proof_points:",
         ]
         for point in page.get("proof_points", []):
@@ -177,6 +181,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             "new_value_vs_previous": page.get("new_value_vs_previous"),
             "reserved_for_later": page.get("reserved_for_later"),
             "visual_intent_type": page.get("visual_intent_type"),
+            "visual_proof": page.get("visual_proof"),
             "proof_points": page.get("proof_points", []),
             "boundary_refs": page.get("boundary_refs", []),
             "new_value_realized": True,

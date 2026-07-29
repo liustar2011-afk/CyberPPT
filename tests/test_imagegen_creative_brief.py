@@ -14,6 +14,7 @@ from scripts.dual_image_overlay.imagegen_handoff import (
     build_page_prompt,
     compile_page_prompt,
     diagnostic_onscreen_text,
+    select_page_visual_intent_type,
 )
 from scripts.dual_image_overlay.prompt_diagnostics import analyze_prompt
 from scripts.dual_image_overlay.style_library import write_project_style_lock
@@ -60,21 +61,20 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
         implicit_compiled = compile_page_prompt(page, lock)
     assert implicit == explicit
     assert implicit != legacy
-    assert "【完整内容语义｜仅供理解，不要求逐字上屏】" in implicit
+    assert "【完整内容语义｜仅供理解，不要求逐字上屏】" not in implicit
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT in implicit
-    assert "必须完整、准确、清晰地呈现，不得再次摘要、删减" in implicit
-    assert "【事实与范围边界｜仅供约束，不上屏】" in implicit
+    assert "不得新增、摘要、删减或改写" in implicit
+    assert "【事实与范围边界｜仅供约束，不上屏】" not in implicit
     assert CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT in implicit
-    assert "【视觉风格】" in implicit
+    assert "【输出与风格｜不上屏】" in implicit
     assert "象牙白 + 深蓝领导汇报" not in implicit
     assert "风格适用语境" not in implicit
-    assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" in implicit
-    assert "先建立上述唯一主链，再把完整上屏文字挂载到主链" in implicit
-    assert "不得使用占据约半幅页面的完整照片区" in implicit
-    assert "不得把抽象名词直接翻译成通用图标或符号" in implicit
-    assert "Do not show frontal faces" in implicit
+    assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" not in implicit
+    assert "【页面逻辑｜不上屏】" in implicit
+    assert "不使用等权卡片、通用图标流程或逐项配图" in implicit
+    assert "Do not show frontal faces" not in implicit
     assert "段落正文留在 PPT 可编辑文字层" not in implicit
-    assert "整体呈现现代中文高端平面设计气质。" in implicit
+    assert "现代中文高端政企汇报设计气质" in implicit
     assert "style.selected_lock" in (
         implicit_compiled.build_metadata()["injected_rule_ids"]
     )
@@ -108,7 +108,7 @@ def test_content_first_uses_the_selected_style_lock_instead_of_fixed_colors() ->
     assert purple.build_metadata()["style_selection"]["id"] == 8
     assert red.build_metadata()["style_selection"]["name"] == "经典深红咨询风"
     assert purple.build_metadata()["style_selection"]["name"] == "冷白灰 + 深紫"
-    assert "整体呈现现代中文高端平面设计气质。" in red.prompt
+    assert "现代中文高端政企汇报设计气质" in red.prompt
     assert "不预设页面构图与信息组织" not in red.prompt
     assert "风格锁" not in red.prompt
     assert "后期叠字" not in red.prompt
@@ -149,9 +149,9 @@ def test_content_first_treats_visible_judgment_as_body_conclusion_without_font_s
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "第一段是正文区结论句，不是页面标题或副标题" in prompt
-    assert "不得按页面标题样式处理" in prompt
-    assert "不得与 PPT 模板层标题争夺视觉层级" in prompt
+    assert "第一段是正文结论句，不是页面标题" in prompt
+    assert "不得通栏放大" in prompt
+    assert "标题竖线、横线等装饰" in prompt
     assert "字号" not in prompt
     assert "1.6—1.8倍" not in prompt
     assert "1.25—1.4倍" not in prompt
@@ -167,39 +167,57 @@ def test_content_first_omits_tracking_metadata_and_avoids_repeated_rules() -> No
     assert "P18" not in prompt
     assert "以上仅用于按页追踪" not in prompt
     assert page.title not in prompt
-    assert prompt.count("再次摘要、删减") == 1
-    assert prompt.count("改变原意") == 1
-    assert prompt.count("新增事实") == 1
-    assert prompt.count("【页面逻辑契约｜仅供构图，不上屏】") == 1
-    assert prompt.count("严格以【页面逻辑契约】建立全页唯一的逻辑主链") == 1
+    assert prompt.count("不得新增、摘要、删减或改写") == 1
+    assert prompt.count("【页面逻辑｜不上屏】") == 1
+    assert prompt.count("以【页面逻辑】组织空间") == 1
     assert "页面构图和信息组织仍由" not in prompt
 
 
-def test_content_first_scene_text_rule_does_not_hide_locked_names_or_numbers() -> None:
+def test_content_first_text_rule_keeps_locked_names_and_numbers_authoritative() -> None:
     page = _page()
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "本限制仅适用于插图内部的环境文字" in prompt
-    assert "不适用于【必须上屏文字】" in prompt
-    assert "必须上屏的组织名称、业务术语和数字仍须准确、清晰地呈现" in prompt
+    assert "只允许出现【必须上屏文字】中的文字" in prompt
+    assert "模块名称、数字、单位和业务术语必须准确" in prompt
 
 
-def test_content_first_uses_the_approved_scene_illustration_wording() -> None:
+def test_content_first_uses_the_compact_visual_wording() -> None:
     page = _page()
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "【页面逻辑契约｜仅供构图，不上屏】" in prompt
-    assert "先建立上述唯一主链，再把完整上屏文字挂载到主链" in prompt
-    assert "严格以【页面逻辑契约】建立全页唯一的逻辑主链" in prompt
-    assert "只在关键节点嵌入少量语义化、场景化、实景化或编辑式局部插画" in prompt
-    assert "不得使用占据约半幅页面的完整照片区" in prompt
-    assert "不得逐行配图、逐项配图" in prompt
-    assert "不得只把实景作为装饰背景，再在前景叠加图标卡片" in prompt
-    assert "不得把抽象名词直接翻译成通用图标或符号" in prompt
+    assert "【页面逻辑｜不上屏】" in prompt
+    assert "主导关系：" in prompt
+    assert "视觉证明：" in prompt
+    assert "空间组织：" in prompt
+    assert "本页避免：" in prompt
+    assert prompt.count("视觉证明：") == 1
+
+
+def test_visual_proof_prefers_page_context_and_new_relations_are_selectable() -> None:
+    page = _page()
+    assert select_page_visual_intent_type(
+        page,
+        "建设对象与专业系统的职责边界是什么",
+    ) == "boundary_guardrail"
+    assert select_page_visual_intent_type(
+        page,
+        "五层能力如何形成上下依赖和可信底座",
+    ) == "hierarchy_support"
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(
+            page,
+            lock,
+            visual_context={"visual_proof": "用共同底座托住业务结果"},
+        )
+    assert "视觉证明：用共同底座托住业务结果" in prompt
+    assert prompt.count("视觉证明：") == 1
+    assert "不使用等权卡片、通用图标流程或逐项配图" in prompt
+    assert "如出现人物，仅使用远景、背影或局部" in prompt
 
 
 def test_creative_brief_preserves_semantics_but_does_not_prescribe_layout() -> None:

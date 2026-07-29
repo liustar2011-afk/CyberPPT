@@ -232,6 +232,14 @@ SCOPE_TERMS = ("首期", "一期", "建设范围", "交付范围", "投资", "�
 IMPLEMENTATION_TERMS = ("实施路线", "建设周期", "前100天", "组织组建", "预算")
 COMPLETED_TERMS = ("已经建成", "已建成", "已经形成完整", "已完成建设", "正式确定")
 CONDITIONAL_STATUSES = ("拟", "建议", "待", "暂缓", "后续验证", "条件成熟")
+VISIBLE_CERTAINTY_TERMS = COMPLETED_TERMS + (
+    "已经批准",
+    "已批准",
+    "正式立项",
+    "最终确定",
+    "将建成",
+    "已经实现",
+)
 COUNT_WORDS = {
     "二": 2,
     "两": 2,
@@ -1480,6 +1488,101 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
                 "Group modules under explicit stages or layers, or split independent conclusions.",
             )
         )
+    visible_lines = _onscreen_content_lines(page.onscreen_text)
+    long_lines = tuple(
+        line for line in visible_lines
+        if len(re.sub(r"[^\w\u4e00-\u9fff]", "", line)) > 48
+    )
+    if long_lines:
+        issues.append(
+            _issue(
+                "ONSCREEN_LINE_TOO_LONG",
+                page,
+                "One or more on-screen lines are too long for a stable visual hierarchy.",
+                "Shorten the visible sentence while preserving its evidence and limitation.",
+                evidence=long_lines[:3],
+                severity="warning",
+            )
+        )
+    target = onscreen_effective_char_target(page)
+    if visible_chars > max(320, int(target * 1.35)):
+        issues.append(
+            _issue(
+                "ONSCREEN_TEXT_OVERLOADED",
+                page,
+                "The visible text substantially exceeds the page's effective reading target.",
+                "Compress repeated explanation or move supporting detail to narration; preserve the locked conclusion and evidence.",
+                evidence=(f"chars={visible_chars}", f"target={target}"),
+                severity="warning",
+            )
+        )
+    numbered_nodes = len(
+        re.findall(r"(?m)^\s*(?:[-*]\s*)?(?:[①②③④⑤⑥⑦⑧⑨⑩]|\d+[.、])", page.onscreen_text)
+    )
+    visible_nodes = max(len(page.module_titles), numbered_nodes)
+    grouped = any(signal in page.onscreen_text for signal in LAYER_SIGNALS)
+    if visible_nodes > 5 and not grouped:
+        issues.append(
+            _issue(
+                "VISIBLE_NODE_OVERLOAD",
+                page,
+                "More than five visible primary nodes appear without explicit grouping.",
+                "Group the nodes under a small number of stages or layers, or return to the Outline if they answer independent questions.",
+                evidence=(f"nodes={visible_nodes}",),
+                severity="error" if visible_nodes >= 8 else "warning",
+            )
+        )
+    return issues
+
+
+def _preflight_semantic_issues(
+    page: ScriptPage,
+    contract: dict[str, object],
+    records_by_id: dict[str, dict[str, object]],
+) -> list[ScriptQualityIssue]:
+    issues: list[ScriptQualityIssue] = []
+    visible = "\n".join((page.main_message, page.onscreen_judgment, page.onscreen_text))
+    conditional_sources = tuple(
+        ref for ref in page.source_refs
+        if any(
+            token in str(records_by_id.get(ref, {}).get("status") or "")
+            for token in CONDITIONAL_STATUSES
+        )
+    )
+    certainty_hits = tuple(term for term in VISIBLE_CERTAINTY_TERMS if term in visible)
+    if conditional_sources and certainty_hits:
+        high_risk = any(
+            term in visible
+            for term in ("投资", "预算", "周期", "立项", "最终范围", "技术路线")
+        )
+        issues.append(
+            _issue(
+                "FACT_CERTAINTY_LOST",
+                page,
+                "Visible page claims upgrade conditional or proposed evidence into a settled fact.",
+                "Restore the source qualification in the visible judgment and on-screen copy before ImageGen compilation.",
+                source_ids=conditional_sources,
+                evidence=certainty_hits,
+                severity="error" if high_risk else "warning",
+            )
+        )
+    question = str(contract.get("business_question") or "")
+    explicit_questions = len(re.findall(r"[？?]", question))
+    dual_marker = any(
+        marker in question
+        for marker in ("两个问题", "两项独立问题", "分别回答")
+    )
+    if explicit_questions > 1 or dual_marker:
+        issues.append(
+            _issue(
+                "PAGE_DUAL_MISSION",
+                page,
+                "The page contract explicitly asks the page to answer more than one independent question.",
+                "Return to the Outline: establish one primary question and subordinate the other, or split the page contract.",
+                evidence=(question,),
+                severity="warning",
+            )
+        )
     return issues
 
 
@@ -1717,6 +1820,7 @@ def audit_script_quality(
                 )
             )
             issues.extend(_narration_boundary_issues(page, contract))
+            issues.extend(_preflight_semantic_issues(page, contract, records_by_id))
             if outline.get("page_contract_receipt_mode") == "required":
                 receipt = page.contract_receipt
                 if receipt is None:
