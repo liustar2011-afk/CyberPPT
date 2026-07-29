@@ -102,6 +102,9 @@ class ScriptPage:
     onscreen_judgment: str = ""
     judgment_role: str = ""
     onscreen_judgment_mode: str = ""
+    image_locked_text: str = ""
+    layout_motif: str = ""
+    scene_role: str = ""
     field_order: tuple[str, ...] = ()
     coaching_tip: str = ""
     speaker_notes: str = ""
@@ -246,6 +249,9 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                 onscreen_judgment=fields.get("上屏结论", "").strip(),
                 judgment_role=fields.get("判断角色", "").strip(),
                 onscreen_judgment_mode=fields.get("上屏结论模式", "").strip(),
+                image_locked_text=fields.get("生图锁定文字", "").strip(),
+                layout_motif=fields.get("版式母题", "").strip(),
+                scene_role=fields.get("场景角色", "").strip(),
                 field_order=_field_order(body),
                 coaching_tip=(
                     fields.get("讲解提示", "")

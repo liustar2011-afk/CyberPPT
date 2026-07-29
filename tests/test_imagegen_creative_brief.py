@@ -17,7 +17,10 @@ from scripts.dual_image_overlay.imagegen_handoff import (
     compile_page_prompt,
     diagnostic_onscreen_text,
     locked_onscreen_text,
+    PresentationDecision,
+    resolve_presentation_decision,
     resolve_onscreen_judgment_mode,
+    select_image_locked_text,
     select_page_visual_intent_type,
 )
 from scripts.dual_image_overlay.prompt_diagnostics import analyze_prompt
@@ -45,6 +48,31 @@ def _page():
     return parse_script_markdown(SCRIPT).pages[0]
 
 
+def test_presentation_decision_honors_explicit_page_values() -> None:
+    page = replace(_page(), layout_motif="process_atlas", scene_role="no_scene")
+    decision = resolve_presentation_decision(page, "phase")
+    assert decision.layout_motif == "process_atlas"
+    assert decision.scene_role == "no_scene"
+    assert decision.source == "script"
+
+
+def test_presentation_decision_avoids_adjacent_duplicate_motif() -> None:
+    page = _page()
+    first = resolve_presentation_decision(page, "capability_relationship")
+    second = resolve_presentation_decision(page, "capability_relationship", (first,))
+    assert first.layout_motif != second.layout_motif
+
+
+def test_presentation_decision_caps_primary_scene_density() -> None:
+    page = _page()
+    prior = (
+        PresentationDecision("control_room_bridge", "primary_scene", "auto", ""),
+        PresentationDecision("evidence_landscape", "primary_scene", "auto", ""),
+    )
+    decision = resolve_presentation_decision(page, "closed_loop", prior)
+    assert decision.scene_role != "primary_scene"
+
+
 def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     page = _page()
     with TemporaryDirectory() as directory:
@@ -67,7 +95,7 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert implicit != legacy
     assert "【完整内容语义｜仅供理解，不要求逐字上屏】" not in implicit
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT in implicit
-    assert "其他说明文字允许在不损失语义的前提下" in implicit
+    assert "解释性正文由后续 PPT 可编辑文字层承载" in implicit
     assert "允许增加不带文字的行业场景、业务动作、环境细节和视觉隐喻" in implicit
     assert "【事实与范围边界｜仅供约束，不上屏】" not in implicit
     assert CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT in implicit
@@ -78,7 +106,7 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "【页面逻辑｜不上屏】" in implicit
     assert "不使用等权卡片、通用图标流程或逐项配图" in implicit
     assert "Do not show frontal faces" not in implicit
-    assert "段落正文留在 PPT 可编辑文字层" not in implicit
+    assert "解释性正文由后续 PPT 可编辑文字层承载" in implicit
     assert "现代中文高端政企汇报设计气质" in implicit
     assert "style.selected_lock" in (
         implicit_compiled.build_metadata()["injected_rule_ids"]
@@ -117,7 +145,7 @@ def test_content_first_uses_the_selected_style_lock_instead_of_fixed_colors() ->
     assert "不预设页面构图与信息组织" not in red.prompt
     assert "风格锁" not in red.prompt
     assert "后期叠字" not in red.prompt
-    assert "可编辑文字层" not in red.prompt
+    assert "可编辑文字层承载" in red.prompt
     assert "ID 1" not in red.prompt
     assert "classic_red_consulting" not in red.prompt
 
@@ -140,7 +168,8 @@ def test_content_first_prompt_places_visible_judgment_before_support_modules() -
         "【完整页面内容｜用于视觉叙事】", 1
     )[0]
     semantics = prompt.split("【完整页面内容｜用于视觉叙事】", 1)[1]
-    assert page.onscreen_judgment in locked
+    assert page.onscreen_judgment not in locked
+    assert "数据治理｜质量与授权" in locked
     assert "数据治理" in semantics
 
 
@@ -158,7 +187,7 @@ def test_content_first_treats_visible_judgment_as_body_conclusion_without_font_s
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "第一段是正文结论句，不是页面标题" in prompt
+    assert "如【锁定上屏文字】含正文结论句" in prompt
     assert "不得通栏放大" in prompt
     assert "标题竖线、横线等装饰" in prompt
     assert "字号" not in prompt
@@ -176,7 +205,7 @@ def test_content_first_omits_tracking_metadata_and_avoids_repeated_rules() -> No
     assert "P18" not in prompt
     assert "以上仅用于按页追踪" not in prompt
     assert page.title not in prompt
-    assert prompt.count("其他说明文字允许在不损失语义的前提下") == 1
+    assert prompt.count("解释性正文由后续 PPT 可编辑文字层承载") == 1
     assert prompt.count("【页面逻辑｜不上屏】") == 1
     assert prompt.count("以【页面逻辑】组织空间") == 1
     assert "页面构图和信息组织仍由" not in prompt
@@ -200,6 +229,30 @@ def test_content_first_locks_only_conclusion_and_numeric_fact_lines() -> None:
     assert all(title in locked for title in page.module_titles)
     assert "2025年完成率 95%" in locked
     assert "保持滚动验证和误差复盘" not in locked
+
+
+def test_image_locked_text_stays_bitmap_safe_and_preserves_short_labels() -> None:
+    page = _page()
+    selected = select_image_locked_text(page)
+    assert page.onscreen_judgment not in selected
+    assert "数据治理｜质量与授权" in selected
+    assert "2025年完成率 95%" in selected
+    assert all(len(line.replace(" ", "")) <= 14 for line in selected.splitlines())
+
+
+def test_content_first_records_presentation_and_editable_body() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        compiled = compile_page_prompt(page, lock)
+    metadata = compiled.build_metadata()
+    assert metadata["presentation"]["layout_motif"] in {
+        "evidence_landscape", "control_room_bridge", "process_atlas",
+        "decision_canvas", "layered_system",
+    }
+    assert metadata["image_locked_text"] == select_image_locked_text(page)
+    assert metadata["editable_body_text"] == page.onscreen_text.strip()
+    assert "【版式与场景策略｜不上屏】" in compiled.prompt
 
 
 def test_semantic_only_keeps_judgment_in_semantics_but_not_locked_copy() -> None:

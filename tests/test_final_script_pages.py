@@ -100,6 +100,8 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertIn("【完整页面内容｜用于视觉叙事】", prompt)
             self.assertEqual("态势感知能力要从工具堆叠转向风险闭环", lock["records"][0]["title"])
             self.assertEqual("运营保障机制需要责任、流程和审计同时落地", lock["records"][1]["title"])
+            self.assertIn("presentation", lock["records"][0])
+            self.assertIn("editable_body_text", lock["records"][0])
             self.assertTrue(Path(summary["artifacts"]["compiled_deliverable_prompt"]).exists())
             self.assertTrue(Path(summary["artifacts"]["page_image_pairs"]).exists())
             self.assertTrue(Path(summary["artifacts"]["template_text_lock"]).exists())

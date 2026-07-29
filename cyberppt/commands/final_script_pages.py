@@ -20,9 +20,16 @@ from scripts.dual_image_overlay.cyberppt_pair_manifest import (
     require_generated,
 )
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, parse_pages, template_title
+from scripts.dual_image_overlay.imagegen_handoff import (
+    PresentationDecision,
+    resolve_presentation_decision,
+    select_image_locked_text,
+    select_page_visual_intent_type,
+)
 from scripts.dual_image_overlay.production_readiness import build_production_readiness
 from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_codex_image
 from scripts.dual_image_overlay.style_library import write_project_style_lock
+from cyberppt.script_quality_contract import parse_script_markdown
 
 
 STAGE_DIR = "workbench/stages/02-blueprint-dual-image"
@@ -90,11 +97,25 @@ def _template_text_lock(
     manifest_path: Path,
 ) -> Path:
     blocks = parse_page_blocks(script)
+    script_pages = {
+        int(page.page_id[1:]): page
+        for page in parse_script_markdown(script.read_text(encoding="utf-8")).pages
+    }
     records: list[dict[str, Any]] = []
+    prior_decisions: list[PresentationDecision] = []
     for page_number in pages:
         page = blocks[page_number]
-        records.append(
-            {
+        script_page = script_pages.get(page_number)
+        presentation: PresentationDecision | None = None
+        if script_page is not None and script_page.page_type == "content":
+            relation = select_page_visual_intent_type(script_page, "")
+            presentation = resolve_presentation_decision(
+                script_page,
+                relation,
+                tuple(prior_decisions),
+            )
+            prior_decisions.append(presentation)
+        record: dict[str, Any] = {
                 "page": page_number,
                 "title": template_title(page),
                 "subtitle": "",
@@ -111,7 +132,11 @@ def _template_text_lock(
                     + (f" --style-lock {style_lock}" if style_lock else "")
                 ),
             }
-        )
+        if presentation is not None:
+            record["presentation"] = presentation.to_dict()
+            record["image_locked_text"] = select_image_locked_text(script_page)
+            record["editable_body_text"] = script_page.onscreen_text.strip()
+        records.append(record)
     payload = {
         "schema": "cyberppt.template_text_lock.v1",
         "created_at": _utc_now(),

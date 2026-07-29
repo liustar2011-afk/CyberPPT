@@ -87,6 +87,32 @@ class ScriptMarkdownParserTests(unittest.TestCase):
         self.assertNotIn("- 证据：", page.onscreen_text)
         self.assertNotIn("S015", page.onscreen_text)
 
+    def test_extracts_optional_presentation_fields_and_keeps_legacy_defaults(self) -> None:
+        page = parse_script_markdown(
+            """## 第1页：示例
+- 页面类型：内容页
+- 上屏结论：结论
+- 上屏文字：正文
+- 版式母题：process_atlas
+- 场景角色：no_scene
+- 生图锁定文字：短标签
+"""
+        ).pages[0]
+        self.assertEqual("process_atlas", page.layout_motif)
+        self.assertEqual("no_scene", page.scene_role)
+        self.assertEqual("短标签", page.image_locked_text)
+
+        legacy = parse_script_markdown(
+            """## 第2页：旧页
+- 页面类型：内容页
+- 上屏结论：结论
+- 上屏文字：正文
+"""
+        ).pages[0]
+        self.assertEqual("", legacy.layout_motif)
+        self.assertEqual("", legacy.scene_role)
+        self.assertEqual("", legacy.image_locked_text)
+
 
 class ScriptContractAuditTests(unittest.TestCase):
     def test_required_page_contract_receipt_must_be_present(self) -> None:

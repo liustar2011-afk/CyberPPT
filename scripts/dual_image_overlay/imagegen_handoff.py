@@ -58,7 +58,8 @@ PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
 DEFAULT_PROMPT_COMPILER = "content-first-v1"
 CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【内容与视觉要求｜不上屏】
 必须由文字与画面共同完整表达【完整页面内容】中的核心判断、业务对象、逻辑关系和关键限定，不得捏造事实或改变判断强度。
-【锁定上屏文字】中的每一项都必须出现在画面中并逐字准确；数字、单位、专有名词、业务术语和否定边界必须准确。其他说明文字允许在不损失语义的前提下调整语序、合并重复、拆分为场景标签或适度压缩。
+【锁定上屏文字】中的每一项都必须出现在画面中并逐字准确；数字、单位、专有名词、业务术语和否定边界必须准确。
+除锁定短文字外，解释性正文由后续 PPT 可编辑文字层承载，不要求 ImageGen 逐字生成；画面只保留必要的短场景标签，不得自行添加长段正文或总结口号。
 不得新增未经页面内容支持的上屏文字；允许增加不带文字的行业场景、业务动作、环境细节和视觉隐喻，让视觉关系承担解释责任。
 以【页面逻辑】组织空间，不使用等权卡片、通用图标流程或逐项配图；先展开业务场景及其关系，再让必要文字附着于场景。
 中文使用清晰的现代无衬线黑体。不得生成额外页面标题、Logo、页脚或页码。
@@ -73,7 +74,7 @@ CONTENT_FIRST_SEMANTIC_ONLY_OUTPUT_CONTRACT = """【内容与视觉要求｜不�
 【输出要求｜不上屏】
 画布尺寸为 2048×1024（2:1）。"""
 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【结论句要求｜不上屏】
-【锁定上屏文字】第一段是正文结论句，不是页面标题；不得通栏放大或添加标题竖线、横线等装饰。
+如【锁定上屏文字】含正文结论句，该句是正文结论句，不是页面标题；不得通栏放大或添加标题竖线、横线等装饰。
 允许调整换行和文字层级；画面必须参与表达页面逻辑，不得退化为文字排版加装饰图片。"""
 CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT = """【结论表达要求｜不上屏】
 本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心判断】【页面逻辑】或【完整页面内容】中自行抽取整句作为页面标题或通栏结论。
@@ -544,6 +545,9 @@ class CompiledPagePrompt:
     creative_brief: CreativeBrief | None = None
     injected_rule_ids: tuple[str, ...] = ()
     style_selection: dict[str, Any] | None = None
+    presentation: PresentationDecision | None = None
+    image_locked_text: str = ""
+    editable_body_text: str = ""
 
     def build_metadata(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -555,6 +559,12 @@ class CompiledPagePrompt:
             payload["creative_brief"] = self.creative_brief.to_dict()
         if self.style_selection is not None:
             payload["style_selection"] = dict(self.style_selection)
+        if self.presentation is not None:
+            payload["presentation"] = self.presentation.to_dict()
+        if self.image_locked_text:
+            payload["image_locked_text"] = self.image_locked_text
+        if self.editable_body_text:
+            payload["editable_body_text"] = self.editable_body_text
         return payload
 
 
@@ -679,6 +689,60 @@ def locked_onscreen_text(
     return "\n".join(locked).strip()
 
 
+MAX_IMAGE_LOCKED_LINES = 7
+MAX_IMAGE_LOCKED_LINE_CHARS = 14
+MAX_IMAGE_LOCKED_CHARS = 84
+
+
+def select_image_locked_text(
+    page: ScriptPage,
+    visual_context: dict[str, str] | None = None,
+) -> str:
+    """Return short, bitmap-safe text while leaving body copy editable."""
+
+    raw = page.image_locked_text.strip() or locked_onscreen_text(page, visual_context)
+    if not raw and not page.field_order and page.title.strip():
+        # Older free-form final scripts do not expose structured fields.  Keep
+        # their page heading as the minimal safe visible anchor.
+        raw = page.title.strip()
+    candidates = [line.strip(" -*") for line in raw.splitlines() if line.strip()]
+    selected: list[str] = []
+    total = 0
+    for line in candidates:
+        compact = re.sub(r"\s+", "", line)
+        if not compact or line in selected:
+            continue
+        if len(compact) > MAX_IMAGE_LOCKED_LINE_CHARS:
+            # Numeric fact lines often carry a long explanatory tail.  Preserve
+            # the compact fact as bitmap copy and leave the tail editable.
+            if re.search(r"\d", compact):
+                shortened = re.split(r"[，,；;。]", line, maxsplit=1)[0].strip()
+                if shortened and len(re.sub(r"\s+", "", shortened)) <= MAX_IMAGE_LOCKED_LINE_CHARS:
+                    line = shortened
+                    compact = re.sub(r"\s+", "", line)
+                else:
+                    continue
+            else:
+                continue
+        if len(selected) >= MAX_IMAGE_LOCKED_LINES or total + len(compact) > MAX_IMAGE_LOCKED_CHARS:
+            continue
+        selected.append(line)
+        total += len(compact)
+    return "\n".join(selected).strip()
+
+
+def render_presentation_contract(decision: PresentationDecision) -> str:
+    return "\n".join(
+        (
+            "【版式与场景策略｜不上屏】",
+            f"版式母题：{decision.layout_motif}。",
+            f"场景角色：{decision.scene_role}。",
+            "保持本页内容关系优先；Style 09 只约束优雅、沉稳、正式的气质，不复用固定页面模板。",
+            "不得因沿用上一页构图而削弱本页的主导关系、文字可读性或业务边界。",
+        )
+    )
+
+
 STYLE_COLOR_LABELS = (
     ("background", "背景"),
     ("title", "主文字"),
@@ -689,6 +753,88 @@ STYLE_COLOR_LABELS = (
 )
 
 CONTENT_FIRST_STYLE_RULE_FIELDS: tuple[str, ...] = ()
+
+LAYOUT_MOTIFS = (
+    "control_room_bridge",
+    "evidence_landscape",
+    "decision_canvas",
+    "process_atlas",
+    "layered_system",
+)
+SCENE_ROLES = ("primary_scene", "supporting_evidence", "no_scene")
+MOTIF_CANDIDATES: dict[str, tuple[str, str]] = {
+    "boundary_guardrail": ("decision_canvas", "evidence_landscape"),
+    "decision_admission": ("decision_canvas", "evidence_landscape"),
+    "comparison": ("decision_canvas", "evidence_landscape"),
+    "hierarchy_support": ("layered_system", "control_room_bridge"),
+    "capability_relationship": ("layered_system", "control_room_bridge"),
+    "phase": ("process_atlas", "evidence_landscape"),
+    "causal": ("process_atlas", "evidence_landscape"),
+    "closed_loop": ("control_room_bridge", "process_atlas"),
+    "scenario_application": ("control_room_bridge", "process_atlas"),
+    "judgment_evidence": ("evidence_landscape", "decision_canvas"),
+    "multi_semantic_foundation": ("evidence_landscape", "decision_canvas"),
+}
+DEFAULT_SCENE_ROLE_BY_MOTIF = {
+    "control_room_bridge": "primary_scene",
+    "evidence_landscape": "supporting_evidence",
+    "decision_canvas": "no_scene",
+    "process_atlas": "no_scene",
+    "layered_system": "supporting_evidence",
+}
+
+
+@dataclass(frozen=True)
+class PresentationDecision:
+    """Content-led visual variation decision recorded with every prompt."""
+
+    layout_motif: str
+    scene_role: str
+    source: str
+    reason: str
+
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "layout_motif": self.layout_motif,
+            "scene_role": self.scene_role,
+            "source": self.source,
+            "reason": self.reason,
+        }
+
+
+def resolve_presentation_decision(
+    page: ScriptPage,
+    relation: str,
+    prior_decisions: tuple[PresentationDecision, ...] = (),
+) -> PresentationDecision:
+    """Choose a content-led motif while preventing batch-level repetition."""
+
+    explicit_motif = page.layout_motif.strip()
+    explicit_scene = page.scene_role.strip()
+    if explicit_motif and explicit_motif not in LAYOUT_MOTIFS:
+        raise ValueError(f"{page.page_id} has unsupported 版式母题: {explicit_motif}")
+    if explicit_scene and explicit_scene not in SCENE_ROLES:
+        raise ValueError(f"{page.page_id} has unsupported 场景角色: {explicit_scene}")
+
+    candidates = MOTIF_CANDIDATES.get(relation, ("evidence_landscape", "decision_canvas"))
+    previous_motif = prior_decisions[-1].layout_motif if prior_decisions else ""
+    motif = explicit_motif or next(
+        (candidate for candidate in candidates if candidate != previous_motif),
+        candidates[0],
+    )
+    scene_role = explicit_scene or DEFAULT_SCENE_ROLE_BY_MOTIF[motif]
+    recent_primary_count = sum(
+        decision.scene_role == "primary_scene" for decision in prior_decisions[-3:]
+    )
+    if not explicit_scene and scene_role == "primary_scene" and recent_primary_count >= 2:
+        scene_role = "supporting_evidence"
+    source = "script" if explicit_motif or explicit_scene else "auto"
+    reason = (
+        "explicit page presentation override"
+        if source == "script"
+        else f"{relation} candidates: {', '.join(candidates)}"
+    )
+    return PresentationDecision(motif, scene_role, source, reason)
 
 
 def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
@@ -809,10 +955,14 @@ def render_content_first_prompt(
     page_mission: str = "",
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
+    presentation_decision: PresentationDecision | None = None,
 ) -> tuple[str, str]:
     """Render a complete-content prompt without translating meaning into layout."""
 
-    if page.page_type == "content" and not page.onscreen_judgment.strip():
+    # Structured scripts require an explicit conclusion.  Preserve execution
+    # compatibility for older free-form final scripts by using their heading as
+    # a minimal anchor; their full content remains owned by the template layer.
+    if page.page_type == "content" and not page.onscreen_judgment.strip() and page.field_order:
         raise ValueError(
             f"{page.page_id} is missing 上屏结论; repair and reapprove the final "
             "script before compiling an ImageGen prompt"
@@ -822,22 +972,30 @@ def render_content_first_prompt(
     onscreen_body = _flatten_markdown_tables(
         _clean_onscreen_for_imagegen(page.onscreen_text)
     )
+    locked = select_image_locked_text(page, visual_context)
+    locked_lines = set(locked.splitlines())
+    judgment_for_semantics = page.onscreen_judgment.strip()
+    if judgment_for_semantics and judgment_for_semantics in locked_lines:
+        judgment_for_semantics = ""
+    if not judgment_for_semantics and not onscreen_body and not page.main_message.strip():
+        judgment_for_semantics = page.title.strip()
     complete_semantics = "\n\n".join(
         part
         for part in (
-            page.onscreen_judgment.strip()
-            if judgment_mode == "semantic_only"
-            else "",
+            judgment_for_semantics,
             onscreen_body,
         )
         if part
     )
-    locked = locked_onscreen_text(page, visual_context)
     relation, logic_contract = render_page_logic_contract(
         page,
         page_mission=page_mission,
         visual_context=visual_context,
         visual_intent_override=visual_intent_override,
+    )
+    presentation = presentation_decision or resolve_presentation_decision(
+        page,
+        relation,
     )
     parts = [
         "【页面任务｜仅供理解，不上屏】",
@@ -847,6 +1005,8 @@ def render_content_first_prompt(
         page.main_message.strip(),
         "",
         logic_contract,
+        "",
+        render_presentation_contract(presentation),
         "",
         "【完整页面内容｜用于视觉叙事】",
         complete_semantics,
@@ -960,6 +1120,7 @@ def compile_page_prompt(
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
     prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
+    prior_decisions: tuple[PresentationDecision, ...] = (),
 ) -> CompiledPagePrompt:
     if prompt_compiler not in PROMPT_COMPILERS:
         raise ValueError(
@@ -968,12 +1129,24 @@ def compile_page_prompt(
         )
     if prompt_compiler == "content-first-v1":
         selected_style = _selected_content_first_style(style_lock)
+        relation = select_page_visual_intent_type(
+            page,
+            page_mission,
+            context=visual_context,
+            override=visual_intent_override,
+        )
+        presentation = resolve_presentation_decision(
+            page,
+            relation,
+            prior_decisions,
+        )
         relation, prompt = render_content_first_prompt(
             page,
             style_lock=style_lock,
             page_mission=page_mission,
             visual_context=visual_context,
             visual_intent_override=visual_intent_override,
+            presentation_decision=presentation,
         )
         assert_deliverable_prompt(prompt)
         if EVIDENCE_ID_RE.search(prompt):
@@ -1001,6 +1174,9 @@ def compile_page_prompt(
                 "colors": dict(selected_style.get("colors") or {}),
                 "style_lock": str(style_lock),
             },
+            presentation=presentation,
+            image_locked_text=select_image_locked_text(page, visual_context),
+            editable_body_text=page.onscreen_text.strip(),
         )
 
     relation = select_page_visual_intent_type(
@@ -1117,7 +1293,7 @@ def write_chapter_handoff(
             "- 送入：页面任务、核心判断、精简页面逻辑、锁定关键文字、完整页面语义、短文字视觉规则，以及所选风格的适用语境和配色。",
             "- 不送入：源材料全文、完整事实边界或重复设计理论。",
             "- 不送入：证据编号、讲解提示、文字取舍、图片数量或后期制作规则。",
-            "- 页面任务、核心判断和页面逻辑只用于理解与构图；锁定文字逐字准确，其余页面内容允许在语义完整前提下重组并与场景融合。",
+            "- 页面任务、核心判断和页面逻辑只用于理解与构图；锁定短文字逐字准确，其余解释性正文进入 PPT 可编辑文字层，画面仅以场景、关系和短标签承载语义。",
         ]
     else:
         compilation_rules = [
@@ -1143,6 +1319,7 @@ def write_chapter_handoff(
     outputs: dict[str, Path] = {}
     content_prompts: list[str] = []
     diagnostics: list[PagePromptDiagnostics] = []
+    prior_decisions: list[PresentationDecision] = []
     comparison_diagnostics: list[
         tuple[PagePromptDiagnostics, PagePromptDiagnostics]
     ] = []
@@ -1168,7 +1345,10 @@ def write_chapter_handoff(
             visual_context=visual_contexts.get(page.page_id),
             visual_intent_override=visual_intent_overrides.get(page.page_id),
             prompt_compiler=prompt_compiler,
+            prior_decisions=tuple(prior_decisions),
         )
+        if compiled.presentation is not None:
+            prior_decisions.append(compiled.presentation)
         prompt = compiled.prompt
         content_prompts.append(prompt)
         selected_diagnostics = PagePromptDiagnostics(
@@ -1192,6 +1372,7 @@ def write_chapter_handoff(
                 visual_context=visual_contexts.get(page.page_id),
                 visual_intent_override=visual_intent_overrides.get(page.page_id),
                 prompt_compiler=compare_with,
+                prior_decisions=tuple(prior_decisions[:-1]),
             )
             comparison_page = PagePromptDiagnostics(
                 page_id=page.page_id,
