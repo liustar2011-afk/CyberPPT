@@ -492,6 +492,12 @@ def _creative_brief_style_contract(style_lock_path: Path | None) -> str:
         ),
         contract,
     )
+    creative_layout_freedom = (
+        "只需保持锁定上屏文字完整准确；不要求沿用原始列表、卡片、栏位或段落"
+        "排布形式，整体构图、视觉隐喻和辅助表达均可自由发挥。"
+    )
+    if "不要求沿用原始列表、卡片、栏位或段落排布形式" not in contract:
+        contract = f"{contract}\n\n{creative_layout_freedom}"
     return contract
 
 

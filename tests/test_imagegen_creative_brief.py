@@ -69,8 +69,10 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "象牙白 + 深蓝领导汇报" not in implicit
     assert "风格适用语境" not in implicit
     assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" in implicit
-    assert "实景编辑式插画或具象行业场景应服务于关键业务对象" in implicit
-    assert "图标不得成为主构图、中央视觉或留白装饰" in implicit
+    assert "先保证锁定上屏文字完整、舒展、清晰" in implicit
+    assert "不得占据约半幅页面" in implicit
+    assert "图标不是默认视觉载体" in implicit
+    assert "Do not show frontal faces" in implicit
     assert "段落正文留在 PPT 可编辑文字层" not in implicit
     assert "整体呈现现代中文高端平面设计气质。" in implicit
     assert "style.selected_lock" in (
@@ -189,12 +191,11 @@ def test_content_first_uses_the_approved_scene_illustration_wording() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert (
-        "优先将业务对象、动作过程和主导关系转化为可识别的视觉结构；"
-        "可根据所选视觉风格和页面语义，采用彩色化、具象化、语义化的场景化插画。"
-        in prompt
-    )
-    assert "彩色化、具象化、语义化或场景化的行业表达" not in prompt
+    assert "先依据【必须上屏文字】建立完整、舒展、可独立阅读的文字主构图" in prompt
+    assert "为需要视觉解释的内容配置少量语义化、场景化、实景化或编辑式局部插画" in prompt
+    assert "不得使用占据约半幅页面的完整照片区" in prompt
+    assert "不得只把实景作为装饰背景，再在前景叠加图标卡片" in prompt
+    assert "不得把抽象名词直接翻译成通用图标或符号" in prompt
 
 
 def test_creative_brief_preserves_semantics_but_does_not_prescribe_layout() -> None:
