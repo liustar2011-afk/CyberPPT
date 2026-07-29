@@ -96,8 +96,8 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert implicit != legacy
     assert "【完整内容语义｜仅供理解，不要求逐字上屏】" not in implicit
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT in implicit
-    assert "解释性正文由后续 PPT 可编辑文字层承载" in implicit
-    assert "允许增加不带文字的行业场景、业务动作、环境细节和视觉隐喻" in implicit
+    assert "【完整上屏内容】均需进入 full 图" in implicit
+    assert "必要的行业场景、业务动作、环境细节和视觉隐喻只能辅助附近文字与业务关系" in implicit
     assert "【事实与范围边界｜仅供约束，不上屏】" not in implicit
     assert CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT in implicit
     assert "【输出与风格｜不上屏】" in implicit
@@ -107,7 +107,7 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "【页面逻辑｜不上屏】" in implicit
     assert "不使用等权卡片、通用图标流程或逐项配图" in implicit
     assert "Do not show frontal faces" not in implicit
-    assert "解释性正文由后续 PPT 可编辑文字层承载" in implicit
+    assert "解释性正文由后续 PPT 可编辑文字层承载" not in implicit
     assert "现代中文高端政企汇报设计气质" in implicit
     assert "style.selected_lock" in (
         implicit_compiled.build_metadata()["injected_rule_ids"]
@@ -146,7 +146,7 @@ def test_content_first_uses_the_selected_style_lock_instead_of_fixed_colors() ->
     assert "不预设页面构图与信息组织" not in red.prompt
     assert "风格锁" not in red.prompt
     assert "后期叠字" not in red.prompt
-    assert "可编辑文字层承载" in red.prompt
+    assert "可编辑文字层承载" not in red.prompt
     assert "ID 1" not in red.prompt
     assert "classic_red_consulting" not in red.prompt
 
@@ -185,13 +185,28 @@ def test_content_first_prompt_places_visible_judgment_before_support_modules() -
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    locked = prompt.split("【锁定上屏文字】", 1)[1].split(
-        "【完整页面内容｜用于视觉叙事】", 1
+    locked = prompt.split("【锁定关键文字】", 1)[1].split(
+        "【完整上屏内容】", 1
     )[0]
-    semantics = prompt.split("【完整页面内容｜用于视觉叙事】", 1)[1]
+    semantics = prompt.split("【完整上屏内容】", 1)[1]
     assert page.onscreen_judgment not in locked
     assert "数据治理｜质量与授权" in locked
     assert "数据治理" in semantics
+
+
+def test_content_first_full_reference_keeps_complete_onscreen_content() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    full = prompt.split("【完整上屏内容】", 1)[1].split(
+        "【结论句要求｜不上屏】", 1
+    )[0]
+    assert "保持滚动验证和误差复盘" in full
+    assert "权限、日志和发布审核共同保障运行" in full
+    assert "解释性正文由后续 PPT 可编辑文字层承载" not in prompt
+    assert "不要求 ImageGen 逐字生成" not in prompt
 
 
 def test_content_first_rejects_content_page_without_visible_judgment() -> None:
@@ -208,7 +223,7 @@ def test_content_first_treats_visible_judgment_as_body_conclusion_without_font_s
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "如【锁定上屏文字】含正文结论句" in prompt
+    assert "如【锁定关键文字】含正文结论句" in prompt
     assert "不得通栏放大" in prompt
     assert "标题竖线、横线等装饰" in prompt
     assert "字号" not in prompt
@@ -226,7 +241,8 @@ def test_content_first_omits_tracking_metadata_and_avoids_repeated_rules() -> No
     assert "P18" not in prompt
     assert "以上仅用于按页追踪" not in prompt
     assert page.title not in prompt
-    assert prompt.count("解释性正文由后续 PPT 可编辑文字层承载") == 1
+    assert "解释性正文由后续 PPT 可编辑文字层承载" not in prompt
+    assert prompt.count("【完整上屏内容】均需进入 full 图") == 1
     assert prompt.count("【页面逻辑｜不上屏】") == 1
     assert prompt.count("以【页面逻辑】组织空间") == 1
     assert "页面构图和信息组织仍由" not in prompt
@@ -238,7 +254,7 @@ def test_content_first_text_rule_keeps_locked_names_and_numbers_authoritative() 
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "【锁定上屏文字】中的每一项都必须出现在画面中并逐字准确" in prompt
+    assert "【锁定关键文字】中的每一项都必须逐字准确" in prompt
     assert "数字、单位、专有名词、业务术语和否定边界必须准确" in prompt
     assert "不得新增未经页面内容支持的上屏文字" in prompt
 
@@ -296,10 +312,10 @@ def test_semantic_only_with_no_numeric_facts_omits_empty_locked_section() -> Non
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "【锁定上屏文字】" not in prompt
+    assert "【锁定关键文字】" not in prompt
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT not in prompt
     assert CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT in prompt
-    assert "不得从【页面任务】【核心判断】【页面逻辑】或【完整页面内容】中自行抽取整句" in prompt
+    assert "不得从【页面任务】【核心判断】或【页面逻辑】中自行抽取整句" in prompt
 
 
 def test_semantic_only_still_locks_business_module_labels() -> None:
@@ -316,8 +332,8 @@ def test_semantic_only_still_locks_business_module_labels() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
     assert CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT in prompt
-    assert "中的每一项都必须出现在画面中并逐字准确" in prompt
-    assert "不得生成完整陈述句、总结句或口号" in prompt
+    assert "中的每一项都必须逐字准确" in prompt
+    assert "【完整上屏内容】仍须完整表达" in prompt
 
 
 def test_style_nine_compiles_short_refinement_signature() -> None:
@@ -352,7 +368,7 @@ def test_semantic_only_numeric_fact_is_locked_but_not_called_a_conclusion() -> N
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "【锁定上屏文字】" in prompt
+    assert "【锁定关键文字】" in prompt
     assert "2025年完成率 95%" in prompt
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT not in prompt
     assert CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT in prompt

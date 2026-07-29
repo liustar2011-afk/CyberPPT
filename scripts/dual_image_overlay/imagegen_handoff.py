@@ -57,31 +57,32 @@ EVIDENCE_ID_RE = re.compile(r"S\d{3}")
 PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
 DEFAULT_PROMPT_COMPILER = "content-first-v1"
 CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【内容与视觉要求｜不上屏】
-必须由文字与画面共同完整表达【完整页面内容】中的核心判断、业务对象、逻辑关系和关键限定，不得捏造事实或改变判断强度。
-【锁定上屏文字】中的每一项都必须出现在画面中并逐字准确；数字、单位、专有名词、业务术语和否定边界必须准确。
-除锁定短文字外，解释性正文由后续 PPT 可编辑文字层承载，不要求 ImageGen 逐字生成；画面只保留必要的短场景标签，不得自行添加长段正文或总结口号。
-不得新增未经页面内容支持的上屏文字；允许增加不带文字的行业场景、业务动作、环境细节和视觉隐喻，让视觉关系承担解释责任。
-以【页面逻辑】组织空间，不使用等权卡片、通用图标流程或逐项配图；先展开业务场景及其关系，再让必要文字附着于场景。
+必须由文字、结构和必要画面共同完整表达【完整上屏内容】中的核心判断、业务对象、逻辑关系、关键限定和正文要点，不得捏造事实、改变判断强度或删除支撑判断成立所必需的内容。
+【锁定关键文字】中的每一项都必须逐字准确；数字、单位、专有名词、业务术语和否定边界必须准确。
+【完整上屏内容】均需进入 full 图；允许调整换行、文字层级和局部语序，但不得把解释性正文全部替换为场景、图标或抽象视觉隐喻。
+不得新增未经页面内容支持的上屏文字；必要的行业场景、业务动作、环境细节和视觉隐喻只能辅助附近文字与业务关系。
+以【页面逻辑】组织空间，不使用等权卡片、通用图标流程或逐项配图。
 中文使用清晰的现代无衬线黑体。不得生成额外页面标题、Logo、页脚或页码。
 【输出要求｜不上屏】
 画布尺寸为 2048×1024（2:1）。"""
 CONTENT_FIRST_SEMANTIC_ONLY_OUTPUT_CONTRACT = """【内容与视觉要求｜不上屏】
-必须由文字与画面共同完整表达【完整页面内容】中的核心判断、业务对象、逻辑关系和关键限定，不得捏造事实或改变判断强度。
+必须由文字、结构和必要画面共同完整表达【完整上屏内容】中的核心判断、业务对象、逻辑关系、关键限定和正文要点，不得捏造事实、改变判断强度或删除支撑判断成立所必需的内容。
 数字、单位、专有名词、业务术语和否定边界必须准确；其他说明文字允许在不损失语义的前提下调整语序、合并重复、拆分为场景标签或适度压缩。
+【完整上屏内容】均需进入 full 图；允许调整换行、文字层级和局部语序，但不得把解释性正文全部替换为场景、图标或抽象视觉隐喻。
 不得新增未经页面内容支持的上屏文字；允许增加不带文字的行业场景、业务动作、环境细节和视觉隐喻，让视觉关系承担解释责任。
 以【页面逻辑】组织空间，不使用等权卡片、通用图标流程或逐项配图；先展开业务场景及其关系，再让必要文字附着于场景。
 中文使用清晰的现代无衬线黑体。不得生成额外页面标题、Logo、页脚或页码。
 【输出要求｜不上屏】
 画布尺寸为 2048×1024（2:1）。"""
 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【结论句要求｜不上屏】
-如【锁定上屏文字】含正文结论句，该句是正文结论句，不是页面标题；不得通栏放大或添加标题竖线、横线等装饰。
+如【锁定关键文字】含正文结论句，该句是正文结论句，不是页面标题；不得通栏放大或添加标题竖线、横线等装饰。
 允许调整换行和文字层级；画面必须参与表达页面逻辑，不得退化为文字排版加装饰图片。"""
 CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT = """【结论表达要求｜不上屏】
-本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心判断】【页面逻辑】或【完整页面内容】中自行抽取整句作为页面标题或通栏结论。
-用业务场景、对象关系和空间组织表达核心判断；画面可见文字只允许使用必要的短场景标签，不得生成完整陈述句、总结句或口号。"""
+本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心判断】或【页面逻辑】中自行抽取整句作为页面标题或通栏结论。
+【完整上屏内容】仍须完整表达；用文字层级、业务结构、对象关系和必要画面共同组织核心判断。"""
 CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT = """【结论表达要求｜不上屏】
-本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心判断】【页面逻辑】或【完整页面内容】中自行抽取整句作为页面标题或通栏结论。
-【锁定上屏文字】中的业务标签和关键事实必须全部上屏；用业务场景、对象关系和空间组织表达核心判断。除锁定项之外，可见文字只允许使用必要的短场景标签，不得生成完整陈述句、总结句或口号。"""
+本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心判断】或【页面逻辑】中自行抽取整句作为页面标题或通栏结论。
+【锁定关键文字】中的业务标签和关键事实必须全部上屏；【完整上屏内容】仍须完整表达，用文字层级、业务结构、对象关系和必要画面共同组织核心判断。"""
 # Status asides that must not be painted as core on-screen claims.
 # Planning decks argue the proposed solution; do not restamp "not yet fact" on every page.
 ONSCREEN_ASIDE_RE = re.compile(
@@ -991,10 +992,7 @@ def render_content_first_prompt(
         _clean_onscreen_for_imagegen(page.onscreen_text)
     )
     locked = select_image_locked_text(page, visual_context)
-    locked_lines = set(locked.splitlines())
     judgment_for_semantics = page.onscreen_judgment.strip()
-    if judgment_for_semantics and judgment_for_semantics in locked_lines:
-        judgment_for_semantics = ""
     if not judgment_for_semantics and not onscreen_body and not page.main_message.strip():
         judgment_for_semantics = page.title.strip()
     complete_semantics = "\n\n".join(
@@ -1026,7 +1024,7 @@ def render_content_first_prompt(
         "",
         render_presentation_contract(presentation),
         "",
-        "【完整页面内容｜用于视觉叙事】",
+        "【完整上屏内容】",
         complete_semantics,
         "",
         (
@@ -1048,9 +1046,9 @@ def render_content_first_prompt(
         render_content_first_style_contract(style_lock),
     ]
     if locked:
-        semantics_index = parts.index("【完整页面内容｜用于视觉叙事】")
+        semantics_index = parts.index("【完整上屏内容】")
         parts[semantics_index:semantics_index] = [
-            "【锁定上屏文字】",
+            "【锁定关键文字】",
             locked,
             "",
         ]
@@ -1311,7 +1309,7 @@ def write_chapter_handoff(
             "- 送入：页面任务、核心判断、精简页面逻辑、锁定关键文字、完整页面语义、短文字视觉规则，以及所选风格的适用语境和配色。",
             "- 不送入：源材料全文、完整事实边界或重复设计理论。",
             "- 不送入：证据编号、讲解提示、文字取舍、图片数量或后期制作规则。",
-            "- 页面任务、核心判断和页面逻辑只用于理解与构图；锁定短文字逐字准确，其余解释性正文进入 PPT 可编辑文字层，画面仅以场景、关系和短标签承载语义。",
+            "- 页面任务、核心判断和页面逻辑只用于理解与构图；锁定关键文字逐字准确，完整上屏内容均需进入 full 图。",
         ]
     else:
         compilation_rules = [
