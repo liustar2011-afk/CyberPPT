@@ -51,7 +51,7 @@ from scripts.dual_image_overlay.prompt_diagnostics import (
     write_batch_diagnostics,
     write_compiler_comparison,
 )
-from scripts.dual_image_overlay.style_library import load_style_lock
+from scripts.dual_image_overlay.style_library import load_style_lock, resolve_default_style
 
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
 PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
@@ -752,7 +752,15 @@ STYLE_COLOR_LABELS = (
     ("accent", "强调色"),
 )
 
-CONTENT_FIRST_STYLE_RULE_FIELDS: tuple[str, ...] = ()
+# ImageGen must receive the governing Style 09 text-first constraints, not only
+# its palette and a short mood signature.  These fields are compact enough to
+# preserve the intended presentation language while preventing a stale project
+# lock from drifting into scenes, illustrations, or icon treatment as defaults.
+CONTENT_FIRST_STYLE_RULE_FIELDS: tuple[str, ...] = (
+    "scope_rule",
+    "content_visual_rule",
+    "icon_rule",
+)
 
 LAYOUT_MOTIFS = (
     "control_room_bridge",
@@ -838,7 +846,13 @@ def resolve_presentation_decision(
 
 
 def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
-    """Load the selected style without importing conflicting text-layer rules."""
+    """Load a selected style with a non-weakenable Style 09 baseline.
+
+    Project locks are snapshots and older Style 09 locks may contain experimental
+    scene-first wording.  Preserve their selected palette, but always compile
+    Style 09 from the canonical library contract so a historical lock cannot
+    silently weaken the text-led, single-medium presentation rules.
+    """
 
     payload = load_style_lock(style_lock)
     style = payload.get("style")
@@ -850,7 +864,11 @@ def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
         raise ValueError(
             f"visual style lock must provide style name and colors: {style_lock}"
         )
-    return style
+    if int(style.get("id") or 0) != 9:
+        return style
+    canonical = resolve_default_style(style_id=9)
+    canonical["colors"] = dict(colors)
+    return canonical
 
 
 def render_content_first_style_contract(style_lock: Path) -> str:

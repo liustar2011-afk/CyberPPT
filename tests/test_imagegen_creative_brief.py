@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
+import json
 
 import pytest
 
@@ -102,7 +103,7 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "【输出与风格｜不上屏】" in implicit
     assert "象牙白 + 深蓝领导汇报" not in implicit
     assert "风格适用语境" not in implicit
-    assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" not in implicit
+    assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" in implicit
     assert "【页面逻辑｜不上屏】" in implicit
     assert "不使用等权卡片、通用图标流程或逐项配图" in implicit
     assert "Do not show frontal faces" not in implicit
@@ -148,6 +149,26 @@ def test_content_first_uses_the_selected_style_lock_instead_of_fixed_colors() ->
     assert "可编辑文字层承载" in red.prompt
     assert "ID 1" not in red.prompt
     assert "classic_red_consulting" not in red.prompt
+
+
+def test_style_nine_content_first_rejects_stale_scene_first_lock_wording() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        payload = json.loads(lock.read_text(encoding="utf-8"))
+        payload["style"]["imagegen_signature"] = [
+            "允许轻微立体层次、浅阴影和扩大场景。"
+        ]
+        payload["style"]["scope_rule"] = "允许场景感成为主叙事。"
+        lock.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+        prompt = build_page_prompt(page, lock)
+
+    assert "允许轻微立体层次、浅阴影和扩大场景" not in prompt
+    assert "允许场景感成为主叙事" not in prompt
+    assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" in prompt
+    assert "文字是页面主体" in prompt
+    assert "不得占据约半幅页面" in prompt
+    assert "图标不是默认视觉载体" in prompt
 
 
 def test_content_first_diagnostics_use_the_compiled_locked_text() -> None:
