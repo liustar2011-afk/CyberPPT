@@ -101,6 +101,29 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
         self.assertEqual("中国电力企业联合会", author)
         self.assertEqual("2026年7月", date)
 
+    def test_extract_content_reads_title_and_subtitle_from_final_script_fields(self) -> None:
+        module = load_template_image_ppt_export()
+        block = module.PageBlock(
+            4,
+            "知识资产基础",
+            (
+                "- 页面类型：内容页\n"
+                "- 页面标题：知识资产基础\n"
+                "- 副标题：30个学科、30万道题目、40年数据，夯实智能应用底座\n"
+                "- 主判断：三类知识资产构成平台智能化应用基础\n"
+                "- 上屏文字：\n"
+                "  **01｜30个电力学科**\n"
+            ),
+        )
+
+        content = module.extract_content(block)
+
+        self.assertEqual("知识资产基础", content.title)
+        self.assertEqual(
+            "30个学科、30万道题目、40年数据，夯实智能应用底座",
+            content.subtitle,
+        )
+
     def test_page_notes_prefer_explicit_speaker_notes(self) -> None:
         module = load_template_image_ppt_export()
         block = module.PageBlock(

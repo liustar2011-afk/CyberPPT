@@ -1005,13 +1005,21 @@ def render_content_first_prompt(
         if judgment_mode == "locked" and not page.subtitle.strip()
         else ""
     )
-    complete_semantics = "\n\n".join(
-        part
-        for part in (
-            visible_judgment,
-            onscreen_body,
+    # A subtitle migration is deliberately non-destructive: the approved body
+    # copy remains the sole visible ImageGen payload.  The full judgment still
+    # guides composition above, but must not be injected into or used to rewrite
+    # 上屏文字.
+    complete_semantics = (
+        onscreen_body
+        if page.subtitle.strip()
+        else "\n\n".join(
+            part
+            for part in (
+                visible_judgment,
+                onscreen_body,
+            )
+            if part
         )
-        if part
     )
     relation, logic_contract = render_page_logic_contract(
         page,

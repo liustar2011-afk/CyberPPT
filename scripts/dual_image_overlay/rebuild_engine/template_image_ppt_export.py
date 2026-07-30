@@ -234,8 +234,21 @@ def extract_content(block: PageBlock) -> PageContent:
         if not line:
             i += 1
             continue
-        if line.startswith("标题：") or line.startswith("标题:"):
-            inline = line.split("：", 1)[-1] if "：" in line else line.split(":", 1)[-1]
+        # Final scripts store template-owned fields as Markdown list items
+        # (`- 页面标题：...`, `- 副标题：...`).  Normalize only for field
+        # recognition; the source script remains the single assembly truth.
+        field_line = line[2:].strip() if line.startswith("- ") else line
+        if (
+            field_line.startswith("页面标题：")
+            or field_line.startswith("页面标题:")
+            or field_line.startswith("标题：")
+            or field_line.startswith("标题:")
+        ):
+            inline = (
+                field_line.split("：", 1)[-1]
+                if "：" in field_line
+                else field_line.split(":", 1)[-1]
+            )
             values: list[str] = []
             if inline.strip():
                 values.append(inline.strip())
@@ -248,8 +261,14 @@ def extract_content(block: PageBlock) -> PageContent:
             if values:
                 title = " ".join(values)
             continue
-        if line.startswith("副标题：") or line.startswith("副标题:"):
-            subtitle = line.split("：", 1)[-1] if "：" in line else line.split(":", 1)[-1]
+        if field_line.startswith("副标题：") or field_line.startswith("副标题:"):
+            subtitle = (
+                field_line.split("：", 1)[-1]
+                if "：" in field_line
+                else field_line.split(":", 1)[-1]
+            )
+            i += 1
+            continue
         elif line.startswith("英文标题：") or line.startswith("英文标题:"):
             extra = line.split("：", 1)[-1] if "：" in line else line.split(":", 1)[-1]
             if extra:

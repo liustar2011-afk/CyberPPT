@@ -59,6 +59,54 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertNotIn(subtitle, body)
         self.assertIn("01｜30个电力学科", body)
 
+    def test_subtitle_migration_preserves_existing_body_copy(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            script = root / "script-final.md"
+            judgment = "三类知识资产共同构成智能应用基础"
+            original_body = (
+                "**01｜30个电力学科**\n"
+                "  - 原有说明文字保持不变\n"
+                "  **02｜约30万条题目**\n"
+                "  - 原有证据关系保持不变\n"
+                "  **03｜40年行业数据**"
+            )
+            script.write_text(
+                f"""## 第4页：知识资产基础
+- 页面类型：内容页
+- 页面标题：知识资产基础
+- 副标题：三类知识资产夯实智能应用底座
+- 主判断：{judgment}
+- 上屏结论模式：semantic_only
+- 上屏结论：{judgment}
+- 上屏文字：
+
+  {original_body}
+""",
+                encoding="utf-8",
+            )
+            page = parse_script_markdown(script.read_text(encoding="utf-8")).pages[0]
+            style_lock = write_project_style_lock(
+                project=project,
+                style_id=9,
+                source_script=script,
+            )
+            prompt = build_page_prompt(page, style_lock)
+
+        body = prompt.split("【完整上屏内容】", 1)[1].split(
+            "【结论表达要求", 1
+        )[0]
+        normalized_original = "\n".join(
+            line.strip() for line in original_body.splitlines()
+        )
+        normalized_body = "\n".join(
+            line.strip() for line in body.strip().splitlines()
+        )
+        self.assertEqual(normalized_original, normalized_body)
+        self.assertNotIn(judgment, body)
+
     def test_full_image_payload_forces_body_region_two_to_one_canvas(self) -> None:
         manifest = {
             "production_mode": "full-image",

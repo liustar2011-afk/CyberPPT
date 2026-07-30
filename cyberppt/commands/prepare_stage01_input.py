@@ -130,6 +130,9 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "Every content page must place `副标题` before `上屏结论` and `上屏文字`. "
         "The template subtitle carries the concise judgment; body on-screen text "
         "carries evidence, relationships, limitations, and implications only.",
+        "When migrating an already approved script to this subtitle rule, preserve "
+        "its existing `上屏文字` unchanged. Only add or update `副标题`, retain the "
+        "full judgment as semantic metadata, and set the appropriate display mode.",
         "Derive the default display policy from `judgment_role`: relationship/positioning/boundary/mechanism become `semantic_only`; fact/metric/milestone/acceptance/prohibition become `locked`. Use `onscreen_judgment_mode` only as an explicit override.",
         "Emit `onscreen_judgment` in the completed Chinese script as `- 上屏结论：...` without terminal punctuation.",
         "The visible layer must be independently readable without speaker narration.",
