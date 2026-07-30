@@ -35,6 +35,7 @@ from scripts.dual_image_overlay.text_content_qa import build_text_content_qa
 from scripts.dual_image_overlay.scene_graph.builder import build_page_scene_graph
 from scripts.dual_image_overlay.scene_graph.gate import build_scene_graph_gate
 from scripts.dual_image_overlay.scene_graph.layout import build_layout_plan_from_scene_graph
+from scripts.dual_image_overlay.scene_graph.page_svg_ir import compile_scene_graph_to_page_svg_ir
 from scripts.dual_image_overlay.scene_graph.schema import scene_graph_to_dict
 from scripts.dual_image_overlay.text_block_group import build_text_block_group
 from scripts.dual_image_overlay.text_truth import verify_text_blocks_against_script
@@ -370,6 +371,7 @@ def _scene_graph_artifact_paths(project_path: Path, page_number: int) -> dict[st
         "graph": project_path / "analysis" / "scene_graph" / f"page_{page_number:03d}_scene_graph.json",
         "gate": project_path / "analysis" / "scene_graph_gate" / f"page_{page_number:03d}_scene_graph_gate.json",
         "layout": project_path / "analysis" / "page_layout_plan" / f"page_{page_number:03d}_layout_plan.json",
+        "page_svg_ir": project_path / "analysis" / "page_svg_ir" / f"page_{page_number:03d}_page_svg_ir.json",
     }
 
 
@@ -404,6 +406,7 @@ def _write_scene_graph_artifacts(
     semantic_layout_plan: dict[str, Any] | None,
     visual_registry: dict[str, Any] | None,
     image_size_check: dict[str, Any],
+    background_href: Path | None = None,
 ) -> dict[str, Path]:
     paths = _scene_graph_artifact_paths(project_path, page_number)
     for path in paths.values():
@@ -423,6 +426,12 @@ def _write_scene_graph_artifacts(
         raise ValueError(f"Scene graph gate failed for page {page_number}: {graph_gate['issues']}")
     page_layout_plan = build_layout_plan_from_scene_graph(graph)
     paths["layout"].write_text(json.dumps(page_layout_plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    page_svg_ir = compile_scene_graph_to_page_svg_ir(
+        graph,
+        background_href=str((background_href or (project_path / "images" / f"page_{page_number:03d}_background.png")).resolve()),
+        layout_plan=page_layout_plan,
+    )
+    paths["page_svg_ir"].write_text(json.dumps(page_svg_ir, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return paths
 
 
@@ -907,6 +916,7 @@ def rebuild_from_manifest(
             semantic_layout_plan=semantic_layout_plan,
             visual_registry=visual_registry,
             image_size_check=image_size_check,
+            background_href=prepared_background,
         )
         page_layout_plan = json.loads(scene_graph_paths["layout"].read_text(encoding="utf-8"))
         boxes, editable_text_layout_source = _editable_boxes_from_scene_graph_or_recognition(
