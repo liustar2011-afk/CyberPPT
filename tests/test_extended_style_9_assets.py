@@ -13,7 +13,7 @@ def test_style_nine_sample_and_reference_are_available() -> None:
 
     assert sample.exists()
     with Image.open(sample) as image:
-        assert image.width / image.height == 2
+        assert abs(image.width / image.height - 16 / 9) < 0.01
     assert "扩展风格9：象牙白 + 深蓝领导汇报" in reference
     assert "默认8种风格仍保持1—8不变" in reference
     assert "演讲辅助" in reference

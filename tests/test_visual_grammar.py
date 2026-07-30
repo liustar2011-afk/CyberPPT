@@ -12,6 +12,20 @@ _SHORT_LINES = (
         "using calm in-composition panels or annotations rather than a separate text "
         "column or rail. No body text on busy/high-contrast imagery."
     ),
+    (
+        "- Do not split the canvas into a text-only half and an image-only half, and do "
+        "not create a separate photo rail or image collage beside the text. Build one "
+        "integrated composition: place semantic visuals within the same overall reading "
+        "field as the nearby text modules, with varied scale, staggered placement, and "
+        "shared whitespace. Each visual must directly clarify the adjacent statement."
+    ),
+    (
+        "- Use process, hierarchy, paths, convergence, branching, and causal relationships "
+        "when they make the locked text easier to understand and give its reading order "
+        "clear visual motion. Let the graphic forms embody the relationships instead of "
+        "reducing them to plain boxes and generic connector lines. Do not replace the text "
+        "relationships with a decorative scene or generic office photo."
+    ),
     "- No connectors through/under text; no fake flow lines; one connector style.",
     "- Unequal visual weight by hierarchy — not an equal card wall.",
     "- Bind each real-world image to one specific nearby business meaning.",

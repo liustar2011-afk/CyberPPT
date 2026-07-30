@@ -23,18 +23,18 @@ from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
 class CyberpptPairManifestTests(unittest.TestCase):
-    def test_dual_image_full_prompt_requires_separate_illustration_containers(self) -> None:
+    def test_dual_image_full_prompt_uses_graphics_to_carry_text_relationships(self) -> None:
         prompt = _full_prompt_for_variants("原始提示词", ["full", "background"])
 
-        self.assertIn("独立且边界清晰的矩形或圆形插图容器", prompt)
-        self.assertIn("页面级标题、正文、编号、标签和结论文字必须位于插图容器之外", prompt)
-        self.assertIn("这些文字视为插图像素的一部分", prompt)
-        self.assertIn("不得为了满足容器规则机械生成等权卡片", prompt)
-        self.assertIn("【关系型图形禁用规则｜不上屏】", prompt)
-        self.assertIn("不得生成流程图、架构图、系统拓扑图", prompt)
-        self.assertIn("每个插图只表达一个具体对象", prompt)
-        self.assertIn("保留干净、完整、低纹理的浅色留白区域", prompt)
+        self.assertIn("图形形态直接承载流程、层级、路径、聚合、分支、优先级和因果关系", prompt)
+        self.assertIn("关系图形应具有比普通方框和通用连接线更强的视觉表现力", prompt)
+        self.assertIn("边界清晰的矩形关系图容器", prompt)
+        self.assertIn("局部关系标注和其他自然文字属于图像表达的一部分", prompt)
+        self.assertIn("与对应矩形图稳定相邻", prompt)
+        self.assertIn("不得覆盖或侵入外围正文安全区", prompt)
+        self.assertIn("不得拆成半屏文字加半屏图片", prompt)
         self.assertNotIn("PPT 原生可编辑形状", prompt)
+        self.assertNotIn("后续原生重建", prompt)
         self.assertEqual(
             "原始提示词",
             _full_prompt_for_variants("原始提示词", ["full"]),
