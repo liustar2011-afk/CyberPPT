@@ -678,6 +678,11 @@ def _load_copy_edit_proposals(
         candidates.append(Path(str(explicit)))
     candidates.append(
         manifest_path.parent
+        / "copy_edit_proposals"
+        / f"page_{page_number:03d}_copy_edit_proposals.json"
+    )
+    candidates.append(
+        manifest_path.parent
         / "build"
         / "analysis"
         / "copy_edit_proposals"
