@@ -1,6 +1,7 @@
 from .builder import build_page_scene_graph
 from .coordinate import COORDINATE_CONTEXT_SCHEMA, normalize_bbox, resolve_coordinate_context
 from .copy_edit import COPY_EDIT_SCHEMA, edit_scene_graph_copy, edit_text_node, validate_semantic_safe_revision
+from .constrained_reflow import CONSTRAINED_REFLOW_SCHEMA, apply_recognized_constrained_reflow
 from .gate import GATE_SCHEMA, build_scene_graph_gate
 from .layout import LAYOUT_PLAN_SCHEMA, build_layout_plan_from_scene_graph
 from .layout_reference_adapter import LAYOUT_REFERENCE_ADAPTER_SCHEMA, adapt_layout_reference
@@ -38,6 +39,7 @@ __all__ = [
     "BLOCKING_ISSUE_CODES",
     "COORDINATE_CONTEXT_SCHEMA",
     "COPY_EDIT_SCHEMA",
+    "CONSTRAINED_REFLOW_SCHEMA",
     "LOCATOR_ONLY_AUTHORITIES",
     "NORMALIZED_CANVAS",
     "SCHEMA",
@@ -89,4 +91,5 @@ __all__ = [
     "edit_scene_graph_copy",
     "edit_text_node",
     "validate_semantic_safe_revision",
+    "apply_recognized_constrained_reflow",
 ]

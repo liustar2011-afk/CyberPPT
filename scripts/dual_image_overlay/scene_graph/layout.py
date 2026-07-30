@@ -79,8 +79,11 @@ def build_layout_plan_from_scene_graph(graph: PageSceneGraph) -> dict:
     for index, text in enumerate(graph.text_nodes):
         binding_type = text.binding.type if text.binding else "missing"
         style = text.style
+        recognized_bbox = _style_bbox(style, "recognized_reflow_bbox")
         explicit_bbox = _style_bbox(style, "layout_bbox")
-        if explicit_bbox is not None:
+        if recognized_bbox is not None:
+            bbox = recognized_bbox
+        elif explicit_bbox is not None:
             bbox = explicit_bbox
         elif binding_type == "edge_label":
             bbox = _bbox_for_edge_label(text, nodes)
