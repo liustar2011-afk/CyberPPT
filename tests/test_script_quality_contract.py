@@ -477,6 +477,155 @@ class ScriptContractAuditTests(unittest.TestCase):
 
         self.assertIn("PREMATURE_SCOPE_CLAIM", codes)
 
+    def test_foundation_page_rejects_off_topic_quality_module(self) -> None:
+        script = parse_script_markdown(
+            """## 第4页：知识资产基础
+- 页面类型：内容页
+- 页面标题：知识资产基础
+- 主判断：三类存量知识资产共同构成智能应用基础。
+- 完整文字稿：现有学科、题目和行业数据共同构成知识资产基础，并可支撑后续学习、教学和分析应用。
+- 文字稿取舍说明：本页只说明既有知识资产。
+- 证据映射：资产规模→S001
+- 上屏文字：
+  **资产规模**
+  - 已形成30个学科、约30万条题目和40年行业数据。
+  **质量要求**
+  - 原题不得开放，数据必须隔离，并防止模型幻觉和内容泄露。
+- 证据：S001
+- 边界：应用能力和治理机制留待后续页面。
+- 视觉结构：三类资产共同支撑知识底座。
+"""
+        )
+        outline = strict_outline(
+            {
+                "page_id": "p04",
+                "sequence": 4,
+                "page_type": "content",
+                "title": "知识资产基础",
+                "argument_role": "foundation",
+                "page_job": "说明已经具备哪些知识资产",
+                "business_question": "已经形成哪些知识资产",
+                "main_message": "三类存量知识资产共同构成智能应用基础",
+                "source_refs": ["S001"],
+                "prerequisite_pages": [],
+            }
+        )
+        truth = source_truth(
+            {
+                "id": "S001",
+                "type": "F",
+                "status": "原文陈述",
+                "statement": "已形成学科、题目和行业数据资产。",
+            }
+        )
+
+        issues = audit_script_quality(script, outline, truth)
+        matching = [
+            issue for issue in issues
+            if issue.code == "OFF_TOPIC_CONSTRAINT_MODULE"
+        ]
+
+        self.assertEqual(1, len(matching))
+        self.assertEqual("error", matching[0].severity)
+
+    def test_safety_page_allows_quality_and_security_boundary_modules(self) -> None:
+        script = parse_script_markdown(
+            """## 第17页：数据安全与题源保护
+- 页面类型：内容页
+- 页面标题：数据安全与题源保护
+- 主判断：分层防护保护题源和业务数据。
+- 完整文字稿：本页说明题源保护、权限隔离、人工审核和审计处置如何共同形成数据安全机制。
+- 文字稿取舍说明：本页聚焦安全治理。
+- 证据映射：安全机制→S001
+- 上屏文字：
+  **安全边界**
+  - 原题不得开放，通过权限隔离降低泄露风险。
+  **质量要求**
+  - 生成内容经人工审核后进入业务服务。
+- 证据：S001
+- 边界：具体产品选型留待实施阶段。
+- 视觉结构：分层安全防护。
+"""
+        )
+        outline = strict_outline(
+            {
+                "page_id": "p17",
+                "sequence": 17,
+                "page_type": "content",
+                "title": "数据安全与题源保护",
+                "argument_role": "assurance",
+                "page_job": "说明如何保护题源和业务数据",
+                "business_question": "如何形成数据安全防护",
+                "main_message": "分层防护保护题源和业务数据",
+                "source_refs": ["S001"],
+                "prerequisite_pages": [],
+            }
+        )
+        truth = source_truth(
+            {
+                "id": "S001",
+                "type": "F",
+                "status": "原文陈述",
+                "statement": "题源和业务数据需要分层防护。",
+            }
+        )
+
+        codes = {
+            issue.code
+            for issue in audit_script_quality(script, outline, truth)
+        }
+
+        self.assertNotIn("OFF_TOPIC_CONSTRAINT_MODULE", codes)
+
+    def test_incidental_constraint_phrase_is_not_treated_as_a_module(self) -> None:
+        script = parse_script_markdown(
+            """## 第10页：学校学科智能分析
+- 页面类型：内容页
+- 页面标题：学校学科智能分析
+- 主判断：多源数据形成可比较的学科规划建议。
+- 完整文字稿：管理者选择目标年度、区域、专业和资源条件后，平台组织行业、招聘、培养和就业数据，形成可比较的情景方案。
+- 文字稿取舍说明：本页聚焦规划分析流程。
+- 证据映射：规划分析→S001
+- 上屏文字：
+  **情景分析**
+  - 管理者选择目标年度、区域范围、专业和约束条件后开展情景比较。
+  **规划建议**
+  - 输出招生、培养和就业建议。
+- 证据：S001
+- 边界：重大调整由学校审议。
+- 视觉结构：规划分析闭环。
+"""
+        )
+        outline = strict_outline(
+            {
+                "page_id": "p10",
+                "sequence": 10,
+                "page_type": "content",
+                "title": "学校学科智能分析",
+                "argument_role": "solution",
+                "page_job": "说明学校如何形成学科规划建议",
+                "business_question": "如何利用多源数据优化学科规划",
+                "main_message": "多源数据形成可比较的学科规划建议",
+                "source_refs": ["S001"],
+                "prerequisite_pages": [],
+            }
+        )
+        truth = source_truth(
+            {
+                "id": "S001",
+                "type": "F",
+                "status": "原文陈述",
+                "statement": "管理者可设置分析条件并比较情景。",
+            }
+        )
+
+        codes = {
+            issue.code
+            for issue in audit_script_quality(script, outline, truth)
+        }
+
+        self.assertNotIn("OFF_TOPIC_CONSTRAINT_MODULE", codes)
+
     def test_proposed_source_cannot_be_upgraded_to_completed(self) -> None:
         script = parse_script_markdown(
             """## 第9页：总体定位

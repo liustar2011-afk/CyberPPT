@@ -171,6 +171,9 @@ def approve_script(project: Path, slide: int, kind: str, note: str = "") -> Path
             "approved_hashes": {
                 artifact: _sha256(Path(artifact)) for artifact in status.final_paths
             },
+            "approved_manifest_entry_count": len(
+                _read_manifest(root).get("entries", [])
+            ),
             "note": note,
         },
     )
@@ -206,6 +209,8 @@ def assert_approved_final_script(project: Path, slide: int, kind: str) -> Path:
             raise PermissionError(
                 f"final {kind} script changed after approval; reapprove before generation: {artifact}"
             )
+    if not status.ready_to_generate:
+        raise PermissionError(status.reason)
     return Path(status.final_paths[0])
 
 
@@ -218,13 +223,51 @@ def get_script_status(project: Path, slide: int, kind: str) -> ScriptStatus:
     final_paths = sorted(str(path) for path in final_dir.glob(f"{_slide_slug(slide)}-{kind}-final.*"))
     approval_path = _approval_path(root, slide, kind)
     approval_exists = approval_path.exists()
-    ready = bool(final_paths and approval_exists)
-    if ready:
-        reason = "final script is saved and user approval is recorded"
-    elif not final_paths:
+    ready = False
+    if not final_paths:
         reason = "final script is not saved"
-    else:
+    elif not approval_exists:
         reason = "user approval is not recorded"
+    else:
+        try:
+            approval = json.loads(approval_path.read_text(encoding="utf-8-sig"))
+        except (OSError, json.JSONDecodeError):
+            reason = "user approval record is unreadable"
+        else:
+            approved_hashes = approval.get("approved_hashes")
+            hashes_match = (
+                approval.get("approved") is True
+                and isinstance(approved_hashes, dict)
+                and all(
+                    approved_hashes.get(artifact) == _sha256(Path(artifact))
+                    for artifact in final_paths
+                )
+            )
+            if not hashes_match:
+                reason = "final script changed after approval; reapprove before generation"
+            else:
+                manifest_entries = _read_manifest(root).get("entries", [])
+                approved_count = approval.get("approved_manifest_entry_count")
+                if isinstance(approved_count, int):
+                    newer_entries = manifest_entries[approved_count:]
+                else:
+                    approved_at = str(approval.get("approved_at") or "")
+                    newer_entries = [
+                        entry
+                        for entry in manifest_entries
+                        if str(entry.get("saved_at") or "") > approved_at
+                    ]
+                newer_draft = any(
+                    entry.get("slide") == slide
+                    and entry.get("kind") == kind
+                    and entry.get("phase") == "draft"
+                    for entry in newer_entries
+                )
+                if newer_draft:
+                    reason = "a newer draft is waiting for final staging and user approval"
+                else:
+                    ready = True
+                    reason = "final script is saved and user approval is recorded"
     return ScriptStatus(
         project=str(root),
         slide=slide,

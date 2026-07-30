@@ -207,6 +207,60 @@ class CyberpptPairManifestTests(unittest.TestCase):
             approved_prompt_text,
         )
 
+    def test_strict_manifest_blocks_body_drift_after_prompt_approval(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "project"
+            init_project(project)
+            script = root / "script.md"
+            original = """## 第4页：知识资产基础
+
+- 页面类型：内容页
+- 页面标题：知识资产基础
+- 副标题：三类知识资产夯实智能应用底座
+- 主判断：三类知识资产共同构成智能应用基础
+- 上屏结论模式：semantic_only
+- 上屏结论：三类知识资产共同构成智能应用基础
+- 上屏文字：
+
+  **01｜30个电力学科**
+  - 原批准正文
+"""
+            script.write_text(original, encoding="utf-8")
+            style_lock = write_project_style_lock(
+                project=project,
+                style_id=9,
+                source_script=script,
+            )
+            page = parse_script_markdown(
+                script.read_text(encoding="utf-8")
+            ).pages[0]
+            prompt = root / "prompt.md"
+            prompt.write_text(
+                build_page_prompt(page, style_lock),
+                encoding="utf-8",
+            )
+            stage_script(project, 4, "imagegen", "final", prompt)
+            approve_script(project, 4, "imagegen")
+
+            script.write_text(
+                original.replace("原批准正文", "未经重新批准的改写"),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(
+                ValueError,
+                "approved ImageGen prompt is stale for page 4",
+            ):
+                build_manifest(
+                    script=script,
+                    pages_raw="4",
+                    output_dir=root / "images",
+                    project_path=project,
+                    style_lock=style_lock,
+                    require_approved_prompts=True,
+                )
+
     def test_strict_manifest_uses_content_first_canonical_prompt(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

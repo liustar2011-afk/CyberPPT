@@ -109,3 +109,25 @@ class ScriptGateTests(unittest.TestCase):
             approved.write_text("修改后的提示词\n", encoding="utf-8")
             with self.assertRaisesRegex(PermissionError, "changed after approval"):
                 assert_approved_final_script(project, slide=2, kind="imagegen")
+
+    def test_new_draft_after_approval_requires_reapproval(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+            source = Path(temp) / "slide-02-prompt.md"
+            source.write_text("已批准提示词\n", encoding="utf-8")
+            stage_script(project, slide=2, kind="imagegen", phase="final", source=source)
+            approve_script(project, slide=2, kind="imagegen")
+
+            revised = Path(temp) / "slide-02-prompt-revised.md"
+            revised.write_text("待审修订提示词\n", encoding="utf-8")
+            stage_script(project, slide=2, kind="imagegen", phase="draft", source=revised)
+
+            status = get_script_status(project, slide=2, kind="imagegen")
+            self.assertFalse(status.ready_to_generate)
+            self.assertEqual(
+                "a newer draft is waiting for final staging and user approval",
+                status.reason,
+            )
+            with self.assertRaisesRegex(PermissionError, "newer draft"):
+                assert_approved_final_script(project, slide=2, kind="imagegen")

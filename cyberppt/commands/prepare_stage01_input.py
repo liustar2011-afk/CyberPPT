@@ -129,17 +129,22 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "Write full prose first; derive on-screen text from it.",
         "Every content page must place `副标题` before `上屏结论` and `上屏文字`. "
         "The template subtitle carries the concise judgment; body on-screen text "
-        "carries evidence, relationships, limitations, and implications only.",
+        "carries the page's own evidence, relationships, and business implications.",
         "When migrating an already approved script to this subtitle rule, preserve "
         "its existing `上屏文字` unchanged. Only add or update `副标题`, retain the "
         "full judgment as semantic metadata, and set the appropriate display mode.",
         "Derive the default display policy from `judgment_role`: relationship/positioning/boundary/mechanism become `semantic_only`; fact/metric/milestone/acceptance/prohibition become `locked`. Use `onscreen_judgment_mode` only as an explicit override.",
         "Emit `onscreen_judgment` in the completed Chinese script as `- 上屏结论：...` without terminal punctuation.",
         "The visible layer must be independently readable without speaker narration.",
-        "Write `上屏文字` as a closed body story: source-supported evidence → "
-        "explanation or causal relation → limitation → implication or handoff. "
+        "Write `上屏文字` as a focused body story: source-supported evidence → "
+        "explanation or causal relation → implication or handoff. "
         "Do not repeat the page title or subtitle inside the body.",
-        "Do not compress the full prose into module labels plus keywords. Preserve every fact, number, relation, and limitation needed to understand why the conclusion follows; concise rewriting is allowed, semantic omission is not.",
+        "Boundary is opt-in, never a mandatory fourth beat. Only pages whose declared "
+        "business subject is scope, admission, safety, governance, quality, compliance, "
+        "risk, assurance, deployment, capacity, degradation, or acceptance may show boundary or "
+        "constraint modules. On all other pages, keep boundary material in internal "
+        "controls and never create labels such as 质量边界、质量要求、安全边界 or 约束条件.",
+        "Do not compress the full prose into module labels plus keywords. Preserve every fact, number, and relation needed to understand why the conclusion follows; preserve a limitation only when the limitation is itself part of the declared page subject.",
         "Count only Chinese, Latin, and numeric characters: target roughly 50% of the full prose, with a hard minimum of 220 and a cap target of 320 visible characters.",
         "Use at least two evidence-bearing on-screen lines. The visible conclusion may also carry the implication or handoff; do not add formulaic 因此/由此 wording only to satisfy the contract.",
         "`reserved_for_later`, `boundary_refs`, and `boundary_constraints` are internal controls only.",

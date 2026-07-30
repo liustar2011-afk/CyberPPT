@@ -257,7 +257,8 @@ def test_content_first_text_rule_keeps_locked_names_and_numbers_authoritative() 
         prompt = build_page_prompt(page, lock)
 
     assert "【锁定关键文字】中的每一项都必须逐字准确" in prompt
-    assert "数字、单位、专有名词、业务术语和否定边界必须准确" in prompt
+    assert "完整上屏内容已有的数字、单位、专有名词、业务术语和否定含义必须准确" in prompt
+    assert "不得自行补充限定信息" in prompt
     assert "不得新增未经页面内容支持的上屏文字" in prompt
 
 

@@ -39,12 +39,59 @@ CONSTRAINT_THEME_TERMS = (
     "范围",
     "边界",
     "准入",
-    "投资",
-    "预算",
+    "安全",
+    "质量",
+    "治理",
+    "合规",
+    "风险",
+    "审核",
+    "权限",
+    "保障",
+    "部署",
+    "高可用",
+    "容量",
+    "降级",
     "验收",
-    "决策条件",
-    "立项条件",
-    "职责分工",
+    "职责",
+)
+CONSTRAINT_ARGUMENT_ROLES = {
+    "scope",
+    "boundary",
+    "admission",
+    "security",
+    "governance",
+    "quality",
+    "compliance",
+    "risk",
+    "assurance",
+    "deployment",
+    "capacity",
+    "degradation",
+    "acceptance",
+}
+ONSCREEN_CONSTRAINT_MODULE_TERMS = (
+    "质量边界",
+    "质量要求",
+    "安全边界",
+    "治理边界",
+    "合规边界",
+    "风险约束",
+    "约束条件",
+    "准入条件",
+)
+ONSCREEN_CONSTRAINT_DETAIL_TERMS = (
+    "题源保密",
+    "个人信息保护",
+    "泄露",
+    "批量还原",
+    "权限隔离",
+    "数据隔离",
+    "质量分级",
+    "人工审核",
+    "不得展示",
+    "不得开放",
+    "不可追溯",
+    "模型幻觉",
 )
 SPEAKER_NOTES_MIN_CHARS = 60
 VISIBLE_JUDGMENT_MIN_SIMILARITY = 0.04
@@ -1289,11 +1336,7 @@ def _narration_boundary_issues(
                 evidence=coaching_hits + note_hits,
             )
         )
-    theme = "\n".join(
-        str(contract.get(field) or "")
-        for field in ("page_job", "business_question", "main_message")
-    )
-    constraint_is_subject = any(term in theme for term in CONSTRAINT_THEME_TERMS)
+    constraint_is_subject = _constraint_is_declared_subject(page, contract)
     if (
         not constraint_is_subject
         and page.boundary
@@ -1316,6 +1359,49 @@ def _narration_boundary_issues(
 
 def _has_any(text: str, terms: tuple[str, ...]) -> bool:
     return any(term in text for term in terms)
+
+
+def _constraint_is_declared_subject(
+    page: ScriptPage,
+    contract: dict[str, object],
+) -> bool:
+    """Return whether constraints are the page's declared subject.
+
+    Deliberately ignore 主判断/上屏文字 here. Generated copy must not be able to
+    legitimize an off-topic boundary module by mentioning safety or quality in
+    the module itself. Only the approved role and page mission fields may opt in.
+    """
+
+    role = str(contract.get("argument_role") or "").strip().lower()
+    if role in CONSTRAINT_ARGUMENT_ROLES:
+        return True
+    declared_subject = "\n".join(
+        str(value or "")
+        for value in (
+            page.title,
+            contract.get("page_job"),
+            contract.get("business_question"),
+        )
+    )
+    return any(term in declared_subject for term in CONSTRAINT_THEME_TERMS)
+
+
+def _onscreen_constraint_module_hits(page: ScriptPage) -> tuple[str, ...]:
+    """Find explicit constraint modules or labels, not incidental prose mentions."""
+
+    hits: set[str] = set()
+    for title in page.module_titles:
+        for term in ONSCREEN_CONSTRAINT_MODULE_TERMS:
+            if term in title:
+                hits.add(term)
+    for line in page.onscreen_text.splitlines():
+        label = re.sub(r"^\s*[-*]\s*", "", line).strip()
+        label = label.strip("* ").strip()
+        label = re.sub(r"^\d{1,2}\s*[|｜]\s*", "", label)
+        for term in ONSCREEN_CONSTRAINT_MODULE_TERMS:
+            if label == term or label.startswith((f"{term}：", f"{term}:")):
+                hits.add(term)
+    return tuple(sorted(hits))
 
 
 def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
@@ -1543,7 +1629,7 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
                 "ONSCREEN_LINE_TOO_LONG",
                 page,
                 "One or more on-screen lines are too long for a stable visual hierarchy.",
-                "Shorten the visible sentence while preserving its evidence and limitation.",
+                "Shorten the visible sentence while preserving the evidence needed for this page's declared subject.",
                 evidence=long_lines[:3],
                 severity="warning",
             )
@@ -1613,6 +1699,27 @@ def _preflight_semantic_issues(
                     page,
                     "A semantic-only page has no judgment to carry into the complete page semantics.",
                     "Provide the approved judgment even though it is not locked for display.",
+                    severity="error",
+                )
+            )
+    constraint_is_subject = _constraint_is_declared_subject(page, contract)
+    if not constraint_is_subject:
+        module_hits = _onscreen_constraint_module_hits(page)
+        detail_hits = tuple(
+            term
+            for term in ONSCREEN_CONSTRAINT_DETAIL_TERMS
+            if term in page.onscreen_text
+        )
+        if module_hits or len(detail_hits) >= 2:
+            issues.append(
+                _issue(
+                    "OFF_TOPIC_CONSTRAINT_MODULE",
+                    page,
+                    "A normal topic page promotes boundary or quality constraints into "
+                    "visible content even though constraints are not the page subject.",
+                    "Remove the constraint module from 上屏文字 and keep it in internal "
+                    "boundary controls or the dedicated governance/safety/acceptance page.",
+                    evidence=module_hits + detail_hits,
                     severity="error",
                 )
             )

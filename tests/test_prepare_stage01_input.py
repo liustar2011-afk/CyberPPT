@@ -84,13 +84,15 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("- page_job: 说明为什么现在可以启动", text)
         self.assertIn("- main_message: 已有基础支持启动", text)
         self.assertIn("- onscreen_judgment: 现有基础足以支持项目启动", text)
-        self.assertIn("must place `上屏结论` before `上屏文字`", text)
+        self.assertIn("must place `副标题` before `上屏结论` and `上屏文字`", text)
         self.assertIn("independently readable without speaker narration", text)
         self.assertIn(
-            "conclusion → source-supported evidence → explanation or causal relation → implication or handoff",
+            "source-supported evidence → explanation or causal relation → implication or handoff",
             text,
         )
-        self.assertIn("semantic omission is not", text)
+        self.assertIn("Boundary is opt-in, never a mandatory fourth beat", text)
+        self.assertIn("never create labels such as 质量边界、质量要求、安全边界 or 约束条件", text)
+        self.assertIn("preserve a limitation only when the limitation is itself part of the declared page subject", text)
         self.assertIn("hard minimum of 220", text)
         self.assertIn("at least two evidence-bearing on-screen lines", text)
         self.assertIn("[primary] 统计基础已经具备 (S001)", text)
