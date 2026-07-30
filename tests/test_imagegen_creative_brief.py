@@ -265,6 +265,13 @@ def test_creative_brief_visual_grammar_defaults_to_empty_auxiliary_allowlist() -
             "四层贯通：治理、解析检索、模型编排、应用反馈持续迭代。",
             "closed_loop",
         ),
+        (
+            "智能应用技术引擎",
+            "三类引擎按业务任务分工并共同受控",
+            "分工关系：学生引擎服务学习闭环，教师引擎服务教学工作流，"
+            "学校引擎服务规划分析，统一治理连接三者。",
+            "capability_relationship",
+        ),
     ),
 )
 def test_visual_intent_uses_explicit_relationship_lines_from_reliable_copy(
