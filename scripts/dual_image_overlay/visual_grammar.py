@@ -15,6 +15,7 @@ class VisualGrammarContract:
     semantic_binding_rule: str
     multi_image_rule: str
     generic_scene_rule: str
+    unsupported_summary_rule: str
 
     def render(self) -> str:
         return "\n".join(
@@ -27,6 +28,7 @@ class VisualGrammarContract:
                 self.semantic_binding_rule,
                 self.multi_image_rule,
                 self.generic_scene_rule,
+                self.unsupported_summary_rule,
             )
         )
 
@@ -38,21 +40,25 @@ def default_visual_grammar() -> VisualGrammarContract:
         image_text_rule=(
             "- Treat readable text modules as elements inside the dominant composition, "
             "using calm in-composition panels or annotations rather than a separate text "
-            "column or rail. No body text on busy/high-contrast imagery."
+            "column or rail. No body text on busy/high-contrast imagery. Do not fabricate "
+            "dates, versions, IDs, tracking codes, status values, sample records, UI data, "
+            "or any other realistic-looking examples."
         ),
         integrated_composition_rule=(
             "- Do not split the canvas into a text-only half and an image-only half, and do "
             "not create a separate photo rail or image collage beside the text. Build one "
-            "integrated composition: place semantic visuals within the same overall reading "
-            "field as the nearby text modules, with varied scale, staggered placement, and "
-            "shared whitespace. Each visual must directly clarify the adjacent statement."
+            "integrated composition in which image-native forms, paths, bands, depth, and "
+            "spatial relationships organize the text into one reading field. Use small "
+            "semantic images only as subordinate accents where they clarify meaning."
         ),
         semantic_scene_rule=(
-            "- Use process, hierarchy, paths, convergence, branching, and causal relationships "
-            "when they make the locked text easier to understand and give its reading order "
-            "clear visual motion. Let the graphic forms embody the relationships instead of "
-            "reducing them to plain boxes and generic connector lines. Do not replace the text "
-            "relationships with a decorative scene or generic office photo."
+            "- First distinguish subject, support, input, output, convergence, branching, loop, "
+            "hierarchy, contrast, and causality. Express the dominant relationship through one "
+            "page-spanning generative graphic mainline rather than plain boxes, generic "
+            "connectors, equal panels, or a collection of semantic scenes. Prefer one restrained "
+            "editorial gesture or asymmetric relationship field; do not use a central emblem, "
+            "standard circular loop, concentric pedestal, chevron chain, or icon-node diagram "
+            "as the main visual."
         ),
         connector_rule=(
             "- No connectors through/under text; no fake flow lines; one connector style."
@@ -61,13 +67,22 @@ def default_visual_grammar() -> VisualGrammarContract:
             "- Unequal visual weight by hierarchy — not an equal card wall."
         ),
         semantic_binding_rule=(
-            "- Bind each real-world image to one specific nearby business meaning."
+            "- Bind each real-world image to one specific nearby business meaning. Do not use "
+            "generic offices, skylines, campuses, server rooms, or technology scenes merely to "
+            "fill whitespace."
         ),
         multi_image_rule=(
             "- Multiple images are allowed when they carry distinct and necessary semantic roles."
         ),
         generic_scene_rule=(
-            "- Do not use one generic industry scene to represent several unrelated meanings."
+            "- Do not use one generic industry scene to represent several unrelated meanings. "
+            "Icons may be low-contrast micro-annotations only, never primary nodes, repeated "
+            "module markers, card headings, or the visual mainline."
+        ),
+        unsupported_summary_rule=(
+            "- Do not invent summary, goal, value, outcome, or conclusion sections or labels. "
+            "Any outcome inferred from the relationships may be expressed only as an unlabeled "
+            "graphical state unless that text is present in the locked on-screen content."
         ),
     )
 
@@ -86,18 +101,36 @@ def creative_brief_visual_grammar() -> str:
             "high-contrast imagery.",
             "- Do not split the canvas into a text-only half and an image-only half, and do "
             "not create a separate photo rail or image collage beside the text. Build one "
-            "integrated composition with semantic visuals embedded among the nearby text "
-            "modules through varied scale, staggered placement, and shared whitespace.",
-            "- Use process, hierarchy, paths, convergence, branching, and causal relationships "
-            "when they make the locked text easier to understand and give its reading order "
-            "clear visual motion. Let the graphic forms embody the relationships instead of "
-            "reducing them to plain boxes and generic connector lines. Do not replace the text "
-            "relationships with a decorative scene or generic office photo.",
+            "integrated composition in which image-native forms, paths, bands, depth, and "
+            "spatial relationships organize the text into one reading field. Use small "
+            "semantic images only as subordinate accents where they clarify meaning.",
+            "- First distinguish subject, support, input, output, convergence, branching, loop, "
+            "hierarchy, contrast, and causality. Express the dominant relationship through one "
+            "page-spanning generative graphic mainline rather than plain boxes, generic "
+            "connectors, equal panels, or a collection of semantic scenes. Prefer one restrained "
+            "editorial gesture or asymmetric relationship field; do not use a central emblem, "
+            "standard circular loop, concentric pedestal, chevron chain, or icon-node diagram "
+            "as the main visual.",
             "- Do not run connectors, decorative lines, or image details through body text.",
             "- Supporting imagery, charts, interface-like forms, and concise auxiliary labels "
             "are allowed when they improve the overall visual idea. They do not need a "
             "one-to-one mapping to every locked module.",
+            "- Do not repeat the page relationship as a second miniature flow, icon chain, "
+            "summary strip, or duplicate diagram. Render supplied relationship or business-meaning "
+            "copy once as a calm annotation integrated into the main composition.",
+            "- Make the relationship between modules the visual protagonist, not a literal symbol "
+            "of the topic. Do not enlarge shields, locks, databases, clouds, chips, people, or charts "
+            "into a hero object. For abstract system, governance, security, architecture, or operations "
+            "pages, default to pure editorial graphics with no photography, simulated interface, or UI data.",
+            "- Aim for mature restraint: generous quiet space, precise thin strokes, limited deep-blue "
+            "mass, flat materials, and almost no shadow. Avoid bevels, heavy drop shadows, 3D badges, "
+            "and template-like decoration.",
+            "- Use photography only when it directly explains a specific business object. Do not "
+            "fill whitespace with generic offices, skylines, campuses, server rooms, or technology scenes.",
             "- Auxiliary text may appear. Keep it brief and coherent, and do not use it to "
             "invent new factual numbers, organization claims, or unsupported conclusions.",
+            "- Do not invent summary, goal, value, outcome, or conclusion sections or labels. "
+            "Any outcome inferred from the relationships may be expressed only as an unlabeled "
+            "graphical state unless that text is present in the locked on-screen content.",
         )
     )

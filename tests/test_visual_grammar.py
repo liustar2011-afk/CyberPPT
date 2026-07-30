@@ -10,27 +10,44 @@ _SHORT_LINES = (
     (
         "- Treat readable text modules as elements inside the dominant composition, "
         "using calm in-composition panels or annotations rather than a separate text "
-        "column or rail. No body text on busy/high-contrast imagery."
+        "column or rail. No body text on busy/high-contrast imagery. Do not fabricate "
+        "dates, versions, IDs, tracking codes, status values, sample records, UI data, "
+        "or any other realistic-looking examples."
     ),
     (
         "- Do not split the canvas into a text-only half and an image-only half, and do "
         "not create a separate photo rail or image collage beside the text. Build one "
-        "integrated composition: place semantic visuals within the same overall reading "
-        "field as the nearby text modules, with varied scale, staggered placement, and "
-        "shared whitespace. Each visual must directly clarify the adjacent statement."
+        "integrated composition in which image-native forms, paths, bands, depth, and "
+        "spatial relationships organize the text into one reading field. Use small "
+        "semantic images only as subordinate accents where they clarify meaning."
     ),
     (
-        "- Use process, hierarchy, paths, convergence, branching, and causal relationships "
-        "when they make the locked text easier to understand and give its reading order "
-        "clear visual motion. Let the graphic forms embody the relationships instead of "
-        "reducing them to plain boxes and generic connector lines. Do not replace the text "
-        "relationships with a decorative scene or generic office photo."
+        "- First distinguish subject, support, input, output, convergence, branching, loop, "
+        "hierarchy, contrast, and causality. Express the dominant relationship through one "
+        "page-spanning generative graphic mainline rather than plain boxes, generic "
+        "connectors, equal panels, or a collection of semantic scenes. Prefer one restrained "
+        "editorial gesture or asymmetric relationship field; do not use a central emblem, "
+        "standard circular loop, concentric pedestal, chevron chain, or icon-node diagram "
+        "as the main visual."
     ),
     "- No connectors through/under text; no fake flow lines; one connector style.",
     "- Unequal visual weight by hierarchy — not an equal card wall.",
-    "- Bind each real-world image to one specific nearby business meaning.",
+    (
+        "- Bind each real-world image to one specific nearby business meaning. Do not use "
+        "generic offices, skylines, campuses, server rooms, or technology scenes merely to "
+        "fill whitespace."
+    ),
     "- Multiple images are allowed when they carry distinct and necessary semantic roles.",
-    "- Do not use one generic industry scene to represent several unrelated meanings.",
+    (
+        "- Do not use one generic industry scene to represent several unrelated meanings. "
+        "Icons may be low-contrast micro-annotations only, never primary nodes, repeated "
+        "module markers, card headings, or the visual mainline."
+    ),
+    (
+        "- Do not invent summary, goal, value, outcome, or conclusion sections or labels. "
+        "Any outcome inferred from the relationships may be expressed only as an unlabeled "
+        "graphical state unless that text is present in the locked on-screen content."
+    ),
 )
 
 _OLD_CHINESE_FRAGMENTS = (

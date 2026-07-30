@@ -56,12 +56,21 @@ from scripts.dual_image_overlay.style_library import load_style_lock, resolve_de
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
 PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
 DEFAULT_PROMPT_COMPILER = "content-first-v1"
+NON_RENDERING_SEMANTIC_CONTRACT = """【只读构图语义｜不得上屏】
+以下页面任务、核心判断、关系类型、视觉证明、空间组织和避免项只用于理解模块关系与设计图形，不是可见文案。
+不得渲染本区中的字段名、词句、同义改写、摘要、推导标签或结论；不得从本区抽取任何新标题、栏目名、图内标签、中心词、底座名称或总结句。
+本区语义只能影响无文字的形态、方向、包裹、汇聚、分支、层级、节奏、留白和视觉重量。图中允许出现的文字仅来自前面的【完整上屏内容】；如存在前置锁定项，必须逐字准确。"""
 CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【内容与视觉要求｜不上屏】
 必须由文字、结构和必要画面共同完整表达【完整上屏内容】中的核心判断、业务对象、逻辑关系、关键限定和正文要点，不得捏造事实、改变判断强度或删除支撑判断成立所必需的内容。
 【锁定关键文字】中的每一项都必须逐字准确；完整上屏内容已有的数字、单位、专有名词、业务术语和否定含义必须准确，不得自行补充限定信息。
 【完整上屏内容】均需进入 full 图；允许调整换行、文字层级和局部语序，但不得把解释性正文全部替换为场景、图标或抽象视觉隐喻。
-不得新增未经页面内容支持的上屏文字；必要的行业场景、业务动作、环境细节和视觉隐喻只能辅助附近文字与业务关系。
-以【页面逻辑】组织空间，不使用等权卡片、通用图标流程或逐项配图。
+不得新增未经页面内容支持的上屏文字；尤其不得自行增加“设计目标”“核心价值”“预期成效”“总结”等归纳区块、标题、标签或结论。脚本没有提供的结果或价值只能用无文字图形状态表达。
+不得虚构日期、版本号、编号、ID、追踪码、状态值、样例数据、界面记录或任何看似真实的示例；只有【完整上屏内容】明确提供的数字和文字才可出现。
+使用生成式图形形态、路径、层次和必要画面组织附近文字与业务关系，少量行业场景只作点缀。
+以【只读构图语义】组织一条清晰的视觉主线；每个锁定模块及其名称只出现一次，成为中心、底座、主轴或正文模块后不得再次作为外围节点、关系标签或第二个同名对象重复。不使用等权卡片、通用图标流程或逐项配图。
+整页优先形成一个克制而明确的编辑式设计动作，由一条连续形态或一个非对称关系场完成环绕、递进、汇聚或托底；不得用中央徽章、中心大图标、标准圆环、同心台阶、连续箭头胶囊或图标节点链充当视觉主线。图标只能作为低对比微型注释，不能成为节点、卡片标题或主要视觉对象。
+脚本已有的协同关系、组件关系、恢复关系或业务含义应作为一次性的文字注释融入主构图，不得在页面底部或侧边再复制一套缩略流程、图标链、总结栏或重复关系图。照片只有直接解释具体业务对象时才使用，不得以办公室、城市、园区、机房或泛科技场景填补留白。
+视觉主角必须是模块之间的关系，而不是页面主题名词的象征物；不得把盾牌、锁、数据库、云、芯片、人物或图表放大成中央主视觉。抽象的系统、治理、安全、架构和运行机制页面默认使用纯编辑式图形语言，不使用照片、仿真界面或仿 UI 数据。整体保持大面积安静留白、精确细线、有限深蓝色块和近乎无阴影的平面质感，避免浮雕、厚重投影、立体徽章和模板化装饰。
 中文使用清晰的现代无衬线黑体。不得生成额外页面标题、Logo、页脚或页码。
 【输出要求｜不上屏】
 画布尺寸为 2048×1024（2:1）。"""
@@ -69,8 +78,13 @@ CONTENT_FIRST_SEMANTIC_ONLY_OUTPUT_CONTRACT = """【内容与视觉要求｜不�
 必须由文字、结构和必要画面共同完整表达【完整上屏内容】中的核心判断、业务对象、逻辑关系、关键限定和正文要点，不得捏造事实、改变判断强度或删除支撑判断成立所必需的内容。
 完整上屏内容已有的数字、单位、专有名词、业务术语和否定含义必须准确，不得自行补充限定信息；其他说明文字允许在不损失语义的前提下调整语序、合并重复、拆分为场景标签或适度压缩。
 【完整上屏内容】均需进入 full 图；允许调整换行、文字层级和局部语序，但不得把解释性正文全部替换为场景、图标或抽象视觉隐喻。
-不得新增未经页面内容支持的上屏文字；允许增加不带文字的行业场景、业务动作、环境细节和视觉隐喻，让视觉关系承担解释责任。
-以【页面逻辑】组织空间，不使用等权卡片、通用图标流程或逐项配图；先展开业务场景及其关系，再让必要文字附着于场景。
+不得新增未经页面内容支持的上屏文字；尤其不得自行增加“设计目标”“核心价值”“预期成效”“总结”等归纳区块、标题、标签或结论。脚本没有提供的结果或价值只能用无文字图形状态表达。
+不得虚构日期、版本号、编号、ID、追踪码、状态值、样例数据、界面记录或任何看似真实的示例；只有【完整上屏内容】明确提供的数字和文字才可出现。
+允许增加不带文字的生成式图形关系和少量行业场景，让视觉关系承担解释责任。
+以【只读构图语义】组织一条清晰的视觉主线；每个锁定模块及其名称只出现一次，成为中心、底座、主轴或正文模块后不得再次作为外围节点、关系标签或第二个同名对象重复。不使用等权卡片、通用图标流程或逐项配图；先展开跨页面的图形关系，再让必要文字附着于稳定承载面。
+整页优先形成一个克制而明确的编辑式设计动作，由一条连续形态或一个非对称关系场完成环绕、递进、汇聚或托底；不得用中央徽章、中心大图标、标准圆环、同心台阶、连续箭头胶囊或图标节点链充当视觉主线。图标只能作为低对比微型注释，不能成为节点、卡片标题或主要视觉对象。
+脚本已有的协同关系、组件关系、恢复关系或业务含义应作为一次性的文字注释融入主构图，不得在页面底部或侧边再复制一套缩略流程、图标链、总结栏或重复关系图。照片只有直接解释具体业务对象时才使用，不得以办公室、城市、园区、机房或泛科技场景填补留白。
+视觉主角必须是模块之间的关系，而不是页面主题名词的象征物；不得把盾牌、锁、数据库、云、芯片、人物或图表放大成中央主视觉。抽象的系统、治理、安全、架构和运行机制页面默认使用纯编辑式图形语言，不使用照片、仿真界面或仿 UI 数据。整体保持大面积安静留白、精确细线、有限深蓝色块和近乎无阴影的平面质感，避免浮雕、厚重投影、立体徽章和模板化装饰。
 中文使用清晰的现代无衬线黑体。不得生成额外页面标题、Logo、页脚或页码。
 【输出要求｜不上屏】
 画布尺寸为 2048×1024（2:1）。"""
@@ -124,6 +138,9 @@ VISUAL_INTENT_SIGNALS: dict[str, tuple[tuple[str, int], ...]] = {
         ("上下依赖", 9),
         ("支撑底座", 9),
         ("贯穿保障", 8),
+        ("统一托底", 10),
+        ("底部设置统一支撑", 10),
+        ("高可用支撑", 7),
         ("需求牵引层", 7),
         ("可信底座", 7),
         ("五层", 5),
@@ -173,6 +190,9 @@ VISUAL_INTENT_SIGNALS: dict[str, tuple[tuple[str, int], ...]] = {
     ),
     "closed_loop": (
         ("闭环", 9),
+        ("闭环回流", 10),
+        ("版本化回流", 8),
+        ("回到起点", 9),
         ("输入、处理、输出", 9),
         ("输入、结果、验证、反馈", 9),
         ("反馈与复盘", 7),
@@ -192,6 +212,10 @@ VISUAL_INTENT_SIGNALS: dict[str, tuple[tuple[str, int], ...]] = {
     "capability_relationship": (
         ("能力协同", 8),
         ("协同支撑", 8),
+        ("双侧协同", 10),
+        ("跨系统协同", 9),
+        ("统一网关", 7),
+        ("领域接口", 6),
         ("共同支撑", 7),
         ("能力关系", 8),
         ("能力体系", 7),
@@ -255,8 +279,11 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "as a foundation or cross-cutting support, not as a software technology stack."
         ),
         "recommended_composition": (
-            "Make the upper-level business result the visual center, organize lower-level "
-            "capabilities as unequal support, and treat cross-cutting assurance as a base or guardrail."
+            "Build an asymmetric protective or supporting field in which upper business "
+            "effects, middle controls, and cross-cutting assurance visibly depend on one "
+            "another. Use overlap, enclosure, pressure, depth, or a grounded edge to show "
+            "support; avoid a centered emblem, concentric pedestal, equal layer bars, or "
+            "stacked architecture."
         ),
         "avoid_on_this_page": (
             "A software architecture stack, equal-height layer bars, one card per layer, "
@@ -356,8 +383,13 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "Use a closed-loop relationship with explicit input, result, validation, and feedback."
         ),
         "recommended_composition": (
-            "Use one integrated operational loop anchored in a real work context, with input, "
-            "result, validation, and feedback attached to their places in the loop."
+            "Use one continuous but non-circular editorial gesture that folds, returns, "
+            "overlaps, or changes state to make recurrence visible. Embed input, result, "
+            "validation, and feedback at unequal moments along that gesture; do not turn the "
+            "modules into equally spaced stages. Place any supplied loop-relationship or "
+            "business-meaning sentence as a calm annotation at the return, overlap, or "
+            "convergence point, never as a separate bottom summary zone. Avoid a closed ring "
+            "with icon nodes."
         ),
         "avoid_on_this_page": (
             "A software workflow, lifecycle icon circle, or numbered administration steps."
@@ -386,9 +418,14 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "them into a software stack unless the content explicitly defines one."
         ),
         "recommended_composition": (
-            "Use one integrated business-work composition with business value as the dominant "
-            "outcome. Weave supporting capabilities into that shared context in unequal roles; do not "
-            "assign a separate picture, panel, quadrant, layer, or numbered visual unit to each capability."
+            "Use one continuous designed relationship field—such as an asymmetric ribbon, "
+            "layered terrain, routed surface, or converging network fabric—with capabilities "
+            "embedded along it in unequal roles. Let direction, support, exchange, convergence, "
+            "and feedback be carried by the field itself instead of arranging modules around a "
+            "central badge. Express a shared governing capability as a transverse band, rule "
+            "surface, or woven layer inside the field, not as a portal, ring, medallion, or "
+            "standalone hero object. Do not assign a separate picture, panel, quadrant, layer, "
+            "or numbered visual unit to each capability."
         ),
         "avoid_on_this_page": (
             "A generic architecture stack, center-satellite nodes, equal capability cards, "
@@ -468,6 +505,7 @@ def select_page_visual_intent_type(
             context.get("page_job", ""),
             page.main_message,
             "\n".join(page.module_titles),
+            page.visual_structure,
         )
     )
     # These are field or object names, not page relationships.
@@ -1029,16 +1067,6 @@ def render_content_first_prompt(
         relation,
     )
     parts = [
-        "【页面任务｜仅供理解，不上屏】",
-        page_mission.strip() or page.main_message.strip(),
-        "",
-        "【核心判断｜仅供理解】",
-        page.main_message.strip(),
-        "",
-        logic_contract,
-        "",
-        render_presentation_contract(page, presentation),
-        "",
         "【完整上屏内容】",
         complete_semantics,
         "",
@@ -1057,6 +1085,18 @@ def render_content_first_prompt(
             if locked
             else CONTENT_FIRST_SEMANTIC_ONLY_OUTPUT_CONTRACT
         ),
+        "",
+        NON_RENDERING_SEMANTIC_CONTRACT,
+        "",
+        "页面任务：",
+        page_mission.strip() or page.main_message.strip(),
+        "",
+        "核心判断：",
+        page.main_message.strip(),
+        "",
+        logic_contract,
+        "",
+        render_presentation_contract(page, presentation),
         "",
         render_content_first_style_contract(style_lock),
     ]

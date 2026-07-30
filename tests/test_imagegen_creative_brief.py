@@ -97,7 +97,7 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "【完整内容语义｜仅供理解，不要求逐字上屏】" not in implicit
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT in implicit
     assert "【完整上屏内容】均需进入 full 图" in implicit
-    assert "必要的行业场景、业务动作、环境细节和视觉隐喻只能辅助附近文字与业务关系" in implicit
+    assert "使用生成式图形形态、路径、层次和必要画面组织附近文字与业务关系" in implicit
     assert "【事实与范围边界｜仅供约束，不上屏】" not in implicit
     assert CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT in implicit
     assert "【输出与风格｜不上屏】" in implicit
@@ -106,6 +106,18 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" in implicit
     assert "【页面逻辑｜不上屏】" in implicit
     assert "不使用等权卡片、通用图标流程或逐项配图" in implicit
+    assert "每个锁定模块及其名称只出现一次" in implicit
+    assert "不得再次作为外围节点、关系标签或第二个同名对象重复" in implicit
+    assert "不得自行增加“设计目标”“核心价值”“预期成效”“总结”" in implicit
+    assert "脚本没有提供的结果或价值只能用无文字图形状态表达" in implicit
+    assert "一个克制而明确的编辑式设计动作" in implicit
+    assert "不得用中央徽章、中心大图标、标准圆环、同心台阶" in implicit
+    assert "不得在页面底部或侧边再复制一套缩略流程" in implicit
+    assert "不得以办公室、城市、园区、机房或泛科技场景填补留白" in implicit
+    assert "不得虚构日期、版本号、编号、ID、追踪码" in implicit
+    assert "视觉主角必须是模块之间的关系" in implicit
+    assert "不得把盾牌、锁、数据库、云、芯片、人物或图表放大成中央主视觉" in implicit
+    assert "默认使用纯编辑式图形语言" in implicit
     assert "Do not show frontal faces" not in implicit
     assert "解释性正文由后续 PPT 可编辑文字层承载" not in implicit
     assert "现代中文高端政企汇报设计气质" in implicit
@@ -166,8 +178,8 @@ def test_style_nine_content_first_rejects_stale_scene_first_lock_wording() -> No
     assert "允许轻微立体层次、浅阴影和扩大场景" not in prompt
     assert "允许场景感成为主叙事" not in prompt
     assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" in prompt
-    assert "文字与语义视觉共同承担表达" in prompt
-    assert "语义视觉可成为页面主体" in prompt
+    assert "生成式图形构图负责组织页面主线" in prompt
+    assert "少量实景、近实景或物件型语义图仅作点缀" in prompt
     assert "文字是页面主体" not in prompt
     assert "不得占据约半幅页面" not in prompt
     assert "图标不是默认视觉载体" in prompt
@@ -194,6 +206,19 @@ def test_content_first_prompt_places_visible_judgment_before_support_modules() -
     assert page.onscreen_judgment not in locked
     assert "数据治理｜质量与授权" in locked
     assert "数据治理" in semantics
+
+
+def test_closed_loop_contract_avoids_equal_stages_and_bottom_summary() -> None:
+    page = replace(
+        _page(),
+        visual_structure="输入、处理、校验、反馈形成闭环回流。",
+    )
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert "do not turn the modules into equally spaced stages" in prompt
+    assert "never as a separate bottom summary zone" in prompt
 
 
 def test_content_first_full_reference_keeps_complete_onscreen_content() -> None:
@@ -246,7 +271,9 @@ def test_content_first_omits_tracking_metadata_and_avoids_repeated_rules() -> No
     assert "解释性正文由后续 PPT 可编辑文字层承载" not in prompt
     assert prompt.count("【完整上屏内容】均需进入 full 图") == 1
     assert prompt.count("【页面逻辑｜不上屏】") == 1
-    assert prompt.count("以【页面逻辑】组织空间") == 1
+    assert prompt.count("以【只读构图语义】组织一条清晰的视觉主线") == 1
+    assert prompt.index("【完整上屏内容】") < prompt.index("【只读构图语义｜不得上屏】")
+    assert "不得从本区抽取任何新标题、栏目名、图内标签" in prompt
     assert "页面构图和信息组织仍由" not in prompt
 
 
@@ -512,6 +539,35 @@ def test_visual_proof_prefers_page_context_and_new_relations_are_selectable() ->
     assert prompt.count("视觉证明：") == 1
     assert "不使用等权卡片、通用图标流程或逐项配图" in prompt
     assert "如出现人物，仅使用远景、背影或局部" in prompt
+
+
+def test_visual_intent_uses_script_visual_structure_for_relationship_role() -> None:
+    base = _page()
+    closed_loop = replace(
+        base,
+        main_message="学生、教师和学校业务共享四段治理机制",
+        visual_structure="闭环回流——受控输入到智能处理、校验、版本化回流，再回到起点。",
+    )
+    interface_collaboration = replace(
+        base,
+        main_message="统一网关连接多类领域接口实现跨系统协同",
+        visual_structure="双侧协同——以身份组织接口为视觉中心，其余模块按支撑关系连接。",
+    )
+    availability_support = replace(
+        base,
+        main_message="三条运行链由高可用机制统一托底",
+        visual_structure="主体泳道——三条运行链展开，底部设置统一支撑关系。",
+    )
+
+    assert select_page_visual_intent_type(closed_loop, "") == "closed_loop"
+    assert (
+        select_page_visual_intent_type(interface_collaboration, "")
+        == "capability_relationship"
+    )
+    assert (
+        select_page_visual_intent_type(availability_support, "")
+        == "hierarchy_support"
+    )
 
 
 def test_explicit_script_visual_proof_reaches_page_logic_contract() -> None:
