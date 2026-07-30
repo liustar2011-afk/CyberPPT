@@ -39,9 +39,9 @@ from scripts.dual_image_overlay.ppt_master_runtime_bridge import (  # noqa: E402
 
 class DualImageOverlaySemanticPlanTests(unittest.TestCase):
     def test_scale_bbox_from_generated_image_to_canvas(self) -> None:
-        self.assertEqual(CANVAS, (1280, 720))
+        self.assertEqual(CANVAS, (1672, 941))
         bbox = scale_bbox([167.2, 94.1, 334.4, 188.2], source_size=(1672, 941))
-        self.assertEqual(bbox, [128.0, 72.0, 256.0, 144.0])
+        self.assertEqual(bbox, [167.2, 94.1, 334.4, 188.2])
 
     def test_relative_bbox_uses_container_safe_area(self) -> None:
         bbox = relative_bbox([100, 50, 500, 250], [0.25, 0.1, 0.75, 0.9])
@@ -57,7 +57,7 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
             normalize_image(source, target)
 
             with Image.open(target) as image:
-                self.assertEqual(image.size, (1280, 720))
+                self.assertEqual(image.size, (1672, 941))
 
     def test_load_semantic_plan_requires_explicit_containers_and_items(self) -> None:
         with TemporaryDirectory() as directory:
@@ -123,10 +123,10 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
 
             plan = load_semantic_plan(path)
 
-            self.assertEqual(plan.image_size, {"width": 1280, "height": 720})
-            self.assertEqual(plan.containers[0].bbox, [61.244, 30.606, 1218.756, 122.423])
-            self.assertEqual(plan.containers[0].text_safe_bbox, [76.555, 45.909, 1201.914, 107.12])
-            self.assertEqual(plan.items[0].bbox, [76.555, 45.909, 1201.914, 107.12])
+            self.assertEqual(plan.image_size, {"width": 1672, "height": 941})
+            self.assertEqual(plan.containers[0].bbox, [80.0, 40.0, 1592.0, 160.0])
+            self.assertEqual(plan.containers[0].text_safe_bbox, [100.0, 60.0, 1570.0, 140.0])
+            self.assertEqual(plan.items[0].bbox, [100.0, 60.0, 1570.0, 140.0])
             self.assertEqual(plan.items[0].container_id, "title_bar")
 
     def test_load_semantic_plan_rejects_unknown_container(self) -> None:
@@ -312,13 +312,13 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
             )
             normalized = normalize_semantic_plan_to_context(plan, context)
 
-        self.assertEqual({"width": 1280.0, "height": 720.0}, normalized["image_size"])
-        self.assertEqual([492.25, 113.24, 629.28, 196.64], normalized["containers"][0]["bbox"])
-        self.assertEqual([535.89, 137.73, 627.75, 160.68], normalized["items"][0]["bbox"])
+        self.assertEqual({"width": 1672.0, "height": 941.0}, normalized["image_size"])
+        self.assertEqual([643.0, 148.0, 822.0, 257.0], normalized["containers"][0]["bbox"])
+        self.assertEqual([700.0, 180.0, 820.0, 210.0], normalized["items"][0]["bbox"])
         self.assertEqual(
             {
                 "input_space": {"width": 1672.0, "height": 941.0},
-                "coordinate_space": {"width": 1280.0, "height": 720.0},
+                "coordinate_space": {"width": 1672.0, "height": 941.0},
                 "method": "scale_xyxy_to_normalized_canvas",
             },
             normalized["coordinate_normalization"],
@@ -351,12 +351,12 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
             input_space={"width": 1672, "height": 941},
         )
 
-        self.assertEqual({"width": 1280.0, "height": 720.0}, normalized["image_size"])
-        self.assertEqual([492.25, 113.24, 629.28, 196.64], normalized["containers"][0]["bbox"])
+        self.assertEqual({"width": 1672.0, "height": 941.0}, normalized["image_size"])
+        self.assertEqual([643.0, 148.0, 822.0, 257.0], normalized["containers"][0]["bbox"])
         self.assertEqual(
             {
                 "input_space": {"width": 1672.0, "height": 941.0},
-                "coordinate_space": {"width": 1280.0, "height": 720.0},
+                "coordinate_space": {"width": 1672.0, "height": 941.0},
                 "method": "scale_xyxy_to_normalized_canvas",
             },
             normalized["coordinate_normalization"],
@@ -449,9 +449,9 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
         item = layout["items"][0]
 
         self.assertEqual("visual_element_registry", container["text_zone_source"])
-        self.assertEqual([290.4, 134.45, 656.8, 330.27], container["text_safe_bbox"])
+        self.assertEqual([88.0, 39.0, 208.0, 103.0], container["text_safe_bbox"])
         self.assertEqual("icon_zone", container["reserved_zones"][0]["name"])
-        self.assertEqual([290.4, 134.45, 656.8, 330.27], item["bbox"])
+        self.assertEqual([88.0, 39.0, 208.0, 103.0], item["bbox"])
         self.assertEqual("visual_element_registry", item["text_zone_source"])
         self.assertEqual("icon_zone", item["reserved_zones"][0]["name"])
 
@@ -551,9 +551,9 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
             context = resolve_overlay_coordinate_context(plan, visual_registry=registry, background_image=image)
             layout = build_semantic_layout_plan(plan, visual_registry=registry, coordinate_context=context)
 
-        self.assertEqual({"width": 1280.0, "height": 720.0}, context["coordinate_space"])
+        self.assertEqual({"width": 1672.0, "height": 941.0}, context["coordinate_space"])
         self.assertEqual({"width": 1672.0, "height": 941.0}, context["source_coordinate_space"])
-        self.assertEqual("normalized_1280x720", context["coordinate_space_source"])
+        self.assertEqual("preserved_1672x941", context["coordinate_space_source"])
         self.assertTrue(context["warnings"])
         self.assertEqual("coordinate_space_mismatch", context["warnings"][0]["code"])
         self.assertEqual(context, layout["coordinate_context"])
@@ -590,7 +590,7 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
 
         self.assertEqual({"width": 1920.0, "height": 941.0}, context["semantic_input_space"])
         self.assertEqual({"width": 1920.0, "height": 941.0}, context["visual_registry_input_space"])
-        self.assertLessEqual(layout["items"][0]["bbox"][2], 1280)
+        self.assertLessEqual(layout["items"][0]["bbox"][2], 1672)
         self.assertTrue(
             any(
                 item["code"]

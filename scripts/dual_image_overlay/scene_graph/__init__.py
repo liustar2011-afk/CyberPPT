@@ -6,6 +6,7 @@ from .page_svg_ir import PAGE_SVG_IR_SCHEMA, PageSvgIRValidationError, compile_s
 from .text_metrics import avoid_reserved_zones, fit_text_to_safe_bbox, measure_line, measure_text
 from .image_assets import IMAGE_ASSET_SCHEMA, asset_id_for_source, image_asset_manifest, register_image_asset, validate_image_asset_contract
 from .qa_fusion import QA_FUSION_SCHEMA, build_qa_fusion_report, run_ppt_master_svg_checker, write_qa_fusion_report
+from .svg_renderer import render_page_svg_ir
 from ..standalone_runtime import check_standalone_runtime
 from .render_qa import RENDER_QA_SCHEMA, build_render_qa
 from .schema import (
@@ -75,5 +76,6 @@ __all__ = [
     "build_qa_fusion_report",
     "run_ppt_master_svg_checker",
     "write_qa_fusion_report",
+    "render_page_svg_ir",
     "check_standalone_runtime",
 ]

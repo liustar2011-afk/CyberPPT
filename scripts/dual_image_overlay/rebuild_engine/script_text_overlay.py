@@ -1225,8 +1225,8 @@ def resolve_overlay_coordinate_context(
         warnings=warnings,
     )
     source_space = actual_size or semantic_input_space
-    coordinate_space = _size_dict(*NORMALIZED_CANVAS_SIZE)
-    source = f"normalized_{NORMALIZED_CANVAS_SIZE[0]}x{NORMALIZED_CANVAS_SIZE[1]}"
+    coordinate_space = actual_size or semantic_input_space or _size_dict(*NORMALIZED_CANVAS_SIZE)
+    source = f"preserved_{int(coordinate_space['width'])}x{int(coordinate_space['height'])}"
 
     for name, size in (("semantic_plan_image_size", plan_size), ("visual_registry_canvas", registry_size)):
         if size and not _sizes_close(size, coordinate_space):

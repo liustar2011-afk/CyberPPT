@@ -38,6 +38,7 @@ from scripts.dual_image_overlay.scene_graph.layout import build_layout_plan_from
 from scripts.dual_image_overlay.scene_graph.page_svg_ir import compile_scene_graph_to_page_svg_ir
 from scripts.dual_image_overlay.scene_graph.qa_fusion import build_qa_fusion_report
 from scripts.dual_image_overlay.scene_graph.schema import scene_graph_to_dict
+from scripts.dual_image_overlay.scene_graph.svg_renderer import render_page_svg_ir
 from scripts.dual_image_overlay.text_block_group import build_text_block_group
 from scripts.dual_image_overlay.text_truth import verify_text_blocks_against_script
 
@@ -149,20 +150,20 @@ def _copy_image_to_project(image_path: Path, project_path: Path) -> str:
     return "../images/" + target.name
 
 
-def _normalized_image_name(source: Path, suffix: str) -> str:
+def _normalized_image_name(source: Path, suffix: str, size: tuple[int, int]) -> str:
     stem = source.stem
     if stem.endswith("_full"):
         stem = stem[: -len("_full")]
     if stem.endswith("_background"):
         stem = stem[: -len("_background")]
-    return f"{stem}_{suffix}_{CANVAS_SIZE[0]}x{CANVAS_SIZE[1]}.png"
+    return f"{stem}_{suffix}_{size[0]}x{size[1]}.png"
 
 
-def _resize_to_canvas(source: Path, target: Path) -> list[int]:
+def _copy_preserving_canvas(source: Path, target: Path) -> list[int]:
     target.parent.mkdir(parents=True, exist_ok=True)
     with Image.open(source) as image:
         source_size = list(image.size)
-        image.convert("RGB").resize(CANVAS_SIZE, Image.Resampling.LANCZOS).save(target)
+        image.convert("RGB").save(target)
     return source_size
 
 
@@ -173,17 +174,27 @@ def _prepare_page_images(
     project_path: Path,
 ) -> tuple[Path, Path, dict[str, Any]]:
     normalized_dir = project_path / "images" / "normalized"
-    prepared_full = normalized_dir / _normalized_image_name(full_image, "full")
-    prepared_background = normalized_dir / _normalized_image_name(background_image, "background")
-    full_size = _resize_to_canvas(full_image, prepared_full)
-    background_size = _resize_to_canvas(background_image, prepared_background)
+    with Image.open(full_image) as image:
+        full_dimensions = image.size
+    with Image.open(background_image) as image:
+        background_dimensions = image.size
+    if full_dimensions != background_dimensions:
+        raise ValueError(
+            f"Full/background dimensions must match: {full_dimensions} != {background_dimensions}"
+        )
+    prepared_full = normalized_dir / _normalized_image_name(full_image, "full", full_dimensions)
+    prepared_background = normalized_dir / _normalized_image_name(
+        background_image, "background", background_dimensions
+    )
+    full_size = _copy_preserving_canvas(full_image, prepared_full)
+    background_size = _copy_preserving_canvas(background_image, prepared_background)
     return prepared_full, prepared_background, {
-        "status": f"normalized_{CANVAS_SIZE[0]}x{CANVAS_SIZE[1]}",
+        "status": f"preserved_{full_dimensions[0]}x{full_dimensions[1]}",
         "source_full_size": full_size,
         "source_background_size": background_size,
-        "full_size": list(CANVAS_SIZE),
-        "background_size": list(CANVAS_SIZE),
-        "output_size": list(CANVAS_SIZE),
+        "full_size": list(full_dimensions),
+        "background_size": list(background_dimensions),
+        "output_size": list(full_dimensions),
         "full_output_path": str(prepared_full),
         "background_output_path": str(prepared_background),
         "output_path": str(prepared_background),
@@ -210,6 +221,7 @@ def _load_explicit_semantic_plan(semantic_plan_dir: Path | None, page_number: in
         semantic_plan_dir / f"page_{page_number:03d}_semantic_plan.json",
         semantic_plan_dir / f"slide-{page_number:02d}-semantic-plan.json",
         semantic_plan_dir / f"slide-{page_number:02d}-semantic_plan.json",
+        semantic_plan_dir / "semantic_plan.json",
     ]
     for path in candidates:
         if path.is_file():
@@ -861,10 +873,6 @@ def rebuild_from_manifest(
         if explicit_semantic is not None:
             explicit_path, explicit_plan = explicit_semantic
             explicit_plan = reconcile_semantic_plan_with_script_truth(explicit_plan, source_script, page_number)
-            explicit_plan = normalize_semantic_plan_to_canvas(
-                explicit_plan,
-                input_space=_source_full_size(image_size_check),
-            )
             semantic_plan_path.write_text(
                 json.dumps(explicit_plan, ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
@@ -1031,19 +1039,36 @@ def rebuild_from_manifest(
             notes_text = ""
             title_for_name = slide_title
 
-        background_href = _background_href_for_svg(prepared_background)
         text_opacity = 0.0 if editable_text_visibility == "hidden" else 1.0
-        svg = render_overlay_svg(
-            background_href=background_href,
+        page_svg_ir = json.loads(scene_graph_paths["page_svg_ir"].read_text(encoding="utf-8"))
+        svg = render_page_svg_ir(
+            page_svg_ir,
             canvas={"width": CANVAS_SIZE[0], "height": CANVAS_SIZE[1]},
-            body_region=body,
+            content_region=body,
             slide_title=slide_title,
             subtitle=subtitle,
-            text_boxes=boxes,
             text_opacity=text_opacity,
         )
         stem = page_stem(page_number, title_for_name)
-        (project_path / "svg_output" / f"{stem}.svg").write_text(svg, encoding="utf-8")
+        svg_path = project_path / "svg_output" / f"{stem}.svg"
+        svg_path.write_text(svg, encoding="utf-8")
+        qa_fusion = build_qa_fusion_report(
+            scene_graph_gate=json.loads(scene_graph_paths["gate"].read_text(encoding="utf-8")),
+            page_svg_ir=page_svg_ir,
+            image_assets=page_svg_ir.get("image_assets"),
+            svg_path=svg_path,
+            expected_format="16:9",
+            require_ppt_master=True,
+        )
+        scene_graph_paths["qa_fusion"].write_text(
+            json.dumps(qa_fusion, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        if not qa_fusion["valid"]:
+            raise ValueError(
+                f"Page SVG IR export gate failed for page {page_number}: "
+                f"{qa_fusion['blocking_errors']}"
+            )
         (project_path / "notes" / f"{stem}.md").write_text(f"# {slide_title}\n\n{notes_text}\n", encoding="utf-8")
         svg_count += 1
         quality_pages.append(
@@ -1057,6 +1082,10 @@ def rebuild_from_manifest(
                 "scene_graph": str(scene_graph_paths["graph"]),
                 "scene_graph_gate": str(scene_graph_paths["gate"]),
                 "page_layout_plan": str(scene_graph_paths["layout"]),
+                "page_svg_ir": str(scene_graph_paths["page_svg_ir"]),
+                "qa_fusion": str(scene_graph_paths["qa_fusion"]),
+                "svg_export_source": "page_svg_ir",
+                "svg_path": str(svg_path),
                 "semantic_source": semantic_source,
                 "editable_text_layout_source": editable_text_layout_source,
                 "visual_registry_source": visual_registry_source,

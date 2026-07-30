@@ -120,6 +120,7 @@ def _text_element(item: Mapping[str, Any], text_truth: Mapping[str, Any], *, saf
         },
         "style": {
             "font_size": item.get("font_size"),
+            "font_size_space": "ppt_svg_px",
             "font_family": item.get("font_family"),
             "font_weight": item.get("font_weight"),
             "fill": item.get("fill"),

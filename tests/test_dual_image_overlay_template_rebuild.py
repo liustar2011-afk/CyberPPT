@@ -354,12 +354,9 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
             self.assertEqual(3, result.returncode, result.stdout + result.stderr)
             self.assertTrue((project / "analysis/semantic_binding/page_002_semantic_binding.json").is_file())
 
-    def test_rebuild_ingress_normalizes_full_and_background_to_template_canvas(self) -> None:
-        # The template/slide physical canvas is fixed at 1280x720 (13.333x7.5in),
-        # independent of whatever higher resolution the source full/background
-        # images were generated at (e.g. 1672x941 for sharper ImageGen output).
-        # Conflating the two previously inflated the exported PPTX to a
-        # non-standard 17.42x9.80in slide.
+    def test_rebuild_ingress_preserves_full_and_background_coordinate_canvas(self) -> None:
+        # The physical slide remains 1280x720, while Page SVG IR retains the
+        # source content-image canvas and maps it once into the template body.
         with TemporaryDirectory() as directory:
             root = Path(directory)
             project = root / "template-project"
@@ -377,15 +374,15 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
             )
 
             with Image.open(prepared_full) as full_image, Image.open(prepared_background) as background_image:
-                self.assertEqual((1280, 720), full_image.size)
-                self.assertEqual((1280, 720), background_image.size)
+                self.assertEqual((1672, 941), full_image.size)
+                self.assertEqual((1672, 941), background_image.size)
 
         self.assertEqual([1672, 941], image_size_check["source_full_size"])
         self.assertEqual([1672, 941], image_size_check["source_background_size"])
-        self.assertEqual([1280, 720], image_size_check["output_size"])
-        self.assertEqual("normalized_1280x720", image_size_check["status"])
-        self.assertIn("/normalized/", str(prepared_full))
-        self.assertIn("/normalized/", str(prepared_background))
+        self.assertEqual([1672, 941], image_size_check["output_size"])
+        self.assertEqual("preserved_1672x941", image_size_check["status"])
+        self.assertIn("/normalized/", str(prepared_full).replace("\\", "/"))
+        self.assertIn("/normalized/", str(prepared_background).replace("\\", "/"))
 
     def test_svg_background_href_points_to_normalized_image_dir(self) -> None:
         from scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild import _background_href_for_svg

@@ -94,9 +94,11 @@ def resolve_coordinate_context(
                 }
             )
 
+    coordinate_space = image or plan or registry or dict(NORMALIZED_CANVAS)
     return {
         "schema": COORDINATE_CONTEXT_SCHEMA,
-        "coordinate_space": dict(NORMALIZED_CANVAS),
+        "normalized_canvas": coordinate_space,
+        "coordinate_space": coordinate_space,
         "semantic_input_space": semantic_input,
         "visual_registry_input_space": registry_input,
         "image_size": image,
