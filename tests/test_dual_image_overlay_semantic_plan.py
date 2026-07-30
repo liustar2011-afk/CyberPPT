@@ -196,13 +196,13 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
             str(core.__file__).replace("\\", "/"),
         )
 
-    def test_runtime_bridge_reports_vendor_fallback_and_host_resources(self) -> None:
+    def test_runtime_bridge_reports_local_vendor_runtime(self) -> None:
         descriptor = runtime_descriptor()
         self.assertEqual("cyberppt_vendor", descriptor.source)
-        self.assertIsNotNone(resolve_host_root())
+        self.assertIsNone(resolve_host_root())
         checker = resolve_shared_resource("svg_quality_checker")
         self.assertIsNotNone(checker)
-        self.assertIn("ppt-master", str(checker))
+        self.assertIn("CyberPPT", str(checker))
 
     def test_ability_card_uses_container_slots_instead_of_item_bbox(self) -> None:
         plan = _ability_plan()

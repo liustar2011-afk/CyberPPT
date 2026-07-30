@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from ..ppt_master_runtime_bridge import resolve_shared_resource
+from ..standalone_runtime import check_standalone_runtime
 from .image_assets import validate_image_asset_contract
 from .page_svg_ir import validate_page_svg_ir
 
@@ -63,6 +64,7 @@ def build_qa_fusion_report(
     else:
         ppt_master = {"status": "deferred", "passed": not require_ppt_master, "blocking": bool(require_ppt_master), "reason": "svg_path_not_provided"}
     components = {
+        "standalone_runtime": check_standalone_runtime(),
         "scene_graph": dict(scene_graph_gate),
         "page_svg_ir": dict(ir_gate),
         "image_assets": dict(asset_gate),

@@ -1,16 +1,14 @@
-"""Resolve the PPT Master runtime and shared resources for dual-image rebuilds.
+"""Resolve the self-contained CyberPPT runtime for dual-image rebuilds.
 
 The dual-image route used to import a vendored module directly from business code.
-This bridge keeps the vendor snapshot as a safe fallback while making the runtime
-selection explicit and allowing the host PPT Master checkout to provide a newer
-layout core when one is available.
+The vendor snapshot is the production runtime. PPT Master is an upstream source
+of ideas/code, not a runtime dependency of CyberPPT.
 """
 
 from __future__ import annotations
 
 import importlib.util
 import json
-import os
 import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -39,19 +37,8 @@ def vendor_root() -> Path:
     return cyberppt_root() / "vendor" / "ppt_master_slide_image_rebuild"
 
 
-def _candidate_host_roots() -> list[Path]:
-    candidates: list[Path] = []
-    configured = os.environ.get("CYBERPPT_PPT_MASTER_ROOT")
-    if configured:
-        candidates.append(Path(configured).expanduser())
-    candidates.append(cyberppt_root().parent / "ppt-master")
-    return list(dict.fromkeys(path.resolve() for path in candidates))
-
-
 def resolve_host_root() -> Path | None:
-    for root in _candidate_host_roots():
-        if (root / "skills" / "ppt-master").is_dir():
-            return root
+    """Return no host runtime: production resolution is intentionally local-only."""
     return None
 
 
@@ -64,21 +51,21 @@ def _resource_bindings() -> tuple[dict[str, Any], Path]:
 
 
 def resolve_shared_resource(relative_path: str) -> Path | None:
-    """Resolve a resource through PPT Master's bindings, with local fallback."""
+    """Resolve a resource from CyberPPT's local snapshot only."""
     bindings, _ = _resource_bindings()
-    host = resolve_host_root()
-    if host and bindings.get("prefer_ppt_master_resources", True):
-        shared = bindings.get("shared", {})
-        if isinstance(shared, dict):
-            configured = shared.get(relative_path)
-            if configured:
-                candidate = host / str(configured)
-                if candidate.exists():
-                    return candidate
     fallback = bindings.get("local_fallback", {})
     configured = fallback.get(relative_path) if isinstance(fallback, dict) else None
     if configured:
         candidate = cyberppt_root() / str(configured)
+        if candidate.exists():
+            return candidate
+    shared = bindings.get("shared", {})
+    shared_configured = shared.get(relative_path) if isinstance(shared, dict) else None
+    if shared_configured:
+        candidate = vendor_root() / str(shared_configured)
+        if candidate.exists():
+            return candidate
+        candidate = vendor_root() / "scripts" / Path(str(shared_configured)).name
         if candidate.exists():
             return candidate
     candidate = vendor_root() / relative_path
@@ -86,35 +73,20 @@ def resolve_shared_resource(relative_path: str) -> Path | None:
 
 
 def _core_candidates() -> list[tuple[str, Path, Path | None]]:
-    host = resolve_host_root()
-    candidates: list[tuple[str, Path, Path | None]] = []
-    # A future host checkout may expose the dual-image layout core here. Keep this
-    # explicit rather than scanning arbitrary Python files.
-    if host:
-        candidates.append(
-            (
-                "ppt_master_host",
-                host / "skills" / "ppt-master" / "scripts" / "dual_image_rebuild_pptx.py",
-                host,
-            )
-        )
-    candidates.append(
-        (
-            "cyberppt_vendor",
-            vendor_root() / "scripts" / "dual_image_rebuild_pptx.py",
-            host,
-        )
-    )
-    return candidates
+    return [(
+        "cyberppt_vendor",
+        vendor_root() / "scripts" / "dual_image_rebuild_pptx.py",
+        None,
+    )]
 
 
 def runtime_descriptor() -> RuntimeDescriptor:
     bindings, bindings_path = _resource_bindings()
     for source, path, host in _core_candidates():
         if path.is_file():
-            shared_ok = bool(host and isinstance(bindings.get("shared"), dict))
-            return RuntimeDescriptor(source, str(path), str(host) if host else None, str(vendor_root()), str(bindings_path), shared_ok)
-    return RuntimeDescriptor("unavailable", None, str(host) if (host := resolve_host_root()) else None, str(vendor_root()), str(bindings_path), False)
+            shared_ok = bool(resolve_shared_resource("svg_quality_checker"))
+            return RuntimeDescriptor(source, str(path), None, str(vendor_root()), str(bindings_path), shared_ok)
+    return RuntimeDescriptor("unavailable", None, None, str(vendor_root()), str(bindings_path), False)
 
 
 def load_layout_core() -> ModuleType | None:
