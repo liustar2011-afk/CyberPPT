@@ -823,7 +823,7 @@ def resolve_presentation_decision(
     relation: str,
     prior_decisions: tuple[PresentationDecision, ...] = (),
 ) -> PresentationDecision:
-    """Choose a content-led motif while preventing batch-level repetition."""
+    """Choose a presentation motif from this page's content relationship only."""
 
     explicit_motif = page.layout_motif.strip()
     explicit_scene = page.scene_role.strip()
@@ -833,17 +833,11 @@ def resolve_presentation_decision(
         raise ValueError(f"{page.page_id} has unsupported 场景角色: {explicit_scene}")
 
     candidates = MOTIF_CANDIDATES.get(relation, ("evidence_landscape", "decision_canvas"))
-    previous_motif = prior_decisions[-1].layout_motif if prior_decisions else ""
-    motif = explicit_motif or next(
-        (candidate for candidate in candidates if candidate != previous_motif),
-        candidates[0],
-    )
+    # Kept in the signature for backward compatibility with batch callers. It must
+    # not influence the decision: page order and neighboring layouts are not content.
+    _ = prior_decisions
+    motif = explicit_motif or candidates[0]
     scene_role = explicit_scene or DEFAULT_SCENE_ROLE_BY_MOTIF[motif]
-    recent_primary_count = sum(
-        decision.scene_role == "primary_scene" for decision in prior_decisions[-3:]
-    )
-    if not explicit_scene and scene_role == "primary_scene" and recent_primary_count >= 2:
-        scene_role = "supporting_evidence"
     source = "script" if explicit_motif or explicit_scene else "auto"
     reason = (
         "explicit page presentation override"

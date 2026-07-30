@@ -57,21 +57,21 @@ def test_presentation_decision_honors_explicit_page_values() -> None:
     assert decision.source == "script"
 
 
-def test_presentation_decision_avoids_adjacent_duplicate_motif() -> None:
+def test_presentation_decision_ignores_adjacent_motif() -> None:
     page = _page()
     first = resolve_presentation_decision(page, "capability_relationship")
     second = resolve_presentation_decision(page, "capability_relationship", (first,))
-    assert first.layout_motif != second.layout_motif
+    assert first.layout_motif == second.layout_motif
 
 
-def test_presentation_decision_caps_primary_scene_density() -> None:
+def test_presentation_decision_ignores_recent_scene_density() -> None:
     page = _page()
     prior = (
         PresentationDecision("control_room_bridge", "primary_scene", "auto", ""),
         PresentationDecision("evidence_landscape", "primary_scene", "auto", ""),
     )
     decision = resolve_presentation_decision(page, "closed_loop", prior)
-    assert decision.scene_role != "primary_scene"
+    assert decision.scene_role == "primary_scene"
 
 
 def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
