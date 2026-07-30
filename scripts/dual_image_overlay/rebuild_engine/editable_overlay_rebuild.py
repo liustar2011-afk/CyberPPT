@@ -36,6 +36,7 @@ from scripts.dual_image_overlay.scene_graph.builder import build_page_scene_grap
 from scripts.dual_image_overlay.scene_graph.gate import build_scene_graph_gate
 from scripts.dual_image_overlay.scene_graph.layout import build_layout_plan_from_scene_graph
 from scripts.dual_image_overlay.scene_graph.page_svg_ir import compile_scene_graph_to_page_svg_ir
+from scripts.dual_image_overlay.scene_graph.qa_fusion import build_qa_fusion_report
 from scripts.dual_image_overlay.scene_graph.schema import scene_graph_to_dict
 from scripts.dual_image_overlay.text_block_group import build_text_block_group
 from scripts.dual_image_overlay.text_truth import verify_text_blocks_against_script
@@ -372,6 +373,7 @@ def _scene_graph_artifact_paths(project_path: Path, page_number: int) -> dict[st
         "gate": project_path / "analysis" / "scene_graph_gate" / f"page_{page_number:03d}_scene_graph_gate.json",
         "layout": project_path / "analysis" / "page_layout_plan" / f"page_{page_number:03d}_layout_plan.json",
         "page_svg_ir": project_path / "analysis" / "page_svg_ir" / f"page_{page_number:03d}_page_svg_ir.json",
+        "qa_fusion": project_path / "analysis" / "qa_fusion" / f"page_{page_number:03d}_qa_fusion.json",
     }
 
 
@@ -432,6 +434,12 @@ def _write_scene_graph_artifacts(
         layout_plan=page_layout_plan,
     )
     paths["page_svg_ir"].write_text(json.dumps(page_svg_ir, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    qa_fusion = build_qa_fusion_report(
+        scene_graph_gate=graph_gate,
+        page_svg_ir=page_svg_ir,
+        require_ppt_master=False,
+    )
+    paths["qa_fusion"].write_text(json.dumps(qa_fusion, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return paths
 
 
