@@ -73,7 +73,9 @@ CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT = """【内容与视觉要求｜不上屏�
 使用生成式图形形态、路径、层次和必要画面组织附近文字与业务关系，少量行业场景只作点缀。
 以【只读构图语义】组织一条清晰的视觉主线；每个锁定模块及其名称只出现一次，成为中心、底座、主轴或正文模块后不得再次作为外围节点、关系标签或第二个同名对象重复。不使用等权卡片、通用图标流程或逐项配图。
 整页优先形成一个克制而明确的编辑式设计动作，由一条连续形态或一个非对称关系场完成环绕、递进、汇聚或托底；不得用中央徽章、中心大图标、标准圆环、同心台阶、连续箭头胶囊或图标节点链充当视觉主线。图标只能作为低对比微型注释，不能成为节点、卡片标题或主要视觉对象。
-脚本已有的协同关系、组件关系、恢复关系或业务含义应作为一次性的文字注释融入主构图，不得在页面底部或侧边再复制一套缩略流程、图标链、总结栏或重复关系图。照片只有直接解释具体业务对象时才使用，不得以办公室、城市、园区、机房或泛科技场景填补留白。
+脚本已有的协同关系、组件关系、恢复关系或业务含义应作为一次性的文字注释融入主构图，不得在页面底部或侧边再复制一套缩略流程、图标链、总结栏或重复关系图。
+上述关系说明是不可拆分的原子注释块：允许换行和语义不变改写，但不得从中提炼、拆出或派生第二套阶段名、结果名、状态名、对象名、底部分类、图例或短标签。
+照片只有直接解释具体业务对象时才使用，不得以办公室、城市、园区、机房或泛科技场景填补留白。
 视觉主角必须是模块之间的关系，而不是页面主题名词的象征物；不得把盾牌、锁、数据库、云、芯片、人物或图表放大成中央主视觉。抽象的系统、治理、安全、架构和运行机制页面默认使用纯编辑式图形语言，不使用照片、仿真界面或仿 UI 数据。整体保持大面积安静留白、精确细线、有限深蓝色块和近乎无阴影的平面质感，避免浮雕、厚重投影、立体徽章和模板化装饰。
 中文使用清晰的现代无衬线黑体。不得生成额外页面标题、Logo、页脚或页码。
 【输出要求｜不上屏】
@@ -87,7 +89,9 @@ CONTENT_FIRST_SEMANTIC_ONLY_OUTPUT_CONTRACT = """【内容与视觉要求｜不�
 允许增加不带文字的生成式图形关系和少量行业场景，让视觉关系承担解释责任。
 以【只读构图语义】组织一条清晰的视觉主线；每个锁定模块及其名称只出现一次，成为中心、底座、主轴或正文模块后不得再次作为外围节点、关系标签或第二个同名对象重复。不使用等权卡片、通用图标流程或逐项配图；先展开跨页面的图形关系，再让必要文字附着于稳定承载面。
 整页优先形成一个克制而明确的编辑式设计动作，由一条连续形态或一个非对称关系场完成环绕、递进、汇聚或托底；不得用中央徽章、中心大图标、标准圆环、同心台阶、连续箭头胶囊或图标节点链充当视觉主线。图标只能作为低对比微型注释，不能成为节点、卡片标题或主要视觉对象。
-脚本已有的协同关系、组件关系、恢复关系或业务含义应作为一次性的文字注释融入主构图，不得在页面底部或侧边再复制一套缩略流程、图标链、总结栏或重复关系图。照片只有直接解释具体业务对象时才使用，不得以办公室、城市、园区、机房或泛科技场景填补留白。
+脚本已有的协同关系、组件关系、恢复关系或业务含义应作为一次性的文字注释融入主构图，不得在页面底部或侧边再复制一套缩略流程、图标链、总结栏或重复关系图。
+上述关系说明是不可拆分的原子注释块：允许换行和语义不变改写，但不得从中提炼、拆出或派生第二套阶段名、结果名、状态名、对象名、底部分类、图例或短标签。
+照片只有直接解释具体业务对象时才使用，不得以办公室、城市、园区、机房或泛科技场景填补留白。
 视觉主角必须是模块之间的关系，而不是页面主题名词的象征物；不得把盾牌、锁、数据库、云、芯片、人物或图表放大成中央主视觉。抽象的系统、治理、安全、架构和运行机制页面默认使用纯编辑式图形语言，不使用照片、仿真界面或仿 UI 数据。整体保持大面积安静留白、精确细线、有限深蓝色块和近乎无阴影的平面质感，避免浮雕、厚重投影、立体徽章和模板化装饰。
 中文使用清晰的现代无衬线黑体。不得生成额外页面标题、Logo、页脚或页码。
 【输出要求｜不上屏】
@@ -149,6 +153,13 @@ VISUAL_INTENT_SIGNALS: dict[str, tuple[tuple[str, int], ...]] = {
         ("可信底座", 7),
         ("五层", 5),
     ),
+    "crosscutting_chain": (
+        ("纵向关系", 10),
+        ("横向治理贯穿", 10),
+        ("横向贯穿", 8),
+        ("纵向主链", 8),
+        ("贯穿每层", 7),
+    ),
     "decision_admission": (
         ("准入", 8),
         ("筛选依据", 8),
@@ -202,6 +213,10 @@ VISUAL_INTENT_SIGNALS: dict[str, tuple[tuple[str, int], ...]] = {
         ("反馈与复盘", 7),
         ("持续校正", 6),
         ("稳定生产能力", 5),
+        ("工作流：", 7),
+        ("效果回收", 7),
+        ("四层贯通", 8),
+        ("持续迭代", 7),
     ),
     "phase": (
         ("分期推进", 9),
@@ -233,6 +248,7 @@ VISUAL_INTENT_SIGNALS: dict[str, tuple[tuple[str, int], ...]] = {
 
 VISUAL_INTENT_PRIORITY = (
     "boundary_guardrail",
+    "crosscutting_chain",
     "hierarchy_support",
     "multi_semantic_foundation",
     "comparison",
@@ -292,6 +308,31 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
         "avoid_on_this_page": (
             "A software architecture stack, equal-height layer bars, one card per layer, "
             "or an isolated capability inventory."
+        ),
+    },
+    "crosscutting_chain": {
+        "visual_thesis": (
+            "Show how a primary transformation chain and a transverse governing force "
+            "operate together without becoming a software stack or a matrix table."
+        ),
+        "decision_relationship": (
+            "The primary modules change state along one directional chain, while one shared "
+            "governing capability crosses and constrains every stage. Neither relationship "
+            "is a peer module list."
+        ),
+        "recommended_composition": (
+            "Build one asymmetric two-direction relationship field. Let the primary chain "
+            "bend, rise, narrow, expand, or change material across unequal moments; weave the "
+            "cross-cutting force through those same moments as a continuous transverse seam, "
+            "pressure line, or embedded band. Attach each required module name and body once "
+            "to a distinct moment of the field. Keep supplied relationship and business-meaning "
+            "sentences inside the field near an intersection or state change, not in a detached "
+            "summary rail."
+        ),
+        "avoid_on_this_page": (
+            "A stacked architecture, equal horizontal layers, a matrix or swimlane, one card "
+            "per stage, a fifth peer card for the cross-cutting force, duplicated module labels, "
+            "or separate vertical-flow and horizontal-governance diagrams."
         ),
     },
     "decision_admission": {
@@ -456,6 +497,7 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
 
 VISUAL_PROOF_FALLBACKS: dict[str, str] = {
     "boundary_guardrail": "用主体能力与外围护栏的关系证明范围和职责清晰。",
+    "crosscutting_chain": "用纵向转化主链与横向贯穿能力的共同作用证明体系完整。",
     "hierarchy_support": "用上层业务结果与下层支撑能力的依赖关系证明体系能够成立。",
     "decision_admission": "用选择依据与后续准入条件证明当前决策合理。",
     "comparison": "用共同维度下的差异和主次证明本页判断。",
@@ -502,6 +544,22 @@ def select_page_visual_intent_type(
     if explicit in VISUAL_INTENT_TEMPLATES:
         return explicit
 
+    relationship_lines = "\n".join(
+        line.strip()
+        for line in _clean_onscreen_for_imagegen(page.onscreen_text).splitlines()
+        if any(
+            marker in line
+            for marker in (
+                "关系：",
+                "工作流：",
+                "贯通：",
+                "闭环：",
+                "回流",
+                "反馈",
+                "持续迭代",
+            )
+        )
+    )
     signal_text = "\n".join(
         (
             page_mission,
@@ -510,6 +568,7 @@ def select_page_visual_intent_type(
             page.main_message,
             "\n".join(page.module_titles),
             page.visual_structure,
+            relationship_lines,
         )
     )
     # These are field or object names, not page relationships.
@@ -525,6 +584,15 @@ def select_page_visual_intent_type(
         )
         for intent_type, signals in VISUAL_INTENT_SIGNALS.items()
     }
+    has_primary_chain = any(
+        phrase in score_text for phrase in ("纵向关系", "纵向主链")
+    )
+    has_transverse_force = any(
+        phrase in score_text
+        for phrase in ("横向治理贯穿", "横向贯穿", "贯穿每层")
+    )
+    if not (has_primary_chain and has_transverse_force):
+        scores["crosscutting_chain"] = 0
     role = context.get("argument_role", "").strip()
     if role == "foundation":
         scores["multi_semantic_foundation"] += 8
@@ -730,6 +798,23 @@ def locked_onscreen_text(
         line = raw.strip()
         if not line or line in locked:
             continue
+        relation_label = re.match(
+            r"^(?:[-*•]\s*)?([^：:\n]{2,14})[：:]",
+            line,
+        )
+        if relation_label:
+            label = relation_label.group(1).strip()
+            if (
+                label.endswith("关系")
+                or label
+                in {
+                    "工作流",
+                    "业务含义",
+                    "四层贯通",
+                    "页面主线",
+                }
+            ) and label not in locked:
+                locked.append(label)
         if re.search(r"\d", line):
             locked.append(line)
     return "\n".join(locked).strip()
@@ -824,6 +909,7 @@ MOTIF_CANDIDATES: dict[str, tuple[str, str]] = {
     "boundary_guardrail": ("decision_canvas", "evidence_landscape"),
     "decision_admission": ("decision_canvas", "evidence_landscape"),
     "comparison": ("decision_canvas", "evidence_landscape"),
+    "crosscutting_chain": ("control_room_bridge", "layered_system"),
     "hierarchy_support": ("layered_system", "control_room_bridge"),
     "capability_relationship": ("layered_system", "control_room_bridge"),
     "phase": ("process_atlas", "evidence_landscape"),
@@ -982,6 +1068,7 @@ def render_page_logic_contract(
                 values[key] = value.strip()
     relation_labels = {
         "boundary_guardrail": "边界护栏",
+        "crosscutting_chain": "纵向主链与横向贯穿",
         "hierarchy_support": "分层支撑",
         "decision_admission": "决策准入",
         "comparison": "对照",

@@ -244,6 +244,88 @@ def test_creative_brief_visual_grammar_defaults_to_empty_auxiliary_allowlist() -
     assert "use at most two short labels" not in grammar
 
 
+@pytest.mark.parametrize(
+    ("title", "main_message", "onscreen_text", "expected"),
+    (
+        (
+            "平台定位与业务架构",
+            "平台连接三类业务并由治理能力贯穿全链",
+            "纵向关系：数据资产 → 知识加工 → 智能能力 → 三类应用；横向治理贯穿每层。",
+            "crosscutting_chain",
+        ),
+        (
+            "教师智能数字助教",
+            "教师端串联教学生产流程并保留最终责任",
+            "工作流：资料上传 → 解析 → 诊断 → 生成 → 审核发布 → 效果回收。",
+            "closed_loop",
+        ),
+        (
+            "总体技术路线",
+            "技术体系沿四层主链逐步建设",
+            "四层贯通：治理、解析检索、模型编排、应用反馈持续迭代。",
+            "closed_loop",
+        ),
+    ),
+)
+def test_visual_intent_uses_explicit_relationship_lines_from_reliable_copy(
+    title: str,
+    main_message: str,
+    onscreen_text: str,
+    expected: str,
+) -> None:
+    page = replace(
+        _page(),
+        title=title,
+        main_message=main_message,
+        onscreen_text=onscreen_text,
+        module_titles=(),
+        visual_structure="",
+    )
+
+    assert select_page_visual_intent_type(page, "") == expected
+
+
+def test_crosscutting_chain_requires_primary_and_transverse_signals() -> None:
+    page = replace(
+        _page(),
+        main_message="平台连接三类业务",
+        onscreen_text="纵向关系：数据资产 → 知识加工 → 智能能力 → 三类应用。",
+        module_titles=(),
+        visual_structure="",
+    )
+
+    assert select_page_visual_intent_type(page, "") != "crosscutting_chain"
+
+
+def test_locked_text_preserves_supplied_relationship_annotation_labels() -> None:
+    page = replace(
+        _page(),
+        onscreen_text=(
+            "纵向关系：数据资产 → 知识加工 → 智能能力 → 三类应用。\n"
+            "工作流：资料上传 → 解析 → 审核发布。\n"
+            "业务含义：教师保留最终责任。"
+        ),
+        module_titles=("01｜数据资产层", "02｜知识加工层"),
+    )
+
+    locked = locked_onscreen_text(page)
+
+    assert "纵向关系" in locked
+    assert "工作流" in locked
+    assert "业务含义" in locked
+
+
+def test_content_first_keeps_relationship_annotations_atomic() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert "上述关系说明是不可拆分的原子注释块" in prompt
+    assert "不得从中提炼、拆出或派生第二套阶段名" in prompt
+    assert "底部分类、图例或短标签" in prompt
+
+
 def test_content_first_full_reference_keeps_complete_onscreen_content() -> None:
     page = _page()
     with TemporaryDirectory() as directory:
