@@ -30,6 +30,11 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertIn("页面级标题、正文、编号、标签和结论文字必须位于插图容器之外", prompt)
         self.assertIn("这些文字视为插图像素的一部分", prompt)
         self.assertIn("不得为了满足容器规则机械生成等权卡片", prompt)
+        self.assertIn("【关系型图形禁用规则｜不上屏】", prompt)
+        self.assertIn("不得生成流程图、架构图、系统拓扑图", prompt)
+        self.assertIn("每个插图只表达一个具体对象", prompt)
+        self.assertIn("保留干净、完整、低纹理的浅色留白区域", prompt)
+        self.assertNotIn("PPT 原生可编辑形状", prompt)
         self.assertEqual(
             "原始提示词",
             _full_prompt_for_variants("原始提示词", ["full"]),
@@ -42,6 +47,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertIn("界面标签、图表刻度、教材封面、文件内容和设备铭牌", prompt)
         self.assertIn("不得删除、翻译、纠正、重写或重新生成", prompt)
         self.assertIn("插图容器之外的页面级标题、正文、编号、标签、结论文字", prompt)
+        self.assertIn("不得在输入图不存在关系型图形的位置新增流程图、架构图", prompt)
 
     def test_promotes_approved_blueprint_to_full_image(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
