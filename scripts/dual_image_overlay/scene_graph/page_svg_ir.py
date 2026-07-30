@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import Any, Mapping
 
 from .gate import build_scene_graph_gate
+from .image_assets import image_asset_manifest, register_image_asset
 from .layout import build_layout_plan_from_scene_graph
 from .schema import BBox, PageSceneGraph, Relation, VisualNode
 from .text_metrics import avoid_reserved_zones, fit_text_to_safe_bbox
@@ -178,11 +179,13 @@ def compile_scene_graph_to_page_svg_ir(
     context = graph.coordinate_context.to_dict()
     canvas = context.get("normalized_canvas") or {"width": 1672.0, "height": 941.0}
     nodes = {node.node_id: node for node in graph.visual_nodes}
+    image_registry: dict[str, dict[str, Any]] = {}
     layout = dict(layout_plan or build_layout_plan_from_scene_graph(graph))
     text_by_id = {node.node_id: node for node in graph.text_nodes}
 
     background_elements: list[dict[str, Any]] = []
     if background_href:
+        background_asset_id = register_image_asset(image_registry, source=str(background_href), role="complex_visual_background", text_bearing=False, editable=False)
         background_elements.append(
             {
                 "id": DEFAULT_BACKGROUND_ID,
@@ -193,10 +196,25 @@ def compile_scene_graph_to_page_svg_ir(
                 "editable": False,
                 "text_bearing": False,
                 "source": {"kind": "dual_image_background"},
+                "asset_id": background_asset_id,
             }
         )
 
     visual_elements = [_visual_element(node) for node in graph.visual_nodes]
+    for element, node in zip(visual_elements, graph.visual_nodes, strict=False):
+        if element["kind"] != "image":
+            continue
+        attrs = node.attributes
+        source = attrs.get("href") or attrs.get("source_ref") or node.source.get("path")
+        if source:
+            element["asset_id"] = register_image_asset(
+                image_registry,
+                source=str(source),
+                role=str(node.semantic_role),
+                crop=attrs.get("crop"),
+                text_bearing=bool(attrs.get("text_bearing", False)),
+                editable=bool(attrs.get("editable", False)),
+            )
     relation_elements = [_relation_element(relation, nodes) for relation in graph.relations]
     text_elements = [
         _text_element(
@@ -208,6 +226,7 @@ def compile_scene_graph_to_page_svg_ir(
         for item in layout.get("items", [])
         if item.get("node_id") in text_by_id
     ]
+    asset_manifest = image_asset_manifest(image_registry)
     ir = {
         "schema": PAGE_SVG_IR_SCHEMA,
         "page": graph.page,
@@ -231,6 +250,8 @@ def compile_scene_graph_to_page_svg_ir(
             "visual_element_count": len(visual_elements),
             "relation_count": len(relation_elements),
         },
+        "image_assets": asset_manifest,
+        "image_asset_contract_gate": asset_manifest["gate"],
     }
     ir_gate = validate_page_svg_ir(ir)
     ir["page_svg_ir_gate"] = ir_gate

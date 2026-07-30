@@ -4,6 +4,7 @@ from .gate import GATE_SCHEMA, build_scene_graph_gate
 from .layout import LAYOUT_PLAN_SCHEMA, build_layout_plan_from_scene_graph
 from .page_svg_ir import PAGE_SVG_IR_SCHEMA, PageSvgIRValidationError, compile_scene_graph_to_page_svg_ir, validate_page_svg_ir
 from .text_metrics import avoid_reserved_zones, fit_text_to_safe_bbox, measure_line, measure_text
+from .image_assets import IMAGE_ASSET_SCHEMA, asset_id_for_source, image_asset_manifest, register_image_asset, validate_image_asset_contract
 from .render_qa import RENDER_QA_SCHEMA, build_render_qa
 from .schema import (
     BINDING_TYPES,
@@ -63,4 +64,9 @@ __all__ = [
     "fit_text_to_safe_bbox",
     "measure_line",
     "measure_text",
+    "IMAGE_ASSET_SCHEMA",
+    "asset_id_for_source",
+    "image_asset_manifest",
+    "register_image_asset",
+    "validate_image_asset_contract",
 ]

@@ -27,6 +27,7 @@ def test_compile_scene_graph_to_page_svg_ir_separates_layers_and_preserves_truth
     assert text["truth_source"]["kind"] == "script"
     assert ir["layers"][0]["elements"][0]["text_bearing"] is False
     assert ir["page_svg_ir_gate"]["valid"] is True
+    assert ir["image_assets"]["assets"][0]["uses"] == 1
 
 
 def test_validate_page_svg_ir_rejects_duplicate_ids():
@@ -34,4 +35,3 @@ def test_validate_page_svg_ir_rejects_duplicate_ids():
     gate = validate_page_svg_ir(ir)
     assert gate["valid"] is False
     assert gate["issues"][0]["code"] == "duplicate_or_missing_element_id"
-
