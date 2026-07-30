@@ -6,7 +6,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from cyberppt.commands.final_script_pages import run_final_script_pages
+from cyberppt.commands.final_script_pages import (
+    BODY_IMAGE_CANVAS_CONTRACT,
+    _generate_manifest_images,
+    run_final_script_pages,
+)
 from cyberppt.commands.init_project import init_project
 from cyberppt.stage01_controls import write_confirmation_request, write_stage01_approval
 from cyberppt.commands.script_gate import stage_script
@@ -17,6 +21,75 @@ from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
 class FinalScriptPagesTests(unittest.TestCase):
+    def test_semantic_only_judgment_moves_to_subtitle_not_body_prompt(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            script = root / "script-final.md"
+            judgment = "30个电力学科、约30万条题目和40年行业数据构成核心资产基础"
+            subtitle = "30个学科、30万道题目、40年数据，夯实智能应用底座"
+            script.write_text(
+                f"""## 第4页：知识资产基础
+- 页面类型：内容页
+- 页面标题：知识资产基础
+- 副标题：{subtitle}
+- 主判断：{judgment}
+- 上屏结论模式：semantic_only
+- 上屏结论：{judgment}
+- 上屏文字：
+
+  **01｜30个电力学科**
+  - 覆盖专业知识与规范
+""",
+                encoding="utf-8",
+            )
+            page = parse_script_markdown(script.read_text(encoding="utf-8")).pages[0]
+            style_lock = write_project_style_lock(
+                project=project,
+                style_id=9,
+                source_script=script,
+            )
+            prompt = build_page_prompt(page, style_lock)
+
+        body = prompt.split("【完整上屏内容】", 1)[1].split(
+            "【结论表达要求", 1
+        )[0]
+        self.assertNotIn(judgment, body)
+        self.assertNotIn(subtitle, body)
+        self.assertIn("01｜30个电力学科", body)
+
+    def test_full_image_payload_forces_body_region_two_to_one_canvas(self) -> None:
+        manifest = {
+            "production_mode": "full-image",
+            "pairs": [
+                {
+                    "page_number": 4,
+                    "full": {
+                        "path": "page-004.png",
+                        "prompt": "页面正文提示词",
+                        "canvas": "2048x1024",
+                    },
+                }
+            ],
+        }
+        with patch("cyberppt.commands.final_script_pages.run_codex_image") as generate:
+            _generate_manifest_images(
+                manifest,
+                full_reference_images=[Path("palette-09.png")],
+                model="gpt-image-2",
+                quality="high",
+                timeout=600,
+                force=False,
+                dry_run=True,
+            )
+
+        kwargs = generate.call_args.kwargs
+        self.assertTrue(kwargs["prompt"].startswith(BODY_IMAGE_CANVAS_CONTRACT))
+        self.assertIn("不得输出16:9", kwargs["prompt"])
+        self.assertEqual("2048x1024", kwargs["size"])
+        self.assertEqual([Path("palette-09.png")], kwargs["image_paths"])
+
     def _approve_inputs_and_prompts(self, project: Path, script: Path, style_id: int = 4) -> None:
         analysis = project / "workbench" / "stages" / "01-analysis"
         outline = analysis / "outline.json"

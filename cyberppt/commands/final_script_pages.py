@@ -35,6 +35,11 @@ from cyberppt.script_quality_contract import parse_script_markdown
 STAGE_DIR = "workbench/stages/02-blueprint-dual-image"
 TEMPLATE_LOCK_DIR = "workbench/locks/template_text"
 LEDGER_PATH = "workbench/artifact-ledger.json"
+BODY_IMAGE_CANVAS_CONTRACT = (
+    "最高优先级画布约束：输出必须严格为 2048×1024（2:1）的正文内容区图片；"
+    "不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，"
+    "不得继承参考图的画布比例。"
+)
 
 
 def _utc_now() -> str:
@@ -118,7 +123,7 @@ def _template_text_lock(
         record: dict[str, Any] = {
                 "page": page_number,
                 "title": template_title(page),
-                "subtitle": "",
+                "subtitle": script_page.subtitle if script_page is not None else "",
                 "section": "",
                 "template_variant": "default",
                 "page_badge_enabled": False,
@@ -420,6 +425,7 @@ def _run_image_ppt_build(
 def _generate_manifest_images(
     manifest: dict[str, Any],
     *,
+    full_reference_images: list[Path] | None = None,
     model: str,
     quality: str,
     timeout: int,
@@ -439,13 +445,16 @@ def _generate_manifest_images(
                 item["status"] = "Generated"
                 skipped.append(str(output_path))
                 continue
-            input_images = [] if variant == "full" else [full_path]
-            if input_images and not full_path.is_file() and not dry_run:
+            input_images = list(full_reference_images or []) if variant == "full" else [full_path]
+            if variant != "full" and not full_path.is_file() and not dry_run:
                 raise FileNotFoundError(
                     f"page {pair.get('page_number')} {variant} requires full image: {full_path}"
                 )
+            prompt = str(item.get("prompt", ""))
+            if variant == "full":
+                prompt = f"{BODY_IMAGE_CANVAS_CONTRACT}\n\n{prompt}"
             run_codex_image(
-                prompt=str(item.get("prompt", "")),
+                prompt=prompt,
                 output_path=output_path,
                 image_paths=input_images,
                 model=model,
@@ -465,6 +474,7 @@ def _generate_manifest_images(
         "generated": generated,
         "skipped": skipped,
         "dry_run": dry_run,
+        "full_reference_images": [str(path) for path in (full_reference_images or [])],
     }
 
 
@@ -542,6 +552,21 @@ def run_final_script_pages(
             style_name=style_name,
             source_script=script,
         )
+    style_data = _read_json(style_lock)
+    full_reference_images: list[Path] = []
+    reference_image = style_data.get("reference_image")
+    if isinstance(reference_image, dict) and reference_image.get("required_for_every_page"):
+        reference_path = Path(str(reference_image.get("path", ""))).expanduser().resolve()
+        if not reference_path.is_file():
+            raise FileNotFoundError(f"required style reference image not found: {reference_path}")
+        expected_hash = str(reference_image.get("sha256") or "").lower()
+        actual_hash = str(_sha256(reference_path) or "").lower()
+        if expected_hash and expected_hash != actual_hash:
+            raise ValueError(
+                f"style reference image hash mismatch: {reference_path}; "
+                f"expected {expected_hash}, got {actual_hash}"
+            )
+        full_reference_images.append(reference_path)
 
     blocks = parse_page_blocks(script)
     pages = parse_pages(pages_raw, set(blocks))
@@ -569,6 +594,7 @@ def run_final_script_pages(
     if generate_images:
         image_generation = _generate_manifest_images(
             manifest,
+            full_reference_images=full_reference_images,
             model=image_model,
             quality=image_quality,
             timeout=image_timeout,

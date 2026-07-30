@@ -99,6 +99,7 @@ class ScriptPage:
     visual_structure: str
     onscreen_text: str
     module_titles: tuple[str, ...]
+    subtitle: str = ""
     visual_proof: str = ""
     onscreen_judgment: str = ""
     judgment_role: str = ""
@@ -229,6 +230,7 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                 heading=heading,
                 page_type=_normalize_page_type(fields.get("页面类型", "")),
                 title=fields.get("页面标题", heading).strip(),
+                subtitle=fields.get("副标题", "").strip(),
                 main_message=fields.get("主判断", "").strip(),
                 full_prose=fields.get("完整文字稿", "").strip(),
                 selection_notes=fields.get("文字稿取舍说明", "").strip(),

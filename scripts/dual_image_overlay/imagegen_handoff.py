@@ -1000,10 +1000,15 @@ def render_content_first_prompt(
     judgment_for_semantics = page.onscreen_judgment.strip()
     if not judgment_for_semantics and not onscreen_body and not page.main_message.strip():
         judgment_for_semantics = page.title.strip()
+    visible_judgment = (
+        judgment_for_semantics
+        if judgment_mode == "locked" and not page.subtitle.strip()
+        else ""
+    )
     complete_semantics = "\n\n".join(
         part
         for part in (
-            judgment_for_semantics,
+            visible_judgment,
             onscreen_body,
         )
         if part

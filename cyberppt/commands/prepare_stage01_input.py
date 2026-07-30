@@ -75,9 +75,12 @@ def prepare_outline_input(project: Path) -> Path:
         "- `page_job`",
         "- `business_question`",
         "- `main_message`",
-        "- `onscreen_judgment`: one concise body-level conclusion derived from "
-        "`main_message`; it is not a page title or subtitle and must not end "
-        "with standard sentence punctuation",
+        "- `subtitle`: a concise audience-facing compression of `main_message`, "
+        "normally no more than 30 Chinese characters; preserve decisive numbers, "
+        "business objects, and the judgment without repeating the page title",
+        "- `onscreen_judgment`: retain the approved full judgment as semantic "
+        "composition metadata; when `subtitle` carries it, use `semantic_only` "
+        "so the body image does not repeat it",
         "- `judgment_role`: use `relationship`, `positioning`, `boundary`, or "
         "`mechanism` when the judgment should normally be proven visually; use "
         "`fact`, `metric`, `milestone`, `acceptance`, or `prohibition` when it "
@@ -124,11 +127,15 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "# Page script authoring input",
         "",
         "Write full prose first; derive on-screen text from it.",
-        "Every content page must place `上屏结论` before `上屏文字`; the conclusion carries the visible story, while modules support it.",
+        "Every content page must place `副标题` before `上屏结论` and `上屏文字`. "
+        "The template subtitle carries the concise judgment; body on-screen text "
+        "carries evidence, relationships, limitations, and implications only.",
         "Derive the default display policy from `judgment_role`: relationship/positioning/boundary/mechanism become `semantic_only`; fact/metric/milestone/acceptance/prohibition become `locked`. Use `onscreen_judgment_mode` only as an explicit override.",
         "Emit `onscreen_judgment` in the completed Chinese script as `- 上屏结论：...` without terminal punctuation.",
         "The visible layer must be independently readable without speaker narration.",
-        "Write `上屏文字` as a closed story: conclusion → source-supported evidence → explanation or causal relation → implication or handoff.",
+        "Write `上屏文字` as a closed body story: source-supported evidence → "
+        "explanation or causal relation → limitation → implication or handoff. "
+        "Do not repeat the page title or subtitle inside the body.",
         "Do not compress the full prose into module labels plus keywords. Preserve every fact, number, relation, and limitation needed to understand why the conclusion follows; concise rewriting is allowed, semantic omission is not.",
         "Count only Chinese, Latin, and numeric characters: target roughly 50% of the full prose, with a hard minimum of 220 and a cap target of 320 visible characters.",
         "Use at least two evidence-bearing on-screen lines. The visible conclusion may also carry the implication or handoff; do not add formulaic 因此/由此 wording only to satisfy the contract.",
