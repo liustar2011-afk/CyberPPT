@@ -37,6 +37,8 @@ def _is_recognized_text_region(node: VisualNode) -> bool:
 def _role_score(text: TextNode, region: VisualNode) -> int:
     text_role = text.semantic_role.lower()
     region_role = region.semantic_role.lower()
+    if text.binding and text.binding.target_id == region.node_id:
+        return 120
     if text.attributes.get("recognized_region_id") == region.node_id:
         return 100
     if text_role == region_role:
@@ -73,12 +75,43 @@ def _assign_regions(text_nodes: list[TextNode], regions: list[VisualNode]) -> di
     return result
 
 
-def _reflow_bbox(text: TextNode, region: VisualNode, canvas: dict[str, Any]) -> BBox:
+def _illustration_safe_right(
+    region: VisualNode,
+    visual_nodes: list[VisualNode],
+    *,
+    canvas_width: float,
+) -> float:
+    """Keep text in a recognized left column out of adjacent image/diagram zones."""
+
+    if region.bbox.x2 > canvas_width * 0.62:
+        return region.bbox.x2
+    candidates = [
+        node.bbox.x1
+        for node in visual_nodes
+        if node.node_id != region.node_id
+        and node.node_type in {"image", "illustration", "photo", "visual_anchor"}
+        and node.bbox.x1 >= region.bbox.x1
+        and node.bbox.y1 < region.bbox.y2
+        and node.bbox.y2 > region.bbox.y1
+    ]
+    if not candidates:
+        return region.bbox.x2
+    gap = max(12.0, canvas_width * 0.012)
+    return min(region.bbox.x2, min(candidates) - gap)
+
+
+def _reflow_bbox(
+    text: TextNode,
+    region: VisualNode,
+    canvas: dict[str, Any],
+    visual_nodes: list[VisualNode],
+) -> BBox:
     bbox = region.bbox
-    width = max(1.0, bbox.x2 - bbox.x1)
+    canvas_width = float(canvas.get("width") or bbox.x2)
+    safe_right = _illustration_safe_right(region, visual_nodes, canvas_width=canvas_width)
+    width = max(1.0, safe_right - bbox.x1)
     height = max(1.0, bbox.y2 - bbox.y1)
     font_size = float(text.style.get("font_size") or 16.0)
-    canvas_width = float(canvas.get("width") or bbox.x2)
     if width >= 160.0:
         desired_width = width
     else:
@@ -87,7 +120,7 @@ def _reflow_bbox(text: TextNode, region: VisualNode, canvas: dict[str, Any]) -> 
             max_region_width,
             max(width, min(len(text.text.replace("\n", "")), 24) * font_size * 0.72),
         )
-    center_x = (bbox.x1 + bbox.x2) / 2.0
+    center_x = (bbox.x1 + safe_right) / 2.0
     x1 = max(0.0, center_x - desired_width / 2.0)
     x2 = min(canvas_width, x1 + desired_width)
     if x2 - x1 < desired_width:
@@ -121,9 +154,44 @@ def _reflow_font_size(text: TextNode) -> float:
         return max(current, 14.5)
     if "title" in role or role in {"section_label", "judgment"}:
         return max(current, 18.0)
-    if role in {"diagram_body", "label", "caption"}:
+    if role == "diagram_body":
+        return max(current, 11.0)
+    if role in {"label", "caption"}:
         return max(current, 10.0)
     return max(current, 12.0)
+
+
+def _wrap_text_to_bbox(text: str, bbox: BBox, font_size: float) -> str:
+    """Insert semantic-neutral line breaks because SVG text does not auto-wrap."""
+
+    if "\u00a0" in text:
+        # Explicit non-breaking spacing is a layout contract for distributed
+        # short labels (for example, one label per recognized gateway cell).
+        return text
+    usable_width = max(1.0, bbox.x2 - bbox.x1)
+    # CJK glyphs render close to one em wide. The additional safety factor
+    # absorbs DrawingML/SVG font metric drift and keeps text visibly inside.
+    chars_per_line = max(4, int(usable_width / max(1.0, font_size * 1.45)))
+    wrapped: list[str] = []
+    for raw_line in text.splitlines() or [text]:
+        if not raw_line:
+            wrapped.append("")
+            continue
+        indent = ""
+        content = raw_line
+        if raw_line.startswith(("• ", "· ")):
+            indent, content = raw_line[:2], raw_line[2:]
+        elif raw_line.startswith("  "):
+            indent, content = "  ", raw_line[2:]
+        first_capacity = max(1, chars_per_line - len(indent))
+        wrapped.append(indent + content[:first_capacity])
+        content = content[first_capacity:]
+        continuation_indent = "  " if indent else ""
+        continuation_capacity = max(1, chars_per_line - len(continuation_indent))
+        while content:
+            wrapped.append(continuation_indent + content[:continuation_capacity])
+            content = content[continuation_capacity:]
+    return "\n".join(wrapped)
 
 
 def apply_recognized_constrained_reflow(
@@ -155,7 +223,9 @@ def apply_recognized_constrained_reflow(
             replace(text, style={**text.style, "font_size": reflow_font_size}),
             region,
             canvas,
+            graph.visual_nodes,
         )
+        reflow_text = _wrap_text_to_bbox(text.text, bbox, reflow_font_size)
         style = {
             **text.style,
             "font_size": reflow_font_size,
@@ -174,13 +244,14 @@ def apply_recognized_constrained_reflow(
                 "expression_pattern_preserved": True,
             },
         )
-        updated_nodes.append(replace(text, style=style, binding=binding))
+        updated_nodes.append(replace(text, text=reflow_text, style=style, binding=binding))
         records.append(
             {
                 "node_id": text.node_id,
                 "region_id": region.node_id,
                 "source_bbox": region.bbox.as_list(),
                 "reflow_bbox": bbox.as_list(),
+                "line_count": len(reflow_text.splitlines()),
                 "status": "assigned",
                 "blocking": False,
             }
