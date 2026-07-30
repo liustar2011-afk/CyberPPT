@@ -6,6 +6,7 @@ from .layout_reference_adapter import LAYOUT_REFERENCE_ADAPTER_SCHEMA, adapt_lay
 from .page_svg_ir import PAGE_SVG_IR_SCHEMA, PageSvgIRValidationError, compile_scene_graph_to_page_svg_ir, validate_page_svg_ir
 from .text_metrics import avoid_reserved_zones, fit_text_to_safe_bbox, measure_line, measure_text
 from .image_assets import IMAGE_ASSET_SCHEMA, asset_id_for_source, image_asset_manifest, register_image_asset, validate_image_asset_contract
+from .illustration_assets import ILLUSTRATION_ASSET_SCHEMA, materialize_recognized_illustration_assets
 from .qa_fusion import QA_FUSION_SCHEMA, build_qa_fusion_report, run_ppt_master_svg_checker, write_qa_fusion_report
 from .svg_renderer import render_page_svg_ir
 from ..standalone_runtime import check_standalone_runtime
@@ -70,6 +71,7 @@ __all__ = [
     "measure_line",
     "measure_text",
     "IMAGE_ASSET_SCHEMA",
+    "ILLUSTRATION_ASSET_SCHEMA",
     "asset_id_for_source",
     "image_asset_manifest",
     "register_image_asset",
@@ -80,5 +82,6 @@ __all__ = [
     "write_qa_fusion_report",
     "render_page_svg_ir",
     "adapt_layout_reference",
+    "materialize_recognized_illustration_assets",
     "check_standalone_runtime",
 ]

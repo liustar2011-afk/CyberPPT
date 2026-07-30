@@ -94,6 +94,11 @@ def adapt_layout_reference(
         seen_ids.add(node_id)
         role = str(raw.get("role") or raw.get("semantic_role") or raw.get("type") or "recognized_region")
         node_type = str(raw.get("node_type") or ("layout_zone" if collection == "zones" else "visual_anchor"))
+        preserve_internal_text = bool(
+            raw.get("preserve_internal_text")
+            or raw.get("internal_text_policy") == "preserve"
+            or role.lower() in {"semantic_image", "illustration", "screenshot", "chart", "document", "equipment"}
+        )
         visual_nodes.append(
             VisualNode(
                 node_id=node_id,
@@ -105,6 +110,9 @@ def adapt_layout_reference(
                 component_id=raw.get("component_id"),
                 attributes={
                     "recognized_layout": True,
+                    "preserve_internal_text": preserve_internal_text,
+                    "text_bearing": bool(raw.get("text_bearing", preserve_internal_text)),
+                    "fit_mode": str(raw.get("fit_mode") or "contain"),
                     "reference_payload": dict(raw),
                 },
             )
