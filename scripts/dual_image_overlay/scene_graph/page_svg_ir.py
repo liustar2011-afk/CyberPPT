@@ -12,6 +12,7 @@ from typing import Any, Mapping
 from .gate import build_scene_graph_gate
 from .layout import build_layout_plan_from_scene_graph
 from .schema import BBox, PageSceneGraph, Relation, VisualNode
+from .text_metrics import avoid_reserved_zones, fit_text_to_safe_bbox
 
 
 PAGE_SVG_IR_SCHEMA = "cyberppt.page_svg_ir.v1"
@@ -91,17 +92,25 @@ def _relation_element(relation: Relation, nodes: Mapping[str, VisualNode]) -> di
     }
 
 
-def _text_element(item: Mapping[str, Any], text_truth: Mapping[str, Any]) -> dict[str, Any]:
+def _text_element(item: Mapping[str, Any], text_truth: Mapping[str, Any], *, safe_bbox: BBox | None = None, reserved_zones: list[Any] | None = None) -> dict[str, Any]:
     raw_bbox = item.get("bbox")
     if not isinstance(raw_bbox, list) or len(raw_bbox) != 4:
         raise PageSvgIRValidationError(f"Text item {item.get('node_id')} has no four-value bbox")
     bbox = BBox.from_any(raw_bbox)
+    safe = safe_bbox or bbox
+    metrics = fit_text_to_safe_bbox(str(item.get("text") or ""), safe, float(item.get("font_size") or 12), font_family=str(item.get("font_family") or "Microsoft YaHei"))
+    avoidance = avoid_reserved_zones(bbox, safe, reserved_zones)
+    if metrics["status"] == "blocked_overflow":
+        raise PageSvgIRValidationError(f"Text item {item.get('node_id')} cannot fit its safe area")
+    if avoidance["status"] == "blocked_reserved_zone":
+        raise PageSvgIRValidationError(f"Text item {item.get('node_id')} collides with a reserved zone")
+    final_bbox = BBox.from_any(avoidance["bbox"])
     return {
         "id": str(item["node_id"]),
         "kind": "text",
         "role": item.get("semantic_role"),
-        "text": str(item.get("text") or ""),
-        "bbox": _bbox_dict(bbox),
+        "text": metrics["text"],
+        "bbox": _bbox_dict(final_bbox),
         "editable": True,
         "truth_source": dict(text_truth),
         "binding": {
@@ -121,6 +130,8 @@ def _text_element(item: Mapping[str, Any], text_truth: Mapping[str, Any]) -> dic
             "source": item.get("layout_source"),
             "intents": list(item.get("layout_intents") or []),
         },
+        "metrics": metrics,
+        "avoidance": avoidance,
     }
 
 
@@ -188,7 +199,12 @@ def compile_scene_graph_to_page_svg_ir(
     visual_elements = [_visual_element(node) for node in graph.visual_nodes]
     relation_elements = [_relation_element(relation, nodes) for relation in graph.relations]
     text_elements = [
-        _text_element(item, text_by_id[item["node_id"]].truth_source)
+        _text_element(
+            item,
+            text_by_id[item["node_id"]].truth_source,
+            safe_bbox=text_by_id[item["node_id"]].binding.safe_bbox if text_by_id[item["node_id"]].binding else None,
+            reserved_zones=(text_by_id[item["node_id"]].binding.metadata.get("reserved_zones", []) if text_by_id[item["node_id"]].binding else []),
+        )
         for item in layout.get("items", [])
         if item.get("node_id") in text_by_id
     ]
@@ -221,4 +237,3 @@ def compile_scene_graph_to_page_svg_ir(
     if strict and not ir_gate["valid"]:
         raise PageSvgIRValidationError(f"Page SVG IR gate failed with {ir_gate['blocking_count']} blocking issue(s)")
     return ir
-

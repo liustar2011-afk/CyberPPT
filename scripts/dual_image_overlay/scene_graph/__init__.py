@@ -3,6 +3,7 @@ from .coordinate import COORDINATE_CONTEXT_SCHEMA, normalize_bbox, resolve_coord
 from .gate import GATE_SCHEMA, build_scene_graph_gate
 from .layout import LAYOUT_PLAN_SCHEMA, build_layout_plan_from_scene_graph
 from .page_svg_ir import PAGE_SVG_IR_SCHEMA, PageSvgIRValidationError, compile_scene_graph_to_page_svg_ir, validate_page_svg_ir
+from .text_metrics import avoid_reserved_zones, fit_text_to_safe_bbox, measure_line, measure_text
 from .render_qa import RENDER_QA_SCHEMA, build_render_qa
 from .schema import (
     BINDING_TYPES,
@@ -58,4 +59,8 @@ __all__ = [
     "scene_graph_from_dict",
     "scene_graph_to_dict",
     "validate_page_svg_ir",
+    "avoid_reserved_zones",
+    "fit_text_to_safe_bbox",
+    "measure_line",
+    "measure_text",
 ]
