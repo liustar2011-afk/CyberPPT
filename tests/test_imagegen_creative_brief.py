@@ -371,9 +371,43 @@ def test_style_nine_compiles_short_refinement_signature() -> None:
 
     assert "审美签名：" in prompt
     assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" in prompt
-    assert "只设一个视觉中心" in prompt
-    assert "禁止等宽分栏、圆角卡片阵列、图标墙" in prompt
-    assert "允许为承载核心业务关系使用克制、低起伏的半平面或浅层空间结构" in prompt
+    assert "建立一条清晰阅读主线" in prompt
+    assert "不得默认使用中央大主体加环绕标注" in prompt
+    assert "相邻页面不得重复中央主体加左右文字的构图骨架" in prompt
+    assert "非居中裁切、跨栏长卷、边缘切入、局部放大或错位双焦点" in prompt
+
+
+def test_layout_family_rotates_by_page_and_avoids_centered_hero_default() -> None:
+    page_four = replace(_page(), page_id="P04")
+    page_five = replace(_page(), page_id="P05")
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt_four = build_page_prompt(page_four, lock)
+        prompt_five = build_page_prompt(page_five, lock)
+
+    layout_four = next(
+        line for line in prompt_four.splitlines() if line.startswith("空间组织：")
+    )
+    layout_five = next(
+        line for line in prompt_five.splitlines() if line.startswith("空间组织：")
+    )
+    assert layout_four != layout_five
+    assert "本页版型族：" in layout_four
+    assert "本页版型族：" in layout_five
+    assert "do not orbit a central object" in layout_four
+
+
+def test_explicit_layout_family_override_reaches_prompt() -> None:
+    page = replace(_page(), page_id="P06")
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(
+            page,
+            lock,
+            visual_context={"layout_family": "custom asymmetric editorial sweep"},
+        )
+
+    assert "本页版型族：custom asymmetric editorial sweep" in prompt
 
 
 def test_locked_judgment_is_not_repeated_in_complete_page_semantics() -> None:
