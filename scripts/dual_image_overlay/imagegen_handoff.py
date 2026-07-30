@@ -401,63 +401,17 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "Supporting modules jointly explain or substantiate the core judgment."
         ),
         "recommended_composition": (
-            "Use one clear reading path that connects the judgment to compact, unequal-weight "
-            "supporting evidence. The judgment may enter from an edge, occupy a band, or emerge "
-            "from a field; do not default to a centered hero object with annotations around it."
+            "Choose the spatial organization from the evidence types and their relationship to "
+            "the judgment. Build one clear reading path with unequal emphasis; let the content "
+            "determine position, scale, grouping, and visual carrier instead of assuming a "
+            "centered hero object."
         ),
         "avoid_on_this_page": (
-            "An equal card wall, one icon per bullet, an unrelated decorative scene, or a "
-            "centered object surrounded by symmetric callouts."
+            "An equal card wall, one icon per bullet, an unrelated decorative scene, or any "
+            "layout skeleton selected independently of the page content."
         ),
     },
 }
-
-LAYOUT_FAMILIES: tuple[str, ...] = (
-    (
-        "left-weighted editorial field: let the primary argument enter from the left third and "
-        "let evidence unfold toward the right; keep the geometric center open"
-    ),
-    (
-        "top-to-bottom evidence cascade: use a shallow upper argument band and an offset lower "
-        "evidence field; avoid a single object occupying the middle"
-    ),
-    (
-        "edge-cropped semantic scene: let a meaningful scene or material system enter from one "
-        "edge while text and evidence occupy the remaining field asymmetrically"
-    ),
-    (
-        "diagonal reading path: move from an upper corner toward the opposite lower region with "
-        "two or three unequal stops; do not orbit a central object"
-    ),
-    (
-        "horizontal editorial sweep: distribute the relationship across a long band with one "
-        "intentional interruption or inset; avoid bilateral symmetry"
-    ),
-    (
-        "offset split-focus field: use one primary region and one smaller counter-region with a "
-        "clear handoff between them; neither region should be centered"
-    ),
-)
-
-
-def select_layout_family(
-    page: ScriptPage,
-    context: dict[str, str] | None = None,
-    override: dict[str, str] | None = None,
-) -> str:
-    """Choose a deterministic cross-page layout family without repeating adjacent skeletons."""
-
-    explicit = (
-        (override or {}).get("layout_family")
-        or (context or {}).get("layout_family")
-        or ""
-    ).strip()
-    if explicit:
-        return explicit
-    match = re.search(r"\d+", page.page_id)
-    ordinal = int(match.group()) if match else sum(map(ord, page.page_id))
-    return LAYOUT_FAMILIES[(ordinal - 1) % len(LAYOUT_FAMILIES)]
-
 
 VISUAL_PROOF_FALLBACKS: dict[str, str] = {
     "boundary_guardrail": "用主体能力与外围护栏的关系证明范围和职责清晰。",
@@ -569,8 +523,7 @@ def build_page_visual_intent(
             if isinstance(value, str) and value.strip():
                 values[key] = value.strip()
     values["recommended_composition"] = (
-        f"{values['recommended_composition']} Cross-page layout family: "
-        f"{select_layout_family(page, context, override)}. {TEXT_IN_COMPOSITION_RULE}"
+        f"{values['recommended_composition']} {TEXT_IN_COMPOSITION_RULE}"
     )
     values["avoid_on_this_page"] = (
         f"{values['avoid_on_this_page']} Avoid {DETACHED_TEXT_RAIL_AVOID}."
@@ -1015,8 +968,7 @@ def render_page_logic_contract(
                 or (visual_context or {}).get("visual_proof")
                 or VISUAL_PROOF_FALLBACKS[relation]
             ).strip(),
-            f"空间组织：{values['recommended_composition']} "
-            f"本页版型族：{select_layout_family(page, visual_context, visual_intent_override)}。",
+            f"空间组织：{values['recommended_composition']}",
             f"本页避免：{values['avoid_on_this_page']}",
         )
     )
@@ -1154,7 +1106,6 @@ def _page_visual_contexts(project: Path) -> dict[str, dict[str, str]]:
         "visual_center",
         "visual_proof",
         "visual_intent_type",
-        "layout_family",
         "onscreen_judgment_mode",
         "judgment_role",
     )
@@ -1180,7 +1131,6 @@ def _page_visual_intent_overrides(project: Path) -> dict[str, dict[str, str]]:
     allowed = {
         "visual_intent_type",
         "visual_proof",
-        "layout_family",
         *VISUAL_INTENT_TEMPLATES["judgment_evidence"].keys(),
     }
     result: dict[str, dict[str, str]] = {}

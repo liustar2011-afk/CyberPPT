@@ -91,10 +91,9 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert len(style_nine["prompt_contract"]) < 600
     assert len(style_nine["imagegen_signature"]) == 3
     assert "禁止霓虹蓝" in style_nine["imagegen_signature"][0]
-    assert "建立一条清晰阅读主线" in style_nine["imagegen_signature"][1]
-    assert "不得默认使用中央大主体加环绕标注" in style_nine["imagegen_signature"][1]
-    assert "允许使用非居中裁切、跨栏长卷、边缘切入、局部放大或错位双焦点" in style_nine["imagegen_signature"][2]
-    assert "相邻页面不得重复中央主体加左右文字的构图骨架" in style_nine["imagegen_signature"][2]
+    assert "由本页内容关系决定的清晰阅读主线" in style_nine["imagegen_signature"][1]
+    assert "不得预设中央主体、等宽分栏、卡片阵列或其他固定版式" in style_nine["imagegen_signature"][1]
+    assert "不得为了追求跨页差异而强制改变构图" in style_nine["imagegen_signature"][2]
     assert "不得使用夸张三维装置" in style_nine["imagegen_signature"][2]
 
 

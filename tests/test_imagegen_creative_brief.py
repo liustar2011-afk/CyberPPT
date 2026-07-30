@@ -371,13 +371,12 @@ def test_style_nine_compiles_short_refinement_signature() -> None:
 
     assert "审美签名：" in prompt
     assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" in prompt
-    assert "建立一条清晰阅读主线" in prompt
-    assert "不得默认使用中央大主体加环绕标注" in prompt
-    assert "相邻页面不得重复中央主体加左右文字的构图骨架" in prompt
-    assert "非居中裁切、跨栏长卷、边缘切入、局部放大或错位双焦点" in prompt
+    assert "由本页内容关系决定的清晰阅读主线" in prompt
+    assert "不得预设中央主体、等宽分栏、卡片阵列或其他固定版式" in prompt
+    assert "不得为了追求跨页差异而强制改变构图" in prompt
 
 
-def test_layout_family_rotates_by_page_and_avoids_centered_hero_default() -> None:
+def test_page_number_does_not_select_a_layout_family() -> None:
     page_four = replace(_page(), page_id="P04")
     page_five = replace(_page(), page_id="P05")
     with TemporaryDirectory() as directory:
@@ -391,23 +390,23 @@ def test_layout_family_rotates_by_page_and_avoids_centered_hero_default() -> Non
     layout_five = next(
         line for line in prompt_five.splitlines() if line.startswith("空间组织：")
     )
-    assert layout_four != layout_five
-    assert "本页版型族：" in layout_four
-    assert "本页版型族：" in layout_five
-    assert "do not orbit a central object" in layout_four
+    assert layout_four == layout_five
+    assert "本页版型族：" not in layout_four
+    assert "Cross-page layout family" not in layout_four
 
 
-def test_explicit_layout_family_override_reaches_prompt() -> None:
+def test_judgment_evidence_layout_is_content_driven() -> None:
     page = replace(_page(), page_id="P06")
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(
             page,
             lock,
-            visual_context={"layout_family": "custom asymmetric editorial sweep"},
+            visual_context={"visual_intent_type": "judgment_evidence"},
         )
 
-    assert "本页版型族：custom asymmetric editorial sweep" in prompt
+    assert "let the content determine position, scale, grouping, and visual carrier" in prompt
+    assert "layout skeleton selected independently of the page content" in prompt
 
 
 def test_locked_judgment_is_not_repeated_in_complete_page_semantics() -> None:
