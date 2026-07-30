@@ -1,0 +1,100 @@
+writing_profile: government-soe-formal
+report_subtype: work-report
+decision_intent: inform
+audience_level: executive-leadership
+project_phase: planning
+reporting_modes_path: config/reporting-modes.yaml
+covered_threshold: 0.42
+weak_threshold: 0.20
+duplicate_threshold: 0.60
+max_chars_per_slide: 280
+formal_title_min_chars: 4
+formal_title_max_chars: 18
+formal_chapter_title_max_chars: 20
+generic_chapter_titles:
+  - 背景
+  - 现状
+  - 问题
+  - 方案
+  - 建议
+  - 措施
+  - 保障
+  - 总结
+  - 思考
+hard_consulting_phrases:
+  - 颠覆
+  - 引爆
+  - 破局
+  - 赛道
+  - 打法
+  - 飞轮
+  - 第二曲线
+  - 指数级
+  - 重塑格局
+  - 绝对领先
+  - 全面领先
+  - 顶层设计牵引跃迁
+soft_consulting_phrases:
+  - 赋能
+  - 抓手
+  - 方法论
+  - 商业闭环
+  - 增长引擎
+  - 价值飞跃
+overclaim_phrases:
+  - 彻底解决
+  - 全面实现
+  - 重大突破
+  - 跨越式发展
+  - 行业第一
+  - 唯一
+  - 绝对优势
+  - 全面领先
+meta_narrative_phrases:
+  - 本报告认为
+  - 本方案旨在
+  - 编制过程中
+  - 资料显示
+  - 研究发现
+action_title_markers:
+  - 将推动
+  - 将实现
+  - 将驱动
+  - 将助力
+  - 引领
+  - 打造
+  - 重塑
+  - 释放
+  - 撬动
+work_arrangement_title_terms:
+  - 重点任务
+  - 工作安排
+  - 实施路径
+  - 推进计划
+  - 责任分工
+  - 保障措施
+  - 主要措施
+forbidden_phrases:
+  - 需关注事项
+  - 总体判断
+  - 不是……而是……
+  - 并非……而是……
+  - 本报告认为
+  - 本方案旨在
+  - 编制过程中
+  - 资料显示
+speaker_notes_enabled: true
+speaker_notes_required_for_substantive: true
+speaker_notes_min_chars: 100
+speaker_notes_max_repetition: 0.72
+speaker_notes_default_seconds: 60
+speaker_notes_simple_page_types:
+  - 封面
+  - 目录
+  - 章节过渡
+  - 过渡页
+  - 封底
+  - 结束页
+target_duration_minutes: null
+duration_tolerance_ratio: 0.15
+

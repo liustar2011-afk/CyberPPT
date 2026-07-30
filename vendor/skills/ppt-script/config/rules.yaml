@@ -1,0 +1,311 @@
+page_fields:
+  - {name: 页面性质, required: true, scope: all}
+  - {name: 页面使命, required: true, scope: substantive}
+  - {name: 核心结论, required: true, scope: substantive}
+  - {name: 材料依据ID, required: true, scope: substantive}
+  - {name: 页面类型, required: true, scope: all}
+  - {name: 页面必要性, required: true, scope: substantive}
+  - {name: 与前页关系, required: true, scope: substantive}
+  - {name: 与后页关系, required: true, scope: substantive}
+  - {name: 推荐主语义图类型, required: true, scope: all}
+  - {name: 落图策略建议, required: true, scope: all}
+
+# 每一页脚本的内容组成契约（结构权威；quality-check 按此校验）
+page_composition:
+  onscreen_zones:
+    order: [标题, 副标题, 主判断, 业务模块, 辅助区]
+    required: [标题]
+    optional: [副标题, 主判断, 辅助区]
+    modules:
+      min: 2
+      max: 5
+      preferred_max: 3
+      wall_warn_at: 4
+  hierarchy_signals: [①, ②, ③, ④, ⑤, →, ->, 随之, 第一层, 第二层, 第三层, 先看, 再看]
+  subtitle_main_judgment:
+    both_filled_level: WARN
+  anti_repeat:
+    enabled: true
+    ngram_chars: 8
+    level: WARN
+    # 副标题/标题/主判断只与模块标题（首行）比，避免正文论据误伤
+    module_title_only_vs_header: true
+  count_alignment:
+    enabled: true
+    backend_fields: [页面形态, 结构说明, 业务关系, 语义骨架说明, 本页内容关系判断]
+    # 只匹配结构枚举（N项/N类/N点），不匹配叙述词「二者/三者」以免误伤
+    patterns:
+      - {match: "两项|二点|二类", count: 2}
+      - {match: "三项|三点|三类", count: 3}
+      - {match: "四项|四点|四类", count: 4}
+      - {match: "五项|五点|五类", count: 5}
+      - {match: "六项|六点|六类", count: 6}
+    # 同构条件：上屏模块数=N，或上屏①…⑩个数=N，或副标题用·/、列出N个短名
+    # 禁止：仅写「五项/四类」字样却未展开为同数模块或短名列表
+    accept_subtitle_count_word_only: false
+    level: WARN
+  adjacent_overlap:
+    enabled: true
+    min_similarity: 0.55
+    aux_similarity: 0.42
+    level: WARN
+  # 辅助区过载：宜短；反误读口号默认不上屏
+  auxiliary:
+    max_chars: 48
+    level: WARN
+    slogan_ban_patterns:
+      - "拟建≠已建"
+      - "同意摸底≠"
+      - "不锁投资"
+      - "不锁定投资"
+      - "≠已建"
+      - "≠全面实施"
+    slogan_ban_level: WARN
+    rule: 辅助区只承载短成果/口径；反误读口号进讲解词边界或后台约束信息。
+  # ①②③之后、辅助区之前出现未编号业务块（如「摸底产出」）
+  orphan_blocks:
+    enabled: true
+    level: WARN
+  # 模块之间正文大段同字（如②③重复同一批主体名）
+  module_body_overlap:
+    enabled: true
+    ngram_chars: 8
+    level: WARN
+  # 模块标题与首条要点同义空转（如「指标口径／指标口径统一」）
+  module_title_tautology:
+    enabled: true
+    level: WARN
+  # 视觉转译接口与上屏字段不一致（如写「采用主判断」但上屏无主判断）
+  interface_consistency:
+    enabled: true
+    level: WARN
+  # 跨页指纹：完整闭环链、追溯五问等只允许一页完整展开
+  cross_page_fingerprints:
+    enabled: true
+    level: WARN
+    patterns:
+      - {id: trace-five-q, label: 追溯五问, match: "哪版数据.{0,8}哪版口径.{0,8}哪版模型"}
+      - {id: closed-loop-chain, label: 业务闭环链路, match: "数据接入.{0,6}质量治理.{0,6}模型预测|数据接入与质量治理.{0,20}供需模型预测"}
+  backend_fields:
+    enforce: true
+    level: WARN
+    conclusion_aliases: [核心结论, 页面结论]
+  diagram_types:
+    enforce_enum: true
+    allow_custom_prefix: 自定义
+  render_strategy:
+    allowed: [标准, 高密度专项, 超高密度专项]
+    reject_placeholder: true
+  density_ceiling:
+    enforce_max_modules: true
+  scaffold:
+    default_render_strategy: 高密度专项
+    include_main_judgment: true
+    include_visual_focus: true
+  rule: >
+    正文页内容组成固定为：后台字段（使命/结论/依据/前后关系）+
+    上屏区（标题→副标题或主判断→2—4个业务模块→辅助区）+
+    讲解词六段 + 语义图/视觉焦点接口。
+    上屏必须阅读自洽（见 onscreen_text.reading_autonomous），不把主旨留给讲解词。
+    上屏模块数默认2—3，超过3须有层级/顺序信号；高密度页上限5（超高密度专项除外）。
+    后台声明的“N项/N类”须与上屏模块数同构，或副标题以·/、短名列出N项；仅写“五项”字样不算同构。
+    同页字段与相邻页上屏不得换词重复同一判断；副标题不得复述模块标题长句。
+    辅助区宜短（默认≤72字），完整闭环链/追溯五问等指纹论据只在一页完整出现。
+    ①②③之后不得夹未编号业务块；模块标题不得与首条要点同义空转；
+    视觉转译重点不得引用未填写的主判断等上屏字段。
+
+density_levels:
+  low: {max_chars: 80, min_modules: 1, max_modules: 1}
+  medium: {min_chars: 81, max_chars: 180, min_modules: 2, max_modules: 3}
+  high: {min_chars: 181, max_chars: 350, min_modules: 3, max_modules: 5}
+  ultra_high: {min_chars: 351, min_modules: 6, split_recommended: true}
+
+semantic_diagram_types:
+  - 路径型
+  - 底座型
+  - 汇聚发散型
+  - 枢纽协同型
+  - 闭环型
+  - 分层映射型
+  - 主辅非对称型
+
+render_strategies:
+  标准: {density_levels: [low, medium]}
+  高密度专项: {density_levels: [high]}
+  超高密度专项: {density_levels: [ultra_high], split_recommended: true}
+
+onscreen_text:
+  formal_only: true
+  # 阅读自洽：观众不听讲解也能读懂本页意图；讲解词不得承载上屏缺席的主旨/因果/对照
+  reading_autonomous: true
+  forbidden_meta_language:
+    - 源材料口径
+    - 复核权威出处
+    - 无来源指标
+    - 本页
+    - 上屏文字
+    - 视觉转译
+    - 直译风险
+    - 正式引用前核验
+    - 正式引用前须核验
+    - 正式引用前仍须核验
+    - 引用前核验
+    - 引用前须核验
+    - 待核验
+    - 须核验
+    - 仅后台
+    - 逻辑顺序
+    - 非并列
+    - 并列主张
+    - 阅读路径
+    - 内容关系
+    - 页面形态
+    - 结构意图
+    - 语义骨架
+    - 论证组织
+    - 按这个结构
+    - 这里按
+    - 材料把
+    - 如下所示
+    - 如上所述
+    - 见图
+    - 供审稿
+    - 写作说明
+    - 自我说明
+    - 过程说明
+    - 后台字段
+    - 不上屏
+    - 关键断点
+    - 按内容填写
+    - 通用占位
+    - 模块一
+    - 模块二
+    - 模块三
+  subtitle_max_chars: 50
+  subtitle_rule: 副标题仅一行短语，不超过50字；不得把业务模块正文写入副标题或主判断字段。
+  path_relation:
+    diagram_types: [路径型]
+    structure_markers: [纵向递进, 逻辑顺序]
+    order_signals: [①, ②, ③, →, ->, 随之, 第一层, 第二层, 第三层, 先看, 再看]
+    conflict_markers: [同步变化, 同步扩展, 三项并列, 等权并列, 并列展开]
+  default_content_render_strategy: 高密度专项
+  rule: >
+    上屏文字必须阅读自洽：不依赖讲解词，观众静读即可理解本页业务意图、模块关系与关键事实。
+    标题/副标题/主判断/①②③模块标题须写出关系与信息增量；模块正文须写出论据，不得只留空骨架等讲解补全。
+    讲解词只补充口述展开、图表读法、边界提醒与转场，不得承载上屏未写出的主旨、因果链或对照关系。
+    上屏区域只允许可直接用于正式汇报的业务文字，并保持结构化、短语化，避免长段文本。
+    副标题仅一行短语；①②③等业务模块写在副标题之后、辅助区之前，不得塞进副标题或主判断字段。
+    严禁过程性、自我对话、自我解释说明及任何后台性文字（含核验提示、版式/结构说明、撰稿自述、审稿指令、模板占位说明）；此类内容只留后台字段或讲解词边界。
+    路径型页须在上屏用业务顺序信号（①②③、→、随之）体现关系，但不得写“逻辑顺序/非并列”等元说明。
+    正文内容页默认高密度专项，须充分利用源材料论点、论证与论据，不得无故降为标准密度。
+
+title_quality:
+  max_chars: 14
+  forbidden_prefixes: [关于, 如何, 为什么, 我们要, 应当如何]
+  forbidden_endings: [。？！，；：]
+  rule: 页面标题使用简洁名词短语，不使用设问句、完整结论句或说明性长句。
+
+consistency:
+  pending_markers: [待审定, 待批准, 待明确, 尚未确定, 原则同意后]
+  completed_markers: [已审定, 已批准, 已明确, 已确定, 已实施]
+  rule: 页码和标题必须与提纲、文件名保持一致；同一上屏区域不得同时出现待决状态和完成状态。
+
+page_nature:
+  allowed: [模板页, 内容页]
+  template_page_types: [封面, 目录, 章节过渡, 章节过渡页, 封底, 封底页, 结束页]
+  imagegen_natures: [内容页]
+  rule: 封面、目录、章节过渡和封底属于全篇模板页，不隶属业务章节且不进入生图脚本；正文业务页面属于内容页。
+
+visual_focus:
+  fields: [主视觉中心, 业务角色, 辅助信息, 约束信息, 阅读路径]
+  required_for: [内容页]
+  center_count: 1
+  allow_none_for: [模板页]
+  conflict_markers: [双中心, 两个中心, 同等突出, 同等放大, 并列核心]
+  # 主视觉中心必须是可落笔对象（上屏可见块/路径/汇聚点），禁止纯抽象关系词
+  abstract_center_patterns:
+    - "关系$"
+    - "约束关系$"
+    - "逻辑$"
+    - "判断$"
+    - "论证$"
+    - "叙事$"
+    - "对.+的.+关系"
+    - "之间的关系"
+  rule: 主视觉中心只能声明一个对象、路径、输出、对比关系或关系骨架；其他内容必须退居辅助、约束或阅读路径节点。
+
+# 正文页视觉段：本仓库核心交付是可投喂画图模型的生图脚本（上屏白名单 + 生图提示词）。
+# 审稿字段（使命/依据/讲解词/闸门三行）服务溯源与质量闸门，不得替代或污染生图段。
+visual_drawing:
+  required_for: [内容页]
+  prefer_direct_prompt: true
+  core_deliverable: image_prompt
+  sketch_sections:
+    - {id: nodes, labels: [可绘制节点, 节点]}
+    - {id: edges, labels: [连线与方向, 连线]}
+    - {id: hierarchy, labels: [画面主次, 主次]}
+    - {id: reading, labels: [阅读顺序, 阅读路径]}
+    - {id: forbid, labels: [禁用画法, 禁用直译]}
+  require_all: [nodes, edges, hierarchy, reading]
+  min_sketch_chars: 80
+  min_prompt_chars: 40
+  min_skeleton_chars: 24
+  skeleton_layout_cues: [上, 下, 左, 右, 中, 环绕, 汇聚, 纵向, 横向, 底座, 路径, 主区, 辅助区, 顶部, 底部]
+  inject_sketch_into_imagegen: true
+  prompt_style: true
+  prompt_verbs:
+    - 绘制
+    - 画成
+    - 画出
+    - 生成
+    - 放置
+    - 置于
+    - 连接
+    - 箭头
+    - 放大
+    - 压低
+    - 沉底
+    - 环绕
+    - 汇聚
+    - 禁止
+    - 白名单
+    - 逐字
+  min_prompt_verbs: 2
+  editorial_ban_patterns:
+    - 本页主语
+    - 本页不得被机械画成
+    - 第二段应重点转译为
+    - 不是本页开篇主张
+    - 开篇摆事实
+    - 证明组织可行性
+    - 把形势事实收束
+    - 防止条件不明时过度承诺
+    - 收敛建设问题依据
+  invent_text_ban_level: WARN
+  level: WARN
+  rule: >
+    核心交付：生图提示词只写构图（布局/主次/箭头/禁画），块内文字必须「逐字复制上屏白名单对应段」，
+    禁止复述改写，禁止发明上屏没有的标题或中心文案。风格套话放全局，不写进每页。
+    审稿字段与讲解词不得进入生图提示词。闸门三行（页面类型/语义图类型/落图策略）不进画面。
+    旧页若仍用「内容关系草图」分段，则继续要求可绘制节点等字段（兼容）。
+
+page_type_quality:
+  default: {max_chars: 350}
+  types:
+    封面: {max_chars: 60}
+    目录: {max_chars: 140}
+    章节过渡: {max_chars: 80}
+    章节过渡页: {max_chars: 80}
+    封底: {max_chars: 80}
+    封底页: {max_chars: 80}
+    结束页: {max_chars: 80}
+    背景页: {max_chars: 240}
+    问题页: {max_chars: 240}
+    架构页: {max_chars: 180}
+    场景页: {max_chars: 300}
+    路径页: {max_chars: 260}
+    机制页: {max_chars: 260}
+    比较页: {max_chars: 280}
+    效益页: {max_chars: 260}
+    请示页: {max_chars: 220}
+  rule: 不同页面类型采用差异化上屏文字预算；超过预算时优先重组关系、压缩表达或拆页，不得通过缩小字号规避。

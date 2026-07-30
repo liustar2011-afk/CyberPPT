@@ -1,0 +1,4 @@
+interface:
+  display_name: "章结构审阅"
+  short_description: "章内推进链、上屏与语义图同构、跨页去重；输出 review Markdown（非 Cursor Canvas）"
+  default_prompt: "使用 $chapter-structure-review 对该章已写 pages 做结构审阅：对照表达逻辑，写出 review/*-structure-review.md，并按落地顺序消费改页。"

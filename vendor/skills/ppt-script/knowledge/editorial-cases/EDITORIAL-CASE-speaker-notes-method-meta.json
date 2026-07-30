@@ -1,0 +1,28 @@
+{
+  "schema": "ppt-script.editorial-case.v1",
+  "case_id": "EDITORIAL-CASE-speaker-notes-method-meta",
+  "status": "approved",
+  "issue_type": "speaker-notes-method-meta",
+  "original_result": "讲解词出现上屏摊开、按这个结构、第一层第二层、本页下页等制作口吻与方法元语言，复述标题多于补充业务含义。",
+  "user_feedback": "讲解词按自然汇报稿写，补充图表解读、判断依据与行动建议，禁止方法元语言与页面指示词。",
+  "accepted_revision": "用观点、因果与问题演进衔接；删除制作说明与结构指路；保留边界说明与转场，但不指向页码。",
+  "root_cause": "把写页工作备忘录误写成口头汇报。",
+  "reusable_principle": {
+    "principle": "讲解词是汇报语音，不是页面说明书；禁止方法元语言、页面指示词与“不是……而是……”句式。",
+    "allowed_transformations": [
+      "把结构指路改成业务因果承接",
+      "把复述标题改成证据解读与行动建议",
+      "把制作口吻改成对听众的判断说明"
+    ]
+  },
+  "applicable_conditions": [
+    "speaker-notes",
+    "notes-check",
+    "method-meta",
+    "speaker-notes-method-meta"
+  ],
+  "do_not_copy_conditions": [
+    "不得复制历史讲解词中的具体业务判断原文",
+    "不得把禁令清单本身念给听众"
+  ]
+}

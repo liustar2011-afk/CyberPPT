@@ -1,0 +1,63 @@
+name: Publish SDK (PyPI)
+
+# Publishes officecli-sdk (sdk/python) to PyPI on its OWN cadence — same model as
+# publish-sdk.yml for npm. Triggers on a push touching sdk/python/** (or manual
+# dispatch); a guard skips when that version is already on PyPI, so only a
+# version bump in pyproject.toml actually publishes. A CLI release does NOT
+# republish the SDK.
+#
+# Auth: PyPI Trusted Publishing (OIDC), no token / no API key. Configure the
+# trusted publisher for the officecli-sdk project on pypi.org:
+#   owner: iOfficeAI   repo: OfficeCLI   workflow: publish-pypi.yml
+# (officecli-sdk already exists on PyPI, so the publisher can be added directly.)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'sdk/python/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # OIDC token for PyPI trusted publishing
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Resolve version and check if already on PyPI
+        id: ver
+        working-directory: sdk/python
+        run: |
+          NAME=$(python -c "import tomllib;print(tomllib.load(open('pyproject.toml','rb'))['project']['name'])")
+          VERSION=$(python -c "import tomllib;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          echo "Publishing candidate: $NAME==$VERSION"
+          CODE=$(curl -s -o /dev/null -w '%{http_code}' "https://pypi.org/pypi/$NAME/$VERSION/json")
+          if [ "$CODE" = "200" ]; then
+            echo "already=true" >> "$GITHUB_OUTPUT"
+            echo "$NAME==$VERSION is already on PyPI — nothing to publish (bump the version to release)."
+          else
+            echo "already=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build sdist + wheel
+        if: steps.ver.outputs.already == 'false'
+        working-directory: sdk/python
+        run: |
+          python -m pip install --upgrade build
+          python -m build
+
+      - name: Publish to PyPI
+        if: steps.ver.outputs.already == 'false'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: sdk/python/dist

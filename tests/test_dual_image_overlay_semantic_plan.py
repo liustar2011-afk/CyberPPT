@@ -30,6 +30,11 @@ from script_text_overlay import (  # noqa: E402
     resolve_overlay_coordinate_context,
     validate_explicit_semantic_plan,
 )
+from scripts.dual_image_overlay.ppt_master_runtime_bridge import (  # noqa: E402
+    resolve_host_root,
+    resolve_shared_resource,
+    runtime_descriptor,
+)
 
 
 class DualImageOverlaySemanticPlanTests(unittest.TestCase):
@@ -187,6 +192,14 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
         self.assertIsNotNone(core)
         self.assertEqual((1280, 720), core.CANVAS)
         self.assertIn("vendor/ppt_master_slide_image_rebuild/scripts/dual_image_rebuild_pptx.py", str(core.__file__))
+
+    def test_runtime_bridge_reports_vendor_fallback_and_host_resources(self) -> None:
+        descriptor = runtime_descriptor()
+        self.assertEqual("cyberppt_vendor", descriptor.source)
+        self.assertIsNotNone(resolve_host_root())
+        checker = resolve_shared_resource("svg_quality_checker")
+        self.assertIsNotNone(checker)
+        self.assertIn("ppt-master", str(checker))
 
     def test_ability_card_uses_container_slots_instead_of_item_bbox(self) -> None:
         plan = _ability_plan()

@@ -1,0 +1,41 @@
+{
+  "name": "@officecli/sdk",
+  "version": "0.1.2",
+  "description": "Node.js SDK for officecli — a thin async client over the officecli resident pipe (read/write .docx/.xlsx/.pptx).",
+  "license": "Apache-2.0",
+  "author": "goworm",
+  "homepage": "https://github.com/iOfficeAI/OfficeCLI/tree/main/sdk/node",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iOfficeAI/OfficeCLI.git",
+    "directory": "sdk/node"
+  },
+  "bugs": {
+    "url": "https://github.com/iOfficeAI/OfficeCLI/issues"
+  },
+  "keywords": [
+    "officecli",
+    "office",
+    "docx",
+    "xlsx",
+    "pptx",
+    "word",
+    "excel",
+    "powerpoint",
+    "ooxml",
+    "sdk"
+  ],
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@officecli/officecli": "^1.0.0"
+  }
+}

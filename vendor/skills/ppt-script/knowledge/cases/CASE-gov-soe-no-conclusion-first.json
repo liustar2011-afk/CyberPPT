@@ -1,0 +1,36 @@
+{
+  "schema": "ppt-script.experience-case.v1",
+  "case_id": "CASE-gov-soe-no-conclusion-first",
+  "title": "正式汇报开篇改回工作逻辑",
+  "task_type": "full-presentation",
+  "report_subtype": "project-proposal",
+  "audience_level": "executive-leadership",
+  "issue_type": "conclusion-first",
+  "tags": ["government-soe-formal", "opening", "work-logic"],
+  "original_output": "开篇先给建设方向与升级框架，再补形势材料。",
+  "revised_output": "开篇先陈述可核验形势与基础条件，方案判断放到后续章节。",
+  "reasons": [
+    "内部审议场景不适用咨询式主张先行",
+    "工作逻辑更能支撑领导按条件作判断"
+  ],
+  "applicable_conditions": [
+    "writing_profile=government-soe-formal",
+    "decision_intent includes seek-decision or approve",
+    "opening pages discuss direction or methodology"
+  ],
+  "do_not_apply_when": [
+    "材料本身已是对外宣介而非内部审议",
+    "用户明确要求保留既有对外传播叙事且已豁免正式文体"
+  ],
+  "positive_patterns": [
+    "事实与形势 → 基础与缺口 → 总体考虑 → 任务路径",
+    "背景页只写可核验事实及其直接工作影响"
+  ],
+  "anti_patterns": [
+    "开篇方向页或N维升级框架页",
+    "先抛判断再补证据"
+  ],
+  "source_project": "method-bank",
+  "created_at": "2026-07-21",
+  "status": "approved"
+}

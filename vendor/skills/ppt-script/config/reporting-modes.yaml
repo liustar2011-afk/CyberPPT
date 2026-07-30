@@ -1,0 +1,151 @@
+report_subtypes:
+  work-report:
+    label: 工作汇报
+    chapter_roles: [有关背景, 工作进展, 主要问题, 下一步安排]
+    emphasis: [工作职责, 任务进展, 主要问题, 下一步安排]
+  progress-update:
+    label: 工作进展汇报
+    chapter_roles: [总体进展, 重点工作完成情况, 阶段性成果, 当前问题, 下一步安排]
+    emphasis: [任务完成状态, 阶段成果, 当前问题, 后续节点]
+  special-topic-report:
+    label: 专题工作汇报
+    chapter_roles: [有关背景, 当前情况, 主要问题, 工作考虑, 重点安排, 请示事项]
+    emphasis: [专项任务依据, 当前基础, 关键制约, 重点安排]
+  decision-support:
+    label: 决策建议汇报
+    chapter_roles: [决策事项, 背景和约束, 可选方案, 方案比较, 建议意见, 决策后安排]
+    emphasis: [决策边界, 方案条件, 风险影响, 推荐依据]
+  request-coordination:
+    label: 请示协调汇报
+    chapter_roles: [事项背景, 已开展工作, 当前困难, 协调事项, 建议支持事项, 后续安排]
+    emphasis: [已开展工作, 当前制约, 支持主体, 支持方式, 支持后成果]
+  implementation-plan:
+    label: 实施方案汇报
+    chapter_roles: [总体要求, 工作目标, 重点任务, 实施步骤, 责任分工, 保障措施]
+    emphasis: [目标任务, 责任主体, 实施机制, 阶段成果, 条件边界]
+  project-proposal:
+    label: 项目建设汇报
+    chapter_roles: [建设背景与必要性, 现有基础与建设条件, 建设目标与总体架构, 建设内容与重点场景, 实施计划与投资安排, 运营机制与预期成效, 风险管控与保障措施]
+    emphasis: [建设必要性, 建设条件, 建设内容, 投入安排, 运营机制, 风险保障]
+  research-report:
+    label: 专题研究汇报
+    chapter_roles: [政策和外部环境, 行业发展现状, 现有基础, 主要问题, 趋势判断, 发展思路, 实施建议]
+    emphasis: [事实依据, 研究判断, 趋势条件, 建议边界]
+  evaluation-review:
+    label: 检查评估汇报
+    chapter_roles: [评估对象与依据, 工作完成情况, 指标达成情况, 主要成效, 存在问题, 评估结论, 整改建议]
+    emphasis: [评估依据, 证据对应, 指标完成, 问题整改]
+  acceptance-report:
+    label: 验收汇报
+    chapter_roles: [项目基本情况, 建设任务完成情况, 主要成果, 指标完成情况, 应用验证情况, 资金和合规情况, 遗留问题, 验收建议]
+    emphasis: [任务逐项对应, 指标证明, 应用验证, 合规情况, 遗留问题]
+  annual-summary:
+    label: 年度总结与计划汇报
+    chapter_roles: [年度工作总体情况, 重点任务完成情况, 主要成果, 存在问题, 形势和任务判断, 下一年度工作思路, 重点工作安排]
+    emphasis: [年度任务, 实际成果, 问题原因, 下年度任务]
+  deployment-mobilization:
+    label: 部署动员汇报
+    chapter_roles: [形势与任务, 总体要求, 工作目标, 重点任务, 时间安排, 责任分工, 工作要求]
+    emphasis: [目标明确, 任务明确, 责任明确, 节点明确, 成果明确]
+  risk-emergency:
+    label: 风险与应急专题汇报
+    chapter_roles: [基本情况, 事件影响, 已采取措施, 当前风险, 后续处置安排, 需要协调事项]
+    emphasis: [事实时间线, 影响范围, 风险等级, 已采取措施, 后续处置]
+  governance-decision:
+    label: 党委会或董事会决策汇报
+    chapter_roles: [议题基本情况, 决策依据, 前期研究和履行程序, 主要方案, 风险与合规意见, 提请审议事项]
+    emphasis: [决策权限, 前置程序, 三重一大, 合规意见, 审议事项]
+  operation-analysis:
+    label: 经营分析汇报
+    chapter_roles: [经营总体情况, 主要指标完成情况, 业务板块分析, 收入成本和效益分析, 主要问题及原因, 后续经营安排]
+    emphasis: [经营指标, 收入成本, 效益分析, 战略任务, 风险合规]
+
+decision_intents:
+  inform:
+    label: 报告情况
+    required_roles: []
+    emphasis: [事实完整, 进展状态, 问题客观, 安排清楚]
+  seek-guidance:
+    label: 请示指导
+    required_roles: [请示事项]
+    emphasis: [政策依据, 需要指导的具体问题, 后续落实安排]
+  seek-decision:
+    label: 提请决策
+    required_roles: [决策事项, 提请审议事项]
+    emphasis: [需要决定的具体事项, 决策依据, 风险影响, 决策后安排]
+  seek-support:
+    label: 协调支持
+    required_roles: [协调事项, 请示事项, 建议支持事项]
+    emphasis: [需要协调的具体事项, 支持主体, 支持方式, 支持后成果]
+  deploy:
+    label: 部署工作
+    required_roles: [重点任务, 责任分工, 时间安排]
+    emphasis: [任务明确, 主体明确, 节点明确, 成果明确]
+  evaluate:
+    label: 检查评估
+    required_roles: [评估依据, 评估结论, 整改建议]
+    emphasis: [依据充分, 证据对应, 问题具体, 整改可执行]
+  accept:
+    label: 验收确认
+    required_roles: [验收建议]
+    emphasis: [任务对应, 指标证明, 遗留问题, 验收结论]
+
+audience_levels:
+  central-ministry:
+    label: 国家部委
+    emphasis: [政治站位, 政策依据, 行业价值, 试点衔接, 规范机制]
+  regulator:
+    label: 行业主管或监管部门
+    emphasis: [政策依据, 职责定位, 行业影响, 合规边界, 需要协调事项]
+  superior-unit:
+    label: 上级单位
+    emphasis: [任务承接, 工作进展, 责任落实, 风险问题, 请示事项]
+  party-committee:
+    label: 党委会
+    emphasis: [政治方向, 三重一大, 前置程序, 风险合规, 决策事项]
+  board:
+    label: 董事会
+    emphasis: [公司治理, 经济性, 风险责任, 投资安排, 决策事项]
+  executive-leadership:
+    label: 领导班子
+    emphasis: [核心结论, 重点任务, 责任分工, 关键风险, 下一步安排]
+  internal-department:
+    label: 内部部门
+    emphasis: [操作要求, 任务边界, 协同机制, 时间节点, 交付成果]
+  member-enterprise:
+    label: 会员或所属企业
+    emphasis: [参与方式, 权责边界, 服务价值, 工作要求, 预期成果]
+  external-public:
+    label: 外部公开对象
+    emphasis: [公开口径, 客观事实, 社会价值, 合规表达, 敏感信息控制]
+
+project_phases:
+  planning:
+    label: 规划研究阶段
+    state_guidance: [拟开展, 计划推进, 研究提出, 探索建立, 条件成熟后实施]
+    forbidden_state_upgrades: [已完成, 已建成, 已全面实施]
+  proposal:
+    label: 立项申报阶段
+    state_guidance: [拟建设, 建议立项, 计划实施, 申请支持]
+    forbidden_state_upgrades: [已投产, 已形成稳定收益]
+  feasibility:
+    label: 可行性研究阶段
+    state_guidance: [经测算, 初步具备, 拟分阶段实施, 尚需论证]
+    forbidden_state_upgrades: [已验证全部成效, 已全面成熟]
+  construction:
+    label: 建设实施阶段
+    state_guidance: [正在建设, 已完成阶段任务, 按计划推进, 尚待验收]
+    forbidden_state_upgrades: [已全面建成, 已正式验收]
+  pilot:
+    label: 试点验证阶段
+    state_guidance: [开展试点, 初步验证, 形成样板, 仍需完善]
+    forbidden_state_upgrades: [已全面推广, 已形成成熟模式]
+  operation:
+    label: 运营阶段
+    state_guidance: [已投入运行, 持续优化, 逐步拓展, 形成服务]
+    forbidden_state_upgrades: [永久稳定, 无任何风险]
+  acceptance:
+    label: 验收阶段
+    state_guidance: [已完成合同任务, 经测试验证, 存在遗留事项, 提请验收]
+    forbidden_state_upgrades: [全部达到最优水平, 不存在任何问题]
+
