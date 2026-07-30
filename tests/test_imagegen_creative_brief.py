@@ -13,6 +13,7 @@ from scripts.dual_image_overlay.imagegen_handoff import (
     CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
     CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT,
     CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT,
+    AUXILIARY_LABEL_BUDGET,
     build_page_creative_brief,
     build_page_prompt,
     compile_page_prompt,
@@ -26,6 +27,7 @@ from scripts.dual_image_overlay.imagegen_handoff import (
 )
 from scripts.dual_image_overlay.prompt_diagnostics import analyze_prompt
 from scripts.dual_image_overlay.style_library import write_project_style_lock
+from scripts.dual_image_overlay.visual_grammar import creative_brief_visual_grammar
 
 
 SCRIPT = """## 第18页：平台支撑与安全运行
@@ -219,6 +221,27 @@ def test_closed_loop_contract_avoids_equal_stages_and_bottom_summary() -> None:
 
     assert "do not turn the modules into equally spaced stages" in prompt
     assert "never as a separate bottom summary zone" in prompt
+
+
+def test_content_first_limits_auxiliary_label_budget() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert AUXILIARY_LABEL_BUDGET in prompt
+    assert "本页辅助标签白名单为空" in prompt
+    assert "不得从正文自动提炼或概括任何新短标签" in prompt
+    assert "不得增加节点名、阶段名、输入输出词、状态词、底座名" in prompt
+    assert "不得新增 Q/A、IN/OUT、INPUT/OUTPUT、YES/NO" in prompt
+
+
+def test_creative_brief_visual_grammar_defaults_to_empty_auxiliary_allowlist() -> None:
+    grammar = creative_brief_visual_grammar()
+
+    assert "empty auxiliary-label allowlist" in grammar
+    assert "only when the upstream script explicitly supplies a non-empty" in grammar
+    assert "use at most two short labels" not in grammar
 
 
 def test_content_first_full_reference_keeps_complete_onscreen_content() -> None:
@@ -674,7 +697,7 @@ def test_creative_brief_is_included_for_compact_style_contract() -> None:
 
     assert "[Page-specific creative brief" in prompt
     assert "【视觉组织原则】" in prompt
-    assert "Auxiliary text may appear" in prompt
+    assert "empty auxiliary-label allowlist" in prompt
     assert "one-to-one mapping" in prompt
     assert "Do not generate any text, number, chart label" not in prompt
 

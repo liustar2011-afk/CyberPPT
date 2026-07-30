@@ -127,8 +127,11 @@ def creative_brief_visual_grammar() -> str:
             "and template-like decoration.",
             "- Use photography only when it directly explains a specific business object. Do not "
             "fill whitespace with generic offices, skylines, campuses, server rooms, or technology scenes.",
-            "- Auxiliary text may appear. Keep it brief and coherent, and do not use it to "
-            "invent new factual numbers, organization claims, or unsupported conclusions.",
+            "- Default to an empty auxiliary-label allowlist. Do not derive or summarize new "
+            "node names, stage names, input/output terms, status words, legends, icon captions, "
+            "side labels, Latin letters, abbreviations, or interface-like tokens. Auxiliary "
+            "labels may appear only when the upstream script explicitly supplies a non-empty "
+            "allowlist, and then only the allowlisted text may be rendered.",
             "- Do not invent summary, goal, value, outcome, or conclusion sections or labels. "
             "Any outcome inferred from the relationships may be expressed only as an unlabeled "
             "graphical state unless that text is present in the locked on-screen content.",
