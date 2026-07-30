@@ -9,7 +9,13 @@ from PIL import Image
 
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.script_gate import approve_script, stage_script
-from scripts.dual_image_overlay.cyberppt_pair_manifest import build_manifest, main, require_generated
+from scripts.dual_image_overlay.cyberppt_pair_manifest import (
+    _background_prompt,
+    _full_prompt_for_variants,
+    build_manifest,
+    main,
+    require_generated,
+)
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, render_prompt
 from scripts.dual_image_overlay.imagegen_handoff import build_page_prompt
 from cyberppt.script_quality_contract import parse_script_markdown
@@ -17,6 +23,26 @@ from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
 class CyberpptPairManifestTests(unittest.TestCase):
+    def test_dual_image_full_prompt_requires_separate_illustration_containers(self) -> None:
+        prompt = _full_prompt_for_variants("原始提示词", ["full", "background"])
+
+        self.assertIn("独立且边界清晰的矩形或圆形插图容器", prompt)
+        self.assertIn("页面级标题、正文、编号、标签和结论文字必须位于插图容器之外", prompt)
+        self.assertIn("这些文字视为插图像素的一部分", prompt)
+        self.assertIn("不得为了满足容器规则机械生成等权卡片", prompt)
+        self.assertEqual(
+            "原始提示词",
+            _full_prompt_for_variants("原始提示词", ["full"]),
+        )
+
+    def test_background_prompt_preserves_text_inside_illustration_containers(self) -> None:
+        prompt = _background_prompt(8)
+
+        self.assertIn("插图容器内部的全部像素和文字视为一个不可拆分的整体", prompt)
+        self.assertIn("界面标签、图表刻度、教材封面、文件内容和设备铭牌", prompt)
+        self.assertIn("不得删除、翻译、纠正、重写或重新生成", prompt)
+        self.assertIn("插图容器之外的页面级标题、正文、编号、标签、结论文字", prompt)
+
     def test_promotes_approved_blueprint_to_full_image(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -273,6 +299,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
 - 页面类型：内容页
 - 页面标题：能力框架
 - 主判断：数据、模型和产品能力共同支撑业务判断。
+- 上屏结论：数据、模型和产品能力共同支撑业务判断
 - 上屏文字：
 
   **业务应用层**
@@ -332,8 +359,8 @@ class CyberpptPairManifestTests(unittest.TestCase):
         prompt = manifest["pairs"][0]["full"]["prompt"]
         self.assertNotIn("【完整内容语义｜仅供理解，不要求逐字上屏】", prompt)
         self.assertIn("【页面逻辑｜不上屏】", prompt)
-        self.assertIn("【锁定上屏文字】", prompt)
-        self.assertIn("【完整页面内容｜用于视觉叙事】", prompt)
+        self.assertIn("【锁定关键文字】", prompt)
+        self.assertIn("【完整上屏内容】", prompt)
         self.assertNotIn("Selected visual intent type:", prompt)
 
 

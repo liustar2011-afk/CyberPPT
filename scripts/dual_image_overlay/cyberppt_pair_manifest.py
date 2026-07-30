@@ -74,6 +74,22 @@ def _compiled_script_path(output_dir: Path, source: Path, pages: list[int]) -> P
     return output_dir / f"{source.stem}_cyberppt_deliverable_p{first}_p{last}.md"
 
 
+FULL_DUAL_IMAGE_CONTAINER_CONTRACT = """【双图容器隔离规则｜不上屏】
+所有插图、照片、界面、图表、教材、文件或设备画面必须完整位于独立且边界清晰的矩形或圆形插图容器内。
+页面级标题、正文、编号、标签和结论文字必须位于插图容器之外；不得覆盖插图，不得与插图容器交叠，并与容器保持清晰留白。
+插图容器内部允许出现属于插图内容的自然文字，例如界面标签、图表刻度、教材封面、文件内容和设备铭牌；这些文字视为插图像素的一部分。
+容器数量、位置、尺寸和组合方式由本页内容决定；不得为了满足容器规则机械生成等权卡片、固定分栏或一项内容一个容器。
+优先使用矩形插图容器；圆形容器仅用于适合圆形裁切的局部物件或小型图表。禁止使用半透明页面正文浮层覆盖插图。"""
+
+
+def _full_prompt_for_variants(prompt: str, output_variants: list[str]) -> str:
+    """Add separability guidance only when a no-text background will be derived."""
+
+    if "background" not in output_variants:
+        return prompt
+    return f"{prompt.rstrip()}\n\n{FULL_DUAL_IMAGE_CONTAINER_CONTRACT}\n"
+
+
 def _background_prompt(page_number: int) -> str:
     return f"""请将输入图作为唯一视觉母版进行 image-to-image 编辑，只生成第【{page_number}】页正文内容区的无文字背景图。
 
@@ -82,9 +98,13 @@ def _background_prompt(page_number: int) -> str:
 
 必须严格保留：输入图的画布比例、整体版式、空间结构、配色、材质、图形关系、流程线、关系箭头、容器、底座、语义小图、背景装饰、阴影、留白、浅色文字承载面、模块标签条和所有非文字图形元素的位置与尺度。
 
-必须删除：所有可读文字、数字、页码、标题、副标题、标签、注释、标点、水印、伪文字、乱码和文字残影。删除后相应区域应恢复为完整的纯色/浅色/低纹理承载面或原本的底层材质。
+插图容器识别规则：先识别边界清晰的矩形或圆形插图容器。照片、界面、图表、教材、文件或设备画面均属于插图；插图容器内部的全部像素和文字视为一个不可拆分的整体。
 
-禁止：新增任何文字、数字、乱码、符号、水印；禁止生成完整 PPT 页面、页眉、页脚、中电联公共元素；禁止改变图形语义关系；禁止出现模糊补丁、涂抹块、局部重绘错位、重复元素或新装饰。
+必须保留：所有插图容器及其内部的全部像素和文字，包括界面标签、图表刻度、教材封面、文件内容和设备铭牌。不得删除、翻译、纠正、重写或重新生成插图容器内部的文字。
+
+必须删除：插图容器之外的页面级标题、正文、编号、标签、结论文字、页码、水印、伪文字、乱码和文字残影。删除后相应区域应恢复为完整的纯色/浅色/低纹理承载面或原本的底层材质。
+
+禁止：在插图容器之外新增任何文字、数字、乱码、符号或水印；禁止生成完整 PPT 页面、页眉、页脚、中电联公共元素；禁止改变图形语义关系；禁止出现模糊补丁、涂抹块、局部重绘错位、重复元素或新装饰。
 """
 
 
@@ -246,6 +266,7 @@ def build_manifest(
                     "restage and reapprove the canonical prompt before manifest creation"
                 )
             prompt = approved_prompt
+        prompt = _full_prompt_for_variants(prompt, output_variants)
         stem = _page_stem(page_number, page.title)
         full_path = output_dir / f"{stem}_full.png"
         full = {
