@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import replace
 from typing import Any, Mapping
 
 from .coordinate import normalize_bbox, resolve_coordinate_context
@@ -524,10 +525,22 @@ def build_page_scene_graph(
     existing_ids = {node.node_id for node in visual_nodes}
     visual_nodes.extend(node for node in _visual_nodes(visual_registry, context) if node.node_id not in existing_ids)
     recognized = adapt_layout_reference(layout_reference, coordinate_context=context)
+    recognized_by_id = {node.node_id: node for node in recognized["visual_nodes"]}
+    visual_nodes = [
+        replace(
+            node,
+            attributes={**node.attributes, **recognized_by_id[node.node_id].attributes},
+            source={
+                **node.source,
+                "recognized_layout_source": recognized_by_id[node.node_id].source,
+            },
+        )
+        if node.node_id in recognized_by_id
+        else node
+        for node in visual_nodes
+    ]
     existing_ids = {node.node_id for node in visual_nodes}
-    visual_nodes.extend(
-        node for node in recognized["visual_nodes"] if node.node_id not in existing_ids
-    )
+    visual_nodes.extend(node for node in recognized["visual_nodes"] if node.node_id not in existing_ids)
     text_nodes = _text_nodes(
         script_sections,
         semantic_plan,

@@ -3,10 +3,13 @@ from pathlib import Path
 
 from scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild import (
     _derive_layout_reference,
+    _load_existing_recognized_overlay,
+    _semantic_plan_from_recognized_boxes,
     _overlay_boxes_from_scene_graph_layout,
     _scene_graph_artifact_paths,
     _scene_graph_gate_blocks_export,
 )
+from scripts.dual_image_overlay.rebuild_engine.script_text_overlay import OverlayTextBox, SemanticContainer
 from scripts.dual_image_overlay.template_rebuild import build_template_rebuild_readiness
 
 
@@ -41,6 +44,87 @@ def test_derives_recognized_layout_from_existing_semantic_and_visual_artifacts()
     assert by_id["title_box"]["bbox_px"] == [100.0, 50.0, 800.0, 80.0]
     assert by_id["visual_1"]["role"] == "semantic_image"
     assert by_id["visual_1"]["preserve_internal_text"] is True
+
+
+def test_builds_scene_graph_semantic_plan_from_existing_recognized_boxes():
+    plan = _semantic_plan_from_recognized_boxes(
+        containers=[
+            SemanticContainer(
+                id="body_region",
+                role="body",
+                x=100,
+                y=200,
+                w=500,
+                h=180,
+            )
+        ],
+        boxes=[
+            OverlayTextBox(
+                text="可靠的脚本文字",
+                x=120,
+                y=220,
+                w=450,
+                h=80,
+                font_size=18,
+                metadata={"role": "body"},
+            )
+        ],
+        image_size={"width": 1600, "height": 900},
+    )
+
+    assert plan["containers"][0]["id"] == "body_region"
+    assert plan["items"][0]["container_id"] == "recognized_text_region_1"
+    assert plan["items"][0]["display_text"] == "可靠的脚本文字"
+    assert plan["items"][0]["truth_source"] == "script_matched_overlay"
+
+
+def test_loads_existing_recognized_overlay_from_pair_build(tmp_path: Path):
+    pair_dir = tmp_path / "pair"
+    analysis = pair_dir / "build" / "analysis"
+    (analysis / "ocr").mkdir(parents=True)
+    (analysis / "semantic_containers").mkdir(parents=True)
+    (analysis / "ocr" / "page_016_text_mapping.json").write_text(
+        json.dumps(
+            {
+                "boxes": [
+                    {
+                        "text": "可靠文本",
+                        "x": 100,
+                        "y": 120,
+                        "w": 400,
+                        "h": 80,
+                        "font_size": 18,
+                        "container_id": "body",
+                        "role": "body",
+                    }
+                ]
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    (analysis / "semantic_containers" / "page_016_containers.json").write_text(
+        json.dumps(
+            {
+                "containers": [
+                    {"id": "body", "role": "body", "x": 90, "y": 110, "w": 430, "h": 100}
+                ]
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    result = _load_existing_recognized_overlay(
+        manifest_path=pair_dir / "page_image_pairs.json",
+        page_number=16,
+    )
+
+    assert result is not None
+    containers, boxes = result
+    assert containers[0].id == "body"
+    assert boxes[0].text == "可靠文本"
+    assert boxes[0].metadata["container_id"] == "body"
 
 
 def test_scene_graph_gate_blocks_export(tmp_path: Path):

@@ -78,20 +78,52 @@ def _reflow_bbox(text: TextNode, region: VisualNode, canvas: dict[str, Any]) -> 
     width = max(1.0, bbox.x2 - bbox.x1)
     height = max(1.0, bbox.y2 - bbox.y1)
     font_size = float(text.style.get("font_size") or 16.0)
-    usable_width = max(font_size * 4.0, width - max(12.0, width * 0.04))
+    canvas_width = float(canvas.get("width") or bbox.x2)
+    if width >= 160.0:
+        desired_width = width
+    else:
+        max_region_width = max(width, canvas_width * 0.24)
+        desired_width = min(
+            max_region_width,
+            max(width, min(len(text.text.replace("\n", "")), 24) * font_size * 0.72),
+        )
+    center_x = (bbox.x1 + bbox.x2) / 2.0
+    x1 = max(0.0, center_x - desired_width / 2.0)
+    x2 = min(canvas_width, x1 + desired_width)
+    if x2 - x1 < desired_width:
+        x1 = max(0.0, x2 - desired_width)
+    is_left_text_column = width >= 160.0 and bbox.x2 <= canvas_width * 0.50
+    padding_ratio = 0.10 if is_left_text_column else (0.05 if width >= 160.0 else 0.02)
+    padding_x = max(6.0, desired_width * padding_ratio)
+    usable_width = max(font_size * 4.0, desired_width - padding_x * 2.0)
     chars_per_line = max(4, int(usable_width / max(1.0, font_size * 0.92)))
     logical_lines = max(1, len(text.text.splitlines()))
     estimated_lines = max(logical_lines, math.ceil(len(text.text.replace("\n", "")) / chars_per_line))
-    desired_height = max(font_size * 1.45 * estimated_lines, font_size * 1.7)
-    new_height = min(max(height, desired_height), height * 1.65)
+    desired_height = max(font_size * 1.75 * estimated_lines, font_size * 1.9)
+    paragraph_count = sum(1 for line in text.text.splitlines() if line.strip())
+    minimum_height = height
+    if paragraph_count >= 2 or estimated_lines >= 3:
+        minimum_height = height * 1.5
+    new_height = min(max(minimum_height, desired_height), max(height * 4.0, desired_height))
     growth = new_height - height
     max_height = float(canvas.get("height") or bbox.y2)
     y1 = max(0.0, bbox.y1 - growth * 0.35)
     y2 = min(max_height, y1 + new_height)
     if y2 - y1 < new_height:
         y1 = max(0.0, y2 - new_height)
-    padding_x = max(6.0, width * 0.02)
-    return BBox(bbox.x1 + padding_x, y1, bbox.x2 - padding_x, y2)
+    return BBox(x1 + padding_x, y1, x2 - padding_x, y2)
+
+
+def _reflow_font_size(text: TextNode) -> float:
+    current = float(text.style.get("font_size") or 16.0)
+    role = text.semantic_role.lower()
+    if role in {"body", "description", "evidence"}:
+        return max(current, 14.5)
+    if "title" in role or role in {"section_label", "judgment"}:
+        return max(current, 18.0)
+    if role in {"diagram_body", "label", "caption"}:
+        return max(current, 10.0)
+    return max(current, 12.0)
 
 
 def apply_recognized_constrained_reflow(
@@ -118,9 +150,15 @@ def apply_recognized_constrained_reflow(
                 }
             )
             continue
-        bbox = _reflow_bbox(text, region, canvas)
+        reflow_font_size = _reflow_font_size(text)
+        bbox = _reflow_bbox(
+            replace(text, style={**text.style, "font_size": reflow_font_size}),
+            region,
+            canvas,
+        )
         style = {
             **text.style,
+            "font_size": reflow_font_size,
             "recognized_reflow_bbox": bbox.as_list(),
             "layout_strategy": "recognized_expression_constrained_reflow",
             "layout_source": "recognized_layout_reflow",

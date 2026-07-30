@@ -490,6 +490,155 @@ def _derive_layout_reference(
     }
 
 
+def _semantic_plan_from_recognized_boxes(
+    *,
+    containers: list[SemanticContainer],
+    boxes: list[OverlayTextBox],
+    image_size: dict[str, float],
+) -> dict[str, Any]:
+    container_payloads = containers_to_json(containers)
+    items: list[dict[str, Any]] = []
+    for index, box in enumerate(boxes, start=1):
+        box_bbox = [float(box.x), float(box.y), float(box.x + box.w), float(box.y + box.h)]
+        metadata = box.metadata if isinstance(box.metadata, dict) else {}
+        requested_id = str(metadata.get("container_id") or "")
+        selected: dict[str, Any] | None = None
+        if requested_id:
+            selected = next((item for item in container_payloads if str(item.get("id")) == requested_id), None)
+        if selected is None:
+            generated_id = f"recognized_text_region_{index}"
+            selected = {
+                "id": generated_id,
+                "role": str(metadata.get("role") or "editable_text"),
+                "x": box.x,
+                "y": box.y,
+                "w": box.w,
+                "h": box.h,
+                "background": "light",
+                "fill": box.fill,
+                "align": box.align,
+                "max_lines": max(1, len(box.text.splitlines())),
+            }
+            container_payloads.append(selected)
+        container_id = str(selected["id"])
+        items.append(
+            {
+                "source_text": box.text,
+                "display_text": box.text,
+                "role": str(metadata.get("role") or selected.get("role") or "body"),
+                "container_id": container_id,
+                "font_size": float(box.font_size),
+                "font_family": box.font_family,
+                "font_weight": box.font_weight,
+                "fill": box.fill,
+                "align": box.align,
+                "word_wrap": bool(box.word_wrap),
+                "truth_source": "script_matched_overlay",
+            }
+        )
+    return {
+        "schema": "cyberppt.semantic_plan.from_recognized_boxes.v1",
+        "image_size": dict(image_size),
+        "containers": [
+            {
+                "id": str(item["id"]),
+                "role": str(item.get("role") or "container"),
+                "bbox": [
+                    float(item["x"]),
+                    float(item["y"]),
+                    float(item["x"]) + float(item["w"]),
+                    float(item["y"]) + float(item["h"]),
+                ],
+                "text_safe_bbox": [
+                    float(item["x"]),
+                    float(item["y"]),
+                    float(item["x"]) + float(item["w"]),
+                    float(item["y"]) + float(item["h"]),
+                ],
+                "background": str(item.get("background") or "light"),
+                "fill": str(item.get("fill") or "#0B1F3D"),
+                "align": str(item.get("align") or "left"),
+                "max_lines": int(item.get("max_lines") or 1),
+            }
+            for item in container_payloads
+        ],
+        "items": items,
+        "source": "existing_ocr_script_overlay",
+    }
+
+
+def _visual_registry_canvas(visual_registry: dict[str, Any] | None) -> dict[str, float] | None:
+    raw = (visual_registry or {}).get("blueprint_canvas_px")
+    if not isinstance(raw, dict):
+        return None
+    width = float(raw.get("width") or raw.get("w") or 0)
+    height = float(raw.get("height") or raw.get("h") or 0)
+    if width <= 0 or height <= 0:
+        return None
+    return {"width": width, "height": height}
+
+
+def _load_existing_recognized_overlay(
+    *,
+    manifest_path: Path,
+    page_number: int,
+) -> tuple[list[SemanticContainer], list[OverlayTextBox]] | None:
+    analysis_dir = manifest_path.parent / "build" / "analysis"
+    mapping_path = analysis_dir / "ocr" / f"page_{page_number:03d}_text_mapping.json"
+    containers_path = analysis_dir / "semantic_containers" / f"page_{page_number:03d}_containers.json"
+    if not mapping_path.is_file() or not containers_path.is_file():
+        return None
+    mapping = json.loads(mapping_path.read_text(encoding="utf-8"))
+    container_doc = json.loads(containers_path.read_text(encoding="utf-8"))
+    boxes: list[OverlayTextBox] = []
+    for raw in mapping.get("boxes", []):
+        if not isinstance(raw, dict) or not str(raw.get("text") or "").strip():
+            continue
+        boxes.append(
+            OverlayTextBox(
+                text=str(raw["text"]),
+                x=float(raw["x"]),
+                y=float(raw["y"]),
+                w=float(raw["w"]),
+                h=float(raw["h"]),
+                font_size=float(raw.get("font_size") or 12),
+                font_family=str(raw.get("font_family") or "Microsoft YaHei"),
+                fill=str(raw.get("fill") or "#0B1F3D"),
+                font_weight=str(raw.get("font_weight") or "400"),
+                align=str(raw.get("align") or "left"),
+                word_wrap=bool(raw.get("word_wrap", True)),
+                source="existing_recognized_overlay",
+                confidence=float(raw.get("confidence") or 1.0),
+                metadata={
+                    "container_id": raw.get("container_id"),
+                    "role": raw.get("role"),
+                    "source_artifact": str(mapping_path),
+                },
+            )
+        )
+    containers: list[SemanticContainer] = []
+    for raw in container_doc.get("containers", []):
+        if not isinstance(raw, dict):
+            continue
+        containers.append(
+            SemanticContainer(
+                id=str(raw["id"]),
+                role=str(raw.get("role") or "container"),
+                x=float(raw["x"]),
+                y=float(raw["y"]),
+                w=float(raw["w"]),
+                h=float(raw["h"]),
+                background=str(raw.get("background") or "light"),
+                fill=str(raw.get("fill") or "#0B1F3D"),
+                align=str(raw.get("align") or "left"),
+                max_lines=int(raw.get("max_lines") or 1),
+            )
+        )
+    if not boxes or not containers:
+        return None
+    return containers, boxes
+
+
 def _load_layout_reference(
     *,
     project_path: Path,
@@ -516,8 +665,45 @@ def _load_layout_reference(
     return _derive_layout_reference(semantic_plan, visual_registry)
 
 
+def _load_copy_edit_proposals(
+    *,
+    manifest_path: Path,
+    page_number: int,
+    pair: dict[str, Any] | None,
+    graph: Any,
+) -> dict[str, str]:
+    candidates: list[Path] = []
+    explicit = (pair or {}).get("copy_edit_proposals")
+    if explicit:
+        candidates.append(Path(str(explicit)))
+    candidates.append(
+        manifest_path.parent
+        / "build"
+        / "analysis"
+        / "copy_edit_proposals"
+        / f"page_{page_number:03d}_copy_edit_proposals.json"
+    )
+    payload: dict[str, Any] | None = None
+    for candidate in candidates:
+        resolved = candidate if candidate.is_absolute() else manifest_path.parent / candidate
+        if resolved.is_file():
+            payload = json.loads(resolved.read_text(encoding="utf-8"))
+            break
+    if not payload:
+        return {}
+    by_node = payload.get("by_node_id") if isinstance(payload.get("by_node_id"), dict) else {}
+    by_container = payload.get("by_container_id") if isinstance(payload.get("by_container_id"), dict) else {}
+    result = {str(key): str(value) for key, value in by_node.items()}
+    for node in graph.text_nodes:
+        target_id = node.binding.target_id if node.binding else None
+        if node.node_id not in result and target_id in by_container:
+            result[node.node_id] = str(by_container[target_id])
+    return result
+
+
 def _write_scene_graph_artifacts(
     *,
+    manifest_path: Path,
     project_path: Path,
     page_number: int,
     source_script: Path,
@@ -528,6 +714,7 @@ def _write_scene_graph_artifacts(
     background_href: Path | None = None,
     pair: dict[str, Any] | None = None,
     layout_mode: str = "recognized-reflow",
+    image_size_override: dict[str, float] | None = None,
 ) -> dict[str, Path]:
     paths = _scene_graph_artifact_paths(project_path, page_number)
     for path in paths.values():
@@ -544,14 +731,22 @@ def _write_scene_graph_artifacts(
         script_sections=extract_script_truth_sections(source_script, page_number),
         semantic_plan=semantic_plan_payload,
         visual_registry=visual_registry or {"blueprint_canvas_px": {"w": CANVAS_SIZE[0], "h": CANVAS_SIZE[1]}, "elements": []},
-        image_size=_image_size_for_scene_graph(image_size_check),
+        image_size=image_size_override or _image_size_for_scene_graph(image_size_check),
         semantic_layout_plan=semantic_layout_plan,
         layout_reference=layout_reference,
     )
     copy_edit_report = None
     reflow_report = None
     if layout_mode == "recognized-reflow":
-        graph, copy_edit_report = edit_scene_graph_copy(graph)
+        graph, copy_edit_report = edit_scene_graph_copy(
+            graph,
+            proposed_revisions=_load_copy_edit_proposals(
+                manifest_path=manifest_path,
+                page_number=page_number,
+                pair=pair,
+                graph=graph,
+            ),
+        )
         paths["copy_edit"].write_text(json.dumps(copy_edit_report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         if background_href is not None:
             graph, illustration_report = materialize_recognized_illustration_assets(
@@ -927,6 +1122,9 @@ def rebuild_from_manifest(
     semantic_plan_dir = project_path / "analysis" / "semantic_plan"
     explicit_semantic_dir = explicit_semantic_plan_dir.resolve() if explicit_semantic_plan_dir else None
     explicit_visual_registry_dir = visual_registry_dir.resolve() if visual_registry_dir else None
+    bundled_visual_registry_dir = manifest_path.parent / "build" / "analysis" / "visual_registry"
+    if explicit_visual_registry_dir is None and bundled_visual_registry_dir.is_dir():
+        explicit_visual_registry_dir = bundled_visual_registry_dir
     semantic_layout_dir = project_path / "analysis" / "semantic_layout_plan"
     semantic_gate_dir = project_path / "analysis" / "semantic_plan_gate"
     containers_dir = project_path / "analysis" / "semantic_containers"
@@ -1054,26 +1252,43 @@ def rebuild_from_manifest(
             visual_registry_source = str(visual_registry_entry[0]) if visual_registry_entry is not None else None
             scene_graph_semantic_plan = explicit_plan
         else:
-            scene_graph_semantic_plan = semantic_plan_to_json(semantic_plan)
+            existing_overlay = _load_existing_recognized_overlay(
+                manifest_path=manifest_path,
+                page_number=page_number,
+            )
+            if existing_overlay is not None:
+                containers, boxes = existing_overlay
+            else:
+                containers = infer_semantic_containers(prepared_background, layout, body, semantic_plan=semantic_plan)
+                boxes = build_overlay_boxes(
+                    source_script,
+                    page_number,
+                    layout,
+                    body,
+                    background_image=prepared_background,
+                    semantic_containers=containers,
+                    semantic_plan=semantic_plan,
+                )
+            scene_graph_semantic_plan = _semantic_plan_from_recognized_boxes(
+                containers=containers,
+                boxes=boxes,
+                image_size=(
+                    _visual_registry_canvas(visual_registry)
+                    or {"width": float(CANVAS_SIZE[0]), "height": float(CANVAS_SIZE[1])}
+                    if existing_overlay is not None
+                    else _image_size_for_scene_graph(image_size_check)
+                ),
+            )
             semantic_plan_path.write_text(
                 json.dumps(scene_graph_semantic_plan, ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
-            )
-            containers = infer_semantic_containers(prepared_background, layout, body, semantic_plan=semantic_plan)
-            boxes = build_overlay_boxes(
-                source_script,
-                page_number,
-                layout,
-                body,
-                background_image=prepared_background,
-                semantic_containers=containers,
-                semantic_plan=semantic_plan,
             )
             semantic_gate = validate_explicit_semantic_plan(None, required=False)
             semantic_layout_plan = {"schema": "cyberppt.dual_image.semantic_layout_plan.v1", "items": []}
             semantic_source = "script_derived_fallback"
             visual_registry_source = str(visual_registry_entry[0]) if visual_registry_entry is not None else None
         scene_graph_paths = _write_scene_graph_artifacts(
+            manifest_path=manifest_path,
             project_path=project_path,
             page_number=page_number,
             source_script=source_script,
@@ -1084,6 +1299,12 @@ def rebuild_from_manifest(
             background_href=prepared_background,
             pair=pair,
             layout_mode=layout_mode,
+            image_size_override=(
+                _visual_registry_canvas(visual_registry)
+                or {"width": float(CANVAS_SIZE[0]), "height": float(CANVAS_SIZE[1])}
+                if explicit_semantic is None and existing_overlay is not None
+                else None
+            ),
         )
         page_layout_plan = json.loads(scene_graph_paths["layout"].read_text(encoding="utf-8"))
         boxes, editable_text_layout_source = _editable_boxes_from_scene_graph_or_recognition(

@@ -79,7 +79,27 @@ def conservative_screen_edit(text: str) -> tuple[str, list[str]]:
 
     revised = re.sub(r"[ \t]+", " ", str(text)).strip()
     revised = re.sub(r"\s*([，。；：、！？])\s*", r"\1", revised)
-    lines = [line.strip() for line in revised.splitlines()]
+    raw_lines = [line.strip() for line in revised.splitlines()]
+    unique_raw_lines: list[str] = []
+    seen_raw: set[str] = set()
+    for line in raw_lines:
+        key = _normalized_token(line)
+        if key and key in seen_raw:
+            continue
+        if key:
+            seen_raw.add(key)
+        unique_raw_lines.append(line)
+    lines: list[str] = []
+    for line in unique_raw_lines:
+        if (
+            lines
+            and line
+            and not line.startswith(("•", "-", "—"))
+            and not lines[-1].endswith(("。", "；", "！", "？", ":", "："))
+        ):
+            lines[-1] += line
+        else:
+            lines.append(line)
     deduped: list[str] = []
     seen: set[str] = set()
     for line in lines:
@@ -92,8 +112,10 @@ def conservative_screen_edit(text: str) -> tuple[str, list[str]]:
     operations: list[str] = []
     if final != text:
         operations.append("normalize_screen_copy")
-    if len(deduped) < len([line for line in lines if line]):
+    if len(unique_raw_lines) < len([line for line in raw_lines if line]) or len(deduped) < len([line for line in lines if line]):
         operations.append("remove_duplicate_lines")
+    if len(lines) < len([line for line in raw_lines if line]):
+        operations.append("join_soft_line_wraps")
     return final, operations
 
 

@@ -52,3 +52,29 @@ def test_builder_adds_recognized_layout_without_replacing_existing_nodes():
     assert graph.visual_nodes[0].node_id == "recognized_visual"
     assert graph.visual_nodes[0].source["kind"] == "layout_reference"
     assert graph.metadata["layout_reference"]["consumed"] is True
+
+
+def test_builder_enriches_existing_container_when_reference_uses_same_id():
+    graph = build_page_scene_graph(
+        page_number=16,
+        script_sections={},
+        semantic_plan={
+            "containers": [
+                {
+                    "id": "body_region",
+                    "role": "body",
+                    "bbox": [100, 100, 600, 300],
+                    "text_safe_bbox": [100, 100, 600, 300],
+                }
+            ],
+            "image_size": {"width": 1600, "height": 900},
+        },
+        visual_registry={"elements": [], "blueprint_canvas_px": {"width": 1600, "height": 900}},
+        image_size={"width": 1600, "height": 900},
+        layout_reference={
+            "zones": [{"id": "body_region", "role": "body", "bbox_px": [100, 100, 500, 200]}],
+        },
+    )
+
+    assert len([node for node in graph.visual_nodes if node.node_id == "body_region"]) == 1
+    assert graph.visual_nodes[0].attributes["recognized_layout"] is True
