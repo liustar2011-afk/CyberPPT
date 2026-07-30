@@ -122,7 +122,11 @@ def load_layout_core() -> ModuleType | None:
     descriptor = runtime_descriptor()
     if not descriptor.module_path:
         return None
-    module_name = "_cyberppt_ppt_master_dual_image_layout_core"
+    module_name = (
+        "_cyberppt_vendored_ppt_master_dual_image_rebuild"
+        if descriptor.source == "cyberppt_vendor"
+        else "_cyberppt_ppt_master_dual_image_layout_core"
+    )
     cached = sys.modules.get(module_name)
     if cached is not None:
         return cached
@@ -141,4 +145,3 @@ def load_layout_core() -> ModuleType | None:
         sys.modules.pop(module_name, None)
         return None
     return module
-

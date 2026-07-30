@@ -191,7 +191,10 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
 
         self.assertIsNotNone(core)
         self.assertEqual((1280, 720), core.CANVAS)
-        self.assertIn("vendor/ppt_master_slide_image_rebuild/scripts/dual_image_rebuild_pptx.py", str(core.__file__))
+        self.assertIn(
+            "vendor/ppt_master_slide_image_rebuild/scripts/dual_image_rebuild_pptx.py",
+            str(core.__file__).replace("\\", "/"),
+        )
 
     def test_runtime_bridge_reports_vendor_fallback_and_host_resources(self) -> None:
         descriptor = runtime_descriptor()
