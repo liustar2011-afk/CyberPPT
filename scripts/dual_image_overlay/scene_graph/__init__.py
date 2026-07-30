@@ -2,6 +2,7 @@ from .builder import build_page_scene_graph
 from .coordinate import COORDINATE_CONTEXT_SCHEMA, normalize_bbox, resolve_coordinate_context
 from .gate import GATE_SCHEMA, build_scene_graph_gate
 from .layout import LAYOUT_PLAN_SCHEMA, build_layout_plan_from_scene_graph
+from .layout_reference_adapter import LAYOUT_REFERENCE_ADAPTER_SCHEMA, adapt_layout_reference
 from .page_svg_ir import PAGE_SVG_IR_SCHEMA, PageSvgIRValidationError, compile_scene_graph_to_page_svg_ir, validate_page_svg_ir
 from .text_metrics import avoid_reserved_zones, fit_text_to_safe_bbox, measure_line, measure_text
 from .image_assets import IMAGE_ASSET_SCHEMA, asset_id_for_source, image_asset_manifest, register_image_asset, validate_image_asset_contract
@@ -48,6 +49,7 @@ __all__ = [
     "GATE_SCHEMA",
     "GateIssue",
     "LAYOUT_PLAN_SCHEMA",
+    "LAYOUT_REFERENCE_ADAPTER_SCHEMA",
     "PAGE_SVG_IR_SCHEMA",
     "PageSvgIRValidationError",
     "LayoutIntent",
@@ -77,5 +79,6 @@ __all__ = [
     "run_ppt_master_svg_checker",
     "write_qa_fusion_report",
     "render_page_svg_ir",
+    "adapt_layout_reference",
     "check_standalone_runtime",
 ]
