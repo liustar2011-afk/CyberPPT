@@ -27,7 +27,10 @@ def _is_recognized_text_region(node: VisualNode) -> bool:
     return bool(
         node.attributes.get("recognized_layout")
         and node.node_type not in {"image", "illustration", "photo"}
-        and node.semantic_role.lower() in TEXT_REGION_ROLES
+        and (
+            node.node_type == "layout_zone"
+            or node.semantic_role.lower() in TEXT_REGION_ROLES
+        )
     )
 
 
@@ -157,6 +160,15 @@ def apply_recognized_constrained_reflow(
         "unassigned_count": sum(record["status"] == "unassigned" for record in records),
         "items": records,
     }
+    if strict and not graph.text_nodes:
+        report["valid"] = False
+        report["issues"] = [
+            {
+                "code": "missing_text_nodes",
+                "blocking": True,
+                "reason": "recognized reflow requires reliable script-backed text nodes",
+            }
+        ]
     return replace(
         graph,
         text_nodes=updated_nodes,

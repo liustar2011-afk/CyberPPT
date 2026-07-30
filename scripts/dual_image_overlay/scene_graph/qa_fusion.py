@@ -54,6 +54,8 @@ def build_qa_fusion_report(
     svg_path: str | Path | None = None,
     expected_format: str | None = None,
     require_ppt_master: bool = False,
+    copy_edit_report: Mapping[str, Any] | None = None,
+    constrained_reflow_report: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Create one blocking report for both CyberPPT and PPT Master QA layers."""
     ir_gate = page_svg_ir.get("page_svg_ir_gate") or validate_page_svg_ir(page_svg_ir)
@@ -70,6 +72,10 @@ def build_qa_fusion_report(
         "image_assets": dict(asset_gate),
         "ppt_master_svg": ppt_master,
     }
+    if copy_edit_report is not None:
+        components["semantic_copy_edit"] = dict(copy_edit_report)
+    if constrained_reflow_report is not None:
+        components["recognized_constrained_reflow"] = dict(constrained_reflow_report)
     blocking = []
     for name, report in components.items():
         if not bool(report.get("valid", report.get("passed", False))):

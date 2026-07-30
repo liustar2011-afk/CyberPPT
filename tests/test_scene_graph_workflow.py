@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from scripts.dual_image_overlay.rebuild_engine.editable_overlay_rebuild import (
+    _derive_layout_reference,
     _overlay_boxes_from_scene_graph_layout,
     _scene_graph_artifact_paths,
     _scene_graph_gate_blocks_export,
@@ -15,6 +16,31 @@ def test_scene_graph_artifact_paths_are_page_scoped(tmp_path: Path):
     assert paths["graph"] == tmp_path / "analysis" / "scene_graph" / "page_006_scene_graph.json"
     assert paths["gate"] == tmp_path / "analysis" / "scene_graph_gate" / "page_006_scene_graph_gate.json"
     assert paths["layout"] == tmp_path / "analysis" / "page_layout_plan" / "page_006_layout_plan.json"
+    assert paths["copy_edit"] == tmp_path / "analysis" / "copy_edit" / "page_006_copy_edit.json"
+
+
+def test_derives_recognized_layout_from_existing_semantic_and_visual_artifacts():
+    reference = _derive_layout_reference(
+        {
+            "containers": [
+                {"id": "title_box", "role": "title", "bbox": [100, 50, 900, 130]}
+            ]
+        },
+        {
+            "elements": [
+                {
+                    "element_id": "visual_1",
+                    "element_type": "illustration",
+                    "blueprint_bbox_px": [900, 180, 1500, 760],
+                }
+            ]
+        },
+    )
+
+    by_id = {item["id"]: item for item in reference["zones"]}
+    assert by_id["title_box"]["bbox_px"] == [100.0, 50.0, 800.0, 80.0]
+    assert by_id["visual_1"]["role"] == "semantic_image"
+    assert by_id["visual_1"]["preserve_internal_text"] is True
 
 
 def test_scene_graph_gate_blocks_export(tmp_path: Path):

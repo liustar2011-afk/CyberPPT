@@ -33,7 +33,10 @@ from scripts.dual_image_overlay.page_understanding import (
 from scripts.dual_image_overlay.semantic_typography_qa import apply_semantic_typography_qa
 from scripts.dual_image_overlay.text_content_qa import build_text_content_qa
 from scripts.dual_image_overlay.scene_graph.builder import build_page_scene_graph
+from scripts.dual_image_overlay.scene_graph.constrained_reflow import apply_recognized_constrained_reflow
+from scripts.dual_image_overlay.scene_graph.copy_edit import edit_scene_graph_copy
 from scripts.dual_image_overlay.scene_graph.gate import build_scene_graph_gate
+from scripts.dual_image_overlay.scene_graph.illustration_assets import materialize_recognized_illustration_assets
 from scripts.dual_image_overlay.scene_graph.layout import build_layout_plan_from_scene_graph
 from scripts.dual_image_overlay.scene_graph.page_svg_ir import compile_scene_graph_to_page_svg_ir
 from scripts.dual_image_overlay.scene_graph.qa_fusion import build_qa_fusion_report
@@ -386,6 +389,9 @@ def _scene_graph_artifact_paths(project_path: Path, page_number: int) -> dict[st
         "layout": project_path / "analysis" / "page_layout_plan" / f"page_{page_number:03d}_layout_plan.json",
         "page_svg_ir": project_path / "analysis" / "page_svg_ir" / f"page_{page_number:03d}_page_svg_ir.json",
         "qa_fusion": project_path / "analysis" / "qa_fusion" / f"page_{page_number:03d}_qa_fusion.json",
+        "copy_edit": project_path / "analysis" / "copy_edit" / f"page_{page_number:03d}_copy_edit.json",
+        "constrained_reflow": project_path / "analysis" / "constrained_reflow" / f"page_{page_number:03d}_constrained_reflow.json",
+        "illustration_assets": project_path / "analysis" / "illustration_assets" / f"page_{page_number:03d}_illustration_assets.json",
     }
 
 
@@ -411,6 +417,105 @@ def _source_full_size(image_size_check: dict[str, Any]) -> dict[str, float]:
     return {"width": float(CANVAS_SIZE[0]), "height": float(CANVAS_SIZE[1])}
 
 
+def _xywh_from_any_bbox(value: Any) -> list[float] | None:
+    if isinstance(value, list) and len(value) == 4:
+        x1, y1, x2, y2 = [float(item) for item in value]
+        if x2 > x1 and y2 > y1:
+            return [x1, y1, x2 - x1, y2 - y1]
+    if isinstance(value, dict):
+        x = float(value.get("x") or value.get("x1") or 0)
+        y = float(value.get("y") or value.get("y1") or 0)
+        width = value.get("w", value.get("width"))
+        height = value.get("h", value.get("height"))
+        if width is not None and height is not None:
+            return [x, y, float(width), float(height)]
+    return None
+
+
+def _derive_layout_reference(
+    semantic_plan: dict[str, Any],
+    visual_registry: dict[str, Any] | None,
+) -> dict[str, Any]:
+    zones: list[dict[str, Any]] = []
+    for index, container in enumerate(semantic_plan.get("containers", []), start=1):
+        if not isinstance(container, dict):
+            continue
+        bbox = _xywh_from_any_bbox(container.get("bbox"))
+        if bbox is None:
+            continue
+        zones.append(
+            {
+                "id": str(container.get("id") or f"recognized_text_{index}"),
+                "role": str(container.get("role") or "editable_text"),
+                "bbox_px": bbox,
+                "confidence": float(container.get("confidence") or 0.85),
+            }
+        )
+    for index, element in enumerate((visual_registry or {}).get("elements", []), start=1):
+        if not isinstance(element, dict):
+            continue
+        element_type = str(element.get("element_type") or "").lower()
+        role = str(element.get("semantic_role") or element.get("role") or element_type).lower()
+        if element_type not in {"image", "illustration", "photo", "screenshot", "chart", "document"} and role not in {
+            "semantic_image",
+            "illustration",
+            "photo",
+            "screenshot",
+            "chart",
+            "document",
+            "equipment",
+        }:
+            continue
+        bbox = _xywh_from_any_bbox(element.get("blueprint_bbox_px") or element.get("bbox"))
+        if bbox is None:
+            continue
+        zones.append(
+            {
+                "id": str(element.get("element_id") or element.get("id") or f"recognized_image_{index}"),
+                "role": "semantic_image",
+                "node_type": "image",
+                "bbox_px": bbox,
+                "preserve_internal_text": True,
+                "text_bearing": True,
+                "confidence": float(element.get("confidence") or 0.8),
+            }
+        )
+    return {
+        "version": "2.0-compatible",
+        "layout_grammar": semantic_plan.get("layout_grammar") or {"page_type_hint": "custom"},
+        "zones": zones,
+        "structure_contract": semantic_plan.get("structure_contract") or {"relations": []},
+        "geometry_locks": semantic_plan.get("geometry_locks") or [],
+        "source": "cyberppt_existing_semantic_and_visual_artifacts",
+    }
+
+
+def _load_layout_reference(
+    *,
+    project_path: Path,
+    page_number: int,
+    pair: dict[str, Any] | None,
+    semantic_plan: dict[str, Any],
+    visual_registry: dict[str, Any] | None,
+) -> dict[str, Any]:
+    candidates: list[Path] = []
+    explicit = (pair or {}).get("layout_reference")
+    if explicit:
+        candidates.append(Path(str(explicit)))
+    candidates.extend(
+        [
+            project_path / "analysis" / "layout_reference" / f"page_{page_number:03d}_layout_reference.json",
+            project_path / "pages" / f"P{page_number:02d}" / "layout_reference.json",
+            project_path / "layout_reference.json",
+        ]
+    )
+    for candidate in candidates:
+        resolved = candidate if candidate.is_absolute() else project_path / candidate
+        if resolved.is_file():
+            return json.loads(resolved.read_text(encoding="utf-8"))
+    return _derive_layout_reference(semantic_plan, visual_registry)
+
+
 def _write_scene_graph_artifacts(
     *,
     project_path: Path,
@@ -421,10 +526,19 @@ def _write_scene_graph_artifacts(
     visual_registry: dict[str, Any] | None,
     image_size_check: dict[str, Any],
     background_href: Path | None = None,
+    pair: dict[str, Any] | None = None,
+    layout_mode: str = "recognized-reflow",
 ) -> dict[str, Path]:
     paths = _scene_graph_artifact_paths(project_path, page_number)
     for path in paths.values():
         path.parent.mkdir(parents=True, exist_ok=True)
+    layout_reference = _load_layout_reference(
+        project_path=project_path,
+        page_number=page_number,
+        pair=pair,
+        semantic_plan=semantic_plan_payload,
+        visual_registry=visual_registry,
+    ) if layout_mode == "recognized-reflow" else None
     graph = build_page_scene_graph(
         page_number=page_number,
         script_sections=extract_script_truth_sections(source_script, page_number),
@@ -432,7 +546,26 @@ def _write_scene_graph_artifacts(
         visual_registry=visual_registry or {"blueprint_canvas_px": {"w": CANVAS_SIZE[0], "h": CANVAS_SIZE[1]}, "elements": []},
         image_size=_image_size_for_scene_graph(image_size_check),
         semantic_layout_plan=semantic_layout_plan,
+        layout_reference=layout_reference,
     )
+    copy_edit_report = None
+    reflow_report = None
+    if layout_mode == "recognized-reflow":
+        graph, copy_edit_report = edit_scene_graph_copy(graph)
+        paths["copy_edit"].write_text(json.dumps(copy_edit_report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        if background_href is not None:
+            graph, illustration_report = materialize_recognized_illustration_assets(
+                graph,
+                background_image=background_href,
+                output_dir=project_path / "images" / "recognized_assets",
+            )
+        else:
+            illustration_report = {"schema": "cyberppt.recognized_illustration_assets.v1", "page": page_number, "count": 0, "assets": []}
+        paths["illustration_assets"].write_text(json.dumps(illustration_report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        graph, reflow_report = apply_recognized_constrained_reflow(graph, strict=True)
+        paths["constrained_reflow"].write_text(json.dumps(reflow_report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        if not copy_edit_report["valid"] or not reflow_report["valid"]:
+            raise ValueError(f"Recognized reflow gate failed for page {page_number}")
     graph_gate = build_scene_graph_gate(graph)
     paths["graph"].write_text(json.dumps(scene_graph_to_dict(graph), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     paths["gate"].write_text(json.dumps(graph_gate, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -450,6 +583,8 @@ def _write_scene_graph_artifacts(
         scene_graph_gate=graph_gate,
         page_svg_ir=page_svg_ir,
         require_ppt_master=False,
+        copy_edit_report=copy_edit_report,
+        constrained_reflow_report=reflow_report,
     )
     paths["qa_fusion"].write_text(json.dumps(qa_fusion, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return paths
@@ -761,6 +896,7 @@ def rebuild_from_manifest(
     editable_text_visibility: str = "visible",
     explicit_semantic_plan_dir: Path | None = None,
     visual_registry_dir: Path | None = None,
+    layout_mode: str = "recognized-reflow",
 ) -> dict[str, Any]:
     """Create overlay SVG pages from generated full/background image pairs."""
     manifest_path = manifest_path.resolve()
@@ -770,6 +906,19 @@ def rebuild_from_manifest(
     source_script = Path(str(manifest.get("source_script", ""))).expanduser().resolve()
     if not source_script.is_file():
         raise FileNotFoundError(f"Source script not found: {source_script}")
+    requested_pages = {
+        int(item["page_number"])
+        for item in manifest.get("pairs", [])
+        if isinstance(item, dict) and item.get("page_number") is not None
+    }
+    parsed_source_pages = parse_page_blocks(source_script)
+    if requested_pages and not requested_pages.issubset(parsed_source_pages):
+        original_script_value = manifest.get("original_script")
+        original_script = Path(str(original_script_value)).expanduser().resolve() if original_script_value else None
+        if original_script is not None and original_script.is_file():
+            original_pages = parse_page_blocks(original_script)
+            if requested_pages.issubset(original_pages):
+                source_script = original_script
 
     _ensure_project_shell(project_path)
     body = _body_region()
@@ -933,6 +1082,8 @@ def rebuild_from_manifest(
             visual_registry=visual_registry,
             image_size_check=image_size_check,
             background_href=prepared_background,
+            pair=pair,
+            layout_mode=layout_mode,
         )
         page_layout_plan = json.loads(scene_graph_paths["layout"].read_text(encoding="utf-8"))
         boxes, editable_text_layout_source = _editable_boxes_from_scene_graph_or_recognition(
@@ -1151,6 +1302,7 @@ def build_parser() -> argparse.ArgumentParser:
     rebuild.add_argument("--editable-text-visibility", choices=("visible", "hidden"), default="visible")
     rebuild.add_argument("--semantic-plan-dir", type=Path)
     rebuild.add_argument("--visual-registry-dir", type=Path)
+    rebuild.add_argument("--layout-mode", choices=("recognized-reflow", "legacy"), default="recognized-reflow")
     rebuild.add_argument("--export", action="store_true", help="Run SVG quality/finalize/export after rebuilding SVG pages.")
 
     return parser
@@ -1168,6 +1320,7 @@ def main(argv: list[str] | None = None) -> int:
             editable_text_visibility=args.editable_text_visibility,
             explicit_semantic_plan_dir=args.semantic_plan_dir.resolve() if args.semantic_plan_dir else None,
             visual_registry_dir=args.visual_registry_dir.resolve() if args.visual_registry_dir else None,
+            layout_mode=args.layout_mode,
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         if args.export:

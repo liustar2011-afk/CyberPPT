@@ -67,3 +67,16 @@ def test_strict_reflow_blocks_when_text_has_no_recognized_region():
 
     assert report["valid"] is False
     assert report["unassigned_count"] == 1
+
+
+def test_strict_reflow_blocks_empty_text_graph():
+    graph = PageSceneGraph(
+        page=16,
+        coordinate_context={"coordinate_space": {"width": 1600, "height": 900}},
+        truth_sources={},
+    )
+
+    _, report = apply_recognized_constrained_reflow(graph, strict=True)
+
+    assert report["valid"] is False
+    assert report["issues"][0]["code"] == "missing_text_nodes"
