@@ -656,6 +656,85 @@ def test_business_relations_outrank_module_title_chains() -> None:
     assert "质量与生命周期" not in relations
 
 
+def test_semantic_keeps_subject_before_structure_verb_marker() -> None:
+    from scripts.dual_image_overlay.imagegen_handoff import _page_semantic_relations
+
+    page = replace(
+        _page(),
+        visual_structure=(
+            "贯穿主链——来源归一为对象再进入服务供给；质量与生命周期贯穿主链。"
+        ),
+        module_titles=(
+            "01｜三类知识来源",
+            "02｜统一知识对象",
+            "03｜分层数据服务",
+            "04｜质量与生命周期",
+        ),
+        full_prose=(
+            "从业务关系看，三类知识来源先归一为统一知识对象，"
+            "再由分层数据服务面向检索、事件计算和分析应用供给能力。"
+        ),
+        onscreen_text="",
+        speaker_notes="",
+    )
+    relations = _page_semantic_relations(page)
+    assert "质量与生命周期贯穿主链" in relations
+    assert "- 贯穿主链。" not in relations
+    assert not any(
+        line.strip() in {"- 贯穿主链。", "- 贯穿主链"}
+        for line in relations.splitlines()
+    )
+
+
+def test_labeled_relation_keeps_semicolon_clauses_together() -> None:
+    from scripts.dual_image_overlay.imagegen_handoff import _page_semantic_relations
+
+    page = replace(
+        _page(),
+        visual_structure="受控边界——由外向内设置受控入口；一级模块与上屏文字一致。",
+        onscreen_text=(
+            "责任关系：数据所有者定用途与范围；业务人员按授权使用；"
+            "平台负责访问与内容治理；运维仅保留必要权限。\n"
+            "业务含义：统一准入原则把知识来源、审核责任和服务等级前置到业务运行入口。"
+        ),
+        full_prose="",
+        speaker_notes="",
+        module_titles=(),
+    )
+    relations = _page_semantic_relations(page)
+    assert "业务人员按授权使用" in relations
+    assert "运维仅保留必要权限" in relations
+    assert "组件关系" not in relations
+    assert not any(
+        line.rstrip().endswith("；") for line in relations.splitlines()
+    )
+
+
+def test_component_relation_semicolon_clauses_stay_intact() -> None:
+    from scripts.dual_image_overlay.imagegen_handoff import _page_semantic_relations
+
+    page = replace(
+        _page(),
+        visual_structure="",
+        onscreen_text=(
+            "组件关系：关系库、缓存、检索索引支撑在线事务；"
+            "对象存储、消息队列支撑异步事件；分析库承接离线计算。\n"
+            "业务含义：三条运行链按实时性和计算特征分工。"
+        ),
+        full_prose="",
+        speaker_notes="",
+        module_titles=(),
+    )
+    relations = _page_semantic_relations(page)
+    assert "对象存储、消息队列支撑异步事件" in relations
+    assert "分析库承接离线计算" in relations
+    assert not any(
+        line.strip() == "- 组件关系：关系库、缓存、检索索引支撑在线事务；"
+        or line.strip() == "- 组件关系：关系库、缓存、检索索引支撑在线事务。"
+        for line in relations.splitlines()
+    )
+
+
 def test_semantic_relations_dedupe_bullet_leftovers_from_onscreen() -> None:
     from scripts.dual_image_overlay.imagegen_handoff import _page_semantic_relations
 

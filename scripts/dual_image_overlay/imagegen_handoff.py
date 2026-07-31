@@ -467,11 +467,22 @@ NON_RENDERING_RELATION_LABELS = {
 # These compact relationship statements are semantic input for ImageGen, not
 # drawable copy.  They commonly live in the full prose / speaker notes after
 # the visible module bullets have been finalized.
-PAGE_SEMANTIC_PHRASE_MARKERS = (
+#
+# Lead phrases always open a relation sentence and are safe trim anchors.
+# Structure-label markers are lead only when written as「贯穿主链——…」; the same
+# tokens may appear mid-sentence as verbs/objects (「质量与生命周期贯穿主链」)
+# and must keep their subject.
+PAGE_SEMANTIC_LEAD_PHRASE_MARKERS = (
     "从业务关系看",
     "统一知识对象连接",
+)
+PAGE_SEMANTIC_STRUCTURE_LABEL_MARKERS = (
     "贯穿主链",
     "四层主链",
+)
+PAGE_SEMANTIC_PHRASE_MARKERS = (
+    *PAGE_SEMANTIC_LEAD_PHRASE_MARKERS,
+    *PAGE_SEMANTIC_STRUCTURE_LABEL_MARKERS,
 )
 PAGE_SEMANTIC_LABEL_MARKERS = (
     "服务关系",
@@ -512,6 +523,15 @@ _LABEL_SEMANTIC_RE = re.compile(
     r"(?:^|[\s\-•*])(?:"
     + "|".join(re.escape(label) for label in PAGE_SEMANTIC_LABEL_MARKERS)
     + r")\s*[：:]"
+)
+_STRUCTURE_LABEL_LEAD_RE = re.compile(
+    r"(?P<label>"
+    + "|".join(re.escape(marker) for marker in PAGE_SEMANTIC_STRUCTURE_LABEL_MARKERS)
+    + r")\s*[——―–]"
+)
+# Authoring note often appended after a visual-structure clause; not semantic.
+_AUTHORING_STRUCTURE_TAIL_RE = re.compile(
+    r"[；;]\s*一级模块与上屏文字一致。?\s*$"
 )
 
 
@@ -591,13 +611,20 @@ def _normalize_semantic_sentence(value: str) -> str:
     text = text.strip()
     if not text:
         return ""
+    text = _AUTHORING_STRUCTURE_TAIL_RE.sub("。", text)
+    text = re.sub(r"[；;]。", "。", text)
+    text = re.sub(r"。{2,}", "。", text)
+
     # Whole-source scans can leave module titles before the relation marker.
-    # Trim to the earliest known marker so line-level and blob-level extracts
-    # collapse to the same sentence.
+    # Trim only to true lead anchors — never to mid-sentence structure verbs.
     earliest: int | None = None
-    for marker in PAGE_SEMANTIC_PHRASE_MARKERS:
+    for marker in PAGE_SEMANTIC_LEAD_PHRASE_MARKERS:
         idx = text.find(marker)
         if idx >= 0 and (earliest is None or idx < earliest):
+            earliest = idx
+    for match in _STRUCTURE_LABEL_LEAD_RE.finditer(text):
+        idx = match.start("label")
+        if earliest is None or idx < earliest:
             earliest = idx
     for match in re.finditer(
         r"(?:^|[\s\-•*])(?P<label>"
@@ -611,7 +638,26 @@ def _normalize_semantic_sentence(value: str) -> str:
     if earliest is not None and earliest > 0:
         text = text[earliest:].strip()
         text = re.sub(r"^[\s\-*•·]+", "", text)
+    # Prefer a terminal period over a dangling Chinese semicolon fragment.
+    if text.endswith(("；", ";")):
+        text = text[:-1].rstrip() + "。"
     return text.strip()
+
+
+def _is_degenerate_semantic_sentence(sentence: str) -> bool:
+    """True when a candidate is only a bare marker / empty after punctuation."""
+
+    stripped = sentence.strip()
+    core = re.sub(r"[\s。！？；;：:\-—―–•*·]+", "", stripped)
+    if not core:
+        return True
+    if core in PAGE_SEMANTIC_PHRASE_MARKERS or core in MODULE_CHAIN_MARKERS:
+        return True
+    bare = re.sub(r"[。！？；;]+$", "", stripped)
+    for marker in PAGE_SEMANTIC_STRUCTURE_LABEL_MARKERS:
+        if re.fullmatch(re.escape(marker) + r"[——―–\-]*", bare):
+            return True
+    return False
 
 
 def _page_semantic_relations(page: ScriptPage) -> str:
@@ -623,6 +669,10 @@ def _page_semantic_relations(page: ScriptPage) -> str:
     the page's governing logic without leaking the source manuscript.
     Prefer explicit business-relation sentences over module-title chains that
     merely restate the on-screen module order.
+
+    Chinese semicolons often separate clauses inside one labeled relation
+    (``责任关系：A；B；C。``) and must not be treated as sentence boundaries;
+    only ``。！？`` split candidates.
     """
 
     candidates: list[str] = []
@@ -633,11 +683,16 @@ def _page_semantic_relations(page: ScriptPage) -> str:
             return
         # Keep one compact sentence at a time; source paragraphs can contain
         # detailed evidence that is intentionally not part of the handoff.
-        for sentence in re.split(r"(?<=[。！？；])\s*", text):
+        # Do not split on「；」— it is clause punctuation inside labeled relations.
+        for sentence in re.split(r"(?<=[。！？])\s*", text):
             sentence = _normalize_semantic_sentence(sentence)
-            if sentence and _has_semantic_marker(sentence):
-                if sentence not in candidates:
-                    candidates.append(sentence)
+            if (
+                sentence
+                and _has_semantic_marker(sentence)
+                and not _is_degenerate_semantic_sentence(sentence)
+                and sentence not in candidates
+            ):
+                candidates.append(sentence)
 
     add_sentence(page.visual_structure)
     for source in (page.onscreen_text, page.full_prose, page.speaker_notes):
