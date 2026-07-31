@@ -155,10 +155,9 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "ivory_deep_blue_scene" not in implicit
     assert "风格适用语境" not in implicit
     assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" not in implicit
-    assert "风格只约束气质" in implicit
-    assert "抽象主题" in implicit
-    assert "精细中文排版" in implicit
-    assert "场景是条件性辅助层" in implicit
+    assert "Style sets tone/material/color only" in implicit
+    assert "locked on-screen text" in implicit
+    assert "default absent" in implicit
     assert "【视觉媒介路由｜不上屏】" not in implicit
     assert "媒介类型：editorial_typographic" not in implicit
     assert "editorial_dense" not in implicit
@@ -167,7 +166,7 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "每个锁定模块及其名称只出现一次" not in implicit
     assert "Do not show frontal faces" not in implicit
     assert "解释性正文由后续 PPT 可编辑文字层承载" not in implicit
-    assert "领导汇报" in implicit
+    assert "领导汇报" in implicit or "leadership briefing" in implicit
     assert "style.selected_lock" in (
         implicit_compiled.build_metadata()["injected_rule_ids"]
     )

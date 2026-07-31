@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 
-SCRIPT_KINDS = {"pptx", "imagegen", "blueprint", "analysis"}
+SCRIPT_KINDS = {"pptx", "imagegen", "imagegen-send", "blueprint", "analysis"}
 SCRIPT_PHASES = {"draft", "final"}
 
 
@@ -74,6 +74,9 @@ def _sha256(path: Path) -> str:
 def _script_dir(project: Path, kind: str, phase: str) -> Path:
     if kind == "imagegen":
         return project / "workbench" / "prompts" / "imagegen"
+    if kind == "imagegen-send":
+        # Send-layer prompts stay beside ImageGen scripts under send/ for audit.
+        return project / "workbench" / "prompts" / "imagegen" / "send"
     if phase == "draft":
         return project / "workbench" / "scripts" / "drafts"
     return project / "workbench" / "scripts" / "final"
@@ -124,7 +127,11 @@ def stage_script(
 
     target = _script_path(root, slide, kind, phase, source.suffix or ".txt")
     target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(source, target)
+    if source.resolve() != target.resolve():
+        shutil.copyfile(source, target)
+    else:
+        # Source was already written to the canonical ledger path.
+        _ensure_plaintext(target)
 
     manifest = _read_manifest(root)
     manifest.setdefault("entries", []).append(

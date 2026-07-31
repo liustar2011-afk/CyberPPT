@@ -12,6 +12,7 @@ from cyberppt.commands.assemble_final_script import assemble_final_script
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.outline_audit import run_outline_audit
+from cyberppt.commands.prepare_imagegen_send import prepare_imagegen_send
 from cyberppt.commands.prepare_stage01_input import (
     prepare_outline_input,
     prepare_page_script_input,
@@ -226,6 +227,22 @@ def _script_status_command(args: argparse.Namespace) -> int:
     return 0 if status.ready_to_generate else 3
 
 
+def _prepare_imagegen_send_command(args: argparse.Namespace) -> int:
+    try:
+        summary = prepare_imagegen_send(
+            project=Path(args.project),
+            pages_raw=args.pages,
+            write_llm_brief=not args.no_llm_brief,
+            stage_draft=not args.no_stage,
+            note=args.note,
+        )
+    except (FileNotFoundError, PermissionError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
+    return 0
+
+
 def _rebuild_dual_image_command(args: argparse.Namespace) -> int:
     return run_script("template-rebuild", args.rebuild_args)
 
@@ -255,6 +272,8 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             image_timeout=args.image_timeout,
             force_images=args.force_images,
             dry_run_images=args.dry_run_images,
+            prompt_enrich=args.prompt_enrich,
+            require_send_approval=args.require_send_approval,
         )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -442,7 +461,7 @@ def build_parser() -> argparse.ArgumentParser:
     stage_script_parser.add_argument("--slide", type=int, required=True, help="Slide number, 1-based.")
     stage_script_parser.add_argument(
         "--kind",
-        choices=["analysis", "blueprint", "imagegen", "pptx"],
+        choices=["analysis", "blueprint", "imagegen", "imagegen-send", "pptx"],
         required=True,
         help="Script type.",
     )
@@ -464,7 +483,7 @@ def build_parser() -> argparse.ArgumentParser:
     approve_script_parser.add_argument("--slide", type=int, required=True, help="Slide number, 1-based.")
     approve_script_parser.add_argument(
         "--kind",
-        choices=["analysis", "blueprint", "imagegen", "pptx"],
+        choices=["analysis", "blueprint", "imagegen", "imagegen-send", "pptx"],
         required=True,
         help="Script type.",
     )
@@ -479,7 +498,7 @@ def build_parser() -> argparse.ArgumentParser:
     script_status_parser.add_argument("--slide", type=int, required=True, help="Slide number, 1-based.")
     script_status_parser.add_argument(
         "--kind",
-        choices=["analysis", "blueprint", "imagegen", "pptx"],
+        choices=["analysis", "blueprint", "imagegen", "imagegen-send", "pptx"],
         required=True,
         help="Script type.",
     )
@@ -538,6 +557,22 @@ def build_parser() -> argparse.ArgumentParser:
     final_script_pages_parser.add_argument("--force-images", action="store_true")
     final_script_pages_parser.add_argument("--dry-run-images", action="store_true")
     final_script_pages_parser.add_argument(
+        "--prompt-enrich",
+        choices=("off", "deterministic", "send"),
+        default="deterministic",
+        help=(
+            "Send-time prompt enrich (default: deterministic — silently append structure/"
+            "material/people/ban cues to the approved prompt). "
+            "off=approved prompt only; "
+            "send=prefer approved imagegen-send final (else deterministic unless --require-send-approval)."
+        ),
+    )
+    final_script_pages_parser.add_argument(
+        "--require-send-approval",
+        action="store_true",
+        help="With --prompt-enrich send, fail unless each page has an approved imagegen-send final.",
+    )
+    final_script_pages_parser.add_argument(
         "--semantic-plan-dir",
         help="Optional semantic plan directory for an editable-overlay production mode.",
     )
@@ -567,6 +602,28 @@ def build_parser() -> argparse.ArgumentParser:
         help="Additional argument forwarded to template-rebuild in editable-overlay mode.",
     )
     final_script_pages_parser.set_defaults(func=_final_script_pages_command)
+
+    prepare_send = subparsers.add_parser(
+        "prepare-imagegen-send",
+        help=(
+            "Build deterministic ImageGen send drafts (+ LLM briefs) from approved "
+            "imagegen finals for optional per-page rewrite and secondary approval."
+        ),
+    )
+    prepare_send.add_argument("project", help="CyberPPT project directory.")
+    prepare_send.add_argument("--pages", required=True, help="Page range, e.g. 15 or 4,5,6.")
+    prepare_send.add_argument(
+        "--no-llm-brief",
+        action="store_true",
+        help="Skip writing per-page LLM enrich brief files.",
+    )
+    prepare_send.add_argument(
+        "--no-stage",
+        action="store_true",
+        help="Write files only; do not stage imagegen-send drafts into the script ledger.",
+    )
+    prepare_send.add_argument("--note", default="", help="Optional staging note.")
+    prepare_send.set_defaults(func=_prepare_imagegen_send_command)
 
     for alias in sorted(SCRIPT_ALIASES):
         command = subparsers.add_parser(alias, add_help=False, help=f"Run scripts/{SCRIPT_ALIASES[alias]}.")

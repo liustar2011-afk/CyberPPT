@@ -199,11 +199,17 @@ def build_manifest(
     force_pending: bool = False,
     require_approved_prompts: bool = False,
     production_mode: str = FULL_IMAGE_MODE,
+    prompt_enrich: str = "deterministic",
+    require_send_approval: bool = False,
 ) -> tuple[dict[str, Any], Path, Path, list[int]]:
     output_variants = output_variants_for_mode(production_mode)
     source_pages = parse_page_blocks(script)
     page_numbers = parse_pages(pages_raw, set(source_pages))
     from cyberppt.script_quality_contract import parse_script_markdown
+    from scripts.dual_image_overlay.prompt_send_enrich import (
+        enrich_result_as_dict,
+        resolve_send_prompt,
+    )
 
     script_pages = {
         int(page.page_id[1:]): page
@@ -232,6 +238,7 @@ def build_manifest(
     compiled_script = _compiled_script_path(output_dir, script, page_numbers)
     approved_prompts: dict[int, tuple[str, Path]] = {}
     relationship_aware_prompts: dict[int, str] = {}
+    enrich_mode = (prompt_enrich or "deterministic").strip().lower()
     if require_approved_prompts:
         if project_path is None:
             raise ValueError("per-slide prompt approval requires --project-path")
@@ -262,6 +269,7 @@ def build_manifest(
     # Compiled prompts no longer carry "## 第N页：" headers; use source page
     # metadata + per-page render_prompt for pair entries.
     pairs: list[dict[str, Any]] = []
+    enrich_ledger: list[dict[str, Any]] = []
     for page_number in content_page_numbers:
         page = source_pages[page_number]
         prompt = render_prompt(page, style_lock_path=style_lock)
@@ -278,6 +286,24 @@ def build_manifest(
             # style contract so Style 09 source edits are reflected without
             # requiring every prompt artifact to be manually rewritten.
             prompt = canonical_prompt
+        send_final: Path | None = None
+        if project_path is not None and enrich_mode == "send":
+            try:
+                send_final = assert_approved_final_script(
+                    project_path, page_number, "imagegen-send"
+                )
+            except (FileNotFoundError, PermissionError):
+                if require_send_approval:
+                    raise
+                send_final = None
+        enrich = resolve_send_prompt(
+            approved_prompt=prompt,
+            mode=enrich_mode,
+            send_final_path=send_final,
+            require_send=require_send_approval and enrich_mode == "send",
+        )
+        prompt = enrich.prompt
+        enrich_ledger.append({"page_number": page_number, **enrich_result_as_dict(enrich)})
         prompt = _full_prompt_for_variants(prompt, output_variants)
         stem = _page_stem(page_number, page.title)
         full_path = output_dir / f"{stem}_full.png"
@@ -291,6 +317,7 @@ def build_manifest(
             "aspect_ratio": "content-region",
             "image_size": "2x-content-region",
             "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
+            "prompt_enrich": enrich_result_as_dict(enrich),
         }
         _mark_status(full, force_pending=force_pending)
         variants: dict[str, dict[str, Any]] = {"full": full}
@@ -381,6 +408,11 @@ def build_manifest(
         "style_lock": str(style_lock.resolve()) if style_lock else None,
         "output_dir": str(output_dir.resolve()),
         "created_at": datetime.now(timezone.utc).isoformat(),
+        "prompt_enrich": {
+            "mode": enrich_mode,
+            "require_send_approval": require_send_approval,
+            "pages": enrich_ledger,
+        },
         "pairs": pairs,
     }
     manifest_path = output_dir / "page_image_pairs.json"
@@ -514,6 +546,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         type=Path,
         help="Optional approved blueprint image directory; matching blueprint PNGs are copied as full images.",
     )
+    parser.add_argument(
+        "--prompt-enrich",
+        choices=("off", "deterministic", "send"),
+        default="deterministic",
+        help="Send-time prompt enrichment mode (default: deterministic).",
+    )
+    parser.add_argument(
+        "--require-send-approval",
+        action="store_true",
+        help="With --prompt-enrich send, require approved imagegen-send finals.",
+    )
     args = parser.parse_args(argv)
 
     if args.copy_images_from:
@@ -548,6 +591,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         style_lock=style_lock,
         force_pending=bool(args.force and not args.resume),
         production_mode=args.production_mode,
+        prompt_enrich=args.prompt_enrich,
+        require_send_approval=args.require_send_approval,
     )
     if args.require_generated:
         require_generated(manifest)

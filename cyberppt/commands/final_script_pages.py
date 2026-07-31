@@ -522,6 +522,8 @@ def run_final_script_pages(
     image_timeout: int = 600,
     force_images: bool = False,
     dry_run_images: bool = False,
+    prompt_enrich: str = "deterministic",
+    require_send_approval: bool = False,
 ) -> dict[str, Any]:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
@@ -581,6 +583,8 @@ def run_final_script_pages(
         style_lock=style_lock,
         require_approved_prompts=True,
         production_mode=production_mode,
+        prompt_enrich=prompt_enrich,
+        require_send_approval=require_send_approval,
     )
     lock_path = _template_text_lock(
         project=project,
@@ -685,6 +689,7 @@ def run_final_script_pages(
         "rebuild": rebuild_status,
         "image_ppt_build": image_ppt_build,
         "image_generation": image_generation,
+        "prompt_enrich": manifest.get("prompt_enrich"),
         "tool_consumption": tool_consumption,
         "production_readiness": production_readiness,
     }
