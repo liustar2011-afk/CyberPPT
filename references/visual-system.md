@@ -323,34 +323,39 @@
 ## 扩展风格9：象牙白 + 深蓝领导汇报
 
 默认8种风格仍保持1—8不变。风格9是仅供显式选择的扩展风格，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用，不进入默认候选。原风格4保持不变，既有风格4项目成果无需迁移。
-
 Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
 
-Create a high-end senior leadership briefing / speech-support page: authoritative, restrained, editorial and content-led. The visual language should resemble a polished policy brief or executive board presentation, not a consulting deck, academic paper, product advertisement, software interface, technology exhibition or generic process infographic.
+Create a high-end senior leadership briefing page in a flat editorial business-infographic style: authoritative, restrained, polished and content-led.
 
-Build one integrated composition with one dominant visual center and one continuous reading path. Derive the composition from the page’s actual business relationships, such as input and output, dependency, convergence, transmission, feedback, hierarchy, containment, evolution or controlled delivery. Do not impose a preset card, column, timeline or central-radial template.
+Build one asymmetric, continuous and unequally weighted composition with one dominant visual center and one clear reading path. Use one main structural carrier, two to four primary content regions, one core judgment or outcome region, and only a few essential connectors.
 
-Use unequal scale, density, contrast and visual weight according to semantic importance. The core judgment must dominate. Supporting elements must remain subordinate and must not form competing visual centers.
+Derive the composition from the page semantics. Select one primary relationship grammar:
 
-Locked Chinese text must be woven directly into the business structure. Place text inside business objects, along relationship paths, beside evidence, within boundary fields or inside outcome regions. Text containers should follow the geometry, direction and grouping of the visual structure. Do not place the complete text layer in separate floating boxes or beside an unrelated illustration.
+- shared support;
+- input–transformation–outcome;
+- dependency–constraint;
+- hierarchy–containment;
+- evidence–judgment–result.
 
-Use semantically specific visual carriers: flattened business-object silhouettes, simplified industry facilities, operational structures, continuous paths, layered boundary fields, controlled interfaces, evidence fragments and outcome regions. Use thin connectors, restrained annotations, asymmetric whitespace, calm color fields and measured grid alignment to make the business logic immediately legible.
+Express relationships through position, scale, alignment, shared boundaries, overlap, containment and short thin connectors. Use broad flat fields, calm text regions, simplified business-object contours, restrained boundaries, hairline rules and asymmetric whitespace.
 
-Industry imagery is optional. When semantically necessary, use only a local embedded crop, partial operational scene or restrained texture connected directly to a business object. Suitable references include grid operation, power facilities, dispatch environments or professional analysis workspaces. Keep the scene secondary and integrated into the composition; never use it as a half-page panel, full-page background or independent scenic poster.
+Use unequal scale, density and contrast. The core judgment must dominate; supporting content remains quieter and subordinate. Do not divide the page evenly according to item count.
 
-Use primarily flat editorial materials: ivory paper-like surfaces, matte ink, quiet deep-blue fields, restrained translucent overlays, hairline rules and thin contour lines. Depth should be extremely shallow and used only to clarify overlap, containment or hierarchy. No object should resemble a product render, display prop, exhibition stand or floating decorative model.
+Keep all locked Chinese text complete. Do not summarize, rewrite or reduce paragraphs into labels. Place text inside the relevant business field, beside the evidence it explains, along the relationship path or within the outcome region. Make text-object attachment explicit through shared geometry, alignment, proximity and grouping.
 
-Avoid equal card walls, equal columns, step cards, generic timelines, hub-and-spoke diagrams, software architecture diagrams, dashboards, SaaS interfaces, one-module-one-illustration repetition, magazine-cover layouts, background photo plus foreground text block, large scenic posters and unrelated decorative hero objects.
+The page should be text-led but visually structured. Business meaning is carried by composition, hierarchy, boundaries and relationships, not by decorative illustration.
 
-Avoid AI chips, neon technology glow, abstract network nodes, icon collections, one-icon-per-label treatment, circular medallions, shields, locks, files, databases or other pictograms as the main narrative. Avoid cartoon symbols, glossy semi-3D objects, resin or plastic materials, metallic highlights, glassmorphism, luminous rims, strong shadows, pedestals, layered discs, badges and floating 3D icons.
+Industry imagery is optional and strictly secondary. When needed, use one small, tightly cropped operational fragment embedded inside a relevant business region. Never let scenery become the main visual center.
 
-People should be absent by default. If essential, show only a few distant, small and low-contrast figures as environmental support. No front-facing portraits, posed meetings, handshakes, pointing-at-screens or promotional workplace photography. People must never carry the core judgment.
+Use flat editorial materials: ivory paper-like surfaces, matte ink, restrained deep-blue fields, subtle translucent overlays, thin contour lines and very shallow depth.
 
-Reference images may inform palette, spacing, material restraint, line quality and overall polish only. Do not copy their object metaphors, central pedestals, layered discs, icon rows, hero objects or fixed compositional scaffold. The page semantics, core judgment, locked Chinese text and business relationships must determine the final composition.
+Avoid equal card walls, equal rows or columns, left-index + central-illustration + right-text layouts, top-image + bottom-modules layouts, radial hubs, timelines, step cards, dashboards, software-architecture diagrams, panoramic industry scenes, abstract data landscapes, dense contour or flowing-line fields, one-icon-per-item treatment, glossy 3D objects, glassmorphism, neon glow, floating icons, background photos with detached text, and any invented relationship not supported by the page content.
 
-Priority: core judgment → locked Chinese text and business relations → business objects, evidence and outcomes → boundaries and controlled outputs → optional local industry scene → decorative refinement.
+People should be absent by default. Reference images may inform palette, spacing, material restraint and polish only; do not copy their object metaphors or fixed layout scaffold.
 
-Final result: one calm, authoritative, presentation-ready composition in which text, objects and relationships form a unified business expression. No visible separation between “text area” and “image area.”
+Priority: core judgment → locked text and business relationships → evidence and outcomes → boundaries → optional local scene.
+
+Final result: one calm, authoritative, flat and integrated executive-report composition with strong hierarchy, few components and no separation between text content and image content.
 
 
 ## 扩展风格10：象牙白 + 深蓝双层语义汇报
