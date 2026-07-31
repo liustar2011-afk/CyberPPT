@@ -121,7 +121,10 @@ def creative_brief_visual_grammar() -> str:
             "- Make the relationship between modules the visual protagonist, not a literal symbol "
             "of the topic. Do not enlarge shields, locks, databases, clouds, chips, people, or charts "
             "into a hero object. For abstract system, governance, security, architecture, or operations "
-            "pages, default to pure editorial graphics with no photography, simulated interface, or UI data.",
+            "pages, interface-like composition is allowed but must not be suggested as the default. "
+            "The model may choose it only when the content benefits. All visible text, numbers, "
+            "states, and records must come from the locked content; do not fabricate UI facts or "
+            "default any page to a dashboard.",
             "- Aim for mature restraint: generous quiet space, precise thin strokes, limited deep-blue "
             "mass, flat materials, and almost no shadow. Avoid bevels, heavy drop shadows, 3D badges, "
             "and template-like decoration.",
@@ -129,7 +132,8 @@ def creative_brief_visual_grammar() -> str:
             "fill whitespace with generic offices, skylines, campuses, server rooms, or technology scenes.",
             "- Default to an empty auxiliary-label allowlist. Do not derive or summarize new "
             "node names, stage names, input/output terms, status words, legends, icon captions, "
-            "side labels, Latin letters, abbreviations, or interface-like tokens. Auxiliary "
+            "side labels, Latin letters, or abbreviations. Unlabeled interface shapes are allowed; "
+            "text-bearing interface tokens remain subject to the allowlist. Auxiliary "
             "labels may appear only when the upstream script explicitly supplies a non-empty "
             "allowlist, and then only the allowlisted text may be rendered.",
             "- Do not invent summary, goal, value, outcome, or conclusion sections or labels. "

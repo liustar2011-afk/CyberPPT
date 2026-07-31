@@ -9,11 +9,9 @@ import pytest
 
 from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.dual_image_overlay.imagegen_handoff import (
-    CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT,
     CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
     CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT,
     CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT,
-    AUXILIARY_LABEL_BUDGET,
     build_page_creative_brief,
     build_page_prompt,
     compile_page_prompt,
@@ -98,28 +96,17 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert implicit != legacy
     assert "【完整内容语义｜仅供理解，不要求逐字上屏】" not in implicit
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT in implicit
-    assert "【完整上屏内容】均需进入 full 图" in implicit
-    assert "使用生成式图形形态、路径、层次和必要画面组织附近文字与业务关系" in implicit
+    assert "【完整上屏内容】均需进入 full 图" not in implicit
+    assert "使用生成式图形形态、路径、层次和必要画面组织附近文字与业务关系" not in implicit
     assert "【事实与范围边界｜仅供约束，不上屏】" not in implicit
-    assert CONTENT_FIRST_FORMAL_OUTPUT_CONTRACT in implicit
+    assert "【内容与视觉要求｜不上屏】" not in implicit
     assert "【输出与风格｜不上屏】" in implicit
     assert "象牙白 + 深蓝领导汇报" not in implicit
     assert "风格适用语境" not in implicit
     assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" in implicit
     assert "【页面逻辑｜不上屏】" in implicit
-    assert "不使用等权卡片、通用图标流程或逐项配图" in implicit
-    assert "每个锁定模块及其名称只出现一次" in implicit
-    assert "不得再次作为外围节点、关系标签或第二个同名对象重复" in implicit
-    assert "不得自行增加“设计目标”“核心价值”“预期成效”“总结”" in implicit
-    assert "脚本没有提供的结果或价值只能用无文字图形状态表达" in implicit
-    assert "一个克制而明确的编辑式设计动作" in implicit
-    assert "不得用中央徽章、中心大图标、标准圆环、同心台阶" in implicit
-    assert "不得在页面底部或侧边再复制一套缩略流程" in implicit
-    assert "不得以办公室、城市、园区、机房或泛科技场景填补留白" in implicit
-    assert "不得虚构日期、版本号、编号、ID、追踪码" in implicit
-    assert "视觉主角必须是模块之间的关系" in implicit
-    assert "不得把盾牌、锁、数据库、云、芯片、人物或图表放大成中央主视觉" in implicit
-    assert "默认使用纯编辑式图形语言" in implicit
+    assert "不使用等权卡片、通用图标流程或逐项配图" not in implicit
+    assert "每个锁定模块及其名称只出现一次" not in implicit
     assert "Do not show frontal faces" not in implicit
     assert "解释性正文由后续 PPT 可编辑文字层承载" not in implicit
     assert "现代中文高端政企汇报设计气质" in implicit
@@ -184,7 +171,7 @@ def test_style_nine_content_first_rejects_stale_scene_first_lock_wording() -> No
     assert "少量实景、近实景或物件型语义图仅作点缀" in prompt
     assert "文字是页面主体" not in prompt
     assert "不得占据约半幅页面" not in prompt
-    assert "图标不是默认视觉载体" in prompt
+    assert "图标不是默认视觉载体" not in prompt
 
 
 def test_content_first_diagnostics_use_the_compiled_locked_text() -> None:
@@ -223,17 +210,24 @@ def test_closed_loop_contract_avoids_equal_stages_and_bottom_summary() -> None:
     assert "never as a separate bottom summary zone" in prompt
 
 
-def test_content_first_limits_auxiliary_label_budget() -> None:
+def test_content_first_omits_auxiliary_label_budget() -> None:
     page = _page()
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert AUXILIARY_LABEL_BUDGET in prompt
-    assert "本页辅助标签白名单为空" in prompt
-    assert "不得从正文自动提炼或概括任何新短标签" in prompt
-    assert "不得增加节点名、阶段名、输入输出词、状态词、底座名" in prompt
-    assert "不得新增 Q/A、IN/OUT、INPUT/OUTPUT、YES/NO" in prompt
+    assert "【辅助标签预算｜不上屏】" not in prompt
+    assert "本页辅助标签白名单为空" not in prompt
+
+
+def test_content_first_omits_removed_interface_visual_language_rules() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert "界面化表达不受禁止" not in prompt
+    assert "不得默认套用仪表盘或模板化界面" not in prompt
 
 
 def test_creative_brief_visual_grammar_defaults_to_empty_auxiliary_allowlist() -> None:
@@ -328,9 +322,9 @@ def test_content_first_keeps_relationship_annotations_atomic() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "上述关系说明是不可拆分的原子注释块" in prompt
-    assert "不得从中提炼、拆出或派生第二套阶段名" in prompt
-    assert "底部分类、图例或短标签" in prompt
+    assert "上述关系说明是不可拆分的原子注释块" not in prompt
+    assert "不得从中提炼、拆出或派生第二套阶段名" not in prompt
+    assert "底部分类、图例或短标签" not in prompt
 
 
 def test_content_first_full_reference_keeps_complete_onscreen_content() -> None:
@@ -381,11 +375,10 @@ def test_content_first_omits_tracking_metadata_and_avoids_repeated_rules() -> No
     assert "以上仅用于按页追踪" not in prompt
     assert page.title not in prompt
     assert "解释性正文由后续 PPT 可编辑文字层承载" not in prompt
-    assert prompt.count("【完整上屏内容】均需进入 full 图") == 1
+    assert "【完整上屏内容】均需进入 full 图" not in prompt
     assert prompt.count("【页面逻辑｜不上屏】") == 1
-    assert prompt.count("以【只读构图语义】组织一条清晰的视觉主线") == 1
-    assert prompt.index("【完整上屏内容】") < prompt.index("【只读构图语义｜不得上屏】")
-    assert "不得从本区抽取任何新标题、栏目名、图内标签" in prompt
+    assert "【只读构图语义｜不得上屏】" not in prompt
+    assert "不得从本区抽取任何新标题、栏目名、图内标签" not in prompt
     assert "页面构图和信息组织仍由" not in prompt
 
 
@@ -395,10 +388,10 @@ def test_content_first_text_rule_keeps_locked_names_and_numbers_authoritative() 
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "【锁定关键文字】中的每一项都必须逐字准确" in prompt
-    assert "完整上屏内容已有的数字、单位、专有名词、业务术语和否定含义必须准确" in prompt
-    assert "不得自行补充限定信息" in prompt
-    assert "不得新增未经页面内容支持的上屏文字" in prompt
+    assert "【锁定关键文字】中的每一项都必须逐字准确" not in prompt
+    assert "完整上屏内容已有的数字、单位、专有名词、业务术语和否定含义必须准确" not in prompt
+    assert "不得自行补充限定信息" not in prompt
+    assert "不得新增未经页面内容支持的上屏文字" not in prompt
 
 
 def test_content_first_locks_only_conclusion_and_numeric_fact_lines() -> None:
@@ -498,7 +491,7 @@ def test_semantic_only_still_locks_business_module_labels() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
     assert CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT in prompt
-    assert "中的每一项都必须逐字准确" in prompt
+    assert "中的每一项都必须逐字准确" not in prompt
     assert "【完整上屏内容】仍须完整表达" in prompt
 
 
@@ -649,7 +642,7 @@ def test_visual_proof_prefers_page_context_and_new_relations_are_selectable() ->
         )
     assert "视觉证明：用共同底座托住业务结果" in prompt
     assert prompt.count("视觉证明：") == 1
-    assert "不使用等权卡片、通用图标流程或逐项配图" in prompt
+    assert "不使用等权卡片、通用图标流程或逐项配图" not in prompt
     assert "如出现人物，仅使用远景、背影或局部" in prompt
 
 
