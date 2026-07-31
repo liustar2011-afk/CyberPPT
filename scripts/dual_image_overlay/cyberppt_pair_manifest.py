@@ -85,11 +85,14 @@ FULL_DUAL_IMAGE_CONTAINER_CONTRACT = """【双图文字可分离规则｜不上�
 
 
 def _full_prompt_for_variants(prompt: str, output_variants: list[str]) -> str:
-    """Add separability guidance only when a no-text background will be derived."""
+    """Keep the approved script prompt unchanged for every output mode.
 
-    if "background" not in output_variants:
-        return prompt
-    return f"{prompt.rstrip()}\n\n{FULL_DUAL_IMAGE_CONTAINER_CONTRACT}\n"
+    The script compiler is the single source of prompt truth.  Dual-image
+    background generation uses its own operation prompt, but must not mutate
+    or append a second generic contract to the approved full-image prompt.
+    """
+
+    return prompt
 
 
 def _background_prompt(page_number: int) -> str:

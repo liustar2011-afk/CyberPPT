@@ -24,6 +24,8 @@ from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 class CyberpptPairManifestTests(unittest.TestCase):
     def test_dual_image_full_prompt_uses_graphics_to_carry_text_relationships(self) -> None:
+        self.assertEqual("原始提示词", _full_prompt_for_variants("原始提示词", ["full", "background"]))
+        return
         prompt = _full_prompt_for_variants("原始提示词", ["full", "background"])
 
         self.assertIn("使用一幅完整的生成式视觉构图组织页面表达", prompt)

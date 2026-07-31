@@ -96,4 +96,43 @@ def write_project_style_lock(
 
 
 def load_style_lock(path: Path) -> dict[str, Any]:
-    return _read_json(path)
+    payload = _read_json(path)
+    style = payload.get("style")
+    if not isinstance(style, dict) or int(style.get("id", -1)) != 9:
+        return payload
+
+    # STYLE09 is maintained by the human-readable visual-system reference.
+    # Refresh the lock snapshot at read time so edits to that document are not
+    # silently ignored by ImageGen handoff compilation.
+    style_source = payload.get("style_source")
+    source_reference = payload.get("source_reference")
+    candidates: list[Path] = []
+    if isinstance(source_reference, str) and source_reference.strip():
+        reference = Path(source_reference)
+        if reference.is_absolute():
+            candidates.append(reference)
+        elif isinstance(style_source, str) and style_source.strip():
+            source_path = Path(style_source)
+            # style_source points at .../scripts/dual_image_overlay/style_presets/*.json;
+            # the repository root is three parents above that file.
+            if len(source_path.parents) > 3:
+                candidates.append(source_path.parents[3] / reference)
+        candidates.append(Path.cwd() / reference)
+    for reference in candidates:
+        if not reference.is_file():
+            continue
+        text = reference.read_text(encoding="utf-8")
+        marker = "## 扩展风格9："
+        start = text.find(marker)
+        if start < 0:
+            break
+        end = text.find("\n## ", start + len(marker))
+        section = text[start:end if end >= 0 else len(text)].strip()
+        if section:
+            refreshed = dict(payload)
+            refreshed_style = dict(style)
+            refreshed_style["prompt_contract"] = section
+            refreshed["style"] = refreshed_style
+            return refreshed
+        break
+    return payload

@@ -975,6 +975,11 @@ def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
         return style
     canonical = resolve_default_style(style_id=9)
     canonical["colors"] = dict(colors)
+    # Keep the live STYLE09 reference contract refreshed by load_style_lock;
+    # only fall back to the bundled JSON contract when the lock has none.
+    lock_contract = str(style.get("prompt_contract") or "").strip()
+    if lock_contract:
+        canonical["prompt_contract"] = lock_contract
     return canonical
 
 

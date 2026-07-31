@@ -104,13 +104,13 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "扩展风格9：象牙白 + 深蓝领导汇报" in implicit
     assert "风格适用语境" not in implicit
     assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" not in implicit
-    assert "Industry scene anchor" in implicit
+    assert "通过行业对象、设施设备、专业环境" in implicit
     assert "【页面逻辑｜不上屏】" not in implicit
     assert "不使用等权卡片、通用图标流程或逐项配图" not in implicit
     assert "每个锁定模块及其名称只出现一次" not in implicit
     assert "Do not show frontal faces" not in implicit
     assert "解释性正文由后续 PPT 可编辑文字层承载" not in implicit
-    assert "senior leadership briefing / speech-support" in implicit
+    assert "领导汇报" in implicit
     assert "style.selected_lock" in (
         implicit_compiled.build_metadata()["injected_rule_ids"]
     )
