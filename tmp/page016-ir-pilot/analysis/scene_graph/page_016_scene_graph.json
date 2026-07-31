@@ -1,0 +1,1477 @@
+{
+  "schema": "cyberppt.page_scene_graph.v1",
+  "page": 16,
+  "coordinate_context": {
+    "schema": "cyberppt.scene_graph.coordinate_context.v1",
+    "semantic_input_space": {
+      "width": 1774.0,
+      "height": 887.0
+    },
+    "visual_registry_input_space": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "image_size": {
+      "width": 1774.0,
+      "height": 887.0
+    },
+    "semantic_plan_image_size": {
+      "width": 1774.0,
+      "height": 887.0
+    },
+    "visual_registry_canvas": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "semantic_bbox_extent": {
+      "width": 1707.0,
+      "height": 872.0
+    },
+    "warnings": [],
+    "normalized_canvas": {
+      "width": 1774.0,
+      "height": 887.0
+    },
+    "coordinate_space": {
+      "width": 1774.0,
+      "height": 887.0
+    }
+  },
+  "truth_sources": {
+    "script": {
+      "authority": "text_truth"
+    },
+    "ocr": {
+      "authority": "locator_evidence_only"
+    },
+    "visual_registry": {
+      "authority": "visual_geometry"
+    },
+    "semantic_plan": {
+      "authority": "container_geometry"
+    }
+  },
+  "visual_nodes": [
+    {
+      "node_id": "l1_title",
+      "node_type": "container",
+      "semantic_role": "section_label",
+      "bbox": [
+        28.0,
+        28.0,
+        638.0,
+        90.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "l1_title",
+          "role": "section_label",
+          "bbox": [
+            28,
+            28,
+            638,
+            90
+          ],
+          "text_safe_bbox": [
+            28,
+            28,
+            638,
+            90
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "l1_body",
+      "node_type": "container",
+      "semantic_role": "body",
+      "bbox": [
+        108.0,
+        92.0,
+        628.0,
+        154.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "l1_body",
+          "role": "body",
+          "bbox": [
+            108,
+            92,
+            628,
+            154
+          ],
+          "text_safe_bbox": [
+            108,
+            92,
+            628,
+            154
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "l2_title",
+      "node_type": "container",
+      "semantic_role": "section_label",
+      "bbox": [
+        28.0,
+        202.0,
+        638.0,
+        260.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "l2_title",
+          "role": "section_label",
+          "bbox": [
+            28,
+            202,
+            638,
+            260
+          ],
+          "text_safe_bbox": [
+            28,
+            202,
+            638,
+            260
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "l2_body",
+      "node_type": "container",
+      "semantic_role": "body",
+      "bbox": [
+        108.0,
+        267.0,
+        628.0,
+        333.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "l2_body",
+          "role": "body",
+          "bbox": [
+            108,
+            267,
+            628,
+            333
+          ],
+          "text_safe_bbox": [
+            108,
+            267,
+            628,
+            333
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "l3_title",
+      "node_type": "container",
+      "semantic_role": "section_label",
+      "bbox": [
+        28.0,
+        377.0,
+        638.0,
+        435.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "l3_title",
+          "role": "section_label",
+          "bbox": [
+            28,
+            377,
+            638,
+            435
+          ],
+          "text_safe_bbox": [
+            28,
+            377,
+            638,
+            435
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "l3_body",
+      "node_type": "container",
+      "semantic_role": "body",
+      "bbox": [
+        108.0,
+        443.0,
+        628.0,
+        509.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "l3_body",
+          "role": "body",
+          "bbox": [
+            108,
+            443,
+            628,
+            509
+          ],
+          "text_safe_bbox": [
+            108,
+            443,
+            628,
+            509
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "l4_title",
+      "node_type": "container",
+      "semantic_role": "section_label",
+      "bbox": [
+        28.0,
+        550.0,
+        638.0,
+        608.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "l4_title",
+          "role": "section_label",
+          "bbox": [
+            28,
+            550,
+            638,
+            608
+          ],
+          "text_safe_bbox": [
+            28,
+            550,
+            638,
+            608
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "l4_body",
+      "node_type": "container",
+      "semantic_role": "body",
+      "bbox": [
+        108.0,
+        615.0,
+        628.0,
+        682.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "l4_body",
+          "role": "body",
+          "bbox": [
+            108,
+            615,
+            628,
+            682
+          ],
+          "text_safe_bbox": [
+            108,
+            615,
+            628,
+            682
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "l5_title",
+      "node_type": "container",
+      "semantic_role": "section_label",
+      "bbox": [
+        28.0,
+        710.0,
+        638.0,
+        765.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "l5_title",
+          "role": "section_label",
+          "bbox": [
+            28,
+            710,
+            638,
+            765
+          ],
+          "text_safe_bbox": [
+            28,
+            710,
+            638,
+            765
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "l5_body",
+      "node_type": "container",
+      "semantic_role": "body",
+      "bbox": [
+        108.0,
+        770.0,
+        758.0,
+        872.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "l5_body",
+          "role": "body",
+          "bbox": [
+            108,
+            770,
+            758,
+            872
+          ],
+          "text_safe_bbox": [
+            108,
+            770,
+            758,
+            872
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "gateway_title",
+      "node_type": "container",
+      "semantic_role": "diagram_label",
+      "bbox": [
+        1300.0,
+        75.0,
+        1470.0,
+        111.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "gateway_title",
+          "role": "diagram_label",
+          "bbox": [
+            1300,
+            75,
+            1470,
+            111
+          ],
+          "text_safe_bbox": [
+            1300,
+            75,
+            1470,
+            111
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "gateway_controls",
+      "node_type": "container",
+      "semantic_role": "diagram_body",
+      "bbox": [
+        1082.0,
+        138.0,
+        1707.0,
+        166.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "gateway_controls",
+          "role": "diagram_body",
+          "bbox": [
+            1082,
+            138,
+            1707,
+            166
+          ],
+          "text_safe_bbox": [
+            1082,
+            138,
+            1707,
+            166
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "domain_title",
+      "node_type": "container",
+      "semantic_role": "diagram_label",
+      "bbox": [
+        1320.0,
+        248.0,
+        1470.0,
+        278.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "domain_title",
+          "role": "diagram_label",
+          "bbox": [
+            1320,
+            248,
+            1470,
+            278
+          ],
+          "text_safe_bbox": [
+            1320,
+            248,
+            1470,
+            278
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "domain_items",
+      "node_type": "container",
+      "semantic_role": "diagram_body",
+      "bbox": [
+        1080.0,
+        345.0,
+        1705.0,
+        375.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "domain_items",
+          "role": "diagram_body",
+          "bbox": [
+            1080,
+            345,
+            1705,
+            375
+          ],
+          "text_safe_bbox": [
+            1080,
+            345,
+            1705,
+            375
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "response_title",
+      "node_type": "container",
+      "semantic_role": "diagram_label",
+      "bbox": [
+        1270.0,
+        455.0,
+        1510.0,
+        485.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "response_title",
+          "role": "diagram_label",
+          "bbox": [
+            1270,
+            455,
+            1510,
+            485
+          ],
+          "text_safe_bbox": [
+            1270,
+            455,
+            1510,
+            485
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "response_sync",
+      "node_type": "container",
+      "semantic_role": "diagram_body",
+      "bbox": [
+        1140.0,
+        495.0,
+        1270.0,
+        550.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "response_sync",
+          "role": "diagram_body",
+          "bbox": [
+            1140,
+            495,
+            1270,
+            550
+          ],
+          "text_safe_bbox": [
+            1140,
+            495,
+            1270,
+            550
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "response_async",
+      "node_type": "container",
+      "semantic_role": "diagram_body",
+      "bbox": [
+        1360.0,
+        495.0,
+        1490.0,
+        550.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "response_async",
+          "role": "diagram_body",
+          "bbox": [
+            1360,
+            495,
+            1490,
+            550
+          ],
+          "text_safe_bbox": [
+            1360,
+            495,
+            1490,
+            550
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "response_event",
+      "node_type": "container",
+      "semantic_role": "diagram_body",
+      "bbox": [
+        1570.0,
+        495.0,
+        1705.0,
+        550.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "response_event",
+          "role": "diagram_body",
+          "bbox": [
+            1570,
+            495,
+            1705,
+            550
+          ],
+          "text_safe_bbox": [
+            1570,
+            495,
+            1705,
+            550
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "trace_title",
+      "node_type": "container",
+      "semantic_role": "diagram_label",
+      "bbox": [
+        1230.0,
+        625.0,
+        1555.0,
+        655.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "trace_title",
+          "role": "diagram_label",
+          "bbox": [
+            1230,
+            625,
+            1555,
+            655
+          ],
+          "text_safe_bbox": [
+            1230,
+            625,
+            1555,
+            655
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "trace_writeback",
+      "node_type": "container",
+      "semantic_role": "diagram_body",
+      "bbox": [
+        1140.0,
+        675.0,
+        1270.0,
+        735.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "trace_writeback",
+          "role": "diagram_body",
+          "bbox": [
+            1140,
+            675,
+            1270,
+            735
+          ],
+          "text_safe_bbox": [
+            1140,
+            675,
+            1270,
+            735
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "trace_chain",
+      "node_type": "container",
+      "semantic_role": "diagram_body",
+      "bbox": [
+        1360.0,
+        675.0,
+        1490.0,
+        735.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "trace_chain",
+          "role": "diagram_body",
+          "bbox": [
+            1360,
+            675,
+            1490,
+            735
+          ],
+          "text_safe_bbox": [
+            1360,
+            675,
+            1490,
+            735
+          ]
+        }
+      }
+    },
+    {
+      "node_id": "trace_audit",
+      "node_type": "container",
+      "semantic_role": "diagram_body",
+      "bbox": [
+        1570.0,
+        675.0,
+        1705.0,
+        735.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "trace_audit",
+          "role": "diagram_body",
+          "bbox": [
+            1570,
+            675,
+            1705,
+            735
+          ],
+          "text_safe_bbox": [
+            1570,
+            675,
+            1705,
+            735
+          ]
+        }
+      }
+    }
+  ],
+  "text_nodes": [
+    {
+      "node_id": "text_semantic_1",
+      "text": "01｜身份组织接口",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "section_label",
+      "binding": {
+        "type": "container_text",
+        "target_id": "l1_title",
+        "placement": "inside",
+        "safe_bbox": [
+          28.0,
+          28.0,
+          638.0,
+          90.0
+        ]
+      },
+      "style": {
+        "font_size": 26,
+        "font_weight": "bold",
+        "layout_bbox": [
+          28.0,
+          28.0,
+          638.0,
+          90.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_2",
+      "text": "• 同步学校、院系、专业、课程、班级、用户、角色与授权范围，\n  对接统一身份和教务系统。",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "l1_body",
+        "placement": "inside",
+        "safe_bbox": [
+          108.0,
+          92.0,
+          628.0,
+          154.0
+        ]
+      },
+      "style": {
+        "font_size": 15,
+        "layout_bbox": [
+          108.0,
+          92.0,
+          628.0,
+          154.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_3",
+      "text": "02｜知识题库接口",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "section_label",
+      "binding": {
+        "type": "container_text",
+        "target_id": "l2_title",
+        "placement": "inside",
+        "safe_bbox": [
+          28.0,
+          202.0,
+          638.0,
+          260.0
+        ]
+      },
+      "style": {
+        "font_size": 26,
+        "font_weight": "bold",
+        "layout_bbox": [
+          28.0,
+          202.0,
+          638.0,
+          260.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_4",
+      "text": "• 以服务端凭证、用途范围、最小返回和频率控制提供知识查询、\n  题目推荐与受控批量任务。",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "l2_body",
+        "placement": "inside",
+        "safe_bbox": [
+          108.0,
+          267.0,
+          628.0,
+          333.0
+        ]
+      },
+      "style": {
+        "font_size": 15,
+        "layout_bbox": [
+          108.0,
+          267.0,
+          628.0,
+          333.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_5",
+      "text": "03｜学习教学接口",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "section_label",
+      "binding": {
+        "type": "container_text",
+        "target_id": "l3_title",
+        "placement": "inside",
+        "safe_bbox": [
+          28.0,
+          377.0,
+          638.0,
+          435.0
+        ]
+      },
+      "style": {
+        "font_size": 26,
+        "font_weight": "bold",
+        "layout_bbox": [
+          28.0,
+          377.0,
+          638.0,
+          435.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_6",
+      "text": "• 知识查询、题目推荐和作答提交即时返回；\n  文档解析、教案生成通过异步任务执行。",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "l3_body",
+        "placement": "inside",
+        "safe_bbox": [
+          108.0,
+          443.0,
+          628.0,
+          509.0
+        ]
+      },
+      "style": {
+        "font_size": 15,
+        "layout_bbox": [
+          108.0,
+          443.0,
+          628.0,
+          509.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_7",
+      "text": "04｜分析报告接口",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "section_label",
+      "binding": {
+        "type": "container_text",
+        "target_id": "l4_title",
+        "placement": "inside",
+        "safe_bbox": [
+          28.0,
+          550.0,
+          638.0,
+          608.0
+        ]
+      },
+      "style": {
+        "font_size": 26,
+        "font_weight": "bold",
+        "layout_bbox": [
+          28.0,
+          550.0,
+          638.0,
+          608.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_8",
+      "text": "• 分析任务接收年度、区域、学科和情景参数，\n  返回任务标识、结果范围、版本与主要因素。",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "l4_body",
+        "placement": "inside",
+        "safe_bbox": [
+          108.0,
+          615.0,
+          628.0,
+          682.0
+        ]
+      },
+      "style": {
+        "font_size": 15,
+        "layout_bbox": [
+          108.0,
+          615.0,
+          628.0,
+          682.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_9",
+      "text": "05｜网关治理",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "section_label",
+      "binding": {
+        "type": "container_text",
+        "target_id": "l5_title",
+        "placement": "inside",
+        "safe_bbox": [
+          28.0,
+          710.0,
+          638.0,
+          765.0
+        ]
+      },
+      "style": {
+        "font_size": 24,
+        "font_weight": "bold",
+        "layout_bbox": [
+          28.0,
+          710.0,
+          638.0,
+          765.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_10",
+      "text": "• 统一执行身份认证、签名、幂等、版本、错误码、限流、链路追踪和模型调用治理。\n• 协同关系：统一网关 → 领域接口 → 同步响应/异步任务/内部事件 → 结果回写与全链追踪。\n• 业务含义：统一网关使跨系统交换遵循同一身份、版本、追踪和配额规则，减少接口口径分裂和重复建设。",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "l5_body",
+        "placement": "inside",
+        "safe_bbox": [
+          108.0,
+          770.0,
+          758.0,
+          872.0
+        ]
+      },
+      "style": {
+        "font_size": 7.5,
+        "layout_bbox": [
+          108.0,
+          770.0,
+          758.0,
+          872.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_11",
+      "text": "统一网关",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "diagram_label",
+      "binding": {
+        "type": "container_text",
+        "target_id": "gateway_title",
+        "placement": "inside",
+        "safe_bbox": [
+          1300.0,
+          75.0,
+          1470.0,
+          111.0
+        ]
+      },
+      "style": {
+        "font_size": 18,
+        "fill": "#FFFFFF",
+        "bold": true,
+        "align": "center",
+        "layout_bbox": [
+          1300.0,
+          75.0,
+          1470.0,
+          111.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_12",
+      "text": "身份认证    签名校验    幂等控制    版本管理    错误码    限流控制    链路追踪    模型治理",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "diagram_body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "gateway_controls",
+        "placement": "inside",
+        "safe_bbox": [
+          1082.0,
+          138.0,
+          1707.0,
+          166.0
+        ]
+      },
+      "style": {
+        "font_size": 10,
+        "fill": "#FFFFFF",
+        "align": "center",
+        "layout_bbox": [
+          1082.0,
+          138.0,
+          1707.0,
+          166.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_13",
+      "text": "领域接口",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "diagram_label",
+      "binding": {
+        "type": "container_text",
+        "target_id": "domain_title",
+        "placement": "inside",
+        "safe_bbox": [
+          1320.0,
+          248.0,
+          1470.0,
+          278.0
+        ]
+      },
+      "style": {
+        "font_size": 16,
+        "font_weight": "bold",
+        "align": "center",
+        "layout_bbox": [
+          1320.0,
+          248.0,
+          1470.0,
+          278.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_14",
+      "text": "身份组织接口          知识题库接口          学习教学接口          分析报告接口",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "diagram_body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "domain_items",
+        "placement": "inside",
+        "safe_bbox": [
+          1080.0,
+          345.0,
+          1705.0,
+          375.0
+        ]
+      },
+      "style": {
+        "font_size": 12,
+        "font_weight": "bold",
+        "align": "center",
+        "layout_bbox": [
+          1080.0,
+          345.0,
+          1705.0,
+          375.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_15",
+      "text": "响应与事件流",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "diagram_label",
+      "binding": {
+        "type": "container_text",
+        "target_id": "response_title",
+        "placement": "inside",
+        "safe_bbox": [
+          1270.0,
+          455.0,
+          1510.0,
+          485.0
+        ]
+      },
+      "style": {
+        "font_size": 16,
+        "bold": true,
+        "align": "center",
+        "layout_bbox": [
+          1270.0,
+          455.0,
+          1510.0,
+          485.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_16",
+      "text": "同步响应\n即时返回结果",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "diagram_body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "response_sync",
+        "placement": "inside",
+        "safe_bbox": [
+          1140.0,
+          495.0,
+          1270.0,
+          550.0
+        ]
+      },
+      "style": {
+        "font_size": 9,
+        "align": "center",
+        "layout_bbox": [
+          1140.0,
+          495.0,
+          1270.0,
+          550.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_17",
+      "text": "异步任务\n后台处理回调",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "diagram_body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "response_async",
+        "placement": "inside",
+        "safe_bbox": [
+          1360.0,
+          495.0,
+          1490.0,
+          550.0
+        ]
+      },
+      "style": {
+        "font_size": 9,
+        "align": "center",
+        "layout_bbox": [
+          1360.0,
+          495.0,
+          1490.0,
+          550.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_18",
+      "text": "内部事件\n状态变更通知",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "diagram_body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "response_event",
+        "placement": "inside",
+        "safe_bbox": [
+          1570.0,
+          495.0,
+          1705.0,
+          550.0
+        ]
+      },
+      "style": {
+        "font_size": 9,
+        "align": "center",
+        "layout_bbox": [
+          1570.0,
+          495.0,
+          1705.0,
+          550.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_19",
+      "text": "结果回写与全链追踪",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "diagram_label",
+      "binding": {
+        "type": "container_text",
+        "target_id": "trace_title",
+        "placement": "inside",
+        "safe_bbox": [
+          1230.0,
+          625.0,
+          1555.0,
+          655.0
+        ]
+      },
+      "style": {
+        "font_size": 16,
+        "bold": true,
+        "align": "center",
+        "layout_bbox": [
+          1230.0,
+          625.0,
+          1555.0,
+          655.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_20",
+      "text": "结果回写\n更新业务成果",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "diagram_body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "trace_writeback",
+        "placement": "inside",
+        "safe_bbox": [
+          1140.0,
+          675.0,
+          1270.0,
+          735.0
+        ]
+      },
+      "style": {
+        "font_size": 9,
+        "align": "center",
+        "layout_bbox": [
+          1140.0,
+          675.0,
+          1270.0,
+          735.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_21",
+      "text": "全链追踪\n端到端可观测",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "diagram_body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "trace_chain",
+        "placement": "inside",
+        "safe_bbox": [
+          1360.0,
+          675.0,
+          1490.0,
+          735.0
+        ]
+      },
+      "style": {
+        "font_size": 9,
+        "align": "center",
+        "layout_bbox": [
+          1360.0,
+          675.0,
+          1490.0,
+          735.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_22",
+      "text": "审计留痕\n全流程留存",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "diagram_body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "trace_audit",
+        "placement": "inside",
+        "safe_bbox": [
+          1570.0,
+          675.0,
+          1705.0,
+          735.0
+        ]
+      },
+      "style": {
+        "font_size": 9,
+        "align": "center",
+        "layout_bbox": [
+          1570.0,
+          675.0,
+          1705.0,
+          735.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    }
+  ],
+  "relations": [],
+  "layout_intents": [],
+  "gates": {},
+  "gate_issues": [],
+  "metadata": {
+    "builder": "scene_graph.builder.v1",
+    "semantic_layout_plan_consumed": true,
+    "source_capture_page_consumed": false
+  }
+}

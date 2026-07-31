@@ -1,0 +1,2912 @@
+{
+  "schema": "cyberppt.dual_image.page_understanding.v1",
+  "page_number": 16,
+  "valid": true,
+  "coordinate_context": {
+    "normalized_canvas": {
+      "width": 1280.0,
+      "height": 720.0
+    }
+  },
+  "cache_signature": {
+    "full_sha256": "ab053a8e1b95c1f89e7a331e21e9f269958c1a6b79f497f9fdc0d2a6a82b5585",
+    "background_sha256": "390c5554577595d9e8e05203cddd43d086e55e8ea658ba0de0d2f6be1bc15a0d",
+    "full_path_sha256": "821838ab35785bf85becaae7ee284cdc5e5c3ec21e9f9eb8b4eea4fa9be4b99e",
+    "background_path_sha256": "e840ac99fe9c7f935f3d5f8123041201e3fe5457fd4a2d7dee28caa28b6d59c8",
+    "text_block_count": 22,
+    "container_count": 30,
+    "explicit_container_count": 22,
+    "implicit_container_count": 8,
+    "visual_element_count": 0
+  },
+  "registration": {
+    "valid": true,
+    "transform": "identity",
+    "source": "normalized_1280x720"
+  },
+  "containers": [
+    {
+      "id": "l1_title",
+      "kind": "explicit_container",
+      "role": "section_label",
+      "bbox": [
+        28.0,
+        28.0,
+        638.0,
+        90.0
+      ],
+      "text_safe_bbox": [
+        28.0,
+        28.0,
+        638.0,
+        90.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "l1_body",
+      "kind": "explicit_container",
+      "role": "body",
+      "bbox": [
+        108.0,
+        92.0,
+        628.0,
+        154.0
+      ],
+      "text_safe_bbox": [
+        108.0,
+        92.0,
+        628.0,
+        154.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "l2_title",
+      "kind": "explicit_container",
+      "role": "section_label",
+      "bbox": [
+        28.0,
+        202.0,
+        638.0,
+        260.0
+      ],
+      "text_safe_bbox": [
+        28.0,
+        202.0,
+        638.0,
+        260.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "l2_body",
+      "kind": "explicit_container",
+      "role": "body",
+      "bbox": [
+        108.0,
+        267.0,
+        628.0,
+        333.0
+      ],
+      "text_safe_bbox": [
+        108.0,
+        267.0,
+        628.0,
+        333.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "l3_title",
+      "kind": "explicit_container",
+      "role": "section_label",
+      "bbox": [
+        28.0,
+        377.0,
+        638.0,
+        435.0
+      ],
+      "text_safe_bbox": [
+        28.0,
+        377.0,
+        638.0,
+        435.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "l3_body",
+      "kind": "explicit_container",
+      "role": "body",
+      "bbox": [
+        108.0,
+        443.0,
+        628.0,
+        509.0
+      ],
+      "text_safe_bbox": [
+        108.0,
+        443.0,
+        628.0,
+        509.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "l4_title",
+      "kind": "explicit_container",
+      "role": "section_label",
+      "bbox": [
+        28.0,
+        550.0,
+        638.0,
+        608.0
+      ],
+      "text_safe_bbox": [
+        28.0,
+        550.0,
+        638.0,
+        608.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "l4_body",
+      "kind": "explicit_container",
+      "role": "body",
+      "bbox": [
+        108.0,
+        615.0,
+        628.0,
+        682.0
+      ],
+      "text_safe_bbox": [
+        108.0,
+        615.0,
+        628.0,
+        682.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "l5_title",
+      "kind": "explicit_container",
+      "role": "section_label",
+      "bbox": [
+        28.0,
+        710.0,
+        638.0,
+        765.0
+      ],
+      "text_safe_bbox": [
+        28.0,
+        710.0,
+        638.0,
+        765.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "l5_body",
+      "kind": "explicit_container",
+      "role": "body",
+      "bbox": [
+        108.0,
+        770.0,
+        758.0,
+        872.0
+      ],
+      "text_safe_bbox": [
+        108.0,
+        770.0,
+        758.0,
+        872.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "gateway_title",
+      "kind": "explicit_container",
+      "role": "diagram_label",
+      "bbox": [
+        1300.0,
+        75.0,
+        1470.0,
+        111.0
+      ],
+      "text_safe_bbox": [
+        1300.0,
+        75.0,
+        1470.0,
+        111.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "gateway_controls",
+      "kind": "explicit_container",
+      "role": "diagram_body",
+      "bbox": [
+        1082.0,
+        138.0,
+        1707.0,
+        166.0
+      ],
+      "text_safe_bbox": [
+        1082.0,
+        138.0,
+        1707.0,
+        166.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "domain_title",
+      "kind": "explicit_container",
+      "role": "diagram_label",
+      "bbox": [
+        1320.0,
+        248.0,
+        1470.0,
+        278.0
+      ],
+      "text_safe_bbox": [
+        1320.0,
+        248.0,
+        1470.0,
+        278.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "domain_items",
+      "kind": "explicit_container",
+      "role": "diagram_body",
+      "bbox": [
+        1080.0,
+        345.0,
+        1705.0,
+        375.0
+      ],
+      "text_safe_bbox": [
+        1080.0,
+        345.0,
+        1705.0,
+        375.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "response_title",
+      "kind": "explicit_container",
+      "role": "diagram_label",
+      "bbox": [
+        1270.0,
+        455.0,
+        1510.0,
+        485.0
+      ],
+      "text_safe_bbox": [
+        1270.0,
+        455.0,
+        1510.0,
+        485.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "response_sync",
+      "kind": "explicit_container",
+      "role": "diagram_body",
+      "bbox": [
+        1140.0,
+        495.0,
+        1270.0,
+        550.0
+      ],
+      "text_safe_bbox": [
+        1140.0,
+        495.0,
+        1270.0,
+        550.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "response_async",
+      "kind": "explicit_container",
+      "role": "diagram_body",
+      "bbox": [
+        1360.0,
+        495.0,
+        1490.0,
+        550.0
+      ],
+      "text_safe_bbox": [
+        1360.0,
+        495.0,
+        1490.0,
+        550.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "response_event",
+      "kind": "explicit_container",
+      "role": "diagram_body",
+      "bbox": [
+        1570.0,
+        495.0,
+        1705.0,
+        550.0
+      ],
+      "text_safe_bbox": [
+        1570.0,
+        495.0,
+        1705.0,
+        550.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "trace_title",
+      "kind": "explicit_container",
+      "role": "diagram_label",
+      "bbox": [
+        1230.0,
+        625.0,
+        1555.0,
+        655.0
+      ],
+      "text_safe_bbox": [
+        1230.0,
+        625.0,
+        1555.0,
+        655.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "trace_writeback",
+      "kind": "explicit_container",
+      "role": "diagram_body",
+      "bbox": [
+        1140.0,
+        675.0,
+        1270.0,
+        735.0
+      ],
+      "text_safe_bbox": [
+        1140.0,
+        675.0,
+        1270.0,
+        735.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "trace_chain",
+      "kind": "explicit_container",
+      "role": "diagram_body",
+      "bbox": [
+        1360.0,
+        675.0,
+        1490.0,
+        735.0
+      ],
+      "text_safe_bbox": [
+        1360.0,
+        675.0,
+        1490.0,
+        735.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "trace_audit",
+      "kind": "explicit_container",
+      "role": "diagram_body",
+      "bbox": [
+        1570.0,
+        675.0,
+        1705.0,
+        735.0
+      ],
+      "text_safe_bbox": [
+        1570.0,
+        675.0,
+        1705.0,
+        735.0
+      ],
+      "source": "background_image",
+      "confidence": 0.8
+    },
+    {
+      "id": "implicit_overlay_box_002",
+      "kind": "implicit_text_container",
+      "role": "text_safe_zone",
+      "bbox": [
+        123.43,
+        160.56,
+        640.62,
+        224.83
+      ],
+      "text_safe_bbox": [
+        123.43,
+        160.56,
+        640.62,
+        224.83
+      ],
+      "source": "full_image_text_block",
+      "confidence": 0.82
+    },
+    {
+      "id": "implicit_overlay_box_004",
+      "kind": "implicit_text_container",
+      "role": "text_safe_zone",
+      "bbox": [
+        123.43,
+        308.1,
+        640.62,
+        375.74
+      ],
+      "text_safe_bbox": [
+        123.43,
+        308.1,
+        640.62,
+        375.74
+      ],
+      "source": "full_image_text_block",
+      "confidence": 0.82
+    },
+    {
+      "id": "implicit_overlay_box_009",
+      "kind": "implicit_text_container",
+      "role": "text_safe_zone",
+      "bbox": [
+        47.56,
+        681.57,
+        650.1099999999999,
+        720.0
+      ],
+      "text_safe_bbox": [
+        47.56,
+        681.57,
+        650.1099999999999,
+        720.0
+      ],
+      "source": "full_image_text_block",
+      "confidence": 0.82
+    },
+    {
+      "id": "implicit_overlay_box_011",
+      "kind": "implicit_text_container",
+      "role": "text_safe_zone",
+      "bbox": [
+        1253.97,
+        146.23,
+        1280.0,
+        188.57999999999998
+      ],
+      "text_safe_bbox": [
+        1253.97,
+        146.23,
+        1280.0,
+        188.57999999999998
+      ],
+      "source": "full_image_text_block",
+      "confidence": 0.82
+    },
+    {
+      "id": "implicit_overlay_box_012",
+      "kind": "implicit_text_container",
+      "role": "text_safe_zone",
+      "bbox": [
+        1047.21,
+        199.34,
+        1280.0,
+        234.95
+      ],
+      "text_safe_bbox": [
+        1047.21,
+        199.34,
+        1280.0,
+        234.95
+      ],
+      "source": "full_image_text_block",
+      "confidence": 0.82
+    },
+    {
+      "id": "implicit_overlay_box_014",
+      "kind": "implicit_text_container",
+      "role": "text_safe_zone",
+      "bbox": [
+        1045.31,
+        373.85,
+        1280.0,
+        411.14000000000004
+      ],
+      "text_safe_bbox": [
+        1045.31,
+        373.85,
+        1280.0,
+        411.14000000000004
+      ],
+      "source": "full_image_text_block",
+      "confidence": 0.82
+    },
+    {
+      "id": "implicit_overlay_box_015",
+      "kind": "implicit_text_container",
+      "role": "text_safe_zone",
+      "bbox": [
+        1225.52,
+        466.59,
+        1280.0,
+        503.88
+      ],
+      "text_safe_bbox": [
+        1225.52,
+        466.59,
+        1280.0,
+        503.88
+      ],
+      "source": "full_image_text_block",
+      "confidence": 0.82
+    },
+    {
+      "id": "implicit_overlay_box_020",
+      "kind": "implicit_text_container",
+      "role": "text_safe_zone",
+      "bbox": [
+        1102.22,
+        652.06,
+        1249.52,
+        714.64
+      ],
+      "text_safe_bbox": [
+        1102.22,
+        652.06,
+        1249.52,
+        714.64
+      ],
+      "source": "full_image_text_block",
+      "confidence": 0.82
+    }
+  ],
+  "text_blocks": [
+    {
+      "id": "overlay_box_001",
+      "ocr_text": "01｜身份组织接口",
+      "final_text": "01｜身份组织接口",
+      "bbox": [
+        59.56,
+        112.61,
+        638.1099999999999,
+        164.88
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 21.92,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "bold",
+        "fill": "#0B1F3D",
+        "align": "left"
+      },
+      "truth": {
+        "status": "script_verified",
+        "source": "script_truth",
+        "matched_text": "01｜身份组织接口",
+        "similarity": 1.0
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 0.8987,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 19.7,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "bold",
+          "fill": "#0B1F3D",
+          "align": "left",
+          "line_height": 1.36,
+          "block_scale": 0.8987,
+          "internal_offset_scale": 0.8987
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_001",
+        "text_block_id": "overlay_box_001",
+        "bbox": [
+          59.56,
+          112.61,
+          638.1099999999999,
+          164.88
+        ],
+        "transform": {
+          "x": 59.56,
+          "y": 112.61,
+          "scale_x": 0.8987,
+          "scale_y": 0.8987
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_001_line_01",
+            "kind": "editable_text_line",
+            "text": "01｜身份组织接口",
+            "line_index": 0,
+            "bbox": [
+              59.56,
+              112.61,
+              638.1099999999999,
+              164.88
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              578.55,
+              52.27
+            ],
+            "style": {
+              "font_size": 19.7,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "bold",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 0.8987,
+              "internal_offset_scale": 0.8987
+            },
+            "scale": 0.8987,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 0.8987,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 1
+        }
+      }
+    },
+    {
+      "id": "overlay_box_002",
+      "ocr_text": "• 同步学校、院系、专业、课程、班级、用户、角色与授权范围，\n  对接统一身份和教务系统。",
+      "final_text": "• 同步学校、院系、专业、课程、班级、用户、角色与授权范围，\n  对接统一身份和教务系统。",
+      "bbox": [
+        135.43,
+        166.56,
+        628.62,
+        218.83
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 12.65,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "400",
+        "fill": "#0B1F3D",
+        "align": "left"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "具体来看，同步学校、院系、专业、课程、班级、用户、角色与授权范围，对接统一身份和教务系统。以服务端凭证、用途范围、最小返回和频率控制提供知识查询、题目推荐与受控批量任务。知识查询、题目推荐和作答提交即时返回；文档解析、教案生成通过异步任务执行。分析任务接收年度、区域、学科和情景参数，返回任务标识、结果范围、版本与主要因素。统一执行身份认证、签名、幂等、版本、错误码、限流、链路追踪和模型调用治理。",
+        "similarity": 0.985,
+        "reason": "script_truth_match_ambiguous"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 1.0,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 12.65,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "400",
+          "fill": "#0B1F3D",
+          "align": "left",
+          "line_height": 1.36,
+          "block_scale": 1.0,
+          "internal_offset_scale": 1.0
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_002",
+        "text_block_id": "overlay_box_002",
+        "bbox": [
+          135.43,
+          166.56,
+          628.62,
+          218.83
+        ],
+        "transform": {
+          "x": 135.43,
+          "y": 166.56,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_002_line_01",
+            "kind": "editable_text_line",
+            "text": "• 同步学校、院系、专业、课程、班级、用户、角色与授权范围，",
+            "line_index": 0,
+            "bbox": [
+              135.43,
+              166.56,
+              628.62,
+              192.695
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              493.19,
+              26.13
+            ],
+            "style": {
+              "font_size": 12.65,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          },
+          {
+            "member_id": "overlay_box_002_line_02",
+            "kind": "editable_text_line",
+            "text": "  对接统一身份和教务系统。",
+            "line_index": 1,
+            "bbox": [
+              135.43,
+              192.695,
+              628.62,
+              218.83
+            ],
+            "relative_bbox": [
+              0.0,
+              26.13,
+              493.19,
+              52.27
+            ],
+            "style": {
+              "font_size": 12.65,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 1.0,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 2
+        }
+      }
+    },
+    {
+      "id": "overlay_box_003",
+      "ocr_text": "02｜知识题库接口",
+      "final_text": "02｜知识题库接口",
+      "bbox": [
+        59.56,
+        259.3,
+        638.1099999999999,
+        308.2
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 21.92,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "bold",
+        "fill": "#0B1F3D",
+        "align": "left"
+      },
+      "truth": {
+        "status": "script_verified",
+        "source": "script_truth",
+        "matched_text": "02｜知识题库接口",
+        "similarity": 1.0
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 0.8987,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 19.7,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "bold",
+          "fill": "#0B1F3D",
+          "align": "left",
+          "line_height": 1.36,
+          "block_scale": 0.8987,
+          "internal_offset_scale": 0.8987
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_003",
+        "text_block_id": "overlay_box_003",
+        "bbox": [
+          59.56,
+          259.3,
+          638.1099999999999,
+          308.2
+        ],
+        "transform": {
+          "x": 59.56,
+          "y": 259.3,
+          "scale_x": 0.8987,
+          "scale_y": 0.8987
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_003_line_01",
+            "kind": "editable_text_line",
+            "text": "02｜知识题库接口",
+            "line_index": 0,
+            "bbox": [
+              59.56,
+              259.3,
+              638.1099999999999,
+              308.2
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              578.55,
+              48.9
+            ],
+            "style": {
+              "font_size": 19.7,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "bold",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 0.8987,
+              "internal_offset_scale": 0.8987
+            },
+            "scale": 0.8987,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 0.8987,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 1
+        }
+      }
+    },
+    {
+      "id": "overlay_box_004",
+      "ocr_text": "• 以服务端凭证、用途范围、最小返回和频率控制提供知识查询、\n  题目推荐与受控批量任务。",
+      "final_text": "• 以服务端凭证、用途范围、最小返回和频率控制提供知识查询、\n  题目推荐与受控批量任务。",
+      "bbox": [
+        135.43,
+        314.1,
+        628.62,
+        369.74
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 12.65,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "400",
+        "fill": "#0B1F3D",
+        "align": "left"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "具体来看，同步学校、院系、专业、课程、班级、用户、角色与授权范围，对接统一身份和教务系统。以服务端凭证、用途范围、最小返回和频率控制提供知识查询、题目推荐与受控批量任务。知识查询、题目推荐和作答提交即时返回；文档解析、教案生成通过异步任务执行。分析任务接收年度、区域、学科和情景参数，返回任务标识、结果范围、版本与主要因素。统一执行身份认证、签名、幂等、版本、错误码、限流、链路追踪和模型调用治理。",
+        "similarity": 0.986,
+        "reason": "script_truth_match_ambiguous"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 1.0,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 12.65,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "400",
+          "fill": "#0B1F3D",
+          "align": "left",
+          "line_height": 1.36,
+          "block_scale": 1.0,
+          "internal_offset_scale": 1.0
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_004",
+        "text_block_id": "overlay_box_004",
+        "bbox": [
+          135.43,
+          314.1,
+          628.62,
+          369.74
+        ],
+        "transform": {
+          "x": 135.43,
+          "y": 314.1,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_004_line_01",
+            "kind": "editable_text_line",
+            "text": "• 以服务端凭证、用途范围、最小返回和频率控制提供知识查询、",
+            "line_index": 0,
+            "bbox": [
+              135.43,
+              314.1,
+              628.62,
+              341.92
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              493.19,
+              27.82
+            ],
+            "style": {
+              "font_size": 12.65,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          },
+          {
+            "member_id": "overlay_box_004_line_02",
+            "kind": "editable_text_line",
+            "text": "  题目推荐与受控批量任务。",
+            "line_index": 1,
+            "bbox": [
+              135.43,
+              341.92,
+              628.62,
+              369.74
+            ],
+            "relative_bbox": [
+              0.0,
+              27.82,
+              493.19,
+              55.64
+            ],
+            "style": {
+              "font_size": 12.65,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 1.0,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 2
+        }
+      }
+    },
+    {
+      "id": "overlay_box_005",
+      "ocr_text": "03｜学习教学接口",
+      "final_text": "03｜学习教学接口",
+      "bbox": [
+        59.56,
+        406.83,
+        638.1099999999999,
+        455.72999999999996
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 21.92,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "bold",
+        "fill": "#0B1F3D",
+        "align": "left"
+      },
+      "truth": {
+        "status": "script_verified",
+        "source": "script_truth",
+        "matched_text": "03｜学习教学接口",
+        "similarity": 1.0
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 1.0,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 21.92,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "bold",
+          "fill": "#0B1F3D",
+          "align": "left",
+          "line_height": 1.36,
+          "block_scale": 1.0,
+          "internal_offset_scale": 1.0
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_005",
+        "text_block_id": "overlay_box_005",
+        "bbox": [
+          59.56,
+          406.83,
+          638.1099999999999,
+          455.72999999999996
+        ],
+        "transform": {
+          "x": 59.56,
+          "y": 406.83,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_005_line_01",
+            "kind": "editable_text_line",
+            "text": "03｜学习教学接口",
+            "line_index": 0,
+            "bbox": [
+              59.56,
+              406.83,
+              638.1099999999999,
+              455.72999999999996
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              578.55,
+              48.9
+            ],
+            "style": {
+              "font_size": 21.92,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "bold",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 1.0,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 1
+        }
+      }
+    },
+    {
+      "id": "overlay_box_006",
+      "ocr_text": "• 知识查询、题目推荐和作答提交即时返回；\n  文档解析、教案生成通过异步任务执行。",
+      "final_text": "• 知识查询、题目推荐和作答提交即时返回；\n  文档解析、教案生成通过异步任务执行。",
+      "bbox": [
+        135.43,
+        462.47,
+        628.62,
+        518.11
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 12.65,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "400",
+        "fill": "#0B1F3D",
+        "align": "left"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "具体来看，同步学校、院系、专业、课程、班级、用户、角色与授权范围，对接统一身份和教务系统。以服务端凭证、用途范围、最小返回和频率控制提供知识查询、题目推荐与受控批量任务。知识查询、题目推荐和作答提交即时返回；文档解析、教案生成通过异步任务执行。分析任务接收年度、区域、学科和情景参数，返回任务标识、结果范围、版本与主要因素。统一执行身份认证、签名、幂等、版本、错误码、限流、链路追踪和模型调用治理。",
+        "similarity": 0.985,
+        "reason": "script_truth_match_ambiguous"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 1.0,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 12.65,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "400",
+          "fill": "#0B1F3D",
+          "align": "left",
+          "line_height": 1.36,
+          "block_scale": 1.0,
+          "internal_offset_scale": 1.0
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_006",
+        "text_block_id": "overlay_box_006",
+        "bbox": [
+          135.43,
+          462.47,
+          628.62,
+          518.11
+        ],
+        "transform": {
+          "x": 135.43,
+          "y": 462.47,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_006_line_01",
+            "kind": "editable_text_line",
+            "text": "• 知识查询、题目推荐和作答提交即时返回；",
+            "line_index": 0,
+            "bbox": [
+              135.43,
+              462.47,
+              628.62,
+              490.29
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              493.19,
+              27.82
+            ],
+            "style": {
+              "font_size": 12.65,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          },
+          {
+            "member_id": "overlay_box_006_line_02",
+            "kind": "editable_text_line",
+            "text": "  文档解析、教案生成通过异步任务执行。",
+            "line_index": 1,
+            "bbox": [
+              135.43,
+              490.29,
+              628.62,
+              518.11
+            ],
+            "relative_bbox": [
+              0.0,
+              27.82,
+              493.19,
+              55.64
+            ],
+            "style": {
+              "font_size": 12.65,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 1.0,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 2
+        }
+      }
+    },
+    {
+      "id": "overlay_box_007",
+      "ocr_text": "04｜分析报告接口",
+      "final_text": "04｜分析报告接口",
+      "bbox": [
+        59.56,
+        552.68,
+        638.1099999999999,
+        601.5799999999999
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 21.92,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "bold",
+        "fill": "#0B1F3D",
+        "align": "left"
+      },
+      "truth": {
+        "status": "script_verified",
+        "source": "script_truth",
+        "matched_text": "04｜分析报告接口",
+        "similarity": 1.0
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 1.0,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 21.92,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "bold",
+          "fill": "#0B1F3D",
+          "align": "left",
+          "line_height": 1.36,
+          "block_scale": 1.0,
+          "internal_offset_scale": 1.0
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_007",
+        "text_block_id": "overlay_box_007",
+        "bbox": [
+          59.56,
+          552.68,
+          638.1099999999999,
+          601.5799999999999
+        ],
+        "transform": {
+          "x": 59.56,
+          "y": 552.68,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_007_line_01",
+            "kind": "editable_text_line",
+            "text": "04｜分析报告接口",
+            "line_index": 0,
+            "bbox": [
+              59.56,
+              552.68,
+              638.1099999999999,
+              601.5799999999999
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              578.55,
+              48.9
+            ],
+            "style": {
+              "font_size": 21.92,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "bold",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 1.0,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 1
+        }
+      }
+    },
+    {
+      "id": "overlay_box_008",
+      "ocr_text": "• 分析任务接收年度、区域、学科和情景参数，\n  返回任务标识、结果范围、版本与主要因素。",
+      "final_text": "• 分析任务接收年度、区域、学科和情景参数，\n  返回任务标识、结果范围、版本与主要因素。",
+      "bbox": [
+        135.43,
+        607.48,
+        628.62,
+        663.96
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 12.65,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "400",
+        "fill": "#0B1F3D",
+        "align": "left"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "具体来看，同步学校、院系、专业、课程、班级、用户、角色与授权范围，对接统一身份和教务系统。以服务端凭证、用途范围、最小返回和频率控制提供知识查询、题目推荐与受控批量任务。知识查询、题目推荐和作答提交即时返回；文档解析、教案生成通过异步任务执行。分析任务接收年度、区域、学科和情景参数，返回任务标识、结果范围、版本与主要因素。统一执行身份认证、签名、幂等、版本、错误码、限流、链路追踪和模型调用治理。",
+        "similarity": 0.986,
+        "reason": "script_truth_match_ambiguous"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 1.0,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 12.65,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "400",
+          "fill": "#0B1F3D",
+          "align": "left",
+          "line_height": 1.36,
+          "block_scale": 1.0,
+          "internal_offset_scale": 1.0
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_008",
+        "text_block_id": "overlay_box_008",
+        "bbox": [
+          135.43,
+          607.48,
+          628.62,
+          663.96
+        ],
+        "transform": {
+          "x": 135.43,
+          "y": 607.48,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_008_line_01",
+            "kind": "editable_text_line",
+            "text": "• 分析任务接收年度、区域、学科和情景参数，",
+            "line_index": 0,
+            "bbox": [
+              135.43,
+              607.48,
+              628.62,
+              635.72
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              493.19,
+              28.24
+            ],
+            "style": {
+              "font_size": 12.65,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          },
+          {
+            "member_id": "overlay_box_008_line_02",
+            "kind": "editable_text_line",
+            "text": "  返回任务标识、结果范围、版本与主要因素。",
+            "line_index": 1,
+            "bbox": [
+              135.43,
+              635.72,
+              628.62,
+              663.96
+            ],
+            "relative_bbox": [
+              0.0,
+              28.24,
+              493.19,
+              56.48
+            ],
+            "style": {
+              "font_size": 12.65,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 1.0,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 2
+        }
+      }
+    },
+    {
+      "id": "overlay_box_009",
+      "ocr_text": "05｜网关治理",
+      "final_text": "05｜网关治理",
+      "bbox": [
+        59.56,
+        687.57,
+        638.1099999999999,
+        733.94
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 20.23,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "bold",
+        "fill": "#0B1F3D",
+        "align": "left"
+      },
+      "truth": {
+        "status": "script_verified",
+        "source": "script_truth",
+        "matched_text": "05｜网关治理",
+        "similarity": 1.0
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 0.8287,
+        "status": "warning",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 16.76,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "bold",
+          "fill": "#0B1F3D",
+          "align": "left",
+          "line_height": 1.36,
+          "block_scale": 0.8287,
+          "internal_offset_scale": 0.8287
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_009",
+        "text_block_id": "overlay_box_009",
+        "bbox": [
+          59.56,
+          687.57,
+          638.1099999999999,
+          733.94
+        ],
+        "transform": {
+          "x": 59.56,
+          "y": 687.57,
+          "scale_x": 0.8287,
+          "scale_y": 0.8287
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_009_line_01",
+            "kind": "editable_text_line",
+            "text": "05｜网关治理",
+            "line_index": 0,
+            "bbox": [
+              59.56,
+              687.57,
+              638.1099999999999,
+              733.94
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              578.55,
+              46.37
+            ],
+            "style": {
+              "font_size": 16.76,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "bold",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 0.8287,
+              "internal_offset_scale": 0.8287
+            },
+            "scale": 0.8287,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 0.8287,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 1
+        }
+      }
+    },
+    {
+      "id": "overlay_box_010",
+      "ocr_text": "• 统一执行身份认证、签名、幂等、版本、错误码、限流、链路追踪和模型调用治理。\n• 协同关系：统一网关 → 领域接口 → 同步响应/异步任务/内部事件 → 结果回写与全链追踪。\n• 业务含义：统一网关使跨系统交换遵循同一身份、版本、追踪和配额规则，减少接口口径分裂和重复建设。",
+      "final_text": "• 统一执行身份认证、签名、幂等、版本、错误码、限流、链路追踪和模型调用治理。\n• 协同关系：统一网关 → 领域接口 → 同步响应/异步任务/内部事件 → 结果回写与全链追踪。\n• 业务含义：统一网关使跨系统交换遵循同一身份、版本、追踪和配额规则，减少接口口径分裂和重复建设。",
+      "bbox": [
+        135.43,
+        738.15,
+        751.9100000000001,
+        824.14
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 12.0,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "400",
+        "fill": "#0B1F3D",
+        "align": "left"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "业务含义：统一网关使跨系统交换遵循同一身份、版本、追踪和配额规则，减少接口口径分裂和重复建设。",
+        "similarity": 0.542,
+        "reason": "script_truth_match_below_threshold"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 1.0,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 12.0,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "400",
+          "fill": "#0B1F3D",
+          "align": "left",
+          "line_height": 1.36,
+          "block_scale": 1.0,
+          "internal_offset_scale": 1.0
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_010",
+        "text_block_id": "overlay_box_010",
+        "bbox": [
+          135.43,
+          738.15,
+          751.9100000000001,
+          824.14
+        ],
+        "transform": {
+          "x": 135.43,
+          "y": 738.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_010_line_01",
+            "kind": "editable_text_line",
+            "text": "• 统一执行身份认证、签名、幂等、版本、错误码、限流、链路追踪和模型调用治理。",
+            "line_index": 0,
+            "bbox": [
+              135.43,
+              738.15,
+              751.9100000000001,
+              766.8133333333333
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              616.48,
+              28.66
+            ],
+            "style": {
+              "font_size": 12.0,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          },
+          {
+            "member_id": "overlay_box_010_line_02",
+            "kind": "editable_text_line",
+            "text": "• 协同关系：统一网关 → 领域接口 → 同步响应/异步任务/内部事件 → 结果回写与全链追踪。",
+            "line_index": 1,
+            "bbox": [
+              135.43,
+              766.8133333333333,
+              751.9100000000001,
+              795.4766666666667
+            ],
+            "relative_bbox": [
+              0.0,
+              28.66,
+              616.48,
+              57.33
+            ],
+            "style": {
+              "font_size": 12.0,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          },
+          {
+            "member_id": "overlay_box_010_line_03",
+            "kind": "editable_text_line",
+            "text": "• 业务含义：统一网关使跨系统交换遵循同一身份、版本、追踪和配额规则，减少接口口径分裂和重复建设。",
+            "line_index": 2,
+            "bbox": [
+              135.43,
+              795.4766666666667,
+              751.9100000000001,
+              824.14
+            ],
+            "relative_bbox": [
+              0.0,
+              57.33,
+              616.48,
+              85.99
+            ],
+            "style": {
+              "font_size": 12.0,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "left",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 1.0,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 3
+        }
+      }
+    },
+    {
+      "id": "overlay_box_011",
+      "ocr_text": "统一网关",
+      "final_text": "统一网关",
+      "bbox": [
+        1265.97,
+        152.23,
+        1427.2,
+        182.57999999999998
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 15.18,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "fill": "#FFFFFF",
+        "align": "center"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "统一网关以版本、追踪、幂等和配额保障协同",
+        "similarity": 1.0,
+        "reason": "script_truth_match_ambiguous"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context"
+    },
+    {
+      "id": "overlay_box_012",
+      "ocr_text": "身份认证    签名校验    幂等控制    版本管理    错误码    限流控制    链路追踪    模型治理",
+      "final_text": "统一执行身份认证、签名、幂等、版本、错误码、限流、链路追踪和模型调用治理。",
+      "bbox": [
+        1059.21,
+        205.34,
+        1651.98,
+        228.95
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 12.0,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "400",
+        "fill": "#FFFFFF",
+        "align": "center"
+      },
+      "truth": {
+        "status": "script_verified",
+        "source": "script_truth",
+        "matched_text": "统一执行身份认证、签名、幂等、版本、错误码、限流、链路追踪和模型调用治理。",
+        "similarity": 0.754
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context"
+    },
+    {
+      "id": "overlay_box_013",
+      "ocr_text": "领域接口",
+      "final_text": "领域接口",
+      "bbox": [
+        1284.94,
+        298.08,
+        1427.21,
+        323.37
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 13.49,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "bold",
+        "fill": "#0B1F3D",
+        "align": "center"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "从业务关系看，外部系统经统一网关进入领域接口，同步请求、异步任务和内部事件按同一身份、版本与追踪规则协同。",
+        "similarity": 1.0,
+        "reason": "script_truth_match_ambiguous"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context"
+    },
+    {
+      "id": "overlay_box_014",
+      "ocr_text": "身份组织接口          知识题库接口          学习教学接口          分析报告接口",
+      "final_text": "身份组织接口          知识题库接口          学习教学接口          分析报告接口",
+      "bbox": [
+        1057.31,
+        379.85,
+        1650.08,
+        405.14000000000004
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 12.0,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "bold",
+        "fill": "#0B1F3D",
+        "align": "center"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "统一网关连接身份组织、知识题库、学习教学和分析报告接口，以版本、追踪、幂等与配额保障跨系统协同。",
+        "similarity": 0.545,
+        "reason": "script_truth_match_below_threshold"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context"
+    },
+    {
+      "id": "overlay_box_015",
+      "ocr_text": "响应与事件流",
+      "final_text": "响应与事件流",
+      "bbox": [
+        1237.52,
+        472.59,
+        1465.1399999999999,
+        497.88
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 13.49,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "fill": "#0B1F3D",
+        "align": "center"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "协同关系：统一网关 → 领域接口 → 同步响应/异步任务/内部事件 → 结果回写与全链追踪。",
+        "similarity": 0.182,
+        "reason": "script_truth_match_below_threshold"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context"
+    },
+    {
+      "id": "overlay_box_016",
+      "ocr_text": "同步响应\n即时返回结果",
+      "final_text": "同步响应\n即时返回结果",
+      "bbox": [
+        1114.22,
+        506.31,
+        1237.52,
+        552.68
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 12.0,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "400",
+        "fill": "#0B1F3D",
+        "align": "center"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "协同关系：统一网关 → 领域接口 → 同步响应/异步任务/内部事件 → 结果回写与全链追踪。",
+        "similarity": 0.25,
+        "reason": "script_truth_match_below_threshold"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 1.0,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 12.0,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "400",
+          "fill": "#0B1F3D",
+          "align": "center",
+          "line_height": 1.36,
+          "block_scale": 1.0,
+          "internal_offset_scale": 1.0
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_016",
+        "text_block_id": "overlay_box_016",
+        "bbox": [
+          1114.22,
+          506.31,
+          1237.52,
+          552.68
+        ],
+        "transform": {
+          "x": 1114.22,
+          "y": 506.31,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_016_line_01",
+            "kind": "editable_text_line",
+            "text": "同步响应",
+            "line_index": 0,
+            "bbox": [
+              1114.22,
+              506.31,
+              1237.52,
+              529.495
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              123.3,
+              23.19
+            ],
+            "style": {
+              "font_size": 12.0,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "center",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          },
+          {
+            "member_id": "overlay_box_016_line_02",
+            "kind": "editable_text_line",
+            "text": "即时返回结果",
+            "line_index": 1,
+            "bbox": [
+              1114.22,
+              529.495,
+              1237.52,
+              552.68
+            ],
+            "relative_bbox": [
+              0.0,
+              23.19,
+              123.3,
+              46.37
+            ],
+            "style": {
+              "font_size": 12.0,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "center",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 1.0,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 2
+        }
+      }
+    },
+    {
+      "id": "overlay_box_017",
+      "ocr_text": "异步任务\n后台处理回调",
+      "final_text": "异步任务\n后台处理回调",
+      "bbox": [
+        1322.88,
+        506.31,
+        1446.18,
+        552.68
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 12.0,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "400",
+        "fill": "#0B1F3D",
+        "align": "center"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "协同关系：统一网关 → 领域接口 → 同步响应/异步任务/内部事件 → 结果回写与全链追踪。",
+        "similarity": 0.208,
+        "reason": "script_truth_match_below_threshold"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 1.0,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 12.0,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "400",
+          "fill": "#0B1F3D",
+          "align": "center",
+          "line_height": 1.36,
+          "block_scale": 1.0,
+          "internal_offset_scale": 1.0
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_017",
+        "text_block_id": "overlay_box_017",
+        "bbox": [
+          1322.88,
+          506.31,
+          1446.18,
+          552.68
+        ],
+        "transform": {
+          "x": 1322.88,
+          "y": 506.31,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_017_line_01",
+            "kind": "editable_text_line",
+            "text": "异步任务",
+            "line_index": 0,
+            "bbox": [
+              1322.88,
+              506.31,
+              1446.18,
+              529.495
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              123.3,
+              23.19
+            ],
+            "style": {
+              "font_size": 12.0,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "center",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          },
+          {
+            "member_id": "overlay_box_017_line_02",
+            "kind": "editable_text_line",
+            "text": "后台处理回调",
+            "line_index": 1,
+            "bbox": [
+              1322.88,
+              529.495,
+              1446.18,
+              552.68
+            ],
+            "relative_bbox": [
+              0.0,
+              23.19,
+              123.3,
+              46.37
+            ],
+            "style": {
+              "font_size": 12.0,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "center",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 1.0,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 2
+        }
+      }
+    },
+    {
+      "id": "overlay_box_018",
+      "ocr_text": "内部事件\n状态变更通知",
+      "final_text": "内部事件\n状态变更通知",
+      "bbox": [
+        1522.05,
+        506.31,
+        1650.09,
+        552.68
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 12.0,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "400",
+        "fill": "#0B1F3D",
+        "align": "center"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "协同关系：统一网关 → 领域接口 → 同步响应/异步任务/内部事件 → 结果回写与全链追踪。",
+        "similarity": 0.167,
+        "reason": "script_truth_match_below_threshold"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 1.0,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 12.0,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "400",
+          "fill": "#0B1F3D",
+          "align": "center",
+          "line_height": 1.36,
+          "block_scale": 1.0,
+          "internal_offset_scale": 1.0
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_018",
+        "text_block_id": "overlay_box_018",
+        "bbox": [
+          1522.05,
+          506.31,
+          1650.09,
+          552.68
+        ],
+        "transform": {
+          "x": 1522.05,
+          "y": 506.31,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_018_line_01",
+            "kind": "editable_text_line",
+            "text": "内部事件",
+            "line_index": 0,
+            "bbox": [
+              1522.05,
+              506.31,
+              1650.09,
+              529.495
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              128.04,
+              23.19
+            ],
+            "style": {
+              "font_size": 12.0,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "center",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          },
+          {
+            "member_id": "overlay_box_018_line_02",
+            "kind": "editable_text_line",
+            "text": "状态变更通知",
+            "line_index": 1,
+            "bbox": [
+              1522.05,
+              529.495,
+              1650.09,
+              552.68
+            ],
+            "relative_bbox": [
+              0.0,
+              23.19,
+              128.04,
+              46.37
+            ],
+            "style": {
+              "font_size": 12.0,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "center",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 1.0,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 2
+        }
+      }
+    },
+    {
+      "id": "overlay_box_019",
+      "ocr_text": "结果回写与全链追踪",
+      "final_text": "结果回写与全链追踪",
+      "bbox": [
+        1199.58,
+        615.91,
+        1507.82,
+        641.1999999999999
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 13.49,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "fill": "#0B1F3D",
+        "align": "center"
+      },
+      "truth": {
+        "status": "script_verified",
+        "source": "script_truth",
+        "matched_text": "协同关系：统一网关 → 领域接口 → 同步响应/异步任务/内部事件 → 结果回写与全链追踪。",
+        "similarity": 1.0
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 1.0,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 13.49,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "700",
+          "fill": "#0B1F3D",
+          "align": "center",
+          "line_height": 1.36,
+          "block_scale": 1.0,
+          "internal_offset_scale": 1.0
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_019",
+        "text_block_id": "overlay_box_019",
+        "bbox": [
+          1199.58,
+          615.91,
+          1507.82,
+          641.1999999999999
+        ],
+        "transform": {
+          "x": 1199.58,
+          "y": 615.91,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_019_line_01",
+            "kind": "editable_text_line",
+            "text": "结果回写与全链追踪",
+            "line_index": 0,
+            "bbox": [
+              1199.58,
+              615.91,
+              1507.82,
+              641.1999999999999
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              308.24,
+              25.29
+            ],
+            "style": {
+              "font_size": 13.49,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "700",
+              "fill": "#0B1F3D",
+              "align": "center",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 1.0,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 1
+        }
+      }
+    },
+    {
+      "id": "overlay_box_020",
+      "ocr_text": "结果回写\n更新业务成果",
+      "final_text": "结果回写\n更新业务成果",
+      "bbox": [
+        1114.22,
+        658.06,
+        1237.52,
+        708.64
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 12.0,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "400",
+        "fill": "#0B1F3D",
+        "align": "center"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "协同关系：统一网关 → 领域接口 → 同步响应/异步任务/内部事件 → 结果回写与全链追踪。",
+        "similarity": 0.167,
+        "reason": "script_truth_match_below_threshold"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context",
+      "fit": {
+        "mode": "uniform_block_scale",
+        "scale": 1.0,
+        "status": "auto_pass",
+        "review_required": false,
+        "fitted_style": {
+          "font_size": 12.0,
+          "font_family": "Microsoft YaHei",
+          "font_weight": "400",
+          "fill": "#0B1F3D",
+          "align": "center",
+          "line_height": 1.36,
+          "block_scale": 1.0,
+          "internal_offset_scale": 1.0
+        }
+      },
+      "text_block_group": {
+        "group_id": "group_overlay_box_020",
+        "text_block_id": "overlay_box_020",
+        "bbox": [
+          1114.22,
+          658.06,
+          1237.52,
+          708.64
+        ],
+        "transform": {
+          "x": 1114.22,
+          "y": 658.06,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        "members": [
+          {
+            "member_id": "overlay_box_020_line_01",
+            "kind": "editable_text_line",
+            "text": "结果回写",
+            "line_index": 0,
+            "bbox": [
+              1114.22,
+              658.06,
+              1237.52,
+              683.3499999999999
+            ],
+            "relative_bbox": [
+              0.0,
+              0.0,
+              123.3,
+              25.29
+            ],
+            "style": {
+              "font_size": 12.0,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "center",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          },
+          {
+            "member_id": "overlay_box_020_line_02",
+            "kind": "editable_text_line",
+            "text": "更新业务成果",
+            "line_index": 1,
+            "bbox": [
+              1114.22,
+              683.3499999999999,
+              1237.52,
+              708.64
+            ],
+            "relative_bbox": [
+              0.0,
+              25.29,
+              123.3,
+              50.58
+            ],
+            "style": {
+              "font_size": 12.0,
+              "font_family": "Microsoft YaHei",
+              "font_weight": "400",
+              "fill": "#0B1F3D",
+              "align": "center",
+              "line_height": 1.36,
+              "block_scale": 1.0,
+              "internal_offset_scale": 1.0
+            },
+            "scale": 1.0,
+            "metadata": {
+              "line_box_source": "fallback",
+              "review_required": true
+            }
+          }
+        ],
+        "scale": 1.0,
+        "edit_behavior": "move_and_scale_as_group",
+        "metadata": {
+          "status": "ok",
+          "review_required": true,
+          "review_reasons": [
+            "missing_line_boxes"
+          ],
+          "line_box_count": 0,
+          "line_count": 2
+        }
+      }
+    },
+    {
+      "id": "overlay_box_021",
+      "ocr_text": "全链追踪\n端到端可观测",
+      "final_text": "全链追踪\n端到端可观测",
+      "bbox": [
+        1322.88,
+        658.06,
+        1446.18,
+        708.64
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 12.0,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "400",
+        "fill": "#0B1F3D",
+        "align": "center"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "协同关系：统一网关 → 领域接口 → 同步响应/异步任务/内部事件 → 结果回写与全链追踪。",
+        "similarity": 0.167,
+        "reason": "script_truth_match_below_threshold"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context"
+    },
+    {
+      "id": "overlay_box_022",
+      "ocr_text": "审计留痕\n全流程留存",
+      "final_text": "审计留痕\n全流程留存",
+      "bbox": [
+        1522.05,
+        658.06,
+        1650.09,
+        708.64
+      ],
+      "line_boxes": [],
+      "style": {
+        "font_size": 12.0,
+        "font_family": "Microsoft YaHei",
+        "font_weight": "400",
+        "fill": "#0B1F3D",
+        "align": "center"
+      },
+      "truth": {
+        "status": "review_required",
+        "source": "ocr_candidate",
+        "matched_text": "统一执行身份认证、签名、幂等、版本、错误码、限流、链路追踪和模型调用治理。",
+        "similarity": 0.051,
+        "reason": "script_truth_match_below_threshold"
+      },
+      "fit_policy": {
+        "mode": "preserve_lines_then_uniform_scale"
+      },
+      "source": "overlay_export_context"
+    }
+  ],
+  "container_text_bindings": [
+    {
+      "text_block_id": "overlay_box_001",
+      "container_id": "l1_body",
+      "method": "bbox_intersection",
+      "intersection_ratio": 0.712,
+      "confidence": 0.712
+    },
+    {
+      "text_block_id": "overlay_box_002",
+      "container_id": "implicit_overlay_box_002",
+      "method": "bbox_intersection",
+      "intersection_ratio": 1.0,
+      "confidence": 1.0
+    },
+    {
+      "text_block_id": "overlay_box_003",
+      "container_id": "l2_body",
+      "method": "bbox_intersection",
+      "intersection_ratio": 0.757,
+      "confidence": 0.757
+    },
+    {
+      "text_block_id": "overlay_box_004",
+      "container_id": "implicit_overlay_box_004",
+      "method": "bbox_intersection",
+      "intersection_ratio": 1.0,
+      "confidence": 1.0
+    },
+    {
+      "text_block_id": "overlay_box_005",
+      "container_id": "l3_title",
+      "method": "bbox_intersection",
+      "intersection_ratio": 0.576,
+      "confidence": 0.576
+    },
+    {
+      "text_block_id": "overlay_box_006",
+      "container_id": "l3_body",
+      "method": "bbox_intersection",
+      "intersection_ratio": 0.835,
+      "confidence": 0.835
+    },
+    {
+      "text_block_id": "overlay_box_007",
+      "container_id": "l4_title",
+      "method": "bbox_intersection",
+      "intersection_ratio": 1.0,
+      "confidence": 1.0
+    },
+    {
+      "text_block_id": "overlay_box_008",
+      "container_id": "l4_body",
+      "method": "bbox_intersection",
+      "intersection_ratio": 0.866,
+      "confidence": 0.866
+    },
+    {
+      "text_block_id": "overlay_box_009",
+      "container_id": "implicit_overlay_box_009",
+      "method": "bbox_intersection",
+      "intersection_ratio": 0.699,
+      "confidence": 0.699
+    },
+    {
+      "text_block_id": "overlay_box_010",
+      "container_id": "l5_body",
+      "method": "bbox_intersection",
+      "intersection_ratio": 0.63,
+      "confidence": 0.63
+    },
+    {
+      "text_block_id": "overlay_box_016",
+      "container_id": "response_sync",
+      "method": "bbox_intersection",
+      "intersection_ratio": 0.745,
+      "confidence": 0.745
+    },
+    {
+      "text_block_id": "overlay_box_017",
+      "container_id": "response_async",
+      "method": "bbox_intersection",
+      "intersection_ratio": 0.659,
+      "confidence": 0.659
+    },
+    {
+      "text_block_id": "overlay_box_018",
+      "container_id": "response_event",
+      "method": "bbox_intersection",
+      "intersection_ratio": 0.589,
+      "confidence": 0.589
+    },
+    {
+      "text_block_id": "overlay_box_019",
+      "container_id": "trace_title",
+      "method": "bbox_intersection",
+      "intersection_ratio": 0.577,
+      "confidence": 0.577
+    },
+    {
+      "text_block_id": "overlay_box_020",
+      "container_id": "implicit_overlay_box_020",
+      "method": "bbox_intersection",
+      "intersection_ratio": 1.0,
+      "confidence": 1.0
+    }
+  ],
+  "visual_elements": [],
+  "review_items": [
+    {
+      "type": "unbound_text_block",
+      "text_block_id": "overlay_box_011",
+      "text": "统一网关",
+      "severity": "warning"
+    },
+    {
+      "type": "unbound_text_block",
+      "text_block_id": "overlay_box_012",
+      "text": "统一执行身份认证、签名、幂等、版本、错误码、限流、链路追踪和模型调用治理。",
+      "severity": "warning"
+    },
+    {
+      "type": "unbound_text_block",
+      "text_block_id": "overlay_box_013",
+      "text": "领域接口",
+      "severity": "warning"
+    },
+    {
+      "type": "unbound_text_block",
+      "text_block_id": "overlay_box_014",
+      "text": "身份组织接口          知识题库接口          学习教学接口          分析报告接口",
+      "severity": "warning"
+    },
+    {
+      "type": "unbound_text_block",
+      "text_block_id": "overlay_box_015",
+      "text": "响应与事件流",
+      "severity": "warning"
+    },
+    {
+      "type": "unbound_text_block",
+      "text_block_id": "overlay_box_021",
+      "text": "全链追踪\n端到端可观测",
+      "severity": "warning"
+    },
+    {
+      "type": "unbound_text_block",
+      "text_block_id": "overlay_box_022",
+      "text": "审计留痕\n全流程留存",
+      "severity": "warning"
+    }
+  ],
+  "error_count": 0,
+  "warning_count": 7,
+  "inputs": {
+    "full_image": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\images\\normalized\\page_016_接口与集成体系_full_1774x887.png",
+    "background_image": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\images\\normalized\\page_016_接口与集成体系_background_1774x887.png"
+  }
+}

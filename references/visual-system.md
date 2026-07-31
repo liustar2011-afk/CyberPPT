@@ -323,12 +323,13 @@
 ## 扩展风格9：象牙白 + 深蓝领导汇报
 
 默认8种风格仍保持1—8不变。风格9是仅供显式选择的扩展风格，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用，不进入默认候选。
-
-风格9面向政企**领导汇报**与**演讲辅助**（非咨询交付件、非学术论文、非产品宣传）：色板与风格4同为象牙白 + 深蓝（#F7F6F0 / #12355B）。视觉身份是 senior leadership briefing / speech-support（不是 process infographic）。单一视觉中心应表达结果/价值/能力（非泛化图表图标）。要求 **Industry scene anchor**：真实行业场景为视觉基础，其上轻叠加业务逻辑关系；观众先感知“正在建设的真实行业能力”，再理解“如何运转”；忌仅用图标/节点/箭头表达；优先电网运行、调度控制室、预测分析工作环境、专业决策氛围；忌 AI 芯片、抽象网络节点、科技蓝光、泛互联网技术场景、扁平图标主视觉、卡通与抽象科技符号。要求 Visual logic：图元从文本逻辑派生，把因果/输入输出/依赖/反馈/演进关系视觉化，形成文图一体叙事；Prefer 场景锚定的能力演示、真实工作语境中的业务能力关系、分层能力含义（非软件栈图）、行业实景中的价值路径、运行语境中的闭环改进；忌软件架构图观感、中心模块+卫星节点+图标箭头整页、技术规格图审美、孤立节点生命周期环、泛化流程箭头、图标步骤图。忌等权模块、编号步骤卡、时间线、机械流程模板、四栏咨询排版、卡片墙、SaaS/仪表盘与库存会议照。**实景彩色插画 / 编辑式行业插画**是高端关键工艺——行业可信度基础与视觉锚点（双层：实景 + 轻逻辑叠加）；文主线不变，可含纪实/编辑摄影；宁少勿滥，禁止一模块一图刷屏或大照片海报。禁止以「视觉结构」或任何后端构图字段作为构图起点。原风格4保持不变，既有使用风格4生成的项目成果无需迁移或覆盖。
-
-### Style 9 people-expression constraint
-
-People are supporting contextual elements only, not the main visual subject. Avoid front-facing portraits, posed meeting-photo compositions, direct eye contact with the camera, and hero-style human compositions. Prefer side views, back views, three-quarter views, distant group working scenes, or small-scale human presence integrated into the business environment. Do not let human faces become the highest-contrast or largest visual element on the page. People should appear naturally engaged in professional work, supporting business capability, decision-making, validation, coordination, or operational improvement. Avoid smiling portraits, handshakes, conference-table group photos, people pointing at screens, and corporate promotional photography. Visual priority: business capability logic, real industry scene, professional work state, then supporting people.
+面向政企领导汇报与演讲辅助，采用象牙白 `#F7F6F0` 与深蓝 `#12355B`。
+页面围绕一个核心判断形成单一业务叙事中心，重点表达业务能力、运行状态、实际价值或预期结果，不做咨询卡片页、软件架构图或产品宣传画面。主视觉优先采用场景化行业插画或编辑式业务场景插画。
+通过行业对象、设施设备、专业环境、运行状态和空间关系建立真实业务语境，不追求照片复刻，不依赖人物证明场景真实性。
+插画应经过构图提炼和逻辑整合，整体专业、克制、大气。
+图形必须从文本逻辑派生。将因果、输入输出、依赖、反馈、演进和价值形成关系融入场景中的对象、区域、状态变化和作用路径，形成文图一体叙事。避免独立悬浮的图标、节点和泛化箭头，避免中心模块＋卫星节点、编号步骤卡、时间线、四栏排版、卡片墙、SaaS界面和仪表盘布局。
+人物默认不出现。仅当页面语义明确依赖人的操作、判断或协同时，允许出现1—2名远景、小尺度、低对比度人物，并置于中景或背景。禁止正面人物、可识别面部、近景人物、人物指向屏幕、会议摆拍、握手及企业宣传摄影。
+视觉优先级：**业务能力逻辑 → 行业场景与业务对象 → 运行状态与价值结果 → 必要时弱化出现的人物。**
 
 ## 扩展风格10：象牙白 + 深蓝双层语义汇报
 
