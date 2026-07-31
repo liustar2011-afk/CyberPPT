@@ -1123,11 +1123,15 @@ MOTIF_CANDIDATES: dict[str, tuple[str, str]] = {
     "multi_semantic_foundation": ("evidence_landscape", "decision_canvas"),
 }
 DEFAULT_SCENE_ROLE_BY_MOTIF = {
-    "control_room_bridge": "primary_scene",
-    "evidence_landscape": "supporting_evidence",
+    "control_room_bridge": "supporting_evidence",
+    "evidence_landscape": "no_scene",
     "decision_canvas": "no_scene",
     "process_atlas": "no_scene",
-    "layered_system": "supporting_evidence",
+    "layered_system": "no_scene",
+}
+
+DEFAULT_SCENE_ROLE_BY_RELATION = {
+    "scenario_application": "primary_scene",
 }
 
 
@@ -1168,7 +1172,10 @@ def resolve_presentation_decision(
     # not influence the decision: page order and neighboring layouts are not content.
     _ = prior_decisions
     motif = explicit_motif or candidates[0]
-    scene_role = explicit_scene or DEFAULT_SCENE_ROLE_BY_MOTIF[motif]
+    scene_role = explicit_scene or DEFAULT_SCENE_ROLE_BY_RELATION.get(
+        relation,
+        DEFAULT_SCENE_ROLE_BY_MOTIF[motif],
+    )
     source = "script" if explicit_motif or explicit_scene else "auto"
     reason = (
         "explicit page presentation override"

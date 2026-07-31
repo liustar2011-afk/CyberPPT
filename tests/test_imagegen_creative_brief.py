@@ -71,6 +71,18 @@ def test_presentation_decision_ignores_recent_scene_density() -> None:
         PresentationDecision("evidence_landscape", "primary_scene", "auto", ""),
     )
     decision = resolve_presentation_decision(page, "closed_loop", prior)
+    assert decision.scene_role == "supporting_evidence"
+
+
+def test_abstract_relations_do_not_default_to_scenes() -> None:
+    page = _page()
+    assert resolve_presentation_decision(page, "judgment_evidence").scene_role == "no_scene"
+    assert resolve_presentation_decision(page, "hierarchy_support").scene_role == "no_scene"
+
+
+def test_scenario_application_still_defaults_to_a_scene() -> None:
+    page = _page()
+    decision = resolve_presentation_decision(page, "scenario_application")
     assert decision.scene_role == "primary_scene"
 
 
@@ -106,7 +118,9 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "ivory_deep_blue_scene" not in implicit
     assert "风格适用语境" not in implicit
     assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" not in implicit
-    assert "优先采用场景化行业彩色插画" in implicit or "场景化行业彩色插画" in implicit or "场景化行业插画" in implicit
+    assert "风格只决定页面的视觉气质" in implicit
+    assert "抽象主题，优先采用二维编辑结构" in implicit
+    assert "场景、照片或编辑式行业插画是条件性载体" in implicit
     assert "【页面逻辑｜不上屏】" not in implicit
     assert "不使用等权卡片、通用图标流程或逐项配图" not in implicit
     assert "每个锁定模块及其名称只出现一次" not in implicit
