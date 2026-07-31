@@ -22,16 +22,17 @@ SEND_ENRICH_HEADER = "【Send enrich｜不上屏】"
 LOCKED_MARKERS = ("【锁定关键文字】", "【完整上屏内容】")
 
 DETERMINISTIC_MATERIALS = (
-    "Materials: low-relief paper / resin / frosted; soft contact shadows; "
-    "ban exaggerated 3D, metal specular, glassmorphism, neon glow."
+    "Materials: flat editorial — ivory paper, matte ink, hairline rules, quiet color fields; "
+    "ban resin/plastic objects, glossy bevels, strong contact shadows, metal specular, "
+    "glassmorphism, luminous rims, pedestals, floating 3D icons."
 )
 DETERMINISTIC_PEOPLE = "People: default absent unless semantics need distant small-scale support."
 DETERMINISTIC_BAN = (
     "Ban: 50/50 text-vs-image splits (left-right or top-bottom), magazine cover+caption, "
     "background photo + foreground text block, equal card walls, step cards, timelines, "
-    "hub-and-spoke, SaaS/dashboard/architecture looks, file cabinets, folders, kraft paper, "
-    "DB cylinders, server racks, logos, seals, org names, page numbers, footers, evidence IDs "
-    "in the body image."
+    "hub-and-spoke, SaaS/dashboard/architecture looks, one-icon-per-label galleries, "
+    "file cabinets, folders, kraft paper, DB cylinders, server racks, logos, seals, org names, "
+    "page numbers, footers, evidence IDs in the body image."
 )
 DETERMINISTIC_COMPOSITION = (
     "Composition: one integrated layout; weave locked Chinese into the business structure; "

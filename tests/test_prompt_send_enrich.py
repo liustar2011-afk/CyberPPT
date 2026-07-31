@@ -29,12 +29,13 @@ def test_deterministic_enrich_appends_structure_and_materials() -> None:
     out = apply_deterministic_enrich(SAMPLE)
     assert SEND_ENRICH_HEADER in out
     assert "path transformation" in out.lower() or "crosscutting" in out.lower()
-    assert "low-relief" in out
+    assert "flat editorial" in out or "Materials: flat editorial" in out
     assert "People: default absent" in out
     assert "50/50" in out
     assert "one integrated layout" in out or "Composition:" in out
     assert "Chrome ban" in out
     assert "slide title" in out
+    assert "resin/plastic" in out
     assert "01｜三类知识来源" in out
     assert out.index("【锁定关键文字】") < out.index(SEND_ENRICH_HEADER)
 
