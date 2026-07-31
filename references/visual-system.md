@@ -323,39 +323,26 @@
 ## 扩展风格9：象牙白 + 深蓝领导汇报
 
 默认8种风格仍保持1—8不变。风格9是仅供显式选择的扩展风格，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用，不进入默认候选。原风格4保持不变，既有风格4项目成果无需迁移。
+
 Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
 
-Create a high-end senior leadership briefing page in a flat editorial business-infographic style: authoritative, restrained, polished and content-led.
+Create a high-end senior leadership briefing page in a structured editorial business-infographic style, moderately closer to a scene-based executive-report page. The page should feel authoritative, calm, polished, content-led and presentation-ready.
 
-Build one asymmetric, continuous and unequally weighted composition with one dominant visual center and one clear reading path. Use one main structural carrier, two to four primary content regions, one core judgment or outcome region, and only a few essential connectors.
+Build one integrated composition with one clear reading path, one dominant judgment and unequal visual hierarchy. Use one main structural carrier, two to five primary content regions, one core judgment or conclusion region, and only a few essential connectors. Derive the structure from the actual page semantics.
 
-Derive the composition from the page semantics. Select one primary relationship grammar:
+Keep all locked Chinese text complete. Do not summarize or rewrite it. Place text directly beside, above, below or partially within the related business object or scene module, so text and scene form one local content unit.
 
-- shared support;
-- input–transformation–outcome;
-- dependency–constraint;
-- hierarchy–containment;
-- evidence–judgment–result.
+Use three to six realistic, clean, business-related scene modules when helpful. Prefer multiple small or medium embedded scene blocks over one giant central concept illustration. Suitable scenes include grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, regional resource landscapes and professional analysis environments. Each scene must support a specific indicator, topic, dimension or judgment.
 
-Express relationships through position, scale, alignment, shared boundaries, overlap, containment and short thin connectors. Use broad flat fields, calm text regions, simplified business-object contours, restrained boundaries, hairline rules and asymmetric whitespace.
+Keep the page structured and report-like. Use broad flat fields, clean white or ivory content panels, deep-blue headings, thin dividers, subtle connectors, restrained blue emphasis and very shallow depth. Important conclusions may be highlighted with a stronger deep-blue region.
 
-Use unequal scale, density and contrast. The core judgment must dominate; supporting content remains quieter and subordinate. Do not divide the page evenly according to item count.
+Prefer a layout language like an executive report page with top indicators, a mid-page judgment or transition zone, lower supporting modules and one summary band when needed.
 
-Keep all locked Chinese text complete. Do not summarize, rewrite or reduce paragraphs into labels. Place text inside the relevant business field, beside the evidence it explains, along the relationship path or within the outcome region. Make text-object attachment explicit through shared geometry, alignment, proximity and grouping.
+Avoid panoramic scenic posters, giant hero illustrations, abstract data landscapes, topographic waves, glossy 3D objects, floating icons, dense symbolic diagrams, equal card walls, one-icon-per-item treatment and separated left-text / center-image / right-text layouts.
 
-The page should be text-led but visually structured. Business meaning is carried by composition, hierarchy, boundaries and relationships, not by decorative illustration.
+People should be absent or minimal. If needed, use only tiny distant figures inside operational scenes.
 
-Industry imagery is optional and strictly secondary. When needed, use one small, tightly cropped operational fragment embedded inside a relevant business region. Never let scenery become the main visual center.
-
-Use flat editorial materials: ivory paper-like surfaces, matte ink, restrained deep-blue fields, subtle translucent overlays, thin contour lines and very shallow depth.
-
-Avoid equal card walls, equal rows or columns, left-index + central-illustration + right-text layouts, top-image + bottom-modules layouts, radial hubs, timelines, step cards, dashboards, software-architecture diagrams, panoramic industry scenes, abstract data landscapes, dense contour or flowing-line fields, one-icon-per-item treatment, glossy 3D objects, glassmorphism, neon glow, floating icons, background photos with detached text, and any invented relationship not supported by the page content.
-
-People should be absent by default. Reference images may inform palette, spacing, material restraint and polish only; do not copy their object metaphors or fixed layout scaffold.
-
-Priority: core judgment → locked text and business relationships → evidence and outcomes → boundaries → optional local scene.
-
-Final result: one calm, authoritative, flat and integrated executive-report composition with strong hierarchy, few components and no separation between text content and image content.
+Final result: a calm, highly readable executive-report page combining business infographics with multiple embedded real-world scene modules.
 
 
 ## 扩展风格10：象牙白 + 深蓝双层语义汇报
