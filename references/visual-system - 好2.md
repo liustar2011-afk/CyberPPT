@@ -330,27 +330,15 @@ Create a high-end senior leadership briefing page in a structured editorial busi
 
 Build one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.
 
-Keep all locked Chinese text complete and unchanged. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.
+Keep all locked Chinese text complete. Do not summarize, rewrite or reduce paragraphs into labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.
 
-Prefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments or operational resources.
+Prefer a scene-supported executive-report language. Use realistic, clean and context-rich business scenes as visual anchors, such as grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, professional analysis environments, teaching materials or operational resources.
 
 Prefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.
 
 Use icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.
 
 Do not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or locked text.
-
-Text discipline — hard:
-
-Render only the locked Chinese text explicitly provided in the page script. Do not invent, summarize, extend or add any other titles, labels, captions, annotations, numbers, footnotes, interface text, document text, signage or decorative microcopy.
-
-Do not generate filler text, pseudo-Chinese, illegible character textures or imagined explanatory details.
-
-Any screen, document, book, blackboard, chart, sign or interface appearing inside a scene must contain no readable text. Use blank surfaces, simple geometric marks, restrained blurred textures or non-text visual cues instead.
-
-Keep every required text element at a clearly readable presentation scale. Do not shrink text to fit, split paragraphs into tiny fragments, or create dense micro-annotations.
-
-When space is insufficient, simplify the composition, reduce scene detail, remove decorative elements or enlarge the text region. Never solve space pressure by reducing font size or adding extra explanatory text.
 
 Screens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.
 
@@ -360,7 +348,7 @@ Avoid equal card walls, equal rows or columns, left-text / center-image / right-
 
 People should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.
 
-Final result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes, strictly subordinate icons and no invented or unreadable text.
+Final result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes and strictly subordinate icons.
 
 
 ## 扩展风格10：象牙白 + 深蓝双层语义汇报
