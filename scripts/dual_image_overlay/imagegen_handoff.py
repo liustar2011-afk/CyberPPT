@@ -56,6 +56,8 @@ from scripts.dual_image_overlay.style_library import load_style_lock, resolve_de
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
 PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
 DEFAULT_PROMPT_COMPILER = "content-first-v1"
+IMAGEGEN_CANVAS_CONTRACT = """【输出尺寸｜不上屏】
+画布尺寸固定为 2048×1024 像素（2:1 横向）。必须按该尺寸与比例构图，不得输出 16:9、4:3、方形或其他比例。"""
 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【结论句要求｜不上屏】
 如【锁定关键文字】含正文结论句，该句是正文结论句，不是页面标题；不得通栏放大或添加标题竖线、横线等装饰。
 允许调整换行和文字层级；画面必须参与表达页面逻辑，不得退化为文字排版加装饰图片。"""
@@ -482,6 +484,23 @@ NON_RENDERING_RELATION_LABELS = {
     "恢复关系",
 }
 
+# These compact relationship statements are semantic input for ImageGen, not
+# drawable copy.  They commonly live in the full prose / speaker notes after
+# the visible module bullets have been finalized.
+PAGE_SEMANTIC_MARKERS = (
+    "服务关系",
+    "对象关系",
+    "业务含义",
+    "协同关系",
+    "组件关系",
+    "恢复关系",
+    "从业务关系看",
+    "统一知识对象连接",
+    "贯穿主链",
+    "闭环关系",
+    "四层主链",
+)
+
 def _clean_onscreen_for_imagegen(text: str) -> str:
     """Keep theme bullets; strip boundary asides that dilute the page mission."""
 
@@ -501,6 +520,41 @@ def _clean_onscreen_for_imagegen(text: str) -> str:
             continue
         cleaned_lines.append(line)
     return "\n".join(cleaned_lines).strip()
+
+
+def _page_semantic_relations(page: ScriptPage) -> str:
+    """Extract compact business relations without forwarding source prose.
+
+    The final script keeps the drawable bullets in ``上屏文字`` while the
+    connective meaning may remain in ``视觉结构``, full prose, or speaker
+    notes.  Preserve only marked relationship sentences so the handoff keeps
+    the page's governing logic without leaking the source manuscript.
+    """
+
+    candidates: list[str] = []
+
+    def add_sentence(value: str) -> None:
+        text = re.sub(r"\s+", " ", value).strip(" -*•")
+        if not text or not any(marker in text for marker in PAGE_SEMANTIC_MARKERS):
+            return
+        # Keep one compact sentence at a time; source paragraphs can contain
+        # detailed evidence that is intentionally not part of the handoff.
+        for sentence in re.split(r"(?<=[。！？；])\s*", text):
+            sentence = sentence.strip()
+            if sentence and any(marker in sentence for marker in PAGE_SEMANTIC_MARKERS):
+                if sentence not in candidates:
+                    candidates.append(sentence)
+
+    add_sentence(page.visual_structure)
+    for source in (page.onscreen_text, page.full_prose, page.speaker_notes):
+        for raw in source.splitlines():
+            add_sentence(raw)
+        # Also inspect prose that is not line-broken at sentence boundaries.
+        add_sentence(source)
+
+    if not candidates:
+        return ""
+    return "\n".join(f"- {sentence}" for sentence in candidates[:4])
 
 
 def select_page_visual_intent_type(
@@ -961,9 +1015,6 @@ def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
     silently weaken the text-led, single-medium presentation rules.
 """
 
-IMAGEGEN_CANVAS_CONTRACT = """【输出尺寸｜不上屏】
-画布尺寸固定为 2048×1024 像素（2:1 横向）。必须按该尺寸与比例构图，不得输出 16:9、4:3、方形或其他比例。"""
-
     payload = load_style_lock(style_lock)
     style = payload.get("style")
     if not isinstance(style, dict):
@@ -1147,15 +1198,29 @@ def render_content_first_prompt(
             if part
         )
     )
-    relation, _logic_contract = render_page_logic_contract(
+    relation, logic_contract = render_page_logic_contract(
         page,
         page_mission=page_mission,
         visual_context=visual_context,
         visual_intent_override=visual_intent_override,
     )
+    semantic_relations = _page_semantic_relations(page)
     presentation = presentation_decision or resolve_presentation_decision(
         page,
         relation,
+    )
+    # In semantic-only mode the judgment is deliberately absent from the
+    # drawable text layer, but it must still reach ImageGen as the governing
+    # thesis.  In locked mode it is already present in the locked copy, so do
+    # not duplicate it in the internal context.
+    include_core_context = bool(
+        judgment_for_semantics
+        and judgment_for_semantics not in locked
+    )
+    include_logic_context = bool(
+        page.visual_structure.strip()
+        or page.visual_proof.strip()
+        or semantic_relations
     )
     parts = [
         "【完整上屏内容】",
@@ -1175,6 +1240,15 @@ def render_content_first_prompt(
         page_mission.strip() or page.main_message.strip(),
         "",
         "核心判断仅供内部理解；不得把该句或其改写渲染为页面标题、摘要或通栏结论：",
+        judgment_for_semantics if include_core_context else "",
+        "",
+        (
+            "【页面语义关系｜仅供理解，不上屏】\n" + semantic_relations
+            if semantic_relations
+            else ""
+        ),
+        "",
+        logic_contract if include_logic_context else "",
         "",
         render_presentation_contract(page, presentation),
         "",
