@@ -53,12 +53,11 @@ def default_visual_grammar() -> VisualGrammarContract:
         ),
         semantic_scene_rule=(
             "- First distinguish subject, support, input, output, convergence, branching, loop, "
-            "hierarchy, contrast, and causality. Express the dominant relationship through one "
-            "page-spanning generative graphic mainline rather than plain boxes, generic "
-            "connectors, equal panels, or a collection of semantic scenes. Prefer one restrained "
-            "editorial gesture or asymmetric relationship field; do not use a central emblem, "
-            "standard circular loop, concentric pedestal, chevron chain, or icon-node diagram "
-            "as the main visual."
+            "hierarchy, contrast, and causality. Choose the visual grammar that best explains "
+            "those relationships: an architecture diagram, process flow, layered system, "
+            "relationship field, or another designed composition may all be appropriate. "
+            "Avoid only mechanically repeated cards, nodes, or connectors that do not clarify "
+            "the page logic; let hierarchy and content determine visual weight and reading order."
         ),
         connector_rule=(
             "- No connectors through/under text; no fake flow lines; one connector style."
@@ -105,12 +104,11 @@ def creative_brief_visual_grammar() -> str:
             "spatial relationships organize the text into one reading field. Use small "
             "semantic images only as subordinate accents where they clarify meaning.",
             "- First distinguish subject, support, input, output, convergence, branching, loop, "
-            "hierarchy, contrast, and causality. Express the dominant relationship through one "
-            "page-spanning generative graphic mainline rather than plain boxes, generic "
-            "connectors, equal panels, or a collection of semantic scenes. Prefer one restrained "
-            "editorial gesture or asymmetric relationship field; do not use a central emblem, "
-            "standard circular loop, concentric pedestal, chevron chain, or icon-node diagram "
-            "as the main visual.",
+            "hierarchy, contrast, and causality. Choose the visual grammar that best explains "
+            "those relationships: an architecture diagram, process flow, layered system, "
+            "relationship field, or another designed composition may all be appropriate. "
+            "Avoid only mechanically repeated cards, nodes, or connectors that do not clarify "
+            "the page logic; let hierarchy and content determine visual weight and reading order.",
             "- Do not run connectors, decorative lines, or image details through body text.",
             "- Supporting imagery, charts, interface-like forms, and concise auxiliary labels "
             "are allowed when they improve the overall visual idea. They do not need a "

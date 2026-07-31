@@ -66,10 +66,10 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "locked on-screen text faithfully in the main composition" in style_nine["semantic_image_text_rule"]
     assert "may use a small amount of clear Chinese labels" in style_nine["semantic_image_text_rule"]
     assert "dense pseudo-Chinese" in style_nine["semantic_image_text_rule"]
-    assert "生成式图形构图负责组织页面主线" in style_nine["scope_rule"]
-    assert "锁定文字嵌入稳定承载面" in style_nine["scope_rule"]
+    assert "生成式图形构图负责组织页面主线" not in style_nine["scope_rule"]
+    assert "锁定文字嵌入稳定承载面" not in style_nine["scope_rule"]
     assert "文字是页面主体" not in style_nine["scope_rule"]
-    assert "少量实景、近实景或物件型语义图仅作点缀" in style_nine["scope_rule"]
+    assert "少量实景、近实景或物件型语义图仅作点缀" not in style_nine["scope_rule"]
     assert "Do not show frontal faces" in style_nine["people_rule"]
     assert "three-quarter frontal faces" in style_nine["people_rule"]
     assert "People must never become the visual center" in style_nine["people_rule"]
@@ -83,12 +83,10 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "领导汇报" in style_nine["scenario"]
     assert "生成式图形构图主导，实景语义图点缀" in style_nine["scenario"]
     assert len(style_nine["prompt_contract"]) < 600
-    assert len(style_nine["imagegen_signature"]) == 3
+    assert len(style_nine["imagegen_signature"]) == 2
     assert "禁止霓虹蓝" in style_nine["imagegen_signature"][0]
-    assert "由本页内容关系决定的清晰阅读主线" in style_nine["imagegen_signature"][1]
-    assert "不得预设中央主体、等宽分栏、卡片阵列或其他固定版式" in style_nine["imagegen_signature"][1]
-    assert "不得为了追求跨页差异而强制改变构图" in style_nine["imagegen_signature"][2]
-    assert "不得使用夸张三维装置" in style_nine["imagegen_signature"][2]
+    assert "由本页内容决定" in style_nine["imagegen_signature"][1]
+    assert "不得预设中央主体、等宽分栏、卡片阵列或其他固定版式" not in style_nine["imagegen_signature"][1]
 
 
 def test_default_style_choices_still_show_only_original_eight() -> None:

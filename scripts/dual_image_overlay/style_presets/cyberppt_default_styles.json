@@ -164,10 +164,9 @@
       "sample": "assets/palette-samples/palette-09.png",
       "imagegen_signature": [
         "材质：象牙白哑光纸感、深蓝墨色、浅灰发丝线；禁止霓虹蓝、透明玻璃、发光底座、HUD 面板、金属高光和科技光流。",
-        "节奏：建立一条由本页内容关系决定的清晰阅读主线，形成两到三级层次并保留必要留白；不得预设中央主体、等宽分栏、卡片阵列或其他固定版式，再把内容机械填入。",
-        "媒介：全页保持一种一致的编辑式视觉语言；版式位置、尺度、分组、留白和视觉载体均由本页业务对象、关系与证据类型决定。不得为了追求跨页差异而强制改变构图，也不得使用夸张三维装置或把照片、UI 面板与线性图标混成多套并列语言。"
+        "节奏与媒介：保持成熟克制的编辑式视觉气质，具体构图由本页内容决定。"
       ],
-      "scope_rule": "本风格只约束色彩、材质、线条、字形、图形质感、图标克制度和编辑式视觉语气，不覆盖页面内容与主导关系。生成式图形构图负责组织页面主线，锁定文字嵌入稳定承载面；少量实景、近实景或物件型语义图仅作点缀，并从具体文字含义与业务关系中生长。",
+      "scope_rule": "本风格只约束配色、材质、字形和成熟克制的编辑式语气。",
       "people_rule": "Do not show frontal faces, three-quarter frontal faces, portrait-like framing, eye contact with the camera, or any clearly recognizable facial features. People must never become the visual center. When human presence is necessary, use anonymous professionals only as rear views, distant small figures, cropped hands or partial bodies, soft-focus silhouettes, or figures whose faces are fully turned away or obscured by the working context. Do not use identifiable people to imply a specific event, organization, role assignment, endorsement, or historical fact. Never use portraits, leaders, name badges, uniforms, handshakes, staged boardroom meetings, or documentary-style activities. Human presence may support the business meaning but never serves as evidence of an actual person, unit, site, or event.",
       "factuality_rule": "Do not depict organization names, logos, seals, signage, recognizable headquarters or landmarks. Keep real organization and person names in the editable text layer only. Generic, non-location-specific facilities, layered workspaces, control consoles, equipment rooms, and industrial scenes may be used as illustrative carriers when they map to the locked content. Schematic screens, charts, maps, and interface labels may organize the composition, but generated values are non-evidentiary; factual numbers and labels must be verified and remain editable.",
       "semantic_image_text_rule": "Render the page's locked on-screen text faithfully in the main composition. Auxiliary semantic imagery may use a small amount of clear Chinese labels, interface text, chart labels, or document wording when it directly clarifies the nearby business object or relationship. Do not add unrelated decorative text, dense pseudo-Chinese, invented names, logos, seals, signage, or text that pretends to be factual evidence; keep supporting text subordinate to the page's locked on-screen text.",

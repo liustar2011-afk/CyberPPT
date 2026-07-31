@@ -167,8 +167,8 @@ def test_style_nine_content_first_rejects_stale_scene_first_lock_wording() -> No
     assert "允许轻微立体层次、浅阴影和扩大场景" not in prompt
     assert "允许场景感成为主叙事" not in prompt
     assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" in prompt
-    assert "生成式图形构图负责组织页面主线" in prompt
-    assert "少量实景、近实景或物件型语义图仅作点缀" in prompt
+    assert "生成式图形构图负责组织页面主线" not in prompt
+    assert "少量实景、近实景或物件型语义图仅作点缀" not in prompt
     assert "文字是页面主体" not in prompt
     assert "不得占据约半幅页面" not in prompt
     assert "图标不是默认视觉载体" not in prompt
@@ -503,9 +503,9 @@ def test_style_nine_compiles_short_refinement_signature() -> None:
 
     assert "审美签名：" in prompt
     assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" in prompt
-    assert "由本页内容关系决定的清晰阅读主线" in prompt
-    assert "不得预设中央主体、等宽分栏、卡片阵列或其他固定版式" in prompt
-    assert "不得为了追求跨页差异而强制改变构图" in prompt
+    assert "由本页内容关系决定的清晰阅读主线" not in prompt
+    assert "不得预设中央主体、等宽分栏、卡片阵列或其他固定版式" not in prompt
+    assert "不得为了追求跨页差异而强制改变构图" not in prompt
 
 
 def test_page_number_does_not_select_a_layout_family() -> None:

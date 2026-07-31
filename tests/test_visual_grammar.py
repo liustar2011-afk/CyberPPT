@@ -23,12 +23,11 @@ _SHORT_LINES = (
     ),
     (
         "- First distinguish subject, support, input, output, convergence, branching, loop, "
-        "hierarchy, contrast, and causality. Express the dominant relationship through one "
-        "page-spanning generative graphic mainline rather than plain boxes, generic "
-        "connectors, equal panels, or a collection of semantic scenes. Prefer one restrained "
-        "editorial gesture or asymmetric relationship field; do not use a central emblem, "
-        "standard circular loop, concentric pedestal, chevron chain, or icon-node diagram "
-        "as the main visual."
+        "hierarchy, contrast, and causality. Choose the visual grammar that best explains "
+        "those relationships: an architecture diagram, process flow, layered system, "
+        "relationship field, or another designed composition may all be appropriate. "
+        "Avoid only mechanically repeated cards, nodes, or connectors that do not clarify "
+        "the page logic; let hierarchy and content determine visual weight and reading order."
     ),
     "- No connectors through/under text; no fake flow lines; one connector style.",
     "- Unequal visual weight by hierarchy — not an equal card wall.",
