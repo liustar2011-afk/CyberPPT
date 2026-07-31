@@ -284,7 +284,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertLess(prompt.index("Page-specific visual intent"), prompt.index("上屏文字"))
         self.assertLess(
             prompt.index("Page-specific visual intent"),
-            prompt.index("视觉风格使用象牙白 + 深蓝领导汇报"),
+            prompt.index("风格9面向政企领导汇报"),
         )
         self.assertIn(
             "Apply this layout guidance before placing any on-screen text",

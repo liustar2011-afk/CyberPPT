@@ -473,11 +473,26 @@ VISUAL_PROOF_FALLBACKS: dict[str, str] = {
     "judgment_evidence": "用主判断与支撑证据的直接关系完成证明。",
 }
 
+NON_RENDERING_RELATION_LABELS = {
+    "服务关系",
+    "对象关系",
+    "业务含义",
+    "协同关系",
+    "组件关系",
+    "恢复关系",
+}
+
 def _clean_onscreen_for_imagegen(text: str) -> str:
     """Keep theme bullets; strip boundary asides that dilute the page mission."""
 
     cleaned_lines: list[str] = []
     for raw in text.splitlines():
+        relation_match = re.match(
+            r"^\s*[-*•]?\s*(?P<label>[^：:\n]{2,14})[：:]",
+            raw,
+        )
+        if relation_match and relation_match.group("label").strip() in NON_RENDERING_RELATION_LABELS:
+            continue
         line = ONSCREEN_ASIDE_RE.sub("", raw)
         line = re.sub(r"[；;]\s*$", "", line.rstrip())
         line = re.sub(r"\s{2,}", " ", line)
@@ -1124,7 +1139,7 @@ def render_content_first_prompt(
             if part
         )
     )
-    relation, logic_contract = render_page_logic_contract(
+    relation, _logic_contract = render_page_logic_contract(
         page,
         page_mission=page_mission,
         visual_context=visual_context,
@@ -1153,8 +1168,6 @@ def render_content_first_prompt(
         "",
         "核心判断：",
         page.main_message.strip(),
-        "",
-        logic_contract,
         "",
         render_presentation_contract(page, presentation),
         "",

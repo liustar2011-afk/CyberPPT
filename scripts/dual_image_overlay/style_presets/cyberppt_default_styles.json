@@ -162,17 +162,14 @@
       },
       "scenario": "政企领导汇报、演讲辅助、企业内部决策沟通；编辑式克制与业务清晰；生成式图形构图主导，实景语义图点缀",
       "sample": "assets/palette-samples/palette-09.png",
-      "imagegen_signature": [
-        "材质：象牙白哑光纸感、深蓝墨色、浅灰发丝线；禁止霓虹蓝、透明玻璃、发光底座、HUD 面板、金属高光和科技光流。",
-        "节奏与媒介：保持成熟克制的编辑式视觉气质，具体构图由本页内容决定。"
-      ],
-      "scope_rule": "本风格只约束配色、材质、字形和成熟克制的编辑式语气。",
-      "people_rule": "Do not show frontal faces, three-quarter frontal faces, portrait-like framing, eye contact with the camera, or any clearly recognizable facial features. People must never become the visual center. When human presence is necessary, use anonymous professionals only as rear views, distant small figures, cropped hands or partial bodies, soft-focus silhouettes, or figures whose faces are fully turned away or obscured by the working context. Do not use identifiable people to imply a specific event, organization, role assignment, endorsement, or historical fact. Never use portraits, leaders, name badges, uniforms, handshakes, staged boardroom meetings, or documentary-style activities. Human presence may support the business meaning but never serves as evidence of an actual person, unit, site, or event.",
+      "imagegen_signature": [],
+      "scope_rule": "本风格约束领导汇报语气、真实行业场景锚点与文图一体表达；具体色彩、材质与构图由风格参考图及本页内容共同决定。",
+      "people_rule": "People are supporting contextual elements only, not the main visual subject. Avoid front-facing portraits, posed meeting-photo compositions, direct eye contact with the camera, and hero-style human compositions. Prefer side views, back views, three-quarter views, distant group working scenes, or small-scale human presence integrated into the business environment. Do not let human faces become the highest-contrast or largest visual element on the page. People should appear naturally engaged in professional work, supporting business capability, decision-making, validation, coordination, or operational improvement. Avoid smiling portraits, handshakes, conference-table group photos, people pointing at screens, and corporate promotional photography. Visual priority: business capability logic, real industry scene, professional work state, then supporting people.",
       "factuality_rule": "Do not depict organization names, logos, seals, signage, recognizable headquarters or landmarks. Keep real organization and person names in the editable text layer only. Generic, non-location-specific facilities, layered workspaces, control consoles, equipment rooms, and industrial scenes may be used as illustrative carriers when they map to the locked content. Schematic screens, charts, maps, and interface labels may organize the composition, but generated values are non-evidentiary; factual numbers and labels must be verified and remain editable.",
       "semantic_image_text_rule": "Render the page's locked on-screen text faithfully in the main composition. Auxiliary semantic imagery may use a small amount of clear Chinese labels, interface text, chart labels, or document wording when it directly clarifies the nearby business object or relationship. Do not add unrelated decorative text, dense pseudo-Chinese, invented names, logos, seals, signage, or text that pretends to be factual evidence; keep supporting text subordinate to the page's locked on-screen text.",
       "content_visual_rule": "先保证锁定上屏文字完整、舒展、清晰，再区分主体、支撑、输入、输出、分支、汇聚、闭环、层级、对比、因果与结论等关系角色。",
-      "prompt_contract": "视觉风格使用象牙白 + 深蓝领导汇报：背景 #F7F6F0，标题 #101820，正文 #303030，次级文字 #6F7275，线条 #C9CDD1，强调色 #12355B。适合政企领导汇报、演讲辅助和企业内部决策沟通；采用正式内部汇报气质、编辑式克制、清晰业务表达、深蓝页内强调与细线分隔。不得生成完整 PPT 页面、Logo、页脚、页码、水印或伪文字。",
-      "density_rule": "保持政企内部汇报所需的信息密度；通过跨页图形主线、空间层次、文字层级、材料组合、细线与色带组织内容，避免依赖重复图标、等权分栏、空泛大字、场景堆叠或装饰性拼贴。"
+      "prompt_contract": "风格9面向政企领导汇报与演讲辅助（非咨询交付件、非学术论文、非产品宣传）。视觉身份是 senior leadership briefing / speech-support（不是 process infographic）。单一视觉中心表达结果、价值或能力。Industry scene anchor：以真实行业场景为视觉基础，轻叠加由文本逻辑派生的业务关系；观众先感知正在建设的真实行业能力，再理解如何运转。优先电网运行、调度控制室、预测分析工作环境和专业决策氛围；避免 AI 芯片、抽象网络节点、科技蓝光、泛互联网技术场景、扁平图标主视觉、卡通与抽象科技符号。Visual logic：从文本逻辑派生图形，把因果、输入输出、依赖、反馈和演进关系视觉化，形成文图一体叙事；偏好场景锚定的能力演示、真实工作语境中的业务能力关系、分层能力含义、行业实景中的价值路径和运行语境中的闭环改进；避免软件架构图观感、中心模块加卫星节点加图标箭头整页、技术规格图审美、孤立节点生命周期环、泛化流程箭头和图标步骤图。避免等权模块、编号步骤卡、时间线、机械流程模板、四栏咨询排版、卡片墙、SaaS/仪表盘与库存会议照。实景彩色插画或编辑式行业插画作为行业锚点，少量使用并与业务关系融合；禁止以视觉结构或任何后端构图字段作为构图起点。",
+      "density_rule": "保持政企领导汇报所需的信息密度；由本页内容决定信息组织、空间层次、文字层级和视觉媒介，避免重复图标、等权分栏、空泛大字、场景堆叠或装饰性拼贴。"
     },
     {
       "id": 10,

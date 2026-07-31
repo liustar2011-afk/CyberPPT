@@ -216,7 +216,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertEqual(manifest["style_lock"], summary["artifacts"]["visual_style_lock"])
             self.assertIn("#12355B", prompt)
             self.assertNotIn("【完整内容语义｜仅供理解，不要求逐字上屏】", prompt)
-            self.assertIn("【页面逻辑｜不上屏】", prompt)
+            self.assertNotIn("【页面逻辑｜不上屏】", prompt)
             self.assertIn("【锁定关键文字】", prompt)
             self.assertIn("【完整上屏内容】", prompt)
             self.assertEqual("态势感知能力要从工具堆叠转向风险闭环", lock["records"][0]["title"])

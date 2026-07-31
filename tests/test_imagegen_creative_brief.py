@@ -104,13 +104,13 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "扩展风格9：象牙白 + 深蓝领导汇报" in implicit
     assert "风格适用语境" not in implicit
     assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" not in implicit
-    assert "视觉风格使用象牙白 + 深蓝领导汇报" in implicit
-    assert "【页面逻辑｜不上屏】" in implicit
+    assert "Industry scene anchor" in implicit
+    assert "【页面逻辑｜不上屏】" not in implicit
     assert "不使用等权卡片、通用图标流程或逐项配图" not in implicit
     assert "每个锁定模块及其名称只出现一次" not in implicit
     assert "Do not show frontal faces" not in implicit
     assert "解释性正文由后续 PPT 可编辑文字层承载" not in implicit
-    assert "正式内部汇报气质" in implicit
+    assert "senior leadership briefing / speech-support" in implicit
     assert "style.selected_lock" in (
         implicit_compiled.build_metadata()["injected_rule_ids"]
     )
@@ -167,7 +167,7 @@ def test_style_nine_content_first_rejects_stale_scene_first_lock_wording() -> No
 
     assert "允许轻微立体层次、浅阴影和扩大场景" not in prompt
     assert "允许场景感成为主叙事" not in prompt
-    assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" in prompt
+    assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" not in prompt
     assert "生成式图形构图负责组织页面主线" not in prompt
     assert "少量实景、近实景或物件型语义图仅作点缀" not in prompt
     assert "文字是页面主体" not in prompt
@@ -207,8 +207,8 @@ def test_closed_loop_contract_avoids_equal_stages_and_bottom_summary() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "do not turn the modules into equally spaced stages" in prompt
-    assert "never as a separate bottom summary zone" in prompt
+    assert "do not turn the modules into equally spaced stages" not in prompt
+    assert "never as a separate bottom summary zone" not in prompt
 
 
 def test_content_first_omits_auxiliary_label_budget() -> None:
@@ -314,7 +314,7 @@ def test_locked_text_preserves_supplied_relationship_annotation_labels() -> None
 
     assert "纵向关系" in locked
     assert "工作流" in locked
-    assert "业务含义" in locked
+    assert "业务含义" not in locked
 
 
 def test_content_first_keeps_relationship_annotations_atomic() -> None:
@@ -377,7 +377,7 @@ def test_content_first_omits_tracking_metadata_and_avoids_repeated_rules() -> No
     assert page.title not in prompt
     assert "解释性正文由后续 PPT 可编辑文字层承载" not in prompt
     assert "【完整上屏内容】均需进入 full 图" not in prompt
-    assert prompt.count("【页面逻辑｜不上屏】") == 1
+    assert prompt.count("【页面逻辑｜不上屏】") == 0
     assert "【只读构图语义｜不得上屏】" not in prompt
     assert "不得从本区抽取任何新标题、栏目名、图内标签" not in prompt
     assert "页面构图和信息组织仍由" not in prompt
@@ -503,7 +503,7 @@ def test_style_nine_compiles_short_refinement_signature() -> None:
         prompt = build_page_prompt(page, lock)
 
     assert "审美签名：" not in prompt
-    assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" in prompt
+    assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" not in prompt
     assert "由本页内容关系决定的清晰阅读主线" not in prompt
     assert "不得预设中央主体、等宽分栏、卡片阵列或其他固定版式" not in prompt
     assert "不得为了追求跨页差异而强制改变构图" not in prompt
@@ -517,15 +517,8 @@ def test_page_number_does_not_select_a_layout_family() -> None:
         prompt_four = build_page_prompt(page_four, lock)
         prompt_five = build_page_prompt(page_five, lock)
 
-    layout_four = next(
-        line for line in prompt_four.splitlines() if line.startswith("空间组织：")
-    )
-    layout_five = next(
-        line for line in prompt_five.splitlines() if line.startswith("空间组织：")
-    )
-    assert layout_four == layout_five
-    assert "本页版型族：" not in layout_four
-    assert "Cross-page layout family" not in layout_four
+    assert "页面逻辑｜不上屏" not in prompt_four
+    assert "页面逻辑｜不上屏" not in prompt_five
 
 
 def test_judgment_evidence_layout_is_content_driven() -> None:
@@ -538,8 +531,8 @@ def test_judgment_evidence_layout_is_content_driven() -> None:
             visual_context={"visual_intent_type": "judgment_evidence"},
         )
 
-    assert "let the content determine position, scale, grouping, and visual carrier" in prompt
-    assert "layout skeleton selected independently of the page content" in prompt
+    assert "let the content determine position, scale, grouping, and visual carrier" not in prompt
+    assert "layout skeleton selected independently of the page content" not in prompt
 
 
 def test_locked_judgment_is_not_repeated_in_complete_page_semantics() -> None:
@@ -616,12 +609,12 @@ def test_content_first_uses_the_compact_visual_wording() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "【页面逻辑｜不上屏】" in prompt
-    assert "主导关系：" in prompt
-    assert "视觉证明：" in prompt
-    assert "空间组织：" in prompt
-    assert "本页避免：" in prompt
-    assert prompt.count("视觉证明：") == 1
+    assert "【页面逻辑｜不上屏】" not in prompt
+    assert "主导关系：" not in prompt
+    assert "视觉证明：" not in prompt
+    assert "空间组织：" not in prompt
+    assert "本页避免：" not in prompt
+    assert prompt.count("视觉证明：") == 0
 
 
 def test_visual_proof_prefers_page_context_and_new_relations_are_selectable() -> None:
@@ -641,8 +634,8 @@ def test_visual_proof_prefers_page_context_and_new_relations_are_selectable() ->
             lock,
             visual_context={"visual_proof": "用共同底座托住业务结果"},
         )
-    assert "视觉证明：用共同底座托住业务结果" in prompt
-    assert prompt.count("视觉证明：") == 1
+    assert "视觉证明：用共同底座托住业务结果" not in prompt
+    assert prompt.count("视觉证明：") == 0
     assert "不使用等权卡片、通用图标流程或逐项配图" not in prompt
     assert "如出现人物，仅使用远景、背影或局部" not in prompt
 
@@ -692,10 +685,7 @@ def test_explicit_script_visual_proof_reaches_page_logic_contract() -> None:
             visual_context={"visual_proof": "自动生成的通用视觉证明"},
         )
 
-    assert (
-        "视觉证明：供需信息经过数据治理、模型推演和专家会商形成行业研判成果，"
-        "再服务履职与行业共用"
-    ) in prompt
+    assert "视觉证明：供需信息经过数据治理、模型推演和专家会商形成行业研判成果" not in prompt
     assert "自动生成的通用视觉证明" not in prompt
     assert "视觉结构：" not in prompt
 
