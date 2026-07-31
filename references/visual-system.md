@@ -333,7 +333,11 @@ Scene: optional local industry-scene anchor only (embedded crop/texture, general
 
 Visual logic: derive graphics from page relations (I/O, dependency, feedback, evolution, path, loop, hierarchy). Prefer business objects, evidence, outcomes. Ban equal card walls, step cards, timelines, hub-and-spoke, software-architecture / tech-spec look, SaaS UI, dashboards, one-module-one-illustration spam, large scenic posters.
 
-Materials: low-relief paper / resin / frosted surfaces, soft contact shadows when helpful. Ban exaggerated 3D, metal specular, glassmorphism.
+Materials: primarily flat editorial surfaces — ivory paper, matte ink, restrained translucent overlays, hairline rules, quiet color fields and thin contour lines. Use depth only as a very shallow tonal separation; no object should read as a product render or display stand. Ban resin/plastic objects, glossy bevels, strong contact shadows, metallic highlights, glassmorphism, luminous rims, pedestals, discs, badges and floating 3D icons.
+
+Flat executive-report language (hard): the default medium is a high-end policy brief / board presentation, not a cartoon, product showcase or technology exhibition. Prefer typographic hierarchy, measured grid, asymmetric whitespace, editorial annotation, thin connectors and calm blocks of color. Business relations must be legible through composition and line weight, not through toy-like objects or icon collections. Avoid one-icon-per-label treatment, circular medallions, shield/lock/file/database pictograms as the primary narrative, and any glossy semi-3D object gallery.
+
+Reference-image handling (hard): reference pages may inform palette, spacing, material restraint and overall polish only. Do not copy their object metaphors, central pedestals, layered disks, icon rows or fixed left-center-right scaffold into unrelated pages. Page semantics and locked text determine the composition.
 
 People: default absent. If needed — few, distant, small, low-contrast support only. No front portraits, posed meetings, handshakes, pointing-at-screens, promo shots. People never carry the core judgment.
 
