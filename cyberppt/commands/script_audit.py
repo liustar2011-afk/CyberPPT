@@ -152,7 +152,7 @@ def _render_markdown(report: dict[str, object]) -> str:
             "",
             f"- 页面使命覆盖：{communication.get('mission_coverage', 0)} / {communication.get('content_pages', 0)}",
             f"- 可见结论覆盖：{communication.get('lead_coverage_count', 0)} / {communication.get('content_pages', 0)}（与主判断对齐 {communication.get('lead_match_count', 0)}；旧稿作者字段兼容 {communication.get('authoring_field_count', 0)}）",
-            f"- 自动提醒：{communication.get('warning_count', 0)} 条；模块同维度、信息取舍仍需人工复核。",
+            f"- 自动提醒：{communication.get('warning_count', 0)} 条；优先核对关系骨架同构与三段式取舍说明（必留上屏/仅讲解/仅追溯），勿为刷覆盖率堆字。",
             "",
         ]
     )

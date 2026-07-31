@@ -71,6 +71,8 @@ CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT = """【结论表达要求｜不上�
 CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT = """【结论表达要求｜不上屏】
 本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心判断】或【页面逻辑】中自行抽取整句作为页面标题或通栏结论。
 【锁定关键文字】中的业务标签和关键事实必须全部上屏；【完整上屏内容】仍须完整表达，用文字层级、业务结构、对象关系和必要画面共同组织核心判断。"""
+CONTENT_FIRST_PAGE_MISSION_LABEL = "页面任务："
+CONTENT_FIRST_CORE_JUDGMENT_LABEL = "核心判断："
 # Status asides that must not be painted as core on-screen claims.
 # Planning decks argue the proposed solution; do not restamp "not yet fact" on every page.
 ONSCREEN_ASIDE_RE = re.compile(
@@ -1075,6 +1077,10 @@ def render_presentation_contract(
             "只允许一处克制的深蓝形面、局部数据纹理或抽象材料层作为视觉重心。"
             "禁止完整流程、连续节点、逐项连接线、架构层、技术面板、光束、四栏结构和物件隐喻。"
         ),
+        "editorial_dense": (
+            "采用高密度编辑媒介：完整保留正文、数字、限定条件与业务边界，使用主文、旁注、事实条和层级缩进组织信息。"
+            "允许两到三个不等权信息区，但禁止大面积无效留白、单一大色块、四条摘要替代全文、四栏均分、流程图和软件架构图。"
+        ),
         "semantic_scene": (
             "采用条件性语义场景媒介：场景必须直接解释不可替代的业务动作或物理环境，"
             "并保持局部、低对比、从属于正文和主关系。"
@@ -1140,6 +1146,7 @@ LAYOUT_MOTIFS = (
 SCENE_ROLES = ("primary_scene", "supporting_evidence", "no_scene")
 VISUAL_MEDIA = (
     "editorial_typographic",
+    "editorial_dense",
     "semantic_scene",
     "data_visualization",
     "document_material",
@@ -1214,7 +1221,56 @@ def resolve_visual_medium(page: ScriptPage, relation: str) -> str:
         return "document_material"
     if re.search(r"厂区|站房|机房|设备部署|区域部署|物理空间|生产现场", semantic_text):
         return "spatial_system"
+    onscreen_size = len(re.sub(r"\s+", "", page.onscreen_text))
+    prose_size = len(re.sub(r"\s+", "", page.full_prose))
+    if prose_size >= max(480, onscreen_size * 3):
+        # Kept for diagnostics / presentation metadata only. Content-first
+        # prompts must not promote this into a must-render medium contract.
+        return "editorial_dense"
     return "editorial_typographic"
+
+
+def select_dense_supporting_facts(page: ScriptPage, limit: int = 10) -> tuple[str, ...]:
+    """Recover high-value facts from approved full prose for dense editorial pages."""
+
+    if resolve_visual_medium(page, "judgment_evidence") != "editorial_dense":
+        return ()
+    onscreen_compact = re.sub(r"\s+", "", page.onscreen_text)
+    candidates: list[tuple[int, int, str]] = []
+    order = 0
+    dense_source = "\n".join(part for part in (page.full_prose, page.evidence_map) if part)
+    for raw in re.split(r"(?<=[。！？；])\s*|\n+", dense_source):
+        sentence = raw.strip(" -*\t\r\n")
+        sentence = re.sub(r"→S\d{3}[；;。]?\s*$", "", sentence).strip()
+        sentence = re.sub(r"^证据映射：", "", sentence).strip()
+        compact = re.sub(r"\s+", "", sentence)
+        if not sentence or len(compact) < 16 or len(compact) > 110:
+            continue
+        if compact in onscreen_compact or compact == re.sub(r"\s+", "", page.main_message):
+            continue
+        if sentence.startswith(("从业务关系看", "具体来看", "因此", "业务含义")):
+            continue
+        score = 0
+        if re.search(r"\d", sentence):
+            score += 3
+        if re.search(r"权限|授权|安全等级|有效期|撤销|隔离|受控接口|独立数据库|独立数据空间", sentence):
+            score += 6
+        if re.search(r"题目|教材|教案|检索|版本|质量|组织标识|行级安全", sentence):
+            score += 2
+        if score < 3:
+            continue
+        candidates.append((-score, order, sentence))
+        order += 1
+    selected: list[str] = []
+    selected_keys: set[str] = set()
+    for _, _, sentence in sorted(candidates):
+        key = re.sub(r"[\s。；;，,]+", "", sentence)
+        if key not in selected_keys:
+            selected.append(sentence.rstrip("。；;"))
+            selected_keys.add(key)
+        if len(selected) >= limit:
+            break
+    return tuple(selected)
 
 
 def resolve_presentation_decision(
@@ -1570,6 +1626,9 @@ def render_content_first_prompt(
         page,
         relation,
     )
+    # Dense medium may still guide typography, but approved facts from full
+    # prose must not be re-promoted into a must-onscreen contract. Gaps belong
+    # in Stage 01 上屏文字, not in ImageGen recovery.
     # The judgment must always reach ImageGen as the governing thesis.  If it
     # is already short enough to be in the locked bitmap copy, do not repeat
     # it in the internal context; otherwise keep it as semantic guidance even
@@ -1610,10 +1669,10 @@ def render_content_first_prompt(
             )
         ),
         "",
-        "页面任务：",
+        CONTENT_FIRST_PAGE_MISSION_LABEL,
         page_mission.strip() or page.main_message.strip(),
         "",
-        "核心判断仅供内部理解；不得把该句或其改写渲染为页面标题、摘要或通栏结论：",
+        CONTENT_FIRST_CORE_JUDGMENT_LABEL,
         judgment_for_semantics if include_core_context else "",
         "",
         (
@@ -1636,7 +1695,14 @@ def render_content_first_prompt(
             visual_intent_override=visual_intent_override,
         ),
         "",
-        render_presentation_contract(page, presentation),
+        # Auto medium labels (editorial_dense / typographic / …) must not enter
+        # ImageGen. Style + onscreen + page logic already govern; only an
+        # explicit script layout/scene override may inject presentation text.
+        (
+            render_presentation_contract(page, presentation)
+            if presentation.source == "script"
+            else ""
+        ),
         "",
         IMAGEGEN_CANVAS_CONTRACT,
         "",

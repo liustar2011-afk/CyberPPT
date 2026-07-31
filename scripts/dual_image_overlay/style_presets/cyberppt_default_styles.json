@@ -169,7 +169,7 @@
       "semantic_image_text_rule": "Render the page's locked on-screen text faithfully in the main composition. Auxiliary semantic imagery may use a small amount of clear Chinese labels, interface text, chart labels, or document wording when it directly clarifies the nearby business object or relationship. Do not add unrelated decorative text, dense pseudo-Chinese, invented names, logos, seals, signage, or text that pretends to be factual evidence; keep supporting text subordinate to the page's locked on-screen text.",
       "content_visual_rule": "先保证锁定上屏文字完整、舒展、清晰，再区分主体、支撑、输入、输出、分支、汇聚、闭环、层级、对比、因果与结论等关系角色。",
       "prompt_contract": "风格9面向政企领导汇报与演讲辅助（非咨询交付件、非学术论文、非产品宣传）。视觉身份是 senior leadership briefing / speech-support。采用象牙白、低饱和深蓝、炭黑和暖灰，通过非对称平衡、尺度对比、精细排版、发丝线、克制的数据纹理和充足留白形成高级编辑式气质。风格只决定视觉气质，视觉载体由页面语义另行决定。数据治理、制度机制、标准体系、权限关系、知识结构和系统能力等抽象主题默认采用编辑排版型媒介：以准确中文排版为主体，以一处克制的深蓝形面、局部数据纹理或抽象材料层建立视觉重心；业务关系通过位置、尺度、间距、对齐、密度和留白表达，不绘制完整流程、连续节点、逐项连接线、架构层、技术面板或光束。只有页面明确依赖人物、设备、地点、环境或操作行为才能成立时，才使用局部、低对比的场景、照片或编辑式行业插画。禁止复古档案、牛皮纸、文件夹、档案柜、教材照片、数据库圆柱、服务器机柜、控制台、设备陈列、科技霓虹、玻璃拟态、金属高光、通用图标墙、等距三维小组件、等权模块、编号步骤卡、时间线、机械流程模板、四栏咨询排版、卡片墙、SaaS界面和仪表盘。不得为了丰富画面强行添加行业设施、人物、环境或逐模块配图。",
-      "density_rule": "保持政企领导汇报所需的信息密度；由本页内容决定信息组织、空间层次、文字层级和视觉媒介，避免重复图标、等权分栏、空泛大字、场景堆叠或装饰性拼贴。"
+      "density_rule": "保持政企领导汇报所需的信息密度；当已批准页面语义明显比上屏摘要包含更多数字、限定条件、授权边界或运行事实时，升级为高密度编辑型媒介，将已批准事实组织为主文、旁注、事实条或边界注释。不得用四条摘要、单一大色块或大面积空白代替信息，也不得退化为卡片墙。"
     },
     {
       "id": 10,

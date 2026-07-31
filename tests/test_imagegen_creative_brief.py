@@ -20,6 +20,7 @@ from scripts.dual_image_overlay.imagegen_handoff import (
     PresentationDecision,
     resolve_presentation_decision,
     resolve_visual_medium,
+    select_dense_supporting_facts,
     resolve_onscreen_judgment_mode,
     select_image_locked_text,
     select_page_visual_intent_type,
@@ -96,6 +97,32 @@ def test_abstract_page_uses_editorial_typographic_medium() -> None:
     assert decision.scene_role == "no_scene"
 
 
+def test_dense_editorial_page_does_not_inject_must_onscreen_fact_layer() -> None:
+    page = replace(
+        _page(),
+        full_prose=(
+            "按30个学科管理约30万条题目及相关教材、教案和知识内容。"
+            "每次查询同时校验题目状态、安全等级和授权用途。"
+            "普通业务结合行级安全策略和服务端权限校验实现多组织隔离。"
+            "跨组织共享需明确资产范围、使用目的、有效期和撤销机制。"
+            "外部系统通过受控接口访问，服务端根据授权范围筛选数据。"
+        )
+        * 4,
+    )
+    assert resolve_visual_medium(page, "capability_relationship") == "editorial_dense"
+    # Helper may still score prose for diagnostics, but content-first prompts
+    # must not re-promote recovered facts into a must-onscreen contract.
+    assert select_dense_supporting_facts(page)
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock, page_mission="如何治理知识底座")
+    assert "【补充事实层｜必须上屏】" not in prompt
+    onscreen_section = prompt.split("【完整上屏内容】", 1)[1].split(
+        "【结论表达要求｜不上屏】", 1
+    )[0]
+    assert "多组织隔离" not in onscreen_section
+
+
 def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     page = _page()
     with TemporaryDirectory() as directory:
@@ -128,12 +155,13 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "ivory_deep_blue_scene" not in implicit
     assert "风格适用语境" not in implicit
     assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" not in implicit
-    assert "风格只决定页面的视觉气质" in implicit
-    assert "抽象主题，优先采用二维编辑结构" in implicit
-    assert "场景、照片或编辑式行业插画是条件性载体" in implicit
-    assert "【视觉媒介路由｜不上屏】" in implicit
-    assert "媒介类型：editorial_typographic" in implicit
-    assert "禁止完整流程、连续节点、逐项连接线、架构层、技术面板、光束、四栏结构和物件隐喻" in implicit
+    assert "风格只约束气质" in implicit
+    assert "抽象主题" in implicit
+    assert "精细中文排版" in implicit
+    assert "场景是条件性辅助层" in implicit
+    assert "【视觉媒介路由｜不上屏】" not in implicit
+    assert "媒介类型：editorial_typographic" not in implicit
+    assert "editorial_dense" not in implicit
     assert "【页面逻辑｜不上屏】" not in implicit
     assert "不使用等权卡片、通用图标流程或逐项配图" not in implicit
     assert "每个锁定模块及其名称只出现一次" not in implicit
@@ -461,7 +489,7 @@ def test_content_first_records_presentation_and_editable_body() -> None:
     assert "【版式与场景策略｜不上屏】" not in compiled.prompt
 
 
-def test_auto_visual_medium_decision_reaches_prompt() -> None:
+def test_auto_visual_medium_decision_stays_out_of_prompt() -> None:
     page = _page()
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
@@ -470,9 +498,9 @@ def test_auto_visual_medium_decision_reaches_prompt() -> None:
     assert compiled.presentation is not None
     assert compiled.presentation.source == "auto"
     assert compiled.presentation.layout_motif not in compiled.prompt
-    assert "【视觉媒介路由｜不上屏】" in compiled.prompt
-    assert f"媒介类型：{compiled.presentation.visual_medium}" in compiled.prompt
-    assert f"场景角色：{compiled.presentation.scene_role}" in compiled.prompt
+    assert "【视觉媒介路由｜不上屏】" not in compiled.prompt
+    assert "媒介类型：" not in compiled.prompt
+    assert "editorial_dense" not in compiled.prompt
     assert "【版式与场景策略｜不上屏】" not in compiled.prompt
 
 
@@ -485,6 +513,7 @@ def test_explicit_presentation_override_reaches_prompt() -> None:
     assert "【人工版式覆盖｜不上屏】" in compiled.prompt
     assert "process_atlas" in compiled.prompt
     assert "no_scene" in compiled.prompt
+    assert "媒介类型：" in compiled.prompt
 
 
 def test_semantic_only_keeps_judgment_in_semantics_but_not_locked_copy() -> None:

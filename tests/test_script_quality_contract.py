@@ -14,6 +14,8 @@ from cyberppt.script_quality_contract import (
     onscreen_effective_char_target,
     onscreen_story_roles,
     parse_script_markdown,
+    parse_selection_notes,
+    selection_notes_are_structured,
     text_similarity,
 )
 
@@ -35,7 +37,10 @@ SCRIPT = """# 第8—9页脚本审稿稿
 - 页面标题：总体定位
 - 主判断：初步定位为面向行业的公共能力。
 - 完整文字稿：在现状、变化和能力断点已经建立的前提下，建设方向初步定位为面向行业的公共能力。该定位明确研究方向和服务对象，同时保留专业运行系统的职责边界。正式判断仍需由数据、模型、业务分析和专家会商共同形成。
-- 文字稿取舍说明：不展开五类能力细节与首期场景；定位保持拟建议，不写成已建成。正式范围与技术路线的状态写入边界字段。
+- 文字稿取舍说明：
+  - 必留上屏：行业公共能力；专业系统边界
+  - 仅讲解：正式判断仍需数据、模型、业务分析和专家会商共同形成
+  - 仅追溯：S015、S026、S059
 - 证据映射：公共能力定位→S015；专业系统边界→S026；正式范围待定→S059
 - 上屏文字：
 
@@ -76,6 +81,10 @@ class ScriptMarkdownParserTests(unittest.TestCase):
         self.assertEqual(("S015", "S026", "S059"), document.pages[1].source_refs)
         self.assertEqual(("行业公共能力", "专业系统边界"), document.pages[1].module_titles)
         self.assertEqual("先说定位再说边界。", document.pages[1].coaching_tip)
+        self.assertTrue(selection_notes_are_structured(document.pages[1].selection_notes))
+        parsed = parse_selection_notes(document.pages[1].selection_notes)
+        self.assertIn("行业公共能力", parsed["必留上屏"])
+        self.assertIn("S015", parsed["仅追溯"])
 
     def test_rejects_document_without_pages(self) -> None:
         with self.assertRaisesRegex(ValueError, "no page headings"):
@@ -332,6 +341,10 @@ class ScriptContractAuditTests(unittest.TestCase):
             punctuated_codes,
         )
 
+    @unittest.skipUnless(
+        (POWER_PROJECT / "workbench/stages/01-analysis/outline.json").is_file(),
+        "power-supply-demand project artifacts not present",
+    )
     def test_power_foundation_regression_is_blocked(self) -> None:
         script = parse_script_markdown(
             (SCRIPT_AUDIT_FIXTURES / "power_foundation_premature_scope.md").read_text(
@@ -353,6 +366,10 @@ class ScriptContractAuditTests(unittest.TestCase):
 
         self.assertIn("PREMATURE_SCOPE_CLAIM", codes)
 
+    @unittest.skipUnless(
+        (POWER_PROJECT / "workbench/stages/01-analysis/outline.json").is_file(),
+        "power-supply-demand project artifacts not present",
+    )
     def test_power_scene_matrix_is_not_treated_as_isolated_method_page(self) -> None:
         script = parse_script_markdown(
             (SCRIPT_AUDIT_FIXTURES / "power_scene_matrix.md").read_text(

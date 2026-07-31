@@ -136,6 +136,9 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "Derive the default display policy from `judgment_role`: relationship/positioning/boundary/mechanism become `semantic_only`; fact/metric/milestone/acceptance/prohibition become `locked`. Use `onscreen_judgment_mode` only as an explicit override.",
         "Emit `onscreen_judgment` in the completed Chinese script as `- 上屏结论：...` without terminal punctuation.",
         "The visible layer must be independently readable without speaker narration.",
+        "First fix the page relation skeleton (path / layers / loop / judgment-evidence), "
+        "then write matching on-screen modules. Do not chase token coverage by stuffing "
+        "full-prose sentences onto the slide.",
         "Write `上屏文字` as a focused body story: source-supported evidence → "
         "explanation or causal relation → implication or handoff. "
         "Do not repeat the page title or subtitle inside the body.",
@@ -147,6 +150,12 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "Do not compress the full prose into module labels plus keywords. Preserve every fact, number, and relation needed to understand why the conclusion follows; preserve a limitation only when the limitation is itself part of the declared page subject.",
         "Count only Chinese, Latin, and numeric characters: target roughly 50% of the full prose, with a hard minimum of 220 and a cap target of 320 visible characters.",
         "Use at least two evidence-bearing on-screen lines. The visible conclusion may also carry the implication or handoff; do not add formulaic 因此/由此 wording only to satisfy the contract.",
+        "`文字稿取舍说明` must use three buckets:",
+        "  - 必留上屏：module titles / key phrases that remain on the slide",
+        "  - 仅讲解：mechanism detail kept for speaker notes, not on-screen",
+        "  - 仅追溯：S### retained in 证据映射 but not rendered on-screen",
+        "ImageGen must not re-promote 完整文字稿 or 证据映射 into must-onscreen text; "
+        "fix thin slides by rewriting Stage 01 上屏文字.",
         "`reserved_for_later`, `boundary_refs`, and `boundary_constraints` are internal controls only.",
         "They must not be copied into coaching tips or speaker notes. State a constraint only when it is the page's declared business subject.",
         "",

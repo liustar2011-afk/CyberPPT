@@ -415,11 +415,32 @@ STRATEGY_ORDER = (
 )
 
 PROSE_MIN_CHARS = 80
+# Extreme floor stays an ERROR under independent-reading audits; the former
+# 0.22/0.28 bands remain advisory so authors compress via 取舍说明 instead of
+# stuffing tokens to chase coverage.
+ONSCREEN_SEMANTIC_COVERAGE_ERROR_FLOOR = 0.15
 ONSCREEN_SEMANTIC_COVERAGE_MIN = 0.22
 ONSCREEN_SEMANTIC_COVERAGE_TARGET = 0.28
 ONSCREEN_EFFECTIVE_CHARS_MIN = 220
 ONSCREEN_EFFECTIVE_CHARS_MAX = 320
 ONSCREEN_PROSE_DENSITY_RATIO = 0.50
+SELECTION_NOTE_REQUIRED_MARKERS = ("必留上屏", "仅讲解", "仅追溯")
+PATH_LIKE_INTENT_TYPES = frozenset(
+    {
+        "path_chain",
+        "closed_loop",
+        "phase",
+        "causal",
+        "crosscutting_chain",
+    }
+)
+LAYER_LIKE_INTENT_TYPES = frozenset(
+    {
+        "hierarchy_support",
+        "capability_relationship",
+        "crosscutting_chain",
+    }
+)
 ONSCREEN_STORY_EXPLANATION_SIGNALS = (
     "说明",
     "表明",
@@ -547,6 +568,43 @@ def onscreen_effective_char_target(page: ScriptPage) -> int:
         ONSCREEN_EFFECTIVE_CHARS_MAX,
         max(ONSCREEN_EFFECTIVE_CHARS_MIN, target),
     )
+
+
+def parse_selection_notes(notes: str) -> dict[str, str]:
+    """Split 文字稿取舍说明 into 必留上屏 / 仅讲解 / 仅追溯 buckets."""
+
+    text = (notes or "").strip()
+    if not text:
+        return {}
+    parts: dict[str, list[str]] = {marker: [] for marker in SELECTION_NOTE_REQUIRED_MARKERS}
+    active = ""
+    for raw in text.splitlines():
+        line = raw.strip().lstrip("-*• ").strip()
+        if not line:
+            continue
+        matched = ""
+        for marker in SELECTION_NOTE_REQUIRED_MARKERS:
+            if line.startswith(f"{marker}：") or line.startswith(f"{marker}:"):
+                matched = marker
+                remainder = line.split("：", 1)[-1] if "：" in line else line.split(":", 1)[-1]
+                active = marker
+                if remainder.strip():
+                    parts[marker].append(remainder.strip())
+                break
+        if matched:
+            continue
+        if active:
+            parts[active].append(line)
+    return {
+        marker: "\n".join(chunks).strip()
+        for marker, chunks in parts.items()
+        if chunks
+    }
+
+
+def selection_notes_are_structured(notes: str) -> bool:
+    parsed = parse_selection_notes(notes)
+    return all(marker in parsed and parsed[marker] for marker in SELECTION_NOTE_REQUIRED_MARKERS)
 
 
 def _nontable_compact_len(text: str) -> int:
@@ -986,8 +1044,11 @@ def script_retry_directive(
             "ONSCREEN_BOUNDARY_ASIDE",
             "ONSCREEN_RELATION_META_LABEL",
             "CONTENT_SELECTION_NOTES_MISSING",
+            "CONTENT_SELECTION_NOTES_UNSTRUCTURED",
+            "CONTENT_SELECTION_ONSCREEN_MISMATCH",
             "CONTENT_EVIDENCE_MAP_MISSING",
             "PROSE_SOURCE_COVERAGE_GAP",
+            "ONSCREEN_RELATION_ISOMORPHISM",
         }
         for code in codes
     ):
@@ -1194,7 +1255,7 @@ def _prose_issues(
             )
         if (
             prose_chars >= PROSE_MIN_CHARS * 2
-            and coverage < ONSCREEN_SEMANTIC_COVERAGE_MIN
+            and coverage < ONSCREEN_SEMANTIC_COVERAGE_ERROR_FLOOR
         ):
             issues.append(
                 _issue(
@@ -1203,13 +1264,33 @@ def _prose_issues(
                     "Too little of the full prose meaning survives in the on-screen layer.",
                     (
                         "Restore the essential facts, numbers, explanatory relations, "
-                        "causal links, and page implication from 完整文字稿; concise "
-                        "rewriting is allowed, semantic omission is not."
+                        "causal links, and page implication from 完整文字稿 via 必留上屏; "
+                        "do not dump the full prose onto the slide."
+                    ),
+                    evidence=(
+                        f"coverage={coverage:.3f}",
+                        f"floor={ONSCREEN_SEMANTIC_COVERAGE_ERROR_FLOOR:.3f}",
+                    ),
+                )
+            )
+        elif (
+            prose_chars >= PROSE_MIN_CHARS * 2
+            and coverage < ONSCREEN_SEMANTIC_COVERAGE_MIN
+        ):
+            issues.append(
+                _issue(
+                    "ONSCREEN_SEMANTIC_COVERAGE_LOW",
+                    page,
+                    "On-screen semantic coverage is below the advisory band; prefer relation isomorphism and structured 取舍说明 over token stuffing.",
+                    (
+                        "Keep the page skeleton in 必留上屏; park mechanism detail in 仅讲解 "
+                        "and Source IDs in 仅追溯."
                     ),
                     evidence=(
                         f"coverage={coverage:.3f}",
                         f"min={ONSCREEN_SEMANTIC_COVERAGE_MIN:.3f}",
                     ),
+                    severity="warning",
                 )
             )
         roles = onscreen_story_roles(page)
@@ -1259,9 +1340,63 @@ def _prose_issues(
                 "CONTENT_SELECTION_NOTES_MISSING",
                 page,
                 "Content page must state what was deliberately left out or deferred.",
-                "Add 文字稿取舍说明 in 1-3 sentences covering evidence, topic, and intensity choices.",
+                "Add 文字稿取舍说明 with 必留上屏 / 仅讲解 / 仅追溯.",
             )
         )
+    elif not selection_notes_are_structured(page.selection_notes):
+        issues.append(
+            _issue(
+                "CONTENT_SELECTION_NOTES_UNSTRUCTURED",
+                page,
+                "文字稿取舍说明 must use the three buckets 必留上屏 / 仅讲解 / 仅追溯.",
+                (
+                    "Rewrite as:\n"
+                    "  - 必留上屏：…\n"
+                    "  - 仅讲解：…\n"
+                    "  - 仅追溯：S### …"
+                ),
+                severity="warning",
+            )
+        )
+    else:
+        parsed = parse_selection_notes(page.selection_notes)
+        keep = parsed.get("必留上屏", "")
+        compact_onscreen = re.sub(r"\s+", "", page.onscreen_text)
+        module_hits = [
+            title
+            for title in page.module_titles
+            if re.sub(r"\s+", "", title) in compact_onscreen
+            and re.sub(r"\s+", "", title) in re.sub(r"\s+", "", keep)
+        ]
+        if page.module_titles and not module_hits:
+            # Require at least one module title echoed in 必留上屏 so the note
+            # is not a free-form essay disconnected from the slide.
+            issues.append(
+                _issue(
+                    "CONTENT_SELECTION_ONSCREEN_MISMATCH",
+                    page,
+                    "必留上屏 does not name any visible on-screen module.",
+                    "List the kept module titles or key phrases that remain in 上屏文字.",
+                    evidence=page.module_titles[:4],
+                    severity="warning",
+                )
+            )
+        traced = tuple(SOURCE_RE.findall(parsed.get("仅追溯", "")))
+        if traced and page.evidence_map_refs:
+            missing_trace = tuple(
+                item for item in traced if item not in page.evidence_map_refs
+            )
+            if missing_trace:
+                issues.append(
+                    _issue(
+                        "CONTENT_SELECTION_ONSCREEN_MISMATCH",
+                        page,
+                        "仅追溯 lists Source IDs that are absent from 证据映射.",
+                        "Keep 仅追溯 IDs inside this page's evidence map.",
+                        evidence=missing_trace,
+                        severity="warning",
+                    )
+                )
     if not page.evidence_map or not page.evidence_map_refs:
         issues.append(
             _issue(
@@ -1635,6 +1770,43 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
                 evidence=(str(count), str(len(page.module_titles))),
             )
         )
+    intent = page.visual_intent_type.strip()
+    if page.page_type == "content" and page.module_titles:
+        path_like = intent in PATH_LIKE_INTENT_TYPES or any(
+            marker in visual
+            for marker in ("贯穿主链", "阶段推进", "路径", "闭环", "回流")
+        )
+        layer_like_intent = intent in LAYER_LIKE_INTENT_TYPES or any(
+            marker in visual for marker in ("分层剖面", "分层", "横向治理")
+        )
+        has_order = any(signal in page.onscreen_text for signal in ORDER_SIGNALS) or bool(
+            re.search(r"(?m)^\s*\*\*\d{2}｜", page.onscreen_text)
+        )
+        has_layer = any(signal in page.onscreen_text for signal in LAYER_SIGNALS) or bool(
+            re.search(r"(?m)^\s*\*\*\d{2}｜", page.onscreen_text)
+        )
+        if path_like and len(page.module_titles) >= 2 and not has_order:
+            issues.append(
+                _issue(
+                    "ONSCREEN_RELATION_ISOMORPHISM",
+                    page,
+                    "Path-like page relation is not readable from on-screen module order.",
+                    "Number modules (01｜…), add →/随之 signals, or change visual_intent_type.",
+                    evidence=(intent or visual[:40], *page.module_titles[:4]),
+                    severity="warning",
+                )
+            )
+        if layer_like_intent and len(page.module_titles) >= 2 and not has_layer:
+            issues.append(
+                _issue(
+                    "ONSCREEN_RELATION_ISOMORPHISM",
+                    page,
+                    "Layered page relation is not readable from on-screen hierarchy cues.",
+                    "Keep numbered layer modules or explicit 层/支撑 signals aligned with 视觉结构.",
+                    evidence=(intent or visual[:40], *page.module_titles[:4]),
+                    severity="warning",
+                )
+            )
     visible_chars = len(re.sub(r"\s+", "", page.onscreen_text))
     if (
         page.page_type == "content"
