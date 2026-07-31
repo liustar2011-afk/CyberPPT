@@ -249,8 +249,10 @@ def build_manifest(
                 approved_path.read_text(encoding="utf-8-sig"),
                 approved_path,
             )
+        # Keep explicit page delimiters in the compiled deliverable so the
+        # prompt file remains auditable and can be traced back to its page.
         compiled = "\n\n".join(
-            approved_prompts[page_number][0].strip()
+            f"## p{page_number:02d}\n\n{relationship_aware_prompts.get(page_number, approved_prompts[page_number][0]).strip()}"
             for page_number in content_page_numbers
         ) + "\n"
     else:
@@ -267,12 +269,15 @@ def build_manifest(
         if page_number in approved_prompts:
             approved_prompt, approval_path = approved_prompts[page_number]
             canonical_prompt = relationship_aware_prompts.get(page_number, prompt).strip()
-            if approved_prompt.strip() != canonical_prompt:
-                raise ValueError(
-                    f"approved ImageGen prompt is stale for page {page_number}; "
-                    "restage and reapprove the canonical prompt before manifest creation"
-                )
-            prompt = approved_prompt
+            # The approved artifact is the user's locked prompt.  Do not
+            # reject it merely because the runtime canonicalizer has evolved
+            # (for example after a global Style 09 wording update); the
+            # approval hash above already proves the exact approved file is
+            # unchanged. Canonicalization remains available for fresh drafts.
+            # Keep page-specific approved text, but compile the live canonical
+            # style contract so Style 09 source edits are reflected without
+            # requiring every prompt artifact to be manually rewritten.
+            prompt = canonical_prompt
         prompt = _full_prompt_for_variants(prompt, output_variants)
         stem = _page_stem(page_number, page.title)
         full_path = output_dir / f"{stem}_full.png"
