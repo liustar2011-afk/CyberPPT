@@ -19,6 +19,7 @@ from scripts.dual_image_overlay.imagegen_handoff import (
     locked_onscreen_text,
     PresentationDecision,
     resolve_presentation_decision,
+    resolve_visual_medium,
     resolve_onscreen_judgment_mode,
     select_image_locked_text,
     select_page_visual_intent_type,
@@ -71,7 +72,7 @@ def test_presentation_decision_ignores_recent_scene_density() -> None:
         PresentationDecision("evidence_landscape", "primary_scene", "auto", ""),
     )
     decision = resolve_presentation_decision(page, "closed_loop", prior)
-    assert decision.scene_role == "supporting_evidence"
+    assert decision.scene_role == "no_scene"
 
 
 def test_abstract_relations_do_not_default_to_scenes() -> None:
@@ -84,6 +85,15 @@ def test_scenario_application_still_defaults_to_a_scene() -> None:
     page = _page()
     decision = resolve_presentation_decision(page, "scenario_application")
     assert decision.scene_role == "primary_scene"
+    assert decision.visual_medium == "semantic_scene"
+
+
+def test_abstract_page_uses_editorial_typographic_medium() -> None:
+    page = _page()
+    assert resolve_visual_medium(page, "capability_relationship") == "editorial_typographic"
+    decision = resolve_presentation_decision(page, "capability_relationship")
+    assert decision.visual_medium == "editorial_typographic"
+    assert decision.scene_role == "no_scene"
 
 
 def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
@@ -121,6 +131,9 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "风格只决定页面的视觉气质" in implicit
     assert "抽象主题，优先采用二维编辑结构" in implicit
     assert "场景、照片或编辑式行业插画是条件性载体" in implicit
+    assert "【视觉媒介路由｜不上屏】" in implicit
+    assert "媒介类型：editorial_typographic" in implicit
+    assert "禁止完整流程、连续节点、逐项连接线、架构层、技术面板、光束、四栏结构和物件隐喻" in implicit
     assert "【页面逻辑｜不上屏】" not in implicit
     assert "不使用等权卡片、通用图标流程或逐项配图" not in implicit
     assert "每个锁定模块及其名称只出现一次" not in implicit
@@ -448,7 +461,7 @@ def test_content_first_records_presentation_and_editable_body() -> None:
     assert "【版式与场景策略｜不上屏】" not in compiled.prompt
 
 
-def test_auto_presentation_decision_stays_in_metadata_only() -> None:
+def test_auto_visual_medium_decision_reaches_prompt() -> None:
     page = _page()
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
@@ -457,7 +470,9 @@ def test_auto_presentation_decision_stays_in_metadata_only() -> None:
     assert compiled.presentation is not None
     assert compiled.presentation.source == "auto"
     assert compiled.presentation.layout_motif not in compiled.prompt
-    assert compiled.presentation.scene_role not in compiled.prompt
+    assert "【视觉媒介路由｜不上屏】" in compiled.prompt
+    assert f"媒介类型：{compiled.presentation.visual_medium}" in compiled.prompt
+    assert f"场景角色：{compiled.presentation.scene_role}" in compiled.prompt
     assert "【版式与场景策略｜不上屏】" not in compiled.prompt
 
 

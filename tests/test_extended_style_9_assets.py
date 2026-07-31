@@ -21,3 +21,5 @@ def test_style_nine_sample_and_reference_are_available() -> None:
     assert "抽象主题，优先采用二维编辑结构" in reference
     assert "场景、照片或编辑式行业插画是条件性载体" in reference
     assert "不得默认使用档案柜、文件夹、牛皮纸" in reference
+    assert "默认采用“编辑排版型”媒介" in reference
+    assert "不默认绘制节点、链路、箭头、光束或技术面板" in reference

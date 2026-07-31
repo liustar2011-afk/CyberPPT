@@ -1069,16 +1069,47 @@ def render_presentation_contract(
     page: ScriptPage,
     decision: PresentationDecision,
 ) -> str:
-    if decision.source != "script":
-        return ""
-    return "\n".join(
+    medium_contracts = {
+        "editorial_typographic": (
+            "采用编辑排版型媒介：以准确中文排版、尺度、位置、间距、对齐、密度和留白表达关系。"
+            "只允许一处克制的深蓝形面、局部数据纹理或抽象材料层作为视觉重心。"
+            "禁止完整流程、连续节点、逐项连接线、架构层、技术面板、光束、四栏结构和物件隐喻。"
+        ),
+        "semantic_scene": (
+            "采用条件性语义场景媒介：场景必须直接解释不可替代的业务动作或物理环境，"
+            "并保持局部、低对比、从属于正文和主关系。"
+        ),
+        "data_visualization": (
+            "采用数据可视化媒介：以可核验的数据关系、直接标注和清晰比较为主体，"
+            "不得用装饰插画或技术面板替代数据。"
+        ),
+        "document_material": (
+            "采用克制的文档材料媒介：只呈现与证据类型直接相关的局部纸张、条文或批注关系，"
+            "禁止复古档案、牛皮纸、文件柜和怀旧拼贴。"
+        ),
+        "spatial_system": (
+            "采用浅层空间系统媒介：仅表达真实存在的部署、区域或设施关系，"
+            "禁止等距三维组件堆叠、科技发光和软件架构图。"
+        ),
+    }
+    lines = [
         (
-            "【人工版式覆盖｜不上屏】",
-            f"版式母题：{page.layout_motif.strip() or decision.layout_motif}。",
-            f"场景角色：{page.scene_role.strip() or decision.scene_role}。",
-            "该覆盖只约束本页表达方式，不得删除完整上屏内容或改变业务关系。",
+            "【人工版式覆盖｜不上屏】"
+            if decision.source == "script"
+            else "【视觉媒介路由｜不上屏】"
+        ),
+        f"媒介类型：{decision.visual_medium}。",
+        medium_contracts[decision.visual_medium],
+        f"场景角色：{page.scene_role.strip() or decision.scene_role}。",
+    ]
+    if decision.source == "script":
+        lines.extend(
+            (
+                f"人工版式母题：{page.layout_motif.strip() or decision.layout_motif}。",
+                "人工覆盖不得删除完整上屏内容或改变业务关系。",
+            )
         )
-    )
+    return "\n".join(lines)
 
 
 STYLE_COLOR_LABELS = (
@@ -1107,6 +1138,13 @@ LAYOUT_MOTIFS = (
     "layered_system",
 )
 SCENE_ROLES = ("primary_scene", "supporting_evidence", "no_scene")
+VISUAL_MEDIA = (
+    "editorial_typographic",
+    "semantic_scene",
+    "data_visualization",
+    "document_material",
+    "spatial_system",
+)
 MOTIF_CANDIDATES: dict[str, tuple[str, str]] = {
     "boundary_guardrail": ("decision_canvas", "evidence_landscape"),
     "decision_admission": ("decision_canvas", "evidence_landscape"),
@@ -1143,6 +1181,7 @@ class PresentationDecision:
     scene_role: str
     source: str
     reason: str
+    visual_medium: str = "editorial_typographic"
 
     def to_dict(self) -> dict[str, str]:
         return {
@@ -1150,7 +1189,32 @@ class PresentationDecision:
             "scene_role": self.scene_role,
             "source": self.source,
             "reason": self.reason,
+            "visual_medium": self.visual_medium,
         }
+
+
+def resolve_visual_medium(page: ScriptPage, relation: str) -> str:
+    """Choose the page medium independently from palette and layout motif."""
+
+    semantic_text = "\n".join(
+        part
+        for part in (
+            page.title,
+            page.main_message,
+            page.onscreen_judgment,
+            page.onscreen_text,
+        )
+        if part
+    )
+    if relation == "scenario_application":
+        return "semantic_scene"
+    if re.search(r"同比|环比|占比|趋势|增长率|下降率|柱状|折线|散点|分布", semantic_text):
+        return "data_visualization"
+    if re.search(r"条款|政策原文|批注|公文|合同|证据材料", semantic_text):
+        return "document_material"
+    if re.search(r"厂区|站房|机房|设备部署|区域部署|物理空间|生产现场", semantic_text):
+        return "spatial_system"
+    return "editorial_typographic"
 
 
 def resolve_presentation_decision(
@@ -1182,7 +1246,10 @@ def resolve_presentation_decision(
         if source == "script"
         else f"{relation} candidates: {', '.join(candidates)}"
     )
-    return PresentationDecision(motif, scene_role, source, reason)
+    visual_medium = resolve_visual_medium(page, relation)
+    if visual_medium != "semantic_scene" and not explicit_scene:
+        scene_role = "no_scene"
+    return PresentationDecision(motif, scene_role, source, reason, visual_medium)
 
 
 def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
