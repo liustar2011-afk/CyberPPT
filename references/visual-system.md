@@ -322,13 +322,22 @@
 
 ## 扩展风格9：象牙白 + 深蓝领导汇报
 
-默认8种风格仍保持1—8不变。风格9是仅供显式选择的扩展风格，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用，不进入默认候选。
+默认8种风格仍保持1—8不变。风格9是仅供显式选择的扩展风格，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用，不进入默认候选。原风格4保持不变，既有风格4项目成果无需迁移。
 
-风格9面向政企**领导汇报**与**演讲辅助**（非咨询交付件、非学术论文、非产品宣传）：色板与风格4同为象牙白 + 深蓝（#F7F6F0 / #12355B）。视觉身份是 senior leadership briefing / speech-support（不是 process infographic）。单一视觉中心应表达结果/价值/能力（非泛化图表图标）。要求 **Industry scene anchor**：真实行业场景为视觉基础，其上轻叠加业务逻辑关系；观众先感知“正在建设的真实行业能力”，再理解“如何运转”；忌仅用图标/节点/箭头表达；优先电网运行、调度控制室、预测分析工作环境、专业决策氛围；忌 AI 芯片、抽象网络节点、科技蓝光、泛互联网技术场景、扁平图标主视觉、卡通与抽象科技符号。要求 Visual logic：图元从文本逻辑派生，把因果/输入输出/依赖/反馈/演进关系视觉化，形成文图一体叙事；Prefer 场景锚定的能力演示、真实工作语境中的业务能力关系、分层能力含义（非软件栈图）、行业实景中的价值路径、运行语境中的闭环改进；忌软件架构图观感、中心模块+卫星节点+图标箭头整页、技术规格图审美、孤立节点生命周期环、泛化流程箭头、图标步骤图。忌等权模块、编号步骤卡、时间线、机械流程模板、四栏咨询排版、卡片墙、SaaS/仪表盘与库存会议照。**实景彩色插画 / 编辑式行业插画**是高端关键工艺——行业可信度基础与视觉锚点（双层：实景 + 轻逻辑叠加）；文主线不变，可含纪实/编辑摄影；宁少勿滥，禁止一模块一图刷屏或大照片海报。禁止以「视觉结构」或任何后端构图字段作为构图起点。原风格4保持不变，既有使用风格4生成的项目成果无需迁移或覆盖。
+Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
+Identity: senior leadership briefing / speech-support — editorial, restrained, content-led. Not consulting-deck, academic-paper, product-marketing, or process-infographic.
 
-### Style 9 people-expression constraint
+Composition (hard): one integrated composition. Locked Chinese text is woven into the business structure; imagery supports objects/relations in place. Ban left-right or top-bottom 50/50 splits of “text column vs image/scene column”; ban magazine cover + caption layouts; ban background photo + foreground text block.
 
-People are supporting contextual elements only, not the main visual subject. Avoid front-facing portraits, posed meeting-photo compositions, direct eye contact with the camera, and hero-style human compositions. Prefer side views, back views, three-quarter views, distant group working scenes, or small-scale human presence integrated into the business environment. Do not let human faces become the highest-contrast or largest visual element on the page. People should appear naturally engaged in professional work, supporting business capability, decision-making, validation, coordination, or operational improvement. Avoid smiling portraits, handshakes, conference-table group photos, people pointing at screens, and corporate promotional photography. Visual priority: business capability logic, real industry scene, professional work state, then supporting people.
+Scene: optional local industry-scene anchor only (embedded crop/texture, generally ≤ ~1/4 of the content area). Never a half-page panel or page foundation. Prefer grid ops / control-room / analysis work atmosphere only when page semantics need it. Ban AI chips, neon tech glow, abstract network nodes, flat icon heroes, cartoon tech symbols.
+
+Visual logic: derive graphics from page relations (I/O, dependency, feedback, evolution, path, loop, hierarchy). Prefer business objects, evidence, outcomes. Ban equal card walls, step cards, timelines, hub-and-spoke, software-architecture / tech-spec look, SaaS UI, dashboards, one-module-one-illustration spam, large scenic posters.
+
+Materials: low-relief paper / resin / frosted surfaces, soft contact shadows when helpful. Ban exaggerated 3D, metal specular, glassmorphism.
+
+People: default absent. If needed — few, distant, small, low-contrast support only. No front portraits, posed meetings, handshakes, pointing-at-screens, promo shots. People never carry the core judgment.
+
+Priority: core judgment → locked text + business relations → outcomes/boundaries → optional local scene. Tone from style; medium from page semantics.
 
 ## 扩展风格10：象牙白 + 深蓝双层语义汇报
 

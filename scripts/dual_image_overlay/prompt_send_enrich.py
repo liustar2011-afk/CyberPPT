@@ -27,9 +27,20 @@ DETERMINISTIC_MATERIALS = (
 )
 DETERMINISTIC_PEOPLE = "People: default absent unless semantics need distant small-scale support."
 DETERMINISTIC_BAN = (
-    "Ban: equal card walls, step cards, timelines, hub-and-spoke, SaaS/dashboard/"
-    "architecture looks, file cabinets, folders, kraft paper, DB cylinders, server racks, "
-    "logos, seals, org names, page numbers, footers, evidence IDs in the body image."
+    "Ban: 50/50 text-vs-image splits (left-right or top-bottom), magazine cover+caption, "
+    "background photo + foreground text block, equal card walls, step cards, timelines, "
+    "hub-and-spoke, SaaS/dashboard/architecture looks, file cabinets, folders, kraft paper, "
+    "DB cylinders, server racks, logos, seals, org names, page numbers, footers, evidence IDs "
+    "in the body image."
+)
+DETERMINISTIC_COMPOSITION = (
+    "Composition: one integrated layout; weave locked Chinese into the business structure; "
+    "optional industry scene ≤ ~1/4 as local embed — never a half-page panel."
+)
+DETERMINISTIC_CHROME = (
+    "Chrome ban: do not draw slide title, subtitle, page number, slide index "
+    "(第N页 / Pxx / Slide N), logo, footer, or master chrome. Keep locked business "
+    "module numbers (e.g. 01｜); invent no decorative serials."
 )
 DETERMINISTIC_FIDELITY = (
     "Fidelity: keep all locked on-screen Chinese text verbatim; do not invent facts, "
@@ -131,9 +142,11 @@ def build_deterministic_enrich_block(prompt: str) -> str:
         [
             SEND_ENRICH_HEADER,
             structure,
+            DETERMINISTIC_COMPOSITION,
             DETERMINISTIC_MATERIALS,
             DETERMINISTIC_PEOPLE,
             DETERMINISTIC_BAN,
+            DETERMINISTIC_CHROME,
             DETERMINISTIC_FIDELITY,
         ]
     )

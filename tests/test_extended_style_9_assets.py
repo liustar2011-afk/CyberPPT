@@ -15,14 +15,13 @@ def test_style_nine_sample_and_reference_are_available() -> None:
     assert sample.exists()
     with Image.open(sample) as image:
         ratio = image.width / image.height
-        # Palette sample may be 16:9 (slide) or 2:1 (ImageGen canvas).
         assert abs(ratio - 16 / 9) < 0.01 or abs(ratio - 2.0) < 0.01
     assert "扩展风格9：象牙白 + 深蓝领导汇报" in reference
     assert "默认8种风格仍保持1—8不变" in reference
     assert "#F7F6F0" in style09
     assert "#12355B" in style09
-    assert "senior leadership briefing" in style09
-    assert "low-relief" in style09
-    assert "paper / resin / frosted" in style09
-    assert "default absent" in style09
-    assert "Industry scene anchor" not in style09
+    assert "speech-support" in style09
+    assert "50/50" in style09
+    assert "1/4" in style09
+    assert "one integrated composition" in style09
+    assert "People: default absent" in style09

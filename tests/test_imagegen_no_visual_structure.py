@@ -284,7 +284,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertLess(prompt.index("Page-specific visual intent"), prompt.index("上屏文字"))
         self.assertLess(
             prompt.index("Page-specific visual intent"),
-            prompt.index("面向政企领导汇报"),
+            prompt.index("senior leadership briefing"),
         )
         self.assertNotIn("扩展风格9：", prompt)
         self.assertNotIn("不进入默认候选", prompt)
@@ -376,7 +376,8 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertNotIn("正式范围待后续确定", prompt)
         self.assertNotIn("Boundary text must not appear on the slide", prompt)
         self.assertIn("【完整上屏内容】", prompt)
-        self.assertNotIn("不得生成额外页面标题、Logo、页脚或页码。", prompt)
+        self.assertIn("【模板层禁绘｜不上屏】", prompt)
+        self.assertIn("不绘制页面标题、副标题、页码、页面序号", prompt)
         self.assertNotIn("不得捏造事实、改变判断强度", prompt)
         self.assertNotIn("不得新增未经页面内容支持的上屏文字", prompt)
         self.assertNotIn("不得新增原文不存在的数字", prompt)

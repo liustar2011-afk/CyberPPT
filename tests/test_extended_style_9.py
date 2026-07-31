@@ -70,20 +70,19 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "锁定文字嵌入稳定承载面" not in style_nine["scope_rule"]
     assert "文字是页面主体" not in style_nine["scope_rule"]
     assert "少量实景、近实景或物件型语义图仅作点缀" not in style_nine["scope_rule"]
-    assert "Scene and people: default absent" in style_nine["people_rule"] or "default absent" in style_nine["people_rule"]
-    assert "senior leadership briefing" in style_nine["prompt_contract"]
-    assert "content-led" in style_nine["prompt_contract"]
+    assert "People: default absent" in style_nine["people_rule"]
+    assert "one integrated composition" in style_nine["prompt_contract"]
+    assert "50/50" in style_nine["prompt_contract"]
+    assert "1/4" in style_nine["prompt_contract"]
+    assert "speech-support" in style_nine["prompt_contract"]
     assert "#F7F6F0" in style_nine["prompt_contract"]
     assert "#12355B" in style_nine["prompt_contract"]
-    assert "low-relief" in style_nine["prompt_contract"]
-    assert "paper / resin / frosted" in style_nine["prompt_contract"]
-    assert "default absent" in style_nine["prompt_contract"]
     assert "Industry scene anchor" not in style_nine["prompt_contract"]
     assert "逐项配图" not in style_nine["prompt_contract"]
     assert "icon_rule" not in style_nine
     assert "政企领导汇报所需的信息密度" in style_nine["density_rule"]
     assert "领导汇报" in style_nine["scenario"]
-    assert 600 < len(style_nine["prompt_contract"]) < 1600
+    assert 600 < len(style_nine["prompt_contract"]) < 2200
     assert style_nine["imagegen_signature"] == []
     assert "节奏与媒介" not in style_nine["prompt_contract"]
 

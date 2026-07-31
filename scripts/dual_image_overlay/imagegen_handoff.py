@@ -62,6 +62,10 @@ PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
 DEFAULT_PROMPT_COMPILER = "content-first-v1"
 IMAGEGEN_CANVAS_CONTRACT = """【输出尺寸｜不上屏】
 画布尺寸固定为 2048×1024 像素（2:1 横向）。必须按该尺寸与比例构图，不得输出 16:9、4:3、方形或其他比例。"""
+IMAGEGEN_CHROME_BAN_CONTRACT = """【模板层禁绘｜不上屏】
+正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。
+标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。
+【锁定关键文字】【完整上屏内容】中的业务编号与模块名（如 01｜）必须保留；禁止新增与锁定文案无关的序号条、页码章或装饰编号。"""
 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【结论句要求｜不上屏】
 如【锁定关键文字】含正文结论句，该句是正文结论句，不是页面标题；不得通栏放大或添加标题竖线、横线等装饰。
 允许调整换行和文字层级；画面必须参与表达页面逻辑，不得退化为文字排版加装饰图片。"""
@@ -1760,6 +1764,8 @@ def render_content_first_prompt(
         ),
         "",
         IMAGEGEN_CANVAS_CONTRACT,
+        "",
+        IMAGEGEN_CHROME_BAN_CONTRACT,
         "",
         render_content_first_style_contract(style_lock),
     ]
