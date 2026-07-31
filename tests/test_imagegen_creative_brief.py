@@ -478,6 +478,27 @@ def test_semantic_only_with_no_numeric_facts_omits_empty_locked_section() -> Non
     assert "不得从【页面任务】【核心判断】或【页面逻辑】中自行抽取整句" in prompt
 
 
+def test_semantic_only_handoff_preserves_thesis_logic_and_relations() -> None:
+    page = replace(
+        _page(),
+        onscreen_judgment_mode="semantic_only",
+        subtitle="多源知识归一后，由分层数据服务支撑应用",
+        visual_structure="贯穿主链——来源 → 对象 → 服务 → 生命周期。",
+        full_prose=(
+            "从业务关系看，三类知识来源先归一为统一知识对象，再由分层数据服务供给应用。"
+            "统一知识对象连接来源、版本、权限和质量状态。"
+        ),
+    )
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock, page_mission="如何治理多源知识")
+
+    assert page.onscreen_judgment in prompt
+    assert "【页面逻辑｜不上屏】" in prompt
+    assert "从业务关系看，三类知识来源先归一为统一知识对象" in prompt
+    assert "统一知识对象连接来源、版本、权限和质量状态" in prompt
+
+
 def test_semantic_only_still_locks_business_module_labels() -> None:
     page = replace(
         _page(),

@@ -1177,9 +1177,15 @@ def render_content_first_prompt(
     judgment_for_semantics = page.onscreen_judgment.strip()
     if not judgment_for_semantics and not onscreen_body and not page.main_message.strip():
         judgment_for_semantics = page.title.strip()
+    core_in_locked_copy = bool(
+        judgment_for_semantics and judgment_for_semantics in locked
+    )
     visible_judgment = (
         judgment_for_semantics
-        if judgment_mode == "locked" and not page.subtitle.strip()
+        if (
+            judgment_mode == "locked"
+            and not page.subtitle.strip()
+        )
         else ""
     )
     # A subtitle migration is deliberately non-destructive: the approved body
@@ -1209,18 +1215,20 @@ def render_content_first_prompt(
         page,
         relation,
     )
-    # In semantic-only mode the judgment is deliberately absent from the
-    # drawable text layer, but it must still reach ImageGen as the governing
-    # thesis.  In locked mode it is already present in the locked copy, so do
-    # not duplicate it in the internal context.
+    # The judgment must always reach ImageGen as the governing thesis.  If it
+    # is already short enough to be in the locked bitmap copy, do not repeat
+    # it in the internal context; otherwise keep it as semantic guidance even
+    # when the page deliberately uses semantic-only on-screen copy.
     include_core_context = bool(
         judgment_for_semantics
-        and judgment_for_semantics not in locked
+        and not core_in_locked_copy
+        and judgment_for_semantics not in complete_semantics
     )
     include_logic_context = bool(
-        page.visual_structure.strip()
-        or page.visual_proof.strip()
-        or semantic_relations
+        semantic_relations
+        or page.subtitle.strip()
+        or page.speaker_notes.strip()
+        or judgment_mode == "semantic_only"
     )
     parts = [
         "【完整上屏内容】",

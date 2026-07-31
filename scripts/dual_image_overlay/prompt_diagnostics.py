@@ -20,12 +20,16 @@ _EXACT_NUMBER_RE = re.compile(
 _CONTENT_START = "【内容锁定】"
 _CONTENT_END = "【构图指令】"
 _COMPOSITION_START = "[Mandatory composition guidance]"
-_CONTENT_FIRST_START = "【页面任务｜"
+_CONTENT_FIRST_STARTS = (
+    "【页面任务｜",
+    "页面任务：",
+)
 _CONTENT_FIRST_ENDS = (
     "【结论句要求｜",
     "【结论表达要求｜",
     "【内容与视觉要求｜",
     "【输出与风格｜",
+    "【输出尺寸｜",
 )
 _SEMANTIC_RULE_GROUPS: dict[str, tuple[str, ...]] = {
     "detached_text_zone": (
@@ -235,9 +239,10 @@ def _section(text: str, start: str, end: str | None = None) -> str:
 def _content_first_page_section(text: str) -> str:
     """Return page-specific content from a content-first-v1 prompt."""
 
-    if _CONTENT_FIRST_START not in text:
+    start = next((marker for marker in _CONTENT_FIRST_STARTS if marker in text), "")
+    if not start:
         return ""
-    value = text.split(_CONTENT_FIRST_START, 1)[1]
+    value = text.split(start, 1)[1]
     end_positions = [
         value.index(marker)
         for marker in _CONTENT_FIRST_ENDS
