@@ -7,6 +7,7 @@ import unittest
 from cyberppt.script_quality_contract import (
     ScriptPage,
     _issue,
+    _visual_structure_judgment_issues,
     audit_script_quality,
     build_communication_review,
     extract_speaker_notes,
@@ -1546,6 +1547,100 @@ class SpeakerNotesContractTests(unittest.TestCase):
             "CONTENT_SPEAKER_NOTES_MISSING",
             {issue.code for issue in issues},
         )
+
+
+def _judgment_page(**overrides: object) -> ScriptPage:
+    base = dict(
+        page_id="p15",
+        sequence=15,
+        heading="知识与数据底座",
+        page_type="content",
+        title="知识与数据底座",
+        main_message="通用、专业和行业知识先归一为标准知识对象，再由分层数据服务支撑应用",
+        full_prose="从业务关系看，三类知识来源先归一为统一知识对象。" * 4,
+        selection_notes="必留上屏：三类来源；仅讲解：细节；仅追溯：S001",
+        evidence_map="点→S001",
+        evidence_map_refs=("S001",),
+        source_refs=("S001",),
+        boundary_source_refs=(),
+        boundary="",
+        visual_structure="",
+        onscreen_text="**01｜三类知识来源**\n- a\n**02｜统一知识对象**\n- b",
+        module_titles=("01｜三类知识来源", "02｜统一知识对象"),
+        speaker_notes="围绕判断展开。",
+        onscreen_judgment="通用、专业和行业知识先归一为标准知识对象，再由分层数据服务支撑应用",
+    )
+    base.update(overrides)
+    return ScriptPage(**base)  # type: ignore[arg-type]
+
+
+class VisualStructureJudgmentAccuracyTests(unittest.TestCase):
+    def test_flags_crosscut_module_peer_staged_on_path(self) -> None:
+        page = _judgment_page(
+            visual_structure=(
+                "贯穿主链——三类知识来源 → 统一知识对象 → 分层数据服务 → 质量与生命周期；"
+                "一级模块与上屏文字一致。"
+            ),
+        )
+        codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
+        self.assertIn("VISUAL_STRUCTURE_CROSSCUT_AS_PEER", codes)
+
+    def test_allows_crosscut_as_second_clause_not_on_arrow_chain(self) -> None:
+        page = _judgment_page(
+            visual_structure=(
+                "贯穿主链——三类知识来源 → 统一知识对象 → 分层数据服务；"
+                "质量与生命周期贯穿主链。"
+            ),
+        )
+        codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
+        self.assertNotIn("VISUAL_STRUCTURE_CROSSCUT_AS_PEER", codes)
+
+    def test_flags_horizontal_governance_as_stacked_layer(self) -> None:
+        page = _judgment_page(
+            main_message="平台以统一知识治理为底座，并由权限审核贯穿全链",
+            full_prose="从业务关系看，数据资产经过知识加工形成智能能力，横向治理贯穿每一层。" * 2,
+            visual_structure=(
+                "分层剖面——自下而上依次呈现数据资产层、知识加工层、智能能力层、"
+                "三类应用层、横向治理层；一级模块与上屏文字一致。"
+            ),
+        )
+        codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
+        self.assertIn("VISUAL_STRUCTURE_CROSSCUT_AS_PEER", codes)
+
+    def test_flags_gateway_center_mismatch(self) -> None:
+        page = _judgment_page(
+            main_message="统一网关连接身份组织、知识题库、学习教学和分析报告接口",
+            onscreen_judgment="统一网关连接身份组织、知识题库、学习教学和分析报告接口",
+            visual_structure=(
+                "双侧协同——以身份组织接口为视觉中心，其余模块按支撑关系连接；"
+                "一级模块与上屏文字一致。"
+            ),
+        )
+        codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
+        self.assertIn("VISUAL_CENTER_JUDGMENT_MISMATCH", codes)
+
+    def test_flags_depth_defense_with_boundary_primitive(self) -> None:
+        page = _judgment_page(
+            main_message="安全体系以五层纵深防护构成内容到审计的防护链",
+            onscreen_judgment="安全体系以五层纵深防护构成内容到审计的防护链",
+            visual_structure=(
+                "受控边界——由外向内设置内容输出控制、风险行为识别、身份与网络隔离、"
+                "数据保护、审计与应急，中心为受控业务输出；一级模块与上屏文字一致。"
+            ),
+        )
+        codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
+        self.assertIn("VISUAL_STRUCTURE_PRIMITIVE_MISMATCH", codes)
+
+    def test_flags_mechanism_peer_lanes(self) -> None:
+        page = _judgment_page(
+            main_message="学生实时链路与教师异步任务采用隔离资源和差异化降级策略",
+            visual_structure=(
+                "主体泳道——横向并列学生实时链路、教师异步队列、资源隔离、弹性降级，"
+                "底部设置统一支撑关系；一级模块与上屏文字一致。"
+            ),
+        )
+        codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
+        self.assertIn("VISUAL_STRUCTURE_MECHANISM_AS_LANE", codes)
 
 
 if __name__ == "__main__":

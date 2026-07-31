@@ -585,6 +585,34 @@ def test_path_chain_hard_hint_from_visual_structure() -> None:
     assert select_page_visual_intent_type(page, "如何治理多源知识") == "path_chain"
 
 
+def test_crosscutting_hard_hint_when_transverse_clause_present() -> None:
+    page = replace(
+        _page(),
+        main_message="多源知识先归一再服务应用，质量治理贯穿主链",
+        visual_structure=(
+            "贯穿主链——来源归一为对象再进入服务供给；质量与生命周期贯穿主链。"
+        ),
+        module_titles=(),
+        onscreen_text="- 支撑内容",
+    )
+    assert select_page_visual_intent_type(page, "如何治理多源知识") == "crosscutting_chain"
+
+
+def test_crosscutting_hard_hint_for_layered_with_horizontal_governance() -> None:
+    page = replace(
+        _page(),
+        main_message="统一底座连接三类应用，横向治理贯穿全链",
+        full_prose="从业务关系看，数据资产经过知识加工形成智能能力，横向治理贯穿每一层。",
+        visual_structure=(
+            "分层剖面——自下而上依次呈现数据资产层、知识加工层、智能能力层、"
+            "三类应用层、横向治理层；一级模块与上屏文字一致。"
+        ),
+        module_titles=(),
+        onscreen_text="- 支撑内容",
+    )
+    assert select_page_visual_intent_type(page, "平台如何组织") == "crosscutting_chain"
+
+
 def test_script_visual_intent_type_field_is_explicit_override() -> None:
     page = replace(
         _page(),
@@ -768,7 +796,7 @@ def test_page_logic_contract_uses_chinese_spatial_rules() -> None:
 
     page = replace(
         _page(),
-        visual_structure="分层剖面——自下而上依次呈现支撑层与结果层。",
+        visual_structure="分层剖面——自下而上依次呈现支撑层与结果层；一级模块与上屏文字一致。",
         main_message="上层结果依赖下层支撑",
         onscreen_text="- 支撑内容",
         module_titles=(),
@@ -779,6 +807,8 @@ def test_page_logic_contract_uses_chinese_spatial_rules() -> None:
     assert relation == "hierarchy_support"
     assert source == "hint"
     assert "主导关系：分层支撑。" in contract
+    assert "结构形态：分层剖面——自下而上依次呈现支撑层与结果层" in contract
+    assert "一级模块与上屏文字一致" not in contract
     # Drawing recipes must not reach ImageGen.
     assert "空间组织：" not in contract
     assert "本页避免：" not in contract

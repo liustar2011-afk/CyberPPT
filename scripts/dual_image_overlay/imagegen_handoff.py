@@ -256,7 +256,24 @@ VISUAL_STRUCTURE_HARD_HINTS: tuple[tuple[str, str], ...] = (
     ("分期推进", "phase"),
     ("非对称对照", "comparison"),
     ("双侧协同", "capability_relationship"),
+    ("主体泳道", "hierarchy_support"),
+    ("汇聚引擎输出", "capability_relationship"),
     ("判断证据", "judgment_evidence"),
+)
+
+_CROSSCUT_HARD_HINT_MARKERS = (
+    "横向治理贯穿",
+    "横向贯穿",
+    "贯穿每层",
+    "横切",
+    "沿主链贯穿",
+    "贯穿式",
+)
+_CROSSCUT_HARD_HINT_PREFIXES = (
+    "贯穿主链",
+    "分层剖面",
+    "转化主链",
+    "路径转化",
 )
 
 TEXT_IN_COMPOSITION_RULE = (
@@ -462,6 +479,7 @@ NON_RENDERING_RELATION_LABELS = {
     "责任关系",
     "四层贯通",
     "建设关系",
+    "分工关系",
 }
 
 # These compact relationship statements are semantic input for ImageGen, not
@@ -749,6 +767,26 @@ def _visual_structure_hard_hint(page: ScriptPage) -> str:
     structure = page.visual_structure.strip()
     if not structure:
         return ""
+    corpus = "\n".join(
+        (
+            structure,
+            page.main_message,
+            page.full_prose,
+            page.speaker_notes,
+        )
+    )
+    # Path/layer primitives with an explicit transverse force are cross-cutting,
+    # not a pure path_chain / hierarchy_support stack.
+    if structure.startswith(_CROSSCUT_HARD_HINT_PREFIXES) and (
+        any(marker in corpus for marker in _CROSSCUT_HARD_HINT_MARKERS)
+        or re.search(r"[；;][^；;\n]{0,40}贯穿主链", structure)
+        or re.search(r"[；;][^；;\n]{0,20}横切", structure)
+        or (
+            "横向治理" in structure
+            and any(token in corpus for token in ("贯穿", "横向"))
+        )
+    ):
+        return "crosscutting_chain"
     for prefix, intent in VISUAL_STRUCTURE_HARD_HINTS:
         if structure.startswith(prefix):
             return intent
@@ -1530,6 +1568,17 @@ def render_visual_carrier_contract(
     return ""
 
 
+def compact_visual_structure_for_logic(visual: str) -> str:
+    """Shrink authoring 视觉结构 to one understanding line for ImageGen."""
+
+    text = re.sub(r"\s+", " ", (visual or "")).strip()
+    if not text:
+        return ""
+    text = re.sub(r"[；;]\s*一级模块与上屏文字一致。?\s*$", "", text).strip()
+    text = re.sub(r"[；;]\s*$", "", text).strip()
+    return text
+
+
 def render_page_logic_contract(
     page: ScriptPage,
     *,
@@ -1537,12 +1586,12 @@ def render_page_logic_contract(
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
 ) -> tuple[str, str, str]:
-    """Render relationship type only — no composition / drawing recipes.
+    """Render relationship type + compact structure form — no drawing recipes.
 
     Returns ``(relation, intent_source, contract)``.
-    ``VISUAL_INTENT_TEMPLATES`` composition/avoid strings remain for legacy
-    creative-brief paths and scoring, but content-first ImageGen only gets the
-    dominant-relation label. Business meaning stays in【页面语义关系】.
+    Line 1 names the dominant relation; line 2 optionally carries a compact
+    ``结构形态`` from script ``视觉结构`` (understanding only, not composition
+    how-to). Business meaning stays in【页面语义关系】.
     """
 
     relation, intent_source = resolve_page_visual_intent(
@@ -1566,13 +1615,14 @@ def render_page_logic_contract(
         "capability_relationship": "能力协同",
         "judgment_evidence": "判断—证据",
     }
-    contract = "\n".join(
-        (
-            "【页面逻辑｜不上屏】",
-            f"主导关系：{relation_labels[relation]}。",
-        )
-    )
-    return relation, intent_source, contract
+    lines = [
+        "【页面逻辑｜不上屏】",
+        f"主导关系：{relation_labels[relation]}。",
+    ]
+    structure = compact_visual_structure_for_logic(page.visual_structure)
+    if structure:
+        lines.append(f"结构形态：{structure}")
+    return relation, intent_source, "\n".join(lines)
 
 
 def render_content_first_prompt(

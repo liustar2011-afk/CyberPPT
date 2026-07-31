@@ -363,6 +363,36 @@ COMPOSITION_PRIMITIVES = (
     "矩阵筛选",
     "闭环回流",
 )
+# Module labels that usually cross-cut / govern a main chain rather than sit as
+# an equal → stage. Peer-staging them on a path/layer list is a common error.
+CROSSCUT_PEER_LABELS = (
+    "横向治理层",
+    "横向治理",
+    "质量与生命周期",
+    "生命周期",
+    "统一模型治理",
+)
+DEPTH_DEFENSE_MARKERS = (
+    "纵深防护",
+    "五层纵深",
+    "纵深",
+    "逐层衔接",
+    "逐级收紧",
+)
+MECHANISM_LANE_LABELS = (
+    "资源隔离",
+    "弹性降级",
+    "差异化降级",
+)
+BUSINESS_LANE_LABELS = (
+    "学生实时链路",
+    "教师异步队列",
+    "在线事务链",
+    "异步事件链",
+    "离线分析链",
+    "实时链路",
+    "异步队列",
+)
 SPATIAL_SIGNALS = (
     "左",
     "右",
@@ -917,6 +947,7 @@ ONSCREEN_RELATION_META_LABELS: tuple[str, ...] = (
     "责任关系",
     "四层贯通",
     "建设关系",
+    "分工关系",
     "从业务关系看",
 )
 
@@ -1094,8 +1125,13 @@ def script_retry_directive(
             "SEMANTIC_DIAGRAM_MISMATCH",
             "VISUAL_STRUCTURE_STYLE_ONLY",
             "VISUAL_STRUCTURE_TOO_THIN",
+            "VISUAL_STRUCTURE_CROSSCUT_AS_PEER",
+            "VISUAL_CENTER_JUDGMENT_MISMATCH",
+            "VISUAL_STRUCTURE_PRIMITIVE_MISMATCH",
+            "VISUAL_STRUCTURE_MECHANISM_AS_LANE",
             "ONSCREEN_ANTI_PATTERN",
             "PRIMITIVE_ONSCREEN_MISMATCH",
+            "ONSCREEN_RELATION_ISOMORPHISM",
         }
         for code in codes
     ):
@@ -1368,7 +1404,14 @@ def _prose_issues(
             if re.sub(r"\s+", "", title) in compact_onscreen
             and re.sub(r"\s+", "", title) in re.sub(r"\s+", "", keep)
         ]
-        if page.module_titles and not module_hits:
+        # The assembly pipeline may intentionally use a generic keep rule
+        # ("页面结论、关键事实与模块标题") when module titles are already
+        # locked in the adjacent 上屏文字 block. Treat that explicit contract
+        # as valid instead of forcing every title to be duplicated in notes.
+        generic_keep_rule = any(
+            token in keep for token in ("模块标题", "上屏模块", "页面结论")
+        )
+        if page.module_titles and not module_hits and not generic_keep_rule:
             # Require at least one module title echoed in 必留上屏 so the note
             # is not a free-form essay disconnected from the slide.
             issues.append(
@@ -1533,6 +1576,180 @@ def _narration_boundary_issues(
 
 def _has_any(text: str, terms: tuple[str, ...]) -> bool:
     return any(term in text for term in terms)
+
+
+def _visual_module_label(value: str) -> str:
+    text = re.sub(r"^\s*\d+\s*｜\s*", "", value).strip()
+    text = re.sub(r"^[①②③④⑤⑥⑦⑧⑨⑩]+", "", text).strip()
+    return text.strip(" 。；;，,")
+
+
+def _visual_structure_chain_nodes(visual: str) -> tuple[str, ...]:
+    """Extract peer nodes from「原语——A → B → C」or「原语——A、B、C」lists."""
+
+    text = visual.strip()
+    if "——" in text:
+        text = text.split("——", 1)[1]
+    text = re.split(r"[；;]", text, maxsplit=1)[0]
+    text = re.sub(r"一级模块与上屏文字一致。?", "", text)
+    text = re.sub(
+        r"^(?:自下而上|自上而下|由外向内|横向并列)?依次呈现",
+        "",
+        text,
+    )
+    text = re.sub(r"^(?:自下而上|自上而下|由外向内|横向并列)", "", text)
+    text = text.strip(" ：:。")
+    if "→" in text:
+        parts = [part.strip() for part in text.split("→")]
+    else:
+        parts = re.split(r"[、，,]", text)
+    nodes: list[str] = []
+    for part in parts:
+        label = _visual_module_label(part)
+        label = re.sub(r"^(?:设置|以|把)", "", label)
+        label = re.sub(r"(?:为视觉中心|按支撑关系连接)$", "", label)
+        label = label.strip(" ：:。")
+        if label and label not in nodes and len(label) <= 24:
+            nodes.append(label)
+    return tuple(nodes)
+
+
+def _page_relation_corpus(page: ScriptPage) -> str:
+    return "\n".join(
+        (
+            page.main_message,
+            page.onscreen_judgment,
+            page.full_prose,
+            page.speaker_notes,
+            page.visual_structure,
+        )
+    )
+
+
+def _visual_structure_judgment_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
+    """Catch visual-structure templates that contradict the page judgment."""
+
+    issues: list[ScriptQualityIssue] = []
+    visual = page.visual_structure.strip()
+    if page.page_type != "content" or not visual:
+        return issues
+    corpus = _page_relation_corpus(page)
+    judgment = f"{page.main_message}\n{page.onscreen_judgment}".strip()
+    nodes = _visual_structure_chain_nodes(visual)
+
+    # 1) Cross-cutting roles peer-staged on → / 、 lists.
+    peer_hits: list[str] = []
+    for node in nodes:
+        bare = _visual_module_label(node)
+        is_named_crosscut = any(
+            bare == label or bare.endswith(label) or label in bare
+            for label in CROSSCUT_PEER_LABELS
+        )
+        patterns = (
+            # 「质量与生命周期贯穿主链 / 横向治理贯穿每一层」
+            rf"{re.escape(bare)}[^。；;\n]{{0,12}}贯穿",
+            rf"{re.escape(bare)}[^。；;\n]{{0,8}}横切",
+            rf"横切[^。；;\n]{{0,12}}{re.escape(bare)}",
+            # 「贯穿每层的横向治理」— do not use「贯穿主链——模块」structure lead
+            rf"贯穿(?!主链)[^。；;\n]{{0,12}}{re.escape(bare)}",
+            rf"横向[^。；;\n]{{0,6}}{re.escape(bare)}",
+        )
+        marked = any(re.search(pattern, corpus) for pattern in patterns)
+        # Explicit crosscut clause while also sitting on the main arrow list.
+        if re.search(
+            rf"[；;][^；;]*{re.escape(bare)}[^；;]*贯穿",
+            visual,
+        ):
+            marked = True
+        if (is_named_crosscut or marked) and (
+            "→" in visual.split("；", 1)[0].split(";", 1)[0]
+            or visual.startswith("分层剖面")
+            or visual.startswith("贯穿主链")
+            or visual.startswith("阶段推进")
+            or visual.startswith("闭环回流")
+        ):
+            peer_hits.append(bare)
+    if peer_hits:
+        issues.append(
+            _issue(
+                "VISUAL_STRUCTURE_CROSSCUT_AS_PEER",
+                page,
+                "Visual structure peer-stages a cross-cutting role on the main chain.",
+                "Keep the main chain as transformation stages only; write cross-cuts as "
+                "「横切：…贯穿主链」instead of another → node or stacked layer.",
+                evidence=tuple(dict.fromkeys(peer_hits)),
+                severity="warning",
+            )
+        )
+
+    # 2) Declared visual center conflicts with the governing judgment.
+    center_match = re.search(
+        r"以(?P<center>[^为，。；;\n]{2,24})为视觉中心",
+        visual,
+    )
+    if center_match and judgment:
+        center = center_match.group("center").strip()
+        if "统一网关" in judgment and "网关" not in center:
+            issues.append(
+                _issue(
+                    "VISUAL_CENTER_JUDGMENT_MISMATCH",
+                    page,
+                    "Visual center does not match the gateway-centered judgment.",
+                    "Put 统一网关 (or 网关治理) at the visual center when the judgment is gateway-led.",
+                    evidence=(center, "统一网关"),
+                    severity="warning",
+                )
+            )
+        if re.search(r"三类引擎|分别支撑三类应用|分别支撑三类", judgment) and re.search(
+            r"(学生|教师|学校)引擎",
+            center,
+        ):
+            issues.append(
+                _issue(
+                    "VISUAL_CENTER_JUDGMENT_MISMATCH",
+                    page,
+                    "Visual center privileges one engine while the judgment treats three engines as peers.",
+                    "Use a shared hub (统一治理 / 三类引擎协同) or an equal three-engine field.",
+                    evidence=(center,),
+                    severity="warning",
+                )
+            )
+
+    # 3) Primitive conflicts with judgment vocabulary.
+    if "受控边界" in visual and _has_any(judgment, DEPTH_DEFENSE_MARKERS):
+        depth_hits = tuple(m for m in DEPTH_DEFENSE_MARKERS if m in judgment)[:2]
+        issues.append(
+            _issue(
+                "VISUAL_STRUCTURE_PRIMITIVE_MISMATCH",
+                page,
+                "Boundary-shell primitive used for a depth-defense judgment.",
+                "Prefer 分层剖面 / 纵深主链 for layered defense; reserve 受控边界 for admission shells.",
+                evidence=("受控边界", *depth_hits),
+                severity="warning",
+            )
+        )
+
+    # 4) Swimlanes peer-stage mechanisms with business chains.
+    if "主体泳道" in visual:
+        mechanism_hits = tuple(
+            label for label in MECHANISM_LANE_LABELS if label in visual
+        )
+        business_hits = tuple(
+            label for label in BUSINESS_LANE_LABELS if label in visual
+        )
+        if mechanism_hits and business_hits:
+            issues.append(
+                _issue(
+                    "VISUAL_STRUCTURE_MECHANISM_AS_LANE",
+                    page,
+                    "Swimlane structure peers mechanism modules with business chains.",
+                    "Keep business chains as lanes; attach 隔离/降级 as controls on those lanes.",
+                    evidence=business_hits + mechanism_hits,
+                    severity="warning",
+                )
+            )
+
+    return issues
 
 
 def _constraint_is_declared_subject(
@@ -1702,6 +1919,7 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
                         severity="warning",
                     )
                 )
+        issues.extend(_visual_structure_judgment_issues(page))
     path_like = "路径" in visual or "贯穿主链" in visual or "阶段推进" in visual
     if path_like and not any(
         signal in page.onscreen_text for signal in ORDER_SIGNALS
