@@ -344,9 +344,6 @@ People should be absent or minimal. If needed, use only tiny distant figures ins
 
 Final result: a calm, highly readable executive-report page combining business infographics with multiple embedded real-world scene modules.
 
-Icon treatment only: apply the following instructions exclusively to icons. Do not change or influence the composition, layout, module containers, imagery, connectors, typography, spacing, or visual hierarchy.
-
-Use refined executive-style icons with subtle depth and material quality. Icons may have soft beveling, slight embossing, shallow shadows, and gentle highlights, creating a premium, lightly dimensional look. Keep them controlled, elegant, and subordinate to the text. Preserve each icon’s original size, position, subject, and container. Avoid glossy 3D rendering, floating icons, glassmorphism, neon effects, and flashy product-style rendering.
 
 ## 扩展风格10：象牙白 + 深蓝双层语义汇报
 
