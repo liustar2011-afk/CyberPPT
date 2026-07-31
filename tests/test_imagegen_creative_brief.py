@@ -592,6 +592,63 @@ def test_business_relations_outrank_module_title_chains() -> None:
     assert "质量与生命周期" not in relations
 
 
+def test_visual_carrier_is_forwarded_verbatim_and_marked_offscreen() -> None:
+    carrier = (
+        "以一条连续的“知识资产归一与服务供给”叙事作为主视觉载体。"
+        "不得将统一知识对象绘制成软件产品包装、服务器机箱或电子证照。"
+    )
+    page = replace(_page(), visual_carrier=carrier)
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert "【视觉载体｜不上屏】" in prompt
+    carrier_section = prompt.split("【视觉载体｜不上屏】", 1)[1]
+    assert carrier in carrier_section
+    assert "不得改写【锁定关键文字】或【完整上屏内容】" in carrier_section
+    assert prompt.index("【视觉载体｜不上屏】") > prompt.index("【完整上屏内容】")
+    assert "软件产品包装" not in prompt.split("【完整上屏内容】", 1)[1].split(
+        "【视觉载体｜不上屏】", 1
+    )[0]
+
+
+def test_visual_carrier_override_beats_page_field() -> None:
+    page = replace(_page(), visual_carrier="页面字段载体")
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(
+            page,
+            lock,
+            visual_intent_override={"visual_carrier": "覆盖载体指引"},
+        )
+    assert "覆盖载体指引" in prompt
+    assert "页面字段载体" not in prompt
+
+
+def test_pages_without_visual_carrier_omit_the_section() -> None:
+    page = replace(_page(), visual_carrier="")
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+    assert "【视觉载体｜不上屏】" not in prompt
+
+
+def test_script_parses_visual_carrier_field() -> None:
+    text = """## 第9页：载体页
+
+- 页面类型：内容页
+- 页面标题：载体页
+- 主判断：主判断成立
+- 上屏结论：主判断成立
+- 上屏文字：
+  **模块A**
+  - 要点
+- 视觉载体：连续叙事主视觉；不得逐项配图标。
+"""
+    page = parse_script_markdown(text).pages[0]
+    assert page.visual_carrier == "连续叙事主视觉；不得逐项配图标。"
+
+
 def test_semantic_only_still_locks_business_module_labels() -> None:
     page = replace(
         _page(),

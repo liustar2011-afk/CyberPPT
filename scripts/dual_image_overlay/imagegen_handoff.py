@@ -1255,6 +1255,53 @@ def render_content_first_style_contract(style_lock: Path) -> str:
     return "\n".join(lines)
 
 
+def resolve_visual_carrier(
+    page: ScriptPage,
+    visual_context: dict[str, str] | None = None,
+    visual_intent_override: dict[str, str] | None = None,
+) -> str:
+    """Return page-specific visual-carrier guidance, if any."""
+
+    for source in (
+        (visual_intent_override or {}).get("visual_carrier"),
+        (visual_context or {}).get("visual_carrier"),
+        page.visual_carrier,
+    ):
+        value = str(source or "").strip()
+        if value:
+            return value
+    receipt = page.contract_receipt
+    if isinstance(receipt, dict):
+        value = str(receipt.get("visual_carrier") or "").strip()
+        if value:
+            return value
+    return ""
+
+
+def render_visual_carrier_contract(
+    page: ScriptPage,
+    *,
+    visual_context: dict[str, str] | None = None,
+    visual_intent_override: dict[str, str] | None = None,
+) -> str:
+    """Render optional page-owned visual-carrier guidance for ImageGen."""
+
+    carrier = resolve_visual_carrier(
+        page,
+        visual_context=visual_context,
+        visual_intent_override=visual_intent_override,
+    )
+    if not carrier:
+        return ""
+    return "\n".join(
+        (
+            "【视觉载体｜不上屏】",
+            carrier,
+            "以上仅约束主视觉载体与构图禁令，不得改写【锁定关键文字】或【完整上屏内容】，不得新增上屏文案。",
+        )
+    )
+
+
 def render_page_logic_contract(
     page: ScriptPage,
     *,
@@ -1432,6 +1479,12 @@ def render_content_first_prompt(
         "",
         logic_contract if include_logic_context else "",
         "",
+        render_visual_carrier_contract(
+            page,
+            visual_context=visual_context,
+            visual_intent_override=visual_intent_override,
+        ),
+        "",
         render_presentation_contract(page, presentation),
         "",
         IMAGEGEN_CANVAS_CONTRACT,
@@ -1478,6 +1531,7 @@ def _page_visual_contexts(project: Path) -> dict[str, dict[str, str]]:
         "visual_center",
         "visual_proof",
         "visual_intent_type",
+        "visual_carrier",
         "onscreen_judgment_mode",
         "judgment_role",
     )
@@ -1503,6 +1557,7 @@ def _page_visual_intent_overrides(project: Path) -> dict[str, dict[str, str]]:
     allowed = {
         "visual_intent_type",
         "visual_proof",
+        "visual_carrier",
         *VISUAL_INTENT_TEMPLATES["judgment_evidence"].keys(),
     }
     result: dict[str, dict[str, str]] = {}
