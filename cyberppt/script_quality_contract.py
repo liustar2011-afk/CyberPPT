@@ -151,6 +151,7 @@ class ScriptPage:
     onscreen_judgment: str = ""
     judgment_role: str = ""
     onscreen_judgment_mode: str = ""
+    visual_intent_type: str = ""
     image_locked_text: str = ""
     layout_motif: str = ""
     scene_role: str = ""
@@ -300,6 +301,7 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                 onscreen_judgment=fields.get("上屏结论", "").strip(),
                 judgment_role=fields.get("判断角色", "").strip(),
                 onscreen_judgment_mode=fields.get("上屏结论模式", "").strip(),
+                visual_intent_type=fields.get("视觉意图类型", "").strip(),
                 image_locked_text=fields.get("生图锁定文字", "").strip(),
                 layout_motif=fields.get("版式母题", "").strip(),
                 scene_role=fields.get("场景角色", "").strip(),

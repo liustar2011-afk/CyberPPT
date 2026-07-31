@@ -104,7 +104,7 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "扩展风格9：象牙白 + 深蓝领导汇报" in implicit
     assert "风格适用语境" not in implicit
     assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" not in implicit
-    assert "通过行业对象、设施设备、专业环境" in implicit
+    assert "优先采用场景化行业插画" in implicit or "场景化行业插画" in implicit
     assert "【页面逻辑｜不上屏】" not in implicit
     assert "不使用等权卡片、通用图标流程或逐项配图" not in implicit
     assert "每个锁定模块及其名称只出现一次" not in implicit
@@ -483,7 +483,13 @@ def test_semantic_only_handoff_preserves_thesis_logic_and_relations() -> None:
         _page(),
         onscreen_judgment_mode="semantic_only",
         subtitle="多源知识归一后，由分层数据服务支撑应用",
-        visual_structure="贯穿主链——来源 → 对象 → 服务 → 生命周期。",
+        visual_structure="贯穿主链——来源 → 对象 → 服务 → 应用出口。",
+        module_titles=(
+            "01｜三类知识来源",
+            "02｜统一知识对象",
+            "03｜分层数据服务",
+            "04｜质量与生命周期",
+        ),
         full_prose=(
             "从业务关系看，三类知识来源先归一为统一知识对象，再由分层数据服务供给应用。"
             "统一知识对象连接来源、版本、权限和质量状态。"
@@ -495,8 +501,95 @@ def test_semantic_only_handoff_preserves_thesis_logic_and_relations() -> None:
 
     assert page.onscreen_judgment in prompt
     assert "【页面逻辑｜不上屏】" in prompt
+    assert "主导关系：路径转化。" in prompt
+    assert "判断—证据" not in prompt
     assert "从业务关系看，三类知识来源先归一为统一知识对象" in prompt
     assert "统一知识对象连接来源、版本、权限和质量状态" in prompt
+    assert "质量与生命周期" not in prompt.split("【页面语义关系｜仅供理解，不上屏】", 1)[1].split(
+        "【页面逻辑｜不上屏】", 1
+    )[0]
+
+
+def test_path_chain_hard_hint_from_visual_structure() -> None:
+    page = replace(
+        _page(),
+        main_message="多源知识先归一再服务应用",
+        visual_structure="贯穿主链——来源 → 对象 → 服务 → 应用。",
+        module_titles=(),
+        onscreen_text="- 支撑内容",
+    )
+    assert select_page_visual_intent_type(page, "如何治理多源知识") == "path_chain"
+
+
+def test_script_visual_intent_type_field_is_explicit_override() -> None:
+    page = replace(
+        _page(),
+        visual_structure="",
+        visual_intent_type="path_chain",
+        main_message="普通支撑判断",
+        onscreen_text="- 支撑内容",
+        module_titles=(),
+    )
+    assert select_page_visual_intent_type(page, "") == "path_chain"
+
+
+def test_contract_receipt_visual_intent_type_is_honored() -> None:
+    page = replace(
+        _page(),
+        visual_structure="",
+        contract_receipt={"visual_intent_type": "closed_loop"},
+        main_message="普通支撑判断",
+        onscreen_text="- 支撑内容",
+        module_titles=(),
+    )
+    assert select_page_visual_intent_type(page, "") == "closed_loop"
+
+
+def test_low_confidence_fallback_omits_logic_contract_even_for_semantic_only() -> None:
+    page = replace(
+        _page(),
+        onscreen_judgment_mode="semantic_only",
+        subtitle="普通副标题",
+        visual_structure="",
+        speaker_notes="补充讲解。",
+        full_prose="普通说明文字。",
+        main_message="形成稳定的行业公共能力",
+        onscreen_text="- 支撑内容",
+        module_titles=(),
+    )
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(page, lock)
+
+    assert "【页面逻辑｜不上屏】" not in prompt
+    assert "主导关系：判断—证据" not in prompt
+
+
+def test_business_relations_outrank_module_title_chains() -> None:
+    from scripts.dual_image_overlay.imagegen_handoff import _page_semantic_relations
+
+    page = replace(
+        _page(),
+        visual_structure=(
+            "贯穿主链——三类知识来源 → 统一知识对象 → 分层数据服务 → 质量与生命周期；"
+        ),
+        module_titles=(
+            "01｜三类知识来源",
+            "02｜统一知识对象",
+            "03｜分层数据服务",
+            "04｜质量与生命周期",
+        ),
+        full_prose=(
+            "从业务关系看，三类知识来源先归一为统一知识对象，再由分层数据服务面向应用供给能力。"
+            "统一知识对象连接来源、版本、权限和质量状态。"
+        ),
+        onscreen_text="",
+        speaker_notes="",
+    )
+    relations = _page_semantic_relations(page)
+    assert "从业务关系看" in relations
+    assert "统一知识对象连接" in relations
+    assert "质量与生命周期" not in relations
 
 
 def test_semantic_only_still_locks_business_module_labels() -> None:

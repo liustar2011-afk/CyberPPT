@@ -189,6 +189,16 @@ VISUAL_INTENT_SIGNALS: dict[str, tuple[tuple[str, int], ...]] = {
         ("近期首先", 6),
         ("先开展", 4),
         ("再拓展", 4),
+        ("阶段推进", 9),
+    ),
+    "path_chain": (
+        ("贯穿主链", 12),
+        ("转化主链", 10),
+        ("业务主链", 9),
+        ("路径转化", 9),
+        ("先归一", 8),
+        ("再由分层", 7),
+        ("依次完成", 5),
     ),
     "capability_relationship": (
         ("能力协同", 8),
@@ -218,12 +228,29 @@ VISUAL_INTENT_PRIORITY = (
     "multi_semantic_foundation",
     "comparison",
     "closed_loop",
+    "path_chain",
     "phase",
     "capability_relationship",
     "decision_admission",
     "scenario_application",
     "causal",
     "judgment_evidence",
+)
+
+# Prefixes taken from the script's 视觉结构 field. When present they outrank
+# keyword scoring so authoring labels like「贯穿主链」are not lost.
+VISUAL_STRUCTURE_HARD_HINTS: tuple[tuple[str, str], ...] = (
+    ("贯穿主链", "path_chain"),
+    ("路径转化", "path_chain"),
+    ("转化主链", "path_chain"),
+    ("闭环回流", "closed_loop"),
+    ("分层剖面", "hierarchy_support"),
+    ("受控边界", "boundary_guardrail"),
+    ("阶段推进", "phase"),
+    ("分期推进", "phase"),
+    ("非对称对照", "comparison"),
+    ("双侧协同", "capability_relationship"),
+    ("判断证据", "judgment_evidence"),
 )
 
 TEXT_IN_COMPOSITION_RULE = (
@@ -421,6 +448,27 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
             "An equal-weight timeline, generic roadmap arrows, or milestone decoration."
         ),
     },
+    "path_chain": {
+        "visual_thesis": (
+            "Express the page as one directional transformation path that converts upstream "
+            "inputs into downstream capabilities or applications."
+        ),
+        "decision_relationship": (
+            "Business objects change state along one primary chain; supporting quality, "
+            "governance, or lifecycle processes may cross or underwrite the chain but are "
+            "not a peer terminal node of the value path."
+        ),
+        "recommended_composition": (
+            "Build one clear reading path with unequal moments for intake, normalization, "
+            "service provision, and application outlets. Attach module names to distinct "
+            "moments of the path; keep cross-cutting quality or lifecycle work as a "
+            "subordinate seam, band, or underwriting layer rather than the final peer stage."
+        ),
+        "avoid_on_this_page": (
+            "Equal numbered stage cards, one icon per module, treating every on-screen "
+            "module as a successive peer node, or a judgment-plus-evidence card wall."
+        ),
+    },
     "capability_relationship": {
         "visual_thesis": "Explain how capabilities work together to create business value.",
         "decision_relationship": (
@@ -471,6 +519,7 @@ VISUAL_PROOF_FALLBACKS: dict[str, str] = {
     "causal": "用原因到业务后果的传导关系证明行动必要性。",
     "closed_loop": "用输入、结果、验证与反馈的闭环证明业务能够持续改进。",
     "phase": "用阶段目的与准入条件的递进证明实施节奏。",
+    "path_chain": "用上游输入到下游能力或应用出口的转化路径证明底座如何成立。",
     "capability_relationship": "用多项能力共同作用于同一业务结果证明协同关系。",
     "judgment_evidence": "用主判断与支撑证据的直接关系完成证明。",
 }
@@ -501,6 +550,25 @@ PAGE_SEMANTIC_MARKERS = (
     "四层主链",
 )
 
+# Prefer these over module-enumeration chains when both are present.
+BUSINESS_RELATION_MARKERS = (
+    "从业务关系看",
+    "服务关系",
+    "对象关系",
+    "业务含义",
+    "协同关系",
+    "组件关系",
+    "恢复关系",
+)
+
+MODULE_CHAIN_MARKERS = (
+    "贯穿主链",
+    "四层主链",
+    "转化主链",
+    "业务主链",
+)
+
+
 def _clean_onscreen_for_imagegen(text: str) -> str:
     """Keep theme bullets; strip boundary asides that dilute the page mission."""
 
@@ -522,6 +590,24 @@ def _clean_onscreen_for_imagegen(text: str) -> str:
     return "\n".join(cleaned_lines).strip()
 
 
+def _module_label(title: str) -> str:
+    return re.sub(r"^\s*\d+\s*｜\s*", "", title).strip()
+
+
+def _is_module_enumeration_chain(sentence: str, module_titles: tuple[str, ...]) -> bool:
+    """True when a chain sentence mostly restates on-screen module titles."""
+
+    if "→" not in sentence:
+        return False
+    if not any(marker in sentence for marker in MODULE_CHAIN_MARKERS):
+        return False
+    labels = [_module_label(title) for title in module_titles if _module_label(title)]
+    if len(labels) < 2:
+        return False
+    hits = sum(1 for label in labels if label in sentence)
+    return hits >= max(2, (len(labels) + 1) // 2)
+
+
 def _page_semantic_relations(page: ScriptPage) -> str:
     """Extract compact business relations without forwarding source prose.
 
@@ -529,6 +615,8 @@ def _page_semantic_relations(page: ScriptPage) -> str:
     connective meaning may remain in ``视觉结构``, full prose, or speaker
     notes.  Preserve only marked relationship sentences so the handoff keeps
     the page's governing logic without leaking the source manuscript.
+    Prefer explicit business-relation sentences over module-title chains that
+    merely restate the on-screen module order.
     """
 
     candidates: list[str] = []
@@ -554,27 +642,81 @@ def _page_semantic_relations(page: ScriptPage) -> str:
 
     if not candidates:
         return ""
-    return "\n".join(f"- {sentence}" for sentence in candidates[:4])
+
+    business = [
+        sentence
+        for sentence in candidates
+        if any(marker in sentence for marker in BUSINESS_RELATION_MARKERS)
+    ]
+    if business:
+        structural = [
+            sentence
+            for sentence in candidates
+            if sentence not in business
+            and not _is_module_enumeration_chain(sentence, page.module_titles)
+        ]
+        ordered = business + structural
+    else:
+        ordered = candidates
+    return "\n".join(f"- {sentence}" for sentence in ordered[:4])
 
 
-def select_page_visual_intent_type(
+def _explicit_visual_intent_type(
+    page: ScriptPage,
+    context: dict[str, str] | None,
+    override: dict[str, str] | None,
+) -> str:
+    """Resolve an author-declared intent from override, outline, script, or contract."""
+
+    for source in (
+        (override or {}).get("visual_intent_type"),
+        (context or {}).get("visual_intent_type"),
+        page.visual_intent_type,
+    ):
+        value = str(source or "").strip()
+        if value in VISUAL_INTENT_TEMPLATES:
+            return value
+    receipt = page.contract_receipt
+    if isinstance(receipt, dict):
+        value = str(receipt.get("visual_intent_type") or "").strip()
+        if value in VISUAL_INTENT_TEMPLATES:
+            return value
+    return ""
+
+
+def _visual_structure_hard_hint(page: ScriptPage) -> str:
+    structure = page.visual_structure.strip()
+    if not structure:
+        return ""
+    for prefix, intent in VISUAL_STRUCTURE_HARD_HINTS:
+        if structure.startswith(prefix):
+            return intent
+    return ""
+
+
+def resolve_page_visual_intent(
     page: ScriptPage,
     page_mission: str,
     context: dict[str, str] | None = None,
     override: dict[str, str] | None = None,
-) -> str:
-    """Select a page relationship without allowing one generic noun to hijack it."""
+) -> tuple[str, str]:
+    """Select a page relationship and report how confidently it was chosen.
+
+    Returns ``(intent_type, source)`` where source is one of:
+    ``explicit``, ``hint``, ``scored``, or ``fallback``.
+    """
 
     if page.page_type != "content":
         raise ValueError(f"page {page.page_id} is {page.page_type}; no visual intent")
     context = context if isinstance(context, dict) else {}
-    explicit = (
-        (override or {}).get("visual_intent_type")
-        or context.get("visual_intent_type")
-        or ""
-    ).strip()
-    if explicit in VISUAL_INTENT_TEMPLATES:
-        return explicit
+
+    explicit = _explicit_visual_intent_type(page, context, override)
+    if explicit:
+        return explicit, "explicit"
+
+    hinted = _visual_structure_hard_hint(page)
+    if hinted:
+        return hinted, "hint"
 
     relationship_lines = "\n".join(
         line.strip()
@@ -637,11 +779,27 @@ def select_page_visual_intent_type(
 
     best_score = max(scores.values(), default=0)
     if best_score < 5:
-        return "judgment_evidence"
+        return "judgment_evidence", "fallback"
     for intent_type in VISUAL_INTENT_PRIORITY:
         if scores.get(intent_type) == best_score:
-            return intent_type
-    return "judgment_evidence"
+            return intent_type, "scored"
+    return "judgment_evidence", "fallback"
+
+
+def select_page_visual_intent_type(
+    page: ScriptPage,
+    page_mission: str,
+    context: dict[str, str] | None = None,
+    override: dict[str, str] | None = None,
+) -> str:
+    """Select a page relationship without allowing one generic noun to hijack it."""
+
+    return resolve_page_visual_intent(
+        page,
+        page_mission,
+        context=context,
+        override=override,
+    )[0]
 
 
 def build_page_visual_intent(
@@ -944,6 +1102,7 @@ MOTIF_CANDIDATES: dict[str, tuple[str, str]] = {
     "hierarchy_support": ("layered_system", "control_room_bridge"),
     "capability_relationship": ("layered_system", "control_room_bridge"),
     "phase": ("process_atlas", "evidence_landscape"),
+    "path_chain": ("process_atlas", "control_room_bridge"),
     "causal": ("process_atlas", "evidence_landscape"),
     "closed_loop": ("control_room_bridge", "process_atlas"),
     "scenario_application": ("control_room_bridge", "process_atlas"),
@@ -1102,10 +1261,13 @@ def render_page_logic_contract(
     page_mission: str = "",
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
-) -> tuple[str, str]:
-    """Render one explicit relationship contract before text and imagery are arranged."""
+) -> tuple[str, str, str]:
+    """Render one explicit relationship contract before text and imagery are arranged.
 
-    relation = select_page_visual_intent_type(
+    Returns ``(relation, intent_source, contract)``.
+    """
+
+    relation, intent_source = resolve_page_visual_intent(
         page,
         page_mission,
         context=visual_context,
@@ -1128,6 +1290,7 @@ def render_page_logic_contract(
         "causal": "因果传导",
         "closed_loop": "闭环",
         "phase": "阶段递进",
+        "path_chain": "路径转化",
         "capability_relationship": "能力协同",
         "judgment_evidence": "判断—证据",
     }
@@ -1146,7 +1309,7 @@ def render_page_logic_contract(
             f"本页避免：{values['avoid_on_this_page']}",
         )
     )
-    return relation, contract
+    return relation, intent_source, contract
 
 
 def render_content_first_prompt(
@@ -1204,7 +1367,7 @@ def render_content_first_prompt(
             if part
         )
     )
-    relation, logic_contract = render_page_logic_contract(
+    relation, intent_source, logic_contract = render_page_logic_contract(
         page,
         page_mission=page_mission,
         visual_context=visual_context,
@@ -1224,11 +1387,22 @@ def render_content_first_prompt(
         and not core_in_locked_copy
         and judgment_for_semantics not in complete_semantics
     )
+    # Content-first keeps ordinary pages free of the long logic block. Inject
+    # it only when the relation is confidently known and is not the low-score
+    # judgment_evidence fallback — never force a wrong default into every
+    # semantic_only page.
     include_logic_context = bool(
-        semantic_relations
-        or page.subtitle.strip()
-        or page.speaker_notes.strip()
-        or judgment_mode == "semantic_only"
+        relation != "judgment_evidence"
+        and (
+            intent_source in {"explicit", "hint"}
+            or (
+                intent_source == "scored"
+                and (
+                    bool(semantic_relations)
+                    or judgment_mode == "semantic_only"
+                )
+            )
+        )
     )
     parts = [
         "【完整上屏内容】",
