@@ -1483,22 +1483,13 @@ def render_visual_center_contract(
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
 ) -> str:
-    """Render optional page-owned visual-center guidance for ImageGen."""
+    """Visual-center text is authoring metadata only — never inject into ImageGen.
 
-    center = resolve_visual_center(
-        page,
-        visual_context=visual_context,
-        visual_intent_override=visual_intent_override,
-    )
-    if not center:
-        return ""
-    return "\n".join(
-        (
-            "【视觉中心｜不上屏】",
-            center,
-            "以上仅标明本页主视觉落点，不得改写【锁定关键文字】或【完整上屏内容】，不得新增上屏文案。",
-        )
-    )
+    Drawing how-to (主视觉落点 / 构图落点) must not reach the model. Keep
+    ``resolve_visual_center`` for Stage1 / diagnostics.
+    """
+
+    return ""
 
 
 def resolve_visual_carrier(
@@ -1530,22 +1521,13 @@ def render_visual_carrier_contract(
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
 ) -> str:
-    """Render optional page-owned visual-carrier guidance for ImageGen."""
+    """Visual-carrier text is authoring metadata only — never inject into ImageGen.
 
-    carrier = resolve_visual_carrier(
-        page,
-        visual_context=visual_context,
-        visual_intent_override=visual_intent_override,
-    )
-    if not carrier:
-        return ""
-    return "\n".join(
-        (
-            "【视觉载体｜不上屏】",
-            carrier,
-            "以上仅约束主视觉载体与构图禁令，不得改写【锁定关键文字】或【完整上屏内容】，不得新增上屏文案。",
-        )
-    )
+    Page scripts may still store ``视觉载体`` for humans; ImageGen must not
+    receive drawing recipes, icon bans, or composition bans from this field.
+    """
+
+    return ""
 
 
 def render_page_logic_contract(
@@ -1555,9 +1537,12 @@ def render_page_logic_contract(
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
 ) -> tuple[str, str, str]:
-    """Render one explicit relationship contract before text and imagery are arranged.
+    """Render relationship type only — no composition / drawing recipes.
 
     Returns ``(relation, intent_source, contract)``.
+    ``VISUAL_INTENT_TEMPLATES`` composition/avoid strings remain for legacy
+    creative-brief paths and scoring, but content-first ImageGen only gets the
+    dominant-relation label. Business meaning stays in【页面语义关系】.
     """
 
     relation, intent_source = resolve_page_visual_intent(
@@ -1566,12 +1551,6 @@ def render_page_logic_contract(
         context=visual_context,
         override=visual_intent_override,
     )
-    values = dict(VISUAL_INTENT_TEMPLATES[relation])
-    if isinstance(visual_intent_override, dict):
-        for key in values:
-            value = visual_intent_override.get(key)
-            if isinstance(value, str) and value.strip():
-                values[key] = value.strip()
     relation_labels = {
         "boundary_guardrail": "边界护栏",
         "crosscutting_chain": "纵向主链与横向贯穿",
@@ -1587,29 +1566,10 @@ def render_page_logic_contract(
         "capability_relationship": "能力协同",
         "judgment_evidence": "判断—证据",
     }
-    visual_center = resolve_visual_center(
-        page,
-        visual_context=visual_context,
-        visual_intent_override=visual_intent_override,
-    )
-    proof = str(
-        page.visual_proof
-        or (visual_intent_override or {}).get("visual_proof")
-        or (visual_context or {}).get("visual_proof")
-        or (
-            f"以「{visual_center}」作为主视觉落点证明本页判断。"
-            if visual_center
-            else ""
-        )
-        or VISUAL_PROOF_FALLBACKS[relation]
-    ).strip()
     contract = "\n".join(
         (
             "【页面逻辑｜不上屏】",
             f"主导关系：{relation_labels[relation]}。",
-            f"视觉证明：{proof}",
-            f"空间组织：{values['recommended_composition']}",
-            f"本页避免：{values['avoid_on_this_page']}",
         )
     )
     return relation, intent_source, contract
@@ -1738,18 +1698,8 @@ def render_content_first_prompt(
         "",
         logic_contract if include_logic_context else "",
         "",
-        render_visual_center_contract(
-            page,
-            visual_context=visual_context,
-            visual_intent_override=visual_intent_override,
-        ),
-        "",
-        render_visual_carrier_contract(
-            page,
-            visual_context=visual_context,
-            visual_intent_override=visual_intent_override,
-        ),
-        "",
+        # 【视觉中心】【视觉载体】and composition recipes are authoring-only.
+        # Never inject drawing how-to into ImageGen.
         # Auto medium labels (editorial_dense / typographic / …) must not enter
         # ImageGen. Style + onscreen + page logic already govern; only an
         # explicit script layout/scene override may inject presentation text.
@@ -2026,10 +1976,11 @@ def write_chapter_handoff(
     if prompt_compiler == "content-first-v1":
         compilation_rules = [
             "- 每页独立完整，可直接送入 ImageGen，不依赖批次级公共提示。",
-            "- 送入：页面任务、核心判断、精简页面逻辑、锁定关键文字、完整页面语义、短文字视觉规则，以及所选风格的适用语境和配色。",
+            "- 送入：页面任务、核心判断、主导关系标签、锁定关键文字、完整上屏与页面语义关系、画布尺寸，以及所选风格的气质与配色。",
             "- 不送入：源材料全文、完整事实边界或重复设计理论。",
             "- 不送入：证据编号、讲解提示、文字取舍、图片数量或后期制作规则。",
-            "- 页面任务、核心判断和页面逻辑只用于理解与构图；锁定关键文字逐字准确，完整上屏内容均需进入 full 图。",
+            "- 不送入：视觉载体、视觉中心、空间组织、本页避免、视觉证明等任何构图/画法指导。",
+            "- 页面任务、核心判断与主导关系只用于理解业务关系；锁定关键文字逐字准确，完整上屏内容均需进入 full 图。",
         ]
     else:
         compilation_rules = [

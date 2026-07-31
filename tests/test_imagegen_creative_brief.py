@@ -779,8 +779,10 @@ def test_page_logic_contract_uses_chinese_spatial_rules() -> None:
     assert relation == "hierarchy_support"
     assert source == "hint"
     assert "主导关系：分层支撑。" in contract
-    assert "空间组织：构建非对称的支撑场域" in contract
-    assert "本页避免：软件架构堆叠" in contract
+    # Drawing recipes must not reach ImageGen.
+    assert "空间组织：" not in contract
+    assert "本页避免：" not in contract
+    assert "视觉证明：" not in contract
     assert "Build an asymmetric" not in contract
     assert "A software architecture stack" not in contract
 
@@ -806,13 +808,15 @@ def test_visual_center_reaches_prompt_and_proof_fallback() -> None:
                 "visual_intent_type": "hierarchy_support",
             },
         )
-    assert "【视觉中心｜不上屏】" in prompt
-    assert "数据资产层到应用层的五层架构与横向治理带" in prompt
-    assert "以「数据资产层到应用层的五层架构与横向治理带」作为主视觉落点证明本页判断。" in prompt
+    # Visual center is authoring metadata only — never injected into ImageGen.
+    assert "【视觉中心｜不上屏】" not in prompt
+    assert "数据资产层到应用层的五层架构与横向治理带" not in prompt
+    assert "以「数据资产层到应用层的五层架构与横向治理带」作为主视觉落点证明本页判断。" not in prompt
+    assert "主导关系：分层支撑。" in prompt
 
 
 
-def test_visual_carrier_is_forwarded_verbatim_and_marked_offscreen() -> None:
+def test_visual_carrier_never_injected_into_imagegen() -> None:
     carrier = (
         "以一条连续的“知识资产归一与服务供给”叙事作为主视觉载体。"
         "不得将统一知识对象绘制成软件产品包装、服务器机箱或电子证照。"
@@ -822,17 +826,13 @@ def test_visual_carrier_is_forwarded_verbatim_and_marked_offscreen() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "【视觉载体｜不上屏】" in prompt
-    carrier_section = prompt.split("【视觉载体｜不上屏】", 1)[1]
-    assert carrier in carrier_section
-    assert "不得改写【锁定关键文字】或【完整上屏内容】" in carrier_section
-    assert prompt.index("【视觉载体｜不上屏】") > prompt.index("【完整上屏内容】")
-    assert "软件产品包装" not in prompt.split("【完整上屏内容】", 1)[1].split(
-        "【视觉载体｜不上屏】", 1
-    )[0]
+    assert "【视觉载体｜不上屏】" not in prompt
+    assert "主视觉载体" not in prompt
+    assert "软件产品包装" not in prompt
+    assert "服务器机箱" not in prompt
 
 
-def test_visual_carrier_override_beats_page_field() -> None:
+def test_visual_carrier_override_also_stays_out_of_imagegen() -> None:
     page = replace(_page(), visual_carrier="页面字段载体")
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
@@ -841,8 +841,9 @@ def test_visual_carrier_override_beats_page_field() -> None:
             lock,
             visual_intent_override={"visual_carrier": "覆盖载体指引"},
         )
-    assert "覆盖载体指引" in prompt
+    assert "覆盖载体指引" not in prompt
     assert "页面字段载体" not in prompt
+    assert "【视觉载体｜不上屏】" not in prompt
 
 
 def test_pages_without_visual_carrier_omit_the_section() -> None:
