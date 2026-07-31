@@ -959,7 +959,10 @@ def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
     scene-first wording.  Preserve their selected palette, but always compile
     Style 09 from the canonical library contract so a historical lock cannot
     silently weaken the text-led, single-medium presentation rules.
-    """
+"""
+
+IMAGEGEN_CANVAS_CONTRACT = """【输出尺寸｜不上屏】
+画布尺寸固定为 2048×1024 像素（2:1 横向）。必须按该尺寸与比例构图，不得输出 16:9、4:3、方形或其他比例。"""
 
     payload = load_style_lock(style_lock)
     style = payload.get("style")
@@ -1174,6 +1177,8 @@ def render_content_first_prompt(
         "核心判断仅供内部理解；不得把该句或其改写渲染为页面标题、摘要或通栏结论：",
         "",
         render_presentation_contract(page, presentation),
+        "",
+        IMAGEGEN_CANVAS_CONTRACT,
         "",
         render_content_first_style_contract(style_lock),
     ]
