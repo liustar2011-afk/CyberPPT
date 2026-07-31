@@ -967,6 +967,21 @@ def render_content_first_style_contract(style_lock: Path) -> str:
     """Render a compact, self-contained style contract from the selected style."""
 
     style = _selected_content_first_style(style_lock)
+    if int(style.get("id") or 0) == 9:
+        description = str(style.get("prompt_contract") or "").strip()
+        lines = [
+            "【输出与风格｜不上屏】",
+            "扩展风格9：象牙白 + 深蓝领导汇报",
+            description,
+        ]
+        signature = style.get("imagegen_signature")
+        if isinstance(signature, list):
+            lines.extend(
+                str(rule).strip()
+                for rule in signature
+                if isinstance(rule, str) and rule.strip()
+            )
+        return "\n".join(line for line in lines if line)
     colors = style["colors"]
     color_parts = [
         f"{label} {str(colors[key]).strip()}"

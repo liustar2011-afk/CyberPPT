@@ -101,15 +101,16 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "【事实与范围边界｜仅供约束，不上屏】" not in implicit
     assert "【内容与视觉要求｜不上屏】" not in implicit
     assert "【输出与风格｜不上屏】" in implicit
-    assert "象牙白 + 深蓝领导汇报" not in implicit
+    assert "扩展风格9：象牙白 + 深蓝领导汇报" in implicit
     assert "风格适用语境" not in implicit
-    assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" in implicit
+    assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" not in implicit
+    assert "视觉风格使用象牙白 + 深蓝领导汇报" in implicit
     assert "【页面逻辑｜不上屏】" in implicit
     assert "不使用等权卡片、通用图标流程或逐项配图" not in implicit
     assert "每个锁定模块及其名称只出现一次" not in implicit
     assert "Do not show frontal faces" not in implicit
     assert "解释性正文由后续 PPT 可编辑文字层承载" not in implicit
-    assert "现代中文高端政企汇报设计气质" in implicit
+    assert "正式内部汇报气质" in implicit
     assert "style.selected_lock" in (
         implicit_compiled.build_metadata()["injected_rule_ids"]
     )
@@ -501,7 +502,7 @@ def test_style_nine_compiles_short_refinement_signature() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "审美签名：" in prompt
+    assert "审美签名：" not in prompt
     assert "禁止霓虹蓝、透明玻璃、发光底座、HUD 面板" in prompt
     assert "由本页内容关系决定的清晰阅读主线" not in prompt
     assert "不得预设中央主体、等宽分栏、卡片阵列或其他固定版式" not in prompt
@@ -643,7 +644,7 @@ def test_visual_proof_prefers_page_context_and_new_relations_are_selectable() ->
     assert "视觉证明：用共同底座托住业务结果" in prompt
     assert prompt.count("视觉证明：") == 1
     assert "不使用等权卡片、通用图标流程或逐项配图" not in prompt
-    assert "如出现人物，仅使用远景、背影或局部" in prompt
+    assert "如出现人物，仅使用远景、背影或局部" not in prompt
 
 
 def test_visual_intent_uses_script_visual_structure_for_relationship_role() -> None:
