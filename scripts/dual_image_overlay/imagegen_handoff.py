@@ -254,256 +254,174 @@ VISUAL_STRUCTURE_HARD_HINTS: tuple[tuple[str, str], ...] = (
 )
 
 TEXT_IN_COMPOSITION_RULE = (
-    "Treat all required text as calm in-composition panels, annotations, or labels attached "
-    "to the dominant visual structure; do not place the complete text layer in a detached "
-    "left/right column or top/bottom rail."
+    "全部必上屏文字以冷静的场内面板、标注或附着标签组织到主导视觉结构上；"
+    "不要把完整文字层放到独立的左右栏或上下导轨。"
 )
 DETACHED_TEXT_RAIL_AVOID = (
-    "a detached full-height text column, text rail, or a separate text zone plus image zone"
+    "独立通高文字栏、文字导轨，或文字区与图片区彼此分离的版式"
 )
 
+# Canonical page-logic spatial rules. content-first【页面逻辑】and the legacy
+# visual-intent path both read recommended_composition / avoid_on_this_page
+# from this single source.
 VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
     "boundary_guardrail": {
-        "visual_thesis": (
-            "Use the relationship between the core capability and its guardrails to prove "
-            "that scope and responsibility are clear."
-        ),
+        "visual_thesis": "用主体能力与外围护栏的关系证明范围和职责清晰。",
         "decision_relationship": (
-            "The core capability occupies the defined scope, while non-goals and constraints "
-            "form a secondary guardrail rather than another peer module."
+            "核心能力占据既定范围，非目标与约束构成次级护栏，而不是另一组对等模块。"
         ),
         "recommended_composition": (
-            "Give the core capability dominant visual weight and compress boundaries into a "
-            "peripheral, bottom, or side guardrail that clearly remains subordinate."
+            "让核心能力占据主要视觉权重，把边界压缩到外围、底部或侧向护栏，并明确保持从属地位。"
         ),
         "avoid_on_this_page": (
-            "A fifty-fifty can-versus-cannot comparison, warning-card wall, or boundaries "
-            "presented as peer service objects."
+            "对半的可做/不可做对照、警告卡墙，或把边界做成与主能力等权的服务对象。"
         ),
     },
     "hierarchy_support": {
-        "visual_thesis": (
-            "Use vertical dependency to prove that upper-level business results rely on "
-            "lower-level capabilities and shared assurance."
-        ),
+        "visual_thesis": "用上层业务结果与下层支撑能力的依赖关系证明体系能够成立。",
         "decision_relationship": (
-            "Upper-level results depend on lower-level capabilities; shared assurance acts "
-            "as a foundation or cross-cutting support, not as a software technology stack."
+            "上层结果依赖下层能力；共享保障作为底座或横向支撑，而不是软件技术堆叠。"
         ),
         "recommended_composition": (
-            "Build an asymmetric protective or supporting field in which upper business "
-            "effects, middle controls, and cross-cutting assurance visibly depend on one "
-            "another. Use overlap, enclosure, pressure, depth, or a grounded edge to show "
-            "support; avoid a centered emblem, concentric pedestal, equal layer bars, or "
-            "stacked architecture."
+            "构建非对称的支撑场域，使上层业务结果、中层控制与横向保障彼此可见依赖。"
+            "用叠合、包围、承压、纵深或承托边缘表现支撑；避免居中徽章、同心台座、等高层条或堆叠架构。"
         ),
         "avoid_on_this_page": (
-            "A software architecture stack, equal-height layer bars, one card per layer, "
-            "or an isolated capability inventory."
+            "软件架构堆叠、等高分层条、一层一卡，或孤立的能力清单。"
         ),
     },
     "crosscutting_chain": {
-        "visual_thesis": (
-            "Show how a primary transformation chain and a transverse governing force "
-            "operate together without becoming a software stack or a matrix table."
-        ),
+        "visual_thesis": "用纵向转化主链与横向贯穿能力的共同作用证明体系完整。",
         "decision_relationship": (
-            "The primary modules change state along one directional chain, while one shared "
-            "governing capability crosses and constrains every stage. Neither relationship "
-            "is a peer module list."
+            "主模块沿一条方向链发生状态变化，同时有一个共享治理能力横断并约束每个阶段；"
+            "两者都不是对等模块清单。"
         ),
         "recommended_composition": (
-            "Build one asymmetric two-direction relationship field. Let the primary chain "
-            "bend, rise, narrow, expand, or change material across unequal moments; weave the "
-            "cross-cutting force through those same moments as a continuous transverse seam, "
-            "pressure line, or embedded band. Attach each required module name and body once "
-            "to a distinct moment of the field. Keep supplied relationship and business-meaning "
-            "sentences inside the field near an intersection or state change, not in a detached "
-            "summary rail."
+            "构建一个非对称的双向关系场：让主链在不等权节点上弯折、抬升、收窄、展开或变换材质；"
+            "再把横向贯穿力织入同一批节点，形成连续的横断缝、承压线或内嵌带。"
+            "每个模块名称与正文只附着一次；关系句放在交汇或状态变化处，不另开摘要栏。"
         ),
         "avoid_on_this_page": (
-            "A stacked architecture, equal horizontal layers, a matrix or swimlane, one card "
-            "per stage, a fifth peer card for the cross-cutting force, duplicated module labels, "
-            "or separate vertical-flow and horizontal-governance diagrams."
+            "堆叠架构、等权水平分层、矩阵/泳道、一阶段一卡、把横向贯穿力做成第五张对等卡、"
+            "重复模块标签，或纵向流程与横向治理拆成两套图。"
         ),
     },
     "decision_admission": {
-        "visual_thesis": (
-            "Explain why the initial selection is justified and how later items qualify for entry."
-        ),
+        "visual_thesis": "用选择依据与后续准入条件证明当前决策合理。",
         "decision_relationship": (
-            "Selection criteria jointly justify the initial choice; later items remain "
-            "behind explicit readiness gates. Treat this as a decision structure, "
-            "not an implementation process."
+            "选择依据共同支撑初始选择；后续事项留在明确准入门槛之后。把它当作决策结构，"
+            "而不是实施流程。"
         ),
         "recommended_composition": (
-            "Use a weighted decision field: give the selected initial scope dominant visual "
-            "weight, bind compact criteria to that choice, and place later scope behind a "
-            "secondary gated-entry area."
+            "使用有权重的决策场：让已选初始范围占据主视觉，把紧凑依据绑在该选择上，"
+            "并把后续范围放到次级准入区。"
         ),
         "avoid_on_this_page": (
-            "Five equal-weight criterion cards, a generic three-step flow, timeline, "
-            "or scenario thumbnail wall."
+            "五个等权依据卡、泛化三步流程、时间线或情景缩略图墙。"
         ),
     },
     "comparison": {
-        "visual_thesis": "Make differences and priorities immediately visible.",
+        "visual_thesis": "用共同维度下的差异和主次证明本页判断。",
         "decision_relationship": (
-            "Compared items share a common dimension; show contrast and priority "
-            "without inventing a ranking not supported by the content."
+            "对照项共享同一维度；呈现对比与主次，但不发明内容未支持的排序。"
         ),
         "recommended_composition": (
-            "Use one aligned comparison field with a shared basis, directly opposed evidence, "
-            "and unequal emphasis where the content establishes priority."
+            "使用同一基准下的对齐对照场，直接对置证据，并在内容明确主次处拉开视觉权重。"
         ),
         "avoid_on_this_page": (
-            "Unaligned cards, decorative versus symbols, invented scores, or a comparison "
-            "without a shared dimension."
+            "未对齐的卡片、装饰性 versus 符号、虚构分数，或缺少共同维度的对照。"
         ),
     },
     "scenario_application": {
-        "visual_thesis": (
-            "Show where the business scenario occurs, what value it creates, "
-            "and what conditions enable it."
-        ),
-        "decision_relationship": (
-            "Business context connects application direction, current stage, and entry conditions."
-        ),
+        "visual_thesis": "用真实业务场景、业务价值与进入条件证明应用方向。",
+        "decision_relationship": "业务语境连接应用方向、当前阶段与进入条件。",
         "recommended_composition": (
-            "Use one integrated real-work scene with business-value and readiness evidence "
-            "embedded in the relevant parts of that scene."
+            "使用一个完整的真实工作场景，把业务价值与准入条件嵌进场景中相关部位。"
         ),
         "avoid_on_this_page": (
-            "A product-feature showcase, scenario thumbnail wall, decorative industry photo, "
-            "or unrelated technology interface."
+            "产品功能陈列、情景缩略图墙、装饰性行业照片，或无关技术界面。"
         ),
     },
     "multi_semantic_foundation": {
-        "visual_thesis": (
-            "Show how several concrete work foundations jointly support the page judgment."
-        ),
-        "decision_relationship": (
-            "Distinct foundations reinforce one another and combine into a sustainable working basis."
-        ),
+        "visual_thesis": "用多项现实基础共同支撑本页判断。",
+        "decision_relationship": "不同基础彼此强化，共同构成可持续的工作底座。",
         "recommended_composition": (
-            "Use one dominant integrated visual carrier for the shared support relationship. "
-            "Use images only where they clarify the relationship; their number, placement, and "
-            "association with a module are determined by the page visual structure, not by the "
-            "count of foundations."
+            "用一个主导的综合视觉载体表达共同支撑关系。"
+            "仅在能澄清关系处使用画面；数量、位置及与模块的对应由页面视觉结构决定，不按基础项数量机械配图。"
         ),
         "avoid_on_this_page": (
-            "One generic office, meeting-room, control-room, or industry image carrying all "
-            "meanings; one image per foundation; a row-by-row text-and-photo correspondence; "
-            "a separate text zone plus photo zone; equal image cards; or unrelated decorative imagery."
+            "一张泛化办公/会议室/控制室/行业图承载全部含义；一项基础一张图；"
+            "逐行图文对应；文字区与图片区分离；等权图片卡；或无关装饰图。"
         ),
     },
     "causal": {
-        "visual_thesis": (
-            "Make the page judgment visible through a clear cause-and-effect argument."
-        ),
-        "decision_relationship": (
-            "Causes or changes lead to a business consequence and explain the need for action."
-        ),
+        "visual_thesis": "用原因到业务后果的传导关系证明行动必要性。",
+        "decision_relationship": "原因或变化通向业务后果，并解释为何需要行动。",
         "recommended_composition": (
-            "Use one directional cause-to-consequence path, with the business consequence as "
-            "the dominant anchor and compact causal evidence attached along the path."
+            "使用一条由因到果的单向路径，以业务后果为主锚点，并把紧凑因果证据附着在路径上。"
         ),
-        "avoid_on_this_page": (
-            "A list of unrelated facts, equal cards, or decorative trend arrows."
-        ),
+        "avoid_on_this_page": "无关事实罗列、等权卡片或装饰性趋势箭头。",
     },
     "closed_loop": {
-        "visual_thesis": (
-            "Show how business inputs become usable results and improve through feedback."
-        ),
-        "decision_relationship": (
-            "Use a closed-loop relationship with explicit input, result, validation, and feedback."
-        ),
+        "visual_thesis": "用输入、结果、验证与反馈的闭环证明业务能够持续改进。",
+        "decision_relationship": "使用显式输入、结果、校验与反馈的闭环关系。",
         "recommended_composition": (
-            "Use one continuous but non-circular editorial gesture that folds, returns, "
-            "overlaps, or changes state to make recurrence visible. Embed input, result, "
-            "validation, and feedback at unequal moments along that gesture; do not turn the "
-            "modules into equally spaced stages. Place any supplied loop-relationship or "
-            "business-meaning sentence as a calm annotation at the return, overlap, or "
-            "convergence point, never as a separate bottom summary zone. Avoid a closed ring "
-            "with icon nodes."
+            "使用一条连续但非圆环的编辑式走势，通过回折、回返、叠合或状态变化让循环可见。"
+            "把输入、结果、校验与反馈嵌在走势上不等权的位置，不要做成等距阶段。"
+            "闭环关系句或业务含义句放在回返、叠合或汇合处作冷静标注，不另开底部摘要区；避免图标节点闭环。"
         ),
-        "avoid_on_this_page": (
-            "A software workflow, lifecycle icon circle, or numbered administration steps."
-        ),
+        "avoid_on_this_page": "软件流程图、生命周期图标环，或编号行政管理步骤。",
     },
     "phase": {
-        "visual_thesis": (
-            "Show stage progression while preserving the different purpose of each phase."
-        ),
+        "visual_thesis": "用阶段目的与准入条件的递进证明实施节奏。",
         "decision_relationship": (
-            "Current, near-term, and later work form a stage progression with explicit "
-            "readiness conditions."
+            "当前、近期与后续工作构成带明确准入条件的阶段递进。"
         ),
         "recommended_composition": (
-            "Use a weighted stage trajectory: give the current or near-term decision primary "
-            "weight and place later stages as secondary, conditional progression."
+            "使用有权重的阶段轨迹：让当前或近期决策占据主权重，后续阶段作为次级、有条件的推进。"
         ),
-        "avoid_on_this_page": (
-            "An equal-weight timeline, generic roadmap arrows, or milestone decoration."
-        ),
+        "avoid_on_this_page": "等权时间线、泛化路线图箭头或里程碑装饰。",
     },
     "path_chain": {
-        "visual_thesis": (
-            "Express the page as one directional transformation path that converts upstream "
-            "inputs into downstream capabilities or applications."
-        ),
+        "visual_thesis": "用上游输入到下游能力或应用出口的转化路径证明底座如何成立。",
         "decision_relationship": (
-            "Business objects change state along one primary chain; supporting quality, "
-            "governance, or lifecycle processes may cross or underwrite the chain but are "
-            "not a peer terminal node of the value path."
+            "业务对象沿一条主链发生状态变化；质量、治理或生命周期过程可以横切或承托主链，"
+            "但不是价值路径的终端对等节点。"
         ),
         "recommended_composition": (
-            "Build one clear reading path with unequal moments for intake, normalization, "
-            "service provision, and application outlets. Attach module names to distinct "
-            "moments of the path; keep cross-cutting quality or lifecycle work as a "
-            "subordinate seam, band, or underwriting layer rather than the final peer stage."
+            "构建一条清晰阅读路径，在接入、归一、服务供给与应用出口处形成不等权节点；"
+            "模块名附着在路径的不同节点上；把横切的质量或生命周期工作做成从属缝、带或承托层，"
+            "而不是终端对等阶段。"
         ),
         "avoid_on_this_page": (
-            "Equal numbered stage cards, one icon per module, treating every on-screen "
-            "module as a successive peer node, or a judgment-plus-evidence card wall."
+            "等权编号阶段卡、一模块一图标、把每个上屏模块都画成相继对等节点，"
+            "或判断加证据的卡片墙。"
         ),
     },
     "capability_relationship": {
-        "visual_thesis": "Explain how capabilities work together to create business value.",
+        "visual_thesis": "用多项能力共同作用于同一业务结果证明协同关系。",
         "decision_relationship": (
-            "Capabilities form a support relationship around the page judgment; do not turn "
-            "them into a software stack unless the content explicitly defines one."
+            "能力围绕本页判断形成支撑关系；除非内容明确给出，不要画成软件堆叠。"
         ),
         "recommended_composition": (
-            "Use one continuous designed relationship field—such as an asymmetric ribbon, "
-            "layered terrain, routed surface, or converging network fabric—with capabilities "
-            "embedded along it in unequal roles. Let direction, support, exchange, convergence, "
-            "and feedback be carried by the field itself instead of arranging modules around a "
-            "central badge. Express a shared governing capability as a transverse band, rule "
-            "surface, or woven layer inside the field, not as a portal, ring, medallion, or "
-            "standalone hero object. Do not assign a separate picture, panel, quadrant, layer, "
-            "or numbered visual unit to each capability."
+            "使用一个连续设计的关系场——如非对称缎带、分层地形、导流表面或汇聚网络——"
+            "把能力以不等角色嵌在场中。方向、支撑、交换、汇合与反馈由场域本身承载，"
+            "不要围绕中心徽章排布模块。共享治理能力表现为横断带、规则面或织入层，"
+            "而不是门户、圆环、徽章或独立主物体。不要给每个能力单独配图、面板、象限、分层或编号视觉单元。"
         ),
         "avoid_on_this_page": (
-            "A generic architecture stack, center-satellite nodes, equal capability cards, "
-            "a five-part picture wall, one image per capability, or a software-module diagram."
+            "泛化架构堆叠、中心辐射节点、等权能力卡、五宫格图墙、一能力一图，或软件模块图。"
         ),
     },
     "judgment_evidence": {
-        "visual_thesis": "Express the page as one judgment supported by evidence.",
-        "decision_relationship": (
-            "Supporting modules jointly explain or substantiate the core judgment."
-        ),
+        "visual_thesis": "用主判断与支撑证据的直接关系完成证明。",
+        "decision_relationship": "支撑模块共同解释或证明核心判断。",
         "recommended_composition": (
-            "Choose the spatial organization from the evidence types and their relationship to "
-            "the judgment. Build one clear reading path with unequal emphasis; let the content "
-            "determine position, scale, grouping, and visual carrier instead of assuming a "
-            "centered hero object."
+            "根据证据类型及其与判断的关系选择空间组织。"
+            "形成一条主次分明的阅读路径；由内容决定位置、尺度、分组和视觉载体，不预设居中主物体。"
         ),
         "avoid_on_this_page": (
-            "An equal card wall, one icon per bullet, an unrelated decorative scene, or any "
-            "layout skeleton selected independently of the page content."
+            "等权卡片墙、一条一图标、无关装饰场景，或脱离本页内容另选布局骨架。"
         ),
     },
 }
@@ -531,24 +449,40 @@ NON_RENDERING_RELATION_LABELS = {
     "协同关系",
     "组件关系",
     "恢复关系",
+    "纵向关系",
+    "闭环关系",
+    "滚动关系",
+    "工作流",
+    "责任关系",
+    "四层贯通",
+    "建设关系",
 }
 
 # These compact relationship statements are semantic input for ImageGen, not
 # drawable copy.  They commonly live in the full prose / speaker notes after
 # the visible module bullets have been finalized.
-PAGE_SEMANTIC_MARKERS = (
+PAGE_SEMANTIC_PHRASE_MARKERS = (
+    "从业务关系看",
+    "统一知识对象连接",
+    "贯穿主链",
+    "四层主链",
+)
+PAGE_SEMANTIC_LABEL_MARKERS = (
     "服务关系",
     "对象关系",
     "业务含义",
     "协同关系",
     "组件关系",
     "恢复关系",
-    "从业务关系看",
-    "统一知识对象连接",
-    "贯穿主链",
+    "纵向关系",
     "闭环关系",
-    "四层主链",
+    "滚动关系",
+    "工作流",
+    "责任关系",
+    "四层贯通",
+    "建设关系",
 )
+PAGE_SEMANTIC_MARKERS = PAGE_SEMANTIC_PHRASE_MARKERS + PAGE_SEMANTIC_LABEL_MARKERS
 
 # Prefer these over module-enumeration chains when both are present.
 BUSINESS_RELATION_MARKERS = (
@@ -559,7 +493,41 @@ BUSINESS_RELATION_MARKERS = (
     "协同关系",
     "组件关系",
     "恢复关系",
+    "纵向关系",
+    "闭环关系",
+    "滚动关系",
+    "工作流",
+    "责任关系",
+    "四层贯通",
+    "建设关系",
 )
+
+_LABEL_SEMANTIC_RE = re.compile(
+    r"(?:^|[\s\-•*])(?:"
+    + "|".join(re.escape(label) for label in PAGE_SEMANTIC_LABEL_MARKERS)
+    + r")\s*[：:]"
+)
+
+
+def _has_semantic_marker(text: str) -> bool:
+    if any(marker in text for marker in PAGE_SEMANTIC_PHRASE_MARKERS):
+        return True
+    return bool(_LABEL_SEMANTIC_RE.search(text)) or any(
+        text.startswith(f"{label}：") or text.startswith(f"{label}:")
+        for label in PAGE_SEMANTIC_LABEL_MARKERS
+    )
+
+
+def _has_business_relation_marker(text: str) -> bool:
+    if "从业务关系看" in text:
+        return True
+    return any(
+        re.search(rf"(?:^|[\s\-•*]){re.escape(marker)}\s*[：:]", text)
+        or text.startswith(f"{marker}：")
+        or text.startswith(f"{marker}:")
+        for marker in BUSINESS_RELATION_MARKERS
+        if marker != "从业务关系看"
+    )
 
 MODULE_CHAIN_MARKERS = (
     "贯穿主链",
@@ -608,6 +576,38 @@ def _is_module_enumeration_chain(sentence: str, module_titles: tuple[str, ...]) 
     return hits >= max(2, (len(labels) + 1) // 2)
 
 
+def _normalize_semantic_sentence(value: str) -> str:
+    """Collapse whitespace and strip leftover bullets after sentence splits."""
+
+    text = re.sub(r"\s+", " ", value).strip()
+    text = re.sub(r"^[\s\-*•·]+", "", text)
+    text = re.sub(r"[\s\-*•·]+$", "", text)
+    text = text.strip()
+    if not text:
+        return ""
+    # Whole-source scans can leave module titles before the relation marker.
+    # Trim to the earliest known marker so line-level and blob-level extracts
+    # collapse to the same sentence.
+    earliest: int | None = None
+    for marker in PAGE_SEMANTIC_PHRASE_MARKERS:
+        idx = text.find(marker)
+        if idx >= 0 and (earliest is None or idx < earliest):
+            earliest = idx
+    for match in re.finditer(
+        r"(?:^|[\s\-•*])(?P<label>"
+        + "|".join(re.escape(label) for label in PAGE_SEMANTIC_LABEL_MARKERS)
+        + r")\s*[：:]",
+        text,
+    ):
+        idx = match.start("label")
+        if earliest is None or idx < earliest:
+            earliest = idx
+    if earliest is not None and earliest > 0:
+        text = text[earliest:].strip()
+        text = re.sub(r"^[\s\-*•·]+", "", text)
+    return text.strip()
+
+
 def _page_semantic_relations(page: ScriptPage) -> str:
     """Extract compact business relations without forwarding source prose.
 
@@ -622,14 +622,14 @@ def _page_semantic_relations(page: ScriptPage) -> str:
     candidates: list[str] = []
 
     def add_sentence(value: str) -> None:
-        text = re.sub(r"\s+", " ", value).strip(" -*•")
-        if not text or not any(marker in text for marker in PAGE_SEMANTIC_MARKERS):
+        text = _normalize_semantic_sentence(value)
+        if not text or not _has_semantic_marker(text):
             return
         # Keep one compact sentence at a time; source paragraphs can contain
         # detailed evidence that is intentionally not part of the handoff.
         for sentence in re.split(r"(?<=[。！？；])\s*", text):
-            sentence = sentence.strip()
-            if sentence and any(marker in sentence for marker in PAGE_SEMANTIC_MARKERS):
+            sentence = _normalize_semantic_sentence(sentence)
+            if sentence and _has_semantic_marker(sentence):
                 if sentence not in candidates:
                     candidates.append(sentence)
 
@@ -646,7 +646,7 @@ def _page_semantic_relations(page: ScriptPage) -> str:
     business = [
         sentence
         for sentence in candidates
-        if any(marker in sentence for marker in BUSINESS_RELATION_MARKERS)
+        if _has_business_relation_marker(sentence)
     ]
     if business:
         structural = [
@@ -718,9 +718,17 @@ def resolve_page_visual_intent(
     if hinted:
         return hinted, "hint"
 
+    relationship_corpus = "\n".join(
+        (
+            page.onscreen_text,
+            page.full_prose,
+            page.speaker_notes,
+            page.visual_structure,
+        )
+    )
     relationship_lines = "\n".join(
         line.strip()
-        for line in _clean_onscreen_for_imagegen(page.onscreen_text).splitlines()
+        for line in relationship_corpus.splitlines()
         if any(
             marker in line
             for marker in (
@@ -739,6 +747,7 @@ def resolve_page_visual_intent(
             page_mission,
             context.get("business_question", ""),
             context.get("page_job", ""),
+            context.get("visual_center", ""),
             page.main_message,
             "\n".join(page.module_titles),
             page.visual_structure,
@@ -826,7 +835,7 @@ def build_page_visual_intent(
         f"{values['recommended_composition']} {TEXT_IN_COMPOSITION_RULE}"
     )
     values["avoid_on_this_page"] = (
-        f"{values['avoid_on_this_page']} Avoid {DETACHED_TEXT_RAIL_AVOID}."
+        f"{values['avoid_on_this_page']} 避免{DETACHED_TEXT_RAIL_AVOID}。"
     )
     return "\n".join(
         (
@@ -1255,6 +1264,53 @@ def render_content_first_style_contract(style_lock: Path) -> str:
     return "\n".join(lines)
 
 
+def resolve_visual_center(
+    page: ScriptPage,
+    visual_context: dict[str, str] | None = None,
+    visual_intent_override: dict[str, str] | None = None,
+) -> str:
+    """Return page-specific visual-center guidance, if any."""
+
+    for source in (
+        (visual_intent_override or {}).get("visual_center"),
+        (visual_context or {}).get("visual_center"),
+        getattr(page, "visual_center", ""),
+    ):
+        value = str(source or "").strip()
+        if value:
+            return value
+    receipt = page.contract_receipt
+    if isinstance(receipt, dict):
+        value = str(receipt.get("visual_center") or "").strip()
+        if value:
+            return value
+    return ""
+
+
+def render_visual_center_contract(
+    page: ScriptPage,
+    *,
+    visual_context: dict[str, str] | None = None,
+    visual_intent_override: dict[str, str] | None = None,
+) -> str:
+    """Render optional page-owned visual-center guidance for ImageGen."""
+
+    center = resolve_visual_center(
+        page,
+        visual_context=visual_context,
+        visual_intent_override=visual_intent_override,
+    )
+    if not center:
+        return ""
+    return "\n".join(
+        (
+            "【视觉中心｜不上屏】",
+            center,
+            "以上仅标明本页主视觉落点，不得改写【锁定关键文字】或【完整上屏内容】，不得新增上屏文案。",
+        )
+    )
+
+
 def resolve_visual_carrier(
     page: ScriptPage,
     visual_context: dict[str, str] | None = None,
@@ -1341,17 +1397,27 @@ def render_page_logic_contract(
         "capability_relationship": "能力协同",
         "judgment_evidence": "判断—证据",
     }
+    visual_center = resolve_visual_center(
+        page,
+        visual_context=visual_context,
+        visual_intent_override=visual_intent_override,
+    )
+    proof = str(
+        page.visual_proof
+        or (visual_intent_override or {}).get("visual_proof")
+        or (visual_context or {}).get("visual_proof")
+        or (
+            f"以「{visual_center}」作为主视觉落点证明本页判断。"
+            if visual_center
+            else ""
+        )
+        or VISUAL_PROOF_FALLBACKS[relation]
+    ).strip()
     contract = "\n".join(
         (
             "【页面逻辑｜不上屏】",
             f"主导关系：{relation_labels[relation]}。",
-            "视觉证明："
-            + str(
-                page.visual_proof
-                or (visual_intent_override or {}).get("visual_proof")
-                or (visual_context or {}).get("visual_proof")
-                or VISUAL_PROOF_FALLBACKS[relation]
-            ).strip(),
+            f"视觉证明：{proof}",
             f"空间组织：{values['recommended_composition']}",
             f"本页避免：{values['avoid_on_this_page']}",
         )
@@ -1478,6 +1544,12 @@ def render_content_first_prompt(
         ),
         "",
         logic_contract if include_logic_context else "",
+        "",
+        render_visual_center_contract(
+            page,
+            visual_context=visual_context,
+            visual_intent_override=visual_intent_override,
+        ),
         "",
         render_visual_carrier_contract(
             page,

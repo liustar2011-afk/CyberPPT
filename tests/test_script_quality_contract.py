@@ -1205,6 +1205,56 @@ class ScriptContractAuditTests(unittest.TestCase):
         self.assertTrue(anti)
         self.assertEqual("warning", anti[0].severity)
 
+    def test_onscreen_relation_meta_labels_are_errors(self) -> None:
+        prose = "统一底座使三类应用共享知识标准，同时保留各自权限与解释口径。" * 3
+        script = parse_script_markdown(
+            f"""## 第6页：平台定位
+- 页面类型：内容页
+- 页面标题：平台定位
+- 主判断：平台以统一知识治理为底座连接三类应用。
+- 完整文字稿：{prose}
+- 文字稿取舍说明：不展开邻页。
+- 证据映射：底座→S009
+- 上屏文字：
+  **01｜数据资产层**
+  - 统一接入数据资产。
+  **02｜三类应用层**
+  - 连接三类业务。
+  - 业务含义：统一底座使三类应用共享知识标准。
+  - 纵向关系：数据资产 → 三类应用。
+- 证据：S009
+- 边界：不替代既有系统。
+- 视觉结构：分层剖面——自下而上呈现支撑关系。
+"""
+        )
+        issues = audit_script_quality(
+            script,
+            strict_outline(
+                {
+                    "page_id": "p06",
+                    "page_type": "content",
+                    "title": "平台定位",
+                    "main_message": "平台以统一知识治理为底座连接三类应用。",
+                    "source_refs": ["S009"],
+                }
+            ),
+            source_truth(
+                {
+                    "id": "S009",
+                    "type": "F",
+                    "status": "已确认",
+                    "statement": "平台范围包括知识资产治理与三类应用。",
+                }
+            ),
+        )
+        meta = [
+            issue for issue in issues if issue.code == "ONSCREEN_RELATION_META_LABEL"
+        ]
+        self.assertTrue(meta)
+        self.assertEqual("error", meta[0].severity)
+        self.assertIn("业务含义", meta[0].evidence)
+        self.assertIn("纵向关系", meta[0].evidence)
+
     def test_primitive_matrix_mismatch_warns(self) -> None:
         prose = "场景筛选需要按业务必要与数据可得综合权衡后分期安排。" * 4
         script = parse_script_markdown(

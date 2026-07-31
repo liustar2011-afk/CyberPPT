@@ -843,6 +843,40 @@ _BOUNDARY_ASIDE_PATTERNS: tuple[str, ...] = (
     "仅为建议",
 )
 
+# Backend relationship labels must not appear in 上屏文字. They belong in
+# 完整文字稿 / 讲解提示 and are forwarded to ImageGen as off-screen semantics.
+ONSCREEN_RELATION_META_LABELS: tuple[str, ...] = (
+    "业务含义",
+    "服务关系",
+    "对象关系",
+    "协同关系",
+    "组件关系",
+    "恢复关系",
+    "纵向关系",
+    "闭环关系",
+    "滚动关系",
+    "工作流",
+    "责任关系",
+    "四层贯通",
+    "建设关系",
+    "从业务关系看",
+)
+
+_ONSCREEN_RELATION_META_RE = re.compile(
+    r"^\s*[-*•]?\s*(?P<label>"
+    + "|".join(re.escape(label) for label in ONSCREEN_RELATION_META_LABELS)
+    + r")\s*[：:]",
+)
+
+
+def _onscreen_relation_meta_hits(text: str) -> tuple[str, ...]:
+    hits: list[str] = []
+    for raw in text.splitlines():
+        match = _ONSCREEN_RELATION_META_RE.match(raw)
+        if match:
+            hits.append(match.group("label"))
+    return tuple(dict.fromkeys(hits))
+
 
 def _analytical_voice_hits(prose: str) -> tuple[str, ...]:
     hits = [pattern for pattern in _ANALYTICAL_VOICE_PATTERNS if pattern in prose]
@@ -950,6 +984,7 @@ def script_retry_directive(
             "CONTENT_PROSE_ANALYTICAL_VOICE",
             "CONTENT_BOUNDARY_ASIDE_OVERLOAD",
             "ONSCREEN_BOUNDARY_ASIDE",
+            "ONSCREEN_RELATION_META_LABEL",
             "CONTENT_SELECTION_NOTES_MISSING",
             "CONTENT_EVIDENCE_MAP_MISSING",
             "PROSE_SOURCE_COVERAGE_GAP",
@@ -1422,6 +1457,17 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
                     "On-screen text contains status/boundary asides that interrupt the page mission.",
                     "Keep theme facts/structure on screen; park hedges in 边界 or ImageGen 禁止项.",
                     evidence=onscreen_aside_hits,
+                )
+            )
+        relation_meta_hits = _onscreen_relation_meta_hits(page.onscreen_text)
+        if relation_meta_hits:
+            issues.append(
+                _issue(
+                    "ONSCREEN_RELATION_META_LABEL",
+                    page,
+                    "On-screen text contains backend relationship labels that must stay off-screen.",
+                    "Move 业务含义 / 服务关系 / 闭环关系等标签句到完整文字稿或讲解提示；上屏只保留可直接阅读的业务模块文案。",
+                    evidence=relation_meta_hits,
                 )
             )
         if visual.strip():

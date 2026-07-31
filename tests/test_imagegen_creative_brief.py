@@ -104,7 +104,11 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "扩展风格9：象牙白 + 深蓝领导汇报" in implicit
     assert "风格适用语境" not in implicit
     assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" not in implicit
-    assert "优先采用场景化行业插画" in implicit or "场景化行业插画" in implicit
+    assert (
+        "优先采用场景化行业彩色插画" in implicit
+        or "场景化行业彩色插画" in implicit
+        or "场景化行业插画" in implicit
+    )
     assert "【页面逻辑｜不上屏】" not in implicit
     assert "不使用等权卡片、通用图标流程或逐项配图" not in implicit
     assert "每个锁定模块及其名称只出现一次" not in implicit
@@ -240,7 +244,7 @@ def test_creative_brief_visual_grammar_defaults_to_empty_auxiliary_allowlist() -
 
 
 @pytest.mark.parametrize(
-    ("title", "main_message", "onscreen_text", "expected"),
+    ("title", "main_message", "full_prose", "expected"),
     (
         (
             "平台定位与业务架构",
@@ -272,14 +276,15 @@ def test_creative_brief_visual_grammar_defaults_to_empty_auxiliary_allowlist() -
 def test_visual_intent_uses_explicit_relationship_lines_from_reliable_copy(
     title: str,
     main_message: str,
-    onscreen_text: str,
+    full_prose: str,
     expected: str,
 ) -> None:
     page = replace(
         _page(),
         title=title,
         main_message=main_message,
-        onscreen_text=onscreen_text,
+        onscreen_text="- 支撑内容",
+        full_prose=full_prose,
         module_titles=(),
         visual_structure="",
     )
@@ -291,7 +296,8 @@ def test_crosscutting_chain_requires_primary_and_transverse_signals() -> None:
     page = replace(
         _page(),
         main_message="平台连接三类业务",
-        onscreen_text="纵向关系：数据资产 → 知识加工 → 智能能力 → 三类应用。",
+        onscreen_text="- 支撑内容",
+        full_prose="纵向关系：数据资产 → 知识加工 → 智能能力 → 三类应用。",
         module_titles=(),
         visual_structure="",
     )
@@ -299,10 +305,11 @@ def test_crosscutting_chain_requires_primary_and_transverse_signals() -> None:
     assert select_page_visual_intent_type(page, "") != "crosscutting_chain"
 
 
-def test_locked_text_preserves_supplied_relationship_annotation_labels() -> None:
+def test_locked_text_strips_backend_relation_meta_labels() -> None:
     page = replace(
         _page(),
         onscreen_text=(
+            "01｜数据资产层\n"
             "纵向关系：数据资产 → 知识加工 → 智能能力 → 三类应用。\n"
             "工作流：资料上传 → 解析 → 审核发布。\n"
             "业务含义：教师保留最终责任。"
@@ -312,8 +319,9 @@ def test_locked_text_preserves_supplied_relationship_annotation_labels() -> None
 
     locked = locked_onscreen_text(page)
 
-    assert "纵向关系" in locked
-    assert "工作流" in locked
+    assert "01｜数据资产层" in locked
+    assert "纵向关系" not in locked
+    assert "工作流" not in locked
     assert "业务含义" not in locked
 
 
@@ -590,6 +598,83 @@ def test_business_relations_outrank_module_title_chains() -> None:
     assert "从业务关系看" in relations
     assert "统一知识对象连接" in relations
     assert "质量与生命周期" not in relations
+
+
+def test_semantic_relations_dedupe_bullet_leftovers_from_onscreen() -> None:
+    from scripts.dual_image_overlay.imagegen_handoff import _page_semantic_relations
+
+    meaning = (
+        "业务含义：统一底座和横向治理使三类应用共享知识标准，"
+        "同时保留各自权限、交互方式和解释口径。"
+    )
+    page = replace(
+        _page(),
+        visual_structure="分层剖面——自下而上依次呈现数据层与应用层。",
+        onscreen_text=(
+            "01｜数据资产层\n"
+            f"  - {meaning}\n"
+            "02｜三类应用层\n"
+        ),
+        full_prose=(
+            "从业务关系看，数据资产经过知识加工形成智能能力并服务三类应用，"
+            "横向治理贯穿每一层。"
+        ),
+        speaker_notes="",
+        module_titles=("01｜数据资产层", "02｜三类应用层"),
+    )
+    relations = _page_semantic_relations(page)
+    assert relations.count(meaning) == 1
+    assert "- - " not in relations
+    assert "从业务关系看，数据资产经过知识加工" in relations
+
+
+def test_page_logic_contract_uses_chinese_spatial_rules() -> None:
+    from scripts.dual_image_overlay.imagegen_handoff import render_page_logic_contract
+
+    page = replace(
+        _page(),
+        visual_structure="分层剖面——自下而上依次呈现支撑层与结果层。",
+        main_message="上层结果依赖下层支撑",
+        onscreen_text="- 支撑内容",
+        module_titles=(),
+    )
+    relation, source, contract = render_page_logic_contract(
+        page, page_mission="体系如何成立"
+    )
+    assert relation == "hierarchy_support"
+    assert source == "hint"
+    assert "主导关系：分层支撑。" in contract
+    assert "空间组织：构建非对称的支撑场域" in contract
+    assert "本页避免：软件架构堆叠" in contract
+    assert "Build an asymmetric" not in contract
+    assert "A software architecture stack" not in contract
+
+
+def test_visual_center_reaches_prompt_and_proof_fallback() -> None:
+    from scripts.dual_image_overlay.imagegen_handoff import build_page_prompt
+
+    page = replace(
+        _page(),
+        visual_structure="分层剖面——支撑与结果。",
+        visual_proof="",
+        onscreen_text="- 支撑内容",
+        module_titles=(),
+    )
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = build_page_prompt(
+            page,
+            lock,
+            page_mission="体系如何成立",
+            visual_context={
+                "visual_center": "数据资产层到应用层的五层架构与横向治理带",
+                "visual_intent_type": "hierarchy_support",
+            },
+        )
+    assert "【视觉中心｜不上屏】" in prompt
+    assert "数据资产层到应用层的五层架构与横向治理带" in prompt
+    assert "以「数据资产层到应用层的五层架构与横向治理带」作为主视觉落点证明本页判断。" in prompt
+
 
 
 def test_visual_carrier_is_forwarded_verbatim_and_marked_offscreen() -> None:

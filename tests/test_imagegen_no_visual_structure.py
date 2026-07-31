@@ -126,7 +126,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
             override={"visual_intent_type": "phase"},
         )
         self.assertIn("- Selected visual intent type: phase", intent)
-        self.assertIn("stage progression", intent)
+        self.assertIn("阶段递进", intent)
 
     def test_page_visual_context_loader_preserves_routing_fields(self) -> None:
         with TemporaryDirectory() as directory:
@@ -174,15 +174,15 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         )
         intent = build_page_visual_intent(page, mission)
         self.assertIn("[Prompt context] Page-specific visual intent", intent)
-        self.assertIn("readiness gates", intent)
-        self.assertIn("decision structure, not an implementation process", intent)
-        self.assertIn("Five equal-weight criterion cards", intent)
+        self.assertIn("明确准入门槛", intent)
+        self.assertIn("把它当作决策结构，而不是实施流程", intent)
+        self.assertIn("五个等权依据卡", intent)
 
     def test_visual_intent_classifies_causal_closed_loop_and_phase(self) -> None:
         cases = [
-            ("为什么现有研判不足", "问题、原因与影响共同形成能力需求", "cause-and-effect"),
-            ("业务如何形成闭环", "输入、处理、输出、反馈与复盘", "closed-loop"),
-            ("能力如何分期推进", "当前、近期和中长期分阶段建设", "stage progression"),
+            ("为什么现有研判不足", "问题、原因与影响共同形成能力需求", "由因到果"),
+            ("业务如何形成闭环", "输入、处理、输出、反馈与复盘", "闭环"),
+            ("能力如何分期推进", "当前、近期和中长期分阶段建设", "阶段递进"),
         ]
         for mission, message, marker in cases:
             page, _ = _visual_intent_page(
@@ -197,17 +197,17 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
             (
                 "不同建设方案有何差异",
                 "通过同一维度比较识别差异与优先级",
-                "differences and priorities",
+                "差异和主次",
             ),
             (
                 "重点场景如何应用并具备什么条件",
                 "场景连接业务价值、当前阶段和推进条件",
-                "application direction, current stage, and entry conditions",
+                "应用方向、当前阶段与进入条件",
             ),
             (
                 "各项能力如何协同支撑业务价值",
                 "数据、模型、产品和机制能力共同支撑业务判断",
-                "capabilities work together to create business value",
+                "多项能力共同作用于同一业务结果",
             ),
         ]
         for mission, message, marker in cases:
@@ -232,11 +232,11 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
   - 支撑协同研判。""",
         )
         intent = build_page_visual_intent(page, mission)
-        self.assertIn("several concrete work foundations", intent)
-        self.assertIn("Use one dominant integrated visual carrier", intent)
-        self.assertIn("one image per foundation", intent)
-        self.assertIn("One generic office", intent)
-        self.assertNotIn("cause-and-effect", intent)
+        self.assertIn("多项现实基础共同支撑", intent)
+        self.assertIn("主导的综合视觉载体", intent)
+        self.assertIn("一项基础一张图", intent)
+        self.assertIn("一张泛化办公", intent)
+        self.assertNotIn("由因到果", intent)
 
     def test_every_visual_intent_type_gets_shared_text_integration_guardrail(self) -> None:
         page, mission = _visual_intent_page(
@@ -250,8 +250,8 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
                 mission,
                 {"visual_intent_type": intent_type},
             )
-            self.assertIn("Treat all required text as calm in-composition panels", intent)
-            self.assertIn("Avoid a detached full-height text column", intent)
+            self.assertIn("全部必上屏文字以冷静的场内面板", intent)
+            self.assertIn("避免独立通高文字栏", intent)
 
     def test_visual_intent_uses_safe_fallback_and_partial_override(self) -> None:
         page, mission = _visual_intent_page(
@@ -262,10 +262,10 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         intent = build_page_visual_intent(
             page,
             mission,
-            {"recommended_composition": "Use one evidence-led editorial composition."},
+            {"recommended_composition": "按证据主导的编辑式构图组织画面。"},
         )
-        self.assertIn("judgment supported by evidence", intent)
-        self.assertIn("Use one evidence-led editorial composition.", intent)
+        self.assertIn("主判断与支撑证据的直接关系", intent)
+        self.assertIn("按证据主导的编辑式构图组织画面。", intent)
         self.assertIn("Avoid on this page:", intent)
 
     def test_page_prompt_places_visual_intent_after_global_style_as_final_priority(self) -> None:
