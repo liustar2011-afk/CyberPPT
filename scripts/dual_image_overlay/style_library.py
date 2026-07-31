@@ -95,6 +95,40 @@ def write_project_style_lock(
     return lock_path
 
 
+def _strip_style09_registry_meta(section: str) -> str:
+    """Keep Style 09 visual rules; drop heading and registry/routing meta."""
+
+    kept: list[str] = []
+    for raw in section.splitlines():
+        line = raw.strip()
+        if not line:
+            if kept and kept[-1] != "":
+                kept.append("")
+            continue
+        if line.startswith("## 扩展风格9"):
+            continue
+        if (
+            "不进入默认候选" in line
+            or "可通过 ID" in line
+            or "默认8种风格仍保持" in line
+            or "slug `" in line
+            or "slug " in line and "ivory_deep_blue" in line
+        ):
+            continue
+        kept.append(line)
+    while kept and kept[0] == "":
+        kept.pop(0)
+    while kept and kept[-1] == "":
+        kept.pop()
+    # Collapse runs of blank lines to a single blank.
+    compact: list[str] = []
+    for line in kept:
+        if line == "" and compact and compact[-1] == "":
+            continue
+        compact.append(line)
+    return "\n".join(compact).strip()
+
+
 def load_style_lock(path: Path) -> dict[str, Any]:
     payload = _read_json(path)
     style = payload.get("style")
@@ -128,10 +162,11 @@ def load_style_lock(path: Path) -> dict[str, Any]:
             break
         end = text.find("\n## ", start + len(marker))
         section = text[start:end if end >= 0 else len(text)].strip()
-        if section:
+        cleaned = _strip_style09_registry_meta(section)
+        if cleaned:
             refreshed = dict(payload)
             refreshed_style = dict(style)
-            refreshed_style["prompt_contract"] = section
+            refreshed_style["prompt_contract"] = cleaned
             refreshed["style"] = refreshed_style
             return refreshed
         break

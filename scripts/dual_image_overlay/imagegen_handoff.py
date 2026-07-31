@@ -51,7 +51,11 @@ from scripts.dual_image_overlay.prompt_diagnostics import (
     write_batch_diagnostics,
     write_compiler_comparison,
 )
-from scripts.dual_image_overlay.style_library import load_style_lock, resolve_default_style
+from scripts.dual_image_overlay.style_library import (
+    _strip_style09_registry_meta,
+    load_style_lock,
+    resolve_default_style,
+)
 
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
 PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
@@ -1210,10 +1214,11 @@ def render_content_first_style_contract(style_lock: Path) -> str:
 
     style = _selected_content_first_style(style_lock)
     if int(style.get("id") or 0) == 9:
-        description = str(style.get("prompt_contract") or "").strip()
+        description = _strip_style09_registry_meta(
+            str(style.get("prompt_contract") or "").strip()
+        )
         lines = [
-            "【输出与风格｜不上屏】",
-            "扩展风格9：象牙白 + 深蓝领导汇报",
+            "【视觉风格｜不上屏】",
             description,
         ]
         signature = style.get("imagegen_signature")
@@ -1237,7 +1242,7 @@ def render_content_first_style_contract(style_lock: Path) -> str:
         if key not in known_keys and str(value).strip()
     )
     lines = [
-        "【输出与风格｜不上屏】",
+        "【视觉风格｜不上屏】",
         f"适用语境：{str(style.get('scenario') or '').strip()}。",
         f"色彩角色：{'；'.join(color_parts)}。",
     ]
