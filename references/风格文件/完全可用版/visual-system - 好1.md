@@ -326,71 +326,24 @@
 
 Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
 
-Create a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished, content-led and presentation-ready.
+Create a high-end senior leadership briefing page in a structured editorial business-infographic style, moderately closer to a scene-based executive-report page. The page should feel authoritative, calm, polished, content-led and presentation-ready.
 
-Build one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main page-level structure, two to five primary content regions, one outcome or conclusion region, and only a few essential connectors. Derive the composition from the actual page semantics rather than from the number of text items.
+Build one integrated composition with one clear reading path, one dominant judgment and unequal visual hierarchy. Use one main structural carrier, two to five primary content regions, one core judgment or conclusion region, and only a few essential connectors. Derive the structure from the actual page semantics.
 
-Locked Chinese text — hard:
+Keep all locked Chinese text complete. Do not summarize or rewrite it. Place text directly beside, above, below or partially within the related business object or scene module, so text and scene form one local content unit.
 
-Keep all locked Chinese text complete, unchanged and in its original order. Do not summarize, rewrite, shorten, relabel or convert paragraphs into compressed tags. Allocate space for the locked text before adding scenes, evidence, icons or decoration.
+Use three to six realistic, clean, business-related scene modules when helpful. Prefer multiple small or medium embedded scene blocks over one giant central concept illustration. Suitable scenes include grid facilities, dispatch centers, control rooms, transmission lines, wind and solar bases, storage equipment, power plants, regional resource landscapes and professional analysis environments. Each scene must support a specific indicator, topic, dimension or judgment.
 
-Use one complete and clearly readable text region for each primary content region. Do not split one paragraph across several small boxes. Keep body text at normal senior-presentation reading scale, visually equivalent to approximately 24–30 px at 1280 × 720. Do not create miniature captions, secondary microcopy or dense annotation layers.
+Keep the page structured and report-like. Use broad flat fields, clean white or ivory content panels, deep-blue headings, thin dividers, subtle connectors, restrained blue emphasis and very shallow depth. Important conclusions may be highlighted with a stronger deep-blue region.
 
-Place the locked text directly beside, above, below or partially within the related business object or scene, so text and visual material form one semantic unit. Make their relationship visible through shared geometry, alignment, proximity, grouping or short connectors.
+Prefer a layout language like an executive report page with top indicators, a mid-page judgment or transition zone, lower supporting modules and one summary band when needed.
 
-Scene-supported semantic expression:
+Avoid panoramic scenic posters, giant hero illustrations, abstract data landscapes, topographic waves, glossy 3D objects, floating icons, dense symbolic diagrams, equal card walls, one-icon-per-item treatment and separated left-text / center-image / right-text layouts.
 
-Prefer realistic or semi-realistic scenes with page-specific business meaning. Each scene must visibly communicate the corresponding business action, transformation, judgment or outcome, rather than merely showing a related office, device, document pile or workplace.
+People should be absent or minimal. If needed, use only tiny distant figures inside operational scenes.
 
-Express each primary business action through one dominant large-scale semantic structure and, only when necessary, one supporting evidence object. Use no more than two semantic visual elements within one primary content region.
+Final result: a calm, highly readable executive-report page combining business infographics with multiple embedded real-world scene modules.
 
-Translate business meaning into presentation-scale forms, such as:
-
-- heterogeneous source materials converging into one structured outline;
-- two knowledge or evidence fields compared with one clearly highlighted gap;
-- several conditions feeding one content blueprint that produces distinct outputs;
-- one content object moving through review, approval, use and feedback;
-- multiple foundations jointly supporting one shared judgment;
-- a controlled boundary separating inputs, processing and approved outputs.
-
-Use large shapes, clear grouping, selective highlights, controlled overlap, restrained directional extension and short thin connectors. The semantic meaning must remain legible from normal presentation viewing distance.
-
-Do not express meaning mainly through miniature document pages, file-browser lists, dense tables, multi-row matrices, full software interfaces, repeated dashboard panels or collections of small screenshots. Screens, documents and charts should function as simplified semantic objects, not as containers for detailed information.
-
-Text and semantic evidence discipline — hard:
-
-Render only the locked Chinese text explicitly provided in the page script. Do not invent additional titles, labels, captions, numbers, footnotes, interface copy, document paragraphs, signage or decorative microtext.
-
-Screens, documents, charts and interfaces may contain clear text-free visual structures, including large blocks, major sections, highlighted differences, check states, approval marks, contrast regions, output groups and simplified diagrams. Do not use blank or generic screens when a screen is expected to explain a business action, but do not fill it with readable microtext.
-
-When space is insufficient, simplify the composition, reduce scene detail, remove supporting evidence, enlarge the text region or reduce the number of visual fragments. Never solve space pressure by shrinking the locked text, splitting it into tiny fragments or adding smaller explanatory text.
-
-Component and hierarchy discipline:
-
-Use:
-
-- one dominant page-level structure;
-- two to five primary content regions;
-- one large semantic object per region;
-- at most one supporting evidence object per region;
-- no more than four to six essential connectors across the page;
-- no more than one or two small auxiliary icons on a typical page.
-
-Do not automatically translate four text items into four equal columns, four equal rows or four equally detailed stages. Use unequal width, scale, density and visual weight according to the page judgment. The core judgment or principal business relationship must dominate; supporting regions remain quieter and subordinate.
-
-Icons are optional and strictly secondary. Keep them small, simple, deep blue and embedded within an existing text, scene or business region. Do not give icons independent cards, circular badges, decorative containers or dedicated display areas. Icons must not determine the composition, create extra modules, form icon rows or replace semantic scenes.
-
-Screens and devices may appear only as supporting evidence inside a broader working or operational scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.
-
-Use broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.
-
-Avoid equal card walls, equal modular grids, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, generic timelines, step-card sequences, software-architecture diagrams, icon grids, glossy 3D objects, glassmorphism, neon glow and floating icons.
-
-People should be absent or minimal. Reference images may inform palette, spacing, scene mood, material restraint and overall polish only; do not copy their fixed layout scaffold.
-
-Priority: locked Chinese text and core judgment → business relationships → large-scale semantic scenes and objects → evidence and outcomes → boundaries and connectors → auxiliary symbols.
-
-Final result: a calm, highly readable executive-report page with complete locked text, strong hierarchy, few components, page-specific semantic scenes, large-scale visual meaning and no invented or unreadable microtext.
 
 ## 扩展风格10：象牙白 + 深蓝双层语义汇报
 
