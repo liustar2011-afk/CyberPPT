@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -116,12 +115,6 @@ def _strip_style09_registry_meta(section: str) -> str:
             or "slug " in line and "ivory_deep_blue" in line
         ):
             continue
-        # Internal STYLE09 subsections use ## headings in the reference doc;
-        # keep their titles in the prompt contract without markdown markers.
-        if line.startswith("## "):
-            line = line[3:].strip()
-            if line and not line.endswith(":"):
-                line = f"{line}:"
         kept.append(line)
     while kept and kept[0] == "":
         kept.pop(0)
@@ -167,19 +160,22 @@ def load_style_lock(path: Path) -> dict[str, Any]:
         start = text.find(marker)
         if start < 0:
             break
-        # STYLE09 may contain internal ## subsections; end only at the next
-        # numbered extension style (STYLE10+), not at the first ## heading.
-        end = text.find("\n## 扩展风格10：", start + len(marker))
-        if end < 0:
-            match = re.search(
-                r"\n## 扩展风格(?!9：)\d+：",
-                text[start + len(marker) :],
-            )
-            end = (
-                start + len(marker) + match.start()
-                if match is not None
-                else -1
-            )
+        # Style 09 now contains internal English `##` subsections. End only at
+        # the next numbered extension-style heading (e.g. 扩展风格10), not at
+        # the first `##` anywhere in the section body.
+        end = -1
+        search_from = start + len(marker)
+        while True:
+            next_heading = text.find("\n## ", search_from)
+            if next_heading < 0:
+                break
+            heading_line = text[next_heading + 1 : text.find("\n", next_heading + 1)]
+            if heading_line.startswith("## 扩展风格") and not heading_line.startswith(
+                "## 扩展风格9"
+            ):
+                end = next_heading
+                break
+            search_from = next_heading + 4
         section = text[start:end if end >= 0 else len(text)].strip()
         cleaned = _strip_style09_registry_meta(section)
         if cleaned:
