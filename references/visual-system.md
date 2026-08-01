@@ -430,6 +430,8 @@ Prefer:
 - one or two close-up evidence fragments;
 - one clearly emphasized outcome or judgment region.
 
+Reducing icon count must not reduce visual expression. Replace redundant pictograms with larger scene crops, clearer business objects, visible object-state changes, material details, spatial transitions, selective highlights and one or two stronger evidence fragments.
+
 Use realistic or semi-realistic industry and business materials where they strengthen meaning: professional operating environments, controlled content objects, data assets, documents in transformation, review activity, analytical workspaces, industry facilities, service interaction or visible results.
 
 A workspace, device or document should visibly demonstrate the relevant action or state. Screens and interfaces are supporting evidence inside a broader scene, not isolated products or the default visual language.
@@ -444,27 +446,24 @@ Visible drop shadows are not the default treatment. Use an extremely soft, diffu
 
 Use matte surfaces, precise edges, restrained translucency and gentle tonal transitions. Material depth should strengthen the main anchor and meaningful object relationships without producing floating cards, raised panels or exhibition objects.
 
-### Visual carrier priority and icon allocation
+### Icon allocation without suppressing visual expression
 
-Carry the main meaning through concrete business objects, scene fragments, object states, typography and spatial relationships.
+Use icons as selective semantic accents, not as the default carrier for every source, service, attribute or action.
 
-For repeated service items, attributes, conditions or lifecycle actions, prefer:
-- clear typographic labels;
-- restrained color bands or tonal levels;
-- shared alignment and spacing;
-- one continuous object changing state;
-- selective highlights;
-- short dividers or connectors.
+A typical page should use:
+- one primary recognition symbol for the page-level business anchor when useful;
+- one to three smaller auxiliary symbols for decisive states, controls, outcomes or exceptions;
+- one shared symbol for a related group when several items belong to the same system.
 
-Treat a related group as one visual system. A layered service stack, attribute list or lifecycle path should normally share one common carrier rather than assigning a separate pictogram to every row or action.
+For repeated lists, service layers, attributes or lifecycle actions, carry the meaning primarily through concrete business objects, scene fragments, object-state changes, typography, color hierarchy, grouping, alignment and spatial progression. Do not assign a separate pictogram to every row or step.
 
-Use one small recognition symbol for the page-level business anchor when it materially improves recognition. A second small symbol may mark the decisive outcome, control point or exception.
+Keep one clear hierarchy: the main scene or business object is visually dominant; the primary symbol is secondary; all other icons are smaller and quieter.
 
-Keep icons simple, deep blue and embedded within an existing scene, object or text grouping. They support recognition but do not define the composition.
+Embed icons inside the existing scene, object, color field or text grouping. They should not require independent cards, circular badges or dedicated display areas.
 
-For continuous processes, show the same business object changing state along one visual path. For repeated attributes or services, use typography, color hierarchy, object-state variation and spatial structure as the primary carriers.
+When icon count is reduced, fill the released visual space with meaningful scene detail, larger evidence fragments, visible transitions, object states, crop variation and spatial depth. Do not replace icons only with empty space, more text boxes or abstract connectors.
 
-Do not give every row, layer, source, service, condition or action its own pictogram. Avoid miniature icon sequences inside tables, stacked services, repeated lists or lifecycle paths.
+Pages whose semantics are inherently interface-like, node-based or process-oriented may use a few additional functional marks, but each mark must add distinct meaning and remain subordinate to the main business anchor.
 
 ### Semantic economy
 
