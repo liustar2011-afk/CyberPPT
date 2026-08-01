@@ -160,22 +160,7 @@ def load_style_lock(path: Path) -> dict[str, Any]:
         start = text.find(marker)
         if start < 0:
             break
-        # Style 09 now contains internal English `##` subsections. End only at
-        # the next numbered extension-style heading (e.g. 扩展风格10), not at
-        # the first `##` anywhere in the section body.
-        end = -1
-        search_from = start + len(marker)
-        while True:
-            next_heading = text.find("\n## ", search_from)
-            if next_heading < 0:
-                break
-            heading_line = text[next_heading + 1 : text.find("\n", next_heading + 1)]
-            if heading_line.startswith("## 扩展风格") and not heading_line.startswith(
-                "## 扩展风格9"
-            ):
-                end = next_heading
-                break
-            search_from = next_heading + 4
+        end = text.find("\n## ", start + len(marker))
         section = text[start:end if end >= 0 else len(text)].strip()
         cleaned = _strip_style09_registry_meta(section)
         if cleaned:

@@ -326,8 +326,6 @@
 
 Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
 
-Typography: use Microsoft YaHei when available; otherwise use a clean modern Chinese sans-serif with glyph proportions, stroke weight, spacing and presentation legibility visually close to Microsoft YaHei.
-
 Create a high-end senior leadership briefing page in a scene-led editorial business-infographic style: authoritative, calm, refined, content-led and ready for formal presentation.
 
 The default visual medium is one open, coherent business scene or concrete business-object field. The page should first read as a clear business judgment expressed through recognizable objects, actions and outcomes, and then as an information structure. Use abstract geometry, boundaries and connectors to organize concrete meaning, not to replace it.
@@ -444,27 +442,13 @@ Visible drop shadows are not the default treatment. Use an extremely soft, diffu
 
 Use matte surfaces, precise edges, restrained translucency and gentle tonal transitions. Material depth should strengthen the main anchor and meaningful object relationships without producing floating cards, raised panels or exhibition objects.
 
-### Visual carrier priority and icon allocation
+### Icons and symbolic marks
 
-Carry the main meaning through concrete business objects, scene fragments, object states, typography and spatial relationships.
+Use icons only as small embedded recognition cues inside an existing scene, object or text grouping.
 
-For repeated service items, attributes, conditions or lifecycle actions, prefer:
-- clear typographic labels;
-- restrained color bands or tonal levels;
-- shared alignment and spacing;
-- one continuous object changing state;
-- selective highlights;
-- short dividers or connectors.
+The main business meaning is carried by recognizable scenes, concrete objects, visible actions and outcomes. Icons should never become the largest objects, the repeated structure of the page or the default carrier for each content item.
 
-Treat a related group as one visual system. A layered service stack, attribute list or lifecycle path should normally share one common carrier rather than assigning a separate pictogram to every row or action.
-
-Use one small recognition symbol for the page-level business anchor when it materially improves recognition. A second small symbol may mark the decisive outcome, control point or exception.
-
-Keep icons simple, deep blue and embedded within an existing scene, object or text grouping. They support recognition but do not define the composition.
-
-For continuous processes, show the same business object changing state along one visual path. For repeated attributes or services, use typography, color hierarchy, object-state variation and spatial structure as the primary carriers.
-
-Do not give every row, layer, source, service, condition or action its own pictogram. Avoid miniature icon sequences inside tables, stacked services, repeated lists or lifecycle paths.
+A typical page may contain one or two small icons. Keep them simple, deep blue and visually subordinate.
 
 ### Semantic economy
 
