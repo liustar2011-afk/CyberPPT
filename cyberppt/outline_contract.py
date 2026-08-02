@@ -33,6 +33,7 @@ HIGH_RISK_SEMANTIC_TERMS = (
     "才能", "必须", "只有", "决定", "确保", "必然", "缺一不可",
     "不可替代", "核心驱动", "决定性",
 )
+QUESTION_TERMS = ("什么", "哪些", "如何", "为何", "为什么", "是否", "谁", "何时", "怎样", "多少", "哪")
 RELATION_PROMOTION_TERMS = ("协同", "驱动", "导致", "依赖", "实现")
 REQUIRED_FIELDS = (
     "schema",
@@ -212,7 +213,10 @@ def _content_issues(pages: list[dict[str, object]]) -> list[AuditIssue]:
 
     for index in range(max(0, len(content_pages) - 2)):
         run = content_pages[index : index + 3]
-        questions = {_text(page.get("business_question")) for page in run}
+        questions = {
+            _text(page.get("audience_question") or page.get("business_question"))
+            for page in run
+        }
         visuals = {_text(page.get("visual_center")) for page in run}
         if "" not in questions and len(questions) == 1 and "" not in visuals and len(visuals) == 1:
             issues.append(
@@ -269,6 +273,91 @@ def _content_issues(pages: list[dict[str, object]]) -> list[AuditIssue]:
                 )
             )
             break
+    return issues
+
+
+def _editorial_control_issues(
+    outline: dict[str, object], pages: list[dict[str, object]]
+) -> list[AuditIssue]:
+    """Audit audience-facing page separation without replacing source semantics."""
+
+    if outline.get("editorial_control_mode") != "required":
+        return []
+    issues: list[AuditIssue] = []
+    question_pages: dict[str, list[str]] = {}
+    for page in pages:
+        if page.get("page_type") != "content":
+            continue
+        page_id = _page_id(page)
+        question = str(page.get("audience_question") or "").strip()
+        exclusions = page.get("must_not_include")
+        split_risk = str(page.get("split_risk") or "").strip()
+        split_reason = str(page.get("split_risk_reason") or "").strip()
+
+        if not question:
+            issues.append(AuditIssue(
+                "AUDIENCE_QUESTION_MISSING",
+                "Each content page must state the concrete audience question it answers.",
+                (page_id,),
+                "define_audience_question",
+            ))
+        else:
+            normalized = _text(question)
+            question_pages.setdefault(normalized, []).append(page_id)
+            if (
+                normalized == _text(_page_mission(page))
+                or re.search(r"本页(?:说明|介绍|讲述|回答)", question)
+                or not any(term in question for term in QUESTION_TERMS)
+            ):
+                issues.append(AuditIssue(
+                    "AUDIENCE_QUESTION_NOT_CONCRETE",
+                    "audience_question must be a real audience question, not a restatement of page_mission or a page-description placeholder.",
+                    (page_id,),
+                    "rewrite_audience_question",
+                ))
+
+        if (
+            not isinstance(exclusions, list)
+            or not exclusions
+            or any(not str(item).strip() for item in exclusions)
+        ):
+            issues.append(AuditIssue(
+                "MUST_NOT_INCLUDE_MISSING",
+                "Each content page must name at least one adjacent topic, claim, or detail that must remain outside the page.",
+                (page_id,),
+                "separate_adjacent_page_scope",
+            ))
+
+        if split_risk not in {"low", "medium", "high"}:
+            issues.append(AuditIssue(
+                "SPLIT_RISK_INVALID",
+                "split_risk must be low, medium, or high.",
+                (page_id,),
+                "assess_page_split_risk",
+            ))
+        elif split_risk in {"medium", "high"} and not split_reason:
+            issues.append(AuditIssue(
+                "SPLIT_RISK_REASON_MISSING",
+                "Medium or high split risk requires a concrete explanation of the competing question, relation, or visual center.",
+                (page_id,),
+                "explain_page_split_risk",
+            ))
+        if split_risk == "high":
+            issues.append(AuditIssue(
+                "HIGH_SPLIT_RISK_UNRESOLVED",
+                "A high-risk page must be split or restructured before the outline can pass.",
+                (page_id,),
+                "split_overloaded_page",
+            ))
+
+    for page_ids in question_pages.values():
+        if len(page_ids) >= 3:
+            issues.append(AuditIssue(
+                "AUDIENCE_QUESTION_REUSED",
+                "The same audience question is reused across three or more pages; aggregate them or make each page answer a materially different question.",
+                tuple(page_ids),
+                "differentiate_audience_questions",
+            ))
     return issues
 
 
@@ -451,6 +540,7 @@ def audit_outline(
     pages = [page for page in raw_pages if isinstance(page, dict)] if isinstance(raw_pages, list) else []
     issues.extend(_template_issues(pages))
     issues.extend(_content_issues(pages))
+    issues.extend(_editorial_control_issues(outline, pages))
     issues.extend(_weight_issues(outline, pages))
     issues.extend(_document_semantic_issues(outline, source_truth))
     issues.extend(_semantic_derivation_issues(outline, pages, source_truth))

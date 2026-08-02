@@ -88,6 +88,7 @@ def render_outline_markdown(payload: dict[str, object], report: dict[str, object
         if page_type == "content":
             fields = (
                 ("页面使命", raw_page.get("page_mission") or raw_page.get("page_job") or raw_page.get("business_question")),
+                ("受众问题", raw_page.get("audience_question")),
                 ("核心结论", raw_page.get("core_message") or raw_page.get("main_message")),
                 ("上屏结论", raw_page.get("onscreen_conclusion") or raw_page.get("onscreen_judgment")),
                 ("主视觉", raw_page.get("visual_center")),
@@ -97,6 +98,13 @@ def render_outline_markdown(payload: dict[str, object], report: dict[str, object
             for label, value in fields:
                 if value:
                     lines.append(f"- {label}：{value}")
+            exclusions = raw_page.get("must_not_include")
+            if isinstance(exclusions, list) and exclusions:
+                lines.append("- 本页不得混入：" + "；".join(str(item) for item in exclusions))
+            if raw_page.get("split_risk"):
+                risk = str(raw_page["split_risk"])
+                reason = str(raw_page.get("split_risk_reason") or "")
+                lines.append(f"- 拆页风险：`{risk}`" + (f"（{reason}）" if reason else ""))
             derivation = raw_page.get("core_message_derivation") or raw_page.get("judgment_derivation")
             if isinstance(derivation, dict) and derivation:
                 refs = derivation.get("source_refs")

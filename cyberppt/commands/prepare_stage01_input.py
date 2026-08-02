@@ -53,8 +53,10 @@ def prepare_outline_input(project: Path) -> Path:
         "Set schema to `cyberppt.outline.v2` and root `core_message_derivation_mode` to `required`.",
         "Create the Outline from Source Truth. Use canonical field names when the material calls for them:",
         "required `page_mission`, required `core_message`, optional `onscreen_conclusion`, "
+        "required `audience_question`, `must_not_include`, `split_risk`, "
         "`new_value_vs_previous`, `reserved_for_later`, `content_units`, "
         "`visual_intent_type`.",
+        "Set root `editorial_control_mode` to `required`.",
         "",
     ]
     if semantic_gate is not None:
@@ -101,7 +103,10 @@ def prepare_outline_input(project: Path) -> Path:
         "",
         "Each content page must define its semantic center, evidence, and content structure:",
         "- `page_mission`: required internal editorial responsibility; describe what the page does in the deck, not a claim it must prove",
-        "- `business_question`: optional; omit it when turning the material into a question would impose an argumentative frame",
+        "- `audience_question`: required concrete question the audience needs this page to answer; it must not repeat page_mission or use a placeholder such as 本页说明什么",
+        "- `business_question`: optional legacy alias; audience_question is the authoritative editorial control",
+        "- `must_not_include`: required non-empty list of adjacent topics, claims, or details that must stay outside this page",
+        "- `split_risk`: required `low`, `medium`, or `high`; medium/high also requires `split_risk_reason`, and high must be resolved by splitting or restructuring before approval",
         "- `core_message`: required; state the smallest complete meaning supported by the cited material, without requiring argument, causality, necessity, value judgment, or action",
         "- `core_message_derivation`: required; include `source_refs`, `supporting_statements`, `derivation`, `introduced_relations`, and `introduced_modalities`",
         "- `content_relations`: required; record the actual source-supported relations such as composed_of, contains, layered_as, corresponds_to, sequence_before, applies_to, covers, bounded_by, provides_to, or supports",
@@ -170,6 +175,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "its existing `上屏文字` unchanged. Only add or update `副标题`, retain the "
         "full judgment as semantic metadata, and set the appropriate display mode.",
         "The approved core_message is mandatory semantic metadata; its onscreen_conclusion remains optional.",
+        "Answer the approved `audience_question`, respect every `must_not_include` exclusion, and do not revive an unresolved split risk while drafting prose or on-screen modules.",
         "Use `detail_refs` when drafting 完整文字稿 and speaker notes, but do not turn each detail record into an on-screen module.",
         "Never strengthen the core_message from page labels, modules, visual structure, or speaker notes.",
         "The visible layer must be independently readable without speaker narration.",
@@ -193,7 +199,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "  - 仅追溯：S### retained in 证据映射 but not rendered on-screen",
         "ImageGen must not re-promote 完整文字稿 or 证据映射 into must-onscreen text; "
         "fix thin slides by rewriting Stage 01 上屏文字.",
-        "`reserved_for_later`, `boundary_refs`, and `boundary_constraints` are internal controls only.",
+        "`must_not_include`, `reserved_for_later`, `boundary_refs`, and `boundary_constraints` are internal controls only.",
         "They must not be copied into coaching tips or speaker notes. State a constraint only when it is the page's declared business subject.",
         "",
     ]
@@ -201,7 +207,11 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         lines += [
             f"## {page.get('page_id')} {page.get('title')}",
             f"- page_mission: {page.get('page_mission') or page.get('page_job', '')}",
+            f"- audience_question: {page.get('audience_question', '')}",
             f"- business_question: {page.get('business_question', '')}",
+            f"- must_not_include: {json.dumps(page.get('must_not_include') or [], ensure_ascii=False)}",
+            f"- split_risk: {page.get('split_risk', '')}",
+            f"- split_risk_reason: {page.get('split_risk_reason', '')}",
             f"- core_message: {page.get('core_message') or page.get('main_message', '')}",
             f"- onscreen_conclusion: {page.get('onscreen_conclusion') or page.get('onscreen_judgment', '')}",
             f"- core_message_derivation: {json.dumps(page.get('core_message_derivation') or page.get('judgment_derivation') or {}, ensure_ascii=False)}",
@@ -267,7 +277,11 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             "schema": "cyberppt.page_contract_receipt.v2",
             "page_id": page.get("page_id"),
             "page_mission": page.get("page_mission") or page.get("page_job"),
+            "audience_question": page.get("audience_question"),
             "business_question": page.get("business_question"),
+            "must_not_include": page.get("must_not_include", []),
+            "split_risk": page.get("split_risk"),
+            "split_risk_reason": page.get("split_risk_reason"),
             "core_message": page.get("core_message") or page.get("main_message"),
             "onscreen_conclusion": page.get("onscreen_conclusion") or page.get("onscreen_judgment"),
             "core_message_derivation": page.get("core_message_derivation") or page.get("judgment_derivation"),
@@ -282,6 +296,9 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             "boundary_refs": page.get("boundary_refs", []),
             "new_value_realized": True,
             "reserved_for_later_respected": True,
+            "audience_question_answered": True,
+            "must_not_include_respected": True,
+            "split_risk_resolved": True,
         }
         lines += [
             "- page_contract_receipt (copy unchanged into the completed page):",

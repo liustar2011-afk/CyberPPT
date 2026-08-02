@@ -61,7 +61,7 @@ def _chapters(outline: dict[str, Any]) -> list[dict[str, Any]]:
     grouped: dict[str, list[dict[str, Any]]] = {}
     for page in _reviewable_pages(outline):
         grouped.setdefault(str(page["chapter_id"]), []).append(page)
-    fields = ("page_id", "sequence", "title", "page_mission", "core_message", "content_units", "content_relations", "source_refs", "page_necessity")
+    fields = ("page_id", "sequence", "title", "page_mission", "audience_question", "must_not_include", "split_risk", "split_risk_reason", "core_message", "content_units", "content_relations", "source_refs", "page_necessity")
     return [{"chapter_id": chapter_id, "title": titles.get(chapter_id, chapter_id), "pages": [{key: page.get(key) for key in fields if key in page} for page in pages]} for chapter_id, pages in grouped.items()]
 
 

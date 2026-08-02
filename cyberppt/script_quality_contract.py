@@ -2650,7 +2650,11 @@ def audit_script_quality(
                     if receipt.get("schema") == "cyberppt.page_contract_receipt.v2":
                         canonical_fields = (
                             "page_mission",
+                            "audience_question",
                             "business_question",
+                            "must_not_include",
+                            "split_risk",
+                            "split_risk_reason",
                             "core_message",
                             "onscreen_conclusion",
                             "core_message_derivation",
@@ -2695,13 +2699,25 @@ def audit_script_quality(
                     if (
                         receipt.get("new_value_realized") is not True
                         or receipt.get("reserved_for_later_respected") is not True
+                        or (
+                            contract.get("audience_question") is not None
+                            and receipt.get("audience_question_answered") is not True
+                        )
+                        or (
+                            contract.get("must_not_include") is not None
+                            and receipt.get("must_not_include_respected") is not True
+                        )
+                        or (
+                            contract.get("split_risk") is not None
+                            and receipt.get("split_risk_resolved") is not True
+                        )
                     ):
                         issues.append(
                             _issue(
                                 "PAGE_CONTRACT_CONSUMPTION_UNCONFIRMED",
                                 page,
-                                "The page does not confirm new-value realization and reserved-content discipline.",
-                                "Review the page and set both receipt decisions to true only after confirmation.",
+                                "The page does not confirm its approved audience question, exclusions, split-risk resolution, new value, and reserved-content discipline.",
+                                "Review the page and set each receipt decision to true only after confirmation.",
                             )
                         )
             missing = tuple(

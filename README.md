@@ -108,6 +108,8 @@ python3 -m cyberppt final-script-pages projects/example --script workbench/scrip
 
 `outline-audit` 返回 `0` 表示通过，`4` 表示生成代理必须读取 `retry_directive` 后换方向重写，`5` 表示默认三次尝试已耗尽、需要用户在升级报告的 2-3 个选项中决策，输入错误返回 `2`。审计合同、最新报告、逐次尝试和升级报告写入 `workbench/stages/01-analysis/`；CLI 不代替生成代理重写大纲。
 
+正式方案提纲启用 `editorial_control_mode: required`：每个内容页除来源语义合同外，还必须声明真实的 `audience_question`、非空的 `must_not_include` 和 `split_risk`。`audience_question` 不能复述页面使命，`must_not_include` 用于隔离相邻页面内容；中高拆页风险必须解释，高风险未通过拆分或重构消除时不得批准。上述字段会进入人类可读提纲、章结构审阅输入和页面脚本收据，防止下游重新混页。
+
 `chapter-structure-review` 是 Outline Audit 与人工确认之间的正式章级门禁。`prepare-chapter-review` 编译包含文档语义身份、叙事主命题和逐页内容关系的机器输入，并在 `review/` 创建 Markdown 审阅骨架；人或 Agent 完成章内推进、跨页重复、主次密度与消费状态审阅后，由 `chapter-review-audit` 检查章节/页面覆盖、必需 Markdown 小节、消费状态和输入哈希。JSON 仅作为机器合同，Markdown 是人工审阅权威稿；大纲或脚本变化会使旧审阅失效。
 
 Stage 01 脚本批准后，主流程自动调用仓库注册的 `vendor/skills/ppt-visual-structure-designer`。先运行 `prepare-visual-structure`，由 Agent 按 Skill 的 `workbench-handoff` 合同生成 `visual/` 四项产物，再运行 `visual-structure-audit` 绑定当前脚本哈希。该闸门通过前，`final-script-pages` 会阻断风格选择、生图和 PPT 生产。

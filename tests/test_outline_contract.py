@@ -56,6 +56,54 @@ def outline(*pages: dict[str, object], **overrides: object) -> dict[str, object]
 
 
 class OutlineContractTests(unittest.TestCase):
+    def test_required_editorial_controls_are_enforced(self) -> None:
+        content = page(1, "content", "建设基础", message="现有条件支持启动", refs=["S001"])
+        payload = outline(content, editorial_control_mode="required")
+        codes = {item.code for item in audit_outline(payload)}
+        self.assertIn("AUDIENCE_QUESTION_MISSING", codes)
+        self.assertIn("MUST_NOT_INCLUDE_MISSING", codes)
+        self.assertIn("SPLIT_RISK_INVALID", codes)
+
+        content.update(
+            {
+                "audience_question": "现有条件是否足以支持项目启动？",
+                "must_not_include": ["实施步骤", "投资承诺"],
+                "split_risk": "low",
+            }
+        )
+        codes = {item.code for item in audit_outline(payload)}
+        self.assertFalse(
+            {"AUDIENCE_QUESTION_MISSING", "MUST_NOT_INCLUDE_MISSING", "SPLIT_RISK_INVALID"}
+            & codes
+        )
+
+    def test_editorial_question_cannot_repeat_mission_and_high_risk_blocks(self) -> None:
+        content = page(1, "content", "建设基础", message="现有条件支持启动", refs=["S001"])
+        content.update(
+            {
+                "page_mission": "说明现有条件是否足以支持项目启动",
+                "audience_question": "说明现有条件是否足以支持项目启动",
+                "must_not_include": ["实施步骤"],
+                "split_risk": "high",
+                "split_risk_reason": "同时承载基础判断和实施安排",
+            }
+        )
+        codes = {item.code for item in audit_outline(outline(content, editorial_control_mode="required"))}
+        self.assertIn("AUDIENCE_QUESTION_NOT_CONCRETE", codes)
+        self.assertIn("HIGH_SPLIT_RISK_UNRESOLVED", codes)
+
+    def test_medium_split_risk_requires_reason(self) -> None:
+        content = page(1, "content", "建设基础", message="现有条件支持启动", refs=["S001"])
+        content.update(
+            {
+                "audience_question": "现有条件是否足以支持项目启动？",
+                "must_not_include": ["实施步骤"],
+                "split_risk": "medium",
+            }
+        )
+        codes = {item.code for item in audit_outline(outline(content, editorial_control_mode="required"))}
+        self.assertIn("SPLIT_RISK_REASON_MISSING", codes)
+
     def test_solution_material_rejects_implicit_consulting_route(self) -> None:
         payload = outline(architecture_mode="consulting")
         self.assertIn("SOLUTION_ARCHITECTURE_REQUIRED", [item.code for item in audit_outline(payload)])

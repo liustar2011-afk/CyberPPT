@@ -39,7 +39,10 @@ class PrepareStage01InputTests(unittest.TestCase):
                             "page_type": "content",
                             "title": "建设基础",
                             "page_job": "说明为什么现在可以启动",
+                            "audience_question": "现有基础是否足以支持项目启动？",
                             "business_question": "基础是否具备",
+                            "must_not_include": ["实施步骤", "投资承诺"],
+                            "split_risk": "low",
                             "main_message": "已有基础支持启动",
                             "onscreen_judgment": "现有基础足以支持项目启动",
                             "new_value_vs_previous": "形成启动判断",
@@ -76,6 +79,10 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("Every content page must state one source-supported `core_message`", text)
         self.assertIn("Each content page must define its semantic center", text)
         self.assertIn("`page_mission`: required internal editorial responsibility", text)
+        self.assertIn("`audience_question`: required concrete question", text)
+        self.assertIn("`must_not_include`: required non-empty list", text)
+        self.assertIn("`split_risk`: required", text)
+        self.assertIn("editorial_control_mode", text)
         self.assertIn("`business_question`: optional", text)
         self.assertIn("source-supported page content", text)
         self.assertIn("Use `boundary` role when a condition or unresolved item", text)
@@ -89,6 +96,9 @@ class PrepareStage01InputTests(unittest.TestCase):
         output = prepare_page_script_input(self.project, "p04")
         text = output.read_text(encoding="utf-8")
         self.assertIn("- page_mission: 说明为什么现在可以启动", text)
+        self.assertIn("- audience_question: 现有基础是否足以支持项目启动？", text)
+        self.assertIn('- must_not_include: ["实施步骤", "投资承诺"]', text)
+        self.assertIn("- split_risk: low", text)
         self.assertIn("- core_message: 已有基础支持启动", text)
         self.assertIn("- onscreen_conclusion: 现有基础足以支持项目启动", text)
         self.assertIn("Do not add `副标题` or `上屏结论` merely because", text)
@@ -113,6 +123,9 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("must not be copied into coaching tips or speaker notes", text)
         self.assertIn("cyberppt-page-contract", text)
         self.assertIn('"new_value_realized":true', text)
+        self.assertIn('"audience_question_answered":true', text)
+        self.assertIn('"must_not_include_respected":true', text)
+        self.assertIn('"split_risk_resolved":true', text)
         self.assertIn('"onscreen_conclusion":"现有基础足以支持项目启动"', text)
         self.assertIn('"visual_proof":"用既有基础托住启动判断"', text)
         self.assertTrue(output.name.endswith("-p04.md"))
