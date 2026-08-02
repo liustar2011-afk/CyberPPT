@@ -65,6 +65,8 @@ Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-s
 2. `editable-overlay`：生成 full 图，再从 full 派生无字底图，经 OCR、语义绑定、overlay 和 `template-rebuild` 输出主要文字可编辑的 PPT。
 3. `editable-overlay-text-reference`：在双图模式上再从 full 派生纯文字 OCR 参考图。该图只供 OCR 使用，禁止作为可见 PPT 图层。
 
+风格10沿用风格09的整页编辑式图文合同：默认 `full_image`，由 ImageGen 在同一主构图中承载锁定上屏文字、业务对象、动作和结果；只有显式指定 `semantic_visual` 或 `editable_overlay` 时，才切换为无字/少字语义底图并由后续文字层承载正文。`truth_lock` 锁定事实真值，`visual_freedom` 释放镜头、场景、对象、材质和视觉隐喻，不得把二者混为像素文字锁。
+
 只有用户明确要求主要正文可编辑、对象级还原、双图法或三图法时，才选择可编辑分支；选择后它属于 `final-script-pages` 主链的正式分支，不再称为旁路或临时 legacy 调用。
 
 含义如下：
@@ -124,7 +126,7 @@ Stage 01 的 `source-truth-audit` / `outline-audit` / `script-audit` 会在报�
 - 阶段开始前必须读取对应 reference 的完整内容；如果终端显示乱码，改用 UTF-8 方式重读，不得跳过。
 - reference 中的具体清单优先于本文件中的摘要描述；如果二者冲突，先停下说明冲突并请求用户确认。
 - 第一阶段必须读取 `source-analysis.md` 和 `storyline.md` 后再完成材料路由，并产出证据表、内容脑暴、方案型章节或咨询型 SCR、逐页大纲和页面信息密度清单；进入逐页脚本时必须读取 `script-quality.md` 并运行 `script-audit`。内容页必须按页证据包写出完整文字稿（小文章/小章节完整性，禁止上屏颗粒度），并强制填写 `文字稿取舍说明` 与 `证据映射`，然后再写上屏文字。
-- 第二阶段必须读取 `visual-system.md` 后再生成风格样张；默认必须逐项使用固定 8 种 CyberPPT 视觉风格，不得用扩展风格替代，除非用户明确要求替换。显式选择风格10时，必须执行“语义结构优先、行业场景辅助”的双层合同；不得用场景替代页面视觉意图或锁定业务关系。
+- 第二阶段必须读取 `visual-system.md` 后再生成风格样张；默认必须逐项使用固定 8 种 CyberPPT 视觉风格，不得用扩展风格替代，除非用户明确要求替换。显式选择风格10时，必须执行“语义结构优先、证据组件增强、语义配图参与表达”的合同：先按页面使命和决策关系选择视觉意图，再从风格10的高阶载体路由中选择与语义一致的主框架；允许ImageGen用无文字的行业场景、业务物件、工作空间和视觉隐喻承载已批准动作与关系，且配图必须嵌入主链、删除后会削弱业务解释；KPI、微图表、侧栏、地图、时间带和结论带仍必须由真实证据触发，不得为追求高密度编造文字、数字或事实。
 - 第二阶段的逐页正文区蓝图子阶段即使已经选好风格，也必须重新对照 `visual-system.md`，声明锁定的风格编号、色板、正文区网格、正文区图表语言和信息密度规则，防止逐页生成时风格漂移。
 - 第三阶段必须读取 `ppt-production.md` 和 `quality-assurance.md` 后再生成 PPTX 和渲染检查。
 - 第二阶段默认模式 `full-image` 不进入 OCR、overlay、semantic_plan、source_capture 或 `template-rebuild`；可编辑模式按合同进入这些步骤。所有模式的正式入口均为 `python -m cyberppt final-script-pages`。
