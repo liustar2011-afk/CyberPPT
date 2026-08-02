@@ -47,6 +47,10 @@ from cyberppt.stage01_controls import (
     write_escalation_decision,
     write_stage01_approval,
 )
+from cyberppt.storyline_director import (
+    prepare_storyline_director,
+    run_storyline_director_audit,
+)
 
 
 def _doctor() -> int:
@@ -182,6 +186,26 @@ def _approve_communication_strategy_command(args: argparse.Namespace) -> int:
         return 2
     print(f"communication_strategy_approval: {path}")
     return 0
+
+
+def _prepare_storyline_director_command(args: argparse.Namespace) -> int:
+    try:
+        payload = prepare_storyline_director(Path(args.project))
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    return 0
+
+
+def _storyline_director_check_command(args: argparse.Namespace) -> int:
+    try:
+        code, report = run_storyline_director_audit(Path(args.project))
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return code
 
 
 def _prepare_chapter_review_command(args: argparse.Namespace) -> int:
@@ -489,6 +513,20 @@ def build_parser() -> argparse.ArgumentParser:
     approve_communication.add_argument("--option", required=True, help="Selected option id.")
     approve_communication.add_argument("--note", default="", help="Optional approval note.")
     approve_communication.set_defaults(func=_approve_communication_strategy_command)
+
+    prepare_director = subparsers.add_parser(
+        "prepare-storyline-director",
+        help="Prepare the story-first directing contract before Outline authoring.",
+    )
+    prepare_director.add_argument("project", help="CyberPPT project directory.")
+    prepare_director.set_defaults(func=_prepare_storyline_director_command)
+
+    director_check = subparsers.add_parser(
+        "storyline-director-check",
+        help="Audit the storyline, chapter questions, evidence-selection rules, and pacing contract.",
+    )
+    director_check.add_argument("project", help="CyberPPT project directory.")
+    director_check.set_defaults(func=_storyline_director_check_command)
 
     outline_audit = subparsers.add_parser(
         "outline-audit",

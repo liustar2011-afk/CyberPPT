@@ -22,6 +22,12 @@ from cyberppt.semantic_understanding import (
     record_semantic_generation,
     run_semantic_understanding_audit,
 )
+from cyberppt.storyline_director import (
+    DIRECTOR_ARTIFACT,
+    prepare_storyline_director,
+    run_storyline_director_audit,
+)
+from tests.test_storyline_director import director_payload
 from tests.test_semantic_understanding import VALID_SEMANTIC
 
 
@@ -83,7 +89,9 @@ class CommunicationStrategyTests(unittest.TestCase):
     def test_init_requires_communication_strategy(self) -> None:
         manifest = (self.project / "manifest.yml").read_text(encoding="utf-8")
         self.assertIn("communication_strategy: required", manifest)
+        self.assertIn("storyline_director: required", manifest)
         self.assertTrue((self.project / "workbench/stages/00-communication-strategy").is_dir())
+        self.assertTrue((self.project / "workbench/stages/00-storyline-director").is_dir())
 
     def test_outline_is_blocked_until_user_selects_an_option(self) -> None:
         self._write_valid_candidate()
@@ -111,6 +119,18 @@ class CommunicationStrategyTests(unittest.TestCase):
             json.dumps({"records": [], "coverage_targets": [], "conclusions": []}),
             encoding="utf-8",
         )
+        (stage / "source-truth-audit.json").write_text(
+            json.dumps({"status": "passed"}), encoding="utf-8"
+        )
+        prepared_director = prepare_storyline_director(self.project)
+        director = director_payload()
+        director["source_truth_sha256"] = prepared_director["source_truth_sha256"]
+        director["communication_strategy_approval_sha256"] = prepared_director["communication_strategy_approval_sha256"]
+        (self.project / DIRECTOR_ARTIFACT).write_text(
+            json.dumps(director, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+        director_code, _ = run_storyline_director_audit(self.project)
+        self.assertEqual(0, director_code)
         authoring_input = prepare_outline_input(self.project).read_text(encoding="utf-8")
         self.assertIn("## approved_communication_strategy", authoring_input)
         self.assertIn("reporting_direction: joint_workshop", authoring_input)

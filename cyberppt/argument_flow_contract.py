@@ -59,6 +59,14 @@ SEMANTIC_CONTRIBUTION_FIELDS = (
     "new_value_vs_previous",
     "reserved_for_later",
 )
+STORYLINE_PAGE_FIELDS = (
+    "storyline_role",
+    "transition_from_previous",
+    "transition_to_next",
+)
+GENERIC_TRANSITIONS = frozenset(
+    {"承上启下", "承接上页", "引出下页", "进入下一页", "继续说明", "进一步说明"}
+)
 EVIDENCE_TYPE_TO_CLAIM_ROLE = {
     "F": "fact",
     "J": "judgment",
@@ -194,10 +202,101 @@ def validate_source_relation_fields(
     """Validate v2 content contracts without imposing page or claim taxonomies."""
 
     issues: list[ArgumentFlowIssue] = []
-    for page in _dict_items(outline, "pages"):
+    storyline_required = outline.get("storyline_contract_mode") == "required"
+    pages = _dict_items(outline, "pages")
+    if storyline_required:
+        storyline = outline.get("storyline")
+        required_root = (
+            "theme",
+            "decision_destination",
+            "story_arc",
+            "chapter_missions",
+            "selection_rules",
+            "exclusion_rules",
+            "page_rules",
+            "pacing",
+        )
+        if not isinstance(storyline, dict) or any(not storyline.get(field) for field in required_root):
+            issues.append(
+                ArgumentFlowIssue(
+                    "STORYLINE_CONTRACT_MISSING",
+                    "A required Storyline Director contract must define theme, decision destination, story arc, chapter missions, selection and exclusion rules, page rules, and pacing.",
+                    retry_strategy="rebuild_from_storyline_director",
+                )
+            )
+        else:
+            content_pages = [page for page in pages if page.get("page_type") == "content"]
+            content_chapters = {str(page.get("chapter_id") or "") for page in content_pages}
+            missions = storyline.get("chapter_missions")
+            mission_items = [item for item in missions if isinstance(item, dict)] if isinstance(missions, list) else []
+            mission_chapters = {str(item.get("chapter_id") or "") for item in mission_items}
+            if content_chapters != mission_chapters:
+                issues.append(
+                    ArgumentFlowIssue(
+                        "STORYLINE_CHAPTER_COVERAGE_MISMATCH",
+                        "Storyline Director chapter missions must cover exactly the chapters that contain content pages.",
+                        retry_strategy="reconcile_storyline_chapter_missions",
+                    )
+                )
+            for mission in mission_items:
+                chapter_id = str(mission.get("chapter_id") or "")
+                maximum = mission.get("max_content_pages")
+                actual = sum(1 for page in content_pages if str(page.get("chapter_id") or "") == chapter_id)
+                if isinstance(maximum, int) and actual > maximum:
+                    issues.append(
+                        ArgumentFlowIssue(
+                            "STORYLINE_CHAPTER_PACING_EXCEEDED",
+                            "A chapter exceeds the Storyline Director's maximum content-page budget.",
+                            tuple(str(page.get("page_id") or "") for page in content_pages if str(page.get("chapter_id") or "") == chapter_id),
+                            retry_strategy="compress_chapter_to_director_budget",
+                        )
+                    )
+            pacing = storyline.get("pacing")
+            if isinstance(pacing, dict):
+                minimum = pacing.get("min_total_pages")
+                maximum = pacing.get("max_total_pages")
+                if isinstance(minimum, int) and isinstance(maximum, int) and not minimum <= len(pages) <= maximum:
+                    issues.append(
+                        ArgumentFlowIssue(
+                            "STORYLINE_TOTAL_PACING_OUT_OF_RANGE",
+                            "Total pages must remain inside the Storyline Director's approved pacing range.",
+                            retry_strategy="rebuild_to_director_pacing",
+                        )
+                    )
+    previous_by_chapter: dict[str, str] = {}
+    for page in pages:
         if page.get("page_type") != "content":
             continue
         page_id = str(page.get("page_id") or "")
+        if storyline_required:
+            missing_storyline = [field for field in STORYLINE_PAGE_FIELDS if not str(page.get(field) or "").strip()]
+            generic_storyline = [
+                field for field in ("transition_from_previous", "transition_to_next")
+                if str(page.get(field) or "").strip() in GENERIC_TRANSITIONS
+            ]
+            if missing_storyline or generic_storyline:
+                issues.append(
+                    ArgumentFlowIssue(
+                        "PAGE_STORYLINE_CONTRACT_INCOMPLETE",
+                        "Each content page must state a concrete storyline role and specific transitions from the preceding question and to the following question; generic transition labels are invalid.",
+                        (page_id,) if page_id else (),
+                        retry_strategy="complete_page_storyline_contract",
+                    )
+                )
+            chapter_id = str(page.get("chapter_id") or "")
+            previous = previous_by_chapter.get(chapter_id)
+            prerequisites = _string_list(page, "prerequisite_pages")
+            if previous is not None and prerequisites != [previous]:
+                issues.append(
+                    ArgumentFlowIssue(
+                        "PAGE_STORYLINE_PREDECESSOR_MISMATCH",
+                        "Within a chapter, each content page must explicitly depend on the immediately preceding content page so the story cannot silently jump or reorder.",
+                        (page_id,),
+                        failed_edges=((previous, page_id),),
+                        retry_strategy="repair_page_storyline_sequence",
+                    )
+                )
+            previous_by_chapter[chapter_id] = page_id
         missing = [field for field in SEMANTIC_CONTRIBUTION_FIELDS if not page.get(field)]
         if missing:
             issues.append(
@@ -262,6 +361,25 @@ def validate_source_relation_fields(
         if isinstance(relations, list):
             for relation in relations:
                 refs = _string_list(relation, "source_refs") if isinstance(relation, dict) else []
+                subject = str(relation.get("subject") or "").strip() if isinstance(relation, dict) else ""
+                objects = relation.get("objects") if isinstance(relation, dict) else None
+                if isinstance(objects, str):
+                    objects = [objects] if objects.strip() else []
+                valid_objects = (
+                    isinstance(objects, list)
+                    and bool(objects)
+                    and all(str(item).strip() for item in objects)
+                )
+                if not subject or not valid_objects:
+                    issues.append(
+                        ArgumentFlowIssue(
+                            "CONTENT_RELATION_ENDPOINTS_MISSING",
+                            "Each content relation must name a non-empty subject and one or more non-empty objects so the semantic relation is human-readable and machine-consumable.",
+                            (page_id,) if page_id else (),
+                            tuple(refs),
+                            retry_strategy="complete_content_relation_endpoints",
+                        )
+                    )
                 if not isinstance(relation, dict) or not refs or not set(refs).issubset(page_sources):
                     issues.append(
                         ArgumentFlowIssue(

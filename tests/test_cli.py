@@ -45,6 +45,8 @@ class CliTests(unittest.TestCase):
         self.assertIn("semantic-check", help_text)
         self.assertIn("record-semantic-generation", help_text)
         self.assertIn("approve-semantic-understanding", help_text)
+        self.assertIn("prepare-storyline-director", help_text)
+        self.assertIn("storyline-director-check", help_text)
         self.assertIn("script-audit", help_text)
         self.assertIn("prepare-chapter-review", help_text)
         self.assertIn("chapter-review-audit", help_text)

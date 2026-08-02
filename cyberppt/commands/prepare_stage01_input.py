@@ -13,6 +13,7 @@ from cyberppt.semantic_understanding import (
     SEMANTIC_ARTIFACT,
     assert_semantic_understanding_ready,
 )
+from cyberppt.storyline_director import assert_storyline_director_ready
 
 
 def _load(path: Path) -> dict[str, object]:
@@ -37,6 +38,7 @@ def prepare_outline_input(project: Path) -> Path:
     project = project.expanduser().resolve()
     semantic_gate = assert_semantic_understanding_ready(project)
     communication_gate = assert_communication_strategy_ready(project)
+    director_gate = assert_storyline_director_ready(project)
     truth = _load(project / "workbench/stages/01-analysis/source-truth.json")
     records = {
         str(item.get("id")): item
@@ -62,6 +64,7 @@ def prepare_outline_input(project: Path) -> Path:
         "`new_value_vs_previous`, `reserved_for_later`, `content_units`, "
         "`visual_intent_type`.",
         "Set root `editorial_control_mode` to `required`.",
+        "Set root `storyline_contract_mode` to `required`. Copy `storyline_director_sha256` and the complete `storyline` contract from the current Storyline Director gate exactly.",
         "",
     ]
     if communication_gate is not None:
@@ -80,6 +83,18 @@ def prepare_outline_input(project: Path) -> Path:
             f"- structure_principle: {selected['structure_principle']}",
             "",
             "Use `structure_principle` to determine chapter order. Source truth still controls meaning and evidence; the approved strategy controls how that meaning is organized for this audience.",
+            "",
+        ]
+    if director_gate is not None:
+        lines += [
+            "## authoritative_storyline_director",
+            "",
+            "The Outline Director has already determined the theme, decision destination, question chain, chapter missions, evidence-selection rules, exclusions, page rules, and pacing. This contract is authoritative for organization; do not replace it with source section mirroring or a generic storyline.",
+            f"- storyline_director_sha256: {director_gate['storyline_director_sha256']}",
+            "- storyline: " + json.dumps(director_gate["outline_contract"], ensure_ascii=False),
+            "",
+            "Each content page must add `storyline_role`, `transition_from_previous`, and `transition_to_next`. These fields must explain how the page advances the director's question chain; generic wording such as 承上启下 is invalid.",
+            "Use Source Truth as evidence selected for the page mission, not as a list of page candidates. Full traceability may live in detail_refs without earning on-screen or page-level weight.",
             "",
         ]
     if semantic_gate is not None:
@@ -130,9 +145,12 @@ def prepare_outline_input(project: Path) -> Path:
         "- `business_question`: optional legacy alias; audience_question is the authoritative editorial control",
         "- `must_not_include`: required non-empty list of adjacent topics, claims, or details that must stay outside this page",
         "- `split_risk`: required `low`, `medium`, or `high`; medium/high also requires `split_risk_reason`, and high must be resolved by splitting or restructuring before approval",
+        "- `storyline_role`: required concrete role in the director's story arc; state what changes in the audience's understanding or decision after this page",
+        "- `transition_from_previous`: required concrete logical dependency on the previous content page or chapter question",
+        "- `transition_to_next`: required concrete unresolved question handed to the next content page or decision destination",
         "- `core_message`: required; state the smallest complete meaning supported by the cited material, without requiring argument, causality, necessity, value judgment, or action",
         "- `core_message_derivation`: required; include `source_refs`, `supporting_statements`, `derivation`, `introduced_relations`, and `introduced_modalities`",
-        "- `content_relations`: required; record the actual source-supported relations such as composed_of, contains, layered_as, corresponds_to, sequence_before, applies_to, covers, bounded_by, provides_to, or supports",
+        "- `content_relations`: required; each relation must include a non-empty `subject`, one or more non-empty `objects`, the actual source-supported `relation` (such as composed_of, contains, layered_as, corresponds_to, sequence_before, applies_to, covers, bounded_by, provides_to, or supports), and supporting `source_refs`",
         "- `subtitle`: optional; it may summarize page content and must not manufacture a conclusion",
         "- `onscreen_conclusion`: optional; write it only when it is an equal-strength visible compression of `core_message`",
         "- Definitions, composition, design, lists, process, duties, and arrangements still require a complete core_message, even when no visible conclusion is appropriate",

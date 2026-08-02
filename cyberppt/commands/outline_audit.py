@@ -24,6 +24,10 @@ from cyberppt.stage01_controls import (
     assert_escalation_resolved,
     snapshot_reference_gate,
 )
+from cyberppt.storyline_director import (
+    assert_storyline_director_ready,
+    storyline_director_binding_issues,
+)
 
 
 def _write_json(path: Path, payload: object) -> None:
@@ -75,6 +79,29 @@ def render_outline_markdown(payload: dict[str, object], report: dict[str, object
             if str(item).strip():
                 lines.append(f"{index}. {item}")
         lines.append("")
+    storyline = payload.get("storyline")
+    if isinstance(storyline, dict) and storyline:
+        lines.extend(
+            [
+                "## 提纲导演合同",
+                "",
+                f"- 主题：{storyline.get('theme', '未声明')}",
+                f"- 决策终点：{storyline.get('decision_destination', '未声明')}",
+                "",
+                "### 故事线",
+                "",
+            ]
+        )
+        for index, item in enumerate(storyline.get("story_arc") or [], 1):
+            if str(item).strip():
+                lines.append(f"{index}. {item}")
+        lines.extend(["", "### 章节问题", ""])
+        for mission in storyline.get("chapter_missions") or []:
+            if isinstance(mission, dict):
+                lines.append(
+                    f"- `{mission.get('chapter_id', '')}` {mission.get('question', '')} → {mission.get('contribution', '')}"
+                )
+        lines.append("")
     lines.extend(["## 逐页大纲", ""])
     for index, raw_page in enumerate(pages, start=1):
         if not isinstance(raw_page, dict):
@@ -91,6 +118,9 @@ def render_outline_markdown(payload: dict[str, object], report: dict[str, object
             lines.append(f"- 所属章节：`{raw_page['chapter_id']}`")
         if page_type == "content":
             fields = (
+                ("故事线角色", raw_page.get("storyline_role")),
+                ("承接前页", raw_page.get("transition_from_previous")),
+                ("交给后页", raw_page.get("transition_to_next")),
                 ("页面使命", raw_page.get("page_mission") or raw_page.get("page_job") or raw_page.get("business_question")),
                 ("受众问题", raw_page.get("audience_question")),
                 ("核心结论", raw_page.get("core_message") or raw_page.get("main_message")),
@@ -203,6 +233,7 @@ def run_outline_audit(
         raise FileNotFoundError(f"project does not exist: {project}")
     semantic_gate = assert_semantic_understanding_ready(project)
     communication_gate = assert_communication_strategy_ready(project)
+    director_gate = assert_storyline_director_ready(project)
     assert_escalation_resolved(project, "source_truth")
     payload = load_outline(input_path.expanduser().resolve())
     resolved_source_truth = (
@@ -251,6 +282,15 @@ def run_outline_audit(
         )
         for item in communication_strategy_binding_issues(payload, communication_gate)
     )
+    issues.extend(
+        AuditIssue(
+            item["code"],
+            item["message"],
+            (),
+            item["retry_strategy"],
+        )
+        for item in storyline_director_binding_issues(payload, director_gate)
+    )
     directive = retry_directive(issues, str(retry.get("strategy") or ""))
     report: dict[str, object] = {
         "schema": "cyberppt.outline_audit.v1",
@@ -288,6 +328,7 @@ def run_outline_audit(
         "reference_gate": snapshot_reference_gate("outline", project),
         "semantic_gate": semantic_gate,
         "communication_strategy_gate": communication_gate,
+        "storyline_director_gate": director_gate,
     }
     _write_json(stage / "outline-contract.json", payload)
     _write_json(stage / "proposition-graph.json", build_proposition_graph(payload))

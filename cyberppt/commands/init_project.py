@@ -16,6 +16,7 @@ PROJECT_DIRS = [
     "workbench/stages",
     "workbench/stages/00-semantic-understanding",
     "workbench/stages/00-communication-strategy",
+    "workbench/stages/00-storyline-director",
     "workbench/stages/01-analysis",
     "workbench/stages/01-analysis/outline-attempts",
     "workbench/stages/01-analysis/source-truth-attempts",
@@ -65,6 +66,10 @@ directories:
   communication_strategy_audit: workbench/stages/00-communication-strategy/communication-strategy-audit.json
   communication_strategy_confirmation: workbench/stages/00-communication-strategy/communication-strategy-confirmation.md
   communication_strategy_approval: workbench/approvals/communication-strategy-approved.json
+  stage_storyline_director: workbench/stages/00-storyline-director
+  storyline_director_input: workbench/stages/00-storyline-director/storyline-director-input.md
+  storyline_director: workbench/stages/00-storyline-director/storyline-director.json
+  storyline_director_audit: workbench/stages/00-storyline-director/storyline-director-audit.json
   stage_analysis: workbench/stages/01-analysis
   source_truth: workbench/stages/01-analysis/source-truth.json
   source_truth_attempts: workbench/stages/01-analysis/source-truth-attempts
@@ -92,6 +97,7 @@ directories:
 gates:
   semantic_understanding: required
   communication_strategy: required
+  storyline_director: required
   script_review_before_generation: required
   visual_structure_designer: required
   imagegen_script_plaintext: required
@@ -158,20 +164,21 @@ CyberPPT project workspace.
 3. Record the execution with `record-semantic-generation --executor <surface> --model <model>`, run `semantic-check`, then obtain human confirmation with `approve-semantic-understanding`. Source Truth is blocked until all three receipts are current.
 4. Before Outline authoring, run `prepare-communication-strategy`, complete the 2-3 audience-specific reporting-direction options in `communication-strategy.json`, and run `communication-strategy-check`. Show `communication-strategy-confirmation.md` to the user and record the selected option with `approve-communication-strategy --option <option_id>`. The Outline is blocked until this human choice is current.
 5. Use the approved communication strategy's architecture mode and structure principle. Solution architecture remains the default for research, construction, implementation, and initiation materials; consulting architecture is used only when the approved user choice explicitly selects it.
-6. New formal solution projects use `argument_contract_mode: strict`, `editorial_control_mode: required`, and `cyberppt.outline.v2`. Build each page from source-grounded `core_message`, `content_units`, and `content_relations`; page types and claim taxonomies do not determine the page meaning. Preserve all source evidence, but never give it equal page weight: P0 is page-forming, P1 supports grouped modules, and P2 remains in `detail_refs` for prose, notes, parameters, or traceability. Each content page must also declare one concrete `audience_question`, a non-empty `must_not_include` list, and `split_risk`; medium/high risks require reasons and high risk blocks approval until resolved.
-7. Build `source-truth.json` from the approved semantic understanding, bind both semantic and source-bundle SHA-256 values at the JSON root, then run `python -m cyberppt source-truth-audit <project> --input <source-truth.json>`. The JSON is authoritative; the command renders `00-source-analysis.md`, preserves attempts, rejects flattened long-form priority inventories, and changes extraction direction when coverage is incomplete.
-8. Preserve the source material's actual sequence and relations. An argument chain may be used only when the material itself supports it; it is never a mandatory chapter template.
-9. Only after Source Truth passes or a recorded escalation decision (`resolve-escalation --gate source_truth`), audit the Stage 01 outline with `python -m cyberppt outline-audit <project> --input <outline.json> --source-truth <source-truth.json>`.
-10. Run `python -m cyberppt prepare-chapter-review <project> --level outline`, complete the Markdown reviews under `review/`, then run `python -m cyberppt chapter-review-audit <project> --level outline`.
-11. Draft batch or full scripts under `workbench/scripts/drafts/`, then run `python -m cyberppt script-audit <project> --input <script.md>`. Content pages must include short-article `完整文字稿` (source-topic completeness, not on-screen granularity), mandatory `文字稿取舍说明` and `证据映射`, then `上屏文字`, plus natural spoken `【演讲者备注】` for PPT notes (no slide-meta 这一页/下一页). This is a repository-wide contract. Open exit-5 escalations without `resolve-escalation` block the next Stage 01 command.
-12. Before full-script approval, run `python -m cyberppt assemble-final-script <project>` to write a clean `workbench/scripts/final/script-final.md` (no 草稿/批次 wording), then audit that final path and repeat chapter review with `--level script`.
-13. Before human confirmation, run `confirmation-request --kind outline|script` (must include audit summary + open questions), then `approve-stage01 --kind outline|script`. Required chapter review must be passed and hash-current. Do not generate images or PPTX until Stage 01 approval exists in `workbench/approvals/`.
-14. After script approval, automatically invoke the registered `ppt-visual-structure-designer` skill in `workbench-handoff` mode. Run `prepare-visual-structure`, create the four required `visual/` artifacts, then run `visual-structure-audit`. This gate must pass before style selection or `final-script-pages`.
-15. Store title/subtitle truth for template assembly in `workbench/locks/template_text/`; if dual images are supplied mid-pipeline, create this lock before template rebuild.
-16. Store stage outputs under `workbench/stages/` and register every durable artifact in `workbench/artifact-ledger.json`.
-17. Store page-specific attempts and resumable intermediate runs in `workbench/runs/`; use `workbench/tmp/` only for disposable scratch files.
-18. Store final scripts in `workbench/scripts/final/`, QA reports in `workbench/qa/`, renders in `outputs/renders/`, and delivery files in `delivery/`.
-19. Do not write new generated images or pair manifests to the repository root `images/`; keep them inside this project workspace.
+6. Build `source-truth.json` from the approved semantic understanding, bind both semantic and source-bundle SHA-256 values at the JSON root, then run `python -m cyberppt source-truth-audit <project> --input <source-truth.json>`. The JSON is authoritative; the command renders `00-source-analysis.md`, preserves attempts, rejects flattened long-form priority inventories, and changes extraction direction when coverage is incomplete.
+7. After Source Truth passes, run `prepare-storyline-director`, complete `storyline-director.json`, and run `storyline-director-check`. The Director does not write pages: it fixes the theme, decision destination, question chain, chapter missions, evidence-selection and exclusion rules, page rules, and pacing. Outline authoring is blocked until this hash-current internal gate passes.
+8. New formal solution projects use `argument_contract_mode: strict`, `editorial_control_mode: required`, `storyline_contract_mode: required`, and `cyberppt.outline.v2`. Copy the Director contract and hash exactly. Build each page from one concrete storyline role plus source-grounded `core_message`, `content_units`, and `content_relations`; page types and claim taxonomies do not determine the page meaning. Every page must declare specific transitions from the previous question and to the next, one concrete `audience_question`, a non-empty `must_not_include` list, and `split_risk`. Preserve all source evidence, but never give it equal page weight: P0 is page-forming, P1 supports grouped modules, and P2 remains in `detail_refs` for prose, notes, parameters, or traceability.
+9. Preserve the source material's actual meanings and relations, while selecting and organizing evidence around the approved theme. Source sections are not a page inventory; a story chain may be used only when supported by the material, must remain bound to Source Truth, and is never a mandatory chapter template.
+10. Only after the Director gate passes or a recorded escalation decision (`resolve-escalation --gate source_truth`), audit the Stage 01 outline with `python -m cyberppt outline-audit <project> --input <outline.json> --source-truth <source-truth.json>`.
+11. Run `python -m cyberppt prepare-chapter-review <project> --level outline`, complete the Markdown reviews under `review/`, then run `python -m cyberppt chapter-review-audit <project> --level outline`.
+12. Draft batch or full scripts under `workbench/scripts/drafts/`, then run `python -m cyberppt script-audit <project> --input <script.md>`. Content pages must include short-article `完整文字稿` (source-topic completeness, not on-screen granularity), mandatory `文字稿取舍说明` and `证据映射`, then `上屏文字`, plus natural spoken `【演讲者备注】` for PPT notes (no slide-meta 这一页/下一页). This is a repository-wide contract. Open exit-5 escalations without `resolve-escalation` block the next Stage 01 command.
+13. Before full-script approval, run `python -m cyberppt assemble-final-script <project>` to write a clean `workbench/scripts/final/script-final.md` (no 草稿/批次 wording), then audit that final path and repeat chapter review with `--level script`.
+14. Before human confirmation, run `confirmation-request --kind outline|script` (must include audit summary + open questions), then `approve-stage01 --kind outline|script`. Required chapter review must be passed and hash-current. Do not generate images or PPTX until Stage 01 approval exists in `workbench/approvals/`.
+15. After script approval, automatically invoke the registered `ppt-visual-structure-designer` skill in `workbench-handoff` mode. Run `prepare-visual-structure`, create the four required `visual/` artifacts, then run `visual-structure-audit`. This gate must pass before style selection or `final-script-pages`.
+16. Store title/subtitle truth for template assembly in `workbench/locks/template_text/`; if dual images are supplied mid-pipeline, create this lock before template rebuild.
+17. Store stage outputs under `workbench/stages/` and register every durable artifact in `workbench/artifact-ledger.json`.
+18. Store page-specific attempts and resumable intermediate runs in `workbench/runs/`; use `workbench/tmp/` only for disposable scratch files.
+19. Store final scripts in `workbench/scripts/final/`, QA reports in `workbench/qa/`, renders in `outputs/renders/`, and delivery files in `delivery/`.
+20. Do not write new generated images or pair manifests to the repository root `images/`; keep them inside this project workspace.
 """,
         encoding="utf-8",
     )

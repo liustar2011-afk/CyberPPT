@@ -123,6 +123,46 @@ class ArgumentFlowContractTests(unittest.TestCase):
         }
         self.assertIn("CONTENT_RELATION_REFS_INVALID", {issue.code for issue in validate_source_relation_fields(payload)})
 
+    def test_v2_content_relation_requires_human_readable_endpoints(self) -> None:
+        payload = {
+            "schema": "cyberppt.outline.v2", "argument_contract_mode": "strict",
+            "pages": [{
+                "page_id": "p10", "page_type": "content",
+                "page_mission": "说明框架", "core_message": "框架由五层构成",
+                "source_refs": ["S021"],
+                "content_units": [{"statement": "框架由五层构成", "source_refs": ["S021"], "role": "primary"}],
+                "content_relations": [{"relation": "composed_of", "source_refs": ["S021"]}],
+                "new_value_vs_previous": "给出结构", "reserved_for_later": "各层后述",
+            }],
+        }
+
+        self.assertIn(
+            "CONTENT_RELATION_ENDPOINTS_MISSING",
+            {issue.code for issue in validate_source_relation_fields(payload)},
+        )
+
+    def test_v2_storyline_mode_requires_page_role_and_specific_transitions(self) -> None:
+        page = {
+            "page_id": "p04", "page_type": "content", "chapter_id": "c1",
+            "page_mission": "定义合作基础", "core_message": "现有条件支持调研",
+            "source_refs": ["S001"],
+            "content_units": [{"statement": "现有条件支持调研", "source_refs": ["S001"], "role": "primary"}],
+            "content_relations": [{"relation": "supports", "subject": "现有条件", "objects": ["联合调研"], "source_refs": ["S001"]}],
+            "new_value_vs_previous": "形成基础判断", "reserved_for_later": "实施安排后述",
+        }
+        storyline = {
+            "theme": "围绕合作启动组织材料", "decision_destination": "决定是否启动调研",
+            "story_arc": ["基础", "运营", "合作"],
+            "chapter_missions": [{"chapter_id": "c1", "max_content_pages": 2}],
+            "selection_rules": ["按主题筛选"], "exclusion_rules": ["不做材料映射"],
+            "page_rules": ["每页一个使命"],
+            "pacing": {"min_total_pages": 1, "target_total_pages": 1, "max_total_pages": 3},
+        }
+        payload = {"schema": "cyberppt.outline.v2", "argument_contract_mode": "strict", "storyline_contract_mode": "required", "storyline": storyline, "pages": [page]}
+        self.assertIn("PAGE_STORYLINE_CONTRACT_INCOMPLETE", {issue.code for issue in validate_source_relation_fields(payload)})
+        page.update({"storyline_role": "建立基础判断", "transition_from_previous": "从主题进入合作基础", "transition_to_next": "基础明确后进入运营机制"})
+        self.assertNotIn("PAGE_STORYLINE_CONTRACT_INCOMPLETE", {issue.code for issue in validate_source_relation_fields(payload)})
+
     def test_v2_rejects_one_source_record_per_content_unit(self) -> None:
         refs = [f"S{index:03d}" for index in range(1, 9)]
         page = {
