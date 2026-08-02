@@ -5,6 +5,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from cyberppt.communication_strategy import (
+    assert_communication_strategy_ready,
+    communication_strategy_binding_issues,
+)
 from cyberppt.semantic_understanding import (
     SEMANTIC_ARTIFACT,
     assert_semantic_understanding_ready,
@@ -32,6 +36,7 @@ def _records(project: Path) -> dict[str, dict[str, object]]:
 def prepare_outline_input(project: Path) -> Path:
     project = project.expanduser().resolve()
     semantic_gate = assert_semantic_understanding_ready(project)
+    communication_gate = assert_communication_strategy_ready(project)
     truth = _load(project / "workbench/stages/01-analysis/source-truth.json")
     records = {
         str(item.get("id")): item
@@ -59,6 +64,24 @@ def prepare_outline_input(project: Path) -> Path:
         "Set root `editorial_control_mode` to `required`.",
         "",
     ]
+    if communication_gate is not None:
+        selected = communication_gate["selected_option"]
+        lines += [
+            "## approved_communication_strategy",
+            "",
+            "The following human-approved communication strategy determines the Outline structure. Copy every named root field exactly; do not silently choose another audience or reporting direction.",
+            f"- communication_strategy_sha256: {communication_gate['communication_strategy_sha256']}",
+            f"- communication_strategy_approval_sha256: {communication_gate['communication_strategy_approval_sha256']}",
+            f"- audience: {communication_gate['audience']}",
+            f"- communication_purpose: {communication_gate['communication_purpose']}",
+            f"- decision_task: {communication_gate['decision_task']}",
+            f"- reporting_direction: {communication_gate['option_id']}",
+            f"- architecture_mode: {selected['architecture_mode']}",
+            f"- structure_principle: {selected['structure_principle']}",
+            "",
+            "Use `structure_principle` to determine chapter order. Source truth still controls meaning and evidence; the approved strategy controls how that meaning is organized for this audience.",
+            "",
+        ]
     if semantic_gate is not None:
         semantic_text = (project / SEMANTIC_ARTIFACT).read_text(encoding="utf-8-sig")
         lines += [
@@ -154,7 +177,13 @@ def prepare_outline_input(project: Path) -> Path:
 def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
     project = project.expanduser().resolve()
     assert_semantic_understanding_ready(project)
+    communication_gate = assert_communication_strategy_ready(project)
     outline = _load(project / "workbench/stages/01-analysis/outline.json")
+    communication_issues = communication_strategy_binding_issues(outline, communication_gate)
+    if communication_issues:
+        raise ValueError(
+            "outline is not bound to the approved communication strategy; rebuild and audit the outline"
+        )
     records = _records(project)
     pages = [
         item for item in outline.get("pages", [])

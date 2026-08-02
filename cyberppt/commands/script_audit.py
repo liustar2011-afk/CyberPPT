@@ -8,6 +8,10 @@ from pathlib import Path
 from uuid import uuid4
 
 from cyberppt.artifact_ledger import append_artifacts
+from cyberppt.communication_strategy import (
+    assert_communication_strategy_ready,
+    communication_strategy_binding_issues,
+)
 from cyberppt.outline_contract import load_outline
 from cyberppt.semantic_understanding import (
     assert_semantic_understanding_ready,
@@ -301,6 +305,7 @@ def run_script_audit(
     if not input_path.exists():
         raise FileNotFoundError(f"script does not exist: {input_path}")
     semantic_gate = assert_semantic_understanding_ready(project)
+    communication_gate = assert_communication_strategy_ready(project)
     assert_escalation_resolved(project, "outline")
     outline_path = (
         outline_path.expanduser().resolve()
@@ -342,6 +347,15 @@ def run_script_audit(
         raise ValueError(
             "script inputs are not bound to the current semantic understanding: "
             f"{codes}. Rebuild and audit Source Truth and Outline first."
+        )
+    communication_issues = communication_strategy_binding_issues(
+        outline,
+        communication_gate,
+    )
+    if communication_issues:
+        raise ValueError(
+            "outline is not bound to the current approved communication strategy; "
+            "rebuild and audit the Outline first"
         )
     script_text = input_path.read_text(encoding="utf-8-sig")
     script_sha256 = _sha256(input_path)
@@ -404,6 +418,7 @@ def run_script_audit(
         "retry_directive": directive,
         "reference_gate": snapshot_reference_gate("script", project),
         "semantic_gate": semantic_gate,
+        "communication_strategy_gate": communication_gate,
     }
     if errors and effective_attempt >= max_attempts:
         report["status"] = "user_decision_required"

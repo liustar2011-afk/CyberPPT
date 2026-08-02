@@ -14,6 +14,10 @@ from cyberppt.semantic_understanding import (
     assert_semantic_understanding_ready,
     semantic_binding_issues,
 )
+from cyberppt.communication_strategy import (
+    assert_communication_strategy_ready,
+    communication_strategy_binding_issues,
+)
 from cyberppt.source_truth_contract import load_source_truth
 from cyberppt.semantic_proposition_contract import build_proposition_graph
 from cyberppt.stage01_controls import (
@@ -198,6 +202,7 @@ def run_outline_audit(
     if not project.exists():
         raise FileNotFoundError(f"project does not exist: {project}")
     semantic_gate = assert_semantic_understanding_ready(project)
+    communication_gate = assert_communication_strategy_ready(project)
     assert_escalation_resolved(project, "source_truth")
     payload = load_outline(input_path.expanduser().resolve())
     resolved_source_truth = (
@@ -237,6 +242,15 @@ def run_outline_audit(
         )
         for item in semantic_binding_issues(payload, semantic_gate)
     )
+    issues.extend(
+        AuditIssue(
+            item["code"],
+            item["message"],
+            (),
+            item["retry_strategy"],
+        )
+        for item in communication_strategy_binding_issues(payload, communication_gate)
+    )
     directive = retry_directive(issues, str(retry.get("strategy") or ""))
     report: dict[str, object] = {
         "schema": "cyberppt.outline_audit.v1",
@@ -273,6 +287,7 @@ def run_outline_audit(
         ),
         "reference_gate": snapshot_reference_gate("outline", project),
         "semantic_gate": semantic_gate,
+        "communication_strategy_gate": communication_gate,
     }
     _write_json(stage / "outline-contract.json", payload)
     _write_json(stage / "proposition-graph.json", build_proposition_graph(payload))

@@ -47,6 +47,7 @@ CyberPPT 内置多层门禁，防止“文件生成了，但证据、密度、�
 | Reference Gate | 每个阶段开始前是否读取对应 reference 文件 | 未读取不得进入阶段 |
 | Evidence Gate | 所有事实、数字、判断、建议是否可追溯到源材料 | 缺证据必须标记缺口或返工 |
 | Storyline Gate | 是否完成 2-3 条故事线脑暴、比较和 SCR 收敛 | 不能只交单版大纲 |
+| Communication Strategy Gate | 是否在提纲前确认沟通对象、沟通目的、决策任务和汇报方向 | 用户未选择方向，或提纲未绑定已选策略时不得继续 |
 | Density Gate | 每页是否有信息密度、组件清单、图表计划和 SO WHAT | 低密度页面必须补充或重排 |
 | Style Gate | 是否展示 8 张独立 16:9 风格样张，并锁定选定风格 | 不能只给文字风格说明 |
 | Blueprint Gate | 是否为全部页面生成逐页正文内容区 ImageGen 蓝图 | 蓝图未确认不得进入 PPTX |
@@ -92,6 +93,9 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 ```bash
 python3 -m cyberppt doctor
 python3 -m cyberppt init projects/example
+python3 -m cyberppt prepare-communication-strategy projects/example
+python3 -m cyberppt communication-strategy-check projects/example
+python3 -m cyberppt approve-communication-strategy projects/example --option decision_review
 python3 -m cyberppt source-truth-audit projects/example --input projects/example/workbench/stages/01-analysis/source-truth.json
 python3 -m cyberppt outline-audit projects/example --input projects/example/workbench/stages/01-analysis/outline.json
 python3 -m cyberppt prepare-chapter-review projects/example --level outline
@@ -105,6 +109,8 @@ python3 -m cyberppt final-script-pages projects/example --script workbench/scrip
 `final-script-pages` 默认按 `build_id` 创建新的构建目录，不覆盖既有版本；`workbench/artifact-ledger.json` 以追加方式记录每次产物，并用 `supersedes` 连接同一路径的历史版本。PPTX 导出必须使用本次运行的明确输出路径，导出工程同时写入 `analysis/export_artifact.json`，续跑不会按文件修改时间猜测旧 PPTX。提示词发送默认 `--prompt-enrich off`，即消费已批准 Prompt 原文；只有明确指定 `deterministic` 或 `send` 才会进行发送时增强。
 
 `source-truth.json` 是第一阶段证据底稿的结构化事实源。`source-truth-audit` 在大纲设计之前检查原子证据、精确定位、P0/P1/P2语义梯度、数字、表格、状态边界和双向追溯，生成 `00-source-analysis.md`；长材料若只有P0/P1、没有足够P2细节层，会以 `SOURCE_PRIORITY_HIERARCHY_FLAT` 阻断。完整保留不等于等权上屏：Outline仅把P0/P1组织为少量主辅模块，P2进入 `detail_refs` 供完整文字稿、备注和追溯使用。
+
+`communication-strategy` 是语义理解与提纲之间的真实人工确认门。候选文件必须明确沟通对象、沟通目的、决策任务和 2-3 个结构原则不同的汇报方向；检查通过后生成中文确认稿，用户选择一个 `option_id` 才会写入哈希绑定的审批记录。后续提纲必须复制已批准的对象、目的、方向、架构模式和结构原则，任何一项漂移都会被 `outline-audit` 阻断。
 
 `outline-audit` 返回 `0` 表示通过，`4` 表示生成代理必须读取 `retry_directive` 后换方向重写，`5` 表示默认三次尝试已耗尽、需要用户在升级报告的 2-3 个选项中决策，输入错误返回 `2`。审计合同、最新报告、逐次尝试和升级报告写入 `workbench/stages/01-analysis/`；CLI 不代替生成代理重写大纲。
 

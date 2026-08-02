@@ -153,6 +153,9 @@ class FinalScriptPagesTests(unittest.TestCase):
             manifest.read_text(encoding="utf-8").replace(
                 "semantic_understanding: required",
                 "semantic_understanding: optional",
+            ).replace(
+                "communication_strategy: required",
+                "communication_strategy: optional",
             ),
             encoding="utf-8",
         )

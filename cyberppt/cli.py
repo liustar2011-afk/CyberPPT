@@ -30,6 +30,11 @@ from cyberppt.commands.visual_structure_stage import (
     prepare_visual_structure_stage,
     run_visual_structure_audit,
 )
+from cyberppt.communication_strategy import (
+    approve_communication_strategy,
+    prepare_communication_strategy,
+    run_communication_strategy_audit,
+)
 from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
 from cyberppt.semantic_understanding import (
     approve_semantic_understanding,
@@ -142,6 +147,40 @@ def _approve_semantic_understanding_command(args: argparse.Namespace) -> int:
         print(str(exc), file=sys.stderr)
         return 2
     print(f"semantic_understanding_approval: {path}")
+    return 0
+
+
+def _prepare_communication_strategy_command(args: argparse.Namespace) -> int:
+    try:
+        payload = prepare_communication_strategy(Path(args.project))
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    return 0
+
+
+def _communication_strategy_check_command(args: argparse.Namespace) -> int:
+    try:
+        code, report = run_communication_strategy_audit(Path(args.project))
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return code
+
+
+def _approve_communication_strategy_command(args: argparse.Namespace) -> int:
+    try:
+        path = approve_communication_strategy(
+            Path(args.project),
+            option_id=args.option,
+            note=args.note,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"communication_strategy_approval: {path}")
     return 0
 
 
@@ -427,6 +466,29 @@ def build_parser() -> argparse.ArgumentParser:
     approve_semantic.add_argument("project", help="CyberPPT project directory.")
     approve_semantic.add_argument("--note", default="", help="Optional approval note.")
     approve_semantic.set_defaults(func=_approve_semantic_understanding_command)
+
+    prepare_communication = subparsers.add_parser(
+        "prepare-communication-strategy",
+        help="Prepare the audience and reporting-direction gate before Outline authoring.",
+    )
+    prepare_communication.add_argument("project", help="CyberPPT project directory.")
+    prepare_communication.set_defaults(func=_prepare_communication_strategy_command)
+
+    communication_check = subparsers.add_parser(
+        "communication-strategy-check",
+        help="Validate communication options and create the human confirmation request.",
+    )
+    communication_check.add_argument("project", help="CyberPPT project directory.")
+    communication_check.set_defaults(func=_communication_strategy_check_command)
+
+    approve_communication = subparsers.add_parser(
+        "approve-communication-strategy",
+        help="Select and approve one reporting direction before Outline authoring.",
+    )
+    approve_communication.add_argument("project", help="CyberPPT project directory.")
+    approve_communication.add_argument("--option", required=True, help="Selected option id.")
+    approve_communication.add_argument("--note", default="", help="Optional approval note.")
+    approve_communication.set_defaults(func=_approve_communication_strategy_command)
 
     outline_audit = subparsers.add_parser(
         "outline-audit",

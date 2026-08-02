@@ -17,6 +17,8 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 `source-truth.json` 是 Source Truth 的唯一结构化事实源，`00-source-analysis.md` 只是由其生成的可读视图。第一阶段必须先执行 `source-truth-audit`，按 F（事实）、J（判断）、R（建议）、B（边界）、U（待核）拆分原子证据，精确定位到段落、表格行或单元格，并完成 P0/P1、数字、表格、状态边界和双向追溯审计。未通过时必须按 `section_sweep -> structured_fact_sweep -> traceability_rebuild` 换方向补抽；达到次数上限后保留当前最佳底稿和缺口清单，不得直接放弃。Source Truth 通过或形成有记录的升级项后，才能进入章节与逐页大纲设计。
 
+形成提纲前必须通过沟通策略确认门。语义理解批准后运行 `prepare-communication-strategy`，基于全文语义识别沟通对象、沟通目的和受众决策任务，并形成 2-3 个章节组织方式实质不同的汇报方向；运行 `communication-strategy-check` 后，必须把 `communication-strategy-confirmation.md` 展示给用户。只有用户以 `approve-communication-strategy --option <option_id>` 明确选择方向，才可运行 `prepare-outline-input` 或 `outline-audit`。提纲根节点必须逐项绑定已批准的对象、目的、方向、架构模式、结构原则以及候选与审批哈希；不得仅保留一个无执行作用的 `audience` 字段，也不得由生成代理静默替用户选择。
+
 第一阶段必须生成结构化逐页大纲并执行 `outline-audit`。若方案类材料未经明确授权采用 `consulting`，审计必须以 `SOLUTION_ARCHITECTURE_REQUIRED` 失败。封面、目录、章节页、内容页和封底必须位于同一连续页面序列，不得把模板页抽离后另列；章节页只写“第X章：XXX”，不承载论点、模块或方法内容。内容页的短 `title` 与 `main_message` 必须分开，不能把整句结论塞进页标题。
 
 页面聚合以一个完整业务问题和一个视觉中心为单位。不得把源材料每个小节或列表项机械拆成单页，也不得预设页数后硬塞内容；页数随业务问题完整性和页面密度自然确定。方法论、筛选原则和评价维度只能支持源材料的实质内容，不能抢占主体篇幅。
@@ -43,7 +45,7 @@ python -m cyberppt script-audit <project> --input <project>/workbench/scripts/fi
 
 | 阶段 | 必须产出 | 停止条件 | 读取 |
 |---|---|---|---|
-| 1. 分析 | `source-truth.json`、Source Truth 审计与可读视图、架构路由、冲突记录、内容脑暴、方案型章节或咨询型 SCR、连续逐页大纲、脚本及审计记录、图表计划、页面信息密度和组件清单 | 第一次确认：Source Truth 与 Outline 已通过或有记录地升级，用户批准架构、章节逻辑、页数和大纲；脚本审计通过后才能批准脚本 | `references/source-analysis.md`, `references/storyline.md`, `references/script-quality.md` |
+| 1. 分析 | `source-truth.json`、Source Truth 审计与可读视图、沟通策略候选与用户选择、架构路由、连续逐页大纲、脚本及审计记录、图表计划、页面信息密度和组件清单 | 提纲前先确认沟通对象、目的和汇报方向；随后批准架构、章节逻辑、页数和大纲；脚本审计通过后才能批准脚本 | `references/source-analysis.md`, `references/storyline.md`, `references/script-quality.md` |
 | 2. 视觉结构、蓝图、生图与 PPT 生产 | 自动调用 `ppt-visual-structure-designer` 形成并校验 `visual/` 四项合同；再生成 8 种视觉风格、选定风格、逐页正文区 ImageGen 蓝图、脚本锁定记录、所选生产模式需要的图片资产、`page_image_pairs.json`、生产 manifest、PPTX | 视觉结构闸门通过后才可选择风格；第二次确认：用户批准视觉方向、生产模式和进入组装/重建的脚本与图像资产 | `vendor/skills/ppt-visual-structure-designer/SKILL.md`, `references/visual-system.md` |
 | 3. 渲染 QA 与交付 | 对 `final-script-pages` 所选分支输出的 PPTX 做渲染检查、模板层检查、可编辑性检查（适用时）、交付说明和必要返工 | 最终确认：用户批准最终 PPT | `references/ppt-production.md`, `references/quality-assurance.md` |
 

@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from cyberppt.communication_strategy import assert_communication_strategy_ready
 from cyberppt.paths import REFERENCES_DIR
 from cyberppt.semantic_understanding import assert_semantic_understanding_ready
 
@@ -79,6 +80,7 @@ def _approval_fields(path: Path) -> dict[str, str]:
 def assert_stage01_script_approval(project: Path, script: Path) -> Path:
     project = project.expanduser().resolve()
     semantic_gate = assert_semantic_understanding_ready(project)
+    communication_gate = assert_communication_strategy_ready(project)
     approval = project / APPROVAL_FILES["script"]
     if not approval.is_file():
         raise FileNotFoundError(f"missing Stage 01 script approval: {approval}")
@@ -94,6 +96,20 @@ def assert_stage01_script_approval(project: Path, script: Path) -> Path:
     ):
         raise ValueError(
             "Stage 01 script audit is stale relative to the current semantic understanding; "
+            "rerun script-audit and reapprove before Stage 02"
+        )
+    audited_communication_gate = audit.get("communication_strategy_gate")
+    if communication_gate is not None and (
+        not isinstance(audited_communication_gate, dict)
+        or audited_communication_gate.get("communication_strategy_sha256")
+        != communication_gate.get("communication_strategy_sha256")
+        or audited_communication_gate.get("communication_strategy_approval_sha256")
+        != communication_gate.get("communication_strategy_approval_sha256")
+        or audited_communication_gate.get("option_id")
+        != communication_gate.get("option_id")
+    ):
+        raise ValueError(
+            "Stage 01 script audit is stale relative to the approved communication strategy; "
             "rerun script-audit and reapprove before Stage 02"
         )
     escalation_decision = _script_approval_escalation_decision(project, audit)
@@ -617,8 +633,23 @@ def write_stage01_approval(
 ) -> Path:
     project = project.expanduser().resolve()
     semantic_gate = assert_semantic_understanding_ready(project)
+    communication_gate = assert_communication_strategy_ready(project)
     if kind not in APPROVAL_FILES:
         raise ValueError(f"unknown approval kind: {kind!r}")
+    current_audit = _read_json(project / LATEST_AUDIT_FILES[kind])
+    audited_communication_gate = current_audit.get("communication_strategy_gate")
+    if communication_gate is not None and (
+        not isinstance(audited_communication_gate, dict)
+        or audited_communication_gate.get("communication_strategy_sha256")
+        != communication_gate.get("communication_strategy_sha256")
+        or audited_communication_gate.get("communication_strategy_approval_sha256")
+        != communication_gate.get("communication_strategy_approval_sha256")
+        or audited_communication_gate.get("option_id")
+        != communication_gate.get("option_id")
+    ):
+        raise ValueError(
+            f"{kind} audit is stale relative to the approved communication strategy; rerun {kind}-audit"
+        )
     request_path = assert_confirmation_request_ready(project, kind)
     chapter_review_audit = assert_chapter_review_ready(project, kind)
     if kind == "outline":
@@ -631,7 +662,7 @@ def write_stage01_approval(
             raise FileNotFoundError(
                 f"script approval requires outline approval first: {outline_approval}"
             )
-        audit = _read_json(project / LATEST_AUDIT_FILES["script"])
+        audit = current_audit
         audited_semantic_gate = audit.get("semantic_gate")
         if semantic_gate is not None and (
             not isinstance(audited_semantic_gate, dict)
