@@ -48,6 +48,15 @@ class FinalManuscriptFormTests(unittest.TestCase):
         )
         self.assertEqual([], audit_final_manuscript_form(text))
 
+    def test_accepts_business_terms_containing_draft_or_batch_words(self) -> None:
+        text = (
+            "# 最终全稿脚本\n\n"
+            "## 第1页：账单处理\n"
+            "- 页面类型：内容\n"
+            "- 上屏文字：系统生成账单草稿，并按处理批次完成复核。\n"
+        )
+        self.assertEqual([], audit_final_manuscript_form(text))
+
     def test_retry_uses_manuscript_form_cleanup(self) -> None:
         from cyberppt.script_quality_contract import ScriptQualityIssue
 

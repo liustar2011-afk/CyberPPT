@@ -148,6 +148,14 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertEqual([Path("palette-09.png")], kwargs["image_paths"])
 
     def _approve_inputs_and_prompts(self, project: Path, script: Path, style_id: int = 4) -> None:
+        manifest = project / "manifest.yml"
+        manifest.write_text(
+            manifest.read_text(encoding="utf-8").replace(
+                "semantic_understanding: required",
+                "semantic_understanding: optional",
+            ),
+            encoding="utf-8",
+        )
         analysis = project / "workbench" / "stages" / "01-analysis"
         outline = analysis / "outline.json"
         source_truth = analysis / "source-truth.json"

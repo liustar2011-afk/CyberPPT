@@ -5,6 +5,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from cyberppt.semantic_understanding import (
+    SEMANTIC_ARTIFACT,
+    assert_semantic_understanding_ready,
+)
+
 
 def _load(path: Path) -> dict[str, object]:
     if not path.exists():
@@ -26,6 +31,7 @@ def _records(project: Path) -> dict[str, dict[str, object]]:
 
 def prepare_outline_input(project: Path) -> Path:
     project = project.expanduser().resolve()
+    semantic_gate = assert_semantic_understanding_ready(project)
     truth = _load(project / "workbench/stages/01-analysis/source-truth.json")
     records = {
         str(item.get("id")): item
@@ -35,12 +41,15 @@ def prepare_outline_input(project: Path) -> Path:
     lines = [
         "# Outline authoring input",
         "",
+        "The whole-document semantic understanding below is the authoritative upstream constraint. Do not replace its business subject, source structure, actors, status distinctions, or decision intent with a generic PPT storyline.",
+        "The Outline root must copy `semantic_understanding_sha256` and `semantic_source_bundle_sha256` from the current semantic gate.",
+        "",
         "Before planning pages, preserve the Source Truth `document_semantics`: `document_role` says what artifact is being presented; `subject_of_report` says what the presentation is about; `primary_thesis` is the deck-level conclusion; `decision_boundary` limits its maturity.",
         "Never replace the subject of report with the document-production activity. For example, a pre-study results briefing about capability construction is not a presentation arguing for another pre-study.",
         "Copy `document_semantics` into the outline and set root `narrative_thesis` exactly to its `primary_thesis`.",
         "",
         "Every content page must state one source-supported `core_message`: the smallest complete meaning the page communicates.",
-        "A core message may express a fact, composition, relationship, process, scope, boundary, or a source-supported judgment.",
+        "A core message may express a fact, composition, relationship, process, scope, boundary, or a source-supported judgment. Boundary is opt-in: B/U records constrain an ordinary page and must not become its semantic center by default.",
         "Set schema to `cyberppt.outline.v2` and root `core_message_derivation_mode` to `required`.",
         "Create the Outline from Source Truth. Use canonical field names when the material calls for them:",
         "required `page_mission`, required `core_message`, optional `onscreen_conclusion`, "
@@ -48,6 +57,19 @@ def prepare_outline_input(project: Path) -> Path:
         "`visual_intent_type`.",
         "",
     ]
+    if semantic_gate is not None:
+        semantic_text = (project / SEMANTIC_ARTIFACT).read_text(encoding="utf-8-sig")
+        lines += [
+            "## semantic_gate_binding",
+            "",
+            f"- semantic_understanding_sha256: {semantic_gate['semantic_understanding_sha256']}",
+            f"- semantic_source_bundle_sha256: {semantic_gate['source_bundle_sha256']}",
+            "",
+            "## authoritative_semantic_understanding",
+            "",
+            semantic_text.rstrip(),
+            "",
+        ]
     semantics = truth.get("document_semantics")
     lines += ["", "## document_semantics", ""]
     lines.append(json.dumps(semantics, ensure_ascii=False) if isinstance(semantics, dict) else "- missing")
@@ -90,6 +112,10 @@ def prepare_outline_input(project: Path) -> Path:
         "- `new_value_vs_previous`",
         "- `reserved_for_later`",
         "- `content_units`: statement, source_refs, role (`primary`, `supporting`, or `boundary`); these are source-grounded content units, not proof claims",
+        "- Source Truth records with claim_role `boundary` or `unresolved` must use content-unit role `boundary`; they must never be labeled `primary` or `supporting`",
+        "- Exclude boundary/unresolved records from `core_message_derivation.source_refs` on ordinary pages; place them in `boundary_refs` instead",
+        "- Only when scope, admission, assurance conditions, or a pending decision is the page's actual business subject may the page set `boundary_focus: true`; it must also provide a non-empty `boundary_focus_reason`",
+        "- `decision_boundary` is a deck-level maturity constraint. Copying it into document_semantics does not require a boundary-led page and does not authorize promoting it into a core_message",
         "- `visual_intent_type`: optional explicit ImageGen relationship type. Use one of "
         "`judgment_evidence`, `boundary_guardrail`, `hierarchy_support`, "
         "`decision_admission`, `comparison`, "
@@ -115,6 +141,7 @@ def prepare_outline_input(project: Path) -> Path:
 
 def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
     project = project.expanduser().resolve()
+    assert_semantic_understanding_ready(project)
     outline = _load(project / "workbench/stages/01-analysis/outline.json")
     records = _records(project)
     pages = [

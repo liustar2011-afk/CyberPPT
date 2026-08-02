@@ -6,12 +6,17 @@ import json
 from pathlib import Path
 
 from cyberppt.source_truth_contract import (
+    SourceTruthIssue,
     audit_source_receipts,
     audit_source_truth,
     source_truth_atomicity_warnings,
     collect_source_receipts,
     load_source_truth,
     source_truth_retry_directive,
+)
+from cyberppt.semantic_understanding import (
+    assert_semantic_understanding_ready,
+    semantic_binding_issues,
 )
 from cyberppt.stage01_controls import snapshot_reference_gate
 
@@ -208,6 +213,7 @@ def run_source_truth_audit(
     project = project.expanduser().resolve()
     if not project.exists():
         raise FileNotFoundError(f"project does not exist: {project}")
+    semantic_gate = assert_semantic_understanding_ready(project)
     payload = load_source_truth(input_path.expanduser().resolve())
     retry = payload.get("retry") if isinstance(payload.get("retry"), dict) else {}
     attempt = int(retry.get("attempt", 1))
@@ -217,6 +223,15 @@ def run_source_truth_audit(
     receipt_roots = (project, project / "source", input_path.expanduser().resolve().parent)
     receipts = collect_source_receipts(payload, receipt_roots)
     issues = audit_source_truth(payload)
+    issues.extend(
+        SourceTruthIssue(
+            item["code"],
+            item["message"],
+            (),
+            item["retry_strategy"],
+        )
+        for item in semantic_binding_issues(payload, semantic_gate)
+    )
     warnings = source_truth_atomicity_warnings(payload)
     issues.extend(
         audit_source_receipts(
@@ -238,6 +253,7 @@ def run_source_truth_audit(
         "retry_directive": directive,
         "reference_gate": snapshot_reference_gate("source_truth", project),
         "source_receipts": receipts,
+        "semantic_gate": semantic_gate,
     }
     stage = project / "workbench" / "stages" / "01-analysis"
     _write_json(stage / "source-truth.json", payload)

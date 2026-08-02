@@ -9,6 +9,10 @@ from uuid import uuid4
 
 from cyberppt.artifact_ledger import append_artifacts
 from cyberppt.outline_contract import load_outline
+from cyberppt.semantic_understanding import (
+    assert_semantic_understanding_ready,
+    semantic_binding_issues,
+)
 from cyberppt.script_quality_contract import (
     audit_final_manuscript_form,
     audit_script_quality,
@@ -296,6 +300,7 @@ def run_script_audit(
         raise FileNotFoundError(f"project does not exist: {project}")
     if not input_path.exists():
         raise FileNotFoundError(f"script does not exist: {input_path}")
+    semantic_gate = assert_semantic_understanding_ready(project)
     assert_escalation_resolved(project, "outline")
     outline_path = (
         outline_path.expanduser().resolve()
@@ -330,6 +335,14 @@ def run_script_audit(
             f"source truth does not exist: {source_truth_path}"
         )
     source_truth = load_source_truth(source_truth_path)
+    binding_issues = semantic_binding_issues(source_truth, semantic_gate)
+    binding_issues.extend(semantic_binding_issues(outline, semantic_gate))
+    if binding_issues:
+        codes = ", ".join(sorted({item["code"] for item in binding_issues}))
+        raise ValueError(
+            "script inputs are not bound to the current semantic understanding: "
+            f"{codes}. Rebuild and audit Source Truth and Outline first."
+        )
     script_text = input_path.read_text(encoding="utf-8-sig")
     script_sha256 = _sha256(input_path)
     document = parse_script_markdown(script_text)
@@ -390,6 +403,7 @@ def run_script_audit(
         "retry_scope": failed_pages,
         "retry_directive": directive,
         "reference_gate": snapshot_reference_gate("script", project),
+        "semantic_gate": semantic_gate,
     }
     if errors and effective_attempt >= max_attempts:
         report["status"] = "user_decision_required"

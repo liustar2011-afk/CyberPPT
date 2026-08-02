@@ -414,6 +414,87 @@ def audit_argument_flow(
         primary_points = [
             point for point in proof_points if point.get("consumption") == "primary"
         ]
+        if source_relation_mode:
+            boundary_focus = page.get("boundary_focus") is True
+            boundary_focus_reason = str(page.get("boundary_focus_reason") or "").strip()
+            if boundary_focus and not boundary_focus_reason:
+                issues.append(
+                    ArgumentFlowIssue(
+                        "BOUNDARY_FOCUS_JUSTIFICATION_MISSING",
+                        "A v2 page may make a boundary its semantic center only when "
+                        "boundary_focus_reason explains why scope, admission, assurance, "
+                        "or a pending decision is the page's actual business subject.",
+                        (page_id,),
+                        retry_strategy="justify_or_demote_boundary_focus",
+                    )
+                )
+
+            boundary_sources = {
+                source_id
+                for source_id in source_refs
+                if str(
+                    record_index.get(source_id, {}).get("claim_role")
+                    or EVIDENCE_TYPE_TO_CLAIM_ROLE.get(
+                        str(record_index.get(source_id, {}).get("type") or ""),
+                        "",
+                    )
+                )
+                in {"boundary", "unresolved"}
+            }
+            for unit in page.get("content_units", []):
+                if not isinstance(unit, dict):
+                    continue
+                unit_boundary_sources = boundary_sources.intersection(
+                    _string_list(unit, "source_refs")
+                )
+                unit_role = str(unit.get("role") or "")
+                if unit_boundary_sources and unit_role == "primary":
+                    issues.append(
+                        ArgumentFlowIssue(
+                            "BOUNDARY_USED_AS_PRIMARY_PROOF",
+                            "Boundary or unresolved evidence cannot be a primary content "
+                            "unit in outline.v2. Keep it as a boundary unit; when the whole "
+                            "page is genuinely about scope, admission, assurance, or a "
+                            "pending decision, explicitly declare boundary_focus.",
+                            (page_id,),
+                            tuple(sorted(unit_boundary_sources)),
+                            retry_strategy="refocus_page_evidence",
+                        )
+                    )
+                elif unit_boundary_sources and unit_role != "boundary":
+                    issues.append(
+                        ArgumentFlowIssue(
+                            "BOUNDARY_CONTENT_UNIT_ROLE_INVALID",
+                            "Boundary or unresolved Source Truth records must use the "
+                            "boundary content-unit role, not a substantive supporting role.",
+                            (page_id,),
+                            tuple(sorted(unit_boundary_sources)),
+                            retry_strategy="demote_boundary_content_unit",
+                        )
+                    )
+
+            derivation = page.get("core_message_derivation") or page.get(
+                "judgment_derivation"
+            )
+            derivation_refs = (
+                set(_string_list(derivation, "source_refs"))
+                if isinstance(derivation, dict)
+                else set()
+            )
+            core_boundary_sources = boundary_sources.intersection(derivation_refs)
+            if core_boundary_sources and not boundary_focus:
+                issues.append(
+                    ArgumentFlowIssue(
+                        "BOUNDARY_USED_AS_CORE_MESSAGE",
+                        "Boundary or unresolved evidence may constrain a normal page but "
+                        "may not derive its core_message. Move it to boundary_refs and a "
+                        "boundary content unit, or explicitly declare a justified "
+                        "boundary_focus page.",
+                        (page_id,),
+                        tuple(sorted(core_boundary_sources)),
+                        retry_strategy="demote_boundary_from_core_message",
+                    )
+                )
         if not source_relation_mode and len(primary_points) > PRIMARY_PROOF_DIRECTION_LIMIT:
             issues.append(
                 ArgumentFlowIssue(

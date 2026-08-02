@@ -79,6 +79,9 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("`business_question`: optional", text)
         self.assertIn("source-supported page content", text)
         self.assertIn("Use `boundary` role when a condition or unresolved item", text)
+        self.assertIn("must never be labeled `primary` or `supporting`", text)
+        self.assertIn("boundary_focus_reason", text)
+        self.assertIn("does not require a boundary-led page", text)
         self.assertIn("Consolidate records only when they express one complete content unit", text)
         self.assertIn("independently readable", text)
 

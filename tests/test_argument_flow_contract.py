@@ -121,6 +121,58 @@ class ArgumentFlowContractTests(unittest.TestCase):
         }
         self.assertIn("CONTENT_RELATION_REFS_INVALID", {issue.code for issue in validate_source_relation_fields(payload)})
 
+    def test_v2_boundary_record_cannot_be_primary_content_unit(self) -> None:
+        page = {
+            "page_id": "p10", "sequence": 10, "page_type": "content",
+            "page_mission": "说明建设内容", "core_message": "建设统一运营能力",
+            "source_refs": ["S027"],
+            "content_units": [{"statement": "投资规模待确定", "source_refs": ["S027"], "role": "primary"}],
+            "content_relations": [{"relation": "contains", "source_refs": ["S027"]}],
+            "core_message_derivation": {"source_refs": [], "supporting_statements": [], "derivation": "", "introduced_relations": [], "introduced_modalities": []},
+            "new_value_vs_previous": "给出建设内容", "reserved_for_later": "投资后续确定",
+        }
+        payload = {"schema": "cyberppt.outline.v2", "argument_contract_mode": "strict", "pages": [page]}
+        truth = strict_truth(record("S027", "boundary", pages=["p10"]))
+
+        codes = {issue.code for issue in audit_argument_flow(payload, truth)}
+        self.assertIn("BOUNDARY_USED_AS_PRIMARY_PROOF", codes)
+
+    def test_v2_boundary_record_cannot_derive_ordinary_core_message(self) -> None:
+        page = {
+            "page_id": "p10", "sequence": 10, "page_type": "content",
+            "page_mission": "说明建设内容", "core_message": "投资规模仍待确定",
+            "source_refs": ["S027"],
+            "content_units": [{"statement": "投资规模待确定", "source_refs": ["S027"], "role": "boundary"}],
+            "content_relations": [{"relation": "bounded_by", "source_refs": ["S027"]}],
+            "core_message_derivation": {"source_refs": ["S027"], "supporting_statements": ["投资规模待确定"], "derivation": "保留原文边界", "introduced_relations": [], "introduced_modalities": []},
+            "new_value_vs_previous": "给出投资边界", "reserved_for_later": "投资后续确定",
+        }
+        payload = {"schema": "cyberppt.outline.v2", "argument_contract_mode": "strict", "pages": [page]}
+        truth = strict_truth(record("S027", "boundary", pages=["p10"]))
+
+        codes = {issue.code for issue in audit_argument_flow(payload, truth)}
+        self.assertIn("BOUNDARY_USED_AS_CORE_MESSAGE", codes)
+
+    def test_v2_justified_boundary_focus_page_may_use_boundary_core(self) -> None:
+        page = {
+            "page_id": "p10", "sequence": 10, "page_type": "content",
+            "page_mission": "明确试运行准入边界", "core_message": "三项测试通过后才能进入真实客户试运行",
+            "boundary_focus": True,
+            "boundary_focus_reason": "本页唯一业务职责是明确真实客户试运行的准入条件。",
+            "source_refs": ["S027"],
+            "content_units": [{"statement": "三项测试通过后才能试运行", "source_refs": ["S027"], "role": "boundary"}],
+            "content_relations": [{"relation": "bounded_by", "source_refs": ["S027"]}],
+            "core_message_derivation": {"source_refs": ["S027"], "supporting_statements": ["三项测试通过后才能试运行"], "derivation": "保留原文准入条件", "introduced_relations": [], "introduced_modalities": []},
+            "new_value_vs_previous": "给出准入条件", "reserved_for_later": "验收指标后述",
+        }
+        payload = {"schema": "cyberppt.outline.v2", "argument_contract_mode": "strict", "pages": [page]}
+        truth = strict_truth(record("S027", "boundary", pages=["p10"]))
+
+        codes = {issue.code for issue in audit_argument_flow(payload, truth)}
+        self.assertNotIn("BOUNDARY_USED_AS_PRIMARY_PROOF", codes)
+        self.assertNotIn("BOUNDARY_USED_AS_CORE_MESSAGE", codes)
+        self.assertNotIn("BOUNDARY_FOCUS_JUSTIFICATION_MISSING", codes)
+
     def test_strict_content_page_requires_argument_role_fields(self) -> None:
         payload = {
             "argument_contract_mode": "strict",

@@ -31,6 +31,12 @@ from cyberppt.commands.visual_structure_stage import (
     run_visual_structure_audit,
 )
 from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
+from cyberppt.semantic_understanding import (
+    approve_semantic_understanding,
+    prepare_semantic_understanding,
+    record_semantic_generation,
+    run_semantic_understanding_audit,
+)
 from cyberppt.stage01_controls import (
     write_confirmation_request,
     write_escalation_decision,
@@ -92,6 +98,51 @@ def _source_truth_audit_command(args: argparse.Namespace) -> int:
         return 2
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return code
+
+
+def _prepare_semantic_understanding_command(args: argparse.Namespace) -> int:
+    try:
+        payload = prepare_semantic_understanding(Path(args.project))
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    return 0
+
+
+def _semantic_check_command(args: argparse.Namespace) -> int:
+    try:
+        code, report = run_semantic_understanding_audit(Path(args.project))
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return code
+
+
+def _record_semantic_generation_command(args: argparse.Namespace) -> int:
+    try:
+        path = record_semantic_generation(
+            Path(args.project),
+            executor=args.executor,
+            model=args.model,
+            note=args.note,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"semantic_generation_receipt: {path}")
+    return 0
+
+
+def _approve_semantic_understanding_command(args: argparse.Namespace) -> int:
+    try:
+        path = approve_semantic_understanding(Path(args.project), note=args.note)
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"semantic_understanding_approval: {path}")
+    return 0
 
 
 def _prepare_chapter_review_command(args: argparse.Namespace) -> int:
@@ -344,6 +395,38 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("path", help="Target project directory.")
     init.add_argument("--force", action="store_true", help="Overwrite generated project manifest and README.")
     init.set_defaults(func=_init_command)
+
+    prepare_semantic = subparsers.add_parser(
+        "prepare-semantic-understanding",
+        help="Prepare the source-bound whole-document semantic-understanding gate.",
+    )
+    prepare_semantic.add_argument("project", help="CyberPPT project directory.")
+    prepare_semantic.set_defaults(func=_prepare_semantic_understanding_command)
+
+    semantic_check = subparsers.add_parser(
+        "semantic-check",
+        help="Audit whole-document semantic understanding before Source Truth.",
+    )
+    semantic_check.add_argument("project", help="CyberPPT project directory.")
+    semantic_check.set_defaults(func=_semantic_check_command)
+
+    record_semantic = subparsers.add_parser(
+        "record-semantic-generation",
+        help="Bind a model execution receipt to the semantic input and output.",
+    )
+    record_semantic.add_argument("project", help="CyberPPT project directory.")
+    record_semantic.add_argument("--executor", required=True, help="Execution surface, e.g. codex-desktop.")
+    record_semantic.add_argument("--model", required=True, help="Model identifier recorded by the executor.")
+    record_semantic.add_argument("--note", default="", help="Optional execution note.")
+    record_semantic.set_defaults(func=_record_semantic_generation_command)
+
+    approve_semantic = subparsers.add_parser(
+        "approve-semantic-understanding",
+        help="Record human approval of a passed, hash-current semantic artifact.",
+    )
+    approve_semantic.add_argument("project", help="CyberPPT project directory.")
+    approve_semantic.add_argument("--note", default="", help="Optional approval note.")
+    approve_semantic.set_defaults(func=_approve_semantic_understanding_command)
 
     outline_audit = subparsers.add_parser(
         "outline-audit",

@@ -412,7 +412,18 @@ def parse_script_markdown(text: str) -> ScriptDocument:
 
 
 SCOPE_TERMS = ("首期", "一期", "建设范围", "交付范围", "投资", "部署方式", "采购")
-IMPLEMENTATION_TERMS = ("实施路线", "建设周期", "前100天", "组织组建", "预算")
+# “预算”在价格表达、套餐控制和采购口径中是正常业务名词，不能一概
+# 视为提前给出实施结论。仅在它与项目/建设/投资实施绑定时触发。
+IMPLEMENTATION_TERMS = (
+    "实施路线",
+    "建设周期",
+    "前100天",
+    "组织组建",
+    "项目预算",
+    "建设预算",
+    "实施预算",
+    "投资预算",
+)
 COMPLETED_TERMS = ("已经建成", "已建成", "已经形成完整", "已完成建设", "正式确定")
 CONDITIONAL_STATUSES = ("拟", "建议", "待", "暂缓", "后续验证", "条件成熟")
 VISIBLE_CERTAINTY_TERMS = COMPLETED_TERMS + (
@@ -1368,6 +1379,13 @@ def _prose_issues(
         and onscreen_chars >= 40
         and prose_chars < int(onscreen_chars * 1.5)
     ):
+        # A short source paragraph can be fully preserved while the required
+        # independent-reading layer is necessarily close in length.  Treat
+        # that ratio as advisory when the page cites every source assigned by
+        # the Outline; source-coverage and near-equality checks remain hard
+        # gates, so this does not permit a second unsupported interpretation.
+        expected = set(expected_source_refs)
+        source_complete = bool(expected) and expected.issubset(set(page.source_refs))
         issues.append(
             _issue(
                 "CONTENT_PROSE_ONSCREEN_GRANULARITY",
@@ -1378,6 +1396,7 @@ def _prose_issues(
                     f"prose_chars={prose_chars}",
                     f"onscreen_chars={onscreen_chars}",
                 ),
+                severity="warning" if source_complete else "error",
             )
         )
     if page.onscreen_text and independent_reading_required:
@@ -2383,8 +2402,9 @@ def audit_final_manuscript_form(text: str) -> list[ScriptQualityIssue]:
             or FINAL_DRAFT_STATUS_RE.match(line)
             or FINAL_PENDING_AUDIT_RE.search(line)
         )
-        token_hit = "草稿" in line or "批次" in line
-        if banner_hit or token_hit:
+        # Only reject manuscript-state banners. Business prose may legitimately
+        # contain terms such as “账单草稿” or “处理批次”.
+        if banner_hit:
             evidence.append(f"L{index}:{line[:100]}")
     if not evidence:
         return []
@@ -2393,14 +2413,13 @@ def audit_final_manuscript_form(text: str) -> list[ScriptQualityIssue]:
             code="FINAL_MANUSCRIPT_DRAFT_BANNER",
             severity="error",
             message=(
-                "Final manuscript must not contain draft/batch banners or the "
-                "words 草稿/批次."
+                "Final manuscript must not contain draft/batch status banners."
             ),
             pages=(),
             evidence=tuple(evidence[:12]),
             suggested_action=(
                 "Run `python -m cyberppt assemble-final-script <project>` or "
-                "remove every 草稿/批次 label before auditing files under "
+                "remove every draft/batch status label before auditing files under "
                 "workbench/scripts/final/."
             ),
         )

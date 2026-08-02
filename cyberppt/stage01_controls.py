@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.paths import REFERENCES_DIR
+from cyberppt.semantic_understanding import assert_semantic_understanding_ready
 
 REFERENCE_GATE_FILES: dict[str, tuple[str, ...]] = {
     "source_truth": ("source-analysis.md",),
@@ -77,11 +78,24 @@ def _approval_fields(path: Path) -> dict[str, str]:
 
 def assert_stage01_script_approval(project: Path, script: Path) -> Path:
     project = project.expanduser().resolve()
+    semantic_gate = assert_semantic_understanding_ready(project)
     approval = project / APPROVAL_FILES["script"]
     if not approval.is_file():
         raise FileNotFoundError(f"missing Stage 01 script approval: {approval}")
     fields = _approval_fields(approval)
     audit = _read_json(project / LATEST_AUDIT_FILES["script"])
+    audited_semantic_gate = audit.get("semantic_gate")
+    if semantic_gate is not None and (
+        not isinstance(audited_semantic_gate, dict)
+        or audited_semantic_gate.get("semantic_understanding_sha256")
+        != semantic_gate.get("semantic_understanding_sha256")
+        or audited_semantic_gate.get("source_bundle_sha256")
+        != semantic_gate.get("source_bundle_sha256")
+    ):
+        raise ValueError(
+            "Stage 01 script audit is stale relative to the current semantic understanding; "
+            "rerun script-audit and reapprove before Stage 02"
+        )
     escalation_decision = _script_approval_escalation_decision(project, audit)
     if audit.get("status") != "passed" and escalation_decision is None:
         raise ValueError(
@@ -602,6 +616,7 @@ def write_stage01_approval(
     note: str = "",
 ) -> Path:
     project = project.expanduser().resolve()
+    semantic_gate = assert_semantic_understanding_ready(project)
     if kind not in APPROVAL_FILES:
         raise ValueError(f"unknown approval kind: {kind!r}")
     request_path = assert_confirmation_request_ready(project, kind)
@@ -617,6 +632,17 @@ def write_stage01_approval(
                 f"script approval requires outline approval first: {outline_approval}"
             )
         audit = _read_json(project / LATEST_AUDIT_FILES["script"])
+        audited_semantic_gate = audit.get("semantic_gate")
+        if semantic_gate is not None and (
+            not isinstance(audited_semantic_gate, dict)
+            or audited_semantic_gate.get("semantic_understanding_sha256")
+            != semantic_gate.get("semantic_understanding_sha256")
+            or audited_semantic_gate.get("source_bundle_sha256")
+            != semantic_gate.get("source_bundle_sha256")
+        ):
+            raise ValueError(
+                "script audit is stale relative to the current semantic understanding; rerun script-audit"
+            )
         escalation_decision = _script_approval_escalation_decision(project, audit)
         if audit.get("status") != "passed" and escalation_decision is None:
             raise ValueError(
