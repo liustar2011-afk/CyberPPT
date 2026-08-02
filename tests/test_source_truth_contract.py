@@ -227,6 +227,30 @@ class SourceTruthContractTests(unittest.TestCase):
     def test_valid_contract_has_no_issues(self) -> None:
         self.assertEqual([], audit_source_truth(valid_payload()))
 
+    def test_long_strict_inventory_requires_p2_detail_layer(self) -> None:
+        payload = valid_payload()
+        template = payload["records"][0]
+        payload["records"] = []
+        for index in range(80):
+            item = dict(template)
+            item["id"] = f"S{index + 1:03d}"
+            item["priority"] = "P0" if index < 8 else "P1"
+            item["source_locator"] = dict(template["source_locator"], paragraph=index + 1)
+            item["supports"] = []
+            item["page_refs"] = []
+            payload["records"].append(item)
+        payload["coverage_targets"] = []
+        payload["conclusions"] = []
+        payload["pages"] = []
+
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertIn("SOURCE_PRIORITY_HIERARCHY_FLAT", codes)
+
+        for item in payload["records"][-8:]:
+            item["priority"] = "P2"
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertNotIn("SOURCE_PRIORITY_HIERARCHY_FLAT", codes)
+
     def test_compound_record_is_warning_not_audit_failure(self) -> None:
         payload = valid_payload()
         payload["records"][0]["statement"] = (

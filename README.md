@@ -104,7 +104,7 @@ python3 -m cyberppt final-script-pages projects/example --script workbench/scrip
 
 `final-script-pages` 默认按 `build_id` 创建新的构建目录，不覆盖既有版本；`workbench/artifact-ledger.json` 以追加方式记录每次产物，并用 `supersedes` 连接同一路径的历史版本。PPTX 导出必须使用本次运行的明确输出路径，导出工程同时写入 `analysis/export_artifact.json`，续跑不会按文件修改时间猜测旧 PPTX。提示词发送默认 `--prompt-enrich off`，即消费已批准 Prompt 原文；只有明确指定 `deterministic` 或 `send` 才会进行发送时增强。
 
-`source-truth.json` 是第一阶段证据底稿的结构化事实源。`source-truth-audit` 在大纲设计之前检查原子证据、精确定位、P0/P1、数字、表格、状态边界和双向追溯，生成 `00-source-analysis.md`；审计失败时依次切换章节扫描、结构化事实扫描和追溯重建，并保留每次尝试。
+`source-truth.json` 是第一阶段证据底稿的结构化事实源。`source-truth-audit` 在大纲设计之前检查原子证据、精确定位、P0/P1/P2语义梯度、数字、表格、状态边界和双向追溯，生成 `00-source-analysis.md`；长材料若只有P0/P1、没有足够P2细节层，会以 `SOURCE_PRIORITY_HIERARCHY_FLAT` 阻断。完整保留不等于等权上屏：Outline仅把P0/P1组织为少量主辅模块，P2进入 `detail_refs` 供完整文字稿、备注和追溯使用。
 
 `outline-audit` 返回 `0` 表示通过，`4` 表示生成代理必须读取 `retry_directive` 后换方向重写，`5` 表示默认三次尝试已耗尽、需要用户在升级报告的 2-3 个选项中决策，输入错误返回 `2`。审计合同、最新报告、逐次尝试和升级报告写入 `workbench/stages/01-analysis/`；CLI 不代替生成代理重写大纲。
 

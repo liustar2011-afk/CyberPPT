@@ -17,6 +17,7 @@ def record(
     depends_on: list[str] | None = None,
     status: str = "现状",
     statement: str = "",
+    priority: str = "P1",
 ) -> dict[str, object]:
     return {
         "id": source_id,
@@ -25,6 +26,7 @@ def record(
         "depends_on": depends_on or [],
         "status": status,
         "statement": statement,
+        "priority": priority,
     }
 
 
@@ -120,6 +122,58 @@ class ArgumentFlowContractTests(unittest.TestCase):
             }],
         }
         self.assertIn("CONTENT_RELATION_REFS_INVALID", {issue.code for issue in validate_source_relation_fields(payload)})
+
+    def test_v2_rejects_one_source_record_per_content_unit(self) -> None:
+        refs = [f"S{index:03d}" for index in range(1, 9)]
+        page = {
+            "page_id": "p10", "sequence": 10, "page_type": "content",
+            "page_mission": "说明能力体系", "core_message": "能力体系包含八项内容",
+            "source_refs": refs,
+            "content_units": [
+                {"statement": f"内容{index}", "source_refs": [source_id], "role": "primary" if index == 1 else "supporting"}
+                for index, source_id in enumerate(refs, 1)
+            ],
+            "content_relations": [{"relation": "contains", "source_refs": refs}],
+            "core_message_derivation": {"source_refs": [refs[0]], "supporting_statements": ["内容1"], "derivation": "原文归纳", "introduced_relations": [], "introduced_modalities": []},
+            "new_value_vs_previous": "给出能力内容", "reserved_for_later": "细节后述",
+        }
+        truth = strict_truth(*[record(source_id, "judgment", pages=["p10"]) for source_id in refs])
+
+        codes = {issue.code for issue in audit_argument_flow(
+            {"schema": "cyberppt.outline.v2", "argument_contract_mode": "strict", "pages": [page]},
+            truth,
+        )}
+        self.assertIn("CONTENT_UNIT_HIERARCHY_FLAT", codes)
+        self.assertIn("SOURCE_RECORDS_MIRRORED_AS_CONTENT_UNITS", codes)
+
+    def test_v2_p2_records_are_retained_as_detail_not_peer_modules(self) -> None:
+        page = {
+            "page_id": "p10", "sequence": 10, "page_type": "content",
+            "page_mission": "说明能力体系", "core_message": "能力体系由统一目录组织",
+            "source_refs": ["S001", "S002"],
+            "content_units": [{"statement": "统一目录组织能力体系", "source_refs": ["S001"], "role": "primary"}],
+            "detail_refs": ["S002"],
+            "content_relations": [{"relation": "contains", "source_refs": ["S001", "S002"]}],
+            "core_message_derivation": {"source_refs": ["S001"], "supporting_statements": ["统一目录"], "derivation": "原文归纳", "introduced_relations": [], "introduced_modalities": []},
+            "new_value_vs_previous": "给出能力结构", "reserved_for_later": "参数保留为细节",
+        }
+        truth = strict_truth(
+            record("S001", "judgment", pages=["p10"], priority="P0"),
+            record("S002", "judgment", pages=["p10"], priority="P2"),
+        )
+        codes = {issue.code for issue in audit_argument_flow(
+            {"schema": "cyberppt.outline.v2", "argument_contract_mode": "strict", "pages": [page]},
+            truth,
+        )}
+        self.assertFalse({"P0_DEMOTED_TO_DETAIL", "P2_USED_AS_PAGE_STRUCTURE", "P2_USED_AS_CORE_MESSAGE"} & codes)
+
+        page["detail_refs"] = []
+        page["content_units"].append({"statement": "参数细节", "source_refs": ["S002"], "role": "supporting"})
+        codes = {issue.code for issue in audit_argument_flow(
+            {"schema": "cyberppt.outline.v2", "argument_contract_mode": "strict", "pages": [page]},
+            truth,
+        )}
+        self.assertIn("P2_USED_AS_PAGE_STRUCTURE", codes)
 
     def test_v2_boundary_record_cannot_be_primary_content_unit(self) -> None:
         page = {

@@ -85,7 +85,8 @@ def prepare_outline_input(project: Path) -> Path:
     lines += ["", "## evidence_records", ""]
     for source_id, record in records.items():
         lines.append(
-            f"- {source_id} [{record.get('claim_role') or record.get('type', '')}; "
+            f"- {source_id} [{record.get('priority', '')}; "
+            f"{record.get('claim_role') or record.get('type', '')}; "
             f"{record.get('status', '')}]: {record.get('statement', '')}"
         )
     lines += ["", "## conclusions", ""]
@@ -112,6 +113,12 @@ def prepare_outline_input(project: Path) -> Path:
         "- `new_value_vs_previous`",
         "- `reserved_for_later`",
         "- `content_units`: statement, source_refs, role (`primary`, `supporting`, or `boundary`); these are source-grounded content units, not proof claims",
+        "- `detail_refs`: source_refs retained for full prose, notes, parameters, examples, or traceability but intentionally not promoted into peer on-screen modules",
+        "- Treat Source Truth priority as semantic weight: P0 is page-forming, P1 supports one of the page's main modules, and P2 is retained detail. Complete coverage never means equal page or visual weight.",
+        "- An ordinary page must contain exactly one `primary` content unit, at most three grouped `supporting` units, and at most one grouped `boundary` unit. A justified boundary-focus page may omit the primary unit.",
+        "- Never create one `content_unit` per Source Truth record. Group related P0/P1 records into 2-4 semantic modules and place P2 records in `detail_refs`.",
+        "- P0 records may not be placed only in `detail_refs`; P2 records may not derive `core_message` or create peer content modules.",
+        "- Every page `source_ref` must be classified through a content unit or `detail_refs`; this preserves traceability without flattening hierarchy.",
         "- Source Truth records with claim_role `boundary` or `unresolved` must use content-unit role `boundary`; they must never be labeled `primary` or `supporting`",
         "- Exclude boundary/unresolved records from `core_message_derivation.source_refs` on ordinary pages; place them in `boundary_refs` instead",
         "- Only when scope, admission, assurance conditions, or a pending decision is the page's actual business subject may the page set `boundary_focus: true`; it must also provide a non-empty `boundary_focus_reason`",
@@ -163,6 +170,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "its existing `上屏文字` unchanged. Only add or update `副标题`, retain the "
         "full judgment as semantic metadata, and set the appropriate display mode.",
         "The approved core_message is mandatory semantic metadata; its onscreen_conclusion remains optional.",
+        "Use `detail_refs` when drafting 完整文字稿 and speaker notes, but do not turn each detail record into an on-screen module.",
         "Never strengthen the core_message from page labels, modules, visual structure, or speaker notes.",
         "The visible layer must be independently readable without speaker narration.",
         "First fix the page relation skeleton (path / layers / loop / judgment-evidence), "
@@ -201,6 +209,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             f"- onscreen_conclusion_mode: {page.get('onscreen_conclusion_mode') or page.get('onscreen_judgment_mode', 'auto')}",
             f"- new_value_vs_previous: {page.get('new_value_vs_previous', '')}",
             f"- reserved_for_later: {page.get('reserved_for_later', '')}",
+            f"- detail_refs: {', '.join(str(item) for item in page.get('detail_refs', [])) or '[]'}",
             f"- visual_intent_type: {page.get('visual_intent_type') or 'auto'}",
             f"- visual_proof: {page.get('visual_proof') or 'auto'}",
             "- content_units:",
@@ -229,9 +238,20 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         boundary_source_ids = [
             str(source_id) for source_id in page.get("boundary_refs", [])
         ]
+        detail_source_ids = [
+            str(source_id) for source_id in page.get("detail_refs", [])
+        ]
         lines.append("- evidence_text:")
         for source_id in proof_source_ids:
             lines.append(f"  - {source_id}: {records.get(str(source_id), {}).get('statement', '')}")
+        lines.append("- retained_detail_text:")
+        if detail_source_ids:
+            for source_id in detail_source_ids:
+                lines.append(
+                    f"  - {source_id}: {records.get(source_id, {}).get('statement', '')}"
+                )
+        else:
+            lines.append("  - none")
         lines.append("- boundary_refs: " + (
             ", ".join(boundary_source_ids) if boundary_source_ids else "[]"
         ))
@@ -258,6 +278,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             "visual_intent_type": page.get("visual_intent_type"),
             "visual_proof": page.get("visual_proof"),
             "content_units": content_units,
+            "detail_refs": page.get("detail_refs", []),
             "boundary_refs": page.get("boundary_refs", []),
             "new_value_realized": True,
             "reserved_for_later_respected": True,

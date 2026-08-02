@@ -210,9 +210,11 @@ def validate_source_relation_fields(
             )
         page_sources = set(_string_list(page, "source_refs"))
         units = page.get("content_units")
+        unit_sources: set[str] = set()
         if isinstance(units, list):
             for unit in units:
                 refs = _string_list(unit, "source_refs") if isinstance(unit, dict) else []
+                unit_sources.update(refs)
                 if (
                     not isinstance(unit, dict)
                     or not str(unit.get("statement") or "").strip()
@@ -229,6 +231,33 @@ def validate_source_relation_fields(
                         )
                     )
                     break
+        detail_sources = set(_string_list(page, "detail_refs"))
+        if (
+            not detail_sources.issubset(page_sources)
+            or bool(detail_sources & unit_sources)
+        ):
+            issues.append(
+                ArgumentFlowIssue(
+                    "DETAIL_REFS_INVALID",
+                    "detail_refs must be a subset of page source_refs and must not "
+                    "also appear as standalone content-unit evidence.",
+                    (page_id,) if page_id else (),
+                    tuple(sorted((detail_sources - page_sources) | (detail_sources & unit_sources))),
+                    retry_strategy="separate_retained_detail_from_page_structure",
+                )
+            )
+        unclassified = page_sources - unit_sources - detail_sources
+        if unclassified:
+            issues.append(
+                ArgumentFlowIssue(
+                    "PAGE_EVIDENCE_CLASSIFICATION_INCOMPLETE",
+                    "Every page source must be classified as content-unit evidence or "
+                    "retained detail; full traceability does not require equal visual weight.",
+                    (page_id,) if page_id else (),
+                    tuple(sorted(unclassified)),
+                    retry_strategy="classify_page_evidence_weight",
+                )
+            )
         relations = page.get("content_relations")
         if isinstance(relations, list):
             for relation in relations:
@@ -441,6 +470,72 @@ def audit_argument_flow(
                 )
                 in {"boundary", "unresolved"}
             }
+            raw_units = page.get("content_units")
+            units = [unit for unit in raw_units if isinstance(unit, dict)] if isinstance(raw_units, list) else []
+            primary_units = [unit for unit in units if unit.get("role") == "primary"]
+            supporting_units = [unit for unit in units if unit.get("role") == "supporting"]
+            boundary_units = [unit for unit in units if unit.get("role") == "boundary"]
+            if (
+                (not boundary_focus and len(primary_units) != 1)
+                or len(supporting_units) > 3
+                or len(boundary_units) > 1
+                or len(units) > 5
+            ):
+                issues.append(
+                    ArgumentFlowIssue(
+                        "CONTENT_UNIT_HIERARCHY_FLAT",
+                        "An ordinary page needs exactly one primary unit, at most three "
+                        "supporting modules, and at most one grouped boundary unit. "
+                        "Retain lower-weight evidence in detail_refs instead of equal modules.",
+                        (page_id,),
+                        retry_strategy="compress_page_semantic_hierarchy",
+                    )
+                )
+            if len(source_refs) >= 6 and len(units) >= 6 and len(units) / len(source_refs) >= 0.75:
+                issues.append(
+                    ArgumentFlowIssue(
+                        "SOURCE_RECORDS_MIRRORED_AS_CONTENT_UNITS",
+                        "Source records are traceability atoms, not slide modules. Group "
+                        "related P0/P1 evidence and retain P2 details without creating one "
+                        "content unit per record.",
+                        (page_id,),
+                        tuple(source_refs),
+                        retry_strategy="group_evidence_into_page_modules",
+                    )
+                )
+
+            detail_sources = set(_string_list(page, "detail_refs"))
+            p0_details = {
+                source_id for source_id in detail_sources
+                if record_index.get(source_id, {}).get("priority") == "P0"
+            }
+            p2_structural = {
+                source_id
+                for unit in units
+                for source_id in _string_list(unit, "source_refs")
+                if record_index.get(source_id, {}).get("priority") == "P2"
+            }
+            if p0_details:
+                issues.append(
+                    ArgumentFlowIssue(
+                        "P0_DEMOTED_TO_DETAIL",
+                        "Page-forming P0 evidence cannot be retained only as background detail.",
+                        (page_id,),
+                        tuple(sorted(p0_details)),
+                        retry_strategy="restore_p0_page_structure",
+                    )
+                )
+            if p2_structural:
+                issues.append(
+                    ArgumentFlowIssue(
+                        "P2_USED_AS_PAGE_STRUCTURE",
+                        "P2 evidence is retained detail and may inform prose, notes, or "
+                        "appendices, but it must not create a peer content module.",
+                        (page_id,),
+                        tuple(sorted(p2_structural)),
+                        retry_strategy="demote_p2_to_detail_refs",
+                    )
+                )
             for unit in page.get("content_units", []):
                 if not isinstance(unit, dict):
                     continue
@@ -481,6 +576,20 @@ def audit_argument_flow(
                 if isinstance(derivation, dict)
                 else set()
             )
+            p2_core_sources = {
+                source_id for source_id in derivation_refs
+                if record_index.get(source_id, {}).get("priority") == "P2"
+            }
+            if p2_core_sources:
+                issues.append(
+                    ArgumentFlowIssue(
+                        "P2_USED_AS_CORE_MESSAGE",
+                        "Retained-detail P2 evidence cannot derive the page core_message.",
+                        (page_id,),
+                        tuple(sorted(p2_core_sources)),
+                        retry_strategy="derive_core_from_p0_p1",
+                    )
+                )
             core_boundary_sources = boundary_sources.intersection(derivation_refs)
             if core_boundary_sources and not boundary_focus:
                 issues.append(

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import hashlib
+import math
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -374,6 +375,33 @@ def _coverage_issues(
     return issues
 
 
+def _priority_hierarchy_issues(
+    records: list[dict[str, object]],
+    *,
+    strict: bool,
+) -> list[SourceTruthIssue]:
+    """Reject long evidence inventories that preserve coverage but flatten importance."""
+
+    if not strict or len(records) < 40:
+        return []
+    counts = {
+        priority: sum(1 for record in records if record.get("priority") == priority)
+        for priority in PRIORITIES
+    }
+    minimum_detail = 1 if len(records) < 80 else max(5, math.ceil(len(records) * 0.10))
+    if counts["P0"] > 0 and counts["P2"] >= minimum_detail:
+        return []
+    return [
+        SourceTruthIssue(
+            "SOURCE_PRIORITY_HIERARCHY_FLAT",
+            "Long strict Source Truth inventories must distinguish page-forming P0, "
+            "module-supporting P1, and retained-detail P2 evidence. Complete retention "
+            "does not make every source item equally prominent.",
+            retry_strategy="rebalance_source_priority",
+        )
+    ]
+
+
 def _traceability_issues(
     records: list[dict[str, object]],
     conclusions: list[dict[str, object]],
@@ -456,6 +484,12 @@ def audit_source_truth(payload: dict[str, object]) -> list[SourceTruthIssue]:
         )
     )
     issues.extend(_coverage_issues(_items(payload, "coverage_targets"), record_ids))
+    issues.extend(
+        _priority_hierarchy_issues(
+            records,
+            strict=payload.get("argument_contract_mode", "legacy") == "strict",
+        )
+    )
     issues.extend(_document_semantic_issues(payload))
     issues.extend(_traceability_issues(records, conclusions, pages))
     return sorted(issues, key=lambda item: (item.code, item.source_ids[:1]))
