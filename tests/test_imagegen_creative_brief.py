@@ -171,6 +171,53 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
         implicit_compiled.build_metadata()["style_selection"]["name"]
         == "象牙白 + 深蓝领导汇报"
     )
+    assert "[Mandatory composition guidance]" not in implicit
+    assert "semantic_structure" not in implicit_compiled.build_metadata()
+
+
+def test_visual_structure_review_mode_is_explicit_and_auditable() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        compiled = compile_page_prompt(
+            page,
+            lock,
+            visual_structure_mode="review",
+        )
+    metadata = compiled.build_metadata()
+    assert "[Mandatory composition guidance]" in compiled.prompt
+    assert "- Reading path:" in compiled.prompt
+    assert "- Dominant visual carrier:" in compiled.prompt
+    assert compiled.prompt.index("【锁定关键文字】") < compiled.prompt.index(
+        "[Mandatory composition guidance]"
+    ) < compiled.prompt.index("【完整上屏内容】")
+    assert metadata["semantic_structure"]["mode"] == "review"
+    assert len(metadata["semantic_structure"]["visual_carrier"]["candidates"]) == 3
+    assert "semantic_structure.composition" in metadata["injected_rule_ids"]
+
+
+def test_visual_structure_review_mode_rejects_non_content_first_compiler() -> None:
+    page = _page()
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        with pytest.raises(ValueError, match="requires content-first-v1"):
+            compile_page_prompt(
+                page,
+                lock,
+                prompt_compiler="legacy",
+                visual_structure_mode="review",
+            )
+
+
+def test_visual_structure_review_replaces_legacy_logic_instruction() -> None:
+    page = replace(_page(), visual_structure="分层剖面——底座向上支撑业务应用")
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        default = compile_page_prompt(page, lock)
+        review = compile_page_prompt(page, lock, visual_structure_mode="review")
+    assert "【页面逻辑｜不上屏】" in default.prompt
+    assert "【页面逻辑｜不上屏】" not in review.prompt
+    assert "[Mandatory composition guidance]" in review.prompt
 
 
 def test_content_first_uses_the_selected_style_lock_instead_of_fixed_colors() -> None:

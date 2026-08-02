@@ -1,0 +1,22 @@
+schema_version: cyberppt.visual-carrier-registry.v1
+selection_rule: semantic_intent_then_composition_then_carrier
+minimum_candidates_per_intent: 3
+score_weights:
+  mission_fit: 25
+  relation_fidelity: 20
+  single_center: 15
+  reading_path: 15
+  text_integration: 10
+  imagegen_stability: 10
+  deck_rhythm: 5
+global_avoid:
+  - equal_card_wall
+  - one_icon_per_bullet
+  - disconnected_left_text_right_image
+  - multiple_visual_centers
+intent_requirements:
+  closed_loop_operation: [start, key_nodes, feedback_target, return_direction]
+  layered_architecture: [foundation, dependent_layers, one_main_flow]
+  risk_control_boundary: [inside, outside, controlled_entry, allowed_output]
+  dual_engine_synergy: [two_actors, shared_interface, shared_outcome]
+  network_ecosystem: [primary_actor, partner_actors, exchange_labels]

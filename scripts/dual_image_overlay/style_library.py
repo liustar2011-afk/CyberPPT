@@ -57,7 +57,12 @@ def resolve_default_style(
     for style in library["styles"]:
         if style_id is not None and int(style["id"]) == int(style_id):
             return dict(style)
-        if normalized_name and normalized_name in {str(style["name"]), str(style["slug"])}:
+        aliases = {
+            str(alias).strip()
+            for alias in style.get("aliases", [])
+            if str(alias).strip()
+        }
+        if normalized_name and normalized_name in {str(style["name"]), str(style["slug"]), *aliases}:
             return dict(style)
     raise ValueError(
         f"unknown CyberPPT style selection: id={style_id!r}, name={style_name!r}. "

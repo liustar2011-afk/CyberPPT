@@ -6,7 +6,13 @@ from tempfile import TemporaryDirectory
 
 from cyberppt.cli import build_parser
 from scripts.dual_image_overlay.cyberppt_pair_manifest import main as pair_manifest_main
-from scripts.dual_image_overlay.deliverable_prompt import style_contract
+from scripts.dual_image_overlay.deliverable_prompt import (
+    PageBlock,
+    render_prompt,
+    style_contract,
+    uses_compact_style_contract,
+)
+from scripts.dual_image_overlay.imagegen_handoff import compile_page_prompt
 from scripts.dual_image_overlay.style_library import (
     default_style_choices,
     load_style_library,
@@ -18,19 +24,21 @@ from scripts.dual_image_overlay.style_library import (
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_style_ten_is_two_layer_explicit_extension() -> None:
+def test_style_ten_is_style_nine_rule_replacement_explicit_extension() -> None:
     styles = load_style_library()["styles"]
     assert [style["id"] for style in styles] == list(range(1, 11))
 
     style_ten = resolve_default_style(style_id=10)
-    assert style_ten["slug"] == "ivory_deep_blue_semantic_scene"
+    assert style_ten["slug"] == "light_tech_business_dense"
     assert style_ten["extension_only"] is True
     assert resolve_default_style(style_name=style_ten["slug"])["id"] == 10
-    assert style_ten["colors"] == resolve_default_style(style_id=9)["colors"]
-    assert "第一层是页面语义结构" in style_ten["scope_rule"]
-    assert "semantic structure is mandatory" in style_ten["semantic_structure_rule"]
-    assert "normally within about one third" in style_ten["scene_layer_rule"]
-    assert "场景不得替代结构" in style_ten["prompt_contract"]
+    assert resolve_default_style(style_name="ivory_deep_blue_semantic_scene")["id"] == 10
+    assert style_ten["colors"]["background"] == "#F7F6F0"
+    assert style_ten["colors"]["accent"] == "#12355B"
+    assert "高级编辑式气质" in style_ten["scope_rule"]
+    assert "senior leadership briefing" in style_ten["prompt_contract"]
+    assert "Positive construction grammar" not in style_ten["prompt_contract"]
+    assert "style_prompt_v2" not in style_ten
 
 
 def test_style_ten_contract_reaches_imagegen_prompt() -> None:
@@ -40,9 +48,25 @@ def test_style_ten_contract_reaches_imagegen_prompt() -> None:
         payload = json.loads(lock.read_text(encoding="utf-8"))
 
     assert payload["style"]["id"] == 10
-    assert "第一层是页面语义结构" in contract
-    assert "semantic structure is mandatory" in contract
-    assert "normally within about one third" in contract
+    assert "senior leadership briefing" in contract
+    assert "Locked Chinese text is woven into the business structure" in contract
+    assert "Do not use identifiable people" not in contract
+
+
+def test_style_ten_keeps_page_composition_guidance_and_full_contract() -> None:
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=10)
+        prompt = render_prompt(
+            PageBlock(page_number=1, title="测试", text="锁定正文"),
+            style_lock_path=lock,
+            composition_guidance="主关系：多路能力汇聚为一个服务中枢。",
+        )
+        compact = uses_compact_style_contract(lock)
+
+    assert compact is False
+    assert "主关系：多路能力汇聚为一个服务中枢。" in prompt
+    assert "Locked Chinese text is woven into the business structure" in prompt
+    assert "one integrated" in prompt
 
 
 def test_style_ten_is_not_added_to_default_eight() -> None:
@@ -93,5 +117,31 @@ def test_pair_manifest_accepts_style_ten() -> None:
 def test_style_ten_sample_and_reference_exist() -> None:
     assert (ROOT / "assets" / "palette-samples" / "palette-10.png").exists()
     reference = (ROOT / "references" / "visual-system.md").read_text(encoding="utf-8")
-    assert "扩展风格10：象牙白 + 深蓝双层语义汇报" in reference
-    assert "以语义结构为骨架，以行业场景为有限视觉锚点" in reference
+    assert "扩展风格10：象牙白 + 深蓝领导汇报（采用风格09规则）" in reference
+    assert "### Positive construction grammar — hard" in reference
+    assert "### Locked Chinese text and scene integration — hard" in reference
+    assert "### Reusable composition grammars" in reference
+
+
+def test_style_ten_defaults_to_full_image_and_supports_explicit_semantic_visual() -> None:
+    from cyberppt.script_quality_contract import parse_script_markdown
+
+    script = ROOT / "projects" / "power-industry-data-services-operation-20260802" / "workbench" / "scripts" / "final" / "script-final.md"
+    if not script.is_file():
+        return
+    page = next(page for page in parse_script_markdown(script.read_text(encoding="utf-8")).pages if page.page_id == "p10")
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=10)
+        semantic = compile_page_prompt(page, lock)
+        full = compile_page_prompt(page, lock, text_render_mode="full_image")
+        semantic_visual = compile_page_prompt(page, lock, text_render_mode="semantic_visual")
+
+    assert semantic.build_metadata()["text_render_mode"] == "full_image"
+    assert "【完整上屏内容】" in semantic.prompt
+    assert semantic_visual.build_metadata()["text_render_mode"] == "semantic_visual"
+    assert "【完整上屏内容】" not in semantic_visual.prompt
+    assert "数据资源" in semantic_visual.prompt
+    assert full.build_metadata()["text_render_mode"] == "full_image"
+    assert "【完整上屏内容】" in full.prompt
+    assert page.module_titles[0] in full.prompt
+    assert "平台负责连接" in full.prompt

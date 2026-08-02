@@ -19,6 +19,7 @@ OUTLINE_FIELDS = (
     "visual_center",
     "visual_proof",
     "visual_intent_type",
+    "semantic_intent_type",
     "visual_carrier",
     "onscreen_judgment_mode",
     "judgment_role",

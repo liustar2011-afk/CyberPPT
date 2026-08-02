@@ -35,6 +35,17 @@ from cyberppt.script_quality_contract import (
     parse_script_markdown,
     resolve_judgment_mode,
 )
+from cyberppt.semantic_intent import (
+    SemanticIntentDecision,
+    canonicalize_intent,
+    resolve_semantic_intent,
+    validate_semantic_structure,
+)
+from cyberppt.composition_resolver import resolve_composition, validate_composition
+from cyberppt.visual_carrier_resolver import (
+    select_visual_carrier,
+    validate_visual_carrier,
+)
 from scripts.dual_image_overlay.creative_brief import (
     CreativeBrief,
     build_creative_brief,
@@ -63,8 +74,11 @@ from scripts.dual_image_overlay.page_semantics import (
 from scripts.dual_image_overlay.prompt_compiler import (
     CompiledPagePrompt,
     DEFAULT_PROMPT_COMPILER,
+    DEFAULT_TEXT_RENDER_MODE,
     PROMPT_COMPILERS,
+    TEXT_RENDER_MODES,
     validate_prompt_compiler,
+    validate_text_render_mode,
 )
 from scripts.dual_image_overlay.script_parser import (
     load_page_missions,
@@ -80,6 +94,8 @@ IMAGEGEN_CHROME_BAN_CONTRACT = """【模板层禁绘｜不上屏】
 正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。
 标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。
 【锁定关键文字】【完整上屏内容】中的业务编号与模块名（如 01｜）必须保留；禁止新增与锁定文案无关的序号条、页码章或装饰编号。"""
+SEMANTIC_VISUAL_CHROME_CONTRACT = """【模板层禁绘｜不上屏】
+正文区图只画业务语义底图，不绘制页面标题、副标题、Logo、页脚、页码、页面序号、母版装饰线或完整正文。正文和事实文字由后续 PPT 可编辑文字层承载。不要把提示词字段名、模块编号、调试信息、伪中文或新增标签画入图片。"""
 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【结论句要求｜不上屏】
 如【锁定关键文字】含正文结论句，该句是正文结论句，不是页面标题；不得通栏放大或添加标题竖线、横线等装饰。
 允许调整换行和文字层级；画面必须参与表达页面逻辑，不得退化为文字排版加装饰图片。"""
@@ -93,6 +109,10 @@ CONTENT_FIRST_PAGE_MISSION_LABEL = "页面任务："
 CONTENT_FIRST_CORE_MEANING_LABEL = "核心意思："
 # Compatibility alias for extensions importing the old constant.
 CONTENT_FIRST_CORE_JUDGMENT_LABEL = CONTENT_FIRST_CORE_MEANING_LABEL
+SEMANTIC_VISUAL_TEXT_CONTRACT = """【语义视觉模式｜默认不上屏正文】
+ImageGen 只负责把页面事实关系转译成有业务含义的场景、对象、动作、空间和结果状态；不要把完整正文逐字排版进图片。正文、数字和主体名称由后续 PPT 可编辑文字层完整承载。允许极少量短标签（0—3 个）贴附在对应对象旁，仅在它能显著帮助识别对象时使用；默认无可读长句、无界面伪文字、无新增标签。"""
+SEMANTIC_VISUAL_FACTS_HEADER = "【事实真值锁｜仅供理解，不在图内排版】"
+SEMANTIC_VISUAL_BRIEF_HEADER = "【视觉语义参考｜用对象和关系表达，不照抄文字】"
 # Status asides that must not be painted as core on-screen claims.
 # Planning decks argue the proposed solution; do not restamp "not yet fact" on every page.
 ONSCREEN_ASIDE_RE = re.compile(
@@ -946,6 +966,109 @@ def select_page_visual_intent_type(
     )[0]
 
 
+def resolve_page_semantic_intent(
+    page: ScriptPage,
+    page_mission: str,
+    context: dict[str, str] | None = None,
+    override: dict[str, str] | None = None,
+) -> SemanticIntentDecision:
+    """Return the canonical semantic decision for shadow migration."""
+
+    context = context if isinstance(context, dict) else {}
+    override = override if isinstance(override, dict) else {}
+    explicit = str(
+        override.get("semantic_intent_type")
+        or context.get("semantic_intent_type")
+        or ""
+    ).strip()
+    legacy, _legacy_source = resolve_page_visual_intent(
+        page, page_mission, context=context, override=override
+    )
+    corpus = "\n".join(
+        part
+        for part in (
+            page_mission,
+            context.get("business_question", ""),
+            context.get("page_job", ""),
+            page.core_message,
+            page.onscreen_text,
+            page.full_prose,
+            page.visual_structure,
+            page.speaker_notes,
+            "\n".join(page.module_titles),
+        )
+        if part
+    )
+    return resolve_semantic_intent(
+        explicit_intent=explicit,
+        legacy_intent=legacy,
+        content_relations=page.content_relations,
+        corpus=corpus,
+    )
+
+
+def audit_page_semantic_intent(
+    page: ScriptPage,
+    page_mission: str = "",
+    context: dict[str, str] | None = None,
+    override: dict[str, str] | None = None,
+    prior_carriers: tuple[str, ...] = (),
+) -> dict[str, object]:
+    """Build one serializable shadow-audit record for a content page."""
+
+    legacy, legacy_source = resolve_page_visual_intent(
+        page, page_mission, context=context, override=override
+    )
+    decision = resolve_page_semantic_intent(
+        page, page_mission, context=context, override=override
+    )
+    composition = resolve_composition(decision)
+    carrier = select_visual_carrier(decision, composition, prior_carriers)
+    corpus = "\n".join(
+        (page.core_message, page.onscreen_text, page.full_prose, page.visual_structure)
+    )
+    record = decision.to_dict()
+    legacy_canonical_intent = canonicalize_intent(legacy)
+    structure_issues = (
+        *validate_composition(composition),
+        *validate_visual_carrier(carrier),
+    )
+    record.update(
+        {
+            "page_id": page.page_id,
+            "page_title": page.title,
+            "legacy_intent": legacy,
+            "legacy_source": legacy_source,
+            "legacy_compatible_intent": decision.legacy_intent,
+            "legacy_matches": legacy == decision.legacy_intent,
+            "legacy_canonical_intent": legacy_canonical_intent,
+            "semantic_refinement": (
+                bool(legacy_canonical_intent)
+                and legacy_canonical_intent != decision.primary_intent
+            ),
+            "composition": composition.to_dict(),
+            "visual_carrier": carrier.to_dict(),
+            "composition_guidance": (
+                f"Use {carrier.selected} as the single dominant carrier occupying about "
+                f"{round(composition.dominant_ratio * 100)}% of the body area. "
+                f"Organize it as: {composition.spatial_organization}. "
+                f"Reading path: {' -> '.join(composition.reading_path)}. "
+                f"Encode relations with {', '.join(composition.relationship_encoding)}."
+            ),
+            "blocking_issues": list(
+                (*structure_issues, *validate_semantic_structure(
+                    decision,
+                    corpus=corpus,
+                    content_relations=page.content_relations,
+                ))
+                if decision.source not in {"fallback", "legacy_hint"}
+                else structure_issues
+            ),
+        }
+    )
+    return record
+
+
 def build_page_visual_intent(
     page: ScriptPage,
     page_mission: str,
@@ -1169,6 +1292,80 @@ def select_image_locked_text(
     return "\n".join(selected).strip()
 
 
+def _semantic_phrase_digest(text: str, *, limit: int = 8) -> list[str]:
+    """Turn visible copy into short semantic anchors, never a copy block.
+
+    The digest deliberately splits on Chinese list punctuation and joins the
+    resulting terms with slashes. This gives ImageGen concrete business nouns
+    and actions without presenting the approved sentence as a bitmap layout
+    instruction.
+    """
+
+    cleaned = re.sub(r"\*+", "", text or "").strip(" -*")
+    if not cleaned:
+        return []
+    parts = [
+        part.strip()
+        for part in re.split(r"[，,、；;。:：→—\-]+", cleaned)
+        if part.strip()
+    ]
+    anchors: list[str] = []
+    for part in parts:
+        part = re.sub(r"\s+", " ", part).strip()
+        if not part or part in anchors:
+            continue
+        # Remove editorial lead-ins while keeping the underlying business term.
+        part = re.sub(r"^(?:主要需求是|围绕|包括|适合|采用|形成|客户可以|可以)", "", part).strip()
+        if not part:
+            continue
+        if len(part) > 24:
+            part = part[:24].rstrip("，,；;。")
+        anchors.append(part)
+        if len(anchors) >= limit:
+            break
+    return anchors
+
+
+def render_semantic_visual_brief(page: ScriptPage) -> str:
+    """Render a compact, non-rendering semantic brief for ImageGen."""
+
+    groups: list[str] = []
+    current = "未命名模块"
+    title_set = {title.strip() for title in page.module_titles if title.strip()}
+    for raw in page.onscreen_text.splitlines():
+        line = re.sub(r"\*+", "", raw).strip()
+        if not line:
+            continue
+        if line in title_set:
+            current = line
+            continue
+        if line.startswith(("-", "*", "•")):
+            anchors = _semantic_phrase_digest(line, limit=7)
+            if anchors:
+                groups.append(f"- {current}：" + " / ".join(anchors))
+    if not groups:
+        anchors = _semantic_phrase_digest(page.onscreen_text, limit=12)
+        if anchors:
+            groups.append("- 页面业务锚点：" + " / ".join(anchors))
+    return "\n".join(groups)
+
+
+def resolve_text_render_mode(
+    style_lock: Path,
+    *,
+    explicit: str | None = None,
+) -> str:
+    """Resolve the text/image boundary without changing legacy styles."""
+
+    if explicit:
+        return validate_text_render_mode(explicit)
+    style = _selected_content_first_style(style_lock)
+    configured = str(style.get("default_text_render_mode") or "").strip()
+    if configured:
+        return validate_text_render_mode(configured)
+    return DEFAULT_TEXT_RENDER_MODE
+
+
 def render_presentation_contract(
     page: ScriptPage,
     decision: PresentationDecision,
@@ -1236,6 +1433,21 @@ STYLE_COLOR_LABELS = (
 CONTENT_FIRST_STYLE_RULE_FIELDS: tuple[str, ...] = (
     "scope_rule",
     "content_visual_rule",
+)
+
+STYLE10_SEMANTIC_RULE_FIELDS: tuple[str, ...] = (
+    "scope_rule",
+    "semantic_structure_rule",
+    "scene_layer_rule",
+    "semantic_image_rule",
+    "factuality_rule",
+    "semantic_image_text_rule",
+    "content_visual_rule",
+    "carrier_router",
+    "component_rule",
+    "default_text_render_mode",
+    "truth_lock",
+    "visual_freedom",
 )
 
 LAYOUT_MOTIFS = (
@@ -1478,11 +1690,21 @@ def render_content_first_style_contract(style_lock: Path) -> str:
         f"适用语境：{str(style.get('scenario') or '').strip()}。",
         f"色彩角色：{'；'.join(color_parts)}。",
     ]
-    style_rules = [
-        str(style.get(field) or "").strip()
-        for field in CONTENT_FIRST_STYLE_RULE_FIELDS
-        if str(style.get(field) or "").strip()
-    ]
+    rule_fields = (
+        STYLE10_SEMANTIC_RULE_FIELDS
+        if int(style.get("id") or 0) == 10
+        else CONTENT_FIRST_STYLE_RULE_FIELDS
+    )
+    style_rules: list[str] = []
+    for field in rule_fields:
+        value = str(style.get(field) or "").strip()
+        if not value:
+            continue
+        style_rules.append(
+            f"默认文字渲染模式：{value}。"
+            if field == "default_text_render_mode"
+            else value
+        )
     if style_rules:
         lines.append("风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）：")
         lines.extend(f"- {rule}" for rule in style_rules)
@@ -1649,11 +1871,16 @@ def render_content_first_prompt(
     visual_intent_override: dict[str, str] | None = None,
     presentation_decision: PresentationDecision | None = None,
     semantic_context: PageSemanticContext | None = None,
+    semantic_composition_contract: str = "",
+    text_render_mode: str = DEFAULT_TEXT_RENDER_MODE,
 ) -> tuple[str, str]:
-    """Render a complete-content prompt without translating meaning into layout."""
+    """Render a content-first prompt with an explicit text/image boundary."""
+
+    text_render_mode = validate_text_render_mode(text_render_mode)
 
     # The core meaning is mandatory semantic context; a visible conclusion is optional.
     judgment_mode = resolve_onscreen_judgment_mode(page, visual_context)
+    semantic_visual = text_render_mode in {"semantic_visual", "editable_overlay"}
     onscreen = diagnostic_onscreen_text(page, "content-first-v1")
     onscreen_body = _flatten_markdown_tables(
         _clean_onscreen_for_imagegen(page.onscreen_text)
@@ -1710,6 +1937,11 @@ def render_content_first_prompt(
         page,
         relation,
     )
+    if semantic_composition_contract:
+        # Review mode replaces legacy composition inference. Keeping both would
+        # give ImageGen two conflicting structural instructions. The legacy
+        # relation remains available in review metadata for human comparison.
+        logic_contract = ""
     # Dense medium may still guide typography, but approved facts from full
     # prose must not be re-promoted into a must-onscreen contract. Gaps belong
     # in Stage 01 上屏文字, not in ImageGen recovery.
@@ -1731,58 +1963,109 @@ def render_content_first_prompt(
             )
         )
     )
-    parts = [
-        "【完整上屏内容】",
-        complete_semantics,
-        "",
-        (
-            CONTENT_FIRST_ONSCREEN_STORY_CONTRACT
-            if judgment_mode == "locked"
-            else (
-                CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT
-                if locked
-                else CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT
-            )
-        ),
-        "",
-        CONTENT_FIRST_PAGE_MISSION_LABEL,
-        page_mission.strip() or page.core_message.strip(),
-        "",
-        CONTENT_FIRST_CORE_MEANING_LABEL,
-        core_meaning_for_semantics,
-        "",
-        (
-            "【页面语义关系｜仅供理解，不上屏】\n" + semantic_relations
-            if semantic_relations
-            else ""
-        ),
-        "",
-        logic_contract if include_logic_context else "",
-        "",
-        # 【视觉中心】【视觉载体】and composition recipes are authoring-only.
-        # Never inject drawing how-to into ImageGen.
-        # Auto medium labels (editorial_dense / typographic / …) must not enter
-        # ImageGen. Style + onscreen + page logic already govern; only an
-        # explicit script layout/scene override may inject presentation text.
-        (
-            render_presentation_contract(page, presentation)
-            if presentation.source == "script"
-            else ""
-        ),
-        "",
-        IMAGEGEN_CANVAS_CONTRACT,
-        "",
-        IMAGEGEN_CHROME_BAN_CONTRACT,
-        "",
-        render_content_first_style_contract(style_lock),
-    ]
-    if locked:
-        semantics_index = parts.index("【完整上屏内容】")
-        parts[semantics_index:semantics_index] = [
-            "【锁定关键文字】",
-            locked,
+    presentation_contract = (
+        render_presentation_contract(page, presentation)
+        if presentation.source == "script"
+        else ""
+    )
+    if semantic_visual:
+        semantic_brief = render_semantic_visual_brief(page)
+        page_specific_semantics = str(
+            (visual_context or {}).get("visual_center") or ""
+        ).strip()
+        parts = [
+            SEMANTIC_VISUAL_TEXT_CONTRACT,
             "",
+            SEMANTIC_VISUAL_FACTS_HEADER,
+            f"- 页面核心意思：{core_meaning_for_semantics}",
+            (
+                f"- 页面副标题语义：{page.subtitle.strip()}"
+                if page.subtitle.strip()
+                else ""
+            ),
+            (
+                f"- 页面任务：{page_mission.strip()}"
+                if page_mission.strip()
+                else ""
+            ),
+            (
+                f"- 关键事实锚点（仅供校验）：{locked}"
+                if locked
+                else ""
+            ),
+            "",
+            SEMANTIC_VISUAL_BRIEF_HEADER,
+            semantic_brief,
+            (
+                "【页面专属语义图谱｜仅供理解】\n" + page_specific_semantics
+                if page_specific_semantics
+                else ""
+            ),
+            "",
+            (
+                "【页面语义关系｜仅供理解，不上屏】\n" + semantic_relations
+                if semantic_relations
+                else ""
+            ),
+            "",
+            logic_contract if include_logic_context else "",
+            "",
+            presentation_contract,
+            "",
+            IMAGEGEN_CANVAS_CONTRACT,
+            "",
+            SEMANTIC_VISUAL_CHROME_CONTRACT,
+            "",
+            render_content_first_style_contract(style_lock),
         ]
+    else:
+        parts = [
+            "【完整上屏内容】",
+            complete_semantics,
+            "",
+            (
+                CONTENT_FIRST_ONSCREEN_STORY_CONTRACT
+                if judgment_mode == "locked"
+                else (
+                    CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT
+                    if locked
+                    else CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT
+                )
+            ),
+            "",
+            CONTENT_FIRST_PAGE_MISSION_LABEL,
+            page_mission.strip() or page.core_message.strip(),
+            "",
+            CONTENT_FIRST_CORE_MEANING_LABEL,
+            core_meaning_for_semantics,
+            "",
+            (
+                "【页面语义关系｜仅供理解，不上屏】\n" + semantic_relations
+                if semantic_relations
+                else ""
+            ),
+            "",
+            logic_contract if include_logic_context else "",
+            "",
+            presentation_contract,
+            "",
+            IMAGEGEN_CANVAS_CONTRACT,
+            "",
+            IMAGEGEN_CHROME_BAN_CONTRACT,
+            "",
+            render_content_first_style_contract(style_lock),
+        ]
+        if locked:
+            semantics_index = parts.index("【完整上屏内容】")
+            parts[semantics_index:semantics_index] = [
+                "【锁定关键文字】",
+                locked,
+                "",
+            ]
+    if semantic_composition_contract:
+        # Composition guidance is semantic metadata, never visible copy.
+        insert_at = 2 if semantic_visual else 3
+        parts[insert_at:insert_at] = [semantic_composition_contract, ""]
     return relation, "\n".join(parts).strip() + "\n"
 
 
@@ -1795,6 +2078,7 @@ def _page_visual_intent_overrides(project: Path) -> dict[str, dict[str, str]]:
 
     allowed = {
         "visual_intent_type",
+        "semantic_intent_type",
         "visual_proof",
         "visual_carrier",
         *VISUAL_INTENT_TEMPLATES["judgment_evidence"].keys(),
@@ -1810,8 +2094,15 @@ def compile_page_prompt(
     visual_intent_override: dict[str, str] | None = None,
     prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
     prior_decisions: tuple[PresentationDecision, ...] = (),
+    visual_structure_mode: str = "off",
+    prior_semantic_carriers: tuple[str, ...] = (),
+    text_render_mode: str | None = None,
 ) -> CompiledPagePrompt:
     prompt_compiler = validate_prompt_compiler(prompt_compiler)
+    if visual_structure_mode not in {"off", "review"}:
+        raise ValueError("visual_structure_mode must be 'off' or 'review'")
+    if visual_structure_mode == "review" and prompt_compiler != "content-first-v1":
+        raise ValueError("visual structure review mode requires content-first-v1")
     semantic_context = derive_page_semantics(
         page,
         page_mission=page_mission,
@@ -1822,12 +2113,52 @@ def compile_page_prompt(
     )
     if prompt_compiler == "content-first-v1":
         selected_style = _selected_content_first_style(style_lock)
+        resolved_text_render_mode = resolve_text_render_mode(
+            style_lock,
+            explicit=text_render_mode,
+        )
         relation = semantic_context.relation
         presentation = resolve_presentation_decision(
             page,
             relation,
             prior_decisions,
         )
+        semantic_structure: dict[str, object] | None = None
+        semantic_composition_contract = ""
+        if visual_structure_mode == "review":
+            semantic_decision = resolve_page_semantic_intent(
+                page,
+                page_mission,
+                context=visual_context,
+                override=visual_intent_override,
+            )
+            composition = resolve_composition(semantic_decision)
+            carrier = select_visual_carrier(
+                semantic_decision,
+                composition,
+                prior_semantic_carriers,
+            )
+            semantic_structure = {
+                "mode": visual_structure_mode,
+                "intent": semantic_decision.to_dict(),
+                "composition": composition.to_dict(),
+                "visual_carrier": carrier.to_dict(),
+            }
+            semantic_composition_contract = "\n".join(
+                (
+                    "[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.",
+                    "[Prompt context] Page-specific visual intent (composition guidance only; do not render field names or instruction text)",
+                    f"- Selected visual intent type: {semantic_decision.primary_intent}",
+                    f"- Decision relationship: {semantic_decision.primary_intent}",
+                    f"- Dominant visual carrier: {carrier.selected}",
+                    f"- Recommended composition: {composition.spatial_organization}",
+                    f"- Reading path: {' -> '.join(composition.reading_path)}",
+                    f"- Relationship encoding: {', '.join(composition.relationship_encoding)}",
+                    f"- Required structural elements: {', '.join(composition.required_elements)}",
+                    f"- Avoid on this page: {', '.join(composition.avoid)}",
+                    "- Keep one visual center. Attach supporting text to its business objects and relation nodes; do not create an independent text wall.",
+                )
+            )
         relation, prompt = render_content_first_prompt(
             page,
             style_lock=style_lock,
@@ -1836,6 +2167,8 @@ def compile_page_prompt(
             visual_intent_override=visual_intent_override,
             presentation_decision=presentation,
             semantic_context=semantic_context,
+            semantic_composition_contract=semantic_composition_contract,
+            text_render_mode=resolved_text_render_mode,
         )
         assert_deliverable_prompt(prompt)
         if EVIDENCE_ID_RE.search(prompt):
@@ -1855,6 +2188,15 @@ def compile_page_prompt(
                 "fact.source_boundary",
                 "style.selected_lock",
                 "style.tone_only",
+                *(
+                    (
+                        "semantic_structure.intent",
+                        "semantic_structure.composition",
+                        "semantic_structure.carrier",
+                    )
+                    if visual_structure_mode == "review"
+                    else ()
+                ),
             ),
             style_selection={
                 "id": selected_style.get("id"),
@@ -1866,6 +2208,8 @@ def compile_page_prompt(
             presentation=presentation,
             image_locked_text=select_image_locked_text(page, visual_context),
             editable_body_text=page.onscreen_text.strip(),
+            semantic_structure=semantic_structure,
+            text_render_mode=resolved_text_render_mode,
         )
 
     relation = semantic_context.relation
@@ -1938,6 +2282,8 @@ def build_page_prompt(
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
     prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
+    visual_structure_mode: str = "off",
+    text_render_mode: str | None = None,
 ) -> str:
     """Backward-compatible string API over the versioned prompt compiler."""
 
@@ -1948,6 +2294,8 @@ def build_page_prompt(
         visual_context=visual_context,
         visual_intent_override=visual_intent_override,
         prompt_compiler=prompt_compiler,
+        visual_structure_mode=visual_structure_mode,
+        text_render_mode=text_render_mode,
     ).prompt
 
 
@@ -1960,9 +2308,13 @@ def write_chapter_handoff(
     batch_name: str,
     prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
     compare_with: str | None = None,
+    visual_structure_mode: str = "off",
+    text_render_mode: str | None = None,
 ) -> dict[str, Path]:
     if compare_with is not None and compare_with not in PROMPT_COMPILERS:
         raise ValueError(f"unsupported comparison compiler: {compare_with}")
+    if visual_structure_mode not in {"off", "review"}:
+        raise ValueError("visual_structure_mode must be 'off' or 'review'")
     document = parse_script_markdown(script.read_text(encoding="utf-8"))
     by_num = {int(page.page_id[1:]): page for page in document.pages}
     missions = _page_missions(project)
@@ -1977,9 +2329,20 @@ def write_chapter_handoff(
             "- 送入：页面任务、核心判断、主导关系标签、锁定关键文字、完整上屏与页面语义关系、画布尺寸，以及所选风格的气质与配色。",
             "- 不送入：源材料全文、完整事实边界或重复设计理论。",
             "- 不送入：证据编号、讲解提示、文字取舍、图片数量或后期制作规则。",
-            "- 不送入：视觉载体、视觉中心、空间组织、本页避免、视觉证明等任何构图/画法指导。",
+            (
+                "- 默认不送入视觉载体、视觉中心、空间组织、本页避免、视觉证明等构图指导；本批次已显式开启审阅模式，以下页面仅注入通过结构合同生成的构图模块。"
+                if visual_structure_mode == "review"
+                else "- 不送入：视觉载体、视觉中心、空间组织、本页避免、视觉证明等任何构图/画法指导。"
+            ),
             "- 页面任务、核心判断与主导关系只用于理解业务关系；锁定关键文字逐字准确，完整上屏内容均需进入 full 图。",
         ]
+        if visual_structure_mode == "review":
+            compilation_rules.extend(
+                [
+                    "- 已显式启用视觉结构审阅模式：在内容锁定之后加入主导关系、空间组织、阅读路径、载体和退化禁项。",
+                    "- 该模式只生成待审阅提示词，不代表视觉结构已获人工批准，也不得自动进入 ImageGen。",
+                ]
+            )
     else:
         compilation_rules = [
             "- 送入：页面使命、核心判断、上屏文字，以及页面级视觉意图。",
@@ -1994,6 +2357,8 @@ def write_chapter_handoff(
         f"> 源脚本：`{script.as_posix()}`",
         f"> 风格锁定：`{style_lock.as_posix()}`",
         f"> Prompt compiler: `{prompt_compiler}`",
+        f"> Visual structure mode: `{visual_structure_mode}`",
+        f"> Text render mode: `{text_render_mode or 'style default'}`",
         "",
         "## 编入规则",
         "",
@@ -2005,6 +2370,7 @@ def write_chapter_handoff(
     content_prompts: list[str] = []
     diagnostics: list[PagePromptDiagnostics] = []
     prior_decisions: list[PresentationDecision] = []
+    prior_semantic_carriers: list[str] = []
     comparison_diagnostics: list[
         tuple[PagePromptDiagnostics, PagePromptDiagnostics]
     ] = []
@@ -2031,9 +2397,16 @@ def write_chapter_handoff(
             visual_intent_override=visual_intent_overrides.get(page.page_id),
             prompt_compiler=prompt_compiler,
             prior_decisions=tuple(prior_decisions),
+            visual_structure_mode=visual_structure_mode,
+            prior_semantic_carriers=tuple(prior_semantic_carriers),
+            text_render_mode=text_render_mode,
         )
         if compiled.presentation is not None:
             prior_decisions.append(compiled.presentation)
+        if compiled.semantic_structure is not None:
+            prior_semantic_carriers.append(
+                str(compiled.semantic_structure["visual_carrier"]["selected"])
+            )
         prompt = compiled.prompt
         content_prompts.append(prompt)
         selected_diagnostics = PagePromptDiagnostics(
@@ -2058,6 +2431,8 @@ def write_chapter_handoff(
                 visual_intent_override=visual_intent_overrides.get(page.page_id),
                 prompt_compiler=compare_with,
                 prior_decisions=tuple(prior_decisions[:-1]),
+                visual_structure_mode="off",
+                text_render_mode=text_render_mode,
             )
             comparison_page = PagePromptDiagnostics(
                 page_id=page.page_id,
@@ -2096,6 +2471,24 @@ def write_chapter_handoff(
             [
                 f"## 第{page_number}页：{page.title or page.page_id}",
                 "",
+                *(
+                    [
+                        (
+                            "- 结构分类对照：现行生产关系 "
+                            f"`{compiled.relation}` → 新审阅关系 "
+                            f"`{compiled.semantic_structure['intent']['primary_intent']}`；"
+                            + (
+                                "需人工确认后方可切换。"
+                                if compiled.relation
+                                != compiled.semantic_structure["intent"]["legacy_intent"]
+                                else "兼容映射一致。"
+                            )
+                        ),
+                        "",
+                    ]
+                    if compiled.semantic_structure is not None
+                    else []
+                ),
                 prompt,
                 "",
             ]
@@ -2162,6 +2555,18 @@ def main(argv: list[str] | None = None) -> int:
         "--compare-with",
         choices=PROMPT_COMPILERS,
     )
+    parser.add_argument(
+        "--visual-structure-mode",
+        choices=("off", "review"),
+        default="off",
+        help="Opt-in semantic composition guidance; review never bypasses approval.",
+    )
+    parser.add_argument(
+        "--text-render-mode",
+        choices=TEXT_RENDER_MODES,
+        default=None,
+        help="Override style default: full_image, semantic_visual, or editable_overlay.",
+    )
     args = parser.parse_args(argv)
 
     raw = args.pages.strip()
@@ -2179,6 +2584,8 @@ def main(argv: list[str] | None = None) -> int:
         batch_name=args.batch_name,
         prompt_compiler=args.prompt_compiler,
         compare_with=args.compare_with,
+        visual_structure_mode=args.visual_structure_mode,
+        text_render_mode=args.text_render_mode,
     )
     print(f"batch_review={outputs['batch']}")
     print(f"diagnostics={outputs['diagnostics']}")

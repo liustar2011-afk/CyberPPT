@@ -1,0 +1,15 @@
+schema_version: cyberppt.legacy-intent-aliases.v1
+aliases:
+  boundary_guardrail: risk_control_boundary
+  crosscutting_chain: layered_architecture
+  hierarchy_support: layered_architecture
+  multi_semantic_foundation: multi_semantic_foundation
+  comparison: comparison_tension
+  closed_loop: closed_loop_operation
+  path_chain: transformation_pipeline
+  phase: phased_roadmap
+  capability_relationship: convergence_to_capability
+  decision_admission: risk_control_boundary
+  scenario_application: scene_embedded_flow
+  causal: problem_cause_resolution
+  judgment_evidence: evidence_to_judgment

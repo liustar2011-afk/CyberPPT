@@ -96,6 +96,9 @@ def prepare_outline_input(project: Path) -> Path:
         "`scenario_application`, `multi_semantic_foundation`, `causal`, "
         "`closed_loop`, `phase`, `capability_relationship`; omit it when the "
         "relationship is not yet clear.",
+        "- `semantic_intent_type`: optional canonical visual-structure relationship for the "
+        "new review router. Use only after semantic-intent review; it does not bypass script "
+        "or ImageGen approval. Legacy `visual_intent_type` remains the production fallback.",
         "- `visual_proof`: optional one-sentence statement of how the visual relationship "
         "expresses `core_message`; omit it when the relationship template is sufficient.",
         "",

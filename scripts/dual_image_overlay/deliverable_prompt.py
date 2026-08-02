@@ -357,31 +357,57 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
         _collapse_text(style.get("semantic_structure_rule"))
     )
     scene_layer_rule = _strip_visual_structure_meta(_collapse_text(style.get("scene_layer_rule")))
+    semantic_image_rule = _strip_visual_structure_meta(
+        _collapse_text(style.get("semantic_image_rule"))
+    )
     people_rule = _strip_visual_structure_meta(_collapse_text(style.get("people_rule")))
     factuality_rule = _strip_visual_structure_meta(_collapse_text(style.get("factuality_rule")))
     semantic_image_text_rule = _strip_visual_structure_meta(
         _collapse_text(style.get("semantic_image_text_rule"))
     )
+    default_text_render_mode = _collapse_text(style.get("default_text_render_mode"))
+    truth_lock = _collapse_text(style.get("truth_lock"))
+    visual_freedom = _collapse_text(style.get("visual_freedom"))
     content_visual_rule = _strip_visual_structure_meta(_collapse_text(style.get("content_visual_rule")))
     icon_rule = _strip_visual_structure_meta(_collapse_text(style.get("icon_rule")))
     density_rule = _collapse_text(style.get("density_rule"))
+    carrier_router = _collapse_text(style.get("carrier_router"))
+    component_rule = _collapse_text(style.get("component_rule"))
+    deck_consistency_rule = _collapse_text(style.get("deck_consistency_rule"))
+    prompt_sequence_rule = _collapse_text(style.get("prompt_sequence_rule"))
     parts = [prompt_contract]
     # Styles with an explicit two-layer contract must send that priority into
     # ImageGen. Legacy styles keep their existing prompt behavior unchanged.
     if semantic_structure_rule:
         parts.extend(part for part in (scope_rule, semantic_structure_rule, scene_layer_rule) if part)
+    if semantic_image_rule:
+        parts.append(semantic_image_rule)
     if people_rule:
         parts.append(people_rule)
     if factuality_rule:
         parts.append(factuality_rule)
     if semantic_image_text_rule:
         parts.append(semantic_image_text_rule)
+    if default_text_render_mode:
+        parts.append(f"默认文字渲染模式：{default_text_render_mode}。")
+    if truth_lock:
+        parts.append(truth_lock)
+    if visual_freedom:
+        parts.append(visual_freedom)
     if content_visual_rule:
         parts.append(content_visual_rule)
     if icon_rule:
         parts.append(icon_rule)
     if density_rule:
         parts.append(density_rule)
+    if carrier_router:
+        parts.append(carrier_router)
+    if component_rule:
+        parts.append(component_rule)
+    if deck_consistency_rule:
+        parts.append(deck_consistency_rule)
+    if prompt_sequence_rule:
+        parts.append(prompt_sequence_rule)
     return "\n\n".join(part for part in parts if part)
 
 
@@ -512,12 +538,55 @@ def uses_compact_style_contract(style_lock_path: Path | None) -> bool:
     return isinstance(style, dict) and bool(_collapse_text(style.get("style_prompt_v2")))
 
 
+def _resolve_text_render_mode(
+    style_lock_path: Path | None,
+    explicit: str | None,
+) -> str:
+    value = str(explicit or "").strip()
+    if not value and style_lock_path is not None and style_lock_path.is_file():
+        try:
+            payload = json.loads(style_lock_path.read_text(encoding="utf-8"))
+            style = payload.get("style") if isinstance(payload, dict) else None
+            if isinstance(style, dict):
+                value = str(style.get("default_text_render_mode") or "").strip()
+        except (OSError, json.JSONDecodeError):
+            value = ""
+    value = value or "full_image"
+    if value not in {"full_image", "semantic_visual", "editable_overlay"}:
+        raise ValueError(
+            "unsupported text render mode: "
+            f"{value}; choose full_image, semantic_visual, or editable_overlay"
+        )
+    return value
+
+
+def _semantic_visual_lines(lines: list[str]) -> list[str]:
+    """Keep concrete nouns/actions while removing the sentence-layout lock."""
+
+    anchors: list[str] = []
+    for line in lines:
+        parts = [
+            part.strip(" -*")
+            for part in re.split(r"[，,、；;。:：→—\-]+", line)
+            if part.strip(" -*")
+        ]
+        if not parts:
+            continue
+        compact = " / ".join(parts[:8])
+        if len(compact) > 120:
+            compact = compact[:120].rstrip("/ ")
+        if compact and compact not in anchors:
+            anchors.append(compact)
+    return anchors
+
+
 def render_prompt(
     page: PageBlock,
     *,
     style_lock_path: Path | None = None,
     composition_guidance: str = "",
     compiler_version: str = "legacy",
+    text_render_mode: str | None = None,
 ) -> str:
     creative_brief = compiler_version == "creative-brief-v1"
     content_lines = (
@@ -525,7 +594,13 @@ def render_prompt(
         if creative_brief
         else _filter_imagegen_content_lines(visible_deliverable_lines(page))
     )
-    body = "\n".join(f"- {line}" for line in content_lines)
+    resolved_text_render_mode = _resolve_text_render_mode(style_lock_path, text_render_mode)
+    semantic_visual = resolved_text_render_mode in {"semantic_visual", "editable_overlay"}
+    if semantic_visual:
+        semantic_lines = _semantic_visual_lines(content_lines)
+        body = "\n".join(f"- {line}" for line in semantic_lines)
+    else:
+        body = "\n".join(f"- {line}" for line in content_lines)
     compact_style = uses_compact_style_contract(style_lock_path)
     layout_directives = [] if compact_style else layout_density_directives(page)
     visual_grammar = (
@@ -549,8 +624,17 @@ def render_prompt(
         )
     parts.extend(
         [
-        "【内容锁定】",
+        (
+            "【事实语义参考｜仅供理解，不在图内排版】"
+            if semantic_visual
+            else "【内容锁定】"
+        ),
         body,
+        (
+            "正文、数字、主体名称和完整结论由后续 PPT 可编辑文字层承载；默认不要在图片中生成长句、伪中文或新增标签。"
+            if semantic_visual
+            else ""
+        ),
         "",
         "【构图指令】",
         "画布 2048×1024（2:1）。只生成正文内容区成稿图。",
@@ -583,7 +667,11 @@ def render_prompt(
     parts.extend(
         [
             "",
-            "忠实于【内容锁定】：核心模块、关键数字与业务术语须可读；不得近义替换或生成伪文字。",
+            (
+                "忠实于【事实语义参考】表达业务对象、动作和关系；不要把参考短语逐字排版进图片。"
+                if semantic_visual
+                else "忠实于【内容锁定】：核心模块、关键数字与业务术语须可读；不得近义替换或生成伪文字。"
+            ),
         ]
     )
     return "\n".join(parts).strip() + "\n"
