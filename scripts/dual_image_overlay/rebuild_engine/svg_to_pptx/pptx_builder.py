@@ -164,7 +164,13 @@ def _windows_extended_path(path: Path) -> str:
 
 def _create_writable_work_dir(output_path: Path) -> Path:
     """Create a real writable work directory for PPTX assembly."""
-    parents = [output_path.parent, Path.cwd(), Path(tempfile.gettempdir())]
+    # PPTX extraction creates several nested package directories.  On Windows,
+    # putting that workspace beside a deeply nested delivery path can exceed
+    # MAX_PATH even when the final PPTX name itself is valid.
+    if os.name == "nt":
+        parents = [Path(tempfile.gettempdir()), output_path.parent, Path.cwd()]
+    else:
+        parents = [output_path.parent, Path.cwd(), Path(tempfile.gettempdir())]
     seen: set[str] = set()
     errors: list[str] = []
 

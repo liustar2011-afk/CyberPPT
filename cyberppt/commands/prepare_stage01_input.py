@@ -35,18 +35,23 @@ def prepare_outline_input(project: Path) -> Path:
     lines = [
         "# Outline authoring input",
         "",
-        "Set root `visible_judgment_mode` to `required` for formal projects.",
-        "Create the Outline from Source Truth. Use canonical field names:",
-        "`page_job`, `business_question`, `main_message`, "
-        "`onscreen_judgment`, "
-        "`judgment_role`, "
-        "`onscreen_judgment_mode`, "
-        "`new_value_vs_previous`, `reserved_for_later`, `proof_points`, "
+        "Before planning pages, preserve the Source Truth `document_semantics`: `document_role` says what artifact is being presented; `subject_of_report` says what the presentation is about; `primary_thesis` is the deck-level conclusion; `decision_boundary` limits its maturity.",
+        "Never replace the subject of report with the document-production activity. For example, a pre-study results briefing about capability construction is not a presentation arguing for another pre-study.",
+        "Copy `document_semantics` into the outline and set root `narrative_thesis` exactly to its `primary_thesis`.",
+        "",
+        "Every content page must state one source-supported `core_message`: the smallest complete meaning the page communicates.",
+        "A core message may express a fact, composition, relationship, process, scope, boundary, or a source-supported judgment.",
+        "Set schema to `cyberppt.outline.v2` and root `core_message_derivation_mode` to `required`.",
+        "Create the Outline from Source Truth. Use canonical field names when the material calls for them:",
+        "required `page_mission`, required `core_message`, optional `onscreen_conclusion`, "
+        "`new_value_vs_previous`, `reserved_for_later`, `content_units`, "
         "`visual_intent_type`.",
         "",
-        "## coverage_targets",
-        "",
     ]
+    semantics = truth.get("document_semantics")
+    lines += ["", "## document_semantics", ""]
+    lines.append(json.dumps(semantics, ensure_ascii=False) if isinstance(semantics, dict) else "- missing")
+    lines += ["", "## coverage_targets", ""]
     for target in truth.get("coverage_targets", []):
         if not isinstance(target, dict):
             continue
@@ -71,26 +76,20 @@ def prepare_outline_input(project: Path) -> Path:
         "",
         "## required_content_page_contract",
         "",
-        "Each content page must define:",
-        "- `page_job`",
-        "- `business_question`",
-        "- `main_message`",
-        "- `subtitle`: a concise audience-facing compression of `main_message`, "
-        "normally no more than 30 Chinese characters; preserve decisive numbers, "
-        "business objects, and the judgment without repeating the page title",
-        "- `onscreen_judgment`: retain the approved full judgment as semantic "
-        "composition metadata; when `subtitle` carries it, use `semantic_only` "
-        "so the body image does not repeat it",
-        "- `judgment_role`: use `relationship`, `positioning`, `boundary`, or "
-        "`mechanism` when the judgment should normally be proven visually; use "
-        "`fact`, `metric`, `milestone`, `acceptance`, or `prohibition` when it "
-        "should normally remain verbatim-visible",
-        "- `上屏文字` must remain independently readable after compression: preserve "
-        "the page's essential evidence, explanatory relation, causal chain, and "
-        "implication or handoff instead of reducing the prose to labels and keywords",
+        "Each content page must define its semantic center, evidence, and content structure:",
+        "- `page_mission`: required internal editorial responsibility; describe what the page does in the deck, not a claim it must prove",
+        "- `business_question`: optional; omit it when turning the material into a question would impose an argumentative frame",
+        "- `core_message`: required; state the smallest complete meaning supported by the cited material, without requiring argument, causality, necessity, value judgment, or action",
+        "- `core_message_derivation`: required; include `source_refs`, `supporting_statements`, `derivation`, `introduced_relations`, and `introduced_modalities`",
+        "- `content_relations`: required; record the actual source-supported relations such as composed_of, contains, layered_as, corresponds_to, sequence_before, applies_to, covers, bounded_by, provides_to, or supports",
+        "- `subtitle`: optional; it may summarize page content and must not manufacture a conclusion",
+        "- `onscreen_conclusion`: optional; write it only when it is an equal-strength visible compression of `core_message`",
+        "- Definitions, composition, design, lists, process, duties, and arrangements still require a complete core_message, even when no visible conclusion is appropriate",
+        "- Never add causality, necessity, exclusivity, certainty, or outcome claims merely to complete a field",
+        "- `上屏文字` must remain independently readable and preserve only relations actually stated or directly supported by the source",
         "- `new_value_vs_previous`",
         "- `reserved_for_later`",
-        "- `proof_points`: claim, source_refs, consumption",
+        "- `content_units`: statement, source_refs, role (`primary`, `supporting`, or `boundary`); these are source-grounded content units, not proof claims",
         "- `visual_intent_type`: optional explicit ImageGen relationship type. Use one of "
         "`judgment_evidence`, `boundary_guardrail`, `hierarchy_support`, "
         "`decision_admission`, `comparison`, "
@@ -98,13 +97,13 @@ def prepare_outline_input(project: Path) -> Path:
         "`closed_loop`, `phase`, `capability_relationship`; omit it when the "
         "relationship is not yet clear.",
         "- `visual_proof`: optional one-sentence statement of how the visual relationship "
-        "proves `main_message`; omit it when the relationship template is sufficient.",
+        "expresses `core_message`; omit it when the relationship template is sufficient.",
         "",
-        "Before creating `proof_points`, screen each candidate against `page_job`, `business_question`, and `main_message`.",
-        "- Keep a candidate only when it directly establishes the page judgment or a necessary step in answering the page question.",
-        "- Boundary or unresolved records default to `boundary_refs`; use them as primary proof only when the page itself defines positioning, scope, assurance conditions, or a decision.",
-        "- When several records establish one implication, consolidate them into one proof point instead of listing each record as an independent direction.",
-        "- Keep at most three primary proof directions on one page; move unrelated material to its actual topic page or reserve it for later.",
+        "Before creating `content_units`, screen each candidate against the source-supported page content.",
+        "- Keep a unit only when it directly presents cited material or supplies part of the page core_message.",
+        "- Use `boundary` role when a condition or unresolved item is genuinely part of this page's subject; page or claim taxonomies must not decide this.",
+        "- Consolidate records only when they express one complete content unit; preserve distinct objects and relations when aggregation would change meaning.",
+        "- Do not manufacture implications merely to turn descriptive material into proof.",
     ]
     output = project / "workbench/stages/01-analysis/outline-authoring-input.md"
     output.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
@@ -126,27 +125,27 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
     lines = [
         "# Page script authoring input",
         "",
-        "Write full prose first; derive on-screen text from it.",
-        "Every content page must place `副标题` before `上屏结论` and `上屏文字`. "
-        "The template subtitle carries the concise judgment; body on-screen text "
-        "carries the page's own evidence, relationships, and business implications.",
+        "Write backend composition guidance as a separate two-line block: `【视觉结构，不上屏】` followed by the guidance text. Never place that guidance inside `上屏文字`.",
+        "Write full prose from the approved core_message and source-supported content relations; derive on-screen text from it.",
+        "Do not add `副标题` or `上屏结论` merely because the page is a content page. "
+        "When the approved Outline has them, preserve them; when it does not, begin with the source-supported on-screen modules.",
         "When migrating an already approved script to this subtitle rule, preserve "
         "its existing `上屏文字` unchanged. Only add or update `副标题`, retain the "
         "full judgment as semantic metadata, and set the appropriate display mode.",
-        "Derive the default display policy from `judgment_role`: relationship/positioning/boundary/mechanism become `semantic_only`; fact/metric/milestone/acceptance/prohibition become `locked`. Use `onscreen_judgment_mode` only as an explicit override.",
-        "Emit `onscreen_judgment` in the completed Chinese script as `- 上屏结论：...` without terminal punctuation.",
+        "The approved core_message is mandatory semantic metadata; its onscreen_conclusion remains optional.",
+        "Never strengthen the core_message from page labels, modules, visual structure, or speaker notes.",
         "The visible layer must be independently readable without speaker narration.",
         "First fix the page relation skeleton (path / layers / loop / judgment-evidence), "
         "then write matching on-screen modules. Do not chase token coverage by stuffing "
         "full-prose sentences onto the slide.",
-        "Write `上屏文字` as a focused body story: source-supported evidence → "
-        "explanation or causal relation → implication or handoff. "
+        "Write `上屏文字` as a focused body expression: source-supported content → "
+        "the same-strength relation stated by the material → implication or handoff only when supported. "
         "Do not repeat the page title or subtitle inside the body.",
-        "Boundary is opt-in, never a mandatory fourth beat. Only pages whose declared "
-        "business subject is scope, admission, safety, governance, quality, compliance, "
-        "risk, assurance, deployment, capacity, degradation, or acceptance may show boundary or "
-        "constraint modules. On all other pages, keep boundary material in internal "
-        "controls and never create labels such as 质量边界、质量要求、安全边界 or 约束条件.",
+        "Boundary is opt-in, never a mandatory fourth beat. A boundary, evidence-status, "
+        "pending-proof, or research-status module may appear only when it is the primary "
+        "meaning of the approved core_message, not merely mentioned by the title, page mission, "
+        "or a trailing caveat. Otherwise keep it in full prose, narration, or traceability and "
+        "never promote it to a peer on-screen module.",
         "Do not compress the full prose into module labels plus keywords. Preserve every fact, number, and relation needed to understand why the conclusion follows; preserve a limitation only when the limitation is itself part of the declared page subject.",
         "Count only Chinese, Latin, and numeric characters: target roughly 50% of the full prose, with a hard minimum of 220 and a cap target of 320 visible characters.",
         "Use at least two evidence-bearing on-screen lines. The visible conclusion may also carry the implication or handoff; do not add formulaic 因此/由此 wording only to satisfy the contract.",
@@ -163,26 +162,36 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
     for page in pages:
         lines += [
             f"## {page.get('page_id')} {page.get('title')}",
-            f"- page_job: {page.get('page_job', '')}",
+            f"- page_mission: {page.get('page_mission') or page.get('page_job', '')}",
             f"- business_question: {page.get('business_question', '')}",
-            f"- main_message: {page.get('main_message', '')}",
-            f"- onscreen_judgment: {page.get('onscreen_judgment', '')}",
-            f"- judgment_role: {page.get('judgment_role', '')}",
-            f"- onscreen_judgment_mode: {page.get('onscreen_judgment_mode', 'auto')}",
+            f"- core_message: {page.get('core_message') or page.get('main_message', '')}",
+            f"- onscreen_conclusion: {page.get('onscreen_conclusion') or page.get('onscreen_judgment', '')}",
+            f"- core_message_derivation: {json.dumps(page.get('core_message_derivation') or page.get('judgment_derivation') or {}, ensure_ascii=False)}",
+            f"- content_relations: {json.dumps(page.get('content_relations') or [], ensure_ascii=False)}",
+            f"- onscreen_conclusion_mode: {page.get('onscreen_conclusion_mode') or page.get('onscreen_judgment_mode', 'auto')}",
             f"- new_value_vs_previous: {page.get('new_value_vs_previous', '')}",
             f"- reserved_for_later: {page.get('reserved_for_later', '')}",
             f"- visual_intent_type: {page.get('visual_intent_type') or 'auto'}",
             f"- visual_proof: {page.get('visual_proof') or 'auto'}",
-            "- proof_points:",
+            "- content_units:",
         ]
-        for point in page.get("proof_points", []):
+        content_units = page.get("content_units") or [
+            {
+                "statement": point.get("claim"),
+                "source_refs": point.get("source_refs", []),
+                "role": "primary" if point.get("consumption") == "primary" else "supporting",
+            }
+            for point in page.get("proof_points", [])
+            if isinstance(point, dict)
+        ]
+        for point in content_units:
             if isinstance(point, dict):
                 refs = ", ".join(str(item) for item in point.get("source_refs", []))
-                lines.append(f"  - [{point.get('consumption', 'supporting')}] {point.get('claim', '')} ({refs})")
+                lines.append(f"  - [{point.get('role', 'supporting')}] {point.get('statement', '')} ({refs})")
         proof_source_ids = list(
             dict.fromkeys(
                 str(source_id)
-                for point in page.get("proof_points", [])
+                for point in content_units
                 if isinstance(point, dict)
                 for source_id in point.get("source_refs", [])
             )
@@ -207,17 +216,18 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         receipt = {
             "schema": "cyberppt.page_contract_receipt.v2",
             "page_id": page.get("page_id"),
-            "page_job": page.get("page_job"),
+            "page_mission": page.get("page_mission") or page.get("page_job"),
             "business_question": page.get("business_question"),
-            "main_message": page.get("main_message"),
-            "onscreen_judgment": page.get("onscreen_judgment"),
-            "judgment_role": page.get("judgment_role"),
-            "onscreen_judgment_mode": page.get("onscreen_judgment_mode"),
+            "core_message": page.get("core_message") or page.get("main_message"),
+            "onscreen_conclusion": page.get("onscreen_conclusion") or page.get("onscreen_judgment"),
+            "core_message_derivation": page.get("core_message_derivation") or page.get("judgment_derivation"),
+            "content_relations": page.get("content_relations", []),
+            "onscreen_conclusion_mode": page.get("onscreen_conclusion_mode") or page.get("onscreen_judgment_mode"),
             "new_value_vs_previous": page.get("new_value_vs_previous"),
             "reserved_for_later": page.get("reserved_for_later"),
             "visual_intent_type": page.get("visual_intent_type"),
             "visual_proof": page.get("visual_proof"),
-            "proof_points": page.get("proof_points", []),
+            "content_units": content_units,
             "boundary_refs": page.get("boundary_refs", []),
             "new_value_realized": True,
             "reserved_for_later_respected": True,

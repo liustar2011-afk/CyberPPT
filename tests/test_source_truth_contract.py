@@ -90,6 +90,23 @@ class SourceTruthContractTests(unittest.TestCase):
         payload = load_source_truth(self._write(valid_payload()))
         self.assertEqual("cyberppt.source_truth.v1", payload["schema"])
 
+    def test_required_document_semantics_cannot_be_empty(self) -> None:
+        payload = valid_payload()
+        payload["document_semantics_mode"] = "required"
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertIn("DOCUMENT_SEMANTICS_MISSING", codes)
+
+        payload["document_semantics"] = {
+            "document_role": "前期研究成果汇报",
+            "subject_of_report": "能力建设",
+            "primary_thesis": "需要推进能力建设",
+            "decision_boundary": "范围与投资仍需论证",
+            "source_refs": ["S001"],
+        }
+        codes = {item.code for item in audit_source_truth(payload)}
+        self.assertNotIn("DOCUMENT_SEMANTICS_MISSING", codes)
+        self.assertNotIn("DOCUMENT_SEMANTICS_INVALID", codes)
+
     def test_source_receipt_records_sha256_and_required_missing_file(self) -> None:
         payload = valid_payload()
         with tempfile.TemporaryDirectory() as directory:

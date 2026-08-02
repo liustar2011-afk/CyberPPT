@@ -7,6 +7,7 @@ import json
 import re
 from pathlib import Path
 
+from cyberppt.artifact_ledger import append_artifacts
 from cyberppt.script_quality_contract import (
     PAGE_HEADING_RE,
     audit_final_manuscript_form,
@@ -101,7 +102,7 @@ def _merge_missing_enrichments(
     return merged
 
 
-def _merge_missing_onscreen_judgments(
+def _merge_missing_onscreen_conclusions(
     pages: dict[int, str],
     project: Path,
 ) -> dict[int, str]:
@@ -112,9 +113,9 @@ def _merge_missing_onscreen_judgments(
     outline_pages = payload.get("pages") if isinstance(payload, dict) else None
     if not isinstance(outline_pages, list):
         return pages
-    judgments = {
+    conclusions = {
         int(str(item.get("page_id") or "").removeprefix("p")): str(
-            item.get("onscreen_judgment") or ""
+            item.get("onscreen_conclusion") or item.get("onscreen_judgment") or ""
         ).strip()
         for item in outline_pages
         if isinstance(item, dict)
@@ -122,7 +123,7 @@ def _merge_missing_onscreen_judgments(
     }
     explicit_modes = {
         int(str(item.get("page_id") or "").removeprefix("p")): str(
-            item.get("onscreen_judgment_mode") or ""
+            item.get("onscreen_conclusion_mode") or item.get("onscreen_judgment_mode") or ""
         ).strip()
         for item in outline_pages
         if isinstance(item, dict)
@@ -140,8 +141,14 @@ def _merge_missing_onscreen_judgments(
     for number, block in pages.items():
         if not re.search(r"^- 页面类型：内容(?:页)?\s*$", block, re.MULTILINE):
             continue
-        judgment = judgments.get(number, "")
+        judgment = conclusions.get(number, "")
         judgment_role = judgment_roles.get(number, "")
+        if not judgment:
+            if "- 上屏结论：" in block:
+                raise ValueError(
+                    f"content page p{number:02d} introduces 上屏结论 although the approved outline has none"
+                )
+            continue
         try:
             judgment_mode = resolve_judgment_mode(
                 explicit_modes.get(number, ""),
@@ -151,10 +158,6 @@ def _merge_missing_onscreen_judgments(
             raise ValueError(
                 f"content page p{number:02d} has invalid judgment policy: {exc}"
             ) from exc
-        if not judgment:
-            raise ValueError(
-                f"content page p{number:02d} has no 上屏结论 in drafts or outline"
-            )
         marker = "- 上屏文字："
         if marker not in block:
             raise ValueError(f"content page p{number:02d} has no 上屏文字 field")
@@ -183,7 +186,10 @@ def _merge_missing_onscreen_judgments(
         receipt_match = PAGE_CONTRACT_RECEIPT_RE.search(merged[number])
         if receipt_match:
             receipt = json.loads(receipt_match.group(1))
-            receipt["onscreen_judgment"] = judgment
+            if receipt.get("schema") == "cyberppt.page_contract_receipt.v2":
+                receipt["onscreen_conclusion"] = judgment
+            else:
+                receipt["onscreen_judgment"] = judgment
             receipt["onscreen_judgment_mode"] = judgment_mode
             receipt["judgment_role"] = judgment_role
             receipt_text = json.dumps(
@@ -197,6 +203,10 @@ def _merge_missing_onscreen_judgments(
                 + merged[number][receipt_match.end(1) :]
             )
     return merged
+
+
+# Backward-compatible internal alias for callers and older tests.
+_merge_missing_onscreen_judgments = _merge_missing_onscreen_conclusions
 
 
 def assemble_final_script(
@@ -221,7 +231,7 @@ def assemble_final_script(
         if output_path is not None
         else project / "workbench" / "scripts" / "final" / "script-final.md"
     )
-    pages = _merge_missing_onscreen_judgments(
+    pages = _merge_missing_onscreen_conclusions(
         _merge_missing_enrichments(
             _collect_draft_pages(drafts),
             enrichment_source,
@@ -268,14 +278,9 @@ def assemble_final_script(
     output.write_text(text, encoding="utf-8")
 
     ledger_path = project / "workbench" / "artifact-ledger.json"
-    if ledger_path.exists():
-        ledger = json.loads(ledger_path.read_text(encoding="utf-8-sig"))
-        artifacts = [
-            item
-            for item in ledger.get("artifacts", [])
-            if isinstance(item, dict) and item.get("id") != "script-final"
-        ]
-        artifacts.append(
+    append_artifacts(
+        ledger_path,
+        [
             {
                 "id": "script-final",
                 "stage": "01-analysis",
@@ -283,18 +288,14 @@ def assemble_final_script(
                 "path": str(output.relative_to(project)).replace("\\", "/"),
                 "status": "assembled_awaiting_audit",
                 "depends_on": ["workbench/scripts/drafts"],
-                "supersedes": [],
                 "resume_command": (
                     f"python -m cyberppt script-audit {project} --input {output}"
                 ),
                 "sha256": _sha256(output),
             }
-        )
-        ledger["artifacts"] = artifacts
-        ledger_path.write_text(
-            json.dumps(ledger, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
+        ],
+        build_id=f"script-assembly-{_sha256(output)[:10]}",
+    )
 
     return {
         "schema": "cyberppt.assemble_final_script.v1",

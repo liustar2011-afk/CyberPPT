@@ -44,12 +44,14 @@ python -m cyberppt script-audit <project> --input <project>/workbench/scripts/fi
 | 阶段 | 必须产出 | 停止条件 | 读取 |
 |---|---|---|---|
 | 1. 分析 | `source-truth.json`、Source Truth 审计与可读视图、架构路由、冲突记录、内容脑暴、方案型章节或咨询型 SCR、连续逐页大纲、脚本及审计记录、图表计划、页面信息密度和组件清单 | 第一次确认：Source Truth 与 Outline 已通过或有记录地升级，用户批准架构、章节逻辑、页数和大纲；脚本审计通过后才能批准脚本 | `references/source-analysis.md`, `references/storyline.md`, `references/script-quality.md` |
-| 2. 蓝图、生图与 PPT 生产 | 8 种视觉风格、选定风格、逐页正文区 ImageGen 蓝图、脚本锁定记录、所选生产模式需要的图片资产、`page_image_pairs.json`、生产 manifest、PPTX | 第二次确认：用户批准视觉方向、生产模式和进入组装/重建的脚本与图像资产 | `references/visual-system.md` |
+| 2. 视觉结构、蓝图、生图与 PPT 生产 | 自动调用 `ppt-visual-structure-designer` 形成并校验 `visual/` 四项合同；再生成 8 种视觉风格、选定风格、逐页正文区 ImageGen 蓝图、脚本锁定记录、所选生产模式需要的图片资产、`page_image_pairs.json`、生产 manifest、PPTX | 视觉结构闸门通过后才可选择风格；第二次确认：用户批准视觉方向、生产模式和进入组装/重建的脚本与图像资产 | `vendor/skills/ppt-visual-structure-designer/SKILL.md`, `references/visual-system.md` |
 | 3. 渲染 QA 与交付 | 对 `final-script-pages` 所选分支输出的 PPTX 做渲染检查、模板层检查、可编辑性检查（适用时）、交付说明和必要返工 | 最终确认：用户批准最终 PPT | `references/ppt-production.md`, `references/quality-assurance.md` |
 
 未经确认不要跨过确认门。用户要求修改时，回到对应阶段修订并重新确认。
 
 ## 主流水线合同
+
+Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-structure-designer`，不得等待用户再次点名。先执行 `prepare-visual-structure` 形成可追踪调用合同，由 Agent 按 `workbench-handoff` 模式读取该 Skill 及其必需 references，生成 `visual/deck-visual-spec.json`、`visual/script-visual-structure.md`、`visual/generation-prompts.md` 和 `visual/validation-report.json`，再执行 `visual-structure-audit`。该阶段只设计视觉结构，不选择 CyberPPT 风格，不生成图片、HTML、SVG 或 PPTX。`final-script-pages` 必须验证视觉产物及其脚本哈希，未通过或已过期时阻断 Stage 02。
 
 正式生产必须由 `python -m cyberppt final-script-pages` 统一编排，按以下顺序推进：
 
@@ -463,7 +465,7 @@ SVG path、PPT custom geometry 和高密度 freeform 是几何敏感视觉的优
 
 如果 PowerPoint 无法打开页面，必须按顺序执行：
 
-1. 删除当前页旧 PPTX、旧 PNG、旧 QA 文件，防止旧文件残留；
+1. 不得删除当前页旧 PPTX、旧 PNG、旧 QA 文件；为本轮建立独立 `build_id` 输出目录，若确需覆盖只能显式使用 `--overwrite`，先移动至 `backup/` 并在 artifact ledger 中记录版本关系；
 2. 扫描 slide XML 中零尺寸、负尺寸、负坐标、异常 ext/off、非法透明度和非法线宽；
 3. 逐组隔离对象，定位首次导致 PowerPoint 打不开的对象或对象组；
 4. 用 PowerPoint-safe SVG path、custom geometry、高密度 freeform 或稳定原生对象组合替代坏对象；

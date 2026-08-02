@@ -94,15 +94,23 @@ python3 -m cyberppt doctor
 python3 -m cyberppt init projects/example
 python3 -m cyberppt source-truth-audit projects/example --input projects/example/workbench/stages/01-analysis/source-truth.json
 python3 -m cyberppt outline-audit projects/example --input projects/example/workbench/stages/01-analysis/outline.json
+python3 -m cyberppt prepare-chapter-review projects/example --level outline
+python3 -m cyberppt chapter-review-audit projects/example --level outline
 python3 -m cyberppt stage-script projects/example --slide 1 --kind imagegen --phase draft --source prompt.md
 python3 -m cyberppt approve-script projects/example --slide 1 --kind imagegen
 python3 -m cyberppt script-status projects/example --slide 1 --kind imagegen
 python3 -m cyberppt final-script-pages projects/example --script workbench/scripts/final/script-final.md --pages 7-8
 ```
 
+`final-script-pages` 默认按 `build_id` 创建新的构建目录，不覆盖既有版本；`workbench/artifact-ledger.json` 以追加方式记录每次产物，并用 `supersedes` 连接同一路径的历史版本。PPTX 导出必须使用本次运行的明确输出路径，导出工程同时写入 `analysis/export_artifact.json`，续跑不会按文件修改时间猜测旧 PPTX。提示词发送默认 `--prompt-enrich off`，即消费已批准 Prompt 原文；只有明确指定 `deterministic` 或 `send` 才会进行发送时增强。
+
 `source-truth.json` 是第一阶段证据底稿的结构化事实源。`source-truth-audit` 在大纲设计之前检查原子证据、精确定位、P0/P1、数字、表格、状态边界和双向追溯，生成 `00-source-analysis.md`；审计失败时依次切换章节扫描、结构化事实扫描和追溯重建，并保留每次尝试。
 
 `outline-audit` 返回 `0` 表示通过，`4` 表示生成代理必须读取 `retry_directive` 后换方向重写，`5` 表示默认三次尝试已耗尽、需要用户在升级报告的 2-3 个选项中决策，输入错误返回 `2`。审计合同、最新报告、逐次尝试和升级报告写入 `workbench/stages/01-analysis/`；CLI 不代替生成代理重写大纲。
+
+`chapter-structure-review` 是 Outline Audit 与人工确认之间的正式章级门禁。`prepare-chapter-review` 编译包含文档语义身份、叙事主命题和逐页内容关系的机器输入，并在 `review/` 创建 Markdown 审阅骨架；人或 Agent 完成章内推进、跨页重复、主次密度与消费状态审阅后，由 `chapter-review-audit` 检查章节/页面覆盖、必需 Markdown 小节、消费状态和输入哈希。JSON 仅作为机器合同，Markdown 是人工审阅权威稿；大纲或脚本变化会使旧审阅失效。
+
+Stage 01 脚本批准后，主流程自动调用仓库注册的 `vendor/skills/ppt-visual-structure-designer`。先运行 `prepare-visual-structure`，由 Agent 按 Skill 的 `workbench-handoff` 合同生成 `visual/` 四项产物，再运行 `visual-structure-audit` 绑定当前脚本哈希。该闸门通过前，`final-script-pages` 会阻断风格选择、生图和 PPT 生产。
 
 常用开发检查：
 

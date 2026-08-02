@@ -373,11 +373,15 @@ class CyberpptPairManifestTests(unittest.TestCase):
             )
 
         prompt = manifest["pairs"][0]["full"]["prompt"]
-        self.assertNotIn("【完整内容语义｜仅供理解，不要求逐字上屏】", prompt)
-        self.assertNotIn("【页面逻辑｜不上屏】", prompt)
+        provenance = manifest["pairs"][0]["full"]["prompt_provenance"]
+        self.assertEqual("approved_prompt", provenance["consumed_from"])
+        self.assertTrue(provenance["canonical_matches_approval"])
+        self.assertEqual(
+            provenance["approved_prompt_sha256"],
+            provenance["consumed_prompt_sha256"],
+        )
         self.assertIn("【锁定关键文字】", prompt)
         self.assertIn("【完整上屏内容】", prompt)
-        self.assertNotIn("Selected visual intent type:", prompt)
 
 
 if __name__ == "__main__":

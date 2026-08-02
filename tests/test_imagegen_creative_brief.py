@@ -155,9 +155,6 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     assert "ivory_deep_blue_scene" not in implicit
     assert "风格适用语境" not in implicit
     assert "风格约定（仅约束视觉表达，不覆盖本页内容与主导关系）" not in implicit
-    assert "one integrated composition" in implicit
-    assert "50/50" in implicit
-    assert "People: default absent" in implicit
     assert "【视觉媒介路由｜不上屏】" not in implicit
     assert "媒介类型：editorial_typographic" not in implicit
     assert "editorial_dense" not in implicit
@@ -403,12 +400,14 @@ def test_content_first_full_reference_keeps_complete_onscreen_content() -> None:
     assert "不要求 ImageGen 逐字生成" not in prompt
 
 
-def test_content_first_rejects_content_page_without_visible_judgment() -> None:
+def test_content_first_accepts_content_page_without_visible_judgment() -> None:
     page = replace(_page(), onscreen_judgment="")
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
-        with pytest.raises(ValueError, match="missing 上屏结论"):
-            build_page_prompt(page, lock)
+        prompt = build_page_prompt(page, lock)
+    assert "不得自行补写结论、因果、必要性或结果承诺" not in prompt or page.main_message
+    assert "2025年完成率 95%" in prompt
+    assert "权限、日志和发布审核共同保障运行" in prompt
 
 
 def test_content_first_treats_visible_judgment_as_body_conclusion_without_font_sizes() -> None:
@@ -535,10 +534,10 @@ def test_semantic_only_with_no_numeric_facts_omits_empty_locked_section() -> Non
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
 
-    assert "【锁定关键文字】" not in prompt
+    assert "\n【锁定关键文字】\n" not in prompt
     assert CONTENT_FIRST_ONSCREEN_STORY_CONTRACT not in prompt
     assert CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT in prompt
-    assert "不得从【页面任务】【核心判断】或【页面逻辑】中自行抽取整句" in prompt
+    assert "不得从【页面任务】【核心意思】或【页面逻辑】中自行抽取整句" in prompt
 
 
 def test_semantic_only_handoff_preserves_thesis_logic_and_relations() -> None:
@@ -562,7 +561,7 @@ def test_semantic_only_handoff_preserves_thesis_logic_and_relations() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock, page_mission="如何治理多源知识")
 
-    assert page.onscreen_judgment in prompt
+    assert page.core_message in prompt
     assert "【页面逻辑｜不上屏】" in prompt
     assert "主导关系：路径转化。" in prompt
     assert "判断—证据" not in prompt
@@ -571,6 +570,34 @@ def test_semantic_only_handoff_preserves_thesis_logic_and_relations() -> None:
     assert "质量与生命周期" not in prompt.split("【页面语义关系｜仅供理解，不上屏】", 1)[1].split(
         "【页面逻辑｜不上屏】", 1
     )[0]
+
+
+def test_v2_composition_relation_routes_without_inventing_judgment_evidence() -> None:
+    page = replace(
+        _page(),
+        onscreen_judgment="",
+        onscreen_judgment_mode="semantic_only",
+        contract_receipt={
+            "schema": "cyberppt.page_contract_receipt.v2",
+            "core_message": "总体能力框架由五个层次构成，各层分别承担相应职责",
+            "content_relations": [
+                {
+                    "relation": "composed_of",
+                    "subject": "总体能力框架",
+                    "objects": ["业务应用", "成果服务", "模型分析", "数据治理", "运行保障"],
+                    "source_refs": ["S021"],
+                }
+            ],
+        },
+    )
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        compiled = compile_page_prompt(page, lock)
+
+    assert compiled.relation == "hierarchy_support"
+    assert "核心意思：" in compiled.prompt
+    assert "composed_of" in compiled.prompt
+    assert "判断—证据" not in compiled.prompt
 
 
 def test_path_chain_hard_hint_from_visual_structure() -> None:

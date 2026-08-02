@@ -4,6 +4,7 @@ import json
 import subprocess
 import unittest
 from pathlib import Path
+import os
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
@@ -93,7 +94,7 @@ class DualImageOverlayTemplateRebuildTests(unittest.TestCase):
             kwargs = run.call_args.kwargs
 
         self.assertEqual(ROOT, kwargs["cwd"])
-        self.assertIn(str(ROOT), kwargs["env"]["PYTHONPATH"].split(":"))
+        self.assertIn(str(ROOT), kwargs["env"]["PYTHONPATH"].split(os.pathsep))
 
     def test_template_rebuild_consumes_template_project_and_source_capture(self) -> None:
         with TemporaryDirectory() as directory:

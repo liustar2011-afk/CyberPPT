@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import tempfile
 import unittest
 from pathlib import Path
@@ -9,6 +10,7 @@ from unittest.mock import Mock, patch
 from cyberppt.commands.final_script_pages import (
     BODY_IMAGE_CANVAS_CONTRACT,
     _generate_manifest_images,
+    _page_range_slug,
     run_final_script_pages,
 )
 from cyberppt.commands.init_project import init_project
@@ -21,6 +23,13 @@ from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
 class FinalScriptPagesTests(unittest.TestCase):
+    def test_long_discontinuous_page_set_uses_windows_safe_slug(self) -> None:
+        pages = [4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 25, 26, 27]
+        slug = _page_range_slug(pages)
+        self.assertLessEqual(len(slug), 80)
+        self.assertTrue(slug.startswith("pages_004_027_21p_"))
+        self.assertEqual(slug, _page_range_slug(pages))
+
     def test_semantic_only_judgment_moves_to_subtitle_not_body_prompt(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -53,7 +62,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             prompt = build_page_prompt(page, style_lock)
 
         body = prompt.split("【完整上屏内容】", 1)[1].split(
-            "【结论表达要求", 1
+            "【核心意思表达要求", 1
         )[0]
         self.assertNotIn(judgment, body)
         self.assertNotIn(subtitle, body)
@@ -96,7 +105,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             prompt = build_page_prompt(page, style_lock)
 
         body = prompt.split("【完整上屏内容】", 1)[1].split(
-            "【结论表达要求", 1
+            "【核心意思表达要求", 1
         )[0]
         normalized_original = "\n".join(
             line.strip() for line in original_body.splitlines()
@@ -157,6 +166,76 @@ class FinalScriptPagesTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
+        review_input = project / "workbench" / "scripts" / "audits" / "chapter-review-input.json"
+        review_input.write_text(
+            json.dumps(
+                {
+                    "schema": "cyberppt.chapter_review_input.v1",
+                    "level": "script",
+                    "input_path": str(script.resolve()),
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        chapter_review = project / "workbench" / "scripts" / "audits" / "chapter-review-audit.json"
+        chapter_review.write_text(
+            json.dumps(
+                {
+                    "schema": "cyberppt.chapter_review_audit.v1",
+                    "status": "passed",
+                    "input": str(review_input.resolve()),
+                    "input_sha256": hashlib.sha256(review_input.read_bytes()).hexdigest(),
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        visual_dir = project / "visual"
+        visual_dir.mkdir(parents=True, exist_ok=True)
+        spec_json = visual_dir / "deck-visual-spec.json"
+        spec_md = visual_dir / "script-visual-structure.md"
+        generation_prompts = visual_dir / "generation-prompts.md"
+        spec_json.write_text(json.dumps({"schema": "cyberppt.visual_spec.v1"}), encoding="utf-8")
+        spec_md.write_text("# visual structure\n", encoding="utf-8")
+        prompt_pages = []
+        for page_number in range(1, 31):
+            prompt_pages.append(
+                "\n".join(
+                    [
+                        f"# Page {page_number}: fixture",
+                        "[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.",
+                        "Use the approved page relationship.",
+                        "[Connector map]",
+                        "Keep the main relation clear.",
+                        "[Text rendering]",
+                        "Render locked text verbatim.",
+                        "[Style]",
+                        "Use the project style lock.",
+                        "[Negative constraints]",
+                        "Do not add slide chrome.",
+                        "---",
+                    ]
+                )
+            )
+        generation_prompts.write_text("\n".join(prompt_pages) + "\n", encoding="utf-8")
+        visual_report = visual_dir / "validation-report.json"
+        visual_report.write_text(
+            json.dumps(
+                {
+                    "schema": "cyberppt.visual_structure_stage.v1",
+                    "status": "passed",
+                    "script_sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
+                    "artifact_sha256": {
+                        "spec_json": hashlib.sha256(spec_json.read_bytes()).hexdigest(),
+                        "spec_markdown": hashlib.sha256(spec_md.read_bytes()).hexdigest(),
+                        "generation_prompts": hashlib.sha256(generation_prompts.read_bytes()).hexdigest(),
+                    },
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
         write_confirmation_request(project, "script")
         approvals = project / "workbench" / "approvals"
         approvals.mkdir(parents=True, exist_ok=True)
@@ -207,10 +286,15 @@ class FinalScriptPagesTests(unittest.TestCase):
             manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
             lock = json.loads(Path(summary["artifacts"]["template_text_lock"]).read_text(encoding="utf-8"))
             visual_lock = json.loads(Path(summary["artifacts"]["visual_style_lock"]).read_text(encoding="utf-8"))
+            build_context = json.loads(Path(summary["artifacts"]["build_context"]).read_text(encoding="utf-8"))
             prompt = Path(summary["artifacts"]["compiled_deliverable_prompt"]).read_text(encoding="utf-8")
             ledger = json.loads((project / "workbench/artifact-ledger.json").read_text(encoding="utf-8"))
 
             self.assertEqual([7, 8], summary["pages"])
+            self.assertEqual(summary["build_id"], build_context["build_id"])
+            self.assertEqual([7, 8], build_context["page_set"])
+            self.assertEqual(summary["source_script_sha256"], build_context["source_script_sha256"])
+            self.assertIn("page_image_pairs", build_context["artifacts"])
             self.assertEqual([7, 8], [pair["page_number"] for pair in manifest["pairs"]])
             self.assertEqual(4, visual_lock["style"]["id"])
             self.assertEqual(manifest["style_lock"], summary["artifacts"]["visual_style_lock"])
@@ -411,6 +495,11 @@ class FinalScriptPagesTests(unittest.TestCase):
                         style_id=5,
                         production_build=True,
                     )
+
+                self.assertEqual(
+                    Path(__file__).resolve().parents[1],
+                    run.call_args.kwargs["cwd"],
+                )
 
         message = str(caught.exception)
         self.assertIn("image-ppt production build failed with exit code 3", message)

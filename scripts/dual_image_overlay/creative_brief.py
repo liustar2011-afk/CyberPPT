@@ -61,9 +61,8 @@ _RELATION_CREATIVE_LANGUAGE: dict[str, tuple[str, str]] = {
         "freely.",
     ),
     "capability_relationship": (
-        "The capabilities must remain connected to the business value they jointly support.",
-        "Find an integrated visual expression in which the capabilities feel useful and "
-        "mutually supportive rather than like isolated software modules.",
+        "Preserve the exact object, capability, correspondence, or support relations declared by the source contract.",
+        "Choose a clear visual expression without adding collaboration, causality, necessity, or an outcome convergence that the contract does not state.",
     ),
     "judgment_evidence": (
         "The supporting meanings must jointly substantiate the page's central judgment.",
@@ -87,7 +86,7 @@ _RELATION_AVOIDS: dict[str, tuple[str, ...]] = {
 
 @dataclass(frozen=True)
 class SemanticContract:
-    core_judgment: str
+    core_meaning: str
     required_meanings: tuple[str, ...]
     relationship_invariant: str
     exact_facts: tuple[str, ...]
@@ -95,6 +94,12 @@ class SemanticContract:
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
+
+    @property
+    def core_judgment(self) -> str:
+        """Compatibility alias for v1 consumers."""
+
+        return self.core_meaning
 
 
 @dataclass(frozen=True)
@@ -152,9 +157,10 @@ def extract_exact_facts(text: str) -> tuple[str, ...]:
 def build_semantic_contract(
     *,
     relation: str,
-    core_judgment: str,
     required_meanings: Iterable[str],
     onscreen_text: str,
+    core_judgment: str = "",
+    core_meaning: str = "",
 ) -> SemanticContract:
     meanings = _clean_meanings(required_meanings)
     if relation == "multi_semantic_foundation":
@@ -174,11 +180,11 @@ def build_semantic_contract(
     else:
         relationship_invariant = (
             "The required meanings must visibly perform their stated logical role in relation "
-            "to the core judgment; they must not degrade into unrelated peer modules or "
+            "to the core meaning; they must not degrade into unrelated peer modules or "
             "decorative examples. This describes business logic, not diagram topology."
         )
     return SemanticContract(
-        core_judgment=core_judgment.strip(),
+        core_meaning=(core_meaning or core_judgment).strip(),
         required_meanings=meanings,
         relationship_invariant=relationship_invariant,
         exact_facts=extract_exact_facts(onscreen_text),
@@ -219,14 +225,16 @@ def build_creative_brief(
     *,
     relation: str,
     page_purpose: str,
-    core_judgment: str,
     required_meanings: Iterable[str],
     onscreen_text: str,
+    core_judgment: str = "",
+    core_meaning: str = "",
     override: dict[str, str] | None = None,
 ) -> CreativeBrief:
     contract = build_semantic_contract(
         relation=relation,
         core_judgment=core_judgment,
+        core_meaning=core_meaning,
         required_meanings=required_meanings,
         onscreen_text=onscreen_text,
     )
@@ -238,6 +246,7 @@ def build_creative_brief(
     visual_message = (
         override.get("visual_thesis")
         or override.get("decision_relationship")
+        or core_meaning
         or core_judgment
         or invariant
     ).strip()
@@ -267,7 +276,7 @@ def render_creative_brief(brief: CreativeBrief) -> str:
     meanings = "; ".join(brief.semantic_contract.required_meanings) or "the locked meanings"
     lines = [
         "[Page-specific creative brief — context only; do not render these labels or instructions]",
-        f"Purpose: {brief.page_purpose or brief.semantic_contract.core_judgment}",
+        f"Purpose: {brief.page_purpose or brief.semantic_contract.core_meaning}",
         f"Creative direction: {brief.visual_message}",
         (
             "Useful meanings already present in the locked on-screen text: "

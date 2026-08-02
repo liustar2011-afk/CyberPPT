@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,6 +38,64 @@ def load_template_image_ppt_export():
 
 
 class DualImageTemplateBodyRegionTest(unittest.TestCase):
+    def test_existing_template_project_is_preserved_without_overwrite(self) -> None:
+        module = load_template_image_ppt_export()
+        manifest = {
+            "canvas": {"width": 1280, "height": 720},
+            "body_region": {"x": 33, "y": 89, "width": 1214, "height": 607},
+            "tasks": [
+                {
+                    "page_number": 1,
+                    "title": "封面",
+                    "slide_title": "电力数据服务",
+                    "body_text": "- 主标题：电力数据服务",
+                    "page_role": "cover",
+                    "render_mode": "brand-template",
+                    "template": "cover",
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp)
+            project = module.write_project(manifest, output_dir, "deck")
+            marker = project / "user-marker.txt"
+            marker.write_text("keep", encoding="utf-8")
+
+            with self.assertRaises(FileExistsError):
+                module.write_project(manifest, output_dir, "deck")
+            self.assertEqual("keep", marker.read_text(encoding="utf-8"))
+
+            replacement = module.write_project(manifest, output_dir, "deck", overwrite=True)
+            backups = list((output_dir / "backup").rglob("user-marker.txt"))
+            self.assertTrue(replacement.is_dir())
+            self.assertEqual(1, len(backups))
+            self.assertEqual("keep", backups[0].read_text(encoding="utf-8"))
+
+    def test_export_consumes_explicit_output_and_writes_pointer(self) -> None:
+        module = load_template_image_ppt_export()
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "project"
+            (project / "svg_output").mkdir(parents=True)
+            output = project.parent / "delivery" / "deck.pptx"
+
+            def fake_run(command, check=False):
+                if "--output" in command:
+                    output.parent.mkdir(parents=True, exist_ok=True)
+                    output.write_bytes(b"pptx")
+                return type("Completed", (), {"returncode": 0})()
+
+            with patch.object(module.subprocess, "run", side_effect=fake_run):
+                result = module.run_export(project, output_path=output)
+                module.run_export(project, output_path=output, overwrite=True)
+
+            pointer = json.loads((project / "analysis" / "export_artifact.json").read_text(encoding="utf-8"))
+            output_backups = list((project.parent / "backup").rglob("deck.pptx"))
+
+        self.assertEqual(output.resolve(), result)
+        self.assertEqual(str(output.resolve()), pointer["path"])
+        self.assertEqual("cyberppt.dual_image.export_artifact.v1", pointer["schema"])
+        self.assertEqual(1, len(output_backups))
+
     def test_generation_helper_is_wired(self) -> None:
         module = load_template_image_ppt_export()
 
@@ -61,6 +122,23 @@ class DualImageTemplateBodyRegionTest(unittest.TestCase):
         surface = rules["body_page_surface"]
         self.assertIsNone(surface["background"])
         self.assertEqual("solid-paper-content-surface", surface["policy"])
+
+    def test_content_page_svg_has_no_body_mask(self) -> None:
+        module = load_template_image_ppt_export()
+
+        svg = module.render_content_page_svg(
+            {
+                "slide_title": "知识资产基础",
+                "subtitle": "30个学科、30万道题目、40年数据，夯实智能应用底座",
+            },
+            target_image=Path("page_004_知识资产基础_full.png"),
+            header={"x": 58, "y": 16},
+            body={"x": 33, "y": 89, "width": 1214, "height": 607},
+        )
+
+        self.assertNotIn("<rect", svg)
+        self.assertNotIn("#F7F6F0", svg)
+        self.assertIn("<image", svg)
 
     def test_page_role_prefers_declared_template_roles(self) -> None:
         module = load_template_image_ppt_export()

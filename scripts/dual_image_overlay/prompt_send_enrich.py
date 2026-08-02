@@ -1,9 +1,9 @@
-"""Send-time ImageGen prompt enrichment (deterministic + LLM-send gate).
+"""Send-time ImageGen prompt enrichment (opt-in + LLM-send gate).
 
-Layer 1 — deterministic (default, silent): append a compact visual cue block
-derived from the approved page prompt's 【页面逻辑】. Never rewrites locked
-on-screen Chinese. Applied automatically on final-script-pages / pair-manifest
-unless --prompt-enrich off.
+Layer 1 — deterministic (opt-in): append a compact visual cue block derived
+from the approved page prompt's 【页面逻辑】. Never rewrites locked on-screen
+Chinese. The default is ``off`` so the approved prompt is consumed verbatim;
+callers may opt in with ``--prompt-enrich deterministic``.
 
 Layer 2 — LLM send script: optional approved `imagegen-send` final that an
 agent/LLM may rewrite for image-model sensitivity. Must keep locked text;
@@ -223,7 +223,10 @@ def resolve_send_prompt(
     if mode not in {"off", "deterministic", "send"}:
         raise ValueError(f"unsupported prompt enrich mode: {mode}")
 
-    source = approved_prompt.strip()
+    # In ``off`` mode the approved bytes are the consumed prompt.  Other
+    # modes intentionally normalize surrounding whitespace before applying a
+    # separate, explicitly requested transformation.
+    source = approved_prompt if mode == "off" else approved_prompt.strip()
     source_hash = _sha256_text(source)
 
     if mode == "off":

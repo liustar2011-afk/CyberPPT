@@ -7,6 +7,11 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.commands.script_gate import assert_approved_final_script, stage_script
+from cyberppt.visual_prompt_consumer import (
+    append_visual_prompt_module,
+    load_visual_prompt_module,
+    visual_module_metadata,
+)
 from scripts.dual_image_overlay.prompt_send_enrich import (
     apply_deterministic_enrich,
     llm_enrich_brief,
@@ -51,14 +56,16 @@ def prepare_imagegen_send(
     for page in pages:
         approved = assert_approved_final_script(project, page, "imagegen")
         source = approved.read_text(encoding="utf-8-sig")
-        enriched = apply_deterministic_enrich(source)
+        visual_module = load_visual_prompt_module(project, page)
+        source_with_visual = append_visual_prompt_module(source, visual_module)
+        enriched = apply_deterministic_enrich(source_with_visual)
         draft_path = send_dir / f"slide-{page:02d}-imagegen-send-draft.md"
         draft_path.write_text(enriched, encoding="utf-8")
         brief_path: Path | None = None
         if write_llm_brief:
             brief_path = send_dir / f"slide-{page:02d}-imagegen-send-llm-brief.md"
             brief_path.write_text(
-                llm_enrich_brief(page_number=page, approved_prompt=source),
+                llm_enrich_brief(page_number=page, approved_prompt=source_with_visual),
                 encoding="utf-8",
             )
         staged: Path | None = None
@@ -78,6 +85,7 @@ def prepare_imagegen_send(
                 "send_draft": str(draft_path),
                 "llm_brief": str(brief_path) if brief_path else None,
                 "staged_draft": str(staged) if staged else None,
+                "visual_structure_handoff": visual_module_metadata(visual_module),
             }
         )
 

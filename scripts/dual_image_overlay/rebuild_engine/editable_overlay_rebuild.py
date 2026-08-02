@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +22,8 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 from PIL import Image
+
+from cyberppt.artifact_ledger import sha256_path, write_json_atomic
 
 from scripts.dual_image_overlay.rebuild_modes import resolve_rebuild_mode
 from scripts.dual_image_overlay.background_text_scan import scan_background_text
@@ -1501,18 +1504,101 @@ def rebuild_from_manifest(
     return {"project_path": str(project_path), "slides": svg_count, "svg_dir": str(project_path / "svg_output")}
 
 
-def export_project(project_path: Path) -> Path:
+def _next_export_path(project_path: Path) -> Path:
+    """Allocate a new export path without inspecting file modification times."""
+
+    exports_dir = project_path / "exports"
+    exports_dir.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    base = exports_dir / f"{project_path.name}_{stamp}.pptx"
+    candidate = base
+    suffix = 2
+    while candidate.exists():
+        candidate = exports_dir / f"{project_path.name}_{stamp}_{suffix:02d}.pptx"
+        suffix += 1
+    return candidate
+
+
+def _backup_existing_export(project_path: Path, output_path: Path) -> Path:
+    """Move an explicitly overwritten export to a recoverable project backup."""
+
+    project_path = project_path.resolve()
+    output_path = output_path.resolve()
+    try:
+        output_path.relative_to(project_path)
+    except ValueError as exc:
+        raise ValueError(
+            f"refusing to overwrite an export outside the rebuild project: {output_path}"
+        ) from exc
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    backup_root = project_path / "backup" / timestamp
+    backup_root.mkdir(parents=True, exist_ok=True)
+    backup_path = backup_root / output_path.name
+    suffix = 2
+    while backup_path.exists():
+        backup_path = backup_root / f"{output_path.stem}_{suffix:02d}{output_path.suffix}"
+        suffix += 1
+    shutil.move(str(output_path), str(backup_path))
+    return backup_path
+
+
+def _write_export_pointer(project_path: Path, output_path: Path) -> Path:
+    pointer = project_path / "analysis" / "export_artifact.json"
+    write_json_atomic(
+        pointer,
+        {
+            "schema": "cyberppt.dual_image.export_artifact.v1",
+            "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "project_path": str(project_path.resolve()),
+            "path": str(output_path.resolve()),
+            "sha256": sha256_path(output_path),
+        },
+    )
+    return pointer
+
+
+def export_project(
+    project_path: Path,
+    *,
+    output_path: Path | None = None,
+    overwrite: bool = False,
+) -> Path:
+    """Run quality/finalize/export and return the exact PPTX produced this run."""
+
+    project_path = project_path.expanduser().resolve()
+    output_path = (
+        output_path.expanduser().resolve()
+        if output_path is not None
+        else _next_export_path(project_path)
+    )
+    if output_path.exists():
+        if not overwrite:
+            raise FileExistsError(
+                f"PPTX output already exists: {output_path}; pass --overwrite to replace it"
+            )
+        _backup_existing_export(project_path, output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     commands = [
         [sys.executable, str(SCRIPTS_DIR / "svg_quality_checker.py"), str(project_path)],
         [sys.executable, str(SCRIPTS_DIR / "finalize_svg.py"), str(project_path)],
-        [sys.executable, str(SCRIPTS_DIR / "svg_to_pptx.py"), str(project_path), "-t", "none", "-a", "none"],
+        [
+            sys.executable,
+            str(SCRIPTS_DIR / "svg_to_pptx.py"),
+            str(project_path),
+            "-t",
+            "none",
+            "-a",
+            "none",
+            "--output",
+            str(output_path),
+        ],
     ]
     for command in commands:
         subprocess.run(command, check=True)
-    exports = sorted((project_path / "exports").glob("*.pptx"), key=lambda p: p.stat().st_mtime)
-    if not exports:
-        raise FileNotFoundError(f"No PPTX exported in {project_path / 'exports'}")
-    return exports[-1]
+    if not output_path.is_file():
+        raise FileNotFoundError(f"No PPTX exported at requested path: {output_path}")
+    _write_export_pointer(project_path, output_path)
+    return output_path
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -1530,6 +1616,8 @@ def build_parser() -> argparse.ArgumentParser:
     rebuild.add_argument("--visual-registry-dir", type=Path)
     rebuild.add_argument("--layout-mode", choices=("recognized-reflow", "legacy"), default="recognized-reflow")
     rebuild.add_argument("--export", action="store_true", help="Run SVG quality/finalize/export after rebuilding SVG pages.")
+    rebuild.add_argument("--pptx-output", type=Path, help="Explicit PPTX output path for --export.")
+    rebuild.add_argument("--overwrite", action="store_true", help="Backup an existing PPTX before replacing it.")
 
     return parser
 
@@ -1550,7 +1638,11 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         if args.export:
-            pptx = export_project(Path(result["project_path"]))
+            pptx = export_project(
+                Path(result["project_path"]),
+                output_path=args.pptx_output,
+                overwrite=args.overwrite,
+            )
             print(f"PPTX: {pptx}")
     except Exception as exc:
         print(f"Error: {exc}", file=sys.stderr)

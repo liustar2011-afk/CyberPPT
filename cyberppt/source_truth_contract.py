@@ -14,6 +14,13 @@ SCHEMA = "cyberppt.source_truth.v1"
 EVIDENCE_TYPES = frozenset({"F", "J", "R", "B", "U"})
 PRIORITIES = frozenset({"P0", "P1", "P2"})
 REQUIRED_FIELDS = ("sources", "coverage_targets", "records", "conclusions", "pages", "retry")
+DOCUMENT_SEMANTIC_FIELDS = (
+    "document_role",
+    "subject_of_report",
+    "primary_thesis",
+    "decision_boundary",
+    "source_refs",
+)
 PRECISE_LOCATOR_FIELDS = ("paragraph", "table", "table_row", "cell")
 NUMERIC_FIELDS = ("raw_value", "raw_unit", "period", "scope")
 BOUNDARY_STATUSES = ("待核", "待确认", "待摸底", "拟建议", "阶段判断", "暂缓", "条件成熟后")
@@ -399,6 +406,43 @@ def _traceability_issues(
     ]
 
 
+def _document_semantic_issues(payload: dict[str, object]) -> list[SourceTruthIssue]:
+    """Require a source-grounded whole-document identity before page planning."""
+
+    if payload.get("document_semantics_mode") != "required":
+        return []
+    semantics = payload.get("document_semantics")
+    if not isinstance(semantics, dict):
+        return [
+            SourceTruthIssue(
+                "DOCUMENT_SEMANTICS_MISSING",
+                "Source Truth must distinguish the document role, subject of report, primary thesis, and decision boundary before outlining.",
+                retry_strategy="derive_document_semantics",
+            )
+        ]
+    missing = [field for field in DOCUMENT_SEMANTIC_FIELDS if not semantics.get(field)]
+    refs = _refs(semantics, "source_refs")
+    record_ids = {str(item.get("id") or "") for item in _items(payload, "records")}
+    if missing or not refs or not set(refs).issubset(record_ids):
+        return [
+            SourceTruthIssue(
+                "DOCUMENT_SEMANTICS_INVALID",
+                "Document semantics fields must be non-empty and cite existing Source Truth records.",
+                tuple(sorted(set(refs) - record_ids)),
+                "derive_document_semantics",
+            )
+        ]
+    if not _items(payload, "conclusions"):
+        return [
+            SourceTruthIssue(
+                "DOCUMENT_CONCLUSIONS_MISSING",
+                "A required document-semantic contract needs at least one source-grounded whole-document conclusion.",
+                retry_strategy="derive_document_semantics",
+            )
+        ]
+    return []
+
+
 def audit_source_truth(payload: dict[str, object]) -> list[SourceTruthIssue]:
     records = _items(payload, "records")
     conclusions = _items(payload, "conclusions")
@@ -412,6 +456,7 @@ def audit_source_truth(payload: dict[str, object]) -> list[SourceTruthIssue]:
         )
     )
     issues.extend(_coverage_issues(_items(payload, "coverage_targets"), record_ids))
+    issues.extend(_document_semantic_issues(payload))
     issues.extend(_traceability_issues(records, conclusions, pages))
     return sorted(issues, key=lambda item: (item.code, item.source_ids[:1]))
 

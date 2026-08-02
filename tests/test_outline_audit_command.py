@@ -41,7 +41,13 @@ class OutlineAuditCommandTests(unittest.TestCase):
             self.assertTrue(report["retry_directive"])
             self.assertTrue((stage / "outline-contract.json").exists())
             self.assertTrue((stage / "outline-audit.json").exists())
+            self.assertTrue((stage / "proposition-graph.json").exists())
             self.assertTrue((stage / "outline-attempts" / "attempt-01.json").exists())
+            readable = stage / "01-outline-readable.md"
+            self.assertTrue(readable.exists())
+            text = readable.read_text(encoding="utf-8")
+            self.assertIn("逐页大纲（人类审阅稿）", text)
+            self.assertIn("JSON 仅作为机器审计合同", text)
 
     def test_strict_audit_loads_explicit_source_truth_and_reports_graph(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -128,9 +134,9 @@ class OutlineAuditCommandTests(unittest.TestCase):
             self.assertIn("outline-audit", readme)
             self.assertIn("source-truth-audit", readme)
             self.assertIn("argument_contract_mode: strict", readme)
-            self.assertIn("foundation → change → gap → necessity", readme)
+            self.assertIn("page types and claim taxonomies do not determine the page meaning", readme)
             self.assertIn("--source-truth", readme)
-            self.assertIn("not a mandatory chapter template", readme)
+            self.assertIn("never a mandatory chapter template", readme)
 
 
 if __name__ == "__main__":

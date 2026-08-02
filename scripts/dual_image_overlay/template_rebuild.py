@@ -5,6 +5,7 @@ import json
 import os
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -29,6 +30,7 @@ from .workspace_assignment import build_workspace_assignment, write_workspace_as
 from .workspace_layout_qa import check_workspace_assignment_layout, write_workspace_layout_qa
 from scripts.dual_image_overlay.text_content_qa import build_text_content_qa
 from scripts.visual_registry_from_source_capture import build_registries, write_registries
+from cyberppt.artifact_ledger import sha256_path, write_json_atomic
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -53,8 +55,7 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_json_atomic(path, payload)
 
 
 def resolve_project_path(manifest_path: Path, manifest: dict[str, Any]) -> Path:
@@ -64,9 +65,45 @@ def resolve_project_path(manifest_path: Path, manifest: dict[str, Any]) -> Path:
     return manifest_path.resolve().parents[2]
 
 
-def _latest_pptx(project_path: Path) -> str | None:
-    exports = sorted((project_path / "exports").glob("*.pptx"), key=lambda path: path.stat().st_mtime)
-    return str(exports[-1]) if exports else None
+def _next_export_path(project_path: Path) -> Path:
+    """Allocate a new export path without relying on directory ordering or mtime."""
+
+    exports_dir = project_path / "exports"
+    exports_dir.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    base = exports_dir / f"{project_path.name}_{stamp}.pptx"
+    candidate = base
+    suffix = 2
+    while candidate.exists():
+        candidate = exports_dir / f"{project_path.name}_{stamp}_{suffix:02d}.pptx"
+        suffix += 1
+    return candidate
+
+
+def _resolve_exported_pptx(project_path: Path, explicit: Path | None = None) -> str | None:
+    """Resolve the PPTX recorded by this run; never guess from existing exports."""
+
+    if explicit is not None:
+        candidate = explicit.expanduser().resolve()
+        return str(candidate) if candidate.is_file() else None
+    pointer = project_path / "analysis" / "export_artifact.json"
+    if not pointer.is_file():
+        return None
+    try:
+        payload = _read_json(pointer)
+    except (OSError, ValueError, json.JSONDecodeError):
+        return None
+    raw_path = payload.get("path")
+    if not isinstance(raw_path, str) or not raw_path.strip():
+        return None
+    candidate = Path(raw_path).expanduser().resolve()
+    if not candidate.is_file():
+        return None
+    expected_hash = str(payload.get("sha256") or "").lower()
+    actual_hash = str(sha256_path(candidate) or "").lower()
+    if expected_hash and expected_hash != actual_hash:
+        return None
+    return str(candidate)
 
 
 def _template_gate(project_path: Path, *, export_requested: bool, exported_pptx: str | None) -> dict[str, Any]:
@@ -339,7 +376,16 @@ def run_vendor_rebuild(
     editable_text_visibility: str = "visible",
     semantic_plan_dir: Path | None = None,
     visual_registry_dir: Path | None = None,
-) -> None:
+    pptx_output: Path | None = None,
+    overwrite: bool = False,
+) -> Path | None:
+    manifest = _read_json(manifest_path)
+    project_path = resolve_project_path(manifest_path, manifest)
+    resolved_pptx_output = (
+        pptx_output.expanduser().resolve()
+        if pptx_output is not None
+        else _next_export_path(project_path)
+    ) if export else None
     command = [
         sys.executable,
         str(REBUILD_ENGINE),
@@ -362,10 +408,16 @@ def run_vendor_rebuild(
         command.append("--force-ocr")
     if export:
         command.append("--export")
+        command.extend(["--pptx-output", str(resolved_pptx_output)])
+        if overwrite:
+            command.append("--overwrite")
     env = os.environ.copy()
     existing_pythonpath = env.get("PYTHONPATH")
     env["PYTHONPATH"] = str(ROOT) if not existing_pythonpath else f"{ROOT}{os.pathsep}{existing_pythonpath}"
     subprocess.run(command, cwd=ROOT, check=True, env=env)
+    if resolved_pptx_output is not None and not resolved_pptx_output.is_file():
+        raise FileNotFoundError(f"vendor rebuild did not produce requested PPTX: {resolved_pptx_output}")
+    return resolved_pptx_output
 
 
 def build_template_rebuild_readiness(
@@ -376,6 +428,7 @@ def build_template_rebuild_readiness(
     semantic_plan_dir: Path | None = None,
     rendered_preview: Path | None = None,
     measurement_model: str = "pptx_render_preview_presence",
+    exported_pptx: Path | None = None,
 ) -> dict[str, Any]:
     manifest = _read_json(manifest_path)
     project_path = resolve_project_path(manifest_path, manifest)
@@ -452,8 +505,16 @@ def build_template_rebuild_readiness(
         project_path, source_capture
     )
 
-    exported_pptx = _latest_pptx(project_path)
-    template_gate = _template_gate(project_path, export_requested=export_requested, exported_pptx=exported_pptx)
+    resolved_exported_pptx = (
+        _resolve_exported_pptx(project_path, exported_pptx)
+        if export_requested
+        else None
+    )
+    template_gate = _template_gate(
+        project_path,
+        export_requested=export_requested,
+        exported_pptx=resolved_exported_pptx,
+    )
     _write_json(analysis_dir / "template_gate.json", template_gate)
     scene_graph_gates = _load_scene_graph_gates(project_path)
     scene_graph_valid = bool(scene_graph_gates) and all(gate.get("valid") for gate in scene_graph_gates)
@@ -464,9 +525,9 @@ def build_template_rebuild_readiness(
     # text_content_qa needs the actual exported artifact, so it can only run
     # once a pptx exists; on a stop-before-export run it's reported as
     # "not yet applicable" rather than a failure.
-    if exported_pptx:
+    if resolved_exported_pptx:
         text_content_qa = build_text_content_qa(
-            Path(exported_pptx),
+            Path(resolved_exported_pptx),
             _expected_texts_from_workspace_assignment(workspace_assignment),
             order_sensitive=False,
         )
@@ -503,7 +564,10 @@ def build_template_rebuild_readiness(
         "render_compare": render_compare.get("report_path"),
         "measured_visual_registry": render_compare.get("measured_registry_dir"),
         "rendered_preview": str(rendered_preview) if rendered_preview else None,
-        "exported_pptx": exported_pptx,
+        "exported_pptx": resolved_exported_pptx,
+        "export_artifact": str(analysis_dir / "export_artifact.json")
+        if (analysis_dir / "export_artifact.json").is_file()
+        else None,
         "visual_qa_gate": str(analysis_dir / "visual_qa_gate.json"),
     }
     quality_reports = {
@@ -637,7 +701,10 @@ def build_template_rebuild_readiness(
             "semantic_plan_dir": str(analysis_dir / "semantic_plan"),
             "container_workspace": str(analysis_dir / "container_workspace" / "container_workspace_index.json"),
             "workspace_assignment": str(analysis_dir / "workspace_assignment" / "workspace_assignment_index.json"),
-            "exported_pptx": exported_pptx,
+            "exported_pptx": resolved_exported_pptx,
+            "export_artifact": str(analysis_dir / "export_artifact.json")
+            if (analysis_dir / "export_artifact.json").is_file()
+            else None,
             "visual_reference": visual_reference,
             "draft_visual_registry": str(resolved_visual_registry_dir)
             if draft_visual_registry_generated and resolved_visual_registry_dir
@@ -667,6 +734,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--semantic-plan-dir", type=Path)
     parser.add_argument("--rendered-preview", type=Path)
     parser.add_argument("--measurement-model", default="pptx_render_preview_presence")
+    parser.add_argument("--pptx-output", type=Path, help="Explicit PPTX output path for --export.")
+    parser.add_argument("--overwrite", action="store_true", help="Backup an existing PPTX before replacing it.")
     parser.add_argument("--export", action="store_true", default=True)
     parser.add_argument("--no-export", action="store_false", dest="export")
     parser.add_argument(
@@ -686,8 +755,9 @@ def main() -> int:
         project_path,
         args.visual_registry_dir.resolve() if args.visual_registry_dir else None,
     )
+    exported_pptx = None
     if not args.skip_rebuild:
-        run_vendor_rebuild(
+        exported_pptx = run_vendor_rebuild(
             manifest_path,
             ocr_backend=args.ocr_backend,
             force_ocr=args.force_ocr,
@@ -697,6 +767,8 @@ def main() -> int:
             editable_text_visibility=args.editable_text_visibility,
             semantic_plan_dir=args.semantic_plan_dir.resolve() if args.semantic_plan_dir else None,
             visual_registry_dir=visual_registry_dir,
+            pptx_output=args.pptx_output.resolve() if args.pptx_output else None,
+            overwrite=args.overwrite,
         )
     readiness = build_template_rebuild_readiness(
         manifest_path,
@@ -705,6 +777,7 @@ def main() -> int:
         semantic_plan_dir=args.semantic_plan_dir.resolve() if args.semantic_plan_dir else None,
         rendered_preview=args.rendered_preview.resolve() if args.rendered_preview else None,
         measurement_model=args.measurement_model,
+        exported_pptx=args.pptx_output.resolve() if args.pptx_output else exported_pptx,
     )
     print(json.dumps(readiness, ensure_ascii=False, indent=2))
     return 0 if readiness["valid"] else 3

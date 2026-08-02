@@ -4,11 +4,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from pathlib import Path
 
 from cyberppt import __version__
 from cyberppt.commands.assemble_final_script import assemble_final_script
+from cyberppt.commands.chapter_structure_review import (
+    prepare_chapter_review_input,
+    run_chapter_review_audit,
+)
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.outline_audit import run_outline_audit
@@ -21,6 +26,10 @@ from cyberppt.commands.script_audit import run_script_audit
 from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script, status_as_json
 from cyberppt.commands.script_runner import SCRIPT_ALIASES, run_script
 from cyberppt.commands.source_truth_audit import run_source_truth_audit
+from cyberppt.commands.visual_structure_stage import (
+    prepare_visual_structure_stage,
+    run_visual_structure_audit,
+)
 from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
 from cyberppt.stage01_controls import (
     write_confirmation_request,
@@ -79,6 +88,46 @@ def _source_truth_audit_command(args: argparse.Namespace) -> int:
             max_attempts=args.max_attempts,
         )
     except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return code
+
+
+def _prepare_chapter_review_command(args: argparse.Namespace) -> int:
+    try:
+        path = prepare_chapter_review_input(Path(args.project), args.level)
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"chapter_review_input: {path}")
+    return 0
+
+
+def _chapter_review_audit_command(args: argparse.Namespace) -> int:
+    try:
+        code, report = run_chapter_review_audit(Path(args.project), args.level)
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return code
+
+
+def _prepare_visual_structure_command(args: argparse.Namespace) -> int:
+    try:
+        path = prepare_visual_structure_stage(Path(args.project), Path(args.script))
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"visual_structure_skill_invocation: {path}")
+    return 0
+
+
+def _visual_structure_audit_command(args: argparse.Namespace) -> int:
+    try:
+        code, report = run_visual_structure_audit(Path(args.project), Path(args.script))
+    except (FileNotFoundError, ValueError, subprocess.CalledProcessError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
     print(json.dumps(report, ensure_ascii=False, indent=2))
@@ -274,6 +323,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             dry_run_images=args.dry_run_images,
             prompt_enrich=args.prompt_enrich,
             require_send_approval=args.require_send_approval,
+            build_id=args.build_id,
         )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -312,6 +362,38 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum changed-direction attempts (1-5; default: 3).",
     )
     outline_audit.set_defaults(func=_outline_audit_command)
+
+    prepare_chapter_review = subparsers.add_parser(
+        "prepare-chapter-review",
+        help="Prepare chapter-level structure review input and Markdown skeletons.",
+    )
+    prepare_chapter_review.add_argument("project", help="CyberPPT project directory.")
+    prepare_chapter_review.add_argument("--level", choices=["outline", "script"], default="outline")
+    prepare_chapter_review.set_defaults(func=_prepare_chapter_review_command)
+
+    chapter_review_audit = subparsers.add_parser(
+        "chapter-review-audit",
+        help="Audit chapter structure review coverage, consumption, and artifact hashes.",
+    )
+    chapter_review_audit.add_argument("project", help="CyberPPT project directory.")
+    chapter_review_audit.add_argument("--level", choices=["outline", "script"], default="outline")
+    chapter_review_audit.set_defaults(func=_chapter_review_audit_command)
+
+    prepare_visual_structure = subparsers.add_parser(
+        "prepare-visual-structure",
+        help="Prepare the automatic ppt-visual-structure-designer invocation contract.",
+    )
+    prepare_visual_structure.add_argument("project", help="CyberPPT project directory.")
+    prepare_visual_structure.add_argument("--script", required=True, help="Approved final script.")
+    prepare_visual_structure.set_defaults(func=_prepare_visual_structure_command)
+
+    visual_structure_audit = subparsers.add_parser(
+        "visual-structure-audit",
+        help="Validate and bind visual-structure-designer outputs to the approved script.",
+    )
+    visual_structure_audit.add_argument("project", help="CyberPPT project directory.")
+    visual_structure_audit.add_argument("--script", required=True, help="Approved final script.")
+    visual_structure_audit.set_defaults(func=_visual_structure_audit_command)
 
     source_truth_audit = subparsers.add_parser(
         "source-truth-audit",
@@ -537,6 +619,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     final_script_pages_parser.add_argument("--output-dir", help="Optional output directory for page_image_pairs.json.")
     final_script_pages_parser.add_argument(
+        "--build-id",
+        help="Stable build identifier used for resumable, versioned Stage 02 outputs.",
+    )
+    final_script_pages_parser.add_argument(
         "--production-mode",
         choices=("full-image", "editable-overlay", "editable-overlay-text-reference"),
         default="full-image",
@@ -559,10 +645,10 @@ def build_parser() -> argparse.ArgumentParser:
     final_script_pages_parser.add_argument(
         "--prompt-enrich",
         choices=("off", "deterministic", "send"),
-        default="deterministic",
+        default="off",
         help=(
-            "Send-time prompt enrich (default: deterministic — silently append structure/"
-            "material/people/ban cues to the approved prompt). "
+            "Send-time prompt enrich (default: off — consume the approved prompt verbatim; "
+            "deterministic mode explicitly appends structure/material/people/ban cues). "
             "off=approved prompt only; "
             "send=prefer approved imagegen-send final (else deterministic unless --require-send-approval)."
         ),

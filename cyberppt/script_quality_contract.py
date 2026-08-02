@@ -11,8 +11,17 @@ import unicodedata
 
 PAGE_HEADING_RE = re.compile(r"^##\s+第(\d+)页[：:](.+?)\s*$", re.MULTILINE)
 FIELD_RE = re.compile(r"^-\s*([^：:\n]+)[：:]\s*(.*)$")
+NON_ONSCREEN_VISUAL_HEADING_RE = re.compile(r"^【视觉结构[，,]\s*不上屏】\s*$")
 MODULE_RE = re.compile(r"^\s*\*\*(.+?)\*\*\s*$")
-SOURCE_RE = re.compile(r"S\d{3}")
+INLINE_MODULE_RE = re.compile(r"^\s*\*\*(.+?)\*\*(?:\s*[|｜:：].*)?\s*$")
+# Source Truth identifiers are historically three digits (for example S015)
+# and are four digits in current projects (for example S0410). Match the
+# complete identifier so four-digit refs are not truncated to S041 and do not
+# produce false UNKNOWN/MISSING source diagnostics.
+SOURCE_RE = re.compile(r"S\d{3,4}(?!\d)")
+SOURCE_RANGE_RE = re.compile(
+    r"S(?P<start>\d{3,4})\s*[—–-]\s*S(?P<end>\d{3,4})"
+)
 PAGE_CONTRACT_RECEIPT_RE = re.compile(
     r"<!--\s*cyberppt-page-contract\s+(?P<payload>\{.*?\})\s*-->",
     re.S,
@@ -70,6 +79,12 @@ CONSTRAINT_ARGUMENT_ROLES = {
     "acceptance",
 }
 ONSCREEN_CONSTRAINT_MODULE_TERMS = (
+    "研究边界",
+    "决策边界",
+    "研究状态",
+    "证据状态",
+    "待补证事项",
+    "待论证事项",
     "质量边界",
     "质量要求",
     "安全边界",
@@ -161,6 +176,24 @@ class ScriptPage:
     speaker_notes: str = ""
     contract_receipt: dict[str, object] | None = None
 
+    @property
+    def core_message(self) -> str:
+        """Canonical v2 semantic center; main_message remains a read alias."""
+
+        return self.main_message
+
+    @property
+    def onscreen_conclusion(self) -> str:
+        return self.onscreen_judgment
+
+    @property
+    def content_relations(self) -> tuple[dict[str, object], ...]:
+        receipt = self.contract_receipt or {}
+        relations = receipt.get("content_relations")
+        if not isinstance(relations, list):
+            return ()
+        return tuple(item for item in relations if isinstance(item, dict))
+
 
 @dataclass(frozen=True)
 class ScriptDocument:
@@ -223,6 +256,13 @@ def _field_blocks(body: str) -> dict[str, str]:
     blocks: dict[str, list[str]] = {}
     active = ""
     for raw_line in body.splitlines():
+        if re.match(r"^【(?:演讲者备注|演讲稿|讲稿|备注)】", raw_line.strip()):
+            active = ""
+            continue
+        if NON_ONSCREEN_VISUAL_HEADING_RE.match(raw_line.strip()):
+            active = "视觉结构"
+            blocks[active] = []
+            continue
         match = FIELD_RE.match(raw_line)
         if match:
             active = match.group(1).strip()
@@ -232,9 +272,47 @@ def _field_blocks(body: str) -> dict[str, str]:
     return {key: "\n".join(lines).strip() for key, lines in blocks.items()}
 
 
+def _source_refs(text: str) -> tuple[str, ...]:
+    """Extract explicit Source IDs and expand inclusive ``Sxxxx—Syyyy`` ranges.
+
+    Authoring inputs and human-readable scripts use ranges to avoid turning the
+    evidence field into an unreadable wall of IDs.  The audit contract still
+    needs the atomic IDs for exact Outline coverage, so expand ranges at parse
+    time while preserving first-seen order and de-duplicating references.
+    """
+
+    source_text = text or ""
+    ranges = list(SOURCE_RANGE_RE.finditer(source_text))
+    events: list[tuple[int, str, object]] = []
+    for match in ranges:
+        events.append((match.start(), "range", match))
+    for match in SOURCE_RE.finditer(source_text):
+        if any(item.start() <= match.start() < item.end() for item in ranges):
+            continue
+        events.append((match.start(), "single", match.group(0)))
+
+    refs: list[str] = []
+    for _, kind, value in sorted(events, key=lambda item: item[0]):
+        if kind == "single":
+            refs.append(str(value))
+            continue
+        match = value
+        assert isinstance(match, re.Match)
+        start = int(match.group("start"))
+        end = int(match.group("end"))
+        if end < start or end - start > 1000:
+            continue
+        width = max(len(match.group("start")), len(match.group("end")))
+        refs.extend(f"S{number:0{width}d}" for number in range(start, end + 1))
+    return tuple(dict.fromkeys(refs))
+
+
 def _field_order(body: str) -> tuple[str, ...]:
     ordered: list[str] = []
     for raw_line in body.splitlines():
+        if NON_ONSCREEN_VISUAL_HEADING_RE.match(raw_line.strip()):
+            ordered.append("视觉结构")
+            continue
         match = FIELD_RE.match(raw_line)
         if match:
             ordered.append(match.group(1).strip())
@@ -262,15 +340,27 @@ def extract_page_contract_receipt(body: str) -> dict[str, object] | None:
     return payload if isinstance(payload, dict) else {"_invalid": True}
 
 
+def _module_title(line: str) -> str | None:
+    """Extract a Markdown module title from a standalone or inline heading.
+
+    Reading-oriented scripts commonly use either ``**模块**`` followed by
+    bullets or the compact ``**模块**｜正文`` form.  Both represent one
+    drawable module; the inline body must remain in the visible text layer.
+    """
+
+    match = MODULE_RE.match(line) or INLINE_MODULE_RE.match(line)
+    return match.group(1).strip() if match else None
+
+
 def parse_script_markdown(text: str) -> ScriptDocument:
     pages: list[ScriptPage] = []
     for sequence, heading, body in _page_sections(text):
         fields = _field_blocks(body)
         onscreen = fields.get("上屏文字", "")
         modules = tuple(
-            match.group(1).strip()
+            title
             for line in onscreen.splitlines()
-            if (match := MODULE_RE.match(line))
+            if (title := _module_title(line))
         )
         pages.append(
             ScriptPage(
@@ -280,20 +370,18 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                 page_type=_normalize_page_type(fields.get("页面类型", "")),
                 title=fields.get("页面标题", heading).strip(),
                 subtitle=fields.get("副标题", "").strip(),
-                main_message=fields.get("主判断", "").strip(),
+                main_message=(fields.get("核心结论") or fields.get("主判断", "")).strip(),
                 full_prose=fields.get("完整文字稿", "").strip(),
                 selection_notes=fields.get("文字稿取舍说明", "").strip(),
                 evidence_map=fields.get("证据映射", "").strip(),
-                evidence_map_refs=tuple(SOURCE_RE.findall(fields.get("证据映射", ""))),
+                evidence_map_refs=_source_refs(fields.get("证据映射", "")),
                 source_refs=tuple(
                     dict.fromkeys(
-                        SOURCE_RE.findall(fields.get("证据", ""))
-                        + SOURCE_RE.findall(fields.get("边界依据", ""))
+                        list(_source_refs(fields.get("证据", "")))
+                        + list(_source_refs(fields.get("边界依据", "")))
                     )
                 ),
-                boundary_source_refs=tuple(
-                    SOURCE_RE.findall(fields.get("边界依据", ""))
-                ),
+                boundary_source_refs=_source_refs(fields.get("边界依据", "")),
                 boundary=fields.get("边界", "").strip(),
                 visual_structure=fields.get("视觉结构", "").strip(),
                 onscreen_text=onscreen,
@@ -656,6 +744,9 @@ def _onscreen_content_lines(text: str) -> tuple[str, ...]:
             continue
         if line.startswith("-"):
             line = line[1:].strip()
+        # Preserve the inline module body while removing Markdown emphasis
+        # from the label, e.g. ``**业务标准**｜口径统一``.
+        line = re.sub(r"^\*\*(.+?)\*\*(?=\s*[|｜:：])", r"\1", line)
         line = line.strip("* ")
         if line:
             lines.append(line)
@@ -680,12 +771,18 @@ def build_communication_review(
     mission_count = 0
     lead_match_count = 0
     authoring_field_count = 0
+    density_low_count = 0
     for page in script.pages:
         if page.page_type != "content":
             continue
         content_count += 1
         contract = pages_by_id.get(page.page_id, {})
-        mission = str(contract.get("business_question") or "").strip()
+        mission = str(
+            contract.get("page_mission")
+            or contract.get("page_job")
+            or contract.get("business_question")
+            or ""
+        ).strip()
         if mission:
             mission_count += 1
         lines = _onscreen_content_lines(page.onscreen_text)
@@ -708,8 +805,8 @@ def build_communication_review(
             and page.field_order.index("上屏结论")
             < page.field_order.index("上屏文字")
         )
-        visible_judgment_required = (
-            outline.get("visible_judgment_mode") == "required"
+        visible_judgment_required = bool(
+            str(contract.get("onscreen_conclusion") or contract.get("onscreen_judgment") or "").strip()
         )
         authoring_field_only = bool(
             not visible_judgment_required
@@ -728,7 +825,12 @@ def build_communication_review(
                     "suggested_action": "Add business_question to the approved Outline.",
                 }
             )
-        if page.main_message and not lead_matches and not authoring_field_only:
+        if (
+            outline.get("schema") != "cyberppt.outline.v2"
+            and page.main_message
+            and not lead_matches
+            and not authoring_field_only
+        ):
             findings.append(
                 {
                     "code": "MAIN_MESSAGE_NOT_FIRST_ONSCREEN_LINE",
@@ -763,6 +865,15 @@ def build_communication_review(
                 }
             )
         semantic_coverage = onscreen_semantic_coverage(page)
+        effective_chars = meaningful_char_count(
+            page.onscreen_judgment + page.onscreen_text
+        )
+        effective_char_target = onscreen_effective_char_target(page)
+        density_status = (
+            "pass" if effective_chars >= effective_char_target else "low"
+        )
+        if density_status == "low":
+            density_low_count += 1
         story_roles = onscreen_story_roles(page)
         if (
             _compact_len(page.full_prose) >= PROSE_MIN_CHARS * 2
@@ -827,7 +938,9 @@ def build_communication_review(
                 "sequence": page.sequence,
                 "title": page.title,
                 "mission": mission,
+                "core_message": page.core_message,
                 "main_message": page.main_message,
+                "onscreen_conclusion": page.onscreen_conclusion,
                 "onscreen_judgment": page.onscreen_judgment,
                 "visible_judgment_present": bool(page.onscreen_judgment),
                 "visible_judgment_aligned": lead_matches,
@@ -846,10 +959,9 @@ def build_communication_review(
                 "module_titles": list(page.module_titles),
                 "numeric_lines": [line for line in lines if re.search(r"\d", line)],
                 "semantic_coverage": round(semantic_coverage, 3),
-                "effective_chars": meaningful_char_count(
-                    page.onscreen_judgment + page.onscreen_text
-                ),
-                "effective_char_target": onscreen_effective_char_target(page),
+                "effective_chars": effective_chars,
+                "effective_char_target": effective_char_target,
+                "reading_density_status": density_status,
                 "story_roles": story_roles,
                 "findings": findings,
                 "review_questions": {
@@ -872,6 +984,8 @@ def build_communication_review(
         "lead_match_count": lead_match_count,
         "authoring_field_count": authoring_field_count,
         "lead_coverage_count": lead_match_count + authoring_field_count,
+        "reading_density_default": "high",
+        "reading_density_low_count": density_low_count,
         "warning_count": warning_count,
         "manual_review_required": True,
         "pages": page_reviews,
@@ -1279,9 +1393,11 @@ def _prose_issues(
                     page,
                     "On-screen text is too compressed to support independent reading.",
                     (
-                        "Rewrite 上屏文字 as a closed conclusion-evidence-explanation-"
-                        "implication story; retain the facts and relations needed to "
-                        "understand the page without narration."
+                        "Rewrite 上屏文字 as a high-information reading layer: retain "
+                        "the page subject, source-supported facts, explicit relations, "
+                        "and the page implication needed to understand it without "
+                        "narration; do not add a formulaic conclusion when the source "
+                        "does not provide one."
                     ),
                     evidence=(
                         f"visible_chars={visible_story_chars}",
@@ -1335,7 +1451,10 @@ def _prose_issues(
             for role, present in roles.items()
             if not present
         )
-        if missing_roles:
+        # High-density reading is mandatory for content pages, but a visible
+        # conclusion remains optional.  Only evaluate the conclusion/evidence/
+        # closure chain when the author actually declares an onscreen judgment.
+        if page.onscreen_judgment and missing_roles:
             issues.append(
                 _issue(
                     "ONSCREEN_STORY_NOT_CLOSED",
@@ -1424,7 +1543,7 @@ def _prose_issues(
                     severity="warning",
                 )
             )
-        traced = tuple(SOURCE_RE.findall(parsed.get("仅追溯", "")))
+        traced = _source_refs(parsed.get("仅追溯", ""))
         if traced and page.evidence_map_refs:
             missing_trace = tuple(
                 item for item in traced if item not in page.evidence_map_refs
@@ -1756,25 +1875,25 @@ def _constraint_is_declared_subject(
     page: ScriptPage,
     contract: dict[str, object],
 ) -> bool:
-    """Return whether constraints are the page's declared subject.
+    """Return whether constraints are the core message's primary subject.
 
-    Deliberately ignore 主判断/上屏文字 here. Generated copy must not be able to
-    legitimize an off-topic boundary module by mentioning safety or quality in
-    the module itself. Only the approved role and page mission fields may opt in.
+    A title or page mission may mention scope while the core meaning remains a
+    business design, target, or method.  Such secondary limits must not become a
+    peer on-screen module.  Only an explicit constraint role or a constraint in
+    the leading clause of the approved core message opts in.
     """
 
     role = str(contract.get("argument_role") or "").strip().lower()
     if role in CONSTRAINT_ARGUMENT_ROLES:
         return True
-    declared_subject = "\n".join(
-        str(value or "")
-        for value in (
-            page.title,
-            contract.get("page_job"),
-            contract.get("business_question"),
-        )
-    )
-    return any(term in declared_subject for term in CONSTRAINT_THEME_TERMS)
+    core_message = str(
+        contract.get("core_message")
+        or contract.get("main_message")
+        or page.core_message
+        or ""
+    ).strip()
+    leading_clause = re.split(r"[。；;！？!?]", core_message, maxsplit=1)[0]
+    return any(term in leading_clause for term in CONSTRAINT_THEME_TERMS)
 
 
 def _onscreen_constraint_module_hits(page: ScriptPage) -> tuple[str, ...]:
@@ -2131,7 +2250,8 @@ def _preflight_semantic_issues(
             )
         )
         judgment_mode = "locked"
-    if judgment_mode == "semantic_only":
+    approved_judgment = str(contract.get("onscreen_judgment") or "").strip()
+    if judgment_mode == "semantic_only" and approved_judgment:
         if not page.onscreen_judgment.strip():
             issues.append(
                 _issue(
@@ -2339,19 +2459,21 @@ def audit_script_quality(
                 )
             )
         if expected_type == "content":
-            visible_judgment_required = (
-                outline.get("visible_judgment_mode") == "required"
-            )
+            expected_judgment = str(
+                contract.get("onscreen_conclusion")
+                or contract.get("onscreen_judgment")
+                or ""
+            ).strip()
+            visible_judgment_required = bool(expected_judgment)
             if (
-                not page.main_message
-                or not page.source_refs
+                not page.source_refs
                 or not page.visual_structure
             ):
                 issues.append(
                     _issue(
                         "CONTENT_PAGE_FIELDS_MISSING",
                         page,
-                        "Content page requires main judgment, evidence, and visual structure.",
+                        "Content page requires evidence and visual structure; a judgment is optional.",
                         "Restore the missing backend fields before review.",
                     )
                 )
@@ -2378,9 +2500,6 @@ def audit_script_quality(
                                 evidence=(page.onscreen_judgment,),
                             )
                         )
-                    expected_judgment = str(
-                        contract.get("onscreen_judgment") or ""
-                    ).strip()
                     if (
                         expected_judgment
                         and page.onscreen_judgment != expected_judgment
@@ -2436,6 +2555,16 @@ def audit_script_quality(
                                 ),
                             )
                         )
+            elif page.onscreen_judgment:
+                issues.append(
+                    _issue(
+                        "SCRIPT_JUDGMENT_INTRODUCED",
+                        page,
+                        "The script introduces an on-screen judgment that is absent from the approved Outline.",
+                        "Remove the judgment; downstream stages may not manufacture conclusions.",
+                        evidence=(page.onscreen_judgment,),
+                    )
+                )
             expected_refs = tuple(
                 str(item)
                 for item in contract.get("source_refs", [])
@@ -2444,10 +2573,15 @@ def audit_script_quality(
             expected_boundary_refs = tuple(
                 str(item) for item in contract.get("boundary_refs", []) if item
             )
+            content_unit_field = (
+                "content_units"
+                if contract.get("content_units") is not None
+                else "proof_points"
+            )
             expected_proof_refs = tuple(
                 dict.fromkeys(
                     str(source_id)
-                    for point in contract.get("proof_points", [])
+                    for point in contract.get(content_unit_field, [])
                     if isinstance(point, dict)
                     for source_id in point.get("source_refs", [])
                 )
@@ -2456,7 +2590,10 @@ def audit_script_quality(
                 _prose_issues(
                     page,
                     expected_source_refs=expected_proof_refs,
-                    independent_reading_required=visible_judgment_required,
+                    # All content pages are reading pages by default.  This density
+                    # requirement is deliberately independent from whether the
+                    # approved Outline declares an onscreen conclusion.
+                    independent_reading_required=page.page_type == "content",
                 )
             )
             issues.extend(_narration_boundary_issues(page, contract))
@@ -2491,6 +2628,19 @@ def audit_script_quality(
                         "proof_points",
                         "boundary_refs",
                     )
+                    if receipt.get("schema") == "cyberppt.page_contract_receipt.v2":
+                        canonical_fields = (
+                            "page_mission",
+                            "business_question",
+                            "core_message",
+                            "onscreen_conclusion",
+                            "core_message_derivation",
+                            "content_relations",
+                            "new_value_vs_previous",
+                            "reserved_for_later",
+                            "content_units",
+                            "boundary_refs",
+                        )
                     if (
                         visible_judgment_required
                         and receipt.get("schema")
@@ -2508,7 +2658,10 @@ def audit_script_quality(
                     )
                     if (
                         receipt.get("page_id") != page.page_id
-                        or receipt.get("main_message") != page.main_message
+                        or (
+                            receipt.get("core_message", receipt.get("main_message"))
+                            != page.core_message
+                        )
                         or mismatched
                     ):
                         issues.append(
@@ -2660,8 +2813,7 @@ def audit_script_quality(
             right.onscreen_judgment,
         )
         if (
-            outline.get("visible_judgment_mode") == "required"
-            and left.onscreen_judgment
+            left.onscreen_judgment
             and right.onscreen_judgment
             and visible_similarity >= 0.82
         ):

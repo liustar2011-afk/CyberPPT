@@ -5,7 +5,9 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+from uuid import uuid4
 
+from cyberppt.artifact_ledger import append_artifacts
 from cyberppt.outline_contract import load_outline
 from cyberppt.script_quality_contract import (
     audit_final_manuscript_form,
@@ -151,8 +153,9 @@ def _render_markdown(report: dict[str, object]) -> str:
             "## 上屏文字六问",
             "",
             f"- 页面使命覆盖：{communication.get('mission_coverage', 0)} / {communication.get('content_pages', 0)}",
-            f"- 可见结论覆盖：{communication.get('lead_coverage_count', 0)} / {communication.get('content_pages', 0)}（与主判断对齐 {communication.get('lead_match_count', 0)}；旧稿作者字段兼容 {communication.get('authoring_field_count', 0)}）",
-            f"- 自动提醒：{communication.get('warning_count', 0)} 条；优先核对关系骨架同构与三段式取舍说明（必留上屏/仅讲解/仅追溯），勿为刷覆盖率堆字。",
+            f"- 可选上屏结论：已呈现 {communication.get('lead_coverage_count', 0)} 页；未声明上屏结论的页面不计缺失",
+            f"- 阅读型信息密度：默认高密度；低于自适应基线的页面 {communication.get('reading_density_low_count', 0)} 页；不以补写结论代替补充事实与关系。",
+            f"- 自动提醒：{communication.get('warning_count', 0)} 条；优先核对关系骨架同构与三段式取舍说明（必留上屏/仅讲解/仅追溯），不得用重复字句刷密度。",
             "",
         ]
     )
@@ -171,8 +174,9 @@ def _render_markdown(report: dict[str, object]) -> str:
                     f"### 第{page.get('sequence', '')}页：{page.get('title', '')}",
                     "",
                     f"- 页面使命：{page.get('mission') or '未提供'}",
-                    f"- 核心判断：{page.get('main_message') or '未提供'}",
-                    f"- 主判断上屏状态：{page.get('lead_status', 'check')}",
+                    f"- 核心结论：{page.get('core_message') or page.get('main_message') or '未提供'}",
+                    f"- 上屏结论状态：{page.get('lead_status', 'check')}（可选）",
+                    f"- 阅读密度：{page.get('reading_density_status', 'check')}（{page.get('effective_chars', 0)} / {page.get('effective_char_target', 0)}）",
                     f"- 六问状态：单一使命=人工复核；模块同维度=人工复核；信息取舍=人工复核；领导展开={'通过' if page.get('review_questions', {}).get('leadership_expandability') == 'pass' else '待检查'}；视觉表达={'通过' if page.get('review_questions', {}).get('visual_expression_ready') == 'pass' else '待检查'}",
                     f"- 自动提醒：{'、'.join(finding_codes) or '无'}",
                     "",
@@ -227,41 +231,33 @@ def _register_artifacts(
     outline_path: Path,
     source_truth_path: Path,
 ) -> None:
-    ledger_path = project / "workbench" / "artifact-ledger.json"
-    ledger = (
-        json.loads(ledger_path.read_text(encoding="utf-8-sig"))
-        if ledger_path.exists()
-        else {"schema": "cyberppt.artifact_ledger.v1", "artifacts": []}
-    )
-    artifacts = ledger.get("artifacts")
-    current = artifacts if isinstance(artifacts, list) else []
-    by_path = {
-        str(item.get("path")): item
-        for item in current
-        if isinstance(item, dict)
-    }
     dependencies = [
         _relative(project, input_path),
         _relative(project, outline_path),
         _relative(project, source_truth_path),
     ]
+    records: list[dict[str, object]] = []
     for path in paths:
         relative = _relative(project, path)
-        by_path[relative] = {
-            "stage": "02-blueprint-dual-image",
-            "page": None,
-            "path": relative,
-            "status": status,
-            "depends_on": dependencies,
-            "supersedes": [],
-            "resume_command": (
-                "python -m cyberppt script-audit "
-                f"{project.as_posix()} --input {input_path.as_posix()}"
-            ),
-            "sha256": _sha256(path),
-        }
-    ledger["artifacts"] = list(by_path.values())
-    _write_json(ledger_path, ledger)
+        records.append(
+            {
+                "stage": "02-blueprint-dual-image",
+                "page": None,
+                "path": relative,
+                "status": status,
+                "depends_on": dependencies,
+                "resume_command": (
+                    "python -m cyberppt script-audit "
+                    f"{project.as_posix()} --input {input_path.as_posix()}"
+                ),
+                "sha256": _sha256(path),
+            }
+        )
+    append_artifacts(
+        project / "workbench" / "artifact-ledger.json",
+        records,
+        build_id=f"script-audit-{_sha256(input_path)[:10]}-{uuid4().hex[:8]}",
+    )
 
 
 def _escalation_options() -> list[dict[str, str]]:
@@ -393,7 +389,7 @@ def run_script_audit(
         "failed_pages": failed_pages,
         "retry_scope": failed_pages,
         "retry_directive": directive,
-        "reference_gate": snapshot_reference_gate("script"),
+        "reference_gate": snapshot_reference_gate("script", project),
     }
     if errors and effective_attempt >= max_attempts:
         report["status"] = "user_decision_required"

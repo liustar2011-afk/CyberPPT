@@ -177,6 +177,28 @@ class AssembleFinalScriptTests(unittest.TestCase):
             self.assertIn('"onscreen_judgment_mode":"semantic_only"', text)
             self.assertIn('"judgment_role":"relationship"', text)
 
+    def test_does_not_manufacture_judgment_when_outline_has_none(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "demo"
+            drafts = project / "workbench/scripts/drafts"
+            drafts.mkdir(parents=True)
+            outline_dir = project / "workbench/stages/01-analysis"
+            outline_dir.mkdir(parents=True)
+            outline_dir.joinpath("outline.json").write_text(
+                json.dumps({"pages": [{"page_id": "p01"}]}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            drafts.joinpath("batch.md").write_text(
+                "## 第1页：能力框架\n"
+                "- 页面类型：内容页\n"
+                "- 上屏文字：五层能力及其职责\n",
+                encoding="utf-8",
+            )
+
+            report = assemble_final_script(project)
+            text = Path(str(report["output"])).read_text(encoding="utf-8")
+            self.assertNotIn("- 上屏结论：", text)
+
 
 if __name__ == "__main__":
     unittest.main()

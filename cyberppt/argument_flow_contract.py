@@ -51,6 +51,14 @@ PAGE_CONTRIBUTION_FIELDS = (
     "new_value_vs_previous",
     "reserved_for_later",
 )
+SEMANTIC_CONTRIBUTION_FIELDS = (
+    "page_mission",
+    "core_message",
+    "content_units",
+    "content_relations",
+    "new_value_vs_previous",
+    "reserved_for_later",
+)
 EVIDENCE_TYPE_TO_CLAIM_ROLE = {
     "F": "fact",
     "J": "judgment",
@@ -82,6 +90,8 @@ def validate_page_role_fields(
 ) -> list[ArgumentFlowIssue]:
     if outline.get("argument_contract_mode", "legacy") != "strict":
         return []
+    if outline.get("schema") == "cyberppt.outline.v2":
+        return validate_source_relation_fields(outline)
     raw_pages = outline.get("pages")
     pages = raw_pages if isinstance(raw_pages, list) else []
     issues: list[ArgumentFlowIssue] = []
@@ -173,6 +183,76 @@ def validate_page_role_fields(
                     "Content page argument_role must use the repository vocabulary.",
                     (page_id,) if page_id else (),
                     retry_strategy="complete_argument_contract",
+                )
+            )
+    return issues
+
+
+def validate_source_relation_fields(
+    outline: dict[str, object],
+) -> list[ArgumentFlowIssue]:
+    """Validate v2 content contracts without imposing page or claim taxonomies."""
+
+    issues: list[ArgumentFlowIssue] = []
+    for page in _dict_items(outline, "pages"):
+        if page.get("page_type") != "content":
+            continue
+        page_id = str(page.get("page_id") or "")
+        missing = [field for field in SEMANTIC_CONTRIBUTION_FIELDS if not page.get(field)]
+        if missing:
+            issues.append(
+                ArgumentFlowIssue(
+                    "SEMANTIC_CONTRIBUTION_FIELDS_MISSING",
+                    "V2 content pages must declare page_mission, core_message, content_units, content_relations, new_value_vs_previous, and reserved_for_later.",
+                    (page_id,) if page_id else (),
+                    retry_strategy="complete_source_relation_contract",
+                )
+            )
+        page_sources = set(_string_list(page, "source_refs"))
+        units = page.get("content_units")
+        if isinstance(units, list):
+            for unit in units:
+                refs = _string_list(unit, "source_refs") if isinstance(unit, dict) else []
+                if (
+                    not isinstance(unit, dict)
+                    or not str(unit.get("statement") or "").strip()
+                    or not refs
+                    or not set(refs).issubset(page_sources)
+                    or str(unit.get("role") or "") not in {"primary", "supporting", "boundary"}
+                ):
+                    issues.append(
+                        ArgumentFlowIssue(
+                            "CONTENT_UNIT_INVALID",
+                            "Each content unit must state source-supported content, cite only page source_refs, and use primary, supporting, or boundary role.",
+                            (page_id,) if page_id else (),
+                            retry_strategy="reconcile_content_units",
+                        )
+                    )
+                    break
+        relations = page.get("content_relations")
+        if isinstance(relations, list):
+            for relation in relations:
+                refs = _string_list(relation, "source_refs") if isinstance(relation, dict) else []
+                if not isinstance(relation, dict) or not refs or not set(refs).issubset(page_sources):
+                    issues.append(
+                        ArgumentFlowIssue(
+                            "CONTENT_RELATION_REFS_INVALID",
+                            "Each content relation must cite a non-empty subset of the page source_refs.",
+                            (page_id,) if page_id else (),
+                            tuple(sorted(set(refs) - page_sources)),
+                            retry_strategy="reconcile_content_relations",
+                        )
+                    )
+                    break
+        boundary_sources = set(_string_list(page, "boundary_refs"))
+        if not boundary_sources.issubset(page_sources):
+            issues.append(
+                ArgumentFlowIssue(
+                    "BOUNDARY_REFS_INVALID",
+                    "boundary_refs must be a subset of page source_refs.",
+                    (page_id,) if page_id else (),
+                    tuple(sorted(boundary_sources - page_sources)),
+                    retry_strategy="reconcile_content_units",
                 )
             )
     return issues
@@ -293,6 +373,7 @@ def audit_argument_flow(
     }
     issues = validate_page_role_fields(outline)
     dependencies: dict[str, list[str]] = {}
+    source_relation_mode = outline.get("schema") == "cyberppt.outline.v2"
 
     for page_id, page in page_index.items():
         prerequisites = _string_list(page, "prerequisite_pages")
@@ -333,7 +414,7 @@ def audit_argument_flow(
         primary_points = [
             point for point in proof_points if point.get("consumption") == "primary"
         ]
-        if len(primary_points) > PRIMARY_PROOF_DIRECTION_LIMIT:
+        if not source_relation_mode and len(primary_points) > PRIMARY_PROOF_DIRECTION_LIMIT:
             issues.append(
                 ArgumentFlowIssue(
                     "PRIMARY_PROOF_DIRECTIONS_EXCESSIVE",
@@ -350,7 +431,7 @@ def audit_argument_flow(
                     retry_strategy="refocus_page_evidence",
                 )
             )
-        for point in primary_points:
+        for point in ([] if source_relation_mode else primary_points):
             point_sources = _string_list(point, "source_refs")
             boundary_primary_sources = [
                 source_id
@@ -417,7 +498,7 @@ def audit_argument_flow(
                 record.get("claim_role")
                 or EVIDENCE_TYPE_TO_CLAIM_ROLE.get(str(record.get("type") or ""), "")
             )
-            if claim_role not in allowed or claim_role in forbidden:
+            if not source_relation_mode and (claim_role not in allowed or claim_role in forbidden):
                 issues.append(
                     ArgumentFlowIssue(
                         "CLAIM_ROLE_EXCEEDS_PAGE_ROLE",
@@ -442,6 +523,8 @@ def audit_argument_flow(
                     )
 
             if (
+                not source_relation_mode
+                and
                 str(page.get("main_claim_status") or "") == "confirmed"
                 and claim_role in {"boundary", "unresolved"}
             ):
@@ -460,11 +543,16 @@ def audit_argument_flow(
     for page_id, page in page_index.items():
         for source_id in _string_list(page, "source_refs"):
             actual_pages_by_source.setdefault(source_id, set()).add(page_id)
-        for point in page.get("proof_points", []):
-            if isinstance(point, dict) and point.get("consumption") == "primary":
+        point_field = "content_units" if source_relation_mode else "proof_points"
+        for point in page.get(point_field, []):
+            if isinstance(point, dict) and (
+                point.get("role") == "primary" or point.get("consumption") == "primary"
+            ):
                 for source_id in _string_list(point, "source_refs"):
                     primary_pages_by_source.setdefault(source_id, set()).add(page_id)
     for source_id, owners in primary_pages_by_source.items():
+        if source_relation_mode:
+            continue
         if len(owners) > 1:
             issues.append(
                 ArgumentFlowIssue(
@@ -553,7 +641,8 @@ def audit_argument_flow(
                 else 0.0
             )
             job_similarity = _normalized_similarity(
-                previous.get("page_job"), current.get("page_job")
+                previous.get("page_mission") or previous.get("page_job"),
+                current.get("page_mission") or current.get("page_job"),
             )
             value_similarity = _normalized_similarity(
                 previous.get("new_value_vs_previous"),
@@ -596,6 +685,8 @@ def argument_graph_summary(
             {
                 "page_id": str(page.get("page_id") or ""),
                 "argument_role": str(page.get("argument_role") or ""),
+                "core_message": str(page.get("core_message") or page.get("main_message") or ""),
+                "content_relation_count": len(page.get("content_relations") or []),
             }
             for page in pages
             if page.get("page_type") == "content"

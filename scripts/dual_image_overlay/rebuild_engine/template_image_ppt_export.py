@@ -9,6 +9,7 @@ created by the PPT pipeline.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -657,6 +658,22 @@ def write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def _write_export_pointer(project_path: Path, output_path: Path) -> Path:
+    digest = hashlib.sha256(output_path.read_bytes()).hexdigest()
+    pointer = project_path / "analysis" / "export_artifact.json"
+    write_json(
+        pointer,
+        {
+            "schema": "cyberppt.dual_image.export_artifact.v1",
+            "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "project_path": str(project_path.resolve()),
+            "path": str(output_path.resolve()),
+            "sha256": digest,
+        },
+    )
+    return pointer
+
+
 def copy_brand(project_path: Path, brand_dir: Path = DEFAULT_BRAND_DIR) -> None:
     for sub in ("templates", "images"):
         (project_path / sub).mkdir(parents=True, exist_ok=True)
@@ -785,10 +802,85 @@ def render_brand_template_svg(task: dict, rules: dict) -> str:
     return svg
 
 
-def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
+def render_content_page_svg(
+    task: dict,
+    *,
+    target_image: Path,
+    header: dict[str, int],
+    body: dict[str, int],
+) -> str:
+    """Render a content page without inserting a template body mask."""
+    svg = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_SIZE[0]}" height="{CANVAS_SIZE[1]}" viewBox="0 0 {CANVAS_SIZE[0]} {CANVAS_SIZE[1]}">',
+    ]
+    svg.append(svg_text(header["x"], header["y"] + 30, task["slide_title"], 25, 700))
+    if task.get("subtitle"):
+        svg.append(svg_text(header["x"], header["y"] + 56, task["subtitle"], 14, 400, "#60758A"))
+    svg.append(
+        f'<image x="{body["x"]}" y="{body["y"]}" width="{body["width"]}" height="{body["height"]}" '
+        f'href={quoteattr("../images/" + target_image.name)} xlink:href={quoteattr("../images/" + target_image.name)} preserveAspectRatio="xMidYMid meet"/>'
+    )
+    svg.append("</svg>\n")
+    return "\n".join(svg)
+
+
+def _backup_existing_project(project_path: Path, output_dir: Path) -> Path:
+    """Move an explicitly overwritten project to a recoverable backup."""
+
+    output_dir = output_dir.resolve()
+    project_path = project_path.resolve()
+    try:
+        project_path.relative_to(output_dir)
+    except ValueError as exc:
+        raise ValueError(f"refusing to backup project outside output directory: {project_path}") from exc
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    backup_root = output_dir / "backup" / timestamp
+    backup_root.mkdir(parents=True, exist_ok=True)
+    backup_path = backup_root / project_path.name
+    suffix = 2
+    while backup_path.exists():
+        backup_path = backup_root / f"{project_path.name}_{suffix:02d}"
+        suffix += 1
+    shutil.move(str(project_path), str(backup_path))
+    return backup_path
+
+
+def _backup_existing_output(output_path: Path, output_dir: Path) -> Path:
+    """Move an explicitly overwritten PPTX to the output directory backup."""
+
+    output_dir = output_dir.resolve()
+    output_path = output_path.resolve()
+    try:
+        output_path.relative_to(output_dir)
+    except ValueError as exc:
+        raise ValueError(f"refusing to backup PPTX outside output directory: {output_path}") from exc
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    backup_root = output_dir / "backup" / timestamp
+    backup_root.mkdir(parents=True, exist_ok=True)
+    backup_path = backup_root / output_path.name
+    suffix = 2
+    while backup_path.exists():
+        backup_path = backup_root / f"{output_path.stem}_{suffix:02d}{output_path.suffix}"
+        suffix += 1
+    shutil.move(str(output_path), str(backup_path))
+    return backup_path
+
+
+def write_project(
+    manifest: dict,
+    output_dir: Path,
+    name: str,
+    *,
+    overwrite: bool = False,
+) -> Path:
     project_path = output_dir / f"{sanitize_name(name)}_template_image_project"
     if project_path.exists():
-        shutil.rmtree(project_path)
+        if not overwrite:
+            raise FileExistsError(
+                f"template image project already exists: {project_path}; "
+                "choose a new --name/--output-dir or pass --overwrite"
+            )
+        _backup_existing_project(project_path, output_dir)
     for sub in ("svg_output", "notes", "templates", "images", "exports"):
         (project_path / sub).mkdir(parents=True, exist_ok=True)
     rules = load_brand_rules()
@@ -812,25 +904,12 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
                 raise FileNotFoundError(f"Missing content image: {image_path}")
             target_image = project_path / "images" / image_path.name
             shutil.copy2(image_path, target_image)
-            # Content pages use a clean paper surface.  The body illustration is
-            # the only visual layer in this region; do not place a template
-            # atmosphere image or feathered overlay behind it.
-            backdrop = (
-                f'<rect x="0" y="87" width="{CANVAS_SIZE[0]}" height="611" fill="#F7F6F0"/>'
+            svg_text_content = render_content_page_svg(
+                task,
+                target_image=target_image,
+                header=header,
+                body=body,
             )
-            svg = [
-                f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_SIZE[0]}" height="{CANVAS_SIZE[1]}" viewBox="0 0 {CANVAS_SIZE[0]} {CANVAS_SIZE[1]}">',
-                backdrop,
-            ]
-            svg.append(svg_text(header["x"], header["y"] + 30, task["slide_title"], 25, 700))
-            if task.get("subtitle"):
-                svg.append(svg_text(header["x"], header["y"] + 56, task["subtitle"], 14, 400, "#60758A"))
-            svg.append(
-                f'<image x="{body["x"]}" y="{body["y"]}" width="{body["width"]}" height="{body["height"]}" '
-                f'href={quoteattr("../images/" + target_image.name)} xlink:href={quoteattr("../images/" + target_image.name)} preserveAspectRatio="xMidYMid meet"/>'
-            )
-            svg.append("</svg>\n")
-            svg_text_content = "\n".join(svg)
         (project_path / "svg_output" / f"{stem}.svg").write_text(svg_text_content, encoding="utf-8")
         notes_text = task.get("notes_text")
         if not notes_text:
@@ -844,15 +923,32 @@ def write_project(manifest: dict, output_dir: Path, name: str) -> Path:
     return project_path
 
 
-def run_export(project_path: Path) -> Path:
+def run_export(
+    project_path: Path,
+    *,
+    output_path: Path | None = None,
+    overwrite: bool = False,
+) -> Path:
+    if output_path is None:
+        raise ValueError(
+            "run_export requires an explicit output_path; refusing nondeterministic latest-PPTX selection"
+        )
+    output_path = output_path.expanduser().resolve()
+    if output_path.exists() and not overwrite:
+        raise FileExistsError(
+            f"PPTX output already exists: {output_path}; pass --overwrite to replace it"
+        )
+    if output_path.exists() and overwrite:
+        _backup_existing_output(output_path, project_path.parent)
     cmd = [sys.executable, str(SCRIPTS_DIR / "svg_to_pptx.py"), str(project_path)]
+    cmd.extend(["--output", str(output_path)])
     result = subprocess.run(cmd, check=False)
     if result.returncode != 0:
         raise RuntimeError(f"svg_to_pptx failed with exit code {result.returncode}")
-    exports = sorted((project_path / "exports").glob("*.pptx"), key=lambda p: p.stat().st_mtime)
-    if not exports:
-        raise FileNotFoundError(f"No PPTX produced in {project_path / 'exports'}")
-    return exports[-1]
+    if not output_path.is_file():
+        raise FileNotFoundError(f"No PPTX produced at requested path: {output_path}")
+    _write_export_pointer(project_path, output_path)
+    return output_path
 
 
 def command_plan(args: argparse.Namespace) -> int:
@@ -918,8 +1014,17 @@ def command_generate(args: argparse.Namespace) -> int:
 
 def command_export(args: argparse.Namespace) -> int:
     manifest = json.loads(args.manifest.resolve().read_text(encoding="utf-8"))
-    project_path = write_project(manifest, args.output_dir.resolve(), args.name)
-    pptx = run_export(project_path)
+    project_path = write_project(
+        manifest,
+        args.output_dir.resolve(),
+        args.name,
+        overwrite=bool(getattr(args, "overwrite", False)),
+    )
+    pptx = run_export(
+        project_path,
+        output_path=Path(args.pptx_output).resolve() if getattr(args, "pptx_output", None) else None,
+        overwrite=bool(getattr(args, "overwrite", False)),
+    )
     print(f"Project: {project_path}")
     print(f"PPTX: {pptx}")
     return 0
@@ -942,7 +1047,15 @@ def command_run(args: argparse.Namespace) -> int:
     rc = command_generate(gen_args)
     if rc != 0:
         return rc
-    return command_export(argparse.Namespace(manifest=manifest, output_dir=args.output_dir, name=args.name))
+    return command_export(
+        argparse.Namespace(
+            manifest=manifest,
+            output_dir=args.output_dir,
+            name=args.name,
+            pptx_output=args.pptx_output,
+            overwrite=args.overwrite,
+        )
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -966,6 +1079,9 @@ def build_parser() -> argparse.ArgumentParser:
             type=Path,
             help="Use approved content images from page_image_pairs.json; do not regenerate them.",
         )
+        if name == "run":
+            p.add_argument("--pptx-output", type=Path, help="Explicit PPTX output path.")
+            p.add_argument("--overwrite", action="store_true", help="Backup existing project/output before replacing it.")
         p.set_defaults(func=command_plan if name == "plan" else command_run)
     gen = sub.add_parser("generate")
     gen.add_argument("manifest", type=Path)
@@ -980,6 +1096,8 @@ def build_parser() -> argparse.ArgumentParser:
     exp.add_argument("manifest", type=Path)
     exp.add_argument("-o", "--output-dir", required=True, type=Path)
     exp.add_argument("--name", default="template_image_ppt")
+    exp.add_argument("--pptx-output", type=Path, help="Explicit PPTX output path.")
+    exp.add_argument("--overwrite", action="store_true", help="Backup existing project/output before replacing it.")
     exp.set_defaults(func=command_export)
     return parser
 

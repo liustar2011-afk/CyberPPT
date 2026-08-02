@@ -38,6 +38,17 @@ class Stage01ControlsTests(unittest.TestCase):
             self.assertIn("sha256", item)
             self.assertEqual(len(item["sha256"]), 64)
 
+    def test_project_reference_gate_never_falls_back_to_repository_references(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory) / "project"
+            reference = project / "workbench" / "references" / "source-analysis.md"
+            reference.parent.mkdir(parents=True)
+            reference.write_text("current project only\n", encoding="utf-8")
+            snapshot = snapshot_reference_gate("source_truth", project)
+            self.assertEqual(snapshot["scope"], "project")
+            self.assertEqual(snapshot["status"], "complete")
+            self.assertEqual(Path(snapshot["files"][0]["path"]), reference.resolve())
+
     def test_open_escalation_blocks_until_decision(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             project = Path(directory) / "project"
@@ -126,6 +137,10 @@ class Stage01ControlsTests(unittest.TestCase):
             )
             request = write_confirmation_request(project, "outline")
             self.assertTrue(request.is_file())
+            request_text = request.read_text(encoding="utf-8")
+            self.assertIn("## 人类审阅稿", request_text)
+            self.assertIn("01-outline-readable.md", request_text)
+            self.assertIn("outline.json` 仅供机器审计", request_text)
             assert_confirmation_request_ready(project, "outline")
             approval = write_stage01_approval(
                 project, kind="outline", note="approved for test"
@@ -163,6 +178,91 @@ class Stage01ControlsTests(unittest.TestCase):
             script.write_text("## 第1页：测试\n内容已改\n", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "does not match the current script"):
                 assert_stage01_script_approval(project, script)
+
+    def test_script_approval_accepts_and_binds_documented_risk_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory) / "project"
+            analysis = project / "workbench" / "stages" / "01-analysis"
+            script = Path(directory) / "final-script.md"
+            script.write_text("## page 1\nbody\n", encoding="utf-8")
+            outline = analysis / "outline.json"
+            source_truth = analysis / "source-truth.json"
+            analysis.mkdir(parents=True, exist_ok=True)
+            outline.write_text("outline\n", encoding="utf-8")
+            source_truth.write_text("source\n", encoding="utf-8")
+            _write_json(
+                project / "workbench/scripts/audits/script-audit.json",
+                {
+                    "status": "user_decision_required",
+                    "input": str(script),
+                    "outline": str(outline),
+                    "source_truth": str(source_truth),
+                },
+            )
+            _write_json(
+                project / "workbench/scripts/audits/script-escalation.json",
+                {
+                    "status": "user_decision_required",
+                    "options": [{"id": "accept_documented_risk", "label": "accept"}],
+                },
+            )
+            decision = write_escalation_decision(
+                project, gate="script", option_id="accept_documented_risk"
+            )
+            write_confirmation_request(project, "script")
+            approvals = project / "workbench/approvals"
+            approvals.mkdir(parents=True, exist_ok=True)
+            (approvals / "stage01-outline-approved.md").write_text(
+                "# approved\n", encoding="utf-8"
+            )
+
+            approval = write_stage01_approval(project, kind="script")
+            approval_text = approval.read_text(encoding="utf-8")
+            self.assertIn("script_audit_status: user_decision_required", approval_text)
+            self.assertIn("escalation_option_id: accept_documented_risk", approval_text)
+            assert_stage01_script_approval(project, script)
+
+            decision.write_text("{}\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "valid accepted-risk escalation"):
+                assert_stage01_script_approval(project, script)
+
+    def test_script_approval_rejects_nonterminal_escalation_option(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory) / "project"
+            analysis = project / "workbench" / "stages" / "01-analysis"
+            script = Path(directory) / "final-script.md"
+            script.write_text("## page 1\nbody\n", encoding="utf-8")
+            outline = analysis / "outline.json"
+            source_truth = analysis / "source-truth.json"
+            analysis.mkdir(parents=True, exist_ok=True)
+            outline.write_text("outline\n", encoding="utf-8")
+            source_truth.write_text("source\n", encoding="utf-8")
+            _write_json(
+                project / "workbench/scripts/audits/script-audit.json",
+                {
+                    "status": "user_decision_required",
+                    "input": str(script),
+                    "outline": str(outline),
+                    "source_truth": str(source_truth),
+                },
+            )
+            _write_json(
+                project / "workbench/scripts/audits/script-escalation.json",
+                {
+                    "status": "user_decision_required",
+                    "options": [{"id": "merge_pages", "label": "revise"}],
+                },
+            )
+            write_escalation_decision(project, gate="script", option_id="merge_pages")
+            write_confirmation_request(project, "script")
+            approvals = project / "workbench/approvals"
+            approvals.mkdir(parents=True, exist_ok=True)
+            (approvals / "stage01-outline-approved.md").write_text(
+                "# approved\n", encoding="utf-8"
+            )
+
+            with self.assertRaisesRegex(ValueError, "valid accepted-risk escalation"):
+                write_stage01_approval(project, kind="script")
 
     def test_outline_audit_blocked_by_open_source_truth_escalation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

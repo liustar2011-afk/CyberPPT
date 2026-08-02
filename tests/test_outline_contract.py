@@ -154,6 +154,157 @@ class OutlineContractTests(unittest.TestCase):
             [item.code for item in audit_outline(payload, truth)],
         )
 
+    def test_content_page_requires_complete_core_message_without_forcing_judgment(self) -> None:
+        content = page(
+            1,
+            "content",
+            "建设目标与能力框架",
+            message="总体建设框架由五个层次构成，各层分别承担相应职责",
+            question="总体建设框架包含哪些内容",
+            visual="五层能力框架",
+            refs=["S021"],
+        )
+        payload = outline(
+            content,
+            core_message_derivation_mode="required",
+            source_section_weights={},
+        )
+        truth = {"records": [{"id": "S021", "statement": "总体建设框架由五个层次构成。"}]}
+
+        content["core_message_derivation"] = {
+            "source_refs": ["S021"],
+            "supporting_statements": ["总体建设框架由五个层次构成。"],
+            "derivation": "保留原文的构成关系。",
+            "introduced_relations": [],
+            "introduced_modalities": [],
+        }
+        codes = [item.code for item in audit_outline(payload, truth)]
+        self.assertNotIn("CORE_MESSAGE_DERIVATION_MISSING", codes)
+        self.assertNotIn("ONSCREEN_CONCLUSION_WITHOUT_JUDGMENT", codes)
+
+    def test_content_page_without_core_message_is_rejected(self) -> None:
+        payload = outline(
+            page(1, "content", "建设目标与能力框架", message="", refs=["S021"]),
+            source_section_weights={},
+        )
+        self.assertIn("CORE_MESSAGE_MISSING", [item.code for item in audit_outline(payload)])
+
+    def test_heading_or_table_label_is_not_a_complete_core_message(self) -> None:
+        heading = page(1, "content", "研究边界", message="1. 研究对象", refs=["S021"])
+        table = page(2, "content", "指标清单", message="指标类别 | 核心指标 | 主要用途", refs=["S022"])
+        codes = [item.code for item in audit_outline(outline(heading, table))]
+        self.assertIn("CORE_MESSAGE_NOT_COMPLETE", codes)
+
+    def test_reused_page_necessity_is_rejected(self) -> None:
+        pages = []
+        for index in range(1, 4):
+            item = page(index, "content", f"主题{index}", message=f"主题{index}包含完整的来源事实和边界说明。", refs=[f"S{index:03d}"])
+            item["page_necessity"] = "该证据组具有独立对象，必须单独成页。"
+            pages.append(item)
+        codes = [item.code for item in audit_outline(outline(*pages))]
+        self.assertIn("PAGE_NECESSITY_BOILERPLATE", codes)
+
+    def test_similar_core_messages_across_different_sources_are_rejected(self) -> None:
+        left = page(1, "content", "组织机制", message="建立领导统筹、处室牵头、专班推进、专家支撑和生态协同的组织机制。", refs=["S001"])
+        right = page(2, "content", "组织条件", message="建议建立领导统筹、处室牵头、专班推进、专家支撑和生态协同的组织机制。", refs=["S002"])
+        codes = [item.code for item in audit_outline(outline(left, right))]
+        self.assertIn("CORE_MESSAGE_REDUNDANT", codes)
+
+    def test_outline_must_inherit_document_subject_and_primary_thesis(self) -> None:
+        semantics = {
+            "document_role": "前期研究成果汇报",
+            "subject_of_report": "电力供需预测预警能力建设",
+            "primary_thesis": "需要推进能力建设",
+            "decision_boundary": "完整范围与投资仍需论证",
+            "source_refs": ["S001"],
+        }
+        truth = {
+            "document_semantics_mode": "required",
+            "document_semantics": semantics,
+            "records": [{"id": "S001", "statement": "需要推进能力建设"}],
+        }
+        payload = outline(document_semantics=semantics, narrative_thesis="需要开展前期研究")
+        codes = {item.code for item in audit_outline(payload, truth)}
+        self.assertIn("NARRATIVE_THESIS_DRIFTED", codes)
+
+        payload["narrative_thesis"] = "需要推进能力建设"
+        self.assertNotIn("NARRATIVE_THESIS_DRIFTED", {item.code for item in audit_outline(payload, truth)})
+
+    def test_v2_objective_composition_contract_passes_semantic_checks(self) -> None:
+        content = page(
+            1,
+            "content",
+            "建设目标与能力框架",
+            message="",
+            refs=["S021"],
+        )
+        content.update(
+            {
+                "page_mission": "说明总体能力框架的构成及各层职责",
+                "core_message": "总体能力框架由五个层次构成，各层分别承担相应职责",
+                "core_message_derivation": {
+                    "source_refs": ["S021"],
+                    "supporting_statements": ["总体能力框架由五个层次构成，各层分别承担相应职责。"],
+                    "derivation": "保留原文组成关系和职责表述。",
+                    "introduced_relations": [],
+                    "introduced_modalities": [],
+                },
+                "content_relations": [
+                    {
+                        "relation": "composed_of",
+                        "subject": "总体能力框架",
+                        "objects": ["业务应用", "成果服务", "模型分析", "数据治理", "运行保障"],
+                        "source_refs": ["S021"],
+                    }
+                ],
+            }
+        )
+        payload = outline(
+            content,
+            schema="cyberppt.outline.v2",
+            core_message_derivation_mode="required",
+            source_section_weights={},
+        )
+        truth = {"records": [{"id": "S021", "statement": "总体能力框架由五个层次构成，各层分别承担相应职责。"}]}
+
+        semantic_codes = {
+            "CORE_MESSAGE_MISSING",
+            "CORE_MESSAGE_DERIVATION_MISSING",
+            "CONTENT_RELATIONS_MISSING",
+            "RELATION_STRENGTH_UPGRADED",
+            "MODALITY_STRENGTH_UPGRADED",
+        }
+        self.assertFalse(semantic_codes & {item.code for item in audit_outline(payload, truth)})
+
+    def test_unsupported_necessity_and_relationship_are_rejected(self) -> None:
+        content = page(
+            1,
+            "content",
+            "建设目标与能力框架",
+            message="五类能力协同，才能支撑多对象、多尺度、多层级研判",
+            question="总体建设框架包含哪些内容",
+            visual="五层能力框架",
+            refs=["S021"],
+        )
+        content["onscreen_judgment"] = "五类能力协同，才能支撑研判"
+        content["judgment_derivation"] = {
+            "source_refs": ["S021"],
+            "supporting_statements": ["总体建设框架由五个层次构成。"],
+            "derivation": "压缩五层构成关系。",
+            "introduced_relations": [],
+            "introduced_modalities": [],
+        }
+        payload = outline(
+            content,
+            judgment_derivation_mode="required",
+            source_section_weights={},
+        )
+        truth = {"records": [{"id": "S021", "statement": "总体建设框架由五个层次构成。"}]}
+
+        codes = [item.code for item in audit_outline(payload, truth)]
+        self.assertIn("RELATION_STRENGTH_UPGRADED", codes)
+        self.assertIn("MODALITY_STRENGTH_UPGRADED", codes)
+
 
 if __name__ == "__main__":
     unittest.main()

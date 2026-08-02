@@ -42,6 +42,10 @@ class CliTests(unittest.TestCase):
         self.assertIn("outline-audit", help_text)
         self.assertIn("source-truth-audit", help_text)
         self.assertIn("script-audit", help_text)
+        self.assertIn("prepare-chapter-review", help_text)
+        self.assertIn("chapter-review-audit", help_text)
+        self.assertIn("prepare-visual-structure", help_text)
+        self.assertIn("visual-structure-audit", help_text)
 
     def test_script_audit_accepts_contract_options(self) -> None:
         args = build_parser().parse_args(

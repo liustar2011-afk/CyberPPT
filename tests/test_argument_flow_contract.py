@@ -5,6 +5,7 @@ import unittest
 from cyberppt.argument_flow_contract import (
     audit_argument_flow,
     validate_page_role_fields,
+    validate_source_relation_fields,
 )
 
 
@@ -68,6 +69,58 @@ def strict_truth(*records: dict[str, object]) -> dict[str, object]:
 
 
 class ArgumentFlowContractTests(unittest.TestCase):
+    def test_v2_requires_source_relation_fields_not_argument_taxonomy(self) -> None:
+        page = {
+            "page_id": "p10",
+            "page_type": "content",
+            "page_mission": "说明总体能力框架的构成",
+            "core_message": "总体能力框架由五个层次构成",
+            "source_refs": ["S021"],
+            "content_units": [
+                {"statement": "总体能力框架由五个层次构成", "source_refs": ["S021"], "role": "primary"}
+            ],
+            "content_relations": [
+                {"relation": "composed_of", "subject": "总体能力框架", "objects": ["五个层次"], "source_refs": ["S021"]}
+            ],
+            "new_value_vs_previous": "给出后续建设内容的总体结构",
+            "reserved_for_later": "各层内容由后页展开",
+        }
+        payload = {"schema": "cyberppt.outline.v2", "argument_contract_mode": "strict", "pages": [page]}
+
+        self.assertEqual([], validate_source_relation_fields(payload))
+        codes = {issue.code for issue in validate_page_role_fields(payload)}
+        self.assertNotIn("ARGUMENT_FIELDS_MISSING", codes)
+        self.assertNotIn("PAGE_CONTRIBUTION_FIELDS_MISSING", codes)
+
+    def test_v2_content_unit_must_use_page_sources(self) -> None:
+        payload = {
+            "schema": "cyberppt.outline.v2",
+            "argument_contract_mode": "strict",
+            "pages": [{
+                "page_id": "p10", "page_type": "content",
+                "page_mission": "说明框架", "core_message": "框架由五层构成",
+                "source_refs": ["S021"],
+                "content_units": [{"statement": "框架由五层构成", "source_refs": ["S999"], "role": "primary"}],
+                "content_relations": [{"relation": "composed_of", "source_refs": ["S021"]}],
+                "new_value_vs_previous": "给出结构", "reserved_for_later": "各层后述",
+            }],
+        }
+        self.assertIn("CONTENT_UNIT_INVALID", {issue.code for issue in validate_source_relation_fields(payload)})
+
+    def test_v2_content_relation_must_use_page_sources(self) -> None:
+        payload = {
+            "schema": "cyberppt.outline.v2", "argument_contract_mode": "strict",
+            "pages": [{
+                "page_id": "p10", "page_type": "content",
+                "page_mission": "说明框架", "core_message": "框架由五层构成",
+                "source_refs": ["S021"],
+                "content_units": [{"statement": "框架由五层构成", "source_refs": ["S021"], "role": "primary"}],
+                "content_relations": [{"relation": "composed_of", "source_refs": ["S999"]}],
+                "new_value_vs_previous": "给出结构", "reserved_for_later": "各层后述",
+            }],
+        }
+        self.assertIn("CONTENT_RELATION_REFS_INVALID", {issue.code for issue in validate_source_relation_fields(payload)})
+
     def test_strict_content_page_requires_argument_role_fields(self) -> None:
         payload = {
             "argument_contract_mode": "strict",

@@ -1,0 +1,56 @@
+registry_version: "1.0"
+intents:
+  - id: single_judgment_anchor
+    relations: [judgment, evidence]
+    carrier: "single result object or key industry scene"
+  - id: multi_semantic_foundation
+    relations: [support]
+    carrier: "shared foundation or integrated working scene"
+  - id: evidence_to_judgment
+    relations: [evidence, converge]
+    carrier: "evidence paths converging on a judgment"
+  - id: scene_embedded_flow
+    relations: [flow]
+    carrier: "continuous industry scene with embedded actions"
+  - id: transformation_pipeline
+    relations: [transform]
+    carrier: "weighted transformation channel"
+  - id: convergence_to_capability
+    relations: [converge]
+    carrier: "service hub or capability engine"
+  - id: capability_to_outcomes
+    relations: [diverge]
+    carrier: "core capability expanding into outcome scenes"
+  - id: layered_architecture
+    relations: [layer]
+    carrier: "spatial dependency layers"
+  - id: dual_engine_synergy
+    relations: [exchange, support]
+    carrier: "shared interface or common outcome"
+  - id: closed_loop_operation
+    relations: [loop]
+    carrier: "loop with explicit start, gate and feedback"
+  - id: comparison_tension
+    relations: [compare]
+    carrier: "shared comparison axis or transition boundary"
+  - id: phased_roadmap
+    relations: [flow, milestone]
+    carrier: "unequal phased path"
+  - id: network_ecosystem
+    relations: [exchange, network]
+    carrier: "hierarchical network with typed flows"
+  - id: policy_to_action
+    relations: [control, transform]
+    carrier: "policy constraint mapped to actions"
+  - id: risk_control_boundary
+    relations: [boundary, control]
+    carrier: "gated trusted boundary"
+  - id: data_flow_value_chain
+    relations: [flow, transform, boundary]
+    carrier: "controlled data-to-value chain"
+  - id: role_responsibility_map
+    relations: [responsibility]
+    carrier: "actor-task-deliverable interfaces"
+  - id: problem_cause_resolution
+    relations: [cause, transform]
+    carrier: "problem tension linked to causes and resolution"

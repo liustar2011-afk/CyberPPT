@@ -29,6 +29,11 @@ LATEST_AUDIT_FILES: dict[str, Path] = {
     "script": Path("workbench/scripts/audits/script-audit.json"),
 }
 
+CHAPTER_REVIEW_AUDIT_FILES: dict[str, Path] = {
+    "outline": Path("workbench/stages/01-analysis/chapter-review-audit.json"),
+    "script": Path("workbench/scripts/audits/chapter-review-audit.json"),
+}
+
 CONFIRMATION_REQUEST_FILES: dict[str, Path] = {
     "outline": Path("workbench/stages/01-analysis/stage01-confirmation-request.md"),
     "script": Path(
@@ -40,6 +45,8 @@ APPROVAL_FILES: dict[str, Path] = {
     "outline": Path("workbench/approvals/stage01-outline-approved.md"),
     "script": Path("workbench/approvals/stage01-script-approved.md"),
 }
+
+SCRIPT_APPROVABLE_ESCALATION_OPTIONS = frozenset({"accept_documented_risk"})
 
 # Accept both canonical and legacy Chinese headings used in existing projects.
 _AUDIT_SUMMARY_HEADINGS = ("## 审计摘要", "## 审计状态")
@@ -75,8 +82,24 @@ def assert_stage01_script_approval(project: Path, script: Path) -> Path:
         raise FileNotFoundError(f"missing Stage 01 script approval: {approval}")
     fields = _approval_fields(approval)
     audit = _read_json(project / LATEST_AUDIT_FILES["script"])
-    if audit.get("status") != "passed":
-        raise ValueError("current Stage 01 script audit is not passed; rerun audit before Stage 02")
+    escalation_decision = _script_approval_escalation_decision(project, audit)
+    if audit.get("status") != "passed" and escalation_decision is None:
+        raise ValueError(
+            "current Stage 01 script audit is neither passed nor covered by a valid "
+            "accepted-risk escalation; rerun audit or resolve the escalation before Stage 02"
+        )
+    if escalation_decision is not None:
+        decision_path, _ = escalation_decision
+        expected_decision_hash = fields.get("escalation_decision_sha256")
+        if not expected_decision_hash:
+            raise ValueError(
+                "Stage 01 script approval is not bound to its escalation decision; reapprove the script"
+            )
+        if expected_decision_hash != _sha256_path(decision_path):
+            raise ValueError(
+                "Stage 01 script approval does not match the current escalation decision; "
+                "reapprove the script before Stage 02"
+            )
     for artifact_key, label in (
         ("input", "script"),
         ("outline", "outline"),
@@ -119,7 +142,48 @@ def _write_json(path: Path, payload: object) -> None:
     )
 
 
-def snapshot_reference_gate(stage_key: str) -> dict[str, Any]:
+def _script_approval_escalation_decision(
+    project: Path, audit: dict[str, Any]
+) -> tuple[Path, dict[str, Any]] | None:
+    """Return a validated terminal script-risk decision, if one permits approval."""
+
+    if audit.get("status") == "passed":
+        return None
+    if audit.get("status") != "user_decision_required":
+        return None
+
+    escalation_path = (project / ESCALATION_FILES["script"]).resolve()
+    decision_path = escalation_decision_path(project, "script").resolve()
+    if not escalation_path.is_file() or not decision_path.is_file():
+        return None
+
+    escalation = _read_json(escalation_path)
+    decision = _read_json(decision_path)
+    if decision.get("schema") != "cyberppt.escalation_decision.v1":
+        return None
+    if decision.get("gate") != "script":
+        return None
+    recorded_escalation = decision.get("escalation_path")
+    if not recorded_escalation:
+        return None
+    if Path(str(recorded_escalation)).expanduser().resolve() != escalation_path:
+        return None
+
+    option_id = str(decision.get("option_id") or "")
+    options = escalation.get("options")
+    offered_option_ids = {
+        str(item.get("id"))
+        for item in options
+        if isinstance(item, dict) and item.get("id")
+    } if isinstance(options, list) else set()
+    if option_id not in offered_option_ids:
+        return None
+    if option_id not in SCRIPT_APPROVABLE_ESCALATION_OPTIONS:
+        return None
+    return decision_path, decision
+
+
+def snapshot_reference_gate(stage_key: str, project: Path | None = None) -> dict[str, Any]:
     """Record which Stage 01 reference files were present and their digests."""
 
     names = REFERENCE_GATE_FILES.get(stage_key)
@@ -130,8 +194,13 @@ def snapshot_reference_gate(stage_key: str) -> dict[str, Any]:
         )
     files: list[dict[str, Any]] = []
     missing: list[str] = []
+    reference_dir = (
+        project.expanduser().resolve() / "workbench" / "references"
+        if project is not None
+        else REFERENCES_DIR
+    )
     for name in names:
-        path = REFERENCES_DIR / name
+        path = reference_dir / name
         if not path.is_file():
             missing.append(name)
             files.append(
@@ -155,6 +224,7 @@ def snapshot_reference_gate(stage_key: str) -> dict[str, Any]:
     return {
         "schema": "cyberppt.reference_gate.v1",
         "stage": stage_key,
+        "scope": "project" if project is not None else "repository",
         "status": "complete" if not missing else "missing_references",
         "missing": missing,
         "files": files,
@@ -274,6 +344,68 @@ def _audit_line(project: Path, gate: str, label: str) -> str:
     )
 
 
+def _chapter_review_required(project: Path, kind: str) -> bool:
+    manifest = project / "manifest.yml"
+    if not manifest.is_file():
+        return False
+    text = manifest.read_text(encoding="utf-8-sig")
+    match = re.search(r"(?ms)^chapter_review:\s*\n(?P<body>(?:^[ \t]+.*\n?)*)", text)
+    if not match:
+        return False
+    return bool(re.search(rf"(?m)^\s+{re.escape(kind)}:\s*required\s*$", match.group("body")))
+
+
+def _chapter_review_line(project: Path, kind: str) -> str:
+    path = project / CHAPTER_REVIEW_AUDIT_FILES[kind]
+    if not path.is_file():
+        return "| `chapter-structure-review` | missing |"
+    report = _read_json(path)
+    return (
+        f"| `chapter-structure-review` | **{report.get('status', 'unknown')}** "
+        f"（pages {report.get('page_count', '-')}, issues {len(report.get('issues') or [])}） |"
+    )
+
+
+def _chapter_review_markdown_lines(project: Path, kind: str) -> list[str]:
+    manifest_path = project / "review/chapter-review-manifest.json"
+    if not manifest_path.is_file():
+        return []
+    manifest = _read_json(manifest_path)
+    if manifest.get("level") != kind:
+        return []
+    lines: list[str] = []
+    for entry in manifest.get("reviews", []):
+        if not isinstance(entry, dict) or not entry.get("path"):
+            continue
+        chapter_ids = [str(value) for value in entry.get("chapter_ids", [])]
+        chapter_label = "、".join(
+            f"第{int(match.group(1))}章" if (match := re.search(r"(\d+)", value)) else value
+            for value in chapter_ids
+        )
+        review_path = project / str(entry["path"])
+        lines.append(f"- {chapter_label}：`{review_path.as_posix()}`")
+    return lines
+
+
+def assert_chapter_review_ready(project: Path, kind: str) -> Path | None:
+    project = project.expanduser().resolve()
+    if not _chapter_review_required(project, kind):
+        return None
+    path = project / CHAPTER_REVIEW_AUDIT_FILES[kind]
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"required chapter structure review audit is missing: {path}. "
+            f"Run prepare-chapter-review and chapter-review-audit --level {kind}."
+        )
+    report = _read_json(path)
+    if report.get("status") != "passed":
+        raise ValueError(f"required chapter structure review is not passed: {path}")
+    input_path = Path(str(report.get("input") or "")).expanduser().resolve()
+    if not input_path.is_file() or report.get("input_sha256") != _sha256_path(input_path):
+        raise ValueError("chapter structure review is stale; rerun preparation, review, and audit")
+    return path
+
+
 def _open_questions_from_audits(project: Path, kind: str) -> list[str]:
     questions: list[str] = []
     gates = ("source_truth", "outline") if kind == "outline" else ("script",)
@@ -311,13 +443,24 @@ def _open_questions_from_audits(project: Path, kind: str) -> list[str]:
                 or 0
             )
             warning_count = int(communication.get("warning_count") or 0)
+            density_low_count = int(
+                communication.get("reading_density_low_count") or 0
+            )
             if mission_coverage < content_pages:
                 questions.append(
                     f"上屏文字审阅：页面使命覆盖 {mission_coverage}/{content_pages}，需补齐 Outline business_question。"
                 )
-            if lead_coverage_count < content_pages:
+            if lead_coverage_count < content_pages and any(
+                isinstance(page, dict)
+                and (page.get("onscreen_conclusion") or page.get("onscreen_judgment"))
+                for page in communication.get("pages", [])
+            ):
                 questions.append(
-                    f"上屏文字审阅：可见结论覆盖 {lead_coverage_count}/{content_pages}，需补齐并对齐上屏结论。"
+                    "上屏文字审阅：存在已批准的上屏结论尚未忠实呈现；仅修复这些页面，不给其他页面补写结论。"
+                )
+            if density_low_count:
+                questions.append(
+                    f"上屏文字审阅：有 {density_low_count} 页低于阅读型高密度基线；补回源材料事实与关系，不以机械补写结论或重复字句刷密度。"
                 )
             if warning_count:
                 questions.append(
@@ -356,11 +499,39 @@ def render_confirmation_request(project: Path, kind: str) -> str:
     if kind == "outline":
         lines.append(_audit_line(project, "source_truth", "source-truth-audit"))
         lines.append(_audit_line(project, "outline", "outline-audit"))
+        lines.append(_chapter_review_line(project, "outline"))
         lines.append("| 脚本 | 未开始（须大纲批准后编写） |")
+        readable = (
+            project
+            / "workbench"
+            / "stages"
+            / "01-analysis"
+            / "01-outline-readable.md"
+        )
+        lines.extend(
+            [
+                "",
+                "## 人类审阅稿",
+                "",
+                f"- **总提纲**：`{readable.as_posix()}`",
+                "- `outline.json` 仅供机器审计，不作为人工确认稿。",
+            ]
+        )
+        chapter_reviews = _chapter_review_markdown_lines(project, "outline")
+        if chapter_reviews:
+            lines.extend([
+                "",
+                "### 分章审阅稿",
+                "",
+                "> 建议按章节逐一审阅；每章可单独提出保留、修改或通过意见。",
+                "",
+                *chapter_reviews,
+            ])
     else:
         lines.append(_audit_line(project, "source_truth", "source-truth-audit"))
         lines.append(_audit_line(project, "outline", "outline-audit"))
         lines.append(_audit_line(project, "script", "script-audit"))
+        lines.append(_chapter_review_line(project, "script"))
     lines.extend(["", "## 开放问题", ""])
     for index, question in enumerate(_open_questions_from_audits(project, kind), start=1):
         lines.append(f"{index}. {question}")
@@ -393,6 +564,7 @@ def render_confirmation_request(project: Path, kind: str) -> str:
 
 def write_confirmation_request(project: Path, kind: str) -> Path:
     project = project.expanduser().resolve()
+    assert_chapter_review_ready(project, kind)
     text = render_confirmation_request(project, kind)
     missing = validate_confirmation_request(text)
     if missing:
@@ -433,6 +605,7 @@ def write_stage01_approval(
     if kind not in APPROVAL_FILES:
         raise ValueError(f"unknown approval kind: {kind!r}")
     request_path = assert_confirmation_request_ready(project, kind)
+    chapter_review_audit = assert_chapter_review_ready(project, kind)
     if kind == "outline":
         assert_escalation_resolved(project, "source_truth")
         assert_escalation_resolved(project, "outline")
@@ -444,8 +617,11 @@ def write_stage01_approval(
                 f"script approval requires outline approval first: {outline_approval}"
             )
         audit = _read_json(project / LATEST_AUDIT_FILES["script"])
-        if audit.get("status") != "passed":
-            raise ValueError("script approval requires a passed script audit")
+        escalation_decision = _script_approval_escalation_decision(project, audit)
+        if audit.get("status") != "passed" and escalation_decision is None:
+            raise ValueError(
+                "script approval requires a passed script audit or a valid accepted-risk escalation decision"
+            )
         script_path = Path(str(audit["input"])).expanduser().resolve()
     path = project / APPROVAL_FILES[kind]
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -464,7 +640,17 @@ def write_stage01_approval(
                 f"- script_sha256: {_sha256_path(script_path)}",
                 f"- outline_sha256: {_sha256_path(Path(str(audit['outline'])).expanduser().resolve())}",
                 f"- source_truth_sha256: {_sha256_path(Path(str(audit['source_truth'])).expanduser().resolve())}",
+                f"- script_audit_status: {audit.get('status', 'unknown')}",
+                *([
+                    f"- escalation_decision: {escalation_decision[0]}",
+                    f"- escalation_decision_sha256: {_sha256_path(escalation_decision[0])}",
+                    f"- escalation_option_id: {escalation_decision[1].get('option_id')}",
+                ] if escalation_decision is not None else []),
             ] if kind == "script" else []),
+            *([
+                f"- chapter_review_audit: {chapter_review_audit}",
+                f"- chapter_review_audit_sha256: {_sha256_path(chapter_review_audit)}",
+            ] if chapter_review_audit else []),
             (
                 "- next: draft scripts by chapter batches and run script-audit"
                 if kind == "outline"

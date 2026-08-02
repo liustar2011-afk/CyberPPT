@@ -70,28 +70,32 @@ class PrepareStage01InputTests(unittest.TestCase):
         (self.project / "workbench/stages/01-analysis/outline.json").unlink()
         output = prepare_outline_input(self.project)
         text = output.read_text(encoding="utf-8")
-        self.assertIn("`page_job`", text)
+        self.assertIn("`page_mission`", text)
         self.assertIn("S001 [", text)
         self.assertIn("原文证据一", text)
-        self.assertIn("screen each candidate against `page_job`, `business_question`, and `main_message`", text)
-        self.assertIn("Boundary or unresolved records default to `boundary_refs`", text)
-        self.assertIn("consolidate them into one proof point", text)
-        self.assertIn("independently readable after compression", text)
+        self.assertIn("Every content page must state one source-supported `core_message`", text)
+        self.assertIn("Each content page must define its semantic center", text)
+        self.assertIn("`page_mission`: required internal editorial responsibility", text)
+        self.assertIn("`business_question`: optional", text)
+        self.assertIn("source-supported page content", text)
+        self.assertIn("Use `boundary` role when a condition or unresolved item", text)
+        self.assertIn("Consolidate records only when they express one complete content unit", text)
+        self.assertIn("independently readable", text)
 
     def test_prepare_page_script_input_contains_consumption_and_evidence(self) -> None:
         output = prepare_page_script_input(self.project, "p04")
         text = output.read_text(encoding="utf-8")
-        self.assertIn("- page_job: 说明为什么现在可以启动", text)
-        self.assertIn("- main_message: 已有基础支持启动", text)
-        self.assertIn("- onscreen_judgment: 现有基础足以支持项目启动", text)
-        self.assertIn("must place `副标题` before `上屏结论` and `上屏文字`", text)
+        self.assertIn("- page_mission: 说明为什么现在可以启动", text)
+        self.assertIn("- core_message: 已有基础支持启动", text)
+        self.assertIn("- onscreen_conclusion: 现有基础足以支持项目启动", text)
+        self.assertIn("Do not add `副标题` or `上屏结论` merely because", text)
         self.assertIn("independently readable without speaker narration", text)
         self.assertIn(
-            "source-supported evidence → explanation or causal relation → implication or handoff",
+            "source-supported content → the same-strength relation stated by the material",
             text,
         )
         self.assertIn("Boundary is opt-in, never a mandatory fourth beat", text)
-        self.assertIn("never create labels such as 质量边界、质量要求、安全边界 or 约束条件", text)
+        self.assertIn("never promote it to a peer on-screen module", text)
         self.assertIn("preserve a limitation only when the limitation is itself part of the declared page subject", text)
         self.assertIn("hard minimum of 220", text)
         self.assertIn("at least two evidence-bearing on-screen lines", text)
@@ -106,9 +110,23 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("must not be copied into coaching tips or speaker notes", text)
         self.assertIn("cyberppt-page-contract", text)
         self.assertIn('"new_value_realized":true', text)
-        self.assertIn('"onscreen_judgment":"现有基础足以支持项目启动"', text)
+        self.assertIn('"onscreen_conclusion":"现有基础足以支持项目启动"', text)
         self.assertIn('"visual_proof":"用既有基础托住启动判断"', text)
         self.assertTrue(output.name.endswith("-p04.md"))
+
+    def test_prepare_page_script_input_keeps_core_message_when_visible_conclusion_is_empty(self) -> None:
+        outline_path = self.project / "workbench/stages/01-analysis/outline.json"
+        payload = json.loads(outline_path.read_text(encoding="utf-8"))
+        page = payload["pages"][0]
+        page["core_message"] = "总体能力框架由五个层次构成"
+        page["main_message"] = ""
+        page["onscreen_judgment"] = ""
+        outline_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+        text = prepare_page_script_input(self.project, "p04").read_text(encoding="utf-8")
+        self.assertIn("- core_message: 总体能力框架由五个层次构成", text)
+        self.assertIn("- onscreen_conclusion: ", text)
+        self.assertIn("Never strengthen the core_message", text)
 
     def test_prepare_page_script_input_rejects_unknown_page(self) -> None:
         with self.assertRaisesRegex(ValueError, "content page not found"):

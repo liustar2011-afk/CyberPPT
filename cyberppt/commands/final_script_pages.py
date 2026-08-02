@@ -29,6 +29,7 @@ from scripts.dual_image_overlay.imagegen_handoff import (
 from scripts.dual_image_overlay.production_readiness import build_production_readiness
 from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_codex_image
 from scripts.dual_image_overlay.style_library import write_project_style_lock
+from cyberppt.artifact_ledger import append_artifacts, write_json_atomic
 from cyberppt.script_quality_contract import parse_script_markdown
 
 
@@ -52,7 +53,77 @@ def _page_range_slug(pages: list[int]) -> str:
         raise ValueError("at least one page is required")
     if pages == list(range(pages[0], pages[-1] + 1)):
         return f"pages_{pages[0]:03d}_{pages[-1]:03d}"
-    return "pages_" + "_".join(f"{page:03d}" for page in pages)
+    explicit = "pages_" + "_".join(f"{page:03d}" for page in pages)
+    if len(explicit) <= 80:
+        return explicit
+    digest = sha256(",".join(str(page) for page in pages).encode("ascii")).hexdigest()[:10]
+    return f"pages_{pages[0]:03d}_{pages[-1]:03d}_{len(pages):02d}p_{digest}"
+
+
+def _build_id(
+    *,
+    script: Path,
+    pages_raw: str,
+    production_mode: str,
+    style_lock: Path | None,
+    requested: str | None = None,
+) -> str:
+    if requested:
+        return requested.strip()
+    material = "|".join(
+        (
+            str(script.resolve()),
+            _sha256(script) or "",
+            pages_raw,
+            production_mode,
+            str(style_lock.resolve()) if style_lock else "",
+            _sha256(style_lock) or "" if style_lock else "",
+        )
+    )
+    digest = sha256(material.encode("utf-8")).hexdigest()[:10]
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    return f"{stamp}-{digest}"
+
+
+def _versioned_output_dir(project: Path, page_slug: str, build_id: str) -> Path:
+    """Return a versioned output directory, resuming only the same build ID."""
+
+    base = project / STAGE_DIR / f"{page_slug}_{build_id}"
+    if base.is_dir():
+        context_path = base / "build_context.json"
+        if context_path.is_file():
+            try:
+                context = _read_json(context_path)
+            except (OSError, ValueError, json.JSONDecodeError):
+                context = {}
+            if context.get("build_id") == build_id:
+                return base
+    candidate = base
+    suffix = 2
+    while candidate.exists():
+        candidate = base.with_name(f"{base.name}_{suffix:02d}")
+        suffix += 1
+    return candidate
+
+
+def _explicit_output_dir(path: Path, build_id: str) -> Path:
+    """Accept an explicit output directory only when it is empty or this build."""
+
+    path = path.expanduser().resolve()
+    if not path.exists() or not any(path.iterdir()):
+        return path
+    context_path = path / "build_context.json"
+    if context_path.is_file():
+        try:
+            context = _read_json(context_path)
+        except (OSError, ValueError, json.JSONDecodeError):
+            context = {}
+        if context.get("build_id") == build_id:
+            return path
+    raise FileExistsError(
+        f"output directory already contains another build: {path}; "
+        "choose a new --build-id/--output-dir or resume the recorded build"
+    )
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -65,8 +136,7 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_json_atomic(path, payload)
 
 
 def _sha256(path: Path) -> str | None:
@@ -101,6 +171,8 @@ def _template_text_lock(
     pages_raw: str,
     style_lock: Path | None,
     manifest_path: Path,
+    output_dir: Path,
+    build_id: str,
 ) -> Path:
     blocks = parse_page_blocks(script)
     script_pages = {
@@ -133,9 +205,10 @@ def _template_text_lock(
                 "approved": True,
                 "depends_on": [str(script), str(manifest_path)],
                 "resume_command": (
-                    "python3 -m cyberppt final-script-pages "
+                    "python -m cyberppt final-script-pages "
                     f"{project} --script {script} --pages {pages_raw}"
                     + (f" --style-lock {style_lock}" if style_lock else "")
+                    + f" --output-dir {output_dir} --build-id {build_id}"
                 ),
             }
         if presentation is not None:
@@ -182,17 +255,8 @@ def _artifact_record(
     return payload
 
 
-def _append_ledger(project: Path, records: list[dict[str, Any]]) -> Path:
-    ledger_path = project / LEDGER_PATH
-    ledger = _read_json(ledger_path)
-    ledger.setdefault("schema", "cyberppt.artifact_ledger.v1")
-    artifacts = ledger.setdefault("artifacts", [])
-    existing_paths = {str(item.get("path")): item for item in artifacts if isinstance(item, dict)}
-    for record in records:
-        existing_paths[record["path"]] = record
-    ledger["artifacts"] = list(existing_paths.values())
-    _write_json(ledger_path, ledger)
-    return ledger_path
+def _append_ledger(project: Path, records: list[dict[str, Any]], *, build_id: str) -> Path:
+    return append_artifacts(project / LEDGER_PATH, records, build_id=build_id)
 
 
 def _template_rebuild_failure_message(project: Path, returncode: int) -> str:
@@ -309,10 +373,20 @@ def _stage02_production_artifacts(project: Path) -> dict[str, str | None]:
     readiness_artifacts = readiness.get("artifacts")
     if not isinstance(readiness_artifacts, dict):
         readiness_artifacts = {}
-    latest_export = None
-    exports = sorted((project / "exports").glob("*.pptx"), key=lambda path: path.stat().st_mtime)
-    if exports:
-        latest_export = str(exports[-1])
+    exported_pptx = readiness_artifacts.get("exported_pptx")
+    if not exported_pptx:
+        pointer_path = analysis / "export_artifact.json"
+        if pointer_path.is_file():
+            try:
+                pointer = _read_json(pointer_path)
+            except (OSError, ValueError, json.JSONDecodeError):
+                pointer = {}
+            exported_pptx = pointer.get("path") if isinstance(pointer, dict) else None
+            if exported_pptx and isinstance(pointer, dict):
+                expected_hash = str(pointer.get("sha256") or "").lower()
+                actual_hash = str(_sha256(Path(str(exported_pptx))) or "").lower()
+                if expected_hash and expected_hash != actual_hash:
+                    exported_pptx = None
 
     semantic_plan_dir = readiness_artifacts.get("semantic_plan_dir") or analysis / "semantic_plan"
     scene_graph_dir = readiness_artifacts.get("scene_graph_gate_dir") or analysis / "scene_graph_gate"
@@ -342,7 +416,7 @@ def _stage02_production_artifacts(project: Path) -> dict[str, str | None]:
             analysis / "workspace_assignment" / "workspace_assignment_index.json",
         ),
         "office_textbox_fit": _first_artifact_file(analysis / "office_textbox_fit.json"),
-        "editable_pptx": _first_artifact_file(readiness_artifacts.get("exported_pptx"), latest_export),
+        "editable_pptx": _first_artifact_file(exported_pptx),
         "render_compare": _first_artifact_file(
             readiness_artifacts.get("render_compare"),
             _first_matching_file(analysis, "page_*_render_compare.json"),
@@ -366,18 +440,22 @@ def _stage02_production_reports(artifacts: dict[str, str | None]) -> dict[str, d
     return reports
 
 
-def _latest_pptx(directory: Path) -> str | None:
-    matches = sorted(directory.glob("*.pptx"), key=lambda path: path.stat().st_mtime) if directory.is_dir() else []
-    return str(matches[-1]) if matches else None
+def _expected_pptx(path: Path | None) -> str | None:
+    return str(path) if path is not None and path.is_file() else None
 
 
-def _image_ppt_artifacts(output_dir: Path, name: str) -> dict[str, str | None]:
+def _image_ppt_artifacts(
+    output_dir: Path,
+    name: str,
+    *,
+    expected_pptx: Path | None = None,
+) -> dict[str, str | None]:
     project_dir = output_dir / f"{name}_template_image_project"
     return {
         "template_image_manifest": str(output_dir / "template_image_manifest.json"),
         "template_image_prompts": str(output_dir / "template_image_prompts.md"),
         "template_image_project": str(project_dir),
-        "exported_pptx": _latest_pptx(project_dir / "exports"),
+        "exported_pptx": _expected_pptx(expected_pptx),
     }
 
 
@@ -389,6 +467,7 @@ def _run_image_ppt_build(
     name: str,
     page_image_manifest: Path,
 ) -> dict[str, Any]:
+    expected_pptx = output_dir / "exports" / f"{name}.pptx"
     command = [
         sys.executable,
         "-m",
@@ -405,10 +484,16 @@ def _run_image_ppt_build(
         name,
         "--page-image-manifest",
         str(page_image_manifest),
+        "--pptx-output",
+        str(expected_pptx),
     ]
-    completed = subprocess.run(command, check=False)
+    # The project flow may be invoked after another stage has changed the
+    # process working directory.  Keep the child CLI anchored at the repository
+    # root so ``python -m cyberppt`` resolves the local package consistently.
+    repository_root = Path(__file__).resolve().parents[2]
+    completed = subprocess.run(command, check=False, cwd=repository_root)
     status = "completed" if completed.returncode == 0 else "failed"
-    artifacts = _image_ppt_artifacts(output_dir, name)
+    artifacts = _image_ppt_artifacts(output_dir, name, expected_pptx=expected_pptx)
     result = {
         "command": command,
         "returncode": completed.returncode,
@@ -523,8 +608,9 @@ def run_final_script_pages(
     image_timeout: int = 600,
     force_images: bool = False,
     dry_run_images: bool = False,
-    prompt_enrich: str = "deterministic",
+    prompt_enrich: str = "off",
     require_send_approval: bool = False,
+    build_id: str | None = None,
 ) -> dict[str, Any]:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
@@ -533,9 +619,11 @@ def run_final_script_pages(
     if not script.is_file():
         raise FileNotFoundError(f"final script not found: {script}")
     from cyberppt.stage01_controls import assert_escalation_resolved, assert_stage01_script_approval
+    from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
 
     assert_escalation_resolved(project, "script")
     assert_stage01_script_approval(project, script)
+    assert_visual_structure_ready(project, script)
     if production_mode not in PRODUCTION_MODES:
         raise ValueError(
             f"unsupported production mode: {production_mode}; "
@@ -574,7 +662,18 @@ def run_final_script_pages(
     blocks = parse_page_blocks(script)
     pages = parse_pages(pages_raw, set(blocks))
     slug = _page_range_slug(pages)
-    target_dir = output_dir.expanduser().resolve() if output_dir else project / STAGE_DIR / slug
+    build_id = _build_id(
+        script=script,
+        pages_raw=pages_raw,
+        production_mode=production_mode,
+        style_lock=style_lock,
+        requested=build_id,
+    )
+    target_dir = (
+        _explicit_output_dir(output_dir, build_id)
+        if output_dir
+        else _versioned_output_dir(project, slug, build_id)
+    )
 
     manifest, manifest_path, compiled_script, page_numbers = build_manifest(
         script=script,
@@ -594,6 +693,8 @@ def run_final_script_pages(
         pages_raw=pages_raw,
         style_lock=style_lock,
         manifest_path=manifest_path,
+        output_dir=target_dir,
+        build_id=build_id,
     )
     image_generation = None
     if generate_images:
@@ -615,17 +716,24 @@ def run_final_script_pages(
         require_generated(manifest)
 
     resume_command = (
-        f"python3 -m cyberppt final-script-pages {project} --script {script} "
-        f"--pages {pages_raw} --style-lock {style_lock} --production-mode {production_mode}"
+        f"python -m cyberppt final-script-pages {project} --script {script} "
+        f"--pages {pages_raw} --style-lock {style_lock} --production-mode {production_mode} "
+        f"--output-dir {target_dir} --build-id {build_id}"
     )
     production_readiness = None
     tool_consumption: dict[str, Any] = {}
     stage_name = "02-production-build" if production_build else "02-blueprint-dual-image"
-    status = "ready_for_image_generation" if not require_images else "image_assets_verified"
+    if generate_images and not dry_run_images:
+        status = "image_assets_generated"
+    else:
+        status = "ready_for_image_generation" if not require_images else "image_assets_verified"
     image_ppt_build: dict[str, Any] | None = None
     rebuild_status: dict[str, Any] | None = None
     image_ppt_output_dir = target_dir / "image_ppt"
-    image_ppt_name = slug
+    # The exporter appends ``_template_image_project`` plus a timestamped file
+    # name.  Use a stable compact build name so Windows paths remain below the
+    # legacy MAX_PATH limit even for deeply nested projects.
+    image_ppt_name = f"deck_{sha256(slug.encode('utf-8')).hexdigest()[:10]}"
     if production_build and production_mode == FULL_IMAGE_MODE:
         image_ppt_build = _run_image_ppt_build(
             script=script,
@@ -651,9 +759,11 @@ def run_final_script_pages(
         status = production_readiness["status"]
     run_summary = {
         "schema": "cyberppt.final_script_pages_run.v1",
+        "build_id": build_id,
         "created_at": _utc_now(),
         "project": str(project),
         "source_script": str(script),
+        "source_script_sha256": _sha256(script),
         "pages": page_numbers,
         "stage": stage_name,
         "status": status,
@@ -694,53 +804,119 @@ def run_final_script_pages(
         "tool_consumption": tool_consumption,
         "production_readiness": production_readiness,
     }
+    build_context_path = target_dir / "build_context.json"
+    build_context = {
+        "schema": "cyberppt.build_context.v1",
+        "build_id": build_id,
+        "created_at": run_summary["created_at"],
+        "project": str(project),
+        "source_script": str(script),
+        "source_script_sha256": _sha256(script),
+        "style_lock": str(style_lock),
+        "style_lock_sha256": _sha256(style_lock),
+        "page_set": page_numbers,
+        "production_mode": production_mode,
+        "stage": stage_name,
+        "status": status,
+        "artifacts": {
+            "compiled_deliverable_prompt": {
+                "path": str(compiled_script),
+                "sha256": _sha256(compiled_script),
+            },
+            "page_image_pairs": {
+                "path": str(manifest_path),
+                "sha256": _sha256(manifest_path),
+            },
+            "template_text_lock": {
+                "path": str(lock_path),
+                "sha256": _sha256(lock_path),
+            },
+            "visual_style_lock": {
+                "path": str(style_lock),
+                "sha256": _sha256(style_lock),
+            },
+        },
+    }
+    if image_ppt_build:
+        build_context["artifacts"]["exported_pptx"] = {
+            "path": image_ppt_build["artifacts"].get("exported_pptx"),
+            "sha256": (
+                _sha256(Path(image_ppt_build["artifacts"]["exported_pptx"]))
+                if image_ppt_build["artifacts"].get("exported_pptx")
+                else None
+            ),
+        }
+    _write_json(build_context_path, build_context)
+    run_summary["artifacts"]["build_context"] = str(build_context_path)
     summary_path = target_dir / f"{slug}_final_script_pages_run.json"
     _write_json(summary_path, run_summary)
 
     page_label = f"{page_numbers[0]}-{page_numbers[-1]}" if len(page_numbers) > 1 else str(page_numbers[0])
+    ledger_records = [
+        _artifact_record(
+            stage=stage_name,
+            page=page_label,
+            path=compiled_script,
+            status=status,
+            depends_on=[script, style_lock],
+            resume_command=resume_command,
+        ),
+        _artifact_record(
+            stage=stage_name,
+            page=page_label,
+            path=manifest_path,
+            status=status,
+            depends_on=[compiled_script],
+            resume_command=resume_command,
+        ),
+        _artifact_record(
+            stage=stage_name,
+            page=page_label,
+            path=lock_path,
+            status="approved",
+            depends_on=[script, manifest_path],
+            resume_command=resume_command,
+        ),
+        _artifact_record(
+            stage=stage_name,
+            page=page_label,
+            path=style_lock,
+            status="approved",
+            depends_on=[script],
+            resume_command=resume_command,
+        ),
+        _artifact_record(
+            stage=stage_name,
+            page=page_label,
+            path=summary_path,
+            status=status,
+            depends_on=[compiled_script, manifest_path, lock_path, style_lock],
+            resume_command=resume_command,
+        ),
+        _artifact_record(
+            stage=stage_name,
+            page=page_label,
+            path=build_context_path,
+            status=status,
+            depends_on=[script, compiled_script, manifest_path, lock_path, style_lock],
+            resume_command=resume_command,
+        ),
+    ]
+    exported_pptx = image_ppt_build["artifacts"].get("exported_pptx") if image_ppt_build else None
+    if exported_pptx:
+        ledger_records.append(
+            _artifact_record(
+                stage="05-qa-delivery" if status == "production_ready" else stage_name,
+                page=page_label,
+                path=Path(exported_pptx),
+                status="assembled" if status == "production_ready" else status,
+                depends_on=[manifest_path, lock_path, style_lock],
+                resume_command=resume_command,
+            )
+        )
     _append_ledger(
         project,
-        [
-            _artifact_record(
-                stage="02-blueprint-dual-image",
-                page=page_label,
-                path=compiled_script,
-                status="ready_for_image_generation",
-                depends_on=[script, style_lock],
-                resume_command=resume_command,
-            ),
-            _artifact_record(
-                stage="02-blueprint-dual-image",
-                page=page_label,
-                path=manifest_path,
-                status="ready_for_image_generation",
-                depends_on=[compiled_script],
-                resume_command=resume_command,
-            ),
-            _artifact_record(
-                stage="02-blueprint-dual-image",
-                page=page_label,
-                path=lock_path,
-                status="approved",
-                depends_on=[script, manifest_path],
-                resume_command=resume_command,
-            ),
-            _artifact_record(
-                stage="02-blueprint-dual-image",
-                page=page_label,
-                path=style_lock,
-                status="approved",
-                depends_on=[script],
-                resume_command=resume_command,
-            ),
-            _artifact_record(
-                stage="02-blueprint-dual-image",
-                page=page_label,
-                path=summary_path,
-                status="ready_for_image_generation",
-                depends_on=[compiled_script, manifest_path, lock_path, style_lock],
-                resume_command=resume_command,
-            ),
-        ],
+        ledger_records,
+        build_id=build_id,
     )
     return run_summary

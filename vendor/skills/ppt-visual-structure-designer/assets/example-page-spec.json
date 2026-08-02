@@ -1,0 +1,316 @@
+{
+  "schema_version": "1.0",
+  "page_id": "P07",
+  "page_number": 7,
+  "page_title": "多类行业能力共同形成持续服务基础",
+  "page_role": "业务机制",
+  "page_mission": "让观众理解行业模型、专业数据和可信交付能力如何共同形成持续服务基础。",
+  "core_judgment": "多类行业能力只有在统一组织和可信交付机制下协同，才能转化为面向中小企业的持续服务。",
+  "content_lock": {
+    "mode": "strict",
+    "locked_items": [
+      {
+        "id": "T1",
+        "type": "title",
+        "text": "多类行业能力共同形成持续服务基础",
+        "source_ref": "示例输入第7页"
+      },
+      {
+        "id": "B1",
+        "type": "body",
+        "text": "行业大模型、专业数据资源和数据产品服务",
+        "source_ref": "示例输入第7页"
+      },
+      {
+        "id": "B2",
+        "type": "body",
+        "text": "依托电力领域数据基础设施统一组织和可信交付",
+        "source_ref": "示例输入第7页"
+      },
+      {
+        "id": "B3",
+        "type": "body",
+        "text": "面向行业中小企业和跨行业协同主体赋能",
+        "source_ref": "示例输入第7页"
+      }
+    ],
+    "allowed_transformations": [
+      "line_break",
+      "grouping",
+      "position_change"
+    ],
+    "forbidden_transformations": [
+      "change facts",
+      "change actors",
+      "change service scope"
+    ]
+  },
+  "evidence_units": [
+    {
+      "id": "E1",
+      "text": "行业大模型",
+      "kind": "capability",
+      "priority": "P1",
+      "source_ref": "示例输入第7页",
+      "status": "已有能力"
+    },
+    {
+      "id": "E2",
+      "text": "专业数据资源",
+      "kind": "capability",
+      "priority": "P1",
+      "source_ref": "示例输入第7页",
+      "status": "已有能力"
+    },
+    {
+      "id": "E3",
+      "text": "数据产品服务",
+      "kind": "capability",
+      "priority": "P1",
+      "source_ref": "示例输入第7页",
+      "status": "已有能力"
+    },
+    {
+      "id": "E4",
+      "text": "统一组织与可信交付",
+      "kind": "process",
+      "priority": "P0",
+      "source_ref": "示例输入第7页",
+      "status": "建设运营机制"
+    },
+    {
+      "id": "E5",
+      "text": "中小企业与跨行业赋能",
+      "kind": "result",
+      "priority": "P0",
+      "source_ref": "示例输入第7页",
+      "status": "服务目标"
+    }
+  ],
+  "semantic_graph": {
+    "primary_relation": "support",
+    "direction": "outside_to_center",
+    "nodes": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5"
+    ],
+    "edges": [
+      {
+        "from": "E1",
+        "to": "E4",
+        "relation": "supports",
+        "label": "模型能力"
+      },
+      {
+        "from": "E2",
+        "to": "E4",
+        "relation": "supports",
+        "label": "数据基础"
+      },
+      {
+        "from": "E3",
+        "to": "E4",
+        "relation": "supports",
+        "label": "产品供给"
+      },
+      {
+        "from": "E4",
+        "to": "E5",
+        "relation": "enables",
+        "label": "可信服务"
+      }
+    ],
+    "decision_relationship": "三类行业能力进入统一服务工作台，经可信组织与交付后形成面向行业的赋能结果。"
+  },
+  "visual_decision": {
+    "visual_intent_type": "multi_semantic_foundation",
+    "visual_thesis": "用一个电力数据服务运营场景承载多类基础能力，共同汇聚为持续服务中枢。",
+    "dominant_visual_carrier": "电力行业数据服务运营工作台与可信服务中枢的融合场景",
+    "spatial_organization": "内容区以中部偏左的共享运营场景为主体，三类能力作为场景内对象从后方和下方进入，中部形成可信服务工作台，右前方展开服务对象与结果。",
+    "reading_path": [
+      "三类行业能力",
+      "统一组织与可信交付",
+      "持续服务能力",
+      "中小企业和跨行业赋能"
+    ],
+    "text_integration_method": "文字作为场景对象标签和与工作台相连的轻量业务面板嵌入，不设置独立文字列。",
+    "relationship_encoding": "使用对象位置、汇聚通道和一条主服务链表达支撑与转化关系，辅助关系以邻接和边界表达。",
+    "visual_center_count": 1,
+    "visual_hierarchy": {
+      "primary": "统一组织与可信交付形成的持续服务中枢",
+      "secondary": [
+        "行业大模型",
+        "专业数据资源",
+        "数据产品服务",
+        "服务对象"
+      ],
+      "tertiary": [
+        "受控调用",
+        "接口交付",
+        "运营反馈"
+      ]
+    }
+  },
+  "text_integration": {
+    "title_render_mode": "external_text_layer",
+    "subtitle_render_mode": "external_text_layer",
+    "body_render_mode": "in_image",
+    "font_family": "Microsoft YaHei",
+    "minimum_font_pt": 9,
+    "placement_strategy": "正文贴近业务对象、工作台节点和服务结果，使用清晰层级和充足容器空间。"
+  },
+  "geometry": {
+    "canvas": {
+      "width": 1280,
+      "height": 720,
+      "ratio": "16:9"
+    },
+    "title_exclusion_zone": {
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 105
+    },
+    "regions": [
+      {
+        "id": "R1",
+        "role": "dominant_scene",
+        "x": 80,
+        "y": 130,
+        "w": 760,
+        "h": 500,
+        "priority": "primary"
+      },
+      {
+        "id": "R2",
+        "role": "outcomes",
+        "x": 850,
+        "y": 185,
+        "w": 340,
+        "h": 380,
+        "priority": "secondary"
+      },
+      {
+        "id": "R3",
+        "role": "support_annotation",
+        "x": 850,
+        "y": 575,
+        "w": 330,
+        "h": 55,
+        "priority": "tertiary"
+      }
+    ]
+  },
+  "image_plan": {
+    "use_scene": true,
+    "scene_type": "realistic colored power data service operations environment",
+    "business_object": "industry data service operations workbench and trusted delivery hub",
+    "semantic_role": "shared foundation and convergence carrier",
+    "placement": "dominant integrated scene across the middle-left content area, connected to outcome space",
+    "front_facing_people": false,
+    "identifiable_location": false,
+    "factual_event_implication": false
+  },
+  "connectors": [
+    {
+      "from": "E1",
+      "to": "E4",
+      "type": "capability_input",
+      "direction": "outside_to_center",
+      "label": "模型能力",
+      "main_chain": false
+    },
+    {
+      "from": "E2",
+      "to": "E4",
+      "type": "data_input",
+      "direction": "outside_to_center",
+      "label": "专业数据",
+      "main_chain": false
+    },
+    {
+      "from": "E3",
+      "to": "E4",
+      "type": "service_input",
+      "direction": "outside_to_center",
+      "label": "数据产品",
+      "main_chain": false
+    },
+    {
+      "from": "E4",
+      "to": "E5",
+      "type": "service_output",
+      "direction": "left_to_right",
+      "label": "可信交付",
+      "main_chain": true
+    }
+  ],
+  "final_text": [
+    {
+      "id": "F1",
+      "role": "module",
+      "text": "行业大模型",
+      "region_id": "R1"
+    },
+    {
+      "id": "F2",
+      "role": "module",
+      "text": "专业数据资源",
+      "region_id": "R1"
+    },
+    {
+      "id": "F3",
+      "role": "module",
+      "text": "数据产品服务",
+      "region_id": "R1"
+    },
+    {
+      "id": "F4",
+      "role": "judgment",
+      "text": "统一组织与可信交付",
+      "region_id": "R1"
+    },
+    {
+      "id": "F5",
+      "role": "result",
+      "text": "面向行业中小企业和跨行业协同主体赋能",
+      "region_id": "R2"
+    }
+  ],
+  "generation_handoff": {
+    "composition_guidance": "Use one integrated power-industry data service operations scene as the dominant carrier. Embed three capability sources into the scene and converge them on a trusted service workbench, then lead the main service chain to the outcome area. Keep unequal emphasis and one visual center.",
+    "required_text": [
+      "行业大模型",
+      "专业数据资源",
+      "数据产品服务",
+      "统一组织与可信交付",
+      "面向行业中小企业和跨行业协同主体赋能"
+    ],
+    "style_guidance": "Ivory white and deep blue senior leadership briefing style, realistic colored industry illustration, Microsoft YaHei-like typography, restrained but expressive.",
+    "negative_constraints": [
+      "no equal card wall",
+      "no one-icon-per-bullet layout",
+      "no disconnected left-text/right-image split",
+      "no front-facing portrait",
+      "no decorative dashboard UI",
+      "no dirty shadows or glowing arrows"
+    ],
+    "title_exclusion_instruction": "Reserve the top title area for an external PowerPoint text layer. Do not draw title, subtitle, logo or page number."
+  },
+  "avoid": [
+    "equal three-column cards",
+    "three isolated icons",
+    "decorative control-room photo",
+    "front-facing people",
+    "secondary area becoming an independent visual center"
+  ],
+  "qa": {
+    "status": "passed",
+    "score": 94,
+    "blocking_issues": [],
+    "warnings": []
+  }
+}

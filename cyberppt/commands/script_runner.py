@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
 
-from cyberppt.paths import SCRIPTS_DIR
+from cyberppt.paths import REPO_ROOT, SCRIPTS_DIR
 
 
 SCRIPT_ALIASES: dict[str, str] = {
@@ -40,5 +41,17 @@ def script_path(script_name: str) -> Path:
 
 def run_script(script_name: str, args: list[str]) -> int:
     path = script_path(script_name)
-    completed = subprocess.run([sys.executable, str(path), *args], check=False)
+    env = os.environ.copy()
+    current_pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = (
+        f"{REPO_ROOT}{os.pathsep}{current_pythonpath}"
+        if current_pythonpath
+        else str(REPO_ROOT)
+    )
+    completed = subprocess.run(
+        [sys.executable, str(path), *args],
+        check=False,
+        cwd=REPO_ROOT,
+        env=env,
+    )
     return int(completed.returncode)

@@ -236,7 +236,7 @@ def run_source_truth_audit(
         "issues": [issue.to_dict() for issue in issues],
         "warnings": [warning.to_dict() for warning in warnings],
         "retry_directive": directive,
-        "reference_gate": snapshot_reference_gate("source_truth"),
+        "reference_gate": snapshot_reference_gate("source_truth", project),
         "source_receipts": receipts,
     }
     stage = project / "workbench" / "stages" / "01-analysis"

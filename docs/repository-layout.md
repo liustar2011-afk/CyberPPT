@@ -54,6 +54,12 @@ delivery files:
 | `outputs/` | Rendered pages and generated intermediate deliverables. |
 | `delivery/` | User-facing final files and delivery notes. |
 
+Stage 02 and later builds use a fresh `build_id` directory by default. Existing
+PPTX, images, and QA records remain addressable; a deliberate overwrite must
+move the replaced item under `backup/` and keep the previous ledger record linked
+through `supersedes`. Export consumers use the run's explicit artifact path (or
+`analysis/export_artifact.json`) rather than selecting a file by modification time.
+
 ## Cleanup Rules
 
 - Remove ignored caches such as `__pycache__/` and `.pytest_cache/` whenever they

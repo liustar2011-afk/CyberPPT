@@ -1,0 +1,60 @@
+profile_id: cec-government-enterprise-scene
+profile_version: "1.0"
+identity: senior leadership briefing / speech-support
+canvas:
+  ratio: "16:9"
+  width: 1280
+  height: 720
+  content_top: 110
+background:
+  primary: "#F7F6F0"
+  fallback: "#FFFFFF"
+colors:
+  primary: "#12355B"
+  secondary:
+    - "#355F7C"
+    - "#6F8FA8"
+  accent:
+    - "#C98B3C"
+  text_primary: "#1F2933"
+  text_secondary: "#4B5563"
+typography:
+  family: Microsoft YaHei
+  fallback: Chinese sans-serif visually close to Microsoft YaHei
+  minimum_font_pt: 9
+  hierarchy_required: true
+text_rendering:
+  title_render_mode: external_text_layer
+  subtitle_render_mode: external_text_layer
+  body_render_mode: in_image
+  reserve_title_zone: true
+scene:
+  preferred: realistic colored industry illustration
+  semantic_scene_required_when_used: true
+  allow_expressive_scene: true
+  scene_must_share_visual_center: true
+  front_facing_portrait: false
+  identifiable_location: false
+  factual_event_implication: false
+composition:
+  single_visual_center: true
+  dominant_visual_carrier_required: true
+  equal_card_wall: false
+  one_icon_per_bullet: false
+  disconnected_left_text_right_image: false
+  center_circle_icon_orbit_default: false
+  auxiliary_area_can_be_visual_center: false
+connectors:
+  clean: true
+  consistent_direction: true
+  cross_text: false
+  dirty_shadow: false
+  strong_glow: false
+public_template_elements:
+  logo: false
+  page_number: false
+  top_color_bar: false
+  fixed_decorations: false
+workflow:
+  default_generation: single_full_page
+  recommend_dual_or_triple_image: false

@@ -14,6 +14,7 @@ external style preset system.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -66,6 +67,10 @@ def _slug(text: str, fallback: str = "page") -> str:
 
 def _page_stem(page_number: int, title: str) -> str:
     return f"page_{page_number:03d}_{_slug(title)}"
+
+
+def _sha256_text(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
 def _compiled_script_path(output_dir: Path, source: Path, pages: list[int]) -> Path:
@@ -199,13 +204,19 @@ def build_manifest(
     force_pending: bool = False,
     require_approved_prompts: bool = False,
     production_mode: str = FULL_IMAGE_MODE,
-    prompt_enrich: str = "deterministic",
+    prompt_enrich: str = "off",
     require_send_approval: bool = False,
+    enforce_prompt_freshness: bool = True,
 ) -> tuple[dict[str, Any], Path, Path, list[int]]:
     output_variants = output_variants_for_mode(production_mode)
     source_pages = parse_page_blocks(script)
     page_numbers = parse_pages(pages_raw, set(source_pages))
     from cyberppt.script_quality_contract import parse_script_markdown
+    from cyberppt.visual_prompt_consumer import (
+        append_visual_prompt_module,
+        load_visual_prompt_module,
+        visual_module_metadata,
+    )
     from scripts.dual_image_overlay.prompt_send_enrich import (
         enrich_result_as_dict,
         resolve_send_prompt,
@@ -238,7 +249,7 @@ def build_manifest(
     compiled_script = _compiled_script_path(output_dir, script, page_numbers)
     approved_prompts: dict[int, tuple[str, Path]] = {}
     relationship_aware_prompts: dict[int, str] = {}
-    enrich_mode = (prompt_enrich or "deterministic").strip().lower()
+    enrich_mode = (prompt_enrich or "off").strip().lower()
     if require_approved_prompts:
         if project_path is None:
             raise ValueError("per-slide prompt approval requires --project-path")
@@ -259,7 +270,7 @@ def build_manifest(
         # Keep explicit page delimiters in the compiled deliverable so the
         # prompt file remains auditable and can be traced back to its page.
         compiled = "\n\n".join(
-            f"## p{page_number:02d}\n\n{relationship_aware_prompts.get(page_number, approved_prompts[page_number][0]).strip()}"
+            f"## p{page_number:02d}\n\n{approved_prompts[page_number][0].strip()}"
             for page_number in content_page_numbers
         ) + "\n"
     else:
@@ -273,19 +284,33 @@ def build_manifest(
     for page_number in content_page_numbers:
         page = source_pages[page_number]
         prompt = render_prompt(page, style_lock_path=style_lock)
+        visual_module = (
+            load_visual_prompt_module(project_path, page_number)
+            if project_path is not None
+            else None
+        )
         approval_path: Path | None = None
+        approval_meta: dict[str, Any] | None = None
         if page_number in approved_prompts:
             approved_prompt, approval_path = approved_prompts[page_number]
             canonical_prompt = relationship_aware_prompts.get(page_number, prompt).strip()
-            # The approved artifact is the user's locked prompt.  Do not
-            # reject it merely because the runtime canonicalizer has evolved
-            # (for example after a global Style 09 wording update); the
-            # approval hash above already proves the exact approved file is
-            # unchanged. Canonicalization remains available for fresh drafts.
-            # Keep page-specific approved text, but compile the live canonical
-            # style contract so Style 09 source edits are reflected without
-            # requiring every prompt artifact to be manually rewritten.
-            prompt = canonical_prompt
+            approval_stale = bool(canonical_prompt and canonical_prompt != approved_prompt.strip())
+            approval_meta = {
+                "approved_path": str(approval_path.resolve()),
+                "approved_prompt_sha256": _sha256_text(approved_prompt),
+                "canonical_prompt_sha256": _sha256_text(canonical_prompt),
+                "canonical_matches_approval": not approval_stale,
+                "status": "stale" if approval_stale else "fresh",
+            }
+            if approval_stale and enforce_prompt_freshness:
+                raise ValueError(
+                    f"approved ImageGen prompt is stale for page {page_number}; "
+                    "re-stage and reapprove the page prompt before generation"
+                )
+            # The approved artifact is the prompt source of truth.  Runtime
+            # canonicalization is diagnostic only and can never replace the
+            # text that the user approved.
+            prompt = approved_prompt
         send_final: Path | None = None
         if project_path is not None and enrich_mode == "send":
             try:
@@ -303,8 +328,16 @@ def build_manifest(
             require_send=require_send_approval and enrich_mode == "send",
         )
         prompt = enrich.prompt
+        if visual_module is not None:
+            prompt = append_visual_prompt_module(prompt, visual_module)
         enrich_ledger.append({"page_number": page_number, **enrich_result_as_dict(enrich)})
         prompt = _full_prompt_for_variants(prompt, output_variants)
+        if approval_meta is not None:
+            approval_meta = {
+                **approval_meta,
+                "consumed_prompt_sha256": _sha256_text(prompt),
+                "consumed_from": "approved_prompt",
+            }
         stem = _page_stem(page_number, page.title)
         full_path = output_dir / f"{stem}_full.png"
         full = {
@@ -318,6 +351,14 @@ def build_manifest(
             "image_size": "2x-content-region",
             "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
             "prompt_enrich": enrich_result_as_dict(enrich),
+            "visual_structure_handoff": visual_module_metadata(visual_module),
+            "prompt_provenance": {
+                **(approval_meta or {}),
+                **({
+                    "consumed_prompt_sha256": _sha256_text(prompt),
+                    "consumed_from": "script_compiler",
+                } if approval_meta is None else {}),
+            },
         }
         _mark_status(full, force_pending=force_pending)
         variants: dict[str, dict[str, Any]] = {"full": full}
@@ -364,10 +405,21 @@ def build_manifest(
                 "page_code": f"P{page_number:02d}",
                 "title": page.title,
                 "page_script": prompt,
+                "visual_structure_handoff": visual_module_metadata(visual_module),
                 **({"prompt_approval": str(approval_path.resolve())} if approval_path else {}),
+                **({"prompt_provenance": approval_meta} if approval_meta else {}),
                 **variants,
             }
         )
+
+    # The compiled deliverable must be the exact prompt collection consumed
+    # by the image manifest, including visual-structure handoff and send-time
+    # deterministic enrichment.  Do not leave a pre-handoff audit artifact.
+    compiled = "\n\n".join(
+        f"## p{int(pair['page_number']):02d}\n\n{str((pair.get('full') or {}).get('prompt', '')).strip()}"
+        for pair in pairs
+    ) + ("\n" if pairs else "")
+    compiled_script.write_text(compiled, encoding="utf-8")
 
     manifest = {
         "mode": (
@@ -408,6 +460,11 @@ def build_manifest(
         "style_lock": str(style_lock.resolve()) if style_lock else None,
         "output_dir": str(output_dir.resolve()),
         "created_at": datetime.now(timezone.utc).isoformat(),
+        "prompt_contract": {
+            "approved_prompt_is_source": bool(require_approved_prompts),
+            "freshness_enforced": bool(require_approved_prompts and enforce_prompt_freshness),
+            "canonical_prompt_is_diagnostic_only": bool(require_approved_prompts),
+        },
         "prompt_enrich": {
             "mode": enrich_mode,
             "require_send_approval": require_send_approval,
@@ -429,6 +486,14 @@ def require_generated(manifest: dict[str, Any]) -> None:
         page_number = pair.get("page_number", "?")
         full_item = pair.get("full") or {}
         full_path_value = str(full_item.get("path", ""))
+        provenance = full_item.get("prompt_provenance") or {}
+        prompt_contract = manifest.get("prompt_contract", {})
+        if prompt_contract.get("approved_prompt_is_source"):
+            if prompt_contract.get("freshness_enforced") and provenance.get("status") == "stale":
+                contract_errors.append(f"page {page_number} approved prompt is stale")
+            consumed_hash = str(provenance.get("consumed_prompt_sha256") or "")
+            if consumed_hash and consumed_hash != _sha256_text(str(full_item.get("prompt") or "")):
+                contract_errors.append(f"page {page_number} consumed prompt hash does not match manifest text")
         if full_item.get("generation_method") != FULL_GENERATION_METHOD:
             contract_errors.append(
                 f"page {page_number} full.generation_method must be {FULL_GENERATION_METHOD}"
@@ -549,8 +614,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--prompt-enrich",
         choices=("off", "deterministic", "send"),
-        default="deterministic",
-        help="Send-time prompt enrichment mode (default: deterministic).",
+        default="off",
+        help="Send-time prompt enrichment mode (default: off; approved prompt is consumed verbatim).",
     )
     parser.add_argument(
         "--require-send-approval",

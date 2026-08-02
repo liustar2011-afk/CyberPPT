@@ -7,8 +7,8 @@ Before any ImageGen call, CyberPPT must:
 3. save them under workbench/prompts/imagegen/;
 4. wait for user modify-or-approve.
 
-Page mission and thesis (页面使命 / 主判断 / 核心判断) are passed before 上屏文字
-so the model can understand the page question and organize the visual mainline.
+Page mission, core meaning, and source-supported content relations are passed before 上屏文字
+so the model can understand the page responsibility without inventing an argument.
 They are context fields, not extra labels to render; the drawable text layer remains 上屏文字.
 The default content-first compiler sends the page task, core judgment, locked on-screen copy,
 and a compact page logic contract. Each page remains a standalone ImageGen prompt, while source
@@ -69,14 +69,16 @@ IMAGEGEN_CHROME_BAN_CONTRACT = """【模板层禁绘｜不上屏】
 CONTENT_FIRST_ONSCREEN_STORY_CONTRACT = """【结论句要求｜不上屏】
 如【锁定关键文字】含正文结论句，该句是正文结论句，不是页面标题；不得通栏放大或添加标题竖线、横线等装饰。
 允许调整换行和文字层级；画面必须参与表达页面逻辑，不得退化为文字排版加装饰图片。"""
-CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT = """【结论表达要求｜不上屏】
-本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心判断】或【页面逻辑】中自行抽取整句作为页面标题或通栏结论。
-【完整上屏内容】仍须完整表达；用文字层级、业务结构、对象关系和必要画面共同组织核心判断。"""
-CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT = """【结论表达要求｜不上屏】
-本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心判断】或【页面逻辑】中自行抽取整句作为页面标题或通栏结论。
-【锁定关键文字】中的业务标签和关键事实必须全部上屏；【完整上屏内容】仍须完整表达，用文字层级、业务结构、对象关系和必要画面共同组织核心判断。"""
+CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT = """【核心意思表达要求｜不上屏】
+本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心意思】或【页面逻辑】中自行抽取整句作为页面标题或通栏结论。
+【完整上屏内容】仍须完整表达；用文字层级、业务结构、对象关系和必要画面共同组织核心意思。"""
+CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT = """【核心意思表达要求｜不上屏】
+本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心意思】或【页面逻辑】中自行抽取整句作为页面标题或通栏结论。
+【锁定关键文字】中的业务标签和关键事实必须全部上屏；【完整上屏内容】仍须完整表达，用文字层级、业务结构、对象关系和必要画面共同组织核心意思。"""
 CONTENT_FIRST_PAGE_MISSION_LABEL = "页面任务："
-CONTENT_FIRST_CORE_JUDGMENT_LABEL = "核心判断："
+CONTENT_FIRST_CORE_MEANING_LABEL = "核心意思："
+# Compatibility alias for extensions importing the old constant.
+CONTENT_FIRST_CORE_JUDGMENT_LABEL = CONTENT_FIRST_CORE_MEANING_LABEL
 # Status asides that must not be painted as core on-screen claims.
 # Planning decks argue the proposed solution; do not restamp "not yet fact" on every page.
 ONSCREEN_ASIDE_RE = re.compile(
@@ -426,9 +428,9 @@ VISUAL_INTENT_TEMPLATES: dict[str, dict[str, str]] = {
         ),
     },
     "capability_relationship": {
-        "visual_thesis": "用多项能力共同作用于同一业务结果证明协同关系。",
+        "visual_thesis": "忠实呈现合同声明的对象、能力及其对应或支撑关系。",
         "decision_relationship": (
-            "能力围绕本页判断形成支撑关系；除非内容明确给出，不要画成软件堆叠。"
+            "只呈现来源合同声明的关系；除非内容明确给出，不得补画协同、因果或结果汇聚。"
         ),
         "recommended_composition": (
             "使用一个连续设计的关系场——如非对称缎带、分层地形、导流表面或汇聚网络——"
@@ -465,7 +467,7 @@ VISUAL_PROOF_FALLBACKS: dict[str, str] = {
     "closed_loop": "用输入、结果、验证与反馈的闭环证明业务能够持续改进。",
     "phase": "用阶段目的与准入条件的递进证明实施节奏。",
     "path_chain": "用上游输入到下游能力或应用出口的转化路径证明底座如何成立。",
-    "capability_relationship": "用多项能力共同作用于同一业务结果证明协同关系。",
+    "capability_relationship": "按来源合同呈现对象、能力及其对应或支撑关系，不增加协同或结果承诺。",
     "judgment_evidence": "用主判断与支撑证据的直接关系完成证明。",
 }
 
@@ -817,6 +819,22 @@ def resolve_page_visual_intent(
     if explicit:
         return explicit, "explicit"
 
+    # V2 page contracts carry the authoritative source relation. Route from it
+    # before consulting page-type or rhetoric heuristics.
+    relation_names = {
+        str(item.get("relation") or "") for item in page.content_relations
+    }
+    if relation_names & {"composed_of", "contains", "part_of", "classified_as", "layered_as"}:
+        return "hierarchy_support", "contract_relation"
+    if relation_names & {"sequence_before", "sequence_after"}:
+        return "phase", "contract_relation"
+    if relation_names & {"bounded_by"}:
+        return "boundary_guardrail", "contract_relation"
+    if relation_names & {"corresponds_to", "applies_to", "covers", "provides_to", "supports"}:
+        return "capability_relationship", "contract_relation"
+    if relation_names & {"causes"}:
+        return "causal", "contract_relation"
+
     hinted = _visual_structure_hard_hint(page)
     if hinted:
         return hinted, "hint"
@@ -1000,8 +1018,8 @@ def build_page_creative_brief(
     )
     return build_creative_brief(
         relation=relation,
-        page_purpose=page_mission or page.main_message,
-        core_judgment=page.main_message,
+        page_purpose=page_mission or page.core_message,
+        core_meaning=page.core_message,
         required_meanings=page.module_titles,
         onscreen_text=_clean_onscreen_for_imagegen(page.onscreen_text),
         override=override,
@@ -1017,11 +1035,15 @@ def content_lock_text(page: ScriptPage, page_mission: str = "") -> str:
     context: list[str] = [
         "[Prompt context] 页面使命 / Page mission（用于理解本页要回答的问题；不要把字段名或说明文字画出来）",
         page_mission.strip() or "未提供页面使命",
-        "[Prompt context] 核心判断 / Core judgment（用于组织视觉主线；不要把字段名或说明文字画出来）",
-        page.main_message.strip() or "未提供核心判断",
-        "上屏文字（需要准确表达的正文文字层）",
-        onscreen,
     ]
+    context.extend(
+        [
+            "[Prompt context] 核心意思 / Core meaning（忠实表达；不要把字段名画出来）",
+            page.core_message.strip(),
+            "[Prompt context] 不得增加源合同未声明的因果、必要性、排他性、协同机制或结果承诺。",
+        ]
+    )
+    context.extend(["上屏文字（需要准确表达的正文文字层）", onscreen])
     return "\n".join(context).strip() + "\n"
 
 
@@ -1616,13 +1638,19 @@ def render_page_logic_contract(
         "closed_loop": "闭环",
         "phase": "阶段递进",
         "path_chain": "路径转化",
-        "capability_relationship": "能力协同",
+        "capability_relationship": "对象与能力关系",
         "judgment_evidence": "判断—证据",
     }
     lines = [
         "【页面逻辑｜不上屏】",
         f"主导关系：{relation_labels[relation]}。",
     ]
+    if page.content_relations:
+        drawable_relations = [
+            {key: value for key, value in relation_item.items() if key != "source_refs"}
+            for relation_item in page.content_relations
+        ]
+        lines.append("来源关系：" + json.dumps(drawable_relations, ensure_ascii=False, separators=(",", ":")))
     structure = compact_visual_structure_for_logic(page.visual_structure)
     if structure:
         lines.append(f"结构形态：{structure}")
@@ -1640,23 +1668,15 @@ def render_content_first_prompt(
 ) -> tuple[str, str]:
     """Render a complete-content prompt without translating meaning into layout."""
 
-    # Structured scripts require an explicit conclusion.  Preserve execution
-    # compatibility for older free-form final scripts by using their heading as
-    # a minimal anchor; their full content remains owned by the template layer.
-    if page.page_type == "content" and not page.onscreen_judgment.strip() and page.field_order:
-        raise ValueError(
-            f"{page.page_id} is missing 上屏结论; repair and reapprove the final "
-            "script before compiling an ImageGen prompt"
-        )
+    # The core meaning is mandatory semantic context; a visible conclusion is optional.
     judgment_mode = resolve_onscreen_judgment_mode(page, visual_context)
     onscreen = diagnostic_onscreen_text(page, "content-first-v1")
     onscreen_body = _flatten_markdown_tables(
         _clean_onscreen_for_imagegen(page.onscreen_text)
     )
     locked = select_image_locked_text(page, visual_context)
-    judgment_for_semantics = page.onscreen_judgment.strip()
-    if not judgment_for_semantics and not onscreen_body and not page.main_message.strip():
-        judgment_for_semantics = page.title.strip()
+    judgment_for_semantics = page.onscreen_conclusion.strip()
+    core_meaning_for_semantics = page.core_message.strip() or page.title.strip()
     core_in_locked_copy = bool(
         judgment_for_semantics and judgment_for_semantics in locked
     )
@@ -1698,15 +1718,7 @@ def render_content_first_prompt(
     # Dense medium may still guide typography, but approved facts from full
     # prose must not be re-promoted into a must-onscreen contract. Gaps belong
     # in Stage 01 上屏文字, not in ImageGen recovery.
-    # The judgment must always reach ImageGen as the governing thesis.  If it
-    # is already short enough to be in the locked bitmap copy, do not repeat
-    # it in the internal context; otherwise keep it as semantic guidance even
-    # when the page deliberately uses semantic-only on-screen copy.
-    include_core_context = bool(
-        judgment_for_semantics
-        and not core_in_locked_copy
-        and judgment_for_semantics not in complete_semantics
-    )
+    # Core meaning is passed separately from optional visible conclusion.
     # Content-first keeps ordinary pages free of the long logic block. Inject
     # it only when the relation is confidently known and is not the low-score
     # judgment_evidence fallback — never force a wrong default into every
@@ -1714,7 +1726,7 @@ def render_content_first_prompt(
     include_logic_context = bool(
         relation != "judgment_evidence"
         and (
-            intent_source in {"explicit", "hint"}
+            intent_source in {"explicit", "hint", "contract_relation"}
             or (
                 intent_source == "scored"
                 and (
@@ -1739,10 +1751,10 @@ def render_content_first_prompt(
         ),
         "",
         CONTENT_FIRST_PAGE_MISSION_LABEL,
-        page_mission.strip() or page.main_message.strip(),
+        page_mission.strip() or page.core_message.strip(),
         "",
-        CONTENT_FIRST_CORE_JUDGMENT_LABEL,
-        judgment_for_semantics if include_core_context else "",
+        CONTENT_FIRST_CORE_MEANING_LABEL,
+        core_meaning_for_semantics,
         "",
         (
             "【页面语义关系｜仅供理解，不上屏】\n" + semantic_relations
@@ -1899,7 +1911,7 @@ def compile_page_prompt(
             relation=relation,
             injected_rule_ids=(
                 "content.page_task",
-                "content.core_judgment",
+                "content.core_meaning",
                 "content.full_semantics",
                 "content.page_logic_contract",
                 "content.locked_key_copy",

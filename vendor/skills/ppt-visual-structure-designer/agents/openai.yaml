@@ -1,0 +1,4 @@
+interface:
+  display_name: "PPT视觉结构设计"
+  short_description: "将PPT内容转为可执行的页面构图、视觉结构与生图脚本"
+  default_prompt: "使用 $ppt-visual-structure-designer 读取整套PPT内容或脚本，先锁定终稿文字和业务关系，再完成逐页视觉结构设计，输出Markdown、JSON规格并运行校验。"

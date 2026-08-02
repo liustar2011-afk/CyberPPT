@@ -73,6 +73,121 @@ def source_truth(*records: dict[str, object]) -> dict[str, object]:
 
 
 class ScriptMarkdownParserTests(unittest.TestCase):
+    def test_four_digit_source_ids_are_parsed_as_complete_refs(self) -> None:
+        document = parse_script_markdown(
+            """## 第23页：四位证据引用
+- 页面类型：内容页
+- 页面标题：四位证据引用
+- 主判断：四位证据引用应保持完整。
+- 证据：S0410、S0420
+- 证据映射：组织→S0410；原型→S0420
+- 完整文字稿：这是足够长的完整文字稿，用于证明解析器保留四位来源标识，而不是把它截断为三位。这里继续补充若干业务事实、关系和结果，确保该字段具备短文章形态并可供质量合同检查。
+- 文字稿取舍说明：必留上屏：组织和原型；仅讲解：细节；仅追溯：S0410、S0420
+- 上屏文字：
+
+  **组织**
+  - 组织机制与责任清单形成可追溯的启动基础
+
+  **原型**
+  - 原型验证数据导入、质量检查和报告生成流程
+
+【视觉结构，不上屏】
+采用阶段推进主链呈现组织到原型的关系。
+
+【演讲者备注】
+
+组织与原型按同一启动链路推进。
+"""
+        )
+        self.assertEqual(("S0410", "S0420"), document.pages[0].source_refs)
+        self.assertEqual(("S0410", "S0420"), document.pages[0].evidence_map_refs)
+
+    def test_source_id_ranges_expand_to_atomic_refs(self) -> None:
+        page = parse_script_markdown(
+            """## 第23页：范围证据引用
+- 页面类型：内容页
+- 页面标题：范围证据引用
+- 主判断：范围引用在审计时展开为原子来源。
+- 证据：S0410—S0412
+- 证据映射：组织与原型→S0410—S0412
+- 完整文字稿：范围引用仍然对应明确的业务事实、关系和结果，脚本解析器应当展开每一个原子来源并保留来源顺序。
+- 文字稿取舍说明：必留上屏：组织与原型；仅讲解：细节；仅追溯：S0410—S0412
+- 上屏文字：
+
+  **组织与原型**
+  - 组织、数据和原型按同一启动链路推进
+
+【视觉结构，不上屏】
+采用阶段推进主链呈现组织到原型的关系。
+
+【演讲者备注】
+
+组织与原型按同一启动链路推进。
+"""
+        ).pages[0]
+        self.assertEqual(("S0410", "S0411", "S0412"), page.source_refs)
+        self.assertEqual(("S0410", "S0411", "S0412"), page.evidence_map_refs)
+
+    def test_inline_module_titles_are_retained_as_modules(self) -> None:
+        page = parse_script_markdown(
+            """## 第16页：共性能力底座
+- 页面类型：内容页
+- 上屏文字：
+  **业务标准**｜目录、对象、尺度和口径统一
+  **分层数据**｜必需数据先成稳定链路
+  **模型体系**｜分步建设并滚动回测
+"""
+        ).pages[0]
+
+        self.assertEqual(
+            ("业务标准", "分层数据", "模型体系"),
+            page.module_titles,
+        )
+        self.assertIn("口径统一", page.onscreen_text)
+
+    def test_non_onscreen_visual_structure_block_is_parsed_separately(self) -> None:
+        page = parse_script_markdown(
+            """## 第11页：五层总体能力框架
+- 页面类型：内容页
+- 页面标题：五层总体能力框架
+- 上屏文字：
+
+  **运行闭环**
+  - 数据治理 → 模型计算 → 审核发布
+
+【视觉结构，不上屏】
+五层纵向架构与一条横向运行闭环同构呈现。
+
+【演讲者备注】
+说明五层框架。
+"""
+        ).pages[0]
+        self.assertIn("运行闭环", page.onscreen_text)
+        self.assertNotIn("视觉结构", page.onscreen_text)
+        self.assertEqual(
+            "五层纵向架构与一条横向运行闭环同构呈现。",
+            page.visual_structure,
+        )
+
+    def test_parser_accepts_core_message_human_label(self) -> None:
+        document = parse_script_markdown(
+            """## 第1页：建设目标与能力框架
+- 页面类型：内容页
+- 页面标题：建设目标与能力框架
+- 核心结论：总体能力框架由五个层次构成，各层分别承担相应职责。
+- 证据：S021
+- 完整文字稿：总体能力框架由五个层次构成，各层分别承担相应职责，并分别展开业务应用、成果服务、模型分析、数据治理和运行保障等内容。
+- 文字稿取舍说明：必留上屏：五层名称；仅讲解：职责说明；仅追溯：S021。
+- 证据映射：S021
+- 视觉结构：五层结构
+- 上屏文字：五层总体能力框架
+"""
+        )
+        self.assertEqual(
+            "总体能力框架由五个层次构成，各层分别承担相应职责。",
+            document.pages[0].core_message,
+        )
+
     def test_extracts_pages_and_fields(self) -> None:
         document = parse_script_markdown(SCRIPT)
 
@@ -131,6 +246,48 @@ class ScriptMarkdownParserTests(unittest.TestCase):
 
 
 class ScriptContractAuditTests(unittest.TestCase):
+    def test_trailing_boundary_caveat_cannot_become_peer_module(self) -> None:
+        outline = strict_outline(
+            {
+                "page_id": "p12",
+                "sequence": 12,
+                "page_type": "content",
+                "title": "建设范围与研究边界",
+                "page_mission": "说明首期范围并保留研究边界。",
+                "core_message": "首期聚焦两项业务；完整系统范围仍待论证。",
+                "source_refs": ["S015"],
+                "content_units": [
+                    {"statement": "首期聚焦两项业务。", "source_refs": ["S015"], "role": "primary"}
+                ],
+            }
+        )
+        truth = source_truth(
+            {"id": "S015", "type": "J", "status": "原文陈述", "statement": "首期聚焦两项业务。"},
+        )
+        script = """## 第12页：建设范围与研究边界
+- 页面类型：内容页
+- 页面标题：建设范围与研究边界
+- 主判断：首期聚焦两项业务；完整系统范围仍待论证。
+- 完整文字稿：首期聚焦两项业务，并保留后续论证事项。首期业务形成可运行闭环，并按数据条件逐步扩展。
+- 文字稿取舍说明：
+  - 必留上屏：首期两项业务
+  - 仅讲解：后续论证事项
+  - 仅追溯：S015
+- 证据映射：首期范围→S015
+- 上屏文字：
+  **首期两项业务**
+  - 月度季度分析和年度报告自动化
+  **研究边界**
+  - 完整系统范围仍待论证
+- 证据：S015
+【视觉结构，不上屏】
+突出首期两项业务。
+【演讲者备注】
+首期聚焦两项业务，并根据验证结果逐步扩展。
+"""
+        codes = {issue.code for issue in audit_script_quality(parse_script_markdown(script), outline, truth)}
+        self.assertIn("OFF_TOPIC_CONSTRAINT_MODULE", codes)
+
     def test_required_page_contract_receipt_must_be_present(self) -> None:
         outline = strict_outline(
             {
@@ -230,6 +387,9 @@ class ScriptContractAuditTests(unittest.TestCase):
         self.assertEqual("拟建什么性质的能力", page["mission"])
         self.assertTrue(page["lead_matches_main_message"])
         self.assertIn("semantic_coverage", page)
+        self.assertEqual("high", review["reading_density_default"])
+        self.assertEqual(1, review["reading_density_low_count"])
+        self.assertEqual("low", page["reading_density_status"])
         self.assertEqual(
             {"conclusion", "evidence", "relation", "closure"},
             set(page["story_roles"]),
@@ -257,6 +417,58 @@ class ScriptContractAuditTests(unittest.TestCase):
         self.assertEqual(220, onscreen_effective_char_target(page))
         self.assertTrue(onscreen_story_roles(page)["relation"])
 
+    def test_all_content_pages_require_density_without_forcing_visible_conclusion(self) -> None:
+        script = """## 第10页：供需研判底座
+- 页面类型：内容页
+- 页面标题：供需研判底座
+- 主判断：供需研判由数据、模型和成果流程共同承载。
+- 完整文字稿：供需研判需要统一数据口径，形成稳定的数据接入和治理链路，再按业务对象和时间尺度组织模型计算。模型结果还要经过业务解释、报告生产、审核发布和版本留痕，实际数据形成后再回到误差复盘，支持下一轮研判。
+- 文字稿取舍说明：
+  - 必留上屏：数据、模型、成果流程和复盘关系
+  - 仅讲解：字段级治理方式
+  - 仅追溯：S001
+- 证据映射：底座关系→S001
+- 上屏文字：
+  **数据**
+  - 统一数据。
+  **模型**
+  - 形成预测。
+- 证据：S001
+【视觉结构，不上屏】
+以数据、模型和成果流程构成连续主链。
+【演讲者备注】
+说明数据、模型和成果流程的业务关系。
+"""
+        outline = strict_outline(
+            {
+                "page_id": "p10",
+                "sequence": 10,
+                "page_type": "content",
+                "title": "供需研判底座",
+                "argument_role": "solution",
+                "source_refs": ["S001"],
+                "prerequisite_pages": [],
+            }
+        )
+        issues = audit_script_quality(
+            parse_script_markdown(script),
+            outline,
+            source_truth(
+                {
+                    "id": "S001",
+                    "type": "R",
+                    "status": "原文陈述",
+                    "statement": "数据、模型和成果流程构成研判底座。",
+                }
+            ),
+        )
+        codes = {issue.code for issue in issues}
+
+        self.assertIn("ONSCREEN_STORY_DENSITY_LOW", codes)
+        self.assertNotIn("ONSCREEN_JUDGMENT_MISSING", codes)
+        self.assertNotIn("SCRIPT_JUDGMENT_INTRODUCED", codes)
+        self.assertNotIn("ONSCREEN_STORY_NOT_CLOSED", codes)
+
     def test_communication_review_warns_when_lead_is_not_main_message(self) -> None:
         script = parse_script_markdown(
             """## 第9页：总体定位
@@ -278,7 +490,7 @@ class ScriptContractAuditTests(unittest.TestCase):
         codes = {item["code"] for item in review["pages"][0]["findings"]}
         self.assertIn("MAIN_MESSAGE_NOT_FIRST_ONSCREEN_LINE", codes)
 
-    def test_visible_judgment_is_required_by_explicit_strict_mode(self) -> None:
+    def test_legacy_global_mode_does_not_force_a_judgment(self) -> None:
         outline = strict_outline(
             {
                 "page_id": "p09",
@@ -305,7 +517,7 @@ class ScriptContractAuditTests(unittest.TestCase):
                 truth,
             )
         }
-        self.assertIn("ONSCREEN_JUDGMENT_MISSING", missing_codes)
+        self.assertNotIn("ONSCREEN_JUDGMENT_MISSING", missing_codes)
 
         revised = SCRIPT.replace(
             "- 主判断：初步定位为面向行业的公共能力。\n",
@@ -321,9 +533,7 @@ class ScriptContractAuditTests(unittest.TestCase):
                 truth,
             )
         }
-        self.assertFalse(
-            any(code.startswith("ONSCREEN_JUDGMENT_") for code in revised_codes)
-        )
+        self.assertIn("SCRIPT_JUDGMENT_INTRODUCED", revised_codes)
 
         punctuated = revised.replace(
             "- 上屏结论：面向行业的公共能力定位支撑行业研判\n",
@@ -337,10 +547,7 @@ class ScriptContractAuditTests(unittest.TestCase):
                 truth,
             )
         }
-        self.assertIn(
-            "ONSCREEN_JUDGMENT_TERMINAL_PUNCTUATION",
-            punctuated_codes,
-        )
+        self.assertIn("SCRIPT_JUDGMENT_INTRODUCED", punctuated_codes)
 
     @unittest.skipUnless(
         (POWER_PROJECT / "workbench/stages/01-analysis/outline.json").is_file(),
@@ -427,10 +634,12 @@ class ScriptContractAuditTests(unittest.TestCase):
             {"id": "S059", "type": "B", "status": "研究边界", "statement": "正式范围待定。"},
         )
 
-        self.assertEqual(
-            [],
-            audit_script_quality(parse_script_markdown(SCRIPT), outline, truth),
-        )
+        issues = audit_script_quality(parse_script_markdown(SCRIPT), outline, truth)
+
+        # Reading-page density is now checked for the supplied content page;
+        # the partial batch must still not invent requirements for absent p10.
+        self.assertTrue(issues)
+        self.assertTrue(all("p10" not in issue.pages for issue in issues))
 
     def test_chapter_page_with_main_message_is_rejected(self) -> None:
         bad = SCRIPT.replace(
@@ -876,7 +1085,6 @@ class ScriptContractAuditTests(unittest.TestCase):
 
         codes = {issue.code for issue in issues}
         self.assertIn("CONTENT_PAGE_TOO_SPARSE", codes)
-        self.assertIn("ONSCREEN_STORY_DENSITY_LOW", codes)
 
     def test_onscreen_layer_must_preserve_full_prose_semantics(self) -> None:
         script = parse_script_markdown(

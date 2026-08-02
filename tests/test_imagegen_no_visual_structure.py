@@ -207,7 +207,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
             (
                 "各项能力如何协同支撑业务价值",
                 "数据、模型、产品和机制能力共同支撑业务判断",
-                "多项能力共同作用于同一业务结果",
+                "忠实呈现合同声明的对象、能力及其对应或支撑关系",
             ),
         ]
         for mission, message, marker in cases:
@@ -343,7 +343,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertNotIn("不要写成正文模块标题", lock)
         self.assertIn("页面使命", lock)
         self.assertIn("拟建什么性质的能力", lock)
-        self.assertIn("核心判断", lock)
+        self.assertIn("核心意思", lock)
         self.assertNotIn("禁止项", lock)
         self.assertNotIn("Boundary (do not show on slide)", lock)
         self.assertNotIn("正式范围待后续确定", lock)
@@ -370,7 +370,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertIn("#12355B", prompt)
         self.assertIn("页面任务", prompt)
         self.assertIn("拟建什么性质的能力", prompt)
-        self.assertIn("核心判断", prompt)
+        self.assertIn("核心意思", prompt)
         self.assertNotIn("禁止项", prompt)
         self.assertNotIn("Boundary (do not show on slide)", prompt)
         self.assertNotIn("正式范围待后续确定", prompt)
