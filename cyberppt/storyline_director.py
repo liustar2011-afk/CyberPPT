@@ -131,10 +131,11 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
         "The source is evidence, not a page inventory. Select and organize evidence around the approved theme and decision destination; preserve all traceability but never give every source item equal narrative or visual weight.",
         "Every chapter must answer one question and hand a necessary unresolved question to the next chapter. Every future page must have one storyline role, one self-contained core meaning, and explicit transitions from the preceding page and to the following page.",
         "Do not promote generic value, constraints, boundaries, background, or technical inventories into the main line unless they are the actual subject of the approved communication strategy.",
+        "Use the source argument model's explicit `argument_weight` as the authority for narrative importance. `core` means the source's independent proposition and must remain a visible story beat; `supporting`, `detail`, and `constraint` describe subordinate material. A `supports` or `maps_to` relation explains how two propositions connect and has `weight_effect=none`; it never turns a core proposition into a foundation/support layer. In particular, an explicit source heading such as `行业优势与合作价值` must be directed as the core claim that the organization has capabilities/advantages and a cooperation value proposition, with its evidence selected underneath.",
         "",
         "Write `storyline-director.json` with schema `cyberppt.storyline_director.v1` and copy all binding hashes exactly.",
         "Required fields: theme, decision_destination, story_arc (3-6 steps), chapter_missions (2-6 entries), selection_rules (3-8), exclusion_rules (3-8), page_rules (4-10), pacing, audience_concerns, and consumed_user_decisions.",
-        "Each chapter mission requires chapter_id, title, question, contribution, transition_to_next, max_content_pages, source_mission, source_question, source_section_refs, source_claim_ids, source_argument_node_ids, audience_concern_ids, and editorial_operation (select, compress, merge, split, or reframe). A reframe must not change the source subject or status.",
+        "Each chapter mission requires chapter_id, title, question, contribution, transition_to_next, max_content_pages, source_mission, source_question, source_section_refs, source_claim_ids, source_argument_node_ids, source_argument_node_roles, source_argument_node_weights, audience_concern_ids, and editorial_operation (select, compress, merge, split, or reframe). A reframe must not change the source subject, argument_role, argument_weight, or status.",
         "Pacing requires target_total_pages, min_total_pages, and max_total_pages.",
         "",
         "## Binding",
@@ -235,6 +236,8 @@ def _audit_issues(
     semantic_source_hash: str = "",
     semantic_argument_model_hash: str = "",
     semantic_argument_node_ids: set[str] | None = None,
+    semantic_argument_node_roles: dict[str, str] | None = None,
+    semantic_argument_node_weights: dict[str, str] | None = None,
     audience_concerns: list[dict[str, Any]] | None = None,
     source_sections: set[str] | None = None,
 ) -> list[dict[str, str]]:
@@ -306,6 +309,30 @@ def _audit_issues(
                         issues.append({"code": "DIRECTOR_ARGUMENT_NODES_MISSING", "message": "each chapter mission must identify the Stage 00 source argument nodes it organizes"})
                     elif semantic_argument_node_ids is not None and not set(map(_text, node_ids)).issubset(semantic_argument_node_ids):
                         issues.append({"code": "DIRECTOR_ARGUMENT_NODE_UNKNOWN", "message": "chapter mission references a source argument node outside the approved semantic model"})
+                    weights = mission.get("source_argument_node_weights")
+                    if not isinstance(weights, dict):
+                        issues.append({"code": "DIRECTOR_ARGUMENT_WEIGHTS_MISSING", "message": "chapter mission must copy source argument node weights from the approved semantic model"})
+                    else:
+                        for node_id in node_ids or []:
+                            node_key = _text(node_id)
+                            expected_weight = _text((semantic_argument_node_weights or {}).get(node_key))
+                            actual_weight = _text(weights.get(node_key))
+                            if not actual_weight:
+                                issues.append({"code": "DIRECTOR_ARGUMENT_WEIGHT_MISSING", "message": "chapter mission is missing a selected source argument node weight"})
+                            elif expected_weight and actual_weight != expected_weight:
+                                issues.append({"code": "DIRECTOR_ARGUMENT_WEIGHT_DRIFTED", "message": "chapter mission changed the source argument weight; relation type cannot downgrade a core argument"})
+                    roles = mission.get("source_argument_node_roles")
+                    if not isinstance(roles, dict):
+                        issues.append({"code": "DIRECTOR_ARGUMENT_ROLES_MISSING", "message": "chapter mission must copy source argument roles from the approved semantic model"})
+                    else:
+                        for node_id in node_ids or []:
+                            node_key = _text(node_id)
+                            expected_role = _text((semantic_argument_node_roles or {}).get(node_key))
+                            actual_role = _text(roles.get(node_key))
+                            if not actual_role:
+                                issues.append({"code": "DIRECTOR_ARGUMENT_ROLE_MISSING", "message": "chapter mission is missing a selected source argument role"})
+                            elif expected_role and actual_role != expected_role:
+                                issues.append({"code": "DIRECTOR_ARGUMENT_ROLE_DRIFTED", "message": "chapter mission changed the source argument role; advantage/capability may not be rewritten as foundation"})
                 concern_ids = mission.get("audience_concern_ids")
                 if not isinstance(concern_ids, list) or not concern_ids:
                     issues.append({"code": "DIRECTOR_AUDIENCE_CONCERNS_MISSING", "message": "each chapter mission must state which audience concerns it answers"})
@@ -353,6 +380,26 @@ def run_storyline_director_audit(project: Path) -> tuple[int, dict[str, Any]]:
         semantic_argument_node_ids=(
             {
                 _text(item.get("id"))
+                for field in ("section_nodes", "subsection_nodes")
+                for item in (load_model(project / SEMANTIC_ARGUMENT_MODEL).get(field) or [])
+                if isinstance(item, dict) and _text(item.get("id"))
+            }
+            if semantic and semantic.get("semantic_argument_model_sha256")
+            else None
+        ),
+        semantic_argument_node_weights=(
+            {
+                _text(item.get("id")): _text(item.get("argument_weight"))
+                for field in ("section_nodes", "subsection_nodes")
+                for item in (load_model(project / SEMANTIC_ARGUMENT_MODEL).get(field) or [])
+                if isinstance(item, dict) and _text(item.get("id"))
+            }
+            if semantic and semantic.get("semantic_argument_model_sha256")
+            else None
+        ),
+        semantic_argument_node_roles=(
+            {
+                _text(item.get("id")): _text(item.get("argument_role"))
                 for field in ("section_nodes", "subsection_nodes")
                 for item in (load_model(project / SEMANTIC_ARGUMENT_MODEL).get(field) or [])
                 if isinstance(item, dict) and _text(item.get("id"))

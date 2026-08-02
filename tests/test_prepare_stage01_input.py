@@ -115,6 +115,7 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("[primary] 统计基础已经具备 (S001)", text)
         self.assertIn("- evidence_text:", text)
         self.assertIn("- boundary_refs: S002", text)
+        self.assertIn("- source_argument_node_weights: {}", text)
         self.assertIn("- visual_intent_type: hierarchy_support", text)
         self.assertIn("- visual_proof: 用既有基础托住启动判断", text)
         self.assertIn("- boundary_constraints:", text)

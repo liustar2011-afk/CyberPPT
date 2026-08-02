@@ -18,6 +18,7 @@ def model() -> dict[str, object]:
         "document_thesis": {
             "statement": "依托基础设施形成可验证运营合作",
             "argument_role": "thesis",
+            "argument_weight": "core",
             "status": "mixed",
             "evidence_refs": ["S001"],
             "actor_refs": ["中电联"],
@@ -28,6 +29,8 @@ def model() -> dict[str, object]:
                 "source_heading": "第一章",
                 "section_thesis": "交代合作依托",
                 "argument_role": "foundation",
+                "argument_weight": "core",
+                "level": 1,
                 "status": "mixed",
                 "evidence_refs": ["S001"],
                 "actor_refs": ["中电联"],
@@ -40,9 +43,11 @@ def model() -> dict[str, object]:
         {
             "id": "c01-s01",
                 "parent_id": "c01",
+                "level": 2,
                 "source_heading": "建设基础",
                 "section_thesis": "已有平台和组织基础构成建设依托",
                 "argument_role": "foundation",
+                "argument_weight": "supporting",
                 "status": "existing",
                 "evidence_refs": ["S001"],
                 "actor_refs": ["中电联"],
@@ -52,9 +57,11 @@ def model() -> dict[str, object]:
             {
                 "id": "c01-s02",
                 "parent_id": "c01",
+                "level": 2,
                 "source_heading": "目标能力",
                 "section_thesis": "建设目标形成可验证能力",
                 "argument_role": "capability",
+                "argument_weight": "core",
                 "status": "planned",
                 "evidence_refs": ["S001"],
                 "actor_refs": ["中电联"],
@@ -68,10 +75,19 @@ def model() -> dict[str, object]:
                 "from": "c01-s01",
                 "to": "c01",
                 "relation": "supports",
+                "weight_effect": "none",
                 "explanation": "建设基础支撑章节使命",
                 "evidence_refs": ["S001"],
             }
         ],
+        "argument_weighting": {
+            "definition": "core 是独立主张，supporting 是展开模块；关系不改变权重。",
+            "core_node_ids": ["c01", "c01-s02"],
+            "supporting_node_ids": ["c01-s01"],
+            "detail_node_ids": [],
+            "constraint_node_ids": [],
+            "review_notes": [],
+        },
         "mece_rules": {
             "partition_basis": "按源材料章节层级与论证功能划分",
             "exhaustive_scope": "覆盖全文一级、二级论点",
@@ -115,7 +131,9 @@ class SourceArgumentModelTests(unittest.TestCase):
                     "page_type": "content",
                     "primary_argument_node_id": "c01",
                     "source_argument_node_ids": ["c01", "c01-s01"],
+                    "source_argument_node_roles": {"c01": "foundation", "c01-s01": "foundation"},
                     "source_argument_node_statuses": {"c01": "mixed", "c01-s01": "existing"},
+                    "source_argument_node_weights": {"c01": "core", "c01-s01": "supporting"},
                     "core_message_derivation": {"argument_node_ids": ["c01", "c01-s01"]},
                 }
             ]
@@ -135,7 +153,9 @@ class SourceArgumentModelTests(unittest.TestCase):
                     "page_type": "content",
                     "primary_argument_node_id": "c01",
                     "source_argument_node_ids": ["c01"],
+                    "source_argument_node_roles": {"c01": "foundation"},
                     "source_argument_node_statuses": {"c01": "existing"},
+                    "source_argument_node_weights": {"c01": "core"},
                     "core_message_derivation": {"argument_node_ids": ["c01"]},
                 }
             ]
@@ -144,6 +164,54 @@ class SourceArgumentModelTests(unittest.TestCase):
             "OUTLINE_ARGUMENT_STATUS_DRIFTED",
             {item["code"] for item in audit_outline_consumption(outline, model())},
         )
+
+    def test_core_weight_is_not_inferred_from_support_relation(self) -> None:
+        broken = model()
+        broken["section_nodes"][0]["argument_weight"] = "supporting"
+        codes = {item["code"] for item in validate_model(broken)}
+        self.assertIn("SEMANTIC_ARGUMENT_WEIGHT_DRIFTED", codes)
+
+    def test_flattened_heading3_is_rejected(self) -> None:
+        broken = model()
+        broken["subsection_nodes"][1]["parent_id"] = "c01-s01"
+        codes = {item["code"] for item in validate_model(broken)}
+        self.assertIn("SEMANTIC_NODE_LEVEL_INVALID", codes)
+
+    def test_outline_must_copy_argument_weight(self) -> None:
+        outline = {
+            "pages": [
+                {
+                    "page_id": "p01",
+                    "page_type": "content",
+                    "primary_argument_node_id": "c01",
+                    "source_argument_node_ids": ["c01"],
+                    "source_argument_node_roles": {"c01": "foundation"},
+                    "source_argument_node_statuses": {"c01": "mixed"},
+                    "source_argument_node_weights": {"c01": "supporting"},
+                    "core_message_derivation": {"argument_node_ids": ["c01"]},
+                }
+            ]
+        }
+        codes = {item["code"] for item in audit_outline_consumption(outline, model())}
+        self.assertIn("OUTLINE_ARGUMENT_WEIGHT_DRIFTED", codes)
+
+    def test_outline_cannot_downgrade_source_argument_role(self) -> None:
+        outline = {
+            "pages": [
+                {
+                    "page_id": "p01",
+                    "page_type": "content",
+                    "primary_argument_node_id": "c01-s02",
+                    "source_argument_node_ids": ["c01-s02"],
+                    "source_argument_node_roles": {"c01-s02": "foundation"},
+                    "source_argument_node_statuses": {"c01-s02": "planned"},
+                    "source_argument_node_weights": {"c01-s02": "core"},
+                    "core_message_derivation": {"argument_node_ids": ["c01-s02"]},
+                }
+            ]
+        }
+        codes = {item["code"] for item in audit_outline_consumption(outline, model())}
+        self.assertIn("OUTLINE_ARGUMENT_ROLE_DRIFTED", codes)
 
     def test_lossy_question_mark_text_is_rejected(self) -> None:
         broken = model()

@@ -35,6 +35,9 @@ RELATIONS = frozenset(
         "requires_confirmation_of",
     }
 )
+RELATION_WEIGHT_EFFECTS = frozenset({"none"})
+ARGUMENT_WEIGHTS = frozenset({"core", "supporting", "detail", "constraint"})
+ARGUMENT_WEIGHT_BUCKETS = ("core", "supporting", "detail", "constraint")
 ARGUMENT_ROLES = frozenset(
     {
         "thesis",
@@ -133,6 +136,7 @@ def empty_model() -> dict[str, Any]:
         "document_thesis": {
             "statement": "",
             "argument_role": "thesis",
+            "argument_weight": "core",
             "status": "mixed",
             "evidence_refs": [],
             "actor_refs": [],
@@ -140,6 +144,14 @@ def empty_model() -> dict[str, Any]:
         "section_nodes": [],
         "subsection_nodes": [],
         "argument_relations": [],
+        "argument_weighting": {
+            "definition": "论点权重描述源材料自身的论证重要性；core 是独立核心主张，supporting 是证明或展开模块，detail 是保留细节，constraint 是约束条件。论证关系不改变节点权重。",
+            "core_node_ids": [],
+            "supporting_node_ids": [],
+            "detail_node_ids": [],
+            "constraint_node_ids": [],
+            "review_notes": [],
+        },
         "mece_rules": {
             "partition_basis": "",
             "exhaustive_scope": "",
@@ -252,11 +264,13 @@ def validate_model(
     if not isinstance(thesis, dict):
         issues.append(_issue("SEMANTIC_DOCUMENT_THESIS_MISSING", "论点模型必须声明 document_thesis。"))
     else:
-        for field in ("statement", "argument_role", "status"):
+        for field in ("statement", "argument_role", "argument_weight", "status"):
             if not _text(thesis.get(field)):
                 issues.append(_issue("SEMANTIC_DOCUMENT_THESIS_INCOMPLETE", f"document_thesis 缺少 {field}。"))
         if _text(thesis.get("argument_role")) != "thesis":
             issues.append(_issue("SEMANTIC_DOCUMENT_THESIS_ROLE_INVALID", "document_thesis.argument_role 必须为 thesis。"))
+        if _text(thesis.get("argument_weight")) != "core":
+            issues.append(_issue("SEMANTIC_DOCUMENT_THESIS_WEIGHT_INVALID", "document_thesis.argument_weight 必须为 core。"))
         _, evidence_ok = _evidence_refs(thesis.get("evidence_refs"))
         if not evidence_ok:
             issues.append(_issue("SEMANTIC_DOCUMENT_THESIS_EVIDENCE_MISSING", "全文主论点必须有可回查的 evidence_refs。"))
@@ -283,11 +297,13 @@ def validate_model(
             issues.append(_issue("SEMANTIC_SECTION_NODE_INVALID", "section_nodes 的每一项必须是对象。"))
             continue
         node_id = _text(node.get("id"))
-        for field in ("id", "source_heading", "section_thesis", "argument_role", "status", "primary_consumer"):
+        for field in ("id", "source_heading", "section_thesis", "argument_role", "argument_weight", "status", "primary_consumer"):
             if not _text(node.get(field)):
                 issues.append(_issue("SEMANTIC_SECTION_NODE_INCOMPLETE", f"一级节点缺少 {field}。", node_id=node_id))
         if _text(node.get("argument_role")) not in ARGUMENT_ROLES:
             issues.append(_issue("SEMANTIC_ARGUMENT_ROLE_INVALID", "一级节点 argument_role 不在受控词表中。", node_id=node_id))
+        if _text(node.get("argument_weight")) not in ARGUMENT_WEIGHTS:
+            issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHT_INVALID", "一级节点 argument_weight 必须是 core、supporting、detail 或 constraint。", node_id=node_id))
         if _text(node.get("status")) not in STATUS_VALUES:
             issues.append(_issue("SEMANTIC_STATUS_INVALID", "一级节点 status 不在受控词表中。", node_id=node_id))
         _, evidence_ok = _evidence_refs(node.get("evidence_refs"))
@@ -313,7 +329,7 @@ def validate_model(
             issues.append(_issue("SEMANTIC_SUBSECTION_NODE_INVALID", "subsection_nodes 的每一项必须是对象。"))
             continue
         node_id = _text(node.get("id"))
-        for field in ("id", "parent_id", "source_heading", "section_thesis", "argument_role", "status", "primary_consumer"):
+        for field in ("id", "parent_id", "source_heading", "section_thesis", "argument_role", "argument_weight", "status", "primary_consumer"):
             if not _text(node.get(field)):
                 issues.append(_issue("SEMANTIC_SUBSECTION_NODE_INCOMPLETE", f"二级节点缺少 {field}。", node_id=node_id))
         parent_id = _text(node.get("parent_id"))
@@ -321,6 +337,8 @@ def validate_model(
             issues.append(_issue("SEMANTIC_SUBSECTION_PARENT_UNKNOWN", "二级节点 parent_id 不指向已声明的一级/上级节点。", node_id=node_id))
         if _text(node.get("argument_role")) not in ARGUMENT_ROLES:
             issues.append(_issue("SEMANTIC_ARGUMENT_ROLE_INVALID", "二级节点 argument_role 不在受控词表中。", node_id=node_id))
+        if _text(node.get("argument_weight")) not in ARGUMENT_WEIGHTS:
+            issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHT_INVALID", "二级节点 argument_weight 必须是 core、supporting、detail 或 constraint。", node_id=node_id))
         if _text(node.get("status")) not in STATUS_VALUES:
             issues.append(_issue("SEMANTIC_STATUS_INVALID", "二级节点 status 不在受控词表中。", node_id=node_id))
         _, evidence_ok = _evidence_refs(node.get("evidence_refs"))
@@ -330,6 +348,57 @@ def validate_model(
             issues.append(_issue("SEMANTIC_SUBSECTION_ACTORS_INVALID", "二级节点 actor_refs 必须是非空主体 ID/名称数组。", node_id=node_id))
 
     node_ids = known_parent_ids
+    levels = {
+        _text(item.get("id")): item.get("level")
+        for item in sections + subsections
+        if isinstance(item, dict) and _text(item.get("id"))
+    }
+    for node in sections:
+        if not isinstance(node, dict):
+            continue
+        node_id = _text(node.get("id"))
+        if node.get("level") != 1:
+            issues.append(_issue("SEMANTIC_NODE_LEVEL_INVALID", "一级章节节点 level 必须为 1。", node_id=node_id))
+    for node in subsections:
+        if not isinstance(node, dict):
+            continue
+        node_id = _text(node.get("id"))
+        parent_id = _text(node.get("parent_id"))
+        parent_level = levels.get(parent_id)
+        if not isinstance(node.get("level"), int) or not isinstance(parent_level, int) or node.get("level") != parent_level + 1:
+            issues.append(_issue("SEMANTIC_NODE_LEVEL_INVALID", "论点节点 level 必须比 parent_id 的 level 高一级；不得把三级能力/优势条目伪装成二级标题。", node_id=node_id))
+
+    weighting = model.get("argument_weighting")
+    if not isinstance(weighting, dict):
+        issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_MISSING", "语义理解必须声明 argument_weighting，明确哪些节点是核心论点、支撑模块、细节或约束。"))
+    else:
+        if not _text(weighting.get("definition")):
+            issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_INCOMPLETE", "argument_weighting.definition 必须解释论点权重与论证关系的区别。"))
+        bucket_ids: dict[str, list[str]] = {}
+        for bucket in ARGUMENT_WEIGHT_BUCKETS:
+            values = weighting.get(f"{bucket}_node_ids")
+            if not isinstance(values, list):
+                issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_BUCKET_INVALID", f"argument_weighting.{bucket}_node_ids 必须是数组。"))
+                values = []
+            bucket_ids[bucket] = [_text(item) for item in values if _text(item)]
+        assigned: dict[str, str] = {}
+        for bucket, values in bucket_ids.items():
+            if len(values) != len(set(values)):
+                issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_DUPLICATED", f"argument_weighting.{bucket}_node_ids 不得重复。"))
+            for node_id in values:
+                if node_id not in node_ids:
+                    issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_NODE_UNKNOWN", "argument_weighting 引用了不存在的论点节点。", node_id=node_id))
+                if node_id in assigned:
+                    issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_NODE_REUSED", "同一论点节点不得同时被归入多个权重桶。", node_id=node_id))
+                assigned[node_id] = bucket
+        missing_weights = sorted(node_ids - set(assigned))
+        if missing_weights:
+            issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_NODE_MISSING", "每个章节/子章节节点都必须进入一个明确的论点权重桶：" + "、".join(missing_weights)))
+        for node_id, expected_weight in assigned.items():
+            actual_weight = _text((node_index(model).get(node_id) or {}).get("argument_weight"))
+            if actual_weight and actual_weight != expected_weight:
+                issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHT_DRIFTED", "节点 argument_weight 必须与 argument_weighting 的权重桶一致；关系类型不能覆盖该字段。", node_id=node_id))
+
     relations = _list(model.get("argument_relations"))
     if not relations:
         issues.append(_issue("SEMANTIC_ARGUMENT_RELATIONS_MISSING", "论点模型必须声明章节和论点之间的论证关系。"))
@@ -341,10 +410,13 @@ def validate_model(
         source = _text(relation.get("from"))
         target = _text(relation.get("to"))
         kind = _text(relation.get("relation"))
+        weight_effect = _text(relation.get("weight_effect"))
         if source not in node_ids or target not in node_ids:
             issues.append(_issue("SEMANTIC_ARGUMENT_RELATION_NODE_UNKNOWN", "论证关系 from/to 必须指向已声明节点。", node_id=relation_id))
         if kind not in RELATIONS:
             issues.append(_issue("SEMANTIC_ARGUMENT_RELATION_TYPE_INVALID", "论证关系 relation 不在受控词表中。", node_id=relation_id))
+        if weight_effect not in RELATION_WEIGHT_EFFECTS:
+            issues.append(_issue("SEMANTIC_ARGUMENT_RELATION_WEIGHT_EFFECT_INVALID", "论证关系必须声明 weight_effect=none；supports、maps_to 等关系只描述连接，不得改变任一节点的核心/支撑权重。", node_id=relation_id))
         _, evidence_ok = _evidence_refs(relation.get("evidence_refs"))
         if not evidence_ok:
             issues.append(_issue("SEMANTIC_ARGUMENT_RELATION_EVIDENCE_MISSING", "论证关系必须有 evidence_refs，不能由提纲阶段自行补出因果。", node_id=relation_id))
@@ -482,6 +554,28 @@ def audit_outline_consumption(
                     issues.append(_issue("OUTLINE_ARGUMENT_STATUS_MISSING", "页面未声明某个语义节点的状态。", node_id=page_id))
                 elif expected_status and actual_status != expected_status:
                     issues.append(_issue("OUTLINE_ARGUMENT_STATUS_DRIFTED", "页面复制的语义节点状态与 Stage 00 不一致。", node_id=page_id))
+        weights = page.get("source_argument_node_weights")
+        if not isinstance(weights, dict):
+            issues.append(_issue("OUTLINE_ARGUMENT_WEIGHTS_MISSING", "页面必须复制所消费语义节点的 argument_weight，不能根据 supports/maps_to 关系自行降格核心论点。", node_id=page_id))
+        else:
+            for node_id in assigned_ids:
+                expected_weight = _text(index.get(_text(node_id), {}).get("argument_weight"))
+                actual_weight = _text(weights.get(_text(node_id)))
+                if not actual_weight:
+                    issues.append(_issue("OUTLINE_ARGUMENT_WEIGHT_MISSING", "页面未声明某个语义节点的 argument_weight。", node_id=page_id))
+                elif expected_weight and actual_weight != expected_weight:
+                    issues.append(_issue("OUTLINE_ARGUMENT_WEIGHT_DRIFTED", "页面复制的语义节点 argument_weight 与 Stage 00 不一致；核心论点不得被改写为支撑层。", node_id=page_id))
+        roles = page.get("source_argument_node_roles")
+        if not isinstance(roles, dict):
+            issues.append(_issue("OUTLINE_ARGUMENT_ROLES_MISSING", "页面必须复制所消费语义节点的 argument_role，避免把 advantage/capability 等核心论点改写成 foundation。", node_id=page_id))
+        else:
+            for node_id in assigned_ids:
+                expected_role = _text(index.get(_text(node_id), {}).get("argument_role"))
+                actual_role = _text(roles.get(_text(node_id)))
+                if not actual_role:
+                    issues.append(_issue("OUTLINE_ARGUMENT_ROLE_MISSING", "页面未声明某个语义节点的 argument_role。", node_id=page_id))
+                elif expected_role and actual_role != expected_role:
+                    issues.append(_issue("OUTLINE_ARGUMENT_ROLE_DRIFTED", "页面复制的语义节点 argument_role 与 Stage 00 不一致；不能把行业优势/核心能力节点改写成 foundation。", node_id=page_id))
         referenced_gaps = {
             _text(gap_id)
             for node_id in assigned

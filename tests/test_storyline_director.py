@@ -75,6 +75,33 @@ class StorylineDirectorTests(unittest.TestCase):
             {issue["code"] for issue in storyline_director_binding_issues({}, gate)},
         )
 
+    def test_semantic_director_must_copy_source_roles_and_weights(self) -> None:
+        payload = director_payload()
+        for mission in payload["chapter_missions"]:
+            mission.update(
+                {
+                    "source_argument_node_ids": [mission["chapter_id"]],
+                    "source_argument_node_roles": {mission["chapter_id"]: "foundation"},
+                    "source_argument_node_weights": {mission["chapter_id"]: "supporting"},
+                }
+            )
+        codes = {
+            issue["code"]
+            for issue in _audit_issues(
+                payload,
+                "source-hash",
+                "approval-hash",
+                semantic_hash="semantic-hash",
+                semantic_source_hash="semantic-source-hash",
+                semantic_argument_model_hash="argument-model-hash",
+                semantic_argument_node_ids={"c1", "c2"},
+                semantic_argument_node_roles={"c1": "capability", "c2": "advantage"},
+                semantic_argument_node_weights={"c1": "core", "c2": "core"},
+            )
+        }
+        self.assertIn("DIRECTOR_ARGUMENT_ROLE_DRIFTED", codes)
+        self.assertIn("DIRECTOR_ARGUMENT_WEIGHT_DRIFTED", codes)
+
 
 if __name__ == "__main__":
     unittest.main()

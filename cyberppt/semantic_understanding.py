@@ -224,6 +224,7 @@ def semantic_template() -> str:
   "document_thesis": {
     "statement": "",
     "argument_role": "thesis",
+    "argument_weight": "core",
     "status": "mixed",
     "evidence_refs": [],
     "actor_refs": []
@@ -231,6 +232,14 @@ def semantic_template() -> str:
   "section_nodes": [],
   "subsection_nodes": [],
   "argument_relations": [],
+  "argument_weighting": {
+    "definition": "",
+    "core_node_ids": [],
+    "supporting_node_ids": [],
+    "detail_node_ids": [],
+    "constraint_node_ids": [],
+    "review_notes": []
+  },
   "mece_rules": {
     "partition_basis": "",
     "exhaustive_scope": "",
@@ -260,8 +269,12 @@ Hard requirements:
 - Cite paragraph/table identifiers from the source extract for the most important semantic conclusions.
 - Record unresolved items and forbidden inferences explicitly.
 - In the marked JSON block, declare one `document_thesis`, every source-native first-level chapter as a `section_node`, every important second-level chapter (including separately named capability/advantage items) as a `subsection_node`, and the evidence-backed `argument_relations` between them. Do not collapse construction content, realized/target capabilities, architecture, operating advantages, cooperation, and recommendations into one undifferentiated list.
+- Separate `argument_weight` from `argument_role` and from `argument_relations`. Use `core` for an independent source proposition that must remain visible in the directed story, `supporting` for proof or expansion modules, `detail` for retained granularity, and `constraint` for conditions/boundaries. A node can support or map to another node and still be `core`; `supports` or `maps_to` never means "支撑层" and must not downgrade the `argument_weight` of either endpoint.
+- Add `argument_weighting` with a complete, non-overlapping assignment of every section/subsection node to `core_node_ids`, `supporting_node_ids`, `detail_node_ids`, or `constraint_node_ids`. Explicitly review source-native sibling claims before assigning weight. In particular, a source heading such as “行业优势与合作价值” is a core proposition about what the organization has and can offer, not a foundation/support layer label.
 - Also complete `document_semantics` with the document role, subject of report, exact primary thesis, decision/maturity boundary, concrete business objects, scope, and decision intent. These fields are produced here and must be copied downstream; Source Truth and Outline must not re-infer them from evidence records.
 - Every node must declare its source heading, thesis, argument role, actor references, status, evidence references, and `primary_consumer`. `primary_consumer` identifies the later chapter/page mission that should carry the node; it is not permission to create a page automatically.
+- Every section/subsection node must also declare `level` consistent with its source heading hierarchy and an explicit `argument_weight`; a Heading3 capability or advantage item must not be flattened into a Heading2 peer.
+- Every argument relation must declare `weight_effect: "none"`; relation type describes how propositions connect, not their narrative importance.
 - Write the marked JSON block as real UTF-8 text. Never replace source language with `?`, the Unicode replacement character, mojibake, or an empty evidence/actor field; the Stage 00 audit will reject lossy text before any downstream artifact can consume it.
 - Declare `mece_rules` with the partition basis, exhaustive scope, overlap policy, and one or more `groups` that enumerate each checked sibling partition (`parent_id`, `node_ids`, `partition_basis`, `exhaustive_scope`, `overlap_policy`). If two source sections use similar words for different dimensions, keep both nodes and state the dimension relation instead of deleting one.
 - Declare `source_gaps` for missing completion facts, implementation conditions, responsible parties, acceptance metrics, demand validation, rights/authorization, or commercial terms. State how the gap must be expressed later; never turn a gap into a fact or a commitment.
