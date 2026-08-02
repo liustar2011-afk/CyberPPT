@@ -13,6 +13,8 @@ from cyberppt.semantic_understanding import (
     SEMANTIC_ARTIFACT,
     assert_semantic_understanding_ready,
 )
+from cyberppt.user_decisions import record_user_decision
+from cyberppt.user_decisions import load_user_decisions
 
 
 COMMUNICATION_STAGE = Path("workbench/stages/00-communication-strategy")
@@ -67,6 +69,7 @@ def _candidate_template(semantic_gate: dict[str, Any]) -> dict[str, Any]:
                 "decision_task": "",
                 "architecture_mode": "solution",
                 "structure_principle": "",
+                "audience_concerns": [],
             },
             {
                 "id": "",
@@ -76,6 +79,7 @@ def _candidate_template(semantic_gate: dict[str, Any]) -> dict[str, Any]:
                 "decision_task": "",
                 "architecture_mode": "solution",
                 "structure_principle": "",
+                "audience_concerns": [],
             },
         ],
         "recommendation": "",
@@ -97,7 +101,7 @@ def _render_authoring_input(
             "",
             "Write `communication-strategy.json` with schema `cyberppt.communication_strategy.v1`.",
             "Copy both semantic hashes below exactly. Supply a concrete audience, communication purpose, decision task, and 1-5 content-focus items.",
-            "Supply 2-3 materially different reporting-direction options. Each option needs `id`, `label`, its concrete `audience`, `communication_purpose`, `decision_task`, `architecture_mode` (`solution` or `consulting`), and a concrete `structure_principle` describing chapter logic and order.",
+            "Supply 2-3 materially different reporting-direction options. Each option needs `id`, `label`, its concrete `audience`, `communication_purpose`, `decision_task`, `architecture_mode` (`solution` or `consulting`), a concrete `structure_principle` describing chapter logic and order, and 2-8 source-anchored `audience_concerns` describing the questions this audience must have answered.",
             "The options may share an architecture mode, but their structure principles must differ. Set `recommendation` to one option id.",
             "If the audience cannot be established from the source, describe the most likely audience but make the ambiguity explicit in the option labels; the human confirmation step remains mandatory.",
             "",
@@ -162,6 +166,37 @@ def _text(value: object) -> str:
     return str(value or "").strip()
 
 
+def _audience_concerns(value: object) -> list[dict[str, Any]]:
+    """Return the concrete questions this audience needs answered.
+
+    ``audience`` alone is only metadata.  A concern contract makes the chosen
+    communication direction consumable by the director and page auditor.
+    """
+
+    if not isinstance(value, list):
+        return []
+    concerns: list[dict[str, Any]] = []
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        concern_id = _text(item.get("id"))
+        question = _text(item.get("question"))
+        anchors = item.get("source_anchors")
+        if not isinstance(anchors, list):
+            anchors = []
+        anchors = [_text(anchor) for anchor in anchors if _text(anchor)]
+        if concern_id and question and anchors:
+            concerns.append(
+                {
+                    "id": concern_id,
+                    "question": question,
+                    "source_anchors": anchors,
+                    "importance": _text(item.get("importance")) or "required",
+                }
+            )
+    return concerns
+
+
 def _audit_issues(payload: dict[str, Any], semantic_gate: dict[str, Any]) -> list[dict[str, str]]:
     issues: list[dict[str, str]] = []
     if payload.get("schema") != "cyberppt.communication_strategy.v1":
@@ -193,8 +228,14 @@ def _audit_issues(payload: dict[str, Any], semantic_gate: dict[str, Any]) -> lis
         task = _text(option.get("decision_task"))
         mode = _text(option.get("architecture_mode"))
         principle = _text(option.get("structure_principle"))
+        concerns = _audience_concerns(option.get("audience_concerns"))
         if not option_id or not label or not audience or not purpose or not task or not principle or mode not in {"solution", "consulting"}:
             issues.append({"code": "COMMUNICATION_OPTION_INCOMPLETE", "message": f"option {index} requires id, label, audience, communication_purpose, decision_task, valid architecture_mode, and structure_principle"})
+        if not 2 <= len(concerns) <= 8:
+            issues.append({"code": "AUDIENCE_CONCERNS_INVALID", "message": f"option {index} requires 2-8 concrete audience concerns; each needs id, question, and source_anchors"})
+        concern_ids = [item["id"] for item in concerns]
+        if len(set(concern_ids)) != len(concern_ids):
+            issues.append({"code": "AUDIENCE_CONCERN_IDS_INVALID", "message": f"option {index} audience concern ids must be unique"})
         ids.append(option_id)
         principles.append(re.sub(r"\s+", "", principle).casefold())
     if len(set(ids)) != len(ids) or "" in ids:
@@ -257,6 +298,11 @@ def run_communication_strategy_audit(project: Path) -> tuple[int, dict[str, Any]
                 f"- 决策任务：{option['decision_task']}",
                 f"- 结构模式：{option['architecture_mode']}",
                 f"- 章节组织：{option['structure_principle']}",
+                "- 受众必须得到回答的问题：",
+                *[
+                    f"  - `{concern.get('id')}` {concern.get('question')}（依据：{'、'.join(str(anchor) for anchor in concern.get('source_anchors', []))}）"
+                    for concern in _audience_concerns(option.get('audience_concerns'))
+                ],
                 "",
             ]
         confirmation.write_text(
@@ -308,6 +354,18 @@ def approve_communication_strategy(project: Path, option_id: str, note: str = ""
     if option_id not in options:
         raise ValueError(f"unknown communication strategy option: {option_id}")
     selected = options[option_id]
+    decision = record_user_decision(
+        project,
+        decision_id=f"communication_strategy:{option_id}",
+        question="本材料主要与谁沟通、以什么方向组织？",
+        answer=f"选择 {selected.get('label') or option_id}：{selected.get('audience')}",
+        applies_to=[
+            "audience_concerns",
+            "chapter_emphasis",
+            "page_selection",
+            "decision_destination",
+        ],
+    )
     approval = {
         "schema": "cyberppt.communication_strategy_approval.v1",
         "decision": "approved",
@@ -316,6 +374,8 @@ def approve_communication_strategy(project: Path, option_id: str, note: str = ""
         "audience": selected["audience"],
         "communication_purpose": selected["communication_purpose"],
         "decision_task": selected["decision_task"],
+        "audience_concerns": _audience_concerns(selected.get("audience_concerns")),
+        "user_decision_id": decision["id"],
         "content_focus": payload["content_focus"],
         "communication_strategy_sha256": _sha256_path(artifact),
         "communication_audit_sha256": _sha256_path(audit_path),
@@ -368,6 +428,14 @@ def assert_communication_strategy_ready(project: Path) -> dict[str, Any] | None:
         for field, expected in expectations
     ):
         raise ValueError("communication-strategy approval is stale; recheck and reapprove")
+    if not 2 <= len(_audience_concerns(approval.get("audience_concerns"))) <= 8:
+        raise ValueError("communication-strategy approval lacks a source-anchored audience concern contract; rerun communication-strategy-check and reapprove")
+    decision_id = _text(approval.get("user_decision_id"))
+    if not decision_id or decision_id not in {
+        _text(item.get("id")) for item in load_user_decisions(project)
+        if isinstance(item, dict)
+    }:
+        raise ValueError("communication-strategy approval lacks its durable user-decision record; reapprove the selected option")
     approval["communication_strategy_approval_sha256"] = _sha256_path(approval_path)
     approval["communication_strategy_path"] = str(artifact)
     approval["communication_strategy_approval_path"] = str(approval_path)
@@ -389,6 +457,8 @@ def communication_strategy_binding_issues(
         "reporting_direction": gate.get("option_id"),
         "architecture_mode": selected.get("architecture_mode"),
         "structure_principle": selected.get("structure_principle"),
+        "user_decision_id": gate.get("user_decision_id"),
+        "audience_concerns": gate.get("audience_concerns"),
     }
     issues: list[dict[str, str]] = []
     for field, value in expected.items():
@@ -400,4 +470,71 @@ def communication_strategy_binding_issues(
                     "retry_strategy": "rebuild_from_approved_communication_strategy",
                 }
             )
+    return issues
+
+
+def audience_concern_binding_issues(
+    outline: dict[str, Any], gate: dict[str, Any] | None
+) -> list[dict[str, str]]:
+    """Ensure page contracts consume the selected audience concerns.
+
+    This deliberately lives beside the root strategy binding: copying the
+    audience label is insufficient evidence that the selected lens changed
+    page selection.
+    """
+
+    if gate is None:
+        return []
+    selected = gate.get("audience_concerns")
+    if not isinstance(selected, list) or not selected:
+        return [{
+            "code": "AUDIENCE_CONCERNS_NOT_BOUND",
+            "message": "The approved communication strategy has no consumable audience concern contract.",
+            "retry_strategy": "rebuild_communication_strategy",
+        }]
+    allowed = {
+        _text(item.get("id"))
+        for item in selected
+        if isinstance(item, dict) and _text(item.get("id"))
+    }
+    pages = outline.get("pages") if isinstance(outline.get("pages"), list) else []
+    issues: list[dict[str, str]] = []
+    consumed: set[str] = set()
+    for page in pages:
+        if not isinstance(page, dict) or page.get("page_type") != "content":
+            continue
+        page_id = _text(page.get("page_id")) or f"sequence-{page.get('sequence', '?')}"
+        ids = page.get("audience_concern_ids")
+        if not isinstance(ids, list) or not ids or any(not _text(item) for item in ids):
+            issues.append({
+                "code": "PAGE_AUDIENCE_CONCERNS_MISSING",
+                "message": f"Content page {page_id} must map to at least one approved audience concern.",
+                "retry_strategy": "map_page_to_audience_concerns",
+            })
+            continue
+        unknown = {_text(item) for item in ids} - allowed
+        if unknown:
+            issues.append({
+                "code": "PAGE_AUDIENCE_CONCERN_UNKNOWN",
+                "message": f"Content page {page_id} references unknown audience concerns: {', '.join(sorted(unknown))}.",
+                "retry_strategy": "map_page_to_audience_concerns",
+            })
+        consumed.update({_text(item) for item in ids} & allowed)
+        if not _text(page.get("audience_relevance")):
+            issues.append({
+                "code": "PAGE_AUDIENCE_RELEVANCE_MISSING",
+                "message": f"Content page {page_id} must explain why this page matters to the selected audience.",
+                "retry_strategy": "state_audience_relevance",
+            })
+    required = {
+        _text(item.get("id"))
+        for item in selected
+        if isinstance(item, dict) and _text(item.get("importance")) != "optional"
+    }
+    if required - consumed:
+        issues.append({
+            "code": "AUDIENCE_CONCERN_UNMAPPED",
+            "message": f"Approved audience concerns are not mapped to content pages: {', '.join(sorted(required - consumed))}.",
+            "retry_strategy": "map_audience_concerns_to_pages",
+        })
     return issues

@@ -8,6 +8,7 @@ from pathlib import Path
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.prepare_stage01_input import prepare_outline_input
 from cyberppt.communication_strategy import (
+    audience_concern_binding_issues,
     COMMUNICATION_ARTIFACT,
     COMMUNICATION_CONFIRMATION,
     approve_communication_strategy,
@@ -67,6 +68,10 @@ class CommunicationStrategyTests(unittest.TestCase):
                     "decision_task": "选择合作推进路径",
                     "architecture_mode": "solution",
                     "structure_principle": "先给出合作判断，再说明基础、方案和下一步决策事项",
+                    "audience_concerns": [
+                        {"id": "AC01", "question": "合作依托是什么？", "source_anchors": ["第一章"], "importance": "required"},
+                        {"id": "AC02", "question": "下一步需要决定什么？", "source_anchors": ["第四章"], "importance": "required"},
+                    ],
                 },
                 {
                     "id": "joint_workshop",
@@ -76,6 +81,10 @@ class CommunicationStrategyTests(unittest.TestCase):
                     "decision_task": "形成联合调研与试点设计输入",
                     "architecture_mode": "solution",
                     "structure_principle": "先建立共同认知，再展开合作议题、分工和研讨问题",
+                    "audience_concerns": [
+                        {"id": "AC01", "question": "合作依托是什么？", "source_anchors": ["第一章"], "importance": "required"},
+                        {"id": "AC02", "question": "下一步需要决定什么？", "source_anchors": ["第四章"], "importance": "required"},
+                    ],
                 },
             ],
             "recommendation": "decision_review",
@@ -113,6 +122,11 @@ class CommunicationStrategyTests(unittest.TestCase):
         self.assertEqual("joint_workshop", gate["option_id"])
         self.assertEqual("联合研讨型", gate["selected_option"]["label"])
         self.assertEqual("双方业务与实施工作组", gate["audience"])
+        self.assertEqual("communication_strategy:joint_workshop", gate["user_decision_id"])
+        decisions = json.loads(
+            (self.project / "workbench/decisions/user-decisions.json").read_text(encoding="utf-8")
+        )["decisions"]
+        self.assertIn("communication_strategy:joint_workshop", {item["id"] for item in decisions})
 
         stage = self.project / "workbench/stages/01-analysis"
         (stage / "source-truth.json").write_text(
@@ -126,6 +140,14 @@ class CommunicationStrategyTests(unittest.TestCase):
         director = director_payload()
         director["source_truth_sha256"] = prepared_director["source_truth_sha256"]
         director["communication_strategy_approval_sha256"] = prepared_director["communication_strategy_approval_sha256"]
+        director["semantic_understanding_sha256"] = prepared_director["semantic_understanding_sha256"]
+        director["semantic_source_bundle_sha256"] = prepared_director["semantic_source_bundle_sha256"]
+        director["consumed_user_decisions"] = [
+            {
+                "decision_id": gate["user_decision_id"],
+                "effect": "按联合工作组受众关注组织章节与页面",
+            }
+        ]
         (self.project / DIRECTOR_ARTIFACT).write_text(
             json.dumps(director, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
@@ -146,10 +168,44 @@ class CommunicationStrategyTests(unittest.TestCase):
             "reporting_direction": gate["option_id"],
             "architecture_mode": selected["architecture_mode"],
             "structure_principle": selected["structure_principle"],
+            "user_decision_id": gate["user_decision_id"],
+            "audience_concerns": gate["audience_concerns"],
         }
         self.assertEqual([], communication_strategy_binding_issues(outline, gate))
         outline["audience"] = "项目执行人员"
         self.assertTrue(communication_strategy_binding_issues(outline, gate))
+
+    def test_audience_concern_contract_requires_page_consumption(self) -> None:
+        self._write_valid_candidate()
+        run_communication_strategy_audit(self.project)
+        approve_communication_strategy(self.project, "joint_workshop")
+        gate = assert_communication_strategy_ready(self.project)
+        self.assertIsNotNone(gate)
+        missing = audience_concern_binding_issues(
+            {"pages": [{"page_type": "content", "page_id": "p01"}]},
+            gate,
+        )
+        self.assertIn("PAGE_AUDIENCE_CONCERNS_MISSING", {item["code"] for item in missing})
+        valid = audience_concern_binding_issues(
+            {
+                "pages": [
+                    {"page_type": "content", "page_id": "p01", "audience_concern_ids": ["AC01"], "audience_relevance": "用于回答合作依托问题"},
+                    {"page_type": "content", "page_id": "p02", "audience_concern_ids": ["AC02"], "audience_relevance": "用于收束下一步决策"},
+                ]
+            },
+            gate,
+        )
+        self.assertEqual([], valid)
+
+    def test_options_require_source_anchored_audience_concerns(self) -> None:
+        payload = self._write_valid_candidate()
+        payload["options"][0]["audience_concerns"] = []
+        (self.project / COMMUNICATION_ARTIFACT).write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+        code, report = run_communication_strategy_audit(self.project)
+        self.assertEqual(4, code)
+        self.assertIn("AUDIENCE_CONCERNS_INVALID", {item["code"] for item in report["issues"]})
 
     def test_changed_candidate_invalidates_approval(self) -> None:
         self._write_valid_candidate()

@@ -79,8 +79,13 @@ def prepare_outline_input(project: Path) -> Path:
             f"- communication_purpose: {communication_gate['communication_purpose']}",
             f"- decision_task: {communication_gate['decision_task']}",
             f"- reporting_direction: {communication_gate['option_id']}",
+            f"- user_decision_id: {communication_gate.get('user_decision_id', '')}",
             f"- architecture_mode: {selected['architecture_mode']}",
             f"- structure_principle: {selected['structure_principle']}",
+            "- audience_concerns: " + json.dumps(
+                communication_gate.get("audience_concerns", []),
+                ensure_ascii=False,
+            ),
             "",
             "Use `structure_principle` to determine chapter order. Source truth still controls meaning and evidence; the approved strategy controls how that meaning is organized for this audience.",
             "",
@@ -89,11 +94,12 @@ def prepare_outline_input(project: Path) -> Path:
         lines += [
             "## authoritative_storyline_director",
             "",
-            "The Outline Director has already determined the theme, decision destination, question chain, chapter missions, evidence-selection rules, exclusions, page rules, and pacing. This contract is authoritative for organization; do not replace it with source section mirroring or a generic storyline.",
+            "The Outline Director has already organized the approved semantic understanding for this audience. It is authoritative only for evidence selection and ordering; it may not replace source subject, source chapter missions, actor roles, status distinctions, or forbidden inferences.",
             f"- storyline_director_sha256: {director_gate['storyline_director_sha256']}",
             "- storyline: " + json.dumps(director_gate["outline_contract"], ensure_ascii=False),
             "",
-            "Each content page must add `storyline_role`, `transition_from_previous`, and `transition_to_next`. These fields must explain how the page advances the director's question chain; generic wording such as 承上启下 is invalid.",
+            "Each content page must add `storyline_role`, `transition_from_previous`, and `transition_to_next`. These fields must explain a source-supported relation; generic wording such as 承上启下 is invalid.",
+            "Each content page must add `audience_concern_ids` and `audience_relevance`. Copy only IDs from the approved concern contract and explain why the selected audience needs this page.",
             "Use Source Truth as evidence selected for the page mission, not as a list of page candidates. Full traceability may live in detail_refs without earning on-screen or page-level weight.",
             "",
         ]

@@ -36,6 +36,7 @@ PROJECT_DIRS = [
     "workbench/scripts/audits",
     "workbench/scripts/audits/attempts",
     "workbench/approvals",
+    "workbench/decisions",
     "workbench/runs",
     "workbench/archive",
     "workbench/tmp",
@@ -88,6 +89,7 @@ directories:
   final_scripts: workbench/scripts/final
   script_audits: workbench/scripts/audits
   approvals: workbench/approvals
+  decisions: workbench/decisions/user-decisions.json
   runs: workbench/runs
   archive: workbench/archive
   tmp: workbench/tmp
@@ -149,6 +151,13 @@ def init_project(path: Path, force: bool = False) -> list[Path]:
     project_name = root.name
     manifest.write_text(_project_manifest(project_name), encoding="utf-8")
     ledger.write_text(_artifact_ledger(), encoding="utf-8")
+    decisions = root / "workbench" / "decisions" / "user-decisions.json"
+    if not decisions.exists():
+        decisions.write_text(
+            json.dumps({"schema": "cyberppt.user_decisions.v1", "decisions": []}, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        created.append(decisions)
     if not semantic_understanding.exists():
         semantic_understanding.write_text(semantic_template(), encoding="utf-8")
         created.append(semantic_understanding)
@@ -162,11 +171,11 @@ CyberPPT project workspace.
 1. Put source materials in `source/`.
 2. Run `python -m cyberppt prepare-semantic-understanding <project>` to compile the complete, source-hashed model task at `semantic-model-input.md`. Execute that fixed task with the chosen model and write only `semantic-understanding.md`.
 3. Record the execution with `record-semantic-generation --executor <surface> --model <model>`, run `semantic-check`, then obtain human confirmation with `approve-semantic-understanding`. Source Truth is blocked until all three receipts are current.
-4. Before Outline authoring, run `prepare-communication-strategy`, complete the 2-3 audience-specific reporting-direction options in `communication-strategy.json`, and run `communication-strategy-check`. Show `communication-strategy-confirmation.md` to the user and record the selected option with `approve-communication-strategy --option <option_id>`. The Outline is blocked until this human choice is current.
+4. Before Outline authoring, run `prepare-communication-strategy`, complete the 2-3 audience-specific reporting-direction options in `communication-strategy.json`, including source-anchored `audience_concerns`, and run `communication-strategy-check`. Show `communication-strategy-confirmation.md` to the user and record the selected option with `approve-communication-strategy --option <option_id>`. The choice is also written to `workbench/decisions/user-decisions.json`; the Outline is blocked until this human choice is current and consumed by the Director.
 5. Use the approved communication strategy's architecture mode and structure principle. Solution architecture remains the default for research, construction, implementation, and initiation materials; consulting architecture is used only when the approved user choice explicitly selects it.
 6. Build `source-truth.json` from the approved semantic understanding, bind both semantic and source-bundle SHA-256 values at the JSON root, then run `python -m cyberppt source-truth-audit <project> --input <source-truth.json>`. The JSON is authoritative; the command renders `00-source-analysis.md`, preserves attempts, rejects flattened long-form priority inventories, and changes extraction direction when coverage is incomplete.
-7. After Source Truth passes, run `prepare-storyline-director`, complete `storyline-director.json`, and run `storyline-director-check`. The Director does not write pages: it fixes the theme, decision destination, question chain, chapter missions, evidence-selection and exclusion rules, page rules, and pacing. Outline authoring is blocked until this hash-current internal gate passes.
-8. New formal solution projects use `argument_contract_mode: strict`, `editorial_control_mode: required`, `storyline_contract_mode: required`, and `cyberppt.outline.v2`. Copy the Director contract and hash exactly. Build each page from one concrete storyline role plus source-grounded `core_message`, `content_units`, and `content_relations`; page types and claim taxonomies do not determine the page meaning. Every page must declare specific transitions from the previous question and to the next, one concrete `audience_question`, a non-empty `must_not_include` list, and `split_risk`. Preserve all source evidence, but never give it equal page weight: P0 is page-forming, P1 supports grouped modules, and P2 remains in `detail_refs` for prose, notes, parameters, or traceability.
+7. After Source Truth passes, run `prepare-storyline-director`, complete `storyline-director.json`, and run `storyline-director-check`. The Director must bind the complete approved semantic understanding, audience concern contract, source-grounded chapter missions, and user-decision consumption receipt. It does not write pages and may organize evidence but may not replace source meaning. Outline authoring is blocked until this hash-current internal gate passes.
+8. New formal solution projects use `argument_contract_mode: strict`, `editorial_control_mode: required`, `storyline_contract_mode: required`, and `cyberppt.outline.v2`. Copy the Director contract and hash exactly. Build each page from one concrete storyline role plus source-grounded `core_message`, `content_units`, and `content_relations`; page types and claim taxonomies do not determine the page meaning. Every content page must declare specific transitions from the previous question and to the next, one concrete `audience_question`, approved `audience_concern_ids`, `audience_relevance`, a non-empty `must_not_include` list, and `split_risk`. Preserve all source evidence, but never give it equal page weight: P0 is page-forming, P1 supports grouped modules, and P2 remains in `detail_refs` for prose, notes, parameters, or traceability.
 9. Preserve the source material's actual meanings and relations, while selecting and organizing evidence around the approved theme. Source sections are not a page inventory; a story chain may be used only when supported by the material, must remain bound to Source Truth, and is never a mandatory chapter template.
 10. Only after the Director gate passes or a recorded escalation decision (`resolve-escalation --gate source_truth`), audit the Stage 01 outline with `python -m cyberppt outline-audit <project> --input <outline.json> --source-truth <source-truth.json>`.
 11. Run `python -m cyberppt prepare-chapter-review <project> --level outline`, complete the Markdown reviews under `review/`, then run `python -m cyberppt chapter-review-audit <project> --level outline`.

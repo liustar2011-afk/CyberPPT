@@ -15,6 +15,7 @@ from cyberppt.semantic_understanding import (
     semantic_binding_issues,
 )
 from cyberppt.communication_strategy import (
+    audience_concern_binding_issues,
     assert_communication_strategy_ready,
     communication_strategy_binding_issues,
 )
@@ -123,6 +124,8 @@ def render_outline_markdown(payload: dict[str, object], report: dict[str, object
                 ("交给后页", raw_page.get("transition_to_next")),
                 ("页面使命", raw_page.get("page_mission") or raw_page.get("page_job") or raw_page.get("business_question")),
                 ("受众问题", raw_page.get("audience_question")),
+                ("受众关注", "、".join(str(item) for item in raw_page.get("audience_concern_ids", [])) if isinstance(raw_page.get("audience_concern_ids"), list) else ""),
+                ("受众相关性", raw_page.get("audience_relevance")),
                 ("核心结论", raw_page.get("core_message") or raw_page.get("main_message")),
                 ("上屏结论", raw_page.get("onscreen_conclusion") or raw_page.get("onscreen_judgment")),
                 ("主视觉", raw_page.get("visual_center")),
@@ -281,6 +284,15 @@ def run_outline_audit(
             item["retry_strategy"],
         )
         for item in communication_strategy_binding_issues(payload, communication_gate)
+    )
+    issues.extend(
+        AuditIssue(
+            item["code"],
+            item["message"],
+            (),
+            item["retry_strategy"],
+        )
+        for item in audience_concern_binding_issues(payload, communication_gate)
     )
     issues.extend(
         AuditIssue(
