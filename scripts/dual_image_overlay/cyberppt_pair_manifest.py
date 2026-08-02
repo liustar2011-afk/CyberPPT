@@ -14,10 +14,8 @@ external style preset system.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
-import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -34,6 +32,17 @@ from scripts.dual_image_overlay.deliverable_prompt import (
 )
 from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import ensure_output_size
 from scripts.dual_image_overlay.style_library import write_project_style_lock
+from scripts.dual_image_overlay.prompt_approval import (
+    assert_prompt_fresh,
+    build_prompt_approval,
+    prompt_sha256,
+)
+from scripts.dual_image_overlay.build_transaction import (
+    atomic_copy,
+    atomic_write_json,
+    atomic_write_text,
+    build_lock,
+)
 from cyberppt.commands.script_gate import assert_approved_final_script
 
 
@@ -70,7 +79,7 @@ def _page_stem(page_number: int, title: str) -> str:
 
 
 def _sha256_text(value: str) -> str:
-    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+    return prompt_sha256(value)
 
 
 def _compiled_script_path(output_dir: Path, source: Path, pages: list[int]) -> Path:
@@ -275,7 +284,8 @@ def build_manifest(
         ) + "\n"
     else:
         compiled = compile_pages(script, content_page_numbers, style_lock_path=style_lock)
-    compiled_script.write_text(compiled, encoding="utf-8")
+    with build_lock(output_dir, f"pair-manifest-{compiled_script.stem}"):
+        atomic_write_text(compiled_script, compiled)
 
     # Compiled prompts no longer carry "## 第N页：" headers; use source page
     # metadata + per-page render_prompt for pair entries.
@@ -294,19 +304,15 @@ def build_manifest(
         if page_number in approved_prompts:
             approved_prompt, approval_path = approved_prompts[page_number]
             canonical_prompt = relationship_aware_prompts.get(page_number, prompt).strip()
-            approval_stale = bool(canonical_prompt and canonical_prompt != approved_prompt.strip())
-            approval_meta = {
-                "approved_path": str(approval_path.resolve()),
-                "approved_prompt_sha256": _sha256_text(approved_prompt),
-                "canonical_prompt_sha256": _sha256_text(canonical_prompt),
-                "canonical_matches_approval": not approval_stale,
-                "status": "stale" if approval_stale else "fresh",
-            }
-            if approval_stale and enforce_prompt_freshness:
-                raise ValueError(
-                    f"approved ImageGen prompt is stale for page {page_number}; "
-                    "re-stage and reapprove the page prompt before generation"
-                )
+            approval = build_prompt_approval(
+                approved_path=approval_path,
+                approved_prompt=approved_prompt,
+                canonical_prompt=canonical_prompt,
+                consumed_prompt=approved_prompt,
+            )
+            approval_meta = approval.metadata()
+            if enforce_prompt_freshness:
+                assert_prompt_fresh(approval, page_number=page_number)
             # The approved artifact is the prompt source of truth.  Runtime
             # canonicalization is diagnostic only and can never replace the
             # text that the user approved.
@@ -333,11 +339,8 @@ def build_manifest(
         enrich_ledger.append({"page_number": page_number, **enrich_result_as_dict(enrich)})
         prompt = _full_prompt_for_variants(prompt, output_variants)
         if approval_meta is not None:
-            approval_meta = {
-                **approval_meta,
-                "consumed_prompt_sha256": _sha256_text(prompt),
-                "consumed_from": "approved_prompt",
-            }
+            approval_meta["consumed_prompt_sha256"] = _sha256_text(prompt)
+            approval_meta["consumed_from"] = "approved_prompt"
         stem = _page_stem(page_number, page.title)
         full_path = output_dir / f"{stem}_full.png"
         full = {
@@ -419,7 +422,8 @@ def build_manifest(
         f"## p{int(pair['page_number']):02d}\n\n{str((pair.get('full') or {}).get('prompt', '')).strip()}"
         for pair in pairs
     ) + ("\n" if pairs else "")
-    compiled_script.write_text(compiled, encoding="utf-8")
+    with build_lock(output_dir, f"pair-manifest-{compiled_script.stem}"):
+        atomic_write_text(compiled_script, compiled)
 
     manifest = {
         "mode": (
@@ -473,7 +477,8 @@ def build_manifest(
         "pairs": pairs,
     }
     manifest_path = output_dir / "page_image_pairs.json"
-    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    with build_lock(output_dir, f"pair-manifest-{manifest_path.stem}"):
+        atomic_write_json(manifest_path, manifest)
     return manifest, manifest_path, compiled_script, page_numbers
 
 
@@ -554,7 +559,7 @@ def _copy_existing_images(existing_manifest: Path, output_dir: Path, *, force: b
             if target.exists() and not force:
                 continue
             output_dir.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, target)
+            atomic_copy(source, target)
             _normalize_ingest_image(target)
 
 
@@ -588,7 +593,7 @@ def _copy_full_images_from_blueprints(
         if target.exists() and not force:
             continue
         output_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(blueprint, target)
+        atomic_copy(blueprint, target)
         _normalize_ingest_image(target)
 
 

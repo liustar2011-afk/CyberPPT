@@ -31,6 +31,14 @@ from .workspace_layout_qa import check_workspace_assignment_layout, write_worksp
 from scripts.dual_image_overlay.text_content_qa import build_text_content_qa
 from scripts.visual_registry_from_source_capture import build_registries, write_registries
 from cyberppt.artifact_ledger import sha256_path, write_json_atomic
+from scripts.dual_image_overlay.build_transaction import build_lock
+from scripts.dual_image_overlay.template_rebuild_qa import (
+    expected_texts_from_workspace_assignment,
+    quality_rules,
+    resolve_exported_pptx,
+    scene_graph_visual_elements,
+    template_gate,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -58,6 +66,13 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     write_json_atomic(path, payload)
 
 
+def _write_project_json(project_path: Path, path: Path, payload: dict[str, Any], *, build_id: str) -> None:
+    """Serialize one analysis artifact while holding the project build lock."""
+
+    with build_lock(project_path, build_id):
+        _write_json(path, payload)
+
+
 def resolve_project_path(manifest_path: Path, manifest: dict[str, Any]) -> Path:
     raw = manifest.get("project_path")
     if isinstance(raw, str) and raw.strip():
@@ -80,47 +95,11 @@ def _next_export_path(project_path: Path) -> Path:
     return candidate
 
 
-def _resolve_exported_pptx(project_path: Path, explicit: Path | None = None) -> str | None:
-    """Resolve the PPTX recorded by this run; never guess from existing exports."""
-
-    if explicit is not None:
-        candidate = explicit.expanduser().resolve()
-        return str(candidate) if candidate.is_file() else None
-    pointer = project_path / "analysis" / "export_artifact.json"
-    if not pointer.is_file():
-        return None
-    try:
-        payload = _read_json(pointer)
-    except (OSError, ValueError, json.JSONDecodeError):
-        return None
-    raw_path = payload.get("path")
-    if not isinstance(raw_path, str) or not raw_path.strip():
-        return None
-    candidate = Path(raw_path).expanduser().resolve()
-    if not candidate.is_file():
-        return None
-    expected_hash = str(payload.get("sha256") or "").lower()
-    actual_hash = str(sha256_path(candidate) or "").lower()
-    if expected_hash and expected_hash != actual_hash:
-        return None
-    return str(candidate)
-
-
-def _template_gate(project_path: Path, *, export_requested: bool, exported_pptx: str | None) -> dict[str, Any]:
-    checks = {
-        "spec_lock_available": (project_path / "spec_lock.md").is_file(),
-        "brand_rules_available": (project_path / "templates" / "brand_rules.json").is_file(),
-        "master_chrome_available": (project_path / "templates" / "master_elements.svg").is_file(),
-        "svg_output_available": any((project_path / "svg_output").glob("*.svg")),
-        "pptx_exported": bool(exported_pptx) if export_requested else True,
-    }
-    return {
-        "schema": "cyberppt.dual_image.template_gate.v1",
-        "valid": all(checks.values()),
-        "checks": checks,
-        "export_requested": export_requested,
-        "exported_pptx": exported_pptx,
-    }
+_resolve_exported_pptx = resolve_exported_pptx
+_template_gate = template_gate
+_expected_texts_from_workspace_assignment = expected_texts_from_workspace_assignment
+_quality_rules = quality_rules
+_scene_graph_visual_elements = scene_graph_visual_elements
 
 
 def _load_scene_graph_gates(project_path: Path) -> list[dict[str, Any]]:
@@ -141,41 +120,6 @@ def _load_background_text_scan(project_path: Path) -> dict[str, Any] | None:
 def _load_semantic_typography_qa(project_path: Path) -> dict[str, Any] | None:
     path = project_path / "analysis" / "semantic_typography_qa" / "semantic_typography_qa_index.json"
     return _read_json(path) if path.exists() else None
-
-
-def _expected_texts_from_workspace_assignment(workspace_assignment: dict[str, Any]) -> list[str]:
-    texts: list[str] = []
-    for page in workspace_assignment.get("pages", []):
-        if not isinstance(page, dict):
-            continue
-        for item in page.get("assignments", []):
-            if isinstance(item, dict) and isinstance(item.get("text"), str) and item["text"].strip():
-                texts.append(item["text"])
-    return texts
-
-
-def _quality_rules(path: Path) -> list[dict[str, Any]]:
-    payload = _read_json(path)
-    rules = payload.get("rules", [])
-    if not isinstance(rules, list):
-        raise ValueError(f"Quality rules must be a list: {path}")
-    return [rule for rule in rules if isinstance(rule, dict)]
-
-
-def _scene_graph_visual_elements(value: Any) -> list[dict[str, Any]]:
-    elements: list[dict[str, Any]] = []
-    if isinstance(value, dict):
-        if any(key in value for key in ("bbox", "blueprint_bbox_px", "render_bbox_px", "ppt_target_bbox_px")):
-            element = {key: item for key, item in value.items() if key in {"id", "element_id", "element_type", "type", "kind", "role", "bbox", "blueprint_bbox_px", "render_bbox_px", "ppt_target_bbox_px"}}
-            element.setdefault("element_type", value.get("element_type") or value.get("type") or value.get("kind") or value.get("role") or "visual")
-            element.setdefault("source", {"kind": "scene_graph"})
-            elements.append(element)
-        for child in value.values():
-            elements.extend(_scene_graph_visual_elements(child))
-    elif isinstance(value, list):
-        for child in value:
-            elements.extend(_scene_graph_visual_elements(child))
-    return elements
 
 
 def _build_template_container_workspaces(
@@ -414,6 +358,9 @@ def run_vendor_rebuild(
     env = os.environ.copy()
     existing_pythonpath = env.get("PYTHONPATH")
     env["PYTHONPATH"] = str(ROOT) if not existing_pythonpath else f"{ROOT}{os.pathsep}{existing_pythonpath}"
+    # The child rebuild engine owns the project lock.  Holding the same
+    # file-based lock here would deadlock the child process before it can
+    # start; the orchestrator only validates the exact artifact afterward.
     subprocess.run(command, cwd=ROOT, check=True, env=env)
     if resolved_pptx_output is not None and not resolved_pptx_output.is_file():
         raise FileNotFoundError(f"vendor rebuild did not produce requested PPTX: {resolved_pptx_output}")
@@ -498,9 +445,10 @@ def build_template_rebuild_readiness(
                 rendered_preview=str(rendered_preview),
                 measurement_model=measurement_model,
             )
-    _write_json(analysis_dir / "source_capture.json", source_capture)
+    readiness_build_id = f"template-readiness-{manifest_path.stem}"
+    _write_project_json(project_path, analysis_dir / "source_capture.json", source_capture, build_id=readiness_build_id)
     source_capture_gate = build_source_capture_gate(source_capture)
-    _write_json(analysis_dir / "source_capture_gate.json", source_capture_gate)
+    _write_project_json(project_path, analysis_dir / "source_capture_gate.json", source_capture_gate, build_id=readiness_build_id)
     container_workspace, workspace_assignment, workspace_layout_qa = _build_template_container_workspaces(
         project_path, source_capture
     )
@@ -515,7 +463,7 @@ def build_template_rebuild_readiness(
         export_requested=export_requested,
         exported_pptx=resolved_exported_pptx,
     )
-    _write_json(analysis_dir / "template_gate.json", template_gate)
+    _write_project_json(project_path, analysis_dir / "template_gate.json", template_gate, build_id=readiness_build_id)
     scene_graph_gates = _load_scene_graph_gates(project_path)
     scene_graph_valid = bool(scene_graph_gates) and all(gate.get("valid") for gate in scene_graph_gates)
     visual_qa_gate = _load_visual_qa_gate(project_path)
@@ -538,7 +486,7 @@ def build_template_rebuild_readiness(
             "skipped": True,
             "reason": "no_exported_pptx_yet",
         }
-    _write_json(analysis_dir / "text_content_qa.json", text_content_qa)
+    _write_project_json(project_path, analysis_dir / "text_content_qa.json", text_content_qa, build_id=readiness_build_id)
     page_number = None
     pairs = manifest.get("pairs")
     if isinstance(pairs, list) and pairs and isinstance(pairs[0], dict) and isinstance(pairs[0].get("page_number"), int):
@@ -716,7 +664,7 @@ def build_template_rebuild_readiness(
         },
         "page_quality_report": page_quality_report,
     }
-    _write_json(analysis_dir / "template_rebuild_readiness.json", readiness)
+    _write_project_json(project_path, analysis_dir / "template_rebuild_readiness.json", readiness, build_id=readiness_build_id)
     return readiness
 
 

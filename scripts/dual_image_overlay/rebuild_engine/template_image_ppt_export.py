@@ -23,6 +23,14 @@ from xml.sax.saxutils import quoteattr
 
 from PIL import Image
 
+from scripts.dual_image_overlay.build_transaction import (
+    atomic_copy,
+    atomic_write_json,
+    atomic_write_text,
+    build_lock,
+)
+from scripts.dual_image_overlay.ppt_export import run_svg_export
+
 try:
     from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_codex_image
 except ModuleNotFoundError:  # Direct script execution through the CyberPPT dispatcher.
@@ -654,8 +662,7 @@ def build_manifest(
 
 
 def write_json(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    atomic_write_json(path, data)
 
 
 def _write_export_pointer(project_path: Path, output_path: Path) -> Path:
@@ -681,7 +688,7 @@ def copy_brand(project_path: Path, brand_dir: Path = DEFAULT_BRAND_DIR) -> None:
         if not source.is_file():
             continue
         target = project_path / ("images" if source.suffix.lower() in {".png", ".jpg", ".jpeg"} else "templates") / source.name
-        shutil.copy2(source, target)
+        atomic_copy(source, target)
 
 
 def fmt(value: float | int) -> str:
@@ -723,7 +730,7 @@ def write_spec_lock(project_path: Path, rules: dict, pixel_size: tuple[int, int]
         lines.append(f"- footer_org_text: x={sx(org.get('x', 40))} y={sy(org.get('y', 712))} size={sy(org.get('font_size', 10))} fill={org.get('fill', '#FFFFFF')} text=\"{org.get('text', '中国电力企业联合会')}\"")
     if num:
         lines.append(f"- footer_page_num: x={sx(num.get('x', 1240))} y={sy(num.get('y', 712))} size={sy(num.get('font_size', 10))} fill={num.get('fill', '#FFFFFF')} mono dynamic")
-    (project_path / "spec_lock.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    atomic_write_text(project_path / "spec_lock.md", "\n".join(lines) + "\n")
 
 
 def svg_text(x: int, y: int, text: str, size: int, weight: int = 400, fill: str = "#123B66") -> str:
@@ -903,21 +910,21 @@ def write_project(
             if not image_path.is_file():
                 raise FileNotFoundError(f"Missing content image: {image_path}")
             target_image = project_path / "images" / image_path.name
-            shutil.copy2(image_path, target_image)
+            atomic_copy(image_path, target_image)
             svg_text_content = render_content_page_svg(
                 task,
                 target_image=target_image,
                 header=header,
                 body=body,
             )
-        (project_path / "svg_output" / f"{stem}.svg").write_text(svg_text_content, encoding="utf-8")
+        atomic_write_text(project_path / "svg_output" / f"{stem}.svg", svg_text_content)
         notes_text = task.get("notes_text")
         if not notes_text:
             source_page = source_pages.get(int(task["page_number"]))
             notes_text = page_notes_text(source_page) if source_page else task.get("body_text", "")
-        (project_path / "notes" / f"{stem}.md").write_text(
+        atomic_write_text(
+            project_path / "notes" / f"{stem}.md",
             f"# {task['slide_title']}\n\n{notes_text}\n",
-            encoding="utf-8",
         )
     write_json(project_path / "template_image_manifest.json", manifest)
     return project_path
@@ -933,22 +940,14 @@ def run_export(
         raise ValueError(
             "run_export requires an explicit output_path; refusing nondeterministic latest-PPTX selection"
         )
-    output_path = output_path.expanduser().resolve()
-    if output_path.exists() and not overwrite:
-        raise FileExistsError(
-            f"PPTX output already exists: {output_path}; pass --overwrite to replace it"
+    with build_lock(project_path, f"pptx-export-{project_path.name}"):
+        return run_svg_export(
+            project_path,
+            output_path=output_path,
+            overwrite=overwrite,
+            scripts_dir=SCRIPTS_DIR,
+            backup_dir=project_path.parent,
         )
-    if output_path.exists() and overwrite:
-        _backup_existing_output(output_path, project_path.parent)
-    cmd = [sys.executable, str(SCRIPTS_DIR / "svg_to_pptx.py"), str(project_path)]
-    cmd.extend(["--output", str(output_path)])
-    result = subprocess.run(cmd, check=False)
-    if result.returncode != 0:
-        raise RuntimeError(f"svg_to_pptx failed with exit code {result.returncode}")
-    if not output_path.is_file():
-        raise FileNotFoundError(f"No PPTX produced at requested path: {output_path}")
-    _write_export_pointer(project_path, output_path)
-    return output_path
 
 
 def command_plan(args: argparse.Namespace) -> int:
@@ -976,7 +975,7 @@ def command_plan(args: argparse.Namespace) -> int:
             )
         else:
             prompt_blocks.append(f"## 第{task['page_number']}页：{task['title']}\n\n保存到：`{task['image_path']}`\n\n{task['prompt']}")
-    (output_dir / "template_image_prompts.md").write_text("\n\n".join(prompt_blocks) + "\n", encoding="utf-8")
+    atomic_write_text(output_dir / "template_image_prompts.md", "\n\n".join(prompt_blocks) + "\n")
     print(output_dir / "template_image_manifest.json")
     return 0
 

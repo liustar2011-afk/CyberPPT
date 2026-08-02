@@ -56,10 +56,24 @@ from scripts.dual_image_overlay.style_library import (
     load_style_lock,
     resolve_default_style,
 )
+from scripts.dual_image_overlay.page_semantics import (
+    PageSemanticContext,
+    derive_page_semantics,
+)
+from scripts.dual_image_overlay.prompt_compiler import (
+    CompiledPagePrompt,
+    DEFAULT_PROMPT_COMPILER,
+    PROMPT_COMPILERS,
+    validate_prompt_compiler,
+)
+from scripts.dual_image_overlay.script_parser import (
+    load_page_missions,
+    load_page_visual_contexts,
+    load_page_visual_intent_overrides,
+)
+from scripts.dual_image_overlay.build_transaction import atomic_write_text, build_lock
 
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
-PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
-DEFAULT_PROMPT_COMPILER = "content-first-v1"
 IMAGEGEN_CANVAS_CONTRACT = """【输出尺寸｜不上屏】
 画布尺寸固定为 2048×1024 像素（2:1 横向）。必须按该尺寸与比例构图，不得输出 16:9、4:3、方形或其他比例。"""
 IMAGEGEN_CHROME_BAN_CONTRACT = """【模板层禁绘｜不上屏】
@@ -971,37 +985,6 @@ def build_page_visual_intent(
     )
 
 
-@dataclass(frozen=True)
-class CompiledPagePrompt:
-    prompt: str
-    compiler_version: str
-    relation: str
-    creative_brief: CreativeBrief | None = None
-    injected_rule_ids: tuple[str, ...] = ()
-    style_selection: dict[str, Any] | None = None
-    presentation: PresentationDecision | None = None
-    image_locked_text: str = ""
-    editable_body_text: str = ""
-
-    def build_metadata(self) -> dict[str, Any]:
-        payload: dict[str, Any] = {
-            "compiler_version": self.compiler_version,
-            "relation": self.relation,
-            "injected_rule_ids": list(self.injected_rule_ids),
-        }
-        if self.creative_brief is not None:
-            payload["creative_brief"] = self.creative_brief.to_dict()
-        if self.style_selection is not None:
-            payload["style_selection"] = dict(self.style_selection)
-        if self.presentation is not None:
-            payload["presentation"] = self.presentation.to_dict()
-        if self.image_locked_text:
-            payload["image_locked_text"] = self.image_locked_text
-        if self.editable_body_text:
-            payload["editable_body_text"] = self.editable_body_text
-        return payload
-
-
 def build_page_creative_brief(
     page: ScriptPage,
     page_mission: str,
@@ -1665,6 +1648,7 @@ def render_content_first_prompt(
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
     presentation_decision: PresentationDecision | None = None,
+    semantic_context: PageSemanticContext | None = None,
 ) -> tuple[str, str]:
     """Render a complete-content prompt without translating meaning into layout."""
 
@@ -1704,13 +1688,24 @@ def render_content_first_prompt(
             if part
         )
     )
-    relation, intent_source, logic_contract = render_page_logic_contract(
-        page,
-        page_mission=page_mission,
-        visual_context=visual_context,
-        visual_intent_override=visual_intent_override,
-    )
-    semantic_relations = _page_semantic_relations(page)
+    if semantic_context is None:
+        relation, intent_source, logic_contract = render_page_logic_contract(
+            page,
+            page_mission=page_mission,
+            visual_context=visual_context,
+            visual_intent_override=visual_intent_override,
+        )
+        semantic_relations = _page_semantic_relations(page)
+    else:
+        relation = semantic_context.relation
+        intent_source = semantic_context.intent_source
+        _, _, logic_contract = render_page_logic_contract(
+            page,
+            page_mission=page_mission,
+            visual_context=semantic_context.visual_context,
+            visual_intent_override=semantic_context.visual_intent_override,
+        )
+        semantic_relations = semantic_context.semantic_relations
     presentation = presentation_decision or resolve_presentation_decision(
         page,
         relation,
@@ -1791,80 +1786,20 @@ def render_content_first_prompt(
     return relation, "\n".join(parts).strip() + "\n"
 
 
-def _page_missions(project: Path) -> dict[str, str]:
-    outline_path = project / "workbench" / "stages" / "01-analysis" / "outline.json"
-    if not outline_path.is_file():
-        return {}
-    payload = json.loads(outline_path.read_text(encoding="utf-8-sig"))
-    pages = payload.get("pages") if isinstance(payload, dict) else None
-    if not isinstance(pages, list):
-        return {}
-    return {
-        str(item.get("page_id")): str(item.get("business_question") or "").strip()
-        for item in pages
-        if isinstance(item, dict) and item.get("page_id")
-    }
-
-
-def _page_visual_contexts(project: Path) -> dict[str, dict[str, str]]:
-    outline_path = project / "workbench" / "stages" / "01-analysis" / "outline.json"
-    if not outline_path.is_file():
-        return {}
-    payload = json.loads(outline_path.read_text(encoding="utf-8-sig"))
-    pages = payload.get("pages") if isinstance(payload, dict) else None
-    if not isinstance(pages, list):
-        return {}
-    fields = (
-        "argument_role",
-        "page_job",
-        "business_question",
-        "visual_center",
-        "visual_proof",
-        "visual_intent_type",
-        "visual_carrier",
-        "onscreen_judgment_mode",
-        "judgment_role",
-    )
-    return {
-        str(item["page_id"]): {
-            field: str(item.get(field) or "").strip()
-            for field in fields
-            if str(item.get(field) or "").strip()
-        }
-        for item in pages
-        if isinstance(item, dict) and item.get("page_id")
-    }
+_page_missions = load_page_missions
+_page_visual_contexts = load_page_visual_contexts
 
 
 def _page_visual_intent_overrides(project: Path) -> dict[str, dict[str, str]]:
-    outline_path = project / "workbench" / "stages" / "01-analysis" / "outline.json"
-    if not outline_path.is_file():
-        return {}
-    payload = json.loads(outline_path.read_text(encoding="utf-8-sig"))
-    pages = payload.get("pages") if isinstance(payload, dict) else None
-    if not isinstance(pages, list):
-        return {}
+    """Compatibility wrapper backed by the shared Stage 01 parser."""
+
     allowed = {
         "visual_intent_type",
         "visual_proof",
         "visual_carrier",
         *VISUAL_INTENT_TEMPLATES["judgment_evidence"].keys(),
     }
-    result: dict[str, dict[str, str]] = {}
-    for item in pages:
-        if not isinstance(item, dict) or not item.get("page_id"):
-            continue
-        raw = item.get("visual_intent")
-        if not isinstance(raw, dict):
-            continue
-        cleaned = {
-            key: value.strip()
-            for key, value in raw.items()
-            if key in allowed and isinstance(value, str) and value.strip()
-        }
-        if cleaned:
-            result[str(item["page_id"])] = cleaned
-    return result
+    return load_page_visual_intent_overrides(project, allowed_fields=allowed)
 
 
 def compile_page_prompt(
@@ -1876,19 +1811,18 @@ def compile_page_prompt(
     prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
     prior_decisions: tuple[PresentationDecision, ...] = (),
 ) -> CompiledPagePrompt:
-    if prompt_compiler not in PROMPT_COMPILERS:
-        raise ValueError(
-            f"unsupported prompt compiler: {prompt_compiler}; "
-            f"choose one of {', '.join(PROMPT_COMPILERS)}"
-        )
+    prompt_compiler = validate_prompt_compiler(prompt_compiler)
+    semantic_context = derive_page_semantics(
+        page,
+        page_mission=page_mission,
+        visual_context=visual_context,
+        visual_intent_override=visual_intent_override,
+        resolve_intent=resolve_page_visual_intent,
+        extract_relations=_page_semantic_relations,
+    )
     if prompt_compiler == "content-first-v1":
         selected_style = _selected_content_first_style(style_lock)
-        relation = select_page_visual_intent_type(
-            page,
-            page_mission,
-            context=visual_context,
-            override=visual_intent_override,
-        )
+        relation = semantic_context.relation
         presentation = resolve_presentation_decision(
             page,
             relation,
@@ -1901,6 +1835,7 @@ def compile_page_prompt(
             visual_context=visual_context,
             visual_intent_override=visual_intent_override,
             presentation_decision=presentation,
+            semantic_context=semantic_context,
         )
         assert_deliverable_prompt(prompt)
         if EVIDENCE_ID_RE.search(prompt):
@@ -1933,12 +1868,7 @@ def compile_page_prompt(
             editable_body_text=page.onscreen_text.strip(),
         )
 
-    relation = select_page_visual_intent_type(
-        page,
-        page_mission,
-        context=visual_context,
-        override=visual_intent_override,
-    )
+    relation = semantic_context.relation
     creative_brief: CreativeBrief | None = None
     if prompt_compiler == "creative-brief-v1":
         creative_brief = build_page_creative_brief(
@@ -2150,7 +2080,8 @@ def write_chapter_handoff(
                     (comparison_page, selected_diagnostics)
                 )
         draft_source = out_dir / f"_tmp_slide-{page_number:02d}-imagegen.md"
-        draft_source.write_text(prompt, encoding="utf-8")
+        with build_lock(out_dir, f"{batch_name}-p{page_number:02d}"):
+            atomic_write_text(draft_source, prompt)
         staged = stage_script(
             project,
             slide=page_number,
@@ -2171,10 +2102,8 @@ def write_chapter_handoff(
         )
 
     batch_path = out_dir / f"{batch_name}-imagegen-review.md"
-    if content_prompts:
-        batch_path.write_text("\n".join(review_parts).rstrip() + "\n", encoding="utf-8")
-    else:
-        batch_path.write_text("\n".join(review_parts).rstrip() + "\n", encoding="utf-8")
+    with build_lock(out_dir, f"{batch_name}-batch"):
+        atomic_write_text(batch_path, "\n".join(review_parts).rstrip() + "\n")
     outputs["batch"] = batch_path
     diagnostics_path = out_dir / f"{batch_name}-imagegen-diagnostics.json"
     write_batch_diagnostics(
@@ -2194,24 +2123,25 @@ def write_chapter_handoff(
 
     gate = project / "workbench" / "stages" / "02-blueprint-dual-image" / f"{batch_name}-imagegen-script-gate.md"
     gate.parent.mkdir(parents=True, exist_ok=True)
-    gate.write_text(
-        "\n".join(
-            [
-                f"# ImageGen 送图脚本门禁 · {batch_name}",
-                "",
-                f"- batch_review: `{batch_path.as_posix()}`",
-                "- status: waiting_for_user_modify_or_approve",
-                "- rule: 用户批准前不得调用 ImageGen / final-script-pages --production-build",
-                "",
-                "## 请回复",
-                "",
-                "1. **批准送图脚本**（可指定页段）→ 将对应页 stage 为 final 并登记 approve-script 后再生图",
-                "2. **修改第N页** → 给出改法，返工该页 prompt 后再审",
-                "",
-            ]
-        ),
-        encoding="utf-8",
-    )
+    with build_lock(gate.parent, f"{batch_name}-gate"):
+        atomic_write_text(
+            gate,
+            "\n".join(
+                [
+                    f"# ImageGen 送图脚本门禁 · {batch_name}",
+                    "",
+                    f"- batch_review: `{batch_path.as_posix()}`",
+                    "- status: waiting_for_user_modify_or_approve",
+                    "- rule: 用户批准前不得调用 ImageGen / final-script-pages --production-build",
+                    "",
+                    "## 请回复",
+                    "",
+                    "1. **批准送图脚本**（可指定页段）→ 将对应页 stage 为 final 并登记 approve-script 后再生图",
+                    "2. **修改第N页** → 给出改法，返工该页 prompt 后再审",
+                    "",
+                ]
+            ),
+        )
     outputs["gate"] = gate
     return outputs
 

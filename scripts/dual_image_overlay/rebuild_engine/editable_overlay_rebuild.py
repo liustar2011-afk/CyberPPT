@@ -24,6 +24,12 @@ if str(SCRIPTS_DIR) not in sys.path:
 from PIL import Image
 
 from cyberppt.artifact_ledger import sha256_path, write_json_atomic
+from scripts.dual_image_overlay.build_transaction import (
+    atomic_copy,
+    atomic_write_json,
+    atomic_write_text,
+    build_lock,
+)
 
 from scripts.dual_image_overlay.rebuild_modes import resolve_rebuild_mode
 from scripts.dual_image_overlay.background_text_scan import scan_background_text
@@ -119,8 +125,7 @@ else:
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    atomic_write_json(path, payload)
 
 
 def load_pair_manifest(path: Path) -> dict[str, Any]:
@@ -152,7 +157,7 @@ def _copy_image_to_project(image_path: Path, project_path: Path) -> str:
     images_dir.mkdir(parents=True, exist_ok=True)
     target = images_dir / image_path.name
     if image_path.resolve() != target.resolve():
-        shutil.copy2(image_path, target)
+        atomic_copy(image_path, target)
     return "../images/" + target.name
 
 
@@ -214,10 +219,7 @@ def _background_href_for_svg(prepared_background: Path) -> str:
 def _write_rebuild_quality(project_path: Path, pages: list[dict[str, Any]]) -> None:
     quality_path = project_path / "analysis" / "rebuild_quality.json"
     quality_path.parent.mkdir(parents=True, exist_ok=True)
-    quality_path.write_text(
-        json.dumps({"pages": pages}, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    atomic_write_json(quality_path, {"pages": pages})
 
 
 def _load_explicit_semantic_plan(semantic_plan_dir: Path | None, page_number: int) -> tuple[Path, dict[str, Any]] | None:
@@ -755,7 +757,7 @@ def _write_scene_graph_artifacts(
                 graph=graph,
             ),
         )
-        paths["copy_edit"].write_text(json.dumps(copy_edit_report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        atomic_write_json(paths["copy_edit"], copy_edit_report)
         if background_href is not None:
             graph, illustration_report = materialize_recognized_illustration_assets(
                 graph,
@@ -764,24 +766,24 @@ def _write_scene_graph_artifacts(
             )
         else:
             illustration_report = {"schema": "cyberppt.recognized_illustration_assets.v1", "page": page_number, "count": 0, "assets": []}
-        paths["illustration_assets"].write_text(json.dumps(illustration_report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        atomic_write_json(paths["illustration_assets"], illustration_report)
         graph, reflow_report = apply_recognized_constrained_reflow(graph, strict=True)
-        paths["constrained_reflow"].write_text(json.dumps(reflow_report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        atomic_write_json(paths["constrained_reflow"], reflow_report)
         if not copy_edit_report["valid"] or not reflow_report["valid"]:
             raise ValueError(f"Recognized reflow gate failed for page {page_number}")
     graph_gate = build_scene_graph_gate(graph)
-    paths["graph"].write_text(json.dumps(scene_graph_to_dict(graph), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    paths["gate"].write_text(json.dumps(graph_gate, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    atomic_write_json(paths["graph"], scene_graph_to_dict(graph))
+    atomic_write_json(paths["gate"], graph_gate)
     if _scene_graph_gate_blocks_export(paths["gate"]):
         raise ValueError(f"Scene graph gate failed for page {page_number}: {graph_gate['issues']}")
     page_layout_plan = build_layout_plan_from_scene_graph(graph)
-    paths["layout"].write_text(json.dumps(page_layout_plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    atomic_write_json(paths["layout"], page_layout_plan)
     page_svg_ir = compile_scene_graph_to_page_svg_ir(
         graph,
         background_href=str((background_href or (project_path / "images" / f"page_{page_number:03d}_background.png")).resolve()),
         layout_plan=page_layout_plan,
     )
-    paths["page_svg_ir"].write_text(json.dumps(page_svg_ir, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    atomic_write_json(paths["page_svg_ir"], page_svg_ir)
     qa_fusion = build_qa_fusion_report(
         scene_graph_gate=graph_gate,
         page_svg_ir=page_svg_ir,
@@ -789,7 +791,7 @@ def _write_scene_graph_artifacts(
         copy_edit_report=copy_edit_report,
         constrained_reflow_report=reflow_report,
     )
-    paths["qa_fusion"].write_text(json.dumps(qa_fusion, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    atomic_write_json(paths["qa_fusion"], qa_fusion)
     return paths
 
 
@@ -1089,7 +1091,7 @@ def _write_page_understanding_artifact(
     return page_understanding_path
 
 
-def rebuild_from_manifest(
+def _rebuild_from_manifest_unlocked(
     manifest_path: Path,
     *,
     ocr_backend: str = "vision-json",
@@ -1228,10 +1230,7 @@ def rebuild_from_manifest(
         if explicit_semantic is not None:
             explicit_path, explicit_plan = explicit_semantic
             explicit_plan = reconcile_semantic_plan_with_script_truth(explicit_plan, source_script, page_number)
-            semantic_plan_path.write_text(
-                json.dumps(explicit_plan, ensure_ascii=False, indent=2) + "\n",
-                encoding="utf-8",
-            )
+            atomic_write_json(semantic_plan_path, explicit_plan)
             semantic_gate = validate_explicit_semantic_plan(explicit_plan)
             coordinate_context = resolve_overlay_coordinate_context(
                 explicit_plan,
@@ -1287,10 +1286,7 @@ def rebuild_from_manifest(
                     else _image_size_for_scene_graph(image_size_check)
                 ),
             )
-            semantic_plan_path.write_text(
-                json.dumps(scene_graph_semantic_plan, ensure_ascii=False, indent=2) + "\n",
-                encoding="utf-8",
-            )
+            atomic_write_json(semantic_plan_path, scene_graph_semantic_plan)
             semantic_gate = validate_explicit_semantic_plan(None, required=False)
             semantic_layout_plan = {"schema": "cyberppt.dual_image.semantic_layout_plan.v1", "items": []}
             semantic_source = "script_derived_fallback"
@@ -1356,32 +1352,22 @@ def rebuild_from_manifest(
             visual_registry=visual_registry,
         )
         semantic_gate_path = semantic_gate_dir / f"page_{page_number:03d}_semantic_plan_gate.json"
-        semantic_gate_path.write_text(
-            json.dumps(semantic_gate, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
+        atomic_write_json(semantic_gate_path, semantic_gate)
         semantic_layout_path = semantic_layout_dir / f"page_{page_number:03d}_layout_plan.json"
-        semantic_layout_path.write_text(
-            json.dumps(semantic_layout_plan, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
+        atomic_write_json(semantic_layout_path, semantic_layout_plan)
         containers_path = containers_dir / f"page_{page_number:03d}_containers.json"
-        containers_path.write_text(
-            json.dumps(
-                {
-                    "page_number": page_number,
-                    "background_image": str(prepared_background),
-                    "semantic_plan": str(semantic_plan_path),
-                    "containers": containers_to_json(containers),
-                },
-                ensure_ascii=False,
-                indent=2,
-            )
-            + "\n",
-            encoding="utf-8",
+        atomic_write_json(
+            containers_path,
+            {
+                "page_number": page_number,
+                "background_image": str(prepared_background),
+                "semantic_plan": str(semantic_plan_path),
+                "containers": containers_to_json(containers),
+            },
         )
         mapping_path = ocr_dir / f"page_{page_number:03d}_text_mapping.json"
-        mapping_path.write_text(
+        atomic_write_text(
+            mapping_path,
             json.dumps(
                 {
                     "page_number": page_number,
@@ -1403,7 +1389,6 @@ def rebuild_from_manifest(
                 indent=2,
             )
             + "\n",
-            encoding="utf-8",
         )
 
         block = pages.get(page_number)
@@ -1431,7 +1416,7 @@ def rebuild_from_manifest(
         )
         stem = page_stem(page_number, title_for_name)
         svg_path = project_path / "svg_output" / f"{stem}.svg"
-        svg_path.write_text(svg, encoding="utf-8")
+        atomic_write_text(svg_path, svg)
         qa_fusion = build_qa_fusion_report(
             scene_graph_gate=json.loads(scene_graph_paths["gate"].read_text(encoding="utf-8")),
             page_svg_ir=page_svg_ir,
@@ -1440,16 +1425,16 @@ def rebuild_from_manifest(
             expected_format="16:9",
             require_ppt_master=True,
         )
-        scene_graph_paths["qa_fusion"].write_text(
-            json.dumps(qa_fusion, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
+        atomic_write_json(scene_graph_paths["qa_fusion"], qa_fusion)
         if not qa_fusion["valid"]:
             raise ValueError(
                 f"Page SVG IR export gate failed for page {page_number}: "
                 f"{qa_fusion['blocking_errors']}"
             )
-        (project_path / "notes" / f"{stem}.md").write_text(f"# {slide_title}\n\n{notes_text}\n", encoding="utf-8")
+        atomic_write_text(
+            project_path / "notes" / f"{stem}.md",
+            f"# {slide_title}\n\n{notes_text}\n",
+        )
         svg_count += 1
         quality_pages.append(
             {
@@ -1502,6 +1487,19 @@ def rebuild_from_manifest(
         },
     )
     return {"project_path": str(project_path), "slides": svg_count, "svg_dir": str(project_path / "svg_output")}
+
+
+def rebuild_from_manifest(
+    manifest_path: Path,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Run one overlay rebuild under the project-level build lock."""
+
+    manifest_path = manifest_path.resolve()
+    manifest = load_pair_manifest(manifest_path)
+    project_path = resolve_project_path(manifest_path, manifest)
+    with build_lock(project_path, f"editable-rebuild-{manifest_path.stem}"):
+        return _rebuild_from_manifest_unlocked(manifest_path, **kwargs)
 
 
 def _next_export_path(project_path: Path) -> Path:
@@ -1557,7 +1555,7 @@ def _write_export_pointer(project_path: Path, output_path: Path) -> Path:
     return pointer
 
 
-def export_project(
+def _export_project_unlocked(
     project_path: Path,
     *,
     output_path: Path | None = None,
@@ -1599,6 +1597,23 @@ def export_project(
         raise FileNotFoundError(f"No PPTX exported at requested path: {output_path}")
     _write_export_pointer(project_path, output_path)
     return output_path
+
+
+def export_project(
+    project_path: Path,
+    *,
+    output_path: Path | None = None,
+    overwrite: bool = False,
+) -> Path:
+    """Export one exact PPTX artifact under the project build lock."""
+
+    project_path = project_path.expanduser().resolve()
+    with build_lock(project_path, f"editable-export-{project_path.name}"):
+        return _export_project_unlocked(
+            project_path,
+            output_path=output_path,
+            overwrite=overwrite,
+        )
 
 
 def build_parser() -> argparse.ArgumentParser:
