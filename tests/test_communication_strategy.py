@@ -56,12 +56,18 @@ class CommunicationStrategyTests(unittest.TestCase):
                 {
                     "id": "decision_review",
                     "label": "领导审定型",
+                    "audience": "中电联与合作企业决策层",
+                    "communication_purpose": "审议合作方向并确认联合调研安排",
+                    "decision_task": "选择合作推进路径",
                     "architecture_mode": "solution",
                     "structure_principle": "先给出合作判断，再说明基础、方案和下一步决策事项",
                 },
                 {
                     "id": "joint_workshop",
                     "label": "联合研讨型",
+                    "audience": "双方业务与实施工作组",
+                    "communication_purpose": "对齐合作议题、分工和试点条件",
+                    "decision_task": "形成联合调研与试点设计输入",
                     "architecture_mode": "solution",
                     "structure_principle": "先建立共同认知，再展开合作议题、分工和研讨问题",
                 },
@@ -98,6 +104,7 @@ class CommunicationStrategyTests(unittest.TestCase):
         self.assertIsNotNone(gate)
         self.assertEqual("joint_workshop", gate["option_id"])
         self.assertEqual("联合研讨型", gate["selected_option"]["label"])
+        self.assertEqual("双方业务与实施工作组", gate["audience"])
 
         stage = self.project / "workbench/stages/01-analysis"
         (stage / "source-truth.json").write_text(
@@ -113,9 +120,9 @@ class CommunicationStrategyTests(unittest.TestCase):
         outline = {
             "communication_strategy_sha256": gate["communication_strategy_sha256"],
             "communication_strategy_approval_sha256": gate["communication_strategy_approval_sha256"],
-            "audience": payload["audience"],
-            "communication_purpose": payload["communication_purpose"],
-            "decision_task": payload["decision_task"],
+            "audience": selected["audience"],
+            "communication_purpose": selected["communication_purpose"],
+            "decision_task": selected["decision_task"],
             "reporting_direction": gate["option_id"],
             "architecture_mode": selected["architecture_mode"],
             "structure_principle": selected["structure_principle"],

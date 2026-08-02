@@ -62,12 +62,18 @@ def _candidate_template(semantic_gate: dict[str, Any]) -> dict[str, Any]:
             {
                 "id": "",
                 "label": "",
+                "audience": "",
+                "communication_purpose": "",
+                "decision_task": "",
                 "architecture_mode": "solution",
                 "structure_principle": "",
             },
             {
                 "id": "",
                 "label": "",
+                "audience": "",
+                "communication_purpose": "",
+                "decision_task": "",
                 "architecture_mode": "solution",
                 "structure_principle": "",
             },
@@ -91,7 +97,7 @@ def _render_authoring_input(
             "",
             "Write `communication-strategy.json` with schema `cyberppt.communication_strategy.v1`.",
             "Copy both semantic hashes below exactly. Supply a concrete audience, communication purpose, decision task, and 1-5 content-focus items.",
-            "Supply 2-3 materially different reporting-direction options. Each option needs `id`, `label`, `architecture_mode` (`solution` or `consulting`), and a concrete `structure_principle` describing chapter logic and order.",
+            "Supply 2-3 materially different reporting-direction options. Each option needs `id`, `label`, its concrete `audience`, `communication_purpose`, `decision_task`, `architecture_mode` (`solution` or `consulting`), and a concrete `structure_principle` describing chapter logic and order.",
             "The options may share an architecture mode, but their structure principles must differ. Set `recommendation` to one option id.",
             "If the audience cannot be established from the source, describe the most likely audience but make the ambiguity explicit in the option labels; the human confirmation step remains mandatory.",
             "",
@@ -182,10 +188,13 @@ def _audit_issues(payload: dict[str, Any], semantic_gate: dict[str, Any]) -> lis
     for index, option in enumerate(valid_options, 1):
         option_id = _text(option.get("id"))
         label = _text(option.get("label"))
+        audience = _text(option.get("audience"))
+        purpose = _text(option.get("communication_purpose"))
+        task = _text(option.get("decision_task"))
         mode = _text(option.get("architecture_mode"))
         principle = _text(option.get("structure_principle"))
-        if not option_id or not label or not principle or mode not in {"solution", "consulting"}:
-            issues.append({"code": "COMMUNICATION_OPTION_INCOMPLETE", "message": f"option {index} requires id, label, valid architecture_mode, and structure_principle"})
+        if not option_id or not label or not audience or not purpose or not task or not principle or mode not in {"solution", "consulting"}:
+            issues.append({"code": "COMMUNICATION_OPTION_INCOMPLETE", "message": f"option {index} requires id, label, audience, communication_purpose, decision_task, valid architecture_mode, and structure_principle"})
         ids.append(option_id)
         principles.append(re.sub(r"\s+", "", principle).casefold())
     if len(set(ids)) != len(ids) or "" in ids:
@@ -243,6 +252,9 @@ def run_communication_strategy_audit(project: Path) -> tuple[int, dict[str, Any]
                 f"### {option['label']}{recommended}",
                 "",
                 f"- option_id: `{option['id']}`",
+                f"- 沟通对象：{option['audience']}",
+                f"- 沟通目的：{option['communication_purpose']}",
+                f"- 决策任务：{option['decision_task']}",
                 f"- 结构模式：{option['architecture_mode']}",
                 f"- 章节组织：{option['structure_principle']}",
                 "",
@@ -301,9 +313,9 @@ def approve_communication_strategy(project: Path, option_id: str, note: str = ""
         "decision": "approved",
         "option_id": option_id,
         "selected_option": selected,
-        "audience": payload["audience"],
-        "communication_purpose": payload["communication_purpose"],
-        "decision_task": payload["decision_task"],
+        "audience": selected["audience"],
+        "communication_purpose": selected["communication_purpose"],
+        "decision_task": selected["decision_task"],
         "content_focus": payload["content_focus"],
         "communication_strategy_sha256": _sha256_path(artifact),
         "communication_audit_sha256": _sha256_path(audit_path),
