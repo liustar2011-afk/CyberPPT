@@ -59,6 +59,7 @@ directories:
   stage_semantic_understanding: workbench/stages/00-semantic-understanding
   semantic_understanding: workbench/stages/00-semantic-understanding/semantic-understanding.md
   semantic_understanding_audit: workbench/stages/00-semantic-understanding/semantic-understanding-audit.json
+  semantic_argument_model: workbench/stages/00-semantic-understanding/semantic-argument-model.json
   semantic_model_input: workbench/stages/00-semantic-understanding/semantic-model-input.md
   semantic_generation_receipt: workbench/stages/00-semantic-understanding/semantic-generation-receipt.json
   semantic_approval: workbench/approvals/semantic-understanding-approved.json
@@ -169,7 +170,7 @@ CyberPPT project workspace.
 ## Flow
 
 1. Put source materials in `source/`.
-2. Run `python -m cyberppt prepare-semantic-understanding <project>` to compile the complete, source-hashed model task at `semantic-model-input.md`. Execute that fixed task with the chosen model and write only `semantic-understanding.md`.
+2. Run `python -m cyberppt prepare-semantic-understanding <project>` to compile the complete, source-hashed model task at `semantic-model-input.md`. Execute that fixed task with the chosen model and write only `semantic-understanding.md`; the artifact must include the marked `cyberppt.semantic_argument_model.v1` JSON block containing the source thesis, chapter/subchapter nodes, evidence-backed argument relations, MECE rules, statuses, actors, and source gaps.
 3. Record the execution with `record-semantic-generation --executor <surface> --model <model>`, run `semantic-check`, then obtain human confirmation with `approve-semantic-understanding`. Source Truth is blocked until all three receipts are current.
 4. Before Outline authoring, run `prepare-communication-strategy`, complete the 2-3 audience-specific reporting-direction options in `communication-strategy.json`, including source-anchored `audience_concerns`, and run `communication-strategy-check`. Show `communication-strategy-confirmation.md` to the user and record the selected option with `approve-communication-strategy --option <option_id>`. The choice is also written to `workbench/decisions/user-decisions.json`; the Outline is blocked until this human choice is current and consumed by the Director.
 5. Use the approved communication strategy's architecture mode and structure principle. Solution architecture remains the default for research, construction, implementation, and initiation materials; consulting architecture is used only when the approved user choice explicitly selects it.

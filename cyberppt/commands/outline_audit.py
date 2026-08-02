@@ -11,9 +11,11 @@ from cyberppt.argument_flow_contract import (
 )
 from cyberppt.outline_contract import AuditIssue, audit_outline, load_outline, retry_directive
 from cyberppt.semantic_understanding import (
+    SEMANTIC_ARGUMENT_MODEL,
     assert_semantic_understanding_ready,
     semantic_binding_issues,
 )
+from cyberppt.source_argument_model import audit_outline_consumption, load_model
 from cyberppt.communication_strategy import (
     audience_concern_binding_issues,
     assert_communication_strategy_ready,
@@ -255,6 +257,9 @@ def run_outline_audit(
     )
     if source_truth_path is not None and source_truth is None:
         raise FileNotFoundError(f"source truth does not exist: {resolved_source_truth}")
+    argument_model = None
+    if semantic_gate is not None and semantic_gate.get("semantic_argument_model_sha256"):
+        argument_model = load_model(project / SEMANTIC_ARGUMENT_MODEL)
     retry = payload.get("retry") if isinstance(payload.get("retry"), dict) else {}
     attempt = int(retry.get("attempt", 1))
     effective_max = int(retry.get("max_attempts", max_attempts))
@@ -267,6 +272,21 @@ def run_outline_audit(
         else []
     )
     issues = audit_outline(payload, source_truth)
+    argument_model_issues = (
+        audit_outline_consumption(payload, argument_model)
+        if payload.get("semantic_argument_model_mode") == "required" or argument_model is not None
+        else []
+    )
+    if payload.get("semantic_argument_model_mode") == "required" or argument_model is not None:
+        issues.extend(
+            AuditIssue(
+                item["code"],
+                item["message"],
+                (item["node_id"],) if item.get("node_id") else (),
+                "rebuild_from_semantic_argument_model",
+            )
+            for item in argument_model_issues
+        )
     issues.extend(
         AuditIssue(
             item["code"],
@@ -323,7 +343,14 @@ def run_outline_audit(
         "checked_source_truth": (
             str(resolved_source_truth) if source_truth is not None else None
         ),
+        "semantic_argument_model": (
+            str(project / SEMANTIC_ARGUMENT_MODEL) if argument_model is not None else None
+        ),
+        "semantic_argument_model_sha256": (
+            semantic_gate.get("semantic_argument_model_sha256") if semantic_gate else None
+        ),
         "argument_graph": argument_graph_summary(payload, source_truth),
+        "argument_model_issues": argument_model_issues,
         "failed_edges": [
             list(edge)
             for issue in argument_issues

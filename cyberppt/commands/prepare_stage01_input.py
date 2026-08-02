@@ -11,8 +11,10 @@ from cyberppt.communication_strategy import (
 )
 from cyberppt.semantic_understanding import (
     SEMANTIC_ARTIFACT,
+    SEMANTIC_ARGUMENT_MODEL,
     assert_semantic_understanding_ready,
 )
+from cyberppt.source_argument_model import load_model
 from cyberppt.storyline_director import assert_storyline_director_ready
 
 
@@ -39,6 +41,9 @@ def prepare_outline_input(project: Path) -> Path:
     semantic_gate = assert_semantic_understanding_ready(project)
     communication_gate = assert_communication_strategy_ready(project)
     director_gate = assert_storyline_director_ready(project)
+    argument_model = None
+    if semantic_gate is not None and semantic_gate.get("semantic_argument_model_sha256"):
+        argument_model = load_model(project / SEMANTIC_ARGUMENT_MODEL)
     truth = _load(project / "workbench/stages/01-analysis/source-truth.json")
     records = {
         str(item.get("id")): item
@@ -50,8 +55,9 @@ def prepare_outline_input(project: Path) -> Path:
         "",
         "The whole-document semantic understanding below is the authoritative upstream constraint. Do not replace its business subject, source structure, actors, status distinctions, or decision intent with a generic PPT storyline.",
         "The Outline root must copy `semantic_understanding_sha256` and `semantic_source_bundle_sha256` from the current semantic gate.",
+        "The Outline must also copy `semantic_argument_model_sha256` and consume the source argument model below. Do not rebuild the source thesis from evidence records.",
         "",
-        "Before planning pages, preserve the Source Truth `document_semantics`: `document_role` says what artifact is being presented; `subject_of_report` says what the presentation is about; `primary_thesis` is the deck-level conclusion; `decision_boundary` limits its maturity.",
+        "Before planning pages, preserve the Stage 00 source argument model `document_semantics` and the Source Truth copy: `document_role` says what artifact is being presented; `subject_of_report` says what the presentation is about; `primary_thesis` is the deck-level conclusion; `decision_boundary` limits its maturity.",
         "Never replace the subject of report with the document-production activity. For example, a pre-study results briefing about capability construction is not a presentation arguing for another pre-study.",
         "Copy `document_semantics` into the outline and set root `narrative_thesis` exactly to its `primary_thesis`.",
         "",
@@ -65,6 +71,7 @@ def prepare_outline_input(project: Path) -> Path:
         "`visual_intent_type`.",
         "Set root `editorial_control_mode` to `required`.",
         "Set root `storyline_contract_mode` to `required`. Copy `storyline_director_sha256` and the complete `storyline` contract from the current Storyline Director gate exactly.",
+        "Set root `semantic_argument_model_mode` to `required`; copy `semantic_argument_model_sha256` exactly from Stage 00.",
         "",
     ]
     if communication_gate is not None:
@@ -110,12 +117,24 @@ def prepare_outline_input(project: Path) -> Path:
             "",
             f"- semantic_understanding_sha256: {semantic_gate['semantic_understanding_sha256']}",
             f"- semantic_source_bundle_sha256: {semantic_gate['source_bundle_sha256']}",
+            f"- semantic_argument_model_sha256: {semantic_gate.get('semantic_argument_model_sha256', '')}",
             "",
             "## authoritative_semantic_understanding",
             "",
             semantic_text.rstrip(),
             "",
         ]
+        if argument_model is not None:
+            lines += [
+                "## authoritative_source_argument_model",
+                "",
+                "This model was completed in Stage 00. Use it to select and organize pages; do not change its document_semantics, thesis, node roles, statuses, relations, MECE basis, or source gaps.",
+                json.dumps(argument_model, ensure_ascii=False, indent=2),
+                "",
+                "Every content page must declare `primary_argument_node_id`, `source_argument_node_ids`, and include the same node IDs in `core_message_derivation.argument_node_ids`.",
+                "Each source node needs one primary page consumer or an explicit allowed merge; a source evidence record alone is not a substitute for node consumption.",
+                "",
+            ]
     semantics = truth.get("document_semantics")
     lines += ["", "## document_semantics", ""]
     lines.append(json.dumps(semantics, ensure_ascii=False) if isinstance(semantics, dict) else "- missing")
@@ -156,11 +175,17 @@ def prepare_outline_input(project: Path) -> Path:
         "- `transition_to_next`: required concrete unresolved question handed to the next content page or decision destination",
         "- `core_message`: required; state the smallest complete meaning supported by the cited material, without requiring argument, causality, necessity, value judgment, or action",
         "- `core_message_derivation`: required; include `source_refs`, `supporting_statements`, `derivation`, `introduced_relations`, and `introduced_modalities`",
+        "- `primary_argument_node_id`: required; the one source argument node whose thesis the page carries",
+        "- `source_argument_node_ids`: required; semantic nodes selected for the page; do not use Source Truth records as a replacement",
+        "- `source_argument_node_statuses`: required object; copy each selected node's status exactly and preserve conditional/planned wording",
+        "- `source_gap_ids` / `gap_handling`: required when a selected semantic node carries source gaps; state what remains待确认/条件性 and never replace the gap with a fact",
+        "- `core_message_derivation.argument_node_ids`: required and must include `primary_argument_node_id`",
         "- `content_relations`: required; each relation must include a non-empty `subject`, one or more non-empty `objects`, the actual source-supported `relation` (such as composed_of, contains, layered_as, corresponds_to, sequence_before, applies_to, covers, bounded_by, provides_to, or supports), and supporting `source_refs`",
         "- `subtitle`: optional; it may summarize page content and must not manufacture a conclusion",
         "- `onscreen_conclusion`: optional; write it only when it is an equal-strength visible compression of `core_message`",
         "- Definitions, composition, design, lists, process, duties, and arrangements still require a complete core_message, even when no visible conclusion is appropriate",
         "- Never add causality, necessity, exclusivity, certainty, or outcome claims merely to complete a field",
+        "- The semantic argument model is authoritative for thesis, chapter role, argument relation, status, actor, and source gaps. Outline authoring may select/compress/reorder for the approved audience, but may not create a new thesis, merge nodes without a declared source relation, or turn a source gap into a fact.",
         "- `上屏文字` must remain independently readable and preserve only relations actually stated or directly supported by the source",
         "- `new_value_vs_previous`",
         "- `reserved_for_later`",
@@ -268,6 +293,9 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             f"- core_message: {page.get('core_message') or page.get('main_message', '')}",
             f"- onscreen_conclusion: {page.get('onscreen_conclusion') or page.get('onscreen_judgment', '')}",
             f"- core_message_derivation: {json.dumps(page.get('core_message_derivation') or page.get('judgment_derivation') or {}, ensure_ascii=False)}",
+            f"- primary_argument_node_id: {page.get('primary_argument_node_id', '')}",
+            f"- source_argument_node_ids: {json.dumps(page.get('source_argument_node_ids') or [], ensure_ascii=False)}",
+            f"- source_argument_node_statuses: {json.dumps(page.get('source_argument_node_statuses') or {}, ensure_ascii=False)}",
             f"- content_relations: {json.dumps(page.get('content_relations') or [], ensure_ascii=False)}",
             f"- onscreen_conclusion_mode: {page.get('onscreen_conclusion_mode') or page.get('onscreen_judgment_mode', 'auto')}",
             f"- new_value_vs_previous: {page.get('new_value_vs_previous', '')}",

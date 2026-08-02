@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.argument_flow_contract import audit_argument_flow
+from cyberppt.source_argument_model import audit_outline_consumption
 from cyberppt.semantic_fidelity import (
     STRONG_RELATIONS,
     audit_relation_shape,
@@ -523,6 +524,7 @@ def _document_semantic_issues(
 def audit_outline(
     outline: dict[str, object],
     source_truth: dict[str, object] | None = None,
+    semantic_argument_model: dict[str, object] | None = None,
 ) -> list[AuditIssue]:
     issues: list[AuditIssue] = []
     if (
@@ -544,6 +546,16 @@ def audit_outline(
     issues.extend(_weight_issues(outline, pages))
     issues.extend(_document_semantic_issues(outline, source_truth))
     issues.extend(_semantic_derivation_issues(outline, pages, source_truth))
+    if outline.get("semantic_argument_model_mode") == "required" or semantic_argument_model is not None:
+        issues.extend(
+            AuditIssue(
+                item["code"],
+                item["message"],
+                (item["node_id"],) if item.get("node_id") else (),
+                "rebuild_from_semantic_argument_model",
+            )
+            for item in audit_outline_consumption(outline, semantic_argument_model)
+        )
     if outline.get("argument_contract_mode", "legacy") == "strict":
         if source_truth is None:
             issues.append(

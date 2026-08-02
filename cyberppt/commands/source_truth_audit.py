@@ -15,9 +15,11 @@ from cyberppt.source_truth_contract import (
     source_truth_retry_directive,
 )
 from cyberppt.semantic_understanding import (
+    SEMANTIC_ARGUMENT_MODEL,
     assert_semantic_understanding_ready,
     semantic_binding_issues,
 )
+from cyberppt.source_argument_model import load_model
 from cyberppt.stage01_controls import snapshot_reference_gate
 
 
@@ -215,6 +217,9 @@ def run_source_truth_audit(
         raise FileNotFoundError(f"project does not exist: {project}")
     semantic_gate = assert_semantic_understanding_ready(project)
     payload = load_source_truth(input_path.expanduser().resolve())
+    argument_model = None
+    if semantic_gate is not None and semantic_gate.get("semantic_argument_model_sha256"):
+        argument_model = load_model(project / SEMANTIC_ARGUMENT_MODEL)
     retry = payload.get("retry") if isinstance(payload.get("retry"), dict) else {}
     attempt = int(retry.get("attempt", 1))
     effective_max = int(retry.get("max_attempts", max_attempts))
@@ -232,6 +237,31 @@ def run_source_truth_audit(
         )
         for item in semantic_binding_issues(payload, semantic_gate)
     )
+    if argument_model is not None:
+        source_semantics = payload.get("document_semantics")
+        model_thesis = argument_model.get("document_thesis")
+        model_semantics = argument_model.get("document_semantics")
+        if isinstance(source_semantics, dict) and isinstance(model_thesis, dict):
+            if str(source_semantics.get("primary_thesis") or "").strip() != str(model_thesis.get("statement") or "").strip():
+                issues.append(
+                    SourceTruthIssue(
+                        "SOURCE_TRUTH_THESIS_DRIFTED",
+                        "Source Truth 的 primary_thesis 必须复制语义阶段 document_thesis.statement，不能在证据整理阶段重新归纳主论点。",
+                        retry_strategy="rebuild_from_semantic_understanding",
+                    )
+                )
+        if isinstance(source_semantics, dict) and isinstance(model_semantics, dict):
+            for field in ("document_role", "subject_of_report", "primary_thesis", "decision_boundary"):
+                expected = str(model_semantics.get(field) or "").strip()
+                actual = str(source_semantics.get(field) or "").strip()
+                if expected and actual != expected:
+                    issues.append(
+                        SourceTruthIssue(
+                            "SOURCE_TRUTH_DOCUMENT_SEMANTICS_DRIFTED",
+                            f"Source Truth 的 document_semantics.{field} 必须复制语义阶段 document_semantics，不能在证据整理阶段重新归纳。",
+                            retry_strategy="rebuild_from_semantic_understanding",
+                        )
+                    )
     warnings = source_truth_atomicity_warnings(payload)
     issues.extend(
         audit_source_receipts(
@@ -254,6 +284,8 @@ def run_source_truth_audit(
         "reference_gate": snapshot_reference_gate("source_truth", project),
         "source_receipts": receipts,
         "semantic_gate": semantic_gate,
+        "semantic_argument_model": str(project / SEMANTIC_ARGUMENT_MODEL) if argument_model is not None else None,
+        "semantic_argument_model_sha256": semantic_gate.get("semantic_argument_model_sha256") if semantic_gate else None,
     }
     stage = project / "workbench" / "stages" / "01-analysis"
     _write_json(stage / "source-truth.json", payload)

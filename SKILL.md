@@ -17,6 +17,8 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 `source-truth.json` 是 Source Truth 的唯一结构化事实源，`00-source-analysis.md` 只是由其生成的可读视图。第一阶段必须先执行 `source-truth-audit`，按 F（事实）、J（判断）、R（建议）、B（边界）、U（待核）拆分原子证据，精确定位到段落、表格行或单元格，并完成 P0/P1、数字、表格、状态边界和双向追溯审计。未通过时必须按 `section_sweep -> structured_fact_sweep -> traceability_rebuild` 换方向补抽；达到次数上限后保留当前最佳底稿和缺口清单，不得直接放弃。Source Truth 通过或形成有记录的升级项后，才能进入章节与逐页大纲设计。
 
+语义理解必须先于 Source Truth 和提纲完成源材料论点模型。`semantic-understanding.md` 中的 `cyberppt.semantic_argument_model.v1` 块是唯一的源论点解释合同，必须声明 `document_semantics`、全文主论点、源原生一级/二级节点、论点角色、证据、主体、状态、论证关系、MECE 分区和源材料缺口。提纲不得从证据清单重新猜主论点；它只能消费该模型并按受众选择、压缩和排序。建设内容、核心能力、架构、行业优势、合作机制和下一步建议若处于不同语义层，必须保留节点并用显式关系连接，不能因证据重叠而合并。缺少完成事实、责任主体、实施条件、验收指标、真实需求或商业条款时，必须登记为 `source_gap` 并保留待确认/条件性表达，禁止补写成事实、承诺或已建成能力。模型出现问号/替换字符等编码损坏时，语义门禁必须阻断，不能把损坏文本传给下游。严格项目的 `outline-audit` 还必须反向检查每个源论点节点有唯一 `primary_consumer` 或显式允许合并，并验证页面核心结论能追溯到节点而不只是追溯到 `S###` 证据。
+
 形成提纲前必须通过沟通策略确认门。语义理解批准后运行 `prepare-communication-strategy`，基于全文语义识别沟通对象、沟通目的和受众决策任务，并形成 2-3 个章节组织方式实质不同的汇报方向；运行 `communication-strategy-check` 后，必须把 `communication-strategy-confirmation.md` 展示给用户。只有用户以 `approve-communication-strategy --option <option_id>` 明确选择方向，才可运行 `prepare-outline-input` 或 `outline-audit`。提纲根节点必须逐项绑定已批准的对象、目的、方向、架构模式、结构原则以及候选与审批哈希；不得仅保留一个无执行作用的 `audience` 字段，也不得由生成代理静默替用户选择。
 
 第一阶段必须生成结构化逐页大纲并执行 `outline-audit`。若方案类材料未经明确授权采用 `consulting`，审计必须以 `SOLUTION_ARCHITECTURE_REQUIRED` 失败。封面、目录、章节页、内容页和封底必须位于同一连续页面序列，不得把模板页抽离后另列；章节页只写“第X章：XXX”，不承载论点、模块或方法内容。内容页的短 `title` 与 `main_message` 必须分开，不能把整句结论塞进页标题。

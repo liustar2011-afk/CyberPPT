@@ -11,6 +11,13 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree
 
+from cyberppt.source_argument_model import (
+    MODEL_JSON as SEMANTIC_ARGUMENT_MODEL_NAME,
+    SCHEMA as SEMANTIC_ARGUMENT_MODEL_SCHEMA,
+    extract_model,
+    validate_model,
+)
+
 
 SEMANTIC_STAGE = Path("workbench/stages/00-semantic-understanding")
 SEMANTIC_ARTIFACT = SEMANTIC_STAGE / "semantic-understanding.md"
@@ -18,9 +25,11 @@ SEMANTIC_AUDIT_JSON = SEMANTIC_STAGE / "semantic-understanding-audit.json"
 SEMANTIC_AUDIT_MD = SEMANTIC_STAGE / "semantic-understanding-audit.md"
 SEMANTIC_MODEL_INPUT = SEMANTIC_STAGE / "semantic-model-input.md"
 SEMANTIC_MODEL_INPUT_JSON = SEMANTIC_STAGE / "semantic-model-input.json"
+SEMANTIC_ARGUMENT_MODEL = SEMANTIC_STAGE / SEMANTIC_ARGUMENT_MODEL_NAME
 SEMANTIC_GENERATION_RECEIPT = SEMANTIC_STAGE / "semantic-generation-receipt.json"
 SEMANTIC_APPROVAL = Path("workbench/approvals/semantic-understanding-approved.json")
 SEMANTIC_CONTRACT_VERSION = "cyberppt.semantic_authoring.v1"
+SEMANTIC_ARGUMENT_MODEL_CONTRACT_VERSION = SEMANTIC_ARGUMENT_MODEL_SCHEMA
 
 _WORD_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 
@@ -71,6 +80,49 @@ def semantic_gate_required(project: Path) -> bool:
             match.group("body"),
         )
     )
+
+
+def semantic_argument_model_required(project: Path) -> bool:
+    """Require the structured model for formal/structured source packages.
+
+    A small text-only fixture from the legacy API is still accepted so older
+    callers can validate the prose contract.  Office/document projects and
+    projects that explicitly opt in must pass the argument-model gate.
+    """
+
+    project = project.expanduser().resolve()
+    manifest = project / "manifest.yml"
+    if manifest.is_file() and re.search(
+        r"(?m)^\s+semantic_argument_model:\s*required\s*$",
+        manifest.read_text(encoding="utf-8-sig"),
+    ):
+        return True
+    source_dir = project / "source"
+    return any(
+        path.is_file() and path.suffix.casefold() in {".docx", ".doc", ".pdf", ".pptx", ".xlsx", ".xls"}
+        for path in source_dir.rglob("*")
+    ) if source_dir.is_dir() else False
+
+
+def _source_headings(project: Path, receipts: list[dict[str, Any]]) -> list[str]:
+    """Read source-native Heading1 labels without turning them into pages."""
+
+    headings: list[str] = []
+    for receipt in receipts:
+        path = project / str(receipt["path"])
+        try:
+            extracted = _source_extract(path)
+        except (OSError, ValueError, zipfile.BadZipFile):
+            continue
+        headings.extend(
+            match.group("text").strip()
+            for match in re.finditer(
+                r"(?m)^\[P\d{4}\]\[style=Heading1\]\s*(?P<text>.+?)\s*$",
+                extracted,
+            )
+            if match.group("text").strip()
+        )
+    return list(dict.fromkeys(headings))
 
 
 def collect_source_receipts(project: Path) -> list[dict[str, Any]]:
@@ -150,6 +202,45 @@ def semantic_template() -> str:
 ## 待核事项与禁止推断
 
 > 待生成。列出缺少来源、授权、范围、预算、目标值或责任确认的事项，以及后续不得自行补出的结论。
+
+## 源材料论点模型（机器可读）
+
+> 这一段必须在语义理解阶段完成。它不是提纲，也不是页面清单；它把源材料的主论点、章节论点、论证关系、证据、主体、状态、缺口和 MECE 分区固化为后续阶段唯一可消费的语义合同。
+
+<!-- semantic-argument-model -->
+```json
+{
+  "schema": "cyberppt.semantic_argument_model.v1",
+  "version": 1,
+  "document_semantics": {
+    "document_role": "",
+    "subject_of_report": "",
+    "primary_thesis": "",
+    "decision_boundary": "",
+    "business_objects": [],
+    "scope": "",
+    "decision_intent": ""
+  },
+  "document_thesis": {
+    "statement": "",
+    "argument_role": "thesis",
+    "status": "mixed",
+    "evidence_refs": [],
+    "actor_refs": []
+  },
+  "section_nodes": [],
+  "subsection_nodes": [],
+  "argument_relations": [],
+  "mece_rules": {
+    "partition_basis": "",
+    "exhaustive_scope": "",
+    "overlap_policy": "",
+    "groups": [],
+    "review_notes": []
+  },
+  "source_gaps": []
+}
+```
 """
 
 
@@ -158,7 +249,7 @@ def semantic_authoring_contract() -> str:
 
 Read every source extract in this package before writing. Do not use prior projects, archived Stage 01 artifacts, existing outlines, page scripts, keyword summaries, or generic consulting storylines as semantic authority.
 
-Write the output to the declared `semantic-understanding.md` artifact and preserve all eleven required section headings. Determine the full business subject, concrete objects, actors, source-native chapter order, temporal/status distinctions, decision intent, concept boundaries, and cross-section evidence chains before considering slide structure.
+Write the output to the declared `semantic-understanding.md` artifact and preserve all eleven required section headings plus the marked machine-readable `源材料论点模型（机器可读）` block. Determine the full business subject, concrete objects, actors, source-native chapter order, temporal/status distinctions, decision intent, concept boundaries, and cross-section evidence chains before considering slide structure.
 
 Hard requirements:
 - Preserve the source document's authoritative first-level structure and argument order unless the source itself supports a different relation.
@@ -168,8 +259,14 @@ Hard requirements:
 - Do not invent causality, necessity, exclusivity, commitments, outcomes, prices, responsibilities, or maturity.
 - Cite paragraph/table identifiers from the source extract for the most important semantic conclusions.
 - Record unresolved items and forbidden inferences explicitly.
+- In the marked JSON block, declare one `document_thesis`, every source-native first-level chapter as a `section_node`, every important second-level chapter (including separately named capability/advantage items) as a `subsection_node`, and the evidence-backed `argument_relations` between them. Do not collapse construction content, realized/target capabilities, architecture, operating advantages, cooperation, and recommendations into one undifferentiated list.
+- Also complete `document_semantics` with the document role, subject of report, exact primary thesis, decision/maturity boundary, concrete business objects, scope, and decision intent. These fields are produced here and must be copied downstream; Source Truth and Outline must not re-infer them from evidence records.
+- Every node must declare its source heading, thesis, argument role, actor references, status, evidence references, and `primary_consumer`. `primary_consumer` identifies the later chapter/page mission that should carry the node; it is not permission to create a page automatically.
+- Write the marked JSON block as real UTF-8 text. Never replace source language with `?`, the Unicode replacement character, mojibake, or an empty evidence/actor field; the Stage 00 audit will reject lossy text before any downstream artifact can consume it.
+- Declare `mece_rules` with the partition basis, exhaustive scope, overlap policy, and one or more `groups` that enumerate each checked sibling partition (`parent_id`, `node_ids`, `partition_basis`, `exhaustive_scope`, `overlap_policy`). If two source sections use similar words for different dimensions, keep both nodes and state the dimension relation instead of deleting one.
+- Declare `source_gaps` for missing completion facts, implementation conditions, responsible parties, acceptance metrics, demand validation, rights/authorization, or commercial terms. State how the gap must be expressed later; never turn a gap into a fact or a commitment.
 
-This task ends after producing the semantic-understanding artifact. Do not create Source Truth, an Outline, page scripts, images, or PPTX.
+This task ends after producing the semantic-understanding artifact and its embedded argument model. Do not create Source Truth, an Outline, page scripts, images, or PPTX.
 """
 
 
@@ -270,12 +367,15 @@ def prepare_semantic_understanding(project: Path) -> dict[str, Any]:
     payload = {
         "schema": "cyberppt.semantic_understanding_input.v1",
         "contract_version": SEMANTIC_CONTRACT_VERSION,
+        "semantic_argument_model_schema": SEMANTIC_ARGUMENT_MODEL_CONTRACT_VERSION,
+        "semantic_argument_model_required": semantic_argument_model_required(project),
         "project": str(project),
         "artifact": str(artifact),
         "model_input": str(model_input),
         "model_input_sha256": model_input_sha256,
         "source_bundle_sha256": source_bundle_sha256(receipts),
         "source_receipts": receipts,
+        "source_headings": _source_headings(project, receipts),
         "required_sections": [aliases[0] for aliases in REQUIRED_SECTIONS.values()],
         "prepared_at": _utc_now(),
     }
@@ -288,11 +388,14 @@ def prepare_semantic_understanding(project: Path) -> dict[str, Any]:
             {
                 "schema": "cyberppt.semantic_model_input.v1",
                 "contract_version": SEMANTIC_CONTRACT_VERSION,
+                "semantic_argument_model_schema": SEMANTIC_ARGUMENT_MODEL_CONTRACT_VERSION,
+                "semantic_argument_model_required": payload["semantic_argument_model_required"],
                 "model_input": str(model_input),
                 "model_input_sha256": model_input_sha256,
                 "output": str(artifact),
                 "source_bundle_sha256": payload["source_bundle_sha256"],
                 "source_receipts": receipts,
+                "source_headings": payload["source_headings"],
                 "required_sections": payload["required_sections"],
             },
             ensure_ascii=False,
@@ -318,6 +421,13 @@ def record_semantic_generation(
     artifact = project / SEMANTIC_ARTIFACT
     if not artifact.is_file():
         raise FileNotFoundError(f"semantic artifact does not exist: {artifact}")
+    structured_model = extract_model(artifact.read_text(encoding="utf-8-sig"))
+    model_path = project / SEMANTIC_ARGUMENT_MODEL
+    if structured_model is not None:
+        model_path.write_text(
+            json.dumps(structured_model, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
     receipt = {
         "schema": "cyberppt.semantic_generation_receipt.v1",
         "contract_version": SEMANTIC_CONTRACT_VERSION,
@@ -327,6 +437,9 @@ def record_semantic_generation(
         "model_input_sha256": prepared["model_input_sha256"],
         "semantic_understanding": str(artifact),
         "semantic_understanding_sha256": _sha256_path(artifact),
+        "semantic_argument_model_sha256": (
+            _sha256_path(model_path) if model_path.is_file() and structured_model is not None else None
+        ),
         "source_bundle_sha256": prepared["source_bundle_sha256"],
         "generated_at": _utc_now(),
         "note": note.strip(),
@@ -403,6 +516,35 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
                 "section": aliases[0],
             })
 
+    argument_model = extract_model(text)
+    argument_model_path = project / SEMANTIC_ARGUMENT_MODEL
+    required_model = bool(prepared.get("semantic_argument_model_required"))
+    argument_model_issues = validate_model(
+        argument_model,
+        required_headings=prepared.get("source_headings") or [],
+        require_document_context=required_model,
+    )
+    if argument_model is None and not required_model:
+        # Legacy text-only callers may still use the prose-only semantic
+        # contract.  Do not pretend that it supplies a consumable argument
+        # model; downstream strict workflows will require the structured form.
+        argument_model_issues = []
+    for item in argument_model_issues:
+        issues.append({
+            "code": item["code"],
+            "message": item["message"],
+            "section": "源材料论点模型（机器可读）",
+            **({"node_id": item["node_id"]} if item.get("node_id") else {}),
+        })
+    if argument_model is not None:
+        argument_model_path.write_text(
+            json.dumps(argument_model, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+    elif argument_model_path.exists() and required_model:
+        # A stale compiled model must not survive a missing source block.
+        argument_model_path.write_text("{}\n", encoding="utf-8")
+
     subject = re.sub(r"\s+", "", resolved.get("business_subject", ""))
     if subject and subject.strip("，。；：、,.!?！？") in ABSTRACT_SUBJECTS:
         issues.append({
@@ -441,13 +583,25 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
             if not isinstance(loaded_receipt, dict):
                 raise ValueError("semantic generation receipt root must be an object")
             generation_receipt = loaded_receipt
+            model_hash = (
+                _sha256_path(argument_model_path)
+                if argument_model_path.is_file() and argument_model is not None
+                else None
+            )
             receipt_expectations = (
                 ("contract_version", SEMANTIC_CONTRACT_VERSION, "SEMANTIC_CONTRACT_VERSION_STALE"),
                 ("model_input_sha256", prepared["model_input_sha256"], "SEMANTIC_MODEL_INPUT_STALE"),
                 ("semantic_understanding_sha256", _sha256_path(artifact), "SEMANTIC_MODEL_OUTPUT_STALE"),
+                (
+                    "semantic_argument_model_sha256",
+                    model_hash,
+                    "SEMANTIC_ARGUMENT_MODEL_STALE",
+                ),
                 ("source_bundle_sha256", prepared["source_bundle_sha256"], "SEMANTIC_MODEL_SOURCE_STALE"),
             )
             for field, expected, code in receipt_expectations:
+                if field == "semantic_argument_model_sha256" and expected is None and not required_model:
+                    continue
                 if str(generation_receipt.get(field) or "").casefold() != str(expected).casefold():
                     issues.append({
                         "code": code,
@@ -471,6 +625,18 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
         "status": "passed" if not issues else "rewrite_required",
         "artifact": str(artifact),
         "semantic_understanding_sha256": _sha256_path(artifact),
+        "semantic_argument_model_schema": SEMANTIC_ARGUMENT_MODEL_CONTRACT_VERSION,
+        "semantic_argument_model_required": required_model,
+        "semantic_argument_model": str(argument_model_path) if argument_model is not None else None,
+        "semantic_argument_model_sha256": (
+            _sha256_path(argument_model_path) if argument_model_path.is_file() and argument_model is not None else None
+        ),
+        "argument_model_summary": {
+            "section_nodes": len(argument_model.get("section_nodes", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("section_nodes"), list) else 0,
+            "subsection_nodes": len(argument_model.get("subsection_nodes", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("subsection_nodes"), list) else 0,
+            "argument_relations": len(argument_model.get("argument_relations", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("argument_relations"), list) else 0,
+            "source_gaps": len(argument_model.get("source_gaps", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("source_gaps"), list) else 0,
+        },
         "source_bundle_sha256": source_bundle_sha256(receipts),
         "source_receipts": receipts,
         "model_input": prepared["model_input"],
@@ -499,6 +665,8 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
         f"- 源材料包 SHA-256：`{report['source_bundle_sha256']}`",
         f"- 模型输入 SHA-256：`{report['model_input_sha256']}`",
         f"- 语义理解 SHA-256：`{report['semantic_understanding_sha256']}`",
+        f"- 源材料论点模型：{'已绑定' if report['semantic_argument_model_sha256'] else '缺失'}",
+        f"- 一级论点节点：{report['argument_model_summary']['section_nodes']}；二级论点节点：{report['argument_model_summary']['subsection_nodes']}；论证关系：{report['argument_model_summary']['argument_relations']}",
         f"- 模型执行回执：{'已绑定' if report['generation_receipt'] else '缺失'}",
         "",
         "## 问题",
@@ -535,6 +703,7 @@ def approve_semantic_understanding(project: Path, note: str = "") -> Path:
         "schema": "cyberppt.semantic_understanding_approval.v1",
         "decision": "approved",
         "semantic_understanding_sha256": audit["semantic_understanding_sha256"],
+        "semantic_argument_model_sha256": audit.get("semantic_argument_model_sha256"),
         "source_bundle_sha256": audit["source_bundle_sha256"],
         "model_input_sha256": audit["model_input_sha256"],
         "generation_receipt_sha256": _sha256_path(generation_receipt),
@@ -570,6 +739,13 @@ def assert_semantic_understanding_ready(project: Path) -> dict[str, Any] | None:
         )
     if report.get("semantic_understanding_sha256") != _sha256_path(artifact):
         raise ValueError("semantic-understanding gate is stale; rerun semantic-check")
+    model_path = project / SEMANTIC_ARGUMENT_MODEL
+    expected_model_hash = str(report.get("semantic_argument_model_sha256") or "")
+    if expected_model_hash:
+        if not model_path.is_file() or _sha256_path(model_path) != expected_model_hash:
+            raise ValueError("semantic argument model gate is stale; rerun semantic-check")
+    elif semantic_argument_model_required(project):
+        raise ValueError("required semantic argument model is missing; rerun semantic-check")
     receipts = collect_source_receipts(project)
     if report.get("source_bundle_sha256") != source_bundle_sha256(receipts):
         raise ValueError("source materials changed after semantic review; rerun semantic-check")
@@ -584,6 +760,7 @@ def assert_semantic_understanding_ready(project: Path) -> dict[str, Any] | None:
         raise ValueError("semantic-understanding human approval is invalid")
     approval_expectations = (
         ("semantic_understanding_sha256", report.get("semantic_understanding_sha256")),
+        ("semantic_argument_model_sha256", report.get("semantic_argument_model_sha256")),
         ("source_bundle_sha256", report.get("source_bundle_sha256")),
         ("model_input_sha256", report.get("model_input_sha256")),
         ("generation_receipt_sha256", report.get("generation_receipt_sha256")),
@@ -608,6 +785,7 @@ def semantic_binding_issues(
         return []
     issues: list[dict[str, str]] = []
     expected_semantic = str(gate.get("semantic_understanding_sha256") or "")
+    expected_argument_model = str(gate.get("semantic_argument_model_sha256") or "")
     expected_source = str(gate.get("source_bundle_sha256") or "")
     if str(payload.get("semantic_understanding_sha256") or "").lower() != expected_semantic.lower():
         issues.append({
@@ -619,6 +797,12 @@ def semantic_binding_issues(
         issues.append({
             "code": "SEMANTIC_SOURCE_BUNDLE_NOT_BOUND",
             "message": "Artifact must bind to the source bundle reviewed by the semantic gate.",
+            "retry_strategy": "rebuild_from_semantic_understanding",
+        })
+    if expected_argument_model and str(payload.get("semantic_argument_model_sha256") or "").lower() != expected_argument_model.lower():
+        issues.append({
+            "code": "SEMANTIC_ARGUMENT_MODEL_NOT_BOUND",
+            "message": "Artifact must bind to the current semantic-stage source argument model SHA-256.",
             "retry_strategy": "rebuild_from_semantic_understanding",
         })
     return issues

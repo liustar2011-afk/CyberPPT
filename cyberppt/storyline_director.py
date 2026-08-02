@@ -15,8 +15,10 @@ from cyberppt.communication_strategy import (
 )
 from cyberppt.semantic_understanding import (
     SEMANTIC_ARTIFACT,
+    SEMANTIC_ARGUMENT_MODEL,
     assert_semantic_understanding_ready,
 )
+from cyberppt.source_argument_model import load_model
 from cyberppt.user_decisions import decision_consumption_issues, load_user_decisions
 
 
@@ -74,6 +76,7 @@ def _outline_contract(payload: dict[str, Any]) -> dict[str, Any]:
         "pacing": payload.get("pacing"),
         "semantic_understanding_sha256": payload.get("semantic_understanding_sha256"),
         "semantic_source_bundle_sha256": payload.get("semantic_source_bundle_sha256"),
+        "semantic_argument_model_sha256": payload.get("semantic_argument_model_sha256"),
         "audience_concerns": payload.get("audience_concerns"),
         "consumed_user_decisions": payload.get("consumed_user_decisions"),
     }
@@ -95,6 +98,9 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
     if truth_audit.get("status") != "passed":
         raise ValueError("storyline director requires source-truth-audit status passed")
     truth = _load(truth_path)
+    argument_model = None
+    if semantic.get("semantic_argument_model_sha256"):
+        argument_model = load_model(project / SEMANTIC_ARGUMENT_MODEL)
     stage = project / DIRECTOR_STAGE
     stage.mkdir(parents=True, exist_ok=True)
     input_path = project / DIRECTOR_INPUT
@@ -128,7 +134,7 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
         "",
         "Write `storyline-director.json` with schema `cyberppt.storyline_director.v1` and copy all binding hashes exactly.",
         "Required fields: theme, decision_destination, story_arc (3-6 steps), chapter_missions (2-6 entries), selection_rules (3-8), exclusion_rules (3-8), page_rules (4-10), pacing, audience_concerns, and consumed_user_decisions.",
-        "Each chapter mission requires chapter_id, title, question, contribution, transition_to_next, max_content_pages, source_mission, source_question, source_section_refs, source_claim_ids, audience_concern_ids, and editorial_operation (select, compress, merge, split, or reframe). A reframe must not change the source subject or status.",
+        "Each chapter mission requires chapter_id, title, question, contribution, transition_to_next, max_content_pages, source_mission, source_question, source_section_refs, source_claim_ids, source_argument_node_ids, audience_concern_ids, and editorial_operation (select, compress, merge, split, or reframe). A reframe must not change the source subject or status.",
         "Pacing requires target_total_pages, min_total_pages, and max_total_pages.",
         "",
         "## Binding",
@@ -137,6 +143,7 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
         f"- communication_strategy_approval_sha256: {communication['communication_strategy_approval_sha256']}",
         f"- semantic_understanding_sha256: {semantic['semantic_understanding_sha256']}",
         f"- semantic_source_bundle_sha256: {semantic['source_bundle_sha256']}",
+        f"- semantic_argument_model_sha256: {semantic.get('semantic_argument_model_sha256', '')}",
         "",
         "## Approved communication strategy",
         "",
@@ -160,6 +167,10 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
         "",
         (project / SEMANTIC_ARTIFACT).read_text(encoding="utf-8-sig").rstrip(),
         "",
+        "## Authoritative source argument model",
+        "",
+        json.dumps(argument_model, ensure_ascii=False, indent=2) if argument_model is not None else "- legacy semantic artifact has no structured model",
+        "",
         "## P0/P1 evidence available for directed selection",
         "",
         json.dumps(weighted_records, ensure_ascii=False, indent=2),
@@ -178,6 +189,7 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
             "communication_strategy_approval_sha256": communication["communication_strategy_approval_sha256"],
             "semantic_understanding_sha256": semantic["semantic_understanding_sha256"],
             "semantic_source_bundle_sha256": semantic["source_bundle_sha256"],
+            "semantic_argument_model_sha256": semantic.get("semantic_argument_model_sha256"),
             "theme": "",
             "decision_destination": "",
             "story_arc": [],
@@ -204,6 +216,7 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
         "communication_strategy_approval_sha256": communication["communication_strategy_approval_sha256"],
         "semantic_understanding_sha256": semantic["semantic_understanding_sha256"],
         "semantic_source_bundle_sha256": semantic["source_bundle_sha256"],
+        "semantic_argument_model_sha256": semantic.get("semantic_argument_model_sha256"),
         "consumed_user_decisions": [
             {
                 "decision_id": communication.get("user_decision_id"),
@@ -220,6 +233,8 @@ def _audit_issues(
     approval_hash: str,
     semantic_hash: str = "",
     semantic_source_hash: str = "",
+    semantic_argument_model_hash: str = "",
+    semantic_argument_node_ids: set[str] | None = None,
     audience_concerns: list[dict[str, Any]] | None = None,
     source_sections: set[str] | None = None,
 ) -> list[dict[str, str]]:
@@ -232,6 +247,7 @@ def _audit_issues(
     for field, expected in (
         ("semantic_understanding_sha256", semantic_hash),
         ("semantic_source_bundle_sha256", semantic_source_hash),
+        ("semantic_argument_model_sha256", semantic_argument_model_hash),
     ):
         if expected and _text(payload.get(field)).casefold() != expected.casefold():
             issues.append({"code": "DIRECTOR_SEMANTIC_BINDING_STALE", "message": f"{field} must match the approved semantic understanding gate"})
@@ -284,6 +300,12 @@ def _audit_issues(
                 claim_ids = mission.get("source_claim_ids")
                 if not isinstance(claim_ids, list) or not claim_ids or any(not _text(item) for item in claim_ids):
                     issues.append({"code": "DIRECTOR_SOURCE_CLAIMS_MISSING", "message": "each chapter mission must identify the semantic/source claims it organizes"})
+                if semantic_argument_model_hash:
+                    node_ids = mission.get("source_argument_node_ids")
+                    if not isinstance(node_ids, list) or not node_ids or any(not _text(item) for item in node_ids):
+                        issues.append({"code": "DIRECTOR_ARGUMENT_NODES_MISSING", "message": "each chapter mission must identify the Stage 00 source argument nodes it organizes"})
+                    elif semantic_argument_node_ids is not None and not set(map(_text, node_ids)).issubset(semantic_argument_node_ids):
+                        issues.append({"code": "DIRECTOR_ARGUMENT_NODE_UNKNOWN", "message": "chapter mission references a source argument node outside the approved semantic model"})
                 concern_ids = mission.get("audience_concern_ids")
                 if not isinstance(concern_ids, list) or not concern_ids:
                     issues.append({"code": "DIRECTOR_AUDIENCE_CONCERNS_MISSING", "message": "each chapter mission must state which audience concerns it answers"})
@@ -327,6 +349,17 @@ def run_storyline_director_audit(project: Path) -> tuple[int, dict[str, Any]]:
         communication["communication_strategy_approval_sha256"],
         semantic_hash=semantic["semantic_understanding_sha256"] if semantic else "",
         semantic_source_hash=semantic["source_bundle_sha256"] if semantic else "",
+        semantic_argument_model_hash=semantic.get("semantic_argument_model_sha256", "") if semantic else "",
+        semantic_argument_node_ids=(
+            {
+                _text(item.get("id"))
+                for field in ("section_nodes", "subsection_nodes")
+                for item in (load_model(project / SEMANTIC_ARGUMENT_MODEL).get(field) or [])
+                if isinstance(item, dict) and _text(item.get("id"))
+            }
+            if semantic and semantic.get("semantic_argument_model_sha256")
+            else None
+        ),
         audience_concerns=_audience_concerns(communication.get("audience_concerns")),
         source_sections=(
             {
@@ -354,6 +387,7 @@ def run_storyline_director_audit(project: Path) -> tuple[int, dict[str, Any]]:
         "communication_strategy_approval_sha256": communication["communication_strategy_approval_sha256"],
         "semantic_understanding_sha256": semantic["semantic_understanding_sha256"] if semantic else None,
         "semantic_source_bundle_sha256": semantic["source_bundle_sha256"] if semantic else None,
+        "semantic_argument_model_sha256": semantic.get("semantic_argument_model_sha256") if semantic else None,
         "issues": issues,
         "audited_at": _utc_now(),
     }
@@ -381,6 +415,7 @@ def assert_storyline_director_ready(project: Path) -> dict[str, Any] | None:
         and audit.get("communication_strategy_approval_sha256") == communication["communication_strategy_approval_sha256"]
         and audit.get("semantic_understanding_sha256") == (semantic["semantic_understanding_sha256"] if semantic else None)
         and audit.get("semantic_source_bundle_sha256") == (semantic["source_bundle_sha256"] if semantic else None)
+        and audit.get("semantic_argument_model_sha256") == (semantic.get("semantic_argument_model_sha256") if semantic else None)
     )
     if not expected:
         raise ValueError("storyline-director gate is stale or not passed; rerun storyline-director-check")

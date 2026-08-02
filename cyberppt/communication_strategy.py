@@ -56,6 +56,7 @@ def _candidate_template(semantic_gate: dict[str, Any]) -> dict[str, Any]:
         "schema": "cyberppt.communication_strategy.v1",
         "semantic_understanding_sha256": semantic_gate["semantic_understanding_sha256"],
         "semantic_source_bundle_sha256": semantic_gate["source_bundle_sha256"],
+        "semantic_argument_model_sha256": semantic_gate.get("semantic_argument_model_sha256"),
         "audience": "",
         "communication_purpose": "",
         "decision_task": "",
@@ -100,7 +101,7 @@ def _render_authoring_input(
             "Do not create pages or an outline here. Do not replace source meaning with a generic consulting storyline.",
             "",
             "Write `communication-strategy.json` with schema `cyberppt.communication_strategy.v1`.",
-            "Copy both semantic hashes below exactly. Supply a concrete audience, communication purpose, decision task, and 1-5 content-focus items.",
+            "Copy all current semantic hashes below exactly. Supply a concrete audience, communication purpose, decision task, and 1-5 content-focus items.",
             "Supply 2-3 materially different reporting-direction options. Each option needs `id`, `label`, its concrete `audience`, `communication_purpose`, `decision_task`, `architecture_mode` (`solution` or `consulting`), a concrete `structure_principle` describing chapter logic and order, and 2-8 source-anchored `audience_concerns` describing the questions this audience must have answered.",
             "The options may share an architecture mode, but their structure principles must differ. Set `recommendation` to one option id.",
             "If the audience cannot be established from the source, describe the most likely audience but make the ambiguity explicit in the option labels; the human confirmation step remains mandatory.",
@@ -109,6 +110,7 @@ def _render_authoring_input(
             "",
             f"- semantic_understanding_sha256: {semantic_gate['semantic_understanding_sha256']}",
             f"- semantic_source_bundle_sha256: {semantic_gate['source_bundle_sha256']}",
+            f"- semantic_argument_model_sha256: {semantic_gate.get('semantic_argument_model_sha256', '')}",
             "",
             "## Approved semantic understanding",
             "",
@@ -143,6 +145,7 @@ def prepare_communication_strategy(project: Path) -> dict[str, Any]:
         "output": str(artifact),
         "semantic_understanding_sha256": semantic_gate["semantic_understanding_sha256"],
         "semantic_source_bundle_sha256": semantic_gate["source_bundle_sha256"],
+        "semantic_argument_model_sha256": semantic_gate.get("semantic_argument_model_sha256"),
         "prepared_at": _utc_now(),
     }
     (project / COMMUNICATION_INPUT_JSON).write_text(
@@ -210,7 +213,10 @@ def _audit_issues(payload: dict[str, Any], semantic_gate: dict[str, Any]) -> lis
     for field, expected in (
         ("semantic_understanding_sha256", semantic_gate["semantic_understanding_sha256"]),
         ("semantic_source_bundle_sha256", semantic_gate["source_bundle_sha256"]),
+        ("semantic_argument_model_sha256", semantic_gate.get("semantic_argument_model_sha256")),
     ):
+        if expected is None:
+            continue
         if _text(payload.get(field)).casefold() != _text(expected).casefold():
             issues.append({"code": "COMMUNICATION_SEMANTIC_BINDING_STALE", "message": f"{field} must match the approved semantic gate"})
     options = payload.get("options")
@@ -266,6 +272,7 @@ def run_communication_strategy_audit(project: Path) -> tuple[int, dict[str, Any]
         "communication_strategy_sha256": _sha256_path(artifact),
         "semantic_understanding_sha256": semantic_gate["semantic_understanding_sha256"],
         "semantic_source_bundle_sha256": semantic_gate["source_bundle_sha256"],
+        "semantic_argument_model_sha256": semantic_gate.get("semantic_argument_model_sha256"),
         "issues": issues,
         "audited_at": _utc_now(),
     }
@@ -381,6 +388,7 @@ def approve_communication_strategy(project: Path, option_id: str, note: str = ""
         "communication_audit_sha256": _sha256_path(audit_path),
         "semantic_understanding_sha256": semantic_gate["semantic_understanding_sha256"],
         "semantic_source_bundle_sha256": semantic_gate["source_bundle_sha256"],
+        "semantic_argument_model_sha256": semantic_gate.get("semantic_argument_model_sha256"),
         "approved_at": _utc_now(),
         "note": note.strip(),
     }
@@ -422,6 +430,7 @@ def assert_communication_strategy_ready(project: Path) -> dict[str, Any] | None:
         ("communication_audit_sha256", _sha256_path(audit_path)),
         ("semantic_understanding_sha256", semantic_gate["semantic_understanding_sha256"] if semantic_gate else ""),
         ("semantic_source_bundle_sha256", semantic_gate["source_bundle_sha256"] if semantic_gate else ""),
+        ("semantic_argument_model_sha256", semantic_gate.get("semantic_argument_model_sha256") if semantic_gate else ""),
     )
     if approval.get("decision") != "approved" or any(
         _text(approval.get(field)).casefold() != _text(expected).casefold()

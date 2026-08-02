@@ -110,6 +110,8 @@ python3 -m cyberppt final-script-pages projects/example --script workbench/scrip
 
 `source-truth.json` 是第一阶段证据底稿的结构化事实源。`source-truth-audit` 在大纲设计之前检查原子证据、精确定位、P0/P1/P2语义梯度、数字、表格、状态边界和双向追溯，生成 `00-source-analysis.md`；长材料若只有P0/P1、没有足够P2细节层，会以 `SOURCE_PRIORITY_HIERARCHY_FLAT` 阻断。完整保留不等于等权上屏：Outline仅把P0/P1组织为少量主辅模块，P2进入 `detail_refs` 供完整文字稿、备注和追溯使用。
 
+在此之前，语义理解阶段必须产出 `semantic-argument-model.json`（嵌入 `semantic-understanding.md` 的 `cyberppt.semantic_argument_model.v1`）。它固化 `document_semantics`、源材料主论点、章节论点、论证关系、主体、状态、MECE 分区和 `source_gaps`；提纲只消费它，不得从 `S###` 证据清单重新猜论点。模型出现问号编码损坏、空证据或文档语义漂移时，Stage 00 直接阻断。严格提纲页必须声明 `primary_argument_node_id`、`source_argument_node_ids` 和 `core_message_derivation.argument_node_ids`，`outline-audit` 会检查节点的主消费者、无依据合并和论点反向追溯。
+
 `communication-strategy` 是语义理解与提纲之间的真实人工确认门。候选文件必须明确沟通对象、沟通目的、决策任务和 2-3 个结构原则不同的汇报方向；检查通过后生成中文确认稿，用户选择一个 `option_id` 才会写入哈希绑定的审批记录。后续提纲必须复制已批准的对象、目的、方向、架构模式和结构原则，任何一项漂移都会被 `outline-audit` 阻断。
 
 `outline-audit` 返回 `0` 表示通过，`4` 表示生成代理必须读取 `retry_directive` 后换方向重写，`5` 表示默认三次尝试已耗尽、需要用户在升级报告的 2-3 个选项中决策，输入错误返回 `2`。审计合同、最新报告、逐次尝试和升级报告写入 `workbench/stages/01-analysis/`；CLI 不代替生成代理重写大纲。

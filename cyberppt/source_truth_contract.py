@@ -445,7 +445,7 @@ def _document_semantic_issues(payload: dict[str, object]) -> list[SourceTruthIss
             SourceTruthIssue(
                 "DOCUMENT_SEMANTICS_MISSING",
                 "Source Truth must distinguish the document role, subject of report, primary thesis, and decision boundary before outlining.",
-                retry_strategy="derive_document_semantics",
+                retry_strategy="rebuild_from_semantic_understanding",
             )
         ]
     missing = [field for field in DOCUMENT_SEMANTIC_FIELDS if not semantics.get(field)]
@@ -457,7 +457,7 @@ def _document_semantic_issues(payload: dict[str, object]) -> list[SourceTruthIss
                 "DOCUMENT_SEMANTICS_INVALID",
                 "Document semantics fields must be non-empty and cite existing Source Truth records.",
                 tuple(sorted(set(refs) - record_ids)),
-                "derive_document_semantics",
+                "rebuild_from_semantic_understanding",
             )
         ]
     if not _items(payload, "conclusions"):
@@ -465,7 +465,7 @@ def _document_semantic_issues(payload: dict[str, object]) -> list[SourceTruthIss
             SourceTruthIssue(
                 "DOCUMENT_CONCLUSIONS_MISSING",
                 "A required document-semantic contract needs at least one source-grounded whole-document conclusion.",
-                retry_strategy="derive_document_semantics",
+                retry_strategy="rebuild_from_semantic_understanding",
             )
         ]
     return []
