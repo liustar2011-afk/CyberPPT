@@ -41,6 +41,8 @@ class CliTests(unittest.TestCase):
         self.assertIn("final-script-pages", help_text)
         self.assertIn("outline-audit", help_text)
         self.assertIn("source-truth-audit", help_text)
+        self.assertIn("prepare-source-map", help_text)
+        self.assertIn("source-map-check", help_text)
         self.assertIn("prepare-semantic-understanding", help_text)
         self.assertIn("semantic-check", help_text)
         self.assertIn("record-semantic-generation", help_text)
@@ -107,6 +109,24 @@ class CliTests(unittest.TestCase):
             )
         self.assertEqual(4, code)
         self.assertIn('"status": "rewrite_required"', buffer.getvalue())
+
+    def test_prepare_source_map_command_compiles_stable_units(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "project"
+            (project / "source").mkdir(parents=True)
+            (project / "source" / "material.md").write_text(
+                "# 主张\n证据。\n",
+                encoding="utf-8",
+            )
+            buffer = io.StringIO()
+            with redirect_stdout(buffer):
+                code = main(["prepare-source-map", str(project)])
+
+            self.assertEqual(0, code)
+            self.assertTrue(
+                (project / "workbench/stages/00-source-map/source-units.jsonl").is_file()
+            )
+            self.assertIn('"status": "passed"', buffer.getvalue())
 
     def test_outline_audit_accepts_source_truth_option(self) -> None:
         args = build_parser().parse_args(

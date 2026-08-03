@@ -76,10 +76,24 @@ def _outline_contract(payload: dict[str, Any]) -> dict[str, Any]:
         "pacing": payload.get("pacing"),
         "semantic_understanding_sha256": payload.get("semantic_understanding_sha256"),
         "semantic_source_bundle_sha256": payload.get("semantic_source_bundle_sha256"),
+        "semantic_source_map_bundle_sha256": payload.get("semantic_source_map_bundle_sha256"),
         "semantic_argument_model_sha256": payload.get("semantic_argument_model_sha256"),
         "audience_concerns": payload.get("audience_concerns"),
         "consumed_user_decisions": payload.get("consumed_user_decisions"),
     }
+
+
+def storyline_director_authoring_contract() -> str:
+    return "\n".join(
+        [
+            "You are the Outline Director. Do not create pages. First define the directed story that the Outline author must follow.",
+            "The source is evidence, not a page inventory. Select and organize evidence around the approved theme and decision destination; preserve all traceability but never give every source item equal narrative or visual weight.",
+            "Every chapter must answer one question and hand a necessary unresolved question to the next chapter. Every future page must have one storyline role, one self-contained core meaning, and explicit transitions from the preceding page and to the following page.",
+            "Do not promote generic value, constraints, boundaries, background, or technical inventories into the main line unless they are the actual subject of the approved communication strategy.",
+            "Use the source argument model's explicit `argument_weight` as the authority for narrative importance. `core` means an independent source proposition and must remain a visible story beat; `supporting`, `detail`, and `constraint` describe subordinate material. A semantic relation explains how propositions connect and has `weight_effect=none`; it never changes either endpoint's argument weight or role. Determine the story beat from the approved proposition, not from a project-specific keyword or a generic layer label.",
+            "Treat `editorial_hypothesis` entries only as candidates. A candidate framing may be selected, rejected, or tested here, but it may not be relabeled as source-explicit, overwrite the source thesis, or retroactively change Stage 00.",
+        ]
+    )
 
 
 def prepare_storyline_director(project: Path) -> dict[str, Any]:
@@ -127,11 +141,7 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
     lines = [
         "# Storyline director authoring input",
         "",
-        "You are the Outline Director. Do not create pages. First define the directed story that the Outline author must follow.",
-        "The source is evidence, not a page inventory. Select and organize evidence around the approved theme and decision destination; preserve all traceability but never give every source item equal narrative or visual weight.",
-        "Every chapter must answer one question and hand a necessary unresolved question to the next chapter. Every future page must have one storyline role, one self-contained core meaning, and explicit transitions from the preceding page and to the following page.",
-        "Do not promote generic value, constraints, boundaries, background, or technical inventories into the main line unless they are the actual subject of the approved communication strategy.",
-        "Use the source argument model's explicit `argument_weight` as the authority for narrative importance. `core` means the source's independent proposition and must remain a visible story beat; `supporting`, `detail`, and `constraint` describe subordinate material. A `supports` or `maps_to` relation explains how two propositions connect and has `weight_effect=none`; it never turns a core proposition into a foundation/support layer. In particular, an explicit source heading such as `行业优势与合作价值` must be directed as the core claim that the organization has capabilities/advantages and a cooperation value proposition, with its evidence selected underneath.",
+        storyline_director_authoring_contract(),
         "",
         "Write `storyline-director.json` with schema `cyberppt.storyline_director.v1` and copy all binding hashes exactly.",
         "Required fields: theme, decision_destination, story_arc (3-6 steps), chapter_missions (2-6 entries), selection_rules (3-8), exclusion_rules (3-8), page_rules (4-10), pacing, audience_concerns, and consumed_user_decisions.",
@@ -144,6 +154,7 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
         f"- communication_strategy_approval_sha256: {communication['communication_strategy_approval_sha256']}",
         f"- semantic_understanding_sha256: {semantic['semantic_understanding_sha256']}",
         f"- semantic_source_bundle_sha256: {semantic['source_bundle_sha256']}",
+        f"- semantic_source_map_bundle_sha256: {semantic.get('source_map_bundle_sha256', '')}",
         f"- semantic_argument_model_sha256: {semantic.get('semantic_argument_model_sha256', '')}",
         "",
         "## Approved communication strategy",
@@ -190,6 +201,7 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
             "communication_strategy_approval_sha256": communication["communication_strategy_approval_sha256"],
             "semantic_understanding_sha256": semantic["semantic_understanding_sha256"],
             "semantic_source_bundle_sha256": semantic["source_bundle_sha256"],
+            "semantic_source_map_bundle_sha256": semantic.get("source_map_bundle_sha256"),
             "semantic_argument_model_sha256": semantic.get("semantic_argument_model_sha256"),
             "theme": "",
             "decision_destination": "",
@@ -217,6 +229,7 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
         "communication_strategy_approval_sha256": communication["communication_strategy_approval_sha256"],
         "semantic_understanding_sha256": semantic["semantic_understanding_sha256"],
         "semantic_source_bundle_sha256": semantic["source_bundle_sha256"],
+        "semantic_source_map_bundle_sha256": semantic.get("source_map_bundle_sha256"),
         "semantic_argument_model_sha256": semantic.get("semantic_argument_model_sha256"),
         "consumed_user_decisions": [
             {
@@ -234,6 +247,7 @@ def _audit_issues(
     approval_hash: str,
     semantic_hash: str = "",
     semantic_source_hash: str = "",
+    semantic_source_map_hash: str = "",
     semantic_argument_model_hash: str = "",
     semantic_argument_node_ids: set[str] | None = None,
     semantic_argument_node_roles: dict[str, str] | None = None,
@@ -250,6 +264,7 @@ def _audit_issues(
     for field, expected in (
         ("semantic_understanding_sha256", semantic_hash),
         ("semantic_source_bundle_sha256", semantic_source_hash),
+        ("semantic_source_map_bundle_sha256", semantic_source_map_hash),
         ("semantic_argument_model_sha256", semantic_argument_model_hash),
     ):
         if expected and _text(payload.get(field)).casefold() != expected.casefold():
@@ -332,7 +347,7 @@ def _audit_issues(
                             if not actual_role:
                                 issues.append({"code": "DIRECTOR_ARGUMENT_ROLE_MISSING", "message": "chapter mission is missing a selected source argument role"})
                             elif expected_role and actual_role != expected_role:
-                                issues.append({"code": "DIRECTOR_ARGUMENT_ROLE_DRIFTED", "message": "chapter mission changed the source argument role; advantage/capability may not be rewritten as foundation"})
+                                issues.append({"code": "DIRECTOR_ARGUMENT_ROLE_DRIFTED", "message": "chapter mission changed the approved source argument role; no core role may be replaced by a generic layer label"})
                 concern_ids = mission.get("audience_concern_ids")
                 if not isinstance(concern_ids, list) or not concern_ids:
                     issues.append({"code": "DIRECTOR_AUDIENCE_CONCERNS_MISSING", "message": "each chapter mission must state which audience concerns it answers"})
@@ -376,6 +391,7 @@ def run_storyline_director_audit(project: Path) -> tuple[int, dict[str, Any]]:
         communication["communication_strategy_approval_sha256"],
         semantic_hash=semantic["semantic_understanding_sha256"] if semantic else "",
         semantic_source_hash=semantic["source_bundle_sha256"] if semantic else "",
+        semantic_source_map_hash=semantic.get("source_map_bundle_sha256", "") if semantic else "",
         semantic_argument_model_hash=semantic.get("semantic_argument_model_sha256", "") if semantic else "",
         semantic_argument_node_ids=(
             {
@@ -434,6 +450,7 @@ def run_storyline_director_audit(project: Path) -> tuple[int, dict[str, Any]]:
         "communication_strategy_approval_sha256": communication["communication_strategy_approval_sha256"],
         "semantic_understanding_sha256": semantic["semantic_understanding_sha256"] if semantic else None,
         "semantic_source_bundle_sha256": semantic["source_bundle_sha256"] if semantic else None,
+        "semantic_source_map_bundle_sha256": semantic.get("source_map_bundle_sha256") if semantic else None,
         "semantic_argument_model_sha256": semantic.get("semantic_argument_model_sha256") if semantic else None,
         "issues": issues,
         "audited_at": _utc_now(),
@@ -462,6 +479,7 @@ def assert_storyline_director_ready(project: Path) -> dict[str, Any] | None:
         and audit.get("communication_strategy_approval_sha256") == communication["communication_strategy_approval_sha256"]
         and audit.get("semantic_understanding_sha256") == (semantic["semantic_understanding_sha256"] if semantic else None)
         and audit.get("semantic_source_bundle_sha256") == (semantic["source_bundle_sha256"] if semantic else None)
+        and audit.get("semantic_source_map_bundle_sha256") == (semantic.get("source_map_bundle_sha256") if semantic else None)
         and audit.get("semantic_argument_model_sha256") == (semantic.get("semantic_argument_model_sha256") if semantic else None)
     )
     if not expected:

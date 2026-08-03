@@ -69,6 +69,16 @@ STATUS_VALUES = frozenset(
         "unknown",
     }
 )
+INTERPRETATION_CONTRACT_MODES = frozenset({"legacy", "strict"})
+CLAIM_ORIGINS = frozenset(
+    {"source_explicit", "source_implied", "editorial_hypothesis"}
+)
+INFERENCE_ORIGINS = frozenset({"source_implied", "editorial_hypothesis"})
+CONCEPT_RESOLUTIONS = frozenset(
+    {"same_meaning", "different_dimension", "homonym", "requires_review"}
+)
+_LEGACY_EVIDENCE_RE = re.compile(r"S\d+")
+_SOURCE_UNIT_RE = re.compile(r"SU-[A-Z0-9-]+")
 
 
 def _looks_corrupted_text(value: object) -> bool:
@@ -114,7 +124,14 @@ def _evidence_refs(value: object) -> tuple[list[str], bool]:
     if not isinstance(value, list) or not value:
         return [], False
     refs = [_text(item) for item in value]
-    valid = all(ref and re.fullmatch(r"S\d+", ref) for ref in refs)
+    valid = all(
+        ref
+        and (
+            _LEGACY_EVIDENCE_RE.fullmatch(ref)
+            or _SOURCE_UNIT_RE.fullmatch(ref)
+        )
+        for ref in refs
+    )
     return refs, valid
 
 
@@ -124,11 +141,15 @@ def empty_model() -> dict[str, Any]:
     return {
         "schema": SCHEMA,
         "version": 1,
+        "interpretation_contract_mode": "strict",
         "document_semantics": {
             "document_role": "",
             "subject_of_report": "",
             "primary_thesis": "",
             "decision_boundary": "",
+            "author_purpose": "",
+            "argument_method": [],
+            "supporting_basis": [],
             "business_objects": [],
             "scope": "",
             "decision_intent": "",
@@ -140,7 +161,9 @@ def empty_model() -> dict[str, Any]:
             "status": "mixed",
             "evidence_refs": [],
             "actor_refs": [],
+            "claim_origin": "source_explicit",
         },
+        "heading_semantic_cards": [],
         "section_nodes": [],
         "subsection_nodes": [],
         "argument_relations": [],
@@ -157,6 +180,12 @@ def empty_model() -> dict[str, Any]:
             "exhaustive_scope": "",
             "overlap_policy": "",
             "groups": [],
+            "review_notes": [],
+        },
+        "inference_register": [],
+        "concept_occurrence_graph": {
+            "concepts": [],
+            "relations": [],
             "review_notes": [],
         },
         "source_gaps": [],
@@ -225,11 +254,332 @@ def _issue(code: str, message: str, *, node_id: str = "") -> dict[str, str]:
     return result
 
 
+def _strict_contract_issues(
+    model: dict[str, Any],
+    *,
+    thesis: dict[str, Any] | None,
+    sections: list[Any],
+    subsections: list[Any],
+    relations: list[Any],
+    required_heading_records: list[dict[str, Any]] | None,
+    source_unit_ids: set[str] | None,
+) -> list[dict[str, str]]:
+    """Validate the source-native interpretation layer used by new projects."""
+
+    issues: list[dict[str, str]] = []
+    known_source_units = source_unit_ids
+
+    def source_unit_ref_issues(
+        refs_value: object,
+        *,
+        owner: str,
+        node_id: str = "",
+        required: bool = True,
+    ) -> list[str]:
+        refs, well_formed = _evidence_refs(refs_value)
+        if required and not well_formed:
+            issues.append(
+                _issue(
+                    "SEMANTIC_STABLE_EVIDENCE_INVALID",
+                    f"{owner} 必须声明非空且格式正确的 evidence/source refs。",
+                    node_id=node_id,
+                )
+            )
+            return refs
+        legacy = sorted({ref for ref in refs if _LEGACY_EVIDENCE_RE.fullmatch(ref)})
+        if legacy:
+            issues.append(
+                _issue(
+                    "SEMANTIC_STABLE_EVIDENCE_REQUIRED",
+                    f"严格语义合同必须使用稳定 source_unit_id，不得继续使用临时 Sxxxx：{'、'.join(legacy)}",
+                    node_id=node_id,
+                )
+            )
+        unit_refs = [ref for ref in refs if _SOURCE_UNIT_RE.fullmatch(ref)]
+        if known_source_units is not None:
+            unknown = sorted(set(unit_refs) - known_source_units)
+            if unknown:
+                issues.append(
+                    _issue(
+                        "SEMANTIC_SOURCE_UNIT_UNKNOWN",
+                        "语义模型引用了源材料地图中不存在的 source_unit_id：" + "、".join(unknown),
+                        node_id=node_id,
+                    )
+                )
+        return refs
+
+    inference_items = model.get("inference_register")
+    if not isinstance(inference_items, list):
+        issues.append(
+            _issue(
+                "SEMANTIC_INFERENCE_REGISTER_INVALID",
+                "严格语义合同必须声明 inference_register 数组；没有推断时使用空数组。",
+            )
+        )
+        inference_items = []
+    inference_ids: set[str] = set()
+    known_argument_ids = {
+        _text(item.get("id"))
+        for item in sections + subsections
+        if isinstance(item, dict) and _text(item.get("id"))
+    }
+    known_argument_ids.update(
+        _text(item.get("heading_id"))
+        for item in _list(model.get("heading_semantic_cards"))
+        if isinstance(item, dict) and _text(item.get("heading_id"))
+    )
+    for item in inference_items:
+        if not isinstance(item, dict):
+            issues.append(_issue("SEMANTIC_INFERENCE_INVALID", "inference_register 的每项必须是对象。"))
+            continue
+        inference_id = _text(item.get("id"))
+        if not inference_id or inference_id in inference_ids:
+            issues.append(_issue("SEMANTIC_INFERENCE_ID_INVALID", "推断记录 id 必须非空且唯一。", node_id=inference_id))
+        if inference_id:
+            inference_ids.add(inference_id)
+        for field in ("statement", "handling"):
+            if not _text(item.get(field)):
+                issues.append(_issue("SEMANTIC_INFERENCE_INCOMPLETE", f"推断记录缺少 {field}。", node_id=inference_id))
+        origin = _text(item.get("claim_origin"))
+        if origin not in INFERENCE_ORIGINS:
+            issues.append(
+                _issue(
+                    "SEMANTIC_INFERENCE_ORIGIN_INVALID",
+                    "推断记录 claim_origin 必须是 source_implied 或 editorial_hypothesis。",
+                    node_id=inference_id,
+                )
+            )
+        source_unit_ref_issues(
+            item.get("basis_refs"), owner="推断记录 basis_refs", node_id=inference_id
+        )
+        affected = [_text(value) for value in _list(item.get("affected_node_ids")) if _text(value)]
+        if not affected:
+            issues.append(_issue("SEMANTIC_INFERENCE_TARGET_MISSING", "推断记录必须声明 affected_node_ids。", node_id=inference_id))
+        unknown_targets = sorted(set(affected) - known_argument_ids - {"document_thesis"})
+        if unknown_targets:
+            issues.append(
+                _issue(
+                    "SEMANTIC_INFERENCE_TARGET_UNKNOWN",
+                    "推断记录引用了未知论点节点：" + "、".join(unknown_targets),
+                    node_id=inference_id,
+                )
+            )
+
+    heading_cards = model.get("heading_semantic_cards")
+    expected_headings = {
+        _text(item.get("heading_id")): item
+        for item in (required_heading_records or [])
+        if isinstance(item, dict) and _text(item.get("heading_id"))
+    }
+    if not isinstance(heading_cards, list):
+        issues.append(
+            _issue(
+                "SEMANTIC_HEADING_CARDS_INVALID",
+                "严格语义合同必须声明 heading_semantic_cards 数组。",
+            )
+        )
+        heading_cards = []
+    card_ids: set[str] = set()
+    for card in heading_cards:
+        if not isinstance(card, dict):
+            issues.append(_issue("SEMANTIC_HEADING_CARD_INVALID", "标题语义卡的每项必须是对象。"))
+            continue
+        heading_id = _text(card.get("heading_id"))
+        if not heading_id or heading_id in card_ids:
+            issues.append(_issue("SEMANTIC_HEADING_CARD_ID_INVALID", "标题语义卡 heading_id 必须非空且唯一。", node_id=heading_id))
+        if heading_id:
+            card_ids.add(heading_id)
+        for field in (
+            "source_unit_id",
+            "source_heading",
+            "semantic_function",
+            "author_claim",
+            "argument_role",
+            "argument_weight",
+        ):
+            if not _text(card.get(field)):
+                issues.append(_issue("SEMANTIC_HEADING_CARD_INCOMPLETE", f"标题语义卡缺少 {field}。", node_id=heading_id))
+        if not isinstance(card.get("level"), int) or int(card.get("level", 0)) < 1:
+            issues.append(_issue("SEMANTIC_HEADING_CARD_LEVEL_INVALID", "标题语义卡 level 必须是正整数。", node_id=heading_id))
+        source_unit_ref_issues(card.get("evidence_refs"), owner="标题语义卡 evidence_refs", node_id=heading_id)
+        source_unit_id = _text(card.get("source_unit_id"))
+        if not _SOURCE_UNIT_RE.fullmatch(source_unit_id):
+            issues.append(_issue("SEMANTIC_HEADING_CARD_SOURCE_UNIT_INVALID", "标题语义卡必须绑定一个稳定 source_unit_id。", node_id=heading_id))
+        elif known_source_units is not None and source_unit_id not in known_source_units:
+            issues.append(_issue("SEMANTIC_SOURCE_UNIT_UNKNOWN", "标题语义卡绑定了未知 source_unit_id。", node_id=heading_id))
+        expected = expected_headings.get(heading_id)
+        if expected is not None and (
+            _text(card.get("source_heading")) != _text(expected.get("title"))
+            or card.get("level") != expected.get("level")
+            or source_unit_id != _text(expected.get("unit_id"))
+        ):
+            issues.append(_issue("SEMANTIC_HEADING_CARD_DRIFTED", "标题语义卡必须逐字绑定原始标题、层级和标题 source_unit_id。", node_id=heading_id))
+    missing_cards = sorted(set(expected_headings) - card_ids)
+    if missing_cards:
+        issues.append(
+            _issue(
+                "SEMANTIC_SOURCE_HEADINGS_UNINTERPRETED",
+                "原始标题树中仍有标题未形成语义卡：" + "、".join(missing_cards),
+            )
+        )
+
+    cards_by_id = {
+        _text(item.get("heading_id")): item
+        for item in heading_cards
+        if isinstance(item, dict) and _text(item.get("heading_id"))
+    }
+    cards_by_title: dict[str, list[dict[str, Any]]] = {}
+    for card in cards_by_id.values():
+        cards_by_title.setdefault(_heading_key(card.get("source_heading")), []).append(card)
+    for node in sections + subsections:
+        if not isinstance(node, dict):
+            continue
+        node_id = _text(node.get("id"))
+        matching_cards = cards_by_title.get(_heading_key(node.get("source_heading")), [])
+        if not matching_cards:
+            continue
+        source_heading_id = _text(node.get("source_heading_id"))
+        card = cards_by_id.get(source_heading_id)
+        if card is None or card not in matching_cards:
+            issues.append(
+                _issue(
+                    "SEMANTIC_NODE_HEADING_CARD_NOT_BOUND",
+                    "严格语义节点必须通过 source_heading_id 绑定对应标题语义卡。",
+                    node_id=node_id,
+                )
+            )
+            continue
+        for field in ("argument_role", "argument_weight", "claim_origin"):
+            if _text(node.get(field)) != _text(card.get(field)):
+                issues.append(
+                    _issue(
+                        "SEMANTIC_NODE_HEADING_CARD_DRIFTED",
+                        f"语义节点的 {field} 必须与已绑定标题语义卡一致。",
+                        node_id=node_id,
+                    )
+                )
+
+    claim_items: list[tuple[str, dict[str, Any]]] = []
+    if isinstance(thesis, dict):
+        claim_items.append(("document_thesis", thesis))
+    claim_items.extend(
+        (_text(item.get("id")), item)
+        for item in sections + subsections
+        if isinstance(item, dict)
+    )
+    claim_items.extend(
+        (_text(item.get("heading_id")), item)
+        for item in heading_cards
+        if isinstance(item, dict)
+    )
+    for node_id, item in claim_items:
+        origin = _text(item.get("claim_origin"))
+        if origin not in CLAIM_ORIGINS:
+            issues.append(
+                _issue(
+                    "SEMANTIC_CLAIM_ORIGIN_INVALID",
+                    "严格语义合同中的每项主张必须标注 source_explicit、source_implied 或 editorial_hypothesis。",
+                    node_id=node_id,
+                )
+            )
+        if origin in INFERENCE_ORIGINS:
+            inference_id = _text(item.get("inference_id"))
+            if not inference_id or inference_id not in inference_ids:
+                issues.append(_issue("SEMANTIC_CLAIM_INFERENCE_UNREGISTERED", "非显式主张必须绑定 inference_register 中的记录。", node_id=node_id))
+        if origin == "editorial_hypothesis":
+            issues.append(
+                _issue(
+                    "SEMANTIC_EDITORIAL_HYPOTHESIS_PROMOTED",
+                    "编辑性假设只能登记为 Director 候选，不得进入源材料主论点、章节论点或标题语义卡。",
+                    node_id=node_id,
+                )
+            )
+        source_unit_ref_issues(item.get("evidence_refs"), owner="语义主张 evidence_refs", node_id=node_id)
+
+    for relation in relations:
+        if not isinstance(relation, dict):
+            continue
+        relation_id = _text(relation.get("id"))
+        origin = _text(relation.get("claim_origin"))
+        if origin not in CLAIM_ORIGINS:
+            issues.append(_issue("SEMANTIC_CLAIM_ORIGIN_INVALID", "严格合同中的论证关系必须声明 claim_origin。", node_id=relation_id))
+        if origin in INFERENCE_ORIGINS:
+            inference_id = _text(relation.get("inference_id"))
+            if not inference_id or inference_id not in inference_ids:
+                issues.append(_issue("SEMANTIC_CLAIM_INFERENCE_UNREGISTERED", "非显式论证关系必须绑定 inference_register。", node_id=relation_id))
+        if origin == "editorial_hypothesis":
+            issues.append(_issue("SEMANTIC_EDITORIAL_HYPOTHESIS_PROMOTED", "编辑性关系不得写入源材料 argument_relations。", node_id=relation_id))
+        source_unit_ref_issues(relation.get("evidence_refs"), owner="论证关系 evidence_refs", node_id=relation_id)
+
+    context = model.get("document_semantics")
+    if isinstance(context, dict):
+        for field in ("argument_method", "supporting_basis"):
+            value = context.get(field)
+            if not isinstance(value, list) or not value:
+                issues.append(_issue("SEMANTIC_DOCUMENT_ARGUMENT_TRACE_MISSING", f"严格语义合同必须声明非空 {field} 数组。"))
+                continue
+            for index, item in enumerate(value):
+                if not isinstance(item, dict):
+                    issues.append(_issue("SEMANTIC_DOCUMENT_ARGUMENT_TRACE_INVALID", f"{field}[{index}] 必须是对象。"))
+                    continue
+                if not _text(item.get("statement")):
+                    issues.append(_issue("SEMANTIC_DOCUMENT_ARGUMENT_TRACE_INVALID", f"{field}[{index}] 缺少 statement。"))
+                source_unit_ref_issues(
+                    item.get("source_refs"),
+                    owner=f"{field}[{index}].source_refs",
+                )
+
+    graph = model.get("concept_occurrence_graph")
+    if not isinstance(graph, dict):
+        issues.append(_issue("SEMANTIC_CONCEPT_GRAPH_INVALID", "严格语义合同必须声明 concept_occurrence_graph 对象。"))
+    else:
+        concepts = graph.get("concepts")
+        graph_relations = graph.get("relations")
+        if not isinstance(concepts, list) or not isinstance(graph_relations, list) or not isinstance(graph.get("review_notes"), list):
+            issues.append(_issue("SEMANTIC_CONCEPT_GRAPH_INVALID", "概念出现图必须包含 concepts、relations 和 review_notes 数组。"))
+            concepts = concepts if isinstance(concepts, list) else []
+            graph_relations = graph_relations if isinstance(graph_relations, list) else []
+        concept_ids: set[str] = set()
+        for concept in concepts:
+            if not isinstance(concept, dict):
+                issues.append(_issue("SEMANTIC_CONCEPT_INVALID", "concepts 的每项必须是对象。"))
+                continue
+            concept_id = _text(concept.get("concept_id"))
+            if not concept_id or concept_id in concept_ids:
+                issues.append(_issue("SEMANTIC_CONCEPT_ID_INVALID", "concept_id 必须非空且唯一。", node_id=concept_id))
+            if concept_id:
+                concept_ids.add(concept_id)
+            for field in ("canonical_label", "rationale"):
+                if not _text(concept.get(field)):
+                    issues.append(_issue("SEMANTIC_CONCEPT_INCOMPLETE", f"重复概念记录缺少 {field}。", node_id=concept_id))
+            if _text(concept.get("resolution")) not in CONCEPT_RESOLUTIONS:
+                issues.append(_issue("SEMANTIC_CONCEPT_RESOLUTION_INVALID", "resolution 必须说明同义、不同维度、同名异义或待复核。", node_id=concept_id))
+            occurrences = [_text(value) for value in _list(concept.get("occurrence_unit_ids")) if _text(value)]
+            if len(occurrences) < 2 or len(occurrences) != len(set(occurrences)):
+                issues.append(_issue("SEMANTIC_CONCEPT_OCCURRENCES_INVALID", "重复概念必须绑定至少两个不重复的 source_unit_id。", node_id=concept_id))
+            source_unit_ref_issues(occurrences, owner="重复概念 occurrence_unit_ids", node_id=concept_id)
+        for relation in graph_relations:
+            if not isinstance(relation, dict):
+                issues.append(_issue("SEMANTIC_CONCEPT_RELATION_INVALID", "概念关系必须是对象。"))
+                continue
+            relation_id = _text(relation.get("id"))
+            left = _text(relation.get("from_concept_id"))
+            right = _text(relation.get("to_concept_id"))
+            if not relation_id or not _text(relation.get("relation")):
+                issues.append(_issue("SEMANTIC_CONCEPT_RELATION_INCOMPLETE", "概念关系缺少 id 或 relation。", node_id=relation_id))
+            if left not in concept_ids or right not in concept_ids or left == right:
+                issues.append(_issue("SEMANTIC_CONCEPT_RELATION_TARGET_INVALID", "概念关系必须连接两个不同且已声明的概念。", node_id=relation_id))
+            source_unit_ref_issues(relation.get("evidence_refs"), owner="概念关系 evidence_refs", node_id=relation_id)
+    return issues
+
+
 def validate_model(
     model: dict[str, Any] | None,
     *,
     required_headings: list[str] | None = None,
+    required_heading_records: list[dict[str, Any]] | None = None,
     source_record_ids: set[str] | None = None,
+    source_unit_ids: set[str] | None = None,
     require_document_context: bool = False,
 ) -> list[dict[str, str]]:
     """Validate semantic structure without deciding page count or page layout."""
@@ -250,6 +600,14 @@ def validate_model(
         )
     if model.get("schema") != SCHEMA:
         issues.append(_issue("SEMANTIC_ARGUMENT_MODEL_SCHEMA_INVALID", f"论点模型 schema 必须是 {SCHEMA}。"))
+    interpretation_mode = _text(model.get("interpretation_contract_mode")) or "legacy"
+    if interpretation_mode not in INTERPRETATION_CONTRACT_MODES:
+        issues.append(
+            _issue(
+                "SEMANTIC_INTERPRETATION_MODE_INVALID",
+                "interpretation_contract_mode 必须是 legacy 或 strict。",
+            )
+        )
     context = model.get("document_semantics")
     if require_document_context:
         if not isinstance(context, dict):
@@ -490,9 +848,28 @@ def validate_model(
         for relation in relations:
             if isinstance(relation, dict):
                 refs.extend(str(item) for item in _list(relation.get("evidence_refs")))
-        unknown = sorted({ref for ref in refs if ref.startswith("S") and ref not in source_record_ids})
+        unknown = sorted(
+            {
+                ref
+                for ref in refs
+                if _LEGACY_EVIDENCE_RE.fullmatch(ref)
+                and ref not in source_record_ids
+            }
+        )
         if unknown:
             issues.append(_issue("SEMANTIC_ARGUMENT_EVIDENCE_UNKNOWN", "论点模型引用了 Source Truth 中不存在的证据：" + "、".join(unknown)))
+    if interpretation_mode == "strict":
+        issues.extend(
+            _strict_contract_issues(
+                model,
+                thesis=thesis if isinstance(thesis, dict) else None,
+                sections=sections,
+                subsections=subsections,
+                relations=relations,
+                required_heading_records=required_heading_records,
+                source_unit_ids=source_unit_ids,
+            )
+        )
     return issues
 
 
@@ -567,7 +944,7 @@ def audit_outline_consumption(
                     issues.append(_issue("OUTLINE_ARGUMENT_WEIGHT_DRIFTED", "页面复制的语义节点 argument_weight 与 Stage 00 不一致；核心论点不得被改写为支撑层。", node_id=page_id))
         roles = page.get("source_argument_node_roles")
         if not isinstance(roles, dict):
-            issues.append(_issue("OUTLINE_ARGUMENT_ROLES_MISSING", "页面必须复制所消费语义节点的 argument_role，避免把 advantage/capability 等核心论点改写成 foundation。", node_id=page_id))
+            issues.append(_issue("OUTLINE_ARGUMENT_ROLES_MISSING", "页面必须复制所消费语义节点的 argument_role，避免用通用层级标签覆盖源论点角色。", node_id=page_id))
         else:
             for node_id in assigned_ids:
                 expected_role = _text(index.get(_text(node_id), {}).get("argument_role"))
@@ -575,7 +952,7 @@ def audit_outline_consumption(
                 if not actual_role:
                     issues.append(_issue("OUTLINE_ARGUMENT_ROLE_MISSING", "页面未声明某个语义节点的 argument_role。", node_id=page_id))
                 elif expected_role and actual_role != expected_role:
-                    issues.append(_issue("OUTLINE_ARGUMENT_ROLE_DRIFTED", "页面复制的语义节点 argument_role 与 Stage 00 不一致；不能把行业优势/核心能力节点改写成 foundation。", node_id=page_id))
+                    issues.append(_issue("OUTLINE_ARGUMENT_ROLE_DRIFTED", "页面复制的语义节点 argument_role 与 Stage 00 不一致；任何核心源论点都不得被改写为通用支撑层。", node_id=page_id))
         referenced_gaps = {
             _text(gap_id)
             for node_id in assigned

@@ -107,6 +107,63 @@ def model() -> dict[str, object]:
     }
 
 
+def strict_model() -> tuple[dict[str, object], set[str], list[dict[str, object]]]:
+    value = model()
+    heading_unit = "SU-ABCDEF1234-HEADING-BBBBBBBBBBBB-01"
+    evidence_unit = "SU-ABCDEF1234-PARAGRAPH-AAAAAAAAAAAA-01"
+    value["interpretation_contract_mode"] = "strict"
+    value["document_semantics"] = {
+        "document_role": "业务方案",
+        "subject_of_report": "目标业务事项",
+        "primary_thesis": value["document_thesis"]["statement"],
+        "decision_boundary": "部分事项待确认",
+        "author_purpose": "推动相关方形成共同判断",
+        "argument_method": [{"statement": "先提出主张再给出支撑", "source_refs": [heading_unit]}],
+        "supporting_basis": [{"statement": "正文提供事实支撑", "source_refs": [evidence_unit]}],
+        "business_objects": ["业务对象"],
+        "scope": "约定范围",
+        "decision_intent": "确认后续动作",
+    }
+    value["document_thesis"]["claim_origin"] = "source_explicit"
+    value["document_thesis"]["evidence_refs"] = [evidence_unit]
+    for node in value["section_nodes"] + value["subsection_nodes"]:
+        node["claim_origin"] = "source_explicit"
+        node["evidence_refs"] = [evidence_unit]
+    for relation in value["argument_relations"]:
+        relation["claim_origin"] = "source_explicit"
+        relation["evidence_refs"] = [evidence_unit]
+    value["heading_semantic_cards"] = [
+        {
+            "heading_id": "H-ABCDEF1234-BBBBBBBBBBBB-01",
+            "source_unit_id": heading_unit,
+            "source_heading": "第一章",
+            "level": 1,
+            "semantic_function": "提出章节主张",
+            "author_claim": "交代本章需要成立的判断",
+            "argument_role": "foundation",
+            "argument_weight": "core",
+            "claim_origin": "source_explicit",
+            "evidence_refs": [heading_unit],
+        }
+    ]
+    value["section_nodes"][0]["source_heading_id"] = "H-ABCDEF1234-BBBBBBBBBBBB-01"
+    value["inference_register"] = []
+    value["concept_occurrence_graph"] = {
+        "concepts": [],
+        "relations": [],
+        "review_notes": [],
+    }
+    headings = [
+        {
+            "heading_id": "H-ABCDEF1234-BBBBBBBBBBBB-01",
+            "unit_id": heading_unit,
+            "title": "第一章",
+            "level": 1,
+        }
+    ]
+    return value, {heading_unit, evidence_unit}, headings
+
+
 class SourceArgumentModelTests(unittest.TestCase):
     def test_marked_nested_json_is_extracted(self) -> None:
         parsed = extract_model("# 语义\n\n" + render_model_block(model()))
@@ -240,6 +297,113 @@ class SourceArgumentModelTests(unittest.TestCase):
         }
         codes = {item["code"] for item in validate_model(broken, require_document_context=True)}
         self.assertIn("SEMANTIC_DOCUMENT_CONTEXT_THESIS_DRIFTED", codes)
+
+    def test_strict_model_binds_heading_cards_and_stable_source_units(self) -> None:
+        value, unit_ids, headings = strict_model()
+
+        issues = validate_model(
+            value,
+            required_headings=["第一章"],
+            required_heading_records=headings,
+            source_unit_ids=unit_ids,
+            require_document_context=True,
+        )
+
+        self.assertEqual([], issues)
+
+    def test_strict_model_rejects_legacy_evidence_and_missing_heading_card(self) -> None:
+        value, unit_ids, headings = strict_model()
+        value["document_thesis"]["evidence_refs"] = ["S001"]
+        value["heading_semantic_cards"] = []
+
+        codes = {
+            item["code"]
+            for item in validate_model(
+                value,
+                required_heading_records=headings,
+                source_unit_ids=unit_ids,
+            )
+        }
+
+        self.assertIn("SEMANTIC_STABLE_EVIDENCE_REQUIRED", codes)
+        self.assertIn("SEMANTIC_SOURCE_HEADINGS_UNINTERPRETED", codes)
+
+    def test_editorial_hypothesis_cannot_be_promoted_into_source_nodes(self) -> None:
+        value, unit_ids, headings = strict_model()
+        value["section_nodes"][0]["claim_origin"] = "editorial_hypothesis"
+        value["section_nodes"][0]["inference_id"] = "I001"
+        value["inference_register"] = [
+            {
+                "id": "I001",
+                "statement": "候选编辑框架",
+                "claim_origin": "editorial_hypothesis",
+                "basis_refs": [next(iter(unit_ids))],
+                "affected_node_ids": ["c01"],
+                "handling": "仅供 Director 评估",
+            }
+        ]
+
+        codes = {
+            item["code"]
+            for item in validate_model(
+                value,
+                required_heading_records=headings,
+                source_unit_ids=unit_ids,
+            )
+        }
+
+        self.assertIn("SEMANTIC_EDITORIAL_HYPOTHESIS_PROMOTED", codes)
+
+    def test_source_implied_heading_interpretation_must_be_registered(self) -> None:
+        value, unit_ids, headings = strict_model()
+        heading_id = value["heading_semantic_cards"][0]["heading_id"]
+        evidence_unit = value["heading_semantic_cards"][0]["source_unit_id"]
+        value["heading_semantic_cards"][0]["claim_origin"] = "source_implied"
+        value["heading_semantic_cards"][0]["inference_id"] = "I001"
+        value["section_nodes"][0]["claim_origin"] = "source_implied"
+        value["section_nodes"][0]["inference_id"] = "I001"
+        value["inference_register"] = [
+            {
+                "id": "I001",
+                "statement": "该标题隐含一个章节判断",
+                "claim_origin": "source_implied",
+                "basis_refs": [evidence_unit],
+                "affected_node_ids": [heading_id, "c01"],
+                "handling": "保留为有依据的隐含解释",
+            }
+        ]
+
+        issues = validate_model(
+            value,
+            required_heading_records=headings,
+            source_unit_ids=unit_ids,
+        )
+
+        self.assertEqual([], issues)
+
+    def test_repeated_concept_can_be_preserved_as_different_dimensions(self) -> None:
+        value, unit_ids, headings = strict_model()
+        value["concept_occurrence_graph"] = {
+            "concepts": [
+                {
+                    "concept_id": "K001",
+                    "canonical_label": "同一业务对象",
+                    "occurrence_unit_ids": sorted(unit_ids),
+                    "resolution": "different_dimension",
+                    "rationale": "两处分别描述对象的构成和形成后的作用，不能因词语重复而合并。",
+                }
+            ],
+            "relations": [],
+            "review_notes": [],
+        }
+
+        issues = validate_model(
+            value,
+            required_heading_records=headings,
+            source_unit_ids=unit_ids,
+        )
+
+        self.assertEqual([], issues)
 
 
 if __name__ == "__main__":

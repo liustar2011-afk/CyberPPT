@@ -14,6 +14,7 @@ PROJECT_DIRS = [
     "visual",
     "workbench",
     "workbench/stages",
+    "workbench/stages/00-source-map",
     "workbench/stages/00-semantic-understanding",
     "workbench/stages/00-communication-strategy",
     "workbench/stages/00-storyline-director",
@@ -56,6 +57,12 @@ directories:
   source: source
   workbench: workbench
   stages: workbench/stages
+  stage_source_map: workbench/stages/00-source-map
+  source_registry: workbench/stages/00-source-map/source-registry.json
+  source_units: workbench/stages/00-source-map/source-units.jsonl
+  source_heading_tree: workbench/stages/00-source-map/source-heading-tree.json
+  source_map: workbench/stages/00-source-map/source-map.md
+  source_map_audit: workbench/stages/00-source-map/source-map-audit.json
   stage_semantic_understanding: workbench/stages/00-semantic-understanding
   semantic_understanding: workbench/stages/00-semantic-understanding/semantic-understanding.md
   semantic_understanding_audit: workbench/stages/00-semantic-understanding/semantic-understanding-audit.json
@@ -75,6 +82,8 @@ directories:
   stage_analysis: workbench/stages/01-analysis
   source_truth: workbench/stages/01-analysis/source-truth.json
   source_truth_attempts: workbench/stages/01-analysis/source-truth-attempts
+  semantic_evidence_cross_audit: workbench/stages/01-analysis/semantic-evidence-cross-audit.json
+  semantic_evidence_cross_audit_readable: workbench/stages/01-analysis/semantic-evidence-cross-audit.md
   stage_blueprint_dual_image: workbench/stages/02-blueprint-dual-image
   stage_overlay: workbench/stages/03-overlay
   stage_template_rebuild: workbench/stages/04-template-rebuild
@@ -98,7 +107,10 @@ directories:
   outputs: outputs
   delivery: delivery
 gates:
+  source_map: required
   semantic_understanding: required
+  semantic_argument_model: required
+  interpretation_contract_mode: strict
   communication_strategy: required
   storyline_director: required
   script_review_before_generation: required
@@ -170,11 +182,11 @@ CyberPPT project workspace.
 ## Flow
 
 1. Put source materials in `source/`.
-2. Run `python -m cyberppt prepare-semantic-understanding <project>` to compile the complete, source-hashed model task at `semantic-model-input.md`. Execute that fixed task with the chosen model and write only `semantic-understanding.md`; the artifact must include the marked `cyberppt.semantic_argument_model.v1` JSON block containing the source thesis, chapter/subchapter nodes, evidence-backed argument relations, MECE rules, statuses, actors, and source gaps.
+2. Run `python -m cyberppt prepare-source-map <project>` and `source-map-check` to compile the source registry, stable `SU-*` units, original heading tree, image-interpretation warnings, and their hashes. Then run `prepare-semantic-understanding`; its fixed model task must consume those units and produce `semantic-understanding.md` plus the marked `cyberppt.semantic_argument_model.v1` block. New strict models must include heading semantic cards, claim origins, inference registration, repeated-concept resolution, source-native thesis/argument hierarchy, MECE rules, statuses, actors, and source gaps.
 3. Record the execution with `record-semantic-generation --executor <surface> --model <model>`, run `semantic-check`, then obtain human confirmation with `approve-semantic-understanding`. Source Truth is blocked until all three receipts are current.
 4. Before Outline authoring, run `prepare-communication-strategy`, complete the 2-3 audience-specific reporting-direction options in `communication-strategy.json`, including source-anchored `audience_concerns`, and run `communication-strategy-check`. Show `communication-strategy-confirmation.md` to the user and record the selected option with `approve-communication-strategy --option <option_id>`. The choice is also written to `workbench/decisions/user-decisions.json`; the Outline is blocked until this human choice is current and consumed by the Director.
 5. Use the approved communication strategy's architecture mode and structure principle. Solution architecture remains the default for research, construction, implementation, and initiation materials; consulting architecture is used only when the approved user choice explicitly selects it.
-6. Build `source-truth.json` from the approved semantic understanding, bind both semantic and source-bundle SHA-256 values at the JSON root, then run `python -m cyberppt source-truth-audit <project> --input <source-truth.json>`. The JSON is authoritative; the command renders `00-source-analysis.md`, preserves attempts, rejects flattened long-form priority inventories, and changes extraction direction when coverage is incomplete.
+6. Build `source-truth.json` from the approved semantic understanding, bind the semantic, source-bundle, and strict source-map SHA-256 values at the JSON root, and map every P0 record back to both `semantic_node_ids` and `source_unit_refs`. Then run `python -m cyberppt source-truth-audit <project> --input <source-truth.json>`; it performs the semantic-evidence cross-audit before rendering `00-source-analysis.md`.
 7. After Source Truth passes, run `prepare-storyline-director`, complete `storyline-director.json`, and run `storyline-director-check`. The Director must bind the complete approved semantic understanding, audience concern contract, source-grounded chapter missions, and user-decision consumption receipt. It does not write pages and may organize evidence but may not replace source meaning. Outline authoring is blocked until this hash-current internal gate passes.
 8. New formal solution projects use `argument_contract_mode: strict`, `editorial_control_mode: required`, `storyline_contract_mode: required`, and `cyberppt.outline.v2`. Copy the Director contract and hash exactly. Build each page from one concrete storyline role plus source-grounded `core_message`, `content_units`, and `content_relations`; page types and claim taxonomies do not determine the page meaning. Every content page must declare specific transitions from the previous question and to the next, one concrete `audience_question`, approved `audience_concern_ids`, `audience_relevance`, a non-empty `must_not_include` list, and `split_risk`. Preserve all source evidence, but never give it equal page weight: P0 is page-forming, P1 supports grouped modules, and P2 remains in `detail_refs` for prose, notes, parameters, or traceability.
 9. Preserve the source material's actual meanings and relations, while selecting and organizing evidence around the approved theme. Source sections are not a page inventory; a story chain may be used only when supported by the material, must remain bound to Source Truth, and is never a mandatory chapter template.

@@ -20,6 +20,7 @@ from cyberppt.semantic_understanding import (
     semantic_binding_issues,
 )
 from cyberppt.source_argument_model import load_model
+from cyberppt.semantic_cross_audit import run_semantic_evidence_cross_audit
 from cyberppt.stage01_controls import snapshot_reference_gate
 
 
@@ -108,8 +109,8 @@ def render_source_truth_markdown(
             "",
             "## Source Truth Map",
             "",
-            "| Source ID | 类型 | 优先级 | 状态 | 精确位置 | 准确表述 | 条件与边界 | 结论 | 页面 |",
-            "|---|---|---|---|---|---|---|---|---|",
+            "| Source ID | 类型 | 优先级 | 来源判定 | 状态 | 语义节点 | 稳定源单元 | 精确位置 | 准确表述 | 条件与边界 | 结论 | 页面 |",
+            "|---|---|---|---|---|---|---|---|---|---|---|---|",
         ]
     )
     records = payload.get("records")
@@ -117,11 +118,14 @@ def render_source_truth_markdown(
         if not isinstance(record, dict):
             continue
         lines.append(
-            "| {id} | {type} | {priority} | {status} | {locator} | {statement} | {conditions} | {supports} | {pages} |".format(
+            "| {id} | {type} | {priority} | {origin} | {status} | {semantic_nodes} | {source_units} | {locator} | {statement} | {conditions} | {supports} | {pages} |".format(
                 id=_escape(record.get("id")),
                 type=_escape(record.get("type")),
                 priority=_escape(record.get("priority")),
+                origin=_escape(record.get("claim_origin")),
                 status=_escape(record.get("status")),
+                semantic_nodes=_escape(record.get("semantic_node_ids")),
+                source_units=_escape(record.get("source_unit_refs")),
                 locator=_escape(_locator_text(record)),
                 statement=_escape(record.get("statement")),
                 conditions=_escape(record.get("conditions")),
@@ -218,6 +222,7 @@ def run_source_truth_audit(
     semantic_gate = assert_semantic_understanding_ready(project)
     payload = load_source_truth(input_path.expanduser().resolve())
     argument_model = None
+    semantic_cross_audit = None
     if semantic_gate is not None and semantic_gate.get("semantic_argument_model_sha256"):
         argument_model = load_model(project / SEMANTIC_ARGUMENT_MODEL)
     retry = payload.get("retry") if isinstance(payload.get("retry"), dict) else {}
@@ -251,7 +256,17 @@ def run_source_truth_audit(
                     )
                 )
         if isinstance(source_semantics, dict) and isinstance(model_semantics, dict):
-            for field in ("document_role", "subject_of_report", "primary_thesis", "decision_boundary"):
+            fields = ("document_role", "subject_of_report", "primary_thesis", "decision_boundary")
+            # New semantic intent fields are authored in Stage 00 and must be
+            # copied verbatim; Source Truth may add source_refs but may not
+            # replace the author's purpose or argument method with a shorter
+            # evidence-derived summary.
+            fields += tuple(
+                field
+                for field in ("author_purpose", "argument_method", "supporting_basis")
+                if field in model_semantics
+            )
+            for field in fields:
                 expected = str(model_semantics.get(field) or "").strip()
                 actual = str(source_semantics.get(field) or "").strip()
                 if expected and actual != expected:
@@ -262,6 +277,21 @@ def run_source_truth_audit(
                             retry_strategy="rebuild_from_semantic_understanding",
                         )
                     )
+        semantic_cross_audit = run_semantic_evidence_cross_audit(
+            project,
+            argument_model,
+            payload,
+        )
+        issues.extend(
+            SourceTruthIssue(
+                str(item.get("code") or "SEMANTIC_EVIDENCE_CROSS_AUDIT_FAILED"),
+                str(item.get("message") or "Semantic/evidence cross-audit failed."),
+                tuple(str(value) for value in item.get("source_ids", []) if str(value)),
+                str(item.get("retry_strategy") or "rebuild_semantic_evidence_binding"),
+            )
+            for item in semantic_cross_audit.get("issues", [])
+            if isinstance(item, dict)
+        )
     warnings = source_truth_atomicity_warnings(payload)
     issues.extend(
         audit_source_receipts(
@@ -286,6 +316,7 @@ def run_source_truth_audit(
         "semantic_gate": semantic_gate,
         "semantic_argument_model": str(project / SEMANTIC_ARGUMENT_MODEL) if argument_model is not None else None,
         "semantic_argument_model_sha256": semantic_gate.get("semantic_argument_model_sha256") if semantic_gate else None,
+        "semantic_evidence_cross_audit": semantic_cross_audit,
     }
     stage = project / "workbench" / "stages" / "01-analysis"
     _write_json(stage / "source-truth.json", payload)

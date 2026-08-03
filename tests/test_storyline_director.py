@@ -63,6 +63,21 @@ class StorylineDirectorTests(unittest.TestCase):
         self.assertIn("DIRECTOR_SEMANTIC_BINDING_STALE", codes)
         self.assertIn("DIRECTOR_AUDIENCE_CONCERNS_NOT_BOUND", codes)
 
+    def test_strict_director_must_bind_source_map_bundle(self) -> None:
+        payload = director_payload()
+
+        codes = {
+            issue["code"]
+            for issue in _audit_issues(
+                payload,
+                "source-hash",
+                "approval-hash",
+                semantic_source_map_hash="source-map-hash",
+            )
+        }
+
+        self.assertIn("DIRECTOR_SEMANTIC_BINDING_STALE", codes)
+
     def test_outline_must_copy_hash_and_director_contract_exactly(self) -> None:
         payload = director_payload()
         gate = {

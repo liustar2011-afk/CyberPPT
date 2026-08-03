@@ -5,11 +5,9 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-from xml.etree import ElementTree
 
 from cyberppt.source_argument_model import (
     MODEL_JSON as SEMANTIC_ARGUMENT_MODEL_NAME,
@@ -17,6 +15,7 @@ from cyberppt.source_argument_model import (
     extract_model,
     validate_model,
 )
+from cyberppt.source_document_map import prepare_source_map, render_units_for_model
 
 
 SEMANTIC_STAGE = Path("workbench/stages/00-semantic-understanding")
@@ -30,8 +29,6 @@ SEMANTIC_GENERATION_RECEIPT = SEMANTIC_STAGE / "semantic-generation-receipt.json
 SEMANTIC_APPROVAL = Path("workbench/approvals/semantic-understanding-approved.json")
 SEMANTIC_CONTRACT_VERSION = "cyberppt.semantic_authoring.v1"
 SEMANTIC_ARGUMENT_MODEL_CONTRACT_VERSION = SEMANTIC_ARGUMENT_MODEL_SCHEMA
-
-_WORD_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 
 REQUIRED_SECTIONS: dict[str, tuple[str, ...]] = {
     "business_subject": ("全文业务主语",),
@@ -104,25 +101,31 @@ def semantic_argument_model_required(project: Path) -> bool:
     ) if source_dir.is_dir() else False
 
 
-def _source_headings(project: Path, receipts: list[dict[str, Any]]) -> list[str]:
-    """Read source-native Heading1 labels without turning them into pages."""
-
-    headings: list[str] = []
-    for receipt in receipts:
-        path = project / str(receipt["path"])
-        try:
-            extracted = _source_extract(path)
-        except (OSError, ValueError, zipfile.BadZipFile):
-            continue
-        headings.extend(
-            match.group("text").strip()
-            for match in re.finditer(
-                r"(?m)^\[P\d{4}\]\[style=Heading1\]\s*(?P<text>.+?)\s*$",
-                extracted,
-            )
-            if match.group("text").strip()
+def strict_interpretation_contract_required(project: Path) -> bool:
+    manifest = project.expanduser().resolve() / "manifest.yml"
+    return bool(
+        manifest.is_file()
+        and re.search(
+            r"(?m)^\s+interpretation_contract_mode:\s*strict\s*$",
+            manifest.read_text(encoding="utf-8-sig"),
         )
-    return list(dict.fromkeys(headings))
+    )
+
+
+def _source_headings(source_map: dict[str, Any]) -> list[str]:
+    """Return source-native top-level headings from the canonical tree."""
+
+    headings = source_map.get("headings")
+    if not isinstance(headings, list):
+        return []
+    result = [
+        str(item.get("title") or "").strip()
+        for item in headings
+        if isinstance(item, dict)
+        and item.get("level") == 1
+        and str(item.get("title") or "").strip()
+    ]
+    return list(dict.fromkeys(result))
 
 
 def collect_source_receipts(project: Path) -> list[dict[str, Any]]:
@@ -171,7 +174,21 @@ def semantic_template() -> str:
 
 ## 材料意图与决策动作
 
-> 待生成。说明受众需要理解、审议、确认、协调、启动、部署或验收什么。
+### 作者写作目的
+
+> 待生成。不能只写“受众需要理解什么”；要回答作者希望通过这份材料推动什么业务关系、形成什么共同判断或启动什么后续动作，并区分“方案讨论/建议”与“已经决定”。
+
+### 论证方式
+
+> 待生成。按原文顺序说明作者用哪些论证步骤逐步收敛到写作目的；每一步写清它回答的问题、承接的上一步和对下一步的作用，不预设固定故事模板。
+
+### 论证支撑
+
+> 待生成。逐项列出作者实际采用的事实、数据、能力、机制、案例、组织安排或阶段动作，并标注其来源与状态；没有出现在原文中的支撑类型不得补写。
+
+### 受众决策动作
+
+> 待生成。说明受众需要理解、审议、确认、协调、启动、部署或验收什么；它是作者目的的接受端，不等同于作者目的本身。
 
 ## 原文结构与论证顺序
 
@@ -212,11 +229,15 @@ def semantic_template() -> str:
 {
   "schema": "cyberppt.semantic_argument_model.v1",
   "version": 1,
+  "interpretation_contract_mode": "strict",
   "document_semantics": {
     "document_role": "",
     "subject_of_report": "",
     "primary_thesis": "",
     "decision_boundary": "",
+    "author_purpose": "",
+    "argument_method": [],
+    "supporting_basis": [],
     "business_objects": [],
     "scope": "",
     "decision_intent": ""
@@ -227,8 +248,10 @@ def semantic_template() -> str:
     "argument_weight": "core",
     "status": "mixed",
     "evidence_refs": [],
-    "actor_refs": []
+    "actor_refs": [],
+    "claim_origin": "source_explicit"
   },
+  "heading_semantic_cards": [],
   "section_nodes": [],
   "subsection_nodes": [],
   "argument_relations": [],
@@ -245,6 +268,12 @@ def semantic_template() -> str:
     "exhaustive_scope": "",
     "overlap_policy": "",
     "groups": [],
+    "review_notes": []
+  },
+  "inference_register": [],
+  "concept_occurrence_graph": {
+    "concepts": [],
+    "relations": [],
     "review_notes": []
   },
   "source_gaps": []
@@ -268,12 +297,17 @@ Hard requirements:
 - Do not invent causality, necessity, exclusivity, commitments, outcomes, prices, responsibilities, or maturity.
 - Cite paragraph/table identifiers from the source extract for the most important semantic conclusions.
 - Record unresolved items and forbidden inferences explicitly.
-- In the marked JSON block, declare one `document_thesis`, every source-native first-level chapter as a `section_node`, every important second-level chapter (including separately named capability/advantage items) as a `subsection_node`, and the evidence-backed `argument_relations` between them. Do not collapse construction content, realized/target capabilities, architecture, operating advantages, cooperation, and recommendations into one undifferentiated list.
+- In the marked JSON block, declare one `document_thesis`, every source-native first-level chapter as a `section_node`, every child heading that carries an independent proposition as a `subsection_node`, and the evidence-backed `argument_relations` between them. Do not collapse distinct semantic dimensions merely because they reuse the same object or vocabulary.
 - Separate `argument_weight` from `argument_role` and from `argument_relations`. Use `core` for an independent source proposition that must remain visible in the directed story, `supporting` for proof or expansion modules, `detail` for retained granularity, and `constraint` for conditions/boundaries. A node can support or map to another node and still be `core`; `supports` or `maps_to` never means "支撑层" and must not downgrade the `argument_weight` of either endpoint.
-- Add `argument_weighting` with a complete, non-overlapping assignment of every section/subsection node to `core_node_ids`, `supporting_node_ids`, `detail_node_ids`, or `constraint_node_ids`. Explicitly review source-native sibling claims before assigning weight. In particular, a source heading such as “行业优势与合作价值” is a core proposition about what the organization has and can offer, not a foundation/support layer label.
-- Also complete `document_semantics` with the document role, subject of report, exact primary thesis, decision/maturity boundary, concrete business objects, scope, and decision intent. These fields are produced here and must be copied downstream; Source Truth and Outline must not re-infer them from evidence records.
+- Add `argument_weighting` with a complete, non-overlapping assignment of every section/subsection node to `core_node_ids`, `supporting_node_ids`, `detail_node_ids`, or `constraint_node_ids`. Determine weight from the heading's proposition and its function in the author's argument, never from a generic keyword or from whether another node supports it.
+- Also complete `document_semantics` with the document role, subject of report, exact primary thesis, decision/maturity boundary, **author_purpose**, an ordered **argument_method**, explicit **supporting_basis**, concrete business objects, scope, and audience decision intent. `author_purpose` must state what the author is trying to advance; `argument_method` must reconstruct the source's actual sequence of claims and questions; `supporting_basis` must identify only the evidence types the author actually uses. These fields are produced here and must be copied downstream; Source Truth and Outline must not re-infer them from evidence records.
 - Every node must declare its source heading, thesis, argument role, actor references, status, evidence references, and `primary_consumer`. `primary_consumer` identifies the later chapter/page mission that should carry the node; it is not permission to create a page automatically.
-- Every section/subsection node must also declare `level` consistent with its source heading hierarchy and an explicit `argument_weight`; a Heading3 capability or advantage item must not be flattened into a Heading2 peer.
+- Every section/subsection node must also declare `level` consistent with its source heading hierarchy and an explicit `argument_weight`; a lower-level item must not be flattened into a higher-level peer merely because its wording sounds important.
+- Set `interpretation_contract_mode` to `strict`. Use stable `SU-*` source-unit identifiers in all evidence fields; legacy `Sxxxx` identifiers are not valid source evidence in this mode.
+- Create one `heading_semantic_cards` entry for every heading in the supplied original heading tree. Each card must bind `heading_id`, heading `source_unit_id`, exact source heading, level, semantic function, author claim, argument role, argument weight, claim origin, and evidence refs. A heading is structural evidence, not automatically a fact or a slide title.
+- Every strict section/subsection node must bind its corresponding card through `source_heading_id` and copy the card's argument role, argument weight, and claim origin. The node may add broader evidence, but it may not reinterpret the heading after the card review.
+- Classify every thesis, semantic node, heading card, and argument relation with `claim_origin`: `source_explicit`, `source_implied`, or `editorial_hypothesis`. Register every implied claim in `inference_register` with its basis, affected nodes, and handling. Editorial hypotheses may be recorded only as Director candidates in the inference register; they may not be promoted into the source-native thesis, nodes, heading cards, or argument relations.
+- Build `concept_occurrence_graph` for terms or objects repeated in multiple source locations. Each repeated concept must bind at least two occurrence source-unit IDs and decide whether the uses have the same meaning, describe different dimensions, are homonyms, or still require review. Repetition is not proof that two passages are duplicates or should become one page.
 - Every argument relation must declare `weight_effect: "none"`; relation type describes how propositions connect, not their narrative importance.
 - Write the marked JSON block as real UTF-8 text. Never replace source language with `?`, the Unicode replacement character, mojibake, or an empty evidence/actor field; the Stage 00 audit will reject lossy text before any downstream artifact can consume it.
 - Declare `mece_rules` with the partition basis, exhaustive scope, overlap policy, and one or more `groups` that enumerate each checked sibling partition (`parent_id`, `node_ids`, `partition_basis`, `exhaustive_scope`, `overlap_policy`). If two source sections use similar words for different dimensions, keep both nodes and state the dimension relation instead of deleting one.
@@ -283,53 +317,11 @@ This task ends after producing the semantic-understanding artifact and its embed
 """
 
 
-def _docx_source_extract(path: Path) -> str:
-    with zipfile.ZipFile(path) as package:
-        document = ElementTree.fromstring(package.read("word/document.xml"))
-    body = document.find(f"{_WORD_NS}body")
-    if body is None:
-        raise ValueError(f"DOCX has no document body: {path}")
-    lines: list[str] = []
-    paragraph_number = 0
-    table_number = 0
-    for child in body:
-        if child.tag == f"{_WORD_NS}p":
-            paragraph_number += 1
-            text = "".join(node.text or "" for node in child.iter(f"{_WORD_NS}t"))
-            style = child.find(f"{_WORD_NS}pPr/{_WORD_NS}pStyle")
-            style_id = style.get(f"{_WORD_NS}val") if style is not None else ""
-            style_suffix = f"[style={style_id}]" if style_id else ""
-            prefix = f"[P{paragraph_number:04d}]{style_suffix}"
-            lines.append(f"{prefix} {text}" if text else prefix)
-        elif child.tag == f"{_WORD_NS}tbl":
-            table_number += 1
-            lines.append(f"[TABLE{table_number:03d}]")
-            for row_number, row in enumerate(child.findall(f"{_WORD_NS}tr"), 1):
-                cells = []
-                for cell in row.findall(f"{_WORD_NS}tc"):
-                    cells.append("".join(node.text or "" for node in cell.iter(f"{_WORD_NS}t")))
-                lines.append(
-                    f"[TABLE{table_number:03d}-R{row_number:03d}] " + " | ".join(cells)
-                )
-    return "\n".join(lines).rstrip() + "\n"
-
-
-def _source_extract(path: Path) -> str:
-    suffix = path.suffix.casefold()
-    if suffix == ".docx":
-        return _docx_source_extract(path)
-    if suffix in {".txt", ".md", ".json", ".csv", ".tsv", ".yaml", ".yml"}:
-        return path.read_text(encoding="utf-8-sig")
-    return (
-        f"[BINARY SOURCE: {path.name}]\n"
-        "The model executor must open and inspect this registered source file directly; "
-        "the deterministic compiler does not extract this format.\n"
-    )
-
-
 def _render_model_input(
     project: Path,
     receipts: list[dict[str, Any]],
+    source_map: dict[str, Any],
+    rendered_sources: list[tuple[dict[str, Any], str]],
 ) -> str:
     lines = [
         "# CyberPPT whole-document semantic model task",
@@ -338,6 +330,7 @@ def _render_model_input(
         f"- project: `{project}`",
         f"- output: `{project / SEMANTIC_ARTIFACT}`",
         f"- source_bundle_sha256: `{source_bundle_sha256(receipts)}`",
+        f"- source_map_bundle_sha256: `{source_map['source_map_bundle_sha256']}`",
         "",
         "## Model contract",
         "",
@@ -347,17 +340,31 @@ def _render_model_input(
         "",
         semantic_template().rstrip(),
     ]
-    for receipt in receipts:
-        source_path = project / str(receipt["path"])
+    lines += [
+        "",
+        "## Canonical source-map contract",
+        "",
+        "The following extracts are compiled from the original heading tree and stable source units. "
+        "Use the exact `SU-*` identifiers for semantic evidence. A heading is structural evidence, "
+        "not automatically a factual claim; interpret its semantic function before assigning weight or origin.",
+        "",
+        "### Original heading tree",
+        "",
+        json.dumps(source_map.get("headings", []), ensure_ascii=False, indent=2),
+    ]
+    receipt_by_path = {str(item["path"]): item for item in receipts}
+    for source, extract in rendered_sources:
+        receipt = receipt_by_path.get(str(source["path"]), source)
         lines += [
             "",
-            f"## Source extract: {receipt['path']}",
+            f"## Source units: {source['path']}",
             "",
+            f"- source_id: `{source['source_id']}`",
             f"- bytes: {receipt['bytes']}",
             f"- sha256: `{receipt['sha256']}`",
             "",
             "```text",
-            _source_extract(source_path).rstrip(),
+            extract.rstrip(),
             "```",
         ]
     return "\n".join(lines).rstrip() + "\n"
@@ -368,13 +375,22 @@ def prepare_semantic_understanding(project: Path) -> dict[str, Any]:
     if not project.is_dir():
         raise FileNotFoundError(f"project does not exist: {project}")
     receipts = collect_source_receipts(project)
+    source_map = prepare_source_map(project)
+    if source_map.get("status") != "passed":
+        raise ValueError(
+            "source map is incomplete; run source-map-check and resolve extraction issues before semantic understanding"
+        )
+    rendered_sources = render_units_for_model(project, prepared=source_map)
     stage = project / SEMANTIC_STAGE
     stage.mkdir(parents=True, exist_ok=True)
     artifact = project / SEMANTIC_ARTIFACT
     if not artifact.exists():
         artifact.write_text(semantic_template(), encoding="utf-8")
     model_input = project / SEMANTIC_MODEL_INPUT
-    model_input.write_text(_render_model_input(project, receipts), encoding="utf-8")
+    model_input.write_text(
+        _render_model_input(project, receipts, source_map, rendered_sources),
+        encoding="utf-8",
+    )
     model_input_sha256 = _sha256_path(model_input)
     input_path = stage / "semantic-understanding-input.json"
     payload = {
@@ -382,13 +398,22 @@ def prepare_semantic_understanding(project: Path) -> dict[str, Any]:
         "contract_version": SEMANTIC_CONTRACT_VERSION,
         "semantic_argument_model_schema": SEMANTIC_ARGUMENT_MODEL_CONTRACT_VERSION,
         "semantic_argument_model_required": semantic_argument_model_required(project),
+        "interpretation_contract_mode_required": (
+            "strict" if strict_interpretation_contract_required(project) else "legacy_compatible"
+        ),
         "project": str(project),
         "artifact": str(artifact),
         "model_input": str(model_input),
         "model_input_sha256": model_input_sha256,
         "source_bundle_sha256": source_bundle_sha256(receipts),
+        "source_map_bundle_sha256": source_map["source_map_bundle_sha256"],
+        "source_registry_sha256": source_map["source_registry_sha256"],
+        "source_units_sha256": source_map["source_units_sha256"],
+        "source_heading_tree_sha256": source_map["source_heading_tree_sha256"],
         "source_receipts": receipts,
-        "source_headings": _source_headings(project, receipts),
+        "source_headings": _source_headings(source_map),
+        "source_heading_tree": source_map["headings"],
+        "source_unit_ids": source_map["unit_ids"],
         "required_sections": [aliases[0] for aliases in REQUIRED_SECTIONS.values()],
         "prepared_at": _utc_now(),
     }
@@ -403,12 +428,18 @@ def prepare_semantic_understanding(project: Path) -> dict[str, Any]:
                 "contract_version": SEMANTIC_CONTRACT_VERSION,
                 "semantic_argument_model_schema": SEMANTIC_ARGUMENT_MODEL_CONTRACT_VERSION,
                 "semantic_argument_model_required": payload["semantic_argument_model_required"],
+                "interpretation_contract_mode_required": payload["interpretation_contract_mode_required"],
                 "model_input": str(model_input),
                 "model_input_sha256": model_input_sha256,
                 "output": str(artifact),
                 "source_bundle_sha256": payload["source_bundle_sha256"],
+                "source_map_bundle_sha256": payload["source_map_bundle_sha256"],
+                "source_registry_sha256": payload["source_registry_sha256"],
+                "source_units_sha256": payload["source_units_sha256"],
+                "source_heading_tree_sha256": payload["source_heading_tree_sha256"],
                 "source_receipts": receipts,
                 "source_headings": payload["source_headings"],
+                "source_heading_tree": payload["source_heading_tree"],
                 "required_sections": payload["required_sections"],
             },
             ensure_ascii=False,
@@ -441,6 +472,13 @@ def record_semantic_generation(
             json.dumps(structured_model, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
+    strict_interpretation = bool(
+        strict_interpretation_contract_required(project)
+        or (
+        isinstance(structured_model, dict)
+        and structured_model.get("interpretation_contract_mode") == "strict"
+        )
+    )
     receipt = {
         "schema": "cyberppt.semantic_generation_receipt.v1",
         "contract_version": SEMANTIC_CONTRACT_VERSION,
@@ -454,6 +492,15 @@ def record_semantic_generation(
             _sha256_path(model_path) if model_path.is_file() and structured_model is not None else None
         ),
         "source_bundle_sha256": prepared["source_bundle_sha256"],
+        "source_map_bundle_sha256": (
+            prepared["source_map_bundle_sha256"] if strict_interpretation else None
+        ),
+        "source_units_sha256": (
+            prepared["source_units_sha256"] if strict_interpretation else None
+        ),
+        "source_heading_tree_sha256": (
+            prepared["source_heading_tree_sha256"] if strict_interpretation else None
+        ),
         "generated_at": _utc_now(),
         "note": note.strip(),
     }
@@ -532,9 +579,16 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
     argument_model = extract_model(text)
     argument_model_path = project / SEMANTIC_ARGUMENT_MODEL
     required_model = bool(prepared.get("semantic_argument_model_required"))
+    strict_required = strict_interpretation_contract_required(project)
+    strict_interpretation = bool(
+        isinstance(argument_model, dict)
+        and argument_model.get("interpretation_contract_mode") == "strict"
+    )
     argument_model_issues = validate_model(
         argument_model,
         required_headings=prepared.get("source_headings") or [],
+        required_heading_records=prepared.get("source_heading_tree") or [],
+        source_unit_ids=set(prepared.get("source_unit_ids") or []),
         require_document_context=required_model,
     )
     if argument_model is None and not required_model:
@@ -542,6 +596,16 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
         # contract.  Do not pretend that it supplies a consumable argument
         # model; downstream strict workflows will require the structured form.
         argument_model_issues = []
+    if strict_required and (
+        not isinstance(argument_model, dict)
+        or argument_model.get("interpretation_contract_mode") != "strict"
+    ):
+        argument_model_issues.append(
+            {
+                "code": "SEMANTIC_INTERPRETATION_MODE_REQUIRED",
+                "message": "该项目启用了严格解读合同，语义模型必须声明 interpretation_contract_mode=strict。",
+            }
+        )
     for item in argument_model_issues:
         issues.append({
             "code": item["code"],
@@ -549,6 +613,35 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
             "section": "源材料论点模型（机器可读）",
             **({"node_id": item["node_id"]} if item.get("node_id") else {}),
         })
+    if required_model and isinstance(argument_model, dict):
+        context = argument_model.get("document_semantics")
+        if isinstance(context, dict):
+            if not str(context.get("author_purpose") or "").strip():
+                issues.append({
+                    "code": "SEMANTIC_AUTHOR_PURPOSE_MISSING",
+                    "message": "正式语义模型必须区分作者写作目的与受众决策动作，并声明 author_purpose。",
+                    "section": "材料意图与决策动作",
+                })
+            for field, label in (
+                ("argument_method", "论证方式"),
+                ("supporting_basis", "论证支撑"),
+            ):
+                value = context.get(field)
+                if not isinstance(value, list) or not value:
+                    issues.append({
+                        "code": "SEMANTIC_ARGUMENT_SUPPORT_MISSING",
+                        "message": f"正式语义模型必须声明非空的 {field}（{label}）数组。",
+                        "section": "材料意图与决策动作",
+                    })
+                    continue
+                for index, item in enumerate(value):
+                    refs = item.get("source_refs") if isinstance(item, dict) else None
+                    if not isinstance(item, dict) or not isinstance(refs, list) or not refs:
+                        issues.append({
+                            "code": "SEMANTIC_ARGUMENT_SUPPORT_UNANCHORED",
+                            "message": f"{field}[{index}] 必须是带 source_refs 的源材料论证记录。",
+                            "section": "材料意图与决策动作",
+                        })
     if argument_model is not None:
         argument_model_path.write_text(
             json.dumps(argument_model, ensure_ascii=False, indent=2) + "\n",
@@ -601,7 +694,7 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
                 if argument_model_path.is_file() and argument_model is not None
                 else None
             )
-            receipt_expectations = (
+            receipt_expectations = [
                 ("contract_version", SEMANTIC_CONTRACT_VERSION, "SEMANTIC_CONTRACT_VERSION_STALE"),
                 ("model_input_sha256", prepared["model_input_sha256"], "SEMANTIC_MODEL_INPUT_STALE"),
                 ("semantic_understanding_sha256", _sha256_path(artifact), "SEMANTIC_MODEL_OUTPUT_STALE"),
@@ -611,7 +704,27 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
                     "SEMANTIC_ARGUMENT_MODEL_STALE",
                 ),
                 ("source_bundle_sha256", prepared["source_bundle_sha256"], "SEMANTIC_MODEL_SOURCE_STALE"),
-            )
+            ]
+            if strict_interpretation:
+                receipt_expectations.extend(
+                    [
+                        (
+                            "source_map_bundle_sha256",
+                            prepared["source_map_bundle_sha256"],
+                            "SEMANTIC_SOURCE_MAP_STALE",
+                        ),
+                        (
+                            "source_units_sha256",
+                            prepared["source_units_sha256"],
+                            "SEMANTIC_SOURCE_UNITS_STALE",
+                        ),
+                        (
+                            "source_heading_tree_sha256",
+                            prepared["source_heading_tree_sha256"],
+                            "SEMANTIC_SOURCE_HEADING_TREE_STALE",
+                        ),
+                    ]
+                )
             for field, expected, code in receipt_expectations:
                 if field == "semantic_argument_model_sha256" and expected is None and not required_model:
                     continue
@@ -640,6 +753,11 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
         "semantic_understanding_sha256": _sha256_path(artifact),
         "semantic_argument_model_schema": SEMANTIC_ARGUMENT_MODEL_CONTRACT_VERSION,
         "semantic_argument_model_required": required_model,
+        "interpretation_contract_mode": (
+            argument_model.get("interpretation_contract_mode", "legacy")
+            if isinstance(argument_model, dict)
+            else "legacy"
+        ),
         "semantic_argument_model": str(argument_model_path) if argument_model is not None else None,
         "semantic_argument_model_sha256": (
             _sha256_path(argument_model_path) if argument_model_path.is_file() and argument_model is not None else None
@@ -648,9 +766,21 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
             "section_nodes": len(argument_model.get("section_nodes", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("section_nodes"), list) else 0,
             "subsection_nodes": len(argument_model.get("subsection_nodes", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("subsection_nodes"), list) else 0,
             "argument_relations": len(argument_model.get("argument_relations", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("argument_relations"), list) else 0,
+            "heading_semantic_cards": len(argument_model.get("heading_semantic_cards", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("heading_semantic_cards"), list) else 0,
+            "inference_records": len(argument_model.get("inference_register", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("inference_register"), list) else 0,
+            "repeated_concepts": len(argument_model.get("concept_occurrence_graph", {}).get("concepts", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("concept_occurrence_graph"), dict) and isinstance(argument_model.get("concept_occurrence_graph", {}).get("concepts"), list) else 0,
             "source_gaps": len(argument_model.get("source_gaps", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("source_gaps"), list) else 0,
         },
         "source_bundle_sha256": source_bundle_sha256(receipts),
+        "source_map_bundle_sha256": (
+            prepared["source_map_bundle_sha256"] if strict_interpretation else None
+        ),
+        "source_units_sha256": (
+            prepared["source_units_sha256"] if strict_interpretation else None
+        ),
+        "source_heading_tree_sha256": (
+            prepared["source_heading_tree_sha256"] if strict_interpretation else None
+        ),
         "source_receipts": receipts,
         "model_input": prepared["model_input"],
         "model_input_sha256": prepared["model_input_sha256"],
@@ -676,10 +806,12 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
         f"- 状态：**{report['status']}**",
         f"- 章节：{report['sections_present']}/{report['sections_required']}",
         f"- 源材料包 SHA-256：`{report['source_bundle_sha256']}`",
+        f"- 稳定源材料地图 SHA-256：`{report['source_map_bundle_sha256'] or 'legacy-not-bound'}`",
         f"- 模型输入 SHA-256：`{report['model_input_sha256']}`",
         f"- 语义理解 SHA-256：`{report['semantic_understanding_sha256']}`",
         f"- 源材料论点模型：{'已绑定' if report['semantic_argument_model_sha256'] else '缺失'}",
         f"- 一级论点节点：{report['argument_model_summary']['section_nodes']}；二级论点节点：{report['argument_model_summary']['subsection_nodes']}；论证关系：{report['argument_model_summary']['argument_relations']}",
+        f"- 标题语义卡：{report['argument_model_summary']['heading_semantic_cards']}；推断登记：{report['argument_model_summary']['inference_records']}；重复概念：{report['argument_model_summary']['repeated_concepts']}",
         f"- 模型执行回执：{'已绑定' if report['generation_receipt'] else '缺失'}",
         "",
         "## 问题",
@@ -718,6 +850,9 @@ def approve_semantic_understanding(project: Path, note: str = "") -> Path:
         "semantic_understanding_sha256": audit["semantic_understanding_sha256"],
         "semantic_argument_model_sha256": audit.get("semantic_argument_model_sha256"),
         "source_bundle_sha256": audit["source_bundle_sha256"],
+        "source_map_bundle_sha256": audit.get("source_map_bundle_sha256"),
+        "source_units_sha256": audit.get("source_units_sha256"),
+        "source_heading_tree_sha256": audit.get("source_heading_tree_sha256"),
         "model_input_sha256": audit["model_input_sha256"],
         "generation_receipt_sha256": _sha256_path(generation_receipt),
         "semantic_audit_sha256": _sha256_path(audit_path),
@@ -762,6 +897,13 @@ def assert_semantic_understanding_ready(project: Path) -> dict[str, Any] | None:
     receipts = collect_source_receipts(project)
     if report.get("source_bundle_sha256") != source_bundle_sha256(receipts):
         raise ValueError("source materials changed after semantic review; rerun semantic-check")
+    if report.get("source_map_bundle_sha256"):
+        source_map = prepare_source_map(project)
+        if (
+            report.get("source_map_bundle_sha256")
+            != source_map.get("source_map_bundle_sha256")
+        ):
+            raise ValueError("source map changed after semantic review; rerun semantic-check")
     approval_path = project / SEMANTIC_APPROVAL
     if not approval_path.is_file():
         raise FileNotFoundError(
@@ -775,6 +917,9 @@ def assert_semantic_understanding_ready(project: Path) -> dict[str, Any] | None:
         ("semantic_understanding_sha256", report.get("semantic_understanding_sha256")),
         ("semantic_argument_model_sha256", report.get("semantic_argument_model_sha256")),
         ("source_bundle_sha256", report.get("source_bundle_sha256")),
+        ("source_map_bundle_sha256", report.get("source_map_bundle_sha256")),
+        ("source_units_sha256", report.get("source_units_sha256")),
+        ("source_heading_tree_sha256", report.get("source_heading_tree_sha256")),
         ("model_input_sha256", report.get("model_input_sha256")),
         ("generation_receipt_sha256", report.get("generation_receipt_sha256")),
         ("semantic_audit_sha256", _sha256_path(audit_path)),
@@ -800,6 +945,7 @@ def semantic_binding_issues(
     expected_semantic = str(gate.get("semantic_understanding_sha256") or "")
     expected_argument_model = str(gate.get("semantic_argument_model_sha256") or "")
     expected_source = str(gate.get("source_bundle_sha256") or "")
+    expected_source_map = str(gate.get("source_map_bundle_sha256") or "")
     if str(payload.get("semantic_understanding_sha256") or "").lower() != expected_semantic.lower():
         issues.append({
             "code": "SEMANTIC_UNDERSTANDING_NOT_BOUND",
@@ -816,6 +962,12 @@ def semantic_binding_issues(
         issues.append({
             "code": "SEMANTIC_ARGUMENT_MODEL_NOT_BOUND",
             "message": "Artifact must bind to the current semantic-stage source argument model SHA-256.",
+            "retry_strategy": "rebuild_from_semantic_understanding",
+        })
+    if expected_source_map and str(payload.get("semantic_source_map_bundle_sha256") or "").lower() != expected_source_map.lower():
+        issues.append({
+            "code": "SEMANTIC_SOURCE_MAP_NOT_BOUND",
+            "message": "Artifact must bind to the stable source units and heading tree reviewed by the semantic gate.",
             "retry_strategy": "rebuild_from_semantic_understanding",
         })
     return issues

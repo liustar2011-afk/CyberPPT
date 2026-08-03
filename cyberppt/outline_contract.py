@@ -502,6 +502,11 @@ def _document_semantic_issues(
             )
         ]
     fields = ("document_role", "subject_of_report", "primary_thesis", "decision_boundary")
+    fields += tuple(
+        field
+        for field in ("author_purpose", "argument_method", "supporting_basis")
+        if field in expected
+    )
     if any(str(actual.get(field) or "").strip() != str(expected.get(field) or "").strip() for field in fields):
         return [
             AuditIssue(

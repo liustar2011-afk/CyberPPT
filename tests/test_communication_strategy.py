@@ -37,6 +37,13 @@ class CommunicationStrategyTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.project = Path(self.temp.name) / "project"
         init_project(self.project)
+        # This fixture intentionally exercises the legacy prose-only semantic
+        # handoff; new initialized projects otherwise default to strict mode.
+        manifest = self.project / "manifest.yml"
+        manifest_text = manifest.read_text(encoding="utf-8")
+        manifest_text = manifest_text.replace("  semantic_argument_model: required\n", "")
+        manifest_text = manifest_text.replace("  interpretation_contract_mode: strict\n", "")
+        manifest.write_text(manifest_text, encoding="utf-8")
         (self.project / "source" / "material.txt").write_text(
             "structured source material", encoding="utf-8"
         )

@@ -42,6 +42,7 @@ from cyberppt.semantic_understanding import (
     record_semantic_generation,
     run_semantic_understanding_audit,
 )
+from cyberppt.source_document_map import prepare_source_map, run_source_map_audit
 from cyberppt.stage01_controls import (
     write_confirmation_request,
     write_escalation_decision,
@@ -102,6 +103,26 @@ def _source_truth_audit_command(args: argparse.Namespace) -> int:
             Path(args.input),
             max_attempts=args.max_attempts,
         )
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return code
+
+
+def _prepare_source_map_command(args: argparse.Namespace) -> int:
+    try:
+        report = prepare_source_map(Path(args.project))
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return 0
+
+
+def _source_map_check_command(args: argparse.Namespace) -> int:
+    try:
+        code, report = run_source_map_audit(Path(args.project))
     except (FileNotFoundError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
@@ -458,6 +479,20 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("path", help="Target project directory.")
     init.add_argument("--force", action="store_true", help="Overwrite generated project manifest and README.")
     init.set_defaults(func=_init_command)
+
+    prepare_source_map_parser = subparsers.add_parser(
+        "prepare-source-map",
+        help="Compile stable source units and the original source heading tree.",
+    )
+    prepare_source_map_parser.add_argument("project", help="CyberPPT project directory.")
+    prepare_source_map_parser.set_defaults(func=_prepare_source_map_command)
+
+    source_map_check = subparsers.add_parser(
+        "source-map-check",
+        help="Audit source extraction, stable IDs, heading hierarchy, and pending image interpretation.",
+    )
+    source_map_check.add_argument("project", help="CyberPPT project directory.")
+    source_map_check.set_defaults(func=_source_map_check_command)
 
     prepare_semantic = subparsers.add_parser(
         "prepare-semantic-understanding",
