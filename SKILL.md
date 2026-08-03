@@ -19,6 +19,17 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 语义理解必须先于 Source Truth 和提纲完成源材料论点模型。`semantic-understanding.md` 中的 `cyberppt.semantic_argument_model.v1` 块是唯一的源论点解释合同，必须声明 `document_semantics`、全文主论点、源原生一级/二级节点、论点角色、论点权重、证据、主体、状态、论证关系、MECE 分区和源材料缺口。`argument_weight`（`core`、`supporting`、`detail`、`constraint`）与 `argument_role`、`supports/maps_to` 等论证关系是不同维度；关系的 `weight_effect` 固定为 `none`，不能因“支持某节点”就把该节点降格为支撑层。提纲不得从证据清单重新猜主论点；它只能消费该模型并按受众选择、压缩和排序。建设内容、核心能力、架构、行业优势、合作机制和下一步建议若处于不同语义层，必须保留节点并用显式关系连接，不能因证据重叠而合并；源材料单列的“行业优势与合作价值”必须保留为“中电联有什么能力、有何优势及合作价值”的核心论点。缺少完成事实、责任主体、实施条件、验收指标、真实需求或商业条款时，必须登记为 `source_gap` 并保留待确认/条件性表达，禁止补写成事实、承诺或已建成能力。模型出现问号/替换字符等编码损坏时，语义门禁必须阻断，不能把损坏文本传给下游。严格项目的 `outline-audit` 还必须反向检查每个源论点节点有唯一 `primary_consumer` 或显式允许合并，复制节点的 `argument_role` 和 `argument_weight`，并验证页面核心结论能追溯到节点而不只是追溯到 `S###` 证据。
 
+### 语义消费锁（不可跳过）
+
+语义理解完成后，后续阶段只能消费已批准的论点模型，禁止回到证据目录重新猜测主论点、章节主线或页面结论。严格项目按以下顺序建立并校验绑定：
+
+1. **冻结 Source Truth**：`source-truth.json` 只保存源材料事实、判断、建议、边界和待核项；通过 Source Truth 审计后不得再写入页面分配。页面与证据的关系写入独立的 `workbench/stages/01-analysis/outline-source-consumption.json`，该文件必须记录当前 Source Truth 的 SHA-256。
+2. **锁定论点到大纲**：`outline.json` 必须声明 `source_truth_mapping_mode: consumption_manifest`、Source Truth 哈希、消费清单路径及消费清单哈希；每个内容页必须从语义模型复制源原生论点节点、`argument_role`、`argument_weight`、主体、状态、论证关系和 `source_gap`，不得用证据清单替代这些字段。
+3. **锁定内容单元到脚本**：每个非边界 `content_unit` 必须有稳定的 `unit_id`。编写脚本前必须生成 `workbench/scripts/page-script-authoring.json` 及其 Markdown 审阅输入；每个内容页的 `consumes` 必须逐项列出本页消费的 `unit_id`，页面合同收据必须写入同一组 `consumed_content_unit_ids`。
+4. **执行消费审计**：运行 `outline-audit` 和 `script-audit` 时，缺少、错配、重复或越过边界的消费声明均为阻断错误。脚本审计的 `quality_status=passed_with_warnings` 只能进入人工内容复核，不能直接标记为脚本批准；只有消费审计通过且确认门完成后才能进入 Stage 02。
+
+上述四项工件必须在项目目录落盘并登记到 `artifact-ledger.json`。任一哈希过期、工件缺失或上游重新生成时，停止下游脚本和视觉生产，先重建受影响的消费绑定并重新审计。
+
 形成提纲前必须通过沟通策略确认门。语义理解批准后运行 `prepare-communication-strategy`，基于全文语义识别沟通对象、沟通目的和受众决策任务，并形成 2-3 个章节组织方式实质不同的汇报方向；运行 `communication-strategy-check` 后，必须把 `communication-strategy-confirmation.md` 展示给用户。只有用户以 `approve-communication-strategy --option <option_id>` 明确选择方向，才可运行 `prepare-outline-input` 或 `outline-audit`。提纲根节点必须逐项绑定已批准的对象、目的、方向、架构模式、结构原则以及候选与审批哈希；不得仅保留一个无执行作用的 `audience` 字段，也不得由生成代理静默替用户选择。
 
 第一阶段必须生成结构化逐页大纲并执行 `outline-audit`。若方案类材料未经明确授权采用 `consulting`，审计必须以 `SOLUTION_ARCHITECTURE_REQUIRED` 失败。封面、目录、章节页、内容页和封底必须位于同一连续页面序列，不得把模板页抽离后另列；章节页只写“第X章：XXX”，不承载论点、模块或方法内容。内容页的短 `title` 与 `main_message` 必须分开，不能把整句结论塞进页标题。
