@@ -7,6 +7,7 @@ import unittest
 from cyberppt.script_quality_contract import (
     ScriptPage,
     _mechanical_evidence_bullets,
+    _generic_onscreen_relation_hits,
     _speaker_placeholder_hits,
     _issue,
     _source_consumption_issues,
@@ -51,6 +52,19 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
     def test_allows_business_specific_speaker_notes(self) -> None:
         notes = "国家部署、行业协同需求和资源现实问题属于三个不同维度，共同说明建设统一基础的必要性。"
         self.assertEqual((), _speaker_placeholder_hits(notes))
+
+    def test_flags_generic_business_relation_placeholder(self) -> None:
+        self.assertTrue(
+            _generic_onscreen_relation_hits("- 业务关系：以上要点共同构成本节完整内容。")
+        )
+
+    def test_allows_page_specific_business_relation(self) -> None:
+        self.assertEqual(
+            (),
+            _generic_onscreen_relation_hits(
+                "国家部署、行业需求和资源问题属于三个并列维度，共同构成建设背景。"
+            ),
+        )
 
 ROOT = Path(__file__).resolve().parents[1]
 POWER_PROJECT = ROOT / "projects" / "power-supply-demand-forecast-early-warning"

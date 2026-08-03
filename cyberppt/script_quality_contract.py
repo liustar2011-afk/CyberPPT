@@ -47,6 +47,10 @@ SPEAKER_PLACEHOLDER_RE = re.compile(
 NUMBERED_EVIDENCE_BULLET_RE = re.compile(
     r"^\s*-\s*依据(?P<number>\d+)[：:]\s*(?P<body>.*?)\s*$"
 )
+GENERIC_ONSCREEN_RELATION_RE = re.compile(
+    r"(?:业务关系[：:]\s*)?(?:以上|上述)(?:内容|要点|依据)"
+    r"(?:共同)?(?:构成|形成|支撑|完成)(?:本节|本页)?(?:完整)?(?:内容|判断|任务)"
+)
 DEFENSIVE_BOUNDARY_COACHING_RE = re.compile(
     r"(反复区分|避免(?:听众)?.{0,12}(?:误解|听成|当成)|"
     r"不要.{0,12}讲成|不是.{0,8}承诺|不构成.{0,8}承诺|"
@@ -1184,6 +1188,14 @@ def _speaker_placeholder_hits(text: str) -> tuple[str, ...]:
     )
 
 
+def _generic_onscreen_relation_hits(text: str) -> tuple[str, ...]:
+    return tuple(
+        dict.fromkeys(
+            match.group(0) for match in GENERIC_ONSCREEN_RELATION_RE.finditer(text)
+        )
+    )
+
+
 def _boundary_aside_hits(text: str) -> tuple[str, ...]:
     hits = [pattern for pattern in _BOUNDARY_ASIDE_PATTERNS if pattern in text]
     return tuple(hits)
@@ -1465,6 +1477,7 @@ def script_retry_directive(
             "PRIMITIVE_ONSCREEN_MISMATCH",
             "ONSCREEN_RELATION_ISOMORPHISM",
             "ONSCREEN_SOURCE_ATOMIZATION",
+            "ONSCREEN_GENERIC_RELATION_PLACEHOLDER",
         }
         for code in codes
     ):
@@ -1756,6 +1769,20 @@ def _prose_issues(
                     "enumerate punctuation fragments or Source Truth atoms."
                 ),
                 evidence=mechanical_evidence,
+            )
+        )
+    generic_relations = _generic_onscreen_relation_hits(page.onscreen_text)
+    if generic_relations:
+        issues.append(
+            _issue(
+                "ONSCREEN_GENERIC_RELATION_PLACEHOLDER",
+                page,
+                "On-screen relationship text is a generic placeholder rather than a business relation.",
+                (
+                    "Name the actual relation carried by the page, such as parallel dimensions, "
+                    "input-to-output transformation, layered support, sequence, control, or feedback."
+                ),
+                evidence=generic_relations,
             )
         )
     boundary_hits = _boundary_aside_hits(prose)
