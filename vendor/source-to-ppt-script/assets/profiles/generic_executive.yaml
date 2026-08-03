@@ -1,0 +1,44 @@
+profile:
+  id: generic_executive
+  name: 通用管理层汇报PPT脚本
+  language: zh-CN
+presentation:
+  audience: 管理层与项目决策者
+  purpose: 管理汇报、项目方案、内部沟通
+  page_count_mode: auto
+  target_page_count: 0
+  min_page_count: 3
+  max_page_count: 40
+content:
+  max_title_chars: 26
+  max_subtitle_chars: 48
+  max_modules_per_page: 6
+  max_body_lines_per_page: 12
+  max_body_line_chars: 38
+  max_total_chars_per_page: 270
+  prohibited_phrases: []
+  rules:
+    - 每页只承担一个页面使命、一个核心判断和一种主要逻辑关系。
+    - 页面围绕受众问题组织，不按源材料章节机械摘要。
+    - 所有事实、数字、责任和边界必须可追溯到源材料。
+    - 不为版式完整擅自补充源材料不存在的能力、结论或数据。
+visual:
+  aspect_ratio: "16:9"
+  font: Microsoft YaHei
+  min_font_pt: 9
+  title_rendering: ppt_text_layer
+  requirements:
+    - 使用一个清晰主视觉承载页面判断。
+    - 文字嵌入逻辑结构，不与图片形成割裂的左右分区。
+    - 标题、副标题、页码和Logo由PPT文字层处理。
+  avoid:
+    - 平均卡片墙
+    - 图标堆叠
+    - 无关装饰图
+    - 第二视觉中心
+chunking:
+  single_call_character_limit: 70000
+  chunk_character_limit: 36000
+workflow:
+  strict_semantic_audit: true
+  preserve_intermediate_files: true

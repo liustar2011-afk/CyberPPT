@@ -1,0 +1,70 @@
+{
+  "global_visual_rules": ["16:9", "Microsoft YaHei", "标题由PPT文字层处理", "实景彩色行业场景与业务逻辑融合"],
+  "pages": [
+    {
+      "page_id": "P01",
+      "visual_intent_type": "cover_scene",
+      "visual_thesis": "安全可信的数据服务正在连接电力教育与行业知识资源",
+      "dominant_carrier": "由电力知识资源向教育大模型延伸的可信数据通道",
+      "scene_anchor": "抽象化电力调度与教育科研工作环境，不出现正面人物",
+      "composition": "宽幅场景作为低对比背景，可信数据通道形成唯一视觉中心，左侧预留标题区域",
+      "reading_path": ["标题区域", "可信数据通道", "教育大模型应用端"],
+      "emphasis_primary": "可信数据通道",
+      "emphasis_secondary": ["电力知识资源", "教育大模型"],
+      "text_embedding": [],
+      "imagery": ["实景彩色行业场景", "克制的数据流叠加"],
+      "layout_regions": [
+        {"region_id": "R01", "purpose": "标题留白", "content_ref": "PPT标题层", "position": "左上至左中", "relative_size": "large", "z_order": 2},
+        {"region_id": "R02", "purpose": "主视觉", "content_ref": "可信数据通道", "position": "中部偏右", "relative_size": "dominant", "z_order": 1}
+      ],
+      "avoid": ["正面人像", "图标密集", "卡片墙", "独立装饰大图"],
+      "aspect_ratio": "16:9",
+      "title_rendering": "ppt_text_layer",
+      "generation_prompt": "16:9政企领导汇报封面底图，象牙白与深蓝色调。以真实电力行业工作环境和教育科研环境为场景基础，用一条克制、清晰的可信数据通道连接电力知识资源与教育大模型应用端，形成中部偏右的唯一视觉中心；左侧保留大面积干净留白供PPT标题层使用。不绘制标题、副标题、页码、Logo或任何具体文字。禁止正面人物、图标密集、卡片墙、强阴影和过度发光。"
+    },
+    {
+      "page_id": "P02",
+      "visual_intent_type": "problem_solution_flow",
+      "visual_thesis": "数据留在受控环境，服务能力沿可信通道持续输出",
+      "dominant_carrier": "左侧受控数据环境—中部可信连接器—右侧API服务调用的贯通结构",
+      "scene_anchor": "电力数据中心与教育大模型研发环境的实景彩色插画",
+      "composition": "中部可信通道占主导，需求、控制和输出文字面板附着在对应环节，避免三栏等宽",
+      "reading_path": ["持续数据需求", "受控数据环境", "可信连接器", "API服务输出", "授权计量审计"],
+      "emphasis_primary": "可信连接器与受控服务通道",
+      "emphasis_secondary": ["持续数据需求", "全过程控制"],
+      "text_embedding": ["需求文字附着于教育大模型端", "原始数据不外流标注附着于数据环境边界", "授权计量审计作为通道底部控制带"],
+      "imagery": ["电力数据中心", "教育大模型研发工作环境", "克制的数据流"],
+      "layout_regions": [
+        {"region_id": "R01", "purpose": "受控数据环境", "content_ref": "M02", "position": "左中", "relative_size": "large", "z_order": 1},
+        {"region_id": "R02", "purpose": "可信服务通道", "content_ref": "核心判断", "position": "中央横向贯穿", "relative_size": "dominant", "z_order": 2},
+        {"region_id": "R03", "purpose": "应用需求", "content_ref": "M01", "position": "右中", "relative_size": "medium", "z_order": 1},
+        {"region_id": "R04", "purpose": "控制机制", "content_ref": "M03", "position": "主通道下方", "relative_size": "medium", "z_order": 3}
+      ],
+      "avoid": ["正面人像", "图标密集", "卡片墙", "文字与图片割裂"],
+      "aspect_ratio": "16:9",
+      "title_rendering": "ppt_text_layer",
+      "generation_prompt": "16:9政企领导汇报页面底图，象牙白背景、深蓝主色、真实电力数据中心与教育大模型研发环境的实景彩色插画。构建左侧受控数据环境、中部可信连接器与横向服务通道、右侧API调用端的一体化主视觉；突出原始数据留在左侧边界内，服务能力沿通道向右输出。需求、可信交付、授权控制、调用计量、审计留痕应作为嵌入式面板或标签附着于对应结构，不使用三栏等宽卡片。标题与副标题由PPT文字层处理，图中不绘制标题、副标题、页码或Logo。禁止正面人物、图标堆叠、强阴影和第二视觉中心。"
+    },
+    {
+      "page_id": "P03",
+      "visual_intent_type": "timeline",
+      "visual_thesis": "试点由技术验证逐步转入合作固化",
+      "dominant_carrier": "从样例验证、接口联调到目录报价验收的递进轨道",
+      "scene_anchor": "轻量化电力数据服务联调工作环境",
+      "composition": "一条由左下向右上的递进主轨道，前半段强调验证，后半段强调合作固化",
+      "reading_path": ["样例验证", "接口联调", "数据目录", "服务报价", "验收指标"],
+      "emphasis_primary": "验证在先、固化在后",
+      "emphasis_secondary": ["技术验证", "合作固化"],
+      "text_embedding": ["五个步骤作为轨道节点标签", "结论作为轨道终点注释"],
+      "imagery": ["联调工作台局部实景", "克制的流程轨道"],
+      "layout_regions": [
+        {"region_id": "R01", "purpose": "递进主轨道", "content_ref": "M01+M02", "position": "左下至右上", "relative_size": "dominant", "z_order": 1},
+        {"region_id": "R02", "purpose": "结论落点", "content_ref": "conclusion", "position": "右上终点", "relative_size": "medium", "z_order": 2}
+      ],
+      "avoid": ["正面人像", "图标密集", "卡片墙", "独立装饰场景"],
+      "aspect_ratio": "16:9",
+      "title_rendering": "ppt_text_layer",
+      "generation_prompt": "16:9政企领导汇报页面底图，以一条从左下向右上递进的主轨道表现试点推进：样例验证、接口联调、数据目录、服务报价、验收指标。前半段突出技术验证，后半段突出合作固化，节点标签嵌入轨道结构；背景仅保留低对比度的电力数据服务联调工作环境，不形成独立视觉中心。标题与副标题由PPT文字层处理，图中不绘制标题、副标题、页码或Logo。禁止正面人物、图标堆叠、等宽卡片和过度阴影。"
+    }
+  ]
+}

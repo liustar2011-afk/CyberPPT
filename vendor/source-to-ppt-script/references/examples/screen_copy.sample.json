@@ -1,0 +1,87 @@
+{
+  "pages": [
+    {
+      "page_id": "P01",
+      "title": "电力行业数据服务试点方案",
+      "subtitle": "可信连接器支撑教育大模型安全用数",
+      "conclusion": "",
+      "modules": [],
+      "annotations": [],
+      "source_asset_ids": [],
+      "content_lock": {
+        "title_meaning": "本次汇报主题",
+        "core_judgment": "电力行业数据服务试点方案",
+        "required_facts": [],
+        "required_terms": ["电力行业数据服务"],
+        "prohibited_rewrites": [],
+        "prohibited_additions": ["源材料未给出的建设成效"]
+      }
+    },
+    {
+      "page_id": "P02",
+      "title": "持续用数需要可信服务通道",
+      "subtitle": "",
+      "conclusion": "原始数据留在受控环境，服务能力通过API持续输出",
+      "modules": [
+        {
+          "module_id": "M01",
+          "heading": "持续需求",
+          "body_lines": ["教育大模型需要权威、专业、持续更新的行业数据"],
+          "asset_ids": ["A001"]
+        },
+        {
+          "module_id": "M02",
+          "heading": "可信交付",
+          "body_lines": ["双方部署可信连接器", "原始数据不外流", "通过API提供检索和训练数据服务"],
+          "asset_ids": ["A002"]
+        },
+        {
+          "module_id": "M03",
+          "heading": "全过程控制",
+          "body_lines": ["授权控制", "调用计量", "审计留痕"],
+          "asset_ids": ["A003"]
+        }
+      ],
+      "annotations": [],
+      "source_asset_ids": ["A001", "A002", "A003"],
+      "content_lock": {
+        "title_meaning": "持续数据需求需要可信服务方式",
+        "core_judgment": "原始数据不外流条件下通过可信连接器和API持续提供服务",
+        "required_facts": ["原始数据保留在提供方受控环境", "全过程授权、计量和审计"],
+        "required_terms": ["可信连接器", "API", "审计留痕"],
+        "prohibited_rewrites": ["不得改为原始数据集中汇聚后对外提供"],
+        "prohibited_additions": ["未明确的隐私计算技术路线", "未明确的服务成效"]
+      }
+    },
+    {
+      "page_id": "P03",
+      "title": "先验证，再固化合作安排",
+      "subtitle": "",
+      "conclusion": "以样例和接口验证为前提，逐步确定可交付、可报价、可验收的试点方案",
+      "modules": [
+        {
+          "module_id": "M01",
+          "heading": "技术验证",
+          "body_lines": ["完成样例验证", "推进接口联调"],
+          "asset_ids": ["A004"]
+        },
+        {
+          "module_id": "M02",
+          "heading": "合作固化",
+          "body_lines": ["确定首批数据目录", "细化服务报价", "明确验收指标"],
+          "asset_ids": ["A004"]
+        }
+      ],
+      "annotations": [],
+      "source_asset_ids": ["A004"],
+      "content_lock": {
+        "title_meaning": "试点按验证在先、合作固化在后的顺序推进",
+        "core_judgment": "先验证再确定目录、报价和验收",
+        "required_facts": ["样例验证", "接口联调", "数据目录", "报价", "验收指标"],
+        "required_terms": ["样例验证", "接口联调"],
+        "prohibited_rewrites": [],
+        "prohibited_additions": ["源材料未给出的时间节点和责任单位"]
+      }
+    }
+  ]
+}

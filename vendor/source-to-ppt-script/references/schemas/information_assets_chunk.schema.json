@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ChunkInformationAssets",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["chunk_summary", "assets"],
+  "properties": {
+    "chunk_summary": {"type": "string"},
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["asset_id", "content", "asset_type", "priority", "must_retain", "compressibility", "source_refs", "evidence", "related_asset_ids", "notes"],
+        "properties": {
+          "asset_id": {"type": "string", "pattern": "^A[0-9]{3,5}$"},
+          "content": {"type": "string", "minLength": 1},
+          "asset_type": {"type": "string", "enum": ["fact", "judgment", "policy_basis", "problem", "goal", "solution", "measure", "result", "data", "constraint", "decision_item", "responsibility", "example", "definition"]},
+          "priority": {"type": "string", "enum": ["core", "important", "supporting"]},
+          "must_retain": {"type": "boolean"},
+          "compressibility": {"type": "string", "enum": ["none", "limited", "high"]},
+          "source_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^(D[0-9]{2}-)?S[0-9]{5}$"}},
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "related_asset_ids": {"type": "array", "items": {"type": "string", "pattern": "^A[0-9]{3,5}$"}},
+          "notes": {"type": "string"}
+        }
+      }
+    }
+  }
+}
