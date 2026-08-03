@@ -321,6 +321,8 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             f"- source_argument_node_statuses: {json.dumps(page.get('source_argument_node_statuses') or {}, ensure_ascii=False)}",
             f"- source_argument_node_weights: {json.dumps(page.get('source_argument_node_weights') or {}, ensure_ascii=False)}",
             f"- content_relations: {json.dumps(page.get('content_relations') or [], ensure_ascii=False)}",
+            f"- source_evidence_contract: {json.dumps(page.get('source_evidence_contract') or {}, ensure_ascii=False)}",
+            f"- source_claims: {json.dumps(page.get('source_claims') or [], ensure_ascii=False)}",
             f"- onscreen_conclusion_mode: {page.get('onscreen_conclusion_mode') or page.get('onscreen_judgment_mode', 'auto')}",
             f"- new_value_vs_previous: {page.get('new_value_vs_previous', '')}",
             f"- reserved_for_later: {page.get('reserved_for_later', '')}",

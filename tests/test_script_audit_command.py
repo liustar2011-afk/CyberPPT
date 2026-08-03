@@ -31,16 +31,16 @@ VALID_SCRIPT = """## 第8页：第二章：定位、目标与研究边界
 
   **行业公共能力**
 
-  - 面向电力行业开展供需形势预测与预警，覆盖主要预测对象、多时间尺度和多类成果。
-  - 由统一数据治理、组合模型、专家会商、成果生产与安全运行共同支撑行业研判和成果发布。
-  - 面向全国、区域、省级和重点行业开展供需分析，服务履职与行业共用；通过统一口径、跨区域协同和可追溯成果管理提升研判效率，明确服务对象与业务边界。
-  - 输出预测、预警、专题研判与成果发布，支撑研究方向和行业共用。
+  - 能力定位：面向电力行业开展供需形势预测与预警，覆盖主要预测对象、多时间尺度和多类成果。
+  - 支撑体系：由统一数据治理、组合模型、专家会商、成果生产与安全运行共同支撑行业研判和成果发布。
+  - 服务范围：面向全国、区域、省级和重点行业开展供需分析，服务履职与行业共用；通过统一口径、跨区域协同和可追溯成果管理提升研判效率，明确服务对象与业务边界。
+  - 成果输出：输出预测、预警、专题研判与成果发布，支撑研究方向和行业共用。
 
   **专业系统边界**
 
-  - 服务行业研判和成果发布，不替代电网调度、市场出清、企业生产计划和具体投资决策。
+  - 职责边界：服务行业研判和成果发布，不替代电网调度、市场出清、企业生产计划和具体投资决策。
 
-  - 保留专业职责和运行边界。
+  - 运行边界：保留专业职责和运行边界。
 
 - 证据：S015、S026、S059
 - 边界：正式范围经摸底验证后确定。
@@ -101,7 +101,7 @@ def _build_project(root: Path, script_text: str = VALID_SCRIPT) -> tuple[Path, P
     # gate while preserving the business meaning used by the tests.
     script_text = script_text.replace(
         "\u7b49\u4e13\u4e1a\u7cfb\u7edf\u3002",
-        "\u7b49\u4e13\u4e1a\u7cfb\u7edf\u3002\u540e\u7eed\u6210\u679c\u8fd8\u5e94\u652f\u6301\u5468\u671f\u6027\u590d\u76d8\u548c\u8fd0\u8425\u66f4\u65b0\u3002",
+        "\u7b49\u4e13\u4e1a\u7cfb\u7edf\u3002\u540e\u7eed\u6210\u679c\u8fd8\u5e94\u652f\u6301\u5468\u671f\u6027\u590d\u76d8\u548c\u8fd0\u8425\u66f4\u65b0\uff0c\u5e76\u5bf9\u6570\u636e\u53e3\u5f84\u3001\u9884\u6d4b\u7ed3\u679c\u3001\u9884\u8b66\u4f9d\u636e\u548c\u6210\u679c\u7248\u672c\u4fdd\u7559\u53ef\u8ffd\u6eaf\u8bb0\u5f55\uff0c\u4f7f\u4e0d\u540c\u5730\u533a\u3001\u4e0d\u540c\u65f6\u95f4\u5c3a\u5ea6\u548c\u4e0d\u540c\u4f7f\u7528\u573a\u666f\u7684\u5206\u6790\u7ed3\u679c\u5177\u5907\u53ef\u6bd4\u8f83\u6027\u4e0e\u53ef\u590d\u6838\u6027\u3002",
     )
     script.write_text(script_text, encoding="utf-8")
     _write_json(
@@ -248,6 +248,30 @@ def _build_failing_project(root: Path) -> tuple[Path, Path]:
         },
     )
     return project, script
+
+
+class ProhibitedContrastTests(unittest.TestCase):
+    def test_rejects_not_but_contrast_in_authored_copy(self) -> None:
+        from cyberppt.script_quality_contract import _prohibited_contrast_hits
+
+        self.assertEqual(
+            ("不是内部工具，而是",),
+            _prohibited_contrast_hits("建设定位不是内部工具，而是行业公共能力。"),
+        )
+
+    def test_rejects_conversational_manuscript_marker(self) -> None:
+        from cyberppt.script_quality_contract import _prohibited_colloquial_hits
+
+        self.assertEqual(("接下来", "看一下"), _prohibited_colloquial_hits("接下来我们看一下运营流程。"))
+
+    def test_rejects_unlabeled_onscreen_bullet(self) -> None:
+        from cyberppt.script_quality_contract import _unlabeled_onscreen_bullets
+
+        self.assertEqual(("- 形成统一目录和服务记录。",), _unlabeled_onscreen_bullets("- 形成统一目录和服务记录。"))
+        self.assertEqual(
+            ("- 形成统一目录，记录授权范围：并支持审计。",),
+            _unlabeled_onscreen_bullets("- 形成统一目录，记录授权范围：并支持审计。"),
+        )
 
 
 class ScriptAuditCommandTests(unittest.TestCase):

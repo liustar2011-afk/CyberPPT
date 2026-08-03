@@ -1026,6 +1026,38 @@ _ANALYTICAL_VOICE_PATTERNS: tuple[str, ...] = (
     "据此，本页",
 )
 
+# Contrastive negation of the form “不是……而是……” is prohibited in
+# authored slide copy. It usually spends the reader's attention rebutting a
+# discarded frame before stating the actual claim. Require the claim and the
+# distinction to be written directly instead.
+_PROHIBITED_CONTRAST_RE = re.compile(
+    r"(?:不是|并非)[^。！？；\n]{0,100}?(?:，|,)?\s*而是"
+)
+
+# Conversational scaffolding is unsuitable for the manuscript layer. Keep this
+# list deliberately narrow: it targets reader-address and spoken transitions,
+# while allowing ordinary formal verbs such as“可以”“需要”和“应当”.
+_PROHIBITED_COLLOQUIAL_PATTERNS: tuple[str, ...] = (
+    "大家",
+    "咱们",
+    "我们先",
+    "我们再",
+    "我们可以",
+    "接下来",
+    "先说",
+    "再说",
+    "最后说",
+    "简单来说",
+    "说白了",
+    "也就是说",
+    "就是说",
+    "看一下",
+    "看一看",
+    "这里说的是",
+    "这部分要",
+    "凭什么",
+)
+
 # Status/aside sermons that must not dominate claim layers (prose climax / onscreen).
 # Legitimate duty wording like “不替代专业系统” is not listed here.
 _BOUNDARY_ASIDE_PATTERNS: tuple[str, ...] = (
@@ -1097,6 +1129,27 @@ def _analytical_voice_hits(prose: str) -> tuple[str, ...]:
     return tuple(hits)
 
 
+def _prohibited_contrast_hits(text: str) -> tuple[str, ...]:
+    return tuple(dict.fromkeys(match.group(0) for match in _PROHIBITED_CONTRAST_RE.finditer(text)))
+
+
+def _prohibited_colloquial_hits(text: str) -> tuple[str, ...]:
+    return tuple(pattern for pattern in _PROHIBITED_COLLOQUIAL_PATTERNS if pattern in text)
+
+
+def _unlabeled_onscreen_bullets(text: str) -> tuple[str, ...]:
+    hits = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        # A conclusion-first item has a short label immediately after the
+        # bullet marker.  A colon buried in the supporting sentence does not
+        # satisfy the contract.
+        has_prefix = bool(re.match(r"^-\s*[^\s：:，,。；;、]{2,24}[：:]", stripped))
+        if stripped.startswith("-") and not has_prefix:
+            hits.append(stripped)
+    return tuple(hits)
+
+
 def _boundary_aside_hits(text: str) -> tuple[str, ...]:
     hits = [pattern for pattern in _BOUNDARY_ASIDE_PATTERNS if pattern in text]
     return tuple(hits)
@@ -1145,6 +1198,89 @@ def text_similarity(left: str, right: str) -> float:
     return len(left_set & right_set) / len(left_set | right_set)
 
 
+def _source_statement_overlap(statement: str, authored: str, size: int = 4) -> float:
+    """Measure factual phrase survival without requiring verbatim prose."""
+
+    def shingles(value: str) -> set[str]:
+        compact = re.sub(r"[^0-9A-Za-z\u4e00-\u9fff]", "", value or "")
+        return {
+            compact[index : index + size]
+            for index in range(max(0, len(compact) - size + 1))
+            if compact[index : index + size]
+        }
+
+    source = shingles(statement)
+    if not source:
+        return 1.0
+    return len(source & shingles(authored)) / len(source)
+
+
+def _source_consumption_issues(
+    page: ScriptPage,
+    contract: dict[str, object],
+) -> list[ScriptQualityIssue]:
+    """Verify that source-grounded content units reach the authored page.
+
+    ``source_refs`` prove traceability only.  Strict Outline v2 pages also
+    carry ``source_statements`` in each content unit; this check requires the
+    editorial unit or at least one of its factual anchors to survive in the
+    full prose/visible layer.  Supporting units may be compressed, while the
+    primary unit remains mandatory.
+    """
+
+    evidence_contract = contract.get("source_evidence_contract")
+    if not isinstance(evidence_contract, dict) or evidence_contract.get("mode") != "required":
+        return []
+    raw_units = contract.get("content_units")
+    if not isinstance(raw_units, list):
+        return []
+    contract_units = {
+        tuple(str(item) for item in unit.get("source_refs") or []): unit
+        for unit in evidence_contract.get("units", [])
+        if isinstance(unit, dict)
+    }
+    authored = "\n".join(
+        (page.full_prose, page.onscreen_text, page.speaker_notes, page.visual_structure)
+    )
+    issues: list[ScriptQualityIssue] = []
+    for unit in raw_units:
+        if not isinstance(unit, dict) or str(unit.get("role") or "") == "boundary":
+            continue
+        statement = str(unit.get("statement") or "")
+        evidence_unit = contract_units.get(
+            tuple(str(item) for item in unit.get("source_refs") or []),
+            {},
+        )
+        source_statements = [
+            str(item)
+            for item in (
+                unit.get("source_statements")
+                or evidence_unit.get("source_statements")
+                or []
+            )
+            if str(item).strip()
+        ]
+        unit_overlap = _source_statement_overlap(statement, authored)
+        fact_overlaps = [
+            _source_statement_overlap(item, authored)
+            for item in source_statements
+        ]
+        threshold = 0.10 if str(unit.get("role") or "") == "primary" else 0.04
+        if unit_overlap < threshold and max(fact_overlaps or [0.0]) < threshold:
+            refs = tuple(str(item) for item in unit.get("source_refs") or [])
+            issues.append(
+                _issue(
+                    "SOURCE_FACT_NOT_CONSUMED",
+                    page,
+                    "Source IDs are present, but the page does not consume the corresponding factual claim.",
+                    "Rewrite 完整文字稿 or 上屏文字 from the content unit and its source statements; keep Source IDs as traceability only.",
+                    source_ids=refs,
+                    evidence=(statement, f"unit_overlap={unit_overlap:.3f}", f"max_fact_overlap={max(fact_overlaps or [0.0]):.3f}"),
+                )
+            )
+    return issues
+
+
 def onscreen_semantic_coverage(page: ScriptPage) -> float:
     """Measure how much full-prose meaning survives in the drawable text layer."""
 
@@ -1187,7 +1323,12 @@ def script_retry_directive(
     previous_strategy: str = "",
 ) -> dict[str, object]:
     codes = sorted({issue.code for issue in issues})
-    if any(
+    # A final-manuscript banner is a path-level contract failure.  It must
+    # take precedence over page-content diagnostics so the retry points to
+    # the assembly/form-cleanup step first.
+    if "FINAL_MANUSCRIPT_DRAFT_BANNER" in codes:
+        preferred = "manuscript_form_cleanup"
+    elif any(
         code
         in {
             "CONTENT_PROSE_MISSING",
@@ -1224,8 +1365,6 @@ def script_retry_directive(
         for code in codes
     ):
         preferred = "cross_page_dedup"
-    elif any(code == "FINAL_MANUSCRIPT_DRAFT_BANNER" for code in codes):
-        preferred = "manuscript_form_cleanup"
     elif any(
         code
         in {
@@ -1495,6 +1634,43 @@ def _prose_issues(
                 "Full prose uses analytical meta-narration instead of source-chapter voice.",
                 "Rewrite as direct source-topic prose; move page-role asides into 文字稿取舍说明 or 边界.",
                 evidence=analytical_hits,
+            )
+        )
+    contrast_hits = _prohibited_contrast_hits(
+        "\n".join((prose, page.onscreen_text, page.speaker_notes))
+    )
+    if contrast_hits:
+        issues.append(
+            _issue(
+                "PROHIBITED_NOT_BUT_CONTRAST",
+                page,
+                "Authored script uses the prohibited ‘不是……而是……’ contrast pattern.",
+                "State the intended claim directly; express distinctions with definitions, parallel clauses, or 前者/后者 wording.",
+                evidence=contrast_hits,
+            )
+        )
+    colloquial_hits = _prohibited_colloquial_hits(
+        "\n".join((prose, page.speaker_notes))
+    )
+    if colloquial_hits:
+        issues.append(
+            _issue(
+                "PROHIBITED_COLLOQUIAL_MANUSCRIPT",
+                page,
+                "Manuscript layer uses conversational wording; formal written-document expression is required.",
+                "Rewrite as objective written prose: state the subject, relation, condition, and conclusion directly; remove reader-address and spoken transition markers.",
+                evidence=colloquial_hits,
+            )
+        )
+    unlabeled_bullets = _unlabeled_onscreen_bullets(page.onscreen_text)
+    if unlabeled_bullets:
+        issues.append(
+            _issue(
+                "ONSCREEN_BULLET_CONCLUSION_MISSING",
+                page,
+                "On-screen bullets lack conclusion-first labels.",
+                "Prefix every parallel item with a concise conclusion label followed by a colon, then provide the supporting detail.",
+                evidence=unlabeled_bullets,
             )
         )
     boundary_hits = _boundary_aside_hits(prose)
@@ -2615,6 +2791,7 @@ def audit_script_quality(
                     independent_reading_required=page.page_type == "content",
                 )
             )
+            issues.extend(_source_consumption_issues(page, contract))
             issues.extend(_narration_boundary_issues(page, contract))
             issues.extend(_preflight_semantic_issues(page, contract, records_by_id))
             if outline.get("page_contract_receipt_mode") == "required":

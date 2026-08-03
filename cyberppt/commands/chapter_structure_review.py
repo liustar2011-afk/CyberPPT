@@ -9,6 +9,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from cyberppt.script_quality_contract import parse_script_markdown, text_similarity
+
 SCHEMA = "cyberppt.chapter_review_manifest.v1"
 REQUIRED_HEADINGS = ("## 总判", "## 章内推进链", "## 跨页优化", "## 建议落地顺序", "## 消费状态")
 
@@ -63,6 +65,105 @@ def _chapters(outline: dict[str, Any]) -> list[dict[str, Any]]:
         grouped.setdefault(str(page["chapter_id"]), []).append(page)
     fields = ("page_id", "sequence", "title", "page_mission", "audience_question", "must_not_include", "split_risk", "split_risk_reason", "core_message", "content_units", "content_relations", "source_refs", "page_necessity")
     return [{"chapter_id": chapter_id, "title": titles.get(chapter_id, chapter_id), "pages": [{key: page.get(key) for key in fields if key in page} for page in pages]} for chapter_id, pages in grouped.items()]
+
+
+def _compact_overlap(left: str, right: str, size: int = 4) -> float:
+    def shingles(value: str) -> set[str]:
+        compact = re.sub(r"[^0-9A-Za-z\u4e00-\u9fff]", "", value or "")
+        return {
+            compact[index : index + size]
+            for index in range(max(0, len(compact) - size + 1))
+            if compact[index : index + size]
+        }
+
+    source = shingles(left)
+    if not source:
+        return 1.0
+    return len(source & shingles(right)) / len(source)
+
+
+def _actual_script_structure_issues(
+    source: Path,
+    outline: dict[str, Any],
+) -> list[dict[str, str]]:
+    """Audit the authored page body, not just review-file bookkeeping."""
+
+    try:
+        script = parse_script_markdown(source.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError) as exc:
+        return [{"code": "SCRIPT_PARSE_FAILED", "message": str(exc)}]
+    outline_pages = {
+        str(item.get("page_id")): item
+        for item in outline.get("pages", [])
+        if isinstance(item, dict) and item.get("page_id")
+    }
+    issues: list[dict[str, str]] = []
+    pages_by_chapter: dict[str, list[Any]] = {}
+    for page in script.pages:
+        contract = outline_pages.get(page.page_id)
+        if not contract or contract.get("page_type") != "content":
+            continue
+        chapter_id = str(contract.get("chapter_id") or "")
+        pages_by_chapter.setdefault(chapter_id, []).append(page)
+        if not page.full_prose.strip():
+            issues.append({"code": "SCRIPT_PROSE_MISSING", "message": f"{page.page_id} has no 完整文字稿"})
+        if not page.onscreen_text.strip():
+            issues.append({"code": "SCRIPT_ONSCREEN_MISSING", "message": f"{page.page_id} has no 上屏文字"})
+        if not page.visual_structure.strip():
+            issues.append({"code": "SCRIPT_VISUAL_STRUCTURE_MISSING", "message": f"{page.page_id} has no 视觉结构"})
+        units = contract.get("content_units") or []
+        evidence_contract = contract.get("source_evidence_contract") or {}
+        evidence_units = {
+            tuple(str(item) for item in unit.get("source_refs") or []): unit
+            for unit in evidence_contract.get("units", [])
+            if isinstance(unit, dict)
+        }
+        authored = "\n".join(
+            (page.full_prose, page.onscreen_text, page.speaker_notes, page.visual_structure)
+        )
+        for unit in units:
+            if not isinstance(unit, dict) or str(unit.get("role") or "") == "boundary":
+                continue
+            statement = str(unit.get("statement") or "")
+            evidence_unit = evidence_units.get(
+                tuple(str(item) for item in unit.get("source_refs") or []),
+                {},
+            )
+            source_statements = [
+                str(item)
+                for item in (
+                    unit.get("source_statements")
+                    or evidence_unit.get("source_statements")
+                    or []
+                )
+                if str(item).strip()
+            ]
+            if not statement and not source_statements:
+                issues.append({"code": "OUTLINE_CONTENT_UNIT_EMPTY", "message": f"{page.page_id} has an empty content unit"})
+                continue
+            if max(
+                [_compact_overlap(statement, authored)]
+                + [_compact_overlap(item, authored) for item in source_statements]
+                + [0.0]
+            ) < (0.10 if unit.get("role") == "primary" else 0.04):
+                refs = "、".join(str(item) for item in unit.get("source_refs") or [])
+                issues.append({
+                    "code": "SCRIPT_CONTENT_UNIT_NOT_CONSUMED",
+                    "message": f"{page.page_id} does not express content unit {refs or statement[:24]}",
+                })
+    # Adjacent pages may share vocabulary, but cannot carry the same page
+    # judgment as their main contribution.  This catches repeated relation
+    # explanations that a Source-ID coverage check cannot see.
+    for chapter_id, pages in pages_by_chapter.items():
+        ordered = sorted(pages, key=lambda item: item.sequence)
+        for left, right in zip(ordered, ordered[1:]):
+            similarity = text_similarity(left.main_message, right.main_message)
+            if similarity >= 0.82:
+                issues.append({
+                    "code": "CROSS_PAGE_MAIN_MESSAGE_DUPLICATED",
+                    "message": f"{left.page_id}/{right.page_id} main judgments are too similar ({similarity:.3f})",
+                })
+    return issues
 
 
 def prepare_chapter_review_input(project: Path, level: str = "outline") -> Path:
@@ -141,6 +242,10 @@ def run_chapter_review_audit(project: Path, level: str = "outline") -> tuple[int
     expected_pages = set().union(*expected.values()) if expected else set()
     if covered_chapters != set(expected): issue("CHAPTER_COVERAGE_INCOMPLETE", f"expected {sorted(expected)}, got {sorted(covered_chapters)}")
     if covered_pages != expected_pages: issue("PAGE_COVERAGE_INCOMPLETE", f"missing={sorted(expected_pages-covered_pages)}, extra={sorted(covered_pages-expected_pages)}")
+    if level == "script":
+        outline = _read_json(project / "workbench/stages/01-analysis/outline.json")
+        for structural_issue in _actual_script_structure_issues(source, outline):
+            issue(structural_issue["code"], structural_issue["message"])
     status = "passed" if not issues else "rewrite_required"
     report = {"schema": "cyberppt.chapter_review_audit.v1", "level": level, "status": status, "input": str(source), "input_sha256": current_hash, "prepared_input": str(prepared_path), "manifest": str(manifest_path), "chapter_count": len(expected), "page_count": len(expected_pages), "issues": issues, "audited_at": _utc_now()}
     _write_json(audit_path, report)
