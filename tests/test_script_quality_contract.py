@@ -6,6 +6,8 @@ import unittest
 
 from cyberppt.script_quality_contract import (
     ScriptPage,
+    _mechanical_evidence_bullets,
+    _speaker_placeholder_hits,
     _issue,
     _source_consumption_issues,
     _visual_structure_judgment_issues,
@@ -20,6 +22,35 @@ from cyberppt.script_quality_contract import (
     selection_notes_are_structured,
     text_similarity,
 )
+
+
+class ProductionAuthoringGuardTests(unittest.TestCase):
+    def test_flags_numbered_evidence_fragments_from_punctuation_splitting(self) -> None:
+        text = """**关键依据**
+- 依据1：2025年1月，
+- 依据2：国家数据局启动第二批先行先试工作；
+- 依据3：同年10月，
+- 依据4：项目纳入第二批任务书。
+"""
+        hits = _mechanical_evidence_bullets(text)
+        self.assertIn("- 依据1：2025年1月，", hits)
+        self.assertIn("- 依据3：同年10月，", hits)
+
+    def test_flags_large_numbered_evidence_dump_even_when_fragments_are_long(self) -> None:
+        text = "\n".join(
+            f"- 依据{i}：这是第{i}条完整但仍由源记录机械编号形成的上屏信息。"
+            for i in range(1, 7)
+        )
+        self.assertEqual(6, len(_mechanical_evidence_bullets(text)))
+
+    def test_flags_generic_speaker_note_placeholder(self) -> None:
+        notes = "主判断。原文围绕关键对象、作用机制和条件边界展开，各项内容共同回答本节业务问题。"
+        hits = _speaker_placeholder_hits(notes)
+        self.assertTrue(hits)
+
+    def test_allows_business_specific_speaker_notes(self) -> None:
+        notes = "国家部署、行业协同需求和资源现实问题属于三个不同维度，共同说明建设统一基础的必要性。"
+        self.assertEqual((), _speaker_placeholder_hits(notes))
 
 ROOT = Path(__file__).resolve().parents[1]
 POWER_PROJECT = ROOT / "projects" / "power-supply-demand-forecast-early-warning"

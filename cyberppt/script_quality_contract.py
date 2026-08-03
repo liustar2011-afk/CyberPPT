@@ -39,6 +39,14 @@ SPEAKER_HOST_META_RE = re.compile(
     r"(各位同事|先把.{0,18}说清楚|先说明|先谈|先讲规则|"
     r"综合起来|接下来看|到这里收一下|全篇收在|请.{0,12}听|请先记住)"
 )
+SPEAKER_PLACEHOLDER_RE = re.compile(
+    r"(原文围绕.{0,36}(?:展开|说明)|"
+    r"各项内容共同回答.{0,18}(?:问题|任务)|"
+    r"关键对象、作用机制和条件边界)"
+)
+NUMBERED_EVIDENCE_BULLET_RE = re.compile(
+    r"^\s*-\s*依据(?P<number>\d+)[：:]\s*(?P<body>.*?)\s*$"
+)
 DEFENSIVE_BOUNDARY_COACHING_RE = re.compile(
     r"(反复区分|避免(?:听众)?.{0,12}(?:误解|听成|当成)|"
     r"不要.{0,12}讲成|不是.{0,8}承诺|不构成.{0,8}承诺|"
@@ -1150,6 +1158,32 @@ def _unlabeled_onscreen_bullets(text: str) -> tuple[str, ...]:
     return tuple(hits)
 
 
+def _mechanical_evidence_bullets(text: str) -> tuple[str, ...]:
+    """Detect source-sentence atomization masquerading as authored slide copy."""
+
+    matches = []
+    for line in text.splitlines():
+        match = NUMBERED_EVIDENCE_BULLET_RE.match(line)
+        if match:
+            matches.append((line.strip(), match.group("body").strip()))
+    if not matches:
+        return ()
+    fragments = [
+        line
+        for line, body in matches
+        if _compact_len(body) < 12 or body.endswith(("，", "；", ",", ";"))
+    ]
+    if len(matches) >= 6:
+        fragments.extend(line for line, _body in matches)
+    return tuple(dict.fromkeys(fragments))
+
+
+def _speaker_placeholder_hits(text: str) -> tuple[str, ...]:
+    return tuple(
+        dict.fromkeys(match.group(0) for match in SPEAKER_PLACEHOLDER_RE.finditer(text))
+    )
+
+
 def _boundary_aside_hits(text: str) -> tuple[str, ...]:
     hits = [pattern for pattern in _BOUNDARY_ASIDE_PATTERNS if pattern in text]
     return tuple(hits)
@@ -1405,6 +1439,7 @@ def script_retry_directive(
             "CONTENT_SPEAKER_NOTES_TOO_THIN",
             "SPEAKER_NOTES_SLIDE_META",
             "SPEAKER_NOTES_HOST_META",
+            "SPEAKER_NOTES_PLACEHOLDER_PROSE",
             "NARRATION_BOUNDARY_COACHING",
             "NARRATION_INTERNAL_BOUNDARY_LEAK",
         }
@@ -1429,6 +1464,7 @@ def script_retry_directive(
             "ONSCREEN_ANTI_PATTERN",
             "PRIMITIVE_ONSCREEN_MISMATCH",
             "ONSCREEN_RELATION_ISOMORPHISM",
+            "ONSCREEN_SOURCE_ATOMIZATION",
         }
         for code in codes
     ):
@@ -1467,6 +1503,7 @@ def script_retry_directive(
         in {
             "SPEAKER_NOTES_SLIDE_META",
             "SPEAKER_NOTES_HOST_META",
+            "SPEAKER_NOTES_PLACEHOLDER_PROSE",
             "NARRATION_BOUNDARY_COACHING",
             "NARRATION_INTERNAL_BOUNDARY_LEAK",
         }
@@ -1706,6 +1743,21 @@ def _prose_issues(
                 evidence=unlabeled_bullets,
             )
         )
+    mechanical_evidence = _mechanical_evidence_bullets(page.onscreen_text)
+    if mechanical_evidence:
+        issues.append(
+            _issue(
+                "ONSCREEN_SOURCE_ATOMIZATION",
+                page,
+                "On-screen evidence was mechanically split into numbered source fragments.",
+                (
+                    "Return to 完整文字稿, select 2–5 complete business points, and "
+                    "rewrite each point as a self-contained conclusion-first line; do not "
+                    "enumerate punctuation fragments or Source Truth atoms."
+                ),
+                evidence=mechanical_evidence,
+            )
+        )
     boundary_hits = _boundary_aside_hits(prose)
     if boundary_hits:
         issues.append(
@@ -1855,6 +1907,20 @@ def _prose_issues(
                     "Speaker notes use host-style framing instead of formal briefing narration.",
                     "Start with the judgment, then state its support and implication directly.",
                     evidence=host_hits,
+                )
+            )
+        placeholder_hits = _speaker_placeholder_hits(notes)
+        if placeholder_hits:
+            issues.append(
+                _issue(
+                    "SPEAKER_NOTES_PLACEHOLDER_PROSE",
+                    page,
+                    "Speaker notes repeat the page judgment and append generic placeholder prose.",
+                    (
+                        "Rewrite the notes as direct business narration derived from the full prose: "
+                        "state the facts, relationships, and distinctions that the speaker will actually explain."
+                    ),
+                    evidence=placeholder_hits,
                 )
             )
     return issues

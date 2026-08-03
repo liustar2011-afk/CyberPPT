@@ -80,8 +80,23 @@ def _content_review_status(project: Path, script_sha256: str) -> dict[str, objec
         and bool(str(page_map[page_id].get("note") or "").strip())
         for page_id in required_pages
     )
+    schema_valid = payload.get("schema") == "cyberppt.content_review.v2"
+    provenance = payload.get("review_provenance")
+    provenance_map = provenance if isinstance(provenance, dict) else {}
+    manifest_path = project / "review" / "chapter-review-manifest.json"
+    manifest_hash = _sha256(manifest_path) if manifest_path.exists() else ""
+    provenance_valid = (
+        provenance_map.get("authoring_separated") is True
+        and str(provenance_map.get("reviewer_type") or "") in {"human", "independent_model"}
+        and bool(str(provenance_map.get("reviewed_at") or "").strip())
+        and bool(str(provenance_map.get("review_summary") or "").strip())
+        and str(provenance_map.get("chapter_review_manifest_sha256") or "").upper()
+        == manifest_hash.upper()
+    )
     if str(payload.get("script_sha256") or "").upper() != script_sha256.upper():
         status = "stale"
+    elif not schema_valid or not provenance_valid:
+        status = "unverified"
     elif not all(decision_map.get(key) is True for key in CONTENT_REVIEW_DECISIONS) or not pages_approved:
         status = "incomplete"
     else:
@@ -92,6 +107,9 @@ def _content_review_status(project: Path, script_sha256: str) -> dict[str, objec
         "decisions": decision_map,
         "reviewed_pages": len(page_map),
         "required_pages": len(required_pages),
+        "schema_valid": schema_valid,
+        "provenance_valid": provenance_valid,
+        "chapter_review_manifest_sha256": manifest_hash,
     }
 
 

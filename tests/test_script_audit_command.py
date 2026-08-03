@@ -78,12 +78,31 @@ def _approve_content_review(project: Path, script: Path) -> None:
         "nonessential_information_removed": True,
         "cross_page_new_value": True,
     }
+    review_manifest = project / "review" / "chapter-review-manifest.json"
+    _write_json(
+        review_manifest,
+        {
+            "schema": "cyberppt.chapter_review_manifest.v1",
+            "level": "script",
+            "input_sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
+            "reviews": [],
+        },
+    )
     _write_json(
         project / "workbench" / "scripts" / "audits" / "content-review.json",
         {
-            "schema": "cyberppt.content_review.v1",
+            "schema": "cyberppt.content_review.v2",
             "script_sha256": hashlib.sha256(script.read_bytes()).hexdigest().upper(),
             "decisions": decisions,
+            "review_provenance": {
+                "reviewer_type": "independent_model",
+                "authoring_separated": True,
+                "reviewed_at": "2026-08-03T00:00:00Z",
+                "review_summary": "Independent test review completed.",
+                "chapter_review_manifest_sha256": hashlib.sha256(
+                    review_manifest.read_bytes()
+                ).hexdigest().upper(),
+            },
             "pages": {
                 page_id: {**decisions, "note": "Page contribution reviewed."}
                 for page_id in page_ids
@@ -324,6 +343,38 @@ class ScriptAuditCommandTests(unittest.TestCase):
             self.assertEqual(4, code)
             self.assertEqual("content_review_required", report["status"])
             self.assertEqual("stale", report["content_review"]["status"])
+
+    def test_legacy_boolean_only_content_review_is_unverified(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project, script = _build_project(Path(tmp))
+            outline = json.loads(
+                (project / "workbench/stages/01-analysis/outline.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            decisions = {
+                "single_mission": True,
+                "module_same_dimension": True,
+                "nonessential_information_removed": True,
+                "cross_page_new_value": True,
+            }
+            _write_json(
+                project / "workbench/scripts/audits/content-review.json",
+                {
+                    "schema": "cyberppt.content_review.v1",
+                    "script_sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
+                    "decisions": decisions,
+                    "pages": {
+                        page["page_id"]: {**decisions, "note": "auto approved"}
+                        for page in outline["pages"]
+                        if page.get("page_type") == "content"
+                    },
+                },
+            )
+            code, report = run_script_audit(project, script, max_attempts=5)
+            self.assertNotEqual(0, code)
+            self.assertEqual("content_review_required", report["status"])
+            self.assertEqual("unverified", report["content_review"]["status"])
 
     def test_attempts_auto_increment_and_change_strategy(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
