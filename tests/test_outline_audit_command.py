@@ -4,6 +4,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from cyberppt.commands.outline_audit import run_outline_audit
 from cyberppt.commands.init_project import init_project
@@ -95,6 +96,39 @@ class OutlineAuditCommandTests(unittest.TestCase):
             self.assertEqual([], report["argument_graph"]["edges"])
             self.assertEqual([], report["failed_edges"])
             self.assertEqual([], report["retry_scope"])
+
+    def test_loaded_semantic_argument_model_is_passed_to_outline_contract_audit(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "project"
+            project.mkdir()
+            semantic_gate = {"semantic_argument_model_sha256": "model-hash"}
+            argument_model = {"schema": "cyberppt.semantic_argument_model.v1"}
+
+            with (
+                patch(
+                    "cyberppt.commands.outline_audit.assert_semantic_understanding_ready",
+                    return_value=semantic_gate,
+                ),
+                patch(
+                    "cyberppt.commands.outline_audit.load_model",
+                    return_value=argument_model,
+                ),
+                patch(
+                    "cyberppt.commands.outline_audit.audit_outline",
+                    return_value=[],
+                ) as contract_audit,
+                patch(
+                    "cyberppt.commands.outline_audit.audit_outline_consumption",
+                    return_value=[],
+                ),
+            ):
+                run_outline_audit(
+                    project,
+                    self._write(root, invalid_outline(1, "source_native")),
+                )
+
+            self.assertIs(contract_audit.call_args.args[2], argument_model)
 
     def test_third_failure_escalates_instead_of_abandoning(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -271,7 +271,7 @@ def run_outline_audit(
         if source_truth is not None
         else []
     )
-    issues = audit_outline(payload, source_truth)
+    issues = audit_outline(payload, source_truth, argument_model)
     argument_model_issues = (
         audit_outline_consumption(payload, argument_model)
         if payload.get("semantic_argument_model_mode") == "required" or argument_model is not None
