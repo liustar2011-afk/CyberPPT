@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 
 from cyberppt.argument_flow_contract import (
@@ -37,6 +38,67 @@ from cyberppt.storyline_director import (
 def _write_json(path: Path, payload: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest().lower()
+
+
+def _source_consumption_manifest_issues(
+    project: Path,
+    outline: dict[str, object],
+    source_truth_path: Path,
+) -> list[AuditIssue]:
+    if outline.get("source_truth_mapping_mode") != "consumption_manifest":
+        return []
+    raw_path = str(outline.get("source_consumption_manifest") or "").strip()
+    if not raw_path:
+        return [
+            AuditIssue(
+                "SOURCE_CONSUMPTION_MANIFEST_MISSING",
+                "Frozen Source Truth mode requires an independent source consumption manifest.",
+                retry_strategy="rebuild_outline_consumption_manifest",
+            )
+        ]
+    manifest_path = Path(raw_path)
+    if not manifest_path.is_absolute():
+        manifest_path = project / manifest_path
+    if not manifest_path.is_file():
+        return [
+            AuditIssue(
+                "SOURCE_CONSUMPTION_MANIFEST_MISSING",
+                "The Outline source consumption manifest does not exist.",
+                retry_strategy="rebuild_outline_consumption_manifest",
+            )
+        ]
+    declared_hash = str(outline.get("source_consumption_sha256") or "").lower()
+    if declared_hash != _sha256(manifest_path):
+        return [
+            AuditIssue(
+                "SOURCE_CONSUMPTION_MANIFEST_STALE",
+                "The Outline source consumption manifest hash does not match the current manifest.",
+                retry_strategy="rebuild_outline_consumption_manifest",
+            )
+        ]
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
+    except json.JSONDecodeError:
+        return [
+            AuditIssue(
+                "SOURCE_CONSUMPTION_MANIFEST_INVALID",
+                "The Outline source consumption manifest is not valid JSON.",
+                retry_strategy="rebuild_outline_consumption_manifest",
+            )
+        ]
+    if str(manifest.get("source_truth_sha256") or "").lower() != _sha256(source_truth_path):
+        return [
+            AuditIssue(
+                "SOURCE_CONSUMPTION_SOURCE_BINDING_STALE",
+                "The source consumption manifest is bound to a different Source Truth artifact.",
+                retry_strategy="rebuild_outline_consumption_manifest",
+            )
+        ]
+    return []
 
 
 def render_outline_markdown(payload: dict[str, object], report: dict[str, object]) -> str:
@@ -278,6 +340,13 @@ def run_outline_audit(
         else []
     )
     issues = audit_outline(payload, source_truth, argument_model)
+    issues.extend(
+        _source_consumption_manifest_issues(
+            project,
+            payload,
+            resolved_source_truth,
+        )
+    )
     argument_model_issues = (
         audit_outline_consumption(payload, argument_model)
         if payload.get("semantic_argument_model_mode") == "required" or argument_model is not None

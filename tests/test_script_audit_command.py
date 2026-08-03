@@ -284,6 +284,8 @@ class ScriptAuditCommandTests(unittest.TestCase):
 
             self.assertEqual(0, code)
             self.assertEqual("passed", report["status"])
+            self.assertEqual("passed_with_warnings", report["quality_status"])
+            self.assertGreater(report["warning_count"], 0)
             audit_dir = project / "workbench" / "scripts" / "audits"
             self.assertTrue((audit_dir / "script-audit.json").exists())
             self.assertTrue((audit_dir / "script-audit.md").exists())
@@ -374,6 +376,8 @@ class ScriptAuditCommandTests(unittest.TestCase):
 
             self.assertEqual(0, code)
             self.assertEqual("passed", report["status"])
+            self.assertEqual("passed_with_warnings", report["quality_status"])
+            self.assertEqual(1, report["warning_count"])
             self.assertEqual([], report["failed_pages"])
             self.assertEqual(
                 ["VISUAL_STRUCTURE_TOO_THIN"],

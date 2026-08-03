@@ -1234,6 +1234,39 @@ def _source_consumption_issues(
     raw_units = contract.get("content_units")
     if not isinstance(raw_units, list):
         return []
+    expected_unit_ids = {
+        str(unit.get("unit_id"))
+        for unit in raw_units
+        if isinstance(unit, dict)
+        and str(unit.get("role") or "") != "boundary"
+        and unit.get("unit_id")
+    }
+    receipt = page.contract_receipt or {}
+    declared_unit_ids = receipt.get("consumed_content_unit_ids")
+    if not isinstance(declared_unit_ids, list):
+        return [
+            _issue(
+                "CONTENT_UNIT_CONSUMPTION_DECLARATION_MISSING",
+                page,
+                "The page receipt must declare the content units consumed by the authored page.",
+                "Copy the explicit consumes list from the page authoring artifact into the page receipt.",
+            )
+        ]
+    if {str(item) for item in declared_unit_ids} != expected_unit_ids:
+        return [
+            _issue(
+                "CONTENT_UNIT_CONSUMPTION_DECLARATION_MISMATCH",
+                page,
+                "The page receipt consumes a different set of content units than the approved Outline.",
+                "Align the page authoring consumes list with every non-boundary content_unit.unit_id.",
+                evidence=tuple(sorted(expected_unit_ids)),
+            )
+        ]
+    contract_units_by_id = {
+        str(unit.get("unit_id")): unit
+        for unit in evidence_contract.get("units", [])
+        if isinstance(unit, dict) and unit.get("unit_id")
+    }
     contract_units = {
         tuple(str(item) for item in unit.get("source_refs") or []): unit
         for unit in evidence_contract.get("units", [])
@@ -1247,7 +1280,7 @@ def _source_consumption_issues(
         if not isinstance(unit, dict) or str(unit.get("role") or "") == "boundary":
             continue
         statement = str(unit.get("statement") or "")
-        evidence_unit = contract_units.get(
+        evidence_unit = contract_units_by_id.get(str(unit.get("unit_id"))) or contract_units.get(
             tuple(str(item) for item in unit.get("source_refs") or []),
             {},
         )

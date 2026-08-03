@@ -71,6 +71,34 @@ def strict_truth(*records: dict[str, object]) -> dict[str, object]:
 
 
 class ArgumentFlowContractTests(unittest.TestCase):
+    def test_v2_frozen_source_truth_uses_consumption_manifest(self) -> None:
+        page = {
+            "page_id": "p10", "sequence": 10, "page_type": "content",
+            "page_mission": "璇存槑涓€涓凡纭鐨勮兘鍔涚粨鏋?",
+            "core_message": "缁熶竴鐩綍鏀拺鏈嶅姟",
+            "source_refs": ["S001"],
+            "content_units": [{
+                "unit_id": "CU-P10-01", "statement": "缁熶竴鐩綍鏀拺鏈嶅姟",
+                "source_refs": ["S001"], "role": "primary",
+            }],
+            "content_relations": [{"relation": "supports", "subject": "鐩綍", "objects": ["鏈嶅姟"], "source_refs": ["S001"]}],
+            "core_message_derivation": {"source_refs": ["S001"], "supporting_statements": ["缁熶竴鐩綍"], "derivation": "鍘熸枃褰掔撼", "introduced_relations": [], "introduced_modalities": []},
+            "new_value_vs_previous": "缁欏嚭鏈嶅姟鍒ゆ柇", "reserved_for_later": "缁嗚妭鍚庤堪",
+        }
+        truth = strict_truth(record("S001", "fact", pages=[]))
+        codes = {
+            issue.code for issue in audit_argument_flow(
+                {
+                    "schema": "cyberppt.outline.v2",
+                    "argument_contract_mode": "strict",
+                    "source_truth_mapping_mode": "consumption_manifest",
+                    "pages": [page],
+                },
+                truth,
+            )
+        }
+        self.assertNotIn("PAGE_EVIDENCE_MAPPING_MISMATCH", codes)
+
     def test_v2_requires_source_relation_fields_not_argument_taxonomy(self) -> None:
         page = {
             "page_id": "p10",

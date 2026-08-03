@@ -419,6 +419,7 @@ def run_script_audit(
         issues.extend(audit_final_manuscript_form(script_text))
     communication_review = build_communication_review(document, outline)
     errors = [issue for issue in issues if issue.severity == "error"]
+    warning_count = sum(1 for issue in issues if issue.severity == "warning")
     content_review = _content_review_status(project, script_sha256)
     directive = script_retry_directive(errors, previous_strategy)
     failed_pages = sorted(
@@ -433,6 +434,17 @@ def run_script_audit(
             if content_review["status"] == "approved"
             else "content_review_required"
         ),
+        # Keep the legacy status field stable for existing gates.  The
+        # orthogonal quality status makes a warning-only run explicit instead
+        # of presenting it as an unqualified pass.
+        "quality_status": (
+            "failed"
+            if errors
+            else "passed_with_warnings"
+            if warning_count
+            else "passed"
+        ),
+        "warning_count": warning_count,
         "attempt": effective_attempt,
         "max_attempts": max_attempts,
         "remaining_attempts": max(0, max_attempts - effective_attempt),

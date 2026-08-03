@@ -521,6 +521,9 @@ def audit_argument_flow(
     issues = validate_page_role_fields(outline)
     dependencies: dict[str, list[str]] = {}
     source_relation_mode = outline.get("schema") == "cyberppt.outline.v2"
+    frozen_source_truth_mapping = (
+        outline.get("source_truth_mapping_mode") == "consumption_manifest"
+    )
 
     for page_id, page in page_index.items():
         prerequisites = _string_list(page, "prerequisite_pages")
@@ -871,19 +874,36 @@ def audit_argument_flow(
                     retry_strategy="assign_single_primary_evidence_owner",
                 )
             )
-    for source_id, record in record_index.items():
-        declared = set(_string_list(record, "page_refs"))
-        actual = actual_pages_by_source.get(source_id, set())
-        if declared != actual:
+    if frozen_source_truth_mapping:
+        mutated_records = [
+            source_id
+            for source_id, record in record_index.items()
+            if _string_list(record, "page_refs")
+        ]
+        if mutated_records:
             issues.append(
                 ArgumentFlowIssue(
-                    "PAGE_EVIDENCE_MAPPING_MISMATCH",
-                    "Source Truth page mappings must match Outline citations in both directions.",
-                    tuple(sorted(declared | actual)),
-                    (source_id,),
-                    retry_strategy="reconcile_page_evidence_mapping",
+                    "SOURCE_TRUTH_PAGE_MAPPING_MUTATED",
+                    "Frozen Source Truth must not contain page assignments; keep them in the consumption manifest.",
+                    failed_edges=(),
+                    source_ids=tuple(sorted(mutated_records)),
+                    retry_strategy="remove_page_assignments_from_source_truth",
                 )
             )
+    else:
+        for source_id, record in record_index.items():
+            declared = set(_string_list(record, "page_refs"))
+            actual = actual_pages_by_source.get(source_id, set())
+            if declared != actual:
+                issues.append(
+                    ArgumentFlowIssue(
+                        "PAGE_EVIDENCE_MAPPING_MISMATCH",
+                        "Source Truth page mappings must match Outline citations in both directions.",
+                        tuple(sorted(declared | actual)),
+                        (source_id,),
+                        retry_strategy="reconcile_page_evidence_mapping",
+                    )
+                )
 
     def prerequisite_closure(page_id: str) -> set[str]:
         closure: set[str] = set()

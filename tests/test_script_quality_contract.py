@@ -7,6 +7,7 @@ import unittest
 from cyberppt.script_quality_contract import (
     ScriptPage,
     _issue,
+    _source_consumption_issues,
     _visual_structure_judgment_issues,
     audit_script_quality,
     build_communication_review,
@@ -70,6 +71,75 @@ def strict_outline(*pages: dict[str, object]) -> dict[str, object]:
 
 def source_truth(*records: dict[str, object]) -> dict[str, object]:
     return {"argument_contract_mode": "strict", "records": list(records)}
+
+
+def _consumption_fixture(receipt: dict[str, object] | None) -> tuple[ScriptPage, dict[str, object]]:
+    units = [
+        {
+            "unit_id": "CU-P01-01",
+            "role": "primary",
+            "statement": "统一目录支撑行业数据服务",
+            "source_refs": ["S001"],
+            "source_statements": ["统一目录支撑行业数据服务"],
+        },
+        {
+            "unit_id": "CU-P01-02",
+            "role": "boundary",
+            "statement": "价格与责任待后续确认",
+            "source_refs": ["S002"],
+            "source_statements": ["价格与责任待后续确认"],
+        },
+    ]
+    page = ScriptPage(
+        page_id="p01",
+        sequence=1,
+        heading="",
+        page_type="content",
+        title="",
+        main_message="统一目录支撑行业数据服务",
+        full_prose="统一目录支撑行业数据服务",
+        selection_notes="",
+        evidence_map="",
+        evidence_map_refs=(),
+        source_refs=("S001",),
+        boundary_source_refs=("S002",),
+        boundary="",
+        visual_structure="闭环",
+        onscreen_text="统一目录支撑行业数据服务",
+        module_titles=(),
+        contract_receipt=receipt,
+    )
+    contract = {
+        "source_evidence_contract": {"mode": "required", "units": units},
+        "content_units": units,
+    }
+    return page, contract
+
+
+class ContentUnitConsumptionTests(unittest.TestCase):
+    def test_missing_declaration_is_blocked(self) -> None:
+        page, contract = _consumption_fixture({})
+        issues = _source_consumption_issues(page, contract)
+        self.assertEqual(
+            ["CONTENT_UNIT_CONSUMPTION_DECLARATION_MISSING"],
+            [issue.code for issue in issues],
+        )
+
+    def test_mismatched_declaration_is_blocked(self) -> None:
+        page, contract = _consumption_fixture(
+            {"consumed_content_unit_ids": ["CU-P01-02"]}
+        )
+        issues = _source_consumption_issues(page, contract)
+        self.assertEqual(
+            ["CONTENT_UNIT_CONSUMPTION_DECLARATION_MISMATCH"],
+            [issue.code for issue in issues],
+        )
+
+    def test_boundary_unit_is_traceability_only(self) -> None:
+        page, contract = _consumption_fixture(
+            {"consumed_content_unit_ids": ["CU-P01-01"]}
+        )
+        self.assertEqual([], _source_consumption_issues(page, contract))
 
 
 class ScriptMarkdownParserTests(unittest.TestCase):

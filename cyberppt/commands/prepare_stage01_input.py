@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 
 from cyberppt.communication_strategy import (
@@ -25,6 +26,58 @@ def _load(path: Path) -> dict[str, object]:
     if not isinstance(payload, dict):
         raise ValueError(f"artifact root must be an object: {path}")
     return payload
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest().lower()
+
+
+def _ensure_page_script_authoring(
+    project: Path,
+    outline_path: Path,
+    pages: list[dict[str, object]],
+) -> Path:
+    """Create an explicit page-authoring contract when a project lacks one.
+
+    The compiler consumes this JSON artifact.  Markdown remains a reviewable
+    authoring input, while the JSON carries the exact content-unit consumption
+    declaration and the outline binding used for stale-artifact detection.
+    """
+
+    path = project / "workbench/scripts/page-script-authoring.json"
+    if path.exists():
+        return path
+    payload = {
+        "schema": "cyberppt.page_script_authoring.v1",
+        "project": project.name,
+        "outline_sha256": _sha256(outline_path),
+        "pages": {
+            str(page["page_id"]): {
+                "prose": "",
+                "selection": ["", "", ""],
+                "onscreen": "",
+                "visual": "",
+                "notes": "",
+                "consumes": [
+                    str(unit["unit_id"])
+                    for unit in page.get("content_units", [])
+                    if isinstance(unit, dict)
+                    and unit.get("role") != "boundary"
+                    and unit.get("unit_id")
+                ],
+            }
+            for page in pages
+            if page.get("page_id")
+        },
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+    return path
 
 
 def _records(project: Path) -> dict[str, dict[str, object]]:
@@ -56,6 +109,7 @@ def prepare_outline_input(project: Path) -> Path:
         "The whole-document semantic understanding below is the authoritative upstream constraint. Do not replace its business subject, source structure, actors, status distinctions, or decision intent with a generic PPT storyline.",
         "The Outline root must copy `semantic_understanding_sha256`, `semantic_source_bundle_sha256`, and, when present, `semantic_source_map_bundle_sha256` from the current semantic gate.",
         "The Outline must also copy `semantic_argument_model_sha256` and consume the source argument model below. Do not rebuild the source thesis from evidence records.",
+        "Source Truth is frozen after the Source Truth stage. Set `source_truth_mapping_mode` to `consumption_manifest`, copy `source_truth_sha256`, and write page-to-evidence mappings only to the independent `source_consumption_manifest`; never write page assignments back into Source Truth records.",
         "",
         "Before planning pages, preserve the Stage 00 source argument model `document_semantics` and the Source Truth copy: `document_role` says what artifact is being presented; `subject_of_report` says what the presentation is about; `primary_thesis` is the deck-level conclusion; `decision_boundary` limits its maturity; `author_purpose` states what the author is trying to advance; `argument_method` and `supporting_basis` explain how the source argues for that purpose.",
         "Never replace the subject of report with the activity used to produce or present the document. Document role and business subject are separate fields.",
@@ -264,9 +318,16 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
     ]
     if page_id and not pages:
         raise ValueError(f"content page not found: {page_id}")
+    authoring_artifact = _ensure_page_script_authoring(
+        project,
+        project / "workbench/stages/01-analysis/outline.json",
+        pages,
+    )
     lines = [
         "# Page script authoring input",
         "",
+        f"Authoritative JSON authoring artifact: `{authoring_artifact}`",
+        "The compiler consumes this JSON artifact. Keep its `outline_sha256` bound to the current Outline and declare every non-boundary `content_unit.unit_id` in each page's `consumes` list.",
         "Write backend composition guidance as a separate two-line block: `【视觉结构，不上屏】` followed by the guidance text. Never place that guidance inside `上屏文字`.",
         "Write full prose from the approved core_message and source-supported content relations; derive on-screen text from it.",
         "Do not add `副标题` or `上屏结论` merely because the page is a content page. "
@@ -343,7 +404,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         for point in content_units:
             if isinstance(point, dict):
                 refs = ", ".join(str(item) for item in point.get("source_refs", []))
-                lines.append(f"  - [{point.get('role', 'supporting')}] {point.get('statement', '')} ({refs})")
+                lines.append(f"  - {point.get('unit_id', '')} [{point.get('role', 'supporting')}] {point.get('statement', '')} ({refs})")
         proof_source_ids = list(
             dict.fromkeys(
                 str(source_id)
