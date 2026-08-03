@@ -324,7 +324,7 @@
 
 默认8种风格仍保持1—8不变。风格9是仅供显式选择的扩展风格，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用，不进入默认候选。原风格4保持不变，既有风格4项目成果无需迁移。
 
-Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
+Palette: pure white #FFFFFF as the page background, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1. Do not use ivory, cream, beige, warm gray, paper texture, or any tinted background.
 
 Create a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.
 
