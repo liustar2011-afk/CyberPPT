@@ -11,6 +11,8 @@ from cyberppt.artifact_ledger import append_artifacts
 from cyberppt.communication_strategy import (
     assert_communication_strategy_ready,
     communication_strategy_binding_issues,
+    effective_forbidden_frontstage_frames,
+    forbidden_frontstage_hits,
 )
 from cyberppt.outline_contract import load_outline
 from cyberppt.semantic_understanding import (
@@ -23,6 +25,7 @@ from cyberppt.script_quality_contract import (
     build_communication_review,
     is_final_script_path,
     parse_script_markdown,
+    ScriptQualityIssue,
     script_retry_directive,
 )
 from cyberppt.source_truth_contract import load_source_truth
@@ -381,6 +384,37 @@ def run_script_audit(
                     previous_directive.get("strategy") or ""
                 )
     issues = audit_script_quality(document, outline, source_truth)
+    forbidden_frames = effective_forbidden_frontstage_frames(communication_gate)
+    for page in document.pages:
+        hits = forbidden_frontstage_hits(
+            [
+                page.title,
+                page.subtitle,
+                page.main_message,
+                page.full_prose,
+                page.onscreen_judgment,
+                page.onscreen_text,
+                page.speaker_notes,
+            ],
+            forbidden_frames,
+        )
+        for phrase in hits:
+            issues.append(
+                ScriptQualityIssue(
+                    code="SCRIPT_BACKSTAGE_INTENT_SURFACED",
+                    severity="error",
+                    message=(
+                        f"Script surfaces forbidden frontstage frame {phrase!r} "
+                        "under the approved communication posture."
+                    ),
+                    pages=(page.page_id,),
+                    evidence=(phrase,),
+                    suggested_action=(
+                        "Restore the approved introduction/exchange posture and keep "
+                        "the latent strategic intent out of visible copy and narration."
+                    ),
+                )
+            )
     if is_final_script_path(input_path):
         issues.extend(audit_final_manuscript_form(script_text))
     communication_review = build_communication_review(document, outline)

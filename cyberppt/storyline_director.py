@@ -12,6 +12,9 @@ from typing import Any
 from cyberppt.communication_strategy import (
     _audience_concerns,
     assert_communication_strategy_ready,
+    communication_posture,
+    effective_forbidden_frontstage_frames,
+    forbidden_frontstage_hits,
 )
 from cyberppt.semantic_understanding import (
     SEMANTIC_ARTIFACT,
@@ -65,7 +68,7 @@ def storyline_director_required(project: Path) -> bool:
 
 
 def _outline_contract(payload: dict[str, Any]) -> dict[str, Any]:
-    return {
+    contract = {
         "theme": payload.get("theme"),
         "decision_destination": payload.get("decision_destination"),
         "story_arc": payload.get("story_arc"),
@@ -81,6 +84,16 @@ def _outline_contract(payload: dict[str, Any]) -> dict[str, Any]:
         "audience_concerns": payload.get("audience_concerns"),
         "consumed_user_decisions": payload.get("consumed_user_decisions"),
     }
+    for field in (
+        "frontstage_purpose",
+        "backstage_intent",
+        "interaction_posture",
+        "explicit_audience_action",
+        "forbidden_frontstage_frames",
+    ):
+        if field in payload:
+            contract[field] = payload.get(field)
+    return contract
 
 
 def storyline_director_authoring_contract() -> str:
@@ -88,6 +101,7 @@ def storyline_director_authoring_contract() -> str:
         [
             "You are the Outline Director. Do not create pages. First define the directed story that the Outline author must follow.",
             "The source is evidence, not a page inventory. Select and organize evidence around the approved theme and decision destination; preserve all traceability but never give every source item equal narrative or visual weight.",
+            "Separate frontstage communication from backstage strategy. Visible story beats, chapter questions, and the communication destination must follow the approved frontstage purpose and audience action. The backstage intent may guide selection but must not become a visible approval request or decision-seeking headline.",
             "Every chapter must answer one question and hand a necessary unresolved question to the next chapter. Every future page must have one storyline role, one self-contained core meaning, and explicit transitions from the preceding page and to the following page.",
             "Do not promote generic value, constraints, boundaries, background, or technical inventories into the main line unless they are the actual subject of the approved communication strategy.",
             "Use the source argument model's explicit `argument_weight` as the authority for narrative importance. `core` means an independent source proposition and must remain a visible story beat; `supporting`, `detail`, and `constraint` describe subordinate material. A semantic relation explains how propositions connect and has `weight_effect=none`; it never changes either endpoint's argument weight or role. Determine the story beat from the approved proposition, not from a project-specific keyword or a generic layer label.",
@@ -143,8 +157,9 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
         "",
         storyline_director_authoring_contract(),
         "",
-        "Write `storyline-director.json` with schema `cyberppt.storyline_director.v1` and copy all binding hashes exactly.",
-        "Required fields: theme, decision_destination, story_arc (3-6 steps), chapter_missions (2-6 entries), selection_rules (3-8), exclusion_rules (3-8), page_rules (4-10), pacing, audience_concerns, and consumed_user_decisions.",
+        "Write `storyline-director.json` with schema `cyberppt.storyline_director.v2` and copy all binding hashes exactly.",
+        "Required fields: theme, decision_destination, story_arc (3-6 steps), chapter_missions (2-6 entries), selection_rules (3-8), exclusion_rules (3-8), page_rules (4-10), pacing, audience_concerns, consumed_user_decisions, and the complete approved frontstage/backstage posture contract.",
+        "`decision_destination` is a compatibility field. When `interaction_posture=peer_exchange`, it must describe the intended understanding or exchange outcome, never an approval request or cooperation decision.",
         "Each chapter mission requires chapter_id, title, question, contribution, transition_to_next, max_content_pages, source_mission, source_question, source_section_refs, source_claim_ids, source_argument_node_ids, source_argument_node_roles, source_argument_node_weights, audience_concern_ids, and editorial_operation (select, compress, merge, split, or reframe). A reframe must not change the source subject, argument_role, argument_weight, or status.",
         "Pacing requires target_total_pages, min_total_pages, and max_total_pages.",
         "",
@@ -163,6 +178,13 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
         f"- communication_purpose: {communication.get('communication_purpose')}",
         f"- decision_task: {communication.get('decision_task')}",
         f"- structure_principle: {selected.get('structure_principle')}",
+        f"- frontstage_purpose: {communication.get('frontstage_purpose', '')}",
+        f"- backstage_intent: {communication.get('backstage_intent', '')}",
+        f"- interaction_posture: {communication.get('interaction_posture', '')}",
+        f"- explicit_audience_action: {communication.get('explicit_audience_action', '')}",
+        "- forbidden_frontstage_frames: " + json.dumps(
+            communication.get("forbidden_frontstage_frames", []), ensure_ascii=False
+        ),
         "- audience_concerns: " + json.dumps(
             _audience_concerns(communication.get("audience_concerns")),
             ensure_ascii=False,
@@ -196,13 +218,14 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
     artifact = project / DIRECTOR_ARTIFACT
     if not artifact.exists():
         template = {
-            "schema": "cyberppt.storyline_director.v1",
+            "schema": "cyberppt.storyline_director.v2",
             "source_truth_sha256": _sha256(truth_path),
             "communication_strategy_approval_sha256": communication["communication_strategy_approval_sha256"],
             "semantic_understanding_sha256": semantic["semantic_understanding_sha256"],
             "semantic_source_bundle_sha256": semantic["source_bundle_sha256"],
             "semantic_source_map_bundle_sha256": semantic.get("source_map_bundle_sha256"),
             "semantic_argument_model_sha256": semantic.get("semantic_argument_model_sha256"),
+            **communication_posture(communication),
             "theme": "",
             "decision_destination": "",
             "story_arc": [],
@@ -254,10 +277,12 @@ def _audit_issues(
     semantic_argument_node_weights: dict[str, str] | None = None,
     audience_concerns: list[dict[str, Any]] | None = None,
     source_sections: set[str] | None = None,
+    communication_posture_contract: dict[str, Any] | None = None,
 ) -> list[dict[str, str]]:
     issues: list[dict[str, str]] = []
-    if payload.get("schema") != "cyberppt.storyline_director.v1":
-        issues.append({"code": "DIRECTOR_SCHEMA_INVALID", "message": "schema must be cyberppt.storyline_director.v1"})
+    schema = _text(payload.get("schema"))
+    if schema not in {"cyberppt.storyline_director.v1", "cyberppt.storyline_director.v2"}:
+        issues.append({"code": "DIRECTOR_SCHEMA_INVALID", "message": "schema must be cyberppt.storyline_director.v1 or v2"})
     for field, expected in (("source_truth_sha256", source_hash), ("communication_strategy_approval_sha256", approval_hash)):
         if _text(payload.get(field)).casefold() != expected.casefold():
             issues.append({"code": "DIRECTOR_BINDING_STALE", "message": f"{field} must match the current upstream artifact"})
@@ -279,6 +304,36 @@ def _audit_issues(
         actual_ids = {_text(item.get("id")) for item in actual_concerns}
         if actual_ids != expected_ids:
             issues.append({"code": "DIRECTOR_AUDIENCE_CONCERNS_NOT_BOUND", "message": "Director must copy the approved audience concern contract exactly"})
+    if schema == "cyberppt.storyline_director.v2":
+        expected_posture = communication_posture(communication_posture_contract)
+        actual_posture = communication_posture(payload)
+        if actual_posture != expected_posture:
+            issues.append({
+                "code": "DIRECTOR_COMMUNICATION_POSTURE_DRIFTED",
+                "message": "Director must copy the approved frontstage/backstage communication posture exactly",
+            })
+        frontstage_values = [
+            payload.get("theme"),
+            payload.get("decision_destination"),
+            payload.get("story_arc"),
+            [
+                {
+                    field: mission.get(field)
+                    for field in ("title", "question", "contribution", "transition_to_next")
+                }
+                for mission in (payload.get("chapter_missions") or [])
+                if isinstance(mission, dict)
+            ],
+        ]
+        hits = forbidden_frontstage_hits(
+            frontstage_values,
+            effective_forbidden_frontstage_frames(expected_posture),
+        )
+        for phrase in hits:
+            issues.append({
+                "code": "DIRECTOR_BACKSTAGE_INTENT_SURFACED",
+                "message": f"Director surfaces forbidden frontstage frame {phrase!r}; restore the approved visible communication posture",
+            })
     for field in ("theme", "decision_destination"):
         if not _text(payload.get(field)):
             issues.append({"code": "DIRECTOR_CENTER_MISSING", "message": f"{field} must be concrete and non-empty"})
@@ -424,6 +479,7 @@ def run_storyline_director_audit(project: Path) -> tuple[int, dict[str, Any]]:
             else None
         ),
         audience_concerns=_audience_concerns(communication.get("audience_concerns")),
+        communication_posture_contract=communication,
         source_sections=(
             {
                 _text(record.get("source_locator", {}).get("section"))

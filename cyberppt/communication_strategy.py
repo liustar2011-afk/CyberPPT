@@ -26,6 +26,45 @@ COMMUNICATION_AUDIT_MD = COMMUNICATION_STAGE / "communication-strategy-audit.md"
 COMMUNICATION_CONFIRMATION = COMMUNICATION_STAGE / "communication-strategy-confirmation.md"
 COMMUNICATION_APPROVAL = Path("workbench/approvals/communication-strategy-approved.json")
 
+COMMUNICATION_SCHEMAS = {
+    "cyberppt.communication_strategy.v1",
+    "cyberppt.communication_strategy.v2",
+}
+INTERACTION_POSTURES = {
+    "decision_request",
+    "peer_exchange",
+    "internal_briefing",
+    "working_session",
+}
+POSTURE_DEFAULT_FORBIDDEN_FRAMES = {
+    "peer_exchange": (
+        "共同决策",
+        "当场决策",
+        "批准哪些",
+        "先批准",
+        "请求批准",
+        "请予批准",
+        "原则批准",
+        "批准建立",
+        "授权启动",
+        "决策请求",
+        "建议形成的原则性意见",
+        "请求合作",
+        "寻求合作",
+        "争取合作",
+        "恳请合作",
+        "达成合作决定",
+        "作出合作决定",
+    ),
+}
+POSTURE_FIELDS = (
+    "frontstage_purpose",
+    "backstage_intent",
+    "interaction_posture",
+    "explicit_audience_action",
+    "forbidden_frontstage_frames",
+)
+
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -53,7 +92,7 @@ def communication_strategy_required(project: Path) -> bool:
 
 def _candidate_template(semantic_gate: dict[str, Any]) -> dict[str, Any]:
     return {
-        "schema": "cyberppt.communication_strategy.v1",
+        "schema": "cyberppt.communication_strategy.v2",
         "semantic_understanding_sha256": semantic_gate["semantic_understanding_sha256"],
         "semantic_source_bundle_sha256": semantic_gate["source_bundle_sha256"],
         "semantic_argument_model_sha256": semantic_gate.get("semantic_argument_model_sha256"),
@@ -68,6 +107,11 @@ def _candidate_template(semantic_gate: dict[str, Any]) -> dict[str, Any]:
                 "audience": "",
                 "communication_purpose": "",
                 "decision_task": "",
+                "frontstage_purpose": "",
+                "backstage_intent": "",
+                "interaction_posture": "peer_exchange",
+                "explicit_audience_action": "",
+                "forbidden_frontstage_frames": [],
                 "architecture_mode": "solution",
                 "structure_principle": "",
                 "audience_concerns": [],
@@ -78,6 +122,11 @@ def _candidate_template(semantic_gate: dict[str, Any]) -> dict[str, Any]:
                 "audience": "",
                 "communication_purpose": "",
                 "decision_task": "",
+                "frontstage_purpose": "",
+                "backstage_intent": "",
+                "interaction_posture": "decision_request",
+                "explicit_audience_action": "",
+                "forbidden_frontstage_frames": [],
                 "architecture_mode": "solution",
                 "structure_principle": "",
                 "audience_concerns": [],
@@ -97,12 +146,16 @@ def _render_authoring_input(
             "# Communication strategy authoring input",
             "",
             "This gate runs after approved whole-document semantic understanding and before Outline authoring.",
-            "Determine who the deck communicates with, what that audience must decide or do, and how the chapter order should change for that audience.",
+            "Determine who the deck communicates with, what it explicitly introduces or discusses, what the audience is visibly invited to do, and what strategic intent must remain backstage.",
             "Do not create pages or an outline here. Do not replace source meaning with a generic consulting storyline.",
             "",
-            "Write `communication-strategy.json` with schema `cyberppt.communication_strategy.v1`.",
+            "Write `communication-strategy.json` with schema `cyberppt.communication_strategy.v2`.",
             "Copy all current semantic hashes below exactly. Supply a concrete audience, communication purpose, decision task, and 1-5 content-focus items.",
+            "`decision_task` is retained as a compatibility field. It means the audience response expected from this communication; for `peer_exchange`, write understanding, questions, opinions, or supplementary conditions rather than an approval decision.",
             "Supply 2-3 materially different reporting-direction options. Each option needs `id`, `label`, its concrete `audience`, `communication_purpose`, `decision_task`, `architecture_mode` (`solution` or `consulting`), a concrete `structure_principle` describing chapter logic and order, and 2-8 source-anchored `audience_concerns` describing the questions this audience must have answered.",
+            "Each v2 option must also define `frontstage_purpose`, `backstage_intent`, `interaction_posture`, `explicit_audience_action`, and 1-12 literal `forbidden_frontstage_frames`.",
+            "`frontstage_purpose` controls visible agenda, chapter framing, titles, questions, and closing language. `backstage_intent` is strategic context only and must never be promoted into those visible fields.",
+            "Use `interaction_posture=peer_exchange` when the visible relationship is introduction and exchange among peers; do not turn a possible future cooperation outcome into an on-screen approval request.",
             "The options may share an architecture mode, but their structure principles must differ. Set `recommendation` to one option id.",
             "If the audience cannot be established from the source, describe the most likely audience but make the ambiguity explicit in the option labels; the human confirmation step remains mandatory.",
             "",
@@ -169,6 +222,134 @@ def _text(value: object) -> str:
     return str(value or "").strip()
 
 
+def _string_list(value: object) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [_text(item) for item in value if _text(item)]
+
+
+def communication_posture(value: object) -> dict[str, Any]:
+    option = value if isinstance(value, dict) else {}
+    return {
+        "frontstage_purpose": _text(option.get("frontstage_purpose")),
+        "backstage_intent": _text(option.get("backstage_intent")),
+        "interaction_posture": _text(option.get("interaction_posture")),
+        "explicit_audience_action": _text(option.get("explicit_audience_action")),
+        "forbidden_frontstage_frames": _string_list(
+            option.get("forbidden_frontstage_frames")
+        ),
+    }
+
+
+def _normalized_phrase(value: object) -> str:
+    return re.sub(r"[\s，。；：、,.!?！？—_\-（）()]+", "", _text(value)).casefold()
+
+
+def _flatten_text(value: object) -> list[str]:
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [text for item in value for text in _flatten_text(item)]
+    if isinstance(value, dict):
+        return [text for item in value.values() for text in _flatten_text(item)]
+    return []
+
+
+def forbidden_frontstage_hits(value: object, forbidden: object) -> list[str]:
+    """Return literal posture frames found in a nested frontstage value."""
+
+    phrases = _string_list(forbidden)
+    hits: list[str] = []
+    for visible_text in _flatten_text(value):
+        normalized = _normalized_phrase(visible_text)
+        for phrase in phrases:
+            normalized_phrase = _normalized_phrase(phrase)
+            if normalized_phrase and normalized_phrase in normalized and phrase not in hits:
+                hits.append(phrase)
+    return hits
+
+
+def effective_forbidden_frontstage_frames(posture: object) -> list[str]:
+    """Return project-specific frames plus non-optional posture policy.
+
+    The authoring model may add source- or audience-specific frames, but it may
+    not weaken the platform-role policy.  In particular, a peer exchange is an
+    introduction/discussion posture, not a request for approval or cooperation.
+    """
+
+    contract = posture if isinstance(posture, dict) else {}
+    frames = [
+        *POSTURE_DEFAULT_FORBIDDEN_FRAMES.get(
+            _text(contract.get("interaction_posture")), ()
+        ),
+        *_string_list(contract.get("forbidden_frontstage_frames")),
+    ]
+    unique: list[str] = []
+    normalized: set[str] = set()
+    for frame in frames:
+        key = _normalized_phrase(frame)
+        if key and key not in normalized:
+            unique.append(frame)
+            normalized.add(key)
+    return unique
+
+
+def frontstage_posture_issues(
+    outline: dict[str, Any], gate: dict[str, Any] | None
+) -> list[dict[str, Any]]:
+    """Reject visible outline rhetoric that surfaces a backstage-only intent.
+
+    The strategy author supplies literal forbidden frames because the same word
+    (for example, 合作) may be a legitimate source topic while an approval-seeking
+    phrase (for example, 批准合作) may violate the selected peer-exchange posture.
+    """
+
+    if gate is None:
+        return []
+    forbidden = effective_forbidden_frontstage_frames(gate)
+    if not forbidden:
+        return []
+    page_fields = (
+        "title",
+        "subtitle",
+        "agenda_items",
+        "sections",
+        "page_mission",
+        "page_necessity",
+        "audience_question",
+        "business_question",
+        "core_message",
+        "storyline_role",
+        "transition_from_previous",
+        "transition_to_next",
+        "decision_request",
+        "closing_note",
+        "discussion_topics",
+    )
+    issues: list[dict[str, Any]] = []
+    pages = outline.get("pages") if isinstance(outline.get("pages"), list) else []
+    for page in pages:
+        if not isinstance(page, dict):
+            continue
+        page_id = _text(page.get("page_id"))
+        for field in page_fields:
+            for visible_text in _flatten_text(page.get(field)):
+                for phrase in forbidden_frontstage_hits(visible_text, forbidden):
+                    issues.append(
+                        {
+                            "code": "BACKSTAGE_INTENT_SURFACED",
+                            "message": (
+                                f"{page_id or 'outline'} field {field} surfaces forbidden "
+                                f"frontstage frame {phrase!r} under the approved "
+                                f"{gate.get('interaction_posture') or 'communication'} posture."
+                            ),
+                            "pages": [page_id] if page_id else [],
+                            "retry_strategy": "restore_frontstage_communication_posture",
+                        }
+                    )
+    return issues
+
+
 def _audience_concerns(value: object) -> list[dict[str, Any]]:
     """Return the concrete questions this audience needs answered.
 
@@ -202,8 +383,9 @@ def _audience_concerns(value: object) -> list[dict[str, Any]]:
 
 def _audit_issues(payload: dict[str, Any], semantic_gate: dict[str, Any]) -> list[dict[str, str]]:
     issues: list[dict[str, str]] = []
-    if payload.get("schema") != "cyberppt.communication_strategy.v1":
-        issues.append({"code": "COMMUNICATION_SCHEMA_INVALID", "message": "schema must be cyberppt.communication_strategy.v1"})
+    schema = _text(payload.get("schema"))
+    if schema not in COMMUNICATION_SCHEMAS:
+        issues.append({"code": "COMMUNICATION_SCHEMA_INVALID", "message": "schema must be cyberppt.communication_strategy.v1 or v2"})
     for field in ("audience", "communication_purpose", "decision_task"):
         if not _text(payload.get(field)):
             issues.append({"code": f"{field.upper()}_MISSING", "message": f"{field} must be concrete and non-empty"})
@@ -242,6 +424,56 @@ def _audit_issues(payload: dict[str, Any], semantic_gate: dict[str, Any]) -> lis
         concern_ids = [item["id"] for item in concerns]
         if len(set(concern_ids)) != len(concern_ids):
             issues.append({"code": "AUDIENCE_CONCERN_IDS_INVALID", "message": f"option {index} audience concern ids must be unique"})
+        if schema == "cyberppt.communication_strategy.v2":
+            posture = communication_posture(option)
+            if any(
+                not posture[field]
+                for field in (
+                    "frontstage_purpose",
+                    "backstage_intent",
+                    "interaction_posture",
+                    "explicit_audience_action",
+                )
+            ):
+                issues.append({
+                    "code": "COMMUNICATION_POSTURE_INCOMPLETE",
+                    "message": f"option {index} requires concrete frontstage purpose, backstage intent, interaction posture, and explicit audience action",
+                })
+            if posture["interaction_posture"] not in INTERACTION_POSTURES:
+                issues.append({
+                    "code": "COMMUNICATION_POSTURE_INVALID",
+                    "message": f"option {index} interaction_posture must be one of {sorted(INTERACTION_POSTURES)}",
+                })
+            forbidden = posture["forbidden_frontstage_frames"]
+            if not 1 <= len(forbidden) <= 12 or len({_normalized_phrase(item) for item in forbidden}) != len(forbidden):
+                issues.append({
+                    "code": "FRONTSTAGE_FORBIDDEN_FRAMES_INVALID",
+                    "message": f"option {index} requires 1-12 unique literal forbidden_frontstage_frames",
+                })
+            if _normalized_phrase(posture["frontstage_purpose"]) == _normalized_phrase(posture["backstage_intent"]):
+                issues.append({
+                    "code": "FRONTSTAGE_BACKSTAGE_NOT_DISTINCT",
+                    "message": f"option {index} must distinguish visible communication purpose from latent strategic intent",
+                })
+            if posture["interaction_posture"] == "peer_exchange":
+                posture_hits = forbidden_frontstage_hits(
+                    [
+                        option.get("communication_purpose"),
+                        option.get("decision_task"),
+                        posture["frontstage_purpose"],
+                        posture["explicit_audience_action"],
+                        [item["question"] for item in concerns],
+                    ],
+                    effective_forbidden_frontstage_frames(posture),
+                )
+                if posture_hits:
+                    issues.append({
+                        "code": "COMMUNICATION_POSTURE_SELF_CONTRADICTORY",
+                        "message": (
+                            f"option {index} declares peer_exchange but surfaces "
+                            f"approval/cooperation-seeking frames: {', '.join(posture_hits)}"
+                        ),
+                    })
         ids.append(option_id)
         principles.append(re.sub(r"\s+", "", principle).casefold())
     if len(set(ids)) != len(ids) or "" in ids:
@@ -284,7 +516,7 @@ def run_communication_strategy_audit(project: Path) -> tuple[int, dict[str, Any]
         f"- 状态：**{report['status']}**",
         f"- 沟通对象：{_text(payload.get('audience')) or '待补充'}",
         f"- 沟通目的：{_text(payload.get('communication_purpose')) or '待补充'}",
-        f"- 决策任务：{_text(payload.get('decision_task')) or '待补充'}",
+        f"- 沟通任务：{_text(payload.get('decision_task')) or '待补充'}",
         "",
         "## 问题",
         "",
@@ -296,15 +528,27 @@ def run_communication_strategy_audit(project: Path) -> tuple[int, dict[str, Any]
         option_lines = []
         for option in payload["options"]:
             recommended = "（推荐）" if option["id"] == payload["recommendation"] else ""
+            posture = communication_posture(option)
             option_lines += [
                 f"### {option['label']}{recommended}",
                 "",
                 f"- option_id: `{option['id']}`",
                 f"- 沟通对象：{option['audience']}",
                 f"- 沟通目的：{option['communication_purpose']}",
-                f"- 决策任务：{option['decision_task']}",
+                f"- 沟通任务：{option['decision_task']}",
                 f"- 结构模式：{option['architecture_mode']}",
                 f"- 章节组织：{option['structure_principle']}",
+                *(
+                    [
+                        f"- 明线目的：{posture['frontstage_purpose']}",
+                        f"- 隐含意图（不得直接上屏）：{posture['backstage_intent']}",
+                        f"- 沟通姿态：{posture['interaction_posture']}",
+                        f"- 明示受众动作：{posture['explicit_audience_action']}",
+                        "- 禁止显性化话术：" + "、".join(posture["forbidden_frontstage_frames"]),
+                    ]
+                    if payload.get("schema") == "cyberppt.communication_strategy.v2"
+                    else []
+                ),
                 "- 受众必须得到回答的问题：",
                 *[
                     f"  - `{concern.get('id')}` {concern.get('question')}（依据：{'、'.join(str(anchor) for anchor in concern.get('source_anchors', []))}）"
@@ -321,10 +565,10 @@ def run_communication_strategy_audit(project: Path) -> tuple[int, dict[str, Any]
                     "",
                     f"当前识别：**{payload['audience']}**",
                     "",
-                    "## 沟通目的与决策任务",
+                    "## 沟通目的与受众任务",
                     "",
                     f"- 沟通目的：{payload['communication_purpose']}",
-                    f"- 决策任务：{payload['decision_task']}",
+                    f"- 沟通任务：{payload['decision_task']}",
                     "",
                     "## 请选择汇报方向",
                     "",
@@ -361,6 +605,14 @@ def approve_communication_strategy(project: Path, option_id: str, note: str = ""
     if option_id not in options:
         raise ValueError(f"unknown communication strategy option: {option_id}")
     selected = options[option_id]
+    prior_communication_decisions = [
+        _text(item.get("id"))
+        for item in load_user_decisions(project)
+        if isinstance(item, dict)
+        and item.get("status") == "approved"
+        and _text(item.get("id")).startswith("communication_strategy:")
+        and _text(item.get("id")) != f"communication_strategy:{option_id}"
+    ]
     decision = record_user_decision(
         project,
         decision_id=f"communication_strategy:{option_id}",
@@ -371,7 +623,10 @@ def approve_communication_strategy(project: Path, option_id: str, note: str = ""
             "chapter_emphasis",
             "page_selection",
             "decision_destination",
+            "frontstage_framing",
+            "backstage_intent",
         ],
+        supersedes=prior_communication_decisions,
     )
     approval = {
         "schema": "cyberppt.communication_strategy_approval.v1",
@@ -392,6 +647,9 @@ def approve_communication_strategy(project: Path, option_id: str, note: str = ""
         "approved_at": _utc_now(),
         "note": note.strip(),
     }
+    if payload.get("schema") == "cyberppt.communication_strategy.v2":
+        approval["communication_strategy_schema"] = payload["schema"]
+        approval.update(communication_posture(selected))
     output = project / COMMUNICATION_APPROVAL
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(approval, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -439,6 +697,14 @@ def assert_communication_strategy_ready(project: Path) -> dict[str, Any] | None:
         raise ValueError("communication-strategy approval is stale; recheck and reapprove")
     if not 2 <= len(_audience_concerns(approval.get("audience_concerns"))) <= 8:
         raise ValueError("communication-strategy approval lacks a source-anchored audience concern contract; rerun communication-strategy-check and reapprove")
+    if approval.get("communication_strategy_schema") == "cyberppt.communication_strategy.v2":
+        posture = communication_posture(approval)
+        if (
+            any(not posture[field] for field in POSTURE_FIELDS[:-1])
+            or posture["interaction_posture"] not in INTERACTION_POSTURES
+            or not posture["forbidden_frontstage_frames"]
+        ):
+            raise ValueError("communication-strategy approval lacks a valid frontstage/backstage posture contract; reapprove the selected option")
     decision_id = _text(approval.get("user_decision_id"))
     if not decision_id or decision_id not in {
         _text(item.get("id")) for item in load_user_decisions(project)
@@ -469,6 +735,9 @@ def communication_strategy_binding_issues(
         "user_decision_id": gate.get("user_decision_id"),
         "audience_concerns": gate.get("audience_concerns"),
     }
+    for field in POSTURE_FIELDS:
+        if gate.get(field) not in (None, "", []):
+            expected[field] = gate.get(field)
     issues: list[dict[str, str]] = []
     for field, value in expected.items():
         if _text(outline.get(field)) != _text(value):

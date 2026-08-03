@@ -14,6 +14,7 @@ from cyberppt.communication_strategy import (
     approve_communication_strategy,
     assert_communication_strategy_ready,
     communication_strategy_binding_issues,
+    frontstage_posture_issues,
     prepare_communication_strategy,
     run_communication_strategy_audit,
 )
@@ -96,6 +97,28 @@ class CommunicationStrategyTests(unittest.TestCase):
             ],
             "recommendation": "decision_review",
         }
+        (self.project / COMMUNICATION_ARTIFACT).write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        return payload
+
+    def _upgrade_candidate_to_v2(self, payload: dict[str, object]) -> dict[str, object]:
+        payload["schema"] = "cyberppt.communication_strategy.v2"
+        for option in payload["options"]:
+            option.update(
+                {
+                    "frontstage_purpose": "介绍方案内容并围绕适用条件开展同行交流",
+                    "backstage_intent": "在充分理解基础上识别未来可能继续合作的议题",
+                    "interaction_posture": "peer_exchange",
+                    "explicit_audience_action": "理解方案、提出意见并补充实际需求与条件",
+                    "forbidden_frontstage_frames": [
+                        "共同决策",
+                        "批准合作",
+                        "先批准",
+                    ],
+                }
+            )
         (self.project / COMMUNICATION_ARTIFACT).write_text(
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
@@ -225,6 +248,22 @@ class CommunicationStrategyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "stale"):
             assert_communication_strategy_ready(self.project)
 
+    def test_new_communication_choice_supersedes_prior_choice(self) -> None:
+        self._write_valid_candidate()
+        run_communication_strategy_audit(self.project)
+        approve_communication_strategy(self.project, "decision_review")
+        approve_communication_strategy(self.project, "joint_workshop")
+        decisions = json.loads(
+            (self.project / "workbench/decisions/user-decisions.json").read_text(encoding="utf-8")
+        )["decisions"]
+        by_id = {item["id"]: item for item in decisions}
+        self.assertEqual("superseded", by_id["communication_strategy:decision_review"]["status"])
+        self.assertEqual(
+            "communication_strategy:joint_workshop",
+            by_id["communication_strategy:decision_review"]["superseded_by"],
+        )
+        self.assertEqual("approved", by_id["communication_strategy:joint_workshop"]["status"])
+
     def test_options_must_be_distinct(self) -> None:
         payload = self._write_valid_candidate()
         payload["options"][1]["structure_principle"] = payload["options"][0]["structure_principle"]
@@ -235,6 +274,63 @@ class CommunicationStrategyTests(unittest.TestCase):
         self.assertEqual(4, code)
         self.assertIn(
             "COMMUNICATION_OPTIONS_NOT_DISTINCT",
+            {item["code"] for item in report["issues"]},
+        )
+
+    def test_v2_requires_distinct_frontstage_and_backstage_contract(self) -> None:
+        payload = self._upgrade_candidate_to_v2(self._write_valid_candidate())
+        code, report = run_communication_strategy_audit(self.project)
+        self.assertEqual(0, code)
+        self.assertEqual("confirmation_required", report["status"])
+
+        payload["options"][0]["backstage_intent"] = payload["options"][0]["frontstage_purpose"]
+        (self.project / COMMUNICATION_ARTIFACT).write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        code, report = run_communication_strategy_audit(self.project)
+        self.assertEqual(4, code)
+        self.assertIn(
+            "FRONTSTAGE_BACKSTAGE_NOT_DISTINCT",
+            {item["code"] for item in report["issues"]},
+        )
+
+    def test_peer_exchange_blocks_backstage_decision_rhetoric_in_outline(self) -> None:
+        self._upgrade_candidate_to_v2(self._write_valid_candidate())
+        run_communication_strategy_audit(self.project)
+        approve_communication_strategy(self.project, "joint_workshop")
+        gate = assert_communication_strategy_ready(self.project)
+        self.assertEqual("peer_exchange", gate["interaction_posture"])
+
+        outline = {
+            "pages": [
+                {
+                    "page_id": "p02",
+                    "page_type": "agenda",
+                    "title": "围绕一次共同决策展开四个问题",
+                }
+            ]
+        }
+        issues = frontstage_posture_issues(outline, gate)
+        self.assertEqual({"BACKSTAGE_INTENT_SURFACED"}, {item["code"] for item in issues})
+        self.assertEqual(["p02"], issues[0]["pages"])
+
+        outline["pages"][0]["title"] = "交流内容"
+        outline["pages"][0]["agenda_items"] = ["基础设施介绍", "运营体系规划"]
+        self.assertEqual([], frontstage_posture_issues(outline, gate))
+
+    def test_peer_exchange_enforces_platform_posture_even_when_model_omits_phrase(self) -> None:
+        payload = self._upgrade_candidate_to_v2(self._write_valid_candidate())
+        payload["options"][0]["forbidden_frontstage_frames"] = ["共同决策"]
+        payload["options"][0]["explicit_audience_action"] = "请求批准合作方案"
+        (self.project / COMMUNICATION_ARTIFACT).write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        code, report = run_communication_strategy_audit(self.project)
+        self.assertEqual(4, code)
+        self.assertIn(
+            "COMMUNICATION_POSTURE_SELF_CONTRADICTORY",
             {item["code"] for item in report["issues"]},
         )
 

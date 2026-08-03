@@ -20,6 +20,7 @@ from cyberppt.communication_strategy import (
     audience_concern_binding_issues,
     assert_communication_strategy_ready,
     communication_strategy_binding_issues,
+    frontstage_posture_issues,
 )
 from cyberppt.source_truth_contract import load_source_truth
 from cyberppt.semantic_proposition_contract import build_proposition_graph
@@ -84,12 +85,17 @@ def render_outline_markdown(payload: dict[str, object], report: dict[str, object
         lines.append("")
     storyline = payload.get("storyline")
     if isinstance(storyline, dict) and storyline:
+        destination_label = (
+            "交流落点"
+            if storyline.get("interaction_posture") == "peer_exchange"
+            else "决策终点"
+        )
         lines.extend(
             [
                 "## 提纲导演合同",
                 "",
                 f"- 主题：{storyline.get('theme', '未声明')}",
-                f"- 决策终点：{storyline.get('decision_destination', '未声明')}",
+                f"- {destination_label}：{storyline.get('decision_destination', '未声明')}",
                 "",
                 "### 故事线",
                 "",
@@ -304,6 +310,15 @@ def run_outline_audit(
             item["retry_strategy"],
         )
         for item in communication_strategy_binding_issues(payload, communication_gate)
+    )
+    issues.extend(
+        AuditIssue(
+            item["code"],
+            item["message"],
+            tuple(str(page) for page in item.get("pages", [])),
+            item["retry_strategy"],
+        )
+        for item in frontstage_posture_issues(payload, communication_gate)
     )
     issues.extend(
         AuditIssue(

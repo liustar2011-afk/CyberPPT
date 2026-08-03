@@ -36,6 +36,7 @@ def record_user_decision(
     answer: str,
     applies_to: list[str],
     source: str = "user",
+    supersedes: list[str] | None = None,
 ) -> dict[str, Any]:
     """Upsert a decision and return the durable record.
 
@@ -51,10 +52,23 @@ def record_user_decision(
     path = project / DECISIONS_ARTIFACT
     payload = _load(path)
     payload.setdefault("schema", "cyberppt.user_decisions.v1")
-    decisions = [
-        item for item in payload.get("decisions", [])
-        if isinstance(item, dict) and str(item.get("id") or "") != decision_id
-    ]
+    superseded_ids = {
+        str(item).strip()
+        for item in (supersedes or [])
+        if str(item).strip() and str(item).strip() != decision_id
+    }
+    decisions = []
+    for item in payload.get("decisions", []):
+        if not isinstance(item, dict) or str(item.get("id") or "") == decision_id:
+            continue
+        if str(item.get("id") or "") in superseded_ids:
+            item = {
+                **item,
+                "status": "superseded",
+                "superseded_by": decision_id.strip(),
+                "superseded_at": _utc_now(),
+            }
+        decisions.append(item)
     record = {
         "id": decision_id.strip(),
         "question": question.strip(),

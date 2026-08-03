@@ -117,6 +117,42 @@ class StorylineDirectorTests(unittest.TestCase):
         self.assertIn("DIRECTOR_ARGUMENT_ROLE_DRIFTED", codes)
         self.assertIn("DIRECTOR_ARGUMENT_WEIGHT_DRIFTED", codes)
 
+    def test_v2_director_keeps_backstage_intent_out_of_visible_story(self) -> None:
+        posture = {
+            "frontstage_purpose": "介绍方案并开展同行交流",
+            "backstage_intent": "识别未来可能继续合作的议题",
+            "interaction_posture": "peer_exchange",
+            "explicit_audience_action": "理解内容、提出意见并补充条件",
+            "forbidden_frontstage_frames": ["共同决策", "批准合作", "先批准"],
+        }
+        payload = director_payload()
+        payload.update(posture)
+        payload["schema"] = "cyberppt.storyline_director.v2"
+        payload["theme"] = "介绍基础设施、运营体系和实施设想"
+        payload["decision_destination"] = "形成完整理解并交流适用条件和后续议题"
+        payload["story_arc"] = ["介绍基础设施", "说明运营体系", "交流实施设想"]
+        self.assertEqual(
+            [],
+            _audit_issues(
+                payload,
+                "source-hash",
+                "approval-hash",
+                communication_posture_contract=posture,
+            ),
+        )
+
+        payload["decision_destination"] = "形成一次共同决策"
+        codes = {
+            issue["code"]
+            for issue in _audit_issues(
+                payload,
+                "source-hash",
+                "approval-hash",
+                communication_posture_contract=posture,
+            )
+        }
+        self.assertIn("DIRECTOR_BACKSTAGE_INTENT_SURFACED", codes)
+
 
 if __name__ == "__main__":
     unittest.main()

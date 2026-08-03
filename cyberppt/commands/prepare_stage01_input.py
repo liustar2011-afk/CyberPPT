@@ -76,6 +76,13 @@ def prepare_outline_input(project: Path) -> Path:
     ]
     if communication_gate is not None:
         selected = communication_gate["selected_option"]
+        posture_fields = [
+            "frontstage_purpose",
+            "backstage_intent",
+            "interaction_posture",
+            "explicit_audience_action",
+            "forbidden_frontstage_frames",
+        ]
         lines += [
             "## approved_communication_strategy",
             "",
@@ -89,12 +96,23 @@ def prepare_outline_input(project: Path) -> Path:
             f"- user_decision_id: {communication_gate.get('user_decision_id', '')}",
             f"- architecture_mode: {selected['architecture_mode']}",
             f"- structure_principle: {selected['structure_principle']}",
+            *[
+                f"- {field}: " + (
+                    json.dumps(communication_gate.get(field), ensure_ascii=False)
+                    if isinstance(communication_gate.get(field), (list, dict))
+                    else str(communication_gate.get(field) or "")
+                )
+                for field in posture_fields
+                if communication_gate.get(field) not in (None, "", [])
+            ],
             "- audience_concerns: " + json.dumps(
                 communication_gate.get("audience_concerns", []),
                 ensure_ascii=False,
             ),
             "",
             "Use `structure_principle` to determine chapter order. Source truth still controls meaning and evidence; the approved strategy controls how that meaning is organized for this audience.",
+            "Visible agenda, chapter titles, page titles, audience questions, and closing language must follow `frontstage_purpose` and `explicit_audience_action`. `backstage_intent` is not a visible story beat and must never be turned into an approval request, decision headline, or closing call to action.",
+            "Copy all supplied posture fields to the Outline root exactly. None of the literal `forbidden_frontstage_frames` may appear in visible or editorial page fields.",
             "",
         ]
     if director_gate is not None:
