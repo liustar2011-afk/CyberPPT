@@ -328,6 +328,38 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertIn(summary["artifacts"]["template_text_lock"], ledger_paths)
             self.assertIn(summary["artifacts"]["visual_style_lock"], ledger_paths)
 
+    def test_external_script_does_not_require_stage01_or_per_page_approvals(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "stage2-only"
+            script = root / "vendor-script.md"
+            script.write_text(
+                "## P01 外部脚本页面\n"
+                "本页结论：外部脚本可以直接进入 Stage 02。\n"
+                "组件A：输入与输出关系\n",
+                encoding="utf-8",
+            )
+
+            summary = run_final_script_pages(
+                project=project,
+                script=script,
+                pages_raw="1",
+                style_id=4,
+                external_script=True,
+            )
+
+            manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
+            context = json.loads(Path(summary["artifacts"]["build_context"]).read_text(encoding="utf-8"))
+
+        self.assertEqual("external_script", summary["source_mode"])
+        self.assertEqual("external_script", context["source_mode"])
+        self.assertEqual("stage2-only", Path(summary["project"]).name)
+        self.assertEqual("external_script", manifest["source_mode"])
+        self.assertEqual(summary["source_script_sha256"], manifest["source_script_sha256"])
+        self.assertFalse(manifest["prompt_contract"]["approved_prompt_is_source"])
+        self.assertTrue(summary["artifacts"]["compiled_deliverable_prompt"].endswith(".md"))
+        self.assertIn("--external-script", summary["resume_command"])
+
     def test_requires_default_style_selection_or_explicit_style_lock(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

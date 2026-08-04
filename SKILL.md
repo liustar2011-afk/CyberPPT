@@ -74,6 +74,8 @@ Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-s
 
 `final-script-pages` 是脚本锁定后的唯一正式编排入口。禁止把直接调用 `codex_oauth_image.py`、`template_image_ppt_export.py`、`python -m cyberppt image-ppt run` 或 `template-rebuild` 当作正式主流程；这些命令只可用于主链内部、故障诊断或明确记录的恢复操作。
 
+当脚本由 Stage 01 之外的系统或人工流程提供时，可使用 `final-script-pages --external-script` 进入 Stage 02。该模式跳过 Stage 01 脚本审批、视觉结构交接和逐页 ImageGen 审批台账，但仍必须经过 Stage 02 的脚本解析、页面范围校验、风格锁、manifest、构建上下文和 artifact ledger；运行摘要必须记录 `source_mode=external_script` 及脚本哈希。未显式指定该参数时，Stage 01 到 Stage 02 的原有门禁不变。
+
 必须显式选择或沿用一种生产模式：
 
 1. `full-image`（默认）：生成 full 图，经 `image-ppt` 套模板；正文区文字通常不可编辑。

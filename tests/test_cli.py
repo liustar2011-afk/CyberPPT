@@ -210,6 +210,25 @@ class CliTests(unittest.TestCase):
         self.assertEqual(3, code)
         run_script.assert_called_once_with("template-rebuild", ["page_image_pairs.json", "--no-export"])
 
+    def test_final_script_pages_external_script_is_forwarded(self) -> None:
+        with patch("cyberppt.cli.run_final_script_pages", return_value={}) as runner:
+            code = main(
+                [
+                    "final-script-pages",
+                    "project",
+                    "--script",
+                    "external.md",
+                    "--pages",
+                    "1",
+                    "--style-id",
+                    "4",
+                    "--external-script",
+                ]
+            )
+
+        self.assertEqual(0, code)
+        self.assertTrue(runner.call_args.kwargs["external_script"])
+
     def test_final_script_pages_rejects_blueprint_only_with_production_build(self) -> None:
         buffer = io.StringIO()
         with (

@@ -9,7 +9,10 @@ import re
 import unicodedata
 
 
-PAGE_HEADING_RE = re.compile(r"^##\s+第(\d+)页[：:](.+?)\s*$", re.MULTILINE)
+PAGE_HEADING_RE = re.compile(
+    r"^##\s+(?:(?:第(\d+)页[：:](.+?)|P(\d+)\s+(.+?)))\s*$",
+    re.MULTILINE,
+)
 FIELD_RE = re.compile(r"^-\s*([^：:\n]+)[：:]\s*(.*)$")
 HEADING_FIELD_RE = re.compile(r"^###\s+(.+?)\s*$")
 NON_ONSCREEN_VISUAL_HEADING_RE = re.compile(r"^【视觉结构[，,]\s*不上屏】\s*$")
@@ -271,8 +274,8 @@ def _page_sections(text: str) -> list[tuple[int, str, str]]:
     matches = list(PAGE_HEADING_RE.finditer(text))
     return [
         (
-            int(match.group(1)),
-            match.group(2).strip(),
+            int(match.group(1) or match.group(3)),
+            (match.group(2) or match.group(4)).strip(),
             text[
                 match.end() : (
                     matches[index + 1].start()

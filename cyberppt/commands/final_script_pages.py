@@ -620,6 +620,7 @@ def run_final_script_pages(
     prompt_enrich: str = "off",
     require_send_approval: bool = False,
     build_id: str | None = None,
+    external_script: bool = False,
 ) -> dict[str, Any]:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
@@ -627,12 +628,14 @@ def run_final_script_pages(
     semantic_plan_dir = semantic_plan_dir.expanduser().resolve() if semantic_plan_dir else None
     if not script.is_file():
         raise FileNotFoundError(f"final script not found: {script}")
-    from cyberppt.stage01_controls import assert_escalation_resolved, assert_stage01_script_approval
-    from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
+    source_mode = "external_script" if external_script else "stage01_approved_script"
+    if not external_script:
+        from cyberppt.stage01_controls import assert_escalation_resolved, assert_stage01_script_approval
+        from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
 
-    assert_escalation_resolved(project, "script")
-    assert_stage01_script_approval(project, script)
-    assert_visual_structure_ready(project, script)
+        assert_escalation_resolved(project, "script")
+        assert_stage01_script_approval(project, script)
+        assert_visual_structure_ready(project, script)
     if production_mode not in PRODUCTION_MODES:
         raise ValueError(
             f"unsupported production mode: {production_mode}; "
@@ -690,11 +693,15 @@ def run_final_script_pages(
         output_dir=target_dir,
         project_path=project,
         style_lock=style_lock,
-        require_approved_prompts=True,
+        require_approved_prompts=not external_script,
         production_mode=production_mode,
         prompt_enrich=prompt_enrich,
         require_send_approval=require_send_approval,
     )
+    manifest["source_mode"] = source_mode
+    manifest["source_script"] = str(script)
+    manifest["source_script_sha256"] = _sha256(script)
+    _write_json(manifest_path, manifest)
     lock_path = _template_text_lock(
         project=project,
         script=script,
@@ -728,6 +735,7 @@ def run_final_script_pages(
         f"python -m cyberppt final-script-pages {project} --script {script} "
         f"--pages {pages_raw} --style-lock {style_lock} --production-mode {production_mode} "
         f"--output-dir {target_dir} --build-id {build_id}"
+        + (" --external-script" if external_script else "")
     )
     production_readiness = None
     tool_consumption: dict[str, Any] = {}
@@ -775,6 +783,7 @@ def run_final_script_pages(
         "source_script_sha256": _sha256(script),
         "pages": page_numbers,
         "stage": stage_name,
+        "source_mode": source_mode,
         "status": status,
         "production_mode": production_mode,
         "artifacts": {
@@ -826,6 +835,7 @@ def run_final_script_pages(
         "page_set": page_numbers,
         "production_mode": production_mode,
         "stage": stage_name,
+        "source_mode": source_mode,
         "status": status,
         "artifacts": {
             "compiled_deliverable_prompt": {

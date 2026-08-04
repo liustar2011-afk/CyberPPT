@@ -459,6 +459,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             prompt_enrich=args.prompt_enrich,
             require_send_approval=args.require_send_approval,
             build_id=args.build_id,
+            external_script=args.external_script,
         )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -819,6 +820,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     final_script_pages_parser.add_argument("project", help="CyberPPT project directory.")
     final_script_pages_parser.add_argument("--script", required=True, help="Final markdown script containing page headings.")
+    final_script_pages_parser.add_argument(
+        "--external-script",
+        action="store_true",
+        help=(
+            "Accept a script supplied outside Stage 01. Skips Stage 01 approval and visual-structure gates; "
+            "the script remains hash-bound in Stage 02 artifacts."
+        ),
+    )
     final_script_pages_parser.add_argument("--pages", required=True, help="Page range, e.g. 7-8 or 7,8.")
     final_script_pages_parser.add_argument("--style-lock", help="Optional project visual lock file.")
     final_script_pages_parser.add_argument(
