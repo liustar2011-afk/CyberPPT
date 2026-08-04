@@ -7,6 +7,7 @@ import unittest
 from cyberppt.script_quality_contract import (
     ScriptPage,
     _mechanical_evidence_bullets,
+    _module_heading_colon_hits,
     _generic_onscreen_relation_hits,
     _speaker_placeholder_hits,
     _issue,
@@ -26,6 +27,22 @@ from cyberppt.script_quality_contract import (
 
 
 class ProductionAuthoringGuardTests(unittest.TestCase):
+    def test_module_headings_reserve_vertical_bar_separator(self) -> None:
+        self.assertEqual(
+            ("### 一、建设前提：国家任务和组织体系已经确立",),
+            _module_heading_colon_hits(
+                "### 一、建设前提：国家任务和组织体系已经确立\n"
+                "- 政策牵引：国家持续部署国家数据基础设施建设。"
+            ),
+        )
+        self.assertEqual(
+            (),
+            _module_heading_colon_hits(
+                "### 一、建设前提｜国家任务和组织体系已经确立\n"
+                "- 政策牵引：国家持续部署国家数据基础设施建设。"
+            ),
+        )
+
     def test_flags_numbered_evidence_fragments_from_punctuation_splitting(self) -> None:
         text = """**关键依据**
 - 依据1：2025年1月，

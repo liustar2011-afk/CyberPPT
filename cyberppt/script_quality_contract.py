@@ -11,7 +11,28 @@ import unicodedata
 
 PAGE_HEADING_RE = re.compile(r"^##\s+第(\d+)页[：:](.+?)\s*$", re.MULTILINE)
 FIELD_RE = re.compile(r"^-\s*([^：:\n]+)[：:]\s*(.*)$")
+HEADING_FIELD_RE = re.compile(r"^###\s+(.+?)\s*$")
 NON_ONSCREEN_VISUAL_HEADING_RE = re.compile(r"^【视觉结构[，,]\s*不上屏】\s*$")
+
+# Current project scripts also use Markdown section headings for the page
+# contract fields. Keep the legacy ``- 字段：内容`` parser, but normalize these
+# headings so the drawable 上屏文字 block is not silently dropped.
+HEADING_FIELD_ALIASES = {
+    "完整文字稿": "完整文字稿",
+    "文字稿取舍说明": "文字稿取舍说明",
+    "证据映射": "证据映射",
+    "上屏文字": "上屏文字",
+    "逻辑骨架": "视觉结构",
+    "视觉意图与生图构图": "视觉结构",
+    "演讲者备注": "演讲者备注",
+}
+
+
+def _heading_field_name(raw: str) -> str | None:
+    """Map a Markdown page-contract heading to the canonical field name."""
+
+    name = re.sub(r"[（(].*?[）)]\s*$", "", raw.strip()).strip()
+    return HEADING_FIELD_ALIASES.get(name)
 MODULE_RE = re.compile(r"^\s*\*\*(.+?)\*\*\s*$")
 INLINE_MODULE_RE = re.compile(r"^\s*\*\*(.+?)\*\*(?:\s*[|｜:：].*)?\s*$")
 # Source Truth identifiers are historically three digits (for example S015)
@@ -275,8 +296,27 @@ def _field_blocks(body: str) -> dict[str, str]:
             active = "视觉结构"
             blocks[active] = []
             continue
+        heading_match = HEADING_FIELD_RE.match(raw_line.strip())
+        if heading_match:
+            heading_field = _heading_field_name(heading_match.group(1))
+            if heading_field:
+                active = heading_field
+                blocks[active] = []
+                continue
+            # Module headings inside 上屏文字 are content, not a new field;
+            # leave ``active`` unchanged so their following bullets remain
+            # drawable text, but preserve the heading itself so downstream
+            # module-title extraction can retain the reading hierarchy.
+            if active == "上屏文字":
+                blocks[active].append(raw_line.rstrip())
+            continue
         match = FIELD_RE.match(raw_line)
         if match:
+            if active == "上屏文字":
+                # Module bullets such as ``- 政策牵引：...`` belong to the
+                # drawable text layer; they are not peer-level contract fields.
+                blocks[active].append(raw_line.rstrip())
+                continue
             active = match.group(1).strip()
             blocks[active] = [match.group(2).strip()]
         elif active:
@@ -360,7 +400,10 @@ def _module_title(line: str) -> str | None:
     drawable module; the inline body must remain in the visible text layer.
     """
 
-    match = MODULE_RE.match(line) or INLINE_MODULE_RE.match(line)
+    # Accept both a bare Markdown heading and the repository's readable
+    # ``- **小标题**`` list form.
+    candidate = re.sub(r"^\s*-\s+", "", line)
+    match = MODULE_RE.match(candidate) or INLINE_MODULE_RE.match(candidate)
     return match.group(1).strip() if match else None
 
 
@@ -1168,6 +1211,23 @@ def _unlabeled_onscreen_bullets(text: str) -> tuple[str, ...]:
     return tuple(hits)
 
 
+def _module_heading_colon_hits(text: str) -> tuple[str, ...]:
+    """Find module headings that use the detail-line colon separator.
+
+    On-screen hierarchy reserves ``｜`` for module-title separation while
+    ``：`` remains available for conclusion-first detail bullets. Keeping the
+    two separators distinct prevents a module heading and its child summary
+    from receiving the same visual punctuation weight.
+    """
+
+    hits = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if re.match(r"^###\s+[^：:\n]+[：:]", stripped):
+            hits.append(stripped)
+    return tuple(hits)
+
+
 def _mechanical_evidence_bullets(text: str) -> tuple[str, ...]:
     """Detect source-sentence atomization masquerading as authored slide copy."""
 
@@ -1752,6 +1812,17 @@ def _prose_issues(
             )
         )
     unlabeled_bullets = _unlabeled_onscreen_bullets(page.onscreen_text)
+    module_heading_colons = _module_heading_colon_hits(page.onscreen_text)
+    if module_heading_colons:
+        issues.append(
+            _issue(
+                "ONSCREEN_MODULE_HEADING_PUNCTUATION",
+                page,
+                "On-screen module headings must not use the same colon separator as detail lines.",
+                "Replace the first module-heading colon with ｜; keep ： only in conclusion-first detail lines.",
+                evidence=module_heading_colons,
+            )
+        )
     if unlabeled_bullets:
         issues.append(
             _issue(
