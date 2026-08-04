@@ -1,4 +1,4 @@
-# 视觉系统与 ImageGen 探索
+﻿# 视觉系统与 ImageGen 探索
 
 ## 默认视觉风格探索
 
@@ -324,61 +324,6 @@
 
 默认8种风格仍保持1—8不变。风格9是仅供显式选择的扩展风格，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用，不进入默认候选。原风格4保持不变，既有风格4项目成果无需迁移。
 
-Palette: pure white #FFFFFF as the page background, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1. Do not use ivory, cream, beige, warm gray, paper texture, or any tinted background.
-
-Create a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.
-
-Build one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.
-
-Keep all locked Chinese text complete and unchanged. Do not summarize, rewrite or reduce paragraphs into labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.
-
-Prefer a scene-supported executive-report language. Use realistic or semi-realistic business scenes with page-specific semantic evidence. Each scene must visibly represent the corresponding business action, transformation or outcome, rather than merely showing a related workplace, device or document.
-
-Prefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.
-
-Use one to three large semantic objects or evidence structures per scene. Suitable visual evidence includes document hierarchies, extracted structures, highlighted sections, comparison matrices, gap markers, structured outlines, content blueprints, generated output groups, review states, version comparisons, approval paths and feedback loops.
-
-Use icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.
-
-Do not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or locked text.
-
-Text and semantic evidence discipline — hard:
-
-Render only the locked Chinese text explicitly provided in the page script. Do not invent additional titles, labels, captions, numbers, footnotes, interface copy, document paragraphs, signage or decorative microtext.
-
-Screens, documents, charts and interfaces may contain clear text-free visual structures that express the page-specific business meaning. Use large recognizable blocks, lines, highlights, check states, contrast regions and simplified diagrams instead of readable microtext.
-
-Do not use blank, blurred or generic screens when a screen is expected to explain a business action. Replace small text with clear visual evidence whose meaning remains visible at presentation scale.
-
-Every scene must communicate at least one page-specific business action, transformation or result without relying on invented text. A generic office desk, isolated device, document pile or person using a screen is insufficient unless the scene visibly demonstrates the corresponding business process.
-
-Keep every required text element at a clearly readable presentation scale. Do not shrink text to fit, split paragraphs into tiny fragments or create dense micro-annotations.
-
-When space is insufficient, simplify the composition, reduce scene detail, remove decorative elements or enlarge the text region. Never solve space pressure by reducing font size or adding extra explanatory text.
-
-Screens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.
-
-Use broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.
-
-Connector grammar — hard:
-
-- Treat connectors as relational evidence, not decoration. Use one primary path plus only the minimum short supporting leaders required by the page semantics.
-- Keep lines hairline-thin and matte: approximately 1–2 px equivalent at 1280×720, deep blue at low contrast, with no ribbons, gradients, glow or heavy borders.
-- Use small restrained arrowheads only where direction is essential; otherwise terminate at the related object or boundary. No large arrows, arrow rows, repeated arrowheads or free-floating endpoints.
-- Route lines behind or between text and scene regions; never cross locked text, key numbers or faces. Avoid multiple crossing paths and closed perimeter loops that frame the page.
-- For feedback, use one subtle return line with a clear origin and destination; do not draw a decorative loop around the whole canvas.
-
-Avoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.
-
-People should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.
-
-Final result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes, page-specific semantic evidence, strictly subordinate icons and no invented or unreadable text.
-
-
-## 扩展风格10：象牙白 + 深蓝领导汇报（采用风格09规则）
-
-默认8种风格仍保持1—8不变。风格10是仅供显式选择的扩展风格，可通过 ID `10` 或 slug `light_tech_business_dense` 调用，不进入默认候选。本节规则完整复制当前正式风格文件中的风格09。
-
 Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
 
 Create a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.
@@ -415,16 +360,20 @@ Screens and devices may appear only as supporting evidence inside a broader work
 
 Use broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.
 
-Connector grammar — hard:
-
-- Treat connectors as relational evidence, not decoration. Use one primary path plus only the minimum short supporting leaders required by the page semantics.
-- Keep lines hairline-thin and matte: approximately 1–2 px equivalent at 1280×720, deep blue at low contrast, with no ribbons, gradients, glow or heavy borders.
-- Use small restrained arrowheads only where direction is essential; otherwise terminate at the related object or boundary. No large arrows, arrow rows, repeated arrowheads or free-floating endpoints.
-- Route lines behind or between text and scene regions; never cross locked text, key numbers or faces. Avoid multiple crossing paths and closed perimeter loops that frame the page.
-- For feedback, use one subtle return line with a clear origin and destination; do not draw a decorative loop around the whole canvas.
-
 Avoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.
 
 People should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.
 
 Final result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes, page-specific semantic evidence, strictly subordinate icons and no invented or unreadable text.
+
+
+## 扩展风格10：象牙白 + 深蓝双层语义汇报
+
+风格10复制风格9的色板、编辑式质感、行业可信度与人物/事实约束，但改变构图优先级。它通过 ID `10` 或 slug `ivory_deep_blue_semantic_scene` 显式选择，不进入默认8种候选。
+
+风格10以风格9为母版，只做收敛，不改变内容承载方式：
+
+1. **内容层完整继承风格9。** 页面定位、全部锁定上屏文字、版式草图、组件数量、箭头关系、阅读顺序和文图融合方式必须完整保留。文字仍是主叙事，解释性正文不得删减、摘要、关键词化或转移到不可见层。
+2. **视觉层在风格9基础上收敛。** 继续使用象牙白、深蓝、编辑式行业插画和具象业务语境，但通常只保留一个低对比、局部嵌入的场景锚点，面积一般不超过正文区约四分之一。减少装饰、图标、色彩饱和度和空间效果，禁止场景海报、逐模块配图、照片列、控制室大图、圆台、盾牌、玻璃卡片、科技发光、戏剧光影和夸张三维。
+
+风格10的收敛原则是“减少装饰，不减少内容”。如果完整文字与场景发生竞争，应缩小或取消场景，不得删除正文来迁就构图。其目标是保留风格9的领导汇报质感和自解释能力，同时降低图片海报感、装饰拼贴感与过度立体化。

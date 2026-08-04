@@ -14,6 +14,7 @@ external style preset system.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -86,6 +87,67 @@ def _compiled_script_path(output_dir: Path, source: Path, pages: list[int]) -> P
     first = pages[0]
     last = pages[-1]
     return output_dir / f"{source.stem}_cyberppt_deliverable_p{first}_p{last}.md"
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _load_reference_map(project_path: Path | None) -> dict[int, list[dict[str, Any]]]:
+    """Load optional per-page ImageGen reference images.
+
+    References are project-owned, hash-bound assets.  They guide composition
+    and material only; the approved page prompt remains the content source of
+    truth.  Keeping the map in the manifest makes every attachment auditable.
+    """
+
+    if project_path is None:
+        return {}
+    map_path = project_path / "workbench" / "locks" / "imagegen_reference_map.json"
+    if not map_path.is_file():
+        return {}
+    payload = json.loads(map_path.read_text(encoding="utf-8"))
+    raw_pages = payload.get("pages") if isinstance(payload, dict) else None
+    if not isinstance(raw_pages, dict):
+        raise ValueError(f"ImageGen reference map pages must be an object: {map_path}")
+    result: dict[int, list[dict[str, Any]]] = {}
+    for raw_page, raw_items in raw_pages.items():
+        try:
+            page_number = int(raw_page)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"invalid ImageGen reference page {raw_page!r}: {map_path}") from exc
+        if not isinstance(raw_items, list):
+            raise ValueError(f"reference map page {page_number} must be a list: {map_path}")
+        items: list[dict[str, Any]] = []
+        for raw_item in raw_items:
+            if not isinstance(raw_item, dict) or not raw_item.get("path"):
+                raise ValueError(f"reference map page {page_number} has an invalid item: {map_path}")
+            path = Path(str(raw_item["path"])).expanduser()
+            if not path.is_absolute():
+                path = (project_path / path).resolve()
+            else:
+                path = path.resolve()
+            if not path.is_file():
+                raise FileNotFoundError(f"ImageGen reference image not found: {path}")
+            expected = str(raw_item.get("sha256") or "").lower()
+            actual = _sha256_file(path)
+            if expected and expected != actual:
+                raise ValueError(
+                    f"ImageGen reference hash mismatch: {path}; expected {expected}, got {actual}"
+                )
+            items.append(
+                {
+                    "path": str(path),
+                    "role": str(raw_item.get("role") or "style_and_composition_reference"),
+                    "sha256": actual,
+                }
+            )
+        result[page_number] = items
+    return result
 
 
 FULL_DUAL_IMAGE_CONTAINER_CONTRACT = """【双图文字可分离规则｜不上屏】
@@ -178,7 +240,7 @@ def _relationship_aware_canonical_prompts(
         _page_missions,
         _page_visual_contexts,
         _page_visual_intent_overrides,
-        build_page_prompt,
+        compile_page_prompt,
     )
 
     document = parse_script_markdown(script.read_text(encoding="utf-8"))
@@ -190,17 +252,39 @@ def _relationship_aware_canonical_prompts(
     missions = _page_missions(project_path)
     contexts = _page_visual_contexts(project_path)
     overrides = _page_visual_intent_overrides(project_path)
-    return {
-        page_number: build_page_prompt(
-            pages[page_number],
+    # Reproduce the same compiler contract used by the approved per-page
+    # prompts.  The approved prompts were staged in visual-structure review
+    # mode, so the canonical diagnostic must include that composition module
+    # (and the full-image text mode) before comparing hashes.  Previously this
+    # helper compiled with the default ``visual_structure_mode=off`` and
+    # therefore marked every approved prompt as stale even when the prompt
+    # source and script were unchanged.
+    canonical: dict[int, str] = {}
+    prior_decisions: list[Any] = []
+    prior_semantic_carriers: list[str] = []
+    for page_number in page_numbers:
+        page = pages.get(page_number)
+        if page is None:
+            continue
+        compiled = compile_page_prompt(
+            page,
             style_lock,
-            page_mission=missions.get(pages[page_number].page_id, ""),
-            visual_context=contexts.get(pages[page_number].page_id),
-            visual_intent_override=overrides.get(pages[page_number].page_id),
+            page_mission=missions.get(page.page_id, ""),
+            visual_context=contexts.get(page.page_id),
+            visual_intent_override=overrides.get(page.page_id),
+            prior_decisions=tuple(prior_decisions),
+            prior_semantic_carriers=tuple(prior_semantic_carriers),
+            visual_structure_mode="review",
+            text_render_mode="full_image",
         )
-        for page_number in page_numbers
-        if page_number in pages
-    }
+        canonical[page_number] = compiled.prompt
+        if compiled.presentation is not None:
+            prior_decisions.append(compiled.presentation)
+        if compiled.semantic_structure is not None:
+            carrier = compiled.semantic_structure.get("visual_carrier") or {}
+            if isinstance(carrier, dict) and carrier.get("selected"):
+                prior_semantic_carriers.append(str(carrier["selected"]))
+    return canonical
 
 
 def build_manifest(
@@ -254,6 +338,7 @@ def build_manifest(
     content_page_numbers = [
         number for number in page_numbers if page_roles[number] == "content"
     ]
+    reference_map = _load_reference_map(project_path)
     output_dir.mkdir(parents=True, exist_ok=True)
     compiled_script = _compiled_script_path(output_dir, script, page_numbers)
     approved_prompts: dict[int, tuple[str, Path]] = {}
@@ -293,6 +378,7 @@ def build_manifest(
     enrich_ledger: list[dict[str, Any]] = []
     for page_number in content_page_numbers:
         page = source_pages[page_number]
+        reference_images = reference_map.get(page_number, [])
         prompt = render_prompt(page, style_lock_path=style_lock)
         visual_module = (
             load_visual_prompt_module(project_path, page_number)
@@ -408,6 +494,7 @@ def build_manifest(
                 "page_code": f"P{page_number:02d}",
                 "title": page.title,
                 "page_script": prompt,
+                **({"reference_images": reference_images} if reference_images else {}),
                 "visual_structure_handoff": visual_module_metadata(visual_module),
                 **({"prompt_approval": str(approval_path.resolve())} if approval_path else {}),
                 **({"prompt_provenance": approval_meta} if approval_meta else {}),

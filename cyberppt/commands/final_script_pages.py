@@ -524,6 +524,11 @@ def _generate_manifest_images(
     skipped: list[str] = []
     for pair in manifest.get("pairs", []):
         full_path = Path(str((pair.get("full") or {}).get("path", "")))
+        page_reference_images = [
+            Path(str(item.get("path")))
+            for item in (pair.get("reference_images") or [])
+            if isinstance(item, dict) and item.get("path")
+        ]
         for variant in variants:
             item = pair.get(variant) or {}
             output_path = Path(str(item.get("path", "")))
@@ -531,7 +536,11 @@ def _generate_manifest_images(
                 item["status"] = "Generated"
                 skipped.append(str(output_path))
                 continue
-            input_images = list(full_reference_images or []) if variant == "full" else [full_path]
+            input_images = (
+                list(page_reference_images or full_reference_images or [])
+                if variant == "full"
+                else [full_path]
+            )
             if variant != "full" and not full_path.is_file() and not dry_run:
                 raise FileNotFoundError(
                     f"page {pair.get('page_number')} {variant} requires full image: {full_path}"

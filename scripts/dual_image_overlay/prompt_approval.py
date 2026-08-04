@@ -17,6 +17,9 @@ def prompt_sha256(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+APPROVED_OVERRIDE_MARKER = "【本轮视觉返工要求｜不上屏】"
+
+
 @dataclass(frozen=True)
 class PromptApproval:
     approved_path: Path
@@ -38,7 +41,16 @@ class PromptApproval:
 
     @property
     def stale(self) -> bool:
-        return self.approved_prompt.strip() != self.canonical_prompt.strip()
+        approved = self.approved_prompt.strip()
+        canonical = self.canonical_prompt.strip()
+        # A user-approved page may carry a narrowly scoped visual-regeneration
+        # note after the compiler-owned prompt.  The note changes art direction
+        # only; the locked copy and compiler contract before the marker must
+        # remain byte-for-byte aligned.  Treat that explicit suffix as an
+        # approved override instead of falsely rejecting the prompt as stale.
+        if APPROVED_OVERRIDE_MARKER in approved:
+            approved = approved.split(APPROVED_OVERRIDE_MARKER, 1)[0].rstrip()
+        return approved != canonical
 
     def metadata(self) -> dict[str, Any]:
         return {
@@ -48,6 +60,7 @@ class PromptApproval:
             "canonical_matches_approval": not self.stale,
             "consumed_prompt_sha256": self.consumed_hash,
             "consumed_from": "approved_prompt",
+            "approved_visual_override": APPROVED_OVERRIDE_MARKER in self.approved_prompt,
             "status": "stale" if self.stale else "fresh",
         }
 

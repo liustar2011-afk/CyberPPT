@@ -1,0 +1,789 @@
+{
+  "file": "D:\\CyberPPT\\tmp\\gansu_image_ppt_v4\\exports\\gansu_electric_investment_full_30_v4_style_consistent.pptx",
+  "summary": {
+    "slide_count": 30,
+    "width_emu": 12192000,
+    "height_emu": 6858000,
+    "aspect_ratio": 1.7778,
+    "native_text_shapes": 47,
+    "native_graphic_shapes": 69,
+    "pictures": 30,
+    "charts": 0,
+    "tables": 0
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "INVALID_SHAPE_BOUNDS",
+      "message": "Element has non-positive dimensions or negative coordinates; PowerPoint may treat the PPTX as corrupted.",
+      "slide": 1
+    },
+    {
+      "code": "SHAPE_OUTSIDE_SLIDE",
+      "message": "Element extends beyond the 12192000×6858000 EMU slide canvas.",
+      "slide": 1
+    },
+    {
+      "code": "INVALID_SHAPE_BOUNDS",
+      "message": "Element has non-positive dimensions or negative coordinates; PowerPoint may treat the PPTX as corrupted.",
+      "slide": 1
+    },
+    {
+      "code": "SHAPE_OUTSIDE_SLIDE",
+      "message": "Element extends beyond the 12192000×6858000 EMU slide canvas.",
+      "slide": 1
+    },
+    {
+      "code": "FULL_SLIDE_BACKGROUND_RISK",
+      "message": "A single image covers at least 90% of the slide; this is treated as a full-slide background risk even if native text exists.",
+      "slide": 1
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 1
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 2
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 2
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 3
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 3
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 4
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 4
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 5
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 5
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 6
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 6
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 7
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 7
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 8
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 8
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 9
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 9
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 10
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 10
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 11
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 11
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 12
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 12
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 13
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 13
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 14
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 14
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 15
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 15
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 16
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 16
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 17
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 17
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 18
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 18
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 19
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 19
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 20
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 20
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 21
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 21
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 22
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 22
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 23
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 23
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 24
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 24
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 25
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 25
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 26
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 26
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 27
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 27
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 28
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 28
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 29
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 29
+    },
+    {
+      "code": "LARGE_IMAGE_ASSET",
+      "message": "A single image covers at least 40% of the slide and must be justified in slide_manifest.json.",
+      "slide": 30
+    },
+    {
+      "code": "HIGH_TOTAL_IMAGE_AREA",
+      "message": "Images cover at least 40% of the slide in total and must be justified in slide_manifest.json.",
+      "slide": 30
+    }
+  ],
+  "slides": [
+    {
+      "slide": 1,
+      "native_text_shapes": 3,
+      "native_graphic_shapes": 8,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 9,
+      "coverage_ratio": 1.0,
+      "picture_area_ratio": 1.0,
+      "max_picture_area_ratio": 1.0,
+      "min_font_size_pt": 21.0,
+      "max_font_size_pt": 31.5,
+      "text_characters": 42
+    },
+    {
+      "slide": 2,
+      "native_text_shapes": 11,
+      "native_graphic_shapes": 18,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 19,
+      "coverage_ratio": 0.8486,
+      "picture_area_ratio": 0.8486,
+      "max_picture_area_ratio": 0.8486,
+      "min_font_size_pt": 20.2,
+      "max_font_size_pt": 31.5,
+      "text_characters": 63
+    },
+    {
+      "slide": 3,
+      "native_text_shapes": 2,
+      "native_graphic_shapes": 4,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 5,
+      "coverage_ratio": 0.8486,
+      "picture_area_ratio": 0.8486,
+      "max_picture_area_ratio": 0.8486,
+      "min_font_size_pt": 19.5,
+      "max_font_size_pt": 39.0,
+      "text_characters": 12
+    },
+    {
+      "slide": 4,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 6
+    },
+    {
+      "slide": 5,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 6
+    },
+    {
+      "slide": 6,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 6
+    },
+    {
+      "slide": 7,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 11
+    },
+    {
+      "slide": 8,
+      "native_text_shapes": 2,
+      "native_graphic_shapes": 4,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 5,
+      "coverage_ratio": 0.8486,
+      "picture_area_ratio": 0.8486,
+      "max_picture_area_ratio": 0.8486,
+      "min_font_size_pt": 19.5,
+      "max_font_size_pt": 39.0,
+      "text_characters": 14
+    },
+    {
+      "slide": 9,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 8
+    },
+    {
+      "slide": 10,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 6
+    },
+    {
+      "slide": 11,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 13
+    },
+    {
+      "slide": 12,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 11
+    },
+    {
+      "slide": 13,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 13
+    },
+    {
+      "slide": 14,
+      "native_text_shapes": 2,
+      "native_graphic_shapes": 4,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 5,
+      "coverage_ratio": 0.8486,
+      "picture_area_ratio": 0.8486,
+      "max_picture_area_ratio": 0.8486,
+      "min_font_size_pt": 19.5,
+      "max_font_size_pt": 39.0,
+      "text_characters": 9
+    },
+    {
+      "slide": 15,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 6
+    },
+    {
+      "slide": 16,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 6
+    },
+    {
+      "slide": 17,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 8
+    },
+    {
+      "slide": 18,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 11
+    },
+    {
+      "slide": 19,
+      "native_text_shapes": 2,
+      "native_graphic_shapes": 4,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 5,
+      "coverage_ratio": 0.8486,
+      "picture_area_ratio": 0.8486,
+      "max_picture_area_ratio": 0.8486,
+      "min_font_size_pt": 19.5,
+      "max_font_size_pt": 39.0,
+      "text_characters": 12
+    },
+    {
+      "slide": 20,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 11
+    },
+    {
+      "slide": 21,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 13
+    },
+    {
+      "slide": 22,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 11
+    },
+    {
+      "slide": 23,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 14
+    },
+    {
+      "slide": 24,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 15
+    },
+    {
+      "slide": 25,
+      "native_text_shapes": 2,
+      "native_graphic_shapes": 4,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 5,
+      "coverage_ratio": 0.8486,
+      "picture_area_ratio": 0.8486,
+      "max_picture_area_ratio": 0.8486,
+      "min_font_size_pt": 19.5,
+      "max_font_size_pt": 39.0,
+      "text_characters": 9
+    },
+    {
+      "slide": 26,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 10
+    },
+    {
+      "slide": 27,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 10
+    },
+    {
+      "slide": 28,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 10
+    },
+    {
+      "slide": 29,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 10
+    },
+    {
+      "slide": 30,
+      "native_text_shapes": 1,
+      "native_graphic_shapes": 1,
+      "pictures": 1,
+      "charts": 0,
+      "tables": 0,
+      "element_count": 2,
+      "coverage_ratio": 0.8842,
+      "picture_area_ratio": 0.7996,
+      "max_picture_area_ratio": 0.7996,
+      "min_font_size_pt": 18.8,
+      "max_font_size_pt": 18.8,
+      "text_characters": 13
+    }
+  ]
+}

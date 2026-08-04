@@ -1104,6 +1104,12 @@ _BOUNDARY_ASIDE_PATTERNS: tuple[str, ...] = (
 # 完整文字稿 / 讲解提示 and are forwarded to ImageGen as off-screen semantics.
 ONSCREEN_RELATION_META_LABELS: tuple[str, ...] = (
     "业务含义",
+    "业务关系",
+    "背景关系",
+    "层间衔接",
+    "共同依据",
+    "责任落实",
+    "追溯关系",
     "服务关系",
     "对象关系",
     "协同关系",

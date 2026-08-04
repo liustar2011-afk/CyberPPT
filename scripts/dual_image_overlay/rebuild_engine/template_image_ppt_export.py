@@ -163,7 +163,10 @@ def page_notes_text(block: PageBlock) -> str:
 
 
 def page_role(block: PageBlock) -> str:
-    declared = re.search(r"页面类型\s*[:：]\s*(封面|目录|章节过渡|内容|结束|封底)页", block.text)
+    # Final scripts commonly declare the type as "页面类型：目录" (without
+    # repeating the trailing "页"). Accept both forms so template pages are
+    # recognized instead of being treated as body pages that require an image.
+    declared = re.search(r"页面类型\s*[:：]\s*(封面|目录|章节过渡|内容|结束|封底)页?", block.text)
     if declared:
         return {
             "封面": "cover",
