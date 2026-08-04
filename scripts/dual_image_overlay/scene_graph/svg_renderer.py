@@ -108,7 +108,7 @@ def render_page_svg_ir(
             f'viewBox="0 0 {width} {height}" data-pptx-bounds="0 0 {width} {height}" '
             f'data-export-source="page_svg_ir">'
         ),
-        f'<rect x="0" y="0" width="{width}" height="{height}" fill="#FFFFFF"/>',
+        f'<rect x="0" y="0" width="{width}" height="{height}" fill="#F7F6F0"/>',
         (
             f'<text x="{float(content_region["x"]):.2f}" y="46" '
             f'font-family="Microsoft YaHei, Arial, sans-serif" font-size="25" '
