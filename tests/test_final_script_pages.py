@@ -350,10 +350,14 @@ class FinalScriptPagesTests(unittest.TestCase):
 
             manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
             context = json.loads(Path(summary["artifacts"]["build_context"]).read_text(encoding="utf-8"))
+            manifest_created = (project / "manifest.yml").is_file()
 
         self.assertEqual("external_script", summary["source_mode"])
+        self.assertTrue(summary["project_created"])
         self.assertEqual("external_script", context["source_mode"])
+        self.assertTrue(context["project_created"])
         self.assertEqual("stage2-only", Path(summary["project"]).name)
+        self.assertTrue(manifest_created)
         self.assertEqual("external_script", manifest["source_mode"])
         self.assertEqual(summary["source_script_sha256"], manifest["source_script_sha256"])
         self.assertFalse(manifest["prompt_contract"]["approved_prompt_is_source"])

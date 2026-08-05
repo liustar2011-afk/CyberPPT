@@ -30,6 +30,7 @@ from scripts.dual_image_overlay.production_readiness import build_production_rea
 from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_codex_image
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 from cyberppt.artifact_ledger import append_artifacts, write_json_atomic
+from cyberppt.commands.init_project import init_project
 from cyberppt.script_quality_contract import parse_script_markdown
 
 
@@ -629,6 +630,10 @@ def run_final_script_pages(
     if not script.is_file():
         raise FileNotFoundError(f"final script not found: {script}")
     source_mode = "external_script" if external_script else "stage01_approved_script"
+    project_created = False
+    if external_script and not project.exists():
+        init_project(project)
+        project_created = True
     if not external_script:
         from cyberppt.stage01_controls import assert_escalation_resolved, assert_stage01_script_approval
         from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
@@ -784,6 +789,7 @@ def run_final_script_pages(
         "pages": page_numbers,
         "stage": stage_name,
         "source_mode": source_mode,
+        "project_created": project_created,
         "status": status,
         "production_mode": production_mode,
         "artifacts": {
@@ -836,6 +842,7 @@ def run_final_script_pages(
         "production_mode": production_mode,
         "stage": stage_name,
         "source_mode": source_mode,
+        "project_created": project_created,
         "status": status,
         "artifacts": {
             "compiled_deliverable_prompt": {
