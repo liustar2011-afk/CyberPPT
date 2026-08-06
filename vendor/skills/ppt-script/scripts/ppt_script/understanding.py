@@ -6,6 +6,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+from .domain_checks import detect_domain_confusions
 from .extractors import extract_project_sources
 from .semantics import audit_semantic_understanding, parse_semantic_contract
 from .source_truth import build_source_inventory, parse_source_truth_map
@@ -22,6 +23,7 @@ _REQUIRED_SECTIONS: dict[str, tuple[str, ...]] = {
 }
 _PLACEHOLDER_TERMS = ("待生成", "待分析", "待补充", "TODO", "TBD", "待填写")
 _CONFLICT_TERMS = ("矛盾", "冲突", "不一致", "但正文", "口径不同", "两种口径")
+_LOCATOR_RE = re.compile(r"\d|[一二三四五六七八九十百]+\s*(?:章|节|页|部分|条|款|表|附录|附件)")
 
 
 @dataclass(frozen=True)
@@ -108,8 +110,18 @@ def audit_source_understanding(project: str | Path) -> UnderstandingAudit:
         for field, label in ((item.content, "内容"), (item.subject, "主体"), (item.source_location, "原文出处")):
             if not field.strip():
                 issues.append(UnderstandingIssue("incomplete-p0", f"{item.source_id} 的 {label} 不能为空。", location="analysis/01-source-truth-map.md"))
-        if item.source_location.strip() in {"源材料", "相关章节", "原文", "附件"}:
+        location = item.source_location.strip()
+        if location in {"源材料", "相关章节", "原文", "附件"}:
             issues.append(UnderstandingIssue("vague-source-location", f"{item.source_id} 的原文出处过于宽泛，无法回查。", location="analysis/01-source-truth-map.md"))
+        elif location and not _LOCATOR_RE.search(location):
+            issues.append(
+                UnderstandingIssue(
+                    "unlocatable-source-location",
+                    f"{item.source_id} 的原文出处‘{location}’未包含可回查的章节/页码/表格等定位信息。",
+                    severity="warning",
+                    location="analysis/01-source-truth-map.md",
+                )
+            )
 
     semantic_enabled = False
     meta_path = project_path / "project.json"
@@ -163,9 +175,20 @@ def audit_source_understanding(project: str | Path) -> UnderstandingAudit:
         bundle = extract_project_sources(project_path)
         inventory = build_source_inventory(bundle.text, bundle.file_names)
         source_text = bundle.text
+        low_quality_files = bundle.low_quality_files
     except (FileNotFoundError, ImportError, OSError, ValueError):
         inventory = build_source_inventory("")
         source_text = ""
+        low_quality_files = []
+
+    for file_name in low_quality_files:
+        issues.append(
+            UnderstandingIssue(
+                "ocr-quality-suspect",
+                f"{file_name} 疑似扫描件或OCR质量过低（页均文字过少或大量空页），需人工核实原文后再继续。",
+                location=f"source/{file_name}",
+            )
+        )
 
     if inventory.state_terms and not any(item.state.strip() for item in p0_items):
         issues.append(UnderstandingIssue("missing-state-grounding", "源材料包含事项状态，但 P0 条目未记录状态。", location="analysis/01-source-truth-map.md"))
@@ -177,6 +200,23 @@ def audit_source_understanding(project: str | Path) -> UnderstandingAudit:
     if source_has_conflict and not truth_has_conflict:
         issues.append(UnderstandingIssue("untracked-conflict", "源材料存在冲突或不同口径，但 Source Truth Map 未记录。", location="analysis/01-source-truth-map.md"))
 
+    for hit in detect_domain_confusions(source_text):
+        already_tracked = any(
+            (item.category == "U" or item.conflict.strip())
+            and any(term in (item.content + item.conflict) for term in hit.terms)
+            for item in truth.items
+        )
+        if not already_tracked:
+            issues.append(
+                UnderstandingIssue(
+                    "domain-term-confusion",
+                    f"源材料同时出现易混淆概念【{hit.group}】（{'、'.join(hit.terms)}），"
+                    "Source Truth Map 未记录区分或标记待核，请核实是否被混用。",
+                    severity="warning",
+                    location="analysis/01-source-truth-map.md",
+                )
+            )
+
     analysis_has_cross_section = section_status.get("cross_section", False)
     if inventory.file_count > 1 and not analysis_has_cross_section:
         issues.append(UnderstandingIssue("missing-multisource-synthesis", "多源材料必须说明跨文件、跨章节证据如何归并。", location="analysis/00-analysis.md"))
@@ -185,6 +225,7 @@ def audit_source_understanding(project: str | Path) -> UnderstandingAudit:
     metrics = {
         "source_file_count": inventory.file_count,
         "source_character_count": inventory.char_count,
+        "low_quality_files": list(low_quality_files),
         "analysis_sections_present": sum(1 for value in section_status.values() if value),
         "analysis_sections_required": len(_REQUIRED_SECTIONS),
         "source_truth_items": len(truth.items),

@@ -8,6 +8,7 @@ from typing import Any
 
 import yaml
 
+from .editorial import EDITORIAL_MODULE_IDS
 from .extractors import extract_project_sources
 from .provenance_bindings import CONTEXT_FRESHNESS_TARGETS
 from .workflow import evaluate_project_state
@@ -16,15 +17,7 @@ _CONTEXT_SCHEMA = "ppt-script.active-context.v2"
 _CONTEXT_MODES = {"deep", "compact"}
 _DEFAULT_SOURCE_CHAR_LIMIT = 120_000
 _DEFAULT_ARTIFACT_CHAR_LIMIT = 120_000
-_EDITORIAL_MODULE_IDS = (
-    "editorial-semantic-planning",
-    "editorial-independent",
-    "editorial-storyline-candidates",
-    "editorial-storyline",
-    "editorial-outline",
-    "editorial-red-team",
-    "editorial-red-team-response",
-)
+_EDITORIAL_MODULE_IDS = EDITORIAL_MODULE_IDS
 _EDITORIAL_REVIEW_ARTIFACTS = (
     "analysis/editorial/01-independent-judgment.json",
     "analysis/editorial/storyline-candidates.json",
@@ -395,6 +388,19 @@ def _is_substantive_text(text: str) -> bool:
     return not any(marker in stripped for marker in markers)
 
 
+def _json_has_substance(payload: dict[str, Any]) -> bool:
+    for value in payload.values():
+        if isinstance(value, list) and value:
+            return True
+        if isinstance(value, str) and value.strip():
+            return True
+        if isinstance(value, dict) and value:
+            return True
+        if isinstance(value, (int, float)) and value:
+            return True
+    return False
+
+
 def _read_artifact(project: Path, relative: str) -> str | None:
     path = project / relative
     if not path.is_file():
@@ -409,31 +415,11 @@ def _read_artifact(project: Path, relative: str) -> str | None:
             verdict = str(payload.get("verdict", "")).strip().upper()
             if verdict not in _EDITORIAL_VERDICTS:
                 return None
-        # Empty contract scaffolds are not project facts.
-        collections = (
-            payload.get("sources"),
-            payload.get("chapters"),
-            payload.get("pages"),
-            payload.get("items"),
-            payload.get("judgments"),
-            payload.get("candidates"),
-        )
-        if any(isinstance(value, list) and value for value in collections):
-            return text
-        if any(
-            isinstance(payload.get(field), str) and payload.get(field, "").strip()
-            for field in (
-                "audience",
-                "objective",
-                "decision_request",
-                "core_conclusion",
-                "core_proposition",
-                "solution",
-                "verdict",
-            )
-        ):
-            return text
+        if not isinstance(payload, dict):
+            return text if _is_substantive_text(text) else None
         if relative.endswith(("understanding-gate.json", "semantic-gate.json")):
+            return text
+        if _json_has_substance(payload):
             return text
         return None
     return text if _is_substantive_text(text) else None

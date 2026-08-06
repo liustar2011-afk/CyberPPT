@@ -326,29 +326,45 @@
 
 Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
 
-Create a high-end senior leadership briefing page in a relationship-led editorial business-infographic style: authoritative, calm, polished, content-led and presentation-ready.
+Create a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished and content-led.
 
-Build one integrated composition with one dominant judgment, one clear reading path and unequal visual hierarchy. Choose one primary structural carrier from the page semantics—continuous process spine, shared operating field, comparison axis, controlled boundary, convergence field or outcome path.
+Build one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main structural carrier, two to five content regions, one outcome region and only a few essential connectors. Derive the structure from the page semantics.
 
-Keep all locked Chinese text complete, unchanged and in its original order. Do not summarize, rewrite, shorten or relabel it. Place each complete text region directly beside, above, below or partially within the related business object, state, boundary or outcome so text and visual material form one local semantic unit.
+Keep all locked Chinese text complete and unchanged. Do not summarize, rewrite or reduce paragraphs into labels. Place text directly beside, above, below or partially within the related business object or scene, so text and visual material form one local content unit.
 
-Use one dominant semantic carrier and zero to three supporting scene fragments; default to one or two. A scene fragment is allowed only when it explains a specific business action, condition, handoff or result. Do not create equal scene modules, photo strips, screenshot galleries or one-picture-per-item layouts. Suitable fragments include a governance review, dispatch/operation state, capability handoff, delivery action, controlled asset, evidence comparison or customer-use outcome.
+Prefer a scene-supported executive-report language. Use realistic or semi-realistic business scenes with page-specific semantic evidence. Each scene must visibly represent the corresponding business action, transformation or outcome, rather than merely showing a related workplace, device or document.
 
-Make relationships—not images—the visual subject. Encode sequence, responsibility, boundary, comparison, convergence and feedback through alignment, proximity, overlap, state changes, partial contours, selective tonal emphasis and a few short thin connectors. A process must not be represented as a row of equal cards or repeated image tiles.
+Prefer several small or medium embedded scenes over one giant central illustration. Each scene must support a specific topic, judgment, indicator or evidence point and remain subordinate to the core judgment.
 
-Keep the page structured and report-like. Use broad flat fields, clean white or ivory content panels, deep-blue headings, thin dividers, subtle connectors, restrained blue emphasis and very shallow depth. Important conclusions may be highlighted with a stronger deep-blue region.
+Use one to three large semantic objects or evidence structures per scene. Suitable visual evidence includes document hierarchies, extracted structures, highlighted sections, comparison matrices, gap markers, structured outlines, content blueprints, generated output groups, review states, version comparisons, approval paths and feedback loops.
 
-Prefer a layout language like an executive report page with top indicators, a mid-page judgment or transition zone, lower supporting modules and one summary band when needed.
+Use icons only when they materially improve recognition. Use no more than one or two on a typical page. Keep them small, simple, deep blue and embedded within an existing text, scene or business region, with only barely perceptible tonal relief.
 
-Render only the locked Chinese text supplied by the page script. Do not invent judgment sentences, module titles, labels, metrics, captions, interface copy, signage or decorative microtext inside generated scenes. Screens, documents and charts may show text-free structures or highlighted regions, but must not become sources of new readable wording.
+Do not give icons independent cards, circular badges, decorative containers or display areas. Icons must not determine the composition, create extra modules, form icon rows or process sequences, or replace scenes, business objects or locked text.
 
-Icons are disabled by default. If a recognition cue is essential, use at most one small, simple, deep-blue icon embedded inside an existing scene or text region. Never use icon rows, circular node badges, icon matrices or one-icon-per-item treatment.
+Text and semantic evidence discipline — hard:
 
-Avoid panoramic scenic posters, giant hero illustrations, abstract data landscapes, topographic waves, glossy 3D objects, floating icons, dense symbolic diagrams, equal card walls, repeated control-room images, screen galleries and separated left-text / center-image / right-text layouts.
+Render only the locked Chinese text explicitly provided in the page script. Do not invent additional titles, labels, captions, numbers, footnotes, interface copy, document paragraphs, signage or decorative microtext.
 
-People should be absent or minimal. If needed, use only tiny distant or side/back figures inside an operational scene, never as the page's visual subject.
+Screens, documents, charts and interfaces may contain clear text-free visual structures that express the page-specific business meaning. Use large recognizable blocks, lines, highlights, check states, contrast regions and simplified diagrams instead of readable microtext.
 
-Final result: one calm, highly readable executive-report composition in which the business relationship carries the main visual weight, a small number of semantic scenes provide evidence, icons remain suppressed and no invented or unreadable text appears.
+Do not use blank, blurred or generic screens when a screen is expected to explain a business action. Replace small text with clear visual evidence whose meaning remains visible at presentation scale.
+
+Every scene must communicate at least one page-specific business action, transformation or result without relying on invented text. A generic office desk, isolated device, document pile or person using a screen is insufficient unless the scene visibly demonstrates the corresponding business process.
+
+Keep every required text element at a clearly readable presentation scale. Do not shrink text to fit, split paragraphs into tiny fragments or create dense micro-annotations.
+
+When space is insufficient, simplify the composition, reduce scene detail, remove decorative elements or enlarge the text region. Never solve space pressure by reducing font size or adding extra explanatory text.
+
+Screens and devices may appear only as supporting evidence inside a broader working scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.
+
+Use broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.
+
+Avoid equal card walls, equal rows or columns, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, timelines, step cards, architecture diagrams, icon grids, glossy 3D, glassmorphism, neon glow and floating icons.
+
+People should be absent or minimal. Reference images may inform palette, spacing, scene mood and polish only.
+
+Final result: a calm, highly readable executive-report page with strong hierarchy, few components, contextual scenes, page-specific semantic evidence, strictly subordinate icons and no invented or unreadable text.
 
 
 ## 扩展风格10：象牙白 + 深蓝双层语义汇报

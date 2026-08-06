@@ -55,11 +55,21 @@ def source_inventory_command(project: Path) -> Path:
     bundle = extract_project_sources(project)
     inventory = build_source_inventory(bundle.text, file_names=bundle.file_names)
     output = project / "analysis/00-source-inventory.md"
-    output.write_text(render_source_inventory(inventory, bundle.unsupported_files), encoding="utf-8")
+    output.write_text(
+        render_source_inventory(
+            inventory, bundle.unsupported_files, bundle.low_quality_files, bundle.original_titles
+        ),
+        encoding="utf-8",
+    )
     json_output = project / "analysis/00-source-inventory.json"
     json_output.write_text(
         json.dumps(
-            {**inventory.to_dict(), "unsupported_files": bundle.unsupported_files},
+            {
+                **inventory.to_dict(),
+                "unsupported_files": bundle.unsupported_files,
+                "low_quality_files": bundle.low_quality_files,
+                "original_titles": bundle.original_titles,
+            },
             ensure_ascii=False,
             indent=2,
         ),

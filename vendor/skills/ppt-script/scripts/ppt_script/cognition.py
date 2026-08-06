@@ -110,12 +110,6 @@ def initialize_cognition(project: str | Path, repo_root: str | Path) -> tuple[Pa
         _copy_template(root, template, target)
         outputs.append(target)
     outputs.append(create_evidence_graph_scaffold(project_path))
-    meta_path = project_path / "project.json"
-    if meta_path.is_file():
-        meta = json.loads(meta_path.read_text(encoding="utf-8"))
-        meta["cognitive_mode"] = "enhanced"
-        meta["cognitive_gate_required"] = True
-        meta_path.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
     return tuple(outputs)
 
 

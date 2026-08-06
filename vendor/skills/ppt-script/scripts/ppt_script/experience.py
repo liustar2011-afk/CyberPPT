@@ -163,7 +163,7 @@ def build_case_index(repo_root: str | Path) -> CaseIndexResult:
         relative = str(path.relative_to(root))
         try:
             payload = _load_case(path)
-        except Exception as exc:
+        except (OSError, ValueError, json.JSONDecodeError, yaml.YAMLError) as exc:
             issues.append(ExperienceIssue("invalid-case-file", relative, str(exc)))
             continue
         validation = validate_case(payload, relative)
@@ -231,7 +231,7 @@ def _text_similarity(query: str, case_text: str) -> float:
 
         matrix = TfidfVectorizer(analyzer="char", ngram_range=(1, 3), min_df=1).fit_transform([query, case_text])
         return float(cosine_similarity(matrix[0:1], matrix[1:2])[0][0])
-    except Exception:
+    except (ImportError, ValueError):
         left = _tokens(query)
         right = _tokens(case_text)
         if not left or not right:
@@ -248,7 +248,7 @@ def _load_index(repo_root: Path) -> list[dict[str, Any]]:
         cases = payload.get("cases", [])
         if isinstance(cases, list):
             return [dict(case) for case in cases if isinstance(case, dict) and case.get("status") == "approved"]
-    except Exception:
+    except (OSError, json.JSONDecodeError, TypeError):
         pass
     return list(build_case_index(repo_root).cases)
 

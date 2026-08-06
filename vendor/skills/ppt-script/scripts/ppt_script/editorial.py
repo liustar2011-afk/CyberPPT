@@ -29,6 +29,16 @@ EditorialContextMode = Literal[
     "red-team-response",
 ]
 
+EDITORIAL_MODULE_IDS: tuple[str, ...] = (
+    "editorial-semantic-planning",
+    "editorial-independent",
+    "editorial-storyline-candidates",
+    "editorial-storyline",
+    "editorial-outline",
+    "editorial-red-team",
+    "editorial-red-team-response",
+)
+
 _PHASES: tuple[EditorialPhase, ...] = (
     "semantic-planning",
     "independent",
@@ -1148,7 +1158,8 @@ def _outline_details(
     _audit_stale_review_language(project, payload, relative, issues)
 
 
-_STALE_REVIEW_CLAIM_RE = re.compile(r"升级方向|升级基础|标题直接点出升级|开篇区分升级")
+_QUOTED_SPAN_RE = re.compile(r"[“\"「『]([^”\"」』]{2,})[”\"」』]")
+_TITLE_REFERENCE_WINDOW = 12
 
 
 def _contract_titles(project: Path, relative: str, collection: str, id_field: str) -> dict[str, str]:
@@ -1175,7 +1186,13 @@ def _audit_stale_review_language(
     relative: str,
     issues: list[EditorialIssue],
 ) -> None:
-    """Fail when review reasoning still describes retired claim framing."""
+    """Flag review reasoning that quotes a title claim absent from the current contract title.
+
+    Generalizes a past incident where reasoning kept citing a retired title framing
+    after the title itself was rewritten; instead of matching that one incident's
+    wording, this checks any reasoning that explicitly quotes what the title
+    says (near "标题"/"题目") against the title actually on record.
+    """
     page_titles = _contract_titles(project, "contracts/page-contracts.json", "pages", "page_id")
     chapter_titles = _contract_titles(
         project, "contracts/chapter-contracts.json", "chapters", "chapter_id"
@@ -1194,19 +1211,21 @@ def _audit_stale_review_language(
             reasoning = review.get("reasoning")
             if not isinstance(item_id, str) or not isinstance(reasoning, str):
                 continue
-            hit = _STALE_REVIEW_CLAIM_RE.search(reasoning)
-            if not hit:
-                continue
             title = titles.get(item_id, "")
-            if "升级" in title:
-                continue
-            _issue(
-                issues,
-                "stale-review-language",
-                f"{collection}[{index}]（{item_id}）仍写“{hit.group(0)}”，"
-                f"但合同标题为“{title or '（空）'}”；请改审稿表述或重跑审稿。",
-                relative,
-            )
+            for match in _QUOTED_SPAN_RE.finditer(reasoning):
+                quoted = match.group(1)
+                context = reasoning[max(0, match.start() - _TITLE_REFERENCE_WINDOW) : match.start()]
+                if "标题" not in context and "题目" not in context:
+                    continue
+                if quoted in title:
+                    continue
+                _issue(
+                    issues,
+                    "stale-review-language",
+                    f"{collection}[{index}]（{item_id}）审稿理由声称标题含“{quoted}”，"
+                    f"但当前合同标题为“{title or '（空）'}”，未包含该表述；请核实是否引用了旧版本内容。",
+                    relative,
+                )
 
 
 def _red_team_review_details(

@@ -3,14 +3,34 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import asdict, dataclass
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
+from .source_truth import UNREALIZED_STATE_TERMS, parse_source_truth_map
 from .version import get_version
+
+_MAX_TITLES_FOR_HEADING_CHECK = 8
+_MIN_HEADING_SPAN = 4
 
 SOURCE_ID_RE = re.compile(r"^S\d{3,}$")
 CHAPTER_ID_RE = re.compile(r"^C\d{2,}$")
 PAGE_ID_RE = re.compile(r"^P\d{2,}$")
+
+_CERTAINTY_TERMS = (
+    "已建成",
+    "已实现",
+    "全面建成",
+    "全面完成",
+    "圆满完成",
+    "高质量完成",
+    "建成投用",
+    "实现全覆盖",
+    "率先",
+    "引领",
+    "树立标杆",
+    "全国领先",
+)
 
 CONTRACT_FILES = {
     "source-truth.json": ("ppt-script.source-truth.v1", "sources"),
@@ -147,6 +167,90 @@ def _source_refs(item: dict[str, Any], *, item_id: str, file: str, known: set[st
             issues.append(ContractIssue("unknown-source", file, f"{item_id} 引用了不存在的来源 {ref}。"))
 
 
+def _unrealized_source_ids(project: Path) -> set[str]:
+    path = project / "analysis/01-source-truth-map.md"
+    if not path.is_file():
+        return set()
+    truth = parse_source_truth_map(path.read_text(encoding="utf-8", errors="ignore"))
+    return {
+        item.source_id
+        for item in truth.items
+        if any(term in item.state for term in UNREALIZED_STATE_TERMS)
+    }
+
+
+def _check_certainty_overreach(
+    item: dict[str, Any],
+    *,
+    text_fields: tuple[str, ...],
+    unrealized: set[str],
+    item_id: str,
+    file: str,
+    issues: list[ContractIssue],
+) -> None:
+    refs = item.get("source_ids", [])
+    if not isinstance(refs, list):
+        return
+    cited_unrealized = [ref for ref in refs if isinstance(ref, str) and ref in unrealized]
+    if not cited_unrealized:
+        return
+    text = " ".join(str(item.get(field, "")) for field in text_fields)
+    hits = [term for term in _CERTAINTY_TERMS if term in text]
+    if hits:
+        issues.append(
+            ContractIssue(
+                "title-overstates-certainty",
+                file,
+                f"{item_id} 使用既成事实措辞（{'、'.join(hits)}），"
+                f"但引用来源 {'、'.join(cited_unrealized)} 在 Source Truth Map 中状态未完成（拟/计划/正在/待核实）；"
+                "请核实措辞是否与来源状态相符。",
+                severity="warning",
+            )
+        )
+
+
+def _load_original_titles(project: Path) -> list[str]:
+    from .extractors import extract_project_sources
+
+    try:
+        return extract_project_sources(project).original_titles
+    except (FileNotFoundError, ImportError, OSError, ValueError):
+        return []
+
+
+def _shares_meaningful_span(a: str, b: str, *, minimum: int = _MIN_HEADING_SPAN) -> bool:
+    match = SequenceMatcher(None, a, b).find_longest_match(0, len(a), 0, len(b))
+    return match.size >= minimum
+
+
+def _check_title_ignores_source_heading(
+    item: dict[str, Any],
+    *,
+    original_titles: list[str],
+    item_id: str,
+    file: str,
+    issues: list[ContractIssue],
+) -> None:
+    # Only fire for materials simple enough that "which heading applies" isn't ambiguous;
+    # multi-section materials are expected to be restructured, not heading-matched 1:1.
+    if not original_titles or len(original_titles) > _MAX_TITLES_FOR_HEADING_CHECK:
+        return
+    title = item.get("title")
+    if not isinstance(title, str) or not title.strip():
+        return
+    if any(_shares_meaningful_span(title, heading) for heading in original_titles):
+        return
+    issues.append(
+        ContractIssue(
+            "title-ignores-source-heading",
+            file,
+            f"{item_id} 的标题“{title}”与原文自带标题（{'、'.join(original_titles)}）均无重合，"
+            "请核实是否应优先复用原文已有的合规标题措辞（见 references/government-soe-title-rules.md 第0节）。",
+            severity="warning",
+        )
+    )
+
+
 def validate_contracts(project: Path) -> ContractReport:
     contract_dir = project / "contracts"
     if not contract_dir.exists():
@@ -181,12 +285,30 @@ def validate_contracts(project: Path) -> ContractReport:
             if isinstance(item, dict) and isinstance(item.get("source_id"), str):
                 _required_text(item, ("type", "priority", "statement"), file="source-truth.json", item_id=item["source_id"], issues=issues)
 
+    unrealized_source_ids = _unrealized_source_ids(project)
+    original_titles = _load_original_titles(project)
+
     if isinstance(chapters, list):
         for item in chapters:
             if isinstance(item, dict) and isinstance(item.get("chapter_id"), str):
                 item_id = item["chapter_id"]
                 _required_text(item, ("mission", "core_conclusion"), file="chapter-contracts.json", item_id=item_id, issues=issues)
                 _source_refs(item, item_id=item_id, file="chapter-contracts.json", known=source_ids, issues=issues)
+                _check_certainty_overreach(
+                    item,
+                    text_fields=("title", "mission", "core_conclusion"),
+                    unrealized=unrealized_source_ids,
+                    item_id=item_id,
+                    file="chapter-contracts.json",
+                    issues=issues,
+                )
+                _check_title_ignores_source_heading(
+                    item,
+                    original_titles=original_titles,
+                    item_id=item_id,
+                    file="chapter-contracts.json",
+                    issues=issues,
+                )
 
     if isinstance(pages, list):
         for item in pages:
@@ -204,6 +326,21 @@ def validate_contracts(project: Path) -> ContractReport:
             if chapter_ref and chapter_ref not in chapter_ids:
                 issues.append(ContractIssue("unknown-chapter", "page-contracts.json", f"{item_id} 引用了不存在的章节 {chapter_ref}。"))
             _source_refs(item, item_id=item_id, file="page-contracts.json", known=source_ids, issues=issues)
+            _check_certainty_overreach(
+                item,
+                text_fields=("title", "mission", "key_message"),
+                unrealized=unrealized_source_ids,
+                item_id=item_id,
+                file="page-contracts.json",
+                issues=issues,
+            )
+            _check_title_ignores_source_heading(
+                item,
+                original_titles=original_titles,
+                item_id=item_id,
+                file="page-contracts.json",
+                issues=issues,
+            )
 
     deck_has_content = any(
         isinstance(deck_payload.get(field), str) and deck_payload.get(field, "").strip()
@@ -226,7 +363,8 @@ def validate_contracts(project: Path) -> ContractReport:
         "chapters": len(chapters) if isinstance(chapters, list) else 0,
         "pages": len(pages) if isinstance(pages, list) else 0,
     }
-    return ContractReport(enabled=True, passed=not issues, issues=tuple(issues), counts=counts)
+    error_count = sum(1 for issue in issues if issue.severity == "error")
+    return ContractReport(enabled=True, passed=error_count == 0, issues=tuple(issues), counts=counts)
 
 
 def render_contract_report(report: ContractReport) -> str:

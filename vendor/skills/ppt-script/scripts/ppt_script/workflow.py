@@ -9,12 +9,11 @@ from typing import Any
 import yaml
 
 from .source_truth import parse_source_truth_map
-from .cli import plan_check_command
-from .cognition import write_cognitive_audit
-from .editorial import write_editorial_audit
+from .cognition import audit_cognition
+from .editorial import audit_editorial
 from .pages_index import active_page_files
-from .semantics import write_semantic_audit
-from .understanding import write_understanding_audit
+from .semantics import audit_semantic_understanding
+from .understanding import audit_source_understanding
 
 LEGACY_WORKFLOW_STATES = (
     "INITIALIZED",
@@ -273,6 +272,29 @@ def semantic_gate_required(project: Path) -> bool:
     return bool(meta.get("semantic_gate_required", False))
 
 
+_SIMPLE_MATERIAL_CHAR_LIMIT = 6000
+
+
+def _material_is_simple(project: Path) -> bool:
+    from .extractors import extract_project_sources
+    from .source_truth import build_source_inventory
+
+    try:
+        bundle = extract_project_sources(project)
+    except (FileNotFoundError, ImportError, OSError, ValueError):
+        return False
+    if not bundle.text.strip():
+        return False
+    inventory = build_source_inventory(bundle.text, bundle.file_names)
+    if inventory.file_count != 1:
+        return False
+    if inventory.char_count > _SIMPLE_MATERIAL_CHAR_LIMIT:
+        return False
+    if inventory.state_terms or inventory.boundary_terms:
+        return False
+    return True
+
+
 def cognitive_gate_required(project: Path) -> bool:
     meta_path = project / "project.json"
     if not meta_path.is_file():
@@ -283,7 +305,9 @@ def cognitive_gate_required(project: Path) -> bool:
         return False
     if "cognitive_gate_required" in meta:
         return bool(meta.get("cognitive_gate_required"))
-    return str(meta.get("cognitive_mode", "legacy")) == "enhanced"
+    if "cognitive_mode" in meta:
+        return str(meta.get("cognitive_mode", "legacy")) == "enhanced"
+    return not _material_is_simple(project)
 
 
 def editorial_gate_required(project: Path) -> bool:
@@ -373,7 +397,7 @@ def _source_understanding_ready(project: Path) -> tuple[bool, tuple[str, ...]]:
         return False, ("有效的 analysis/01-source-truth-map.md",)
     if not understanding_gate_required(project):
         return True, ()
-    report = write_understanding_audit(project)
+    report = audit_source_understanding(project)
     if report.passed:
         return True, ()
     messages = tuple(issue.message for issue in report.issues[:3])
@@ -381,7 +405,7 @@ def _source_understanding_ready(project: Path) -> tuple[bool, tuple[str, ...]]:
 
 
 def _semantic_ready(project: Path) -> tuple[bool, tuple[str, ...]]:
-    report = write_semantic_audit(project)
+    report = audit_semantic_understanding(project)
     if report.passed:
         return True, ()
     messages = tuple(issue.message for issue in report.issues[:3])
@@ -391,7 +415,7 @@ def _semantic_ready(project: Path) -> tuple[bool, tuple[str, ...]]:
 def _cognition_ready(project: Path) -> tuple[bool, tuple[str, ...]]:
     if not cognitive_gate_required(project):
         return True, ()
-    report = write_cognitive_audit(project)
+    report = audit_cognition(project)
     if report.passed:
         return True, ()
     messages = tuple(issue.message for issue in report.issues[:3])
@@ -399,7 +423,7 @@ def _cognition_ready(project: Path) -> tuple[bool, tuple[str, ...]]:
 
 
 def _editorial_ready(project: Path, phase: str) -> tuple[bool, tuple[str, ...]]:
-    report = write_editorial_audit(project, phase)  # type: ignore[arg-type]
+    report = audit_editorial(project, phase)  # type: ignore[arg-type]
     if report.passed:
         return True, ()
     output = f"analysis/editorial/99-{phase}-audit.json"
@@ -414,21 +438,35 @@ def _editorial_ready(project: Path, phase: str) -> tuple[bool, tuple[str, ...]]:
 
 
 def _page_plan_ready(project: Path) -> tuple[bool, tuple[str, ...]]:
+    from .planning import audit_plan_text
+
     command = f'python scripts/project_manager.py plan-check "{project}"'
-    output = project / "outline/02-plan-audit.json"
+    plan_path = project / "outline/02-outline.md"
+    if not plan_path.is_file():
+        return False, (f"缺少 outline/02-outline.md",)
     try:
-        plan_check_command(project)
-        payload = json.loads(output.read_text(encoding="utf-8"))
+        truth = parse_source_truth_map(
+            (project / "analysis/01-source-truth-map.md").read_text(encoding="utf-8")
+        )
+        formal = False
+        meta_path = project / "project.json"
+        if meta_path.is_file():
+            meta = json.loads(meta_path.read_text(encoding="utf-8"))
+            formal = (
+                meta.get("writing_profile") == "government-soe-formal"
+                or editorial_gate_required(project)
+            )
+        report = audit_plan_text(
+            plan_path.read_text(encoding="utf-8"),
+            truth.required_ids,
+            formal_internal_reporting=formal,
+        )
     except (OSError, ValueError, json.JSONDecodeError) as exc:
-        return False, (f"plan-check 无法完成：运行 {command}，目标文件 {output}。{exc}",)
-    if payload.get("passed"):
+        return False, (f"plan-check 无法完成：运行 {command}。{exc}",)
+    if report.passed:
         return True, ()
-    issues = payload.get("issues", [])
-    details = tuple(
-        str(item.get("message", item)) if isinstance(item, dict) else str(item)
-        for item in issues[:3]
-    )
-    return False, (f"plan-check 未通过：运行 {command}，并使 {output} 通过。", *details)
+    details = tuple(issue.message for issue in report.issues[:3])
+    return False, (f"plan-check 未通过：运行 {command}。", *details)
 
 
 def _json_pass(path: Path, *, audit: bool = False) -> bool:

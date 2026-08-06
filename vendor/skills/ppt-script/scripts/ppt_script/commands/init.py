@@ -87,8 +87,6 @@ def initialize_project(projects_dir: Path, project_name: str) -> Path:
         "context_artifact_char_limit": 120000,
         "semantic_gate_required": True,
         "understanding_gate_required": True,
-        "cognitive_mode": "enhanced",
-        "cognitive_gate_required": True,
         "experience_mode": "enabled",
         "experience_case_limit": 5,
         "editorial_mode": "chief-editor",

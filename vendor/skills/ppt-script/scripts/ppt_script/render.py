@@ -5,8 +5,15 @@ from datetime import datetime
 from .models import AuditReport, ComparisonReport, FormalStyleAudit, PlanningAudit, ScriptSlide, SourceInventory, SpeakerNotesAudit
 
 
-def render_source_inventory(inventory: SourceInventory, unsupported_files: list[str] | None = None) -> str:
+def render_source_inventory(
+    inventory: SourceInventory,
+    unsupported_files: list[str] | None = None,
+    low_quality_files: list[str] | None = None,
+    original_titles: list[str] | None = None,
+) -> str:
     unsupported_files = unsupported_files or []
+    low_quality_files = low_quality_files or []
+    original_titles = original_titles or []
     lines = [
         "# 源材料机器概览",
         "",
@@ -18,6 +25,8 @@ def render_source_inventory(inventory: SourceInventory, unsupported_files: list[
         f"- 候选内容条目：{inventory.candidate_item_count}",
         f"- 文件：{', '.join(inventory.file_names) or '无'}",
         f"- 未支持文件：{', '.join(unsupported_files) or '无'}",
+        f"- 疑似扫描件/OCR质量过低：{', '.join(low_quality_files) or '无'}",
+        f"- 原文自带标题：{'；'.join(original_titles) or '无'}",
         f"- 数字：{', '.join(inventory.numbers) or '无'}",
         f"- 状态词：{', '.join(f'{key}={value}' for key, value in inventory.state_terms.items()) or '无'}",
         f"- 边界词：{', '.join(f'{key}={value}' for key, value in inventory.boundary_terms.items()) or '无'}",
