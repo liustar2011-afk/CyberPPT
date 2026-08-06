@@ -38,8 +38,10 @@ def load_visual_prompt_module(project: Path, page_number: int) -> VisualPromptMo
     """Load the approved visual-structure handoff for one page, when present.
 
     The visible Chinese body remains owned by the approved per-page ImageGen
-    prompt.  This consumer deliberately imports only composition, connectors,
-    rendering, style and negative constraints from generation-prompts.md.
+    prompt.  This consumer deliberately imports only page-expression guidance
+    from generation-prompts.md.  The selected CyberPPT style is owned by the
+    production prompt compiler and is never imported from the visual-structure
+    handoff's ``[Style]`` section.
     """
 
     source_path = project.expanduser().resolve() / "visual" / "generation-prompts.md"
@@ -61,7 +63,6 @@ def load_visual_prompt_module(project: Path, page_number: int) -> VisualPromptMo
         "[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.",
         "[Connector map]",
         "[Text rendering]",
-        "[Style]",
         "[Negative constraints]",
     ):
         content = _section(page_block, heading)

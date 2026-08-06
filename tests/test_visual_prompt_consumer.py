@@ -52,6 +52,7 @@ no equal card wall
             assert module is not None
             self.assertIn("carrier and reading path", module.prompt_text)
             self.assertNotIn("LOCKED BODY MUST NOT BE IMPORTED", module.prompt_text)
+            self.assertNotIn("deep blue", module.prompt_text)
             prompt = append_visual_prompt_module("APPROVED LOCKED TEXT", module)
             prompt2 = append_visual_prompt_module(prompt, module)
             self.assertEqual(prompt, prompt2)
