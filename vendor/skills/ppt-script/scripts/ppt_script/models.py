@@ -298,6 +298,7 @@ class AuditReport:
     missing_missions: list[int] = field(default_factory=list)
     missing_key_messages: list[int] = field(default_factory=list)
     missing_source_ids: list[int] = field(default_factory=list)
+    polarity_mismatches: list[str] = field(default_factory=list)
     speaker_notes: SpeakerNotesAudit | None = None
     notes: list[str] = field(default_factory=list)
 

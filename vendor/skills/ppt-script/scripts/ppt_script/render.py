@@ -159,7 +159,9 @@ def render_audit(report: AuditReport) -> str:
         lines.append(f"- 缺少页面结论：{report.missing_key_messages}")
     if report.missing_source_ids:
         lines.append(f"- 缺少材料依据ID：{report.missing_source_ids}")
-    if not any((report.forbidden_hits, report.duplicate_pairs, report.density_issues, report.missing_titles, report.missing_missions, report.missing_key_messages, report.missing_source_ids, report.unmapped_required_source_ids, report.unverified_numbers)):
+    if report.polarity_mismatches:
+        lines.append(f"- 否定/肯定极性与源条目相反（请核实是否颠倒了原意）：{'、'.join(report.polarity_mismatches)}")
+    if not any((report.forbidden_hits, report.duplicate_pairs, report.density_issues, report.missing_titles, report.missing_missions, report.missing_key_messages, report.missing_source_ids, report.unmapped_required_source_ids, report.unverified_numbers, report.polarity_mismatches)):
         lines.append("- 无确定性问题")
     lines.extend(["", "## 说明", ""])
     lines.extend(f"- {note}" for note in report.notes)

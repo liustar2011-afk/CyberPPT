@@ -48,6 +48,32 @@ LEGACY_TO_CANONICAL = {
     "judgment_evidence": "evidence_to_judgment",
 }
 
+# Weak-signal candidates used only for legacy-hint *scoring*.  Unlike
+# LEGACY_TO_CANONICAL (which picks one deterministic representative for
+# explicit/legacy comparisons), this table lets a single legacy label boost
+# every canonical intent it could plausibly mean, mirroring RELATION_CANDIDATES.
+LEGACY_HINT_CANDIDATES: dict[str, tuple[str, ...]] = {
+    "boundary_guardrail": ("risk_control_boundary",),
+    "crosscutting_chain": ("layered_architecture",),
+    "hierarchy_support": ("layered_architecture",),
+    "multi_semantic_foundation": ("multi_semantic_foundation",),
+    "comparison": ("comparison_tension",),
+    "closed_loop": ("closed_loop_operation",),
+    "path_chain": ("transformation_pipeline", "data_flow_value_chain", "policy_to_action"),
+    "phase": ("phased_roadmap", "transformation_pipeline"),
+    "capability_relationship": (
+        "convergence_to_capability",
+        "capability_to_outcomes",
+        "dual_engine_synergy",
+        "network_ecosystem",
+        "role_responsibility_map",
+    ),
+    "decision_admission": ("risk_control_boundary",),
+    "scenario_application": ("scene_embedded_flow",),
+    "causal": ("problem_cause_resolution",),
+    "judgment_evidence": ("evidence_to_judgment", "single_judgment_anchor"),
+}
+
 CANONICAL_TO_LEGACY = {
     "single_judgment_anchor": "judgment_evidence",
     "multi_semantic_foundation": "multi_semantic_foundation",
@@ -113,6 +139,7 @@ RELATION_CANDIDATES: dict[str, tuple[str, ...]] = {
 }
 
 INTENT_SIGNALS: dict[str, tuple[str, ...]] = {
+    "single_judgment_anchor": ("核心结论", "唯一结论", "总体判断", "一句话结论", "关键判断"),
     "closed_loop_operation": ("反馈", "回流", "复盘", "迭代", "回到"),
     "transformation_pipeline": ("输入", "处理", "输出", "转化", "加工"),
     "convergence_to_capability": ("汇聚", "汇集", "形成能力", "统一中枢"),
@@ -228,10 +255,14 @@ def resolve_semantic_intent(
             "compound:分别支撑三类应用"
         )
 
-    legacy = canonicalize_intent(legacy_intent)
-    if legacy:
-        scores[legacy] = scores.get(legacy, 0.0) + 1.5
-        evidence.setdefault(legacy, []).append(f"legacy:{legacy_intent}")
+    legacy_key = legacy_intent.strip()
+    legacy_candidates = LEGACY_HINT_CANDIDATES.get(legacy_key, ())
+    if not legacy_candidates:
+        legacy_single = canonicalize_intent(legacy_intent)
+        legacy_candidates = (legacy_single,) if legacy_single else ()
+    for rank, intent in enumerate(legacy_candidates):
+        scores[intent] = scores.get(intent, 0.0) + (1.5 if rank == 0 else 0.7)
+        evidence.setdefault(intent, []).append(f"legacy:{legacy_intent}")
 
     if not scores:
         return SemanticIntentDecision(

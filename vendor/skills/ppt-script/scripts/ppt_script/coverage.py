@@ -8,6 +8,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 from .models import ScriptSlide, SemanticCoverageItem, SourceItem
 
+_NEGATION_MARKERS = ("不得", "不可", "禁止", "严禁", "不允许", "不宜", "不能")
+
+
+def _has_negation(text: str) -> bool:
+    return any(marker in text for marker in _NEGATION_MARKERS)
+
 
 def _normalize(text: str) -> str:
     value = re.sub(r"[\s，。；：、,.!?！？（）()《》〈〉\[\]【】]", "", text).lower()
@@ -69,6 +75,8 @@ def semantic_coverage(
         best_index = max(range(len(scores)), key=scores.__getitem__)
         score = scores[best_index]
         status = "covered" if score >= covered_threshold else "weak" if score >= weak_threshold else "missing"
+        if status != "missing" and _has_negation(item.content) != _has_negation(slide_texts[best_index]):
+            status = "polarity-mismatch"
         results.append(
             SemanticCoverageItem(item.source_id, item.importance, item.content, status, slides[best_index].number, round(score, 4))
         )

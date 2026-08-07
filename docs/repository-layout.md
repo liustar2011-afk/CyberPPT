@@ -18,6 +18,7 @@ assets, project workspaces, and generated artifacts.
 | `docs/` | Repository documentation, specs, and plans | Keep repo layout docs, design specs, and implementation plans here. |
 | `tests/` | Regression tests | Keep pytest/unittest tests here. Test-only helper modules may stay in `scripts/` only when existing entrypoints rely on that path. |
 | `vendor/` | Local vendored upstream resources | Keep imported upstream workflow assets here to avoid hidden runtime dependencies on other repos. Do not mix project outputs into vendor trees. |
+| `vendor/word-to-ppt-script/` | Vendored word-to-ppt-script skill | One-time copy from the `business-semantic-content-pipeline-v0.2.0` repo's `skills/word-to-ppt-script/`. CyberPPT owns and maintains this copy going forward; it does not auto-sync with upstream. Project generation scripts import `scripts/assemble_full_prose.py` and invoke `scripts/validate_script.py` from here — never from a sibling-repo path. |
 | `examples/` | Minimal examples | Keep small, durable examples here. Large generated decks and runs belong in project workspaces. |
 | `projects/` | Named CyberPPT project workspaces | Preferred home for user-facing projects created by `python3 -m cyberppt init`. Source files, stage work, approvals, outputs, and delivery files live under each project. |
 | `image2pptx_runs/` | Temporary or historical run workspaces | Allowed for ad hoc run captures and resume/debug sessions. New formal projects should prefer `projects/<name>/`. |

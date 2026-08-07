@@ -67,17 +67,23 @@ def audit_script_text(
         slide for slide in slides
         if not any(value in (slide.page_type or "") for value in config.speaker_notes_simple_page_types)
     ]
+    coverage = semantic_coverage(
+        source_map.items,
+        slides,
+        config.covered_threshold,
+        config.weak_threshold,
+    )
+    polarity_mismatches = [
+        f"{item.source_id}（第{item.best_slide}页）"
+        for item in coverage
+        if item.status == "polarity-mismatch"
+    ]
     return AuditReport(
         slide_count=len(slides),
         required_source_ids=required,
         mapped_source_ids=mapped,
         unmapped_required_source_ids=unmapped,
-        semantic_coverage=semantic_coverage(
-            source_map.items,
-            slides,
-            config.covered_threshold,
-            config.weak_threshold,
-        ),
+        semantic_coverage=coverage,
         unverified_numbers=_unverified_numbers(source_text, slides),
         forbidden_hits=forbidden_hits,
         duplicate_pairs=duplicates,
@@ -86,10 +92,12 @@ def audit_script_text(
         missing_missions=[slide.number for slide in slides if not slide.mission],
         missing_key_messages=[slide.number for slide in substantive if not slide.key_message],
         missing_source_ids=[slide.number for slide in substantive if not slide.source_ids],
+        polarity_mismatches=polarity_mismatches,
         speaker_notes=speaker_notes,
         notes=[
             "Source ID映射用于检查P0/P1是否落实到页面；语义相似度只用于发现候选遗漏。",
             "未核实数字表示上屏脚本出现但全部源材料未出现的数字；讲解词数字单独检查。",
+            "polarity_mismatches表示上屏内容与源条目的否定/肯定极性相反（例如源条目写\"不得\"，页面文字丢了这个字）。",
         ],
     )
 

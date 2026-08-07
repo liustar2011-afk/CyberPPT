@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WordToPptPageContract",
+  "type": "object",
+  "required": ["page_id", "page_type", "title", "question", "core_judgment", "must_include", "must_not_include", "source_ids"],
+  "properties": {
+    "page_id": {"type": "string"},
+    "page_type": {"enum": ["cover", "agenda", "chapter", "content", "back_cover"]},
+    "title": {"type": "string"},
+    "question": {"type": "string"},
+    "core_judgment": {"type": "string"},
+    "must_include": {"type": "array", "items": {"type": "string"}},
+    "must_not_include": {"type": "array", "items": {"type": "string"}},
+    "previous_input": {"type": "string"},
+    "next_handoff": {"type": "string"},
+    "ownership_tags": {"type": "array", "items": {"type": "string"}},
+    "source_ids": {"type": "array", "items": {"type": "string"}}
+  }
+}

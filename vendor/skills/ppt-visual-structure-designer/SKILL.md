@@ -103,7 +103,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - 核心结论。
 - 证据单元及优先级。
 - 实体、关系、方向、状态和边界。
-- 决策关系：观众需要理解的因果、流程、汇聚、支撑、对比、分层、闭环或控制关系。
+- 关系核对：核对上游逐页脚本（`ppt-script`或`word-to-ppt-script`）中已锁定的因果、流程、汇聚、支撑、对比、分层、闭环或控制关系（通常写在逻辑骨架或页面视觉焦点字段中），不得在本阶段重新判定或改判。若上游未锁定关系、关系存在歧义，或锁定文字与逻辑骨架相互矛盾，应退回上游补齐，不得由本技能自行创设一个上游没有确认过的关系来源。
 
 不得把原文项目符号数量直接等同于视觉模块数量。
 
@@ -129,7 +129,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 
 - `visual_intent_type`。
 - `visual_thesis`。
-- `decision_relationship`。
+- `decision_relationship`（继承第3步核对的上游关系，不独立创设）。
 - `dominant_visual_carrier`。
 - `industry_scene_anchor`。
 - `spatial_organization`。

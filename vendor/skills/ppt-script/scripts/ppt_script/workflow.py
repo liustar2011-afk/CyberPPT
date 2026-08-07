@@ -486,6 +486,7 @@ def _json_pass(path: Path, *, audit: bool = False) -> bool:
             "missing_missions",
             "missing_key_messages",
             "missing_source_ids",
+            "polarity_mismatches",
         )
         return not any(data.get(key) for key in blockers)
     return False

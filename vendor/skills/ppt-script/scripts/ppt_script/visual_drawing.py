@@ -6,6 +6,8 @@ from typing import Any, Mapping
 
 from .visual_focus import parse_visual_focus
 
+_SOURCE_ID_LEAK_RE = re.compile(r"(?<![A-Za-z0-9])S\d{3,4}(?![A-Za-z0-9])")
+
 
 @dataclass(frozen=True, slots=True)
 class DrawingIssue:
@@ -84,6 +86,18 @@ def audit_visual_drawing(
     issues: list[DrawingIssue] = []
     prompt = extract_image_prompt(content)
     direct = has_direct_image_prompt(content)
+
+    leaked_ids = sorted(set(_SOURCE_ID_LEAK_RE.findall(prompt)))
+    if leaked_ids:
+        issues.append(
+            DrawingIssue(
+                "visual-prompt-source-id-leak",
+                page,
+                "生图提示词混入内部 Source ID，应删除并改写为可直接画图的描述",
+                "、".join(leaked_ids),
+                "ERROR",
+            )
+        )
     min_chars = int(drawing.get("min_prompt_chars") or drawing.get("min_sketch_chars") or 0)
     if len(re.sub(r"\s+", "", prompt)) < min_chars:
         issues.append(
