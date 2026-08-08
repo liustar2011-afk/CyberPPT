@@ -18,13 +18,60 @@ from scripts.dual_image_overlay.deliverable_prompt import (
     template_title,
     visible_deliverable_lines,
 )
-from scripts.dual_image_overlay.style_library import write_project_style_lock
+from scripts.dual_image_overlay.style_library import (
+    resolve_default_style,
+    write_project_style_lock,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
+    def test_style_four_does_not_prescribe_page_structures(self) -> None:
+        forbidden = (
+            "正式内部汇报结构",
+            "正式内部汇报风格",
+            "紧凑矩阵",
+            "右侧栏",
+            "编号 chips",
+            "流程轴",
+            "SO WHAT",
+        )
+        style = resolve_default_style(style_id=4)
+        registry_text = json.dumps(style, ensure_ascii=False)
+        standalone_preset_text = (
+            ROOT
+            / "scripts"
+            / "dual_image_overlay"
+            / "style_presets"
+            / "ivory_deep_blue.json"
+        ).read_text(encoding="utf-8")
+
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            script = root / "script-final.md"
+            script.write_text(
+                "## 第1页：测试\n- 上屏文字：\n\n  **按语义构图**\n",
+                encoding="utf-8",
+            )
+            lock = write_project_style_lock(
+                project=root / "project",
+                style_id=4,
+                source_script=script,
+            )
+            lock_text = lock.read_text(encoding="utf-8")
+            prompt = compile_pages(script, [1], style_lock_path=lock)
+
+        for phrase in forbidden:
+            self.assertNotIn(phrase, registry_text)
+            self.assertNotIn(phrase, standalone_preset_text)
+            self.assertNotIn(phrase, lock_text)
+            self.assertNotIn(phrase, prompt)
+        self.assertIn("象牙白", prompt)
+        self.assertIn("#F7F6F0", prompt)
+        self.assertIn("#12355B", prompt)
+
     def test_style_nine_safety_rules_are_injected_into_imagegen_prompt(self) -> None:
         with TemporaryDirectory() as directory:
             root = Path(directory)

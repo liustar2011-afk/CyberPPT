@@ -40,6 +40,15 @@ mechanical transform — treat it with the same judgment as any other prose you
 write for this skill, and do not introduce a claim, number or entity the
 records do not support (§8, no-fabrication rule).
 
+**Break it into paragraphs.** A page with more than a couple of source
+records reads as an unreadable wall of text if it stays one unbroken block —
+this has been observed in practice. Insert a blank line at each genuine
+argument pivot (background → problem, one enumerated theme → another,
+problem → resolution), the same way you would paragraph any other piece of
+prose. Do not reword or reorder the underlying statements to force a
+paragraph break — only decide where the blank line goes. A one-record page
+naturally stays a single paragraph; that is fine.
+
 **When no LLM agent is present** — a scheduled unattended regeneration, a
 pure-script CI run, or a generation script invoked without an agent in the
 loop — there are two fallback tiers, in preference order:
@@ -73,7 +82,14 @@ loop — there are two fallback tiers, in preference order:
   no-op (stable sort preserves original order). On pages that do mix roles,
   it orders the prose as background/evidence before judgment before
   mechanism before recommendation before caveats, which is a more legible
-  default than whatever order `source_refs` happened to list them in.
+  default than whatever order `source_refs` happened to list them in;
+- breaks the assembled body into blank-line-separated paragraphs: once at
+  every weight/role tier change, and additionally every `_PARAGRAPH_CHUNK_SIZE`
+  (3) statements within a long same-tier run, so a page with many same-tier
+  records still reads as several short paragraphs instead of one block. This
+  is a mechanical chunk-count heuristic, not topic-aware paragraphing — it
+  never reorders or rewrites a statement, only decides where the blank line
+  goes.
 
 It deliberately does **not** auto-generate a closing synthesis sentence.
 Writing a new sentence that paraphrases "what these facts add up to" risks

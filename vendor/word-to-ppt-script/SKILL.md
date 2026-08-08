@@ -125,8 +125,10 @@ commands:
    project's own `10-script-final.md` equivalent) using the field format in
    `templates/10-script-final.md`: page type, page title, source chapter,
    main judgment, complete draft, text-selection explanation, evidence
-   mapping, locked on-screen text, logic skeleton, speaker notes, and the
-   `cyberppt-page-contract` receipt. Visual structure/`visual_intent_type`
+   mapping, locked on-screen text, logic skeleton, and speaker notes. Write
+   page contracts to a script-hash-bound `page-contracts.json` sidecar; do not
+   embed `cyberppt-page-contract` metadata in the formal human-readable script.
+   Draft comments may be accepted only as a legacy assembly input. Visual structure/`visual_intent_type`
    fields are only required when visual design is in scope for this task.
    When it is not, state so explicitly, once, in the script's own header —
    include the exact line `视觉设计范围：不含视觉设计` (the fixed string
@@ -387,8 +389,9 @@ Every page in `10-script-final.md` must include the exact fields defined in `tem
 The final script must include:
 
 - cover, contents, chapter transition and closing template pages;
-- content pages with page type, page title, source chapter, main judgment, complete draft, text-selection explanation, evidence mapping, locked on-screen text, logic skeleton, visual structure, visual intent, page-contract receipt and speaker notes;
-- a `cyberppt-page-contract` receipt carrying `page_mission`, `core_message`, source references, consumed units and `must_not_include`;
+- content pages with page type, page title, source chapter, main judgment, complete draft, text-selection explanation, evidence mapping, locked on-screen text, logic skeleton, visual structure, visual intent and speaker notes;
+- a separate, script-hash-bound `page-contracts.json` carrying each page's `page_mission`, `core_message`, source references, consumed units and `must_not_include`;
+- no `cyberppt-page-contract` HTML metadata inside the formal human-readable script; legacy comments are accepted only as assembly input;
 - no process commentary or compilation explanation inside the artifact;
 - no source-tracking IDs inside visible on-screen text;
 - no unsupported fields or legacy `overlay` sections.

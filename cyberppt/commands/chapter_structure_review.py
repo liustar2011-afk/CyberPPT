@@ -9,7 +9,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from cyberppt.script_quality_contract import parse_script_markdown, text_similarity
+from cyberppt.script_quality_contract import parse_script_path, text_similarity
+from cyberppt.semantic_digest import outline_semantic_digest, script_semantic_digest
 
 SCHEMA = "cyberppt.chapter_review_manifest.v1"
 REQUIRED_HEADINGS = ("## 总判", "## 章内推进链", "## 跨页优化", "## 建议落地顺序", "## 消费状态")
@@ -89,7 +90,7 @@ def _actual_script_structure_issues(
     """Audit the authored page body, not just review-file bookkeeping."""
 
     try:
-        script = parse_script_markdown(source.read_text(encoding="utf-8-sig"))
+        script = parse_script_path(source)
     except (OSError, ValueError) as exc:
         return [{"code": "SCRIPT_PARSE_FAILED", "message": str(exc)}]
     outline_pages = {
@@ -166,6 +167,15 @@ def _actual_script_structure_issues(
     return issues
 
 
+def _manifest_path(project: Path, level: str) -> Path:
+    suffix = "" if level == "outline" else f"-{level}"
+    return project / "review" / f"chapter-review-manifest{suffix}.json"
+
+
+def _input_semantic_digest(source: Path, level: str) -> str:
+    return outline_semantic_digest(source) if level == "outline" else script_semantic_digest(source)
+
+
 def prepare_chapter_review_input(project: Path, level: str = "outline") -> Path:
     project = project.expanduser().resolve()
     if not project.is_dir():
@@ -174,15 +184,21 @@ def prepare_chapter_review_input(project: Path, level: str = "outline") -> Path:
     outline_path = project / "workbench/stages/01-analysis/outline.json"
     outline = _read_json(outline_path)
     chapters = _chapters(outline)
-    _write_json(output, {"schema": "cyberppt.chapter_review_input.v1", "level": level, "input_path": str(source), "input_sha256": _sha256(source), "outline_path": str(outline_path), "outline_sha256": _sha256(outline_path), "document_semantics": outline.get("document_semantics", {}), "narrative_thesis": outline.get("narrative_thesis", ""), "chapters": chapters, "required_markdown_headings": list(REQUIRED_HEADINGS), "prepared_at": _utc_now()})
+    _write_json(output, {"schema": "cyberppt.chapter_review_input.v1", "level": level, "input_path": str(source), "input_sha256": _sha256(source), "input_semantic_sha256": _input_semantic_digest(source, level), "outline_path": str(outline_path), "outline_sha256": _sha256(outline_path), "outline_semantic_sha256": outline_semantic_digest(outline_path), "document_semantics": outline.get("document_semantics", {}), "narrative_thesis": outline.get("narrative_thesis", ""), "chapters": chapters, "required_markdown_headings": list(REQUIRED_HEADINGS), "prepared_at": _utc_now()})
     review_dir = project / "review"
     review_dir.mkdir(parents=True, exist_ok=True)
     covered_chapters: set[str] = set()
-    existing_manifest = review_dir / "chapter-review-manifest.json"
+    existing_manifest = _manifest_path(project, level)
     if existing_manifest.is_file():
         try:
             manifest = _read_json(existing_manifest)
             if manifest.get("level") == level:
+                if (
+                    not manifest.get("input_semantic_sha256")
+                    and str(manifest.get("input_sha256") or "").lower() == _sha256(source)
+                ):
+                    manifest["input_semantic_sha256"] = _input_semantic_digest(source, level)
+                    _write_json(existing_manifest, manifest)
                 for entry in manifest.get("reviews", []):
                     if isinstance(entry, dict):
                         covered_chapters.update(str(value) for value in entry.get("chapter_ids", []))
@@ -204,15 +220,24 @@ def run_chapter_review_audit(project: Path, level: str = "outline") -> tuple[int
     project = project.expanduser().resolve()
     source, prepared_path, audit_path = _paths(project, level)
     prepared = _read_json(prepared_path)
-    manifest_path = project / "review/chapter-review-manifest.json"
+    manifest_path = _manifest_path(project, level)
     manifest = _read_json(manifest_path)
     issues: list[dict[str, str]] = []
     def issue(code: str, message: str) -> None: issues.append({"code": code, "message": message})
     if manifest.get("schema") != SCHEMA: issue("MANIFEST_SCHEMA_INVALID", f"expected {SCHEMA}")
     if manifest.get("level") != level: issue("REVIEW_LEVEL_MISMATCH", f"manifest level must be {level}")
     current_hash = _sha256(source)
-    if str(prepared.get("input_sha256") or "").lower() != current_hash: issue("PREPARED_INPUT_STALE", "prepared review input does not match the current artifact")
-    if str(manifest.get("input_sha256") or "").lower() != current_hash: issue("REVIEW_INPUT_STALE", "review manifest does not match the current artifact")
+    current_semantic_hash = _input_semantic_digest(source, level)
+    prepared_semantic = str(prepared.get("input_semantic_sha256") or "").lower()
+    manifest_semantic = str(manifest.get("input_semantic_sha256") or "").lower()
+    if prepared_semantic:
+        if prepared_semantic != current_semantic_hash: issue("PREPARED_INPUT_STALE", "prepared review input does not match the current semantic artifact")
+    elif str(prepared.get("input_sha256") or "").lower() != current_hash:
+        issue("PREPARED_INPUT_STALE", "prepared review input does not match the current artifact")
+    if manifest_semantic:
+        if manifest_semantic != current_semantic_hash: issue("REVIEW_INPUT_STALE", "review manifest does not match the current semantic artifact")
+    elif str(manifest.get("input_sha256") or "").lower() != current_hash:
+        issue("REVIEW_INPUT_STALE", "review manifest does not match the current artifact")
     expected = {str(ch["chapter_id"]): {str(page["page_id"]) for page in ch.get("pages", [])} for ch in prepared.get("chapters", []) if isinstance(ch, dict)}
     covered_chapters: set[str] = set(); covered_pages: set[str] = set()
     reviews = manifest.get("reviews")
@@ -247,6 +272,6 @@ def run_chapter_review_audit(project: Path, level: str = "outline") -> tuple[int
         for structural_issue in _actual_script_structure_issues(source, outline):
             issue(structural_issue["code"], structural_issue["message"])
     status = "passed" if not issues else "rewrite_required"
-    report = {"schema": "cyberppt.chapter_review_audit.v1", "level": level, "status": status, "input": str(source), "input_sha256": current_hash, "prepared_input": str(prepared_path), "manifest": str(manifest_path), "chapter_count": len(expected), "page_count": len(expected_pages), "issues": issues, "audited_at": _utc_now()}
+    report = {"schema": "cyberppt.chapter_review_audit.v1", "level": level, "status": status, "input": str(source), "input_sha256": current_hash, "input_semantic_sha256": current_semantic_hash, "prepared_input": str(prepared_path), "manifest": str(manifest_path), "chapter_count": len(expected), "page_count": len(expected_pages), "issues": issues, "audited_at": _utc_now()}
     _write_json(audit_path, report)
     return (0 if status == "passed" else 4), report

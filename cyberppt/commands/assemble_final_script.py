@@ -34,6 +34,16 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest().upper()
 
 
+def _extract_page_contracts(text: str) -> dict[str, dict[str, object]]:
+    contracts: dict[str, dict[str, object]] = {}
+    for match in PAGE_CONTRACT_RECEIPT_RE.finditer(text):
+        payload = json.loads(match.group(1))
+        page_id = str(payload.get("page_id") or "")
+        if page_id:
+            contracts[page_id] = payload
+    return contracts
+
+
 def _extract_pages(text: str) -> dict[int, str]:
     matches = list(PAGE_START_RE.finditer(text))
     pages: dict[int, str] = {}
@@ -262,6 +272,12 @@ def assemble_final_script(
     if not text.endswith("\n"):
         text += "\n"
 
+    page_contracts = _extract_page_contracts(text)
+    # The final manuscript is a human artifact.  Machine receipts live in a
+    # verified sidecar and no longer pollute the readable Markdown source.
+    text = PAGE_CONTRACT_RECEIPT_RE.sub("", text)
+    text = re.sub(r"\n{3,}", "\n\n", text).rstrip() + "\n"
+
     form_issues = audit_final_manuscript_form(text)
     if form_issues:
         raise ValueError(
@@ -270,12 +286,27 @@ def assemble_final_script(
         )
 
     # Ensure parseable before write.
-    parse_script_markdown(text)
+    parse_script_markdown(text, page_contracts)
     if not PAGE_HEADING_RE.search(text):
         raise ValueError("assembled manuscript has no page headings")
 
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(text, encoding="utf-8")
+    sidecar = output.with_name("page-contracts.json")
+    outline_path = project / "workbench/stages/01-analysis/outline.json"
+    source_truth_path = project / "workbench/stages/01-analysis/source-truth.json"
+    sidecar_payload = {
+        "schema": "cyberppt.page_contracts.v1",
+        "script": output.name,
+        "script_sha256": _sha256(output),
+        "outline_sha256": _sha256(outline_path) if outline_path.is_file() else "",
+        "source_truth_sha256": _sha256(source_truth_path) if source_truth_path.is_file() else "",
+        "pages": page_contracts,
+    }
+    sidecar.write_text(
+        json.dumps(sidecar_payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
     ledger_path = project / "workbench" / "artifact-ledger.json"
     append_artifacts(
@@ -292,7 +323,19 @@ def assemble_final_script(
                     f"python -m cyberppt script-audit {project} --input {output}"
                 ),
                 "sha256": _sha256(output),
-            }
+            },
+            {
+                "id": "script-page-contracts",
+                "stage": "01-analysis",
+                "page": None,
+                "path": str(sidecar.relative_to(project)).replace("\\", "/"),
+                "status": "assembled_awaiting_audit",
+                "depends_on": ["script-final"],
+                "resume_command": (
+                    f"python -m cyberppt script-audit {project} --input {output}"
+                ),
+                "sha256": _sha256(sidecar),
+            },
         ],
         build_id=f"script-assembly-{_sha256(output)[:10]}",
     )
@@ -305,4 +348,5 @@ def assemble_final_script(
         "first_page": f"p{first:02d}",
         "last_page": f"p{last:02d}",
         "sha256": _sha256(output),
+        "page_contracts": str(sidecar),
     }

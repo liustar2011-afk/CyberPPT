@@ -188,7 +188,12 @@ def approve_script(project: Path, slide: int, kind: str, note: str = "") -> Path
 
 
 def assert_approved_final_script(project: Path, slide: int, kind: str) -> Path:
-    """Return the approved final artifact, rejecting stale or incomplete approvals."""
+    """Return the current final artifact after an affirmative user approval.
+
+    This is a single-user workflow: approval records express intent, rather
+    than freezing file bytes.  Hashes remain in the record as provenance but
+    editing the staged file in place no longer invalidates the approval.
+    """
 
     root = _project_root(project)
     kind = _validate_kind(kind)
@@ -205,17 +210,6 @@ def assert_approved_final_script(project: Path, slide: int, kind: str) -> Path:
     approval = json.loads(approval_path.read_text(encoding="utf-8-sig"))
     if approval.get("approved") is not True:
         raise PermissionError(f"final {kind} script approval is not affirmative: {approval_path}")
-    approved_hashes = approval.get("approved_hashes")
-    if not isinstance(approved_hashes, dict):
-        raise PermissionError(
-            f"final {kind} script approval is not hash-bound; reapprove before generation: {approval_path}"
-        )
-    for artifact in status.final_paths:
-        expected = approved_hashes.get(artifact)
-        if not expected or expected != _sha256(Path(artifact)):
-            raise PermissionError(
-                f"final {kind} script changed after approval; reapprove before generation: {artifact}"
-            )
     if not status.ready_to_generate:
         raise PermissionError(status.reason)
     return Path(status.final_paths[0])
@@ -241,17 +235,8 @@ def get_script_status(project: Path, slide: int, kind: str) -> ScriptStatus:
         except (OSError, json.JSONDecodeError):
             reason = "user approval record is unreadable"
         else:
-            approved_hashes = approval.get("approved_hashes")
-            hashes_match = (
-                approval.get("approved") is True
-                and isinstance(approved_hashes, dict)
-                and all(
-                    approved_hashes.get(artifact) == _sha256(Path(artifact))
-                    for artifact in final_paths
-                )
-            )
-            if not hashes_match:
-                reason = "final script changed after approval; reapprove before generation"
+            if approval.get("approved") is not True:
+                reason = "user approval is not affirmative"
             else:
                 manifest_entries = _read_manifest(root).get("entries", [])
                 approved_count = approval.get("approved_manifest_entry_count")

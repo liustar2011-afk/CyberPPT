@@ -98,7 +98,7 @@ class ScriptGateTests(unittest.TestCase):
             self.assertEqual((project / "workbench/prompts/imagegen/slide-02-imagegen-draft.md").resolve(), target)
             self.assertIn("中文提示词", target.read_text(encoding="utf-8"))
 
-    def test_approved_final_script_rejects_post_approval_edits(self) -> None:
+    def test_approved_final_script_allows_post_approval_edits(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"
             init_project(project)
@@ -110,8 +110,11 @@ class ScriptGateTests(unittest.TestCase):
             approved = assert_approved_final_script(project, slide=2, kind="imagegen")
             self.assertTrue(approved.exists())
             approved.write_text("修改后的提示词\n", encoding="utf-8")
-            with self.assertRaisesRegex(PermissionError, "changed after approval"):
-                assert_approved_final_script(project, slide=2, kind="imagegen")
+            self.assertEqual(
+                approved,
+                assert_approved_final_script(project, slide=2, kind="imagegen"),
+            )
+            self.assertTrue(get_script_status(project, slide=2, kind="imagegen").ready_to_generate)
 
     def test_new_draft_after_approval_requires_reapproval(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -134,3 +137,18 @@ class ScriptGateTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(PermissionError, "newer draft"):
                 assert_approved_final_script(project, slide=2, kind="imagegen")
+
+    def test_affirmative_legacy_approval_without_hashes_is_accepted(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            project = Path(temp) / "client-report"
+            init_project(project)
+            source = Path(temp) / "slide-02-prompt.md"
+            source.write_text("approved prompt\n", encoding="utf-8")
+            stage_script(project, slide=2, kind="imagegen", phase="final", source=source)
+            approval_path = approve_script(project, slide=2, kind="imagegen")
+            approval = json.loads(approval_path.read_text(encoding="utf-8"))
+            approval.pop("approved_hashes")
+            approval_path.write_text(json.dumps(approval), encoding="utf-8")
+
+            self.assertTrue(get_script_status(project, 2, "imagegen").ready_to_generate)
+            self.assertTrue(assert_approved_final_script(project, 2, "imagegen").is_file())

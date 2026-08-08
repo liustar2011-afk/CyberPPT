@@ -95,6 +95,19 @@ Even without the hash-gate machinery, keep three things:
    from the project's own workbench/": it is shared, cross-project
    infrastructure vendored into CyberPPT itself, not an external dependency.
 
+For the per-page script gate, an affirmative approval now records workflow
+intent instead of freezing the approved file bytes. SHA-256 values may still
+be written to approval records and manifests for troubleshooting, but an
+in-place edit to a staged final script or ImageGen prompt does not force a
+stage/approve cycle. Missing or negative approval, missing files, malformed
+scripts, failed content checks, and missing generated assets remain blocking.
+
+The Stage 02 handoff is also deliberately not hash-bound. Its source bindings
+record paths only; handoff audits verify that those files exist and that the
+handoff schema, page coverage, roles, required text, and body canvas are valid.
+Changing the handoff or an upstream script does not invalidate an already
+passed visual-structure report merely because a SHA-256 value changed.
+
 ## What this does and does not change
 
 `python3 -m cyberppt init` still scaffolds the full Stage 00/01 project

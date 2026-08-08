@@ -159,7 +159,7 @@
     "subtitle_render_mode": "external_text_layer",
     "body_render_mode": "in_image",
     "font_family": "Microsoft YaHei",
-    "minimum_font_pt": 9,
+    "minimum_font_pt": 12,
     "placement_strategy": "正文贴近业务对象、工作台节点和服务结果，使用清晰层级和充足容器空间。"
   },
   "geometry": {

@@ -21,7 +21,7 @@ colors:
 typography:
   family: Microsoft YaHei
   fallback: Chinese sans-serif visually close to Microsoft YaHei
-  minimum_font_pt: 9
+  minimum_font_pt: 12
   hierarchy_required: true
 text_rendering:
   title_render_mode: external_text_layer

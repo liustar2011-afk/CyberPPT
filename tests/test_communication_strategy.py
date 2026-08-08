@@ -248,6 +248,17 @@ class CommunicationStrategyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "stale"):
             assert_communication_strategy_ready(self.project)
 
+    def test_reaudit_timestamp_does_not_invalidate_unchanged_approval(self) -> None:
+        self._write_valid_candidate()
+        run_communication_strategy_audit(self.project)
+        approve_communication_strategy(self.project, "decision_review")
+
+        # A repeat audit rewrites audited_at and therefore changes the audit
+        # file hash, but it does not change the reviewed strategy contract.
+        run_communication_strategy_audit(self.project)
+
+        self.assertIsNotNone(assert_communication_strategy_ready(self.project))
+
     def test_new_communication_choice_supersedes_prior_choice(self) -> None:
         self._write_valid_candidate()
         run_communication_strategy_audit(self.project)

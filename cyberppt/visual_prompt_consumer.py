@@ -44,7 +44,8 @@ def load_visual_prompt_module(project: Path, page_number: int) -> VisualPromptMo
     handoff's ``[Style]`` section.
     """
 
-    source_path = project.expanduser().resolve() / "visual" / "generation-prompts.md"
+    project = project.expanduser().resolve()
+    source_path = project / "visual" / "generation-prompts.md"
     if not source_path.is_file():
         return None
     source = source_path.read_text(encoding="utf-8-sig")

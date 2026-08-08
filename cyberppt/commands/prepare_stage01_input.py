@@ -109,7 +109,7 @@ def prepare_outline_input(project: Path) -> Path:
         "The whole-document semantic understanding below is the authoritative upstream constraint. Do not replace its business subject, source structure, actors, status distinctions, or decision intent with a generic PPT storyline.",
         "The Outline root must copy `semantic_understanding_sha256`, `semantic_source_bundle_sha256`, and, when present, `semantic_source_map_bundle_sha256` from the current semantic gate.",
         "The Outline must also copy `semantic_argument_model_sha256` and consume the source argument model below. Do not rebuild the source thesis from evidence records.",
-        "Source Truth is frozen after the Source Truth stage. Set `source_truth_mapping_mode` to `consumption_manifest`, copy `source_truth_sha256`, and write page-to-evidence mappings only to the independent `source_consumption_manifest`; never write page assignments back into Source Truth records.",
+        "Source Truth is frozen after the Source Truth stage. Set `source_truth_mapping_mode` to `consumption_manifest`; record `source_truth_semantic_sha256` and `source_consumption_semantic_sha256` as the authority bindings, while retaining the corresponding raw SHA-256 fields only as byte receipts. Write page-to-evidence mappings only to the independent `source_consumption_manifest`; never write page assignments back into Source Truth records.",
         "",
         "Before planning pages, preserve the Stage 00 source argument model `document_semantics` and the Source Truth copy: `document_role` says what artifact is being presented; `subject_of_report` says what the presentation is about; `primary_thesis` is the deck-level conclusion; `decision_boundary` limits its maturity; `author_purpose` states what the author is trying to advance; `argument_method` and `supporting_basis` explain how the source argues for that purpose.",
         "Never replace the subject of report with the activity used to produce or present the document. Document role and business subject are separate fields.",
@@ -207,6 +207,7 @@ def prepare_outline_input(project: Path) -> Path:
                 "Every content page must declare `primary_argument_node_id`, `source_argument_node_ids`, and include the same node IDs in `core_message_derivation.argument_node_ids`.",
                 "Every content page must copy `source_argument_node_roles` and `source_argument_node_weights` for its selected nodes. `argument_weight=core` is an authoritative source proposition and must not be replaced by a generic layer label merely because another proposition supports it; relation, role, and weight are separate dimensions.",
                 "Each source node needs one primary page consumer or an explicit allowed merge; a source evidence record alone is not a substitute for node consumption.",
+                "Do not default to one page per source subsection regardless of how much material that subsection has. Before finalizing the page plan, estimate each candidate page's available source material (roughly, the combined length of the Source Truth statements it would cite). If two or more consecutive subsections in the same chapter are each much thinner than the deck's typical page, merge them into one denser page instead of writing several thin standalone pages — a page that can't be filled from real source material should not exist just because the source document gave that content its own subsection heading. The audit enforces this: `outline-audit` flags `CONTENT_PAGE_DENSITY_LOW` for runs of 2+ consecutive same-chapter pages that fall far below the deck's median page volume, with `retry_strategy: merge_thin_adjacent_pages`.",
                 "",
             ]
     semantics = truth.get("document_semantics")
@@ -469,7 +470,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
             "split_risk_resolved": True,
         }
         lines += [
-            "- page_contract_receipt (copy unchanged into the completed page):",
+            "- page_contract_receipt (draft transport only; copy unchanged so the final assembler can move it into page-contracts.json):",
             f"  <!-- cyberppt-page-contract {json.dumps(receipt, ensure_ascii=False, separators=(',', ':'))} -->",
         ]
         lines.append("")

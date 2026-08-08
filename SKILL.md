@@ -23,12 +23,12 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 语义理解完成后，后续阶段只能消费已批准的论点模型，禁止回到证据目录重新猜测主论点、章节主线或页面结论。严格项目按以下顺序建立并校验绑定：
 
-1. **冻结 Source Truth**：`source-truth.json` 只保存源材料事实、判断、建议、边界和待核项；通过 Source Truth 审计后不得再写入页面分配。页面与证据的关系写入独立的 `workbench/stages/01-analysis/outline-source-consumption.json`，该文件必须记录当前 Source Truth 的 SHA-256。
-2. **锁定论点到大纲**：`outline.json` 必须声明 `source_truth_mapping_mode: consumption_manifest`、Source Truth 哈希、消费清单路径及消费清单哈希；每个内容页必须从语义模型复制源原生论点节点、`argument_role`、`argument_weight`、主体、状态、论证关系和 `source_gap`，不得用证据清单替代这些字段。
+1. **冻结 Source Truth**：`source-truth.json` 只保存源材料事实、判断、建议、边界和待核项；通过 Source Truth 审计后不得再写入页面分配。页面与证据的关系写入独立的 `workbench/stages/01-analysis/outline-source-consumption.json`。新产物必须优先记录稳定语义摘要，原始文件 SHA-256 仅作为交付收据保留。
+2. **锁定论点到大纲**：`outline.json` 必须声明 `source_truth_mapping_mode: consumption_manifest`、Source Truth 语义摘要、消费清单路径及消费清单语义摘要；每个内容页必须从语义模型复制源原生论点节点、`argument_role`、`argument_weight`、主体、状态、论证关系和 `source_gap`，不得用证据清单替代这些字段。旧项目只有原始 SHA-256 时允许兼容读取，但重新生成后必须升级为语义摘要。
 3. **锁定内容单元到脚本**：每个非边界 `content_unit` 必须有稳定的 `unit_id`。编写脚本前必须生成 `workbench/scripts/page-script-authoring.json` 及其 Markdown 审阅输入；每个内容页的 `consumes` 必须逐项列出本页消费的 `unit_id`，页面合同收据必须写入同一组 `consumed_content_unit_ids`。
-4. **执行消费审计**：运行 `outline-audit` 和 `script-audit` 时，缺少、错配、重复或越过边界的消费声明均为阻断错误。脚本审计的 `quality_status=passed_with_warnings` 只能进入人工内容复核，不能直接标记为脚本批准；只有消费审计通过且确认门完成后才能进入 Stage 02。
+4. **执行消费审计**：运行 `outline-audit` 和 `script-audit` 时，缺少、错配、重复或越过边界的消费声明均为阻断错误。`quality_status=passed_with_warnings` 必须在确认稿中如实展示，但不触发第二套内容复核闸门；`approve-stage01` 是唯一人工决定，消费审计通过且用户确认后即可进入 Stage 02。
 
-上述四项工件必须在项目目录落盘并登记到 `artifact-ledger.json`。任一哈希过期、工件缺失或上游重新生成时，停止下游脚本和视觉生产，先重建受影响的消费绑定并重新审计。
+上述四项工件必须在项目目录落盘并登记到 `artifact-ledger.json`。门禁采用三层模型：权威内容用稳定语义摘要决定是否失效；原始 SHA-256 只证明某次实际交付的文件字节；派生审计、确认稿和可读报告不得反向控制上游批准。只有语义摘要变化、工件缺失或人工决策边界变化时，才停止下游并重建受影响的消费绑定；时间戳、路径、JSON/Markdown 排版和报告格式变化不得单独导致批准失效。
 
 形成提纲前必须通过沟通策略确认门。语义理解批准后运行 `prepare-communication-strategy`，基于全文语义识别沟通对象、沟通目的和受众决策任务，并形成 2-3 个章节组织方式实质不同的汇报方向；运行 `communication-strategy-check` 后，必须把 `communication-strategy-confirmation.md` 展示给用户。只有用户以 `approve-communication-strategy --option <option_id>` 明确选择方向，才可运行 `prepare-outline-input` 或 `outline-audit`。提纲根节点必须逐项绑定已批准的对象、目的、方向、架构模式、结构原则以及候选与审批哈希；不得仅保留一个无执行作用的 `audience` 字段，也不得由生成代理静默替用户选择。
 
@@ -66,7 +66,7 @@ python -m cyberppt script-audit <project> --input <project>/workbench/scripts/fi
 
 ## 主流水线合同
 
-Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-structure-designer`，不得等待用户再次点名。先执行 `prepare-visual-structure` 形成可追踪调用合同，由 Agent 按 `workbench-handoff` 模式读取该 Skill 及其必需 references，生成 `visual/deck-visual-spec.json`、`visual/script-visual-structure.md`、`visual/generation-prompts.md` 和 `visual/validation-report.json`，再执行 `visual-structure-audit`。该阶段只设计视觉结构，不选择 CyberPPT 风格，不生成图片、HTML、SVG 或 PPTX。`final-script-pages` 必须验证视觉产物及其脚本哈希，未通过或已过期时阻断 Stage 02。
+Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-structure-designer`，不得等待用户再次点名。先执行 `prepare-visual-structure`，从正式 `stage02-handoff.json` 派生 `visual/visual-design-input.json` 并形成可追踪调用合同；由 Agent 按 `workbench-handoff` 模式读取该 Skill 及其必需 references，对每个内容页生成并比较至少三种结构上真正不同的候选，再生成 `visual/deck-visual-spec.json`、`visual/script-visual-structure.md`、`visual/generation-prompts.md` 和 `visual/validation-report.json`，最后执行 `visual-structure-audit`。确定性代码只负责输入组装、合同校验和 Prompt 编译，不得用关键词匹配代替 Skill 决定 `visual_intent_type`、主视觉载体或空间组织。该阶段只设计视觉结构，不选择 CyberPPT 风格，不生成图片、HTML、SVG 或 PPTX。`final-script-pages --blueprint-only` 只编译页面编码、2:1正文画布、非上屏语义背景、严格上屏文字、Skill视觉设计模块、正式风格锁和生成约束，不得重新塞入完整文字稿、演讲备注、证据映射或审计元数据。`final-script-pages` 必须优先验证脚本与 Stage 02 交接包的稳定语义摘要，同时保留原始 SHA-256 收据；只有语义内容或正式视觉产物变化时才判定过期并阻断 Stage 02。
 
 正式生产必须由 `python -m cyberppt final-script-pages` 统一编排，按以下顺序推进：
 
@@ -110,6 +110,12 @@ Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-s
 ## 阶段成果物落盘与反向追踪
 
 每一阶段必须落地阶段成果物。所有阶段性结论、脚本、prompt、图片、PPTX、QA、确认记录和返工说明都必须写入仓库项目目录，不能只留在对话中。
+
+### 对话交付链接（硬规则）
+
+每一轮对话只要新建、重新生成或更新了仓库文件，最终回复必须逐项提供本轮产出物的可点击 Markdown 链接；阶段成果物必须优先列出，不得只报告“已完成”、文件名、普通文本路径、目录路径或口头说明。链接必须指向实际落盘文件，并使用当前环境可打开的绝对路径；例如：`[script-final.md](D:/CyberPPT/projects/<project>/workbench/scripts/final/script-final.md)`。
+
+至少必须链接：本轮更新的权威输入、正式阶段成果、审计或 QA 报告、人工确认稿、问题消费记录以及用于生成该成果的项目级生成器。若某项尚未生成、已失效或不能交付，仍须链接现有状态文件，并在链接旁明确标记其状态。不得用一个目录链接代替多个关键成果文件，也不得要求用户自行到目录中查找。
 
 默认落点：
 

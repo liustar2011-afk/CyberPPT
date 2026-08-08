@@ -4,6 +4,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from PIL import Image
 
@@ -23,6 +24,64 @@ from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
 class CyberpptPairManifestTests(unittest.TestCase):
+    def test_compact_blueprint_uses_handoff_locked_text_without_full_prose(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "project"
+            init_project(project)
+            script = root / "script.md"
+            script.write_text("## 第4页：建设背景\n正文\n", encoding="utf-8")
+            style_lock = write_project_style_lock(project=project, style_id=4, source_script=script)
+            visual = project / "visual"
+            visual.mkdir(exist_ok=True)
+            (visual / "generation-prompts.md").write_text(
+                "# Page 4: 建设背景\n"
+                "[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.\n"
+                "- Dominant visual carrier: 可信服务基座\n\n"
+                "[Connector map]\n- E1 -> E2\n\n"
+                "[Text rendering]\n- Body rendering mode: in_image\n\n"
+                "[Style]\nSHOULD_NOT_BE_IMPORTED\n\n"
+                "[Negative constraints]\n- no equal card wall\n---\n",
+                encoding="utf-8",
+            )
+            handoff = {
+                "schema": "cyberppt.stage02_handoff.v1",
+                "pages": [
+                    {
+                        "page_id": "p04",
+                        "page_number": 4,
+                        "render_role": "content",
+                        "core_message": "跨主体需求与现实制约共同要求可信服务基座。",
+                        "full_prose": "这段完整讲稿不得进入最终送图脚本。",
+                        "onscreen_text": "业务演进与协同需求\n现实制约\n可信服务基座",
+                    }
+                ],
+            }
+            handoff_path = project / "workbench/stages/02-handoff/stage02-handoff.json"
+            handoff_path.parent.mkdir(parents=True, exist_ok=True)
+            handoff_path.write_text(json.dumps(handoff, ensure_ascii=False), encoding="utf-8")
+            with patch(
+                "cyberppt.stage02_handoff.load_stage02_handoff",
+                return_value=handoff,
+            ):
+                manifest, _, compiled, _ = build_manifest(
+                    script=script,
+                    pages_raw="4",
+                    output_dir=root / "images",
+                    project_path=project,
+                    style_lock=style_lock,
+                    compact_blueprint=True,
+                )
+                compiled_text = compiled.read_text(encoding="utf-8")
+
+        prompt = manifest["pairs"][0]["full"]["prompt"]
+        self.assertIn("2048×1024（2:1）", prompt)
+        self.assertIn("业务演进与协同需求", prompt)
+        self.assertIn("可信服务基座", prompt)
+        self.assertNotIn("这段完整讲稿不得进入最终送图脚本", prompt)
+        self.assertNotIn("SHOULD_NOT_BE_IMPORTED", prompt)
+        self.assertEqual(prompt, compiled_text.split("\n\n", 1)[1].strip())
+
     def test_dual_image_full_prompt_uses_graphics_to_carry_text_relationships(self) -> None:
         self.assertEqual("原始提示词", _full_prompt_for_variants("原始提示词", ["full", "background"]))
         return
@@ -249,7 +308,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
             approved_prompt_text,
         )
 
-    def test_strict_manifest_blocks_body_drift_after_prompt_approval(self) -> None:
+    def test_manifest_reports_body_drift_without_blocking_generation(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "project"
@@ -290,18 +349,17 @@ class CyberpptPairManifestTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            with self.assertRaisesRegex(
-                ValueError,
-                "approved ImageGen prompt is stale for page 4",
-            ):
-                build_manifest(
-                    script=script,
-                    pages_raw="4",
-                    output_dir=root / "images",
-                    project_path=project,
-                    style_lock=style_lock,
-                    require_approved_prompts=True,
-                )
+            manifest, _, _, _ = build_manifest(
+                script=script,
+                pages_raw="4",
+                output_dir=root / "images",
+                project_path=project,
+                style_lock=style_lock,
+                require_approved_prompts=True,
+            )
+
+        self.assertFalse(manifest["prompt_contract"]["freshness_enforced"])
+        self.assertEqual("stale", manifest["pairs"][0]["prompt_provenance"]["status"])
 
     def test_strict_manifest_uses_content_first_canonical_prompt(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

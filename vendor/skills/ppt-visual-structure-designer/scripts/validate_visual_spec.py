@@ -54,8 +54,8 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
     if not vd.get("dominant_visual_carrier"):
         add(issues, "error", "dominant_carrier", "Dominant visual carrier is required", n)
     ti = page.get("text_integration", {})
-    if ti.get("minimum_font_pt", 0) < 9:
-        add(issues, "error", "font_size", "Minimum font size must be at least 9pt", n)
+    if ti.get("minimum_font_pt", 0) < 12:
+        add(issues, "error", "font_size", "Minimum font size must be at least 12pt", n)
     if ti.get("title_render_mode") != "external_text_layer":
         add(issues, "warning", "title_mode", "Default profile expects external title text layer", n)
     ip = page.get("image_plan", {})

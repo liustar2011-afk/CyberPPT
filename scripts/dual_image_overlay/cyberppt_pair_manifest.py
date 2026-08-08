@@ -30,6 +30,7 @@ from scripts.dual_image_overlay.deliverable_prompt import (
     parse_page_blocks,
     parse_pages,
     render_prompt,
+    style_contract,
 )
 from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import ensure_output_size
 from scripts.dual_image_overlay.style_library import write_project_style_lock
@@ -226,6 +227,32 @@ def _mark_status(item: dict[str, Any], *, force_pending: bool = False) -> None:
             item["last_error"] = f"Missing expected CyberPPT image file: {path}"
 
 
+def _compact_blueprint_prompt(
+    *,
+    page_number: int,
+    handoff_page: dict[str, Any],
+    visual_prompt: str,
+    style_lock: Path | None,
+) -> str:
+    return "\n\n".join(
+        [
+            f"【页面编码】P{page_number:02d}",
+            "【正文画布合同】\n2048×1024（2:1）正文内容区。不得绘制标题、副标题、Logo、页码、页脚或模板外框。",
+            (
+                "【构图优先级｜不上屏】\n页面视觉设计模块对空间关系和主视觉载体具有最高优先级；"
+                "正式风格锁只控制色彩、材质、字体气质和表面语言，不得把页面改造成卡片矩阵、"
+                "左侧分类栏、编号 chips、图标节点或一条文字配一个图标。必须形成一个连续、"
+                "具有真实行业对象和空间关系的主视觉场景，正文作为对象标签、路径节点或场景内工作面板附着其中。"
+            ),
+            "【语义背景｜不上屏】\n" + str(handoff_page.get("core_message") or "").strip(),
+            "【严格上屏文字】\n" + str(handoff_page.get("onscreen_text") or "").strip(),
+            "【视觉设计｜不上屏】\n" + visual_prompt.strip(),
+            "【正式风格锁｜不上屏】\n" + style_contract(style_lock).strip(),
+            "【生成约束】\n只渲染“严格上屏文字”中的文字；语义背景、字段名、指令、证据编号和调试信息均不得上屏。",
+        ]
+    )
+
+
 def _relationship_aware_canonical_prompts(
     *,
     script: Path,
@@ -252,13 +279,16 @@ def _relationship_aware_canonical_prompts(
     missions = _page_missions(project_path)
     contexts = _page_visual_contexts(project_path)
     overrides = _page_visual_intent_overrides(project_path)
-    # Reproduce the same compiler contract used by the approved per-page
-    # prompts.  The approved prompts were staged in visual-structure review
-    # mode, so the canonical diagnostic must include that composition module
-    # (and the full-image text mode) before comparing hashes.  Previously this
-    # helper compiled with the default ``visual_structure_mode=off`` and
-    # therefore marked every approved prompt as stale even when the prompt
-    # source and script were unchanged.
+    try:
+        from cyberppt.stage02_handoff import handoff_page_map, load_stage02_handoff
+
+        handoff = load_stage02_handoff(project_path)
+    except (FileNotFoundError, ValueError):
+        handoff = None
+    handoff_pages = handoff_page_map(handoff) if handoff else {}
+    # The approved prompt owns content and the selected style.  The separately
+    # audited visual-structure module is appended only after freshness has
+    # been checked, so it must not be compiled into the approval baseline too.
     canonical: dict[int, str] = {}
     prior_decisions: list[Any] = []
     prior_semantic_carriers: list[str] = []
@@ -266,16 +296,24 @@ def _relationship_aware_canonical_prompts(
         page = pages.get(page_number)
         if page is None:
             continue
+        handoff_page = handoff_pages.get(page_number) or {}
+        handoff_visual = handoff_page.get("visual_structure") or {}
+        page_mission = str(handoff_page.get("page_mission") or missions.get(page.page_id, ""))
+        visual_context = dict(contexts.get(page.page_id) or {})
+        if isinstance(handoff_visual, dict):
+            if handoff_visual.get("intent_type"):
+                visual_context["visual_intent_type"] = str(handoff_visual["intent_type"])
+            if handoff_visual.get("dominant_carrier"):
+                visual_context["visual_carrier"] = str(handoff_visual["dominant_carrier"])
         compiled = compile_page_prompt(
             page,
             style_lock,
-            page_mission=missions.get(page.page_id, ""),
-            visual_context=contexts.get(page.page_id),
+            page_mission=page_mission,
+            visual_context=visual_context,
             visual_intent_override=overrides.get(page.page_id),
             prior_decisions=tuple(prior_decisions),
             prior_semantic_carriers=tuple(prior_semantic_carriers),
-            visual_structure_mode="review",
-            text_render_mode="full_image",
+            visual_structure_mode="off",
         )
         canonical[page_number] = compiled.prompt
         if compiled.presentation is not None:
@@ -299,7 +337,8 @@ def build_manifest(
     production_mode: str = FULL_IMAGE_MODE,
     prompt_enrich: str = "off",
     require_send_approval: bool = False,
-    enforce_prompt_freshness: bool = True,
+    enforce_prompt_freshness: bool = False,
+    compact_blueprint: bool = False,
 ) -> tuple[dict[str, Any], Path, Path, list[int]]:
     output_variants = output_variants_for_mode(production_mode)
     source_pages = parse_page_blocks(script)
@@ -335,9 +374,32 @@ def build_manifest(
         )
         for number in page_numbers
     }
+    stage02_handoff: dict[str, Any] | None = None
+    stage02_handoff_path: Path | None = None
+    handoff_pages: dict[int, dict[str, Any]] = {}
+    if project_path is not None:
+        from cyberppt.stage02_handoff import HANDOFF_JSON, handoff_page_map, load_stage02_handoff
+
+        stage02_handoff = load_stage02_handoff(project_path)
+        if stage02_handoff is not None:
+            stage02_handoff_path = project_path / HANDOFF_JSON
+            handoff_pages = handoff_page_map(stage02_handoff)
+            role_aliases_from_handoff = {
+                "cover": "cover",
+                "agenda": "agenda",
+                "section": "section",
+                "content": "content",
+                "ending": "ending",
+            }
+            for number in page_numbers:
+                handoff_page = handoff_pages.get(number)
+                if handoff_page is None:
+                    raise ValueError(f"Stage 02 handoff is missing requested page {number}")
+                page_roles[number] = role_aliases_from_handoff[str(handoff_page["render_role"])]
     content_page_numbers = [
         number for number in page_numbers if page_roles[number] == "content"
     ]
+    effective_compact_blueprint = bool(compact_blueprint and handoff_pages)
     reference_map = _load_reference_map(project_path)
     output_dir.mkdir(parents=True, exist_ok=True)
     compiled_script = _compiled_script_path(output_dir, script, page_numbers)
@@ -349,12 +411,27 @@ def build_manifest(
             raise ValueError("per-slide prompt approval requires --project-path")
         if style_lock is None:
             raise ValueError("per-slide prompt approval requires a visual style lock")
-        relationship_aware_prompts = _relationship_aware_canonical_prompts(
-            script=script,
-            project_path=project_path,
-            style_lock=style_lock,
-            page_numbers=content_page_numbers,
-        )
+        if effective_compact_blueprint:
+            relationship_aware_prompts = {}
+            for page_number in content_page_numbers:
+                module = load_visual_prompt_module(project_path, page_number)
+                if module is None:
+                    raise ValueError(
+                        f"compact production prompt requires visual design module for page {page_number}"
+                    )
+                relationship_aware_prompts[page_number] = _compact_blueprint_prompt(
+                    page_number=page_number,
+                    handoff_page=handoff_pages[page_number],
+                    visual_prompt=module.prompt_text,
+                    style_lock=style_lock,
+                )
+        else:
+            relationship_aware_prompts = _relationship_aware_canonical_prompts(
+                script=script,
+                project_path=project_path,
+                style_lock=style_lock,
+                page_numbers=content_page_numbers,
+            )
         for page_number in content_page_numbers:
             approved_path = assert_approved_final_script(project_path, page_number, "imagegen")
             approved_prompts[page_number] = (
@@ -385,6 +462,22 @@ def build_manifest(
             if project_path is not None
             else None
         )
+        if effective_compact_blueprint:
+            handoff_page = handoff_pages.get(page_number) or {}
+            if not handoff_page:
+                raise ValueError(
+                    f"compact blueprint requires Stage 02 handoff page {page_number}"
+                )
+            if visual_module is None:
+                raise ValueError(
+                    f"compact blueprint requires visual design module for page {page_number}"
+                )
+            prompt = _compact_blueprint_prompt(
+                page_number=page_number,
+                handoff_page=handoff_page,
+                visual_prompt=visual_module.prompt_text,
+                style_lock=style_lock,
+            )
         approval_path: Path | None = None
         approval_meta: dict[str, Any] | None = None
         if page_number in approved_prompts:
@@ -420,7 +513,11 @@ def build_manifest(
             require_send=require_send_approval and enrich_mode == "send",
         )
         prompt = enrich.prompt
-        if visual_module is not None:
+        if (
+            visual_module is not None
+            and not effective_compact_blueprint
+            and "【视觉设计｜不上屏】" not in prompt
+        ):
             prompt = append_visual_prompt_module(prompt, visual_module)
         enrich_ledger.append({"page_number": page_number, **enrich_result_as_dict(enrich)})
         prompt = _full_prompt_for_variants(prompt, output_variants)
@@ -428,6 +525,8 @@ def build_manifest(
             approval_meta["consumed_prompt_sha256"] = _sha256_text(prompt)
             approval_meta["consumed_from"] = "approved_prompt"
         stem = _page_stem(page_number, page.title)
+        prompt_file = output_dir / "prompts" / f"p{page_number:02d}.txt"
+        atomic_write_text(prompt_file, prompt.rstrip() + "\n")
         full_path = output_dir / f"{stem}_full.png"
         full = {
             "filename": full_path.name,
@@ -494,8 +593,16 @@ def build_manifest(
                 "page_code": f"P{page_number:02d}",
                 "title": page.title,
                 "page_script": prompt,
+                "prompt_file": str(prompt_file),
                 **({"reference_images": reference_images} if reference_images else {}),
                 "visual_structure_handoff": visual_module_metadata(visual_module),
+                **(
+                    {
+                        "stage02_handoff": str(stage02_handoff_path.resolve()),
+                    }
+                    if stage02_handoff_path is not None
+                    else {}
+                ),
                 **({"prompt_approval": str(approval_path.resolve())} if approval_path else {}),
                 **({"prompt_provenance": approval_meta} if approval_meta else {}),
                 **variants,
@@ -549,12 +656,21 @@ def build_manifest(
         "source_script": str(compiled_script.resolve()),
         "original_script": str(script.resolve()),
         "style_lock": str(style_lock.resolve()) if style_lock else None,
+        "stage02_handoff": (
+            {
+                "path": str(stage02_handoff_path.resolve()),
+                "schema": stage02_handoff.get("schema"),
+            }
+            if stage02_handoff_path is not None and stage02_handoff is not None
+            else None
+        ),
         "output_dir": str(output_dir.resolve()),
         "created_at": datetime.now(timezone.utc).isoformat(),
         "prompt_contract": {
             "approved_prompt_is_source": bool(require_approved_prompts),
             "freshness_enforced": bool(require_approved_prompts and enforce_prompt_freshness),
             "canonical_prompt_is_diagnostic_only": bool(require_approved_prompts),
+            "compact_blueprint": effective_compact_blueprint,
         },
         "prompt_enrich": {
             "mode": enrich_mode,
@@ -583,9 +699,6 @@ def require_generated(manifest: dict[str, Any]) -> None:
         if prompt_contract.get("approved_prompt_is_source"):
             if prompt_contract.get("freshness_enforced") and provenance.get("status") == "stale":
                 contract_errors.append(f"page {page_number} approved prompt is stale")
-            consumed_hash = str(provenance.get("consumed_prompt_sha256") or "")
-            if consumed_hash and consumed_hash != _sha256_text(str(full_item.get("prompt") or "")):
-                contract_errors.append(f"page {page_number} consumed prompt hash does not match manifest text")
         if full_item.get("generation_method") != FULL_GENERATION_METHOD:
             contract_errors.append(
                 f"page {page_number} full.generation_method must be {FULL_GENERATION_METHOD}"

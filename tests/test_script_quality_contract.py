@@ -1,16 +1,20 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
+import tempfile
 import unittest
 
 from cyberppt.script_quality_contract import (
     ScriptPage,
     _mechanical_evidence_bullets,
+    _compound_module_heading_hits,
     _module_heading_colon_hits,
     _generic_onscreen_relation_hits,
     _speaker_placeholder_hits,
     _issue,
+    _presentation_issues,
     _source_consumption_issues,
     _visual_structure_judgment_issues,
     audit_script_quality,
@@ -19,6 +23,7 @@ from cyberppt.script_quality_contract import (
     meaningful_char_count,
     onscreen_effective_char_target,
     onscreen_story_roles,
+    parse_script_path,
     parse_script_markdown,
     parse_selection_notes,
     selection_notes_are_structured,
@@ -27,6 +32,30 @@ from cyberppt.script_quality_contract import (
 
 
 class ProductionAuthoringGuardTests(unittest.TestCase):
+    def test_compound_group_heading_distinguishes_peer_merge_from_parent_child(self) -> None:
+        self.assertEqual(
+            (
+                "合作原则与合作方式两个层面",
+                "服务等级与交付责任两个层面",
+            ),
+            _compound_module_heading_hits(
+                (
+                    "合作原则与合作方式两个层面",
+                    "服务等级与交付责任两个层面",
+                    "报价机制——服务分类与报价构成",
+                    "分配机制——价格关系与分配比例",
+                )
+            ),
+        )
+
+    def test_compound_group_heading_does_not_pass_by_deleting_meta_phrase(self) -> None:
+        self.assertEqual(
+            ("合作原则与合作方式", "服务等级与交付责任"),
+            _compound_module_heading_hits(
+                ("合作原则与合作方式", "服务等级与交付责任")
+            ),
+        )
+
     def test_module_headings_reserve_vertical_bar_separator(self) -> None:
         self.assertEqual(
             ("### 一、建设前提：国家任务和组织体系已经确立",),
@@ -205,8 +234,84 @@ class ContentUnitConsumptionTests(unittest.TestCase):
 
 
 class ScriptMarkdownParserTests(unittest.TestCase):
+    def test_parse_script_path_prefers_verified_sidecar(self) -> None:
+        script = "## 第1页：测试\n\n- 页面类型：内容页\n- 页面标题：测试\n"
+        legacy = {
+            "schema": "cyberppt.page_contract_receipt.v2",
+            "page_id": "p01",
+            "core_message": "旧注释",
+        }
+        script += (
+            "<!-- cyberppt-page-contract "
+            + json.dumps(legacy, ensure_ascii=False)
+            + " -->\n"
+        )
+        sidecar_receipt = {
+            "schema": "cyberppt.page_contract_receipt.v2",
+            "page_id": "p01",
+            "core_message": "独立合同",
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            script_path = Path(temp_dir) / "script-final.md"
+            script_path.write_text(script, encoding="utf-8")
+            (script_path.parent / "page-contracts.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "cyberppt.page_contracts.v1",
+                        "script": script_path.name,
+                        "script_sha256": hashlib.sha256(script_path.read_bytes()).hexdigest(),
+                        "pages": {"p01": sidecar_receipt},
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            page = parse_script_path(script_path).pages[0]
+
+        self.assertEqual("独立合同", page.contract_receipt["core_message"])
+
+    def test_parse_script_path_rejects_stale_sidecar(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            script_path = Path(temp_dir) / "script-final.md"
+            script_path.write_text(
+                "## 第1页：测试\n\n- 页面类型：内容页\n- 页面标题：测试\n",
+                encoding="utf-8",
+            )
+            (script_path.parent / "page-contracts.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "cyberppt.page_contracts.v1",
+                        "script": script_path.name,
+                        "script_sha256": "0" * 64,
+                        "pages": {},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "sidecar is stale"):
+                parse_script_path(script_path)
+
+    def test_parse_script_path_keeps_legacy_comment_fallback(self) -> None:
+        receipt = {
+            "schema": "cyberppt.page_contract_receipt.v2",
+            "page_id": "p01",
+            "core_message": "旧项目仍可读取",
+        }
+        script = (
+            "## 第1页：测试\n\n- 页面类型：内容页\n- 页面标题：测试\n"
+            "<!-- cyberppt-page-contract "
+            + json.dumps(receipt, ensure_ascii=False)
+            + " -->\n"
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            script_path = Path(temp_dir) / "script-final.md"
+            script_path.write_text(script, encoding="utf-8")
+            page = parse_script_path(script_path).pages[0]
+
+        self.assertEqual("旧项目仍可读取", page.contract_receipt["core_message"])
+
     def test_four_digit_source_ids_are_parsed_as_complete_refs(self) -> None:
-        document = parse_script_markdown(
+        page = parse_script_markdown(
             """## 第23页：四位证据引用
 - 页面类型：内容页
 - 页面标题：四位证据引用
@@ -231,8 +336,8 @@ class ScriptMarkdownParserTests(unittest.TestCase):
 组织与原型按同一启动链路推进。
 """
         )
-        self.assertEqual(("S0410", "S0420"), document.pages[0].source_refs)
-        self.assertEqual(("S0410", "S0420"), document.pages[0].evidence_map_refs)
+        self.assertEqual(("S0410", "S0420"), page.pages[0].source_refs)
+        self.assertEqual(("S0410", "S0420"), page.pages[0].evidence_map_refs)
 
     def test_source_id_ranges_expand_to_atomic_refs(self) -> None:
         page = parse_script_markdown(
@@ -343,6 +448,57 @@ class ScriptMarkdownParserTests(unittest.TestCase):
 
         self.assertNotIn("- 证据：", page.onscreen_text)
         self.assertNotIn("S015", page.onscreen_text)
+
+    def test_plain_text_modules_do_not_require_markdown(self) -> None:
+        page = parse_script_markdown(
+            """## 第1页：示例
+- 页面类型：内容页
+### 上屏文字（严格锁定）
+
+业务演进
+    系统运行：新能源接入使运行关系更加复杂。
+    市场经营：交易与保供分析更加精细。
+### 视觉结构（不上屏）
+
+左右双区对照，阅读顺序由左至右。
+"""
+        ).pages[0]
+        self.assertEqual("业务演进", page.top_level_module_titles[0])
+        self.assertNotIn("**", page.onscreen_text)
+        self.assertNotIn("####", page.onscreen_text)
+
+    def test_markdown_and_authoring_meta_in_locked_text_are_errors(self) -> None:
+        document = parse_script_markdown(
+            """## 第1页：示例
+- 页面类型：内容页
+### 上屏文字（严格锁定）
+
+#### 业务演进与协同需求两个层面
+- **业务演进**：业务关系变化。
+### 视觉结构（不上屏）
+
+左右双区对照，阅读顺序由左至右。
+"""
+        )
+        page = document.pages[0]
+        codes = {issue.code for issue in audit_script_quality(
+            document,
+            strict_outline(
+                {
+                    "page_id": "p01",
+                    "sequence": 1,
+                    "page_type": "content",
+                    "title": "示例",
+                    "argument_role": "positioning",
+                    "source_refs": [],
+                    "prerequisite_pages": [],
+                    "main_claim_status": "proposed",
+                }
+            ),
+            {"records": []},
+        )}
+        self.assertIn("ONSCREEN_MARKDOWN_LEAK", codes)
+        self.assertIn("ONSCREEN_BACKEND_META_LEAK", codes)
 
     def test_extracts_optional_presentation_fields_and_keeps_legacy_defaults(self) -> None:
         page = parse_script_markdown(
@@ -1915,6 +2071,20 @@ def _judgment_page(**overrides: object) -> ScriptPage:
 
 
 class VisualStructureJudgmentAccuracyTests(unittest.TestCase):
+    def test_compound_group_heading_is_a_blocking_presentation_issue(self) -> None:
+        page = _judgment_page(
+            onscreen_text="合作原则与合作方式\n原则说明\n方式说明",
+            module_titles=("合作原则与合作方式",),
+            top_level_module_titles=("合作原则与合作方式",),
+        )
+        issues = [
+            issue
+            for issue in _presentation_issues(page)
+            if issue.code == "ONSCREEN_COMPOUND_GROUP_HEADING"
+        ]
+        self.assertEqual(1, len(issues))
+        self.assertEqual("error", issues[0].severity)
+
     def test_flags_crosscut_module_peer_staged_on_path(self) -> None:
         page = _judgment_page(
             visual_structure=(

@@ -52,6 +52,12 @@ from cyberppt.storyline_director import (
     prepare_storyline_director,
     run_storyline_director_audit,
 )
+from cyberppt.stage02_handoff import (
+    HANDOFF_AUDIT,
+    HANDOFF_JSON,
+    audit_stage02_handoff,
+    prepare_stage02_handoff,
+)
 
 
 def _doctor() -> int:
@@ -269,6 +275,33 @@ def _visual_structure_audit_command(args: argparse.Namespace) -> int:
     return code
 
 
+def _prepare_stage02_handoff_command(args: argparse.Namespace) -> int:
+    try:
+        report = prepare_stage02_handoff(
+            Path(args.project),
+            script=Path(args.script) if args.script else None,
+        )
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return 0 if report.get("status") == "passed" else 1
+
+
+def _stage02_handoff_check_command(args: argparse.Namespace) -> int:
+    project = Path(args.project).expanduser().resolve()
+    try:
+        report = audit_stage02_handoff(project)
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    from cyberppt.artifact_ledger import write_json_atomic
+
+    write_json_atomic(project / HANDOFF_AUDIT, report)
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return 0 if report.get("status") == "passed" else 1
+
+
 def _script_audit_command(args: argparse.Namespace) -> int:
     try:
         code, report = run_script_audit(
@@ -460,6 +493,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             require_send_approval=args.require_send_approval,
             build_id=args.build_id,
             external_script=args.external_script,
+            blueprint_only=args.blueprint_only,
         )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -613,6 +647,24 @@ def build_parser() -> argparse.ArgumentParser:
     visual_structure_audit.add_argument("project", help="CyberPPT project directory.")
     visual_structure_audit.add_argument("--script", required=True, help="Approved final script.")
     visual_structure_audit.set_defaults(func=_visual_structure_audit_command)
+
+    prepare_handoff = subparsers.add_parser(
+        "prepare-stage02-handoff",
+        help="Compile the hash-bound Stage 01 to Stage 02 field contract.",
+    )
+    prepare_handoff.add_argument("project", help="CyberPPT project directory.")
+    prepare_handoff.add_argument(
+        "--script",
+        help="Approved final script; defaults to workbench/scripts/final/script-final.md.",
+    )
+    prepare_handoff.set_defaults(func=_prepare_stage02_handoff_command)
+
+    check_handoff = subparsers.add_parser(
+        "stage02-handoff-check",
+        help="Audit Stage 02 handoff fields, source paths, roles, text locks, and coordinate spaces.",
+    )
+    check_handoff.add_argument("project", help="CyberPPT project directory.")
+    check_handoff.set_defaults(func=_stage02_handoff_check_command)
 
     source_truth_audit = subparsers.add_parser(
         "source-truth-audit",
@@ -829,7 +881,13 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     final_script_pages_parser.add_argument("--pages", required=True, help="Page range, e.g. 7-8 or 7,8.")
-    final_script_pages_parser.add_argument("--style-lock", help="Optional project visual lock file.")
+    final_script_pages_parser.add_argument(
+        "--style-lock",
+        help=(
+            "Optional CyberPPT visual style lock JSON (schema cyberppt.visual_style_lock.v1). "
+            "Markdown confirmation files are not accepted; use --style-id/--style-name to generate the JSON lock."
+        ),
+    )
     final_script_pages_parser.add_argument(
         "--style-id",
         type=int,

@@ -62,7 +62,7 @@ Reserve the top title area for an external PowerPoint text layer. Do not draw th
 - no decorative dashboard UI
 - no generic center circle with surrounding icons
 - no dirty shadows or glowing arrows
-- no tiny text below 9pt equivalent
+- no tiny text below 12pt equivalent
 
 不要使用“不要丑、不要普通”等不可执行描述。
 

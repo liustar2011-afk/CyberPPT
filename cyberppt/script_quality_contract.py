@@ -3,10 +3,46 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
 import json
 from pathlib import Path
 import re
 import unicodedata
+
+from cyberppt.paths import repo_path
+
+# Fallback values, used only if vendor/skills/ppt-script/config/rules.yaml is
+# missing or malformed (e.g. a checkout without the vendor/ skill content, or
+# PyYAML unavailable) so this module still works standalone. When the YAML
+# loads successfully these are overridden by _load_module_ceiling() below —
+# the YAML is the single source of truth; these are not a second copy of the
+# policy to keep in sync by hand.
+_MODULE_CEILING_FALLBACK = 5
+_RULES_YAML_PATH = repo_path("vendor", "skills", "ppt-script", "config", "rules.yaml")
+
+
+def _load_module_ceiling() -> int:
+    """Read page_composition.onscreen_zones.modules.max from rules.yaml.
+
+    This threshold used to be duplicated as a bare literal (``> 5``) at each
+    check site, disconnected from vendor/skills/ppt-script/config/rules.yaml's
+    documented ``modules.max`` — editing the YAML had no runtime effect, so
+    the two could silently drift. Load it once at import time instead.
+    """
+
+    try:
+        import yaml  # local import: keep PyYAML optional for this module
+    except ImportError:
+        return _MODULE_CEILING_FALLBACK
+    try:
+        config = yaml.safe_load(_RULES_YAML_PATH.read_text(encoding="utf-8"))
+        value = config["page_composition"]["onscreen_zones"]["modules"]["max"]
+        return int(value)
+    except (OSError, KeyError, TypeError, ValueError, yaml.YAMLError):
+        return _MODULE_CEILING_FALLBACK
+
+
+MODULE_CEILING = _load_module_ceiling()
 
 
 PAGE_HEADING_RE = re.compile(
@@ -25,9 +61,54 @@ HEADING_FIELD_ALIASES = {
     "文字稿取舍说明": "文字稿取舍说明",
     "证据映射": "证据映射",
     "上屏文字": "上屏文字",
+    # "逻辑骨架" and "视觉意图与生图构图" are legacy heading names some
+    # generators use in place of a real 视觉结构 section; both alias onto
+    # the canonical field. When a page uses the canonical "视觉结构（不上屏）"
+    # heading directly (added to the page-composition contract so a genuine
+    # composition field always exists — see generate_script_final.py's
+    # 视觉结构 requirement), it must ALSO map onto the same key, or
+    # _heading_field_name returns None for it, the heading is invisible as a
+    # field boundary, and its content silently merges with whatever field
+    # preceded it (observed: 逻辑骨架 + 视觉结构 + the page-contract HTML
+    # comment all concatenating into one blob).
     "逻辑骨架": "视觉结构",
+    "视觉结构": "视觉结构",
     "视觉意图与生图构图": "视觉结构",
     "演讲者备注": "演讲者备注",
+}
+
+# Peer-level page-contract fields.  A ``- label: value`` line inside the
+# drawable 上屏文字 block is ambiguous: most such lines are visible module
+# copy, while these names start a new backend/contract field.  Keep the list
+# explicit so ordinary module labels remain drawable without allowing a
+# backend field to be swallowed by 上屏文字.
+PAGE_CONTRACT_FIELDS = {
+    "页面类型",
+    "页面标题",
+    "副标题",
+    "核心结论",
+    "主判断",
+    "完整文字稿",
+    "文字稿取舍说明",
+    "证据映射",
+    "上屏文字",
+    "上屏模块清单",
+    "上屏顶层模块清单",
+    "上屏结论",
+    "判断角色",
+    "上屏结论模式",
+    "视觉意图类型",
+    "视觉载体",
+    "生图锁定文字",
+    "版式母题",
+    "场景角色",
+    "视觉证明",
+    "证据",
+    "边界依据",
+    "边界",
+    "视觉结构",
+    "讲解提示",
+    "演讲者备注",
 }
 
 
@@ -197,6 +278,8 @@ class ScriptPage:
     visual_structure: str
     onscreen_text: str
     module_titles: tuple[str, ...]
+    raw_onscreen_text: str = ""
+    top_level_module_titles: tuple[str, ...] = ()
     subtitle: str = ""
     visual_proof: str = ""
     onscreen_judgment: str = ""
@@ -211,6 +294,17 @@ class ScriptPage:
     coaching_tip: str = ""
     speaker_notes: str = ""
     contract_receipt: dict[str, object] | None = None
+
+    def __post_init__(self) -> None:
+        # Callers that predate the top-level/nested distinction (hand-built
+        # ScriptPage fixtures, tests) only ever set ``module_titles``. Treat
+        # every module as top-level for them, preserving prior behavior.
+        # ``parse_script_markdown`` explicitly passes the indentation-aware
+        # value, which is the only place this can legitimately differ.
+        if not self.top_level_module_titles and self.module_titles:
+            object.__setattr__(
+                self, "top_level_module_titles", self.module_titles
+            )
 
     @property
     def core_message(self) -> str:
@@ -315,12 +409,13 @@ def _field_blocks(body: str) -> dict[str, str]:
             continue
         match = FIELD_RE.match(raw_line)
         if match:
-            if active == "上屏文字":
+            field_name = match.group(1).strip()
+            if active == "上屏文字" and field_name not in PAGE_CONTRACT_FIELDS:
                 # Module bullets such as ``- 政策牵引：...`` belong to the
                 # drawable text layer; they are not peer-level contract fields.
                 blocks[active].append(raw_line.rstrip())
                 continue
-            active = match.group(1).strip()
+            active = field_name
             blocks[active] = [match.group(2).strip()]
         elif active:
             blocks[active].append(raw_line.rstrip())
@@ -368,9 +463,17 @@ def _field_order(body: str) -> tuple[str, ...]:
         if NON_ONSCREEN_VISUAL_HEADING_RE.match(raw_line.strip()):
             ordered.append("视觉结构")
             continue
+        heading_match = HEADING_FIELD_RE.match(raw_line.strip())
+        if heading_match:
+            heading_field = _heading_field_name(heading_match.group(1))
+            if heading_field:
+                ordered.append(heading_field)
+            continue
         match = FIELD_RE.match(raw_line)
         if match:
-            ordered.append(match.group(1).strip())
+            field_name = match.group(1).strip()
+            if field_name in PAGE_CONTRACT_FIELDS:
+                ordered.append(field_name)
     return tuple(ordered)
 
 
@@ -407,25 +510,129 @@ def _module_title(line: str) -> str | None:
     # ``- **小标题**`` list form.
     candidate = re.sub(r"^\s*-\s+", "", line)
     match = MODULE_RE.match(candidate) or INLINE_MODULE_RE.match(candidate)
-    return match.group(1).strip() if match else None
+    if match:
+        return match.group(1).strip()
+    # Canonical v3 on-screen text is plain text, not Markdown.  A module is
+    # represented as ``label：body`` or as a short standalone group label;
+    # indentation carries hierarchy.  Keep legacy Markdown recognition above
+    # for migration diagnostics, but do not require it for module extraction.
+    plain = candidate.strip()
+    if not plain:
+        return None
+    if "：" in plain or ":" in plain:
+        label = re.split(r"[：:]", plain, maxsplit=1)[0].strip()
+        return label or None
+    if len(plain) <= 28 and not re.search(r"[。；;！？!?]$", plain):
+        return plain
+    return None
 
 
-def parse_script_markdown(text: str) -> ScriptDocument:
+def audience_facing_group_label(label: str) -> str:
+    """Remove authoring-only structural suffixes from a visible group label."""
+
+    value = str(label or "").strip()
+    value = re.sub(r"(?:一|二|两|三|四|五|六|七|八|九|十|\d+)个层面$", "", value)
+    value = re.sub(r"(控制链|权利对象)层面$", r"\1", value)
+    if value == "四个维度分别选择":
+        value = "交付维度选择"
+    return value.strip(" ：:")
+
+
+def _line_indent(line: str) -> int:
+    """Return leading-space indentation for relative module hierarchy."""
+
+    return len(line) - len(line.lstrip(" "))
+
+
+def _json_string_list(value: str) -> tuple[str, ...]:
+    if not value.strip():
+        return ()
+    try:
+        payload = json.loads(value)
+    except json.JSONDecodeError:
+        return ()
+    if not isinstance(payload, list):
+        return ()
+    return tuple(str(item).strip() for item in payload if str(item).strip())
+
+
+def load_page_contract_sidecar(script_path: Path) -> dict[str, dict[str, object]]:
+    """Load and verify the page-contract sidecar next to a final script.
+
+    Missing sidecars are allowed for legacy scripts.  A present sidecar is a
+    formal binding artifact and therefore fails closed when its script hash or
+    shape is invalid.
+    """
+
+    script_path = script_path.expanduser().resolve()
+    sidecar = script_path.with_name("page-contracts.json")
+    if not sidecar.is_file():
+        return {}
+    payload = json.loads(sidecar.read_text(encoding="utf-8-sig"))
+    if not isinstance(payload, dict) or payload.get("schema") != "cyberppt.page_contracts.v1":
+        raise ValueError(f"invalid page-contract sidecar: {sidecar}")
+    if payload.get("script") != script_path.name:
+        raise ValueError(f"page-contract sidecar targets another script: {sidecar}")
+    expected_script = hashlib.sha256(script_path.read_bytes()).hexdigest()
+    if str(payload.get("script_sha256") or "").casefold() != expected_script.casefold():
+        raise ValueError(f"page-contract sidecar is stale for script: {sidecar}")
+    raw_pages = payload.get("pages")
+    if not isinstance(raw_pages, dict):
+        raise ValueError(f"page-contract sidecar pages must be an object: {sidecar}")
+    pages: dict[str, dict[str, object]] = {}
+    for page_id, receipt in raw_pages.items():
+        normalized_page_id = str(page_id)
+        if not re.fullmatch(r"p\d{2,}", normalized_page_id):
+            raise ValueError(f"invalid page id in page-contract sidecar: {page_id}")
+        if not isinstance(receipt, dict):
+            raise ValueError(f"invalid receipt for {normalized_page_id}: {sidecar}")
+        if receipt.get("page_id") != normalized_page_id:
+            raise ValueError(
+                f"page-contract receipt id mismatch for {normalized_page_id}: {sidecar}"
+            )
+        pages[normalized_page_id] = receipt
+    return pages
+
+
+def parse_script_markdown(
+    text: str,
+    page_contracts: dict[str, dict[str, object]] | None = None,
+) -> ScriptDocument:
     pages: list[ScriptPage] = []
     for sequence, heading, body in _page_sections(text):
         fields = _field_blocks(body)
+        page_type = _normalize_page_type(fields.get("页面类型", ""))
         onscreen = fields.get("上屏文字", "")
-        modules = tuple(
-            title
-            for line in onscreen.splitlines()
-            if (title := _module_title(line))
+        module_lines: list[tuple[str, int]] = []
+        if page_type == "content":
+            for line in onscreen.splitlines():
+                title = _module_title(line)
+                if title is None:
+                    continue
+                module_lines.append((title, _line_indent(line)))
+        modules = tuple(title for title, _ in module_lines)
+        # Markdown nested under ``- 上屏文字：`` normally starts with two or
+        # four spaces, so absolute column zero is not a valid definition of
+        # top level.  The least-indented module on this page is the peer level;
+        # only deeper module headings are children.
+        base_module_indent = min((indent for _, indent in module_lines), default=0)
+        top_level_modules = tuple(
+            title for title, indent in module_lines if indent == base_module_indent
         )
+        declared_modules = _json_string_list(fields.get("上屏模块清单", ""))
+        declared_top_level_modules = _json_string_list(
+            fields.get("上屏顶层模块清单", "")
+        )
+        if declared_modules:
+            modules = declared_modules
+        if declared_top_level_modules:
+            top_level_modules = declared_top_level_modules
         pages.append(
             ScriptPage(
                 page_id=f"p{sequence:02d}",
                 sequence=sequence,
                 heading=heading,
-                page_type=_normalize_page_type(fields.get("页面类型", "")),
+                page_type=page_type,
                 title=fields.get("页面标题", heading).strip(),
                 subtitle=fields.get("副标题", "").strip(),
                 main_message=(fields.get("核心结论") or fields.get("主判断", "")).strip(),
@@ -441,9 +648,15 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                 ),
                 boundary_source_refs=_source_refs(fields.get("边界依据", "")),
                 boundary=fields.get("边界", "").strip(),
-                visual_structure=fields.get("视觉结构", "").strip(),
+                visual_structure=(
+                    fields.get("视觉结构", "")
+                    .split("<!--", 1)[0]
+                    .strip()
+                ),
                 onscreen_text=onscreen,
                 module_titles=modules,
+                raw_onscreen_text=onscreen,
+                top_level_module_titles=top_level_modules,
                 visual_proof=fields.get("视觉证明", "").strip(),
                 onscreen_judgment=fields.get("上屏结论", "").strip(),
                 judgment_role=fields.get("判断角色", "").strip(),
@@ -461,12 +674,23 @@ def parse_script_markdown(text: str) -> ScriptDocument:
                     .strip()
                 ),
                 speaker_notes=extract_speaker_notes(body),
-                contract_receipt=extract_page_contract_receipt(body),
+                contract_receipt=(page_contracts or {}).get(f"p{sequence:02d}")
+                or extract_page_contract_receipt(body),
             )
         )
     if not pages:
         raise ValueError("script contains no page headings")
     return ScriptDocument(tuple(pages))
+
+
+def parse_script_path(path: Path) -> ScriptDocument:
+    """Parse a script with its verified sidecar, falling back to legacy comments."""
+
+    path = path.expanduser().resolve()
+    return parse_script_markdown(
+        path.read_text(encoding="utf-8-sig"),
+        load_page_contract_sidecar(path),
+    )
 
 
 SCOPE_TERMS = ("首期", "一期", "建设范围", "交付范围", "投资", "部署方式", "采购")
@@ -502,10 +726,20 @@ COUNT_WORDS = {
     "七": 7,
     "八": 8,
 }
-ORDER_SIGNALS = ("①", "②", "③", "④", "⑤", "→", "随后", "再", "最后")
+# Every signal tuple below is matched with a bare substring test
+# (`_has_any`/`term in text`). Keep every entry at least 2 characters and
+# specific to the relationship it claims to detect — a single common
+# character ("层", "上", "行"...) or a generic connective ("再", "最后")
+# will match incidental prose that has nothing to do with the structure
+# being checked, silently defeating the check it belongs to. This bit both
+# ways: the checker never fires when it should (false pass on a page with
+# no real structure) and never fires when content is deliberately padded
+# with the bare character to game it. This was found and fixed for
+# LAYER_SIGNALS's old bare "层"; keep new entries to the same bar.
+ORDER_SIGNALS = ("①", "②", "③", "④", "⑤", "→", "随后", "依次", "最后一步")
 LOOP_SIGNALS = ("回流", "反馈", "复盘", "闭环", "持续校正")
-MATRIX_SIGNALS = ("|---", "×", "矩阵", "行", "列")
-LAYER_SIGNALS = ("自下而上", "自上而下", "底座", "层", "贯穿")
+MATRIX_SIGNALS = ("|---", "×", "矩阵")
+LAYER_SIGNALS = ("自下而上", "自上而下", "底座", "贯穿")
 COMPOSITION_PRIMITIVES = (
     "贯穿主链",
     "双侧协同",
@@ -722,6 +956,41 @@ def _page_text(page: ScriptPage) -> str:
             page.boundary,
         )
     )
+
+
+_TERM_HEDGE_LEAD_RE = re.compile(r"(具备|符合|满足|达到)[^。；]{0,12}$")
+_TERM_HEDGE_TRAIL_CONDITION_RE = re.compile(r"^[^。；]{0,12}(条件|基础)")
+_TERM_HEDGE_TRAIL_NEGATION_RE = re.compile(r"^[^。；]{0,10}(尚未|尚不|待定|暂缓|暂未|仍需|有待|尚待)")
+
+
+def _unhedged_terms(text: str, terms: tuple[str, ...]) -> tuple[str, ...]:
+    """Return the subset of `terms` that appear in `text` without a hedging frame.
+
+    A bare substring match can't distinguish a commitment ("首期建设范围
+    包括...") from a hedged readiness/pending statement ("具备开展首期...的
+    条件", "建设周期尚未确定"). Only flag a term when at least one of its
+    occurrences sits outside both recognized hedge shapes:
+    - a "具备/符合/满足/达到 ... 条件/基础" precondition frame around the term;
+    - a "尚未/尚不/待定/暂缓/暂未/仍需/有待/尚待" negation immediately after it.
+    A term whose every occurrence is hedged this way is not a violation.
+    """
+
+    unhedged: list[str] = []
+    for term in terms:
+        for match in re.finditer(re.escape(term), text):
+            before = text[max(0, match.start() - 16) : match.start()]
+            after = text[match.end() : match.end() + 16]
+            if _TERM_HEDGE_LEAD_RE.search(before) and _TERM_HEDGE_TRAIL_CONDITION_RE.search(after):
+                continue
+            if _TERM_HEDGE_TRAIL_NEGATION_RE.search(after):
+                continue
+            unhedged.append(term)
+            break
+    return tuple(unhedged)
+
+
+def _unhedged_scope_terms(text: str) -> tuple[str, ...]:
+    return _unhedged_terms(text, SCOPE_TERMS)
 
 
 def _claim_text(page: ScriptPage) -> str:
@@ -1188,6 +1457,126 @@ def _onscreen_relation_meta_hits(text: str) -> tuple[str, ...]:
     return tuple(dict.fromkeys(hits))
 
 
+# Backend/process self-talk: the author narrating their own authoring or
+# verification process, rather than reader-facing business content. Unlike
+# ONSCREEN_RELATION_META_LABELS (a legitimate relationship word used as an
+# on-screen module label), these phrases have no legitimate on-screen
+# meaning at all — a real reader never needs to see "verify before formal
+# citation" or "per this structure" — so a bare substring match anywhere in
+# the on-screen text is appropriate here, unlike the hedge-sensitive checks
+# elsewhere in this file (SCOPE_TERMS/IMPLEMENTATION_TERMS) where the same
+# word can legitimately appear in a non-violating context.
+ONSCREEN_BACKEND_META_PHRASES: tuple[str, ...] = (
+    "正式引用前核验",
+    "待核验",
+    "须核验",
+    "仅后台",
+    "逻辑顺序",
+    "非并列",
+    "阅读路径",
+    "内容关系",
+    "论证组织",
+    "材料把",
+    "这里按",
+    "按这个结构",
+    "供审稿",
+    "写作说明",
+    "两个层面",
+    "三个层面",
+    "四个维度分别选择",
+    "控制链层面",
+    "权利对象层面",
+)
+
+
+def _onscreen_backend_meta_hits(text: str) -> tuple[str, ...]:
+    return tuple(phrase for phrase in ONSCREEN_BACKEND_META_PHRASES if phrase in text)
+
+
+# A module heading is a grouping contract, not a bag of nearby nouns.  These
+# semantic heads describe different organizing questions and therefore cannot
+# be joined as one peer heading unless an explicit parent concept owns both.
+_COMPOUND_HEADING_INCOMPATIBLE_HEADS: frozenset[frozenset[str]] = frozenset(
+    {
+        frozenset(("原则", "方式")),
+        frozenset(("等级", "责任")),
+        frozenset(("分类", "构成")),
+        frozenset(("关系", "比例")),
+    }
+)
+_COMPOUND_HEADING_HEADS: tuple[str, ...] = (
+    "原则", "方式", "等级", "责任", "分类", "构成", "关系", "比例"
+)
+_COMPOUND_PARENT_DOMAINS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
+    (("报价", "计价", "收费"), ("服务", "分类", "报价", "价格", "构成", "计价", "费用")),
+    (("分配", "分润", "结算"), ("价格", "分配", "比例", "分润", "结算", "收益", "关系")),
+)
+
+
+def _compound_module_heading_hits(titles: tuple[str, ...]) -> tuple[str, ...]:
+    """Return headings that merge peer semantic dimensions.
+
+    ``父概念——子维度A与子维度B`` is allowed only when both children belong
+    to the parent's business domain.  Without that owning parent, known
+    incompatible semantic heads are a blocking compound grouping.
+    """
+    hits: list[str] = []
+    for raw_title in titles:
+        title = re.sub(r"^\s*(?:[一二三四五六七八九十]+[、.]|\d+[、.｜|])\s*", "", raw_title).strip()
+        parent = ""
+        detail = title
+        parent_match = re.split(r"\s*(?:——|—|--|：|:)\s*", title, maxsplit=1)
+        if len(parent_match) == 2:
+            parent, detail = parent_match
+        detail = re.sub(r"(?:两个|三个|四个)层面\s*$", "", detail).strip()
+        children = [part.strip() for part in re.split(r"[与和及]", detail) if part.strip()]
+        if len(children) != 2:
+            continue
+        heads = {
+            head
+            for child in children
+            for head in _COMPOUND_HEADING_HEADS
+            if child.endswith(head)
+        }
+        incompatible = frozenset(heads) in _COMPOUND_HEADING_INCOMPATIBLE_HEADS
+        if not incompatible:
+            continue
+        if parent:
+            parent_owns_children = any(
+                any(token in parent for token in parent_terms)
+                and all(any(term in child for term in child_terms) for child in children)
+                for parent_terms, child_terms in _COMPOUND_PARENT_DOMAINS
+            )
+            if parent_owns_children:
+                continue
+        hits.append(raw_title)
+    return tuple(dict.fromkeys(hits))
+
+
+def _onscreen_heading_candidates(page: ScriptPage) -> tuple[str, ...]:
+    candidates = list(page.module_titles)
+    for raw in page.onscreen_text.splitlines():
+        line = re.sub(r"^\s*[-*+]\s*", "", raw).replace("**", "").strip()
+        if (
+            line
+            and len(line) <= 40
+            and not re.search(r"[：:。；;！？!?]", line)
+        ):
+            candidates.append(line)
+    return tuple(dict.fromkeys(candidates))
+
+
+_ONSCREEN_MARKDOWN_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("heading", re.compile(r"(?m)^\s*#{1,6}\s+")),
+    ("bold", re.compile(r"\*\*[^*\n]+\*\*")),
+    ("bullet", re.compile(r"(?m)^\s*[-*+]\s+")),
+)
+
+
+def _onscreen_markdown_hits(text: str) -> tuple[str, ...]:
+    return tuple(name for name, pattern in _ONSCREEN_MARKDOWN_PATTERNS if pattern.search(text))
+
+
 def _analytical_voice_hits(prose: str) -> tuple[str, ...]:
     hits = [pattern for pattern in _ANALYTICAL_VOICE_PATTERNS if pattern in prose]
     return tuple(hits)
@@ -1202,14 +1591,33 @@ def _prohibited_colloquial_hits(text: str) -> tuple[str, ...]:
 
 
 def _unlabeled_onscreen_bullets(text: str) -> tuple[str, ...]:
+    lines = text.splitlines()
     hits = []
-    for line in text.splitlines():
+    for index, line in enumerate(lines):
         stripped = line.strip()
+        if not stripped.startswith("-"):
+            continue
         # A conclusion-first item has a short label immediately after the
         # bullet marker.  A colon buried in the supporting sentence does not
         # satisfy the contract.
         has_prefix = bool(re.match(r"^-\s*[^\s：:，,。；;、]{2,24}[：:]", stripped))
-        if stripped.startswith("-") and not has_prefix:
+        if has_prefix:
+            continue
+        # A bullet with no colon can also be a genuine group heading — a
+        # parent whose actual content is its more-indented children just
+        # below it, not a leaf that forgot its conclusion label (every node,
+        # leaf or group, is its own "- " list item so nesting renders
+        # correctly; see generate_script_final.py's _render_item). Only
+        # flag it when the next non-blank line is NOT more indented, i.e.
+        # it has no children and really is a bare, unlabeled leaf.
+        indent = len(line) - len(line.lstrip(" "))
+        has_child = False
+        for next_line in lines[index + 1 :]:
+            if not next_line.strip():
+                continue
+            has_child = (len(next_line) - len(next_line.lstrip(" "))) > indent
+            break
+        if not has_child:
             hits.append(stripped)
     return tuple(hits)
 
@@ -1488,6 +1896,7 @@ def script_retry_directive(
             "CONTENT_BOUNDARY_ASIDE_OVERLOAD",
             "ONSCREEN_BOUNDARY_ASIDE",
             "ONSCREEN_RELATION_META_LABEL",
+            "ONSCREEN_COMPOUND_GROUP_HEADING",
             "CONTENT_SELECTION_NOTES_MISSING",
             "CONTENT_SELECTION_NOTES_UNSTRUCTURED",
             "CONTENT_SELECTION_ONSCREEN_MISMATCH",
@@ -1914,8 +2323,19 @@ def _prose_issues(
         # ("页面结论、关键事实与模块标题") when module titles are already
         # locked in the adjacent 上屏文字 block. Treat that explicit contract
         # as valid instead of forcing every title to be duplicated in notes.
+        # "主判断、关键构成要素和必要边界" is the same kind of declaration
+        # under this project's own primary/supporting/boundary content-unit
+        # vocabulary (see references/02-source-compilation.md) — it already
+        # covers "whatever ended up locked into 上屏文字", the same as
+        # "模块标题" does, just phrased in that vocabulary instead.
         generic_keep_rule = any(
-            token in keep for token in ("模块标题", "上屏模块", "页面结论")
+            token in keep
+            for token in (
+                "模块标题",
+                "上屏模块",
+                "页面结论",
+                "关键构成要素",
+            )
         )
         if page.module_titles and not module_hits and not generic_keep_rule:
             # Require at least one module title echoed in 必留上屏 so the note
@@ -2294,7 +2714,16 @@ def _constraint_is_declared_subject(
         or ""
     ).strip()
     leading_clause = re.split(r"[。；;！？!?]", core_message, maxsplit=1)[0]
-    return any(term in leading_clause for term in CONSTRAINT_THEME_TERMS)
+    # CONSTRAINT_THEME_TERMS ("安全", "质量", "风险", "合规", ...) are common
+    # business words that can appear as a passing modifier deep in a clause
+    # whose actual subject is something else entirely ("平台建设兼顾安全与
+    # 效率，形成可持续运营体系" — the clause is about the operating system,
+    # not about safety). Restricting the match to the clause's opening
+    # window approximates "is this the declared topic" rather than "is this
+    # word merely present somewhere in the sentence" — Chinese subject-first
+    # clauses put the topic noun near the start.
+    topic_window = leading_clause[:10]
+    return any(term in topic_window for term in CONSTRAINT_THEME_TERMS)
 
 
 def _onscreen_constraint_module_hits(page: ScriptPage) -> tuple[str, ...]:
@@ -2320,6 +2749,17 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
     full_text = _page_text(page)
     visual = page.visual_structure
     if page.page_type == "content":
+        markdown_hits = _onscreen_markdown_hits(page.raw_onscreen_text)
+        if markdown_hits:
+            issues.append(
+                _issue(
+                    "ONSCREEN_MARKDOWN_LEAK",
+                    page,
+                    "Locked on-screen text contains Markdown authoring syntax.",
+                    "Emit plain audience-facing text; keep headings, bold markers, and list syntax in the review renderer only.",
+                    evidence=markdown_hits,
+                )
+            )
         onscreen_aside_hits = _boundary_aside_hits(page.onscreen_text)
         if onscreen_aside_hits:
             issues.append(
@@ -2340,6 +2780,30 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
                     "On-screen text contains backend relationship labels that must stay off-screen.",
                     "Move 业务含义 / 服务关系 / 闭环关系等标签句到完整文字稿或讲解提示；上屏只保留可直接阅读的业务模块文案。",
                     evidence=relation_meta_hits,
+                )
+            )
+        backend_meta_hits = _onscreen_backend_meta_hits(page.onscreen_text)
+        if backend_meta_hits:
+            issues.append(
+                _issue(
+                    "ONSCREEN_BACKEND_META_LEAK",
+                    page,
+                    "On-screen text contains backend/process self-talk that must never reach the reader.",
+                    "Remove authoring/verification process narration (待核验／仅后台／逻辑顺序／写作说明 etc.) from 上屏文字; keep it in backend fields or drop it entirely.",
+                    evidence=backend_meta_hits,
+                )
+            )
+        compound_heading_hits = _compound_module_heading_hits(
+            _onscreen_heading_candidates(page)
+        )
+        if compound_heading_hits:
+            issues.append(
+                _issue(
+                    "ONSCREEN_COMPOUND_GROUP_HEADING",
+                    page,
+                    "An on-screen group heading merges different semantic dimensions as peers.",
+                    "Split the dimensions into separate modules, or rewrite the heading as a real parent-child relation whose parent explicitly owns both child dimensions; deleting '两个层面' alone is not a fix.",
+                    evidence=compound_heading_hits,
                 )
             )
         if visual.strip():
@@ -2440,7 +2904,17 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
                     )
                 )
         issues.extend(_visual_structure_judgment_issues(page))
-    path_like = "路径" in visual or "贯穿主链" in visual or "阶段推进" in visual
+    # "阅读路径" (reading path/order) is one of the five elements the
+    # canonical 视觉结构 template explicitly asks every page to describe
+    # (vendor/word-to-ppt-script/templates/10-script-final.md) — it is a
+    # layout-reading-order note, not a business/process path claim, so its
+    # mere presence must not trigger the same "path visual" requirement as
+    # an actual "业务路径"/"贯穿主链" claim would.
+    path_like = (
+        bool(re.search(r"(?<!阅读)路径", visual))
+        or "贯穿主链" in visual
+        or "阶段推进" in visual
+    )
     if path_like and not any(
         signal in page.onscreen_text for signal in ORDER_SIGNALS
     ):
@@ -2493,8 +2967,8 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
     count = _declared_count(page.main_message + "\n" + page.onscreen_text)
     if (
         count is not None
-        and page.module_titles
-        and len(page.module_titles) != count
+        and page.top_level_module_titles
+        and len(page.top_level_module_titles) != count
     ):
         issues.append(
             _issue(
@@ -2502,14 +2976,14 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
                 page,
                 (
                     f"Declared count {count} does not match "
-                    f"{len(page.module_titles)} on-screen modules."
+                    f"{len(page.top_level_module_titles)} on-screen modules."
                 ),
                 "Align the declared count and the visible module structure.",
-                evidence=(str(count), str(len(page.module_titles))),
+                evidence=(str(count), str(len(page.top_level_module_titles))),
             )
         )
     intent = page.visual_intent_type.strip()
-    if page.page_type == "content" and page.module_titles:
+    if page.page_type == "content" and page.top_level_module_titles:
         path_like = intent in PATH_LIKE_INTENT_TYPES or any(
             marker in visual
             for marker in ("贯穿主链", "阶段推进", "路径", "闭环", "回流")
@@ -2523,25 +2997,25 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
         has_layer = any(signal in page.onscreen_text for signal in LAYER_SIGNALS) or bool(
             re.search(r"(?m)^\s*\*\*\d{2}｜", page.onscreen_text)
         )
-        if path_like and len(page.module_titles) >= 2 and not has_order:
+        if path_like and len(page.top_level_module_titles) >= 2 and not has_order:
             issues.append(
                 _issue(
                     "ONSCREEN_RELATION_ISOMORPHISM",
                     page,
                     "Path-like page relation is not readable from on-screen module order.",
                     "Number modules (01｜…), add →/随之 signals, or change visual_intent_type.",
-                    evidence=(intent or visual[:40], *page.module_titles[:4]),
+                    evidence=(intent or visual[:40], *page.top_level_module_titles[:4]),
                     severity="warning",
                 )
             )
-        if layer_like_intent and len(page.module_titles) >= 2 and not has_layer:
+        if layer_like_intent and len(page.top_level_module_titles) >= 2 and not has_layer:
             issues.append(
                 _issue(
                     "ONSCREEN_RELATION_ISOMORPHISM",
                     page,
                     "Layered page relation is not readable from on-screen hierarchy cues.",
                     "Keep numbered layer modules or explicit 层/支撑 signals aligned with 视觉结构.",
-                    evidence=(intent or visual[:40], *page.module_titles[:4]),
+                    evidence=(intent or visual[:40], *page.top_level_module_titles[:4]),
                     severity="warning",
                 )
             )
@@ -2564,18 +3038,17 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
         )
     if (
         page.page_type == "content"
-        and len(page.module_titles) > 5
-        and not any(
-            signal in page.onscreen_text
-            for signal in ORDER_SIGNALS + LAYER_SIGNALS
-        )
+        and len(page.top_level_module_titles) > MODULE_CEILING
+        and not any(signal in page.onscreen_text for signal in ORDER_SIGNALS)
     ):
         issues.append(
             _issue(
                 "MODULE_HIERARCHY_MISSING",
                 page,
                 "More than five modules are presented without grouping or hierarchy.",
-                "Group modules under explicit stages or layers, or split independent conclusions.",
+                "Nest closely related items under fewer top-level modules (indented "
+                "child bullets don't count toward the ceiling), or add explicit order "
+                "signals (①②③, →) if this is genuinely a sequential list.",
             )
         )
     visible_lines = _onscreen_content_lines(page.onscreen_text)
@@ -2609,15 +3082,17 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
     numbered_nodes = len(
         re.findall(r"(?m)^\s*(?:[-*]\s*)?(?:[①②③④⑤⑥⑦⑧⑨⑩]|\d+[.、])", page.onscreen_text)
     )
-    visible_nodes = max(len(page.module_titles), numbered_nodes)
-    grouped = any(signal in page.onscreen_text for signal in LAYER_SIGNALS)
-    if visible_nodes > 5 and not grouped:
+    visible_nodes = max(len(page.top_level_module_titles), numbered_nodes)
+    if visible_nodes > MODULE_CEILING:
         issues.append(
             _issue(
                 "VISIBLE_NODE_OVERLOAD",
                 page,
-                "More than five visible primary nodes appear without explicit grouping.",
-                "Group the nodes under a small number of stages or layers, or return to the Outline if they answer independent questions.",
+                "The number of visible primary nodes exceeds the configured page ceiling.",
+                "Nest closely related items under fewer top-level modules (indented "
+                "child bullets don't count toward the ceiling), or split genuinely "
+                "independent conclusions into separate pages. Numbering alone does not "
+                "reduce the number of primary nodes.",
                 evidence=(f"nodes={visible_nodes}",),
                 severity="error" if visible_nodes >= 8 else "warning",
             )
@@ -3008,7 +3483,7 @@ def audit_script_quality(
                             "PAGE_CONTRACT_RECEIPT_MISSING",
                             page,
                             "Strict content pages must retain the hidden page-contract receipt.",
-                            "Copy the cyberppt-page-contract comment from page-script-authoring-input.",
+                            "Generate page-contracts.json beside the final script, or migrate the legacy inline receipt.",
                         )
                     )
                 elif receipt.get("_invalid") is True:
@@ -3147,9 +3622,7 @@ def audit_script_quality(
         role = str(contract.get("argument_role") or "")
         claim_text = _claim_text(page)
         if role in {"foundation", "change", "gap", "necessity"}:
-            matched = tuple(
-                term for term in SCOPE_TERMS if term in claim_text
-            )
+            matched = _unhedged_scope_terms(claim_text)
             if matched:
                 issues.append(
                     _issue(
@@ -3169,9 +3642,7 @@ def audit_script_quality(
             "solution",
             "scope",
         }:
-            matched = tuple(
-                term for term in IMPLEMENTATION_TERMS if term in claim_text
-            )
+            matched = _unhedged_terms(claim_text, IMPLEMENTATION_TERMS)
             if matched:
                 issues.append(
                     _issue(

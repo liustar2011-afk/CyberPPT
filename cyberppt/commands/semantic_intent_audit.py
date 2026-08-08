@@ -6,12 +6,12 @@ import argparse
 import json
 from pathlib import Path
 
-from cyberppt.script_quality_contract import parse_script_markdown
+from cyberppt.script_quality_contract import parse_script_path
 from scripts.dual_image_overlay.imagegen_handoff import audit_page_semantic_intent
 
 
 def build_audit(script: Path) -> dict[str, object]:
-    document = parse_script_markdown(script.read_text(encoding="utf-8"))
+    document = parse_script_path(script)
     pages: list[dict[str, object]] = []
     prior_carriers: list[str] = []
     for page in document.pages:

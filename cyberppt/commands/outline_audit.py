@@ -10,6 +10,12 @@ from cyberppt.argument_flow_contract import (
     argument_graph_summary,
     audit_argument_flow,
 )
+from cyberppt.content_review import content_review_status
+from cyberppt.semantic_digest import (
+    json_semantic_digest,
+    outline_semantic_digest,
+    source_truth_semantic_digest,
+)
 from cyberppt.outline_contract import AuditIssue, audit_outline, load_outline, retry_directive
 from cyberppt.semantic_understanding import (
     SEMANTIC_ARGUMENT_MODEL,
@@ -44,6 +50,43 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest().lower()
 
 
+# Judgment dimensions checked by an independent reviewer at the PAGE
+# PLANNING stage, before script text exists — narrower than the script
+# stage's CONTENT_REVIEW_DECISIONS (script_audit.py) because on-screen
+# module grouping isn't decided yet at outline time. These three catch
+# problems that are cheaper to fix here than after a page is fully
+# scripted: two sibling pages planned to cover materially the same
+# content, or a page's own content_units already reaching beyond what its
+# own page_mission promises.
+OUTLINE_CONTENT_REVIEW_DECISIONS = (
+    "single_mission",
+    "no_cross_page_duplication",
+    "content_within_mission_scope",
+)
+
+
+def _outline_content_review_status(
+    project: Path,
+    payload: dict[str, object],
+    outline_path: Path,
+    outline_sha256: str,
+) -> dict[str, object]:
+    required_pages = [
+        str(page.get("page_id"))
+        for page in payload.get("pages", [])
+        if isinstance(page, dict) and page.get("page_type") == "content"
+    ]
+    return content_review_status(
+        project / "workbench" / "stages" / "01-analysis" / "outline-content-review.json",
+        schema="cyberppt.outline_content_review.v1",
+        decision_keys=OUTLINE_CONTENT_REVIEW_DECISIONS,
+        required_page_ids=required_pages,
+        content_sha256=outline_sha256,
+        content_semantic_sha256=outline_semantic_digest(outline_path),
+        manifest_path=project / "review" / "chapter-review-manifest.json",
+    )
+
+
 def _source_consumption_manifest_issues(
     project: Path,
     outline: dict[str, object],
@@ -71,8 +114,16 @@ def _source_consumption_manifest_issues(
                 retry_strategy="rebuild_outline_consumption_manifest",
             )
         ]
+    declared_semantic_hash = str(
+        outline.get("source_consumption_semantic_sha256") or ""
+    ).lower()
     declared_hash = str(outline.get("source_consumption_sha256") or "").lower()
-    if declared_hash != _sha256(manifest_path):
+    manifest_matches = (
+        declared_semantic_hash == json_semantic_digest(manifest_path)
+        if declared_semantic_hash
+        else declared_hash == _sha256(manifest_path)
+    )
+    if not manifest_matches:
         return [
             AuditIssue(
                 "SOURCE_CONSUMPTION_MANIFEST_STALE",
@@ -90,7 +141,16 @@ def _source_consumption_manifest_issues(
                 retry_strategy="rebuild_outline_consumption_manifest",
             )
         ]
-    if str(manifest.get("source_truth_sha256") or "").lower() != _sha256(source_truth_path):
+    declared_truth_semantic = str(
+        manifest.get("source_truth_semantic_sha256") or ""
+    ).lower()
+    truth_matches = (
+        declared_truth_semantic == source_truth_semantic_digest(source_truth_path)
+        if declared_truth_semantic
+        else str(manifest.get("source_truth_sha256") or "").lower()
+        == _sha256(source_truth_path)
+    )
+    if not truth_matches:
         return [
             AuditIssue(
                 "SOURCE_CONSUMPTION_SOURCE_BINDING_STALE",
@@ -408,9 +468,16 @@ def run_outline_audit(
         for item in storyline_director_binding_issues(payload, director_gate)
     )
     directive = retry_directive(issues, str(retry.get("strategy") or ""))
+    content_review = _outline_content_review_status(
+        project, payload, input_path, _sha256(input_path)
+    )
     report: dict[str, object] = {
         "schema": "cyberppt.outline_audit.v1",
-        "status": "passed" if not issues else "rewrite_required",
+        # Keep editorial review as evidence, not a second approval gate.
+        # The existing Stage 01 approval command is the single human gate.
+        "status": "rewrite_required" if issues else "passed",
+        "content_review": content_review,
+        "content_review_gate": "advisory",
         "attempt": attempt,
         "max_attempts": effective_max,
         "remaining_attempts": max(0, effective_max - attempt),

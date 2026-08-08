@@ -31,7 +31,7 @@ from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_code
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 from cyberppt.artifact_ledger import append_artifacts, write_json_atomic
 from cyberppt.commands.init_project import init_project
-from cyberppt.script_quality_contract import parse_script_markdown
+from cyberppt.script_quality_contract import parse_script_path
 
 
 STAGE_DIR = "workbench/stages/02-blueprint-dual-image"
@@ -136,6 +136,24 @@ def _read_json(path: Path) -> dict[str, Any]:
     return data
 
 
+def _read_style_lock(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        raise FileNotFoundError(f"visual style lock JSON not found: {path}")
+    try:
+        data = _read_json(path)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(
+            f"--style-lock must point to a valid JSON visual style lock, not Markdown or plain text: {path}. "
+            "Use --style-id/--style-name to generate the project JSON lock automatically."
+        ) from exc
+    if data.get("schema") != "cyberppt.visual_style_lock.v1":
+        raise ValueError(
+            f"--style-lock is not a CyberPPT visual style lock JSON: {path}; "
+            "expected schema cyberppt.visual_style_lock.v1"
+        )
+    return data
+
+
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     write_json_atomic(path, payload)
 
@@ -178,7 +196,7 @@ def _template_text_lock(
     blocks = parse_page_blocks(script)
     script_pages = {
         int(page.page_id[1:]): page
-        for page in parse_script_markdown(script.read_text(encoding="utf-8")).pages
+        for page in parse_script_path(script).pages
     }
     records: list[dict[str, Any]] = []
     prior_decisions: list[PresentationDecision] = []
@@ -622,6 +640,7 @@ def run_final_script_pages(
     require_send_approval: bool = False,
     build_id: str | None = None,
     external_script: bool = False,
+    blueprint_only: bool = False,
 ) -> dict[str, Any]:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
@@ -660,7 +679,7 @@ def run_final_script_pages(
             style_name=style_name,
             source_script=script,
         )
-    style_data = _read_json(style_lock)
+    style_data = _read_style_lock(style_lock)
     full_reference_images: list[Path] = []
     reference_image = style_data.get("reference_image")
     if isinstance(reference_image, dict) and reference_image.get("required_for_every_page"):
@@ -698,10 +717,12 @@ def run_final_script_pages(
         output_dir=target_dir,
         project_path=project,
         style_lock=style_lock,
-        require_approved_prompts=not external_script,
+        require_approved_prompts=not external_script and not blueprint_only,
         production_mode=production_mode,
         prompt_enrich=prompt_enrich,
         require_send_approval=require_send_approval,
+        enforce_prompt_freshness=False,
+        compact_blueprint=not external_script,
     )
     manifest["source_mode"] = source_mode
     manifest["source_script"] = str(script)
@@ -745,7 +766,9 @@ def run_final_script_pages(
     production_readiness = None
     tool_consumption: dict[str, Any] = {}
     stage_name = "02-production-build" if production_build else "02-blueprint-dual-image"
-    if generate_images and not dry_run_images:
+    if blueprint_only:
+        status = "blueprint_created"
+    elif generate_images and not dry_run_images:
         status = "image_assets_generated"
     else:
         status = "ready_for_image_generation" if not require_images else "image_assets_verified"

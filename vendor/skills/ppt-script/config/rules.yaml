@@ -21,6 +21,13 @@ page_composition:
       max: 5
       preferred_max: 3
       wall_warn_at: 4
+      # Only unindented "- **label**" bullets count toward min/max/wall_warn_at.
+      # An indented "  - **label**" bullet is a genuine child of the
+      # preceding top-level module (a real second hierarchy level, not a
+      # peer competing for the ceiling) — see cyberppt/script_quality_
+      # contract.py's top_level_module_titles vs module_titles. Prefer
+      # nesting 4+ closely related sub-items under one top-level module over
+      # cramming them into a single bullet's body text.
   hierarchy_signals: [①, ②, ③, ④, ⑤, →, ->, 随之, 第一层, 第二层, 第三层, 先看, 再看]
   subtitle_main_judgment:
     both_filled_level: WARN

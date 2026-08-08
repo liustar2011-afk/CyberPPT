@@ -10,8 +10,15 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.communication_strategy import assert_communication_strategy_ready
+from cyberppt.outline_contract import load_outline
 from cyberppt.paths import REFERENCES_DIR
+from cyberppt.script_quality_contract import parse_script_path
 from cyberppt.semantic_understanding import assert_semantic_understanding_ready
+from cyberppt.semantic_digest import (
+    outline_semantic_digest,
+    script_semantic_digest,
+    source_truth_semantic_digest,
+)
 
 REFERENCE_GATE_FILES: dict[str, tuple[str, ...]] = {
     "source_truth": ("source-analysis.md",),
@@ -66,6 +73,20 @@ def _sha256_bytes(data: bytes) -> str:
 
 def _sha256_path(path: Path) -> str:
     return _sha256_bytes(path.read_bytes())
+
+
+def _semantic_or_raw(path: Path, semantic_fn: Any) -> str:
+    """Return a semantic digest, with a narrow legacy fallback.
+
+    Old approvals and a few external integrations may point at placeholder or
+    pre-contract artifacts that cannot be parsed as current Stage 01 authority
+    documents.  They remain raw-hash bound; valid current artifacts always use
+    their semantic digest.
+    """
+    try:
+        return semantic_fn(path)
+    except (ValueError, json.JSONDecodeError):
+        return _sha256_path(path)
 
 
 def _approval_fields(path: Path) -> dict[str, str]:
@@ -141,12 +162,24 @@ def assert_stage01_script_approval(project: Path, script: Path) -> Path:
         artifact_path = Path(str(artifact_value)).expanduser().resolve()
         if not artifact_path.is_file():
             raise FileNotFoundError(f"Stage 01 script audit artifact does not exist: {artifact_path}")
-        expected = fields.get(f"{label.replace(' ', '_')}_sha256")
-        if not expected:
+        field_prefix = label.replace(" ", "_")
+        expected_semantic = fields.get(f"{field_prefix}_semantic_sha256")
+        expected_raw = fields.get(f"{field_prefix}_sha256")
+        if not expected_semantic and not expected_raw:
             raise ValueError(
                 "Stage 01 script approval is not hash-bound; reapprove the current final script and its inputs"
             )
-        if expected != _sha256_path(artifact_path):
+        semantic_fn = {
+            "script": script_semantic_digest,
+            "outline": outline_semantic_digest,
+            "source truth": source_truth_semantic_digest,
+        }[label]
+        matches = (
+            expected_semantic == _semantic_or_raw(artifact_path, semantic_fn)
+            if expected_semantic
+            else expected_raw == _sha256_path(artifact_path)
+        )
+        if not matches:
             raise ValueError(
                 f"Stage 01 script approval does not match the current {label}; "
                 "rerun Stage 01 audit and reapprove before Stage 02"
@@ -417,6 +450,76 @@ def _chapter_review_markdown_lines(project: Path, kind: str) -> list[str]:
     return lines
 
 
+def _truncate(text: str, limit: int = 160) -> str:
+    text = " ".join(str(text or "").split())
+    if len(text) <= limit:
+        return text
+    return text[:limit].rstrip() + "…"
+
+
+def _outline_deliverable_lines(project: Path) -> list[str]:
+    outline_path = project / "workbench" / "stages" / "01-analysis" / "outline.json"
+    if not outline_path.is_file():
+        return []
+    try:
+        outline = load_outline(outline_path)
+    except ValueError:
+        return []
+    pages = [page for page in outline.get("pages", []) if isinstance(page, dict)]
+    if not pages:
+        return []
+    lines: list[str] = []
+    current_chapter: str | None = None
+    for page in sorted(pages, key=lambda item: item.get("sequence", 0)):
+        chapter_id = str(page.get("chapter_id") or "")
+        if chapter_id and chapter_id != current_chapter:
+            current_chapter = chapter_id
+            lines.append(f"**{chapter_id}**")
+        page_id = str(page.get("page_id") or "")
+        title = str(page.get("title") or "")
+        core_message = _truncate(page.get("core_message") or page.get("subtitle") or "")
+        if core_message:
+            lines.append(f"- `{page_id}` {title} — {core_message}")
+        else:
+            lines.append(f"- `{page_id}` {title}")
+    return lines
+
+
+def _script_deliverable_lines(project: Path) -> list[str]:
+    script_path = project / "workbench" / "scripts" / "final" / "script-final.md"
+    if not script_path.is_file():
+        return []
+    try:
+        document = parse_script_path(script_path)
+    except (ValueError, OSError):
+        return []
+    lines: list[str] = []
+    for page in sorted(document.pages, key=lambda item: item.sequence):
+        if page.page_type != "content":
+            continue
+        judgment = _truncate(page.core_message or page.onscreen_judgment or "")
+        lines.append(f"**`{page.page_id}` {page.title}**")
+        if judgment:
+            lines.append(f"- 主判断：{judgment}")
+        onscreen_lines = [line for line in page.onscreen_text.splitlines() if line.strip()]
+        if onscreen_lines:
+            # A single flattened line (joining all whitespace, including the
+            # newlines that carry the bullet hierarchy) reads as an
+            # unreadable run-on and hides exactly the parent/child structure
+            # this project spent a session fixing — render as a fenced block
+            # so indentation and line breaks survive verbatim for the human
+            # reviewer, capped by line count rather than character count.
+            preview_lines = onscreen_lines[:14]
+            lines.append("- 上屏文字预览：")
+            lines.append("  ```text")
+            lines.extend(f"  {line}" for line in preview_lines)
+            if len(onscreen_lines) > len(preview_lines):
+                lines.append(f"  …（还有 {len(onscreen_lines) - len(preview_lines)} 行，完整内容见 script-final.md）")
+            lines.append("  ```")
+        lines.append("")
+    return lines
+
+
 def assert_chapter_review_ready(project: Path, kind: str) -> Path | None:
     project = project.expanduser().resolve()
     if not _chapter_review_required(project, kind):
@@ -431,7 +534,20 @@ def assert_chapter_review_ready(project: Path, kind: str) -> Path | None:
     if report.get("status") != "passed":
         raise ValueError(f"required chapter structure review is not passed: {path}")
     input_path = Path(str(report.get("input") or "")).expanduser().resolve()
-    if not input_path.is_file() or report.get("input_sha256") != _sha256_path(input_path):
+    expected_semantic = str(report.get("input_semantic_sha256") or "")
+    semantic_digest = (
+        outline_semantic_digest(input_path)
+        if kind == "outline"
+        else script_semantic_digest(input_path)
+    ) if expected_semantic and input_path.is_file() else ""
+    matches = (
+        expected_semantic == semantic_digest
+        if expected_semantic
+        else report.get("input_sha256") == _sha256_path(input_path)
+        if input_path.is_file()
+        else False
+    )
+    if not input_path.is_file() or not matches:
         raise ValueError("chapter structure review is stale; rerun preparation, review, and audit")
     return path
 
@@ -557,11 +673,56 @@ def render_confirmation_request(project: Path, kind: str) -> str:
                 "",
                 *chapter_reviews,
             ])
+        outline_deliverable = _outline_deliverable_lines(project)
+        if outline_deliverable:
+            lines.extend(
+                [
+                    "",
+                    "## 成果物内容（逐页大纲）",
+                    "",
+                    "> 以下为 `outline.json` 的实际页面内容摘要，供直接审阅，无需另行打开文件。",
+                    "",
+                    *outline_deliverable,
+                ]
+            )
     else:
         lines.append(_audit_line(project, "source_truth", "source-truth-audit"))
         lines.append(_audit_line(project, "outline", "outline-audit"))
         lines.append(_audit_line(project, "script", "script-audit"))
         lines.append(_chapter_review_line(project, "script"))
+        script_path = (
+            project / "workbench" / "scripts" / "final" / "script-final.md"
+        )
+        lines.extend(
+            [
+                "",
+                "## 人类审阅稿",
+                "",
+                f"- **完整讲稿**：`{script_path.as_posix()}`",
+            ]
+        )
+        chapter_reviews = _chapter_review_markdown_lines(project, "script")
+        if chapter_reviews:
+            lines.extend([
+                "",
+                "### 分章审阅稿",
+                "",
+                "> 建议按章节逐一审阅；每章可单独提出保留、修改或通过意见。",
+                "",
+                *chapter_reviews,
+            ])
+        script_deliverable = _script_deliverable_lines(project)
+        if script_deliverable:
+            lines.extend(
+                [
+                    "",
+                    "## 成果物内容（逐页讲稿）",
+                    "",
+                    "> 以下为 `script-final.md` 的实际页面主判断与上屏文字预览，供直接审阅，无需另行打开文件。",
+                    "",
+                    *script_deliverable,
+                ]
+            )
     lines.extend(["", "## 开放问题", ""])
     for index, question in enumerate(_open_questions_from_audits(project, kind), start=1):
         lines.append(f"{index}. {question}")
@@ -655,6 +816,11 @@ def write_stage01_approval(
     if kind == "outline":
         assert_escalation_resolved(project, "source_truth")
         assert_escalation_resolved(project, "outline")
+        if current_audit.get("status") != "passed":
+            raise ValueError(
+                "outline approval requires a passed mechanical outline-audit; "
+                "fix its blocking issues and rerun outline-audit"
+            )
     else:
         assert_escalation_resolved(project, "script")
         outline_approval = project / APPROVAL_FILES["outline"]
@@ -677,7 +843,9 @@ def write_stage01_approval(
         escalation_decision = _script_approval_escalation_decision(project, audit)
         if audit.get("status") != "passed" and escalation_decision is None:
             raise ValueError(
-                "script approval requires a passed script audit or a valid accepted-risk escalation decision"
+                "script approval requires a passed script audit or a valid "
+                f"accepted-risk escalation decision (audit status: {audit.get('status')!r}); "
+                "fix blocking mechanical issues and rerun script-audit"
             )
         script_path = Path(str(audit["input"])).expanduser().resolve()
     path = project / APPROVAL_FILES[kind]
@@ -695,8 +863,11 @@ def write_stage01_approval(
             *([
                 f"- script: {script_path}",
                 f"- script_sha256: {_sha256_path(script_path)}",
+                f"- script_semantic_sha256: {_semantic_or_raw(script_path, script_semantic_digest)}",
                 f"- outline_sha256: {_sha256_path(Path(str(audit['outline'])).expanduser().resolve())}",
+                f"- outline_semantic_sha256: {_semantic_or_raw(Path(str(audit['outline'])).expanduser().resolve(), outline_semantic_digest)}",
                 f"- source_truth_sha256: {_sha256_path(Path(str(audit['source_truth'])).expanduser().resolve())}",
+                f"- source_truth_semantic_sha256: {_semantic_or_raw(Path(str(audit['source_truth'])).expanduser().resolve(), source_truth_semantic_digest)}",
                 f"- script_audit_status: {audit.get('status', 'unknown')}",
                 *([
                     f"- escalation_decision: {escalation_decision[0]}",

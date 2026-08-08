@@ -179,12 +179,14 @@ class AssembleFinalScriptTests(unittest.TestCase):
             self.assertIn("- 上屏结论模式：semantic_only", text)
             self.assertIn("- 判断角色：relationship", text)
             self.assertLess(text.index("- 上屏结论："), text.index("- 上屏文字："))
-            self.assertIn(
-                '"onscreen_judgment":"结论先行并由正文证据支撑"',
-                text,
+            self.assertNotIn("cyberppt-page-contract", text)
+            contracts = json.loads(
+                Path(str(report["page_contracts"])).read_text(encoding="utf-8")
             )
-            self.assertIn('"onscreen_judgment_mode":"semantic_only"', text)
-            self.assertIn('"judgment_role":"relationship"', text)
+            receipt = contracts["pages"]["p01"]
+            self.assertEqual("结论先行并由正文证据支撑", receipt["onscreen_judgment"])
+            self.assertEqual("semantic_only", receipt["onscreen_judgment_mode"])
+            self.assertEqual("relationship", receipt["judgment_role"])
 
     def test_does_not_manufacture_judgment_when_outline_has_none(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

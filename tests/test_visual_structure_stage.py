@@ -11,9 +11,50 @@ from cyberppt.commands.visual_structure_stage import (
     assert_visual_structure_ready,
     visual_structure_required,
 )
+from cyberppt.stage02_handoff import audit_stage02_handoff
 
 
 class VisualStructureStageTests(unittest.TestCase):
+    def test_handoff_audit_ignores_source_hash_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory) / "project"
+            project.mkdir()
+            source = project / "script.md"
+            source.write_text("current script\n", encoding="utf-8")
+            payload = {
+                "schema": "cyberppt.stage02_handoff.v1",
+                "source_bindings": {
+                    "script": {
+                        "path": str(source),
+                        "sha256": "0" * 64,
+                        "semantic_sha256": "1" * 64,
+                    }
+                },
+                "pages": [
+                    {
+                        "page_id": "p01",
+                        "page_number": 1,
+                        "render_role": "content",
+                        "title": "Title",
+                        "page_mission": "Mission",
+                        "core_message": "Message",
+                        "onscreen_text": "Text",
+                        "stage02_visual_input": {
+                            "body_image_canvas": {
+                                "width": 2048,
+                                "height": 1024,
+                                "ratio": "2:1",
+                            }
+                        },
+                    }
+                ],
+            }
+
+            report = audit_stage02_handoff(project, payload)
+
+        self.assertEqual("passed", report["status"])
+        self.assertNotIn("handoff_sha256", report)
+
     def test_new_projects_register_required_visual_structure_gate(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             project = Path(directory) / "project"

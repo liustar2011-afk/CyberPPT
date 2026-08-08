@@ -28,19 +28,38 @@
 6. 文字稿取舍说明；
 7. 证据映射；
 8. 上屏文字（严格锁定）；
+   - 内容必须是可直接消费的纯文本，不含 Markdown 或后台结构语言；
+   - 模块层级另写入 `上屏模块清单`、`上屏顶层模块清单` JSON 数组；
+   - 每个模块标题只表达一个分组维度；异维度并列必须拆分，只有明确上位概念统摄子维度时才可使用“上位概念——子维度A与子维度B”；
 9. 逻辑骨架；
 10. 视觉结构（不上屏）；
 11. 视觉意图与生图构图；
-12. `cyberppt-page-contract` 页级合同注释；
-13. 演讲者备注。
+12. 演讲者备注。
 
-### 页级合同注释
+### 页级合同 sidecar
 
-每个内容页必须包含：
+正式 `10-script-final.md` 不得嵌入后台合同注释。每个内容页的合同写入同级或项目约定位置的 `page-contracts.json`，并绑定正式脚本 SHA-256：
 
-```html
-<!-- cyberppt-page-contract {"schema":"cyberppt.page_contract_receipt.v2","page_id":"p04","page_mission":"...","core_message":"...","source_refs":["SRC-..."],"visual_intent_type":"...","consumed_content_unit_ids":["SRC-..."],"must_not_include":["..."]} -->
+```json
+{
+  "schema": "cyberppt.page_contracts.v1",
+  "script": "10-script-final.md",
+  "script_sha256": "...",
+  "pages": {
+    "p04": {
+      "schema": "cyberppt.page_contract_receipt.v2",
+      "page_id": "p04",
+      "page_mission": "...",
+      "core_message": "...",
+      "source_refs": ["SRC-..."],
+      "consumed_content_unit_ids": ["SRC-..."],
+      "must_not_include": ["..."]
+    }
+  }
+}
 ```
+
+草稿可暂时携带 `cyberppt-page-contract` HTML 注释作为迁移载体；正式合稿器必须移除注释、生成 sidecar。无 sidecar 的旧项目仍可回退读取旧注释；sidecar 一旦存在，脚本哈希不匹配必须阻断。
 
 其中：
 

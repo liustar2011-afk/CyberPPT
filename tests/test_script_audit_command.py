@@ -29,18 +29,18 @@ VALID_SCRIPT = """## 第8页：第二章：定位、目标与研究边界
 - 证据映射：公共能力定位→S015；职责分工与不替代边界→S026；会商与支撑机制→S059
 - 上屏文字：
 
-  **行业公共能力**
+行业公共能力
 
-  - 能力定位：面向电力行业开展供需形势预测与预警，覆盖主要预测对象、多时间尺度和多类成果。
-  - 支撑体系：由统一数据治理、组合模型、专家会商、成果生产与安全运行共同支撑行业研判和成果发布。
-  - 服务范围：面向全国、区域、省级和重点行业开展供需分析，服务履职与行业共用；通过统一口径、跨区域协同和可追溯成果管理提升研判效率，明确服务对象与业务边界。
-  - 成果输出：输出预测、预警、专题研判与成果发布，支撑研究方向和行业共用。
+    能力定位：面向电力行业开展供需形势预测与预警，覆盖主要预测对象、多时间尺度和多类成果。
+    支撑体系：由统一数据治理、组合模型、专家会商、成果生产与安全运行共同支撑行业研判和成果发布。
+    服务范围：面向全国、区域、省级和重点行业开展供需分析，服务履职与行业共用；通过统一口径、跨区域协同和可追溯成果管理提升研判效率，明确服务对象与业务边界。
+    成果输出：输出预测、预警、专题研判与成果发布，支撑研究方向和行业共用。
 
-  **专业系统边界**
+专业系统边界
 
-  - 职责边界：服务行业研判和成果发布，不替代电网调度、市场出清、企业生产计划和具体投资决策。
+    职责边界：服务行业研判和成果发布，不替代电网调度、市场出清、企业生产计划和具体投资决策。
 
-  - 运行边界：保留专业职责和运行边界。
+    运行边界：保留专业职责和运行边界。
 
 - 证据：S015、S026、S059
 - 边界：正式范围经摸底验证后确定。
@@ -78,7 +78,7 @@ def _approve_content_review(project: Path, script: Path) -> None:
         "nonessential_information_removed": True,
         "cross_page_new_value": True,
     }
-    review_manifest = project / "review" / "chapter-review-manifest.json"
+    review_manifest = project / "review" / "chapter-review-manifest-script.json"
     _write_json(
         review_manifest,
         {
@@ -97,6 +97,8 @@ def _approve_content_review(project: Path, script: Path) -> None:
             "review_provenance": {
                 "reviewer_type": "independent_model",
                 "authoring_separated": True,
+                "authoring_run_id": "authoring-run-test",
+                "reviewer_run_id": "review-run-test",
                 "reviewed_at": "2026-08-03T00:00:00Z",
                 "review_summary": "Independent test review completed.",
                 "chapter_review_manifest_sha256": hashlib.sha256(
@@ -322,15 +324,16 @@ class ScriptAuditCommandTests(unittest.TestCase):
                 )
             )
 
-    def test_structural_success_requires_content_review(self) -> None:
+    def test_structural_success_does_not_require_a_second_content_gate(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             project, script = _build_project(Path(temp_dir))
 
             code, report = run_script_audit(project, script)
 
-            self.assertEqual(4, code)
-            self.assertEqual("content_review_required", report["status"])
+            self.assertEqual(0, code)
+            self.assertEqual("passed", report["status"])
             self.assertEqual("missing", report["content_review"]["status"])
+            self.assertEqual("advisory", report["content_review_gate"])
 
     def test_stale_content_review_is_not_accepted(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -340,8 +343,8 @@ class ScriptAuditCommandTests(unittest.TestCase):
 
             code, report = run_script_audit(project, script)
 
-            self.assertEqual(4, code)
-            self.assertEqual("content_review_required", report["status"])
+            self.assertEqual(0, code)
+            self.assertEqual("passed", report["status"])
             self.assertEqual("stale", report["content_review"]["status"])
 
     def test_legacy_boolean_only_content_review_is_unverified(self) -> None:
@@ -372,9 +375,27 @@ class ScriptAuditCommandTests(unittest.TestCase):
                 },
             )
             code, report = run_script_audit(project, script, max_attempts=5)
-            self.assertNotEqual(0, code)
-            self.assertEqual("content_review_required", report["status"])
+            self.assertEqual(0, code)
+            self.assertEqual("passed", report["status"])
             self.assertEqual("unverified", report["content_review"]["status"])
+
+    def test_same_authoring_and_reviewer_run_is_unverified(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, script = _build_project(Path(temp_dir))
+            _approve_content_review(project, script)
+            review_path = project / "workbench/scripts/audits/content-review.json"
+            review = json.loads(review_path.read_text(encoding="utf-8"))
+            review["review_provenance"]["reviewer_run_id"] = review[
+                "review_provenance"
+            ]["authoring_run_id"]
+            _write_json(review_path, review)
+
+            code, report = run_script_audit(project, script)
+
+            self.assertEqual(0, code)
+            self.assertEqual("passed", report["status"])
+            self.assertEqual("unverified", report["content_review"]["status"])
+            self.assertFalse(report["content_review"]["identity_valid"])
 
     def test_attempts_auto_increment_and_change_strategy(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

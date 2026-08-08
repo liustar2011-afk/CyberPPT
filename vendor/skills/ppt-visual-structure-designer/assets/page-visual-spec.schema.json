@@ -370,7 +370,7 @@
         },
         "minimum_font_pt": {
           "type": "number",
-          "minimum": 9
+          "minimum": 12
         },
         "placement_strategy": {
           "type": "string",

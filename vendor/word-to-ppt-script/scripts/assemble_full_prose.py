@@ -42,6 +42,22 @@ conclusion beyond what source-truth actually states, which conflicts with
 this skill's no-fabrication rule. If a page's argument genuinely needs an
 explicit close, write it by hand and keep it traceable to a specific record.
 
+Also breaks the assembled body into paragraphs (blank-line separated) instead
+of one unbroken block, which was unreadable once a page carried more than a
+handful of statements. Paragraph breaks land at two kinds of boundary:
+
+- a `semantic_argument_weight`/`semantic_argument_role` tier change (the sort
+  already groups records by tier, so this reuses that structure rather than
+  inventing new topic boundaries);
+- inside a long same-tier run, every `_PARAGRAPH_CHUNK_SIZE` statements, so a
+  single tier with many records still reads as several short paragraphs
+  rather than one wall of text.
+
+This is a mechanical, content-preserving heuristic, not real topic-aware
+paragraphing — it never reorders or rewrites a statement, only decides where
+a blank line goes. A hand-authored page that genuinely needs a different
+paragraph shape should still be edited by hand.
+
 Usage:
 
     from assemble_full_prose import assemble_full_prose
@@ -85,15 +101,46 @@ _FRAME_BY_ROLE = {
 }
 _FRAME_DEFAULT = "具体内容包括以下几个方面："
 
+# Inside one same-tier run, start a new paragraph after this many statements
+# so a long run of same-weight/same-role records doesn't render as one
+# unbroken block.
+_PARAGRAPH_CHUNK_SIZE = 3
+
 
 def _strip_marker(statement: str) -> str:
     return _MARKER_RE.sub("", statement, count=1)
 
 
-def _sort_key(record: dict, index: int) -> tuple:
+def _tier_key(record: dict) -> tuple:
     weight = _WEIGHT_ORDER.get(record.get("semantic_argument_weight", ""), _DEFAULT_WEIGHT)
     role = _ROLE_ORDER.get(record.get("semantic_argument_role", ""), _DEFAULT_ROLE)
-    return (weight, role, index)  # index is the stable-order tiebreaker
+    return (weight, role)
+
+
+def _sort_key(record: dict, index: int) -> tuple:
+    return _tier_key(record) + (index,)  # index is the stable-order tiebreaker
+
+
+def _paragraph_join(parts: list[str], tiers: list[tuple]) -> str:
+    """Join statement fragments into blank-line-separated paragraphs.
+
+    Breaks whenever the (weight, role) tier changes, and additionally every
+    `_PARAGRAPH_CHUNK_SIZE` fragments within a same-tier run.
+    """
+
+    if not parts:
+        return ""
+    paragraphs: list[str] = [parts[0]]
+    run_length = 1
+    for prev_tier, tier, part in zip(tiers, tiers[1:], parts[1:]):
+        tier_changed = tier != prev_tier
+        if tier_changed or run_length >= _PARAGRAPH_CHUNK_SIZE:
+            paragraphs.append(part)
+            run_length = 1
+        else:
+            paragraphs[-1] += part
+            run_length += 1
+    return "\n\n".join(paragraphs)
 
 
 def assemble_full_prose(records: list[dict]) -> str:
@@ -128,7 +175,8 @@ def assemble_full_prose(records: list[dict]) -> str:
     else:
         parts = statements
 
-    body = "".join(parts)
+    tiers = [_tier_key(r) for r in ordered]
+    body = _paragraph_join(parts, tiers)
 
     if reissue:
         dominant_role = ordered[0].get("semantic_argument_role", "")

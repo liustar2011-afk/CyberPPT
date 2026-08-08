@@ -561,6 +561,11 @@ def run_communication_strategy_audit(project: Path) -> tuple[int, dict[str, Any]
                 [
                     "# 提纲生成前：沟通策略确认",
                     "",
+                    "## 成果物",
+                    "",
+                    f"- **候选沟通策略**：`{artifact.as_posix()}`",
+                    f"- **全文语义理解文档**：`{(project / SEMANTIC_ARTIFACT).as_posix()}`",
+                    "",
                     "## 请确认这套材料主要与谁沟通？",
                     "",
                     f"当前识别：**{payload['audience']}**",
@@ -685,7 +690,6 @@ def assert_communication_strategy_ready(project: Path) -> dict[str, Any] | None:
     approval = _load_candidate(approval_path)
     expectations = (
         ("communication_strategy_sha256", _sha256_path(artifact)),
-        ("communication_audit_sha256", _sha256_path(audit_path)),
         ("semantic_understanding_sha256", semantic_gate["semantic_understanding_sha256"] if semantic_gate else ""),
         ("semantic_source_bundle_sha256", semantic_gate["source_bundle_sha256"] if semantic_gate else ""),
         ("semantic_argument_model_sha256", semantic_gate.get("semantic_argument_model_sha256") if semantic_gate else ""),

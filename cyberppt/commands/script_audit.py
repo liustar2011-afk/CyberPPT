@@ -8,6 +8,8 @@ from pathlib import Path
 from uuid import uuid4
 
 from cyberppt.artifact_ledger import append_artifacts
+from cyberppt.content_review import content_review_status
+from cyberppt.semantic_digest import script_semantic_digest
 from cyberppt.communication_strategy import (
     assert_communication_strategy_ready,
     communication_strategy_binding_issues,
@@ -24,7 +26,7 @@ from cyberppt.script_quality_contract import (
     audit_script_quality,
     build_communication_review,
     is_final_script_path,
-    parse_script_markdown,
+    parse_script_path,
     ScriptQualityIssue,
     script_retry_directive,
 )
@@ -55,18 +57,9 @@ CONTENT_REVIEW_DECISIONS = (
 )
 
 
-def _content_review_status(project: Path, script_sha256: str) -> dict[str, object]:
-    path = project / "workbench" / "scripts" / "audits" / "content-review.json"
-    if not path.exists():
-        return {"status": "missing", "path": str(path), "decisions": {}}
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8-sig"))
-    except (json.JSONDecodeError, OSError):
-        return {"status": "invalid", "path": str(path), "decisions": {}}
-    decisions = payload.get("decisions")
-    decision_map = decisions if isinstance(decisions, dict) else {}
-    page_reviews = payload.get("pages")
-    page_map = page_reviews if isinstance(page_reviews, dict) else {}
+def _content_review_status(
+    project: Path, script_sha256: str, script_path: Path
+) -> dict[str, object]:
     outline_path = project / "workbench/stages/01-analysis/outline.json"
     outline = json.loads(outline_path.read_text(encoding="utf-8-sig"))
     required_pages = [
@@ -74,43 +67,15 @@ def _content_review_status(project: Path, script_sha256: str) -> dict[str, objec
         for item in outline.get("pages", [])
         if isinstance(item, dict) and item.get("page_type") == "content"
     ]
-    pages_approved = all(
-        isinstance(page_map.get(page_id), dict)
-        and all(page_map[page_id].get(key) is True for key in CONTENT_REVIEW_DECISIONS)
-        and bool(str(page_map[page_id].get("note") or "").strip())
-        for page_id in required_pages
+    return content_review_status(
+        project / "workbench" / "scripts" / "audits" / "content-review.json",
+        schema="cyberppt.content_review.v2",
+        decision_keys=CONTENT_REVIEW_DECISIONS,
+        required_page_ids=required_pages,
+        content_sha256=script_sha256,
+        content_semantic_sha256=script_semantic_digest(script_path),
+        manifest_path=project / "review" / "chapter-review-manifest-script.json",
     )
-    schema_valid = payload.get("schema") == "cyberppt.content_review.v2"
-    provenance = payload.get("review_provenance")
-    provenance_map = provenance if isinstance(provenance, dict) else {}
-    manifest_path = project / "review" / "chapter-review-manifest.json"
-    manifest_hash = _sha256(manifest_path) if manifest_path.exists() else ""
-    provenance_valid = (
-        provenance_map.get("authoring_separated") is True
-        and str(provenance_map.get("reviewer_type") or "") in {"human", "independent_model"}
-        and bool(str(provenance_map.get("reviewed_at") or "").strip())
-        and bool(str(provenance_map.get("review_summary") or "").strip())
-        and str(provenance_map.get("chapter_review_manifest_sha256") or "").upper()
-        == manifest_hash.upper()
-    )
-    if str(payload.get("script_sha256") or "").upper() != script_sha256.upper():
-        status = "stale"
-    elif not schema_valid or not provenance_valid:
-        status = "unverified"
-    elif not all(decision_map.get(key) is True for key in CONTENT_REVIEW_DECISIONS) or not pages_approved:
-        status = "incomplete"
-    else:
-        status = "approved"
-    return {
-        "status": status,
-        "path": str(path),
-        "decisions": decision_map,
-        "reviewed_pages": len(page_map),
-        "required_pages": len(required_pages),
-        "schema_valid": schema_valid,
-        "provenance_valid": provenance_valid,
-        "chapter_review_manifest_sha256": manifest_hash,
-    }
 
 
 def _next_attempt(attempts_dir: Path) -> int:
@@ -380,7 +345,7 @@ def run_script_audit(
         )
     script_text = input_path.read_text(encoding="utf-8-sig")
     script_sha256 = _sha256(input_path)
-    document = parse_script_markdown(script_text)
+    document = parse_script_path(input_path)
     audit_dir = project / "workbench" / "scripts" / "audits"
     attempts_dir = audit_dir / "attempts"
     effective_attempt = (
@@ -438,20 +403,17 @@ def run_script_audit(
     communication_review = build_communication_review(document, outline)
     errors = [issue for issue in issues if issue.severity == "error"]
     warning_count = sum(1 for issue in issues if issue.severity == "warning")
-    content_review = _content_review_status(project, script_sha256)
+    content_review = _content_review_status(project, script_sha256, input_path)
     directive = script_retry_directive(errors, previous_strategy)
     failed_pages = sorted(
         {page for issue in errors for page in issue.pages}
     )
     report: dict[str, object] = {
         "schema": "cyberppt.script_audit.v1",
-        "status": (
-            "rewrite_required"
-            if errors
-            else "passed"
-            if content_review["status"] == "approved"
-            else "content_review_required"
-        ),
+        # One human gate only: editorial review remains useful evidence, but
+        # does not create a second approval loop after mechanical errors are
+        # clear.  ``approve-stage01`` is the user's final decision boundary.
+        "status": "rewrite_required" if errors else "passed",
         # Keep the legacy status field stable for existing gates.  The
         # orthogonal quality status makes a warning-only run explicit instead
         # of presenting it as an unqualified pass.
@@ -477,6 +439,7 @@ def run_script_audit(
         "issues": [issue.to_dict() for issue in issues],
         "communication_review": communication_review,
         "content_review": content_review,
+        "content_review_gate": "advisory",
         "failed_pages": failed_pages,
         "retry_scope": failed_pages,
         "retry_directive": directive,

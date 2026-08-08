@@ -814,9 +814,31 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
         f"- 标题语义卡：{report['argument_model_summary']['heading_semantic_cards']}；推断登记：{report['argument_model_summary']['inference_records']}；重复概念：{report['argument_model_summary']['repeated_concepts']}",
         f"- 模型执行回执：{'已绑定' if report['generation_receipt'] else '缺失'}",
         "",
-        "## 问题",
+        "## 成果物",
         "",
+        f"- **全文语义理解文档**：`{artifact.as_posix()}`",
+        f"- **源材料论点模型（机器可读）**：`{(project / SEMANTIC_ARGUMENT_MODEL).as_posix()}`",
     ]
+    if required_model and isinstance(argument_model, dict):
+        context = argument_model.get("document_semantics")
+        if isinstance(context, dict):
+            for field, label in (
+                ("document_role", "文档角色"),
+                ("subject_of_report", "报告主题"),
+                ("primary_thesis", "全文核心论点"),
+                ("decision_boundary", "决策成熟度边界"),
+                ("author_purpose", "作者意图"),
+            ):
+                value = context.get(field)
+                if isinstance(value, str) and value.strip():
+                    lines.append(f"- **{label}**：{value.strip()}")
+    lines.extend(
+        [
+            "",
+            "## 问题",
+            "",
+        ]
+    )
     if issues:
         lines.extend(f"- `{item['code']}`：{item['message']}" for item in issues)
     else:
@@ -866,6 +888,17 @@ def approve_semantic_understanding(project: Path, note: str = "") -> Path:
         encoding="utf-8",
     )
     return output
+
+
+def semantic_review_deliverables(project: Path) -> dict[str, str]:
+    """Paths to the human-reviewable semantic-understanding deliverables."""
+
+    project = project.expanduser().resolve()
+    return {
+        "review": (project / SEMANTIC_AUDIT_MD).as_posix(),
+        "document": (project / SEMANTIC_ARTIFACT).as_posix(),
+        "argument_model": (project / SEMANTIC_ARGUMENT_MODEL).as_posix(),
+    }
 
 
 def assert_semantic_understanding_ready(project: Path) -> dict[str, Any] | None:
@@ -922,7 +955,6 @@ def assert_semantic_understanding_ready(project: Path) -> dict[str, Any] | None:
         ("source_heading_tree_sha256", report.get("source_heading_tree_sha256")),
         ("model_input_sha256", report.get("model_input_sha256")),
         ("generation_receipt_sha256", report.get("generation_receipt_sha256")),
-        ("semantic_audit_sha256", _sha256_path(audit_path)),
     )
     if any(
         str(approval.get(field) or "").casefold() != str(expected or "").casefold()

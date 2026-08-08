@@ -376,6 +376,28 @@ class FinalScriptPagesTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "请选择一个 CyberPPT 默认视觉风格"):
                 run_final_script_pages(project=project, script=script, pages_raw="7")
 
+    def test_rejects_markdown_style_lock_with_actionable_message(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            script = root / "script-final.md"
+            script.write_text("## 第1页：测试\n正文\n", encoding="utf-8")
+            style_lock = root / "style-lock.md"
+            style_lock.write_text("# 风格确认稿\n", encoding="utf-8")
+            self._approve_inputs_and_prompts(project, script)
+
+            with self.assertRaisesRegex(
+                ValueError,
+                r"--style-lock must point to a valid JSON visual style lock.*--style-id/--style-name",
+            ):
+                run_final_script_pages(
+                    project=project,
+                    script=script,
+                    pages_raw="1",
+                    style_lock=style_lock,
+                )
+
     def test_production_build_runs_template_image_ppt_export(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
