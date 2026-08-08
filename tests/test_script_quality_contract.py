@@ -28,10 +28,15 @@ from cyberppt.script_quality_contract import (
     parse_selection_notes,
     selection_notes_are_structured,
     text_similarity,
+    audience_facing_group_label,
 )
 
 
 class ProductionAuthoringGuardTests(unittest.TestCase):
+    def test_strips_structural_row_markers_from_visible_group_labels(self) -> None:
+        self.assertEqual("访问与成果交付方式", audience_facing_group_label("第1行｜访问与成果交付方式"))
+        self.assertEqual("部署运行环境", audience_facing_group_label("第2行:部署运行环境"))
+
     def test_compound_group_heading_distinguishes_peer_merge_from_parent_child(self) -> None:
         self.assertEqual(
             (

@@ -528,9 +528,15 @@ def _module_title(line: str) -> str | None:
 
 
 def audience_facing_group_label(label: str) -> str:
-    """Remove authoring-only structural suffixes from a visible group label."""
+    """Remove authoring-only structural markers from a visible group label.
+
+    Labels such as ``第1行｜...`` are layout/debug coordinates, not audience
+    copy.  Strip them centrally so every script generator benefits, regardless
+    of the source project.
+    """
 
     value = str(label or "").strip()
+    value = re.sub(r"^第\s*(?:[一二三四五六七八九十]+|\d+)\s*行\s*[｜|:]\s*", "", value)
     value = re.sub(r"(?:一|二|两|三|四|五|六|七|八|九|十|\d+)个层面$", "", value)
     value = re.sub(r"(控制链|权利对象)层面$", r"\1", value)
     if value == "四个维度分别选择":

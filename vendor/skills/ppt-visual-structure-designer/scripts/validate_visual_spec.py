@@ -10,6 +10,8 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
+MINIMUM_FONT_PT = 14
+
 REQUIRED_MD_SECTIONS = [
     "页面角色", "页面使命", "核心结论", "内容锁定", "证据单元与语义关系",
     "视觉意图", "页面草图", "页面构图", "实景锚点与图文融合",
@@ -18,6 +20,9 @@ REQUIRED_MD_SECTIONS = [
 ]
 PLACEHOLDERS = ["文案略", "文字略", "同上", "沿用前页", "参考原文", "待补充", "TODO"]
 RISK_TERMS = ["等宽三列", "并列卡片", "六宫格", "一项一图", "一条内容一个图标", "左文右图"]
+# Structural row markers are authoring aids, not presentation copy.  If they
+# reach locked/final text they are likely to be rendered verbatim by ImageGen.
+ROW_MARKER_RE = re.compile(r"^\s*第\s*[0-9一二三四五六七八九十]+\s*行\s*[｜|:]", re.MULTILINE)
 
 
 def add(issues: list[dict[str, Any]], level: str, code: str, message: str, page: int | None = None) -> None:
@@ -54,8 +59,14 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
     if not vd.get("dominant_visual_carrier"):
         add(issues, "error", "dominant_carrier", "Dominant visual carrier is required", n)
     ti = page.get("text_integration", {})
-    if ti.get("minimum_font_pt", 0) < 12:
-        add(issues, "error", "font_size", "Minimum font size must be at least 12pt", n)
+    if ti.get("minimum_font_pt", 0) < MINIMUM_FONT_PT:
+        add(
+            issues,
+            "error",
+            "font_size",
+            f"Minimum font size must be at least {MINIMUM_FONT_PT}pt",
+            n,
+        )
     if ti.get("title_render_mode") != "external_text_layer":
         add(issues, "warning", "title_mode", "Default profile expects external title text layer", n)
     ip = page.get("image_plan", {})
@@ -69,6 +80,8 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
     if sg.get("primary_relation") in {"flow", "transform", "converge", "diverge", "loop", "control", "exchange", "boundary", "responsibility"} and not page.get("connectors"):
         add(issues, "error", "connectors", "This relation type requires explicit connectors", n)
     final_text = "\n".join(item.get("text", "") for item in page.get("final_text", []))
+    if ROW_MARKER_RE.search(final_text):
+        add(issues, "error", "structural_row_marker", "Structural '第N行' marker must not appear in final on-screen text", n)
     for token in PLACEHOLDERS:
         if token.lower() in final_text.lower():
             add(issues, "error", "placeholder", f"Placeholder text found: {token}", n)
@@ -163,6 +176,8 @@ def validate_markdown(path: Path) -> dict:
             if not value:
                 add(issues, "error", "missing_section", f"Missing or empty section: {section}", number)
         final = section_text(block, "终稿文字")
+        if ROW_MARKER_RE.search(final):
+            add(issues, "error", "structural_row_marker", "Structural '第N行' marker must not appear in final on-screen text", number)
         for token in PLACEHOLDERS:
             if token.lower() in final.lower():
                 add(issues, "error", "placeholder", f"Placeholder text found: {token}", number)
