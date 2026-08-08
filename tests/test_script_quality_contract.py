@@ -12,6 +12,8 @@ from cyberppt.script_quality_contract import (
     _compound_module_heading_hits,
     _module_heading_colon_hits,
     _generic_onscreen_relation_hits,
+    _onscreen_detail_phrase_overages,
+    _onscreen_layout_meta_hits,
     _speaker_placeholder_hits,
     _issue,
     _presentation_issues,
@@ -29,6 +31,7 @@ from cyberppt.script_quality_contract import (
     selection_notes_are_structured,
     text_similarity,
     audience_facing_group_label,
+    strip_authoring_group_marker,
 )
 
 
@@ -36,6 +39,16 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
     def test_strips_structural_row_markers_from_visible_group_labels(self) -> None:
         self.assertEqual("访问与成果交付方式", audience_facing_group_label("第1行｜访问与成果交付方式"))
         self.assertEqual("部署运行环境", audience_facing_group_label("第2行:部署运行环境"))
+
+    def test_strips_row_markers_from_prompt_lines_but_preserves_indent(self) -> None:
+        self.assertEqual(
+            "    访问与成果交付方式",
+            strip_authoring_group_marker("    第1行｜访问与成果交付方式"),
+        )
+        self.assertEqual(
+            "访问与成果交付方式",
+            strip_authoring_group_marker("第X行｜访问与成果交付方式"),
+        )
 
     def test_compound_group_heading_distinguishes_peer_merge_from_parent_child(self) -> None:
         self.assertEqual(
@@ -116,6 +129,65 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
                 "国家部署、行业需求和资源问题属于三个并列维度，共同构成建设背景。"
             ),
         )
+
+    def test_flags_layout_metadata_but_keeps_business_count_labels(self) -> None:
+        hits = _onscreen_layout_meta_hits(
+            "四行选择矩阵\n"
+            "四种合作方式\n"
+            "阅读顺序：先看主体，再看合作方式\n"
+            "第X行｜仅供排版定位"
+        )
+        self.assertIn("四行选择矩阵", hits)
+        self.assertIn("阅读顺序：先看主体，再看合作方式", hits)
+        self.assertIn("第X行｜仅供排版定位", hits)
+        self.assertNotIn("四种合作方式", hits)
+
+    def test_detail_phrase_rule_ignores_full_prose_and_flags_only_labelled_details(self) -> None:
+        short = "**完整文字稿**\n" + ("这是完整文字稿中的长段落，允许保留业务事实、条件和关系。" * 8)
+        visible = (
+            "模块标题\n"
+            "    短标签：保留一个清晰的业务短句。\n"
+            "    长标签：" + "这是一条仍然塞入多个并列条件和解释关系的明细文字。" * 4
+        )
+        self.assertTrue(short)
+        overages = _onscreen_detail_phrase_overages(visible)
+        self.assertEqual(1, len(overages))
+        self.assertGreater(overages[0][1], 36)
+        self.assertEqual((), _onscreen_detail_phrase_overages("模块标题\n完整业务标签"))
+
+    def test_full_prose_is_not_a_visible_detail_input(self) -> None:
+        page = parse_script_markdown(
+            "## 第1页：正文与上屏分离\n"
+            "- 页面类型：内容页\n"
+            "- 完整文字稿："
+            + ("这是完整文字稿中的连续业务论证，允许保留事实、条件、关系和边界。" * 8)
+            + "\n"
+            "- 上屏文字：\n"
+            "  **业务判断**\n"
+            "      关键事实：形成稳定的服务链。\n"
+            "- 视觉结构：判断证据支撑。\n"
+        ).pages[0]
+        codes = {issue.code for issue in _presentation_issues(page)}
+        self.assertNotIn("ONSCREEN_DETAIL_PHRASE_TOO_LONG", codes)
+
+    def test_detail_phrase_error_blocks_only_when_hard_band_is_crossed(self) -> None:
+        page = parse_script_markdown(
+            "## 第1页：明细阈值\n"
+            "- 页面类型：内容页\n"
+            "- 主判断：形成稳定服务链\n"
+            "- 完整文字稿：形成稳定服务链并保留必要事实和边界。\n"
+            "- 上屏文字：\n"
+            "  **服务机制**\n"
+            "      机制说明：" + "这是一条超过硬阈值的明细句，包含多个并列条件和交付要求。" * 4 + "\n"
+            "- 视觉结构：判断证据支撑。\n"
+        ).pages[0]
+        issues = [
+            issue
+            for issue in _presentation_issues(page)
+            if issue.code == "ONSCREEN_DETAIL_PHRASE_TOO_LONG"
+        ]
+        self.assertEqual(1, len(issues))
+        self.assertEqual("error", issues[0].severity)
 
 ROOT = Path(__file__).resolve().parents[1]
 POWER_PROJECT = ROOT / "projects" / "power-supply-demand-forecast-early-warning"

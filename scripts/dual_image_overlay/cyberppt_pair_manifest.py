@@ -26,7 +26,9 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.dual_image_overlay.deliverable_prompt import (
+    _style09_terminal_execution_lock,
     compile_pages,
+    enforce_style09_terminal_lock,
     parse_page_blocks,
     parse_pages,
     render_prompt,
@@ -234,8 +236,7 @@ def _compact_blueprint_prompt(
     visual_prompt: str,
     style_lock: Path | None,
 ) -> str:
-    return "\n\n".join(
-        [
+    parts = [
             f"【页面编码】P{page_number:02d}",
             "【正文画布合同】\n2048×1024（2:1）正文内容区。不得绘制标题、副标题、Logo、页码、页脚或模板外框。",
             (
@@ -250,7 +251,10 @@ def _compact_blueprint_prompt(
             "【正式风格锁｜不上屏】\n" + style_contract(style_lock).strip(),
             "【生成约束】\n只渲染“严格上屏文字”中的文字；语义背景、字段名、指令、证据编号和调试信息均不得上屏。",
         ]
-    )
+    terminal_execution_lock = _style09_terminal_execution_lock(style_lock)
+    if terminal_execution_lock:
+        parts.append("【风格09最终执行锁｜最高优先级】\n" + terminal_execution_lock)
+    return "\n\n".join(parts)
 
 
 def _relationship_aware_canonical_prompts(
@@ -346,6 +350,7 @@ def build_manifest(
     from cyberppt.script_quality_contract import parse_script_markdown
     from cyberppt.visual_prompt_consumer import (
         append_visual_prompt_module,
+        append_style09_surface_adapter,
         load_visual_prompt_module,
         visual_module_metadata,
     )
@@ -399,7 +404,14 @@ def build_manifest(
     content_page_numbers = [
         number for number in page_numbers if page_roles[number] == "content"
     ]
-    effective_compact_blueprint = bool(compact_blueprint and handoff_pages)
+    # Style 09 is a shared surface contract, not a page-by-page infographic
+    # recipe.  Its content-first compiler already carries the page's semantic
+    # relation; importing the older visual-structure module would reintroduce
+    # prescriptive matrices, swim lanes and node grids for only some pages.
+    style09_surface_adapter = bool(_style09_terminal_execution_lock(style_lock))
+    effective_compact_blueprint = bool(
+        compact_blueprint and handoff_pages and not style09_surface_adapter
+    )
     reference_map = _load_reference_map(project_path)
     output_dir.mkdir(parents=True, exist_ok=True)
     compiled_script = _compiled_script_path(output_dir, script, page_numbers)
@@ -492,10 +504,14 @@ def build_manifest(
             approval_meta = approval.metadata()
             if enforce_prompt_freshness:
                 assert_prompt_fresh(approval, page_number=page_number)
-            # The approved artifact is the prompt source of truth.  Runtime
-            # canonicalization is diagnostic only and can never replace the
-            # text that the user approved.
-            prompt = approved_prompt
+            # Style 09 is a live source-authored contract. Reassembly after a
+            # source style edit must consume the freshly compiled canonical
+            # prompt; a historical approval remains audit evidence only.
+            if _style09_terminal_execution_lock(style_lock):
+                prompt = canonical_prompt
+                approval_meta["consumed_from"] = "canonical_style09_refresh"
+            else:
+                prompt = approved_prompt
         send_final: Path | None = None
         if project_path is not None and enrich_mode == "send":
             try:
@@ -513,17 +529,40 @@ def build_manifest(
             require_send=require_send_approval and enrich_mode == "send",
         )
         prompt = enrich.prompt
-        if (
-            visual_module is not None
-            and not effective_compact_blueprint
-            and "【视觉设计｜不上屏】" not in prompt
-        ):
-            prompt = append_visual_prompt_module(prompt, visual_module)
+        if visual_module is not None and not effective_compact_blueprint:
+            if style09_surface_adapter:
+                prompt = append_style09_surface_adapter(prompt, visual_module)
+            elif "【视觉设计｜不上屏】" not in prompt:
+                prompt = append_visual_prompt_module(prompt, visual_module)
+        # The visual-structure handoff is page-specific composition guidance.
+        # Reassert the source-authored Style 09 lock after that handoff so a
+        # matrix/swim-lane recipe cannot turn the whole page into a generic
+        # infographic or override the shared surface language.
+        prompt = enforce_style09_terminal_lock(prompt, style_lock)
         enrich_ledger.append({"page_number": page_number, **enrich_result_as_dict(enrich)})
         prompt = _full_prompt_for_variants(prompt, output_variants)
         if approval_meta is not None:
             approval_meta["consumed_prompt_sha256"] = _sha256_text(prompt)
-            approval_meta["consumed_from"] = "approved_prompt"
+            approval_meta.setdefault("consumed_from", "approved_prompt")
+        visual_handoff_metadata = visual_module_metadata(visual_module)
+        if style09_surface_adapter and visual_module is not None:
+            # Style 09 consumes a filtered semantic subset of the handoff.
+            # Concrete layout recipes remain suppressed, while the business
+            # scene/object cues stay in the prompt to prevent generic
+            # table-first rendering on dense pages.
+            visual_handoff_metadata = {
+                **visual_handoff_metadata,
+                "consumed": True,
+                "adapted_by": "style09_surface_adapter",
+                "suppressed_fields": [
+                    "Selected visual intent type",
+                    "Decision relationship",
+                    "Recommended composition",
+                    "Connector map",
+                    "Text rendering",
+                    "Negative constraints",
+                ],
+            }
         stem = _page_stem(page_number, page.title)
         prompt_file = output_dir / "prompts" / f"p{page_number:02d}.txt"
         atomic_write_text(prompt_file, prompt.rstrip() + "\n")
@@ -539,7 +578,7 @@ def build_manifest(
             "image_size": "2x-content-region",
             "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
             "prompt_enrich": enrich_result_as_dict(enrich),
-            "visual_structure_handoff": visual_module_metadata(visual_module),
+            "visual_structure_handoff": visual_handoff_metadata,
             "prompt_provenance": {
                 **(approval_meta or {}),
                 **({
@@ -595,7 +634,7 @@ def build_manifest(
                 "page_script": prompt,
                 "prompt_file": str(prompt_file),
                 **({"reference_images": reference_images} if reference_images else {}),
-                "visual_structure_handoff": visual_module_metadata(visual_module),
+                "visual_structure_handoff": visual_handoff_metadata,
                 **(
                     {
                         "stage02_handoff": str(stage02_handoff_path.resolve()),

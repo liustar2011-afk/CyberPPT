@@ -32,6 +32,7 @@ if __package__ in {None, ""}:
 from cyberppt.commands.script_gate import stage_script
 from cyberppt.script_quality_contract import (
     ScriptPage,
+    strip_authoring_group_marker,
     parse_script_markdown,
     resolve_judgment_mode,
 )
@@ -626,6 +627,10 @@ def _clean_onscreen_for_imagegen(text: str) -> str:
 
     cleaned_lines: list[str] = []
     for raw in text.splitlines():
+        # Row numbers/coordinates are authoring metadata, not audience copy.
+        # Apply this before every compiler (including content-first) so stale
+        # approved prompts cannot reintroduce markers such as ``第X行｜``.
+        raw = strip_authoring_group_marker(raw)
         relation_match = re.match(
             r"^\s*[-*•]?\s*(?P<label>[^：:\n]{2,14})[：:]",
             raw,
@@ -1665,6 +1670,9 @@ def render_content_first_style_contract(style_lock: Path) -> str:
             "【视觉风格｜不上屏】",
             description,
         ]
+        component_rule = str(style.get("component_rule") or "").strip()
+        if component_rule and component_rule not in description:
+            lines.extend(["基础组件约束（仅约束表达方式，不改变本页内容）：", component_rule])
         signature = style.get("imagegen_signature")
         if isinstance(signature, list):
             lines.extend(
@@ -1816,13 +1824,17 @@ def render_page_logic_contract(
     page_mission: str = "",
     visual_context: dict[str, str] | None = None,
     visual_intent_override: dict[str, str] | None = None,
+    include_structure: bool = True,
 ) -> tuple[str, str, str]:
-    """Render relationship type + compact structure form — no drawing recipes.
+    """Render relationship type and optional authoring structure metadata.
 
     Returns ``(relation, intent_source, contract)``.
-    Line 1 names the dominant relation; line 2 optionally carries a compact
-    ``结构形态`` from script ``视觉结构`` (understanding only, not composition
-    how-to). Business meaning stays in【页面语义关系】.
+    The ``结构形态`` field is authoring metadata and may contain concrete layout
+    recipes (matrix rows, swim lanes, node chains, etc.).  Style-specific
+    compilers can set ``include_structure=False`` to keep only the semantic
+    relation and avoid turning a reusable style surface into a page-by-page
+    infographic recipe. Business meaning stays in ``页面语义关系`` and the
+    locked on-screen text.
     """
 
     relation, intent_source = resolve_page_visual_intent(
@@ -1856,9 +1868,10 @@ def render_page_logic_contract(
             for relation_item in page.content_relations
         ]
         lines.append("来源关系：" + json.dumps(drawable_relations, ensure_ascii=False, separators=(",", ":")))
-    structure = compact_visual_structure_for_logic(page.visual_structure)
-    if structure:
-        lines.append(f"结构形态：{structure}")
+    if include_structure:
+        structure = compact_visual_structure_for_logic(page.visual_structure)
+        if structure:
+            lines.append(f"结构形态：{structure}")
     return relation, intent_source, "\n".join(lines)
 
 
@@ -1915,12 +1928,23 @@ def render_content_first_prompt(
             if part
         )
     )
+    # Style 09 is a shared visual surface, not a page-specific blueprint
+    # language.  The final script's ``结构形态`` often contains literal
+    # instructions such as "四行矩阵", "泳道" or "顶部五节点".  Passing that
+    # authoring field to ImageGen makes those recipes dominate the generic
+    # style contract and is the direct cause of the recent P19–P27 card-wall
+    # output.  Keep the semantic intent resolver (which still reads the field)
+    # but do not forward the layout recipe itself for Style 09.
+    selected_style_for_logic = _selected_content_first_style(style_lock)
+    style09_surface = int(selected_style_for_logic.get("id") or 0) == 9
+    include_authoring_structure = not style09_surface
     if semantic_context is None:
         relation, intent_source, logic_contract = render_page_logic_contract(
             page,
             page_mission=page_mission,
             visual_context=visual_context,
             visual_intent_override=visual_intent_override,
+            include_structure=include_authoring_structure,
         )
         semantic_relations = _page_semantic_relations(page)
     else:
@@ -1931,8 +1955,20 @@ def render_content_first_prompt(
             page_mission=page_mission,
             visual_context=semantic_context.visual_context,
             visual_intent_override=semantic_context.visual_intent_override,
+            include_structure=include_authoring_structure,
         )
         semantic_relations = semantic_context.semantic_relations
+    # Only the Stage 02 relationship-aware path has an audited page context to
+    # accompany this compact label.  Keep ordinary direct callers and generic
+    # pages free of a synthetic logic block, as they were before the Style 09
+    # adapter was added.
+    style09_relation_context = style09_surface and bool(
+        visual_context
+        or (
+            semantic_context is not None
+            and semantic_context.visual_context
+        )
+    )
     presentation = presentation_decision or resolve_presentation_decision(
         page,
         relation,
@@ -1951,14 +1987,21 @@ def render_content_first_prompt(
     # judgment_evidence fallback — never force a wrong default into every
     # semantic_only page.
     include_logic_context = bool(
-        relation != "judgment_evidence"
-        and (
-            intent_source in {"explicit", "hint", "contract_relation"}
-            or (
-                intent_source == "scored"
-                and (
-                    bool(semantic_relations)
-                    or judgment_mode == "semantic_only"
+        # Style 09 receives the compact relation label even when the page's
+        # authoring metadata does not provide a high-confidence legacy source.
+        # The label is semantic context only; the layout recipe is suppressed
+        # above, so this cannot recreate a matrix/swim-lane blueprint.
+        style09_relation_context
+        or (
+            relation != "judgment_evidence"
+            and (
+                intent_source in {"explicit", "hint", "contract_relation"}
+                or (
+                    intent_source == "scored"
+                    and (
+                        bool(semantic_relations)
+                        or judgment_mode == "semantic_only"
+                    )
                 )
             )
         )

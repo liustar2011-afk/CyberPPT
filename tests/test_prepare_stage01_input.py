@@ -107,6 +107,9 @@ class PrepareStage01InputTests(unittest.TestCase):
             "source-supported content → the same-strength relation stated by the material",
             text,
         )
+        self.assertIn("<=36 is the preferred band", text)
+        self.assertIn("四行选择矩阵", text)
+        self.assertIn("第X行｜ coordinates", text)
         self.assertIn("Boundary is opt-in, never a mandatory fourth beat", text)
         self.assertIn("never promote it to a peer on-screen module", text)
         self.assertIn("preserve a limitation only when the limitation is itself part of the declared page subject", text)

@@ -20,8 +20,8 @@ def test_style_nine_sample_and_reference_are_available() -> None:
     assert "默认8种风格仍保持1—8不变" in reference
     assert "#F7F6F0" in style09
     assert "#12355B" in style09
-    assert "speech-support" in style09
-    assert "50/50" in style09
-    assert "1/4" in style09
-    assert "one integrated composition" in style09
-    assert "People: default absent" in style09
+    assert "基础组件表达规范（通用）" in style09
+    assert "线条" in style09 and "虚线不作装饰节点链" in style09
+    assert "边框" in style09 and "禁止胶囊" in style09
+    assert "箭头" in style09 and "禁止宽箭头带" in style09
+    assert "形状" in style09 and "低矮、哑光、正视" in style09

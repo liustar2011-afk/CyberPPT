@@ -81,12 +81,12 @@ class ChapterStructureReviewTests(unittest.TestCase):
             self.assertIn("REVIEW_SECTION_MISSING", codes)
             self.assertIn("PAGE_COVERAGE_INCOMPLETE", codes)
 
-    def test_required_review_blocks_confirmation_until_passed(self) -> None:
+    def test_required_review_does_not_block_confirmation(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             project = self.make_project(Path(tmp))
             (project / "manifest.yml").write_text("chapter_review:\n  outline: required\n", encoding="utf-8")
-            with self.assertRaises(FileNotFoundError):
-                write_confirmation_request(project, "outline")
+            request = write_confirmation_request(project, "outline")
+            self.assertTrue(request.is_file())
             prepare_chapter_review_input(project)
             self.complete_review(project)
             run_chapter_review_audit(project)

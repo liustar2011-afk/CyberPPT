@@ -62,7 +62,7 @@ class VisualStructureStageTests(unittest.TestCase):
             self.assertTrue(visual_structure_required(project))
             self.assertTrue((project / "visual").is_dir())
 
-    def test_gate_binds_visual_artifacts_to_current_script(self) -> None:
+    def test_gate_reuses_visual_artifacts_after_script_or_style_refresh(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             project = Path(directory) / "project"
             project.mkdir()
@@ -96,8 +96,7 @@ class VisualStructureStageTests(unittest.TestCase):
             )
             self.assertIsNotNone(assert_visual_structure_ready(project, script))
             script.write_text("changed\n", encoding="utf-8")
-            with self.assertRaisesRegex(ValueError, "stale"):
-                assert_visual_structure_ready(project, script)
+            self.assertIsNotNone(assert_visual_structure_ready(project, script))
 
 
 if __name__ == "__main__":

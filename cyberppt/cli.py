@@ -494,6 +494,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             build_id=args.build_id,
             external_script=args.external_script,
             blueprint_only=args.blueprint_only,
+            no_style_reference=args.no_style_reference,
         )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -926,6 +927,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     final_script_pages_parser.add_argument("--image-timeout", type=int, default=600)
     final_script_pages_parser.add_argument("--force-images", action="store_true")
+    final_script_pages_parser.add_argument(
+        "--no-style-reference",
+        action="store_true",
+        help="Do not pass the Style 09 reference image to the image backend.",
+    )
     final_script_pages_parser.add_argument("--dry-run-images", action="store_true")
     final_script_pages_parser.add_argument(
         "--prompt-enrich",

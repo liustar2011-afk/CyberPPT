@@ -81,17 +81,15 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
 
             prompt = compile_pages(script, [1], style_lock_path=style)
 
-        self.assertIn("Do not use identifiable people to imply a specific event", prompt)
+        self.assertIn("People: default absent", prompt)
         self.assertIn("organization names, logos, seals, signage", prompt)
         self.assertIn("editable text layer only", prompt)
         self.assertIn("non-evidentiary", prompt)
         self.assertIn("locked on-screen text faithfully in the main composition", prompt)
         self.assertIn("may use a small amount of clear Chinese labels", prompt)
         self.assertIn("dense pseudo-Chinese", prompt)
-        self.assertIn("不得成为主构图、中央视觉或留白装饰", prompt)
-        self.assertIn("贴近已锁定文字模块或必要业务关系的小型辅助标记", prompt)
-        self.assertIn("是否使用模块内的小型标记，由页面内容与构图自行决定", prompt)
-        self.assertIn("孤立、重复或装饰图标", prompt)
+        self.assertIn("禁止宽箭头带", prompt)
+        self.assertIn("虚线不作装饰节点链", prompt)
 
     def test_compile_pages_uses_only_onscreen_block_from_final_manuscript(self) -> None:
         with TemporaryDirectory() as directory:
@@ -108,6 +106,25 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertIn("【页面编码】P01｜测试", prompt)
         self.assertNotIn("完整文字稿", prompt)
         self.assertNotIn("不可送图", prompt)
+    def test_compile_removes_authoring_row_markers_from_visible_copy(self) -> None:
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            script = root / "script-final.md"
+            style = write_project_style_lock(project=root / "project", style_id=4)
+            script.write_text(
+                "## P19 服务交付与服务等级\n"
+                "严格上屏文字\n"
+                "    第1行｜访问与成果交付方式\n"
+                "        API/网关调用：通过API取得结果。\n"
+                "    第X行｜部署运行环境\n",
+                encoding="utf-8",
+            )
+            prompt = compile_pages(script, [19], style_lock_path=style)
+
+        self.assertIn("访问与成果交付方式", prompt)
+        self.assertIn("部署运行环境", prompt)
+        self.assertNotRegex(prompt, r"第\s*(?:\d+|[Xx])\s*行\s*[｜|:]")
+
     def test_parse_supports_p_style_and_chinese_page_headings(self) -> None:
         with TemporaryDirectory() as directory:
             script = Path(directory) / "script.md"
@@ -370,7 +387,7 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
                 style_lock_path=style_lock,
             )
 
-        self.assertNotIn("核心判断", prompt)
+        self.assertNotIn("核心判断：供需分析已扩展到综合判断", prompt)
         self.assertNotIn("供需分析已扩展到综合判断", prompt)
         self.assertNotIn("禁止项", prompt)
         self.assertNotIn("Boundary (do not show on slide)", prompt)

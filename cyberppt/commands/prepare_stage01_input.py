@@ -347,6 +347,8 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "Write `上屏文字` as a focused body expression: source-supported content → "
         "the same-strength relation stated by the material → implication or handoff only when supported. "
         "Do not repeat the page title or subtitle inside the body.",
+        "Write each labelled on-screen detail as a short phrase or short sentence: count meaningful Chinese/Latin/numeric characters after the first label separator; <=36 is the preferred band, 37–60 requires shortening or splitting, and >60 is a script-audit error. Keep long judgments, legal boundaries, and necessary complete conclusions in their dedicated fields instead of hiding them inside a detail line.",
+        "Never put compositor instructions such as 四行选择矩阵、阅读顺序、视觉中心、构图说明、泳道/色块/主链呈现 or 第X行｜ coordinates into `上屏文字`; write them under `【视觉结构，不上屏】` or another backend field.",
         "Boundary is opt-in, never a mandatory fourth beat. A boundary, evidence-status, "
         "pending-proof, or research-status module may appear only when it is the primary "
         "meaning of the approved core_message, not merely mentioned by the title, page mission, "

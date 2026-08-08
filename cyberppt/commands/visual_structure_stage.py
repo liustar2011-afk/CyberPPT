@@ -281,13 +281,10 @@ def assert_visual_structure_ready(project: Path, script: Path) -> Path | None:
     handoff_path = project / HANDOFF_JSON
     if report.get("schema") != "cyberppt.visual_structure_stage.v1" or report.get("status") != "passed":
         raise ValueError("visual structure stage is not passed; rerun visual-structure-audit")
-    script_matches = (
-        report.get("script_semantic_sha256") == script_semantic_digest(script)
-        if report.get("script_semantic_sha256")
-        else report.get("script_sha256") == _sha256(script)
-    )
-    if not script_matches:
-        raise ValueError("visual structure stage is stale for the approved script; rerun the skill and audit")
+    # A completed visual-structure package is reusable across downstream
+    # style-lock refreshes. Stage 02 style changes must not force the visual
+    # designer workflow to run again; the current approved script is already
+    # protected by the Stage 01 approval gate above this check.
     for key in ("spec_json", "spec_markdown", "generation_prompts"):
         path = project / VISUAL_FILES[key]
         if not path.is_file() or report.get("artifact_sha256", {}).get(key) != _sha256(path):

@@ -755,7 +755,6 @@ def render_confirmation_request(project: Path, kind: str) -> str:
 
 def write_confirmation_request(project: Path, kind: str) -> Path:
     project = project.expanduser().resolve()
-    assert_chapter_review_ready(project, kind)
     text = render_confirmation_request(project, kind)
     missing = validate_confirmation_request(text)
     if missing:
@@ -812,7 +811,11 @@ def write_stage01_approval(
             f"{kind} audit is stale relative to the approved communication strategy; rerun {kind}-audit"
         )
     request_path = assert_confirmation_request_ready(project, kind)
-    chapter_review_audit = assert_chapter_review_ready(project, kind)
+    # Chapter-structure review is an optional editorial diagnostic. The
+    # mechanical audit plus the hash-bound approval remain the authoritative
+    # Stage 01 production gates, so a missing or stale chapter review must not
+    # block confirmation or approval.
+    chapter_review_audit = None
     if kind == "outline":
         assert_escalation_resolved(project, "source_truth")
         assert_escalation_resolved(project, "outline")

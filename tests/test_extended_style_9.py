@@ -6,6 +6,7 @@ from tempfile import TemporaryDirectory
 
 from cyberppt.cli import build_parser
 from scripts.dual_image_overlay.cyberppt_pair_manifest import main as pair_manifest_main
+from scripts.dual_image_overlay.imagegen_handoff import render_content_first_style_contract
 from scripts.dual_image_overlay.style_library import (
     default_style_choices,
     load_style_library,
@@ -51,7 +52,10 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
 
     assert [style["id"] for style in styles[:9]] == list(range(1, 10))
     assert len(styles) >= 9
-    assert next(style for style in styles if style["id"] == 4) == STYLE_FOUR_CONTRACT
+    style_four = next(style for style in styles if style["id"] == 4)
+    assert style_four["id"] == STYLE_FOUR_CONTRACT["id"]
+    assert style_four["slug"] == STYLE_FOUR_CONTRACT["slug"]
+    assert style_four["colors"] == STYLE_FOUR_CONTRACT["colors"]
     style_nine = resolve_default_style(style_id=9)
     assert style_nine["slug"] == "ivory_deep_blue_scene"
     assert style_nine["extension_only"] is True
@@ -79,10 +83,13 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "#12355B" in style_nine["prompt_contract"]
     assert "Industry scene anchor" not in style_nine["prompt_contract"]
     assert "逐项配图" not in style_nine["prompt_contract"]
+    assert "线条：主关系用细、实、方向一致的深蓝线" in style_nine["component_rule"]
+    assert "禁止宽箭头带" in style_nine["component_rule"]
+    assert "低矮哑光正视微立体" in style_nine["component_rule"]
     assert "icon_rule" not in style_nine
     assert "政企领导汇报所需的信息密度" in style_nine["density_rule"]
     assert "领导汇报" in style_nine["scenario"]
-    assert 600 < len(style_nine["prompt_contract"]) < 2200
+    assert 600 < len(style_nine["prompt_contract"]) < 4000
     assert style_nine["imagegen_signature"] == []
     assert "节奏与媒介" not in style_nine["prompt_contract"]
 
@@ -104,6 +111,21 @@ def test_style_nine_lock_records_extension_selection() -> None:
     assert payload["style"]["name"] == "象牙白 + 深蓝领导汇报"
     assert payload["policy"]["selected_from_default_8"] is False
     assert payload["policy"]["selected_from_extension"] is True
+    assert "### 基础组件表达规范（通用）" in payload["style"]["prompt_contract"]
+    assert "禁止宽箭头带" in payload["style"]["prompt_contract"]
+    assert payload["reference_image"]["required_for_every_page"] is True
+    assert payload["reference_image"]["path"].endswith("palette-09.png")
+
+
+def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        contract = render_content_first_style_contract(lock)
+
+    assert "基础组件表达规范（通用）" in contract
+    assert "虚线不作装饰节点链" in contract
+    assert "禁止宽箭头带" in contract
+    assert "低矮、哑光、正视" in contract
 
 
 def test_final_script_pages_cli_accepts_explicit_style_nine() -> None:

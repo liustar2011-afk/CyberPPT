@@ -536,12 +536,33 @@ def audience_facing_group_label(label: str) -> str:
     """
 
     value = str(label or "").strip()
-    value = re.sub(r"^第\s*(?:[一二三四五六七八九十]+|\d+)\s*行\s*[｜|:]\s*", "", value)
+    value = re.sub(
+        r"^第\s*(?:[一二三四五六七八九十]+|\d+|[Xx])\s*行\s*[｜|:]\s*",
+        "",
+        value,
+    )
     value = re.sub(r"(?:一|二|两|三|四|五|六|七|八|九|十|\d+)个层面$", "", value)
     value = re.sub(r"(控制链|权利对象)层面$", r"\1", value)
     if value == "四个维度分别选择":
         value = "交付维度选择"
     return value.strip(" ：:")
+
+
+def strip_authoring_group_marker(line: str) -> str:
+    """Remove authoring-only row markers while preserving line indentation.
+
+    Final scripts may contain layout coordinates such as ``第1行｜...`` or
+    ``第X行｜...``.  They are useful to an author but are not audience-facing
+    copy and must never be sent to ImageGen as visible text.
+    """
+
+    raw = str(line or "")
+    match = re.match(r"^(\s*)(.*)$", raw, flags=re.S)
+    if not match:
+        return raw
+    indent, body = match.groups()
+    cleaned = audience_facing_group_label(body)
+    return indent + cleaned if cleaned != body else raw
 
 
 def _line_indent(line: str) -> int:
@@ -1494,9 +1515,82 @@ ONSCREEN_BACKEND_META_PHRASES: tuple[str, ...] = (
     "权利对象层面",
 )
 
+# Authoring/layout instructions belong to ``视觉结构（不上屏）`` (or another
+# backend field), not to the reader-facing ``上屏文字`` block.  Keep this list
+# deliberately narrow: a business label such as ``四种合作方式`` or ``五个
+# 环节`` is valid visible copy, while ``四行选择矩阵`` and ``阅读顺序`` are
+# instructions to the compositor rather than content for the audience.
+ONSCREEN_LAYOUT_META_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"^\s*(?:[一二三四五六七八九十百\d]+)\s*行\s*(?:选择)?\s*矩阵(?:表)?\s*$"),
+    re.compile(r"^\s*(?:主视觉|视觉中心|阅读顺序|构图说明|版式说明|布局说明)\s*[：:]"),
+    re.compile(
+        r"^\s*(?:以|采用|按).{0,24}(?:矩阵|泳道|色块|主链|收束条|节点链)"
+        r".{0,24}(?:呈现|构成|排列|阅读|收束)"
+    ),
+    re.compile(r"^\s*第\s*(?:[一二三四五六七八九十百\d]+|[Xx])\s*行\s*[｜|：:]"),
+)
+
+# Detail lines should be short phrases or short sentences.  These thresholds
+# count meaningful Chinese/Latin/numeric characters in the text after the
+# first label separator, so punctuation and a concise label do not hide a
+# paragraph.  The advisory band lets the author see the problem early; the
+# hard band blocks script approval until the detail is split or shortened.
+ONSCREEN_DETAIL_PHRASE_WARNING_CHARS = 36
+ONSCREEN_DETAIL_PHRASE_ERROR_CHARS = 60
+
 
 def _onscreen_backend_meta_hits(text: str) -> tuple[str, ...]:
     return tuple(phrase for phrase in ONSCREEN_BACKEND_META_PHRASES if phrase in text)
+
+
+def _onscreen_layout_meta_hits(text: str) -> tuple[str, ...]:
+    """Return visible lines that are compositor instructions, not slide copy."""
+
+    hits: list[str] = []
+    for raw in text.splitlines():
+        raw_line = re.sub(r"^[-*+•]\s*", "", raw.strip())
+        if re.search(r"^第\s*(?:[一二三四五六七八九十百\d]+|[Xx])\s*行\s*[｜|：:]", raw_line):
+            hits.append(raw_line)
+        line = strip_authoring_group_marker(raw).strip()
+        line = re.sub(r"^[-*+•]\s*", "", line).strip()
+        if not line:
+            continue
+        if any(pattern.search(line) for pattern in ONSCREEN_LAYOUT_META_PATTERNS):
+            hits.append(line)
+    return tuple(dict.fromkeys(hits))
+
+
+def _onscreen_detail_phrase_overages(text: str) -> tuple[tuple[str, int], ...]:
+    """Return ``(line, body_chars)`` for overlong labelled detail lines.
+
+    Module headings and standalone labels are intentionally ignored.  A line
+    becomes a detail candidate only when it contains a label/value separator;
+    this keeps the rule focused on the sentence that would otherwise become a
+    paragraph inside a card, lane, or matrix cell.
+    """
+
+    overages: list[tuple[str, int]] = []
+    for raw in text.splitlines():
+        raw_indent = len(raw) - len(raw.lstrip(" "))
+        had_bullet = bool(re.match(r"^\s*[-*+•]\s+", raw))
+        line = strip_authoring_group_marker(raw).strip()
+        line = re.sub(r"^[-*+•]\s*", "", line).strip()
+        if not line or line.startswith("#") or MODULE_RE.match(line):
+            continue
+        parts = re.split(r"[：:]", line, maxsplit=1)
+        if len(parts) == 2 and parts[1].strip():
+            body = parts[1]
+        elif raw_indent > 0 or had_bullet:
+            # A nested/bulleted line without a label is still a detail line;
+            # the author should give it a short functional label rather than
+            # hiding a paragraph behind a list marker.
+            body = line
+        else:
+            continue
+        body_chars = meaningful_char_count(body)
+        if body_chars > ONSCREEN_DETAIL_PHRASE_WARNING_CHARS:
+            overages.append((line, body_chars))
+    return tuple(overages)
 
 
 # A module heading is a grouping contract, not a bag of nearby nouns.  These
@@ -1908,6 +2002,8 @@ def script_retry_directive(
             "CONTENT_SELECTION_ONSCREEN_MISMATCH",
             "CONTENT_EVIDENCE_MAP_MISSING",
             "PROSE_SOURCE_COVERAGE_GAP",
+            "ONSCREEN_DETAIL_PHRASE_TOO_LONG",
+            "ONSCREEN_LAYOUT_META_LEAK",
             "ONSCREEN_RELATION_ISOMORPHISM",
         }
         for code in codes
@@ -2797,6 +2893,40 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
                     "On-screen text contains backend/process self-talk that must never reach the reader.",
                     "Remove authoring/verification process narration (待核验／仅后台／逻辑顺序／写作说明 etc.) from 上屏文字; keep it in backend fields or drop it entirely.",
                     evidence=backend_meta_hits,
+                )
+            )
+        layout_meta_hits = _onscreen_layout_meta_hits(page.onscreen_text)
+        if layout_meta_hits:
+            issues.append(
+                _issue(
+                    "ONSCREEN_LAYOUT_META_LEAK",
+                    page,
+                    "On-screen text contains compositor/layout instructions rather than audience-facing copy.",
+                    "Move matrix/lane/reading-order/layout instructions to 视觉结构（不上屏） or another backend field; keep only the business labels and short detail phrases in 上屏文字.",
+                    evidence=layout_meta_hits,
+                )
+            )
+        detail_phrase_overages = _onscreen_detail_phrase_overages(page.onscreen_text)
+        if detail_phrase_overages:
+            detail_severity = (
+                "error"
+                if any(
+                    chars > ONSCREEN_DETAIL_PHRASE_ERROR_CHARS
+                    for _line, chars in detail_phrase_overages
+                )
+                else "warning"
+            )
+            issues.append(
+                _issue(
+                    "ONSCREEN_DETAIL_PHRASE_TOO_LONG",
+                    page,
+                    "One or more on-screen detail lines are written as paragraphs instead of short phrases or short sentences.",
+                    "Keep long judgments, legal boundaries, and necessary complete conclusions in their dedicated fields; split each visible detail into a concise label plus one short phrase or sentence.",
+                    evidence=tuple(
+                        f"{chars}字：{line}"
+                        for line, chars in detail_phrase_overages[:8]
+                    ),
+                    severity=detail_severity,
                 )
             )
         compound_heading_hits = _compound_module_heading_hits(

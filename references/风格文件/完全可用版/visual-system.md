@@ -93,11 +93,11 @@
 - 圆角、阴影、分隔线、图标和图片处理；
 - 页眉、页脚、来源和页码处理（默认策略见 `SKILL.md`"默认页面结构策略"：默认不设左上角页码徽章、不设独立页脚区、不含保密声明文字；来源/证据ID/口径改为内容区内联小字。仅当用户明确要求启用时才记录页码徽章/页脚样式）；
 - 间距节奏和目标信息密度。
-- 通用图标策略：仅当所选视觉风格允许普通概念图标时，才从 `chunk-filled`、`tabler-filled`、`tabler-outline` 或 `phosphor-duotone` 中锁定一个 stylistic library；`simple-icons` 仅作为真实品牌 logo 例外。对于明确采用“无图标优先”的视觉风格（如风格09），记录 `icon_policy=none_by_default`，不得预先锁定普通概念图标库；仅当页面脚本明确要求某个具体图标或符号时，才为该页登记例外。
+- 通用图标库选择：从 `chunk-filled`、`tabler-filled`、`tabler-outline` 或 `phosphor-duotone` 中锁定一个 stylistic library；`simple-icons` 仅作为真实品牌 logo 例外。
 
 不要只因为颜色好看就批准风格。网格、密度、层级、图表语言和留白行为共同定义视觉系统。
 
-图标风格属于视觉系统，但并非所有视觉系统都必须使用图标。第二阶段锁定视觉方向后，应先记录 `icon_policy`。仅当 `icon_policy=allowed` 时才锁定通用图标库，第三阶段不得跨库混用普通概念图标；若 `icon_policy=none_by_default`，第二阶段与第三阶段不得为了“视觉丰富度”“语义识别”或“模块区分”主动补充普通概念图标。只有页面脚本明确指定的图标或符号才可作为例外，并须保持小型、从属且不决定构图。
+图标风格也属于视觉系统。第二阶段锁定视觉方向后，应同时锁定通用图标库；第三阶段不得跨库混用普通概念图标。蓝图中的随机概念图标不要求逐像素复刻，但最终 PPT 图标必须语义近似、同库同风格，并通过空间注册反测。
 
 必须额外记录统一页面表面系统：
 
@@ -322,66 +322,156 @@
 
 ## 扩展风格9：象牙白 + 深蓝领导汇报
 
-默认8种风格仍保持1—8不变。风格9仅供显式选择，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用。
+默认8种风格仍保持1—8不变。风格9是仅供显式选择的扩展风格，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用，不进入默认候选。原风格4保持不变，既有风格4项目成果无需迁移。
 
 Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
 
-Identity: senior leadership briefing / speech-support — editorial, restrained, content-led.
+Create a high-end senior leadership briefing page in a scene-led editorial business-infographic style: authoritative, calm, refined, content-led and ready for formal presentation.
 
-### 核心视觉语法
+The default visual medium is one open, coherent business scene or concrete business-object field. The page should first read as a clear business judgment expressed through recognizable objects, actions and outcomes, and then as an information structure. Use abstract geometry, boundaries and connectors to organize concrete meaning, not to replace it.
 
-生成克制、清晰、高级的政企领导汇报页。优先使用可识别的业务场景、具体对象、动作、证据和结果；抽象主题则使用开放、非对称的平面2D编辑式关系场，不得把“平台、中心、枢纽、底座、能力、数据空间”等词具象成展台或三维装置。
+### Positive construction grammar — hard
 
-默认媒介是一处开放、连贯的业务场或具体对象面；页面先读到一个业务锚点，再读到文字关系。锚点在内容允许时占约35%—50%的视觉权重，2—5个文字组共享同一视觉场，不要求独立卡片、图标容器或抬高面。只有当页面语义无法由场景或对象承载时，才使用纯平面关系表达。
+1. Identify the page’s core judgment and primary business relationship.
+2. Select one recognizable, page-specific business anchor: an operating scene, business object, controlled service field, content or data asset, professional work environment, industry facility, evidence structure or visible outcome.
+3. Give the main anchor approximately 35%–50% of the visual field when content permits. Build one integrated, asymmetric and unequally weighted composition around it.
+4. Organize two to five open content groupings around, within or along the main anchor. These groupings share one visual field and do not require independent cards or panels.
+5. Embed all locked Chinese text into the corresponding scene, object, business field, boundary or outcome region.
+6. Use one or two large semantic actions to show how business objects compare, converge, transform, separate, support, pass through control or produce results.
+7. Create hierarchy through crop, overlap, scale contrast, tonal separation, foreground–background relationships, precise alignment and a few short connectors.
+8. Use one clearly emphasized judgment or outcome region to complete the reading path.
 
-- 每页只保留一个核心判断和一种主关系。
-- 使用一个主业务锚点，配合2—5个开放内容组及一个明确结果区；不按条目数量机械均分。
-- 用对齐、留白、比例、裁切、重叠、色块、局部边界和少量连接线表达汇聚、转化、对比、支撑、控制或输出。
-- 保留页面所需的“收束”关系；其视觉方式优先采用对齐、色调、留白和连接关系。短连接箭头可以保留，但标签、色块和承载面必须是普通矩形或开放平面色场，不得做成梯形、切角、箭头带、徽章或异形几何容器。
-- 保留页面所需的色块层次；色块优先作为普通平面色场使用，避免变成异形容器、厚重框体或装饰性立体模块。
-- 实景可保留自然透视；信息图、关系图和语义结构以平面2D为主，允许极浅的微立体承载面、低浮雕层次或轻微前后关系，但必须正视、哑光、克制。
-- 锁定中文必须完整、清晰、原序呈现；先给文字留足空间，再添加场景和证据，不生成伪中文或无关标签。
-- 图文关系应清楚、克制、服务于页面判断；场景、对象或关系场不能沦为无关装饰背景。
-- 允许根据页面语义采用自然的图文布局，但避免刻意堆叠、过度分区和装饰性照片墙。
-- 当无法找到有意义的场景或证据时，使用干净的平面2D关系表达，不强行添加照片或复杂视觉素材。
-- 图标默认数量为零。只有页面脚本明确指定某个具体图标时才允许小型、扁平、从属地使用。
-- 整体使用象牙白、白、浅蓝灰与深蓝，保持编辑式不对称布局、平静留白和高层级可读性。
+Suitable anchors include:
+- multiple source materials being parsed into one structured knowledge object;
+- two business or evidence fields compared around one visible gap;
+- one controlled content object moving through review, approval and output;
+- several foundations visibly supporting one shared capability or judgment;
+- several inputs converging into one service, model, decision or result;
+- one protected asset operating inside a controlled service field;
+- one operational environment showing monitoring, analysis, isolation, review or coordinated action.
 
-### 硬性禁令
+Use one dominant anchor and two to four secondary scene or evidence fragments. Vary their scale, crop and viewpoint. Let some fragments extend beyond local boundaries or overlap quiet color fields so the page feels composed as one visual field rather than assembled from modules.
 
-- 禁止图标墙、图标行、图标网格、一条一图标、徽章、图标卡片和卡片墙。
-- 禁止夸张厚重的展陈舞台、讲台、圆盘、圆柱、同心环、穹顶、胶囊及复杂光效；底部承载台、浅层基座或低浮雕关系面可以使用，但必须低矮、正视、哑光、无戏剧性透视。
-- 禁止玻璃舱、透明壳、立方体、全息物体、金属镜面、霓虹、强辉光、悬浮物、明显挤出和装饰性3D。
-- 禁止仪表盘、SaaS产品营销、应用商店、科技发布会、展陈和未来概念海报语言。
-- 禁止重复表达同一语义，或额外添加底部总结链、第二套流程、装饰性模块。
+### Locked Chinese text and scene integration — hard
 
-### 机械表达控制
+Keep all locked Chinese text complete, unchanged and in its original order. Do not summarize, rewrite, shorten, relabel or convert paragraphs into compressed tags.
 
-避免把页面机械化为等权模块、重复卡片、密集表格、连续箭头或装饰性流程。不要为了整齐而牺牲语义主次，结构应服务于业务关系、对象状态、动作、证据和结果。
+Allocate space for locked text before adding scenes, evidence, icons or decoration. Use one complete and clearly readable text region for each primary content grouping. Do not split one paragraph across several small boxes.
 
-当多个输入、输出或节点承担不同业务角色时，必须用对象、状态、材质或空间位置把角色区分开；不得把不同角色复制成同一种设备、同一种几何符号或同一种装饰。只有源内容明确表示同类对象时，才允许重复同一视觉载体。
+Keep body text at normal senior-presentation reading scale, visually equivalent to approximately 24–30 px at 1280 × 720. If space is limited, simplify scenes, reduce evidence, remove decorative detail or enlarge the text field. Never shrink locked text to fit.
 
-### 基础组件表达规范（通用）
+Render only the locked Chinese text provided in the page script. Screens, documents and interfaces may contain large text-free structures, highlighted regions, check states, contrast areas, approval marks or simplified diagrams, but should not contain invented readable microtext.
 
-- **线条**：主关系用细、实、方向一致的深蓝线；次级边界或反馈可用浅灰短虚线，但虚线不作装饰节点链、不承担主阅读路径。线端必须落在真实对象边界，避免穿过文字、数字和关键对象。
-- **边框**：只用细线普通矩形或开放平面色场，边框服务于分组和边界，不为每段文字重复套框。禁止胶囊、厚重框、梯形、切角、异形、玻璃舱和立体门框；允许一侧开放或局部边界。
-- **箭头**：只在存在真实方向时使用短、细、单向箭头，小箭头头贴近线端。禁止宽箭头带、块状箭头、重复步骤箭头、中心辐射和跨文字连线；闭环用偏向一侧的开放路径或短回接线，不画完整圆环。
-- **形状**：以平面矩形、普通色块和低矮、哑光、正视的微立体承载面为主。禁止把色块做成箭头带、徽章、盾牌、圆盘、中心辐射、梯形或切角容器；禁止夸张挤出、复杂光效和展台化造型。
-- **颜色角色**：深蓝表达主关系和结论，浅蓝灰承载辅助信息；暖色只标记风险、禁止或例外，不做彩色等级卡片墙。组件数量和重复次数服从业务关系，不为填满画布而增加线、框、箭头或形状。
+Treat each primary content grouping as one editorial scene unit containing:
+- one recognizable scene, object or evidence structure;
+- one complete locked-text region;
+- one visible action, condition, state or outcome.
 
-### 高密度内容的通用构图约束
+Place text inside a quiet field within the scene, attach it to the object edge, align it with the corresponding action, or embed it in the outcome region. Text and visual material should read as one semantic unit. The scene carries the business meaning; the locked text completes the judgment.
 
-当页面包含多行正文、多个维度、分类、步骤、输入输出或权利边界时，先把它视为一个连续的业务工作面，而不是一张待排版的信息图。选择一个能承载核心判断的业务锚点（如受控服务场、合同或成果对象、运营工作面、证据场），让文字组围绕、附着或穿过同一视觉面展开。
+### Reusable composition grammars
 
-关系仍可表达，但用不等宽、不等高、开放边缘、局部色场、重叠和少量连接线组织；流程不默认做成连续箭头或步骤卡，分类不默认做成等宽表格、泳道或卡片墙，矩阵不默认铺满整页网格。允许局部保留这些结构，但它们只能从属于主业务工作面，并且只保留能说明主判断的部分。
+Select one primary grammar from the page semantics.
 
-正文很多时，优先扩大主视觉面和文字区、减少模块数量，不通过压缩文字、增加小卡片或堆叠标签解决密度。整页最多一个主场景或主对象、一个辅助证据对象；禁止一类一图、缩略图拼贴、照片条带和多张小场景并列。至少保留一个连续、无容器切割的主视觉区域，让画面先读到业务对象或动作，再读到文字分组；不同业务角色用位置、状态、色调或材质区分，同类对象才适度重复。流程或环节优先表现为同一对象沿连续路径发生状态变化，不要自动画成编号圆点、圆环、连续箭头节点链或等宽阶段框。即使文案出现“闭环”“闭合”或“循环”，也必须用偏向一侧的开放路径、对象状态回到起点或短回接线表达，不得绘制完整圆环、环形节点、中心辐射、圆形流程图或仪表盘；只有源内容明确要求离散图表时才局部使用。
+#### A. Continuous object transformation
 
-### Final ImageGen execution lock — hard
+Use one recognizable business object across the page and show it changing through input, processing, review, control or output. Keep it visually continuous rather than splitting it into separate step cards.
 
-This block must be repeated verbatim at the absolute end of every Style 09 ImageGen prompt and overrides conflicting carrier language elsewhere:
+#### B. Core scene with attached actions
 
-保持扁平2D为主、无图标优先、干净克制。默认媒介是一个开放连贯的业务场或具体对象面，至少保留一个主业务锚点占据明显视觉权重；2—5组文字共享同一视觉面，不自动拆成等宽卡片。线条细、实、方向一致，主关系用深蓝连续线，次级边界或反馈才用浅灰短虚线，虚线不作装饰节点；边框只用细线普通矩形或开放平面色场，不用胶囊、厚框、梯形、切角、异形、玻璃舱或立体门框；箭头只表达真实方向，短、细、箭头头小，不用宽箭头带、块状箭头、中心辐射或跨文字连线，闭环用开放路径或短回接线；形状以平面矩形、普通色块和低矮哑光正视微立体为主，不用徽章、盾牌、圆盘、异形容器、夸张挤出或复杂光效。整页最多一个主场景或主对象、一个辅助证据对象，禁止一类一图、缩略图拼贴、照片条带和多张小场景并列。不得无提示添加盾牌、锁、文件、数据库等概念图标。避免机械化等权模块与重复流程，所有结构服务于业务关系和清晰阅读。高密度页面先构成一个连续业务工作面，再放置不等权、开放的文字组，不要让完整正文自动变成表格、泳道、步骤卡或卡片墙。矩阵、泳道、步骤或节点只作为关系语义参考，不自动复制造成纯信息图；即使语义是矩阵，也不得把整页铺成纯平面表格、规则网格、泳道或多列卡片，应以一个主业务工作面、受控空间或关系场承载不等权开放分组，必要时保留少量平面结构但不让其支配整页。流程优先表现为连续对象或路径的状态变化，不要自动画成编号圆点、圆环、连续箭头节点链或等宽阶段框。即使文案出现“闭环”“闭合”或“循环”，也必须用偏向一侧的开放路径、对象状态回到起点或短回接线表达，不得绘制完整圆环、环形节点、中心辐射、圆形流程图或仪表盘；只有源内容明确要求离散图表时才局部使用。不同业务角色不得复制成同一种视觉载体，只有源内容明确表示同类对象时才允许重复。
+Place one business object, service field or operating environment in the main visual region. Attach supporting capabilities, conditions, controls or outcomes through direct spatial relationships, unequal scale and selective emphasis.
+
+#### C. Dual-field comparison
+
+Use two concrete business fields or states in a controlled comparison. Show the main difference, mismatch or transition through scale, alignment, crop, selective highlighting and one decisive judgment region.
+
+#### D. Multi-source convergence
+
+Show several distinct sources, foundations or actors entering one shared service, capability, result or judgment. Use visible convergence and one dominant outcome field rather than equal parallel modules.
+
+#### E. Concrete controlled containment
+
+Place one recognizable protected object, data asset, content object or operating scene inside a controlled field. Express access, isolation, protection and approved output through checkpoints, partial boundaries, state changes and spatial depth. Keep the concrete object visible; the boundaries organize the relationship rather than becoming the page’s main subject.
+
+Use one grammar per page unless the locked content clearly requires a second relationship.
+
+### Open grouping and executive hierarchy
+
+Use open content groupings within one shared visual field. Group content through common alignment, proximity, shared background tone, partial boundaries and direct attachment to the main scene or object.
+
+Create refinement through:
+- one strong visual judgment;
+- one dominant business anchor;
+- unequal scale, density and detail;
+- controlled asymmetric whitespace;
+- large calm scene regions;
+- precise alignment;
+- selective deep-blue emphasis;
+- one subordinate supporting area;
+- clear foreground, middle-ground and background relationships;
+- open edges and partial contours;
+- short, purposeful connectors.
+
+The core judgment or principal business relationship carries the greatest visual weight. Supporting evidence and explanations remain quieter and subordinate.
+
+Do not distribute content according to item count. Three, four or five text items do not automatically require equal columns, equal rows or equally detailed stages.
+
+Use two to five open groupings, one key outcome region, one large semantic action per primary grouping, at most one supporting evidence object per grouping, and four to six essential connectors across the page.
+
+### Scene richness and visual expression
+
+Create visual richness through meaningful scene selection, varied cropping, unequal scale, selective overlap and viewpoint changes.
+
+Prefer:
+- one dominant scene or concrete business object;
+- one partially cropped supporting scene;
+- one or two close-up evidence fragments;
+- one clearly emphasized outcome or judgment region.
+
+Use realistic or semi-realistic industry and business materials where they strengthen meaning: professional operating environments, controlled content objects, data assets, documents in transformation, review activity, analytical workspaces, industry facilities, service interaction or visible results.
+
+A workspace, device or document should visibly demonstrate the relevant action or state. Screens and interfaces are supporting evidence inside a broader scene, not isolated products or the default visual language.
+
+### Depth and material finish
+
+Maintain a flat editorial foundation. Create depth primarily through overlap, cropping, scale contrast, tonal separation and foreground–background relationships.
+
+Use subtle variations of ivory, white, pale blue-grey and deep blue to distinguish levels. Allow scene fragments, business objects and quiet text fields to overlap slightly where this clarifies hierarchy.
+
+Visible drop shadows are not the default treatment. Use an extremely soft, diffuse and low-contrast shadow only at one or two meaningful overlaps. Most text regions and content groupings remain flat and shadow-free.
+
+Use matte surfaces, precise edges, restrained translucency and gentle tonal transitions. Material depth should strengthen the main anchor and meaningful object relationships without producing floating cards, raised panels or exhibition objects.
+
+### Icons and symbolic marks
+
+Use icons only as small embedded recognition cues inside an existing scene, object or text grouping.
+
+The main business meaning is carried by recognizable scenes, concrete objects, visible actions and outcomes. Icons should never become the largest objects, the repeated structure of the page or the default carrier for each content item.
+
+A typical page may contain one or two small icons. Keep them simple, deep blue and visually subordinate.
+
+### Semantic economy
+
+Represent each locked concept once as the primary textual and visual expression.
+
+A supporting element may add an outcome, condition, boundary or evidence, but should not repeat the same label, rebuild the same sequence or add a paraphrased conclusion.
+
+When the main composition already expresses a process, hierarchy, dimensions or layered relationship, do not add a second icon chain, footer process, repeated layer list or extra summary band unless explicitly required by locked text.
+
+Use one primary visual metaphor across the page. Express remaining relationships through the business scene, object state, position, scale, crop, color fields, partial boundaries and connectors.
+
+Do not automatically convert the page into a left structure + right explanation column + bottom summary chain. Supporting text belongs inside the same integrated composition.
+
+### Essential guardrails
+
+Keep the result free from icon walls, repeated device mockups, dense microtext, generic office decoration, product-showcase rendering, duplicated semantic summaries, glossy 3D objects, glassmorphism, neon glow and floating display objects.
+
+These exclusions are secondary. Always prioritize the positive construction grammar, recognizable business anchoring, open scene-led composition, complete locked text, semantic clarity and executive-level visual hierarchy.
+
+Priority: locked Chinese text and core judgment → recognizable business anchor → business relationships → large-scale semantic actions → evidence and outcomes → crop, overlap and tonal depth → auxiliary symbols.
+
+Final result: one calm, highly readable and visually refined executive-report composition with complete locked text, a recognizable business scene or object, open content grouping, clear page-specific meaning, strong hierarchy, natural spatial depth and no unnecessary semantic repetition.
+
 ## 扩展风格10：象牙白 + 深蓝双层语义汇报2
 
 默认8种风格仍保持1—8不变。风格10是仅供显式选择的扩展风格，可通过 ID `10` 调用，不进入默认候选。

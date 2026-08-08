@@ -890,6 +890,30 @@ def test_page_logic_contract_uses_chinese_spatial_rules() -> None:
     assert "A software architecture stack" not in contract
 
 
+def test_style09_hides_page_layout_recipe_but_keeps_semantic_relation() -> None:
+    page = replace(
+        _page(),
+        visual_structure=(
+            "贯穿主链——四行矩阵表：主视觉顶部呈现横向五节点控制链，"
+            "下方以泳道呈现分类，底部设置收束条。"
+        ),
+        main_message="控制链与分类共同界定业务边界",
+        onscreen_text="- 控制链与权利边界",
+        module_titles=(),
+    )
+    with TemporaryDirectory() as style09_directory, TemporaryDirectory() as style08_directory:
+        style09_lock = write_project_style_lock(project=Path(style09_directory), style_id=9)
+        style08_lock = write_project_style_lock(project=Path(style08_directory), style_id=8)
+        style09_prompt = build_page_prompt(page, style09_lock)
+        style08_prompt = build_page_prompt(page, style08_lock)
+
+    assert "主导关系：" in style09_prompt
+    assert "结构形态：" not in style09_prompt
+    # The adapter is Style 09-specific; other style compilers retain the
+    # existing authoring contract for backward compatibility.
+    assert "结构形态：" in style08_prompt
+
+
 def test_visual_center_reaches_prompt_and_proof_fallback() -> None:
     from scripts.dual_image_overlay.imagegen_handoff import build_page_prompt
 

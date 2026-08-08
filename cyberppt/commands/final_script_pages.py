@@ -641,6 +641,7 @@ def run_final_script_pages(
     build_id: str | None = None,
     external_script: bool = False,
     blueprint_only: bool = False,
+    no_style_reference: bool = False,
 ) -> dict[str, Any]:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
@@ -681,7 +682,7 @@ def run_final_script_pages(
         )
     style_data = _read_style_lock(style_lock)
     full_reference_images: list[Path] = []
-    reference_image = style_data.get("reference_image")
+    reference_image = None if no_style_reference else style_data.get("reference_image")
     if isinstance(reference_image, dict) and reference_image.get("required_for_every_page"):
         reference_path = Path(str(reference_image.get("path", ""))).expanduser().resolve()
         if not reference_path.is_file():

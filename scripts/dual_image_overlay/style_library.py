@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from hashlib import sha256
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -96,7 +97,23 @@ def write_project_style_lock(
             "samples_are_required_for_user_confirmation": True,
         },
     }
+    if int(style.get("id", -1)) == 9 and style.get("sample"):
+        repository_root = path.resolve().parents[3]
+        reference_path = (repository_root / str(style["sample"])).resolve()
+        if reference_path.is_file():
+            payload["reference_image"] = {
+                "path": str(reference_path),
+                "sha256": sha256(reference_path.read_bytes()).hexdigest().upper(),
+                "required_for_every_page": True,
+                "role": "style_reference_only",
+            }
     lock_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if int(style.get("id", -1)) == 9:
+        # Style 09 is authored in references/visual-system.md. Persist the
+        # refreshed source section into the lock itself so every downstream
+        # consumer and hash sees the current source-of-truth immediately.
+        payload = load_style_lock(lock_path)
+        lock_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return lock_path
 
 

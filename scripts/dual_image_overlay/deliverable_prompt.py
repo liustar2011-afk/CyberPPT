@@ -19,6 +19,7 @@ from scripts.dual_image_overlay.visual_grammar import (
     creative_brief_visual_grammar,
     default_visual_grammar,
 )
+from cyberppt.script_quality_contract import strip_authoring_group_marker
 
 
 PAGE_HEADING_RE = re.compile(
@@ -155,6 +156,7 @@ def _drop_line(line: str) -> bool:
 
 def _clean_line(line: str) -> str:
     line = line.strip()
+    line = strip_authoring_group_marker(line)
     line = TITLE_REFERENCE_RE.sub("", line)
     line = QUOTED_EVIDENCE_LABEL_RE.sub("", line)
     line = EVIDENCE_LABEL_RE.sub("", line)
@@ -580,6 +582,61 @@ def _semantic_visual_lines(lines: list[str]) -> list[str]:
     return anchors
 
 
+def _style09_terminal_execution_lock(style_lock_path: Path | None) -> str:
+    """Read Style 09's source-authored terminal lock from the refreshed contract."""
+
+    if style_lock_path is None:
+        return ""
+    # Legacy callers may still pass a plain-text style description (the
+    # content-first compiler accepts that form for styles 1–8).  Style 09
+    # enforcement is optional, so a non-JSON lock must not break those callers.
+    try:
+        payload = load_style_lock(style_lock_path)
+    except (OSError, ValueError, TypeError):
+        return ""
+    style = payload.get("style") if isinstance(payload.get("style"), dict) else payload
+    if int(style.get("id") or 0) != 9:
+        return ""
+    contract = str(style.get("prompt_contract") or "")
+    marker = "### Final ImageGen execution lock — hard"
+    if marker not in contract:
+        return ""
+    tail = contract.split(marker, 1)[1]
+    lines = [line.strip() for line in tail.splitlines() if line.strip()]
+    for line in reversed(lines):
+        if line.startswith("禁止任何图标、徽章、卡片墙") or line.startswith("保持扁平2D"):
+            return line
+    return ""
+
+
+STYLE09_TERMINAL_LOCK_HEADER = "【风格09最终执行锁｜最高优先级】"
+
+
+def enforce_style09_terminal_lock(
+    prompt: str,
+    style_lock_path: Path | None,
+) -> str:
+    """Keep Style 09's execution lock at the actual end of the prompt.
+
+    Visual-structure handoff is appended after the compiled prompt.  Without
+    reasserting the lock here, page-level carrier language (for example a
+    matrix or swim-lane recipe) can silently outrank the source-authored Style
+    09 surface rules.  Remove earlier copies and add one final copy so the
+    precedence contract is true in the string sent to ImageGen.
+    """
+
+    lock = _style09_terminal_execution_lock(style_lock_path)
+    if not lock:
+        return prompt
+    lines = [
+        line
+        for line in str(prompt).splitlines()
+        if line.strip() not in {STYLE09_TERMINAL_LOCK_HEADER, lock}
+    ]
+    body = "\n".join(lines).rstrip()
+    return f"{body}\n\n{STYLE09_TERMINAL_LOCK_HEADER}\n{lock}\n"
+
+
 def render_prompt(
     page: PageBlock,
     *,
@@ -674,6 +731,9 @@ def render_prompt(
             ),
         ]
     )
+    terminal_execution_lock = _style09_terminal_execution_lock(style_lock_path)
+    if terminal_execution_lock:
+        parts.extend(["", STYLE09_TERMINAL_LOCK_HEADER, terminal_execution_lock])
     return "\n".join(parts).strip() + "\n"
 
 

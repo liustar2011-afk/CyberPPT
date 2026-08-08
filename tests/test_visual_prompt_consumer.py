@@ -5,6 +5,7 @@ import unittest
 from cyberppt.visual_prompt_consumer import (
     VISUAL_STRUCTURE_HEADER,
     append_visual_prompt_module,
+    append_style09_surface_adapter,
     load_visual_prompt_module,
     strip_visual_prompt_module,
 )
@@ -124,6 +125,37 @@ no equal card wall
             compiled_text = compiled.read_text(encoding="utf-8")
             self.assertIn(VISUAL_STRUCTURE_HEADER, compiled_text)
             self.assertIn("controlled delivery spine", compiled_text)
+
+    def test_style09_adapter_keeps_scene_semantics_but_drops_layout_recipe(self) -> None:
+        with TemporaryDirectory() as temp:
+            project = Path(temp)
+            visual = project / "visual"
+            visual.mkdir(exist_ok=True)
+            (visual / "generation-prompts.md").write_text(
+                """# Page 6: Test
+
+[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.
+- Industry scene anchor: controlled delivery surface
+- Recommended composition: six-node swim-lane infographic
+- Industry scene anchor: a monitored service workspace
+- business object: a controlled delivery object; semantic role: primary carrier; placement: center 68%
+- Text integration: attach labels to the service boundary
+- Relationship encoding: inputs remain outside until authorized
+
+---
+""",
+                encoding="utf-8",
+            )
+            module = load_visual_prompt_module(project, 6)
+            assert module is not None
+            adapted = append_style09_surface_adapter("APPROVED LOCKED TEXT", module)
+
+        self.assertIn("controlled delivery surface", adapted)
+        self.assertIn("monitored service workspace", adapted)
+        self.assertIn("inputs remain outside until authorized", adapted)
+        self.assertNotIn("six-node swim-lane infographic", adapted)
+        self.assertNotIn("placement: center 68%", adapted)
+        self.assertNotIn(VISUAL_STRUCTURE_HEADER, adapted)
 
 
 if __name__ == "__main__":

@@ -17,13 +17,55 @@ from scripts.dual_image_overlay.cyberppt_pair_manifest import (
     main,
     require_generated,
 )
-from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, render_prompt
+from scripts.dual_image_overlay.deliverable_prompt import (
+    _style09_terminal_execution_lock,
+    parse_page_blocks,
+    render_prompt,
+)
 from scripts.dual_image_overlay.imagegen_handoff import build_page_prompt
 from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
 class CyberpptPairManifestTests(unittest.TestCase):
+    def test_style09_lock_is_reasserted_after_visual_structure_handoff(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "project"
+            project.mkdir()
+            script = root / "script.md"
+            script.write_text(
+                "## P4 建设背景\n"
+                "正文模块：统一连接与可信使用。\n",
+                encoding="utf-8",
+            )
+            style_lock = write_project_style_lock(project=project, style_id=9, source_script=script)
+            visual = project / "visual"
+            visual.mkdir()
+            (visual / "generation-prompts.md").write_text(
+                "# Page 4: 建设背景\n"
+                "[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.\n"
+                "- Recommended composition: use a six-node swim-lane infographic.\n\n"
+                "[Negative constraints]\n- no equal card wall\n---\n",
+                encoding="utf-8",
+            )
+            manifest, _, _, _ = build_manifest(
+                script=script,
+                pages_raw="4",
+                output_dir=root / "images",
+                project_path=project,
+                style_lock=style_lock,
+            )
+            expected_lock = _style09_terminal_execution_lock(style_lock)
+
+        prompt = manifest["pairs"][0]["full"]["prompt"]
+        self.assertNotIn("six-node swim-lane infographic", prompt)
+        self.assertIn("【风格09业务场适配器｜不上屏】", prompt)
+        self.assertTrue(prompt.rstrip().endswith(expected_lock))
+        handoff = manifest["pairs"][0]["visual_structure_handoff"]
+        self.assertTrue(handoff["consumed"])
+        self.assertEqual("style09_surface_adapter", handoff["adapted_by"])
+
     def test_compact_blueprint_uses_handoff_locked_text_without_full_prose(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
