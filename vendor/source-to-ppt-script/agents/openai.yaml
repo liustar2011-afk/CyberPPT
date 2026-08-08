@@ -1,6 +1,0 @@
-interface:
-  display_name: "源材料转PPT脚本"
-  short_description: "将DOCX、PDF、PPTX、MD等材料分阶段编译为可追溯的逐页PPT脚本"
-  default_prompt: "请使用此技能，将我提供的源材料解析为逐页PPT脚本。必须先建立信息资产和页面规划，通过校验后再生成上屏文字与视觉脚本。"
-policy:
-  allow_implicit_invocation: true
