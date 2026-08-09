@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "page_id": "P07",
   "page_number": 7,
   "page_title": "多类行业能力共同形成持续服务基础",
@@ -125,10 +125,71 @@
     ],
     "decision_relationship": "三类行业能力进入统一服务工作台，经可信组织与交付后形成面向行业的赋能结果。"
   },
+  "structural_decision": {
+    "semantic_focus": {
+      "kind": "action",
+      "ref": "E4"
+    },
+    "spatial_grammar": [
+      "anchor",
+      "convergence"
+    ],
+    "semantic_tags": [
+      "support",
+      "transform"
+    ],
+    "primary_refs": [
+      "E4",
+      "E5"
+    ],
+    "secondary_refs": [
+      "E1",
+      "E2",
+      "E3"
+    ],
+    "reading_sequence": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5"
+    ],
+    "text_bindings": [
+      {
+        "evidence_id": "E1",
+        "target_ref": "E1",
+        "binding": "label"
+      },
+      {
+        "evidence_id": "E2",
+        "target_ref": "E2",
+        "binding": "label"
+      },
+      {
+        "evidence_id": "E3",
+        "target_ref": "E3",
+        "binding": "label"
+      },
+      {
+        "evidence_id": "E4",
+        "target_ref": "E4",
+        "binding": "embedded"
+      },
+      {
+        "evidence_id": "E5",
+        "target_ref": "E5",
+        "binding": "result"
+      }
+    ],
+    "representation_freedom": {
+      "carrier": "free",
+      "medium": "free",
+      "reason": "The approved content fixes relationships and text, not a concrete carrier or medium."
+    }
+  },
   "visual_decision": {
     "visual_intent_type": "multi_semantic_foundation",
     "visual_thesis": "用一个电力数据服务运营场景承载多类基础能力，共同汇聚为持续服务中枢。",
-    "dominant_visual_carrier": "电力行业数据服务运营工作台与可信服务中枢的融合场景",
     "spatial_organization": "内容区以中部偏左的共享运营场景为主体，三类能力作为场景内对象从后方和下方进入，中部形成可信服务工作台，右前方展开服务对象与结果。",
     "reading_path": [
       "三类行业能力",

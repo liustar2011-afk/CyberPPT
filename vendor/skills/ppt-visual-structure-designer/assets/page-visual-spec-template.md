@@ -22,8 +22,12 @@
 - 视觉意图类型：{{visual_intent_type}}
 - 视觉主张：{{visual_thesis}}
 - 决策关系：{{decision_relationship}}
-- 主视觉载体：{{dominant_visual_carrier}}
-- 单一视觉中心：{{single_visual_center}}
+- 语义焦点：{{semantic_focus_kind}} / {{semantic_focus_ref}}
+- 空间语法：{{spatial_grammar}}
+- 主结构：{{primary_refs}}
+- 次级结构：{{secondary_refs}}
+- 文字归属：{{text_bindings}}
+- 表达自由度：{{representation_freedom}}
 - 阅读路径：{{reading_path}}
 
 ### 页面草图

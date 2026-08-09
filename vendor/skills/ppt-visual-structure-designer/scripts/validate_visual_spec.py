@@ -53,11 +53,68 @@ def schema_validate(data: dict, path: Path, skill_root: Path, issues: list[dict[
 
 def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
     n = page.get("page_number")
+    schema_version = str(page.get("schema_version") or "")
     vd = page.get("visual_decision", {})
     if vd.get("visual_center_count") != 1:
         add(issues, "error", "visual_center", "Page must have exactly one visual center", n)
-    if not vd.get("dominant_visual_carrier"):
+    if schema_version == "1.0" and not vd.get("dominant_visual_carrier"):
         add(issues, "error", "dominant_carrier", "Dominant visual carrier is required", n)
+    if schema_version == "1.0":
+        add(
+            issues,
+            "warning",
+            "legacy_schema",
+            "Schema 1.0 is supported for compatibility; migrate to structural_decision v1.1",
+            n,
+        )
+    structural = page.get("structural_decision")
+    if isinstance(structural, dict):
+        graph = page.get("semantic_graph", {})
+        nodes = {str(value) for value in graph.get("nodes", [])}
+        evidence = {
+            str(item.get("id")): item
+            for item in page.get("evidence_units", [])
+            if isinstance(item, dict) and item.get("id")
+        }
+        focus = structural.get("semantic_focus", {})
+        focus_ref = str(focus.get("ref") or "") if isinstance(focus, dict) else ""
+        if focus_ref not in nodes:
+            add(issues, "error", "semantic_focus_ref", f"Semantic focus ref is not a graph node: {focus_ref}", n)
+        primary_refs = [str(value) for value in structural.get("primary_refs", [])]
+        secondary_refs = [str(value) for value in structural.get("secondary_refs", [])]
+        reading_sequence = [str(value) for value in structural.get("reading_sequence", [])]
+        for field, refs in (
+            ("primary_refs", primary_refs),
+            ("secondary_refs", secondary_refs),
+            ("reading_sequence", reading_sequence),
+        ):
+            unknown = sorted(set(refs) - nodes)
+            if unknown:
+                add(issues, "error", "structural_ref", f"{field} contains unknown graph nodes: {unknown}", n)
+        overlap = sorted(set(primary_refs).intersection(secondary_refs))
+        if overlap:
+            add(issues, "error", "structural_hierarchy", f"Primary and secondary refs overlap: {overlap}", n)
+        if focus_ref and focus_ref not in primary_refs:
+            add(issues, "error", "semantic_focus_hierarchy", "Semantic focus must be included in primary_refs", n)
+        bound_evidence: set[str] = set()
+        for binding in structural.get("text_bindings", []):
+            if not isinstance(binding, dict):
+                continue
+            evidence_id = str(binding.get("evidence_id") or "")
+            target_ref = str(binding.get("target_ref") or "")
+            if evidence_id not in evidence:
+                add(issues, "error", "text_binding_evidence", f"Unknown evidence id in text binding: {evidence_id}", n)
+            else:
+                bound_evidence.add(evidence_id)
+            if target_ref not in nodes:
+                add(issues, "error", "text_binding_target", f"Unknown graph node in text binding: {target_ref}", n)
+        missing_p0 = sorted(
+            evidence_id
+            for evidence_id, item in evidence.items()
+            if item.get("priority") == "P0" and evidence_id not in bound_evidence
+        )
+        if missing_p0:
+            add(issues, "error", "p0_text_binding", f"P0 evidence has no structural text binding: {missing_p0}", n)
     ti = page.get("text_integration", {})
     if ti.get("minimum_font_pt", 0) < MINIMUM_FONT_PT:
         add(
@@ -182,8 +239,19 @@ def validate_markdown(path: Path) -> dict:
             if token.lower() in final.lower():
                 add(issues, "error", "placeholder", f"Placeholder text found: {token}", number)
         visual = section_text(block, "视觉意图")
-        if "主视觉载体" not in visual or "单一视觉中心" not in visual:
-            add(issues, "error", "visual_decision", "视觉意图 must state dominant carrier and single visual center", number)
+        legacy_visual = "主视觉载体" in visual and "单一视觉中心" in visual
+        structural_visual = all(
+            token in visual
+            for token in ("语义焦点", "空间语法", "主结构", "文字归属")
+        )
+        if not (legacy_visual or structural_visual):
+            add(
+                issues,
+                "error",
+                "visual_decision",
+                "视觉意图 must state either the legacy carrier contract or semantic focus, spatial grammar, primary structure and text bindings",
+                number,
+            )
         match = re.search(r"视觉意图类型[：:]\s*`?([a-z0-9_-]+)", visual)
         intents.append(match.group(1) if match else "")
         rendering = section_text(block, "标题与文字渲染")

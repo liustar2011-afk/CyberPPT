@@ -8,11 +8,17 @@ from pathlib import Path
 
 def page_prompt(page: dict) -> str:
     vd = page["visual_decision"]
+    structural = page.get("structural_decision") or {}
     sg = page["semantic_graph"]
     ip = page["image_plan"]
     ti = page["text_integration"]
     handoff = page["generation_handoff"]
     reading = " -> ".join(vd["reading_path"])
+    focus = structural.get("semantic_focus") or {}
+    grammar = ", ".join(structural.get("spatial_grammar") or [])
+    dominant = vd.get("dominant_visual_carrier") or (
+        f"semantic focus {focus.get('ref', '')} expressed through {grammar}"
+    ).strip()
     avoid = "; ".join(page.get("avoid", []) + handoff.get("negative_constraints", []))
     required_text = "\n".join(f"- {text}" for text in handoff["required_text"])
     connectors = "\n".join(
@@ -29,7 +35,7 @@ Preserve all required on-screen text, numbers, units, names, status words, and b
 - Selected visual intent type: {vd["visual_intent_type"]}
 - Visual thesis: {vd["visual_thesis"]}
 - Decision relationship: {sg["decision_relationship"]}
-- Dominant visual carrier: {vd["dominant_visual_carrier"]}
+- Dominant visual carrier: {dominant}
 - Recommended composition: {vd["spatial_organization"]}
 - Reading path: {reading}
 - Industry scene anchor: {ip["scene_type"]}; business object: {ip["business_object"]}; semantic role: {ip["semantic_role"]}; placement: {ip["placement"]}

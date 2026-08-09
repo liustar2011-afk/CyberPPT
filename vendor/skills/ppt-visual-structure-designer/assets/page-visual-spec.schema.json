@@ -25,9 +25,46 @@
     "avoid",
     "qa"
   ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "1.0"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "visual_decision": {
+            "required": [
+              "dominant_visual_carrier"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "1.1"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "structural_decision"
+        ]
+      }
+    }
+  ],
   "properties": {
     "schema_version": {
-      "const": "1.0"
+      "enum": [
+        "1.0",
+        "1.1"
+      ]
     },
     "page_id": {
       "type": "string",
@@ -254,13 +291,166 @@
         }
       }
     },
+    "structural_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_focus",
+        "spatial_grammar",
+        "semantic_tags",
+        "primary_refs",
+        "secondary_refs",
+        "reading_sequence",
+        "text_bindings",
+        "representation_freedom"
+      ],
+      "properties": {
+        "semantic_focus": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "ref"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "entity",
+                "action",
+                "state",
+                "relationship",
+                "outcome"
+              ]
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "spatial_grammar": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "anchor",
+              "path",
+              "convergence",
+              "divergence",
+              "layer",
+              "boundary",
+              "interface",
+              "network",
+              "tension",
+              "feedback",
+              "control"
+            ]
+          }
+        },
+        "semantic_tags": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "primary_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "secondary_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "reading_sequence": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "text_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "evidence_id",
+              "target_ref",
+              "binding"
+            ],
+            "properties": {
+              "evidence_id": {
+                "type": "string",
+                "pattern": "^E[0-9]+$"
+              },
+              "target_ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "binding": {
+                "enum": [
+                  "label",
+                  "annotation",
+                  "embedded",
+                  "result"
+                ]
+              }
+            }
+          }
+        },
+        "representation_freedom": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "carrier",
+            "medium",
+            "reason"
+          ],
+          "properties": {
+            "carrier": {
+              "enum": [
+                "free",
+                "constrained"
+              ]
+            },
+            "medium": {
+              "enum": [
+                "free",
+                "scene_required",
+                "diagram_required"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
     "visual_decision": {
       "type": "object",
       "additionalProperties": false,
       "required": [
         "visual_intent_type",
         "visual_thesis",
-        "dominant_visual_carrier",
         "spatial_organization",
         "reading_path",
         "text_integration_method",
@@ -279,7 +469,8 @@
         },
         "dominant_visual_carrier": {
           "type": "string",
-          "minLength": 6
+          "minLength": 6,
+          "deprecated": true
         },
         "spatial_organization": {
           "type": "string",

@@ -64,9 +64,13 @@ Markdown用于人工预审和生图脚本组装，JSON用于自动校验、批�
 - 视觉意图类型。
 - 视觉主张。
 - 决策关系。
-- 主视觉载体。
-- 单一视觉中心。
+- 语义焦点及其类型。
+- 空间语法。
+- 主结构与次级结构所引用的语义节点。
+- P0证据的文字归属。
 - 阅读路径。
+
+旧版“主视觉载体、单一视觉中心”字段仅用于读取`1.0`合同，不作为`1.1`结构真值。
 
 ### 页面草图
 
@@ -111,6 +115,7 @@ Markdown用于人工预审和生图脚本组装，JSON用于自动校验、批�
 - `content_lock`
 - `evidence_units`
 - `semantic_graph`
+- `structural_decision`
 - `visual_decision`
 - `text_integration`
 - `geometry`
@@ -122,6 +127,16 @@ Markdown用于人工预审和生图脚本组装，JSON用于自动校验、批�
 - `qa`
 
 具体类型以`assets/page-visual-spec.schema.json`和`assets/deck-visual-spec.schema.json`为准。
+
+`schema_version: 1.1`必须包含`structural_decision`：
+
+- `semantic_focus`：引用语义图中的实体、动作、状态、关系或结果。
+- `spatial_grammar`：描述关系如何空间化，不指定具体媒介。
+- `semantic_tags`：记录可组合的次级语义标签。
+- `primary_refs`与`secondary_refs`：形成唯一主结构和从属关系。
+- `reading_sequence`：使用语义图节点ID记录阅读顺序。
+- `text_bindings`：将证据单元绑定到语义节点。
+- `representation_freedom`：记录载体和媒介是否受来源约束。
 
 ## 内容锁定
 
