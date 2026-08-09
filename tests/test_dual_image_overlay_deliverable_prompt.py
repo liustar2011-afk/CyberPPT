@@ -97,7 +97,19 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
             script = root / "script-final.md"
             style = write_project_style_lock(project=root / "project", style_id=4)
             script.write_text(
-                "## 第1页：测试\n- 页面类型：内容页\n- 完整文字稿：不可送图\n- 上屏文字：\n\n  **可画模块**\n\n  - 可画要点\n\n- 证据：S001\n- 边界：不可送图\n【演讲者备注】\n不可送图\n",
+                "## 第1页：测试\n"
+                "- 页面类型：内容页\n"
+                "- ### 完整文字稿\n"
+                "- 不可送图\n"
+                "### 上屏文字（严格锁定）\n"
+                "可画模块\n"
+                "可画要点\n"
+                "- - 上屏模块清单：[\"可画模块\"]\n"
+                "- ### 逻辑骨架\n"
+                "- 不可送图逻辑\n"
+                "- ### 证据映射\n"
+                "- 不可送图证据\n"
+                "【演讲者备注】\n不可送图备注\n",
                 encoding="utf-8",
             )
             prompt = compile_pages(script, [1], style_lock_path=style)
@@ -169,6 +181,9 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertIn("No evidence IDs, watermarks, debug marks, or placeholders.", prompt)
         self.assertNotIn("不得出现证据编号", prompt)
         self.assertIn("【内容锁定】", prompt)
+        self.assertIn("可读文字严格白名单", prompt)
+        self.assertIn("不得从完整句中抽取词语另做标签", prompt)
+        self.assertIn("其内部不得承载白名单之外的可读文字", prompt)
         self.assertNotIn("## 第2页：", prompt)
         self.assertNotIn("\n标题：", prompt)
         self.assertNotIn("\n副标题：", prompt)
@@ -395,6 +410,7 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertNotIn("Boundary text must not appear on the slide", prompt)
         self.assertIn("上屏文字", prompt)
         self.assertIn("关键变化", prompt)
+        self.assertIn("可读文字严格白名单", prompt)
         self.assertIn("不要生成页面标题、副标题、Logo、页脚", prompt)
         self.assertIn("No evidence IDs, watermarks, debug marks, or placeholders.", prompt)
         self.assertNotIn("不得出现证据编号", prompt)

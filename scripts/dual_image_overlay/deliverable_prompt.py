@@ -233,12 +233,23 @@ def visible_deliverable_lines(page: PageBlock) -> list[str]:
     # block rather than trying to delete every non-drawable field line-by-line.
     raw_lines = page.text.splitlines()
     onscreen_start = next(
-        (index for index, line in enumerate(raw_lines) if re.match(r"^\s*-\s*上屏文字[：:]?\s*$", line)),
+        (
+            index
+            for index, line in enumerate(raw_lines)
+            if re.match(
+                r"^\s*(?:-\s*)?(?:#{1,6}\s*)?上屏文字(?:（严格锁定）)?[：:]?\s*$",
+                line,
+            )
+        ),
         None,
     )
     if onscreen_start is not None:
         selected: list[str] = []
         for raw in raw_lines[onscreen_start + 1 :]:
+            if re.match(r"^\s*(?:-\s*)?#{1,6}\s+", raw):
+                break
+            if re.match(r"^\s*(?:-\s*){1,2}上屏(?:模块|顶层模块)清单[：:]", raw):
+                break
             if re.match(r"^\s*-\s*(?:证据|边界|视觉结构|讲解提示|演讲者备注)[：:]", raw):
                 break
             if raw.strip().startswith("【演讲者备注】"):
@@ -719,6 +730,14 @@ def render_prompt(
         "Do not invent section labels like meta headers; only render 上屏文字 modules.",
         ]
     )
+    if not semantic_visual:
+        parts.extend(
+            [
+                "可读文字严格白名单：图中只允许逐条完整呈现【内容锁定】中的字符串；除此之外不得出现任何可读文字。",
+                "不得从完整句中抽取词语另做标签、按钮、图例、流程节点或项目符号；不得把同一内容以正文和拆分标签重复呈现。",
+                "大屏、图表、文件、装置或图标可以按业务语义使用，但其内部不得承载白名单之外的可读文字；空间不足时减少视觉元素或扩大文字区，不得新增微型文字。",
+            ]
+        )
     parts.extend(
         [
             "",
