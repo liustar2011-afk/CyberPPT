@@ -509,6 +509,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             external_script=args.external_script,
             blueprint_only=args.blueprint_only,
             no_style_reference=args.no_style_reference,
+            skip_image_text_audit=args.skip_image_text_audit,
         )
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -961,6 +962,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Do not pass the Style 09 reference image to the image backend.",
     )
     final_script_pages_parser.add_argument("--dry-run-images", action="store_true")
+    final_script_pages_parser.add_argument(
+        "--skip-image-text-audit",
+        action="store_true",
+        help=(
+            "Generate each image once without OCR/vision text audit or correction retries. "
+            "The default production text gate remains enabled."
+        ),
+    )
     final_script_pages_parser.add_argument(
         "--prompt-enrich",
         choices=("off", "deterministic", "send"),

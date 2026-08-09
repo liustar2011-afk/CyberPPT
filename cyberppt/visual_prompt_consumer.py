@@ -25,17 +25,42 @@ _STYLE09_SEMANTIC_FIELDS = (
 )
 
 _LAYOUT_BEARING_TEXT_INTEGRATION_RE = re.compile(
-    r"(?:位于|置于|放在|上部|下部|顶部|底部|左侧|右侧|居中|结果区|结论区)"
+    r"(?:位于|置于|放在|上部|下部|顶部|底部|左侧|右侧|居中|结果区|结论区|"
+    r"沿.*(?:路径|节点)|贴近.*节点|闭环路径)"
+)
+
+_STYLE09_VISUAL_THESIS_FIELD = "Visual thesis:"
+_STYLE09_CLOSED_LOOP_INTENT = "Selected visual intent type: closed_loop_operation"
+
+_STYLE09_RELATION_NORMALIZATIONS = (
+    ("平台运营闭环", "平台运营关系"),
+    ("反馈回路", "运营反馈返回前序环节"),
+    ("主链按顺时针推进", "主关系依次发生"),
+    ("按顺时针推进", "依次发生"),
+    ("反馈线单独回到", "运营反馈返回"),
+    ("反馈线回到", "运营反馈返回"),
+)
+
+_STYLE09_NEGATIVE_GEOMETRY_CLAUSE_RE = re.compile(
+    r"(?:不使用|不要|不得|禁止).*(?:圆环|箭头|网格|泳道|阶段框|节点链)"
 )
 
 
 def _sanitize_style09_semantic_segment(segment: str) -> str:
     """Keep text-object semantics but discard stale placement instructions."""
-    if not segment.startswith("Text integration:"):
+    if ":" not in segment:
         return segment
     prefix, value = segment.split(":", 1)
     clauses = [part.strip() for part in re.split(r"(?<=[。！？])|，", value) if part.strip()]
-    kept = [part for part in clauses if not _LAYOUT_BEARING_TEXT_INTEGRATION_RE.search(part)]
+    kept: list[str] = []
+    for clause in clauses:
+        if prefix == "Text integration" and _LAYOUT_BEARING_TEXT_INTEGRATION_RE.search(clause):
+            continue
+        if _STYLE09_NEGATIVE_GEOMETRY_CLAUSE_RE.search(clause):
+            continue
+        for source, replacement in _STYLE09_RELATION_NORMALIZATIONS:
+            clause = clause.replace(source, replacement)
+        kept.append(clause)
     return f"{prefix}: {'，'.join(kept).rstrip('。')}。" if kept else ""
 
 
@@ -153,10 +178,16 @@ def append_style09_surface_adapter(
     if module is None:
         return base
     lines: list[str] = []
+    visual_thesis = ""
+    closed_loop_operation = False
     for raw_line in module.prompt_text.splitlines():
         line = raw_line.strip().lstrip("-").strip()
         if not line:
             continue
+        if line.startswith(_STYLE09_VISUAL_THESIS_FIELD):
+            visual_thesis = line.split(":", 1)[1].strip().rstrip("。")
+        elif line.startswith(_STYLE09_CLOSED_LOOP_INTENT):
+            closed_loop_operation = True
         # The visual handoff often packs several labelled facts into one
         # semicolon-separated line (for example, ``business object`` followed
         # by ``placement``). Split first so layout-bearing fields cannot hitch
@@ -167,16 +198,25 @@ def append_style09_surface_adapter(
                 segment = _sanitize_style09_semantic_segment(segment)
                 if segment:
                     lines.append(f"- {segment}")
+    if closed_loop_operation and visual_thesis:
+        lines = [
+            line
+            for line in lines
+            if not line.startswith(("- Industry scene anchor:", "- business object:"))
+        ]
+        lines.insert(
+            0,
+            "- Dominant semantic carrier: 同一业务对象沿连续状态变化承载业务机制："
+            f"{visual_thesis}。",
+        )
     block = "\n".join(
         [
             STYLE09_SURFACE_HEADER,
-            "仅保留业务语义锚点，不照抄原页面的矩阵、泳道、卡片、节点链或固定版式；这些字段不上屏。",
+            "以下字段只提供页面业务语义锚点，不上屏；不照抄原页面固定版式。",
             "用一个连续的业务场或具体对象承载文字，让文字附着于对象、边界、动作或结果；关系可用对齐、色调、留白和少量连接线表达。",
             *lines,
             "不要把上述语义字段改造成等宽表格、泳道、步骤卡、连续箭头节点链、图标行或纯信息图。",
-            "“通道、路径、链、闭环、控制台”等词只表示业务关系，不要具象成整页箭头带、完整圆环、环形节点、规则网格或等宽阶段框；推进和收束用同一对象的状态变化、开放折线路径、短回接线、对齐、色调和留白表达。",
-            "基础组件保持克制：先用邻接、对齐、包含、留白和颜色表达关系，只有真实方向无法由空间关系读出时才使用箭头。编号、自然邻接或同一连续基线已表达顺序时，不重复添加逐项箭头；整条流程优先只保留一条主方向线或一个末端箭头。主业务流用深蓝细实线和贴近线端的小型三角箭头头，反馈或复盘最多一条浅灰短虚线；虚线不作装饰节点、不沿页面三边绕行，也不同时承担边框、回流和装饰。每条线必须落在对象外边界，圆点只用于真实接口、汇聚或分支，不得悬空、靠近但不接触、跨越文字。",
-            "整页可见边界最多两级：一级业务范围边界、一级必要子组边界；组内项目优先用留白、对齐、浅色底或短分隔线，不逐项完整套框。标签、色块和承载面默认用直角矩形或开放平面色场，同页异形标题条最多一个，不做梯形、六边形、切角、箭头带、徽章、厚底座或多层台阶；低矮平台只在平台承载、分层支撑或汇聚中枢语义明确时使用，且不得兼作页面外框、标题底座和装饰舞台。锁定内容未明确要求时，不添加对勾、警告三角、循环图标、定位针、盾牌或装饰性连续箭头。最多一个主业务场景或主对象、一个辅助证据对象，保持正视、哑光、克制的微立体层次。",
+            "业务语义字段只保留先后、反馈、约束、汇聚或分支等事实关系，不从字段名称推导具体造型；连接关系保持轻量、从属，不支配页面。",
         ]
     )
     return f"{base.rstrip()}\n\n{block}\n"

@@ -221,6 +221,52 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertTrue(manifest["pairs"][0]["full"]["text_audit"]["valid"])
             self.assertEqual(2, len(summary["text_audits"]))
 
+    def test_skip_text_audit_generates_once_without_ocr_or_correction_retry(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "page-004.png"
+            manifest = {
+                "production_mode": "full-image",
+                "pairs": [
+                    {
+                        "page_number": 4,
+                        "image_text_truth": {"script_text": "数据产品"},
+                        "full": {
+                            "path": str(output),
+                            "prompt": "prompt",
+                            "canvas": "2048x1024",
+                        },
+                    }
+                ],
+            }
+
+            def generate_image(**kwargs: object) -> None:
+                Path(str(kwargs["output_path"])).write_bytes(b"generated")
+
+            with (
+                patch(
+                    "cyberppt.commands.final_script_pages.run_codex_image",
+                    side_effect=generate_image,
+                ) as generate,
+                patch("cyberppt.image_text_gate.audit_generated_image_text") as audit,
+                patch("cyberppt.commands.final_script_pages.ensure_output_size") as enhance,
+            ):
+                summary = _generate_manifest_images(
+                    manifest,
+                    model="gpt-image-2",
+                    quality="high",
+                    timeout=600,
+                    force=True,
+                    dry_run=False,
+                    skip_text_audit=True,
+                )
+
+            generate.assert_called_once()
+            audit.assert_not_called()
+            enhance.assert_called_once_with(output, "2048x1024")
+            self.assertTrue(summary["text_audit_skipped"])
+            self.assertEqual([], summary["text_audits"])
+            self.assertNotIn("text_audit", manifest["pairs"][0]["full"])
+
     def _approve_inputs_and_prompts(self, project: Path, script: Path, style_id: int = 4) -> None:
         manifest = project / "manifest.yml"
         manifest.write_text(

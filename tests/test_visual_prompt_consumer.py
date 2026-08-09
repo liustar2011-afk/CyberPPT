@@ -144,12 +144,17 @@ no equal card wall
                 """# Page 6: Test
 
 [Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.
+- Selected visual intent type: closed_loop_operation
+- Visual thesis: 产品形成链与订单履行链通过运营反馈持续优化和退出
 - Industry scene anchor: controlled delivery surface
 - Recommended composition: six-node swim-lane infographic
 - Industry scene anchor: a monitored service workspace
 - business object: a controlled delivery object; semantic role: primary carrier; placement: center 68%
+- business object: 具有明确起点、交付门控和反馈回路的平台运营闭环
 - Text integration: attach labels to the service boundary
+- Text integration: 阶段文字沿闭环路径附着，门控与退出条件贴近对应节点。
 - Relationship encoding: inputs remain outside until authorized
+- Relationship encoding: 主链按顺时针推进，反馈线单独回到产品形成段，不使用装饰圆环。
 
 ---
 """,
@@ -159,18 +164,50 @@ no equal card wall
             assert module is not None
             adapted = append_style09_surface_adapter("APPROVED LOCKED TEXT", module)
 
-        self.assertIn("controlled delivery surface", adapted)
-        self.assertIn("monitored service workspace", adapted)
+        self.assertNotIn("controlled delivery surface", adapted)
+        self.assertNotIn("monitored service workspace", adapted)
         self.assertIn("inputs remain outside until authorized", adapted)
+        self.assertIn(
+            "Dominant semantic carrier: 同一业务对象沿连续状态变化承载业务机制：产品形成链与订单履行链通过运营反馈持续优化和退出。",
+            adapted,
+        )
         self.assertNotIn("six-node swim-lane infographic", adapted)
         self.assertNotIn("placement: center 68%", adapted)
         self.assertNotIn(VISUAL_STRUCTURE_HEADER, adapted)
-        self.assertIn("编号、自然邻接或同一连续基线已表达顺序时", adapted)
-        self.assertIn("反馈或复盘最多一条浅灰短虚线", adapted)
-        self.assertIn("每条线必须落在对象外边界", adapted)
-        self.assertIn("整页可见边界最多两级", adapted)
-        self.assertIn("同页异形标题条最多一个", adapted)
-        self.assertIn("不添加对勾、警告三角、循环图标", adapted)
+        self.assertIn("用一个连续的业务场或具体对象承载文字", adapted)
+        self.assertIn("运营反馈返回产品形成段", adapted)
+        self.assertIn("主关系依次发生", adapted)
+        self.assertNotIn("平台运营闭环", adapted)
+        self.assertNotIn("反馈回路", adapted)
+        self.assertNotIn("反馈线", adapted)
+        self.assertNotIn("顺时针", adapted)
+        self.assertNotIn("闭环路径", adapted)
+        self.assertNotIn("装饰圆环", adapted)
+        self.assertNotIn("整页可见边界最多两级", adapted)
+        self.assertNotIn("同页异形标题条最多一个", adapted)
+
+    def test_style09_adapter_does_not_add_mechanism_carrier_to_other_intents(self) -> None:
+        with TemporaryDirectory() as temp:
+            project = Path(temp)
+            visual = project / "visual"
+            visual.mkdir(exist_ok=True)
+            (visual / "generation-prompts.md").write_text(
+                """# Page 18: Test
+
+[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.
+- Selected visual intent type: evidence_to_judgment
+- Visual thesis: 多类证据共同支撑判断
+- Industry scene anchor: 真实业务证据场
+---
+""",
+                encoding="utf-8",
+            )
+            module = load_visual_prompt_module(project, 18)
+            assert module is not None
+            adapted = append_style09_surface_adapter("APPROVED LOCKED TEXT", module)
+
+        self.assertIn("Industry scene anchor: 真实业务证据场", adapted)
+        self.assertNotIn("Dominant semantic carrier:", adapted)
 
 
 if __name__ == "__main__":

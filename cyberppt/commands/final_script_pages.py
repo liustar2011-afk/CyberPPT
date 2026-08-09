@@ -563,6 +563,7 @@ def _generate_manifest_images(
     timeout: int,
     force: bool,
     dry_run: bool,
+    skip_text_audit: bool = False,
 ) -> dict[str, Any]:
     production_mode = str(manifest.get("production_mode") or FULL_IMAGE_MODE)
     variants = output_variants_for_mode(production_mode)
@@ -579,7 +580,11 @@ def _generate_manifest_images(
         for variant in variants:
             item = pair.get(variant) or {}
             output_path = Path(str(item.get("path", "")))
-            text_truth = pair.get("image_text_truth") if variant == "full" else None
+            text_truth = (
+                pair.get("image_text_truth")
+                if variant == "full" and not skip_text_audit
+                else None
+            )
             has_text_receipt = (item.get("text_audit") or {}).get("valid") is True
             if output_path.is_file() and not force and (
                 not isinstance(text_truth, dict) or has_text_receipt
@@ -668,6 +673,7 @@ def _generate_manifest_images(
         "generated": generated,
         "skipped": skipped,
         "dry_run": dry_run,
+        "text_audit_skipped": skip_text_audit,
         "full_reference_images": [str(path) for path in (full_reference_images or [])],
         "text_audits": text_audits,
     }
@@ -723,6 +729,7 @@ def run_final_script_pages(
     external_script: bool = False,
     blueprint_only: bool = False,
     no_style_reference: bool = False,
+    skip_image_text_audit: bool = False,
 ) -> dict[str, Any]:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
@@ -830,6 +837,7 @@ def run_final_script_pages(
             timeout=image_timeout,
             force=force_images,
             dry_run=dry_run_images,
+            skip_text_audit=skip_image_text_audit,
         )
         _write_json(manifest_path, manifest)
     if require_images or (
