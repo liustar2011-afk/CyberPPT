@@ -1,0 +1,105 @@
+version: 3
+mode: ppt_page
+
+output:
+  upscale_enabled: true
+  upscale_factor: 1.5
+  max_width: 3840
+  max_height: 2160
+  never_downscale: true
+  format: png
+  png_compression: 6
+  jpeg_quality: 96
+
+analysis:
+  white_threshold: 244
+  white_chroma_tolerance: 12
+  canny_low: 80
+  canny_high: 180
+
+processing:
+  denoise:
+    enabled: true
+    method: bilateral
+    strength: 0.18
+  local_contrast:
+    enabled: false
+    clip_limit: 1.15
+    tile_grid_size: 8
+  sharpen:
+    enabled: true
+    amount: 0.58
+    radius: 1.05
+    threshold: 3
+  saturation:
+    factor: 1.0
+  brightness:
+    factor: 1.0
+
+protection:
+  fine_structure:
+    enabled: true
+    original_blend: 0.18
+    dilation: 1
+  white_background:
+    enabled: true
+    original_blend: 0.78
+    clean_extreme_white: false
+    clean_threshold: 252
+
+super_resolution:
+  # builtin | realesrgan | swinir | realesrgan_ncnn | external
+  backend: builtin
+  requested_scale: 2.0
+
+  # After AI SR, re-inject high-contrast detail from a Lanczos-upscaled source.
+  # This is critical for Chinese text, arrows, borders and chart geometry.
+  text_guard:
+    enabled: true
+    fine_structure_blend: 0.72
+    protect_white_background: true
+    white_background_blend: 0.90
+
+  realesrgan:
+    repo_dir: third_party/Real-ESRGAN
+    python: ""
+    model_name: RealESRGAN_x4plus
+    outscale: 2.0
+    denoise_strength: 0.35
+    tile: 512
+    tile_pad: 10
+    pre_pad: 0
+    fp32: false
+    gpu_id: null
+
+  swinir:
+    repo_dir: third_party/SwinIR
+    python: ""
+    scale: 4
+    model_path: model_zoo/swinir/003_realSR_BSRGAN_DFO_s64w8_SwinIR-M_x4_GAN.pth
+    tile: 400
+    tile_overlap: 32
+    large_model: false
+
+  realesrgan_ncnn:
+    executable: ""
+    model_name: realesrgan-x4plus
+    scale: 2
+    tile: 0
+    model_dir: ""
+
+  external:
+    enabled: false
+    executable: ""
+    command: []
+    scale: 2
+
+gates:
+  max_aspect_ratio_delta: 0.001
+  warn_white_ratio_drop: 0.10
+  warn_blockiness_increase_ratio: 1.35
+  warn_sharpness_increase_ratio: 8.0
+  min_structural_correlation: 0.92
+  max_normalized_mean_abs_delta: 0.08
+  min_edge_recall: 0.75
+  min_edge_precision: 0.75

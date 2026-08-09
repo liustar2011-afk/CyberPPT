@@ -44,9 +44,9 @@ def test_ensure_output_size_normalizes_png(tmp_path: Path) -> None:
 
     result = module.ensure_output_size(output, "2048x1024")
 
-    assert result == (2048, 1024)
+    assert result == (4096, 2048)
     with Image.open(output) as normalized:
-        assert normalized.size == (2048, 1024)
+        assert normalized.size == (4096, 2048)
 
 
 def test_ensure_output_size_leaves_auto_unchanged(tmp_path: Path) -> None:
@@ -79,7 +79,7 @@ def test_write_image_preserves_raw_backend_dimensions(tmp_path: Path) -> None:
     with Image.open(raw) as raw_image:
         assert raw_image.size == (320, 180)
     with Image.open(output) as normalized:
-        assert normalized.size == (2048, 1024)
+        assert normalized.size == (4096, 2048)
 
 
 def test_write_image_preserves_raw_even_when_size_matches(tmp_path: Path) -> None:
@@ -96,4 +96,7 @@ def test_write_image_preserves_raw_even_when_size_matches(tmp_path: Path) -> Non
     )
 
     raw = tmp_path / "generated_raw.png"
-    assert raw.read_bytes() == output.read_bytes()
+    with Image.open(raw) as raw_image:
+        assert raw_image.size == (2048, 1024)
+    with Image.open(output) as enhanced:
+        assert enhanced.size == (4096, 2048)

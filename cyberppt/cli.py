@@ -16,6 +16,7 @@ from cyberppt.commands.chapter_structure_review import (
 )
 from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
+from cyberppt.image_enhancer import enhance_image
 from cyberppt.commands.outline_audit import run_outline_audit
 from cyberppt.commands.prepare_imagegen_send import prepare_imagegen_send
 from cyberppt.commands.prepare_stage01_input import (
@@ -464,6 +465,19 @@ def _rebuild_dual_image_command(args: argparse.Namespace) -> int:
     return run_script("template-rebuild", args.rebuild_args)
 
 
+def _enhance_image_command(args: argparse.Namespace) -> int:
+    try:
+        result = enhance_image(
+            Path(args.input), output=Path(args.output) if args.output else None,
+            backend=args.backend, scale=args.scale, mode=args.mode,
+        )
+    except (FileNotFoundError, RuntimeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0
+
+
 def _final_script_pages_command(args: argparse.Namespace) -> int:
     if args.blueprint_only and args.production_build:
         print("--blueprint-only cannot be combined with --production-build", file=sys.stderr)
@@ -510,6 +524,20 @@ def build_parser() -> argparse.ArgumentParser:
 
     doctor = subparsers.add_parser("doctor", help="Check repository assets and command availability.")
     doctor.set_defaults(func=lambda _args: _doctor())
+
+    enhance = subparsers.add_parser(
+        "enhance-image", help="Enhance one image through the registered ppt-image-enhancer skill."
+    )
+    enhance.add_argument("input")
+    enhance.add_argument("--output")
+    enhance.add_argument(
+        "--backend", choices=("auto", "builtin", "realesrgan_ncnn", "realesrgan", "swinir"), default="auto"
+    )
+    enhance.add_argument("--scale", type=float, choices=(1.0, 1.5, 2.0, 4.0), default=1.0)
+    enhance.add_argument(
+        "--mode", choices=("ppt_page", "chart_heavy", "scene_plus_text", "screenshot")
+    )
+    enhance.set_defaults(func=_enhance_image_command)
 
     init = subparsers.add_parser("init", help="Create a CyberPPT project workspace.")
     init.add_argument("path", help="Target project directory.")

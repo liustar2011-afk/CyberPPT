@@ -24,6 +24,7 @@ from urllib import error, request
 
 DEFAULT_MODEL = "gpt-image-2"
 DEFAULT_SIZE = "2048x1024"
+ENHANCED_OUTPUT_SCALE = 2
 DEFAULT_QUALITY = "high"
 DEFAULT_OUTPUT_FORMAT = "png"
 DEFAULT_TIMEOUT = 600
@@ -490,7 +491,7 @@ def _extract_responses_text(body: str) -> str:
 
 
 def ensure_output_size(output_path: Path, size: str) -> tuple[int, int]:
-    """Force an on-disk image to the requested WIDTHxHEIGHT (ingest normalization)."""
+    """Enhance and normalize an ingested image through the registered vendor skill."""
 
     if size == "auto":
         return (-1, -1)
@@ -498,29 +499,25 @@ def ensure_output_size(output_path: Path, size: str) -> tuple[int, int]:
     if parsed is None:
         return (-1, -1)
     target_width, target_height = parsed
-    try:
-        from PIL import Image
-    except ImportError as exc:
-        _die("Pillow is required to normalize image size on ingest. Install pillow and retry.")
-        raise SystemExit(1) from exc
-    with Image.open(output_path) as image:
-        actual = image.size
-        if actual == (target_width, target_height):
-            return actual
-        resized = image.convert("RGBA").resize(
-            (target_width, target_height),
-            Image.Resampling.LANCZOS,
-        )
-        suffix = output_path.suffix.lower()
-        if suffix in {".jpg", ".jpeg"}:
-            resized.convert("RGB").save(output_path, format="JPEG", quality=95)
-        else:
-            resized.save(output_path, format="PNG")
+    from cyberppt.image_enhancer import enhance_image
+
+    enhanced_width = target_width * ENHANCED_OUTPUT_SCALE
+    enhanced_height = target_height * ENHANCED_OUTPUT_SCALE
+    enhance_image(
+        output_path,
+        output=output_path,
+        backend="builtin",
+        scale=float(ENHANCED_OUTPUT_SCALE),
+        target_size=(enhanced_width, enhanced_height),
+        mode="chart_heavy",
+    )
     print(
-        f"Normalized image size {actual[0]}x{actual[1]} -> {target_width}x{target_height}: {output_path}",
+        f"Enhanced image at {ENHANCED_OUTPUT_SCALE}x pixel density "
+        f"({enhanced_width}x{enhanced_height}) for logical canvas "
+        f"{target_width}x{target_height}: {output_path}",
         file=sys.stderr,
     )
-    return (target_width, target_height)
+    return (enhanced_width, enhanced_height)
 
 
 def raw_output_path(output_path: Path) -> Path:

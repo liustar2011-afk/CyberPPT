@@ -209,7 +209,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertEqual("cyberppt-full-image-only", manifest["mode"])
         self.assertEqual(["full"], manifest["output_variants"])
         self.assertEqual("Generated", full_status)
-        self.assertEqual((2048, 1024), full_size)
+        self.assertEqual((4096, 2048), full_size)
         self.assertNotIn("background", pair)
 
     def test_manifest_generates_full_images_only(self) -> None:

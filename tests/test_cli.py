@@ -39,6 +39,7 @@ class CliTests(unittest.TestCase):
         self.assertIn("script-status", help_text)
         self.assertIn("rebuild-dual-image", help_text)
         self.assertIn("final-script-pages", help_text)
+        self.assertIn("enhance-image", help_text)
         self.assertIn("outline-audit", help_text)
         self.assertIn("source-truth-audit", help_text)
         self.assertIn("prepare-source-map", help_text)

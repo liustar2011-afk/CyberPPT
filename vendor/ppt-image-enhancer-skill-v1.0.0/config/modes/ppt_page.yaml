@@ -1,0 +1,16 @@
+mode: ppt_page
+output:
+  upscale_factor: 1.5
+processing:
+  denoise:
+    strength: 0.15
+  local_contrast:
+    enabled: false
+  sharpen:
+    amount: 0.55
+    radius: 1.0
+protection:
+  fine_structure:
+    original_blend: 0.20
+  white_background:
+    original_blend: 0.82

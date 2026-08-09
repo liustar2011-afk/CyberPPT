@@ -1,0 +1,17 @@
+mode: chart_heavy
+output:
+  upscale_factor: 1.5
+processing:
+  denoise:
+    enabled: false
+  local_contrast:
+    enabled: false
+  sharpen:
+    amount: 0.60
+    radius: 0.85
+protection:
+  fine_structure:
+    original_blend: 0.24
+    dilation: 1
+  white_background:
+    original_blend: 0.85
