@@ -153,13 +153,14 @@ Markdown用于人工预审和生图脚本组装，JSON用于自动校验、批�
 
 `generation_handoff`至少包含：
 
-- `composition_guidance`
+- `structural_guidance`：引用`structural_decision`并只补充结构性约束。
 - `required_text`
-- `style_guidance`
-- `negative_constraints`
-- `title_exclusion_zone`
+- `style_source_ref`：指向唯一权威风格来源，不复制风格正文。
+- `title_exclusion_instruction`
 
-构图指令不得在画面中显示。标题与副标题默认由外部PPT文字层处理，正文按用户指定的生图模式执行。
+`schema_version: 1.0`仍可读取`composition_guidance`、`style_guidance`和`negative_constraints`，但这些字段已废弃。`1.1`不得再出现这些字段。
+
+结构指令不得在画面中显示。标题与副标题默认由外部PPT文字层处理，正文按用户指定的生图模式执行。字体、字号、颜色、线条、边框、形状、人物外观和媒介质感由`style_source_ref`对应的风格文件负责。
 
 ## 文件命名
 

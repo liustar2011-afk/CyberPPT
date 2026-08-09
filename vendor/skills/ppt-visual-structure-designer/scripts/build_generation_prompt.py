@@ -6,7 +6,14 @@ import json
 from pathlib import Path
 
 
-def page_prompt(page: dict) -> str:
+def _connector_text(page: dict) -> str:
+    return "\n".join(
+        f"- {c['from']} -> {c['to']}: {c['type']} / {c['direction']} / {c['label']}"
+        for c in page.get("connectors", [])
+    ) or "- No business arrows; use spatial adjacency only."
+
+
+def _legacy_page_prompt(page: dict) -> str:
     vd = page["visual_decision"]
     structural = page.get("structural_decision") or {}
     sg = page["semantic_graph"]
@@ -21,10 +28,7 @@ def page_prompt(page: dict) -> str:
     ).strip()
     avoid = "; ".join(page.get("avoid", []) + handoff.get("negative_constraints", []))
     required_text = "\n".join(f"- {text}" for text in handoff["required_text"])
-    connectors = "\n".join(
-        f"- {c['from']} -> {c['to']}: {c['type']} / {c['direction']} / {c['label']}"
-        for c in page.get("connectors", [])
-    ) or "- No business arrows; use spatial adjacency only."
+    connectors = _connector_text(page)
     return f'''# Page {page["page_number"]}: {page["page_title"]}
 
 [Content lock]
@@ -62,6 +66,67 @@ Preserve all required on-screen text, numbers, units, names, status words, and b
 [Negative constraints]
 {avoid}
 '''
+
+
+def _structural_page_prompt(page: dict) -> str:
+    vd = page["visual_decision"]
+    structural = page["structural_decision"]
+    graph = page["semantic_graph"]
+    ti = page["text_integration"]
+    handoff = page["generation_handoff"]
+    focus = structural["semantic_focus"]
+    freedom = structural["representation_freedom"]
+    required_text = "\n".join(f"- {text}" for text in handoff["required_text"])
+    bindings = "\n".join(
+        f"- Text binding: {item['evidence_id']} -> {item['target_ref']} / {item['binding']}"
+        for item in structural["text_bindings"]
+    )
+    constraints = "\n".join(
+        f"- Additional structural constraint: {item}"
+        for item in handoff["structural_guidance"].get("additional_constraints", [])
+    ) or "- Additional structural constraint: none."
+    connectors = _connector_text(page)
+    return f'''# Page {page["page_number"]}: {page["page_title"]}
+
+[Content lock]
+Preserve all required on-screen text, numbers, units, names, status words, and business relationships. Do not paraphrase unless the content lock explicitly allows it.
+
+[Structural guidance]
+Apply these page-level semantic relationships before placing any on-screen text. Do not render field names or instruction text. Do not infer a specific carrier, medium, or visual style unless the source constrains it.
+- Selected visual intent type: {vd["visual_intent_type"]}
+- Visual thesis: {vd["visual_thesis"]}
+- Decision relationship: {graph["decision_relationship"]}
+- Semantic focus: {focus["kind"]} / {focus["ref"]}
+- Spatial grammar: {', '.join(structural["spatial_grammar"])}
+- Semantic tags: {', '.join(structural["semantic_tags"])}
+- Primary structure refs: {', '.join(structural["primary_refs"])}
+- Secondary structure refs: {', '.join(structural["secondary_refs"]) or 'none'}
+- Reading sequence: {' -> '.join(structural["reading_sequence"])}
+{bindings}
+- Representation freedom: carrier={freedom["carrier"]}; medium={freedom["medium"]}; reason={freedom["reason"]}
+{constraints}
+
+[Connector map]
+{connectors}
+
+[Text placement]
+- Body rendering mode: {ti["body_render_mode"]}
+- Placement strategy: {ti["placement_strategy"]}
+- {handoff["title_exclusion_instruction"]}
+
+[Required on-screen body text]
+{required_text}
+
+[Style source]
+{handoff["style_source_ref"]}
+'''
+
+
+def page_prompt(page: dict) -> str:
+    handoff = page.get("generation_handoff") or {}
+    if page.get("structural_decision") and handoff.get("structural_guidance"):
+        return _structural_page_prompt(page)
+    return _legacy_page_prompt(page)
 
 
 def main() -> int:

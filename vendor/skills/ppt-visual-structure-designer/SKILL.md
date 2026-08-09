@@ -66,7 +66,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 
 机器可用资源：
 
-- `assets/default-profile-cec.yaml`：默认中电联政企视觉配置。
+- `assets/default-profile-cec.yaml`：可选的中电联政企外部风格配置示例，不属于通用结构合同。
 - `assets/visual-intent-registry.yaml`：视觉意图机器注册表。
 - `assets/page-visual-spec.schema.json`：单页JSON合同。
 - `assets/deck-visual-spec.schema.json`：整套JSON合同。

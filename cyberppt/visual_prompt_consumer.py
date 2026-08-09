@@ -18,6 +18,15 @@ STYLE09_SURFACE_HEADER = "【风格09业务场适配器｜不上屏】"
 # labels are authored by the visual-structure stage and are deliberately
 # filtered by the shared adapter below.
 _STYLE09_SEMANTIC_FIELDS = (
+    "Decision relationship:",
+    "Semantic focus:",
+    "Spatial grammar:",
+    "Semantic tags:",
+    "Primary structure refs:",
+    "Secondary structure refs:",
+    "Reading sequence:",
+    "Text binding:",
+    "Representation freedom:",
     "Industry scene anchor:",
     "business object:",
     "Text integration:",
@@ -93,7 +102,7 @@ def load_visual_prompt_module(project: Path, page_number: int) -> VisualPromptMo
     prompt.  This consumer deliberately imports only page-expression guidance
     from generation-prompts.md.  The selected CyberPPT style is owned by the
     production prompt compiler and is never imported from the visual-structure
-    handoff's ``[Style]`` section.
+    handoff's legacy ``[Style]`` section or its v1.1 ``[Style source]`` reference.
     """
 
     project = project.expanduser().resolve()
@@ -113,8 +122,10 @@ def load_visual_prompt_module(project: Path, page_number: int) -> VisualPromptMo
     page_block = match.group(1).strip()
     parts: list[str] = []
     for heading in (
+        "[Structural guidance]",
         "[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.",
         "[Connector map]",
+        "[Text placement]",
         "[Text rendering]",
         "[Negative constraints]",
     ):

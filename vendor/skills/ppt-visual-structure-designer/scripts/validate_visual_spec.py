@@ -23,6 +23,11 @@ RISK_TERMS = ["等宽三列", "并列卡片", "六宫格", "一项一图", "一�
 # Structural row markers are authoring aids, not presentation copy.  If they
 # reach locked/final text they are likely to be rendered verbatim by ImageGen.
 ROW_MARKER_RE = re.compile(r"^\s*第\s*[0-9一二三四五六七八九十]+\s*行\s*[｜|:]", re.MULTILINE)
+STYLE_IMPLEMENTATION_RE = re.compile(
+    r"(?:#[0-9a-f]{3,8}\b|rgb\(|\bfont\b|字体|字号|\b[0-9]+\s*pt\b|颜色|色彩|深蓝|象牙白|"
+    r"线宽|粗细|圆角|阴影|发光|渐变|材质|箭头头|stroke(?:-width)?|shadow|glow|gradient)",
+    re.IGNORECASE,
+)
 
 
 def add(issues: list[dict[str, Any]], level: str, code: str, message: str, page: int | None = None) -> None:
@@ -62,7 +67,7 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
     if schema_version == "1.0":
         add(
             issues,
-            "warning",
+            "notice",
             "legacy_schema",
             "Schema 1.0 is supported for compatibility; migrate to structural_decision v1.1",
             n,
@@ -116,7 +121,7 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
         if missing_p0:
             add(issues, "error", "p0_text_binding", f"P0 evidence has no structural text binding: {missing_p0}", n)
     ti = page.get("text_integration", {})
-    if ti.get("minimum_font_pt", 0) < MINIMUM_FONT_PT:
+    if schema_version == "1.0" and ti.get("minimum_font_pt", 0) < MINIMUM_FONT_PT:
         add(
             issues,
             "error",
@@ -127,7 +132,7 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
     if ti.get("title_render_mode") != "external_text_layer":
         add(issues, "warning", "title_mode", "Default profile expects external title text layer", n)
     ip = page.get("image_plan", {})
-    if ip.get("front_facing_people") is not False:
+    if schema_version == "1.0" and ip.get("front_facing_people") is not False:
         add(issues, "error", "front_portrait", "Front-facing people are prohibited by default", n)
     if ip.get("identifiable_location") is not False:
         add(issues, "error", "location", "Identifiable location is prohibited by default", n)
@@ -143,18 +148,46 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
         if token.lower() in final_text.lower():
             add(issues, "error", "placeholder", f"Placeholder text found: {token}", n)
     handoff = page.get("generation_handoff", {})
+    structural_handoff = handoff.get("structural_guidance", {})
+    additional_constraints = (
+        structural_handoff.get("additional_constraints", [])
+        if isinstance(structural_handoff, dict)
+        else []
+    )
     merged = "\n".join([
         handoff.get("composition_guidance", ""),
         handoff.get("style_guidance", ""),
         "\n".join(handoff.get("negative_constraints", [])),
+        "\n".join(additional_constraints),
         "\n".join(page.get("avoid", [])),
     ]).lower()
     if "overlay" in merged:
         add(issues, "error", "overlay", "overlay field or instruction is not allowed", n)
-    neg = " ".join(handoff.get("negative_constraints", [])).lower()
-    for required in ["equal card", "one-icon-per-bullet", "left-text/right-image", "front-facing portrait"]:
-        if required not in neg:
-            add(issues, "warning", "negative_constraint", f"Missing recommended negative constraint: {required}", n)
+    if schema_version == "1.0":
+        neg = " ".join(handoff.get("negative_constraints", [])).lower()
+        for required in ["equal card", "one-icon-per-bullet", "left-text/right-image", "front-facing portrait"]:
+            if required not in neg:
+                add(issues, "warning", "negative_constraint", f"Missing recommended negative constraint: {required}", n)
+    if schema_version == "1.1":
+        structural_text = json.dumps(
+            {
+                "structural_decision": page.get("structural_decision", {}),
+                "visual_decision": page.get("visual_decision", {}),
+                "image_plan": page.get("image_plan", {}),
+                "structural_guidance": structural_handoff,
+                "avoid": page.get("avoid", []),
+            },
+            ensure_ascii=False,
+        )
+        match = STYLE_IMPLEMENTATION_RE.search(structural_text)
+        if match:
+            add(
+                issues,
+                "error",
+                "style_in_structure",
+                f"Style implementation detail must come from style_source_ref, not structural fields: {match.group(0)}",
+                n,
+            )
     if page.get("qa", {}).get("score", 0) < 80:
         add(issues, "error", "qa_score", "QA score below 80", n)
     elif page.get("qa", {}).get("score", 0) < 90:
@@ -274,8 +307,15 @@ def validate_markdown(path: Path) -> dict:
 def summarize(issues: list[dict[str, Any]]) -> dict:
     errors = [i for i in issues if i["level"] == "error"]
     warnings = [i for i in issues if i["level"] == "warning"]
+    notices = [i for i in issues if i["level"] == "notice"]
     base = 100 - 10 * len(errors) - 2 * len(warnings)
-    return {"valid": not errors, "score": max(0, base), "errors": errors, "warnings": warnings}
+    return {
+        "valid": not errors,
+        "score": max(0, base),
+        "errors": errors,
+        "warnings": warnings,
+        "notices": notices,
+    }
 
 
 def main() -> int:
@@ -295,7 +335,7 @@ def main() -> int:
     else:
         print("PASS" if result["valid"] and (not args.strict or not result["warnings"]) else "FAIL")
         print(f"Score: {result['score']}")
-        for group in ("errors", "warnings"):
+        for group in ("errors", "warnings", "notices"):
             for item in result[group]:
                 page = f" page={item['page']}" if "page" in item else ""
                 print(f"[{item['level'].upper()}] {item['code']}{page}: {item['message']}")

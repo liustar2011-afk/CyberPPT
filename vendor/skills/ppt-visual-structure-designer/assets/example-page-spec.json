@@ -219,8 +219,6 @@
     "title_render_mode": "external_text_layer",
     "subtitle_render_mode": "external_text_layer",
     "body_render_mode": "in_image",
-    "font_family": "Microsoft YaHei",
-    "minimum_font_pt": 14,
     "placement_strategy": "正文贴近业务对象、工作台节点和服务结果，使用清晰层级和充足容器空间。"
   },
   "geometry": {
@@ -267,9 +265,9 @@
   },
   "image_plan": {
     "use_scene": true,
-    "scene_type": "realistic colored power data service operations environment",
-    "business_object": "industry data service operations workbench and trusted delivery hub",
-    "semantic_role": "shared foundation and convergence carrier",
+    "scene_type": "contextual activity scene selected by the final renderer",
+    "business_object": "participants, inputs, coordination action and service outcome",
+    "semantic_role": "optional medium for support and convergence semantics",
     "placement": "dominant integrated scene across the middle-left content area, connected to outcome space",
     "front_facing_people": false,
     "identifiable_location": false,
@@ -342,7 +340,13 @@
     }
   ],
   "generation_handoff": {
-    "composition_guidance": "Use one integrated power-industry data service operations scene as the dominant carrier. Embed three capability sources into the scene and converge them on a trusted service workbench, then lead the main service chain to the outcome area. Keep unequal emphasis and one visual center.",
+    "structural_guidance": {
+      "source": "structural_decision",
+      "additional_constraints": [
+        "keep one primary structure",
+        "do not duplicate P0 evidence as another primary region"
+      ]
+    },
     "required_text": [
       "行业大模型",
       "专业数据资源",
@@ -350,22 +354,12 @@
       "统一组织与可信交付",
       "面向行业中小企业和跨行业协同主体赋能"
     ],
-    "style_guidance": "Ivory white and deep blue senior leadership briefing style, realistic colored industry illustration, Microsoft YaHei-like typography, restrained but expressive.",
-    "negative_constraints": [
-      "no equal card wall",
-      "no one-icon-per-bullet layout",
-      "no disconnected left-text/right-image split",
-      "no front-facing portrait",
-      "no decorative dashboard UI",
-      "no dirty shadows or glowing arrows"
-    ],
+    "style_source_ref": "external-style-lock",
     "title_exclusion_instruction": "Reserve the top title area for an external PowerPoint text layer. Do not draw title, subtitle, logo or page number."
   },
   "avoid": [
     "equal three-column cards",
-    "three isolated icons",
-    "decorative control-room photo",
-    "front-facing people",
+    "one visual object per bullet",
     "secondary area becoming an independent visual center"
   ],
   "qa": {

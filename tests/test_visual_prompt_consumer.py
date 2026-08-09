@@ -1,4 +1,6 @@
 from pathlib import Path
+import subprocess
+import sys
 from tempfile import TemporaryDirectory
 import unittest
 
@@ -35,23 +37,23 @@ class VisualPromptConsumerTests(unittest.TestCase):
 [Content lock]
 lock
 
-[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.
-carrier and reading path
+[Structural guidance]
+- Semantic focus: action / E4
+- Spatial grammar: convergence
+- Primary structure refs: E4, E5
+- Text binding: E4 -> E4 / embedded
 
 [Connector map]
 - E1 -> E2
 
-[Text rendering]
-- 9pt
+[Text placement]
+- Body rendering mode: in_image
 
 [Required on-screen body text]
 - LOCKED BODY MUST NOT BE IMPORTED
 
-[Style]
-deep blue
-
-[Negative constraints]
-no equal card wall
+[Style source]
+DO-NOT-IMPORT-STYLE-LOCK
 
 ---
 """,
@@ -60,14 +62,45 @@ no equal card wall
             module = load_visual_prompt_module(project, 6)
             self.assertIsNotNone(module)
             assert module is not None
-            self.assertIn("carrier and reading path", module.prompt_text)
+            self.assertIn("Semantic focus: action / E4", module.prompt_text)
+            self.assertIn("Text binding: E4 -> E4 / embedded", module.prompt_text)
             self.assertNotIn("LOCKED BODY MUST NOT BE IMPORTED", module.prompt_text)
-            self.assertNotIn("deep blue", module.prompt_text)
+            self.assertNotIn("DO-NOT-IMPORT-STYLE-LOCK", module.prompt_text)
             prompt = append_visual_prompt_module("APPROVED LOCKED TEXT", module)
             prompt2 = append_visual_prompt_module(prompt, module)
             self.assertEqual(prompt, prompt2)
             self.assertEqual(prompt.count(VISUAL_STRUCTURE_HEADER), 1)
             self.assertEqual(strip_visual_prompt_module(prompt), "APPROVED LOCKED TEXT")
+
+    def test_v11_builder_keeps_style_reference_out_of_consumed_module(self) -> None:
+        repo = Path(__file__).resolve().parents[1]
+        skill = repo / "vendor" / "skills" / "ppt-visual-structure-designer"
+        with TemporaryDirectory() as temp:
+            project = Path(temp)
+            visual = project / "visual"
+            visual.mkdir()
+            output = visual / "generation-prompts.md"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(skill / "scripts" / "build_generation_prompt.py"),
+                    str(skill / "assets" / "example-page-spec.json"),
+                    "--output",
+                    str(output),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            module = load_visual_prompt_module(project, 7)
+
+        self.assertIsNotNone(module)
+        assert module is not None
+        self.assertIn("[Structural guidance]", module.prompt_text)
+        self.assertIn("Semantic focus: action / E4", module.prompt_text)
+        self.assertNotIn("[Style source]", module.prompt_text)
+        self.assertNotIn("external-style-lock", module.prompt_text)
+        self.assertNotIn("Font:", module.prompt_text)
 
     def test_pair_manifest_consumes_project_generation_prompts(self) -> None:
         with TemporaryDirectory() as temp:

@@ -16,6 +16,44 @@
     "capacity_suggestions",
     "qa_summary"
   ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "1.0"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "deck_rhythm": {
+            "required": [
+              "color_roles"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "1.1"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "deck_rhythm": {
+            "properties": {
+              "color_roles": false
+            }
+          }
+        }
+      }
+    }
+  ],
   "properties": {
     "schema_version": {
       "enum": [
@@ -113,8 +151,7 @@
       "required": [
         "density_pattern",
         "visual_intent_sequence",
-        "repetition_control",
-        "color_roles"
+        "repetition_control"
       ],
       "properties": {
         "density_pattern": {
@@ -133,7 +170,8 @@
         },
         "color_roles": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "deprecated": true
         }
       }
     },
