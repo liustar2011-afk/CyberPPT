@@ -81,7 +81,7 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
 
             prompt = compile_pages(script, [1], style_lock_path=style)
 
-        self.assertIn("People: default absent", prompt)
+        self.assertIn("默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。", prompt)
         self.assertIn("organization names, logos, seals, signage", prompt)
         self.assertIn("editable text layer only", prompt)
         self.assertIn("non-evidentiary", prompt)

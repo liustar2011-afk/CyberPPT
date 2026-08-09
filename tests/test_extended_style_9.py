@@ -127,6 +127,12 @@ def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
     assert "虚线不作装饰节点链" in contract
     assert "禁止宽箭头带" in contract
     assert "低矮、哑光、正视" in contract
+    assert "整页反馈虚线原则上最多一条" in contract
+    assert "整页可见边界最多两级" in contract
+    assert "编号、自然邻接或同一连续基线已经表达顺序时" in contract
+    assert "箭头头宽度不明显超过线宽的2—3倍" in contract
+    assert "同页异形标题条最多一个" in contract
+    assert "不得仅为区分类目自动分配多色" in contract
 
 
 def test_style_nine_people_rule_is_the_absolute_prompt_suffix() -> None:

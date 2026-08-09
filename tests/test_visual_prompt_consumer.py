@@ -165,6 +165,12 @@ no equal card wall
         self.assertNotIn("six-node swim-lane infographic", adapted)
         self.assertNotIn("placement: center 68%", adapted)
         self.assertNotIn(VISUAL_STRUCTURE_HEADER, adapted)
+        self.assertIn("编号、自然邻接或同一连续基线已表达顺序时", adapted)
+        self.assertIn("反馈或复盘最多一条浅灰短虚线", adapted)
+        self.assertIn("每条线必须落在对象外边界", adapted)
+        self.assertIn("整页可见边界最多两级", adapted)
+        self.assertIn("同页异形标题条最多一个", adapted)
+        self.assertIn("不添加对勾、警告三角、循环图标", adapted)
 
 
 if __name__ == "__main__":

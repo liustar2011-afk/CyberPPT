@@ -18,6 +18,7 @@ from scripts.dual_image_overlay.cyberppt_pair_manifest import (
     require_generated,
 )
 from scripts.dual_image_overlay.deliverable_prompt import (
+    _style09_people_rule,
     _style09_terminal_execution_lock,
     parse_page_blocks,
     render_prompt,
@@ -57,11 +58,15 @@ class CyberpptPairManifestTests(unittest.TestCase):
                 style_lock=style_lock,
             )
             expected_lock = _style09_terminal_execution_lock(style_lock)
+            expected_people_rule = _style09_people_rule(style_lock)
 
         prompt = manifest["pairs"][0]["full"]["prompt"]
         self.assertNotIn("six-node swim-lane infographic", prompt)
         self.assertIn("【风格09业务场适配器｜不上屏】", prompt)
-        self.assertTrue(prompt.rstrip().endswith(expected_lock))
+        terminal_suffix = f"{expected_lock}\n{expected_people_rule}"
+        self.assertTrue(prompt.rstrip().endswith(terminal_suffix))
+        self.assertEqual(1, prompt.count(expected_lock))
+        self.assertEqual(1, prompt.count(expected_people_rule))
         handoff = manifest["pairs"][0]["visual_structure_handoff"]
         self.assertTrue(handoff["consumed"])
         self.assertEqual("style09_surface_adapter", handoff["adapted_by"])
