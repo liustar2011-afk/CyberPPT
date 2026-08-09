@@ -6,6 +6,7 @@ from cyberppt.visual_prompt_consumer import (
     VISUAL_STRUCTURE_HEADER,
     append_visual_prompt_module,
     append_style09_surface_adapter,
+    _sanitize_style09_semantic_segment,
     load_visual_prompt_module,
     strip_visual_prompt_module,
 )
@@ -15,6 +16,14 @@ from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
 class VisualPromptConsumerTests(unittest.TestCase):
+    def test_style09_text_integration_drops_stale_placement_clause(self) -> None:
+        self.assertEqual(
+            "Text integration: 各类文字贴近真实对象和工作面。",
+            _sanitize_style09_semantic_segment(
+                "Text integration: 各类文字贴近真实对象和工作面，首期合作结论位于上部唯一结果区。"
+            ),
+        )
+
     def test_loads_only_visual_sections_and_preserves_idempotence(self) -> None:
         with TemporaryDirectory() as temp:
             project = Path(temp)

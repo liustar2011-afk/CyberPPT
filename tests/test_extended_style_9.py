@@ -6,6 +6,7 @@ from tempfile import TemporaryDirectory
 
 from cyberppt.cli import build_parser
 from scripts.dual_image_overlay.cyberppt_pair_manifest import main as pair_manifest_main
+from scripts.dual_image_overlay.deliverable_prompt import enforce_style09_terminal_lock
 from scripts.dual_image_overlay.imagegen_handoff import render_content_first_style_contract
 from scripts.dual_image_overlay.style_library import (
     default_style_choices,
@@ -74,7 +75,7 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "锁定文字嵌入稳定承载面" not in style_nine["scope_rule"]
     assert "文字是页面主体" not in style_nine["scope_rule"]
     assert "少量实景、近实景或物件型语义图仅作点缀" not in style_nine["scope_rule"]
-    assert "People: default absent" in style_nine["people_rule"]
+    assert style_nine["people_rule"] == "默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。"
     assert "one integrated composition" in style_nine["prompt_contract"]
     assert "50/50" in style_nine["prompt_contract"]
     assert "1/4" in style_nine["prompt_contract"]
@@ -126,6 +127,19 @@ def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
     assert "虚线不作装饰节点链" in contract
     assert "禁止宽箭头带" in contract
     assert "低矮、哑光、正视" in contract
+
+
+def test_style_nine_people_rule_is_the_absolute_prompt_suffix() -> None:
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        prompt = enforce_style09_terminal_lock(
+            "页面场景要求联合团队围桌讨论。\n默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。",
+            lock,
+        )
+
+    rule = "默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。"
+    assert prompt.rstrip().endswith(rule)
+    assert prompt.count(rule) == 1
 
 
 def test_final_script_pages_cli_accepts_explicit_style_nine() -> None:

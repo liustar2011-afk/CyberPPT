@@ -571,6 +571,47 @@ def _line_indent(line: str) -> int:
     return len(line) - len(line.lstrip(" "))
 
 
+_ACTOR_LABEL_RE = re.compile(
+    r"(?:单位|主体|资源方|需求方|供给方|模型(?:算法)?方|服务方|实施方|运营方|"
+    r"合作方|合作伙伴|机构|企业|院所|高校|客户)$"
+)
+_ACTOR_PARENT_RE = re.compile(r"(?:参与主体|合作主体|主体类型|参与方|合作伙伴|角色|服务对象)$")
+_NON_ACTOR_PARENT_RE = re.compile(r"(?:建设|平台|载体|机制|路径|流程|环节|内容|目标|任务)$")
+
+
+def _onscreen_parent_child_role_mismatches(text: str) -> tuple[str, ...]:
+    """Reject false hierarchy caused by nesting actors under a business item.
+
+    Indentation means an actual parent-child taxonomy. It must not be used as
+    a convenient way to retain a second semantic dimension. For example,
+    ``协同载体建设`` is one construction item; demand/resource/model/service
+    parties are participants in that item, not its child items.
+    """
+
+    nodes: list[tuple[str, int]] = []
+    for line in text.splitlines():
+        title = _module_title(line)
+        if title is not None:
+            nodes.append((title, _line_indent(line)))
+    mismatches: list[str] = []
+    for index, (parent, indent) in enumerate(nodes):
+        descendants: list[tuple[str, int]] = []
+        for title, child_indent in nodes[index + 1 :]:
+            if child_indent <= indent:
+                break
+            descendants.append((title, child_indent))
+        direct_indent = min((child_indent for _, child_indent in descendants), default=-1)
+        children = [title for title, child_indent in descendants if child_indent == direct_indent]
+        direct_actor_children = [child for child in children if _ACTOR_LABEL_RE.search(child)]
+        if (
+            len(direct_actor_children) >= 2
+            and _NON_ACTOR_PARENT_RE.search(parent)
+            and not _ACTOR_PARENT_RE.search(parent)
+        ):
+            mismatches.append(f"{parent} -> {', '.join(direct_actor_children[:4])}")
+    return tuple(mismatches)
+
+
 def _json_string_list(value: str) -> tuple[str, ...]:
     if not value.strip():
         return ()
@@ -1593,6 +1634,25 @@ def _onscreen_detail_phrase_overages(text: str) -> tuple[tuple[str, int], ...]:
     return tuple(overages)
 
 
+def assert_imagegen_onscreen_readiness(
+    document: ScriptDocument,
+    page_numbers: set[int],
+) -> None:
+    """Block ImageGen when a requested page still contains paragraph-like copy."""
+
+    failures: list[str] = []
+    for page in document.pages:
+        if page.page_type != "content" or int(page.page_id[1:]) not in page_numbers:
+            continue
+        for line, chars in _onscreen_detail_phrase_overages(page.onscreen_text):
+            failures.append(f"{page.page_id.upper()} {chars}字：{line}")
+    if failures:
+        raise ValueError(
+            "requested pages contain paragraph-like on-screen copy; compress each "
+            "module into short parallel items before ImageGen:\n" + "\n".join(failures)
+        )
+
+
 # A module heading is a grouping contract, not a bag of nearby nouns.  These
 # semantic heads describe different organizing questions and therefore cannot
 # be joined as one peer heading unless an explicit parent concept owns both.
@@ -1602,10 +1662,11 @@ _COMPOUND_HEADING_INCOMPATIBLE_HEADS: frozenset[frozenset[str]] = frozenset(
         frozenset(("等级", "责任")),
         frozenset(("分类", "构成")),
         frozenset(("关系", "比例")),
+        frozenset(("对象", "边界")),
     }
 )
 _COMPOUND_HEADING_HEADS: tuple[str, ...] = (
-    "原则", "方式", "等级", "责任", "分类", "构成", "关系", "比例"
+    "原则", "方式", "等级", "责任", "分类", "构成", "关系", "比例", "对象", "边界"
 )
 _COMPOUND_PARENT_DOMAINS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
     (("报价", "计价", "收费"), ("服务", "分类", "报价", "价格", "构成", "计价", "费用")),
@@ -2207,7 +2268,11 @@ def _prose_issues(
         )
         min_story_chars = onscreen_effective_char_target(page)
         coverage = onscreen_semantic_coverage(page)
-        if visible_story_chars < min_story_chars:
+        structured_short_layer = bool(
+            len(_onscreen_content_lines(page.onscreen_text)) >= 4
+            and not _onscreen_detail_phrase_overages(page.onscreen_text)
+        )
+        if visible_story_chars < min_story_chars and not structured_short_layer:
             issues.append(
                 _issue(
                     "ONSCREEN_STORY_DENSITY_LOW",
@@ -2229,6 +2294,7 @@ def _prose_issues(
         if (
             prose_chars >= PROSE_MIN_CHARS * 2
             and coverage < ONSCREEN_SEMANTIC_COVERAGE_ERROR_FLOOR
+            and not structured_short_layer
         ):
             issues.append(
                 _issue(
@@ -2512,6 +2578,34 @@ def _prose_issues(
                     evidence=(f"chars={_compact_len(notes)}",),
                 )
             )
+        note_paragraphs = tuple(
+            part.strip() for part in re.split(r"\n\s*\n", notes) if part.strip()
+        )
+        if _compact_len(notes) > 120 and len(note_paragraphs) < 2:
+            issues.append(
+                _issue(
+                    "SPEAKER_NOTES_UNSEGMENTED",
+                    page,
+                    "Long speaker notes must be divided into readable semantic paragraphs.",
+                    "Use 2-4 paragraphs: judgment first, support or mechanism next, then implication or transition.",
+                    evidence=(f"chars={_compact_len(notes)}",),
+                )
+            )
+        incomplete_boundaries = tuple(
+            paragraph[-12:]
+            for paragraph in note_paragraphs[:-1]
+            if not paragraph.endswith(("。", "！", "？"))
+        )
+        if incomplete_boundaries:
+            issues.append(
+                _issue(
+                    "SPEAKER_NOTES_INCOMPLETE_PARAGRAPH_BOUNDARY",
+                    page,
+                    "Speaker-note paragraphs must end at complete sentences.",
+                    "Move paragraph breaks to after a full stop, question mark, or exclamation mark; never break after a comma or semicolon.",
+                    evidence=incomplete_boundaries,
+                )
+            )
         meta_hits = tuple(
             sorted({match.group(0) for match in SPEAKER_SLIDE_META_RE.finditer(notes)})
         )
@@ -2675,6 +2769,30 @@ def _visual_structure_judgment_issues(page: ScriptPage) -> list[ScriptQualityIss
     visual = page.visual_structure.strip()
     if page.page_type != "content" or not visual:
         return issues
+    visible_result_labels = tuple(
+        match.group(1).strip()
+        for match in re.finditer(
+            r"(?:单独收束|结果区呈现|结论区呈现).{0,12}[“\"]([^”\"]+)[”\"]",
+            visual,
+        )
+        if match.group(1).strip()
+    )
+    compact_onscreen = re.sub(r"\s+", "", page.onscreen_text)
+    unlocked_results = tuple(
+        label
+        for label in visible_result_labels
+        if re.sub(r"\s+", "", label) not in compact_onscreen
+    )
+    if unlocked_results:
+        issues.append(
+            _issue(
+                "VISUAL_STRUCTURE_UNLOCKED_VISIBLE_TEXT",
+                page,
+                "Visual structure requests visible result text absent from locked on-screen text.",
+                "Add the result once to locked on-screen text, or remove the instruction to render it.",
+                evidence=unlocked_results,
+            )
+        )
     corpus = _page_relation_corpus(page)
     judgment = f"{page.main_message}\n{page.onscreen_judgment}".strip()
     nodes = _visual_structure_chain_nodes(visual)
@@ -2893,6 +3011,17 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
                     "On-screen text contains backend/process self-talk that must never reach the reader.",
                     "Remove authoring/verification process narration (待核验／仅后台／逻辑顺序／写作说明 etc.) from 上屏文字; keep it in backend fields or drop it entirely.",
                     evidence=backend_meta_hits,
+                )
+            )
+        hierarchy_role_hits = _onscreen_parent_child_role_mismatches(page.onscreen_text)
+        if hierarchy_role_hits:
+            issues.append(
+                _issue(
+                    "ONSCREEN_FALSE_PARENT_CHILD_RELATION",
+                    page,
+                    "On-screen indentation creates a false parent-child relation across semantic dimensions.",
+                    "Nest only true category members. Fold participating actors into the business item's description, or place them under a separate actor group when they must remain visible.",
+                    evidence=hierarchy_role_hits,
                 )
             )
         layout_meta_hits = _onscreen_layout_meta_hits(page.onscreen_text)

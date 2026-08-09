@@ -348,6 +348,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "the same-strength relation stated by the material → implication or handoff only when supported. "
         "Do not repeat the page title or subtitle inside the body.",
         "Write each labelled on-screen detail as a short phrase or short sentence: count meaningful Chinese/Latin/numeric characters after the first label separator; <=36 is the preferred band, 37–60 requires shortening or splitting, and >60 is a script-audit error. Keep long judgments, legal boundaries, and necessary complete conclusions in their dedicated fields instead of hiding them inside a detail line.",
+        "Indentation declares a real parent-child taxonomy, not visual grouping. Before nesting, verify that every child answers the same classification question implied by its parent. Never nest actors or participating parties under a construction item, mechanism, platform, carrier, path, process, task, or goal. Fold those actors into the item's short description, or create a separate actor group only when actor roles are independently required on screen.",
         "Never put compositor instructions such as 四行选择矩阵、阅读顺序、视觉中心、构图说明、泳道/色块/主链呈现 or 第X行｜ coordinates into `上屏文字`; write them under `【视觉结构，不上屏】` or another backend field.",
         "Boundary is opt-in, never a mandatory fourth beat. A boundary, evidence-status, "
         "pending-proof, or research-status module may appear only when it is the primary "

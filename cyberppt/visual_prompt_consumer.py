@@ -24,6 +24,20 @@ _STYLE09_SEMANTIC_FIELDS = (
     "Relationship encoding:",
 )
 
+_LAYOUT_BEARING_TEXT_INTEGRATION_RE = re.compile(
+    r"(?:位于|置于|放在|上部|下部|顶部|底部|左侧|右侧|居中|结果区|结论区)"
+)
+
+
+def _sanitize_style09_semantic_segment(segment: str) -> str:
+    """Keep text-object semantics but discard stale placement instructions."""
+    if not segment.startswith("Text integration:"):
+        return segment
+    prefix, value = segment.split(":", 1)
+    clauses = [part.strip() for part in re.split(r"(?<=[。！？])|，", value) if part.strip()]
+    kept = [part for part in clauses if not _LAYOUT_BEARING_TEXT_INTEGRATION_RE.search(part)]
+    return f"{prefix}: {'，'.join(kept).rstrip('。')}。" if kept else ""
+
 
 @dataclass(frozen=True)
 class VisualPromptModule:
@@ -150,7 +164,9 @@ def append_style09_surface_adapter(
         for segment in re.split(r"[;；]", line):
             segment = segment.strip()
             if any(segment.startswith(field) for field in _STYLE09_SEMANTIC_FIELDS):
-                lines.append(f"- {segment}")
+                segment = _sanitize_style09_semantic_segment(segment)
+                if segment:
+                    lines.append(f"- {segment}")
     block = "\n".join(
         [
             STYLE09_SURFACE_HEADER,

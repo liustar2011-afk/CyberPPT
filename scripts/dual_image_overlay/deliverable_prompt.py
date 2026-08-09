@@ -612,6 +612,21 @@ def _style09_terminal_execution_lock(style_lock_path: Path | None) -> str:
 STYLE09_TERMINAL_LOCK_HEADER = "【风格09最终执行锁｜最高优先级】"
 
 
+def _style09_people_rule(style_lock_path: Path | None) -> str:
+    """Return Style 09's people constraint for final prompt reassertion."""
+
+    if style_lock_path is None:
+        return ""
+    try:
+        payload = load_style_lock(style_lock_path)
+    except (OSError, ValueError, TypeError):
+        return ""
+    style = payload.get("style") if isinstance(payload.get("style"), dict) else payload
+    if int(style.get("id") or 0) != 9:
+        return ""
+    return _strip_visual_structure_meta(_collapse_text(style.get("people_rule")))
+
+
 def enforce_style09_terminal_lock(
     prompt: str,
     style_lock_path: Path | None,
@@ -626,15 +641,19 @@ def enforce_style09_terminal_lock(
     """
 
     lock = _style09_terminal_execution_lock(style_lock_path)
+    people_rule = _style09_people_rule(style_lock_path)
     if not lock:
         return prompt
     lines = [
         line
         for line in str(prompt).splitlines()
-        if line.strip() not in {STYLE09_TERMINAL_LOCK_HEADER, lock}
+        if line.strip() not in {STYLE09_TERMINAL_LOCK_HEADER, lock, people_rule}
     ]
     body = "\n".join(lines).rstrip()
-    return f"{body}\n\n{STYLE09_TERMINAL_LOCK_HEADER}\n{lock}\n"
+    suffix = f"{STYLE09_TERMINAL_LOCK_HEADER}\n{lock}"
+    if people_rule:
+        suffix = f"{suffix}\n{people_rule}"
+    return f"{body}\n\n{suffix}\n"
 
 
 def render_prompt(
@@ -734,6 +753,9 @@ def render_prompt(
     terminal_execution_lock = _style09_terminal_execution_lock(style_lock_path)
     if terminal_execution_lock:
         parts.extend(["", STYLE09_TERMINAL_LOCK_HEADER, terminal_execution_lock])
+        people_rule = _style09_people_rule(style_lock_path)
+        if people_rule:
+            parts.append(people_rule)
     return "\n".join(parts).strip() + "\n"
 
 

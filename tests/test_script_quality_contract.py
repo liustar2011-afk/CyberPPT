@@ -14,12 +14,15 @@ from cyberppt.script_quality_contract import (
     _generic_onscreen_relation_hits,
     _onscreen_detail_phrase_overages,
     _onscreen_layout_meta_hits,
+    _onscreen_parent_child_role_mismatches,
     _speaker_placeholder_hits,
     _issue,
     _presentation_issues,
+    _prose_issues,
     _source_consumption_issues,
     _visual_structure_judgment_issues,
     audit_script_quality,
+    assert_imagegen_onscreen_readiness,
     build_communication_review,
     extract_speaker_notes,
     meaningful_char_count,
@@ -65,6 +68,29 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
                 )
             ),
         )
+
+    def test_flags_actor_dimension_nested_under_construction_item(self) -> None:
+        text = (
+            "三项建设内容\n"
+            "    协同载体建设\n"
+            "        需求单位：提出业务需求。\n"
+            "        资源方：提供数据资源。\n"
+            "        模型算法方：提供模型能力。\n"
+            "        技术实施方：提供实施支撑。"
+        )
+        self.assertEqual(
+            ("协同载体建设 -> 需求单位, 资源方, 模型算法方, 技术实施方",),
+            _onscreen_parent_child_role_mismatches(text),
+        )
+
+    def test_allows_actor_children_under_actor_group(self) -> None:
+        text = (
+            "参与主体\n"
+            "    需求单位：提出业务需求。\n"
+            "    资源方：提供数据资源。\n"
+            "    模型算法方：提供模型能力。"
+        )
+        self.assertEqual((), _onscreen_parent_child_role_mismatches(text))
 
     def test_compound_group_heading_does_not_pass_by_deleting_meta_phrase(self) -> None:
         self.assertEqual(
@@ -188,6 +214,53 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
         ]
         self.assertEqual(1, len(issues))
         self.assertEqual("error", issues[0].severity)
+
+    def test_imagegen_blocks_requested_page_with_paragraph_like_onscreen_copy(self) -> None:
+        document = parse_script_markdown(
+            "## 第21页：合作对象与合作方式\n"
+            "- 页面类型：内容页\n"
+            "- 上屏文字：\n"
+            "  **参与主体**\n"
+            "      按资源条件参与合作：" + "各类主体结合资源条件选择合作方式并明确责任分工。" * 5 + "\n"
+        )
+
+        with self.assertRaisesRegex(ValueError, "P21"):
+            assert_imagegen_onscreen_readiness(document, {21})
+        assert_imagegen_onscreen_readiness(document, {20})
+
+    def test_imagegen_also_blocks_warning_band_detail_copy(self) -> None:
+        document = parse_script_markdown(
+            "## 第5页：合作基础\n"
+            "- 页面类型：内容页\n"
+            "- 上屏文字：\n"
+            "  **行业节点**\n"
+            "      节点建设：" + "承担主体连接、目录衔接、接口协同和场景承接。" * 3 + "\n"
+        )
+
+        with self.assertRaisesRegex(ValueError, "P05"):
+            assert_imagegen_onscreen_readiness(document, {5})
+
+    def test_four_parallel_short_items_do_not_require_paragraph_density(self) -> None:
+        page = parse_script_markdown(
+            "## 第21页：合作对象与合作方式\n"
+            "- 页面类型：内容页\n"
+            "- 完整文字稿：" + "合作主体依据资源条件选择合作方式并明确责任。" * 30 + "\n"
+            "- 上屏文字：\n"
+            "  **四类参与主体**\n"
+            "      电力及能源企业：提供行业场景与业务数据。\n"
+            "      科研院所及高校：提供科研数据与知识模型。\n"
+            "      数字科技企业：提供技术产品与治理能力。\n"
+            "      专业咨询机构：提供行业研究与推广支持。\n"
+            "- 视觉结构：四类主体并列。\n"
+        ).pages[0]
+
+        error_codes = {
+            issue.code
+            for issue in _prose_issues(page, independent_reading_required=True)
+            if issue.severity == "error"
+        }
+        self.assertNotIn("ONSCREEN_STORY_DENSITY_LOW", error_codes)
+        self.assertNotIn("ONSCREEN_SEMANTIC_COVERAGE_LOW", error_codes)
 
 ROOT = Path(__file__).resolve().parents[1]
 POWER_PROJECT = ROOT / "projects" / "power-supply-demand-forecast-early-warning"
@@ -2147,7 +2220,56 @@ def _judgment_page(**overrides: object) -> ScriptPage:
     return ScriptPage(**base)  # type: ignore[arg-type]
 
 
+class SpeakerNotesParagraphTests(unittest.TestCase):
+    def test_rejects_long_unsegmented_speaker_notes(self) -> None:
+        notes = (
+            "平台先统一识别客户需求和可用资源，再通过审核验证形成明确的产品规格。"
+            "订单生效后，授权、交付、计量和结算按照同一业务对象连续衔接。"
+            "运营结果最终回流到产品优化与合作评估，形成完整闭环。"
+        ) * 2
+        codes = {
+            issue.code for issue in _prose_issues(_judgment_page(speaker_notes=notes))
+        }
+        self.assertIn("SPEAKER_NOTES_UNSEGMENTED", codes)
+
+    def test_allows_formal_segmented_speaker_notes(self) -> None:
+        notes = (
+            "平台先统一识别客户需求和可用资源，再通过审核验证形成明确的产品规格。\n\n"
+            "订单生效后，授权、交付、计量和结算按照同一业务对象连续衔接。"
+            "运营结果最终回流到产品优化与合作评估，形成完整闭环。"
+        )
+        codes = {
+            issue.code for issue in _prose_issues(_judgment_page(speaker_notes=notes))
+        }
+        self.assertNotIn("SPEAKER_NOTES_UNSEGMENTED", codes)
+
+    def test_rejects_paragraph_break_after_semicolon(self) -> None:
+        notes = (
+            "平台先统一识别客户需求和可用资源；\n\n"
+            "再通过审核验证形成产品规格，订单生效后连续衔接授权、交付和结算。"
+        )
+        codes = {
+            issue.code for issue in _prose_issues(_judgment_page(speaker_notes=notes))
+        }
+        self.assertIn("SPEAKER_NOTES_INCOMPLETE_PARAGRAPH_BOUNDARY", codes)
+
+
 class VisualStructureJudgmentAccuracyTests(unittest.TestCase):
+    def test_flags_visible_result_missing_from_locked_onscreen_text(self) -> None:
+        page = _judgment_page(
+            visual_structure="页面底部单独收束“合作完善方向”的结论条。",
+        )
+        codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
+        self.assertIn("VISUAL_STRUCTURE_UNLOCKED_VISIBLE_TEXT", codes)
+
+    def test_allows_visible_result_locked_once(self) -> None:
+        page = _judgment_page(
+            onscreen_text="合作完善方向：共性能力仍需完善。",
+            visual_structure="页面底部单独收束“合作完善方向”的结论条。",
+        )
+        codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
+        self.assertNotIn("VISUAL_STRUCTURE_UNLOCKED_VISIBLE_TEXT", codes)
+
     def test_compound_group_heading_is_a_blocking_presentation_issue(self) -> None:
         page = _judgment_page(
             onscreen_text="合作原则与合作方式\n原则说明\n方式说明",

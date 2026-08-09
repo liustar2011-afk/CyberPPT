@@ -31,7 +31,10 @@ from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_code
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 from cyberppt.artifact_ledger import append_artifacts, write_json_atomic
 from cyberppt.commands.init_project import init_project
-from cyberppt.script_quality_contract import parse_script_path
+from cyberppt.script_quality_contract import (
+    assert_imagegen_onscreen_readiness,
+    parse_script_path,
+)
 
 
 STAGE_DIR = "workbench/stages/02-blueprint-dual-image"
@@ -194,9 +197,11 @@ def _template_text_lock(
     build_id: str,
 ) -> Path:
     blocks = parse_page_blocks(script)
+    document = parse_script_path(script)
+    assert_imagegen_onscreen_readiness(document, set(pages))
     script_pages = {
         int(page.page_id[1:]): page
-        for page in parse_script_path(script).pages
+        for page in document.pages
     }
     records: list[dict[str, Any]] = []
     prior_decisions: list[PresentationDecision] = []
