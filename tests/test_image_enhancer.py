@@ -68,3 +68,31 @@ class ImageEnhancerBridgeTests(unittest.TestCase):
 
             with patch("cyberppt.image_enhancer.subprocess.run", side_effect=fake_run):
                 enhance_image(source, output=source, target_size=(2048, 1024))
+
+    def test_windows_unicode_paths_are_staged_through_ascii_temp_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "建设基础.png"
+            output = root / "合作方案.png"
+            source.write_bytes(b"source")
+
+            def fake_run(command, **_kwargs):
+                run_source = Path(command[2])
+                run_output = Path(command[command.index("--output") + 1])
+                run_report = Path(command[command.index("--report") + 1])
+                self.assertTrue(str(run_source).isascii())
+                self.assertTrue(str(run_output).isascii())
+                run_output.write_bytes(b"enhanced")
+                run_report.write_text(
+                    json.dumps({"super_resolution_backend": "builtin", "warnings": []}),
+                    encoding="utf-8",
+                )
+                return type("Completed", (), {"returncode": 0})()
+
+            with (
+                patch("cyberppt.image_enhancer.sys.platform", "win32"),
+                patch("cyberppt.image_enhancer.subprocess.run", side_effect=fake_run),
+            ):
+                result = enhance_image(source, output=output, backend="builtin")
+            self.assertEqual(b"enhanced", output.read_bytes())
+            self.assertEqual(str(output.resolve()), result["output"])

@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import sys
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -40,6 +42,12 @@ def _runtime_python() -> Path:
     return candidate if candidate.is_file() else Path(sys.executable)
 
 
+def _needs_ascii_staging(*paths: Path) -> bool:
+    return sys.platform == "win32" and any(
+        not str(path).isascii() for path in paths
+    )
+
+
 def enhance_image(
     source: Path,
     *,
@@ -57,19 +65,41 @@ def enhance_image(
     output = (output or source.with_name(f"{source.stem}_enhanced.png")).expanduser().resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
     report = output.with_suffix(output.suffix + ".report.json")
-    command = [
-        str(_runtime_python()), str(ENTRYPOINT), str(source), "--output", str(output),
-        "--report", str(report), "--backend", backend, "--scale", str(scale),
-    ]
-    if target_size is not None:
-        command.extend(["--target-size", f"{target_size[0]}x{target_size[1]}"])
-    if mode is not None:
-        command.extend(["--mode", mode])
-    completed = subprocess.run(command, cwd=SKILL_ROOT, check=False)
-    if completed.returncode != 0:
-        raise RuntimeError(
-            f"ppt-image-enhancer failed with exit code {completed.returncode}: {' '.join(command)}"
-        )
+
+    def run_skill(run_source: Path, run_output: Path, run_report: Path) -> list[str]:
+        command = [
+            str(_runtime_python()), str(ENTRYPOINT), str(run_source),
+            "--output", str(run_output), "--report", str(run_report),
+            "--backend", backend, "--scale", str(scale),
+        ]
+        if target_size is not None:
+            command.extend(["--target-size", f"{target_size[0]}x{target_size[1]}"])
+        if mode is not None:
+            command.extend(["--mode", mode])
+        completed = subprocess.run(command, cwd=SKILL_ROOT, check=False)
+        if completed.returncode != 0:
+            raise RuntimeError(
+                "ppt-image-enhancer failed with exit code "
+                f"{completed.returncode}: {' '.join(command)}"
+            )
+        return command
+
+    if _needs_ascii_staging(source, output, report):
+        with tempfile.TemporaryDirectory(prefix="cyberppt-enhance-") as temp_dir:
+            stage = Path(temp_dir)
+            staged_source = stage / f"input{source.suffix or '.png'}"
+            staged_output = stage / f"output{output.suffix or '.png'}"
+            staged_report = stage / "output.report.json"
+            shutil.copy2(source, staged_source)
+            command = run_skill(staged_source, staged_output, staged_report)
+            if not staged_output.is_file() or not staged_report.is_file():
+                raise RuntimeError(
+                    "ppt-image-enhancer completed without its declared output/report"
+                )
+            shutil.copy2(staged_output, output)
+            shutil.copy2(staged_report, report)
+    else:
+        command = run_skill(source, output, report)
     if not output.is_file() or not report.is_file():
         raise RuntimeError("ppt-image-enhancer completed without its declared output/report")
     payload = json.loads(report.read_text(encoding="utf-8"))
