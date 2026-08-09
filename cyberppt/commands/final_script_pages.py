@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -53,6 +54,24 @@ BODY_IMAGE_CANVAS_CONTRACT = (
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def _failed_text_audit_image_path(output_path: Path, attempt: int) -> Path:
+    return output_path.with_name(
+        f"{output_path.stem}.attempt-{attempt:02d}-text-audit-failed{output_path.suffix}"
+    )
+
+
+def _text_correction_prompt(base_prompt: str, audit: dict[str, Any]) -> str:
+    issues = json.dumps(audit.get("issues", []), ensure_ascii=False, indent=2)
+    return f"""{base_prompt}
+
+文字纠错重绘（最高优先级）：
+第一张输入图片是上一轮生成但文字审计未通过的原图。请以该图为基础重新生成，保持其构图、配色、视觉层级、图形关系及所有无关文字不变。
+只纠正下列已确认的错字或乱码；expected 是正确写法，observed 是原图中的错误写法，bbox 是错误位置（如有）：
+{issues}
+不得忽略、改写或扩展纠错清单，不得借机调整其他内容。所有纠错项必须按 expected 准确呈现。
+"""
 
 
 def _page_range_slug(pages: list[int]) -> str:
@@ -580,6 +599,8 @@ def _generate_manifest_images(
             prompt = str(item.get("prompt", ""))
             if variant == "full":
                 prompt = f"{BODY_IMAGE_CANVAS_CONTRACT}\n\n{prompt}"
+            base_prompt = prompt
+            attempt_input_images = list(input_images)
             canvas = str(item.get("canvas") or "2048x1024")
             max_attempts = 3 if isinstance(text_truth, dict) else 1
             accepted_audit: dict[str, Any] | None = None
@@ -587,7 +608,7 @@ def _generate_manifest_images(
                 run_codex_image(
                     prompt=prompt,
                     output_path=output_path,
-                    image_paths=input_images,
+                    image_paths=attempt_input_images,
                     model=model,
                     size=canvas,
                     quality=quality,
@@ -611,6 +632,21 @@ def _generate_manifest_images(
                     text_audits.append(audit)
                     if not audit["valid"]:
                         if attempt < max_attempts:
+                            if not output_path.is_file():
+                                raise FileNotFoundError(
+                                    f"page {pair.get('page_number')} failed text audit image "
+                                    f"not found for correction retry: {output_path}"
+                                )
+                            failed_image = _failed_text_audit_image_path(output_path, attempt)
+                            shutil.copy2(output_path, failed_image)
+                            audit["image"] = str(failed_image)
+                            audit["correction_retry"] = {
+                                "next_attempt": attempt + 1,
+                                "source_image": str(failed_image),
+                                "issues": audit.get("issues", []),
+                            }
+                            attempt_input_images = [failed_image, *input_images]
+                            prompt = _text_correction_prompt(base_prompt, audit)
                             continue
                         raise RuntimeError(
                             f"page {pair.get('page_number')} image text audit failed after "
