@@ -89,8 +89,7 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertIn("may use a small amount of clear Chinese labels", prompt)
         self.assertIn("dense pseudo-Chinese", prompt)
         self.assertIn("禁止宽箭头带", prompt)
-        self.assertIn("虚线只表达反馈或弱关系", prompt)
-        self.assertEqual(1, prompt.count("端点准确落在对象边界"))
+        self.assertIn("虚线不作装饰节点链", prompt)
 
     def test_compile_pages_uses_only_onscreen_block_from_final_manuscript(self) -> None:
         with TemporaryDirectory() as directory:

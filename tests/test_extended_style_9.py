@@ -84,9 +84,9 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "#12355B" in style_nine["prompt_contract"]
     assert "Industry scene anchor" not in style_nine["prompt_contract"]
     assert "逐项配图" not in style_nine["prompt_contract"]
-    assert "线条：主次线宽和颜色层级清楚" in style_nine["component_rule"]
+    assert "线条：主关系用细、实、方向一致的深蓝线" in style_nine["component_rule"]
     assert "禁止宽箭头带" in style_nine["component_rule"]
-    assert "同组内容保持一致的线宽、圆角和内边距" in style_nine["component_rule"]
+    assert "低矮哑光正视微立体" in style_nine["component_rule"]
     assert "icon_rule" not in style_nine
     assert "政企领导汇报所需的信息密度" in style_nine["density_rule"]
     assert "领导汇报" in style_nine["scenario"]
@@ -124,15 +124,15 @@ def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
         contract = render_content_first_style_contract(lock)
 
     assert "基础组件表达规范（通用）" in contract
-    assert "虚线只表达反馈或弱关系" in contract
+    assert "虚线不作装饰节点链" in contract
     assert "禁止宽箭头带" in contract
-    assert "不限制业务所需的具体形态" in contract
-    assert "避免厚框、重阴影和多层嵌套" in contract
-    assert "编号、邻接或连续基线已经表达顺序时" in contract
-    assert "箭身细、箭头头小且贴近线端" in contract
-    assert "不为装饰随意增加颜色" in contract
-    assert "基础组件约束（仅约束表达方式，不改变本页内容）" not in contract
-    assert contract.count("端点准确落在对象边界") == 1
+    assert "低矮、哑光、正视" in contract
+    assert "整页反馈虚线原则上最多一条" in contract
+    assert "整页可见边界最多两级" in contract
+    assert "编号、自然邻接或同一连续基线已经表达顺序时" in contract
+    assert "箭头头宽度不明显超过线宽的2—3倍" in contract
+    assert "同页异形标题条最多一个" in contract
+    assert "不得仅为区分类目自动分配多色" in contract
 
 
 def test_style_nine_people_rule_is_the_absolute_prompt_suffix() -> None:

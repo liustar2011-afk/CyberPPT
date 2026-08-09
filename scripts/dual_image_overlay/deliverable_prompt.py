@@ -354,14 +354,6 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
     if style_prompt_v2:
         return style_prompt_v2
     prompt_contract = _strip_visual_structure_meta(_collapse_text(style.get("prompt_contract")))
-    style09_has_terminal_lock = (
-        int(style.get("id") or 0) == 9
-        and "### Final ImageGen execution lock — hard" in prompt_contract
-    )
-    if style09_has_terminal_lock:
-        prompt_contract = prompt_contract.split(
-            "### Final ImageGen execution lock — hard", 1
-        )[0].rstrip()
     scope_rule = _strip_visual_structure_meta(_collapse_text(style.get("scope_rule")))
     semantic_structure_rule = _strip_visual_structure_meta(
         _collapse_text(style.get("semantic_structure_rule"))
@@ -392,7 +384,7 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
         parts.extend(part for part in (scope_rule, semantic_structure_rule, scene_layer_rule) if part)
     if semantic_image_rule:
         parts.append(semantic_image_rule)
-    if people_rule and not style09_has_terminal_lock:
+    if people_rule:
         parts.append(people_rule)
     if factuality_rule:
         parts.append(factuality_rule)
@@ -412,7 +404,7 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
         parts.append(density_rule)
     if carrier_router:
         parts.append(carrier_router)
-    if component_rule and "### 基础组件表达规范（通用）" not in prompt_contract:
+    if component_rule:
         parts.append(component_rule)
     if deck_consistency_rule:
         parts.append(deck_consistency_rule)
@@ -612,9 +604,7 @@ def _style09_terminal_execution_lock(style_lock_path: Path | None) -> str:
     tail = contract.split(marker, 1)[1]
     lines = [line.strip() for line in tail.splitlines() if line.strip()]
     for line in reversed(lines):
-        if line.startswith("禁止任何图标、徽章、卡片墙") or line.startswith(
-            ("保持扁平2D", "保持组件细节精确")
-        ):
+        if line.startswith("禁止任何图标、徽章、卡片墙") or line.startswith("保持扁平2D"):
             return line
     return ""
 

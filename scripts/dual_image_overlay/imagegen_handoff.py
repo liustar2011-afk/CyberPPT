@@ -1666,20 +1666,12 @@ def render_content_first_style_contract(style_lock: Path) -> str:
         description = _strip_style09_registry_meta(
             str(style.get("prompt_contract") or "").strip()
         )
-        if "### Final ImageGen execution lock — hard" in description:
-            description = description.split(
-                "### Final ImageGen execution lock — hard", 1
-            )[0].rstrip()
         lines = [
             "【视觉风格｜不上屏】",
             description,
         ]
         component_rule = str(style.get("component_rule") or "").strip()
-        if (
-            component_rule
-            and component_rule not in description
-            and "### 基础组件表达规范（通用）" not in description
-        ):
+        if component_rule and component_rule not in description:
             lines.extend(["基础组件约束（仅约束表达方式，不改变本页内容）：", component_rule])
         signature = style.get("imagegen_signature")
         if isinstance(signature, list):
