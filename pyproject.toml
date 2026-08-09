@@ -20,7 +20,7 @@ classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Topic :: Office/Business :: Office Suites",
 ]
-dependencies = ["pyyaml"]
+dependencies = ["pyyaml", "rapidocr-onnxruntime>=1.4,<2"]
 
 [project.scripts]
 cyberppt = "cyberppt.cli:main"

@@ -27,7 +27,10 @@ from scripts.dual_image_overlay.imagegen_handoff import (
     select_page_visual_intent_type,
 )
 from scripts.dual_image_overlay.production_readiness import build_production_readiness
-from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_codex_image
+from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import (
+    ensure_output_size,
+    run_codex_image,
+)
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 from cyberppt.artifact_ledger import append_artifacts, write_json_atomic
 from cyberppt.commands.init_project import init_project
@@ -546,6 +549,7 @@ def _generate_manifest_images(
     variants = output_variants_for_mode(production_mode)
     generated: list[str] = []
     skipped: list[str] = []
+    text_audits: list[dict[str, Any]] = []
     for pair in manifest.get("pairs", []):
         full_path = Path(str((pair.get("full") or {}).get("path", "")))
         page_reference_images = [
@@ -556,7 +560,11 @@ def _generate_manifest_images(
         for variant in variants:
             item = pair.get(variant) or {}
             output_path = Path(str(item.get("path", "")))
-            if output_path.is_file() and not force:
+            text_truth = pair.get("image_text_truth") if variant == "full" else None
+            has_text_receipt = (item.get("text_audit") or {}).get("valid") is True
+            if output_path.is_file() and not force and (
+                not isinstance(text_truth, dict) or has_text_receipt
+            ):
                 item["status"] = "Generated"
                 skipped.append(str(output_path))
                 continue
@@ -572,20 +580,51 @@ def _generate_manifest_images(
             prompt = str(item.get("prompt", ""))
             if variant == "full":
                 prompt = f"{BODY_IMAGE_CANVAS_CONTRACT}\n\n{prompt}"
-            run_codex_image(
-                prompt=prompt,
-                output_path=output_path,
-                image_paths=input_images,
-                model=model,
-                size=str(item.get("canvas") or "2048x1024"),
-                quality=quality,
-                timeout=timeout,
-                force=True,
-                dry_run=dry_run,
-            )
+            canvas = str(item.get("canvas") or "2048x1024")
+            max_attempts = 3 if isinstance(text_truth, dict) else 1
+            accepted_audit: dict[str, Any] | None = None
+            for attempt in range(1, max_attempts + 1):
+                run_codex_image(
+                    prompt=prompt,
+                    output_path=output_path,
+                    image_paths=input_images,
+                    model=model,
+                    size=canvas,
+                    quality=quality,
+                    timeout=timeout,
+                    force=True,
+                    dry_run=dry_run,
+                    postprocess=False,
+                )
+                if dry_run:
+                    break
+                if isinstance(text_truth, dict):
+                    from cyberppt.image_text_gate import audit_generated_image_text
+
+                    audit = audit_generated_image_text(
+                        output_path,
+                        script_text=str(text_truth.get("script_text") or ""),
+                        timeout=timeout,
+                    )
+                    audit["page_number"] = pair.get("page_number")
+                    audit["attempt"] = attempt
+                    text_audits.append(audit)
+                    if not audit["valid"]:
+                        if attempt < max_attempts:
+                            continue
+                        raise RuntimeError(
+                            f"page {pair.get('page_number')} image text audit failed after "
+                            f"{max_attempts} generation attempts; regenerate before enhancement: "
+                            f"{json.dumps(audit.get('issues', []), ensure_ascii=False)}"
+                        )
+                    accepted_audit = audit
+                ensure_output_size(output_path, canvas)
+                break
             if not dry_run:
                 item["status"] = "Generated"
                 item["generated_at"] = _utc_now()
+                if accepted_audit is not None:
+                    item["text_audit"] = accepted_audit
             generated.append(str(output_path))
     return {
         "backend": "codex_oauth_image",
@@ -594,6 +633,7 @@ def _generate_manifest_images(
         "skipped": skipped,
         "dry_run": dry_run,
         "full_reference_images": [str(path) for path in (full_reference_images or [])],
+        "text_audits": text_audits,
     }
 
 

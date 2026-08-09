@@ -146,6 +146,46 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertIn("不得输出16:9", kwargs["prompt"])
         self.assertEqual("2048x1024", kwargs["size"])
         self.assertEqual([Path("palette-09.png")], kwargs["image_paths"])
+        self.assertFalse(kwargs["postprocess"])
+
+    def test_typo_audit_regenerates_before_enhancement(self) -> None:
+        manifest = {
+            "production_mode": "full-image",
+            "pairs": [
+                {
+                    "page_number": 4,
+                    "image_text_truth": {
+                        "script_text": "数据产品\n数据服务",
+                        "scope": "typo_and_gibberish_only",
+                    },
+                    "full": {
+                        "path": "page-004.png",
+                        "prompt": "prompt",
+                        "canvas": "2048x1024",
+                    },
+                }
+            ],
+        }
+        failed = {"valid": False, "issues": [{"type": "typo"}]}
+        passed = {"valid": True, "issues": []}
+        with (
+            patch("cyberppt.commands.final_script_pages.run_codex_image") as generate,
+            patch("cyberppt.image_text_gate.audit_generated_image_text", side_effect=[failed, passed]),
+            patch("cyberppt.commands.final_script_pages.ensure_output_size") as enhance,
+        ):
+            summary = _generate_manifest_images(
+                manifest,
+                model="gpt-image-2",
+                quality="high",
+                timeout=600,
+                force=True,
+                dry_run=False,
+            )
+
+        self.assertEqual(2, generate.call_count)
+        enhance.assert_called_once_with(Path("page-004.png"), "2048x1024")
+        self.assertTrue(manifest["pairs"][0]["full"]["text_audit"]["valid"])
+        self.assertEqual(2, len(summary["text_audits"]))
 
     def _approve_inputs_and_prompts(self, project: Path, script: Path, style_id: int = 4) -> None:
         manifest = project / "manifest.yml"

@@ -358,6 +358,7 @@ def build_manifest(
         enrich_result_as_dict,
         resolve_send_prompt,
     )
+    from scripts.dual_image_overlay.imagegen_handoff import select_image_locked_text
 
     script_pages = {
         int(page.page_id[1:]): page
@@ -626,12 +627,26 @@ def build_manifest(
             }
             _mark_status(text_reference, force_pending=force_pending)
             variants["text_reference"] = text_reference
+        required_image_text = [
+            line
+            for line in select_image_locked_text(script_pages[page_number]).splitlines()
+            if line.strip()
+        ]
+        allowed_image_text = "\n".join(
+            value
+            for value in (script_pages[page_number].onscreen_text, *required_image_text)
+            if str(value).strip()
+        )
         pairs.append(
             {
                 "page_number": page_number,
                 "page_code": f"P{page_number:02d}",
                 "title": page.title,
                 "page_script": prompt,
+                "image_text_truth": {
+                    "script_text": allowed_image_text,
+                    "scope": "typo_and_gibberish_only",
+                },
                 "prompt_file": str(prompt_file),
                 **({"reference_images": reference_images} if reference_images else {}),
                 "visual_structure_handoff": visual_handoff_metadata,
@@ -679,6 +694,12 @@ def build_manifest(
             if page_roles[number] != "content"
         ],
         "output_variants": output_variants,
+        "text_audit_contract": {
+            "required_before_enhancement": True,
+            "scope": "typo_and_gibberish_only",
+            "max_generation_attempts": 3,
+            "failure_action": "regenerate_image",
+        },
         "generation_contract": {
             "mode": "full-image-only" if production_mode == FULL_IMAGE_MODE else production_mode,
             "owner": "CyberPPT",
@@ -742,6 +763,12 @@ def require_generated(manifest: dict[str, Any]) -> None:
             contract_errors.append(
                 f"page {page_number} full.generation_method must be {FULL_GENERATION_METHOD}"
             )
+        if (manifest.get("text_audit_contract") or {}).get("required_before_enhancement"):
+            text_audit = full_item.get("text_audit") or {}
+            if text_audit.get("valid") is not True:
+                contract_errors.append(
+                    f"page {page_number} full image has no passed pre-enhancement text audit"
+                )
         if "background" in output_variants:
             background_item = pair.get("background") or {}
             if background_item.get("generation_method") != BACKGROUND_GENERATION_METHOD:

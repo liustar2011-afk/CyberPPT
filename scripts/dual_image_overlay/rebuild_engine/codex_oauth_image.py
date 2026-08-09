@@ -526,7 +526,14 @@ def raw_output_path(output_path: Path) -> Path:
     return output_path.with_name(f"{output_path.stem}_raw.png")
 
 
-def _write_image(image_b64: str, output_path: Path, *, force: bool, size: str | None = None) -> None:
+def _write_image(
+    image_b64: str,
+    output_path: Path,
+    *,
+    force: bool,
+    size: str | None = None,
+    postprocess: bool = True,
+) -> None:
     if len(image_b64) > MAX_CODEX_BASE64_CHARS:
         _die("Image payload exceeded size limit.")
     raw_path = raw_output_path(output_path)
@@ -551,7 +558,7 @@ def _write_image(image_b64: str, output_path: Path, *, force: bool, size: str | 
         )
     except ImportError:
         print(f"Wrote raw backend image: {raw_path}", file=sys.stderr)
-    if size:
+    if size and postprocess:
         final_size = ensure_output_size(output_path, size)
         if final_size != (-1, -1):
             print(
@@ -588,6 +595,7 @@ def run_codex_image(
     force: bool = False,
     dry_run: bool = False,
     timeout: int = DEFAULT_TIMEOUT,
+    postprocess: bool = True,
 ) -> Path:
     """Generate or edit one image through Codex OAuth."""
     image_paths = image_paths or []
@@ -641,7 +649,7 @@ def run_codex_image(
         endpoint_label = "responses"
     elapsed = time.time() - started
     print(f"Codex OAuth image completed via {endpoint_label} in {elapsed:.1f}s.", file=sys.stderr)
-    _write_image(payloads[0], output_path, force=force, size=size)
+    _write_image(payloads[0], output_path, force=force, size=size, postprocess=postprocess)
     print(f"Wrote {output_path}")
     return output_path
 
