@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 import subprocess
 import sys
@@ -75,6 +76,11 @@ DO-NOT-IMPORT-STYLE-LOCK
     def test_v11_builder_keeps_style_reference_out_of_consumed_module(self) -> None:
         repo = Path(__file__).resolve().parents[1]
         skill = repo / "vendor" / "skills" / "ppt-visual-structure-designer"
+        example_path = skill / "assets" / "example-page-spec.json"
+        example = json.loads(example_path.read_text(encoding="utf-8"))
+        page_number = example["page_number"]
+        focus = example["structural_decision"]["semantic_focus"]
+        style_source_ref = example["generation_handoff"]["style_source_ref"]
         with TemporaryDirectory() as temp:
             project = Path(temp)
             visual = project / "visual"
@@ -84,7 +90,7 @@ DO-NOT-IMPORT-STYLE-LOCK
                 [
                     sys.executable,
                     str(skill / "scripts" / "build_generation_prompt.py"),
-                    str(skill / "assets" / "example-page-spec.json"),
+                    str(example_path),
                     "--output",
                     str(output),
                 ],
@@ -92,14 +98,17 @@ DO-NOT-IMPORT-STYLE-LOCK
                 capture_output=True,
                 text=True,
             )
-            module = load_visual_prompt_module(project, 7)
+            module = load_visual_prompt_module(project, page_number)
 
         self.assertIsNotNone(module)
         assert module is not None
         self.assertIn("[Structural guidance]", module.prompt_text)
-        self.assertIn("Semantic focus: action / E4", module.prompt_text)
+        self.assertIn(
+            f"Semantic focus: {focus['kind']} / {focus['ref']}",
+            module.prompt_text,
+        )
         self.assertNotIn("[Style source]", module.prompt_text)
-        self.assertNotIn("external-style-lock", module.prompt_text)
+        self.assertNotIn(style_source_ref, module.prompt_text)
         self.assertNotIn("Font:", module.prompt_text)
 
     def test_pair_manifest_consumes_project_generation_prompts(self) -> None:

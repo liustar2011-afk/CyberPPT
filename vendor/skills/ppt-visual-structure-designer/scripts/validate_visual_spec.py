@@ -72,6 +72,18 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
             "Schema 1.0 is supported for compatibility; migrate to structural_decision v1.1",
             n,
         )
+    sg = page.get("semantic_graph", {})
+    primary_relation = str(sg.get("primary_relation") or "")
+    if primary_relation in {"", "none"} and (
+        len(sg.get("nodes", [])) > 1 or bool(sg.get("edges"))
+    ):
+        add(
+            issues,
+            "error",
+            "primary_relation",
+            "A page with multiple semantic nodes or edges must declare one primary relation",
+            n,
+        )
     structural = page.get("structural_decision")
     if isinstance(structural, dict):
         graph = page.get("semantic_graph", {})
@@ -102,6 +114,8 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
         if focus_ref and focus_ref not in primary_refs:
             add(issues, "error", "semantic_focus_hierarchy", "Semantic focus must be included in primary_refs", n)
         bound_evidence: set[str] = set()
+        binding_targets: dict[str, set[str]] = {}
+        actor_targets: dict[str, set[str]] = {}
         for binding in structural.get("text_bindings", []):
             if not isinstance(binding, dict):
                 continue
@@ -111,8 +125,31 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
                 add(issues, "error", "text_binding_evidence", f"Unknown evidence id in text binding: {evidence_id}", n)
             else:
                 bound_evidence.add(evidence_id)
+                binding_targets.setdefault(evidence_id, set()).add(target_ref)
+                if evidence[evidence_id].get("kind") == "actor":
+                    actor_targets.setdefault(target_ref, set()).add(evidence_id)
             if target_ref not in nodes:
                 add(issues, "error", "text_binding_target", f"Unknown graph node in text binding: {target_ref}", n)
+        for target_ref, actor_ids in sorted(actor_targets.items()):
+            if len(actor_ids) > 1:
+                add(
+                    issues,
+                    "error",
+                    "role_replication",
+                    f"Distinct actor roles collapse onto one structural target {target_ref}: {sorted(actor_ids)}",
+                    n,
+                )
+        primary_ref_set = set(primary_refs)
+        for evidence_id, targets in sorted(binding_targets.items()):
+            repeated_primary_targets = sorted(targets.intersection(primary_ref_set))
+            if len(repeated_primary_targets) > 1:
+                add(
+                    issues,
+                    "error",
+                    "duplicate_primary_expression",
+                    f"One evidence unit is repeated across primary targets: {evidence_id} -> {repeated_primary_targets}",
+                    n,
+                )
         missing_p0 = sorted(
             evidence_id
             for evidence_id, item in evidence.items()
@@ -136,7 +173,6 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
         add(issues, "error", "front_portrait", "Front-facing people are prohibited by default", n)
     if ip.get("identifiable_location") is not False:
         add(issues, "error", "location", "Identifiable location is prohibited by default", n)
-    sg = page.get("semantic_graph", {})
     if sg.get("primary_relation") not in (None, "none") and not sg.get("edges"):
         add(issues, "error", "semantic_edges", "A relational page requires semantic edges", n)
     if sg.get("primary_relation") in {"flow", "transform", "converge", "diverge", "loop", "control", "exchange", "boundary", "responsibility"} and not page.get("connectors"):

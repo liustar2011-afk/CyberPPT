@@ -71,6 +71,8 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - `assets/page-visual-spec.schema.json`：单页JSON合同。
 - `assets/deck-visual-spec.schema.json`：整套JSON合同。
 - `assets/page-visual-spec-template.md`：Markdown输出模板。
+- `assets/domain-neutral-structure-fixtures.json`：六类跨领域通用结构回归夹具。
+- `scripts/test_domain_neutral_fixtures.py`：验证正例、故障变体和外部风格切换不改变结构。
 
 ## 工作流程
 

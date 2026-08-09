@@ -1,12 +1,12 @@
 {
   "schema_version": "1.1",
-  "deck_id": "example-cec-data-service",
-  "deck_title": "电力行业数据服务运营体系示例",
+  "deck_id": "example-public-service-transformation",
+  "deck_title": "????????????",
   "deck_context": {
-    "audience": "中电联内部领导和合作单位",
-    "purpose": "说明多类行业能力如何转化为持续服务",
-    "usage_scene": "领导汇报与演讲辅助",
-    "narrative": "行业能力基础进入中电联数据基础设施，通过可信组织和运营形成服务结果。",
+    "audience": "???????????????????",
+    "purpose": "??????????????????????",
+    "usage_scene": "?????????",
+    "narrative": "?????????????????????????????",
     "source_files": [
       "example-input.md"
     ]
@@ -15,51 +15,58 @@
   "content_lock": {
     "default_mode": "strict",
     "global_locked_terms": [
-      "电力领域数据基础设施",
-      "可信交付",
-      "中小企业"
+      "????",
+      "????",
+      "????",
+      "???????"
     ],
     "global_forbidden_changes": [
-      "不得升级事项状态",
-      "不得改变主体关系",
-      "不得删除安全边界"
+      "????????",
+      "????????",
+      "????????"
     ]
   },
   "pages": [
     {
       "schema_version": "1.1",
-      "page_id": "P07",
-      "page_number": 7,
-      "page_title": "多类行业能力共同形成持续服务基础",
-      "page_role": "业务机制",
-      "page_mission": "让观众理解行业模型、专业数据和可信交付能力如何共同形成持续服务基础。",
-      "core_judgment": "多类行业能力只有在统一组织和可信交付机制下协同，才能转化为面向中小企业的持续服务。",
+      "page_id": "P02",
+      "page_number": 2,
+      "page_title": "服务诉求转化为可追踪办理结果",
+      "page_role": "流程路径",
+      "page_mission": "让观众理解服务诉求如何经过分流和办理形成可追踪结果。",
+      "core_judgment": "统一分流与责任办理把服务诉求转化为可追踪的反馈结果。",
       "content_lock": {
         "mode": "strict",
         "locked_items": [
           {
             "id": "T1",
             "type": "title",
-            "text": "多类行业能力共同形成持续服务基础",
-            "source_ref": "示例输入第7页"
+            "text": "服务诉求转化为可追踪办理结果",
+            "source_ref": "domain-neutral fixture input-transform-output"
           },
           {
             "id": "B1",
             "type": "body",
-            "text": "行业大模型、专业数据资源和数据产品服务",
-            "source_ref": "示例输入第7页"
+            "text": "服务诉求",
+            "source_ref": "domain-neutral fixture input-transform-output"
           },
           {
             "id": "B2",
             "type": "body",
-            "text": "依托电力领域数据基础设施统一组织和可信交付",
-            "source_ref": "示例输入第7页"
+            "text": "分类分流",
+            "source_ref": "domain-neutral fixture input-transform-output"
           },
           {
             "id": "B3",
             "type": "body",
-            "text": "面向行业中小企业和跨行业协同主体赋能",
-            "source_ref": "示例输入第7页"
+            "text": "责任办理",
+            "source_ref": "domain-neutral fixture input-transform-output"
+          },
+          {
+            "id": "B4",
+            "type": "body",
+            "text": "可追踪反馈结果",
+            "source_ref": "domain-neutral fixture input-transform-output"
           }
         ],
         "allowed_transformations": [
@@ -70,117 +77,99 @@
         "forbidden_transformations": [
           "change facts",
           "change actors",
-          "change service scope"
+          "change relationships"
         ]
       },
       "evidence_units": [
         {
           "id": "E1",
-          "text": "行业大模型",
-          "kind": "capability",
-          "priority": "P1",
-          "source_ref": "示例输入第7页",
-          "status": "已有能力"
+          "text": "服务诉求",
+          "kind": "fact",
+          "priority": "P0",
+          "status": "待受理",
+          "source_ref": "domain-neutral fixture input-transform-output"
         },
         {
           "id": "E2",
-          "text": "专业数据资源",
-          "kind": "capability",
-          "priority": "P1",
-          "source_ref": "示例输入第7页",
-          "status": "已有能力"
+          "text": "分类分流",
+          "kind": "process",
+          "priority": "P0",
+          "status": "处理动作",
+          "source_ref": "domain-neutral fixture input-transform-output"
         },
         {
           "id": "E3",
-          "text": "数据产品服务",
-          "kind": "capability",
-          "priority": "P1",
-          "source_ref": "示例输入第7页",
-          "status": "已有能力"
+          "text": "责任办理",
+          "kind": "process",
+          "priority": "P0",
+          "status": "处理动作",
+          "source_ref": "domain-neutral fixture input-transform-output"
         },
         {
           "id": "E4",
-          "text": "统一组织与可信交付",
-          "kind": "process",
-          "priority": "P0",
-          "source_ref": "示例输入第7页",
-          "status": "建设运营机制"
-        },
-        {
-          "id": "E5",
-          "text": "中小企业与跨行业赋能",
+          "text": "可追踪反馈结果",
           "kind": "result",
           "priority": "P0",
-          "source_ref": "示例输入第7页",
-          "status": "服务目标"
+          "status": "服务结果",
+          "source_ref": "domain-neutral fixture input-transform-output"
         }
       ],
       "semantic_graph": {
-        "primary_relation": "support",
-        "direction": "outside_to_center",
+        "primary_relation": "transform",
+        "direction": "left_to_right",
         "nodes": [
           "E1",
           "E2",
           "E3",
-          "E4",
-          "E5"
+          "E4"
         ],
         "edges": [
           {
             "from": "E1",
-            "to": "E4",
-            "relation": "supports",
-            "label": "模型能力"
+            "to": "E2",
+            "relation": "enters",
+            "label": "受理"
           },
           {
             "from": "E2",
-            "to": "E4",
-            "relation": "supports",
-            "label": "数据基础"
+            "to": "E3",
+            "relation": "routes",
+            "label": "分流"
           },
           {
             "from": "E3",
             "to": "E4",
-            "relation": "supports",
-            "label": "产品供给"
-          },
-          {
-            "from": "E4",
-            "to": "E5",
-            "relation": "enables",
-            "label": "可信服务"
+            "relation": "produces",
+            "label": "反馈"
           }
         ],
-        "decision_relationship": "三类行业能力进入统一服务工作台，经可信组织与交付后形成面向行业的赋能结果。"
+        "decision_relationship": "统一分流与责任办理把服务诉求转化为可追踪的反馈结果。"
       },
       "structural_decision": {
         "semantic_focus": {
           "kind": "action",
-          "ref": "E4"
+          "ref": "E2"
         },
         "spatial_grammar": [
-          "anchor",
-          "convergence"
+          "path"
         ],
         "semantic_tags": [
-          "support",
-          "transform"
+          "transform",
+          "accountability"
         ],
         "primary_refs": [
-          "E4",
-          "E5"
+          "E2",
+          "E3",
+          "E4"
         ],
         "secondary_refs": [
-          "E1",
-          "E2",
-          "E3"
+          "E1"
         ],
         "reading_sequence": [
           "E1",
           "E2",
           "E3",
-          "E4",
-          "E5"
+          "E4"
         ],
         "text_bindings": [
           {
@@ -191,55 +180,46 @@
           {
             "evidence_id": "E2",
             "target_ref": "E2",
-            "binding": "label"
+            "binding": "embedded"
           },
           {
             "evidence_id": "E3",
             "target_ref": "E3",
-            "binding": "label"
+            "binding": "embedded"
           },
           {
             "evidence_id": "E4",
             "target_ref": "E4",
-            "binding": "embedded"
-          },
-          {
-            "evidence_id": "E5",
-            "target_ref": "E5",
             "binding": "result"
           }
         ],
         "representation_freedom": {
           "carrier": "free",
           "medium": "free",
-          "reason": "The approved content fixes relationships and text, not a concrete carrier or medium."
+          "reason": "The source fixes semantic relationships but leaves carrier and medium open."
         }
       },
       "visual_decision": {
-        "visual_intent_type": "multi_semantic_foundation",
-        "visual_thesis": "用一个电力数据服务运营场景承载多类基础能力，共同汇聚为持续服务中枢。",
-        "spatial_organization": "内容区以中部偏左的共享运营场景为主体，三类能力作为场景内对象从后方和下方进入，中部形成可信服务工作台，右前方展开服务对象与结果。",
+        "visual_intent_type": "transformation_pipeline",
+        "visual_thesis": "统一分流与责任办理把服务诉求转化为可追踪的反馈结果。",
+        "spatial_organization": "Use path as one integrated semantic structure; keep secondary evidence subordinate to the semantic focus.",
         "reading_path": [
-          "三类行业能力",
-          "统一组织与可信交付",
-          "持续服务能力",
-          "中小企业和跨行业赋能"
+          "服务诉求",
+          "分类分流",
+          "责任办理",
+          "可追踪反馈结果"
         ],
-        "text_integration_method": "文字作为场景对象标签和与工作台相连的轻量业务面板嵌入，不设置独立文字列。",
-        "relationship_encoding": "使用对象位置、汇聚通道和一条主服务链表达支撑与转化关系，辅助关系以邻接和边界表达。",
+        "text_integration_method": "Bind each text unit to its semantic node, action, relationship or outcome inside the primary structure.",
+        "relationship_encoding": "Preserve the declared direction and edge labels; use adjacency for subordinate relationships.",
         "visual_center_count": 1,
         "visual_hierarchy": {
-          "primary": "统一组织与可信交付形成的持续服务中枢",
+          "primary": "分类分流",
           "secondary": [
-            "行业大模型",
-            "专业数据资源",
-            "数据产品服务",
-            "服务对象"
+            "责任办理",
+            "可追踪反馈结果"
           ],
           "tertiary": [
-            "受控调用",
-            "接口交付",
-            "运营反馈"
+            "服务诉求"
           ]
         }
       },
@@ -247,7 +227,7 @@
         "title_render_mode": "external_text_layer",
         "subtitle_render_mode": "external_text_layer",
         "body_render_mode": "in_image",
-        "placement_strategy": "正文贴近业务对象、工作台节点和服务结果，使用清晰层级和充足容器空间。"
+        "placement_strategy": "Place each locked text unit with the semantic node or relationship it explains."
       },
       "geometry": {
         "canvas": {
@@ -264,39 +244,30 @@
         "regions": [
           {
             "id": "R1",
-            "role": "dominant_scene",
+            "role": "primary_structure",
             "x": 80,
             "y": 130,
-            "w": 760,
+            "w": 820,
             "h": 500,
             "priority": "primary"
           },
           {
             "id": "R2",
-            "role": "outcomes",
-            "x": 850,
-            "y": 185,
-            "w": 340,
-            "h": 380,
+            "role": "subordinate_evidence",
+            "x": 920,
+            "y": 180,
+            "w": 280,
+            "h": 390,
             "priority": "secondary"
-          },
-          {
-            "id": "R3",
-            "role": "support_annotation",
-            "x": 850,
-            "y": 575,
-            "w": 330,
-            "h": 55,
-            "priority": "tertiary"
           }
         ]
       },
       "image_plan": {
-        "use_scene": true,
-        "scene_type": "contextual activity scene selected by the final renderer",
-        "business_object": "participants, inputs, coordination action and service outcome",
-        "semantic_role": "optional medium for support and convergence semantics",
-        "placement": "dominant integrated scene across the middle-left content area, connected to outcome space",
+        "use_scene": false,
+        "scene_type": "No medium selected at the structural stage",
+        "business_object": "Semantic nodes, actions, relationships and outcomes",
+        "semantic_role": "Optional medium selected by the final renderer",
+        "placement": "One integrated relationship field with subordinate evidence attached",
         "front_facing_people": false,
         "identifiable_location": false,
         "factual_event_implication": false
@@ -304,67 +275,53 @@
       "connectors": [
         {
           "from": "E1",
-          "to": "E4",
-          "type": "capability_input",
-          "direction": "outside_to_center",
-          "label": "模型能力",
-          "main_chain": false
+          "to": "E2",
+          "type": "enters",
+          "direction": "left_to_right",
+          "label": "受理",
+          "main_chain": true
         },
         {
           "from": "E2",
-          "to": "E4",
-          "type": "data_input",
-          "direction": "outside_to_center",
-          "label": "专业数据",
-          "main_chain": false
+          "to": "E3",
+          "type": "routes",
+          "direction": "left_to_right",
+          "label": "分流",
+          "main_chain": true
         },
         {
           "from": "E3",
           "to": "E4",
-          "type": "service_input",
-          "direction": "outside_to_center",
-          "label": "数据产品",
-          "main_chain": false
-        },
-        {
-          "from": "E4",
-          "to": "E5",
-          "type": "service_output",
+          "type": "produces",
           "direction": "left_to_right",
-          "label": "可信交付",
-          "main_chain": true
+          "label": "反馈",
+          "main_chain": false
         }
       ],
       "final_text": [
         {
           "id": "F1",
           "role": "module",
-          "text": "行业大模型",
-          "region_id": "R1"
+          "text": "服务诉求",
+          "region_id": "R2"
         },
         {
           "id": "F2",
-          "role": "module",
-          "text": "专业数据资源",
+          "role": "result",
+          "text": "分类分流",
           "region_id": "R1"
         },
         {
           "id": "F3",
           "role": "module",
-          "text": "数据产品服务",
+          "text": "责任办理",
           "region_id": "R1"
         },
         {
           "id": "F4",
-          "role": "judgment",
-          "text": "统一组织与可信交付",
+          "role": "module",
+          "text": "可追踪反馈结果",
           "region_id": "R1"
-        },
-        {
-          "id": "F5",
-          "role": "result",
-          "text": "面向行业中小企业和跨行业协同主体赋能",
-          "region_id": "R2"
         }
       ],
       "generation_handoff": {
@@ -372,43 +329,43 @@
           "source": "structural_decision",
           "additional_constraints": [
             "keep one primary structure",
-            "do not duplicate P0 evidence as another primary region"
+            "bind every P0 evidence unit",
+            "do not duplicate one judgment as another primary region"
           ]
         },
         "required_text": [
-          "行业大模型",
-          "专业数据资源",
-          "数据产品服务",
-          "统一组织与可信交付",
-          "面向行业中小企业和跨行业协同主体赋能"
+          "服务诉求",
+          "分类分流",
+          "责任办理",
+          "可追踪反馈结果"
         ],
         "style_source_ref": "external-style-lock",
         "title_exclusion_instruction": "Reserve the top title area for an external PowerPoint text layer. Do not draw title, subtitle, logo or page number."
       },
       "avoid": [
-        "equal three-column cards",
+        "equal treatment of unequal semantic roles",
         "one visual object per bullet",
-        "secondary area becoming an independent visual center"
+        "a second primary structure"
       ],
       "qa": {
         "status": "passed",
-        "score": 94,
+        "score": 96,
         "blocking_issues": [],
         "warnings": []
       }
     }
   ],
   "deck_rhythm": {
-    "density_pattern": "单页示例；正式整套需形成疏密变化。",
+    "density_pattern": "?????????????????????",
     "visual_intent_sequence": [
-      "multi_semantic_foundation"
+      "transformation_pipeline"
     ],
-    "repetition_control": "单页无连续重复风险。"
+    "repetition_control": "??????????"
   },
   "capacity_suggestions": [],
   "qa_summary": {
     "status": "passed",
-    "average_score": 94,
+    "average_score": 96,
     "blocking_issues": [],
     "warnings": []
   }
