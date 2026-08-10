@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import unittest
 
 from cyberppt.argument_flow_contract import (
@@ -71,6 +72,226 @@ def strict_truth(*records: dict[str, object]) -> dict[str, object]:
 
 
 class ArgumentFlowContractTests(unittest.TestCase):
+    def _topic_partition_payload(self) -> dict[str, object]:
+        def page(
+            page_id: str,
+            topic_category: str,
+            source_id: str,
+        ) -> dict[str, object]:
+            return {
+                "page_id": page_id,
+                "page_type": "content",
+                "chapter_id": "c1",
+                "page_mission": f"Explain {topic_category}",
+                "core_message": f"{topic_category} has a defined structure",
+                "topic_category": topic_category,
+                "page_order_reason": f"Place {topic_category} at this dependency step",
+                "source_refs": [source_id],
+                "content_units": [{
+                    "statement": f"{topic_category} structure",
+                    "source_refs": [source_id],
+                    "role": "primary",
+                    "topic_category": topic_category,
+                }],
+                "content_relations": [{
+                    "relation": "contains",
+                    "subject": topic_category,
+                    "objects": ["structure"],
+                    "source_refs": [source_id],
+                }],
+                "new_value_vs_previous": f"Define {topic_category}",
+                "reserved_for_later": "Later details",
+            }
+
+        return {
+            "schema": "cyberppt.outline.v2",
+            "argument_contract_mode": "strict",
+            "topic_partition_mode": "required",
+            "page_sequence_mode": "required",
+            "storyline": {
+                "chapter_missions": [{
+                    "chapter_id": "c1",
+                    "topic_categories": ["product formation", "delivery mechanism"],
+                }],
+            },
+            "chapter_page_orders": [{
+                "chapter_id": "c1",
+                "ordering_principles": [
+                    "definition_before_detail",
+                    "mechanism_before_execution",
+                ],
+                "ordered_topic_categories": [
+                    "product formation",
+                    "delivery mechanism",
+                ],
+                "ordered_page_ids": ["p04", "p05"],
+                "rationale": "Define the offering before explaining delivery.",
+            }],
+            "pages": [
+                page("p04", "product formation", "S001"),
+                page("p05", "delivery mechanism", "S002"),
+            ],
+        }
+
+    def test_topic_partition_accepts_one_topic_per_page_within_chapter_scope(self) -> None:
+        payload = self._topic_partition_payload()
+
+        codes = {issue.code for issue in validate_source_relation_fields(payload)}
+
+        self.assertFalse({
+            "CHAPTER_TOPIC_SCOPE_MISSING",
+            "PAGE_TOPIC_CATEGORY_MISSING",
+            "PAGE_TOPIC_OUTSIDE_CHAPTER_SCOPE",
+            "PAGE_TOPIC_MIXED",
+            "TOPIC_CATEGORY_SPLIT_WITHOUT_REASON",
+        } & codes)
+
+    def test_topic_partition_rejects_mixed_content_unit_topics(self) -> None:
+        payload = self._topic_partition_payload()
+        payload["pages"][0]["content_units"].append({
+            "statement": "Commercial settlement",
+            "source_refs": ["S001"],
+            "role": "supporting",
+            "topic_category": "commercial mechanism",
+        })
+
+        codes = {issue.code for issue in validate_source_relation_fields(payload)}
+
+        self.assertIn("PAGE_TOPIC_MIXED", codes)
+
+    def test_topic_partition_requires_reason_when_one_topic_spans_pages(self) -> None:
+        payload = self._topic_partition_payload()
+        second = payload["pages"][1]
+        second["topic_category"] = "product formation"
+        second["content_units"][0]["topic_category"] = "product formation"
+
+        codes = {issue.code for issue in validate_source_relation_fields(payload)}
+
+        self.assertIn("TOPIC_CATEGORY_SPLIT_WITHOUT_REASON", codes)
+
+    def test_topic_partition_accepts_page_specific_split_reasons(self) -> None:
+        payload = self._topic_partition_payload()
+        first, second = payload["pages"]
+        second["topic_category"] = "product formation"
+        second["content_units"][0]["topic_category"] = "product formation"
+        first["topic_split_reason"] = "Defines the product object and composition."
+        second["topic_split_reason"] = "Explains a different lifecycle relation and audience question."
+
+        codes = {issue.code for issue in validate_source_relation_fields(payload)}
+
+        self.assertNotIn("TOPIC_CATEGORY_SPLIT_WITHOUT_REASON", codes)
+
+    def test_topic_partition_rejects_page_topic_outside_chapter_scope(self) -> None:
+        payload = self._topic_partition_payload()
+        page = payload["pages"][0]
+        page["topic_category"] = "commercial mechanism"
+        page["content_units"][0]["topic_category"] = "commercial mechanism"
+
+        codes = {issue.code for issue in validate_source_relation_fields(payload)}
+
+        self.assertIn("PAGE_TOPIC_OUTSIDE_CHAPTER_SCOPE", codes)
+
+    def test_topic_partition_requires_chapter_scope_and_page_topic(self) -> None:
+        payload = self._topic_partition_payload()
+        del payload["storyline"]["chapter_missions"][0]["topic_categories"]
+        del payload["pages"][0]["topic_category"]
+
+        codes = {issue.code for issue in validate_source_relation_fields(payload)}
+
+        self.assertIn("CHAPTER_TOPIC_SCOPE_MISSING", codes)
+        self.assertIn("PAGE_TOPIC_CATEGORY_MISSING", codes)
+
+    def test_topic_partition_defaults_on_for_formal_v2_storyline(self) -> None:
+        payload = self._topic_partition_payload()
+        del payload["topic_partition_mode"]
+        payload["storyline_contract_mode"] = "required"
+        payload["argument_contract_mode"] = "legacy"
+        del payload["pages"][0]["topic_category"]
+
+        codes = {issue.code for issue in audit_argument_flow(payload, None)}
+
+        self.assertIn("PAGE_TOPIC_CATEGORY_MISSING", codes)
+
+    def test_page_sequence_accepts_declared_logical_order(self) -> None:
+        payload = self._topic_partition_payload()
+
+        codes = {issue.code for issue in validate_source_relation_fields(payload)}
+
+        self.assertFalse({
+            "CHAPTER_PAGE_ORDER_LOGIC_MISSING",
+            "CHAPTER_PAGE_ORDER_PRINCIPLE_INVALID",
+            "CHAPTER_PAGE_ORDER_MISMATCH",
+            "CHAPTER_TOPIC_ORDER_MISMATCH",
+            "CHAPTER_PAGE_ORDER_RATIONALE_MISSING",
+            "CHAPTER_TOPIC_SEQUENCE_FRAGMENTED",
+            "PAGE_ORDER_REASON_MISSING",
+        } & codes)
+
+    def test_page_sequence_requires_chapter_logic_and_page_reason(self) -> None:
+        payload = self._topic_partition_payload()
+        del payload["chapter_page_orders"]
+        del payload["pages"][0]["page_order_reason"]
+
+        codes = {issue.code for issue in validate_source_relation_fields(payload)}
+
+        self.assertIn("CHAPTER_PAGE_ORDER_LOGIC_MISSING", codes)
+        self.assertIn("PAGE_ORDER_REASON_MISSING", codes)
+
+    def test_page_sequence_rejects_declared_order_that_differs_from_pages(self) -> None:
+        payload = self._topic_partition_payload()
+        order_logic = payload["chapter_page_orders"][0]
+        order_logic["ordered_page_ids"] = ["p05", "p04"]
+
+        codes = {issue.code for issue in validate_source_relation_fields(payload)}
+
+        self.assertIn("CHAPTER_PAGE_ORDER_MISMATCH", codes)
+
+    def test_page_sequence_requires_exactly_one_order_entry_per_chapter(self) -> None:
+        payload = self._topic_partition_payload()
+        payload["chapter_page_orders"].append(copy.deepcopy(payload["chapter_page_orders"][0]))
+
+        codes = {issue.code for issue in validate_source_relation_fields(payload)}
+
+        self.assertIn("CHAPTER_PAGE_ORDER_COVERAGE_MISMATCH", codes)
+
+    def test_page_sequence_rejects_unsupported_principle(self) -> None:
+        payload = self._topic_partition_payload()
+        order_logic = payload["chapter_page_orders"][0]
+        order_logic["ordering_principles"] = ["looks_better"]
+
+        codes = {issue.code for issue in validate_source_relation_fields(payload)}
+
+        self.assertIn("CHAPTER_PAGE_ORDER_PRINCIPLE_INVALID", codes)
+
+    def test_page_sequence_rejects_fragmented_topic_reentry(self) -> None:
+        payload = self._topic_partition_payload()
+        first = payload["pages"][0]
+        third = copy.deepcopy(first)
+        third["page_id"] = "p06"
+        third["source_refs"] = ["S003"]
+        third["content_units"][0]["source_refs"] = ["S003"]
+        third["content_relations"][0]["source_refs"] = ["S003"]
+        first["topic_split_reason"] = "Defines product composition."
+        third["topic_split_reason"] = "Explains product lifecycle after delivery."
+        payload["pages"].append(third)
+        order_logic = payload["chapter_page_orders"][0]
+        order_logic["ordered_page_ids"] = ["p04", "p05", "p06"]
+
+        codes = {issue.code for issue in validate_source_relation_fields(payload)}
+
+        self.assertIn("CHAPTER_TOPIC_SEQUENCE_FRAGMENTED", codes)
+
+    def test_page_sequence_defaults_on_for_formal_v2_storyline(self) -> None:
+        payload = self._topic_partition_payload()
+        del payload["page_sequence_mode"]
+        payload["storyline_contract_mode"] = "required"
+        payload["argument_contract_mode"] = "legacy"
+        del payload["pages"][0]["page_order_reason"]
+
+        codes = {issue.code for issue in audit_argument_flow(payload, None)}
+
+        self.assertIn("PAGE_ORDER_REASON_MISSING", codes)
+
     def test_v2_frozen_source_truth_uses_consumption_manifest(self) -> None:
         page = {
             "page_id": "p10", "sequence": 10, "page_type": "content",
