@@ -225,6 +225,8 @@ def assemble_final_script(
     output_path: Path | None = None,
     title: str = "",
     enrichment_source: Path | None = None,
+    *,
+    lightweight: bool = False,
 ) -> dict[str, object]:
     """Merge draft batches into a clean final manuscript under scripts/final/."""
 
@@ -264,7 +266,8 @@ def assemble_final_script(
         f"> 页数：{len(numbers)}（p{first:02d}–p{last:02d}）\n"
         f"> 状态：**最终全稿**\n"
         f"> 来源：`workbench/scripts/drafts/` 合稿\n"
-        f"> 下一步：`python -m cyberppt script-audit {project} --input {output}`\n\n"
+        f"> 下一步：`python -m cyberppt script-audit {project} --input {output}"
+        f"{' --lightweight' if lightweight else ''}`\n\n"
         "---\n\n"
     )
     body = "\n".join(pages[number] for number in numbers)
@@ -292,6 +295,17 @@ def assemble_final_script(
 
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(text, encoding="utf-8")
+    if lightweight:
+        return {
+            "schema": "cyberppt.assemble_final_script.v1",
+            "mode": "lightweight",
+            "project": str(project),
+            "output": str(output),
+            "page_count": len(numbers),
+            "first_page": f"p{first:02d}",
+            "last_page": f"p{last:02d}",
+        }
+
     sidecar = output.with_name("page-contracts.json")
     outline_path = project / "workbench/stages/01-analysis/outline.json"
     source_truth_path = project / "workbench/stages/01-analysis/source-truth.json"

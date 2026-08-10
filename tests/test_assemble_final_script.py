@@ -210,6 +210,28 @@ class AssembleFinalScriptTests(unittest.TestCase):
             text = Path(str(report["output"])).read_text(encoding="utf-8")
             self.assertNotIn("- 上屏结论：", text)
 
+    def test_lightweight_assembly_writes_only_final_script(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "demo"
+            drafts = project / "workbench/scripts/drafts"
+            drafts.mkdir(parents=True)
+            drafts.joinpath("chapter.md").write_text(
+                "## 第1页：封面\n"
+                "- 页面类型：封面\n"
+                "- 上屏文字：合作方案\n",
+                encoding="utf-8",
+            )
+
+            report = assemble_final_script(project, lightweight=True)
+            output = Path(str(report["output"]))
+            text = output.read_text(encoding="utf-8")
+
+            self.assertEqual("lightweight", report["mode"])
+            self.assertIn("script-audit", text)
+            self.assertIn("--lightweight", text)
+            self.assertFalse(output.with_name("page-contracts.json").exists())
+            self.assertFalse((project / "workbench/artifact-ledger.json").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

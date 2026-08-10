@@ -77,6 +77,83 @@ class CliTests(unittest.TestCase):
         self.assertEqual("source-truth.json", args.source_truth)
         self.assertEqual(2, args.attempt)
 
+    def test_prepare_communication_strategy_accepts_lightweight_mode(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "prepare-communication-strategy",
+                "project",
+                "--lightweight",
+            ]
+        )
+
+        self.assertTrue(args.lightweight)
+
+    def test_stage01_commands_accept_lightweight_contract(self) -> None:
+        parser = build_parser()
+        cases = [
+            ["init", "project", "--lightweight"],
+            ["prepare-semantic-understanding", "project", "--lightweight"],
+            ["semantic-check", "project", "--lightweight"],
+            ["source-truth-audit", "project", "--input", "truth.json", "--lightweight"],
+            [
+                "prepare-outline-input",
+                "project",
+                "--lightweight",
+                "--communication-goal",
+                "说明合作价值与参与方式",
+            ],
+            ["outline-audit", "project", "--input", "outline.json", "--lightweight"],
+            ["prepare-page-script-input", "project", "--page", "p01", "--lightweight"],
+            ["assemble-final-script", "project", "--lightweight"],
+            ["script-audit", "project", "--input", "script.md", "--lightweight"],
+        ]
+        for argv in cases:
+            with self.subTest(command=argv[0]):
+                self.assertTrue(parser.parse_args(argv).lightweight)
+
+    def test_lightweight_init_omits_control_and_stage02_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "lightweight"
+            buffer = io.StringIO()
+            with redirect_stdout(buffer):
+                code = main(["init", str(project), "--lightweight"])
+
+            self.assertEqual(0, code)
+            self.assertIn("mode: lightweight", (project / "manifest.yml").read_text(encoding="utf-8"))
+            self.assertTrue((project / "workbench/stages/01-analysis").is_dir())
+            self.assertTrue((project / "workbench/scripts/drafts").is_dir())
+            self.assertFalse((project / "workbench/artifact-ledger.json").exists())
+            self.assertFalse((project / "workbench/approvals").exists())
+            self.assertFalse((project / "workbench/decisions").exists())
+            self.assertFalse((project / "workbench/runs").exists())
+            self.assertFalse((project / "workbench/stages/02-visual").exists())
+            self.assertFalse((project / "workbench/stages/01-analysis/outline-attempts").exists())
+
+    def test_lightweight_semantic_prepare_prints_plain_task_without_json_duplication(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "lightweight"
+            self.assertEqual(0, main(["init", str(project), "--lightweight"]))
+            (project / "source/material.txt").write_text(
+                "source-native cooperation arrangement", encoding="utf-8"
+            )
+            self.assertEqual(0, main(["prepare-source-map", str(project)]))
+            buffer = io.StringIO()
+            with redirect_stdout(buffer):
+                code = main(
+                    [
+                        "prepare-semantic-understanding",
+                        str(project),
+                        "--lightweight",
+                    ]
+                )
+
+            output = buffer.getvalue()
+            self.assertEqual(0, code)
+            self.assertTrue(output.startswith("# CyberPPT whole-document semantic model task"))
+            self.assertIn("source-native cooperation arrangement", output)
+            self.assertNotIn('"authoring_task":', output)
+            self.assertNotIn("source_bundle_sha256", output)
+
     def test_script_audit_input_error_returns_two(self) -> None:
         buffer = io.StringIO()
         with redirect_stderr(buffer):

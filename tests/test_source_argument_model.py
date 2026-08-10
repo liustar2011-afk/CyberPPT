@@ -202,6 +202,32 @@ class SourceArgumentModelTests(unittest.TestCase):
             {item["code"] for item in audit_outline_consumption(outline, model())},
         )
 
+    def test_core_section_requires_primary_consumer_by_default(self) -> None:
+        codes = {
+            item["code"]
+            for item in audit_outline_consumption({"pages": []}, model())
+        }
+        self.assertIn("ARGUMENT_NODE_WITHOUT_PRIMARY_CONSUMER", codes)
+
+    def test_non_core_section_defaults_to_selective_consumption(self) -> None:
+        candidate = model()
+        candidate["section_nodes"][0]["argument_weight"] = "detail"
+        codes = {
+            item["code"]
+            for item in audit_outline_consumption({"pages": []}, candidate)
+        }
+        self.assertNotIn("ARGUMENT_NODE_WITHOUT_PRIMARY_CONSUMER", codes)
+
+    def test_non_core_section_can_explicitly_require_primary_consumer(self) -> None:
+        candidate = model()
+        candidate["section_nodes"][0]["argument_weight"] = "constraint"
+        candidate["section_nodes"][0]["required_for_primary_consumer"] = True
+        codes = {
+            item["code"]
+            for item in audit_outline_consumption({"pages": []}, candidate)
+        }
+        self.assertIn("ARGUMENT_NODE_WITHOUT_PRIMARY_CONSUMER", codes)
+
     def test_page_status_cannot_drift_from_semantic_node(self) -> None:
         outline = {
             "pages": [

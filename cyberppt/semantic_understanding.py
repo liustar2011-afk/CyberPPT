@@ -15,7 +15,14 @@ from cyberppt.source_argument_model import (
     extract_model,
     validate_model,
 )
-from cyberppt.source_document_map import prepare_source_map, render_units_for_model
+from cyberppt.source_document_map import (
+    SOURCE_HEADING_TREE,
+    SOURCE_MAP_AUDIT,
+    SOURCE_REGISTRY,
+    SOURCE_UNITS,
+    prepare_source_map,
+    render_units_for_model,
+)
 
 
 SEMANTIC_STAGE = Path("workbench/stages/00-semantic-understanding")
@@ -322,6 +329,8 @@ def _render_model_input(
     receipts: list[dict[str, Any]],
     source_map: dict[str, Any],
     rendered_sources: list[tuple[dict[str, Any], str]],
+    *,
+    include_hashes: bool = True,
 ) -> str:
     lines = [
         "# CyberPPT whole-document semantic model task",
@@ -329,9 +338,15 @@ def _render_model_input(
         f"- contract: `{SEMANTIC_CONTRACT_VERSION}`",
         f"- project: `{project}`",
         f"- output: `{project / SEMANTIC_ARTIFACT}`",
-        f"- source_bundle_sha256: `{source_bundle_sha256(receipts)}`",
-        f"- source_map_bundle_sha256: `{source_map['source_map_bundle_sha256']}`",
-        "",
+        *(
+            [
+                f"- source_bundle_sha256: `{source_bundle_sha256(receipts)}`",
+                f"- source_map_bundle_sha256: `{source_map['source_map_bundle_sha256']}`",
+                "",
+            ]
+            if include_hashes
+            else []
+        ),
         "## Model contract",
         "",
         semantic_authoring_contract().rstrip(),
@@ -361,7 +376,7 @@ def _render_model_input(
             "",
             f"- source_id: `{source['source_id']}`",
             f"- bytes: {receipt['bytes']}",
-            f"- sha256: `{receipt['sha256']}`",
+            *([f"- sha256: `{receipt['sha256']}`"] if include_hashes else []),
             "",
             "```text",
             extract.rstrip(),
@@ -370,17 +385,103 @@ def _render_model_input(
     return "\n".join(lines).rstrip() + "\n"
 
 
-def prepare_semantic_understanding(project: Path) -> dict[str, Any]:
+def _load_existing_source_map(project: Path) -> dict[str, Any]:
+    """Load the already-checked source map without regenerating control files."""
+
+    paths = {
+        "audit": project / SOURCE_MAP_AUDIT,
+        "registry": project / SOURCE_REGISTRY,
+        "units": project / SOURCE_UNITS,
+        "headings": project / SOURCE_HEADING_TREE,
+    }
+    missing = [str(path) for path in paths.values() if not path.is_file()]
+    if missing:
+        raise FileNotFoundError(
+            "lightweight semantic preparation requires an existing source map; "
+            f"run prepare-source-map and source-map-check first. Missing: {missing}"
+        )
+    audit = json.loads(paths["audit"].read_text(encoding="utf-8-sig"))
+    registry = json.loads(paths["registry"].read_text(encoding="utf-8-sig"))
+    heading_tree = json.loads(paths["headings"].read_text(encoding="utf-8-sig"))
+    if not isinstance(audit, dict) or audit.get("status") != "passed":
+        raise ValueError("source map has not passed source-map-check")
+    if not isinstance(registry, dict) or not isinstance(registry.get("sources"), list):
+        raise ValueError(f"invalid source registry: {paths['registry']}")
+    if not isinstance(heading_tree, dict) or not isinstance(heading_tree.get("headings"), list):
+        raise ValueError(f"invalid source heading tree: {paths['headings']}")
+    units: list[dict[str, Any]] = []
+    for line_number, raw in enumerate(
+        paths["units"].read_text(encoding="utf-8-sig").splitlines(), start=1
+    ):
+        if not raw.strip():
+            continue
+        item = json.loads(raw)
+        if not isinstance(item, dict) or not str(item.get("unit_id") or "").strip():
+            raise ValueError(f"invalid source unit at {paths['units']}:{line_number}")
+        units.append(item)
+    if not units:
+        raise ValueError(f"source unit registry is empty: {paths['units']}")
+    return {
+        **audit,
+        "sources": registry["sources"],
+        "headings": heading_tree["headings"],
+        "unit_ids": [str(item["unit_id"]) for item in units],
+    }
+
+
+def prepare_semantic_understanding(
+    project: Path,
+    *,
+    lightweight: bool = False,
+) -> dict[str, Any]:
     project = project.expanduser().resolve()
     if not project.is_dir():
         raise FileNotFoundError(f"project does not exist: {project}")
-    receipts = collect_source_receipts(project)
-    source_map = prepare_source_map(project)
+    source_map = (
+        _load_existing_source_map(project)
+        if lightweight
+        else prepare_source_map(project)
+    )
+    receipts = (
+        [
+            {
+                "path": str(item.get("path") or ""),
+                "bytes": int(item.get("bytes") or 0),
+            }
+            for item in source_map.get("sources", [])
+            if isinstance(item, dict) and item.get("path")
+        ]
+        if lightweight
+        else collect_source_receipts(project)
+    )
     if source_map.get("status") != "passed":
         raise ValueError(
             "source map is incomplete; run source-map-check and resolve extraction issues before semantic understanding"
         )
     rendered_sources = render_units_for_model(project, prepared=source_map)
+    if lightweight:
+        return {
+            "schema": "cyberppt.semantic_understanding_input.v1",
+            "mode": "lightweight",
+            "project": str(project),
+            "outputs": [
+                str(project / SEMANTIC_ARTIFACT),
+                str(project / SEMANTIC_ARGUMENT_MODEL),
+            ],
+            "semantic_argument_model_required": True,
+            "interpretation_contract_mode_required": "strict",
+            "source_headings": _source_headings(source_map),
+            "source_heading_tree": source_map["headings"],
+            "source_unit_ids": source_map["unit_ids"],
+            "required_sections": [aliases[0] for aliases in REQUIRED_SECTIONS.values()],
+            "authoring_task": _render_model_input(
+                project,
+                receipts,
+                source_map,
+                rendered_sources,
+                include_hashes=False,
+            ),
+        }
     stage = project / SEMANTIC_STAGE
     stage.mkdir(parents=True, exist_ok=True)
     artifact = project / SEMANTIC_ARTIFACT
@@ -552,9 +653,13 @@ def _table_data_rows(body: str) -> int:
     return count
 
 
-def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]]:
+def run_semantic_understanding_audit(
+    project: Path,
+    *,
+    lightweight: bool = False,
+) -> tuple[int, dict[str, Any]]:
     project = project.expanduser().resolve()
-    prepared = prepare_semantic_understanding(project)
+    prepared = prepare_semantic_understanding(project, lightweight=lightweight)
     artifact = project / SEMANTIC_ARTIFACT
     text = artifact.read_text(encoding="utf-8-sig")
     sections = _heading_sections(text)
@@ -579,7 +684,7 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
     argument_model = extract_model(text)
     argument_model_path = project / SEMANTIC_ARGUMENT_MODEL
     required_model = bool(prepared.get("semantic_argument_model_required"))
-    strict_required = strict_interpretation_contract_required(project)
+    strict_required = lightweight or strict_interpretation_contract_required(project)
     strict_interpretation = bool(
         isinstance(argument_model, dict)
         and argument_model.get("interpretation_contract_mode") == "strict"
@@ -672,10 +777,10 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
             "section": "核心概念语义表",
         })
 
-    receipts = prepared["source_receipts"]
+    receipts = [] if lightweight else collect_source_receipts(project)
     generation_receipt: dict[str, Any] | None = None
     generation_receipt_path = project / SEMANTIC_GENERATION_RECEIPT
-    if semantic_gate_required(project):
+    if not lightweight and semantic_gate_required(project):
         if not generation_receipt_path.is_file():
             issues.append({
                 "code": "SEMANTIC_GENERATION_RECEIPT_MISSING",
@@ -750,7 +855,9 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
         "schema": "cyberppt.semantic_understanding_audit.v1",
         "status": "passed" if not issues else "rewrite_required",
         "artifact": str(artifact),
-        "semantic_understanding_sha256": _sha256_path(artifact),
+        "semantic_understanding_sha256": (
+            None if lightweight else _sha256_path(artifact)
+        ),
         "semantic_argument_model_schema": SEMANTIC_ARGUMENT_MODEL_CONTRACT_VERSION,
         "semantic_argument_model_required": required_model,
         "interpretation_contract_mode": (
@@ -760,7 +867,9 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
         ),
         "semantic_argument_model": str(argument_model_path) if argument_model is not None else None,
         "semantic_argument_model_sha256": (
-            _sha256_path(argument_model_path) if argument_model_path.is_file() and argument_model is not None else None
+            _sha256_path(argument_model_path)
+            if not lightweight and argument_model_path.is_file() and argument_model is not None
+            else None
         ),
         "argument_model_summary": {
             "section_nodes": len(argument_model.get("section_nodes", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("section_nodes"), list) else 0,
@@ -771,23 +880,25 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
             "repeated_concepts": len(argument_model.get("concept_occurrence_graph", {}).get("concepts", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("concept_occurrence_graph"), dict) and isinstance(argument_model.get("concept_occurrence_graph", {}).get("concepts"), list) else 0,
             "source_gaps": len(argument_model.get("source_gaps", [])) if isinstance(argument_model, dict) and isinstance(argument_model.get("source_gaps"), list) else 0,
         },
-        "source_bundle_sha256": source_bundle_sha256(receipts),
+        "source_bundle_sha256": (
+            None if lightweight else source_bundle_sha256(receipts)
+        ),
         "source_map_bundle_sha256": (
-            prepared["source_map_bundle_sha256"] if strict_interpretation else None
+            prepared.get("source_map_bundle_sha256") if strict_interpretation else None
         ),
         "source_units_sha256": (
-            prepared["source_units_sha256"] if strict_interpretation else None
+            prepared.get("source_units_sha256") if strict_interpretation else None
         ),
         "source_heading_tree_sha256": (
-            prepared["source_heading_tree_sha256"] if strict_interpretation else None
+            prepared.get("source_heading_tree_sha256") if strict_interpretation else None
         ),
         "source_receipts": receipts,
-        "model_input": prepared["model_input"],
-        "model_input_sha256": prepared["model_input_sha256"],
+        "model_input": prepared.get("model_input"),
+        "model_input_sha256": prepared.get("model_input_sha256"),
         "generation_receipt": generation_receipt,
         "generation_receipt_sha256": (
             _sha256_path(generation_receipt_path)
-            if generation_receipt_path.is_file()
+            if not lightweight and generation_receipt_path.is_file()
             else None
         ),
         "sections_present": sum(bool(value) for value in resolved.values()),
@@ -795,6 +906,25 @@ def run_semantic_understanding_audit(project: Path) -> tuple[int, dict[str, Any]
         "issues": issues,
         "audited_at": _utc_now(),
     }
+    report["mode"] = "lightweight" if lightweight else "controlled"
+    if lightweight:
+        for field in (
+            "semantic_understanding_sha256",
+            "semantic_argument_model_sha256",
+            "source_bundle_sha256",
+            "source_map_bundle_sha256",
+            "source_units_sha256",
+            "source_heading_tree_sha256",
+            "source_receipts",
+            "model_input",
+            "model_input_sha256",
+            "generation_receipt",
+            "generation_receipt_sha256",
+            "audited_at",
+        ):
+            report.pop(field, None)
+        return (0 if not issues else 4), report
+
     audit_json = project / SEMANTIC_AUDIT_JSON
     audit_json.write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n",

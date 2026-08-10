@@ -5,12 +5,52 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+AGENTS = ROOT / "AGENTS.md"
 SKILL = ROOT / "SKILL.md"
 SOURCE_ANALYSIS = ROOT / "references" / "source-analysis.md"
 SCRIPT_QUALITY = ROOT / "references" / "script-quality.md"
+LITE_SKILL = ROOT / "vendor" / "word-to-ppt-script" / "SKILL.md"
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_every_completed_step_surfaces_clickable_artifact_links(self) -> None:
+        agents = AGENTS.read_text(encoding="utf-8-sig")
+        skill = SKILL.read_text(encoding="utf-8-sig")
+        lite = LITE_SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("当任何一个阶段或环节任务完成时", agents)
+        self.assertIn("可点击 Markdown 链接提交到屏幕上", agents)
+        self.assertIn("当前环境可打开的绝对路径", agents)
+        self.assertIn("本环节无文件产出", agents)
+        self.assertIn("对话交付链接（硬规则）", skill)
+        self.assertIn("可点击 Markdown 链接", skill)
+        self.assertIn("After any stage or step completes", lite)
+        self.assertIn("clickable Markdown link to its absolute path", lite)
+
+    def test_single_user_stage01_uses_conversation_not_control_artifacts(self) -> None:
+        skill = SKILL.read_text(encoding="utf-8-sig")
+        lite = LITE_SKILL.read_text(encoding="utf-8-sig")
+
+        for checkpoint in (
+            "交流目标",
+            "章节和页面提纲",
+            "页面详细内容",
+            "最终全稿",
+        ):
+            self.assertIn(checkpoint, skill)
+        self.assertIn("用户交互发生在对话中", skill)
+        self.assertIn("不改变底稿结构", skill)
+        self.assertIn("局部修改后重复全量审计", skill)
+        self.assertIn("提出 2-3 个方向实质不同的交流目标选项", skill)
+        self.assertIn("明确推荐一项", skill)
+        self.assertIn("不得直接向用户抛出", skill)
+        self.assertIn("prepare-communication-strategy <project> --lightweight", skill)
+        self.assertIn("do not create approval", lite)
+        self.assertIn("Do not create a script-hash-bound", lite)
+        self.assertIn("2-3 materially", lite)
+        self.assertIn("different, source-grounded communication-goal options", lite)
+        self.assertIn("Never ask the user", lite)
+
     def test_native_script_audit_gate_precedes_stage02(self) -> None:
         skill = SKILL.read_text(encoding="utf-8-sig")
         reference = SCRIPT_QUALITY.read_text(encoding="utf-8-sig")

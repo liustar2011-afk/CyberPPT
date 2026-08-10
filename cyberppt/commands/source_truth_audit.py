@@ -20,7 +20,11 @@ from cyberppt.semantic_understanding import (
     semantic_binding_issues,
 )
 from cyberppt.source_argument_model import load_model
-from cyberppt.semantic_cross_audit import run_semantic_evidence_cross_audit
+from cyberppt.semantic_cross_audit import (
+    run_semantic_evidence_cross_audit,
+    semantic_evidence_cross_issues,
+)
+from cyberppt.source_document_map import load_source_units
 from cyberppt.stage01_controls import snapshot_reference_gate
 
 
@@ -213,35 +217,50 @@ def run_source_truth_audit(
     project: Path,
     input_path: Path,
     max_attempts: int = 3,
+    *,
+    lightweight: bool = False,
 ) -> tuple[int, dict[str, object]]:
-    if not 1 <= max_attempts <= 5:
+    if not lightweight and not 1 <= max_attempts <= 5:
         raise ValueError("max_attempts must be between 1 through 5")
     project = project.expanduser().resolve()
     if not project.exists():
         raise FileNotFoundError(f"project does not exist: {project}")
-    semantic_gate = assert_semantic_understanding_ready(project)
+    semantic_gate = None if lightweight else assert_semantic_understanding_ready(project)
     payload = load_source_truth(input_path.expanduser().resolve())
     argument_model = None
     semantic_cross_audit = None
-    if semantic_gate is not None and semantic_gate.get("semantic_argument_model_sha256"):
+    argument_model_path = project / SEMANTIC_ARGUMENT_MODEL
+    if lightweight:
+        if not argument_model_path.is_file():
+            raise FileNotFoundError(
+                "lightweight Source Truth audit requires semantic-argument-model.json; "
+                "complete semantic understanding and run semantic-check --lightweight first"
+            )
+        argument_model = load_model(argument_model_path)
+    elif semantic_gate is not None and semantic_gate.get("semantic_argument_model_sha256"):
         argument_model = load_model(project / SEMANTIC_ARGUMENT_MODEL)
-    retry = payload.get("retry") if isinstance(payload.get("retry"), dict) else {}
+    retry = (
+        payload.get("retry")
+        if not lightweight and isinstance(payload.get("retry"), dict)
+        else {}
+    )
     attempt = int(retry.get("attempt", 1))
     effective_max = int(retry.get("max_attempts", max_attempts))
-    if not 1 <= effective_max <= 5:
+    if not lightweight and not 1 <= effective_max <= 5:
         raise ValueError("retry.max_attempts must be between 1 through 5")
     receipt_roots = (project, project / "source", input_path.expanduser().resolve().parent)
-    receipts = collect_source_receipts(payload, receipt_roots)
+    receipts = [] if lightweight else collect_source_receipts(payload, receipt_roots)
     issues = audit_source_truth(payload)
-    issues.extend(
-        SourceTruthIssue(
-            item["code"],
-            item["message"],
-            (),
-            item["retry_strategy"],
+    if not lightweight:
+        issues.extend(
+            SourceTruthIssue(
+                item["code"],
+                item["message"],
+                (),
+                item["retry_strategy"],
+            )
+            for item in semantic_binding_issues(payload, semantic_gate)
         )
-        for item in semantic_binding_issues(payload, semantic_gate)
-    )
     if argument_model is not None:
         source_semantics = payload.get("document_semantics")
         model_thesis = argument_model.get("document_thesis")
@@ -277,11 +296,30 @@ def run_source_truth_audit(
                             retry_strategy="rebuild_from_semantic_understanding",
                         )
                     )
-        semantic_cross_audit = run_semantic_evidence_cross_audit(
-            project,
-            argument_model,
-            payload,
-        )
+        if lightweight:
+            source_unit_ids = {
+                str(item.get("unit_id") or "")
+                for item in load_source_units(project)
+                if str(item.get("unit_id") or "")
+            }
+            cross_issues = semantic_evidence_cross_issues(
+                argument_model,
+                payload,
+                source_unit_ids=source_unit_ids,
+            )
+            semantic_cross_audit = {
+                "schema": "cyberppt.semantic_evidence_cross_audit.v1",
+                "status": "passed" if not cross_issues else "rewrite_required",
+                "source_unit_count": len(source_unit_ids),
+                "issues": cross_issues,
+                "mode": "lightweight",
+            }
+        else:
+            semantic_cross_audit = run_semantic_evidence_cross_audit(
+                project,
+                argument_model,
+                payload,
+            )
         issues.extend(
             SourceTruthIssue(
                 str(item.get("code") or "SEMANTIC_EVIDENCE_CROSS_AUDIT_FAILED"),
@@ -293,13 +331,14 @@ def run_source_truth_audit(
             if isinstance(item, dict)
         )
     warnings = source_truth_atomicity_warnings(payload)
-    issues.extend(
-        audit_source_receipts(
-            receipts,
-            required=payload.get("source_receipt_policy") == "required",
-            expected=payload.get("source_receipts"),
+    if not lightweight:
+        issues.extend(
+            audit_source_receipts(
+                receipts,
+                required=payload.get("source_receipt_policy") == "required",
+                expected=payload.get("source_receipts"),
+            )
         )
-    )
     directive = source_truth_retry_directive(issues, str(retry.get("strategy") or ""))
     report: dict[str, object] = {
         "schema": "cyberppt.source_truth_audit.v1",
@@ -311,13 +350,29 @@ def run_source_truth_audit(
         "issues": [issue.to_dict() for issue in issues],
         "warnings": [warning.to_dict() for warning in warnings],
         "retry_directive": directive,
-        "reference_gate": snapshot_reference_gate("source_truth", project),
+        "reference_gate": (
+            None if lightweight else snapshot_reference_gate("source_truth", project)
+        ),
         "source_receipts": receipts,
         "semantic_gate": semantic_gate,
         "semantic_argument_model": str(project / SEMANTIC_ARGUMENT_MODEL) if argument_model is not None else None,
         "semantic_argument_model_sha256": semantic_gate.get("semantic_argument_model_sha256") if semantic_gate else None,
         "semantic_evidence_cross_audit": semantic_cross_audit,
+        "mode": "lightweight" if lightweight else "controlled",
     }
+    if lightweight:
+        for field in (
+            "attempt",
+            "max_attempts",
+            "remaining_attempts",
+            "reference_gate",
+            "source_receipts",
+            "semantic_gate",
+            "semantic_argument_model_sha256",
+        ):
+            report.pop(field, None)
+        return (0 if not issues else 4), report
+
     stage = project / "workbench" / "stages" / "01-analysis"
     _write_json(stage / "source-truth.json", payload)
     _write_json(stage / "source-truth-audit.json", report)

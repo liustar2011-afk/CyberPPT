@@ -152,6 +152,68 @@ class PrepareStage01InputTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "content page not found"):
             prepare_page_script_input(self.project, "p99")
 
+    def test_lightweight_outline_input_embeds_director_reasoning_without_writing_control_file(self) -> None:
+        semantic = self.project / "workbench/stages/00-semantic-understanding"
+        semantic.mkdir(parents=True)
+        (semantic / "semantic-understanding.md").write_text(
+            "# 全文语义理解\n\n## 全文业务主语\n行业数据服务运营合作。\n",
+            encoding="utf-8",
+        )
+        (semantic / "semantic-argument-model.json").write_text(
+            json.dumps(
+                {
+                    "schema": "cyberppt.semantic_argument_model.v1",
+                    "document_semantics": {"primary_thesis": "形成运营合作"},
+                    "section_nodes": [],
+                    "subsection_nodes": [],
+                    "argument_relations": [],
+                    "source_gaps": [],
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        outline = self.project / "workbench/stages/01-analysis/outline.json"
+        outline.unlink()
+
+        text = prepare_outline_input(
+            self.project,
+            lightweight=True,
+            communication_goal="面向合作企业说明合作价值、参与方式与下一步对接事项",
+        )
+
+        self.assertIsInstance(text, str)
+        self.assertIn("compare 2-3 genuinely different", text)
+        self.assertIn("The source is evidence, not a page inventory", text)
+        self.assertIn("selected_communication_goal", text)
+        self.assertIn("Outline root field `communication_goal`", text)
+        self.assertIn("solution is the default architecture", text)
+        self.assertIn("形成运营合作", text)
+        self.assertIn("P0 is page-forming", text)
+        self.assertIn("Present the completed chapter/page Outline to the user", text)
+        self.assertFalse(outline.exists())
+        self.assertFalse(
+            (self.project / "workbench/stages/01-analysis/outline-authoring-input.md").exists()
+        )
+
+    def test_lightweight_page_input_keeps_business_rules_without_authoring_controls(self) -> None:
+        text = prepare_page_script_input(
+            self.project, "p04", lightweight=True
+        )
+
+        self.assertIsInstance(text, str)
+        self.assertIn("完整文字稿", text)
+        self.assertIn("必留上屏/仅讲解/仅追溯", text)
+        self.assertIn("【视觉结构，不上屏】", text)
+        self.assertIn("present the detailed page content to the user", text)
+        self.assertNotIn("cyberppt-page-contract", text)
+        self.assertFalse(
+            (self.project / "workbench/scripts/page-script-authoring.json").exists()
+        )
+        self.assertFalse(
+            (self.project / "workbench/scripts/page-script-authoring-input-p04.md").exists()
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -176,6 +176,41 @@ class OutlineAuditCommandTests(unittest.TestCase):
             self.assertIn("--source-truth", readme)
             self.assertIn("never a mandatory chapter template", readme)
 
+    def test_lightweight_audit_reports_business_issues_without_control_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "project"
+            model_dir = project / "workbench/stages/00-semantic-understanding"
+            model_dir.mkdir(parents=True)
+            (model_dir / "semantic-argument-model.json").write_text(
+                json.dumps(
+                    {
+                        "schema": "cyberppt.semantic_argument_model.v1",
+                        "section_nodes": [],
+                        "subsection_nodes": [],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            code, report = run_outline_audit(
+                project,
+                self._write(root, invalid_outline(3, "source_native")),
+                lightweight=True,
+            )
+            stage = project / "workbench/stages/01-analysis"
+
+            self.assertEqual(4, code)
+            self.assertEqual("rewrite_required", report["status"])
+            self.assertEqual("lightweight", report["mode"])
+            self.assertIn("argument_graph", report)
+            self.assertIn("retry_directive", report)
+            self.assertNotIn("attempt", report)
+            self.assertFalse((stage / "outline-audit.json").exists())
+            self.assertFalse((stage / "outline-attempts").exists())
+            self.assertFalse((stage / "outline-escalation.json").exists())
+            self.assertFalse((stage / "proposition-graph.json").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

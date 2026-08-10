@@ -78,22 +78,43 @@ switched to `full` mode.
 Use when one person is compiling one Word document into one script in one
 sitting and the document's structure is already clear (§3 default rule).
 
-Four steps, no hash-gated intermediate artifacts, no per-stage `*-audit`
-commands:
+The agent must stop for user input in the conversation; do not create approval
+files, checkpoint files, state JSON, receipts or manifests to represent these
+interactions. User feedback edits the existing outline or page scripts
+directly.
 
-1. **Extract source.** Pull the source atoms this script needs (fact,
+Four authoring steps, no hash-gated intermediate artifacts or persisted
+per-stage audit chain. In CyberPPT, the official lightweight commands still
+run one semantic, Source Truth and Outline business check before the final
+script check; those commands do not write gate state:
+
+1. **Understand and extract source.** In CyberPPT, first use
+   `prepare-semantic-understanding --lightweight` and
+   `semantic-check --lightweight`, then build the canonical Source Truth and
+   run `source-truth-audit --lightweight`. Pull the source atoms this script
+   needs (fact,
    policy/requirement, judgment, definition, proposal, action/responsibility,
    boundary/constraint, risk, background) directly from the Word document or
    from an already-produced `source-truth.json`/outline if one exists. Keep
    each atom's entity, number, date, status, condition, scope, responsibility
    and wording strength — this is the same discipline as Gate 1, just without
    writing `01-source-normalized.md`/`02-source-truth-map.md` as separate
-   files.
+   files. In CyberPPT, run `python -m cyberppt
+   prepare-communication-strategy <project> --lightweight`, analyze its
+   `source_outline` and `decision_evidence`, and present 2-3 materially
+   different, source-grounded communication-goal options. Each option states
+   the concrete audience, use scenario, intended understanding or belief,
+   explicit audience action, and supporting source unit IDs. Mark one option
+   as recommended. Never ask the user to supply audience, scenario, or desired
+   action from a blank slate; the user selects, revises, or supplements the
+   proposed options. This command writes no gate, approval, hash, receipt,
+   attempt, manifest, or ledger file.
 2. **Page boundaries.** Sketch one primary question and one owner per page
    directly (Gate 3's rules still apply: no duplicate primary ownership, no
    drafting on-screen text before boundaries are settled) without producing
    `05-page-boundary-matrix.md` or `machine/page-contracts.json` as separate
-   artifacts.
+   artifacts. Present the proposed chapter and page outline to the user and
+   wait for feedback before drafting detailed page content.
 3. **Full manuscript, on-screen text and speaker notes.** Write 完整文字稿
    yourself from the page's source-truth records: read each record's
    statement, role and weight, then compose connected argument prose —
@@ -116,34 +137,43 @@ commands:
    exactly: `references/06-on-screen-text.md`, `07-logic-and-parallelism.md`,
    `08-speaker-notes.md`, and `references/17-density-and-coverage.md` for the
    density band, coverage checklist and nested small-heading form. This step
-   is not compressible — it is where quality is actually won or lost.
-   Whichever way 完整文字稿 and 上屏文字 were produced, always run
-   `scripts/validate_script.py --strict` afterward — density, coverage,
-   banned-pattern and defensive-coaching checks apply the same way to
-   agent-written prose as to mechanically assembled prose.
+   is not compressible — it is where quality is actually won or lost. Present
+   the detailed page content to the user (chapter-sized batches are allowed),
+   accept live revisions, and only then assemble the final manuscript.
+   Whichever way 完整文字稿 and 上屏文字 were produced, preserve the same
+   density, coverage, banned-pattern and defensive-coaching rules. In
+   CyberPPT, do not run a repeated full-script validation here; run the single
+   official `script-audit --lightweight` only after final assembly.
 4. **Final script assembly.** Produce the single deliverable file (the
    project's own `10-script-final.md` equivalent) using the field format in
    `templates/10-script-final.md`: page type, page title, source chapter,
    main judgment, complete draft, text-selection explanation, evidence
-   mapping, locked on-screen text, logic skeleton, and speaker notes. Write
-   page contracts to a script-hash-bound `page-contracts.json` sidecar; do not
-   embed `cyberppt-page-contract` metadata in the formal human-readable script.
+   mapping, locked on-screen text, logic skeleton, and speaker notes.
+   Do not create a script-hash-bound `page-contracts.json` sidecar in lite
+   mode; do not embed `cyberppt-page-contract` metadata in the formal
+   human-readable script.
    Draft comments may be accepted only as a legacy assembly input. Visual structure/`visual_intent_type`
    fields are only required when visual design is in scope for this task.
    When it is not, state so explicitly, once, in the script's own header —
    include the exact line `视觉设计范围：不含视觉设计` (the fixed string
    `scripts/validate_script.py` searches the document for). Without it, the
-   validator has no way to distinguish "visual design intentionally out of
+    validator has no way to distinguish "visual design intentionally out of
    scope" from "visual design forgotten," and will correctly keep failing
    every content page on `MISSING_VISUAL`/`MISSING_VISUAL_INTENT`/
-   `TITLE_LAYER_UNCLEAR`.
+    `TITLE_LAYER_UNCLEAR`. After the one final validation, present the whole
+    script to the user and wait for final confirmation.
 
 **Mandatory quality gate for lite mode** (this is what replaces Gates 0–7's
 hash-bound audit trail — do not skip it):
 
 ```bash
-python scripts/validate_script.py <final-script>.md --strict
+python -m cyberppt script-audit <project> --input <final-script>.md --lightweight
 ```
+
+When the skill is used outside CyberPPT, use
+`python scripts/validate_script.py <final-script>.md --strict` instead. Both
+forms perform one final content check; neither creates a per-stage retry chain
+in lite mode.
 
 Reconcile every `error`; reconcile or consciously accept every `warning`
 before treating the script as done. A project-local pre-check script may
@@ -151,6 +181,13 @@ duplicate a fast subset of these rules for immediate feedback while drafting,
 but `scripts/validate_script.py` and its `config/quality-rules.yaml` /
 `config/cec-formal.yaml` thresholds are the authoritative source of truth —
 if a local pre-check and this validator ever disagree, this validator wins.
+
+After any stage or step completes, the same response must show every actual
+output file as a clickable Markdown link to its absolute path. Do not report
+only completion, a filename, a plain-text path or a directory and make the
+user search for the deliverable. If the step produced no file, say so
+explicitly. This display rule must not create checkpoint, approval, state,
+hash, receipt, attempt, manifest or ledger files.
 
 Switch mid-task to `full` mode (Gates 0–7) if, while working, it becomes
 clear the outline is genuinely contested, multiple authors will keep editing

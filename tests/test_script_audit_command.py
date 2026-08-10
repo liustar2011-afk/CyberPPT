@@ -50,7 +50,9 @@ VALID_SCRIPT = """## 第8页：第二章：定位、目标与研究边界
 
 【演讲者备注】
 
-建设定位是面向行业的电力供需形势预测与预警公共能力，覆盖主要对象与多类成果，并由数据、模型、会商和成果生产支撑；同时明确不替代调度、出清和企业计划等专业系统。
+建设定位是面向行业的电力供需形势预测与预警公共能力，覆盖主要对象与多类成果，并由数据、模型、会商和成果生产支撑。
+
+同时明确不替代调度、出清和企业计划等专业系统。
 """
 
 
@@ -297,6 +299,26 @@ class ProhibitedContrastTests(unittest.TestCase):
 
 
 class ScriptAuditCommandTests(unittest.TestCase):
+    def test_lightweight_check_has_no_gate_or_persistence_side_effects(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, script = _build_project(Path(temp_dir))
+            ledger = project / "workbench" / "artifact-ledger.json"
+            ledger_before = ledger.read_bytes()
+
+            code, report = run_script_audit(
+                project,
+                script,
+                lightweight=True,
+            )
+
+            self.assertEqual(0, code)
+            self.assertEqual("cyberppt.script_check.v1", report["schema"])
+            self.assertFalse(report["persisted"])
+            self.assertFalse(
+                (project / "workbench" / "scripts" / "audits").exists()
+            )
+            self.assertEqual(ledger_before, ledger.read_bytes())
+
     def test_persists_passed_reports_and_ledger(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             project, script = _build_project(Path(temp_dir))
@@ -413,6 +435,37 @@ class ScriptAuditCommandTests(unittest.TestCase):
                 report1["retry_directive"]["strategy"],
                 report2["retry_directive"]["strategy"],
             )
+
+    def test_named_batch_preserves_legacy_attempts_and_is_traceable(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, script = _build_project(Path(temp_dir))
+            audit_dir = project / "workbench" / "scripts" / "audits"
+            legacy_attempt = audit_dir / "attempts" / "attempt-01.json"
+            _write_json(legacy_attempt, {"legacy": True})
+
+            code, report = run_script_audit(
+                project,
+                script,
+                max_attempts=5,
+                batch_id="stage01-fix-20260810",
+            )
+
+            self.assertEqual(0, code)
+            self.assertEqual("stage01-fix-20260810", report["audit_batch_id"])
+            self.assertEqual({"legacy": True}, json.loads(legacy_attempt.read_text(encoding="utf-8")))
+            batch_dir = audit_dir / "batches" / "stage01-fix-20260810"
+            self.assertTrue((batch_dir / "script-audit.json").exists())
+            self.assertTrue((batch_dir / "script-audit.md").exists())
+            self.assertTrue((batch_dir / "attempts" / "attempt-01.json").exists())
+            latest = json.loads((audit_dir / "script-audit.json").read_text(encoding="utf-8"))
+            self.assertEqual("stage01-fix-20260810", latest["audit_batch_id"])
+
+    def test_named_batch_rejects_path_traversal(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project, script = _build_project(Path(temp_dir))
+
+            with self.assertRaisesRegex(ValueError, "batch_id"):
+                run_script_audit(project, script, batch_id="../outside")
 
     def test_max_attempt_returns_user_decision_options(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

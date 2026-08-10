@@ -515,6 +515,22 @@ class ScriptMarkdownParserTests(unittest.TestCase):
         self.assertEqual(("S0410", "S0411", "S0412"), page.source_refs)
         self.assertEqual(("S0410", "S0411", "S0412"), page.evidence_map_refs)
 
+    def test_explicit_source_truth_ids_and_ranges_are_preserved(self) -> None:
+        page = parse_script_markdown(
+            """## 第23页：正式来源引用
+- 页面类型：内容页
+- 证据：ST003、ST0410—ST0412
+- 证据映射：正式证据→ST003、ST0410—ST0412
+"""
+        ).pages[0]
+        self.assertEqual(
+            ("ST003", "ST0410", "ST0411", "ST0412"), page.source_refs
+        )
+        self.assertEqual(
+            ("ST003", "ST0410", "ST0411", "ST0412"),
+            page.evidence_map_refs,
+        )
+
     def test_inline_module_titles_are_retained_as_modules(self) -> None:
         page = parse_script_markdown(
             """## 第16页：共性能力底座
@@ -1142,6 +1158,48 @@ class ScriptContractAuditTests(unittest.TestCase):
 
         self.assertIn("PREMATURE_SCOPE_CLAIM", codes)
 
+    def test_foundation_page_may_repeat_scope_approved_by_outline(self) -> None:
+        script = parse_script_markdown(
+            """## 第4页：工作基础
+- 页面类型：内容页
+- 页面标题：工作基础
+- 主判断：现有基础支持首期产品与试点启动。
+- 完整文字稿：现有组织、资源、平台和场景基础共同支持首期产品与试点启动，脚本仅展开大纲已经批准的判断。
+- 文字稿取舍说明：必留上屏：启动基础；仅讲解：细节；仅追溯：S006。
+- 证据映射：启动基础→S006
+- 上屏文字：
+  **启动基础**
+  - 现有条件支持首期产品与试点启动。
+- 证据：S006
+- 视觉结构：现有基础共同支撑启动判断。
+"""
+        )
+        outline = strict_outline(
+            {
+                "page_id": "p04",
+                "sequence": 4,
+                "page_type": "content",
+                "title": "工作基础",
+                "argument_role": "foundation",
+                "core_message": "现有基础支持首期产品与试点启动。",
+                "source_refs": ["S006"],
+                "prerequisite_pages": [],
+                "main_claim_status": "confirmed",
+            }
+        )
+        truth = source_truth(
+            {
+                "id": "S006",
+                "type": "F",
+                "status": "已形成",
+                "statement": "现有基础支持首期产品与试点启动。",
+            }
+        )
+
+        codes = {issue.code for issue in audit_script_quality(script, outline, truth)}
+
+        self.assertNotIn("PREMATURE_SCOPE_CLAIM", codes)
+
     def test_foundation_page_rejects_off_topic_quality_module(self) -> None:
         script = parse_script_markdown(
             """## 第4页：知识资产基础
@@ -1485,6 +1543,50 @@ class ScriptContractAuditTests(unittest.TestCase):
         )
 
         self.assertIn("DECLARED_COUNT_MISMATCH", {issue.code for issue in issues})
+
+    def test_approved_semantic_count_does_not_redefine_visible_group_count(self) -> None:
+        script = parse_script_markdown(
+            """## 第9页：能力架构
+- 页面类型：内容页
+- 页面标题：能力架构
+- 主判断：五层能力与三类管理面共同支撑运营。
+- 完整文字稿：五层能力与三类管理面共同支撑运营，正文展开可信连接、业务管理和贯穿保障的关系。
+- 文字稿取舍说明：必留上屏：能力架构；仅讲解：细节；仅追溯：S015。
+- 证据映射：能力架构→S015
+- 上屏文字：
+  **能力架构**
+  - 可信连接支撑资源与服务。
+  **贯穿保障**
+  - 安全与运营要求贯穿能力体系。
+  **业务管理**
+  - 资源、交付和客户管理共同支撑运营。
+- 证据：S015
+- 视觉结构：能力与管理关系。
+"""
+        )
+        outline = strict_outline(
+            {
+                "page_id": "p09",
+                "sequence": 9,
+                "page_type": "content",
+                "title": "能力架构",
+                "argument_role": "solution",
+                "core_message": "五层能力与三类管理面共同支撑运营。",
+                "source_refs": ["S015"],
+                "prerequisite_pages": [],
+            }
+        )
+        issues = audit_script_quality(
+            script,
+            outline,
+            source_truth(
+                {"id": "S015", "type": "F", "status": "已形成", "statement": "能力架构。"}
+            ),
+        )
+
+        self.assertNotIn(
+            "DECLARED_COUNT_MISMATCH", {issue.code for issue in issues}
+        )
 
     def test_content_page_with_one_short_module_is_too_sparse(self) -> None:
         sparse = """## 第10页：能力框架

@@ -119,13 +119,14 @@ def _heading_field_name(raw: str) -> str | None:
     return HEADING_FIELD_ALIASES.get(name)
 MODULE_RE = re.compile(r"^\s*\*\*(.+?)\*\*\s*$")
 INLINE_MODULE_RE = re.compile(r"^\s*\*\*(.+?)\*\*(?:\s*[|｜:：].*)?\s*$")
-# Source Truth identifiers are historically three digits (for example S015)
-# and are four digits in current projects (for example S0410). Match the
-# complete identifier so four-digit refs are not truncated to S041 and do not
-# produce false UNKNOWN/MISSING source diagnostics.
-SOURCE_RE = re.compile(r"S\d{3,4}(?!\d)")
+# Source Truth identifiers are historically S015/S0410 and current Stage 01
+# projects may use ST003/ST0410. Match both complete forms so a valid formal
+# Source Truth ID is not reported as missing merely because its namespace is
+# explicit.
+SOURCE_RE = re.compile(r"ST?\d{3,4}(?!\d)")
 SOURCE_RANGE_RE = re.compile(
-    r"S(?P<start>\d{3,4})\s*[—–-]\s*S(?P<end>\d{3,4})"
+    r"(?P<prefix>ST?)?(?P<start>\d{3,4})\s*[—–-]\s*"
+    r"(?P<end_prefix>ST?)(?P<end>\d{3,4})"
 )
 PAGE_CONTRACT_RECEIPT_RE = re.compile(
     r"<!--\s*cyberppt-page-contract\s+(?P<payload>\{.*?\})\s*-->",
@@ -423,7 +424,7 @@ def _field_blocks(body: str) -> dict[str, str]:
 
 
 def _source_refs(text: str) -> tuple[str, ...]:
-    """Extract explicit Source IDs and expand inclusive ``Sxxxx—Syyyy`` ranges.
+    """Extract explicit Source IDs and expand inclusive S/ST ranges.
 
     Authoring inputs and human-readable scripts use ranges to avoid turning the
     evidence field into an unreadable wall of IDs.  The audit contract still
@@ -448,12 +449,17 @@ def _source_refs(text: str) -> tuple[str, ...]:
             continue
         match = value
         assert isinstance(match, re.Match)
+        prefix = match.group("prefix") or match.group("end_prefix")
+        if prefix != match.group("end_prefix"):
+            continue
         start = int(match.group("start"))
         end = int(match.group("end"))
         if end < start or end - start > 1000:
             continue
         width = max(len(match.group("start")), len(match.group("end")))
-        refs.extend(f"S{number:0{width}d}" for number in range(start, end + 1))
+        refs.extend(
+            f"{prefix}{number:0{width}d}" for number in range(start, end + 1)
+        )
     return tuple(dict.fromkeys(refs))
 
 
@@ -3048,7 +3054,10 @@ def _onscreen_constraint_module_hits(page: ScriptPage) -> tuple[str, ...]:
     return tuple(sorted(hits))
 
 
-def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
+def _presentation_issues(
+    page: ScriptPage,
+    contract: dict[str, object] | None = None,
+) -> list[ScriptQualityIssue]:
     issues: list[ScriptQualityIssue] = []
     full_text = _page_text(page)
     visual = page.visual_structure
@@ -3260,7 +3269,20 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
                 "Name the layers, support relation, or top-to-bottom reading order.",
             )
         )
-    count = _declared_count(page.main_message + "\n" + page.onscreen_text)
+    count = _declared_count(page.onscreen_text)
+    if count is None:
+        count = _declared_count(page.main_message)
+        approved_core = str(
+            (contract or {}).get("core_message")
+            or (contract or {}).get("main_message")
+            or ""
+        ).strip()
+        # A number in the approved semantic judgment may describe an internal
+        # business construct rather than the count of peer on-screen groups.
+        # Only compare it with module count when the script introduced that
+        # count itself; explicit counts in the on-screen layer remain strict.
+        if approved_core and page.main_message.strip() == approved_core:
+            count = None
     if (
         count is not None
         and page.top_level_module_titles
@@ -3918,7 +3940,22 @@ def audit_script_quality(
         role = str(contract.get("argument_role") or "")
         claim_text = _claim_text(page)
         if role in {"foundation", "change", "gap", "necessity"}:
-            matched = _unhedged_scope_terms(claim_text)
+            approved_scope_text = "\n".join(
+                str(contract.get(field) or "")
+                for field in (
+                    "title",
+                    "page_mission",
+                    "audience_question",
+                    "core_message",
+                    "main_message",
+                )
+            )
+            approved_scope_terms = set(_unhedged_scope_terms(approved_scope_text))
+            matched = tuple(
+                term
+                for term in _unhedged_scope_terms(claim_text)
+                if term not in approved_scope_terms
+            )
             if matched:
                 issues.append(
                     _issue(
@@ -3972,7 +4009,7 @@ def audit_script_quality(
                     completed,
                 )
             )
-        issues.extend(_presentation_issues(page))
+        issues.extend(_presentation_issues(page, contract))
     for left, right in zip(script.pages, script.pages[1:]):
         similarity = text_similarity(left.main_message, right.main_message)
         if left.main_message and right.main_message and similarity >= 0.82:

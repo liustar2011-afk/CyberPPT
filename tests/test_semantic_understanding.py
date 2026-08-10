@@ -7,6 +7,9 @@ from pathlib import Path
 
 from cyberppt.commands.init_project import init_project
 from cyberppt.semantic_understanding import (
+    SEMANTIC_ARGUMENT_MODEL,
+    SEMANTIC_AUDIT_JSON,
+    SEMANTIC_AUDIT_MD,
     SEMANTIC_ARTIFACT,
     SEMANTIC_MODEL_INPUT,
     approve_semantic_understanding,
@@ -16,6 +19,7 @@ from cyberppt.semantic_understanding import (
     run_semantic_understanding_audit,
     semantic_binding_issues,
 )
+from cyberppt.source_document_map import prepare_source_map
 
 
 VALID_SEMANTIC = """# 全文语义理解
@@ -121,6 +125,63 @@ class SemanticUnderstandingTests(unittest.TestCase):
         self.assertEqual(64, len(payload["source_map_bundle_sha256"]))
         self.assertTrue(payload["source_unit_ids"])
         self.assertEqual(payload["model_input_sha256"], payload["model_input_sha256"].lower())
+
+    def test_lightweight_prepare_reads_existing_source_map_without_control_writes(self) -> None:
+        lightweight = Path(self.temp.name) / "lightweight"
+        init_project(lightweight, lightweight=True)
+        (lightweight / "source" / "material.txt").write_text(
+            "source-native business relation and operating arrangement",
+            encoding="utf-8",
+        )
+        prepare_source_map(lightweight)
+        before = sorted(
+            path.relative_to(lightweight).as_posix()
+            for path in lightweight.rglob("*")
+            if path.is_file()
+        )
+
+        payload = prepare_semantic_understanding(lightweight, lightweight=True)
+        after = sorted(
+            path.relative_to(lightweight).as_posix()
+            for path in lightweight.rglob("*")
+            if path.is_file()
+        )
+
+        self.assertEqual(before, after)
+        self.assertEqual("lightweight", payload["mode"])
+        self.assertIn("source-native business relation", payload["authoring_task"])
+        self.assertIn("author_purpose", payload["authoring_task"])
+        self.assertIn("argument_method", payload["authoring_task"])
+        self.assertIn("heading_semantic_cards", payload["authoring_task"])
+        self.assertIn("concept_occurrence_graph", payload["authoring_task"])
+        self.assertIn("source_gaps", payload["authoring_task"])
+        self.assertNotIn("source_bundle_sha256", payload["authoring_task"])
+        self.assertFalse((lightweight / SEMANTIC_ARTIFACT).exists())
+
+    def test_lightweight_semantic_check_keeps_substantive_rules_without_receipt_files(self) -> None:
+        lightweight = Path(self.temp.name) / "lightweight-audit"
+        init_project(lightweight, lightweight=True)
+        (lightweight / "source" / "material.txt").write_text(
+            "structured source material", encoding="utf-8"
+        )
+        prepare_source_map(lightweight)
+        artifact = lightweight / SEMANTIC_ARTIFACT
+        artifact.write_text(VALID_SEMANTIC, encoding="utf-8")
+
+        code, report = run_semantic_understanding_audit(
+            lightweight, lightweight=True
+        )
+        codes = {item["code"] for item in report["issues"]}
+
+        self.assertEqual(4, code)
+        self.assertIn("SEMANTIC_ARGUMENT_MODEL_MISSING", codes)
+        self.assertIn("SEMANTIC_INTERPRETATION_MODE_REQUIRED", codes)
+        self.assertNotIn("SEMANTIC_GENERATION_RECEIPT_MISSING", codes)
+        self.assertEqual("lightweight", report["mode"])
+        self.assertFalse(any(key.endswith("sha256") for key in report))
+        self.assertFalse((lightweight / SEMANTIC_AUDIT_JSON).exists())
+        self.assertFalse((lightweight / SEMANTIC_AUDIT_MD).exists())
+        self.assertFalse((lightweight / SEMANTIC_ARGUMENT_MODEL).exists())
 
     def test_passed_gate_becomes_stale_when_source_changes(self) -> None:
         self._use_legacy_text_contract()

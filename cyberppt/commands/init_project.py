@@ -48,6 +48,18 @@ PROJECT_DIRS = [
     "delivery",
 ]
 
+LIGHTWEIGHT_PROJECT_DIRS = [
+    "source",
+    "workbench",
+    "workbench/stages",
+    "workbench/stages/00-source-map",
+    "workbench/stages/00-semantic-understanding",
+    "workbench/stages/01-analysis",
+    "workbench/scripts",
+    "workbench/scripts/drafts",
+    "workbench/scripts/final",
+]
+
 
 def _project_manifest(name: str) -> str:
     return f"""name: {name}
@@ -127,6 +139,56 @@ status:
 """
 
 
+def _lightweight_project_manifest(name: str) -> str:
+    return f"""name: {name}
+workflow: cyberppt
+schema: cyberppt.project.v1
+mode: lightweight
+directories:
+  source: source
+  workbench: workbench
+  stages: workbench/stages
+  stage_source_map: workbench/stages/00-source-map
+  source_registry: workbench/stages/00-source-map/source-registry.json
+  source_units: workbench/stages/00-source-map/source-units.jsonl
+  source_heading_tree: workbench/stages/00-source-map/source-heading-tree.json
+  source_map: workbench/stages/00-source-map/source-map.md
+  source_map_audit: workbench/stages/00-source-map/source-map-audit.json
+  stage_semantic_understanding: workbench/stages/00-semantic-understanding
+  semantic_understanding: workbench/stages/00-semantic-understanding/semantic-understanding.md
+  semantic_argument_model: workbench/stages/00-semantic-understanding/semantic-argument-model.json
+  stage_analysis: workbench/stages/01-analysis
+  source_truth: workbench/stages/01-analysis/source-truth.json
+  outline: workbench/stages/01-analysis/outline.json
+  scripts: workbench/scripts
+  script_drafts: workbench/scripts/drafts
+  final_scripts: workbench/scripts/final
+status:
+  stage: initialized
+  notes: "Lightweight Stage 01 keeps business reasoning and canonical authoring artifacts without control ledgers or approval state."
+"""
+
+
+def _lightweight_readme(project_name: str) -> str:
+    return f"""# {project_name}
+
+CyberPPT lightweight Stage 01 workspace.
+
+## Flow
+
+1. Put the only authoritative source materials in `source/`; run `prepare-source-map` and one `source-map-check`.
+2. Run `prepare-semantic-understanding --lightweight`, complete the canonical semantic understanding, then run one `semantic-check --lightweight`. Preserve source-native thesis, actors, status, argument roles, weights, relations, concept distinctions and source gaps.
+3. Build canonical `workbench/stages/01-analysis/source-truth.json`; run one `source-truth-audit --lightweight`. Source Truth remains factual authority and never stores page assignments.
+4. Run `prepare-communication-strategy --lightweight`. The agent must analyze the source, present 2-3 communication-goal options, recommend one and let the user select or revise it; never ask blank audience/scenario/action questions.
+5. Run `prepare-outline-input --lightweight --communication-goal <selected-goal>`. The command preserves Storyline Director reasoning inside the authoring task without creating a Director gate. Present the chapter/page outline to the user before drafting details.
+6. Run `outline-audit --lightweight` once before presenting the outline. Fix only affected outline content; do not create attempts or escalation state.
+7. Run `prepare-page-script-input --lightweight` for all pages or the current chapter/page. Write canonical chapter Markdown drafts directly and present detailed page content to the user.
+8. Run `assemble-final-script --lightweight`, then one final `script-audit --lightweight`. Present the final script and wait for confirmation.
+
+The lightweight path creates no approval JSON, interaction state, generation receipt, retry attempt, escalation, artifact ledger or hash-freshness gate. It retains the full semantic, storyline, outline and page-authoring business rules.
+"""
+
+
 def _artifact_ledger() -> str:
     return json.dumps(
         {
@@ -138,7 +200,12 @@ def _artifact_ledger() -> str:
     ) + "\n"
 
 
-def init_project(path: Path, force: bool = False) -> list[Path]:
+def init_project(
+    path: Path,
+    force: bool = False,
+    *,
+    lightweight: bool = False,
+) -> list[Path]:
     root = path.expanduser().resolve()
     created: list[Path] = []
     manifest = root / "manifest.yml"
@@ -153,7 +220,7 @@ def init_project(path: Path, force: bool = False) -> list[Path]:
             raise FileExistsError(f"refusing to overwrite existing project files: {joined}")
 
     root.mkdir(parents=True, exist_ok=True)
-    for directory in PROJECT_DIRS:
+    for directory in (LIGHTWEIGHT_PROJECT_DIRS if lightweight else PROJECT_DIRS):
         target = root / directory
         target.mkdir(parents=True, exist_ok=True)
         keep = target / ".gitkeep"
@@ -162,7 +229,17 @@ def init_project(path: Path, force: bool = False) -> list[Path]:
             created.append(keep)
 
     project_name = root.name
-    manifest.write_text(_project_manifest(project_name), encoding="utf-8")
+    manifest.write_text(
+        _lightweight_project_manifest(project_name)
+        if lightweight
+        else _project_manifest(project_name),
+        encoding="utf-8",
+    )
+    if lightweight:
+        readme.write_text(_lightweight_readme(project_name), encoding="utf-8")
+        created.extend([manifest, readme])
+        return created
+
     ledger.write_text(_artifact_ledger(), encoding="utf-8")
     decisions = root / "workbench" / "decisions" / "user-decisions.json"
     if not decisions.exists():

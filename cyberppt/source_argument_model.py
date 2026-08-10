@@ -986,8 +986,11 @@ def audit_outline_consumption(
         if not isinstance(node, dict):
             continue
         node_id = _text(node.get("id"))
-        required_for_primary = node.get("required_for_primary_consumer") is True or (
-            node_id in section_node_ids and node.get("required_for_primary_consumer") is not False
+        primary_requirement = node.get("required_for_primary_consumer")
+        required_for_primary = primary_requirement is True or (
+            node_id in section_node_ids
+            and primary_requirement is not False
+            and _text(node.get("argument_weight")) == "core"
         )
         if not required_for_primary:
             continue

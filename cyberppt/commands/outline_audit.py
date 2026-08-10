@@ -358,16 +358,19 @@ def run_outline_audit(
     input_path: Path,
     max_attempts: int = 3,
     source_truth_path: Path | None = None,
+    *,
+    lightweight: bool = False,
 ) -> tuple[int, dict[str, object]]:
-    if not 1 <= max_attempts <= 5:
+    if not lightweight and not 1 <= max_attempts <= 5:
         raise ValueError("max_attempts must be between 1 through 5")
     project = project.expanduser().resolve()
     if not project.exists():
         raise FileNotFoundError(f"project does not exist: {project}")
-    semantic_gate = assert_semantic_understanding_ready(project)
-    communication_gate = assert_communication_strategy_ready(project)
-    director_gate = assert_storyline_director_ready(project)
-    assert_escalation_resolved(project, "source_truth")
+    semantic_gate = None if lightweight else assert_semantic_understanding_ready(project)
+    communication_gate = None if lightweight else assert_communication_strategy_ready(project)
+    director_gate = None if lightweight else assert_storyline_director_ready(project)
+    if not lightweight:
+        assert_escalation_resolved(project, "source_truth")
     payload = load_outline(input_path.expanduser().resolve())
     resolved_source_truth = (
         source_truth_path.expanduser().resolve()
@@ -386,12 +389,19 @@ def run_outline_audit(
     if source_truth_path is not None and source_truth is None:
         raise FileNotFoundError(f"source truth does not exist: {resolved_source_truth}")
     argument_model = None
-    if semantic_gate is not None and semantic_gate.get("semantic_argument_model_sha256"):
+    argument_model_path = project / SEMANTIC_ARGUMENT_MODEL
+    if lightweight and argument_model_path.is_file():
+        argument_model = load_model(argument_model_path)
+    elif semantic_gate is not None and semantic_gate.get("semantic_argument_model_sha256"):
         argument_model = load_model(project / SEMANTIC_ARGUMENT_MODEL)
-    retry = payload.get("retry") if isinstance(payload.get("retry"), dict) else {}
+    retry = (
+        payload.get("retry")
+        if not lightweight and isinstance(payload.get("retry"), dict)
+        else {}
+    )
     attempt = int(retry.get("attempt", 1))
     effective_max = int(retry.get("max_attempts", max_attempts))
-    if not 1 <= effective_max <= 5:
+    if not lightweight and not 1 <= effective_max <= 5:
         raise ValueError("retry.max_attempts must be between 1 through 5")
     stage = project / "workbench" / "stages" / "01-analysis"
     argument_issues = (
@@ -400,13 +410,14 @@ def run_outline_audit(
         else []
     )
     issues = audit_outline(payload, source_truth, argument_model)
-    issues.extend(
-        _source_consumption_manifest_issues(
-            project,
-            payload,
-            resolved_source_truth,
+    if not lightweight:
+        issues.extend(
+            _source_consumption_manifest_issues(
+                project,
+                payload,
+                resolved_source_truth,
+            )
         )
-    )
     argument_model_issues = (
         audit_outline_consumption(payload, argument_model)
         if payload.get("semantic_argument_model_mode") == "required" or argument_model is not None
@@ -422,54 +433,45 @@ def run_outline_audit(
             )
             for item in argument_model_issues
         )
-    issues.extend(
-        AuditIssue(
-            item["code"],
-            item["message"],
-            (),
-            item["retry_strategy"],
+    if not lightweight:
+        issues.extend(
+            AuditIssue(
+                item["code"], item["message"], (), item["retry_strategy"]
+            )
+            for item in semantic_binding_issues(payload, semantic_gate)
         )
-        for item in semantic_binding_issues(payload, semantic_gate)
-    )
-    issues.extend(
-        AuditIssue(
-            item["code"],
-            item["message"],
-            (),
-            item["retry_strategy"],
+        issues.extend(
+            AuditIssue(
+                item["code"], item["message"], (), item["retry_strategy"]
+            )
+            for item in communication_strategy_binding_issues(payload, communication_gate)
         )
-        for item in communication_strategy_binding_issues(payload, communication_gate)
-    )
-    issues.extend(
-        AuditIssue(
-            item["code"],
-            item["message"],
-            tuple(str(page) for page in item.get("pages", [])),
-            item["retry_strategy"],
+        issues.extend(
+            AuditIssue(
+                item["code"],
+                item["message"],
+                tuple(str(page) for page in item.get("pages", [])),
+                item["retry_strategy"],
+            )
+            for item in frontstage_posture_issues(payload, communication_gate)
         )
-        for item in frontstage_posture_issues(payload, communication_gate)
-    )
-    issues.extend(
-        AuditIssue(
-            item["code"],
-            item["message"],
-            (),
-            item["retry_strategy"],
+        issues.extend(
+            AuditIssue(
+                item["code"], item["message"], (), item["retry_strategy"]
+            )
+            for item in audience_concern_binding_issues(payload, communication_gate)
         )
-        for item in audience_concern_binding_issues(payload, communication_gate)
-    )
-    issues.extend(
-        AuditIssue(
-            item["code"],
-            item["message"],
-            (),
-            item["retry_strategy"],
+        issues.extend(
+            AuditIssue(
+                item["code"], item["message"], (), item["retry_strategy"]
+            )
+            for item in storyline_director_binding_issues(payload, director_gate)
         )
-        for item in storyline_director_binding_issues(payload, director_gate)
-    )
     directive = retry_directive(issues, str(retry.get("strategy") or ""))
-    content_review = _outline_content_review_status(
-        project, payload, input_path, _sha256(input_path)
+    content_review = (
+        None
+        if lightweight
+        else _outline_content_review_status(project, payload, input_path, _sha256(input_path))
     )
     report: dict[str, object] = {
         "schema": "cyberppt.outline_audit.v1",
@@ -515,11 +517,27 @@ def run_outline_audit(
                 if page
             }
         ),
-        "reference_gate": snapshot_reference_gate("outline", project),
+        "reference_gate": (
+            None if lightweight else snapshot_reference_gate("outline", project)
+        ),
         "semantic_gate": semantic_gate,
         "communication_strategy_gate": communication_gate,
         "storyline_director_gate": director_gate,
+        "mode": "lightweight" if lightweight else "controlled",
     }
+    if lightweight:
+        report.pop("reference_gate", None)
+        report.pop("semantic_gate", None)
+        report.pop("communication_strategy_gate", None)
+        report.pop("storyline_director_gate", None)
+        report.pop("semantic_argument_model_sha256", None)
+        report.pop("attempt", None)
+        report.pop("max_attempts", None)
+        report.pop("remaining_attempts", None)
+        report.pop("content_review", None)
+        report.pop("content_review_gate", None)
+        return (0 if not issues else 4), report
+
     _write_json(stage / "outline-contract.json", payload)
     _write_json(stage / "proposition-graph.json", build_proposition_graph(payload))
     _write_json(stage / "outline-audit.json", report)

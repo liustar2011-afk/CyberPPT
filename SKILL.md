@@ -11,7 +11,24 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 将源材料转化为有证据链、结构合宜、可编辑的演示文稿。证据管理可以使用 MBB 级标准，但表达架构必须根据材料类型选路，不能让咨询方法替代源材料本身。保留证据可追溯性，设置确认门，并以渲染结果而不是文件生成作为完成判断。
 
-## 第一阶段架构路由与大纲审计
+## Stage 01 单人轻量主流程（默认，优先级最高）
+
+本节覆盖后文针对完整审计模式的 Stage 01 强制条款。单人、单机、一次性生成脚本时，必须默认使用本节；不得因为仓库存在完整门禁命令就自动调用它们。只有用户明确要求完整审计轨迹，或任务客观属于多人持续编辑、监管留痕、可回放审计时，才切换到后文完整模式。
+
+轻量流程不改变底稿结构，不复制 Source Truth，不建立平行运行目录。继续使用项目现有 `source/`、`workbench/stages/01-analysis/source-truth.json`、`outline.json`、`workbench/scripts/drafts/` 和最终脚本路径。用户交互发生在对话中，不能用确认文件、状态 JSON、哈希或回执代替。
+
+必须保留四个对话节点：
+
+1. **交流目标**：先运行 `python -m cyberppt prepare-communication-strategy <project> --lightweight` 并分析其 `source_outline` 与 `decision_evidence`。基于源材料提出 2-3 个方向实质不同的交流目标选项，逐项说明具体受众、使用场景、希望受众理解或相信什么、希望受众采取什么行动及对应 `source unit_id` 依据，并明确推荐一项。不得直接向用户抛出受众、场景、目标行动等空白问题；用户只需选择、修改或补充建议，收到输入后再确定表达策略。该命令只向当前执行代理输出写作输入，不写沟通策略 JSON、审批、哈希、回执、attempt、manifest 或 ledger。
+2. **章节和页面提纲**：提出章节顺序、章节任务、页面标题、每页核心问题和主要证据；在对话中展示并接受实时修改，用户回应后再写页面详细内容。
+3. **页面详细内容**：提出每页核心信息、完整文字稿、上屏文字、证据引用和视觉结构；长稿可按章展示，收到反馈后直接修改原章节脚本。
+4. **最终全稿**：合稿并完成一次全稿检查后展示最终脚本，等待用户最终确认。
+
+内部执行依次只做一次：`doctor` 与源登记核查；`prepare-semantic-understanding --lightweight` 后完成语义产物并运行 `semantic-check --lightweight`；构建/刷新 Source Truth 后运行 `source-truth-audit --lightweight`；提出交流目标；运行带用户目标的 `prepare-outline-input --lightweight`，完成提纲后运行 `outline-audit --lightweight`；逐章完成页面内容；`assemble-final-script --lightweight`；最后一次全稿 `script-audit --lightweight`。三个轻量检查保留业务质量判断，但都不写 audit、attempt、receipt、escalation、approval 或 artifact ledger。不得在局部修改后重复全量审计，不得为了同步状态重新执行已经完成且内容未受影响的上游阶段。
+
+轻量流程默认不执行或持久化：语义生成回执与批准、沟通策略批准文件、storyline director 独立门禁、Source Truth/Outline 的重试链与审计报告、chapter review 审计、confirmation request、attempt 目录、artifact ledger 以及 SHA 新鲜度绑定。出现问题时只修复检查报告指出的受影响内容；全量重跑必须由用户明确要求。
+
+## 第一阶段架构路由与大纲审计（完整模式）
 
 `solution` 是方案、研究、建设、实施和立项类材料的默认架构。它应保留正式工作顺序：现状与需求；定位、目标与边界；建设内容与应用；实施、投资、风险与保障；判断、审批条件与下一步。`consulting` 仅在用户明确要求或材料明确属于咨询论证时启用；SCR 只服务该路线，不是全仓库默认结构。证据表可以继续采用 MBB 标准，但不得据此把方案材料改写成咨询报告。
 
@@ -38,7 +55,7 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 审计失败后必须按 `retry_directive` 换方向重写，不能沿原策略只做措辞修补。默认最多 3 次，每次保留审计问题和新策略；仍未通过时输出 2-3 个可决策选项请求用户选择，不得直接放弃任务。CLI 只负责审计、记录和给出重试方向，实际重写由生成代理完成。
 
-## 原生脚本质量审计
+## 原生脚本质量审计（完整模式）
 
 Outline 通过并获得用户批准后，逐批编写脚本并运行：
 
@@ -54,7 +71,7 @@ python -m cyberppt script-audit <project> --input <project>/workbench/scripts/fi
 
 详细规则读取 `references/script-quality.md`。上屏语义结构纪律（单一主关系、文字归属、反卡片墙和禁止固定版式配方）已吸收进 `references/script-quality.md` 与 `script-audit`；具体构图候选和媒介选择由正式 Stage 02 `ppt-visual-structure-designer` 完成。不得改用 `vendor/ppt-script-visual-redesign` 或个人目录中的旧 `ppt-script`、旧项目管理运行时或旧项目生命周期替代本仓库流程。
 
-## 强制流程
+## 强制流程（完整模式）
 
 | 阶段 | 必须产出 | 停止条件 | 读取 |
 |---|---|---|---|
@@ -109,7 +126,7 @@ Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-s
 
 ## 阶段成果物落盘与反向追踪
 
-每一阶段必须落地阶段成果物。所有阶段性结论、脚本、prompt、图片、PPTX、QA、确认记录和返工说明都必须写入仓库项目目录，不能只留在对话中。
+完整模式下，每一阶段必须落地阶段成果物。所有阶段性结论、脚本、prompt、图片、PPTX、QA、确认记录和返工说明都必须写入仓库项目目录，不能只留在对话中。单人轻量 Stage 01 的用户交流节点不得据此生成控制文件。
 
 ### 对话交付链接（硬规则）
 
@@ -127,7 +144,7 @@ Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-s
 | 可编辑 template-rebuild 分支 | `workbench/stages/04-template-rebuild/` | 可编辑模式使用的 template PPTX、template_rebuild_readiness、source_capture、template-normalized reference、模板层 QA |
 | QA 与交付 | `workbench/stages/05-qa-delivery/` | visual_qa_gate、slide_manifest、side-by-side、局部裁图、最终 deck、交付说明 |
 
-项目必须维护 `artifact-ledger.json`。每个成果物必须记录 `stage`、`page`、`path`、`status`、`depends_on`、`supersedes` 和 `resume_command`；能计算 hash 时还必须记录 SHA-256。`depends_on` 指向上游成果物，`supersedes` 指向被本次返工替代的旧成果物。这样套模板后发现问题时，可以沿 `depends_on` 反查到脚本、full 图或模板层中真正需要修改的来源。
+完整模式和 Stage 02 生产必须维护 `artifact-ledger.json`。每个成果物必须记录 `stage`、`page`、`path`、`status`、`depends_on`、`supersedes` 和 `resume_command`；能计算 hash 时还必须记录 SHA-256。`depends_on` 指向上游成果物，`supersedes` 指向被本次返工替代的旧成果物。这样套模板后发现问题时，可以沿 `depends_on` 反查到脚本、full 图或模板层中真正需要修改的来源。单人轻量 Stage 01 不维护该 ledger。
 
 不得只在对话中说明阶段成果而不写入仓库文件。手工停点、用户确认和返工原因也必须作为成果物登记；未登记的阶段结论不得作为后续阶段的输入。
 
@@ -135,9 +152,9 @@ Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-s
 
 每个阶段开始前必须读取上表“读取”列中的全部 reference 文件，并把该阶段关键约束转成执行清单后再行动。不得只根据主文件摘要、记忆、既有脚本或上一轮经验执行。
 
-Stage 01 的 `source-truth-audit` / `outline-audit` / `script-audit` 会在报告与 attempt 中写入 `reference_gate`（references 路径与 sha256），使 Reference Gate 可观测；缺少必需 reference 时标记 `missing_references`。
+完整模式 Stage 01 的 `source-truth-audit` / `outline-audit` / `script-audit` 会在报告与 attempt 中写入 `reference_gate`（references 路径与 sha256），使 Reference Gate 可观测；缺少必需 reference 时标记 `missing_references`。轻量模式运行一次语义、Source Truth、Outline 和最终全稿检查，但不写 reference gate、audit 或 attempt 链。
 
-### Stage 01 控制点补强（强制）
+### Stage 01 控制点补强（仅完整模式强制）
 
 1. **exit 5 未决策阻断下游**：存在未关闭升级（`*-escalation.json` 且最新审计非 `passed`、也无决策文件）时：
    - `source_truth` 未决 → 阻断 `outline-audit`

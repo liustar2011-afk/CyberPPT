@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import re
 from uuid import uuid4
 
 from cyberppt.artifact_ledger import append_artifacts
@@ -26,6 +27,7 @@ from cyberppt.script_quality_contract import (
     audit_script_quality,
     build_communication_review,
     is_final_script_path,
+    parse_script_markdown,
     parse_script_path,
     ScriptQualityIssue,
     script_retry_directive,
@@ -85,6 +87,20 @@ def _next_attempt(attempts_dir: Path) -> int:
         if path.stem.split("-")[-1].isdigit()
     ]
     return max(numbers, default=0) + 1
+
+
+AUDIT_BATCH_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
+
+
+def _audit_batch_dir(audit_dir: Path, batch_id: str | None) -> Path:
+    if batch_id is None:
+        return audit_dir
+    if not AUDIT_BATCH_ID_RE.fullmatch(batch_id):
+        raise ValueError(
+            "batch_id must be 1-128 ASCII letters, digits, dots, underscores, "
+            "or hyphens, and must start with a letter or digit"
+        )
+    return audit_dir / "batches" / batch_id
 
 
 def _render_markdown(report: dict[str, object]) -> str:
@@ -281,18 +297,25 @@ def run_script_audit(
     source_truth_path: Path | None = None,
     attempt: int | None = None,
     max_attempts: int = 3,
+    batch_id: str | None = None,
+    lightweight: bool = False,
 ) -> tuple[int, dict[str, object]]:
-    if not 1 <= max_attempts <= 5:
+    if not lightweight and not 1 <= max_attempts <= 5:
         raise ValueError("max_attempts must be between 1 through 5")
+    if lightweight and (attempt is not None or batch_id is not None):
+        raise ValueError("--lightweight cannot be combined with --attempt or --batch-id")
     project = project.expanduser().resolve()
     input_path = input_path.expanduser().resolve()
     if not project.exists():
         raise FileNotFoundError(f"project does not exist: {project}")
     if not input_path.exists():
         raise FileNotFoundError(f"script does not exist: {input_path}")
-    semantic_gate = assert_semantic_understanding_ready(project)
-    communication_gate = assert_communication_strategy_ready(project)
-    assert_escalation_resolved(project, "outline")
+    semantic_gate = None
+    communication_gate = None
+    if not lightweight:
+        semantic_gate = assert_semantic_understanding_ready(project)
+        communication_gate = assert_communication_strategy_ready(project)
+        assert_escalation_resolved(project, "outline")
     outline_path = (
         outline_path.expanduser().resolve()
         if outline_path is not None
@@ -326,48 +349,65 @@ def run_script_audit(
             f"source truth does not exist: {source_truth_path}"
         )
     source_truth = load_source_truth(source_truth_path)
-    binding_issues = semantic_binding_issues(source_truth, semantic_gate)
-    binding_issues.extend(semantic_binding_issues(outline, semantic_gate))
-    if binding_issues:
-        codes = ", ".join(sorted({item["code"] for item in binding_issues}))
-        raise ValueError(
-            "script inputs are not bound to the current semantic understanding: "
-            f"{codes}. Rebuild and audit Source Truth and Outline first."
+    if not lightweight:
+        binding_issues = semantic_binding_issues(source_truth, semantic_gate)
+        binding_issues.extend(semantic_binding_issues(outline, semantic_gate))
+        if binding_issues:
+            codes = ", ".join(sorted({item["code"] for item in binding_issues}))
+            raise ValueError(
+                "script inputs are not bound to the current semantic understanding: "
+                f"{codes}. Rebuild and audit Source Truth and Outline first."
+            )
+        communication_issues = communication_strategy_binding_issues(
+            outline,
+            communication_gate,
         )
-    communication_issues = communication_strategy_binding_issues(
-        outline,
-        communication_gate,
-    )
-    if communication_issues:
-        raise ValueError(
-            "outline is not bound to the current approved communication strategy; "
-            "rebuild and audit the Outline first"
-        )
+        if communication_issues:
+            raise ValueError(
+                "outline is not bound to the current approved communication strategy; "
+                "rebuild and audit the Outline first"
+            )
     script_text = input_path.read_text(encoding="utf-8-sig")
-    script_sha256 = _sha256(input_path)
-    document = parse_script_path(input_path)
-    audit_dir = project / "workbench" / "scripts" / "audits"
-    attempts_dir = audit_dir / "attempts"
-    effective_attempt = (
-        attempt if attempt is not None else _next_attempt(attempts_dir)
+    script_sha256 = None if lightweight else _sha256(input_path)
+    document = (
+        parse_script_markdown(script_text)
+        if lightweight
+        else parse_script_path(input_path)
     )
-    if not 1 <= effective_attempt <= max_attempts:
-        raise ValueError("attempt must be between 1 and max_attempts")
+    audit_dir = project / "workbench" / "scripts" / "audits"
+    batch_dir = _audit_batch_dir(audit_dir, batch_id)
+    attempts_dir = batch_dir / "attempts"
+    effective_attempt = 1
     previous_strategy = ""
-    previous = attempts_dir / f"attempt-{effective_attempt - 1:02d}.json"
-    if previous.exists():
-        previous_payload = json.loads(
-            previous.read_text(encoding="utf-8-sig")
+    if not lightweight:
+        effective_attempt = (
+            attempt if attempt is not None else _next_attempt(attempts_dir)
         )
-        previous_audit = previous_payload.get("audit")
-        if isinstance(previous_audit, dict):
-            previous_directive = previous_audit.get("retry_directive")
-            if isinstance(previous_directive, dict):
-                previous_strategy = str(
-                    previous_directive.get("strategy") or ""
-                )
+        if not 1 <= effective_attempt <= max_attempts:
+            raise ValueError("attempt must be between 1 and max_attempts")
+        attempt_json = attempts_dir / f"attempt-{effective_attempt:02d}.json"
+        if batch_id is not None and attempt_json.exists():
+            raise ValueError(
+                f"script audit batch attempt already exists: {attempt_json}"
+            )
+        previous = attempts_dir / f"attempt-{effective_attempt - 1:02d}.json"
+        if previous.exists():
+            previous_payload = json.loads(
+                previous.read_text(encoding="utf-8-sig")
+            )
+            previous_audit = previous_payload.get("audit")
+            if isinstance(previous_audit, dict):
+                previous_directive = previous_audit.get("retry_directive")
+                if isinstance(previous_directive, dict):
+                    previous_strategy = str(
+                        previous_directive.get("strategy") or ""
+                    )
     issues = audit_script_quality(document, outline, source_truth)
-    forbidden_frames = effective_forbidden_frontstage_frames(communication_gate)
+    forbidden_frames = (
+        ()
+        if lightweight
+        else effective_forbidden_frontstage_frames(communication_gate)
+    )
     for page in document.pages:
         hits = forbidden_frontstage_hits(
             [
@@ -403,11 +443,43 @@ def run_script_audit(
     communication_review = build_communication_review(document, outline)
     errors = [issue for issue in issues if issue.severity == "error"]
     warning_count = sum(1 for issue in issues if issue.severity == "warning")
-    content_review = _content_review_status(project, script_sha256, input_path)
+    content_review = (
+        None
+        if lightweight
+        else _content_review_status(project, script_sha256, input_path)
+    )
     directive = script_retry_directive(errors, previous_strategy)
     failed_pages = sorted(
         {page for issue in errors for page in issue.pages}
     )
+    if lightweight:
+        report = {
+            "schema": "cyberppt.script_check.v1",
+            "status": "rewrite_required" if errors else "passed",
+            "quality_status": (
+                "failed"
+                if errors
+                else "passed_with_warnings"
+                if warning_count
+                else "passed"
+            ),
+            "warning_count": warning_count,
+            "input": str(input_path),
+            "outline": str(outline_path),
+            "source_truth": str(source_truth_path),
+            "coverage": {
+                "page_count": len(document.pages),
+                "first_page": document.pages[0].page_id,
+                "last_page": document.pages[-1].page_id,
+            },
+            "issues": [issue.to_dict() for issue in issues],
+            "communication_review": communication_review,
+            "failed_pages": failed_pages,
+            "retry_scope": failed_pages,
+            "persisted": False,
+        }
+        return (4 if errors else 0), report
+
     report: dict[str, object] = {
         "schema": "cyberppt.script_audit.v1",
         # One human gate only: editorial review remains useful evidence, but
@@ -428,6 +500,7 @@ def run_script_audit(
         "attempt": effective_attempt,
         "max_attempts": max_attempts,
         "remaining_attempts": max(0, max_attempts - effective_attempt),
+        "audit_batch_id": batch_id,
         "input": str(input_path),
         "outline": str(outline_path),
         "source_truth": str(source_truth_path),
@@ -452,17 +525,22 @@ def run_script_audit(
         report["options"] = _escalation_options()
     latest_json = audit_dir / "script-audit.json"
     latest_md = audit_dir / "script-audit.md"
-    attempt_json = (
-        attempts_dir / f"attempt-{effective_attempt:02d}.json"
-    )
+    batch_json = batch_dir / "script-audit.json"
+    batch_md = batch_dir / "script-audit.md"
     _write_json(latest_json, report)
     latest_md.parent.mkdir(parents=True, exist_ok=True)
     latest_md.write_text(_render_markdown(report), encoding="utf-8")
+    if batch_id is not None:
+        _write_json(batch_json, report)
+        batch_md.parent.mkdir(parents=True, exist_ok=True)
+        batch_md.write_text(_render_markdown(report), encoding="utf-8")
     _write_json(
         attempt_json,
         {"script_sha256": script_sha256, "audit": report},
     )
     artifact_paths = [latest_json, latest_md, attempt_json]
+    if batch_id is not None:
+        artifact_paths.extend((batch_json, batch_md))
     if report["status"] == "user_decision_required":
         escalation = audit_dir / "script-escalation.json"
         _write_json(escalation, report)
