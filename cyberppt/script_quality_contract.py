@@ -1150,6 +1150,31 @@ def onscreen_effective_char_target(page: ScriptPage) -> int:
     )
 
 
+def _is_structured_compact_onscreen_layer(
+    page: ScriptPage,
+    *,
+    visible_story_chars: int | None = None,
+) -> bool:
+    """Return whether concise copy carries an explicit readable hierarchy.
+
+    A single umbrella is valid only because ``module_titles >= 5`` requires
+    several subordinate items. Four unrelated short lines therefore cannot
+    pass by presenting themselves as structure.
+    """
+
+    visible_chars = (
+        meaningful_char_count(page.onscreen_judgment + page.onscreen_text)
+        if visible_story_chars is None
+        else visible_story_chars
+    )
+    return bool(
+        1 <= len(page.top_level_module_titles) <= MODULE_CEILING
+        and len(page.module_titles) >= 5
+        and visible_chars >= 60
+        and not _onscreen_detail_phrase_overages(page.onscreen_text)
+    )
+
+
 def parse_selection_notes(notes: str) -> dict[str, str]:
     """Split 文字稿取舍说明 into 必留上屏 / 仅讲解 / 仅追溯 buckets."""
 
@@ -1330,7 +1355,13 @@ def build_communication_review(
         effective_chars = meaningful_char_count(
             page.onscreen_judgment + page.onscreen_text
         )
-        effective_char_target = onscreen_effective_char_target(page)
+        structured_compact_layer = _is_structured_compact_onscreen_layer(
+            page,
+            visible_story_chars=effective_chars,
+        )
+        effective_char_target = (
+            60 if structured_compact_layer else onscreen_effective_char_target(page)
+        )
         density_status = (
             "pass" if effective_chars >= effective_char_target else "low"
         )
@@ -1591,6 +1622,13 @@ def _onscreen_relation_meta_hits(text: str) -> tuple[str, ...]:
 # elsewhere in this file (SCOPE_TERMS/IMPLEMENTATION_TERMS) where the same
 # word can legitimately appear in a non-violating context.
 ONSCREEN_BACKEND_META_PHRASES: tuple[str, ...] = (
+    "定位关系",
+    "共同归属",
+    "体系关系",
+    "页面作用",
+    "结构说明",
+    "状态说明",
+    "目标属性",
     "正式引用前核验",
     "待核验",
     "须核验",
@@ -2331,12 +2369,18 @@ def _prose_issues(
         )
         min_story_chars = onscreen_effective_char_target(page)
         coverage = onscreen_semantic_coverage(page)
-        structured_short_layer = bool(
-            len(_onscreen_content_lines(page.onscreen_text)) >= 4
-            and not _onscreen_detail_phrase_overages(page.onscreen_text)
+        # Formal slides may be independently readable through an explicit
+        # information architecture rather than paragraph-length copy.  Accept
+        # a compact layer only when it has a real 1-5 module skeleton (one is
+        # allowed only as an umbrella with several true children), enough
+        # supporting items, meaningful total copy, and no overlong detail.
+        # This deliberately rejects the former "four thin lines" loophole.
+        structured_compact_layer = _is_structured_compact_onscreen_layer(
+            page,
+            visible_story_chars=visible_story_chars,
         )
         if visible_story_chars < min_story_chars and (
-            strict_reading_density or not structured_short_layer
+            not structured_compact_layer
         ):
             issues.append(
                 _issue(
@@ -2359,7 +2403,7 @@ def _prose_issues(
         if (
             prose_chars >= PROSE_MIN_CHARS * 2
             and coverage < ONSCREEN_SEMANTIC_COVERAGE_ERROR_FLOOR
-            and (strict_reading_density or not structured_short_layer)
+            and not structured_compact_layer
         ):
             issues.append(
                 _issue(

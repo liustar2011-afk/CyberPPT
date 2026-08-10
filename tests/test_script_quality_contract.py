@@ -39,6 +39,21 @@ from cyberppt.script_quality_contract import (
 
 
 class ProductionAuthoringGuardTests(unittest.TestCase):
+    def test_onscreen_rejects_author_explanation_group_labels(self) -> None:
+        page = parse_script_markdown(
+            "## 第1页：总体定位\n"
+            "- 页面类型：内容页\n"
+            "- 完整文字稿：行业节点承担体系连接，运营平台承接服务运营。\n"
+            "- 上屏文字：\n"
+            "定位关系\n"
+            "    共同归属：三类定位共同构成总体方向。\n"
+            "- 视觉结构：三类定位分别承接连接、运营和协同。\n"
+        ).pages[0]
+
+        codes = {issue.code for issue in _presentation_issues(page)}
+
+        self.assertIn("ONSCREEN_BACKEND_META_LEAK", codes)
+
     def test_formal_v2_strict_density_rejects_four_thin_lines(self) -> None:
         page = parse_script_markdown(
             """## 第1页：正式材料
@@ -72,6 +87,47 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
         }
 
         self.assertIn("ONSCREEN_STORY_DENSITY_LOW", codes)
+
+    def test_formal_v2_accepts_compact_copy_with_explicit_information_architecture(self) -> None:
+        page = parse_script_markdown(
+            """## 第1页：正式材料
+
+- 页面类型：内容页
+- 页面标题：正式材料
+- 主判断：形成完整业务关系。
+- 完整文字稿：正式材料完整说明需求变化、资源条件、运行机制、实施要求和业务承接，并以明确事实和关系支撑页面判断，形成可独立理解的完整论述。
+- 上屏文字：
+
+需求变化
+    协同范围：跨主体、跨区域协同持续增长。
+    服务内容：延伸至模型、分析和场景交付。
+
+资源条件
+    资源分布：数据、模型和专业能力分属多方。
+    权利要求：使用范围和安全条件各不相同。
+
+运营机制
+    履约衔接：授权、交付、计量和结算相互贯通。
+    持续改进：运行结果返回产品和服务管理。
+- 证据：S001
+- 视觉结构：需求变化引出资源条件，运营机制承接供需并形成持续改进关系。
+
+【演讲者备注】
+
+正式说明相关业务关系和实施条件。
+"""
+        ).pages[0]
+
+        codes = {
+            issue.code
+            for issue in _prose_issues(
+                page,
+                independent_reading_required=True,
+                strict_reading_density=True,
+            )
+        }
+
+        self.assertNotIn("ONSCREEN_STORY_DENSITY_LOW", codes)
 
     def test_strips_structural_row_markers_from_visible_group_labels(self) -> None:
         self.assertEqual("访问与成果交付方式", audience_facing_group_label("第1行｜访问与成果交付方式"))
