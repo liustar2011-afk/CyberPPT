@@ -59,14 +59,19 @@ class AuditIssue:
         return asdict(self)
 
 
-def load_outline(path: Path) -> dict[str, object]:
+def load_outline(path: Path, *, lightweight: bool = False) -> dict[str, object]:
     try:
         payload = json.loads(path.read_text(encoding="utf-8-sig"))
     except json.JSONDecodeError as exc:
         raise ValueError(f"invalid outline JSON: {exc.msg}") from exc
     if not isinstance(payload, dict):
         raise ValueError("outline root must be an object")
-    for field in REQUIRED_FIELDS:
+    required_fields = (
+        tuple(field for field in REQUIRED_FIELDS if field != "retry")
+        if lightweight
+        else REQUIRED_FIELDS
+    )
+    for field in required_fields:
         if field not in payload:
             raise ValueError(f"missing required field: {field}")
     if payload.get("schema") not in {"cyberppt.outline.v1", "cyberppt.outline.v2"}:

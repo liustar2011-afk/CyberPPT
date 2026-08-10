@@ -371,7 +371,7 @@ def run_outline_audit(
     director_gate = None if lightweight else assert_storyline_director_ready(project)
     if not lightweight:
         assert_escalation_resolved(project, "source_truth")
-    payload = load_outline(input_path.expanduser().resolve())
+    payload = load_outline(input_path.expanduser().resolve(), lightweight=lightweight)
     resolved_source_truth = (
         source_truth_path.expanduser().resolve()
         if source_truth_path is not None

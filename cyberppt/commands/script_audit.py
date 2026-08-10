@@ -336,7 +336,7 @@ def run_script_audit(
     )
     if not outline_path.exists():
         raise FileNotFoundError(f"outline does not exist: {outline_path}")
-    outline = load_outline(outline_path)
+    outline = load_outline(outline_path, lightweight=lightweight)
     if (
         not source_truth_path.exists()
         and outline.get("argument_contract_mode") == "strict"

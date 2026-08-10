@@ -193,9 +193,11 @@ class OutlineAuditCommandTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
+            payload = invalid_outline(3, "source_native")
+            payload.pop("retry")
             code, report = run_outline_audit(
                 project,
-                self._write(root, invalid_outline(3, "source_native")),
+                self._write(root, payload),
                 lightweight=True,
             )
             stage = project / "workbench/stages/01-analysis"
