@@ -149,6 +149,7 @@ def prepare_outline_input(
         "Set root `topic_partition_mode` to `required`. This enables the chapter/page topic partition contract described below.",
         "Topic partitioning is on by default for formal v2 storyline outlines; declaring the mode keeps that default visible and auditable.",
         "Set root `page_sequence_mode` to `required` and add root `chapter_page_orders`. Intra-chapter page ordering is also on by default for formal v2 storyline outlines.",
+        "Set root `title_style_mode` to `formal_plain` for formal government, state-owned-enterprise, association, proposal, planning, and implementation materials. This is the default for formal v2 solution outlines: write plain declarative titles in the form business object + matter/mechanism/requirement; avoid question titles, slogans, `从……到……` journey rhetoric, promotional verbs, and titles that state `完整构成`. Use `expressive` only when the user explicitly requests a speech- or marketing-led title style, and then set `user_requested_title_style` to true.",
         "Create the Outline from Source Truth. Use canonical field names when the material calls for them:",
         "required `page_mission`, required `core_message`, optional `onscreen_conclusion`, "
         "required `audience_question`, `must_not_include`, `split_risk`, "
@@ -465,6 +466,7 @@ def prepare_page_script_input(
         "its existing `上屏文字` unchanged. Only add or update `副标题`, retain the "
         "full judgment as semantic metadata, and set the appropriate display mode.",
         "The approved core_message is mandatory semantic metadata; its onscreen_conclusion remains optional.",
+        "Preserve the approved Outline title exactly. For formal materials, keep the default `formal_plain` title style and do not re-dramatize titles as questions, slogans, journey rhetoric, or promotional claims during page drafting.",
         "Answer the approved `audience_question`, respect every `must_not_include` exclusion, and do not revive an unresolved split risk while drafting prose or on-screen modules.",
         "Use `detail_refs` when drafting 完整文字稿 and speaker notes, but do not turn each detail record into an on-screen module.",
         "Never strengthen the core_message from page labels, modules, visual structure, or speaker notes.",

@@ -35,6 +35,8 @@ HIGH_RISK_SEMANTIC_TERMS = (
     "不可替代", "核心驱动", "决定性",
 )
 QUESTION_TERMS = ("什么", "哪些", "如何", "为何", "为什么", "是否", "谁", "何时", "怎样", "多少", "哪")
+FORMAL_TITLE_QUESTION_PREFIXES = ("为什么", "为何", "如何", "怎样", "怎么", "是否")
+FORMAL_TITLE_SLOGAN_PREFIXES = ("携手", "共创", "赋能", "开启", "引领", "聚势", "筑梦")
 RELATION_PROMOTION_TERMS = ("协同", "驱动", "导致", "依赖", "实现")
 REQUIRED_FIELDS = (
     "schema",
@@ -111,6 +113,63 @@ def _core_message(page: dict[str, object]) -> str:
     """Read the v2 semantic center while retaining v1 compatibility."""
 
     return str(page.get("core_message") or page.get("main_message") or "").strip()
+
+
+def _title_style_issues(
+    outline: dict[str, object], pages: list[dict[str, object]]
+) -> list[AuditIssue]:
+    """Enforce plain declarative titles for formal v2 solution materials by default."""
+
+    configured = str(outline.get("title_style_mode") or "").strip()
+    mode = configured or (
+        "formal_plain"
+        if outline.get("schema") == "cyberppt.outline.v2"
+        and _is_solution_material(outline.get("material_type"))
+        else "legacy"
+    )
+    if mode not in {"legacy", "formal_plain", "expressive"}:
+        return [
+            AuditIssue(
+                "TITLE_STYLE_MODE_INVALID",
+                "title_style_mode must be legacy, formal_plain, or expressive.",
+                retry_strategy="select_supported_title_style",
+            )
+        ]
+    if mode == "expressive":
+        if outline.get("user_requested_title_style") is not True:
+            return [
+                AuditIssue(
+                    "TITLE_STYLE_OVERRIDE_UNCONFIRMED",
+                    "Expressive titles require an explicit user request.",
+                    retry_strategy="restore_formal_plain_titles",
+                )
+            ]
+        return []
+    if mode != "formal_plain":
+        return []
+
+    issues: list[AuditIssue] = []
+    for page in pages:
+        title = str(page.get("title") or "").strip()
+        if not title:
+            continue
+        dramatic = (
+            title.endswith(("?", "？"))
+            or title.startswith(FORMAL_TITLE_QUESTION_PREFIXES)
+            or title.startswith(FORMAL_TITLE_SLOGAN_PREFIXES)
+            or bool(re.match(r"^从.+到.+", title))
+            or title.endswith("的完整构成")
+        )
+        if dramatic:
+            issues.append(
+                AuditIssue(
+                    "FORMAL_TITLE_NOT_PLAIN",
+                    "Formal government and enterprise materials default to plain declarative titles that name the business object and topic; avoid questions, slogans, journey rhetoric, and promotional framing.",
+                    (_page_id(page),),
+                    "rewrite_as_plain_declarative_title",
+                )
+            )
+    return issues
 
 
 def _page_mission(page: dict[str, object]) -> str:
@@ -647,6 +706,7 @@ def audit_outline(
         )
     raw_pages = outline.get("pages")
     pages = [page for page in raw_pages if isinstance(page, dict)] if isinstance(raw_pages, list) else []
+    issues.extend(_title_style_issues(outline, pages))
     issues.extend(_template_issues(pages))
     issues.extend(_content_issues(pages))
     issues.extend(_editorial_control_issues(outline, pages))

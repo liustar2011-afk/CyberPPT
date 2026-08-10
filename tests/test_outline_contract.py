@@ -56,6 +56,34 @@ def outline(*pages: dict[str, object], **overrides: object) -> dict[str, object]
 
 
 class OutlineContractTests(unittest.TestCase):
+    def test_formal_v2_outline_defaults_to_plain_declarative_titles(self) -> None:
+        payload = outline(
+            page(1, "content", "为什么需要运营型数据基础设施", message="需要建设运营基础"),
+            page(2, "content", "从资源能力到正式运营对象", message="资源能力形成运营对象"),
+            schema="cyberppt.outline.v2",
+        )
+
+        issues = [item for item in audit_outline(payload) if item.code == "FORMAL_TITLE_NOT_PLAIN"]
+
+        self.assertEqual({"p01", "p02"}, {item.pages[0] for item in issues})
+
+    def test_expressive_title_style_requires_explicit_user_request(self) -> None:
+        payload = outline(
+            page(1, "content", "如何形成持续运营？", message="形成持续运营"),
+            schema="cyberppt.outline.v2",
+            title_style_mode="expressive",
+        )
+        self.assertIn(
+            "TITLE_STYLE_OVERRIDE_UNCONFIRMED",
+            [item.code for item in audit_outline(payload)],
+        )
+
+        payload["user_requested_title_style"] = True
+        self.assertNotIn(
+            "TITLE_STYLE_OVERRIDE_UNCONFIRMED",
+            [item.code for item in audit_outline(payload)],
+        )
+
     def test_required_editorial_controls_are_enforced(self) -> None:
         content = page(1, "content", "建设基础", message="现有条件支持启动", refs=["S001"])
         payload = outline(content, editorial_control_mode="required")
