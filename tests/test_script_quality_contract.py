@@ -129,6 +129,38 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
 
         self.assertNotIn("ONSCREEN_STORY_DENSITY_LOW", codes)
 
+    def test_formal_v2_rejects_generic_modules_that_delete_source_specificity(self) -> None:
+        page = parse_script_markdown(
+            """## 第4页：总体定位
+
+- 页面类型：内容页
+- 页面标题：总体定位
+- 主判断：形成行业节点、运营平台和多主体协同载体。
+- 完整文字稿：建设国家数据基础设施电力行业节点、行业数据与专业能力运营平台、多主体协同和价值共创载体，连接需求方、资源方、技术服务方和运营方，围绕数据产品与场景服务开展产品共建、场景实施和持续运营。汇聚电力行业数据、知识、模型与专业能力，完成资源登记、产品封装、服务订购、接口调用、使用计量、收益结算和运营评价，推动供需对接、授权流通、能力复用和场景落地。
+- 上屏文字：
+总体定位
+    体系位置：明确总体位置和基本方向。
+    主要作用：形成必要支撑和相关能力。
+
+运营安排
+    处理对象：组织相关对象开展工作。
+    协同事项：推动有关事项持续实施。
+- 证据：ST002
+- 视觉结构：三类建设定位共同连接行业资源与应用需求。
+"""
+        ).pages[0]
+
+        codes = {
+            issue.code
+            for issue in _prose_issues(
+                page,
+                independent_reading_required=True,
+                strict_reading_density=True,
+            )
+        }
+
+        self.assertIn("ONSCREEN_SOURCE_SPECIFICITY_LOW", codes)
+
     def test_strips_structural_row_markers_from_visible_group_labels(self) -> None:
         self.assertEqual("访问与成果交付方式", audience_facing_group_label("第1行｜访问与成果交付方式"))
         self.assertEqual("部署运行环境", audience_facing_group_label("第2行:部署运行环境"))

@@ -964,9 +964,20 @@ PROSE_MIN_CHARS = 80
 # 0.22/0.28 bands remain advisory so authors compress via 取舍说明 instead of
 # stuffing tokens to chase coverage.
 ONSCREEN_SEMANTIC_COVERAGE_ERROR_FLOOR = 0.15
+ONSCREEN_SOURCE_SPECIFICITY_ERROR_FLOOR = 0.12
 ONSCREEN_SEMANTIC_COVERAGE_MIN = 0.22
 ONSCREEN_SEMANTIC_COVERAGE_TARGET = 0.28
 ONSCREEN_EFFECTIVE_CHARS_MIN = 220
+ONSCREEN_SOURCE_ERASURE_PHRASES: tuple[str, ...] = (
+    "总体位置",
+    "基本方向",
+    "必要支撑",
+    "相关能力",
+    "相关对象",
+    "有关事项",
+    "开展工作",
+    "持续实施",
+)
 ONSCREEN_EFFECTIVE_CHARS_MAX = 320
 ONSCREEN_PROSE_DENSITY_RATIO = 0.50
 SELECTION_NOTE_REQUIRED_MARKERS = ("必留上屏", "仅讲解", "仅追溯")
@@ -2379,6 +2390,37 @@ def _prose_issues(
             page,
             visible_story_chars=visible_story_chars,
         )
+        source_erasure_hits = tuple(
+            phrase
+            for phrase in ONSCREEN_SOURCE_ERASURE_PHRASES
+            if phrase in page.onscreen_text
+        )
+        if (
+            strict_reading_density
+            and structured_compact_layer
+            and prose_chars >= PROSE_MIN_CHARS * 2
+            and coverage < ONSCREEN_SOURCE_SPECIFICITY_ERROR_FLOOR
+            and len(source_erasure_hits) >= 2
+        ):
+            issues.append(
+                _issue(
+                    "ONSCREEN_SOURCE_SPECIFICITY_LOW",
+                    page,
+                    "Compact on-screen copy replaces source-specific business content with generic concepts.",
+                    (
+                        "Keep the source's named business objects in module titles and retain its "
+                        "concrete duties, processed objects, operating actions, participants, and "
+                        "collaboration actions in child items. Split or add true source-supported "
+                        "short items to stay within 30 characters; never replace distinctive "
+                        "business content with generic concepts."
+                    ),
+                    evidence=(
+                        f"coverage={coverage:.3f}",
+                        f"floor={ONSCREEN_SOURCE_SPECIFICITY_ERROR_FLOOR:.3f}",
+                        *source_erasure_hits,
+                    ),
+                )
+            )
         if visible_story_chars < min_story_chars and (
             not structured_compact_layer
         ):
