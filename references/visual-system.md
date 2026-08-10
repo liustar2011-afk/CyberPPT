@@ -320,11 +320,11 @@
 
 直接通过当前对话发送 8 张独立图片，并简要比较语气、密度、优势和风险。需要时给出推荐风格。网页、拼图或总览图只能作为辅助浏览，不能作为确认依据。停止并请求第二次确认，然后再进入混合还原 PPTX。
 
-## 扩展风格9：象牙白 + 深蓝领导汇报
+## 扩展风格9：纯白 + 深蓝领导汇报
 
 默认8种风格仍保持1—8不变。风格9仅供显式选择，可通过 ID `9` 或 slug `ivory_deep_blue_scene` 调用。
 
-Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
+Palette: pure white #FFFFFF, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
 
 Identity: senior leadership briefing / speech-support — editorial, restrained, content-led.
 
@@ -345,7 +345,7 @@ Identity: senior leadership briefing / speech-support — editorial, restrained,
 - 允许根据页面语义采用自然的图文布局，但避免刻意堆叠、过度分区和装饰性照片墙。
 - 当无法找到有意义的场景或证据时，使用干净的平面2D关系表达，不强行添加照片或复杂视觉素材。
 - 图标默认数量为零。只有页面脚本明确指定某个具体图标时才允许小型、扁平、从属地使用。
-- 整体使用象牙白、白、浅蓝灰与深蓝，保持编辑式不对称布局、平静留白和高层级可读性。
+- 整体使用纯白、浅蓝灰与深蓝，保持编辑式不对称布局、平静留白和高层级可读性。
 
 ### 硬性禁令
 
