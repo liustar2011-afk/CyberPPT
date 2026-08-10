@@ -872,6 +872,56 @@ SPATIAL_SIGNALS = (
     "层级",
     "底座",
 )
+SEMANTIC_STRUCTURE_SIGNALS = (
+    "主关系",
+    "语义焦点",
+    "文字归属",
+    "支撑",
+    "流转",
+    "转化",
+    "汇聚",
+    "分支",
+    "依赖",
+    "包含",
+    "对比",
+    "控制",
+    "约束",
+    "授权",
+    "边界",
+    "责任",
+    "协同",
+    "反馈",
+    "输入",
+    "输出",
+    "结果",
+    "从属",
+)
+VISUAL_STRUCTURE_LAYOUT_RECIPE_RES = (
+    re.compile(
+        r"(?:主视觉|页面|正文区)[^。；;\n]{0,28}"
+        r"(?:位于|放在|置于|设置|排列|分为|横跨|占据|占约)"
+    ),
+    re.compile(
+        r"(?:上半部|下半部|顶部|底部|左侧|右侧|中央偏[左右]?|页面中央|"
+        r"居中|为视觉中心)"
+    ),
+    re.compile(
+        r"(?:[一二三四五六七八九十\d]+\s*(?:条|行|列|个)?\s*"
+        r"(?:横向|纵向)?\s*(?:泳道|卡片|节点|栏|矩阵)|"
+        r"(?:横向|纵向)\s*(?:泳道|排列|矩阵|条带|说明条|收束条))"
+    ),
+    re.compile(r"(?:矩阵筛选|主体泳道|分层剖面|汇聚引擎输出)"),
+    re.compile(r"(?:结果区|结论区|说明条|收束条|节奏条|独立横条)"),
+    re.compile(
+        r"(?:阅读顺序|自左向右扫过|自右向左扫过|自上而下扫过|自下而上扫过)"
+    ),
+    re.compile(r"(?:左文右图|右文左图|左图右表|左表右图)"),
+)
+VISUAL_STRUCTURE_MULTIPLE_PRIMARY_RE = re.compile(
+    r"(?:第二套|另一套)[^。；;\n]{0,24}(?:流程|主链|结构|结果链|总结链)|"
+    r"(?:独立于|脱离)[^。；;\n]{0,24}(?:主关系|主链|业务对象)"
+    r"[^。；;\n]{0,16}(?:流程|结果|说明)"
+)
 STYLE_ONLY_TERMS = (
     "简洁现代",
     "高级大气",
@@ -2111,6 +2161,8 @@ def script_retry_directive(
             "VISUAL_STRUCTURE_STYLE_ONLY",
             "VISUAL_STRUCTURE_TOO_THIN",
             "VISUAL_STRUCTURE_CROSSCUT_AS_PEER",
+            "VISUAL_STRUCTURE_LAYOUT_RECIPE",
+            "VISUAL_STRUCTURE_MULTIPLE_PRIMARY_NARRATIVES",
             "VISUAL_CENTER_JUDGMENT_MISMATCH",
             "VISUAL_STRUCTURE_PRIMITIVE_MISMATCH",
             "VISUAL_STRUCTURE_MECHANISM_AS_LANE",
@@ -2720,6 +2772,16 @@ def _visual_module_label(value: str) -> str:
     return text.strip(" 。；;，,")
 
 
+def _visual_structure_layout_recipe_hits(visual: str) -> tuple[str, ...]:
+    hits: list[str] = []
+    for pattern in VISUAL_STRUCTURE_LAYOUT_RECIPE_RES:
+        for match in pattern.finditer(visual):
+            value = match.group(0).strip()
+            if value and value not in hits:
+                hits.append(value)
+    return tuple(hits)
+
+
 def _visual_structure_chain_nodes(visual: str) -> tuple[str, ...]:
     """Extract peer nodes from「原语——A → B → C」or「原语——A、B、C」lists."""
 
@@ -2791,6 +2853,28 @@ def _visual_structure_judgment_issues(page: ScriptPage) -> list[ScriptQualityIss
                 "Visual structure requests visible result text absent from locked on-screen text.",
                 "Add the result once to locked on-screen text, or remove the instruction to render it.",
                 evidence=unlocked_results,
+            )
+        )
+    layout_recipe_hits = _visual_structure_layout_recipe_hits(visual)
+    if layout_recipe_hits:
+        issues.append(
+            _issue(
+                "VISUAL_STRUCTURE_LAYOUT_RECIPE",
+                page,
+                "Stage 01 visual structure contains a fixed page-layout recipe.",
+                "Keep only the approved business relation, semantic focus, direction and text ownership; leave rows, columns, lanes, positions, containers and carrier selection to the Stage 02 visual-structure designer.",
+                evidence=layout_recipe_hits[:8],
+            )
+        )
+    multiple_primary = VISUAL_STRUCTURE_MULTIPLE_PRIMARY_RE.search(visual)
+    if multiple_primary:
+        issues.append(
+            _issue(
+                "VISUAL_STRUCTURE_MULTIPLE_PRIMARY_NARRATIVES",
+                page,
+                "Visual structure introduces another independent process, result chain or summary structure.",
+                "Keep one primary business relation and make every secondary relation subordinate to it; do not add a second narrative in the visual handoff.",
+                evidence=(multiple_primary.group(0).strip(),),
             )
         )
     corpus = _page_relation_corpus(page)
@@ -2869,7 +2953,7 @@ def _visual_structure_judgment_issues(page: ScriptPage) -> list[ScriptQualityIss
                     "VISUAL_CENTER_JUDGMENT_MISMATCH",
                     page,
                     "Visual center privileges one engine while the judgment treats three engines as peers.",
-                    "Use a shared hub (统一治理 / 三类引擎协同) or an equal three-engine field.",
+                    "Use the shared coordination relation as the semantic focus and leave the concrete carrier open for Stage 02.",
                     evidence=(center,),
                     severity="warning",
                 )
@@ -2883,7 +2967,7 @@ def _visual_structure_judgment_issues(page: ScriptPage) -> list[ScriptQualityIss
                 "VISUAL_STRUCTURE_PRIMITIVE_MISMATCH",
                 page,
                 "Boundary-shell primitive used for a depth-defense judgment.",
-                "Prefer 分层剖面 / 纵深主链 for layered defense; reserve 受控边界 for admission shells.",
+                "Describe the dependency or control relation directly and leave the concrete spatial grammar to Stage 02.",
                 evidence=("受控边界", *depth_hits),
                 severity="warning",
             )
@@ -2903,7 +2987,7 @@ def _visual_structure_judgment_issues(page: ScriptPage) -> list[ScriptQualityIss
                     "VISUAL_STRUCTURE_MECHANISM_AS_LANE",
                     page,
                     "Swimlane structure peers mechanism modules with business chains.",
-                    "Keep business chains as lanes; attach 隔离/降级 as controls on those lanes.",
+                    "Keep the business chains as the primary relation and bind 隔离/降级 as subordinate controls without prescribing lanes.",
                     evidence=business_hits + mechanism_hits,
                     severity="warning",
                 )
@@ -3072,30 +3156,27 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
                 )
             )
         if visual.strip():
-            has_primitive = _has_any(visual, COMPOSITION_PRIMITIVES)
-            has_spatial = _has_any(visual, SPATIAL_SIGNALS)
-            style_only = _has_any(visual, STYLE_ONLY_TERMS) and not (
-                has_primitive or has_spatial
-            )
+            has_semantic_structure = _has_any(visual, SEMANTIC_STRUCTURE_SIGNALS)
+            style_only = _has_any(visual, STYLE_ONLY_TERMS) and not has_semantic_structure
             if style_only:
                 issues.append(
                     _issue(
                         "VISUAL_STRUCTURE_STYLE_ONLY",
                         page,
-                        "Visual structure only names style adjectives without spatial structure.",
-                        "Rewrite 视觉结构 with a composition primitive and center/main-chain direction.",
+                        "Visual structure only names style adjectives without a business relation.",
+                        "Rewrite 视觉结构 with one primary business relation, semantic focus and text ownership; leave style and layout to Stage 02.",
                         evidence=tuple(
                             term for term in STYLE_ONLY_TERMS if term in visual
                         ),
                     )
                 )
-            elif not (has_primitive or has_spatial) or _compact_len(visual) < 12:
+            elif not has_semantic_structure or _compact_len(visual) < 12:
                 issues.append(
                     _issue(
                         "VISUAL_STRUCTURE_TOO_THIN",
                         page,
-                        "Visual structure is too thin to guide on-screen composition.",
-                        "Name a composition primitive and the visual center or main-chain direction.",
+                        "Visual structure is too thin to hand off the page semantics.",
+                        "State one primary business relation, its semantic focus, participating roles or objects, and text ownership without prescribing a layout.",
                         severity="warning",
                     )
                 )
@@ -3118,56 +3199,6 @@ def _presentation_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
                         )
                     )
                     break
-            if (
-                ("矩阵筛选" in visual or "矩阵" in visual)
-                and not _has_any(page.onscreen_text, MATRIX_SIGNALS)
-            ):
-                issues.append(
-                    _issue(
-                        "PRIMITIVE_ONSCREEN_MISMATCH",
-                        page,
-                        "Matrix-oriented visual structure lacks matrix signals on screen.",
-                        "Align 上屏文字 with row/column or table structure, or change the primitive.",
-                        severity="warning",
-                    )
-                )
-            if (
-                ("贯穿主链" in visual or "阶段推进" in visual)
-                and not _has_any(page.onscreen_text, ORDER_SIGNALS)
-            ):
-                issues.append(
-                    _issue(
-                        "PRIMITIVE_ONSCREEN_MISMATCH",
-                        page,
-                        "Path/stage visual structure lacks on-screen order signals.",
-                        "Add numbered steps, arrows, or sequence words matching the main chain.",
-                        severity="warning",
-                    )
-                )
-            if "闭环回流" in visual and not _has_any(
-                page.onscreen_text, LOOP_SIGNALS
-            ):
-                issues.append(
-                    _issue(
-                        "PRIMITIVE_ONSCREEN_MISMATCH",
-                        page,
-                        "Loop visual structure lacks on-screen return or feedback relation.",
-                        "Name the feedback, review, or correction link on screen.",
-                        severity="warning",
-                    )
-                )
-            if "分层剖面" in visual and not _has_any(
-                page.onscreen_text, LAYER_SIGNALS
-            ):
-                issues.append(
-                    _issue(
-                        "PRIMITIVE_ONSCREEN_MISMATCH",
-                        page,
-                        "Layered visual structure lacks hierarchy signals on screen.",
-                        "Name layers, support relations, or top-to-bottom reading order.",
-                        severity="warning",
-                    )
-                )
         issues.extend(_visual_structure_judgment_issues(page))
     # "阅读路径" (reading path/order) is one of the five elements the
     # canonical 视觉结构 template explicitly asks every page to describe

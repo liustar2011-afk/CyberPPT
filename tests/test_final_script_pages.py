@@ -14,6 +14,12 @@ from cyberppt.commands.final_script_pages import (
     run_final_script_pages,
 )
 from cyberppt.commands.init_project import init_project
+from cyberppt.commands.visual_structure_stage import (
+    VISUAL_FILES,
+    _prompt_inputs_sha256,
+    _sha256,
+    _skill_root,
+)
 from cyberppt.stage01_controls import write_confirmation_request, write_stage01_approval
 from cyberppt.commands.script_gate import stage_script
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, render_prompt
@@ -350,18 +356,68 @@ class FinalScriptPagesTests(unittest.TestCase):
                 )
             )
         generation_prompts.write_text("\n".join(prompt_pages) + "\n", encoding="utf-8")
+        fixture_pages = sorted(parse_page_blocks(script))
+        handoff = project / "workbench" / "stages" / "02-handoff" / "stage02-handoff.json"
+        handoff.parent.mkdir(parents=True, exist_ok=True)
+        handoff.write_text(
+            json.dumps(
+                {
+                    "schema": "cyberppt.stage02_handoff.v1",
+                    "source_bindings": {"script": {"path": str(script.resolve())}},
+                    "pages": [
+                        {
+                            "page_id": f"p{page_number:02d}",
+                            "page_number": page_number,
+                            "render_role": "content",
+                            "title": f"Page {page_number}",
+                            "page_mission": "Fixture mission",
+                            "core_message": "Fixture message",
+                            "onscreen_text": "Fixture text",
+                            "onscreen_items": ["Fixture text"],
+                            "stage02_visual_input": {
+                                "locked_text_items": [
+                                    {
+                                        "text_id": f"P{page_number:02d}-T01",
+                                        "text": "Fixture text",
+                                        "ordinal": 1,
+                                    }
+                                ],
+                                "business_relationships": [],
+                                "author_visual_notes_authority": "advisory_only",
+                                "body_image_canvas": {"width": 2048, "height": 1024, "ratio": "2:1"},
+                            },
+                        }
+                        for page_number in fixture_pages
+                    ],
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        extra_visual_artifacts = {
+            key: project / VISUAL_FILES[key]
+            for key in ("design_input", "skill_request", "decisions", "execution_receipt")
+        }
+        for key, path in extra_visual_artifacts.items():
+            path.write_text(key + "\n", encoding="utf-8")
+        visual_artifacts = {
+            **extra_visual_artifacts,
+            "spec_json": spec_json,
+            "spec_markdown": spec_md,
+            "generation_prompts": generation_prompts,
+        }
         visual_report = visual_dir / "validation-report.json"
         visual_report.write_text(
             json.dumps(
                 {
-                    "schema": "cyberppt.visual_structure_stage.v1",
+                    "schema": "cyberppt.visual_structure_stage.v2",
                     "status": "passed",
-                    "script_sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
                     "artifact_sha256": {
-                        "spec_json": hashlib.sha256(spec_json.read_bytes()).hexdigest(),
-                        "spec_markdown": hashlib.sha256(spec_md.read_bytes()).hexdigest(),
-                        "generation_prompts": hashlib.sha256(generation_prompts.read_bytes()).hexdigest(),
+                        key: _sha256(path) for key, path in visual_artifacts.items()
                     },
+                    "prompt_inputs_sha256": _prompt_inputs_sha256(
+                        project, script, _skill_root()
+                    ),
                 },
                 ensure_ascii=False,
             ),

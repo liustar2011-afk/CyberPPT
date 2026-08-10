@@ -86,9 +86,29 @@ def _onscreen_items(page: ScriptPage) -> list[str]:
     return items
 
 
+def _locked_text_items(page: ScriptPage) -> list[dict[str, Any]]:
+    """Give every locked body string a stable, page-scoped identity."""
+
+    page_id = normalize_page_id(page.page_id, page.sequence).upper()
+    return [
+        {
+            "text_id": f"{page_id}-T{index:02d}",
+            "text": text,
+            "ordinal": index,
+        }
+        for index, text in enumerate(_onscreen_items(page), start=1)
+    ]
+
+
 def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, Any]:
     receipt = page.contract_receipt if isinstance(page.contract_receipt, dict) else {}
     render_role = _render_role(page.page_type)
+    business_relationships = [
+        dict(item)
+        for item in ((outline or {}).get("content_relations") or page.content_relations)
+        if isinstance(item, dict)
+    ]
+    locked_text_items = _locked_text_items(page)
     record: dict[str, Any] = {
         "page_id": normalize_page_id(page.page_id, page.sequence),
         "page_number": page.sequence,
@@ -101,12 +121,14 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "full_prose": page.full_prose,
         "onscreen_text": page.onscreen_text,
         "onscreen_items": _onscreen_items(page),
+        "locked_text_items": locked_text_items,
         "image_locked_text": page.image_locked_text,
         "editable_body_text": page.onscreen_text,
         "speaker_notes": page.speaker_notes,
         "source_refs": list(page.source_refs),
         "consumed_content_unit_ids": list(receipt.get("consumed_content_unit_ids") or []),
         "must_not_include": list(receipt.get("must_not_include") or []),
+        "business_relationships": business_relationships,
         "field_provenance": {
             "content": "script-final.md",
             "page_mission": "script-page-contract",
@@ -126,9 +148,12 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "core_message": page.main_message,
         "full_prose": page.full_prose,
         "onscreen_text": page.onscreen_text,
+        "locked_text_items": locked_text_items,
         "module_titles": list(page.module_titles),
         "top_level_module_titles": list(page.top_level_module_titles),
-        "approved_stage01_visual_structure": page.visual_structure,
+        "business_relationships": business_relationships,
+        "author_visual_notes": page.visual_structure,
+        "author_visual_notes_authority": "advisory_only",
         "source_refs": list(page.source_refs),
         "must_not_include": list(receipt.get("must_not_include") or []),
         "body_image_canvas": dict(BODY_CANVAS),
@@ -193,8 +218,8 @@ def render_handoff_markdown(payload: dict[str, Any], report: dict[str, Any] | No
         f"- 模板页：{len(templates)}",
         f"- 审计状态：{(report or {}).get('status', 'pending')}",
         "",
-        "| 页面 | 渲染角色 | 论证角色 | 标题 | 页面使命 | Stage 02 视觉输入 |",
-        "|---|---|---|---|---|---|",
+        "| 页面 | 渲染角色 | 论证角色 | 标题 | 页面使命 | 业务关系 | 作者视觉备注 | Stage 02 视觉输入 |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for page in pages:
         visual_input = page.get("stage02_visual_input") or {}
@@ -202,6 +227,8 @@ def render_handoff_markdown(payload: dict[str, Any], report: dict[str, Any] | No
         lines.append(
             f"| {page['page_id']} | {page['render_role']} | {page.get('argument_role') or '—'} | "
             f"{str(page.get('title') or '').replace('|', '｜')} | {mission} | "
+            f"{len(visual_input.get('business_relationships') or []) if visual_input else '—'} | "
+            f"{visual_input.get('author_visual_notes_authority') or '—'} | "
             f"{'已具备' if visual_input else '—'} |"
         )
     if report:
@@ -270,6 +297,21 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
         visual_input = page.get("stage02_visual_input") or {}
         if visual_input.get("body_image_canvas") != BODY_CANVAS:
             issue("BODY_IMAGE_CANVAS_INVALID", f"{page_id} body image canvas must be 2048x1024 (2:1).")
+        locked_items = visual_input.get("locked_text_items")
+        if not isinstance(locked_items, list) or not locked_items:
+            issue("LOCKED_TEXT_ITEMS_MISSING", f"{page_id} has no stable locked body-text items.")
+        else:
+            ids = [str(item.get("text_id") or "") for item in locked_items if isinstance(item, dict)]
+            texts = [str(item.get("text") or "") for item in locked_items if isinstance(item, dict)]
+            if len(ids) != len(locked_items) or any(not value for value in ids) or len(ids) != len(set(ids)):
+                issue("LOCKED_TEXT_IDS_INVALID", f"{page_id} locked body-text ids must be non-empty and unique.")
+            if texts != list(page.get("onscreen_items") or []):
+                issue("LOCKED_TEXT_ORDER_DRIFTED", f"{page_id} locked body text must match onscreen_items exactly and in order.")
+        relationships = visual_input.get("business_relationships")
+        if not isinstance(relationships, list):
+            issue("BUSINESS_RELATIONSHIPS_INVALID", f"{page_id} business_relationships must be an array.")
+        if visual_input.get("author_visual_notes_authority") != "advisory_only":
+            issue("AUTHOR_VISUAL_NOTES_AUTHORITY_INVALID", f"{page_id} author visual notes must be advisory only.")
 
     status = "passed" if not blocking else "failed"
     return {

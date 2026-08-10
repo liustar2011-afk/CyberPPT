@@ -95,9 +95,10 @@ Even without the hash-gate machinery, keep three things:
    from the project's own workbench/": it is shared, cross-project
    infrastructure vendored into CyberPPT itself, not an external dependency.
 
-For the per-page script gate, an affirmative approval now records workflow
-intent instead of freezing the approved file bytes. SHA-256 values may still
-be written to approval records and manifests for troubleshooting, but an
+For Stage 01 and the per-page script gate, an affirmative approval records
+workflow intent instead of freezing the approved file bytes. Stage 01 approval
+records contain no SHA-256 bindings. Artifact hashes may still be written to
+audits and manifests for troubleshooting, but an
 in-place edit to a staged final script or ImageGen prompt does not force a
 stage/approve cycle. Missing or negative approval, missing files, malformed
 scripts, failed content checks, and missing generated assets remain blocking.

@@ -142,7 +142,6 @@ def prepare_outline_input(project: Path) -> Path:
             "",
             "The following human-approved communication strategy determines the Outline structure. Copy every named root field exactly; do not silently choose another audience or reporting direction.",
             f"- communication_strategy_sha256: {communication_gate['communication_strategy_sha256']}",
-            f"- communication_strategy_approval_sha256: {communication_gate['communication_strategy_approval_sha256']}",
             f"- audience: {communication_gate['audience']}",
             f"- communication_purpose: {communication_gate['communication_purpose']}",
             f"- decision_task: {communication_gate['decision_task']}",
@@ -329,7 +328,10 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "",
         f"Authoritative JSON authoring artifact: `{authoring_artifact}`",
         "The compiler consumes this JSON artifact. Keep its `outline_sha256` bound to the current Outline and declare every non-boundary `content_unit.unit_id` in each page's `consumes` list.",
-        "Write backend composition guidance as a separate two-line block: `【视觉结构，不上屏】` followed by the guidance text. Never place that guidance inside `上屏文字`.",
+        "Write the Stage 02 semantic-structure handoff as a separate two-line block: `【视觉结构，不上屏】` followed by the guidance text. Never place that guidance inside `上屏文字`.",
+        "This handoff records one core judgment, one primary business relation and direction, the participating roles or objects, and which locked text belongs to which role, action, boundary or result. It is not a page-layout recipe.",
+        "Do not prescribe rows, columns, swim lanes, matrices, card counts, top/bottom/left/right/center placement, percentage geometry, summary strips, or a named visual carrier. Leave candidate composition and medium selection to the Stage 02 visual-structure designer.",
+        "The logic skeleton and the visual-structure handoff must describe the same business relation. Do not add a second process, result chain, abstract hub or conclusion that is absent from the approved content relation.",
         "Write full prose from the approved core_message and source-supported content relations; derive on-screen text from it.",
         "Do not add `副标题` or `上屏结论` merely because the page is a content page. "
         "When the approved Outline has them, preserve them; when it does not, begin with the source-supported on-screen modules.",
@@ -349,7 +351,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> Path:
         "Do not repeat the page title or subtitle inside the body.",
         "Write each labelled on-screen detail as a short phrase or short sentence: count meaningful Chinese/Latin/numeric characters after the first label separator; <=36 is the preferred band, 37–60 requires shortening or splitting, and >60 is a script-audit error. Keep long judgments, legal boundaries, and necessary complete conclusions in their dedicated fields instead of hiding them inside a detail line.",
         "Indentation declares a real parent-child taxonomy, not visual grouping. Before nesting, verify that every child answers the same classification question implied by its parent. Never nest actors or participating parties under a construction item, mechanism, platform, carrier, path, process, task, or goal. Fold those actors into the item's short description, or create a separate actor group only when actor roles are independently required on screen.",
-        "Never put compositor instructions such as 四行选择矩阵、阅读顺序、视觉中心、构图说明、泳道/色块/主链呈现 or 第X行｜ coordinates into `上屏文字`; write them under `【视觉结构，不上屏】` or another backend field.",
+        "Never put compositor instructions such as 四行选择矩阵、阅读顺序、视觉中心、构图说明、泳道/色块/主链呈现 or 第X行｜ coordinates into `上屏文字` or `【视觉结构，不上屏】`. Translate any legitimate business meaning into the semantic relation handoff and leave the concrete layout to Stage 02.",
         "Boundary is opt-in, never a mandatory fourth beat. A boundary, evidence-status, "
         "pending-proof, or research-status module may appear only when it is the primary "
         "meaning of the approved core_message, not merely mentioned by the title, page mission, "

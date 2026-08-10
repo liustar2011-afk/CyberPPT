@@ -74,7 +74,7 @@ def test_open_visual_grammar_allows_expression_with_business_boundaries() -> Non
     assert "轻微立体效果" not in rendered
 
 
-def test_deliverable_prompt_renders_visual_grammar_once_for_style_nine() -> None:
+def test_deliverable_prompt_uses_only_the_single_style_contract_for_style_nine() -> None:
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = render_prompt(
@@ -82,11 +82,11 @@ def test_deliverable_prompt_renders_visual_grammar_once_for_style_nine() -> None
             style_lock_path=lock,
         )
 
-    assert prompt.count("【视觉组织原则】") == 1
+    assert "【视觉组织原则】" not in prompt
     assert "【页面编码】P09｜测试" in prompt
     assert "不得在生成图中渲染页面编码或页面标题" in prompt
     for line in _SHORT_LINES:
-        assert prompt.count(line) == 1
+        assert line not in prompt
     for fragment in _OLD_CHINESE_FRAGMENTS:
         assert fragment not in prompt
     assert "【设计目标与叙事】" not in prompt

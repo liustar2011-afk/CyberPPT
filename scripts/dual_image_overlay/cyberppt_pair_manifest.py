@@ -508,7 +508,7 @@ def build_manifest(
             # Style 09 is a live source-authored contract. Reassembly after a
             # source style edit must consume the freshly compiled canonical
             # prompt; a historical approval remains audit evidence only.
-            if _style09_terminal_execution_lock(style_lock):
+            if style09_surface_adapter:
                 prompt = canonical_prompt
                 approval_meta["consumed_from"] = "canonical_style09_refresh"
             else:

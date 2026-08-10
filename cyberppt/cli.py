@@ -29,6 +29,7 @@ from cyberppt.commands.script_runner import SCRIPT_ALIASES, run_script
 from cyberppt.commands.source_truth_audit import run_source_truth_audit
 from cyberppt.commands.visual_structure_stage import (
     prepare_visual_structure_stage,
+    record_visual_structure_execution,
     run_visual_structure_audit,
 )
 from cyberppt.communication_strategy import (
@@ -262,7 +263,23 @@ def _prepare_visual_structure_command(args: argparse.Namespace) -> int:
     except (FileNotFoundError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
-    print(f"visual_structure_skill_invocation: {path}")
+    print(f"visual_structure_skill_request: {path}")
+    return 0
+
+
+def _record_visual_structure_execution_command(args: argparse.Namespace) -> int:
+    try:
+        path = record_visual_structure_execution(
+            Path(args.project),
+            Path(args.script),
+            executor=args.executor,
+            model=args.model,
+            note=args.note,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(f"visual_structure_execution_receipt: {path}")
     return 0
 
 
@@ -664,11 +681,22 @@ def build_parser() -> argparse.ArgumentParser:
 
     prepare_visual_structure = subparsers.add_parser(
         "prepare-visual-structure",
-        help="Prepare the automatic ppt-visual-structure-designer invocation contract.",
+        help="Prepare the ppt-visual-structure-designer execution request and locked input contract.",
     )
     prepare_visual_structure.add_argument("project", help="CyberPPT project directory.")
     prepare_visual_structure.add_argument("--script", required=True, help="Approved final script.")
     prepare_visual_structure.set_defaults(func=_prepare_visual_structure_command)
+
+    record_visual_structure = subparsers.add_parser(
+        "record-visual-structure-execution",
+        help="Record an actual ppt-visual-structure-designer execution and bind its outputs.",
+    )
+    record_visual_structure.add_argument("project", help="CyberPPT project directory.")
+    record_visual_structure.add_argument("--script", required=True, help="Approved final script.")
+    record_visual_structure.add_argument("--executor", required=True, help="Execution surface, e.g. codex-desktop.")
+    record_visual_structure.add_argument("--model", required=True, help="Model identifier recorded by the executor.")
+    record_visual_structure.add_argument("--note", default="", help="Optional execution note.")
+    record_visual_structure.set_defaults(func=_record_visual_structure_execution_command)
 
     visual_structure_audit = subparsers.add_parser(
         "visual-structure-audit",
@@ -680,7 +708,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     prepare_handoff = subparsers.add_parser(
         "prepare-stage02-handoff",
-        help="Compile the hash-bound Stage 01 to Stage 02 field contract.",
+        help="Compile the validated Stage 01 to Stage 02 field contract.",
     )
     prepare_handoff.add_argument("project", help="CyberPPT project directory.")
     prepare_handoff.add_argument(

@@ -54,6 +54,7 @@ class CliTests(unittest.TestCase):
         self.assertIn("prepare-chapter-review", help_text)
         self.assertIn("chapter-review-audit", help_text)
         self.assertIn("prepare-visual-structure", help_text)
+        self.assertIn("record-visual-structure-execution", help_text)
         self.assertIn("visual-structure-audit", help_text)
 
     def test_script_audit_accepts_contract_options(self) -> None:

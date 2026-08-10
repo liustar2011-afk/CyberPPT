@@ -869,15 +869,6 @@ def approve_semantic_understanding(project: Path, note: str = "") -> Path:
     approval = {
         "schema": "cyberppt.semantic_understanding_approval.v1",
         "decision": "approved",
-        "semantic_understanding_sha256": audit["semantic_understanding_sha256"],
-        "semantic_argument_model_sha256": audit.get("semantic_argument_model_sha256"),
-        "source_bundle_sha256": audit["source_bundle_sha256"],
-        "source_map_bundle_sha256": audit.get("source_map_bundle_sha256"),
-        "source_units_sha256": audit.get("source_units_sha256"),
-        "source_heading_tree_sha256": audit.get("source_heading_tree_sha256"),
-        "model_input_sha256": audit["model_input_sha256"],
-        "generation_receipt_sha256": _sha256_path(generation_receipt),
-        "semantic_audit_sha256": _sha256_path(audit_path),
         "approved_at": _utc_now(),
         "note": note.strip(),
     }
@@ -946,23 +937,6 @@ def assert_semantic_understanding_ready(project: Path) -> dict[str, Any] | None:
     approval = json.loads(approval_path.read_text(encoding="utf-8-sig"))
     if not isinstance(approval, dict) or approval.get("decision") != "approved":
         raise ValueError("semantic-understanding human approval is invalid")
-    approval_expectations = (
-        ("semantic_understanding_sha256", report.get("semantic_understanding_sha256")),
-        ("semantic_argument_model_sha256", report.get("semantic_argument_model_sha256")),
-        ("source_bundle_sha256", report.get("source_bundle_sha256")),
-        ("source_map_bundle_sha256", report.get("source_map_bundle_sha256")),
-        ("source_units_sha256", report.get("source_units_sha256")),
-        ("source_heading_tree_sha256", report.get("source_heading_tree_sha256")),
-        ("model_input_sha256", report.get("model_input_sha256")),
-        ("generation_receipt_sha256", report.get("generation_receipt_sha256")),
-    )
-    if any(
-        str(approval.get(field) or "").casefold() != str(expected or "").casefold()
-        for field, expected in approval_expectations
-    ):
-        raise ValueError(
-            "semantic-understanding human approval is stale; rerun semantic-check and approval"
-        )
     report["human_approval"] = approval
     report["human_approval_path"] = str(approval_path)
     return report

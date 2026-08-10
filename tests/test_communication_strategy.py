@@ -146,7 +146,11 @@ class CommunicationStrategyTests(unittest.TestCase):
     def test_approved_choice_controls_outline_contract(self) -> None:
         payload = self._write_valid_candidate()
         run_communication_strategy_audit(self.project)
-        approve_communication_strategy(self.project, "joint_workshop", note="user selected")
+        approval_path = approve_communication_strategy(
+            self.project, "joint_workshop", note="user selected"
+        )
+        approval = json.loads(approval_path.read_text(encoding="utf-8"))
+        self.assertFalse(any(key.endswith("_sha256") for key in approval))
         gate = assert_communication_strategy_ready(self.project)
         self.assertIsNotNone(gate)
         self.assertEqual("joint_workshop", gate["option_id"])
@@ -169,7 +173,7 @@ class CommunicationStrategyTests(unittest.TestCase):
         prepared_director = prepare_storyline_director(self.project)
         director = director_payload()
         director["source_truth_sha256"] = prepared_director["source_truth_sha256"]
-        director["communication_strategy_approval_sha256"] = prepared_director["communication_strategy_approval_sha256"]
+        director["communication_strategy_sha256"] = prepared_director["communication_strategy_sha256"]
         director["semantic_understanding_sha256"] = prepared_director["semantic_understanding_sha256"]
         director["semantic_source_bundle_sha256"] = prepared_director["semantic_source_bundle_sha256"]
         director["consumed_user_decisions"] = [
@@ -191,7 +195,6 @@ class CommunicationStrategyTests(unittest.TestCase):
         selected = gate["selected_option"]
         outline = {
             "communication_strategy_sha256": gate["communication_strategy_sha256"],
-            "communication_strategy_approval_sha256": gate["communication_strategy_approval_sha256"],
             "audience": selected["audience"],
             "communication_purpose": selected["communication_purpose"],
             "decision_task": selected["decision_task"],

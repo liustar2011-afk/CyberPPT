@@ -54,6 +54,8 @@ from scripts.dual_image_overlay.creative_brief import (
 )
 from scripts.dual_image_overlay.deliverable_prompt import (
     PageBlock,
+    _compile_style09_contract,
+    _style09_page_semantic_tags,
     assert_deliverable_prompt,
     render_prompt,
 )
@@ -1658,7 +1660,11 @@ def _selected_content_first_style(style_lock: Path) -> dict[str, Any]:
     return canonical
 
 
-def render_content_first_style_contract(style_lock: Path) -> str:
+def render_content_first_style_contract(
+    style_lock: Path,
+    *,
+    semantic_tags: frozenset[str] | None = None,
+) -> str:
     """Render a compact, self-contained style contract from the selected style."""
 
     style = _selected_content_first_style(style_lock)
@@ -1666,13 +1672,11 @@ def render_content_first_style_contract(style_lock: Path) -> str:
         description = _strip_style09_registry_meta(
             str(style.get("prompt_contract") or "").strip()
         )
+        description = _compile_style09_contract(description, semantic_tags)
         lines = [
             "【视觉风格｜不上屏】",
             description,
         ]
-        component_rule = str(style.get("component_rule") or "").strip()
-        if component_rule and component_rule not in description:
-            lines.extend(["基础组件约束（仅约束表达方式，不改变本页内容）：", component_rule])
         signature = style.get("imagegen_signature")
         if isinstance(signature, list):
             lines.extend(
@@ -1928,6 +1932,10 @@ def render_content_first_prompt(
             if part
         )
     )
+    style09_semantic_tags = _style09_page_semantic_tags(
+        PageBlock(page.sequence, page.title, complete_semantics),
+        [line for line in complete_semantics.splitlines() if line.strip()],
+    )
     # Style 09 is a shared visual surface, not a page-specific blueprint
     # language.  The final script's ``结构形态`` often contains literal
     # instructions such as "四行矩阵", "泳道" or "顶部五节点".  Passing that
@@ -2059,7 +2067,10 @@ def render_content_first_prompt(
             "",
             SEMANTIC_VISUAL_CHROME_CONTRACT,
             "",
-            render_content_first_style_contract(style_lock),
+            render_content_first_style_contract(
+                style_lock,
+                semantic_tags=style09_semantic_tags,
+            ),
         ]
     else:
         parts = [
@@ -2096,7 +2107,10 @@ def render_content_first_prompt(
             "",
             IMAGEGEN_CHROME_BAN_CONTRACT,
             "",
-            render_content_first_style_contract(style_lock),
+            render_content_first_style_contract(
+                style_lock,
+                semantic_tags=style09_semantic_tags,
+            ),
         ]
         if locked:
             semantics_index = parts.index("【完整上屏内容】")

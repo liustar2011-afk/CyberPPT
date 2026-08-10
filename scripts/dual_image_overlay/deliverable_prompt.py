@@ -357,7 +357,97 @@ def _extract_hex_colors(text: str) -> list[str]:
     return colors
 
 
-def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
+_STYLE09_CONDITIONAL_HEADING = "### 条件构图规则（编译器按需选择）"
+_STYLE09_TERMINAL_HEADING = "### Final ImageGen execution lock — hard"
+_STYLE09_TAG_LINE_RE = re.compile(r"(?m)^semantic_tags:\s*\[([^\]]*)\]\s*$")
+_STYLE09_SCOPE_COMMENT_RE = re.compile(r"(?m)^\s*<!--\s*style09:[^>]+-->\s*$")
+
+
+def _style09_page_semantic_tags(page: PageBlock, content_lines: list[str]) -> frozenset[str]:
+    """Infer composable Style 09 clause tags from the locked page content."""
+
+    corpus = "\n".join((page.title, *content_lines))
+    compact = re.sub(r"\s+", "", corpus)
+    labels = [page.title]
+    for raw_line in content_lines:
+        line = re.sub(r"^\s*[-*•]+\s*", "", raw_line).strip("* ")
+        if not line:
+            continue
+        label = re.split(r"[：:]", line, maxsplit=1)[0].strip()
+        if len(label) <= 24:
+            labels.append(label)
+    label_corpus = "\n".join(labels)
+    tags: set[str] = set()
+    if len(compact) >= 180 or len([line for line in content_lines if line.strip()]) >= 6:
+        tags.add("dense_text")
+    if re.search(r"(?:多个维度|多维|维度|方面|层级|架构|视图)", label_corpus):
+        tags.add("multi_dimension")
+    if re.search(
+        r"(?:分类|类别|矩阵|分为|分成|层级|架构|方向|[一二三四五六七八九十\d]+(?:类|层|个方向))",
+        label_corpus,
+    ) or re.search(r"[一二三四五六七八九十\d]+类", corpus):
+        tags.add("classification")
+    if "矩阵" in label_corpus:
+        tags.add("matrix")
+    if re.search(
+        r"(?:流程|步骤|阶段|路径|生命周期|输入输出|形成链|履行链|反馈链|业务链)",
+        label_corpus,
+    ):
+        tags.update(("flow", "sequence"))
+    has_input = bool(re.search(r"(?:输入|需求侧|供给侧|来源)", label_corpus))
+    has_output = bool(re.search(r"(?:输出|交付结果|成果|服务对象)", label_corpus))
+    if has_input and has_output:
+        tags.add("input_output")
+    boundary_terms = set(
+        re.findall(r"权利|责任|授权|准入|门控|边界|范围|受控|控制", corpus)
+    )
+    if len(boundary_terms) >= 3 or re.search(
+        r"(?:权利边界|授权范围|准入条件|受控输出|控制边界|安全合规|权利|授权)",
+        label_corpus,
+    ):
+        tags.update(("boundary", "authorization"))
+    if re.search(r"(?:反馈|回流|复盘|返回前序)", label_corpus):
+        tags.add("feedback")
+    if re.search(r"(?:闭环|闭合|循环|反馈环|回流|返回前序)", label_corpus):
+        tags.add("loop")
+    return frozenset(tags)
+
+
+def _compile_style09_contract(
+    contract: str,
+    semantic_tags: frozenset[str] | None,
+) -> str:
+    """Strip authoring metadata and select tagged Style 09 clauses for one page."""
+
+    contract = _STYLE09_SCOPE_COMMENT_RE.sub("", contract)
+    if _STYLE09_CONDITIONAL_HEADING not in contract or _STYLE09_TERMINAL_HEADING not in contract:
+        return _STYLE09_TAG_LINE_RE.sub("", contract)
+    before, tail = contract.split(_STYLE09_CONDITIONAL_HEADING, 1)
+    conditional, after = tail.split(_STYLE09_TERMINAL_HEADING, 1)
+    matches = list(re.finditer(r"(?m)^####\s+(.+?)\s*$", conditional))
+    selected: list[str] = []
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(conditional)
+        block = conditional[match.start() : end].strip()
+        tag_match = _STYLE09_TAG_LINE_RE.search(block)
+        block_tags = {
+            tag.strip()
+            for tag in (tag_match.group(1).split(",") if tag_match else [])
+            if tag.strip()
+        }
+        if semantic_tags is None or not block_tags or block_tags.intersection(semantic_tags):
+            selected.append(_STYLE09_TAG_LINE_RE.sub("", block).strip())
+    parts = [before.rstrip()]
+    if selected:
+        parts.append("### 本页命中的条件构图规则\n\n" + "\n\n".join(selected))
+    parts.append(f"{_STYLE09_TERMINAL_HEADING}{after}")
+    return "\n\n".join(part for part in parts if part).strip()
+
+
+def _style_contract_from_payload(
+    payload: dict[str, Any],
+    semantic_tags: frozenset[str] | None = None,
+) -> str | None:
     style = payload.get("style")
     if not isinstance(style, dict):
         return None
@@ -385,7 +475,11 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
     icon_rule = _strip_visual_structure_meta(_collapse_text(style.get("icon_rule")))
     density_rule = _collapse_text(style.get("density_rule"))
     carrier_router = _collapse_text(style.get("carrier_router"))
-    component_rule = _collapse_text(style.get("component_rule"))
+    component_rule = (
+        ""
+        if int(style.get("id") or 0) == 9 and prompt_contract
+        else _collapse_text(style.get("component_rule"))
+    )
     deck_consistency_rule = _collapse_text(style.get("deck_consistency_rule"))
     prompt_sequence_rule = _collapse_text(style.get("prompt_sequence_rule"))
     parts = [prompt_contract]
@@ -421,10 +515,17 @@ def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
         parts.append(deck_consistency_rule)
     if prompt_sequence_rule:
         parts.append(prompt_sequence_rule)
-    return "\n\n".join(part for part in parts if part)
+    contract = "\n\n".join(part for part in parts if part)
+    if int(style.get("id") or 0) == 9 and prompt_contract:
+        contract = _compile_style09_contract(contract, semantic_tags)
+    return contract
 
 
-def style_contract(style_lock_path: Path | None) -> str:
+def style_contract(
+    style_lock_path: Path | None,
+    *,
+    semantic_tags: frozenset[str] | None = None,
+) -> str:
     if style_lock_path is None:
         raise ValueError(
             "missing visual style lock. 直接上传脚本转换前必须先选择 CyberPPT 默认 8 种风格之一，"
@@ -435,7 +536,7 @@ def style_contract(style_lock_path: Path | None) -> str:
     except json.JSONDecodeError:
         payload = {}
     if payload:
-        contract = _style_contract_from_payload(payload)
+        contract = _style_contract_from_payload(payload, semantic_tags)
         if contract:
             return contract
     text = style_lock_path.read_text(encoding="utf-8")
@@ -444,10 +545,14 @@ def style_contract(style_lock_path: Path | None) -> str:
     return f"核心色板：{color_text}。"
 
 
-def _creative_brief_style_contract(style_lock_path: Path | None) -> str:
+def _creative_brief_style_contract(
+    style_lock_path: Path | None,
+    *,
+    semantic_tags: frozenset[str] | None = None,
+) -> str:
     """Remove bitmap-inapplicable or text-expanding clauses for the new compiler."""
 
-    contract = style_contract(style_lock_path)
+    contract = style_contract(style_lock_path, semantic_tags=semantic_tags)
     contract = re.sub(
         r"允许根据画面容量压缩、取舍和重组文字，但不得改变原意，?",
         "完整、准确呈现锁定的上屏文字，不得压缩、删减、改写或重组，",
@@ -549,6 +654,25 @@ def uses_compact_style_contract(style_lock_path: Path | None) -> bool:
         return False
     style = payload.get("style")
     return isinstance(style, dict) and bool(_collapse_text(style.get("style_prompt_v2")))
+
+
+def _style_contract_owns_visual_grammar(style_lock_path: Path | None) -> bool:
+    """Return whether global visual grammar is already owned by the style lock."""
+
+    if uses_compact_style_contract(style_lock_path):
+        return True
+    if style_lock_path is None or not style_lock_path.is_file():
+        return False
+    try:
+        payload = json.loads(style_lock_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    style = payload.get("style")
+    return (
+        isinstance(style, dict)
+        and int(style.get("id") or 0) == 9
+        and bool(_collapse_text(style.get("prompt_contract")))
+    )
 
 
 def _resolve_text_render_mode(
@@ -681,6 +805,7 @@ def render_prompt(
         if creative_brief
         else _filter_imagegen_content_lines(visible_deliverable_lines(page))
     )
+    style09_semantic_tags = _style09_page_semantic_tags(page, content_lines)
     resolved_text_render_mode = _resolve_text_render_mode(style_lock_path, text_render_mode)
     semantic_visual = resolved_text_render_mode in {"semantic_visual", "editable_overlay"}
     if semantic_visual:
@@ -689,11 +814,14 @@ def render_prompt(
     else:
         body = "\n".join(f"- {line}" for line in content_lines)
     compact_style = uses_compact_style_contract(style_lock_path)
-    layout_directives = [] if compact_style else layout_density_directives(page)
+    style_owns_visual_grammar = _style_contract_owns_visual_grammar(style_lock_path)
+    layout_directives = (
+        [] if style_owns_visual_grammar else layout_density_directives(page)
+    )
     visual_grammar = (
         creative_brief_visual_grammar()
         if creative_brief
-        else ("" if compact_style else default_visual_grammar().render())
+        else ("" if style_owns_visual_grammar else default_visual_grammar().render())
     )
     parts = [
         f"【页面编码】P{page.page_number:02d}｜{page.title}",
@@ -734,23 +862,29 @@ def render_prompt(
         parts.extend(
             [
                 "可读文字严格白名单：图中只允许逐条完整呈现【内容锁定】中的字符串；除此之外不得出现任何可读文字。",
-                "不得从完整句中抽取词语另做标签、按钮、图例、流程节点或项目符号；不得把同一内容以正文和拆分标签重复呈现。",
-                "大屏、图表、文件、装置或图标可以按业务语义使用，但其内部不得承载白名单之外的可读文字；空间不足时减少视觉元素或扩大文字区，不得新增微型文字。",
+                "共享父级标题与子角色标题必须分层：父级只呈现一次且不得替代任何子角色标题；复合父级拆分后，所有并列子角色必须完整呈现，并使用同一层级、同一形式。只允许拆出原文已经明确列出的子角色，不得新增分类或事实。",
+                "不得从说明句中大量抽取词语另做标签、按钮、图例、流程节点或项目符号；不得把同一内容以正文和拆分标签重复呈现。",
+                "任何按业务语义选择的视觉载体，其内部不得承载白名单之外的可读文字；空间不足时减少视觉元素或扩大文字区，不得新增微型文字。",
             ]
         )
     parts.extend(
         [
             "",
             (
-                _creative_brief_style_contract(style_lock_path)
+                _creative_brief_style_contract(
+                    style_lock_path,
+                    semantic_tags=style09_semantic_tags,
+                )
                 if creative_brief
-                else style_contract(style_lock_path)
+                else style_contract(
+                    style_lock_path,
+                    semantic_tags=style09_semantic_tags,
+                )
             ),
-            "",
-            "【视觉组织原则】",
-            visual_grammar,
         ]
     )
+    if visual_grammar:
+        parts.extend(["", "【视觉组织原则】", visual_grammar])
     if layout_directives:
         parts.extend(
             [

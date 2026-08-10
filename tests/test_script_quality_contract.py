@@ -1919,7 +1919,7 @@ class ScriptContractAuditTests(unittest.TestCase):
         self.assertIn("业务含义", meta[0].evidence)
         self.assertIn("纵向关系", meta[0].evidence)
 
-    def test_primitive_matrix_mismatch_warns(self) -> None:
+    def test_stage01_matrix_recipe_is_blocked(self) -> None:
         prose = "场景筛选需要按业务必要与数据可得综合权衡后分期安排。" * 4
         script = parse_script_markdown(
             f"""## 第19页：场景布局
@@ -1964,10 +1964,10 @@ class ScriptContractAuditTests(unittest.TestCase):
         mismatch = [
             issue
             for issue in issues
-            if issue.code == "PRIMITIVE_ONSCREEN_MISMATCH"
+            if issue.code == "VISUAL_STRUCTURE_LAYOUT_RECIPE"
         ]
         self.assertTrue(mismatch)
-        self.assertEqual("warning", mismatch[0].severity)
+        self.assertEqual("error", mismatch[0].severity)
 
 
 class SpeakerNotesContractTests(unittest.TestCase):
@@ -2255,6 +2255,41 @@ class SpeakerNotesParagraphTests(unittest.TestCase):
 
 
 class VisualStructureJudgmentAccuracyTests(unittest.TestCase):
+    def test_flags_fixed_layout_recipe_in_stage01_visual_handoff(self) -> None:
+        page = _judgment_page(
+            visual_structure=(
+                "五类服务共同形成标准化服务关系。主视觉以五条横向泳道自上而下排列，"
+                "右侧设置统一收束条。"
+            ),
+        )
+        issues = _visual_structure_judgment_issues(page)
+        matches = [
+            issue for issue in issues if issue.code == "VISUAL_STRUCTURE_LAYOUT_RECIPE"
+        ]
+        self.assertEqual(1, len(matches))
+        self.assertEqual("error", matches[0].severity)
+
+    def test_allows_semantic_handoff_without_page_geometry(self) -> None:
+        page = _judgment_page(
+            visual_structure=(
+                "主关系为三类知识来源支撑统一知识对象，并由分层数据服务形成应用结果；"
+                "语义焦点是统一知识对象，来源文字归属于输入对象，服务文字归属于支撑关系；"
+                "不预设具体载体、行列或位置。"
+            ),
+        )
+        codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
+        self.assertNotIn("VISUAL_STRUCTURE_LAYOUT_RECIPE", codes)
+        self.assertNotIn("VISUAL_STRUCTURE_MULTIPLE_PRIMARY_NARRATIVES", codes)
+
+    def test_flags_second_independent_visual_narrative(self) -> None:
+        page = _judgment_page(
+            visual_structure=(
+                "主关系为来源支撑统一知识对象；另一套总结链独立于主关系形成结果说明。"
+            ),
+        )
+        codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
+        self.assertIn("VISUAL_STRUCTURE_MULTIPLE_PRIMARY_NARRATIVES", codes)
+
     def test_flags_visible_result_missing_from_locked_onscreen_text(self) -> None:
         page = _judgment_page(
             visual_structure="页面底部单独收束“合作完善方向”的结论条。",

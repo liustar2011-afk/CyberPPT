@@ -157,7 +157,7 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
         "",
         storyline_director_authoring_contract(),
         "",
-        "Write `storyline-director.json` with schema `cyberppt.storyline_director.v2` and copy all binding hashes exactly.",
+        "Write `storyline-director.json` with schema `cyberppt.storyline_director.v2` and copy all artifact binding hashes exactly.",
         "Required fields: theme, decision_destination, story_arc (3-6 steps), chapter_missions (2-6 entries), selection_rules (3-8), exclusion_rules (3-8), page_rules (4-10), pacing, audience_concerns, consumed_user_decisions, and the complete approved frontstage/backstage posture contract.",
         "`decision_destination` is a compatibility field. When `interaction_posture=peer_exchange`, it must describe the intended understanding or exchange outcome, never an approval request or cooperation decision.",
         "Each chapter mission requires chapter_id, title, question, contribution, transition_to_next, max_content_pages, source_mission, source_question, source_section_refs, source_claim_ids, source_argument_node_ids, source_argument_node_roles, source_argument_node_weights, audience_concern_ids, and editorial_operation (select, compress, merge, split, or reframe). A reframe must not change the source subject, argument_role, argument_weight, or status.",
@@ -166,7 +166,7 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
         "## Binding",
         "",
         f"- source_truth_sha256: {_sha256(truth_path)}",
-        f"- communication_strategy_approval_sha256: {communication['communication_strategy_approval_sha256']}",
+        f"- communication_strategy_sha256: {communication['communication_strategy_sha256']}",
         f"- semantic_understanding_sha256: {semantic['semantic_understanding_sha256']}",
         f"- semantic_source_bundle_sha256: {semantic['source_bundle_sha256']}",
         f"- semantic_source_map_bundle_sha256: {semantic.get('source_map_bundle_sha256', '')}",
@@ -220,7 +220,7 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
         template = {
             "schema": "cyberppt.storyline_director.v2",
             "source_truth_sha256": _sha256(truth_path),
-            "communication_strategy_approval_sha256": communication["communication_strategy_approval_sha256"],
+            "communication_strategy_sha256": communication["communication_strategy_sha256"],
             "semantic_understanding_sha256": semantic["semantic_understanding_sha256"],
             "semantic_source_bundle_sha256": semantic["source_bundle_sha256"],
             "semantic_source_map_bundle_sha256": semantic.get("source_map_bundle_sha256"),
@@ -249,7 +249,7 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
         "model_input_sha256": _sha256(input_path),
         "output": str(artifact),
         "source_truth_sha256": _sha256(truth_path),
-        "communication_strategy_approval_sha256": communication["communication_strategy_approval_sha256"],
+        "communication_strategy_sha256": communication["communication_strategy_sha256"],
         "semantic_understanding_sha256": semantic["semantic_understanding_sha256"],
         "semantic_source_bundle_sha256": semantic["source_bundle_sha256"],
         "semantic_source_map_bundle_sha256": semantic.get("source_map_bundle_sha256"),
@@ -267,7 +267,7 @@ def prepare_storyline_director(project: Path) -> dict[str, Any]:
 def _audit_issues(
     payload: dict[str, Any],
     source_hash: str,
-    approval_hash: str,
+    communication_hash: str,
     semantic_hash: str = "",
     semantic_source_hash: str = "",
     semantic_source_map_hash: str = "",
@@ -283,7 +283,7 @@ def _audit_issues(
     schema = _text(payload.get("schema"))
     if schema not in {"cyberppt.storyline_director.v1", "cyberppt.storyline_director.v2"}:
         issues.append({"code": "DIRECTOR_SCHEMA_INVALID", "message": "schema must be cyberppt.storyline_director.v1 or v2"})
-    for field, expected in (("source_truth_sha256", source_hash), ("communication_strategy_approval_sha256", approval_hash)):
+    for field, expected in (("source_truth_sha256", source_hash), ("communication_strategy_sha256", communication_hash)):
         if _text(payload.get(field)).casefold() != expected.casefold():
             issues.append({"code": "DIRECTOR_BINDING_STALE", "message": f"{field} must match the current upstream artifact"})
     for field, expected in (
@@ -443,7 +443,7 @@ def run_storyline_director_audit(project: Path) -> tuple[int, dict[str, Any]]:
     issues = _audit_issues(
         payload,
         _sha256(truth_path),
-        communication["communication_strategy_approval_sha256"],
+        communication["communication_strategy_sha256"],
         semantic_hash=semantic["semantic_understanding_sha256"] if semantic else "",
         semantic_source_hash=semantic["source_bundle_sha256"] if semantic else "",
         semantic_source_map_hash=semantic.get("source_map_bundle_sha256", "") if semantic else "",
@@ -503,7 +503,7 @@ def run_storyline_director_audit(project: Path) -> tuple[int, dict[str, Any]]:
         "artifact": str(artifact),
         "storyline_director_sha256": _sha256(artifact),
         "source_truth_sha256": _sha256(truth_path),
-        "communication_strategy_approval_sha256": communication["communication_strategy_approval_sha256"],
+        "communication_strategy_sha256": communication["communication_strategy_sha256"],
         "semantic_understanding_sha256": semantic["semantic_understanding_sha256"] if semantic else None,
         "semantic_source_bundle_sha256": semantic["source_bundle_sha256"] if semantic else None,
         "semantic_source_map_bundle_sha256": semantic.get("source_map_bundle_sha256") if semantic else None,
@@ -532,7 +532,7 @@ def assert_storyline_director_ready(project: Path) -> dict[str, Any] | None:
         audit.get("status") == "passed"
         and audit.get("storyline_director_sha256") == _sha256(artifact)
         and audit.get("source_truth_sha256") == _sha256(truth_path)
-        and audit.get("communication_strategy_approval_sha256") == communication["communication_strategy_approval_sha256"]
+        and audit.get("communication_strategy_sha256") == communication["communication_strategy_sha256"]
         and audit.get("semantic_understanding_sha256") == (semantic["semantic_understanding_sha256"] if semantic else None)
         and audit.get("semantic_source_bundle_sha256") == (semantic["source_bundle_sha256"] if semantic else None)
         and audit.get("semantic_source_map_bundle_sha256") == (semantic.get("source_map_bundle_sha256") if semantic else None)

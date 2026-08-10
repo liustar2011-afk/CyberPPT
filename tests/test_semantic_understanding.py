@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -129,7 +130,9 @@ class SemanticUnderstandingTests(unittest.TestCase):
         self.assertEqual("passed", report["status"])
         with self.assertRaisesRegex(FileNotFoundError, "human approval"):
             assert_semantic_understanding_ready(self.project)
-        approve_semantic_understanding(self.project, note="test approval")
+        approval_path = approve_semantic_understanding(self.project, note="test approval")
+        approval = json.loads(approval_path.read_text(encoding="utf-8"))
+        self.assertFalse(any(key.endswith("_sha256") for key in approval))
         self.assertIsNotNone(assert_semantic_understanding_ready(self.project))
 
         (self.project / "source" / "material.txt").write_text(

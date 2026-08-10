@@ -1,4 +1,4 @@
-"""Compiled ImageGen / deliverable prompts must not inject 视觉结构 or thesis fields."""
+"""Compiled prompts must not inject page-level visual-structure backend fields."""
 
 from __future__ import annotations
 
@@ -284,7 +284,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertLess(prompt.index("Page-specific visual intent"), prompt.index("上屏文字"))
         self.assertLess(
             prompt.index("Page-specific visual intent"),
-            prompt.index("senior leadership briefing"),
+            prompt.index("### 核心视觉语法"),
         )
         self.assertNotIn("扩展风格9：", prompt)
         self.assertNotIn("不进入默认候选", prompt)
@@ -400,7 +400,8 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
                 style_lock_path=lock,
             )
         self.assertNotIn("视觉结构：", prompt)
-        self.assertNotIn("视觉结构", prompt)
+        self.assertNotIn("【视觉结构设计模块｜不上屏】", prompt)
+        self.assertNotIn("[Prompt context] Page-specific visual intent", prompt)
         self.assertNotIn("【设计目标与叙事】", prompt)
         self.assertNotIn("不使用外部风格 preset", prompt)
         self.assertNotIn("确认样张", prompt)

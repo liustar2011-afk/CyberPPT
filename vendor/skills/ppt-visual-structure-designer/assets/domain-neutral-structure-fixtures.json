@@ -6,6 +6,10 @@
     "dual_visual_center": "visual_center",
     "replicated_roles": "role_replication",
     "duplicated_primary_expression": "duplicate_primary_expression",
+    "layout_recipe_in_relationship": "layout_recipe",
+    "disconnected_media_and_text": "disconnected_expression",
+    "dual_primary_narrative": "dual_primary_narrative",
+    "abstract_center": "abstract_center",
     "style_leak": "style_in_structure"
   },
   "style_refs": [

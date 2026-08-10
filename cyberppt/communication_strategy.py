@@ -644,11 +644,6 @@ def approve_communication_strategy(project: Path, option_id: str, note: str = ""
         "audience_concerns": _audience_concerns(selected.get("audience_concerns")),
         "user_decision_id": decision["id"],
         "content_focus": payload["content_focus"],
-        "communication_strategy_sha256": _sha256_path(artifact),
-        "communication_audit_sha256": _sha256_path(audit_path),
-        "semantic_understanding_sha256": semantic_gate["semantic_understanding_sha256"],
-        "semantic_source_bundle_sha256": semantic_gate["source_bundle_sha256"],
-        "semantic_argument_model_sha256": semantic_gate.get("semantic_argument_model_sha256"),
         "approved_at": _utc_now(),
         "note": note.strip(),
     }
@@ -688,17 +683,8 @@ def assert_communication_strategy_ready(project: Path) -> dict[str, Any] | None:
             f"python -m cyberppt approve-communication-strategy {project} --option <option_id>"
         )
     approval = _load_candidate(approval_path)
-    expectations = (
-        ("communication_strategy_sha256", _sha256_path(artifact)),
-        ("semantic_understanding_sha256", semantic_gate["semantic_understanding_sha256"] if semantic_gate else ""),
-        ("semantic_source_bundle_sha256", semantic_gate["source_bundle_sha256"] if semantic_gate else ""),
-        ("semantic_argument_model_sha256", semantic_gate.get("semantic_argument_model_sha256") if semantic_gate else ""),
-    )
-    if approval.get("decision") != "approved" or any(
-        _text(approval.get(field)).casefold() != _text(expected).casefold()
-        for field, expected in expectations
-    ):
-        raise ValueError("communication-strategy approval is stale; recheck and reapprove")
+    if approval.get("decision") != "approved":
+        raise ValueError("communication-strategy human approval is invalid")
     if not 2 <= len(_audience_concerns(approval.get("audience_concerns"))) <= 8:
         raise ValueError("communication-strategy approval lacks a source-anchored audience concern contract; rerun communication-strategy-check and reapprove")
     if approval.get("communication_strategy_schema") == "cyberppt.communication_strategy.v2":
@@ -715,7 +701,7 @@ def assert_communication_strategy_ready(project: Path) -> dict[str, Any] | None:
         if isinstance(item, dict)
     }:
         raise ValueError("communication-strategy approval lacks its durable user-decision record; reapprove the selected option")
-    approval["communication_strategy_approval_sha256"] = _sha256_path(approval_path)
+    approval["communication_strategy_sha256"] = _sha256_path(artifact)
     approval["communication_strategy_path"] = str(artifact)
     approval["communication_strategy_approval_path"] = str(approval_path)
     return approval
@@ -729,7 +715,6 @@ def communication_strategy_binding_issues(
     selected = gate.get("selected_option") if isinstance(gate.get("selected_option"), dict) else {}
     expected = {
         "communication_strategy_sha256": gate.get("communication_strategy_sha256"),
-        "communication_strategy_approval_sha256": gate.get("communication_strategy_approval_sha256"),
         "audience": gate.get("audience"),
         "communication_purpose": gate.get("communication_purpose"),
         "decision_task": gate.get("decision_task"),

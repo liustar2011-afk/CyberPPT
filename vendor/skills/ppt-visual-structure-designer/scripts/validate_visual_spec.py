@@ -28,6 +28,40 @@ STYLE_IMPLEMENTATION_RE = re.compile(
     r"线宽|粗细|圆角|阴影|发光|渐变|材质|箭头头|stroke(?:-width)?|shadow|glow|gradient)",
     re.IGNORECASE,
 )
+DECISION_LAYOUT_RECIPE_RE = re.compile(
+    r"(?:主视觉|页面|正文区).{0,28}(?:位于|放在|置于|设置|排列|分为|横跨|占据|占约)|"
+    r"(?:上半部|下半部|顶部|底部|左侧|右侧|中央偏[左右]?|页面中央|居中|为视觉中心)|"
+    r"(?:[一二三四五六七八九十\d]+\s*(?:条|行|列|个)?\s*(?:横向|纵向)?\s*"
+    r"(?:泳道|卡片|节点|栏|矩阵)|(?:横向|纵向)\s*(?:泳道|排列|矩阵|条带|说明条|收束条))|"
+    r"(?:矩阵筛选|主体泳道|分层剖面|汇聚引擎输出)|"
+    r"(?:结果区|结论区|说明条|收束条|节奏条|独立横条)|"
+    r"(?:阅读顺序|自左向右扫过|自右向左扫过|自上而下扫过|自下而上扫过)|"
+    r"(?:left[- ]text\s*/?\s*right[- ]image|right[- ]text\s*/?\s*left[- ]image)",
+    re.IGNORECASE,
+)
+DISCONNECTED_EXPRESSION_RE = re.compile(
+    r"(?:左图右表|左表右图|左文右图|右文左图)|"
+    r"(?:文字|正文|文本).{0,24}(?:左侧|右侧|一侧).{0,36}(?:图片|图形|场景|配图).{0,24}"
+    r"(?:右侧|左侧|另一侧)|"
+    r"(?:图片|图形|场景|配图).{0,24}(?:左侧|右侧|一侧).{0,36}(?:文字|正文|文本).{0,24}"
+    r"(?:右侧|左侧|另一侧)|"
+    r"(?:left[- ]text\s*/?\s*right[- ]image|right[- ]text\s*/?\s*left[- ]image|"
+    r"separate(?:d)?\s+text\s+(?:and|from)\s+(?:image|scene))",
+    re.IGNORECASE,
+)
+SECOND_PRIMARY_NARRATIVE_RE = re.compile(
+    r"(?:第二套|另一套)[^。；;\n]{0,24}(?:流程|主链|结构|结果链|总结链)|"
+    r"(?:独立于|脱离)[^。；;\n]{0,24}(?:主关系|主链|业务对象)"
+    r"[^。；;\n]{0,16}(?:流程|结果|说明)|"
+    r"(?:second|another)\s+(?:independent\s+)?(?:flow|process|result chain|summary narrative)",
+    re.IGNORECASE,
+)
+ABSTRACT_CENTER_RE = re.compile(
+    r"(?:抽象|通用|装饰性)(?:中心|中央)(?:框|枢纽|引擎|装置)|"
+    r"(?:中心圆|中央大框)[^。；;\n]{0,24}(?:周边|放射|连接)|"
+    r"(?:generic|abstract|decorative)\s+(?:center|central)\s+(?:box|hub|engine|device)",
+    re.IGNORECASE,
+)
 
 
 def add(issues: list[dict[str, Any]], level: str, code: str, message: str, page: int | None = None) -> None:
@@ -73,6 +107,17 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
             n,
         )
     sg = page.get("semantic_graph", {})
+    decision_relationship = str(sg.get("decision_relationship") or "")
+    layout_match = DECISION_LAYOUT_RECIPE_RE.search(decision_relationship)
+    if layout_match:
+        add(
+            issues,
+            "error",
+            "layout_recipe",
+            "decision_relationship must contain only business semantics, not a fixed page-layout recipe: "
+            f"{layout_match.group(0)}",
+            n,
+        )
     primary_relation = str(sg.get("primary_relation") or "")
     if primary_relation in {"", "none"} and (
         len(sg.get("nodes", [])) > 1 or bool(sg.get("edges"))
@@ -84,6 +129,9 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
             "A page with multiple semantic nodes or edges must declare one primary relation",
             n,
         )
+    final_text_items = [item for item in page.get("final_text", []) if isinstance(item, dict)]
+    final_text_ids = [str(item.get("id") or "") for item in final_text_items]
+    final_text_id_set = set(final_text_ids)
     structural = page.get("structural_decision")
     if isinstance(structural, dict):
         graph = page.get("semantic_graph", {})
@@ -114,6 +162,7 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
         if focus_ref and focus_ref not in primary_refs:
             add(issues, "error", "semantic_focus_hierarchy", "Semantic focus must be included in primary_refs", n)
         bound_evidence: set[str] = set()
+        bound_text_ids: list[str] = []
         binding_targets: dict[str, set[str]] = {}
         actor_targets: dict[str, set[str]] = {}
         for binding in structural.get("text_bindings", []):
@@ -130,6 +179,11 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
                     actor_targets.setdefault(target_ref, set()).add(evidence_id)
             if target_ref not in nodes:
                 add(issues, "error", "text_binding_target", f"Unknown graph node in text binding: {target_ref}", n)
+            text_ids = [str(value) for value in binding.get("text_ids", [])]
+            unknown_text_ids = sorted(set(text_ids) - final_text_id_set)
+            if unknown_text_ids:
+                add(issues, "error", "text_binding_text_id", f"Unknown final_text ids in text binding: {unknown_text_ids}", n)
+            bound_text_ids.extend(text_ids)
         for target_ref, actor_ids in sorted(actor_targets.items()):
             if len(actor_ids) > 1:
                 add(
@@ -157,6 +211,9 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
         )
         if missing_p0:
             add(issues, "error", "p0_text_binding", f"P0 evidence has no structural text binding: {missing_p0}", n)
+        duplicate_text_ids = sorted({value for value in bound_text_ids if bound_text_ids.count(value) > 1})
+        if duplicate_text_ids:
+            add(issues, "error", "duplicate_text_binding", f"Locked text ids are bound more than once: {duplicate_text_ids}", n)
     ti = page.get("text_integration", {})
     if schema_version == "1.0" and ti.get("minimum_font_pt", 0) < MINIMUM_FONT_PT:
         add(
@@ -173,6 +230,48 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
         add(issues, "error", "front_portrait", "Front-facing people are prohibited by default", n)
     if ip.get("identifiable_location") is not False:
         add(issues, "error", "location", "Identifiable location is prohibited by default", n)
+    expression_text = "\n".join(
+        str(value or "")
+        for value in (
+            vd.get("spatial_organization"),
+            vd.get("text_integration_method"),
+            vd.get("relationship_encoding"),
+            ip.get("scene_type"),
+            ip.get("business_object"),
+            ip.get("semantic_role"),
+            ip.get("placement"),
+        )
+    )
+    disconnected_match = DISCONNECTED_EXPRESSION_RE.search(expression_text)
+    if disconnected_match:
+        add(
+            issues,
+            "error",
+            "disconnected_expression",
+            "Text and visual media form separate complete regions instead of one semantic structure: "
+            f"{disconnected_match.group(0)}",
+            n,
+        )
+    second_primary_match = SECOND_PRIMARY_NARRATIVE_RE.search(expression_text)
+    if second_primary_match:
+        add(
+            issues,
+            "error",
+            "dual_primary_narrative",
+            "A second independent process, result chain or summary narrative is not allowed: "
+            f"{second_primary_match.group(0)}",
+            n,
+        )
+    abstract_center_match = ABSTRACT_CENTER_RE.search(expression_text)
+    if abstract_center_match:
+        add(
+            issues,
+            "error",
+            "abstract_center",
+            "An abstract center cannot substitute for a semantic node, action, state or relation: "
+            f"{abstract_center_match.group(0)}",
+            n,
+        )
     if sg.get("primary_relation") not in (None, "none") and not sg.get("edges"):
         add(issues, "error", "semantic_edges", "A relational page requires semantic edges", n)
     if sg.get("primary_relation") in {"flow", "transform", "converge", "diverge", "loop", "control", "exchange", "boundary", "responsibility"} and not page.get("connectors"):
@@ -184,6 +283,15 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
         if token.lower() in final_text.lower():
             add(issues, "error", "placeholder", f"Placeholder text found: {token}", n)
     handoff = page.get("generation_handoff", {})
+    required_text_ids = [str(value) for value in handoff.get("required_text_ids", [])]
+    if required_text_ids:
+        unknown_required_ids = sorted(set(required_text_ids) - final_text_id_set)
+        if unknown_required_ids:
+            add(issues, "error", "required_text_id", f"Unknown required_text_ids: {unknown_required_ids}", n)
+        final_by_id = {str(item.get("id") or ""): str(item.get("text") or "") for item in final_text_items}
+        resolved_text = [final_by_id[value] for value in required_text_ids if value in final_by_id]
+        if resolved_text != [str(value) for value in handoff.get("required_text", [])]:
+            add(issues, "error", "required_text_id_order", "required_text must equal required_text_ids resolved through final_text, in order", n)
     structural_handoff = handoff.get("structural_guidance", {})
     additional_constraints = (
         structural_handoff.get("additional_constraints", [])

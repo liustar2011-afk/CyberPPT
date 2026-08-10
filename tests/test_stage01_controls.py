@@ -148,7 +148,7 @@ class Stage01ControlsTests(unittest.TestCase):
             self.assertTrue(approval.is_file())
             self.assertIn("approve_outline", approval.read_text(encoding="utf-8"))
 
-    def test_script_approval_is_bound_to_script_outline_and_source_hashes(self) -> None:
+    def test_script_approval_is_affirmative_and_not_hash_bound(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             project = Path(directory) / "project"
             analysis = project / "workbench" / "stages" / "01-analysis"
@@ -176,8 +176,9 @@ class Stage01ControlsTests(unittest.TestCase):
 
             assert_stage01_script_approval(project, script)
             script.write_text("## 第1页：测试\n内容已改\n", encoding="utf-8")
-            with self.assertRaisesRegex(ValueError, "does not match the current script"):
-                assert_stage01_script_approval(project, script)
+            assert_stage01_script_approval(project, script)
+            approval_text = (approvals / "stage01-script-approved.md").read_text(encoding="utf-8")
+            self.assertNotIn("_sha256:", approval_text)
 
     def test_script_approval_accepts_and_binds_documented_risk_decision(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

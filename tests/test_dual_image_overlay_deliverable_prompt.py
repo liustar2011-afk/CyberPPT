@@ -88,8 +88,8 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertIn("locked on-screen text faithfully in the main composition", prompt)
         self.assertIn("may use a small amount of clear Chinese labels", prompt)
         self.assertIn("dense pseudo-Chinese", prompt)
-        self.assertIn("禁止宽箭头带", prompt)
-        self.assertIn("虚线不作装饰节点链", prompt)
+        self.assertIn("不得出现粗大箭头头、宽箭头带", prompt)
+        self.assertIn("连接只表达真实关系并保持细、小、从属", prompt)
 
     def test_compile_pages_uses_only_onscreen_block_from_final_manuscript(self) -> None:
         with TemporaryDirectory() as directory:
@@ -182,7 +182,14 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertNotIn("不得出现证据编号", prompt)
         self.assertIn("【内容锁定】", prompt)
         self.assertIn("可读文字严格白名单", prompt)
-        self.assertIn("不得从完整句中抽取词语另做标签", prompt)
+        self.assertIn("共享父级标题与子角色标题必须分层", prompt)
+        self.assertIn("父级只呈现一次且不得替代任何子角色标题", prompt)
+        self.assertIn("复合父级拆分后，所有并列子角色必须完整呈现", prompt)
+        self.assertIn("并使用同一层级、同一形式", prompt)
+        self.assertIn("只允许拆出原文已经明确列出的子角色", prompt)
+        self.assertIn("不得从说明句中大量抽取词语另做标签", prompt)
+        self.assertIn("任何按业务语义选择的视觉载体", prompt)
+        self.assertNotIn("大屏、图表、文件、装置或图标可以", prompt)
         self.assertIn("其内部不得承载白名单之外的可读文字", prompt)
         self.assertNotIn("## 第2页：", prompt)
         self.assertNotIn("\n标题：", prompt)

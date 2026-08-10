@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from hashlib import sha256
 from datetime import datetime, timezone
 from pathlib import Path
@@ -11,7 +12,6 @@ from typing import Any
 
 STYLE_LIBRARY_PATH = Path(__file__).parent / "style_presets" / "cyberppt_default_styles.json"
 VISUAL_LOCK_RELATIVE = Path("workbench/locks/visual_style_lock.json")
-
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -182,7 +182,12 @@ def load_style_lock(path: Path) -> dict[str, Any]:
         start = text.find(marker)
         if start < 0:
             break
-        end = text.find("\n## ", start + len(marker))
+        # Markdown permits up to three leading spaces before an ATX heading.
+        # Treat an indented following H2 as a real section boundary so Style 09
+        # can never absorb Style 10 or any later style section.
+        tail_start = start + len(marker)
+        next_heading = re.search(r"(?m)^[ \t]{0,3}##[ \t]+", text[tail_start:])
+        end = tail_start + next_heading.start() if next_heading else -1
         section = text[start:end if end >= 0 else len(text)].strip()
         cleaned = _strip_style09_registry_meta(section)
         if cleaned:

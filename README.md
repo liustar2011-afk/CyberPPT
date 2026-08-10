@@ -120,7 +120,7 @@ python3 -m cyberppt final-script-pages projects/example --script /path/to/extern
 
 在此之前，语义理解阶段必须产出 `semantic-argument-model.json`（嵌入 `semantic-understanding.md` 的 `cyberppt.semantic_argument_model.v1`）。它固化 `document_semantics`、源材料主论点、章节论点、`argument_weight`（核心/支撑/细节/约束）、论证关系、主体、状态、MECE 分区和 `source_gaps`；论证关系的 `weight_effect` 固定为 `none`，不能把“支持关系”误读成“支撑层”。提纲只消费它，不得从 `S###` 证据清单重新猜论点；源材料单列的“行业优势与合作价值”必须保持为“中电联有什么能力、有何优势及合作价值”的核心论点。模型出现问号编码损坏、空证据或文档语义漂移时，Stage 00 直接阻断。严格提纲页必须声明 `primary_argument_node_id`、`source_argument_node_ids`、`source_argument_node_roles`、`source_argument_node_weights` 和 `core_message_derivation.argument_node_ids`，`outline-audit` 会检查节点的主消费者、角色/权重复制、无依据合并和论点反向追溯。
 
-`communication-strategy` 是语义理解与提纲之间的真实人工确认门。候选文件必须明确沟通对象、沟通目的、决策任务和 2-3 个结构原则不同的汇报方向；检查通过后生成中文确认稿，用户选择一个 `option_id` 才会写入哈希绑定的审批记录。后续提纲必须复制已批准的对象、目的、方向、架构模式和结构原则，任何一项漂移都会被 `outline-audit` 阻断。
+`communication-strategy` 是语义理解与提纲之间的真实人工确认门。候选文件必须明确沟通对象、沟通目的、决策任务和 2-3 个结构原则不同的汇报方向；检查通过后生成中文确认稿，用户选择一个 `option_id` 才会写入审批记录。审批记录表达用户决定，不绑定文件哈希；后续提纲仍必须复制已批准的对象、目的、方向、架构模式和结构原则，任何一项漂移都会被 `outline-audit` 阻断。
 
 `outline-audit` 返回 `0` 表示通过，`4` 表示生成代理必须读取 `retry_directive` 后换方向重写，`5` 表示默认三次尝试已耗尽、需要用户在升级报告的 2-3 个选项中决策，输入错误返回 `2`。审计合同、最新报告、逐次尝试和升级报告写入 `workbench/stages/01-analysis/`；CLI 不代替生成代理重写大纲。
 

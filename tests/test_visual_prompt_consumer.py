@@ -188,6 +188,11 @@ no equal card wall
 [Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.
 - Selected visual intent type: closed_loop_operation
 - Visual thesis: 产品形成链与订单履行链通过运营反馈持续优化和退出
+- Decision relationship: 主视觉以五条横向泳道呈现五类服务，右侧另设统一收束条。
+- Semantic focus: action / E2
+- Spatial grammar: feedback
+- Reading sequence: E1 -> E2 -> E3
+- Text binding: E2 -> E2 / embedded
 - Industry scene anchor: controlled delivery surface
 - Recommended composition: six-node swim-lane infographic
 - Industry scene anchor: a monitored service workspace
@@ -208,6 +213,13 @@ no equal card wall
 
         self.assertNotIn("controlled delivery surface", adapted)
         self.assertNotIn("monitored service workspace", adapted)
+        self.assertNotIn("Decision relationship:", adapted)
+        self.assertNotIn("五条横向泳道", adapted)
+        self.assertNotIn("统一收束条", adapted)
+        self.assertIn("Semantic focus: action / E2", adapted)
+        self.assertIn("Spatial grammar: feedback", adapted)
+        self.assertIn("Reading sequence: E1 -> E2 -> E3", adapted)
+        self.assertIn("Text binding: E2 -> E2 / embedded", adapted)
         self.assertIn("inputs remain outside until authorized", adapted)
         self.assertIn(
             "Dominant semantic carrier: 同一业务对象沿连续状态变化承载业务机制：产品形成链与订单履行链通过运营反馈持续优化和退出。",

@@ -18,7 +18,6 @@ STYLE09_SURFACE_HEADER = "【风格09业务场适配器｜不上屏】"
 # labels are authored by the visual-structure stage and are deliberately
 # filtered by the shared adapter below.
 _STYLE09_SEMANTIC_FIELDS = (
-    "Decision relationship:",
     "Semantic focus:",
     "Spatial grammar:",
     "Semantic tags:",

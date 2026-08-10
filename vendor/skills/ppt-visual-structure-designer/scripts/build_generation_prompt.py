@@ -13,6 +13,38 @@ def _connector_text(page: dict) -> str:
     ) or "- No business arrows; use spatial adjacency only."
 
 
+def _required_text_values(page: dict) -> list[str]:
+    handoff = page["generation_handoff"]
+    text_ids = [str(value) for value in handoff.get("required_text_ids") or []]
+    if not text_ids:
+        return [str(value) for value in handoff["required_text"]]
+    final_by_id: dict[str, str] = {}
+    for item in page.get("final_text") or []:
+        text_id = str(item.get("id") or "")
+        if not text_id or text_id in final_by_id:
+            raise ValueError(f"duplicate or empty final_text id: {text_id!r}")
+        final_by_id[text_id] = str(item.get("text") or "")
+    unknown = [text_id for text_id in text_ids if text_id not in final_by_id]
+    if unknown:
+        raise ValueError(f"required_text_ids reference unknown final_text ids: {unknown}")
+    values = [final_by_id[text_id] for text_id in text_ids]
+    declared = [str(value) for value in handoff.get("required_text") or []]
+    if declared and declared != values:
+        raise ValueError("required_text differs from required_text_ids/final_text")
+    return values
+
+
+def _binding_text(page: dict) -> str:
+    lines: list[str] = []
+    for item in page["structural_decision"]["text_bindings"]:
+        text_ids = [str(value) for value in item.get("text_ids") or []]
+        suffix = f" / locked text ids: {', '.join(text_ids)}" if text_ids else ""
+        lines.append(
+            f"- Text binding: {item['evidence_id']} -> {item['target_ref']} / {item['binding']}{suffix}"
+        )
+    return "\n".join(lines)
+
+
 def _legacy_page_prompt(page: dict) -> str:
     vd = page["visual_decision"]
     structural = page.get("structural_decision") or {}
@@ -27,7 +59,7 @@ def _legacy_page_prompt(page: dict) -> str:
         f"semantic focus {focus.get('ref', '')} expressed through {grammar}"
     ).strip()
     avoid = "; ".join(page.get("avoid", []) + handoff.get("negative_constraints", []))
-    required_text = "\n".join(f"- {text}" for text in handoff["required_text"])
+    required_text = "\n".join(f"- {text}" for text in _required_text_values(page))
     connectors = _connector_text(page)
     return f'''# Page {page["page_number"]}: {page["page_title"]}
 
@@ -76,11 +108,8 @@ def _structural_page_prompt(page: dict) -> str:
     handoff = page["generation_handoff"]
     focus = structural["semantic_focus"]
     freedom = structural["representation_freedom"]
-    required_text = "\n".join(f"- {text}" for text in handoff["required_text"])
-    bindings = "\n".join(
-        f"- Text binding: {item['evidence_id']} -> {item['target_ref']} / {item['binding']}"
-        for item in structural["text_bindings"]
-    )
+    required_text = "\n".join(f"- {text}" for text in _required_text_values(page))
+    bindings = _binding_text(page)
     constraints = "\n".join(
         f"- Additional structural constraint: {item}"
         for item in handoff["structural_guidance"].get("additional_constraints", [])
@@ -103,6 +132,7 @@ Apply these page-level semantic relationships before placing any on-screen text.
 - Secondary structure refs: {', '.join(structural["secondary_refs"]) or 'none'}
 - Reading sequence: {' -> '.join(structural["reading_sequence"])}
 {bindings}
+- Locked text ids are internal binding references only; do not render the ids.
 - Representation freedom: carrier={freedom["carrier"]}; medium={freedom["medium"]}; reason={freedom["reason"]}
 {constraints}
 

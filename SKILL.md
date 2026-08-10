@@ -30,7 +30,7 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 上述四项工件必须在项目目录落盘并登记到 `artifact-ledger.json`。门禁采用三层模型：权威内容用稳定语义摘要决定是否失效；原始 SHA-256 只证明某次实际交付的文件字节；派生审计、确认稿和可读报告不得反向控制上游批准。只有语义摘要变化、工件缺失或人工决策边界变化时，才停止下游并重建受影响的消费绑定；时间戳、路径、JSON/Markdown 排版和报告格式变化不得单独导致批准失效。
 
-形成提纲前必须通过沟通策略确认门。语义理解批准后运行 `prepare-communication-strategy`，基于全文语义识别沟通对象、沟通目的和受众决策任务，并形成 2-3 个章节组织方式实质不同的汇报方向；运行 `communication-strategy-check` 后，必须把 `communication-strategy-confirmation.md` 展示给用户。只有用户以 `approve-communication-strategy --option <option_id>` 明确选择方向，才可运行 `prepare-outline-input` 或 `outline-audit`。提纲根节点必须逐项绑定已批准的对象、目的、方向、架构模式、结构原则以及候选与审批哈希；不得仅保留一个无执行作用的 `audience` 字段，也不得由生成代理静默替用户选择。
+形成提纲前必须通过沟通策略确认门。语义理解批准后运行 `prepare-communication-strategy`，基于全文语义识别沟通对象、沟通目的和受众决策任务，并形成 2-3 个章节组织方式实质不同的汇报方向；运行 `communication-strategy-check` 后，必须把 `communication-strategy-confirmation.md` 展示给用户。只有用户以 `approve-communication-strategy --option <option_id>` 明确选择方向，才可运行 `prepare-outline-input` 或 `outline-audit`。审批记录只表达用户决定，不绑定文件哈希；提纲根节点仍必须逐项绑定当前候选产物以及已批准的对象、目的、方向、架构模式和结构原则，不得仅保留一个无执行作用的 `audience` 字段，也不得由生成代理静默替用户选择。
 
 第一阶段必须生成结构化逐页大纲并执行 `outline-audit`。若方案类材料未经明确授权采用 `consulting`，审计必须以 `SOLUTION_ARCHITECTURE_REQUIRED` 失败。封面、目录、章节页、内容页和封底必须位于同一连续页面序列，不得把模板页抽离后另列；章节页只写“第X章：XXX”，不承载论点、模块或方法内容。内容页的短 `title` 与 `main_message` 必须分开，不能把整句结论塞进页标题。
 
@@ -52,7 +52,7 @@ python -m cyberppt script-audit <project> --input <project>/workbench/scripts/fi
 
 完整文字稿是内容表达权威层：对齐源材料中本页主题的主体内容，写成小文章/小章节；禁止上屏颗粒度；必须是章节正文口吻，禁止“本页只确认/首先需要确认…”一类分析旁白（旁白进取舍说明或边界）。上屏文字是完整文字稿的概括化、图形化表达，禁止与文字稿并列各写一套，禁止各自从 Source Truth 分头摘取。审稿时先审文字稿取舍与论证，再审上屏是否忠实压缩。该要求为仓库默认合同。封面、目录、章节页和封底除外。设计见 `docs/superpowers/specs/2026-07-24-page-full-prose-from-source-design.md`。
 
-详细规则读取 `references/script-quality.md`。上屏构图纪律（构图原语、视觉结构句式、反卡片墙）已吸收进 `references/script-quality.md` 与 `script-audit`；不得改用 `vendor/ppt-script-visual-redesign` 或个人目录中的旧 `ppt-script`、旧项目管理运行时或旧项目生命周期替代本仓库流程。
+详细规则读取 `references/script-quality.md`。上屏语义结构纪律（单一主关系、文字归属、反卡片墙和禁止固定版式配方）已吸收进 `references/script-quality.md` 与 `script-audit`；具体构图候选和媒介选择由正式 Stage 02 `ppt-visual-structure-designer` 完成。不得改用 `vendor/ppt-script-visual-redesign` 或个人目录中的旧 `ppt-script`、旧项目管理运行时或旧项目生命周期替代本仓库流程。
 
 ## 强制流程
 

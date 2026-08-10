@@ -282,6 +282,22 @@ def _mutate(page: dict[str, Any], mutation: str) -> dict[str, Any]:
                 "binding": binding["binding"],
             }
         )
+    elif mutation == "layout_recipe_in_relationship":
+        invalid["semantic_graph"]["decision_relationship"] = (
+            "主视觉以四条纵向泳道排列，底部设置统一收束条。"
+        )
+    elif mutation == "disconnected_media_and_text":
+        invalid["visual_decision"]["text_integration_method"] = (
+            "左图右表，两侧各自完整呈现内容，彼此没有文字归属或业务连接。"
+        )
+    elif mutation == "dual_primary_narrative":
+        invalid["visual_decision"]["spatial_organization"] += (
+            " 另一套总结链独立于主关系形成结果说明。"
+        )
+    elif mutation == "abstract_center":
+        invalid["visual_decision"]["spatial_organization"] = (
+            "页面中央设置抽象中心框，周边放射连接全部内容。"
+        )
     elif mutation == "style_leak":
         invalid["generation_handoff"]["structural_guidance"]["additional_constraints"].append(
             "use #123456 borders"

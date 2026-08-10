@@ -22,11 +22,18 @@ class SkillContractTests(unittest.TestCase):
         )
         self.assertIn("章内推进", reference)
         self.assertIn("上屏结构与语义图同构", reference)
-        self.assertIn("构图原语", reference)
         self.assertIn("VISUAL_STRUCTURE_STYLE_ONLY", reference)
         self.assertIn("跨页重复", reference)
         self.assertIn("状态升级", reference)
         self.assertIn("vendor/ppt-script-visual-redesign", skill)
+
+    def test_stage01_visual_structure_is_a_semantic_handoff(self) -> None:
+        reference = SCRIPT_QUALITY.read_text(encoding="utf-8-sig")
+
+        self.assertIn("Stage 01 只锁定内容关系，不提前锁定页面版式", reference)
+        self.assertIn("`视觉结构（不上屏）`语义合同", reference)
+        self.assertIn("ppt-visual-structure-designer", reference)
+        self.assertIn("VISUAL_STRUCTURE_LAYOUT_RECIPE", reference)
 
     def test_old_ppt_script_runtime_is_not_required(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")

@@ -17,7 +17,6 @@ from cyberppt.semantic_understanding import assert_semantic_understanding_ready
 from cyberppt.semantic_digest import (
     outline_semantic_digest,
     script_semantic_digest,
-    source_truth_semantic_digest,
 )
 
 REFERENCE_GATE_FILES: dict[str, tuple[str, ...]] = {
@@ -89,15 +88,6 @@ def _semantic_or_raw(path: Path, semantic_fn: Any) -> str:
         return _sha256_path(path)
 
 
-def _approval_fields(path: Path) -> dict[str, str]:
-    return {
-        key.strip(): value.strip()
-        for line in path.read_text(encoding="utf-8-sig").splitlines()
-        if line.startswith("- ") and ":" in line
-        for key, value in [line[2:].split(":", 1)]
-    }
-
-
 def assert_stage01_script_approval(project: Path, script: Path) -> Path:
     project = project.expanduser().resolve()
     semantic_gate = assert_semantic_understanding_ready(project)
@@ -105,7 +95,6 @@ def assert_stage01_script_approval(project: Path, script: Path) -> Path:
     approval = project / APPROVAL_FILES["script"]
     if not approval.is_file():
         raise FileNotFoundError(f"missing Stage 01 script approval: {approval}")
-    fields = _approval_fields(approval)
     audit = _read_json(project / LATEST_AUDIT_FILES["script"])
     audited_semantic_gate = audit.get("semantic_gate")
     if semantic_gate is not None and (
@@ -117,21 +106,19 @@ def assert_stage01_script_approval(project: Path, script: Path) -> Path:
     ):
         raise ValueError(
             "Stage 01 script audit is stale relative to the current semantic understanding; "
-            "rerun script-audit and reapprove before Stage 02"
+            "rerun script-audit before Stage 02"
         )
     audited_communication_gate = audit.get("communication_strategy_gate")
     if communication_gate is not None and (
         not isinstance(audited_communication_gate, dict)
         or audited_communication_gate.get("communication_strategy_sha256")
         != communication_gate.get("communication_strategy_sha256")
-        or audited_communication_gate.get("communication_strategy_approval_sha256")
-        != communication_gate.get("communication_strategy_approval_sha256")
         or audited_communication_gate.get("option_id")
         != communication_gate.get("option_id")
     ):
         raise ValueError(
             "Stage 01 script audit is stale relative to the approved communication strategy; "
-            "rerun script-audit and reapprove before Stage 02"
+            "rerun script-audit before Stage 02"
         )
     escalation_decision = _script_approval_escalation_decision(project, audit)
     if audit.get("status") != "passed" and escalation_decision is None:
@@ -139,18 +126,6 @@ def assert_stage01_script_approval(project: Path, script: Path) -> Path:
             "current Stage 01 script audit is neither passed nor covered by a valid "
             "accepted-risk escalation; rerun audit or resolve the escalation before Stage 02"
         )
-    if escalation_decision is not None:
-        decision_path, _ = escalation_decision
-        expected_decision_hash = fields.get("escalation_decision_sha256")
-        if not expected_decision_hash:
-            raise ValueError(
-                "Stage 01 script approval is not bound to its escalation decision; reapprove the script"
-            )
-        if expected_decision_hash != _sha256_path(decision_path):
-            raise ValueError(
-                "Stage 01 script approval does not match the current escalation decision; "
-                "reapprove the script before Stage 02"
-            )
     for artifact_key, label in (
         ("input", "script"),
         ("outline", "outline"),
@@ -162,31 +137,6 @@ def assert_stage01_script_approval(project: Path, script: Path) -> Path:
         artifact_path = Path(str(artifact_value)).expanduser().resolve()
         if not artifact_path.is_file():
             raise FileNotFoundError(f"Stage 01 script audit artifact does not exist: {artifact_path}")
-        field_prefix = label.replace(" ", "_")
-        expected_semantic = fields.get(f"{field_prefix}_semantic_sha256")
-        expected_raw = fields.get(f"{field_prefix}_sha256")
-        if not expected_semantic and not expected_raw:
-            raise ValueError(
-                "Stage 01 script approval is not hash-bound; reapprove the current final script and its inputs"
-            )
-        semantic_fn = {
-            "script": script_semantic_digest,
-            "outline": outline_semantic_digest,
-            "source truth": source_truth_semantic_digest,
-        }[label]
-        matches = (
-            expected_semantic == _semantic_or_raw(artifact_path, semantic_fn)
-            if expected_semantic
-            else expected_raw == _sha256_path(artifact_path)
-        )
-        if not matches:
-            raise ValueError(
-                f"Stage 01 script approval does not match the current {label}; "
-                "rerun Stage 01 audit and reapprove before Stage 02"
-            )
-    current_script = script.expanduser().resolve()
-    if fields.get("script") and Path(fields["script"]).expanduser().resolve() != current_script:
-        raise ValueError("Stage 01 script approval points to a different final script")
     return approval
 
 
@@ -802,8 +752,6 @@ def write_stage01_approval(
         not isinstance(audited_communication_gate, dict)
         or audited_communication_gate.get("communication_strategy_sha256")
         != communication_gate.get("communication_strategy_sha256")
-        or audited_communication_gate.get("communication_strategy_approval_sha256")
-        != communication_gate.get("communication_strategy_approval_sha256")
         or audited_communication_gate.get("option_id")
         != communication_gate.get("option_id")
     ):
@@ -812,7 +760,7 @@ def write_stage01_approval(
         )
     request_path = assert_confirmation_request_ready(project, kind)
     # Chapter-structure review is an optional editorial diagnostic. The
-    # mechanical audit plus the hash-bound approval remain the authoritative
+    # mechanical audit plus affirmative human approval remain the authoritative
     # Stage 01 production gates, so a missing or stale chapter review must not
     # block confirmation or approval.
     chapter_review_audit = None
@@ -865,22 +813,14 @@ def write_stage01_approval(
             f"- notes: {note or 'User approved Stage 01 ' + kind + '.'}",
             *([
                 f"- script: {script_path}",
-                f"- script_sha256: {_sha256_path(script_path)}",
-                f"- script_semantic_sha256: {_semantic_or_raw(script_path, script_semantic_digest)}",
-                f"- outline_sha256: {_sha256_path(Path(str(audit['outline'])).expanduser().resolve())}",
-                f"- outline_semantic_sha256: {_semantic_or_raw(Path(str(audit['outline'])).expanduser().resolve(), outline_semantic_digest)}",
-                f"- source_truth_sha256: {_sha256_path(Path(str(audit['source_truth'])).expanduser().resolve())}",
-                f"- source_truth_semantic_sha256: {_semantic_or_raw(Path(str(audit['source_truth'])).expanduser().resolve(), source_truth_semantic_digest)}",
                 f"- script_audit_status: {audit.get('status', 'unknown')}",
                 *([
                     f"- escalation_decision: {escalation_decision[0]}",
-                    f"- escalation_decision_sha256: {_sha256_path(escalation_decision[0])}",
                     f"- escalation_option_id: {escalation_decision[1].get('option_id')}",
                 ] if escalation_decision is not None else []),
             ] if kind == "script" else []),
             *([
                 f"- chapter_review_audit: {chapter_review_audit}",
-                f"- chapter_review_audit_sha256: {_sha256_path(chapter_review_audit)}",
             ] if chapter_review_audit else []),
             (
                 "- next: draft scripts by chapter batches and run script-audit"

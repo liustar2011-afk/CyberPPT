@@ -457,16 +457,22 @@ def test_content_first_accepts_content_page_without_visible_judgment() -> None:
     assert "权限、日志和发布审核共同保障运行" in prompt
 
 
-def test_content_first_treats_visible_judgment_as_body_conclusion_without_font_sizes() -> None:
+def test_content_first_treats_visible_judgment_as_body_conclusion_with_style_font_floor() -> None:
     page = _page()
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
+        style_contract = json.loads(lock.read_text(encoding="utf-8"))["style"][
+            "prompt_contract"
+        ]
 
     assert "如【锁定关键文字】含正文结论句" in prompt
     assert "不得通栏放大" in prompt
     assert "标题竖线、横线等装饰" in prompt
-    assert "字号" not in prompt
+    font_floor = "所有可读文字的视觉字号不得小于 14pt 等效尺寸"
+    assert font_floor in style_contract
+    assert font_floor in prompt
+    assert "中文字体统一使用微软雅黑（Microsoft YaHei）" in prompt
     assert "1.6—1.8倍" not in prompt
     assert "1.25—1.4倍" not in prompt
 

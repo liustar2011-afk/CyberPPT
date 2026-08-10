@@ -135,7 +135,7 @@ Markdown用于人工预审和生图脚本组装，JSON用于自动校验、批�
 - `semantic_tags`：记录可组合的次级语义标签。
 - `primary_refs`与`secondary_refs`：形成唯一主结构和从属关系。
 - `reading_sequence`：使用语义图节点ID记录阅读顺序。
-- `text_bindings`：将证据单元绑定到语义节点。
+- `text_bindings`：将证据单元绑定到语义节点；CyberPPT工作台模式还必须用`text_ids`逐项引用`locked_text_items`中的精确正文ID。所有正文ID必须被绑定且只能出现一次，不得引用未知ID。
 - `representation_freedom`：记录载体和媒介是否受来源约束。
 
 ## 内容锁定
@@ -155,10 +155,19 @@ Markdown用于人工预审和生图脚本组装，JSON用于自动校验、批�
 
 - `structural_guidance`：引用`structural_decision`并只补充结构性约束。
 - `required_text`
+- `required_text_ids`：CyberPPT工作台模式必填，顺序必须与`required_text`和`final_text`完全一致。
 - `style_source_ref`：指向唯一权威风格来源，不复制风格正文。
 - `title_exclusion_instruction`
 
 `schema_version: 1.0`仍可读取`composition_guidance`、`style_guidance`和`negative_constraints`，但这些字段已废弃。`1.1`不得再出现这些字段。
+
+CyberPPT工作台的`visual-design-input.json`使用以下权威边界：
+
+- `business_relationships`：业务关系真值；`decision_relationship`只能由此继承和组织。
+- `author_visual_notes`：低权重作者备注，固定版式和载体描述不得进入关系真值。
+- `locked_text_items`：带稳定`text_id`的正文唯一来源。
+
+工作台还要求`visual-design-decisions.json`保存每页至少三个结构候选、候选完整证据覆盖、评分维度与总分、选中候选以及输入哈希。正式执行回执由仓库命令生成并绑定执行器、模型、Skill包与产物哈希。
 
 结构指令不得在画面中显示。标题与副标题默认由外部PPT文字层处理，正文按用户指定的生图模式执行。字体、字号、颜色、线条、边框、形状、人物外观和媒介质感由`style_source_ref`对应的风格文件负责。
 

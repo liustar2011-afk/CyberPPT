@@ -6,10 +6,15 @@ from tempfile import TemporaryDirectory
 
 from cyberppt.cli import build_parser
 from scripts.dual_image_overlay.cyberppt_pair_manifest import main as pair_manifest_main
-from scripts.dual_image_overlay.deliverable_prompt import enforce_style09_terminal_lock
+from scripts.dual_image_overlay.deliverable_prompt import (
+    PageBlock,
+    _style09_page_semantic_tags,
+    enforce_style09_terminal_lock,
+)
 from scripts.dual_image_overlay.imagegen_handoff import render_content_first_style_contract
 from scripts.dual_image_overlay.style_library import (
     default_style_choices,
+    load_style_lock,
     load_style_library,
     resolve_default_style,
     write_project_style_lock,
@@ -112,10 +117,53 @@ def test_style_nine_lock_records_extension_selection() -> None:
     assert payload["style"]["name"] == "象牙白 + 深蓝领导汇报"
     assert payload["policy"]["selected_from_default_8"] is False
     assert payload["policy"]["selected_from_extension"] is True
-    assert "### 基础组件表达规范（通用）" in payload["style"]["prompt_contract"]
-    assert "禁止宽箭头带" in payload["style"]["prompt_contract"]
+    assert "### 核心视觉语法" in payload["style"]["prompt_contract"]
+    assert "图标默认数量为零" in payload["style"]["prompt_contract"]
+    assert "宽箭头带" in payload["style"]["prompt_contract"]
+    assert "页面先读到一个业务锚点，再读到文字关系" in payload["style"]["prompt_contract"]
+    assert payload["style"]["prompt_contract"].count("文字型视觉主线") == 1
+    assert "不得新增非锁定标签" in payload["style"]["prompt_contract"]
+    assert payload["style"]["prompt_contract"].count("**图文融合**") == 1
+    assert "禁止图形区与文字区各自完整重复同一组内容" in payload["style"]["prompt_contract"]
+    assert "把文字列表伪装成关系图" in payload["style"]["prompt_contract"]
+    assert "2—5个文字组共享同一视觉场" in payload["style"]["prompt_contract"]
+    assert "禁止重复表达同一语义" in payload["style"]["prompt_contract"]
+    assert "不得把不同角色复制成同一种设备" in payload["style"]["prompt_contract"]
+    assert "微软雅黑（Microsoft YaHei）" in payload["style"]["prompt_contract"]
+    assert "不得小于 14pt 等效尺寸" in payload["style"]["prompt_contract"]
+    assert "Final ImageGen execution lock" in payload["style"]["prompt_contract"]
     assert payload["reference_image"]["required_for_every_page"] is True
     assert payload["reference_image"]["path"].endswith("palette-09.png")
+
+
+def test_style_nine_reference_stops_at_indented_following_h2() -> None:
+    with TemporaryDirectory() as directory:
+        root = Path(directory)
+        reference = root / "visual-system.md"
+        reference.write_text(
+            "## 扩展风格9：测试\n\nStyle 09 only.\n\n"
+            "  ## 扩展风格10：测试\n\nStyle 10 must not leak.\n",
+            encoding="utf-8",
+        )
+        lock = root / "visual_style_lock.json"
+        lock.write_text(
+            json.dumps(
+                {
+                    "style_source": str(root / "styles.json"),
+                    "source_reference": str(reference),
+                    "style": {"id": 9, "prompt_contract": "stale"},
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        payload = load_style_lock(lock)
+
+    contract = payload["style"]["prompt_contract"]
+    assert "Style 09 only." in contract
+    assert "扩展风格10" not in contract
+    assert "Style 10 must not leak." not in contract
 
 
 def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
@@ -124,18 +172,73 @@ def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
         contract = render_content_first_style_contract(lock)
 
     assert "基础组件表达规范（通用）" in contract
-    assert "虚线不作装饰节点链" in contract
-    assert "禁止宽箭头带" in contract
-    assert "低矮、哑光、正视" in contract
-    assert "整页反馈虚线原则上最多一条" in contract
-    assert "整页可见边界最多两级" in contract
-    assert "编号、自然邻接或同一连续基线已经表达顺序时" in contract
-    assert "箭头头宽度不明显超过线宽的2—3倍" in contract
-    assert "同页异形标题条最多一个" in contract
-    assert "不得仅为区分类目自动分配多色" in contract
+    assert "直线端点、折点和曲线切线要干净" in contract
+    assert "宽箭头带" in contract
+    assert "微立体承载面保持低矮、正视、哑光" in contract
+    assert "同类线宽必须一致" in contract
+    assert "边框使用细、低对比、单层描边" in contract
+    assert "曲线转向平滑、切线连续" in contract
+    assert "不得据此改变页面的业务结构、元素数量、空间关系、阅读路径或主次关系" in contract
+    assert "保留已经确定的方向、数量和连接关系" in contract
+    assert "箭头头使用贴近线端的小型简洁三角形" in contract
+    assert "保留既有容器形状和数量" in contract
+    assert "保留已经选择的载体类型、轮廓和数量" in contract
+    assert "保留已经确定的前后关系与视觉重心" in contract
+    assert "主业务锚点优先表现可观察的业务动作、状态变化或受控结果" in contract
+    assert "生成优先级：核心判断 → 业务动作或状态 → 主业务锚点" in contract
+    assert "沿页面主要阅读路径形成连续主线" in contract
+    assert "不得据此固定生成时间轴、卡片墙、左右分栏或等宽多列" in contract
+    assert contract.count("文字型视觉主线") == 1
+    assert contract.count("**图文融合**") == 1
+    assert "左右分区仅用于不同且互补的业务角色" in contract
+    assert "删除视觉部分后若业务逻辑不变" in contract
+    assert "#### 多行正文或多个维度" in contract
+    assert "#### 分类或矩阵" in contract
+    assert "#### 步骤、流程或输入输出" in contract
+    assert "#### 权利边界" in contract
+    assert "#### 闭环语义" in contract
+    assert "semantic_tags:" not in contract
+    assert "style09:scope" not in contract
+    assert "连接只表达真实关系并保持细、小、从属" in contract
+    assert contract.count("保留已经确定的方向、数量和连接关系") == 1
+    assert contract.count("保留既有容器形状和数量") == 1
 
 
-def test_style_nine_people_rule_is_the_absolute_prompt_suffix() -> None:
+def test_style_nine_selects_composable_conditional_clauses() -> None:
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        contract = render_content_first_style_contract(
+            lock,
+            semantic_tags=frozenset({"flow", "feedback"}),
+        )
+
+    assert "#### 步骤、流程或输入输出" in contract
+    assert "#### 闭环语义" in contract
+    assert "#### 多行正文或多个维度" not in contract
+    assert "#### 分类或矩阵" not in contract
+    assert "#### 权利边界" not in contract
+    assert "semantic_tags:" not in contract
+
+
+def test_style_nine_infers_multiple_page_semantic_tags_without_incidental_boundary() -> None:
+    page = PageBlock(
+        10,
+        "总体业务主线",
+        "\n".join(
+            (
+                "产品形成链：需求论证与五类审核共同形成产品设计。",
+                "订单履行链：可信交付形成计量、验收、账单与结算依据。",
+                "运营反馈环：跟踪订购并回流至产品形成链。",
+            )
+        ),
+    )
+    tags = _style09_page_semantic_tags(page, page.text.splitlines())
+
+    assert {"flow", "sequence", "feedback", "loop"}.issubset(tags)
+    assert "boundary" not in tags
+
+
+def test_style_nine_people_rule_comes_from_the_single_style_contract() -> None:
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = enforce_style09_terminal_lock(
@@ -144,7 +247,7 @@ def test_style_nine_people_rule_is_the_absolute_prompt_suffix() -> None:
         )
 
     rule = "默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。"
-    assert prompt.rstrip().endswith(rule)
+    assert "### Final ImageGen execution lock" not in prompt
     assert prompt.count(rule) == 1
 
 

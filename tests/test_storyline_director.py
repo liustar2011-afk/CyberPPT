@@ -9,7 +9,7 @@ def director_payload() -> dict[str, object]:
     return {
         "schema": "cyberppt.storyline_director.v1",
         "source_truth_sha256": "source-hash",
-        "communication_strategy_approval_sha256": "approval-hash",
+        "communication_strategy_sha256": "strategy-hash",
         "semantic_understanding_sha256": "semantic-hash",
         "semantic_source_bundle_sha256": "semantic-source-hash",
         "theme": "围绕合作启动组织材料",
@@ -35,13 +35,13 @@ def director_payload() -> dict[str, object]:
 
 class StorylineDirectorTests(unittest.TestCase):
     def test_valid_director_contract_passes(self) -> None:
-        self.assertEqual([], _audit_issues(director_payload(), "source-hash", "approval-hash"))
+        self.assertEqual([], _audit_issues(director_payload(), "source-hash", "strategy-hash"))
 
     def test_director_requires_real_question_chain_and_pacing(self) -> None:
         payload = director_payload()
         payload["story_arc"] = ["只有一步"]
         payload["pacing"] = {"target_total_pages": 30, "min_total_pages": 20, "max_total_pages": 25}
-        codes = {issue["code"] for issue in _audit_issues(payload, "source-hash", "approval-hash")}
+        codes = {issue["code"] for issue in _audit_issues(payload, "source-hash", "strategy-hash")}
         self.assertIn("DIRECTOR_RULESET_INVALID", codes)
         self.assertIn("DIRECTOR_PACING_INVALID", codes)
 
@@ -54,7 +54,7 @@ class StorylineDirectorTests(unittest.TestCase):
             for issue in _audit_issues(
                 payload,
                 "source-hash",
-                "approval-hash",
+                "strategy-hash",
                 semantic_hash="semantic-hash",
                 semantic_source_hash="semantic-source-hash",
                 audience_concerns=director_payload()["audience_concerns"],
@@ -71,7 +71,7 @@ class StorylineDirectorTests(unittest.TestCase):
             for issue in _audit_issues(
                 payload,
                 "source-hash",
-                "approval-hash",
+                "strategy-hash",
                 semantic_source_map_hash="source-map-hash",
             )
         }
@@ -105,7 +105,7 @@ class StorylineDirectorTests(unittest.TestCase):
             for issue in _audit_issues(
                 payload,
                 "source-hash",
-                "approval-hash",
+                "strategy-hash",
                 semantic_hash="semantic-hash",
                 semantic_source_hash="semantic-source-hash",
                 semantic_argument_model_hash="argument-model-hash",
@@ -136,7 +136,7 @@ class StorylineDirectorTests(unittest.TestCase):
             _audit_issues(
                 payload,
                 "source-hash",
-                "approval-hash",
+                "strategy-hash",
                 communication_posture_contract=posture,
             ),
         )
@@ -147,7 +147,7 @@ class StorylineDirectorTests(unittest.TestCase):
             for issue in _audit_issues(
                 payload,
                 "source-hash",
-                "approval-hash",
+                "strategy-hash",
                 communication_posture_contract=posture,
             )
         }
