@@ -1632,7 +1632,11 @@ ONSCREEN_LAYOUT_META_PATTERNS: tuple[re.Pattern[str], ...] = (
 # first label separator, so punctuation and a concise label do not hide a
 # paragraph.  The advisory band lets the author see the problem early; the
 # hard band blocks script approval until the detail is split or shortened.
-ONSCREEN_DETAIL_PHRASE_WARNING_CHARS = 36
+# Formal on-screen copy is phrase-led by default.  A page may carry several
+# short, same-topic items, but no individual labelled detail may become a
+# paragraph.  Keep warning and error thresholds identical so >30 chars is a
+# blocking authoring defect rather than an advisory that survives to Stage 02.
+ONSCREEN_DETAIL_PHRASE_WARNING_CHARS = 30
 ONSCREEN_DETAIL_PHRASE_ERROR_CHARS = 60
 
 
@@ -2246,6 +2250,7 @@ def _prose_issues(
     *,
     expected_source_refs: tuple[str, ...] = (),
     independent_reading_required: bool = False,
+    strict_reading_density: bool = False,
 ) -> list[ScriptQualityIssue]:
     if page.page_type != "content":
         return []
@@ -2330,7 +2335,9 @@ def _prose_issues(
             len(_onscreen_content_lines(page.onscreen_text)) >= 4
             and not _onscreen_detail_phrase_overages(page.onscreen_text)
         )
-        if visible_story_chars < min_story_chars and not structured_short_layer:
+        if visible_story_chars < min_story_chars and (
+            strict_reading_density or not structured_short_layer
+        ):
             issues.append(
                 _issue(
                     "ONSCREEN_STORY_DENSITY_LOW",
@@ -2352,7 +2359,7 @@ def _prose_issues(
         if (
             prose_chars >= PROSE_MIN_CHARS * 2
             and coverage < ONSCREEN_SEMANTIC_COVERAGE_ERROR_FLOOR
-            and not structured_short_layer
+            and (strict_reading_density or not structured_short_layer)
         ):
             issues.append(
                 _issue(
@@ -3057,6 +3064,8 @@ def _onscreen_constraint_module_hits(page: ScriptPage) -> tuple[str, ...]:
 def _presentation_issues(
     page: ScriptPage,
     contract: dict[str, object] | None = None,
+    *,
+    strict_detail_phrase_length: bool = False,
 ) -> list[ScriptQualityIssue]:
     issues: list[ScriptQualityIssue] = []
     full_text = _page_text(page)
@@ -3132,7 +3141,7 @@ def _presentation_issues(
         if detail_phrase_overages:
             detail_severity = (
                 "error"
-                if any(
+                if strict_detail_phrase_length or any(
                     chars > ONSCREEN_DETAIL_PHRASE_ERROR_CHARS
                     for _line, chars in detail_phrase_overages
                 )
@@ -3788,6 +3797,9 @@ def audit_script_quality(
                     # requirement is deliberately independent from whether the
                     # approved Outline declares an onscreen conclusion.
                     independent_reading_required=page.page_type == "content",
+                    strict_reading_density=(
+                        outline.get("schema") == "cyberppt.outline.v2"
+                    ),
                 )
             )
             issues.extend(_source_consumption_issues(page, contract))
@@ -4009,7 +4021,15 @@ def audit_script_quality(
                     completed,
                 )
             )
-        issues.extend(_presentation_issues(page, contract))
+        issues.extend(
+            _presentation_issues(
+                page,
+                contract,
+                strict_detail_phrase_length=(
+                    outline.get("schema") == "cyberppt.outline.v2"
+                ),
+            )
+        )
     for left, right in zip(script.pages, script.pages[1:]):
         similarity = text_similarity(left.main_message, right.main_message)
         if left.main_message and right.main_message and similarity >= 0.82:

@@ -107,7 +107,8 @@ class PrepareStage01InputTests(unittest.TestCase):
             "source-supported content → the same-strength relation stated by the material",
             text,
         )
-        self.assertIn("<=36 is the preferred band", text)
+        self.assertIn("<=30 is required", text)
+        self.assertIn(">30 is a script-audit error", text)
         self.assertIn("四行选择矩阵", text)
         self.assertIn("第X行｜ coordinates", text)
         self.assertIn("Boundary is opt-in, never a mandatory fourth beat", text)

@@ -39,6 +39,40 @@ from cyberppt.script_quality_contract import (
 
 
 class ProductionAuthoringGuardTests(unittest.TestCase):
+    def test_formal_v2_strict_density_rejects_four_thin_lines(self) -> None:
+        page = parse_script_markdown(
+            """## 第1页：正式材料
+
+- 页面类型：内容页
+- 页面标题：正式材料
+- 主判断：形成完整业务关系。
+- 完整文字稿：正式材料需要完整说明业务对象、事实依据、组成关系、实施条件和必要承接，形成能够独立理解的页面论述。
+- 上屏文字：
+
+事项一：简要信息。
+事项二：简要信息。
+事项三：简要信息。
+事项四：简要信息。
+- 证据：S001
+- 视觉结构：业务对象与事项关系。
+
+【演讲者备注】
+
+正式说明相关业务关系和实施条件。
+"""
+        ).pages[0]
+
+        codes = {
+            issue.code
+            for issue in _prose_issues(
+                page,
+                independent_reading_required=True,
+                strict_reading_density=True,
+            )
+        }
+
+        self.assertIn("ONSCREEN_STORY_DENSITY_LOW", codes)
+
     def test_strips_structural_row_markers_from_visible_group_labels(self) -> None:
         self.assertEqual("访问与成果交付方式", audience_facing_group_label("第1行｜访问与成果交付方式"))
         self.assertEqual("部署运行环境", audience_facing_group_label("第2行:部署运行环境"))
@@ -178,7 +212,7 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
         self.assertTrue(short)
         overages = _onscreen_detail_phrase_overages(visible)
         self.assertEqual(1, len(overages))
-        self.assertGreater(overages[0][1], 36)
+        self.assertGreater(overages[0][1], 30)
         self.assertEqual((), _onscreen_detail_phrase_overages("模块标题\n完整业务标签"))
 
     def test_full_prose_is_not_a_visible_detail_input(self) -> None:
@@ -209,9 +243,34 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
         ).pages[0]
         issues = [
             issue
-            for issue in _presentation_issues(page)
+            for issue in _presentation_issues(
+                page,
+                strict_detail_phrase_length=True,
+            )
             if issue.code == "ONSCREEN_DETAIL_PHRASE_TOO_LONG"
         ]
+        self.assertEqual(1, len(issues))
+        self.assertEqual("error", issues[0].severity)
+
+    def test_detail_phrase_over_thirty_chars_is_a_blocking_error(self) -> None:
+        page = parse_script_markdown(
+            "## 第1页：短语化上屏\n"
+            "- 页面类型：内容页\n"
+            "- 完整文字稿：完整文字稿可以连续说明事实、关系和边界。\n"
+            "- 上屏文字：\n"
+            "事项说明：1234567890123456789012345678901\n"
+            "- 视觉结构：事项与依据。\n"
+        ).pages[0]
+
+        issues = [
+            issue
+            for issue in _presentation_issues(
+                page,
+                strict_detail_phrase_length=True,
+            )
+            if issue.code == "ONSCREEN_DETAIL_PHRASE_TOO_LONG"
+        ]
+
         self.assertEqual(1, len(issues))
         self.assertEqual("error", issues[0].severity)
 
