@@ -178,6 +178,7 @@ def prepare_outline_input(
             storyline_director_authoring_contract(),
             "",
             "Before authoring the Outline, compare 2-3 genuinely different source-supported storyline routes for this communication goal. For each route state its audience logic, evidence selection, chapter progression, strengths, and risks. Select and explain one recommended route, then encode only that route in the Outline `storyline` contract.",
+            "Apply the named route guidance above: when the source has an explicit argument sequence, include `source_logic_focused` among the candidates and recommend it for introduction- or understanding-led communication unless the selected goal explicitly requires decision/action reordering.",
             "The final Outline is a selective argument, not a directory of source sections. Preserve every source fact in traceability where needed, but give page-forming weight only to the chosen route and the semantic model's P0/core propositions.",
             "Present the completed chapter/page Outline to the user for review before page-detail authoring.",
             "",

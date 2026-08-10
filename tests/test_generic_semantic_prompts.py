@@ -34,6 +34,15 @@ class GenericSemanticPromptTests(unittest.TestCase):
         self.assertIn("independent source proposition", director)
         self.assertIn("editorial_hypothesis", director)
 
+    def test_storyline_contract_includes_source_logic_focused_route(self) -> None:
+        director = storyline_director_authoring_contract()
+
+        self.assertIn("`source_logic_focused`", director)
+        self.assertIn("preserves the source-native thesis and major section progression", director)
+        self.assertIn("first introductions", director)
+        self.assertIn("must not replace the source progression", director)
+        self.assertIn("Do not select `source_logic_focused` automatically", director)
+
 
 if __name__ == "__main__":
     unittest.main()
