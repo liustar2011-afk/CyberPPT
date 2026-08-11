@@ -63,6 +63,7 @@ from cyberppt.stage02_handoff import (
     audit_stage02_handoff,
     prepare_stage02_handoff,
 )
+from cyberppt.stage01_compiler import compile_outline_draft, compile_source_truth
 
 
 def _doctor() -> int:
@@ -123,6 +124,38 @@ def _source_truth_audit_command(args: argparse.Namespace) -> int:
         return 2
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return code
+
+
+def _compile_source_truth_command(args: argparse.Namespace) -> int:
+    try:
+        if not args.lightweight:
+            raise ValueError("compile-source-truth currently requires --lightweight")
+        output = compile_source_truth(
+            Path(args.project),
+            Path(args.output) if args.output else None,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(str(output))
+    return 0
+
+
+def _compile_outline_draft_command(args: argparse.Namespace) -> int:
+    try:
+        if not args.lightweight:
+            raise ValueError("compile-outline-draft currently requires --lightweight")
+        output = compile_outline_draft(
+            Path(args.project),
+            communication_goal=args.communication_goal,
+            output=Path(args.output) if args.output else None,
+            source_truth=Path(args.source_truth) if args.source_truth else None,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(str(output))
+    return 0
 
 
 def _prepare_source_map_command(args: argparse.Namespace) -> int:
@@ -818,6 +851,23 @@ def build_parser() -> argparse.ArgumentParser:
     )
     source_truth_audit.set_defaults(func=_source_truth_audit_command)
 
+    compile_truth = subparsers.add_parser(
+        "compile-source-truth",
+        help="Project canonical semantic atomic items into Source Truth without rereading or reauthoring the source.",
+    )
+    compile_truth.add_argument("project", help="CyberPPT project directory.")
+    compile_truth.add_argument(
+        "--output",
+        default="",
+        help="Optional output path; defaults to the canonical project source-truth.json.",
+    )
+    compile_truth.add_argument(
+        "--lightweight",
+        action="store_true",
+        help="Use the lightweight projection path; no approvals, receipts, attempts, escalations, manifests, or ledgers are created.",
+    )
+    compile_truth.set_defaults(func=_compile_source_truth_command)
+
     script_audit = subparsers.add_parser(
         "script-audit",
         help=(
@@ -936,6 +986,33 @@ def build_parser() -> argparse.ArgumentParser:
         help="User-selected or revised communication goal; required with --lightweight.",
     )
     prepare_outline.set_defaults(func=_prepare_outline_input_command)
+
+    compile_outline = subparsers.add_parser(
+        "compile-outline-draft",
+        help="Compile a complete editable Outline draft from the semantic model, Source Truth, and selected communication goal.",
+    )
+    compile_outline.add_argument("project", help="CyberPPT project directory.")
+    compile_outline.add_argument(
+        "--communication-goal",
+        required=True,
+        help="User-selected or revised communication goal.",
+    )
+    compile_outline.add_argument(
+        "--output",
+        default="",
+        help="Optional output path; defaults to the canonical project outline.json.",
+    )
+    compile_outline.add_argument(
+        "--source-truth",
+        default="",
+        help="Optional Source Truth input; defaults to the canonical project artifact.",
+    )
+    compile_outline.add_argument(
+        "--lightweight",
+        action="store_true",
+        help="Use the lightweight compiler path; only the canonical Outline artifact is written.",
+    )
+    compile_outline.set_defaults(func=_compile_outline_draft_command)
 
     prepare_page = subparsers.add_parser(
         "prepare-page-script-input",

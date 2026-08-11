@@ -144,13 +144,18 @@ def load_source_truth(path: Path) -> dict[str, object]:
         raise ValueError("source truth root must be an object")
     if payload.get("schema") != SCHEMA:
         raise ValueError(f"schema must be {SCHEMA}")
-    for field in REQUIRED_FIELDS:
+    required_fields = (
+        tuple(field for field in REQUIRED_FIELDS if field != "retry")
+        if payload.get("projection_mode") == "semantic_atomic_items"
+        else REQUIRED_FIELDS
+    )
+    for field in required_fields:
         if field not in payload:
             raise ValueError(f"missing required field: {field}")
     for field in ("sources", "coverage_targets", "records", "conclusions", "pages"):
         if not isinstance(payload.get(field), list):
             raise ValueError(f"{field} must be an array")
-    if not isinstance(payload.get("retry"), dict):
+    if "retry" in payload and not isinstance(payload.get("retry"), dict):
         raise ValueError("retry must be an object")
     return payload
 

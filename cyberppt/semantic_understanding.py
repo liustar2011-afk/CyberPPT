@@ -12,7 +12,10 @@ from typing import Any
 from cyberppt.source_argument_model import (
     MODEL_JSON as SEMANTIC_ARGUMENT_MODEL_NAME,
     SCHEMA as SEMANTIC_ARGUMENT_MODEL_SCHEMA,
+    empty_model,
     extract_model,
+    load_model,
+    render_review_markdown,
     validate_model,
 )
 from cyberppt.source_document_map import (
@@ -300,7 +303,7 @@ def semantic_authoring_contract() -> str:
 
 Read every source extract in this package before writing. Do not use prior projects, archived Stage 01 artifacts, existing outlines, page scripts, keyword summaries, or generic consulting storylines as semantic authority.
 
-Write the output to the declared `semantic-understanding.md` artifact and preserve all eleven required section headings plus the marked machine-readable `源材料论点模型（机器可读）` block. Determine the full business subject, concrete objects, actors, source-native chapter order, temporal/status distinctions, decision intent, concept boundaries, and cross-section evidence chains before considering slide structure.
+Write the canonical output only to the declared `semantic-argument-model.json` artifact. `semantic-check --lightweight` deterministically renders `semantic-understanding.md` from that model for human review; do not author a second prose interpretation. Determine the full business subject, concrete objects, actors, source-native chapter order, temporal/status distinctions, decision intent, concept boundaries, and cross-section evidence chains before considering slide structure.
 
 Hard requirements:
 - Preserve the source document's authoritative first-level structure and argument order unless the source itself supports a different relation.
@@ -322,7 +325,7 @@ Hard requirements:
 - Classify every thesis, semantic node, heading card, and argument relation with `claim_origin`: `source_explicit`, `source_implied`, or `editorial_hypothesis`. Register every implied claim in `inference_register` with its basis, affected nodes, and handling. Editorial hypotheses may be recorded only as Director candidates in the inference register; they may not be promoted into the source-native thesis, nodes, heading cards, or argument relations.
 - Build `concept_occurrence_graph` for terms or objects repeated in multiple source locations. Each repeated concept must bind at least two occurrence source-unit IDs and decide whether the uses have the same meaning, describe different dimensions, are homonyms, or still require review. Repetition is not proof that two passages are duplicates or should become one page.
 - Set `semantic_content_unit_coverage_mode` to `required`; this is the default strict contract, not an opt-in audit. Treat source completeness as a disposition problem, not a keyword-sampling problem. In `source_coverage.assignments`, place every substantive paragraph, list item, table or other non-heading `SU-*` unit under one or more section/subsection nodes whose thesis actually carries that information. The assigned unit must also appear in the target node's `evidence_refs`.
-- A source-unit assignment may not rely on `summary` alone. Add `atomic_items`; each item must contain `item_id`, a source-faithful `statement`, `source_unit_refs`, `claim_role`, `importance`, `status`, and at least two source-specific `coverage_anchors`. Preserve named business objects, actors, actions, processing targets, conditions, states and numeric facts in the item; use optional machine-readable `actors`, `conditions`, and `numeric_facts` arrays when present. If one source unit contains different claim roles or statuses, split it into multiple atomic items. Every assigned source unit must occur in at least one atomic item.
+- Set root `source_truth_projection_mode` to `required`. A source-unit assignment may not rely on `summary` alone. Add `atomic_items`; each item must contain `item_id`, a source-faithful `statement`, `source_unit_refs`, semantic `claim_role`, Source Truth `evidence_role` (`fact`, `change`, `problem`, `judgment`, `recommendation`, `boundary`, or `unresolved`), Source Truth `evidence_priority` (`P0`, `P1`, or `P2`), `importance`, `status`, `claim_origin`, and at least two source-specific `coverage_anchors`. Preserve named business objects, actors, actions, processing targets, conditions, states and numeric facts in the item; use optional machine-readable `actors`, `conditions`, and `numeric_facts` arrays when present. If one source unit contains different evidence roles, semantic roles, priorities, or statuses, split it into multiple atomic items. Every assigned source unit must occur in at least one atomic item.
 - Do not map an atomic item to a node merely because the heading is nearby. Its `claim_role` and `status` must be compatible with the target semantic node; otherwise correct the classification or split the item. A compact node thesis may synthesize atomic items, but cannot replace them.
 - If a source unit is deliberately excluded from the semantic model, list it in `source_coverage.intentional_omissions` with `source_unit_refs` and a specific editorial reason. Units supporting `core` or `constraint` nodes, and units supporting an independently headed `supporting` node with at least six evidence units, are protected: omission additionally requires `user_authorized_omission: true` and a concrete `user_decision_ref`. An unassigned source unit, a generic reason such as “not important”, or a coverage list that is not bound to a semantic node is invalid.
 - Preserve argument prerequisites as first-class semantic content: overall policy/industry background, causal premises, business changes, named objects, duties, processing targets, operating actions, participants, quantitative facts and explicit conditions must not disappear merely because a later paragraph states a more compact conclusion.
@@ -331,7 +334,7 @@ Hard requirements:
 - Declare `mece_rules` with the partition basis, exhaustive scope, overlap policy, and one or more `groups` that enumerate each checked sibling partition (`parent_id`, `node_ids`, `partition_basis`, `exhaustive_scope`, `overlap_policy`). If two source sections use similar words for different dimensions, keep both nodes and state the dimension relation instead of deleting one.
 - Declare `source_gaps` for missing completion facts, implementation conditions, responsible parties, acceptance metrics, demand validation, rights/authorization, or commercial terms. State how the gap must be expressed later; never turn a gap into a fact or a commitment.
 
-This task ends after producing the semantic-understanding artifact and its embedded argument model. Do not create Source Truth, an Outline, page scripts, images, or PPTX.
+This task ends after producing the canonical semantic-argument-model.json. Do not create Source Truth, an Outline, page scripts, images, or PPTX.
 """
 
 
@@ -348,7 +351,8 @@ def _render_model_input(
         "",
         f"- contract: `{SEMANTIC_CONTRACT_VERSION}`",
         f"- project: `{project}`",
-        f"- output: `{project / SEMANTIC_ARTIFACT}`",
+        f"- canonical_output: `{project / SEMANTIC_ARGUMENT_MODEL}`",
+        f"- generated_review: `{project / SEMANTIC_ARTIFACT}`",
         *(
             [
                 f"- source_bundle_sha256: `{source_bundle_sha256(receipts)}`",
@@ -364,7 +368,11 @@ def _render_model_input(
         "",
         "## Required output skeleton",
         "",
-        semantic_template().rstrip(),
+        (
+            semantic_template().rstrip()
+            if include_hashes
+            else json.dumps(empty_model(), ensure_ascii=False, indent=2)
+        ),
     ]
     lines += [
         "",
@@ -700,6 +708,20 @@ def run_semantic_understanding_audit(
     project = project.expanduser().resolve()
     prepared = prepare_semantic_understanding(project, lightweight=lightweight)
     artifact = project / SEMANTIC_ARTIFACT
+    argument_model_path = project / SEMANTIC_ARGUMENT_MODEL
+    argument_model: dict[str, Any] | None = None
+    if lightweight and argument_model_path.is_file():
+        argument_model = load_model(argument_model_path)
+        artifact.parent.mkdir(parents=True, exist_ok=True)
+        artifact.write_text(
+            render_review_markdown(argument_model),
+            encoding="utf-8",
+        )
+    if not artifact.is_file():
+        raise FileNotFoundError(
+            "semantic argument model is missing; author the canonical JSON at "
+            f"{argument_model_path} and rerun semantic-check --lightweight"
+        )
     text = artifact.read_text(encoding="utf-8-sig")
     sections = _heading_sections(text)
     issues: list[dict[str, Any]] = []
@@ -720,8 +742,8 @@ def run_semantic_understanding_audit(
                 "section": aliases[0],
             })
 
-    argument_model = extract_model(text)
-    argument_model_path = project / SEMANTIC_ARGUMENT_MODEL
+    if argument_model is None:
+        argument_model = extract_model(text)
     required_model = bool(prepared.get("semantic_argument_model_required"))
     strict_required = lightweight or strict_interpretation_contract_required(project)
     strict_interpretation = bool(

@@ -24,7 +24,7 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 3. **页面详细内容**：提出每页核心信息、完整文字稿、上屏文字、证据引用和视觉结构；长稿可按章展示，收到反馈后直接修改原章节脚本。
 4. **最终全稿**：合稿并完成一次全稿检查后展示最终脚本，等待用户最终确认。
 
-内部执行依次只做一次：`doctor` 与源登记核查；`prepare-semantic-understanding --lightweight` 后完成语义产物并运行 `semantic-check --lightweight`；构建/刷新 Source Truth 后运行 `source-truth-audit --lightweight`；提出交流目标；运行带用户目标的 `prepare-outline-input --lightweight`，完成提纲后运行 `outline-audit --lightweight`；逐章完成页面内容；`assemble-final-script --lightweight`；最后一次全稿 `script-audit --lightweight`。三个轻量检查保留业务质量判断，但都不写 audit、attempt、receipt、escalation、approval 或 artifact ledger。不得在局部修改后重复全量审计，不得为了同步状态重新执行已经完成且内容未受影响的上游阶段。
+内部执行依次只做一次：`doctor` 与源登记核查；`prepare-semantic-understanding --lightweight` 后只创作唯一语义作者产物 `semantic-argument-model.json`，再运行 `semantic-check --lightweight` 确定性生成审阅 Markdown；运行 `compile-source-truth <project> --lightweight` 将已校验原子事项投影为 Source Truth，再运行一次 `source-truth-audit --lightweight`；提出交流目标；用户选择或修改目标后运行 `compile-outline-draft <project> --communication-goal <goal> --lightweight` 生成完整可编辑提纲初稿，人工调整章节、合并、页数与页序后运行一次 `outline-audit --lightweight`；逐章完成页面内容；`assemble-final-script --lightweight`；最后一次全稿 `script-audit --lightweight`。轻量检查保留业务质量判断，但不写 audit、attempt、receipt、escalation、approval 或 artifact ledger。不得在局部修改后重复全量审计，不得为了同步状态重新执行已经完成且内容未受影响的上游阶段。
 
 轻量流程默认不执行或持久化：语义生成回执与批准、沟通策略批准文件、storyline director 独立门禁、Source Truth/Outline 的重试链与审计报告、chapter review 审计、confirmation request、attempt 目录、artifact ledger 以及 SHA 新鲜度绑定。出现问题时只修复检查报告指出的受影响内容；全量重跑必须由用户明确要求。
 

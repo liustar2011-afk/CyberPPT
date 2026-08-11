@@ -73,6 +73,9 @@ INTERPRETATION_CONTRACT_MODES = frozenset({"legacy", "strict"})
 CLAIM_ORIGINS = frozenset(
     {"source_explicit", "source_implied", "editorial_hypothesis"}
 )
+SOURCE_TRUTH_CLAIM_ROLES = frozenset(
+    {"fact", "change", "problem", "judgment", "recommendation", "boundary", "unresolved"}
+)
 INFERENCE_ORIGINS = frozenset({"source_implied", "editorial_hypothesis"})
 CONCEPT_RESOLUTIONS = frozenset(
     {"same_meaning", "different_dimension", "homonym", "requires_review"}
@@ -142,6 +145,7 @@ def empty_model() -> dict[str, Any]:
         "schema": SCHEMA,
         "version": 1,
         "interpretation_contract_mode": "strict",
+        "source_truth_projection_mode": "required",
         "document_semantics": {
             "document_role": "",
             "subject_of_report": "",
@@ -206,6 +210,175 @@ def render_model_block(model: dict[str, Any] | None = None) -> str:
         + json.dumps(value, ensure_ascii=False, indent=2)
         + "\n```"
     )
+
+
+def render_review_markdown(model: dict[str, Any]) -> str:
+    """Render the human semantic review from the canonical machine model.
+
+    Lightweight Stage 01 authors the semantic model once.  This renderer keeps
+    the required review document available without asking a model to restate
+    the same interpretation in a second independently-authored artifact.
+    """
+
+    semantics = model.get("document_semantics")
+    semantics = semantics if isinstance(semantics, dict) else {}
+    thesis = model.get("document_thesis")
+    thesis = thesis if isinstance(thesis, dict) else {}
+    sections = [item for item in _list(model.get("section_nodes")) if isinstance(item, dict)]
+    nodes = sections + [
+        item for item in _list(model.get("subsection_nodes")) if isinstance(item, dict)
+    ]
+
+    def value(field: str, fallback: str) -> str:
+        return _text(semantics.get(field)) or fallback
+
+    def node_thesis(node: dict[str, Any]) -> str:
+        return _text(node.get("section_thesis") or node.get("thesis"))
+
+    def bullet_lines(items: list[str], fallback: str) -> list[str]:
+        cleaned = [item for item in items if item]
+        return [f"- {item}" for item in cleaned] or [f"- {fallback}"]
+
+    business_objects = [
+        _text(item) for item in _list(semantics.get("business_objects")) if _text(item)
+    ]
+    structure_lines = [
+        f"{index}. {_text(node.get('source_heading'))}：{node_thesis(node)}"
+        for index, node in enumerate(sections, start=1)
+        if _text(node.get("source_heading")) and node_thesis(node)
+    ]
+    foundation_gap = [
+        f"{_text(node.get('source_heading'))}：{node_thesis(node)}"
+        for node in nodes
+        if _text(node.get("argument_role")) in {"foundation", "gap"}
+        and node_thesis(node)
+    ]
+    goal_support = [
+        f"{_text(node.get('source_heading'))}：{node_thesis(node)}"
+        for node in nodes
+        if _text(node.get("argument_weight")) in {"core", "supporting"}
+        and node_thesis(node)
+    ]
+    relations = [
+        f"{_text(item.get('from'))} --{_text(item.get('relation'))}--> "
+        f"{_text(item.get('to'))}：{_text(item.get('explanation'))}"
+        for item in _list(model.get("argument_relations"))
+        if isinstance(item, dict)
+    ]
+    state_rows = [
+        "| {heading} | {actors} | {status} | {weight} |".format(
+            heading=_text(node.get("source_heading")) or _text(node.get("id")),
+            actors="、".join(_text(item) for item in _list(node.get("actor_refs")) if _text(item)) or "未单列主体",
+            status=_text(node.get("status")) or "unknown",
+            weight=_text(node.get("argument_weight")) or "detail",
+        )
+        for node in nodes
+    ]
+    concept_rows = []
+    graph = model.get("concept_occurrence_graph")
+    if isinstance(graph, dict):
+        for item in _list(graph.get("concepts")):
+            if not isinstance(item, dict):
+                continue
+            concept_rows.append(
+                "| {term} | {resolution} | {refs} |".format(
+                    term=_text(item.get("concept") or item.get("term") or item.get("name")),
+                    resolution=_text(item.get("resolution")) or "按源材料语境区分",
+                    refs="、".join(
+                        _text(ref)
+                        for ref in _list(item.get("occurrence_source_unit_ids") or item.get("source_unit_refs"))
+                        if _text(ref)
+                    ) or "见语义节点证据",
+                )
+            )
+    if not concept_rows:
+        concept_rows = [
+            f"| {item} | 按源材料中的业务对象含义使用 | 见相关语义节点 evidence_refs |"
+            for item in business_objects
+        ]
+    gaps = [
+        _text(item.get("statement") if isinstance(item, dict) else item)
+        for item in _list(model.get("source_gaps"))
+    ]
+    forbidden = [
+        _text(item.get("handling") or item.get("statement"))
+        for item in _list(model.get("inference_register"))
+        if isinstance(item, dict)
+    ]
+
+    primary_thesis = _text(thesis.get("statement")) or value(
+        "primary_thesis", "全文主论点见机器可读语义模型。"
+    )
+    author_purpose = value("author_purpose", "保持源材料意图并供后续阶段直接消费。")
+    decision_intent = value("decision_intent", "由受众理解材料并确认后续动作。")
+    decision_boundary = value("decision_boundary", "不得将未确认事项写成既成事实。")
+
+    lines = [
+        "# 全文语义理解",
+        "",
+        "> 本文由 semantic-argument-model.json 确定性渲染；机器模型是唯一语义作者产物。",
+        "",
+        "## 全文业务主语",
+        "",
+        value("subject_of_report", primary_thesis) + "；全文主论点为：" + primary_thesis,
+        "",
+        "## 核心业务对象",
+        "",
+        "以下对象必须保持各自业务含义、主体责任和来源边界：",
+        *bullet_lines(business_objects, "业务对象及其边界以语义节点和来源证据为准。"),
+        "",
+        "## 空间、时间与服务范围",
+        "",
+        value("scope", "范围以来源单元、状态和边界字段的共同约束为准。")
+        + "；不得超出来源声明的空间、时间、服务及成熟度范围。",
+        "",
+        "## 材料意图与决策动作",
+        "",
+        f"- 作者目的：{author_purpose}",
+        f"- 受众动作：{decision_intent}",
+        f"- 成熟度边界：{decision_boundary}",
+        "",
+        "## 原文结构与论证顺序",
+        "",
+        *bullet_lines(structure_lines, "按原文一级章节和语义节点顺序组织论证。"),
+        "",
+        "## 现有基础与能力缺口",
+        "",
+        *bullet_lines(foundation_gap, "基础与缺口分别由对应语义节点及其证据界定。"),
+        "",
+        "## 业务目标与支撑手段",
+        "",
+        *bullet_lines(goal_support, primary_thesis),
+        "",
+        "## 核心概念语义表",
+        "",
+        "| 原文简称 | 语义处理 | 来源锚点 |",
+        "| --- | --- | --- |",
+        *concept_rows,
+        "",
+        "## 跨章节证据链",
+        "",
+        *bullet_lines(relations, "全文主论点及章节判断均绑定稳定 SU-* 来源单元。"),
+        "",
+        "## 状态、主体与边界",
+        "",
+        "| 语义节点 | 主体 | 状态 | 权重 |",
+        "| --- | --- | --- | --- |",
+        *state_rows,
+        "",
+        "## 待核事项与禁止推断",
+        "",
+        *bullet_lines(
+            gaps + forbidden,
+            decision_boundary + "；不得据此推导未经来源确认的承诺、因果、结果或责任。",
+        ),
+        "",
+        "## 源材料论点模型（机器可读）",
+        "",
+        render_model_block(model),
+        "",
+    ]
+    return "\n".join(lines)
 
 
 def extract_model(text: str) -> dict[str, Any] | None:
@@ -594,6 +767,7 @@ def validate_model(
     issues: list[dict[str, str]] = []
     if not isinstance(model, dict):
         return [_issue("SEMANTIC_ARGUMENT_MODEL_MISSING", "语义理解必须产出机器可读的源材料论点模型。")]
+    projection_required = model.get("source_truth_projection_mode") == "required"
     corrupted_paths = _walk_corrupted_text(model)
     if corrupted_paths:
         preview = "、".join(corrupted_paths[:8])
@@ -943,11 +1117,26 @@ def validate_model(
                         item_refs = {_text(item) for item in _list(atomic_item.get("source_unit_refs")) if _text(item)}
                         anchors = [_text(item) for item in _list(atomic_item.get("coverage_anchors")) if _text(item)]
                         claim_role = _text(atomic_item.get("claim_role"))
+                        evidence_role = _text(atomic_item.get("evidence_role"))
+                        evidence_priority = _text(atomic_item.get("evidence_priority"))
                         importance = _text(atomic_item.get("importance"))
                         status = _text(atomic_item.get("status"))
+                        item_origin = _text(atomic_item.get("claim_origin"))
                         if not item_id or not statement or not item_refs or not claim_role or not importance or not status:
                             issues.append(_issue("SEMANTIC_ATOMIC_ITEM_INCOMPLETE", "每个 atomic_item 必须包含 item_id、statement、source_unit_refs、claim_role、importance 和 status。", node_id=item_id))
                             continue
+                        if projection_required and (
+                            evidence_role not in SOURCE_TRUTH_CLAIM_ROLES
+                            or evidence_priority not in {"P0", "P1", "P2"}
+                            or item_origin not in CLAIM_ORIGINS
+                        ):
+                            issues.append(
+                                _issue(
+                                    "SEMANTIC_SOURCE_TRUTH_PROJECTION_FIELDS_MISSING",
+                                    "source_truth_projection_mode=required 时，每个 atomic_item 必须声明有效的 evidence_role、evidence_priority 和 claim_origin。",
+                                    node_id=item_id,
+                                )
+                            )
                         if not item_refs <= refs:
                             issues.append(_issue("SEMANTIC_ATOMIC_ITEM_SOURCE_DISCONNECTED", "atomic_item.source_unit_refs 必须属于当前 assignment。", node_id=item_id))
                         if len(set(anchors)) < 2:
