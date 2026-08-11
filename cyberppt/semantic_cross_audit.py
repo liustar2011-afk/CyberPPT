@@ -157,6 +157,82 @@ def semantic_evidence_cross_issues(
     if not strict:
         return issues
 
+    truth_omissions: dict[str, dict[str, Any]] = {}
+    for item in _items(source_truth.get("intentional_source_unit_omissions")):
+        if not isinstance(item, dict):
+            continue
+        for unit_id in _refs(item.get("source_unit_refs")):
+            truth_omissions[unit_id] = item
+
+    # Reverse coverage: important semantic claims must be reconstructed from
+    # Source Truth records, not merely point at one representative paragraph.
+    subsection_ids = {
+        _text(item.get("id"))
+        for item in _items(model.get("subsection_nodes"))
+        if _text(item.get("id"))
+    }
+    for node_id, claim in claims.items():
+        if node_id not in subsection_ids:
+            continue
+        weight = _text(claim.get("argument_weight"))
+        evidence_refs = {
+            ref for ref in _refs(claim.get("evidence_refs"))
+            if ref.startswith("SU-") and "-HEADING-" not in ref
+        }
+        protected = (
+            weight in {"core", "constraint"}
+            or (
+                weight == "supporting"
+                and bool(_text(claim.get("source_heading")))
+                and len(evidence_refs) >= 6
+            )
+        )
+        if not protected:
+            continue
+        mapped_records = [
+            record for record in records
+            if node_id in set(_refs(record.get("semantic_node_ids")))
+        ]
+        if not mapped_records:
+            issues.append(_issue(
+                "SOURCE_TRUTH_PROTECTED_NODE_MISSING",
+                "核心、关键约束或证据充分的独立语义论点没有任何 Source Truth 记录承载。",
+                node_id=node_id,
+            ))
+            continue
+        mapped_units = {
+            unit_id
+            for record in mapped_records
+            for unit_id in _refs(record.get("source_unit_refs"))
+        }
+        missing_units: list[str] = []
+        unauthorized_omissions: list[str] = []
+        for unit_id in sorted(evidence_refs - mapped_units):
+            omission = truth_omissions.get(unit_id)
+            if omission is None:
+                missing_units.append(unit_id)
+                continue
+            if not (
+                omission.get("user_authorized_omission") is True
+                and _text(omission.get("user_decision_ref"))
+                and len(_text(omission.get("reason"))) >= 8
+            ):
+                unauthorized_omissions.append(unit_id)
+        if missing_units:
+            issues.append(_issue(
+                "SOURCE_TRUTH_PROTECTED_EVIDENCE_GAP",
+                "重要语义论点的部分来源证据单元未进入 Source Truth；代表性摘要不能替代逐项事实、关系、条件和状态保留。",
+                node_id=node_id,
+                source_ids=missing_units,
+            ))
+        if unauthorized_omissions:
+            issues.append(_issue(
+                "SOURCE_TRUTH_PROTECTED_OMISSION_UNAUTHORIZED",
+                "重要语义论点的来源单元不得由生成器自行舍弃；必须记录明确用户决定。",
+                node_id=node_id,
+                source_ids=unauthorized_omissions,
+            ))
+
     for record in records:
         record_id = _text(record.get("id"))
         origin = _text(record.get("claim_origin"))

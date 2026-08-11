@@ -159,11 +159,23 @@ def strict_model() -> tuple[dict[str, object], set[str], list[dict[str, object]]
                 "source_unit_refs": [evidence_unit],
                 "semantic_node_ids": ["c01"],
                 "summary": "正文事实归入第一章语义节点",
+                "atomic_items": [
+                    {
+                        "item_id": "AI-001",
+                        "statement": "正文事实支撑第一章所述业务基础",
+                        "source_unit_refs": [evidence_unit],
+                        "claim_role": "foundation",
+                        "importance": "core",
+                        "status": "mixed",
+                        "coverage_anchors": ["正文事实", "业务基础"],
+                    }
+                ],
             }
         ],
         "intentional_omissions": [],
         "review_notes": [],
     }
+    value["semantic_content_unit_coverage_mode"] = "required"
     headings = [
         {
             "heading_id": "H-ABCDEF1234-BBBBBBBBBBBB-01",
@@ -490,6 +502,97 @@ class SourceArgumentModelTests(unittest.TestCase):
             )
         }
         self.assertIn("SEMANTIC_SOURCE_UNIT_UNDISPOSED", codes)
+
+    def test_strict_model_rejects_summary_only_assignment(self) -> None:
+        value, unit_ids, headings = strict_model()
+        value["source_coverage"]["assignments"][0].pop("atomic_items")
+
+        codes = {
+            item["code"]
+            for item in validate_model(
+                value,
+                required_heading_records=headings,
+                source_unit_ids=unit_ids,
+                required_content_unit_ids=set(value["document_thesis"]["evidence_refs"]),
+            )
+        }
+
+        self.assertIn("SEMANTIC_ATOMIC_ITEMS_MISSING", codes)
+        self.assertIn("SEMANTIC_SOURCE_UNIT_ABSTRACTED_AWAY", codes)
+
+    def test_strict_model_requires_source_specific_atomic_anchors(self) -> None:
+        value, unit_ids, headings = strict_model()
+        value["source_coverage"]["assignments"][0]["atomic_items"][0]["coverage_anchors"] = ["业务"]
+
+        codes = {
+            item["code"]
+            for item in validate_model(
+                value,
+                required_heading_records=headings,
+                source_unit_ids=unit_ids,
+                required_content_unit_ids=set(value["document_thesis"]["evidence_refs"]),
+            )
+        }
+
+        self.assertIn("SEMANTIC_ATOMIC_ITEM_ANCHORS_INSUFFICIENT", codes)
+
+    def test_strict_model_blocks_unauthorized_protected_omission(self) -> None:
+        value, unit_ids, headings = strict_model()
+        evidence_unit = next(iter(value["document_thesis"]["evidence_refs"]))
+        value["source_coverage"]["assignments"] = []
+        value["source_coverage"]["intentional_omissions"] = [
+            {
+                "source_unit_refs": [evidence_unit],
+                "reason": "为缩短篇幅而不在语义模型中保留该项事实。",
+            }
+        ]
+
+        codes = {
+            item["code"]
+            for item in validate_model(
+                value,
+                required_heading_records=headings,
+                source_unit_ids=unit_ids,
+                required_content_unit_ids={evidence_unit},
+            )
+        }
+
+        self.assertIn("SEMANTIC_PROTECTED_SOURCE_OMITTED", codes)
+
+        value["source_coverage"]["intentional_omissions"][0].update(
+            user_authorized_omission=True,
+            user_decision_ref="conversation:2026-08-11:omit-source-unit",
+        )
+        codes = {
+            item["code"]
+            for item in validate_model(
+                value,
+                required_heading_records=headings,
+                source_unit_ids=unit_ids,
+                required_content_unit_ids={evidence_unit},
+            )
+        }
+        self.assertNotIn("SEMANTIC_PROTECTED_SOURCE_OMITTED", codes)
+
+    def test_strict_model_rejects_atomic_role_and_status_mismatch(self) -> None:
+        value, unit_ids, headings = strict_model()
+        item = value["source_coverage"]["assignments"][0]["atomic_items"][0]
+        item["claim_role"] = "cooperation"
+        item["status"] = "existing"
+        value["section_nodes"][0]["status"] = "planned"
+
+        codes = {
+            issue["code"]
+            for issue in validate_model(
+                value,
+                required_heading_records=headings,
+                source_unit_ids=unit_ids,
+                required_content_unit_ids=set(value["document_thesis"]["evidence_refs"]),
+            )
+        }
+
+        self.assertIn("SEMANTIC_ATOMIC_ROLE_MISMATCH", codes)
+        self.assertIn("SEMANTIC_ATOMIC_STATUS_MISMATCH", codes)
 
     def test_source_assignment_must_bind_target_node_evidence(self) -> None:
         value, unit_ids, headings = strict_model()

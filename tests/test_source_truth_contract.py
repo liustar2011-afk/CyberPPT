@@ -80,6 +80,15 @@ def valid_payload() -> dict[str, object]:
 
 
 class SourceTruthContractTests(unittest.TestCase):
+    def test_strict_compound_record_requires_atomic_semantic_units(self) -> None:
+        payload = valid_payload()
+        record = payload["records"][0]
+        record["source_unit_refs"] = ["SU-A", "SU-B", "SU-C"]
+        record["semantic_units"] = [{"text": "概括性摘要。", "claim_role": "fact"}]
+
+        codes = {item.code for item in audit_source_truth(payload)}
+
+        self.assertIn("SOURCE_RECORD_ATOMICITY_REQUIRED", codes)
     def _write(self, payload: dict[str, object]) -> Path:
         root = Path(tempfile.mkdtemp())
         path = root / "source-truth.json"
@@ -251,7 +260,7 @@ class SourceTruthContractTests(unittest.TestCase):
         codes = {item.code for item in audit_source_truth(payload)}
         self.assertNotIn("SOURCE_PRIORITY_HIERARCHY_FLAT", codes)
 
-    def test_compound_record_is_warning_not_audit_failure(self) -> None:
+    def test_compound_record_is_blocked_and_also_reported_as_warning(self) -> None:
         payload = valid_payload()
         payload["records"][0]["statement"] = (
             "现有材料已经形成全国电力供需统计基础；同时具备分区域观察条件；"
@@ -267,7 +276,10 @@ class SourceTruthContractTests(unittest.TestCase):
             }
         ]
 
-        self.assertEqual([], audit_source_truth(payload))
+        self.assertIn(
+            "SOURCE_RECORD_ATOMICITY_REQUIRED",
+            {item.code for item in audit_source_truth(payload)},
+        )
         self.assertEqual(
             ["SOURCE_RECORD_ATOMICITY_WARNING"],
             [item.code for item in source_truth_atomicity_warnings(payload)],

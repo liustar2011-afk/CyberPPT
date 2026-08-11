@@ -275,6 +275,21 @@ def _semantic_record_issues(
             if isinstance(raw_units, list)
             else []
         )
+        if len(units) == 1:
+            statement = str(record.get("statement") or "")
+            source_unit_refs = _refs(record, "source_unit_refs")
+            independent_markers = sum(
+                statement.count(mark) for mark in ("；", ";", "。")
+            )
+            if len(source_unit_refs) >= 3 or independent_markers >= 3:
+                issues.append(
+                    SourceTruthIssue(
+                        "SOURCE_RECORD_ATOMICITY_REQUIRED",
+                        "Strict Source Truth records spanning several source units or independent clauses must split semantic_units; one summary unit cannot prove atomic retention.",
+                        ids,
+                        "split_semantic_units",
+                    )
+                )
         unit_roles = {str(unit.get("claim_role") or "") for unit in units}
         if claim_role not in CLAIM_ROLES or not units or "" in unit_roles:
             issues.append(

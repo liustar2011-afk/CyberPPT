@@ -188,6 +188,12 @@ def empty_model() -> dict[str, Any]:
             "relations": [],
             "review_notes": [],
         },
+        "semantic_content_unit_coverage_mode": "required",
+        "source_coverage": {
+            "assignments": [],
+            "intentional_omissions": [],
+            "review_notes": [],
+        },
         "source_gaps": [],
     }
 
@@ -872,6 +878,13 @@ def validate_model(
             )
         )
         if required_content_unit_ids is not None:
+            if _text(model.get("semantic_content_unit_coverage_mode")) != "required":
+                issues.append(
+                    _issue(
+                        "SEMANTIC_CONTENT_UNIT_COVERAGE_MODE_REQUIRED",
+                        "严格语义理解默认启用原子事项覆盖；semantic_content_unit_coverage_mode 必须为 required。",
+                    )
+                )
             coverage = model.get("source_coverage")
             if not isinstance(coverage, dict):
                 issues.append(
@@ -884,6 +897,17 @@ def validate_model(
                 assigned_refs: set[str] = set()
                 omitted_refs: set[str] = set()
                 node_lookup = node_index(model)
+                protected_refs = {
+                    ref
+                    for node in node_lookup.values()
+                    if _text(node.get("argument_weight")) in {"core", "constraint"}
+                    or (
+                        _text(node.get("argument_weight")) == "supporting"
+                        and len({_text(item) for item in _list(node.get("evidence_refs")) if _text(item)}) >= 6
+                    )
+                    for ref in _list(node.get("evidence_refs"))
+                    if _text(ref) in required_content_unit_ids
+                }
                 for assignment in _list(coverage.get("assignments")):
                     if not isinstance(assignment, dict):
                         issues.append(_issue("SEMANTIC_SOURCE_ASSIGNMENT_INVALID", "source_coverage.assignments 的每项必须是对象。"))
@@ -901,6 +925,48 @@ def validate_model(
                         missing_evidence = sorted(refs - node_evidence)
                         if missing_evidence:
                             issues.append(_issue("SEMANTIC_SOURCE_ASSIGNMENT_EVIDENCE_DISCONNECTED", "已归属源单元必须同时进入目标语义节点 evidence_refs：" + "、".join(missing_evidence), node_id=target_id))
+                    atomic_items = _list(assignment.get("atomic_items"))
+                    if not atomic_items:
+                        issues.append(
+                            _issue(
+                                "SEMANTIC_ATOMIC_ITEMS_MISSING",
+                                "源单元归属不能只写 summary；必须拆出保留业务对象、动作、条件、状态和数字的 atomic_items。",
+                            )
+                        )
+                    atomic_covered_refs: set[str] = set()
+                    for atomic_item in atomic_items:
+                        if not isinstance(atomic_item, dict):
+                            issues.append(_issue("SEMANTIC_ATOMIC_ITEM_INVALID", "assignment.atomic_items 的每项必须是对象。"))
+                            continue
+                        item_id = _text(atomic_item.get("item_id"))
+                        statement = _text(atomic_item.get("statement"))
+                        item_refs = {_text(item) for item in _list(atomic_item.get("source_unit_refs")) if _text(item)}
+                        anchors = [_text(item) for item in _list(atomic_item.get("coverage_anchors")) if _text(item)]
+                        claim_role = _text(atomic_item.get("claim_role"))
+                        importance = _text(atomic_item.get("importance"))
+                        status = _text(atomic_item.get("status"))
+                        if not item_id or not statement or not item_refs or not claim_role or not importance or not status:
+                            issues.append(_issue("SEMANTIC_ATOMIC_ITEM_INCOMPLETE", "每个 atomic_item 必须包含 item_id、statement、source_unit_refs、claim_role、importance 和 status。", node_id=item_id))
+                            continue
+                        if not item_refs <= refs:
+                            issues.append(_issue("SEMANTIC_ATOMIC_ITEM_SOURCE_DISCONNECTED", "atomic_item.source_unit_refs 必须属于当前 assignment。", node_id=item_id))
+                        if len(set(anchors)) < 2:
+                            issues.append(_issue("SEMANTIC_ATOMIC_ITEM_ANCHORS_INSUFFICIENT", "每个原子事项至少保留两个来源特征锚点，不能用通用概括代替具体业务内容。", node_id=item_id))
+                        if claim_role not in ARGUMENT_ROLES:
+                            issues.append(_issue("SEMANTIC_ATOMIC_ROLE_INVALID", "atomic_item.claim_role 不在受控论证角色中。", node_id=item_id))
+                        if importance not in ARGUMENT_WEIGHTS:
+                            issues.append(_issue("SEMANTIC_ATOMIC_IMPORTANCE_INVALID", "atomic_item.importance 必须为 core、supporting、detail 或 constraint。", node_id=item_id))
+                        if status not in STATUS_VALUES:
+                            issues.append(_issue("SEMANTIC_ATOMIC_STATUS_INVALID", "atomic_item.status 不在受控状态词表中。", node_id=item_id))
+                        compatible_targets = [node_lookup[target_id] for target_id in target_ids if target_id in node_lookup]
+                        if compatible_targets and all(_text(node.get("argument_role")) != claim_role for node in compatible_targets):
+                            issues.append(_issue("SEMANTIC_ATOMIC_ROLE_MISMATCH", "原子事项 claim_role 与其目标语义节点均不相容，应纠正归类或拆分事项。", node_id=item_id))
+                        if compatible_targets and status != "mixed" and all(_text(node.get("status")) not in {status, "mixed"} for node in compatible_targets):
+                            issues.append(_issue("SEMANTIC_ATOMIC_STATUS_MISMATCH", "原子事项 status 与其目标语义节点均不相容，应保留真实状态并纠正归类。", node_id=item_id))
+                        atomic_covered_refs.update(item_refs)
+                    abstracted_refs = sorted(refs - atomic_covered_refs)
+                    if abstracted_refs:
+                        issues.append(_issue("SEMANTIC_SOURCE_UNIT_ABSTRACTED_AWAY", "以下已分配源单元没有进入任何原子事项，仍可能被 summary 抽象掉：" + "、".join(abstracted_refs)))
                     assigned_refs.update(refs)
                 for omission in _list(coverage.get("intentional_omissions")):
                     if not isinstance(omission, dict):
@@ -911,6 +977,18 @@ def validate_model(
                     if not refs or len(reason) < 8:
                         issues.append(_issue("SEMANTIC_SOURCE_OMISSION_REASON_MISSING", "有意忽略必须列明源单元并给出具体编辑理由，不能使用空泛说明。"))
                         continue
+                    protected_omissions = sorted(refs & protected_refs)
+                    if protected_omissions and (
+                        omission.get("user_authorized_omission") is not True
+                        or not _text(omission.get("user_decision_ref"))
+                    ):
+                        issues.append(
+                            _issue(
+                                "SEMANTIC_PROTECTED_SOURCE_OMITTED",
+                                "核心、约束或证据充分的独立支撑事项不得自动舍弃；必须记录 user_authorized_omission=true 和 user_decision_ref："
+                                + "、".join(protected_omissions),
+                            )
+                        )
                     omitted_refs.update(refs)
                 overlap = sorted(assigned_refs & omitted_refs)
                 if overlap:
