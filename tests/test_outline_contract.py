@@ -56,6 +56,36 @@ def outline(*pages: dict[str, object], **overrides: object) -> dict[str, object]
 
 
 class OutlineContractTests(unittest.TestCase):
+    def test_structural_driver_cannot_live_only_in_detail_refs(self) -> None:
+        content = page(
+            1,
+            "content",
+            "建设背景与协同需求",
+            message="跨主体数据协同需求持续增长",
+            refs=["S001", "S002"],
+        )
+        content.update({
+            "detail_refs": ["S001"],
+            "content_units": [{
+                "unit_id": "p01-u01",
+                "statement": "跨主体数据协同需求持续增长",
+                "source_refs": ["S002"],
+                "importance": "primary",
+                "full_prose_required": True,
+                "coverage_anchors": ["跨主体数据", "协同需求"],
+                "onscreen_required": True,
+                "onscreen_anchors": ["跨主体数据"],
+            }],
+        })
+        truth = {"records": [
+            {"id": "S001", "argument_duty": "driver"},
+            {"id": "S002", "argument_duty": "consequence"},
+        ]}
+
+        codes = {item.code for item in audit_outline(outline(content), truth)}
+
+        self.assertIn("STRUCTURAL_ARGUMENT_RECORD_HIDDEN", codes)
+
     def test_formal_semantic_outline_requires_atomic_page_content_units(self) -> None:
         payload = outline(
             page(1, "content", "建设基础", message="现有基础支撑首期试点"),

@@ -76,6 +76,9 @@ CLAIM_ORIGINS = frozenset(
 SOURCE_TRUTH_CLAIM_ROLES = frozenset(
     {"fact", "change", "problem", "judgment", "recommendation", "boundary", "unresolved"}
 )
+ARGUMENT_DUTIES = frozenset(
+    {"premise", "driver", "consequence", "gap", "response", "support", "detail", "boundary"}
+)
 INFERENCE_ORIGINS = frozenset({"source_implied", "editorial_hypothesis"})
 CONCEPT_RESOLUTIONS = frozenset(
     {"same_meaning", "different_dimension", "homonym", "requires_review"}
@@ -1119,6 +1122,7 @@ def validate_model(
                         claim_role = _text(atomic_item.get("claim_role"))
                         evidence_role = _text(atomic_item.get("evidence_role"))
                         evidence_priority = _text(atomic_item.get("evidence_priority"))
+                        argument_duty = _text(atomic_item.get("argument_duty"))
                         importance = _text(atomic_item.get("importance"))
                         status = _text(atomic_item.get("status"))
                         item_origin = _text(atomic_item.get("claim_origin"))
@@ -1128,15 +1132,22 @@ def validate_model(
                         if projection_required and (
                             evidence_role not in SOURCE_TRUTH_CLAIM_ROLES
                             or evidence_priority not in {"P0", "P1", "P2"}
+                            or argument_duty not in ARGUMENT_DUTIES
                             or item_origin not in CLAIM_ORIGINS
                         ):
                             issues.append(
                                 _issue(
                                     "SEMANTIC_SOURCE_TRUTH_PROJECTION_FIELDS_MISSING",
-                                    "source_truth_projection_mode=required 时，每个 atomic_item 必须声明有效的 evidence_role、evidence_priority 和 claim_origin。",
+                                    "source_truth_projection_mode=required 时，每个 atomic_item 必须声明有效的 evidence_role、evidence_priority、argument_duty 和 claim_origin。",
                                     node_id=item_id,
                                 )
                             )
+                        if argument_duty in {"premise", "driver", "consequence", "gap", "response"} and evidence_priority == "P2":
+                            issues.append(_issue(
+                                "SEMANTIC_STRUCTURAL_DUTY_DOWNGRADED",
+                                "承担前提、驱动、结果、缺口或回应职责的原子事项不得标为 P2；否则完整论证链会在 Outline 和上屏压缩中被静默删除。",
+                                node_id=item_id,
+                            ))
                         if not item_refs <= refs:
                             issues.append(_issue("SEMANTIC_ATOMIC_ITEM_SOURCE_DISCONNECTED", "atomic_item.source_unit_refs 必须属于当前 assignment。", node_id=item_id))
                         if len(set(anchors)) < 2:

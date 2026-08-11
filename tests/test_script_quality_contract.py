@@ -1695,6 +1695,47 @@ class ScriptContractAuditTests(unittest.TestCase):
 
         self.assertNotIn("PREMATURE_SCOPE_CLAIM", codes)
 
+    def test_necessity_page_may_use_scope_term_from_assigned_source(self) -> None:
+        script = parse_script_markdown(
+            """## 第3页：行业协同需求与服务供给缺口
+- 页面类型：内容页
+- 页面标题：行业协同需求与服务供给缺口
+- 主判断：运行经营对数据协同的依赖持续增强。
+- 完整文字稿：电力市场化改革使交易决策、价格研判、燃料采购、经营分析和风险控制更依赖跨主体数据与专业模型。
+- 文字稿取舍说明：必留上屏：需求侧；仅讲解：燃料采购；仅追溯：无。
+- 证据映射：需求侧→S006
+- 上屏文字：
+  需求侧：燃料采购需要跨主体数据与专业模型
+- 证据：S006
+- 视觉结构：需求增强与供给不足共同提出建设必要性。
+"""
+        )
+        outline = strict_outline(
+            {
+                "page_id": "p03",
+                "sequence": 3,
+                "page_type": "content",
+                "title": "行业协同需求与服务供给缺口",
+                "argument_role": "necessity",
+                "core_message": "运行经营对数据协同的依赖持续增强。",
+                "source_refs": ["S006"],
+                "prerequisite_pages": [],
+                "main_claim_status": "confirmed",
+            }
+        )
+        truth = source_truth(
+            {
+                "id": "S006",
+                "type": "J",
+                "status": "阶段判断",
+                "statement": "燃料采购对跨主体数据与专业模型的需求不断增加。",
+            }
+        )
+
+        codes = {issue.code for issue in audit_script_quality(script, outline, truth)}
+
+        self.assertNotIn("PREMATURE_SCOPE_CLAIM", codes)
+
     def test_foundation_page_rejects_off_topic_quality_module(self) -> None:
         script = parse_script_markdown(
             """## 第4页：知识资产基础

@@ -692,6 +692,7 @@ def _page_content_unit_contract_issues(
     pages: list[dict[str, object]],
 ) -> list[AuditIssue]:
     issues: list[AuditIssue] = []
+    structural_duties = {"premise", "driver", "consequence", "gap", "response", "boundary"}
     required = (
         outline.get("semantic_argument_model_mode") == "required"
         or outline.get("page_content_unit_coverage_mode") == "required"
@@ -730,6 +731,7 @@ def _page_content_unit_contract_issues(
             onscreen_required = unit.get("onscreen_required")
             coverage_anchors = [str(item).strip() for item in unit.get("coverage_anchors") or [] if str(item).strip()]
             onscreen_anchors = [str(item).strip() for item in unit.get("onscreen_anchors") or [] if str(item).strip()]
+            argument_duties = [str(item).strip() for item in unit.get("argument_duties") or [] if str(item).strip()]
             if not unit_id or not statement or not source_refs:
                 issues.append(AuditIssue(
                     "PAGE_CONTENT_UNIT_IDENTITY_MISSING",
@@ -774,6 +776,13 @@ def _page_content_unit_contract_issues(
                         (page_id,),
                         "restore_onscreen_business_anchor",
                     ))
+            if structural_duties.intersection(argument_duties) and onscreen_required is not True:
+                issues.append(AuditIssue(
+                    "STRUCTURAL_ARGUMENT_DUTY_HIDDEN",
+                    "承担前提、驱动、结果、缺口、回应或边界职责的内容单元不得只留在讲稿或追溯层；否则页面论证链会从中间开始。",
+                    (page_id,),
+                    "restore_structural_argument_chain",
+                ))
         if onscreen_count == 0:
             issues.append(AuditIssue(
                 "PAGE_ONSCREEN_CONTENT_DUTY_MISSING",
@@ -781,6 +790,46 @@ def _page_content_unit_contract_issues(
                 (page_id,),
                 "assign_onscreen_content_duty",
             ))
+    return issues
+
+
+def _structural_argument_duty_issues(
+    pages: list[dict[str, object]],
+    source_truth: dict[str, object] | None,
+) -> list[AuditIssue]:
+    """Keep indispensable argument-chain records out of trace-only storage."""
+    if source_truth is None:
+        return []
+    structural_duties = {"premise", "driver", "consequence", "gap", "response", "boundary"}
+    records = {
+        str(item.get("id") or ""): item
+        for item in source_truth.get("records") or []
+        if isinstance(item, dict) and item.get("id")
+    }
+    issues: list[AuditIssue] = []
+    for page in pages:
+        if page.get("page_type") != "content":
+            continue
+        page_id = str(page.get("page_id") or "")
+        detail_refs = {str(item) for item in page.get("detail_refs") or []}
+        units = [item for item in page.get("content_units") or [] if isinstance(item, dict)]
+        for source_id in page.get("source_refs") or []:
+            source_id = str(source_id)
+            duty = str(records.get(source_id, {}).get("argument_duty") or "")
+            if duty not in structural_duties:
+                continue
+            carriers = [
+                unit for unit in units
+                if source_id in {str(item) for item in unit.get("source_refs") or []}
+            ]
+            visible = any(unit.get("onscreen_required") is True for unit in carriers)
+            if source_id in detail_refs or not visible:
+                issues.append(AuditIssue(
+                    "STRUCTURAL_ARGUMENT_RECORD_HIDDEN",
+                    f"Source Truth 记录 {source_id} 承担 {duty} 论证职责，不得只放入 detail_refs、讲稿或追溯层。",
+                    (page_id,),
+                    "restore_structural_argument_chain",
+                ))
     return issues
 
 
@@ -812,6 +861,7 @@ def audit_outline(
     issues.extend(_document_semantic_issues(outline, source_truth))
     issues.extend(_semantic_derivation_issues(outline, pages, source_truth))
     issues.extend(_page_content_unit_contract_issues(outline, pages))
+    issues.extend(_structural_argument_duty_issues(pages, source_truth))
     if outline.get("semantic_argument_model_mode") == "required" or semantic_argument_model is not None:
         issues.extend(
             AuditIssue(

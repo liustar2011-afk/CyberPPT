@@ -186,6 +186,7 @@ class Stage01CompilerTests(unittest.TestCase):
                                 "claim_role": "foundation",
                                 "evidence_role": "fact",
                                 "evidence_priority": "P0",
+                                "argument_duty": "premise",
                                 "importance": "core",
                                 "status": "existing",
                                 "claim_origin": "source_explicit",
@@ -201,6 +202,7 @@ class Stage01CompilerTests(unittest.TestCase):
                                 "claim_role": "foundation",
                                 "evidence_role": "fact",
                                 "evidence_priority": "P1",
+                                "argument_duty": "support",
                                 "importance": "constraint",
                                 "status": "existing",
                                 "claim_origin": "source_explicit",
@@ -216,6 +218,7 @@ class Stage01CompilerTests(unittest.TestCase):
                                 "claim_role": "foundation",
                                 "evidence_role": "fact",
                                 "evidence_priority": "P2",
+                                "argument_duty": "detail",
                                 "importance": "detail",
                                 "status": "existing",
                                 "claim_origin": "source_explicit",
@@ -295,6 +298,12 @@ class Stage01CompilerTests(unittest.TestCase):
         } | set(content_page["detail_refs"])
         self.assertEqual(set(content_page["source_refs"]), consumed_refs)
         self.assertLess(len(content_page["content_units"]), len(content_page["source_refs"]))
+        premise_unit = next(
+            unit for unit in content_page["content_units"]
+            if "premise" in unit["argument_duties"]
+        )
+        self.assertTrue(premise_unit["onscreen_required"])
+        self.assertGreaterEqual(len(premise_unit["onscreen_anchors"]), 2)
         self.assertEqual(
             {
                 "node_id": "c01-s01",
@@ -322,6 +331,26 @@ class Stage01CompilerTests(unittest.TestCase):
         with self.assertRaisesRegex(
             ValueError,
             "SEMANTIC_SOURCE_TRUTH_PROJECTION_FIELDS_MISSING",
+        ):
+            compile_source_truth(self.project)
+
+    def test_structural_argument_duty_cannot_be_downgraded_to_p2(self) -> None:
+        atomic = self.model["source_coverage"]["assignments"][0]["atomic_items"][0]
+        atomic["argument_duty"] = "driver"
+        atomic["evidence_priority"] = "P2"
+        model_path = self.project / SEMANTIC_ARGUMENT_MODEL
+        model_path.write_text(json.dumps(self.model, ensure_ascii=False, indent=2), encoding="utf-8")
+
+        code, report = run_semantic_understanding_audit(self.project, lightweight=True)
+
+        self.assertEqual(4, code)
+        self.assertIn(
+            "SEMANTIC_STRUCTURAL_DUTY_DOWNGRADED",
+            {item["code"] for item in report["issues"]},
+        )
+        with self.assertRaisesRegex(
+            ValueError,
+            "SEMANTIC_STRUCTURAL_DUTY_DOWNGRADED",
         ):
             compile_source_truth(self.project)
 

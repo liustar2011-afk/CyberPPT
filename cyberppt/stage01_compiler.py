@@ -246,6 +246,7 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
                     "semantic_status": status,
                     "claim_role": evidence_role,
                     "semantic_argument_role": str(atomic.get("claim_role") or ""),
+                    "argument_duty": str(atomic.get("argument_duty") or "detail"),
                     "semantic_units": semantic_units,
                     "coverage_anchors": anchors,
                     "actors": _strings(atomic.get("actors")),
@@ -364,8 +365,13 @@ def _clean_title(value: object) -> str:
 
 
 def _page_content_units(page_id: str, records: list[dict[str, Any]], topic: str) -> tuple[list[dict[str, Any]], list[str]]:
-    structural = [record for record in records if str(record.get("priority")) != "P2"]
-    details = [str(record.get("id")) for record in records if str(record.get("priority")) == "P2"]
+    structural_duties = {"premise", "driver", "consequence", "gap", "response", "boundary"}
+    structural = [
+        record for record in records
+        if str(record.get("priority")) != "P2"
+        or str(record.get("argument_duty") or "") in structural_duties
+    ]
+    details = [str(record.get("id")) for record in records if record not in structural]
     if not structural and records:
         structural = [records[0]]
         details = [str(record.get("id")) for record in records[1:]]
@@ -423,8 +429,17 @@ def _page_content_units(page_id: str, records: list[dict[str, Any]], topic: str)
                 "importance": role,
                 "full_prose_required": True,
                 "coverage_anchors": anchors[:4],
-                "onscreen_required": role in {"primary", "boundary"},
-                "onscreen_anchors": anchors[:1],
+                "argument_duties": list(dict.fromkeys(
+                    str(record.get("argument_duty") or "detail") for record in grouped
+                )),
+                "onscreen_required": role in {"primary", "boundary"} or any(
+                    str(record.get("argument_duty") or "") in structural_duties
+                    for record in grouped
+                ),
+                "onscreen_anchors": anchors[:2] if any(
+                    str(record.get("argument_duty") or "") in structural_duties
+                    for record in grouped
+                ) else anchors[:1],
                 "topic_category": topic,
             }
         )

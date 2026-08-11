@@ -4452,6 +4452,13 @@ def audit_script_quality(
                 )
             )
             approved_scope_terms = set(_unhedged_scope_terms(approved_scope_text))
+            approved_source_scope_text = "\n".join(
+                str(records_by_id.get(source_id, {}).get("statement") or "")
+                for source_id in page.source_refs
+            )
+            approved_scope_terms.update(
+                _unhedged_scope_terms(approved_source_scope_text)
+            )
             matched = tuple(
                 term
                 for term in _unhedged_scope_terms(claim_text)
