@@ -480,6 +480,27 @@ class ArgumentFlowContractTests(unittest.TestCase):
         codes = {issue.code for issue in audit_argument_flow(payload, truth)}
         self.assertIn("BOUNDARY_USED_AS_PRIMARY_PROOF", codes)
 
+    def test_page_source_records_must_share_declared_semantic_node(self) -> None:
+        page = content_page("p10", 10, "solution", refs=["S001"])
+        page.update(
+            {
+                "source_argument_node_ids": ["sub-02-01"],
+                "detail_refs": [],
+                "boundary_refs": [],
+            }
+        )
+        truth = strict_truth(
+            record("S001", "fact", pages=["p10"]) | {"semantic_node_ids": ["sub-02-02"]}
+        )
+        codes = {
+            issue.code
+            for issue in audit_argument_flow(
+                {"schema": "cyberppt.outline.v2", "argument_contract_mode": "strict", "pages": [page]},
+                truth,
+            )
+        }
+        self.assertIn("OUTLINE_SOURCE_NODE_EVIDENCE_DISCONNECTED", codes)
+
     def test_v2_boundary_record_cannot_derive_ordinary_core_message(self) -> None:
         page = {
             "page_id": "p10", "sequence": 10, "page_type": "content",

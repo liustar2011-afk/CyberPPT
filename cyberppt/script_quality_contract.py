@@ -1382,6 +1382,7 @@ def build_communication_review(
         if (
             _compact_len(page.full_prose) >= PROSE_MIN_CHARS * 2
             and semantic_coverage < ONSCREEN_SEMANTIC_COVERAGE_MIN
+            and not structured_compact_layer
         ):
             findings.append(
                 {
@@ -1401,6 +1402,7 @@ def build_communication_review(
         elif (
             _compact_len(page.full_prose) >= PROSE_MIN_CHARS * 2
             and semantic_coverage < ONSCREEN_SEMANTIC_COVERAGE_TARGET
+            and not structured_compact_layer
         ):
             findings.append(
                 {
@@ -1948,6 +1950,241 @@ def _boundary_aside_hits(text: str) -> tuple[str, ...]:
     return tuple(hits)
 
 
+def _onscreen_parallel_structure_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
+    """Check that peer items in each visible module share a syntax skeleton.
+
+    This is deliberately a warning: a source-faithful exception may be valid,
+    but mixed paragraph/label syntax in one module is usually an authoring
+    defect.  The check concerns form only; it never requires identical wording
+    and therefore cannot flatten different business responsibilities.
+    """
+
+    if page.page_type != "content":
+        return []
+    lines = page.onscreen_text.splitlines()
+
+    def heading_title(line: str) -> str | None:
+        title = _module_title(line)
+        if title is None:
+            return None
+        # Plain ``标签：内容`` lines are visible details, not headings.
+        stripped = line.strip()
+        if re.search(r"[：:]", stripped) and not stripped.startswith("**"):
+            return None
+        return title
+
+    headings: list[tuple[int, int, str]] = []
+    for index, line in enumerate(lines):
+        title = heading_title(line)
+        if title is not None:
+            headings.append((_line_indent(line), index, title))
+    issues: list[ScriptQualityIssue] = []
+    for position, (indent, start, title) in enumerate(headings):
+        end = len(lines)
+        for next_indent, next_index, _ in headings[position + 1 :]:
+            if next_indent <= indent:
+                end = next_index
+                break
+        child_lines: list[str] = []
+        for line in lines[start + 1 : end]:
+            if not line.strip() or heading_title(line) is not None:
+                continue
+            if _line_indent(line) <= indent:
+                continue
+            child_lines.append(line.strip().lstrip("- ").strip())
+        if len(child_lines) < 3:
+            continue
+        classes = {
+            "label_colon" if re.search(r"[：:]", line) else "phrase"
+            for line in child_lines
+        }
+        if len(classes) > 1:
+            issues.append(
+                _issue(
+                    "ONSCREEN_PARALLEL_STRUCTURE_INCONSISTENT",
+                    page,
+                    f"Module {title} mixes label-value items with free phrases instead of a parallel syntax.",
+                    "Use one peer syntax within the module (prefer 标签：短语); preserve each item's distinct business object, responsibility, or action.",
+                    evidence=tuple(child_lines[:6]),
+                    severity="warning",
+                )
+            )
+    return issues
+
+
+def _necessity_page_closure_issues(
+    page: ScriptPage,
+    contract: dict[str, object],
+) -> list[ScriptQualityIssue]:
+    """Require a necessity page to close the causal chain on screen."""
+
+    topic = str(contract.get("topic_category") or "").strip()
+    if page.page_type != "content" or "必要性" not in topic:
+        return []
+    title = str(contract.get("title") or page.title).strip()
+    issues: list[ScriptQualityIssue] = []
+    if not re.search(r"必要性|必要|为何|原因", title):
+        issues.append(
+            _issue(
+                "PAGE_TITLE_ARGUMENT_ROLE_MISMATCH",
+                page,
+                "The approved title describes a narrower demand topic while the page argument role is construction necessity.",
+                "Name the page's actual proposition explicitly, preferably with 建设必要性 for formal reporting materials.",
+                evidence=(f"title={title}", f"topic_category={topic}"),
+            )
+        )
+    visible_lines = [line.strip() for line in page.onscreen_text.splitlines() if line.strip()]
+    tail = "\n".join(visible_lines[max(0, len(visible_lines) * 2 // 3) :])
+    if not re.search(r"建设必要性|需要(?:建设|建立)|建立行业级|建设行业级", tail):
+        issues.append(
+            _issue(
+                "ONSCREEN_NECESSITY_CLOSURE_MISSING",
+                page,
+                "The on-screen chain states background, demand, or gap but does not close on the required construction response.",
+                "End the visible chain with the source-supported necessity conclusion; do not stop at a problem inventory or add a generic slogan.",
+                evidence=(tail[-180:],),
+            )
+        )
+    return issues
+
+
+ONSCREEN_FLOW_ACTION_TERMS = (
+    "建立", "推动", "带动", "驱动", "形成", "制约", "需要", "组织",
+    "连接", "贯通", "衔接", "转化", "输入", "输出", "履行", "交付",
+    "反馈", "回流", "支撑", "完善", "梳理", "实施", "运营", "推广",
+    "管理", "确认", "授权", "计量", "结算", "验证", "进入", "转入",
+)
+ONSCREEN_CLOSING_CONNECTORS = ("需要", "建设", "建立", "衔接", "形成")
+ONSCREEN_NECESSITY_CONSTRAINT_TERMS = (
+    "难以", "不足", "缺口", "尚未", "制约", "分散", "不能",
+)
+ONSCREEN_FLOW_HEADING_MAX_CHARS = 24
+FORMULAIC_TRANSITION_TERMS = (
+    "因此", "由此", "进而", "综上", "综上所述", "基于此", "鉴于此", "所以",
+)
+
+
+def _onscreen_flow_language_issues(
+    page: ScriptPage,
+    contract: dict[str, object],
+) -> list[ScriptQualityIssue]:
+    """Require flow pages to express motion in their visible language.
+
+    A visual arrow cannot manufacture a relation that the locked text does not
+    state.  Top-level modules on a causal/process/loop page therefore need
+    predicates or business actions; causal necessity pages additionally need
+    explicit connectors so the headings read as one continuous argument.
+    """
+
+    modules = tuple(item.strip() for item in page.top_level_module_titles if item.strip())
+    visual = page.visual_structure
+    topic = str(contract.get("topic_category") or "")
+    is_flow = len(modules) >= 3 and (
+        "→" in visual
+        or "必要性" in topic
+        or any(term in visual for term in ("论证链", "主链", "闭环", "依次", "顺序关系", "阶段推进"))
+    )
+    if page.page_type != "content" or not is_flow:
+        return []
+    issues: list[ScriptQualityIssue] = []
+    action_modules = tuple(
+        module
+        for module in modules
+        if any(term in module for term in ONSCREEN_FLOW_ACTION_TERMS)
+    )
+    required_actions = max(2, (len(modules) + 1) // 2)
+    if len(action_modules) < required_actions:
+        missing = tuple(module for module in modules if module not in action_modules)
+        issues.append(
+            _issue(
+                "ONSCREEN_FLOW_ACTION_MISSING",
+                page,
+                "The visible flow is built from isolated noun phrases instead of business actions or relation predicates.",
+                "Rewrite peer headings so they state what changes, drives, constrains, forms, transfers, or results; child items should supply evidence and detail.",
+                evidence=missing[:6],
+            )
+        )
+    long_modules = tuple(
+        module
+        for module in modules
+        if meaningful_char_count(module) > ONSCREEN_FLOW_HEADING_MAX_CHARS
+    )
+    if long_modules:
+        issues.append(
+            _issue(
+                "ONSCREEN_FLOW_HEADING_TOO_LONG",
+                page,
+                "One or more flow headings over-explain the relation instead of advancing it concisely.",
+                "Keep each flow step within 24 meaningful characters; place evidence and qualifications in child items.",
+                evidence=long_modules[:6],
+            )
+        )
+    repeated_steps: list[str] = []
+    for left, right in zip(modules, modules[1:]):
+        left_compact = re.sub(r"[^\w\u4e00-\u9fff]+", "", left)
+        right_compact = re.sub(r"[^\w\u4e00-\u9fff]+", "", right)
+        overlap = ""
+        for width in range(min(12, len(left_compact), len(right_compact)), 3, -1):
+            if left_compact.endswith(right_compact[:width]):
+                overlap = right_compact[:width]
+                break
+        if overlap:
+            repeated_steps.append(f"{left} → {right}（重复：{overlap}）")
+    if repeated_steps:
+        issues.append(
+            _issue(
+                "ONSCREEN_FLOW_STEP_REDUNDANT",
+                page,
+                "An adjacent flow step repeats the previous step's ending as its opening, making the chain explicit and verbose.",
+                "Let the next step advance with a new business subject or predicate; rely on sequence for continuity instead of verbatim relay wording.",
+                evidence=tuple(repeated_steps[:4]),
+            )
+        )
+    if "必要性" in topic:
+        has_constraint = any(
+            term in module
+            for module in modules[:-1]
+            for term in ONSCREEN_NECESSITY_CONSTRAINT_TERMS
+        )
+        closes = any(term in modules[-1] for term in ONSCREEN_CLOSING_CONNECTORS)
+        if not has_constraint or not closes:
+            issues.append(
+                _issue(
+                    "ONSCREEN_NECESSITY_CHAIN_INCOMPLETE",
+                    page,
+                    "The necessity modules do not establish both a concrete constraint and a construction response.",
+                    "State the constraint with a concrete predicate such as 难以/尚未/不足, then close with the required construction action and its business effect; explicit causal connectives are not required.",
+                    evidence=modules,
+                )
+            )
+    return issues
+
+
+def _formulaic_transition_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
+    """Reject speech-like filler transitions from all authored content layers."""
+
+    if page.page_type != "content":
+        return []
+    issues: list[ScriptQualityIssue] = []
+    for field_name, text in (
+        ("完整文字稿", page.full_prose),
+        ("上屏文字", page.onscreen_text),
+        ("演讲者备注", page.speaker_notes),
+    ):
+        hits = tuple(term for term in FORMULAIC_TRANSITION_TERMS if term in text)
+        if hits:
+            issues.append(
+                _issue(
+                    "FORMULAIC_TRANSITION_PHRASE",
+                    page,
+                    f"{field_name} uses formulaic discourse transitions instead of a concrete business relation.",
+                    "Remove 因此/由此/进而/综上/所以-style filler and let the subject, action, constraint, or result carry the transition.",
+                    evidence=(field_name, *hits),
+                )
+            )
+    return issues
+
+
 def _issue(
     code: str,
     page: ScriptPage,
@@ -2104,6 +2341,143 @@ def _source_consumption_issues(
                     evidence=(statement, f"unit_overlap={unit_overlap:.3f}", f"max_fact_overlap={max(fact_overlaps or [0.0]):.3f}"),
                 )
             )
+    return issues
+
+
+def _full_prose_source_coverage_issues(
+    page: ScriptPage,
+    contract: dict[str, object],
+    records_by_id: dict[str, dict[str, object]],
+) -> list[ScriptQualityIssue]:
+    """Require every page-assigned fact to survive in 完整文字稿.
+
+    Evidence identifiers prove provenance, not consumption.  A page may omit
+    an assigned record only when the approved Outline declares a specific
+    editorial reason in ``intentional_omissions``.
+    """
+
+    expected_refs = tuple(
+        dict.fromkeys(
+            str(ref)
+            for field in ("source_refs", "detail_refs", "boundary_refs")
+            for ref in (contract.get(field) or [])
+            if str(ref).strip()
+        )
+    )
+    omissions: set[str] = set()
+    issues: list[ScriptQualityIssue] = []
+    for item in contract.get("intentional_omissions") or []:
+        if not isinstance(item, dict):
+            issues.append(
+                _issue(
+                    "FULL_PROSE_OMISSION_INVALID",
+                    page,
+                    "Outline intentional_omissions entries must be objects.",
+                    "Declare source_refs and a specific editorial reason in the approved Outline.",
+                )
+            )
+            continue
+        refs = tuple(str(ref) for ref in item.get("source_refs") or [] if str(ref).strip())
+        reason = str(item.get("reason") or "").strip()
+        if not refs or len(reason) < 8:
+            issues.append(
+                _issue(
+                    "FULL_PROSE_OMISSION_REASON_MISSING",
+                    page,
+                    "An intentional omission requires source_refs and a specific editorial reason.",
+                    "Explain why the source information is deliberately excluded from this page; generic importance labels are insufficient.",
+                    source_ids=refs,
+                )
+            )
+            continue
+        omissions.update(refs)
+    for ref in expected_refs:
+        if ref in omissions:
+            continue
+        record = records_by_id.get(ref)
+        if not record:
+            continue
+        anchors = [str(record.get("statement") or "")]
+        anchors.extend(
+            str(unit.get("text") or "")
+            for unit in record.get("semantic_units") or []
+            if isinstance(unit, dict) and str(unit.get("text") or "").strip()
+        )
+        overlap = max(
+            (_source_statement_overlap(anchor, page.full_prose) for anchor in anchors if anchor.strip()),
+            default=0.0,
+        )
+        if overlap < 0.08:
+            issues.append(
+                _issue(
+                    "FULL_PROSE_SOURCE_COVERAGE_GAP",
+                    page,
+                    "The approved source record is cited but its factual content is absent from 完整文字稿.",
+                    "Restore the source-specific fact in 完整文字稿, or record a specific intentional omission in the approved Outline.",
+                    source_ids=(ref,),
+                    evidence=(str(record.get("statement") or ""), f"overlap={overlap:.3f}"),
+                )
+            )
+    return issues
+
+
+def _page_content_unit_coverage_issues(
+    page: ScriptPage,
+    contract: dict[str, object],
+) -> list[ScriptQualityIssue]:
+    """Verify atomic page content survives both prose and onscreen compression."""
+
+    issues: list[ScriptQualityIssue] = []
+    units = [
+        item for item in (contract.get("content_units") or [])
+        if isinstance(item, dict)
+    ]
+    for unit in units:
+        unit_id = str(unit.get("unit_id") or "")
+        statement = str(unit.get("statement") or "").strip()
+        source_refs = tuple(
+            str(item) for item in unit.get("source_refs") or [] if str(item)
+        )
+        coverage_anchors = tuple(
+            str(item).strip() for item in unit.get("coverage_anchors") or []
+            if str(item).strip()
+        )
+        onscreen_anchors = tuple(
+            str(item).strip() for item in unit.get("onscreen_anchors") or []
+            if str(item).strip()
+        )
+        if unit.get("full_prose_required") is True:
+            hits = tuple(anchor for anchor in coverage_anchors if anchor in page.full_prose)
+            required_hits = max(2, (len(coverage_anchors) * 2 + 2) // 3)
+            statement_overlap = _source_statement_overlap(statement, page.full_prose)
+            if len(hits) < required_hits or statement_overlap < 0.12:
+                issues.append(_issue(
+                    "FULL_PROSE_CONTENT_UNIT_GAP",
+                    page,
+                    "页面原子内容单元没有完整进入完整文字稿，存在对象、动作、条件或业务特征丢失。",
+                    "恢复该内容单元的来源特征；不要用更抽象的概括句替代。",
+                    source_ids=source_refs,
+                    evidence=(
+                        f"unit_id={unit_id}",
+                        f"statement={statement}",
+                        f"anchor_hits={len(hits)}/{len(coverage_anchors)}",
+                        f"overlap={statement_overlap:.3f}",
+                    ),
+                ))
+        if unit.get("onscreen_required") is True:
+            missing = tuple(
+                anchor for anchor in onscreen_anchors
+                if anchor not in page.onscreen_text
+            )
+            if missing:
+                issues.append(_issue(
+                    "ONSCREEN_CONTENT_UNIT_GAP",
+                    page,
+                    "提纲指定的重要内容单元没有进入上屏文字，页面视觉表达丢失关键业务特征。",
+                    "以短语化、条目化方式恢复 onscreen_anchors；可以压缩句式，不能删除业务对象或关键动作。",
+                    source_ids=source_refs,
+                    evidence=(f"unit_id={unit_id}", *missing),
+                ))
     return issues
 
 
@@ -2317,6 +2691,21 @@ def _prose_issues(
             )
         )
         return issues
+    semantic_paragraphs = tuple(
+        paragraph.strip()
+        for paragraph in re.split(r"\n\s*\n", prose)
+        if paragraph.strip()
+    )
+    if prose_chars >= 260 and len(semantic_paragraphs) < 2:
+        issues.append(
+            _issue(
+                "CONTENT_PROSE_SEMANTIC_PARAGRAPHS_MISSING",
+                page,
+                "Long full prose is collapsed into one block instead of semantic paragraphs.",
+                "Split 完整文字稿 at argument boundaries such as background, concrete demand, present gap, and page conclusion; do not split mechanically by sentence count.",
+                evidence=(f"chars={prose_chars}", f"paragraphs={len(semantic_paragraphs)}"),
+            )
+        )
     order = list(page.field_order)
     if "完整文字稿" in order and "上屏文字" in order:
         if order.index("完整文字稿") > order.index("上屏文字"):
@@ -2466,6 +2855,7 @@ def _prose_issues(
         elif (
             prose_chars >= PROSE_MIN_CHARS * 2
             and coverage < ONSCREEN_SEMANTIC_COVERAGE_MIN
+            and not structured_compact_layer
         ):
             issues.append(
                 _issue(
@@ -3246,6 +3636,7 @@ def _presentation_issues(
                     severity=detail_severity,
                 )
             )
+        issues.extend(_onscreen_parallel_structure_issues(page))
         compound_heading_hits = _compound_module_heading_hits(
             _onscreen_heading_candidates(page)
         )
@@ -3889,6 +4280,18 @@ def audit_script_quality(
                 )
             )
             issues.extend(_source_consumption_issues(page, contract))
+            issues.extend(
+                _full_prose_source_coverage_issues(
+                    page,
+                    contract,
+                    records_by_id,
+                )
+            )
+            if (
+                outline.get("semantic_argument_model_mode") == "required"
+                or outline.get("page_content_unit_coverage_mode") == "required"
+            ):
+                issues.extend(_page_content_unit_coverage_issues(page, contract))
             issues.extend(_narration_boundary_issues(page, contract))
             issues.extend(_preflight_semantic_issues(page, contract, records_by_id))
             if outline.get("page_contract_receipt_mode") == "required":
@@ -4107,6 +4510,9 @@ def audit_script_quality(
                     completed,
                 )
             )
+        issues.extend(_necessity_page_closure_issues(page, contract))
+        issues.extend(_onscreen_flow_language_issues(page, contract))
+        issues.extend(_formulaic_transition_issues(page))
         issues.extend(
             _presentation_issues(
                 page,

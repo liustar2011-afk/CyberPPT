@@ -283,6 +283,11 @@ def semantic_template() -> str:
     "relations": [],
     "review_notes": []
   },
+  "source_coverage": {
+    "assignments": [],
+    "intentional_omissions": [],
+    "review_notes": []
+  },
   "source_gaps": []
 }
 ```
@@ -315,6 +320,8 @@ Hard requirements:
 - Every strict section/subsection node must bind its corresponding card through `source_heading_id` and copy the card's argument role, argument weight, and claim origin. The node may add broader evidence, but it may not reinterpret the heading after the card review.
 - Classify every thesis, semantic node, heading card, and argument relation with `claim_origin`: `source_explicit`, `source_implied`, or `editorial_hypothesis`. Register every implied claim in `inference_register` with its basis, affected nodes, and handling. Editorial hypotheses may be recorded only as Director candidates in the inference register; they may not be promoted into the source-native thesis, nodes, heading cards, or argument relations.
 - Build `concept_occurrence_graph` for terms or objects repeated in multiple source locations. Each repeated concept must bind at least two occurrence source-unit IDs and decide whether the uses have the same meaning, describe different dimensions, are homonyms, or still require review. Repetition is not proof that two passages are duplicates or should become one page.
+- Treat source completeness as a disposition problem, not a keyword-sampling problem. In `source_coverage.assignments`, place every substantive paragraph, list item, table or other non-heading `SU-*` unit under one or more section/subsection nodes whose thesis actually carries that information. The assigned unit must also appear in the target node's `evidence_refs`. If a source unit is deliberately excluded from the semantic model, list it in `source_coverage.intentional_omissions` with `source_unit_refs` and a specific editorial reason. An unassigned source unit, a generic reason such as “not important”, or a coverage list that is not bound to a semantic node is invalid.
+- Preserve argument prerequisites as first-class semantic content: overall policy/industry background, causal premises, business changes, named objects, duties, processing targets, operating actions, participants, quantitative facts and explicit conditions must not disappear merely because a later paragraph states a more compact conclusion.
 - Every argument relation must declare `weight_effect: "none"`; relation type describes how propositions connect, not their narrative importance.
 - Write the marked JSON block as real UTF-8 text. Never replace source language with `?`, the Unicode replacement character, mojibake, or an empty evidence/actor field; the Stage 00 audit will reject lossy text before any downstream artifact can consume it.
 - Declare `mece_rules` with the partition basis, exhaustive scope, overlap policy, and one or more `groups` that enumerate each checked sibling partition (`parent_id`, `node_ids`, `partition_basis`, `exhaustive_scope`, `overlap_policy`). If two source sections use similar words for different dimensions, keep both nodes and state the dimension relation instead of deleting one.
@@ -426,7 +433,32 @@ def _load_existing_source_map(project: Path) -> dict[str, Any]:
         "sources": registry["sources"],
         "headings": heading_tree["headings"],
         "unit_ids": [str(item["unit_id"]) for item in units],
+        "content_unit_ids": [
+            str(item["unit_id"])
+            for item in units
+            if str(item.get("kind") or "").lower() != "heading"
+            and str(item.get("text") or "").strip()
+        ],
     }
+
+
+def _source_content_unit_ids(project: Path) -> list[str]:
+    """Return substantive non-heading units that require an explicit disposition."""
+
+    path = project / SOURCE_UNITS
+    result: list[str] = []
+    for raw in path.read_text(encoding="utf-8-sig").splitlines():
+        if not raw.strip():
+            continue
+        item = json.loads(raw)
+        unit_id = str(item.get("unit_id") or "").strip()
+        if (
+            unit_id
+            and str(item.get("kind") or "").lower() != "heading"
+            and str(item.get("text") or "").strip()
+        ):
+            result.append(unit_id)
+    return result
 
 
 def prepare_semantic_understanding(
@@ -458,6 +490,7 @@ def prepare_semantic_understanding(
         raise ValueError(
             "source map is incomplete; run source-map-check and resolve extraction issues before semantic understanding"
         )
+    source_map["content_unit_ids"] = _source_content_unit_ids(project)
     rendered_sources = render_units_for_model(project, prepared=source_map)
     if lightweight:
         return {
@@ -473,6 +506,7 @@ def prepare_semantic_understanding(
             "source_headings": _source_headings(source_map),
             "source_heading_tree": source_map["headings"],
             "source_unit_ids": source_map["unit_ids"],
+            "source_content_unit_ids": source_map.get("content_unit_ids", []),
             "required_sections": [aliases[0] for aliases in REQUIRED_SECTIONS.values()],
             "authoring_task": _render_model_input(
                 project,
@@ -515,6 +549,7 @@ def prepare_semantic_understanding(
         "source_headings": _source_headings(source_map),
         "source_heading_tree": source_map["headings"],
         "source_unit_ids": source_map["unit_ids"],
+        "source_content_unit_ids": source_map.get("content_unit_ids", []),
         "required_sections": [aliases[0] for aliases in REQUIRED_SECTIONS.values()],
         "prepared_at": _utc_now(),
     }
@@ -694,6 +729,9 @@ def run_semantic_understanding_audit(
         required_headings=prepared.get("source_headings") or [],
         required_heading_records=prepared.get("source_heading_tree") or [],
         source_unit_ids=set(prepared.get("source_unit_ids") or []),
+        required_content_unit_ids=set(
+            prepared.get("source_content_unit_ids") or []
+        ),
         require_document_context=required_model,
     )
     if argument_model is None and not required_model:

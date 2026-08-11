@@ -15,11 +15,17 @@ from cyberppt.script_quality_contract import (
     _onscreen_detail_phrase_overages,
     _onscreen_layout_meta_hits,
     _onscreen_parent_child_role_mismatches,
+    _onscreen_parallel_structure_issues,
+    _necessity_page_closure_issues,
+    _onscreen_flow_language_issues,
+    _formulaic_transition_issues,
     _speaker_placeholder_hits,
     _issue,
     _presentation_issues,
     _prose_issues,
     _source_consumption_issues,
+    _full_prose_source_coverage_issues,
+    _page_content_unit_coverage_issues,
     _visual_structure_judgment_issues,
     audit_script_quality,
     assert_imagegen_onscreen_readiness,
@@ -36,6 +42,348 @@ from cyberppt.script_quality_contract import (
     audience_facing_group_label,
     strip_authoring_group_marker,
 )
+
+
+class OnscreenParallelStructureTests(unittest.TestCase):
+    def _page(self, text: str) -> ScriptPage:
+        return ScriptPage(
+            page_id="p09",
+            sequence=9,
+            heading="",
+            page_type="content",
+            title="合作对象",
+            main_message="不同伙伴提供不同能力",
+            full_prose="不同伙伴提供不同能力，形成合作供给。" * 12,
+            selection_notes="",
+            evidence_map="",
+            evidence_map_refs=("ST032",),
+            source_refs=("ST032",),
+            boundary_source_refs=(),
+            boundary="",
+            visual_structure="伙伴能力关系",
+            onscreen_text=text,
+            module_titles=("合作伙伴能力",),
+        )
+
+    def test_mixed_label_and_free_phrase_is_flagged(self) -> None:
+        issues = _onscreen_parallel_structure_issues(
+            self._page(
+                "Partner capability\n"
+                "    Power utility: provide industry scenarios\n"
+                "    Research institute: provide models\n"
+                "    Technology partner provides implementation\n"
+            )
+        )
+        self.assertIn(
+            "ONSCREEN_PARALLEL_STRUCTURE_INCONSISTENT",
+            {item.code for item in issues},
+        )
+
+    def test_parallel_label_value_items_pass(self) -> None:
+        issues = _onscreen_parallel_structure_issues(
+            self._page(
+                "Partner capability\n"
+                "    Power utility: provide industry scenarios\n"
+                "    Research institute: provide models\n"
+                "    Technology partner: provide implementation\n"
+            )
+        )
+        self.assertNotIn(
+            "ONSCREEN_PARALLEL_STRUCTURE_INCONSISTENT",
+            {item.code for item in issues},
+        )
+
+
+class NecessityPageContractTests(unittest.TestCase):
+    def _page(self, *, title: str, onscreen: str, prose: str = "") -> ScriptPage:
+        return ScriptPage(
+            page_id="p03",
+            sequence=3,
+            heading="",
+            page_type="content",
+            title=title,
+            main_message="需求增长而稳定供给不足，需要建设行业级服务运营基础",
+            full_prose=prose or ("行业变化带来协同需求。现有资源尚未形成稳定供给。" * 15),
+            selection_notes="",
+            evidence_map="",
+            evidence_map_refs=("ST001",),
+            source_refs=("ST001",),
+            boundary_source_refs=(),
+            boundary="",
+            visual_structure="背景形成需求，供给缺口导向建设必要性",
+            onscreen_text=onscreen,
+            module_titles=("建设背景", "供给缺口"),
+        )
+
+    def test_narrow_title_and_missing_necessity_closure_are_blocked(self) -> None:
+        issues = _necessity_page_closure_issues(
+            self._page(
+                title="行业数据服务运营的建设需求",
+                onscreen="建设背景\n    业务变化：协同需求增长\n\n供给缺口\n    供给现状：尚未形成稳定服务供给",
+            ),
+            {"title": "行业数据服务运营的建设需求", "topic_category": "建设必要性"},
+        )
+        codes = {item.code for item in issues}
+        self.assertIn("PAGE_TITLE_ARGUMENT_ROLE_MISMATCH", codes)
+        self.assertIn("ONSCREEN_NECESSITY_CLOSURE_MISSING", codes)
+
+    def test_explicit_necessity_title_and_source_response_pass(self) -> None:
+        issues = _necessity_page_closure_issues(
+            self._page(
+                title="行业数据服务运营基础的建设必要性",
+                onscreen="供给缺口\n    供给现状：尚未形成稳定服务供给\n\n建设必要性\n    建设要求：需要建立行业级数据连接、可信使用和服务运营基础",
+            ),
+            {"title": "行业数据服务运营基础的建设必要性", "topic_category": "建设必要性"},
+        )
+        self.assertEqual([], issues)
+
+    def test_long_full_prose_requires_semantic_paragraphs(self) -> None:
+        page = self._page(
+            title="行业数据服务运营基础的建设必要性",
+            onscreen="建设必要性\n    建设要求：需要建立行业级服务运营基础",
+            prose="新型电力系统建设带来协同需求。" * 25,
+        )
+        self.assertIn(
+            "CONTENT_PROSE_SEMANTIC_PARAGRAPHS_MISSING",
+            {item.code for item in _prose_issues(page)},
+        )
+
+    def test_semantically_paragraphed_full_prose_passes(self) -> None:
+        page = self._page(
+            title="行业数据服务运营基础的建设必要性",
+            onscreen="建设必要性\n    建设要求：需要建立行业级服务运营基础",
+            prose=("新型电力系统建设带来协同需求。" * 13)
+            + "\n\n"
+            + ("现有分散资源尚未形成稳定供给。" * 13),
+        )
+        self.assertNotIn(
+            "CONTENT_PROSE_SEMANTIC_PARAGRAPHS_MISSING",
+            {item.code for item in _prose_issues(page)},
+        )
+
+    def test_isolated_noun_modules_do_not_form_a_causal_flow(self) -> None:
+        page = self._page(
+            title="行业数据服务运营基础的建设必要性",
+            onscreen="建设背景\n\n协同需求\n\n供给缺口\n\n建设行业级服务运营基础",
+        )
+        page = ScriptPage(
+            **{
+                **page.__dict__,
+                "top_level_module_titles": (
+                    "建设背景",
+                    "协同需求",
+                    "供给缺口",
+                    "建设行业级服务运营基础",
+                ),
+            }
+        )
+        codes = {
+            item.code
+            for item in _onscreen_flow_language_issues(
+                page,
+                {"topic_category": "建设必要性"},
+            )
+        }
+        self.assertIn("ONSCREEN_FLOW_ACTION_MISSING", codes)
+
+    def test_action_led_causal_modules_form_a_visible_flow(self) -> None:
+        page = self._page(
+            title="行业数据服务运营基础的建设必要性",
+            onscreen="新型电力系统加快建设",
+        )
+        page = ScriptPage(
+            **{
+                **page.__dict__,
+                "top_level_module_titles": (
+                    "新型电力系统加快建设",
+                    "生产经营与智能应用更依赖跨主体协同",
+                    "分散资源难以形成稳定服务供给",
+                    "建设行业级服务运营基础，衔接需求与供给",
+                ),
+            }
+        )
+        self.assertEqual(
+            [],
+            _onscreen_flow_language_issues(
+                page,
+                {"topic_category": "建设必要性"},
+            ),
+        )
+
+    def test_relay_repetition_between_flow_steps_is_blocked(self) -> None:
+        page = self._page(
+            title="行业数据服务运营基础的建设必要性",
+            onscreen="业务持续演进",
+        )
+        page = ScriptPage(
+            **{
+                **page.__dict__,
+                "top_level_module_titles": (
+                    "新型电力系统建设推动业务持续演进",
+                    "业务持续演进带动跨主体协同需求增长",
+                    "分散资源难以形成稳定服务供给",
+                    "建设行业级服务运营基础",
+                ),
+            }
+        )
+        self.assertIn(
+            "ONSCREEN_FLOW_STEP_REDUNDANT",
+            {
+                item.code
+                for item in _onscreen_flow_language_issues(
+                    page,
+                    {"topic_category": "建设必要性"},
+                )
+            },
+        )
+
+    def test_over_explained_flow_heading_is_blocked(self) -> None:
+        page = self._page(
+            title="行业数据服务运营基础的建设必要性",
+            onscreen="建设服务运营基础",
+        )
+        page = ScriptPage(
+            **{
+                **page.__dict__,
+                "top_level_module_titles": (
+                    "新型电力系统加快建设",
+                    "生产经营与智能应用越来越依赖多个主体之间的数据知识模型协同",
+                    "分散资源难以形成稳定服务供给",
+                    "建设行业级服务运营基础",
+                ),
+            }
+        )
+        self.assertIn(
+            "ONSCREEN_FLOW_HEADING_TOO_LONG",
+            {
+                item.code
+                for item in _onscreen_flow_language_issues(
+                    page,
+                    {"topic_category": "建设必要性"},
+                )
+            },
+        )
+
+    def test_formulaic_transition_is_rejected_in_authored_layers(self) -> None:
+        page = self._page(
+            title="行业数据服务运营基础的建设必要性",
+            onscreen="供给存在缺口，因此需要建设服务运营基础",
+            prose="需求持续增长。由此，需要建立稳定服务供给。",
+        )
+        page = ScriptPage(
+            **{
+                **page.__dict__,
+                "speaker_notes": "综上所述，平台需要形成持续服务能力。",
+            }
+        )
+        issues = _formulaic_transition_issues(page)
+        self.assertEqual(3, len(issues))
+        self.assertEqual(
+            {"FORMULAIC_TRANSITION_PHRASE"},
+            {item.code for item in issues},
+        )
+
+    def test_business_actions_replace_formulaic_transitions(self) -> None:
+        page = self._page(
+            title="行业数据服务运营基础的建设必要性",
+            onscreen="需要建设服务运营基础，衔接协同需求与稳定供给",
+            prose="需求持续增长，稳定供给仍然不足。建设服务运营基础能够衔接需求与供给。",
+        )
+        self.assertEqual([], _formulaic_transition_issues(page))
+
+
+class FullProseSourceCoverageTests(unittest.TestCase):
+    def _page(self, prose: str) -> ScriptPage:
+        return ScriptPage(
+            page_id="p03",
+            sequence=3,
+            heading="",
+            page_type="content",
+            title="建设需求",
+            main_message="新型电力系统建设带动数据协同需求增长",
+            full_prose=prose,
+            selection_notes="",
+            evidence_map="",
+            evidence_map_refs=("ST001",),
+            source_refs=("ST001",),
+            boundary_source_refs=(),
+            boundary="",
+            visual_structure="背景形成需求",
+            onscreen_text="新型电力系统建设",
+            module_titles=("新型电力系统建设",),
+        )
+
+    def test_cited_record_missing_from_full_prose_is_blocked(self) -> None:
+        issues = _full_prose_source_coverage_issues(
+            self._page("本页只写了抽象的数据协同需求。"),
+            {"source_refs": ["ST001"]},
+            {
+                "ST001": {
+                    "statement": "随着新型能源体系和新型电力系统加快建设，电力业务数字化、市场化和智能化程度持续提升。"
+                }
+            },
+        )
+        self.assertIn("FULL_PROSE_SOURCE_COVERAGE_GAP", {item.code for item in issues})
+
+    def test_source_specific_fact_in_full_prose_passes(self) -> None:
+        issues = _full_prose_source_coverage_issues(
+            self._page("随着新型能源体系和新型电力系统加快建设，电力业务数字化、市场化和智能化程度持续提升。"),
+            {"source_refs": ["ST001"]},
+            {
+                "ST001": {
+                    "statement": "随着新型能源体系和新型电力系统加快建设，电力业务数字化、市场化和智能化程度持续提升。"
+                }
+            },
+        )
+        self.assertNotIn("FULL_PROSE_SOURCE_COVERAGE_GAP", {item.code for item in issues})
+
+    def test_specific_outline_omission_is_allowed(self) -> None:
+        issues = _full_prose_source_coverage_issues(
+            self._page("本页聚焦总体背景。"),
+            {
+                "source_refs": ["ST001"],
+                "intentional_omissions": [
+                    {
+                        "source_refs": ["ST001"],
+                        "reason": "该记录属于后续产品运营机制页面，本页仅承担建设背景。",
+                    }
+                ],
+            },
+            {"ST001": {"statement": "资源登记、授权交付和计量结算形成运营机制。"}},
+        )
+        self.assertEqual([], issues)
+
+    def test_atomic_content_unit_blocks_partial_prose_coverage(self) -> None:
+        page = self._page("新型电力系统加快建设，跨主体协同需求增长。")
+        issues = _page_content_unit_coverage_issues(
+            page,
+            {"content_units": [{
+                "unit_id": "p03-u01",
+                "statement": "新能源大规模接入改变电源结构、负荷特征和运行方式。",
+                "source_refs": ["ST001"],
+                "full_prose_required": True,
+                "coverage_anchors": ["新能源大规模接入", "电源结构", "负荷特征", "运行方式"],
+                "onscreen_required": False,
+                "onscreen_anchors": [],
+            }]},
+        )
+        self.assertIn("FULL_PROSE_CONTENT_UNIT_GAP", {item.code for item in issues})
+
+    def test_onscreen_content_unit_requires_business_anchors(self) -> None:
+        page = self._page("新能源大规模接入改变电源结构、负荷特征和运行方式。")
+        issues = _page_content_unit_coverage_issues(
+            page,
+            {"content_units": [{
+                "unit_id": "p03-u01",
+                "statement": "新能源大规模接入改变电源结构和运行方式。",
+                "source_refs": ["ST001"],
+                "full_prose_required": True,
+                "coverage_anchors": ["新能源大规模接入", "电源结构", "运行方式"],
+                "onscreen_required": True,
+                "onscreen_anchors": ["新能源大规模接入", "运行方式"],
+            }]},
+        )
+        self.assertIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
 
 
 class ProductionAuthoringGuardTests(unittest.TestCase):

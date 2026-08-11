@@ -56,6 +56,17 @@ def outline(*pages: dict[str, object], **overrides: object) -> dict[str, object]
 
 
 class OutlineContractTests(unittest.TestCase):
+    def test_formal_semantic_outline_requires_atomic_page_content_units(self) -> None:
+        payload = outline(
+            page(1, "content", "建设基础", message="现有基础支撑首期试点"),
+            semantic_argument_model_mode="required",
+        )
+
+        codes = {item.code for item in audit_outline(payload)}
+
+        self.assertIn("PAGE_CONTENT_UNIT_COVERAGE_MODE_REQUIRED", codes)
+        self.assertIn("PAGE_CONTENT_UNITS_MISSING", codes)
+
     def test_formal_v2_outline_defaults_to_plain_declarative_titles(self) -> None:
         payload = outline(
             page(1, "content", "为什么需要运营型数据基础设施", message="需要建设运营基础"),

@@ -153,6 +153,17 @@ def strict_model() -> tuple[dict[str, object], set[str], list[dict[str, object]]
         "relations": [],
         "review_notes": [],
     }
+    value["source_coverage"] = {
+        "assignments": [
+            {
+                "source_unit_refs": [evidence_unit],
+                "semantic_node_ids": ["c01"],
+                "summary": "正文事实归入第一章语义节点",
+            }
+        ],
+        "intentional_omissions": [],
+        "review_notes": [],
+    }
     headings = [
         {
             "heading_id": "H-ABCDEF1234-BBBBBBBBBBBB-01",
@@ -165,6 +176,135 @@ def strict_model() -> tuple[dict[str, object], set[str], list[dict[str, object]]
 
 
 class SourceArgumentModelTests(unittest.TestCase):
+    def test_formal_semantic_outline_enables_disposition_by_default(self) -> None:
+        outline = {
+            "semantic_argument_model_mode": "required",
+            "pages": [],
+        }
+
+        codes = {item["code"] for item in audit_outline_consumption(outline, model())}
+
+        self.assertIn("OUTLINE_ARGUMENT_DISPOSITION_MODE_REQUIRED", codes)
+        self.assertIn("OUTLINE_ARGUMENT_DISPOSITION_MISSING", codes)
+
+    def test_required_disposition_blocks_silent_subsection_loss(self) -> None:
+        outline = {
+            "argument_node_disposition_mode": "required",
+            "argument_node_dispositions": [{
+                "node_id": "c01-s02",
+                "disposition": "intentional_omission",
+                "rationale": "Not used by the selected route.",
+                "omission_reason": "Outside the approved communication goal.",
+            }],
+            "pages": [{
+                "page_id": "p01",
+                "page_type": "content",
+                "primary_argument_node_id": "c01",
+                "source_argument_node_ids": ["c01"],
+                "source_argument_node_roles": {"c01": "foundation"},
+                "source_argument_node_statuses": {"c01": "mixed"},
+                "source_argument_node_weights": {"c01": "core"},
+                "core_message_derivation": {"argument_node_ids": ["c01"]},
+                "detail_refs": ["c01-s01"],
+            }],
+        }
+
+        codes = {item["code"] for item in audit_outline_consumption(outline, model())}
+
+        self.assertIn("OUTLINE_ARGUMENT_DISPOSITION_MISSING", codes)
+
+    def test_merged_disposition_requires_formal_consumption_and_reason(self) -> None:
+        outline = {
+            "argument_node_disposition_mode": "required",
+            "argument_node_dispositions": [
+                {
+                    "node_id": "c01-s01",
+                    "disposition": "merged_page",
+                    "page_id": "p01",
+                    "rationale": "Merged into the chapter page.",
+                },
+                {
+                    "node_id": "c01-s02",
+                    "disposition": "intentional_omission",
+                    "rationale": "Not used by the selected route.",
+                    "omission_reason": "Outside the approved communication goal.",
+                },
+            ],
+            "pages": [{
+                "page_id": "p01",
+                "page_type": "content",
+                "primary_argument_node_id": "c01",
+                "source_argument_node_ids": ["c01"],
+                "source_argument_node_roles": {"c01": "foundation"},
+                "source_argument_node_statuses": {"c01": "mixed"},
+                "source_argument_node_weights": {"c01": "core"},
+                "core_message_derivation": {"argument_node_ids": ["c01"]},
+                "detail_refs": ["c01-s01"],
+            }],
+        }
+
+        codes = {item["code"] for item in audit_outline_consumption(outline, model())}
+
+        self.assertIn("OUTLINE_MERGED_ARGUMENT_NOT_CONSUMED", codes)
+        self.assertIn("OUTLINE_ARGUMENT_MERGE_REASON_MISSING", codes)
+        self.assertIn("OUTLINE_ARGUMENT_MERGE_TOPIC_MISSING", codes)
+
+    def test_protected_argument_cannot_be_silently_omitted(self) -> None:
+        candidate = model()
+        candidate["subsection_nodes"][0]["evidence_refs"] = [
+            f"S{index:03d}" for index in range(1, 7)
+        ]
+        outline = {
+            "argument_node_disposition_mode": "required",
+            "argument_node_dispositions": [
+                {
+                    "node_id": "c01-s01",
+                    "disposition": "intentional_omission",
+                    "rationale": "Compressed for length.",
+                    "omission_reason": "Supporting material.",
+                },
+                {
+                    "node_id": "c01-s02",
+                    "disposition": "intentional_omission",
+                    "rationale": "Compressed for length.",
+                    "omission_reason": "Core material.",
+                },
+            ],
+            "pages": [],
+        }
+
+        codes = {item["code"] for item in audit_outline_consumption(outline, candidate)}
+
+        self.assertIn("OUTLINE_PROTECTED_ARGUMENT_OMITTED", codes)
+
+    def test_user_authorized_omission_of_protected_argument_is_traceable(self) -> None:
+        outline = {
+            "argument_node_disposition_mode": "required",
+            "argument_node_dispositions": [
+                {
+                    "node_id": "c01-s01",
+                    "disposition": "intentional_omission",
+                    "rationale": "User excluded this supporting topic.",
+                    "omission_reason": "Outside the confirmed scope.",
+                    "user_authorized_omission": True,
+                    "user_decision_ref": "conversation:exclude-foundation",
+                },
+                {
+                    "node_id": "c01-s02",
+                    "disposition": "intentional_omission",
+                    "rationale": "User excluded this core topic.",
+                    "omission_reason": "Outside the confirmed scope.",
+                    "user_authorized_omission": True,
+                    "user_decision_ref": "conversation:exclude-capability",
+                },
+            ],
+            "pages": [],
+        }
+
+        codes = {item["code"] for item in audit_outline_consumption(outline, model())}
+
+        self.assertNotIn("OUTLINE_PROTECTED_ARGUMENT_OMITTED", codes)
+
     def test_marked_nested_json_is_extracted(self) -> None:
         parsed = extract_model("# 语义\n\n" + render_model_block(model()))
         self.assertEqual(SCHEMA, parsed["schema"])
@@ -336,6 +476,58 @@ class SourceArgumentModelTests(unittest.TestCase):
         )
 
         self.assertEqual([], issues)
+
+    def test_strict_model_requires_every_content_unit_disposition(self) -> None:
+        value, unit_ids, headings = strict_model()
+        extra = "SU-ABCDEF1234-PARAGRAPH-CCCCCCCCCCCC-01"
+        codes = {
+            item["code"]
+            for item in validate_model(
+                value,
+                required_heading_records=headings,
+                source_unit_ids=unit_ids | {extra},
+                required_content_unit_ids={next(iter(value["document_thesis"]["evidence_refs"])), extra},
+            )
+        }
+        self.assertIn("SEMANTIC_SOURCE_UNIT_UNDISPOSED", codes)
+
+    def test_source_assignment_must_bind_target_node_evidence(self) -> None:
+        value, unit_ids, headings = strict_model()
+        evidence = next(iter(value["document_thesis"]["evidence_refs"]))
+        value["section_nodes"][0]["evidence_refs"] = []
+        codes = {
+            item["code"]
+            for item in validate_model(
+                value,
+                required_heading_records=headings,
+                source_unit_ids=unit_ids,
+                required_content_unit_ids={evidence},
+            )
+        }
+        self.assertIn("SEMANTIC_SOURCE_ASSIGNMENT_EVIDENCE_DISCONNECTED", codes)
+
+    def test_specific_intentional_omission_satisfies_disposition(self) -> None:
+        value, unit_ids, headings = strict_model()
+        extra = "SU-ABCDEF1234-PARAGRAPH-CCCCCCCCCCCC-01"
+        value["source_coverage"]["intentional_omissions"] = [
+            {
+                "source_unit_refs": [extra],
+                "reason": "该段仅重复附件字段定义，正文论点节点不再重复展开。",
+            }
+        ]
+        issues = validate_model(
+            value,
+            required_heading_records=headings,
+            source_unit_ids=unit_ids | {extra},
+            required_content_unit_ids={
+                next(iter(value["document_thesis"]["evidence_refs"])),
+                extra,
+            },
+        )
+        self.assertNotIn(
+            "SEMANTIC_SOURCE_UNIT_UNDISPOSED",
+            {item["code"] for item in issues},
+        )
 
     def test_strict_model_rejects_legacy_evidence_and_missing_heading_card(self) -> None:
         value, unit_ids, headings = strict_model()

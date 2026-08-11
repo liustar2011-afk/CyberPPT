@@ -423,16 +423,8 @@ def run_outline_audit(
         if payload.get("semantic_argument_model_mode") == "required" or argument_model is not None
         else []
     )
-    if payload.get("semantic_argument_model_mode") == "required" or argument_model is not None:
-        issues.extend(
-            AuditIssue(
-                item["code"],
-                item["message"],
-                (item["node_id"],) if item.get("node_id") else (),
-                "rebuild_from_semantic_argument_model",
-            )
-            for item in argument_model_issues
-        )
+    # audit_outline() already includes audit_outline_consumption().  Keep the
+    # raw result for the report, but do not append it a second time.
     if not lightweight:
         issues.extend(
             AuditIssue(

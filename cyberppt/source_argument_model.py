@@ -580,6 +580,7 @@ def validate_model(
     required_heading_records: list[dict[str, Any]] | None = None,
     source_record_ids: set[str] | None = None,
     source_unit_ids: set[str] | None = None,
+    required_content_unit_ids: set[str] | None = None,
     require_document_context: bool = False,
 ) -> list[dict[str, str]]:
     """Validate semantic structure without deciding page count or page layout."""
@@ -870,6 +871,59 @@ def validate_model(
                 source_unit_ids=source_unit_ids,
             )
         )
+        if required_content_unit_ids is not None:
+            coverage = model.get("source_coverage")
+            if not isinstance(coverage, dict):
+                issues.append(
+                    _issue(
+                        "SEMANTIC_SOURCE_COVERAGE_MISSING",
+                        "严格语义理解必须逐一处置全部正文源单元：归入语义节点，或以具体理由声明有意忽略。",
+                    )
+                )
+            else:
+                assigned_refs: set[str] = set()
+                omitted_refs: set[str] = set()
+                node_lookup = node_index(model)
+                for assignment in _list(coverage.get("assignments")):
+                    if not isinstance(assignment, dict):
+                        issues.append(_issue("SEMANTIC_SOURCE_ASSIGNMENT_INVALID", "source_coverage.assignments 的每项必须是对象。"))
+                        continue
+                    refs = {_text(item) for item in _list(assignment.get("source_unit_refs")) if _text(item)}
+                    target_ids = {_text(item) for item in _list(assignment.get("semantic_node_ids")) if _text(item)}
+                    if not refs or not target_ids or not _text(assignment.get("summary")):
+                        issues.append(_issue("SEMANTIC_SOURCE_ASSIGNMENT_INCOMPLETE", "每项源信息归属必须包含 source_unit_refs、semantic_node_ids 和具体 summary。"))
+                        continue
+                    unknown_targets = sorted(target_ids - set(node_lookup))
+                    if unknown_targets:
+                        issues.append(_issue("SEMANTIC_SOURCE_ASSIGNMENT_NODE_UNKNOWN", "源信息归属指向不存在的语义节点：" + "、".join(unknown_targets)))
+                    for target_id in target_ids & set(node_lookup):
+                        node_evidence = {_text(item) for item in _list(node_lookup[target_id].get("evidence_refs")) if _text(item)}
+                        missing_evidence = sorted(refs - node_evidence)
+                        if missing_evidence:
+                            issues.append(_issue("SEMANTIC_SOURCE_ASSIGNMENT_EVIDENCE_DISCONNECTED", "已归属源单元必须同时进入目标语义节点 evidence_refs：" + "、".join(missing_evidence), node_id=target_id))
+                    assigned_refs.update(refs)
+                for omission in _list(coverage.get("intentional_omissions")):
+                    if not isinstance(omission, dict):
+                        issues.append(_issue("SEMANTIC_SOURCE_OMISSION_INVALID", "source_coverage.intentional_omissions 的每项必须是对象。"))
+                        continue
+                    refs = {_text(item) for item in _list(omission.get("source_unit_refs")) if _text(item)}
+                    reason = _text(omission.get("reason"))
+                    if not refs or len(reason) < 8:
+                        issues.append(_issue("SEMANTIC_SOURCE_OMISSION_REASON_MISSING", "有意忽略必须列明源单元并给出具体编辑理由，不能使用空泛说明。"))
+                        continue
+                    omitted_refs.update(refs)
+                overlap = sorted(assigned_refs & omitted_refs)
+                if overlap:
+                    issues.append(_issue("SEMANTIC_SOURCE_DISPOSITION_CONFLICT", "同一源单元不得同时标记为已归属和有意忽略：" + "、".join(overlap)))
+                unknown_dispositions = sorted((assigned_refs | omitted_refs) - set(required_content_unit_ids))
+                if unknown_dispositions:
+                    issues.append(_issue("SEMANTIC_SOURCE_DISPOSITION_UNKNOWN", "source_coverage 引用了非正文或不存在的源单元：" + "、".join(unknown_dispositions)))
+                missing_dispositions = sorted(set(required_content_unit_ids) - assigned_refs - omitted_refs)
+                if missing_dispositions:
+                    preview = "、".join(missing_dispositions[:12])
+                    if len(missing_dispositions) > 12:
+                        preview += "……"
+                    issues.append(_issue("SEMANTIC_SOURCE_UNIT_UNDISPOSED", "以下正文源信息既未归入语义节点，也未声明有意忽略：" + preview))
     return issues
 
 
@@ -899,6 +953,7 @@ def audit_outline_consumption(
     pages = [item for item in _list(outline.get("pages")) if isinstance(item, dict) and item.get("page_type") == "content"]
     issues: list[dict[str, str]] = []
     primary_consumers: dict[str, list[str]] = {}
+    assigned_consumers: dict[str, list[str]] = {}
     for page in pages:
         page_id = _text(page.get("page_id"))
         primary = _text(page.get("primary_argument_node_id"))
@@ -909,6 +964,9 @@ def audit_outline_consumption(
         if primary not in assigned:
             issues.append(_issue("OUTLINE_PRIMARY_ARGUMENT_NOT_ASSIGNED", "页面 primary_argument_node_id 必须包含在 source_argument_node_ids 中。", node_id=page_id))
         assigned_ids = [_text(item) for item in assigned]
+        for node_id in assigned_ids:
+            if node_id:
+                assigned_consumers.setdefault(node_id, []).append(page_id)
         if len(assigned_ids) != len(set(assigned_ids)):
             issues.append(_issue("OUTLINE_ARGUMENT_NODE_DUPLICATED", "页面 source_argument_node_ids 不得重复声明同一语义节点。", node_id=page_id))
         for node_id in assigned_ids:
@@ -1003,6 +1061,150 @@ def audit_outline_consumption(
             allowed = {_text(item) for item in _list(node.get("allowed_merges"))}
             if not allowed or not set(consumers).issubset(allowed):
                 issues.append(_issue("ARGUMENT_NODE_PRIMARY_CONSUMER_DUPLICATED", "同一源论点被多个页面作为主论点消费，但没有声明 allowed_merges。", node_id=node_id))
+
+    disposition_required = (
+        outline.get("semantic_argument_model_mode") == "required"
+        or outline.get("argument_node_disposition_mode") == "required"
+    )
+    if disposition_required and outline.get("argument_node_disposition_mode") != "required":
+        issues.append(_issue(
+            "OUTLINE_ARGUMENT_DISPOSITION_MODE_REQUIRED",
+            "正式语义论点提纲默认必须启用 argument_node_disposition_mode=required，逐项说明章节内容如何形成页面。",
+        ))
+    if disposition_required:
+        raw_dispositions = outline.get("argument_node_dispositions")
+        dispositions = [
+            item for item in _list(raw_dispositions) if isinstance(item, dict)
+        ]
+        disposition_index: dict[str, dict[str, Any]] = {}
+        for item in dispositions:
+            node_id = _text(item.get("node_id"))
+            if not node_id:
+                issues.append(_issue(
+                    "OUTLINE_ARGUMENT_DISPOSITION_NODE_MISSING",
+                    "论点节点处置项必须声明 node_id。",
+                ))
+                continue
+            if node_id in disposition_index:
+                issues.append(_issue(
+                    "OUTLINE_ARGUMENT_DISPOSITION_DUPLICATED",
+                    "同一论点节点只能声明一次页面处置。",
+                    node_id=node_id,
+                ))
+            disposition_index[node_id] = item
+
+        # Subsection nodes are the smallest source-authored argument units that
+        # can become pages.  Every one must be deliberately carried, merged, or
+        # omitted; a detail/evidence citation alone must not hide page loss.
+        candidate_ids = {
+            _text(item.get("id"))
+            for item in _list(model.get("subsection_nodes"))
+            if isinstance(item, dict) and _text(item.get("id"))
+        }
+        for node_id in sorted(candidate_ids):
+            item = disposition_index.get(node_id)
+            node = index.get(node_id, {})
+            weight = _text(node.get("argument_weight"))
+            evidence_count = len(_list(node.get("evidence_refs")))
+            protected = (
+                weight in {"core", "constraint"}
+                or (
+                    bool(_text(node.get("source_heading")))
+                    and evidence_count >= 6
+                    and weight == "supporting"
+                )
+            )
+            if item is None:
+                issues.append(_issue(
+                    "OUTLINE_ARGUMENT_DISPOSITION_MISSING",
+                    "源材料小节论点未声明独立成页、合并承载或有意舍弃；detail_refs 和证据引用不能替代章节选材决定。",
+                    node_id=node_id,
+                ))
+                continue
+            disposition = _text(item.get("disposition"))
+            page_id = _text(item.get("page_id"))
+            rationale = _text(item.get("rationale"))
+            if disposition not in {"standalone_page", "merged_page", "intentional_omission"}:
+                issues.append(_issue(
+                    "OUTLINE_ARGUMENT_DISPOSITION_INVALID",
+                    "论点节点处置必须是 standalone_page、merged_page 或 intentional_omission。",
+                    node_id=node_id,
+                ))
+                continue
+            if not rationale:
+                issues.append(_issue(
+                    "OUTLINE_ARGUMENT_DISPOSITION_RATIONALE_MISSING",
+                    "每个论点节点的页面处置都必须说明选择、合并或舍弃理由。",
+                    node_id=node_id,
+                ))
+            if disposition == "standalone_page":
+                if not page_id or page_id not in primary_consumers.get(node_id, []):
+                    issues.append(_issue(
+                        "OUTLINE_STANDALONE_ARGUMENT_NOT_PRIMARY",
+                        "声明独立成页的论点节点必须是对应页面的 primary_argument_node_id。",
+                        node_id=node_id,
+                    ))
+            elif disposition == "merged_page":
+                if not page_id or page_id not in assigned_consumers.get(node_id, []):
+                    issues.append(_issue(
+                        "OUTLINE_MERGED_ARGUMENT_NOT_CONSUMED",
+                        "声明合并承载的论点节点必须由指定页面正式消费，不能只放入 detail_refs 或 evidence 字段。",
+                        node_id=node_id,
+                    ))
+                if not _text(item.get("merge_reason")):
+                    issues.append(_issue(
+                        "OUTLINE_ARGUMENT_MERGE_REASON_MISSING",
+                        "合并承载必须说明两个论点为何属于同一页面主题和同一主业务关系。",
+                        node_id=node_id,
+                    ))
+                shared_topic = _text(item.get("shared_page_topic"))
+                target_page = next(
+                    (page for page in pages if _text(page.get("page_id")) == page_id),
+                    None,
+                )
+                if not shared_topic:
+                    issues.append(_issue(
+                        "OUTLINE_ARGUMENT_MERGE_TOPIC_MISSING",
+                        "合并承载必须声明 shared_page_topic，证明被合并论点服务于同一页面主题。",
+                        node_id=node_id,
+                    ))
+                elif isinstance(target_page, dict) and shared_topic != _text(target_page.get("topic_category")):
+                    issues.append(_issue(
+                        "OUTLINE_ARGUMENT_MERGE_TOPIC_MISMATCH",
+                        "合并处置的 shared_page_topic 必须与承载页 topic_category 完全一致。",
+                        node_id=node_id,
+                    ))
+                source_parent = _text(node.get("parent_id"))
+                target_primary = _text(target_page.get("primary_argument_node_id")) if isinstance(target_page, dict) else ""
+                target_parent = _text(index.get(target_primary, {}).get("parent_id"))
+                if (
+                    source_parent
+                    and target_primary
+                    and target_primary != source_parent
+                    and target_parent != source_parent
+                    and not _text(item.get("cross_chapter_reason"))
+                ):
+                    issues.append(_issue(
+                        "OUTLINE_ARGUMENT_CROSS_CHAPTER_REASON_MISSING",
+                        "论点跨出原章节承载时必须声明 cross_chapter_reason，说明新的章节位置为何更符合故事线。",
+                        node_id=node_id,
+                    ))
+            elif disposition == "intentional_omission":
+                if not _text(item.get("omission_reason")):
+                    issues.append(_issue(
+                        "OUTLINE_ARGUMENT_OMISSION_REASON_MISSING",
+                        "有意舍弃必须说明其与所选交流目标或故事线的关系，不能以篇幅有限笼统代替。",
+                        node_id=node_id,
+                    ))
+                if protected and not (
+                    item.get("user_authorized_omission") is True
+                    and _text(item.get("user_decision_ref"))
+                ):
+                    issues.append(_issue(
+                        "OUTLINE_PROTECTED_ARGUMENT_OMITTED",
+                        "核心、关键约束或证据充分的独立小节论点不得由生成器自行舍弃；如用户明确要求删除，必须记录 user_authorized_omission=true 和 user_decision_ref。",
+                        node_id=node_id,
+                    ))
 
     # The semantic model marks relationships between semantic layers.  A page
     # cannot claim that two nodes are interchangeable merely because they cite

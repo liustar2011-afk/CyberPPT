@@ -687,6 +687,103 @@ def _document_semantic_issues(
     return []
 
 
+def _page_content_unit_contract_issues(
+    outline: dict[str, object],
+    pages: list[dict[str, object]],
+) -> list[AuditIssue]:
+    issues: list[AuditIssue] = []
+    required = (
+        outline.get("semantic_argument_model_mode") == "required"
+        or outline.get("page_content_unit_coverage_mode") == "required"
+    )
+    if not required:
+        return issues
+    if outline.get("page_content_unit_coverage_mode") != "required":
+        issues.append(AuditIssue(
+            "PAGE_CONTENT_UNIT_COVERAGE_MODE_REQUIRED",
+            "正式语义提纲默认必须启用 page_content_unit_coverage_mode=required，防止页面在完整稿和上屏压缩中静默丢失重要内容。",
+            retry_strategy="rebuild_page_content_units",
+        ))
+    for page in pages:
+        if page.get("page_type") != "content":
+            continue
+        page_id = str(page.get("page_id") or "")
+        units = [
+            item for item in (page.get("content_units") or [])
+            if isinstance(item, dict)
+        ]
+        if not units:
+            issues.append(AuditIssue(
+                "PAGE_CONTENT_UNITS_MISSING",
+                "内容页必须把拟保留信息拆成可审计的原子内容单元。",
+                (page_id,),
+                "rebuild_page_content_units",
+            ))
+            continue
+        onscreen_count = 0
+        for unit in units:
+            unit_id = str(unit.get("unit_id") or "")
+            statement = str(unit.get("statement") or "").strip()
+            source_refs = [str(item) for item in unit.get("source_refs") or [] if str(item)]
+            importance = str(unit.get("importance") or "")
+            full_required = unit.get("full_prose_required")
+            onscreen_required = unit.get("onscreen_required")
+            coverage_anchors = [str(item).strip() for item in unit.get("coverage_anchors") or [] if str(item).strip()]
+            onscreen_anchors = [str(item).strip() for item in unit.get("onscreen_anchors") or [] if str(item).strip()]
+            if not unit_id or not statement or not source_refs:
+                issues.append(AuditIssue(
+                    "PAGE_CONTENT_UNIT_IDENTITY_MISSING",
+                    "每个内容单元必须声明 unit_id、statement 和 source_refs。",
+                    (page_id,),
+                    "rebuild_page_content_units",
+                ))
+            if importance not in {"primary", "supporting", "detail", "boundary"}:
+                issues.append(AuditIssue(
+                    "PAGE_CONTENT_UNIT_IMPORTANCE_MISSING",
+                    "每个内容单元必须声明 primary、supporting、detail 或 boundary 重要等级。",
+                    (page_id,),
+                    "classify_page_content_units",
+                ))
+            if not isinstance(full_required, bool):
+                issues.append(AuditIssue(
+                    "PAGE_CONTENT_UNIT_PROSE_DUTY_MISSING",
+                    "每个内容单元必须明确 full_prose_required。",
+                    (page_id,),
+                    "assign_page_content_duties",
+                ))
+            elif full_required and len(coverage_anchors) < 2:
+                issues.append(AuditIssue(
+                    "PAGE_CONTENT_UNIT_ANCHORS_INSUFFICIENT",
+                    "必须进入完整文字稿的内容单元至少需要两个来源特征锚点，不能只靠泛化关键词证明覆盖。",
+                    (page_id,),
+                    "restore_source_specific_anchors",
+                ))
+            if not isinstance(onscreen_required, bool):
+                issues.append(AuditIssue(
+                    "PAGE_CONTENT_UNIT_ONSCREEN_DUTY_MISSING",
+                    "每个内容单元必须明确 onscreen_required。",
+                    (page_id,),
+                    "assign_page_content_duties",
+                ))
+            elif onscreen_required:
+                onscreen_count += 1
+                if not onscreen_anchors:
+                    issues.append(AuditIssue(
+                        "PAGE_CONTENT_UNIT_ONSCREEN_ANCHORS_MISSING",
+                        "必须上屏的内容单元至少需要一个业务特征锚点。",
+                        (page_id,),
+                        "restore_onscreen_business_anchor",
+                    ))
+        if onscreen_count == 0:
+            issues.append(AuditIssue(
+                "PAGE_ONSCREEN_CONTENT_DUTY_MISSING",
+                "每个内容页至少有一个 primary 或关键 supporting 内容单元承担上屏责任。",
+                (page_id,),
+                "assign_onscreen_content_duty",
+            ))
+    return issues
+
+
 def audit_outline(
     outline: dict[str, object],
     source_truth: dict[str, object] | None = None,
@@ -714,6 +811,7 @@ def audit_outline(
     issues.extend(_content_page_density_issues(pages, source_truth))
     issues.extend(_document_semantic_issues(outline, source_truth))
     issues.extend(_semantic_derivation_issues(outline, pages, source_truth))
+    issues.extend(_page_content_unit_contract_issues(outline, pages))
     if outline.get("semantic_argument_model_mode") == "required" or semantic_argument_model is not None:
         issues.extend(
             AuditIssue(

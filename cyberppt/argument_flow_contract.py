@@ -856,6 +856,35 @@ def audit_argument_flow(
         allowed = explicit_allowed or set(DEFAULT_ALLOWED_CLAIMS.get(argument_role, ()))
         forbidden = set(_string_list(page, "forbidden_claim_roles"))
         source_refs = _string_list(page, "source_refs")
+        selected_argument_nodes = set(
+            _string_list(page, "source_argument_node_ids")
+            + _string_list(page, "source_evidence_node_ids")
+        )
+        assigned_record_refs = list(
+            dict.fromkeys(
+                source_refs
+                + _string_list(page, "detail_refs")
+                + _string_list(page, "boundary_refs")
+            )
+        )
+        disconnected_records = []
+        for record_id in assigned_record_refs:
+            record = record_index.get(record_id)
+            if not record:
+                continue
+            record_nodes = set(_string_list(record, "semantic_node_ids"))
+            if record_nodes and not (record_nodes & selected_argument_nodes):
+                disconnected_records.append(record_id)
+        if disconnected_records:
+            issues.append(
+                ArgumentFlowIssue(
+                    "OUTLINE_SOURCE_NODE_EVIDENCE_DISCONNECTED",
+                    "页面引用的 Source Truth 记录必须与页面声明的 source_argument_node_ids 至少共享一个语义节点；来源编号不能替代语义归属。",
+                    (page_id,),
+                    tuple(disconnected_records),
+                    retry_strategy="reconcile_page_semantic_nodes",
+                )
+            )
         proof_points = [
             point
             for point in page.get("proof_points", [])
