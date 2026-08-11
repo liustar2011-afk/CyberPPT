@@ -150,10 +150,10 @@
     {
       "id": 9,
       "slug": "ivory_deep_blue_scene",
-      "name": "象牙白 + 深蓝领导汇报",
+      "name": "纯白 + 深蓝领导汇报",
       "extension_only": true,
       "colors": {
-        "background": "#F7F6F0",
+        "background": "#FFFFFF",
         "title": "#101820",
         "body": "#303030",
         "secondary": "#6F7275",

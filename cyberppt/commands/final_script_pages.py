@@ -74,6 +74,59 @@ def _text_correction_prompt(base_prompt: str, audit: dict[str, Any]) -> str:
 """
 
 
+def _write_imagegen_attempt_record(
+    output_path: Path,
+    *,
+    page_number: object,
+    variant: str,
+    attempt: int,
+    prompt: str,
+    base_prompt: str,
+    image_paths: list[Path],
+    model: str,
+    quality: str,
+    size: str,
+    correction_audit: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Persist exactly what is about to be sent for one ImageGen attempt."""
+    prompt_dir = output_path.parent / "prompts" / "attempts"
+    prompt_dir.mkdir(parents=True, exist_ok=True)
+    stem = f"page-{int(page_number):03d}-{variant}-attempt-{attempt:02d}"
+    prompt_path = prompt_dir / f"{stem}-sent.txt"
+    record_path = prompt_dir / f"{stem}-request.json"
+    # Keep the audit artifact byte-identical to the string passed to the
+    # backend.  On Windows the default text newline translation would turn
+    # LF into CRLF after the hash had already been computed.
+    prompt_path.write_text(prompt, encoding="utf-8", newline="")
+    record = {
+        "schema": "cyberppt.imagegen_attempt_request.v1",
+        "page_number": page_number,
+        "variant": variant,
+        "attempt": attempt,
+        "prompt_path": str(prompt_path.resolve()),
+        "prompt_sha256": sha256(prompt.encode("utf-8")).hexdigest(),
+        "prompt_chars": len(prompt),
+        "model": model,
+        "quality": quality,
+        "size": size,
+        "input_images": [str(path.resolve()) for path in image_paths],
+        "correction_retry": correction_audit is not None,
+        "original_prompt": base_prompt if correction_audit is not None else None,
+        "failed_image": (
+            correction_audit.get("image") if correction_audit is not None else None
+        ),
+        "correction_issues": (
+            correction_audit.get("issues", []) if correction_audit is not None else []
+        ),
+    }
+    record_path.write_text(
+        json.dumps(record, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    record["request_record_path"] = str(record_path.resolve())
+    return record
+
+
 def _page_range_slug(pages: list[int]) -> str:
     if not pages:
         raise ValueError("at least one page is required")
@@ -565,11 +618,19 @@ def _generate_manifest_images(
     dry_run: bool,
     skip_text_audit: bool = False,
 ) -> dict[str, Any]:
+    if skip_text_audit:
+        manifest["text_audit_contract"] = {
+            "required_before_enhancement": False,
+            "scope": "disabled_for_visual_composition_test",
+            "max_generation_attempts": 1,
+            "failure_action": "not_applicable",
+        }
     production_mode = str(manifest.get("production_mode") or FULL_IMAGE_MODE)
     variants = output_variants_for_mode(production_mode)
     generated: list[str] = []
     skipped: list[str] = []
     text_audits: list[dict[str, Any]] = []
+    imagegen_attempts: list[dict[str, Any]] = []
     for pair in manifest.get("pairs", []):
         full_path = Path(str((pair.get("full") or {}).get("path", "")))
         page_reference_images = [
@@ -609,7 +670,23 @@ def _generate_manifest_images(
             canvas = str(item.get("canvas") or "2048x1024")
             max_attempts = 3 if isinstance(text_truth, dict) else 1
             accepted_audit: dict[str, Any] | None = None
+            correction_audit: dict[str, Any] | None = None
             for attempt in range(1, max_attempts + 1):
+                imagegen_attempts.append(
+                    _write_imagegen_attempt_record(
+                        output_path,
+                        page_number=pair.get("page_number"),
+                        variant=variant,
+                        attempt=attempt,
+                        prompt=prompt,
+                        base_prompt=base_prompt,
+                        image_paths=attempt_input_images,
+                        model=model,
+                        quality=quality,
+                        size=canvas,
+                        correction_audit=correction_audit,
+                    )
+                )
                 run_codex_image(
                     prompt=prompt,
                     output_path=output_path,
@@ -652,6 +729,7 @@ def _generate_manifest_images(
                             }
                             attempt_input_images = [failed_image, *input_images]
                             prompt = _text_correction_prompt(base_prompt, audit)
+                            correction_audit = audit
                             continue
                         raise RuntimeError(
                             f"page {pair.get('page_number')} image text audit failed after "
@@ -676,6 +754,7 @@ def _generate_manifest_images(
         "text_audit_skipped": skip_text_audit,
         "full_reference_images": [str(path) for path in (full_reference_images or [])],
         "text_audits": text_audits,
+        "imagegen_attempts": imagegen_attempts,
     }
 
 
@@ -727,6 +806,7 @@ def run_final_script_pages(
     require_send_approval: bool = False,
     build_id: str | None = None,
     external_script: bool = False,
+    lightweight_stage01_confirmed: bool = False,
     blueprint_only: bool = False,
     no_style_reference: bool = False,
     skip_image_text_audit: bool = False,
@@ -737,7 +817,15 @@ def run_final_script_pages(
     semantic_plan_dir = semantic_plan_dir.expanduser().resolve() if semantic_plan_dir else None
     if not script.is_file():
         raise FileNotFoundError(f"final script not found: {script}")
-    source_mode = "external_script" if external_script else "stage01_approved_script"
+    if external_script and lightweight_stage01_confirmed:
+        raise ValueError("--external-script cannot be combined with --lightweight-stage01-confirmed")
+    source_mode = (
+        "external_script"
+        if external_script
+        else "interactive_lightweight_confirmation"
+        if lightweight_stage01_confirmed
+        else "stage01_approved_script"
+    )
     project_created = False
     if external_script and not project.exists():
         init_project(project)
@@ -746,8 +834,24 @@ def run_final_script_pages(
         from cyberppt.stage01_controls import assert_escalation_resolved, assert_stage01_script_approval
         from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
 
-        assert_escalation_resolved(project, "script")
-        assert_stage01_script_approval(project, script)
+        if lightweight_stage01_confirmed:
+            from cyberppt.commands.script_audit import run_script_audit
+            from cyberppt.stage02_handoff import load_stage02_handoff
+
+            code, audit = run_script_audit(project, script, lightweight=True)
+            if code != 0 or audit.get("status") != "passed":
+                raise ValueError(
+                    "lightweight Stage 01 confirmation requires a currently passed "
+                    "full-script audit before final-script-pages"
+                )
+            handoff = load_stage02_handoff(project, required=True)
+            if handoff.get("stage01_confirmation_mode") != "interactive_lightweight_confirmation":
+                raise ValueError(
+                    "Stage 02 handoff is not bound to interactive lightweight Stage 01 confirmation"
+                )
+        else:
+            assert_escalation_resolved(project, "script")
+            assert_stage01_script_approval(project, script)
         assert_visual_structure_ready(project, script)
     if production_mode not in PRODUCTION_MODES:
         raise ValueError(
@@ -852,6 +956,7 @@ def run_final_script_pages(
         f"--pages {pages_raw} --style-lock {style_lock} --production-mode {production_mode} "
         f"--output-dir {target_dir} --build-id {build_id}"
         + (" --external-script" if external_script else "")
+        + (" --lightweight-stage01-confirmed" if lightweight_stage01_confirmed else "")
     )
     production_readiness = None
     tool_consumption: dict[str, Any] = {}
@@ -1053,9 +1158,14 @@ def run_final_script_pages(
                 resume_command=resume_command,
             )
         )
-    _append_ledger(
-        project,
-        ledger_records,
-        build_id=build_id,
-    )
+    # A dry run persists reviewable prompts and request previews, but it must not
+    # reserve immutable artifact ids.  The real run reuses the same build id and
+    # paths with generated hashes/statuses, which would otherwise conflict with
+    # the preview records written a few seconds earlier.
+    if not dry_run_images:
+        _append_ledger(
+            project,
+            ledger_records,
+            build_id=build_id,
+        )
     return run_summary

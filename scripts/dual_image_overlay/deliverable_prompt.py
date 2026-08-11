@@ -9,7 +9,7 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -831,8 +831,7 @@ def render_prompt(
     if composition_guidance.strip() and (not compact_style or creative_brief):
         parts.extend(
             [
-                "[Mandatory composition guidance] Apply this layout guidance before placing "
-                "any on-screen text. Do not render its field names or instruction text.",
+                _source_visual_expression_header(),
                 composition_guidance.strip(),
                 "",
             ]
@@ -861,8 +860,8 @@ def render_prompt(
     if not semantic_visual:
         parts.extend(
             [
-                "可读文字严格白名单：图中只允许逐条完整呈现【内容锁定】中的字符串；除此之外不得出现任何可读文字。",
-                "共享父级标题与子角色标题必须分层：父级只呈现一次且不得替代任何子角色标题；复合父级拆分后，所有并列子角色必须完整呈现，并使用同一层级、同一形式。只允许拆出原文已经明确列出的子角色，不得新增分类或事实。",
+                "可读文字严格白名单：图中只允许逐条完整呈现【内容锁定】中的字符串；除此之外不得出现任何可读文字。页面任务、核心意思、页面逻辑、视觉结构、语义关系和所有不上屏区块只决定构图，其中未在白名单逐字出现的词句不得渲染、摘录、改写、缩写或组合成标题、中心结论、标签、流程节点或总结框。",
+                "共享父级标题与子角色标题必须分层：父级只呈现一次且不得替代任何子角色标题；复合父级拆分后，所有并列子角色必须完整呈现，并使用同一层级、同一形式。只允许拆出原文已经明确列出的子角色，不得新增分类或事实。共享谓词、共享限定语和父级说明不得复制或改写到每个并列子项；除非原文逐项明确陈述，否则子项只呈现原文已有名称。",
                 "不得从说明句中大量抽取词语另做标签、按钮、图例、流程节点或项目符号；不得把同一内容以正文和拆分标签重复呈现。",
                 "任何按业务语义选择的视觉载体，其内部不得承载白名单之外的可读文字；空间不足时减少视觉元素或扩大文字区，不得新增微型文字。",
             ]
@@ -912,6 +911,75 @@ def render_prompt(
     return "\n".join(parts).strip() + "\n"
 
 
+def append_composition_guidance(prompt: str, guidance: str) -> str:
+    """Append source-authored relationships without turning them into a layout recipe."""
+
+    guidance = str(guidance or "").strip()
+    if not guidance or guidance in prompt:
+        return prompt
+    block = _source_visual_expression_header()
+    return f"{prompt.rstrip()}\n\n{block}\n{guidance}\n"
+
+
+def _source_visual_expression_header() -> str:
+    return (
+        "【本页业务关系与视觉表达意图｜不上屏】以下内容只锁定业务对象、动作、状态、"
+        "边界、因果与收束关系，不锁定分栏、卡片、框体或文字区。将锁定文字就近附着于"
+        "同一连续业务场中的相关对象、动作或状态，使图形与文字共同表达关系；不得把每个"
+        "语义分句自动拆成独立面板，也不得另建一套与文字分离或重复的图形结构。"
+    )
+
+
+def source_visual_structure_guidance(value: str, visible_text: str = "") -> str:
+    """Keep visual relations without leaking non-visible copy into ImageGen.
+
+    Stage 01 visual notes may quote a semantic focus to explain composition.  A
+    quoted phrase is especially likely to be copied verbatim by an image model,
+    even when the surrounding block is marked non-visible.  Preserve quoted
+    text only when it already occurs in the locked visible-text corpus;
+    otherwise replace it with a non-lexical reference to the semantic focus.
+    """
+
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    excluded_markers = (
+        "阅读出口",
+        "交给P",
+        "交给 P",
+        "下一页",
+        "视觉结构只表达",
+        "不上屏",
+        "不预设固定版式",
+        "不预设固定版式或",
+    )
+    compact_visible = re.sub(r"\s+", "", str(visible_text or ""))
+
+    def sanitize_quote(match: re.Match[str]) -> str:
+        quoted = next(
+            (group for group in match.groups() if group is not None),
+            "",
+        ).strip()
+        if quoted and re.sub(r"\s+", "", quoted) in compact_visible:
+            return match.group(0)
+        return "该语义焦点"
+
+    text = re.sub(
+        r"“([^”]+)”|‘([^’]+)’|「([^」]+)」|『([^』]+)』|\"([^\"]+)\"",
+        sanitize_quote,
+        text,
+    )
+    sentences = re.split(r"(?<=[。！？])\s*", text)
+    kept = [
+        sentence.strip()
+        for sentence in sentences
+        if sentence.strip()
+        and not any(marker in sentence for marker in excluded_markers)
+        and not re.search(r"\bP\d{1,3}\b", sentence, flags=re.I)
+    ]
+    return "".join(kept).strip()
+
+
 def assert_deliverable_prompt(prompt: str) -> None:
     forbidden = [
         r"\(E\d+",
@@ -930,21 +998,36 @@ def assert_deliverable_prompt(prompt: str) -> None:
             raise ValueError(f"Deliverable prompt still contains forbidden marker: {pattern}")
 
 
-def compile_pages(script_path: Path, pages: Iterable[int], style_lock_path: Path | None = None) -> str:
+def compile_pages(
+    script_path: Path,
+    pages: Iterable[int],
+    style_lock_path: Path | None = None,
+    composition_guidance_by_page: Mapping[int, str] | None = None,
+) -> str:
     blocks = parse_page_blocks(script_path)
-    return compile_page_blocks(blocks, pages, style_lock_path=style_lock_path)
+    return compile_page_blocks(
+        blocks,
+        pages,
+        style_lock_path=style_lock_path,
+        composition_guidance_by_page=composition_guidance_by_page,
+    )
 
 
 def compile_page_blocks(
     blocks: dict[int, PageBlock],
     pages: Iterable[int],
     style_lock_path: Path | None = None,
+    composition_guidance_by_page: Mapping[int, str] | None = None,
 ) -> str:
     rendered: list[str] = []
     for page_number in pages:
         if page_number not in blocks:
             raise ValueError(f"Page {page_number} not found")
-        prompt = render_prompt(blocks[page_number], style_lock_path=style_lock_path)
+        prompt = render_prompt(
+            blocks[page_number],
+            style_lock_path=style_lock_path,
+            composition_guidance=(composition_guidance_by_page or {}).get(page_number, ""),
+        )
         assert_deliverable_prompt(prompt)
         rendered.append(prompt)
     return "\n".join(rendered)

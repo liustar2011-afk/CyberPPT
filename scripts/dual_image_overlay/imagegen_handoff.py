@@ -108,6 +108,10 @@ CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT = """【核心意思表达要求｜�
 CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT = """【核心意思表达要求｜不上屏】
 本页没有要求逐字上屏的正文结论句；不得从【页面任务】【核心意思】或【页面逻辑】中自行抽取整句作为页面标题或通栏结论。
 【锁定关键文字】中的业务标签和关键事实必须全部上屏；【完整上屏内容】仍须完整表达，用文字层级、业务结构、对象关系和必要画面共同组织核心意思。"""
+CONTENT_FIRST_SHARED_PREDICATE_CONTRACT = """【并列语义防发散｜不上屏】
+共享谓词、共享限定语、父级说明只保留在原文所属层级，不得自动复制、分配或改写到每个并列子项。除非【完整上屏内容】逐项明确陈述，否则子项只呈现原文已有名称，不得生成“共享谓词 + 子项”的新判断、新标签或新事实。"""
+CONTENT_FIRST_VISIBLE_TEXT_WHITELIST_CONTRACT = """【可读文字白名单｜硬约束】
+图中所有可读文字只能来自【锁定关键文字】或【完整上屏内容】中的原文字符串。页面任务、核心意思、页面逻辑、视觉结构、语义关系、演讲备注及所有“不上屏”区块只决定构图和对象关系；其中任何词句只要未在上屏白名单中逐字出现，就不得渲染、摘录、改写、缩写或组合成标题、中心结论、标签、按钮、图例、流程节点或总结框。允许用场景、对象、位置、连线、色调和视觉焦点表达这些非上屏语义。"""
 CONTENT_FIRST_PAGE_MISSION_LABEL = "页面任务："
 CONTENT_FIRST_CORE_MEANING_LABEL = "核心意思："
 # Compatibility alias for extensions importing the old constant.
@@ -2073,6 +2077,22 @@ def render_content_first_prompt(
             ),
         ]
     else:
+        nonvisible_semantic_context = (
+            [
+                "【非上屏语义边界】",
+                "页面任务与核心意思已在上游用于推导语义关系，不在本提示中复述原句；不得自行生成额外结论、总结框或标题。",
+                "",
+            ]
+            if style09_surface
+            else [
+                CONTENT_FIRST_PAGE_MISSION_LABEL,
+                page_mission.strip() or page.core_message.strip(),
+                "",
+                CONTENT_FIRST_CORE_MEANING_LABEL,
+                core_meaning_for_semantics,
+                "",
+            ]
+        )
         parts = [
             "【完整上屏内容】",
             complete_semantics,
@@ -2087,12 +2107,11 @@ def render_content_first_prompt(
                 )
             ),
             "",
-            CONTENT_FIRST_PAGE_MISSION_LABEL,
-            page_mission.strip() or page.core_message.strip(),
+            CONTENT_FIRST_VISIBLE_TEXT_WHITELIST_CONTRACT,
             "",
-            CONTENT_FIRST_CORE_MEANING_LABEL,
-            core_meaning_for_semantics,
+            CONTENT_FIRST_SHARED_PREDICATE_CONTRACT,
             "",
+            *nonvisible_semantic_context,
             (
                 "【页面语义关系｜仅供理解，不上屏】\n" + semantic_relations
                 if semantic_relations

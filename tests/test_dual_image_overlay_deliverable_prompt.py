@@ -15,6 +15,7 @@ from scripts.dual_image_overlay.deliverable_prompt import (
     parse_content_locks,
     parse_page_blocks,
     render_prompt,
+    source_visual_structure_guidance,
     template_title,
     visible_deliverable_lines,
 )
@@ -28,6 +29,55 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
+    def test_source_visual_guidance_drops_page_navigation_and_backend_meta(self) -> None:
+        raw = (
+            "需求侧与供给侧两条证据链汇聚到服务供给缺口。"
+            "视觉中心再指向连接、可信使用和服务运营三类建设响应。"
+            "阅读出口把总体定位问题交给P05；视觉结构只表达业务关系，不预设固定版式。"
+        )
+        guidance = source_visual_structure_guidance(raw)
+        self.assertIn("两条证据链汇聚到服务供给缺口", guidance)
+        self.assertIn("三类建设响应", guidance)
+        self.assertNotIn("P05", guidance)
+        self.assertNotIn("阅读出口", guidance)
+        self.assertNotIn("视觉结构只表达", guidance)
+
+    def test_source_visual_guidance_redacts_non_visible_quoted_copy(self) -> None:
+        raw = "需求与供给汇聚到“稳定、规模化行业服务供给尚未形成”这一视觉中心。"
+        guidance = source_visual_structure_guidance(
+            raw,
+            "机制不全：尚未形成稳定、规模化服务供给",
+        )
+        self.assertNotIn("稳定、规模化行业服务供给尚未形成", guidance)
+        self.assertIn("汇聚到该语义焦点这一视觉中心", guidance)
+
+    def test_source_visual_guidance_keeps_locked_quoted_copy(self) -> None:
+        raw = "需求与供给汇聚到“服务供给缺口”这一视觉中心。"
+        guidance = source_visual_structure_guidance(
+            raw,
+            "核心判断：服务供给缺口",
+        )
+        self.assertIn("“服务供给缺口”", guidance)
+
+    def test_source_visual_expression_is_relationship_guidance_not_layout_recipe(self) -> None:
+        with TemporaryDirectory() as directory:
+            lock = write_project_style_lock(project=Path(directory), style_id=9)
+            prompt = render_prompt(
+                PageBlock(
+                    page_number=4,
+                    title="测试",
+                    text="- 上屏文字：业务缺口汇聚到建设响应",
+                ),
+                style_lock_path=lock,
+                composition_guidance="需求与供给共同汇聚到服务缺口。",
+            )
+        self.assertIn("【本页业务关系与视觉表达意图｜不上屏】", prompt)
+        self.assertIn("不锁定分栏、卡片、框体或文字区", prompt)
+        self.assertIn("将锁定文字就近附着于同一连续业务场", prompt)
+        self.assertIn("不得把每个语义分句自动拆成独立面板", prompt)
+        self.assertNotIn("Mandatory composition guidance", prompt)
+        self.assertNotIn("Apply this layout guidance", prompt)
+
     def test_style_four_does_not_prescribe_page_structures(self) -> None:
         forbidden = (
             "正式内部汇报结构",
@@ -89,7 +139,8 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertIn("may use a small amount of clear Chinese labels", prompt)
         self.assertIn("dense pseudo-Chinese", prompt)
         self.assertIn("不得出现粗大箭头头、宽箭头带", prompt)
-        self.assertIn("连接只表达真实关系并保持细、小、从属", prompt)
+        self.assertIn("共享谓词、共享限定语和父级说明不得复制或改写到每个并列子项", prompt)
+        self.assertIn("页面任务、核心意思、页面逻辑、视觉结构、语义关系和所有不上屏区块只决定构图", prompt)
 
     def test_compile_pages_uses_only_onscreen_block_from_final_manuscript(self) -> None:
         with TemporaryDirectory() as directory:
@@ -183,6 +234,7 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertIn("【内容锁定】", prompt)
         self.assertIn("可读文字严格白名单", prompt)
         self.assertIn("共享父级标题与子角色标题必须分层", prompt)
+        self.assertIn("共享谓词、共享限定语和父级说明不得复制或改写到每个并列子项", prompt)
         self.assertIn("父级只呈现一次且不得替代任何子角色标题", prompt)
         self.assertIn("复合父级拆分后，所有并列子角色必须完整呈现", prompt)
         self.assertIn("并使用同一层级、同一形式", prompt)

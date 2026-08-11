@@ -221,6 +221,38 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertIn("第一张输入图片是上一轮生成", second_call.kwargs["prompt"])
             self.assertIn('"expected": "数据服务"', second_call.kwargs["prompt"])
             self.assertIn('"observed": "数据服努"', second_call.kwargs["prompt"])
+            attempt_records = summary["imagegen_attempts"]
+            self.assertEqual(2, len(attempt_records))
+            first_sent = Path(attempt_records[0]["prompt_path"])
+            second_sent = Path(attempt_records[1]["prompt_path"])
+            second_record = json.loads(
+                Path(attempt_records[1]["request_record_path"]).read_text(encoding="utf-8")
+            )
+            self.assertEqual(first_call.kwargs["prompt"], first_sent.read_text(encoding="utf-8"))
+            self.assertEqual(second_call.kwargs["prompt"], second_sent.read_text(encoding="utf-8"))
+            self.assertEqual(
+                second_call.kwargs["prompt"].encode("utf-8"),
+                second_sent.read_bytes(),
+            )
+            self.assertTrue(second_record["correction_retry"])
+            self.assertEqual(failed["issues"], second_record["correction_issues"])
+            self.assertEqual("gpt-image-2", second_record["model"])
+            self.assertEqual("high", second_record["quality"])
+            self.assertEqual("2048x1024", second_record["size"])
+            self.assertEqual(
+                first_call.kwargs["prompt"], second_record["original_prompt"]
+            )
+            self.assertEqual(str(failed_image), second_record["failed_image"])
+            self.assertEqual(
+                second_record["prompt_sha256"],
+                hashlib.sha256(
+                    second_sent.read_text(encoding="utf-8").encode("utf-8")
+                ).hexdigest(),
+            )
+            self.assertEqual(
+                [str(failed_image.resolve()), str(reference.resolve())],
+                second_record["input_images"],
+            )
             self.assertTrue(failed_image.is_file())
             self.assertEqual(str(failed_image), summary["text_audits"][0]["image"])
             enhance.assert_called_once_with(output, "2048x1024")
@@ -272,6 +304,15 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertTrue(summary["text_audit_skipped"])
             self.assertEqual([], summary["text_audits"])
             self.assertNotIn("text_audit", manifest["pairs"][0]["full"])
+            self.assertEqual(
+                {
+                    "required_before_enhancement": False,
+                    "scope": "disabled_for_visual_composition_test",
+                    "max_generation_attempts": 1,
+                    "failure_action": "not_applicable",
+                },
+                manifest["text_audit_contract"],
+            )
 
     def _approve_inputs_and_prompts(self, project: Path, script: Path, style_id: int = 4) -> None:
         manifest = project / "manifest.yml"
@@ -383,6 +424,22 @@ class FinalScriptPagesTests(unittest.TestCase):
                                     }
                                 ],
                                 "business_relationships": [],
+                                "stage01_relationship_features": {
+                                    "authority": "stage01_semantic_handoff",
+                                    "actors": ["Fixture"],
+                                    "actions": [
+                                        {
+                                            "subject": "Fixture",
+                                            "relation": "supports",
+                                            "object": "Fixture result",
+                                        }
+                                    ],
+                                    "directions": [],
+                                    "conditions": [],
+                                    "branches": [],
+                                    "feedback": [],
+                                    "source_visual_notes": "",
+                                },
                                 "author_visual_notes_authority": "advisory_only",
                                 "body_image_canvas": {"width": 2048, "height": 1024, "ratio": "2:1"},
                             },
@@ -711,6 +768,30 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertEqual(1, len(calls[1].kwargs["image_paths"]))
         self.assertEqual(1, len(calls[2].kwargs["image_paths"]))
         self.assertEqual("codex_oauth_image", summary["image_generation"]["backend"])
+
+    def test_image_dry_run_does_not_reserve_artifact_ledger_ids(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            script = root / "script-final.md"
+            script.write_text("## 第7页：测试\n正文\n", encoding="utf-8")
+            self._approve_inputs_and_prompts(project, script)
+
+            with (
+                patch("cyberppt.commands.final_script_pages.run_codex_image"),
+                patch("cyberppt.commands.final_script_pages._append_ledger") as append_ledger,
+            ):
+                run_final_script_pages(
+                    project=project,
+                    script=script,
+                    pages_raw="7",
+                    style_id=4,
+                    generate_images=True,
+                    dry_run_images=True,
+                )
+
+            append_ledger.assert_not_called()
 
     def test_production_build_failure_reports_image_ppt_command(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

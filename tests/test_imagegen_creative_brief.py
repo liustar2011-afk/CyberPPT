@@ -169,7 +169,7 @@ def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
     )
     assert (
         implicit_compiled.build_metadata()["style_selection"]["name"]
-        == "象牙白 + 深蓝领导汇报"
+        == "纯白 + 深蓝领导汇报"
     )
     assert "[Mandatory composition guidance]" not in implicit
     assert "semantic_structure" not in implicit_compiled.build_metadata()
@@ -614,7 +614,8 @@ def test_semantic_only_handoff_preserves_thesis_logic_and_relations() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock, page_mission="如何治理多源知识")
 
-    assert page.core_message in prompt
+    assert page.core_message not in prompt
+    assert "页面任务与核心意思已在上游用于推导语义关系" in prompt
     assert "【页面逻辑｜不上屏】" in prompt
     assert "主导关系：路径转化。" in prompt
     assert "判断—证据" not in prompt
@@ -648,7 +649,10 @@ def test_v2_composition_relation_routes_without_inventing_judgment_evidence() ->
         compiled = compile_page_prompt(page, lock)
 
     assert compiled.relation == "hierarchy_support"
-    assert "核心意思：" in compiled.prompt
+    assert "核心意思：" not in compiled.prompt
+    assert "页面任务与核心意思已在上游用于推导语义关系" in compiled.prompt
+    assert "共享谓词、共享限定语、父级说明只保留在原文所属层级" in compiled.prompt
+    assert "其中任何词句只要未在上屏白名单中逐字出现，就不得渲染" in compiled.prompt
     assert "composed_of" in compiled.prompt
     assert "判断—证据" not in compiled.prompt
 

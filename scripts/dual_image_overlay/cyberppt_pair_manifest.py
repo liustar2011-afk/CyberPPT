@@ -27,12 +27,15 @@ if __package__ in {None, ""}:
 
 from scripts.dual_image_overlay.deliverable_prompt import (
     _style09_terminal_execution_lock,
+    append_composition_guidance,
     compile_pages,
     enforce_style09_terminal_lock,
     parse_page_blocks,
     parse_pages,
     render_prompt,
+    source_visual_structure_guidance,
     style_contract,
+    visible_deliverable_lines,
 )
 from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import ensure_output_size
 from scripts.dual_image_overlay.style_library import write_project_style_lock
@@ -350,7 +353,6 @@ def build_manifest(
     from cyberppt.script_quality_contract import parse_script_markdown
     from cyberppt.visual_prompt_consumer import (
         append_visual_prompt_module,
-        append_style09_surface_adapter,
         load_visual_prompt_module,
         visual_module_metadata,
     )
@@ -405,13 +407,13 @@ def build_manifest(
     content_page_numbers = [
         number for number in page_numbers if page_roles[number] == "content"
     ]
-    # Style 09 is a shared surface contract, not a page-by-page infographic
-    # recipe.  Its content-first compiler already carries the page's semantic
-    # relation; importing the older visual-structure module would reintroduce
-    # prescriptive matrices, swim lanes and node grids for only some pages.
-    style09_surface_adapter = bool(_style09_terminal_execution_lock(style_lock))
+    # Style 09 is assembled exclusively from the source-authored style lock.
+    # Do not append the page visual-structure handoff or a synthetic adapter:
+    # that handoff contains internal refs, text bindings and carrier metadata,
+    # not reusable style rules.
+    style09_source_contract = bool(_style09_terminal_execution_lock(style_lock))
     effective_compact_blueprint = bool(
-        compact_blueprint and handoff_pages and not style09_surface_adapter
+        compact_blueprint and handoff_pages and not style09_source_contract
     )
     reference_map = _load_reference_map(project_path)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -458,7 +460,19 @@ def build_manifest(
             for page_number in content_page_numbers
         ) + "\n"
     else:
-        compiled = compile_pages(script, content_page_numbers, style_lock_path=style_lock)
+        compiled = compile_pages(
+            script,
+            content_page_numbers,
+            style_lock_path=style_lock,
+            composition_guidance_by_page={
+                number: source_visual_structure_guidance(
+                    str(script_pages[number].visual_structure or ""),
+                    "\n".join(visible_deliverable_lines(source_pages[number])),
+                )
+                for number in content_page_numbers
+                if number in script_pages
+            },
+        )
     with build_lock(output_dir, f"pair-manifest-{compiled_script.stem}"):
         atomic_write_text(compiled_script, compiled)
 
@@ -469,7 +483,18 @@ def build_manifest(
     for page_number in content_page_numbers:
         page = source_pages[page_number]
         reference_images = reference_map.get(page_number, [])
-        prompt = render_prompt(page, style_lock_path=style_lock)
+        prompt = render_prompt(
+            page,
+            style_lock_path=style_lock,
+            composition_guidance=source_visual_structure_guidance(
+                str(
+                    script_pages.get(page_number).visual_structure
+                    if script_pages.get(page_number) is not None
+                    else ""
+                ),
+                "\n".join(visible_deliverable_lines(page)),
+            ),
+        )
         visual_module = (
             load_visual_prompt_module(project_path, page_number)
             if project_path is not None
@@ -508,7 +533,7 @@ def build_manifest(
             # Style 09 is a live source-authored contract. Reassembly after a
             # source style edit must consume the freshly compiled canonical
             # prompt; a historical approval remains audit evidence only.
-            if style09_surface_adapter:
+            if style09_source_contract:
                 prompt = canonical_prompt
                 approval_meta["consumed_from"] = "canonical_style09_refresh"
             else:
@@ -530,10 +555,17 @@ def build_manifest(
             require_send=require_send_approval and enrich_mode == "send",
         )
         prompt = enrich.prompt
+        source_visual_structure = source_visual_structure_guidance(
+            str(
+                script_pages.get(page_number).visual_structure
+                if script_pages.get(page_number) is not None
+                else ""
+            ),
+            "\n".join(visible_deliverable_lines(page)),
+        )
+        prompt = append_composition_guidance(prompt, source_visual_structure)
         if visual_module is not None and not effective_compact_blueprint:
-            if style09_surface_adapter:
-                prompt = append_style09_surface_adapter(prompt, visual_module)
-            elif "【视觉设计｜不上屏】" not in prompt:
+            if not style09_source_contract and "【视觉设计｜不上屏】" not in prompt:
                 prompt = append_visual_prompt_module(prompt, visual_module)
         # The visual-structure handoff is page-specific composition guidance.
         # Reassert the source-authored Style 09 lock after that handoff so a
@@ -545,25 +577,9 @@ def build_manifest(
         if approval_meta is not None:
             approval_meta["consumed_prompt_sha256"] = _sha256_text(prompt)
             approval_meta.setdefault("consumed_from", "approved_prompt")
-        visual_handoff_metadata = visual_module_metadata(visual_module)
-        if style09_surface_adapter and visual_module is not None:
-            # Style 09 consumes a filtered semantic subset of the handoff.
-            # Concrete layout recipes remain suppressed, while the business
-            # scene/object cues stay in the prompt to prevent generic
-            # table-first rendering on dense pages.
-            visual_handoff_metadata = {
-                **visual_handoff_metadata,
-                "consumed": True,
-                "adapted_by": "style09_surface_adapter",
-                "suppressed_fields": [
-                    "Selected visual intent type",
-                    "Decision relationship",
-                    "Recommended composition",
-                    "Connector map",
-                    "Text rendering",
-                    "Negative constraints",
-                ],
-            }
+        visual_handoff_metadata = visual_module_metadata(
+            None if style09_source_contract else visual_module
+        )
         stem = _page_stem(page_number, page.title)
         prompt_file = output_dir / "prompts" / f"p{page_number:02d}.txt"
         atomic_write_text(prompt_file, prompt.rstrip() + "\n")

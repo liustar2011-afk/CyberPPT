@@ -65,9 +65,12 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     style_nine = resolve_default_style(style_id=9)
     assert style_nine["slug"] == "ivory_deep_blue_scene"
     assert style_nine["extension_only"] is True
-    assert style_nine["name"] == "象牙白 + 深蓝领导汇报"
+    assert style_nine["name"] == "纯白 + 深蓝领导汇报"
     assert resolve_default_style(style_name="ivory_deep_blue_scene")["id"] == 9
-    assert style_nine["colors"] == STYLE_FOUR_CONTRACT["colors"]
+    assert style_nine["colors"] == {
+        **STYLE_FOUR_CONTRACT["colors"],
+        "background": "#FFFFFF",
+    }
     assert "先保证锁定上屏文字完整、舒展、清晰" in style_nine["content_visual_rule"]
     assert "再区分主体、支撑、输入、输出" in style_nine["content_visual_rule"]
     assert "使用跨页面展开的图形形态、色带、路径、箭头" not in style_nine["content_visual_rule"]
@@ -114,19 +117,19 @@ def test_style_nine_lock_records_extension_selection() -> None:
         payload = json.loads(lock.read_text(encoding="utf-8"))
 
     assert payload["style"]["id"] == 9
-    assert payload["style"]["name"] == "象牙白 + 深蓝领导汇报"
+    assert payload["style"]["name"] == "纯白 + 深蓝领导汇报"
     assert payload["policy"]["selected_from_default_8"] is False
     assert payload["policy"]["selected_from_extension"] is True
     assert "### 核心视觉语法" in payload["style"]["prompt_contract"]
     assert "图标默认数量为零" in payload["style"]["prompt_contract"]
     assert "宽箭头带" in payload["style"]["prompt_contract"]
-    assert "页面先读到一个业务锚点，再读到文字关系" in payload["style"]["prompt_contract"]
+    assert "行业场景与文字共同构成主视觉" in payload["style"]["prompt_contract"]
     assert payload["style"]["prompt_contract"].count("文字型视觉主线") == 1
     assert "不得新增非锁定标签" in payload["style"]["prompt_contract"]
     assert payload["style"]["prompt_contract"].count("**图文融合**") == 1
     assert "禁止图形区与文字区各自完整重复同一组内容" in payload["style"]["prompt_contract"]
     assert "把文字列表伪装成关系图" in payload["style"]["prompt_contract"]
-    assert "2—5个文字组共享同一视觉场" in payload["style"]["prompt_contract"]
+    assert "2—5个文字组分布在同一连续关系场中" in payload["style"]["prompt_contract"]
     assert "禁止重复表达同一语义" in payload["style"]["prompt_contract"]
     assert "不得把不同角色复制成同一种设备" in payload["style"]["prompt_contract"]
     assert "微软雅黑（Microsoft YaHei）" in payload["style"]["prompt_contract"]
@@ -174,18 +177,18 @@ def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
     assert "基础组件表达规范（通用）" in contract
     assert "直线端点、折点和曲线切线要干净" in contract
     assert "宽箭头带" in contract
-    assert "微立体承载面保持低矮、正视、哑光" in contract
+    assert "必要的微立体关系面保持低矮、正视、哑光" in contract
     assert "同类线宽必须一致" in contract
     assert "边框使用细、低对比、单层描边" in contract
     assert "曲线转向平滑、切线连续" in contract
     assert "不得据此改变页面的业务结构、元素数量、空间关系、阅读路径或主次关系" in contract
     assert "保留已经确定的方向、数量和连接关系" in contract
     assert "箭头头使用贴近线端的小型简洁三角形" in contract
-    assert "保留既有容器形状和数量" in contract
-    assert "保留已经选择的载体类型、轮廓和数量" in contract
+    assert "本规则不得诱导新增、放大或复制容器" in contract
+    assert "不得据此新增大底板、资料容器、独立文字面" in contract
     assert "保留已经确定的前后关系与视觉重心" in contract
-    assert "主业务锚点优先表现可观察的业务动作、状态变化或受控结果" in contract
-    assert "生成优先级：核心判断 → 业务动作或状态 → 主业务锚点" in contract
+    assert "主业务锚点优先由真实设施、设备、作业环境、人员动作、物流或信息流" in contract
+    assert "生成优先级：核心判断 → 行业环境与业务对象 → 业务动作、状态或结果" in contract
     assert "沿页面主要阅读路径形成连续主线" in contract
     assert "不得据此固定生成时间轴、卡片墙、左右分栏或等宽多列" in contract
     assert contract.count("文字型视觉主线") == 1
@@ -199,9 +202,9 @@ def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
     assert "#### 闭环语义" in contract
     assert "semantic_tags:" not in contract
     assert "style09:scope" not in contract
-    assert "连接只表达真实关系并保持细、小、从属" in contract
+    assert "少量方向线" in contract
     assert contract.count("保留已经确定的方向、数量和连接关系") == 1
-    assert contract.count("保留既有容器形状和数量") == 1
+    assert contract.count("本规则不得诱导新增、放大或复制容器") == 1
 
 
 def test_style_nine_selects_composable_conditional_clauses() -> None:
@@ -291,3 +294,55 @@ def test_pair_manifest_accepts_explicit_style_nine() -> None:
         )
 
     assert code == 0
+
+
+def test_style_nine_contract_suppresses_duplicate_response_structures() -> None:
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        payload = json.loads(lock.read_text(encoding="utf-8"))
+
+    contract = payload["style"]["prompt_contract"]
+    assert "重复表达压制（硬约束）" in contract
+    assert "第二套同类关系结构" in contract
+    assert "重复总结区" in contract
+    assert "建设响应" not in contract
+    assert "同一页每个核心概念只允许一个主文字载体和一个主要图形承载面" in contract
+
+
+def test_style_nine_contract_preserves_industry_scene_and_rejects_large_document_carriers() -> None:
+    with TemporaryDirectory() as directory:
+        lock = write_project_style_lock(project=Path(directory), style_id=9)
+        payload = json.loads(lock.read_text(encoding="utf-8"))
+
+    contract = payload["style"]["prompt_contract"]
+    assert "行业环境不是装饰或末端点缀" in contract
+    assert "不得先切出独立文字区再把场景填入剩余区域" in contract
+    assert "仅可作为小型证据细节，全部合计不得压过主要行业场景" in contract
+    assert "一个占主导的行业场景或主关系" in contract
+    assert "不得让所有区域等权" in contract
+    assert "通过大胆裁切、大小差、前后景、清晰度和跨区流向形成三级权重" in contract
+    assert "可使用少量轻量局部承载面，但不得形成等权卡片墙" in contract
+    assert "若提供风格参考图，只继承色彩、材质、留白、字体层级和编辑节奏" in contract
+    assert "不复制其具体物件或固定分区" in contract
+    assert "平台、中枢、引擎、中心等本身就是页面明确表达的业务对象时，可以成为中心载体" in contract
+    assert "不得放在底部通栏重复全文结论" in contract
+    assert "合同或成果对象" not in contract
+    assert "扩大主视觉面和文字区" not in contract
+    assert "锚点在内容允许时占约35%—50%的视觉权重" not in contract
+    assert "高端咨询报告构图" in contract
+    assert "一个主视觉或主关系约占画面视觉注意力的40%—55%" in contract
+    assert "每个主要语义区域都可以有行业配图" in contract
+    assert "每一处图片、对象或场景都必须明确承担至少一个锁定文字组" in contract
+    assert "允许一句主要判断、一个业务动作或一个重要明细拥有一张独立配图" in contract
+    assert "不得为了减少图片数量而强行合并或压缩有明确语义价值的配图" in contract
+    assert "判断标准不是“一句话一张图”的数量" in contract
+    assert "配图粒度必须跟随语义粒度" in contract
+    assert "一张大场景只有在其中可识别的对象、动作或流向能够同时解释多个文字组及其关系时才可合并承载" in contract
+    assert "否则应为主要文字组配置各自贴合的语义场景、对象切片或关系画面" in contract
+    assert "不得用只证明行业身份的全景照片替代" in contract
+    assert "无法指出所对应锁定文字组的图片不得出现" in contract
+    assert "不得把泛行业照片铺在页边、页角或底层充当气氛装饰" in contract
+    assert "应删除无语义装饰，把面积让给真正解释主关系的场景、对象和文字" in contract
+    assert "至少一处行业场景采用大胆裁切或延伸至画面边缘" in contract
+    assert "否则禁止对称圆环、中央圆盘" in contract
+    assert "不得让所有区域等权" in contract
