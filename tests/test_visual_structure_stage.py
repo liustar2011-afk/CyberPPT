@@ -8,6 +8,7 @@ import unittest
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.visual_structure_stage import (
     VISUAL_FILES,
+    _decision_execution_design,
     _prompt_inputs_sha256,
     _sha256,
     _skill_root,
@@ -20,6 +21,20 @@ from cyberppt.script_quality_contract import ScriptPage
 
 
 class VisualStructureStageTests(unittest.TestCase):
+    def test_corrupted_optional_execution_design_falls_back_to_concise_relation_design(self) -> None:
+        source = {
+            "business_relationships": [{"subject": "服务运营", "objects": ["very long audit-only evidence"]}],
+            "core_judgment": "服务运营以订单履行形成一致结算依据。",
+        }
+        decision = {
+            "execution_design": {"business_object": "???"},
+            "evidence_units": [{"key": "E2", "summary": "订单履行｜购买约定、服务执行与计量结算保持一致 / 其余审计细节"}],
+        }
+        design = _decision_execution_design(source, decision, {"semantic_focus": {"evidence_key": "E2"}}, "P11")
+        self.assertIn("订单履行", design["business_object"])
+        self.assertNotIn("very long audit-only evidence", design["business_object"])
+        self.assertLess(len(design["business_object"]), 64)
+
     def test_handoff_separates_business_relations_from_author_layout_notes(self) -> None:
         page = ScriptPage(
             page_id="p06",
@@ -150,6 +165,15 @@ class VisualStructureStageTests(unittest.TestCase):
             init_project(project)
             self.assertTrue(visual_structure_required(project))
             self.assertTrue((project / "visual").is_dir())
+
+    def test_existing_project_with_visual_artifacts_requires_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory) / "project"
+            visual = project / "visual"
+            visual.mkdir(parents=True)
+            (project / "manifest.yml").write_text("mode: lightweight\n", encoding="utf-8")
+            (visual / "skill-request.json").write_text("{}\n", encoding="utf-8")
+            self.assertTrue(visual_structure_required(project))
 
     def test_gate_binds_prompt_inputs_and_invalidates_script_change(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

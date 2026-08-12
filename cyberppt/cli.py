@@ -31,6 +31,7 @@ from cyberppt.commands.script_gate import approve_script, get_script_status, sta
 from cyberppt.commands.script_runner import SCRIPT_ALIASES, run_script
 from cyberppt.commands.source_truth_audit import run_source_truth_audit
 from cyberppt.commands.visual_structure_stage import (
+    execute_visual_structure_stage,
     prepare_visual_structure_stage,
     record_visual_structure_execution,
     run_visual_structure_audit,
@@ -318,6 +319,16 @@ def _prepare_visual_structure_command(args: argparse.Namespace) -> int:
         print(str(exc), file=sys.stderr)
         return 2
     print(f"visual_structure_skill_request: {path}")
+    return 0
+
+
+def _execute_visual_structure_command(args: argparse.Namespace) -> int:
+    try:
+        artifacts = execute_visual_structure_stage(Path(args.project), Path(args.script))
+    except (FileNotFoundError, ValueError, KeyError, TypeError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps({key: str(value) for key, value in artifacts.items()}, ensure_ascii=False, indent=2))
     return 0
 
 
@@ -805,6 +816,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Use the current passed lightweight full-script audit and the user's interactive final confirmation without creating Stage 01 approval artifacts.",
     )
     prepare_visual_structure.set_defaults(func=_prepare_visual_structure_command)
+
+    execute_visual_structure = subparsers.add_parser(
+        "execute-visual-structure",
+        help="Compile the executed visual-design decision receipt into official Stage 02 visual specs.",
+    )
+    execute_visual_structure.add_argument("project", help="CyberPPT project directory.")
+    execute_visual_structure.add_argument("--script", required=True, help="Approved final script.")
+    execute_visual_structure.set_defaults(func=_execute_visual_structure_command)
 
     record_visual_structure = subparsers.add_parser(
         "record-visual-structure-execution",
