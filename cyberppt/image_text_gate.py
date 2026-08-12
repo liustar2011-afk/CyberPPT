@@ -46,46 +46,40 @@ def _normalize(value: str) -> str:
     return re.sub(r"[\s\W_]+", "", value, flags=re.UNICODE)
 
 
+def _ocr_edge_variants(value: str) -> set[str]:
+    """Return variants after removing OCR-only ASCII edge marks.
+
+    RapidOCR can read a thin vertical divider beside a label as ``I`` or ``1``.
+    Those marks are layout artifacts, not glyph substitutions in the label.
+    """
+    divider_glyphs = {"I", "l", "1", "丨"}
+    variants = {value}
+    if value and value[0] in divider_glyphs:
+        variants.add(value[1:])
+    if value and value[-1] in divider_glyphs:
+        variants.add(value[:-1])
+    if (
+        len(value) > 2
+        and value[0] in divider_glyphs
+        and value[-1] in divider_glyphs
+    ):
+        variants.add(value[1:-1])
+    # Very short OCR fragments are often neighboring-label slices; vision
+    # review remains the authority for explicit two/three-character typos.
+    return {item for item in variants if len(item) >= 4}
+
+
 def _ocr_mismatch_issues(
     items: list[dict[str, Any]], script_text: str
 ) -> list[dict[str, Any]]:
-    """Find OCR strings that closely align with script truth but differ by glyph."""
-    truth = _normalize(script_text)
-    issues: list[dict[str, Any]] = []
-    for item in items:
-        observed = _normalize(str(item.get("text") or ""))
-        if len(observed) < 2 or observed in truth:
-            continue
-        candidates = [
-            truth[index : index + len(observed)]
-            for index in range(max(0, len(truth) - len(observed) + 1))
-        ]
-        if not candidates:
-            continue
-        expected = max(candidates, key=lambda value: SequenceMatcher(None, observed, value).ratio())
-        ratio = SequenceMatcher(None, observed, expected).ratio()
-        # A near match anchors the OCR result to text that is actually expected on this page.
-        # The gate deliberately treats the mismatch as blocking: it may be a real typo or a
-        # damaged glyph that OCR maps to different valid characters (pseudo-Chinese).
-        if ratio < 0.6 or observed == expected:
-            continue
-        differing = [
-            f"{actual}->{wanted}"
-            for actual, wanted in zip(observed, expected)
-            if actual != wanted
-        ]
-        issues.append(
-            {
-                "type": "gibberish",
-                "expected": expected,
-                "observed": observed,
-                "evidence": "independent OCR glyph mismatch: " + ", ".join(differing),
-                "confidence": item.get("confidence"),
-                "bbox": item.get("bbox"),
-                "detector": "rapidocr_onnxruntime",
-            }
-        )
-    return issues
+    """Do not infer typo truth by aligning OCR strings to script prose.
+
+    RapidOCR is retained as an observation source in the audit receipt, while
+    blocking typo/gibberish decisions come only from the six-tile visual glyph
+    audit.  Whole-string OCR alignment confuses neighboring labels, dividers,
+    and valid-but-different Chinese words with single-character corruption.
+    """
+    return []
 
 
 def audit_generated_image_text(

@@ -100,8 +100,58 @@ def _locked_text_items(page: ScriptPage) -> list[dict[str, Any]]:
     ]
 
 
+def _stage01_relationship_features(
+    relationships: list[dict[str, Any]], visual_notes: str
+) -> dict[str, Any]:
+    """Preserve relationship-bearing Stage 01 language without promoting layout advice."""
+
+    actors = list(dict.fromkeys(
+        str(item.get("subject") or "").strip()
+        for item in relationships
+        if isinstance(item, dict) and str(item.get("subject") or "").strip()
+    ))
+    actions: list[dict[str, str]] = []
+    for item in relationships:
+        if not isinstance(item, dict):
+            continue
+        subject = str(item.get("subject") or "").strip()
+        relation = str(item.get("relation") or "").strip()
+        for obj in item.get("objects") or []:
+            text = str(obj or "").strip()
+            if text:
+                actions.append({"subject": subject, "relation": relation, "object": text})
+
+    clauses = [
+        value.strip(" ；。\n")
+        for value in str(visual_notes or "").replace("\n", "；").split("；")
+        if value.strip(" ；。\n")
+    ]
+    select = lambda tokens: [value for value in clauses if any(token in value for token in tokens)]
+    return {
+        "authority": "stage01_semantic_handoff",
+        "actors": actors,
+        "actions": actions,
+        "directions": select(("进入", "形成", "转化", "承接", "汇聚", "贯通", "连接", "回到")),
+        "conditions": select(("条件", "只有", "仅", "若", "如果", "通过后", "满足")),
+        "branches": select(("分支", "互斥", "分别", "三类", "两类", "暂停", "终止", "再验证")),
+        "feedback": select(("反馈", "回流", "闭环", "复盘", "迭代", "持续更新")),
+        "source_visual_notes": str(visual_notes or "").strip(),
+    }
+
+
 def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, Any]:
     receipt = page.contract_receipt if isinstance(page.contract_receipt, dict) else {}
+    outline = outline or {}
+    page_mission = str(receipt.get("page_mission") or outline.get("page_mission") or "")
+    must_not_include = list(receipt.get("must_not_include") or outline.get("must_not_include") or [])
+    consumed_content_unit_ids = list(
+        receipt.get("consumed_content_unit_ids")
+        or [
+            str(item.get("unit_id") or "")
+            for item in (outline.get("content_units") or [])
+            if isinstance(item, dict) and str(item.get("unit_id") or "")
+        ]
+    )
     render_role = _render_role(page.page_type)
     business_relationships = [
         dict(item)
@@ -109,14 +159,17 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         if isinstance(item, dict)
     ]
     locked_text_items = _locked_text_items(page)
+    relationship_features = _stage01_relationship_features(
+        business_relationships, page.visual_structure
+    )
     record: dict[str, Any] = {
         "page_id": normalize_page_id(page.page_id, page.sequence),
         "page_number": page.sequence,
         "render_role": render_role,
-        "argument_role": str((outline or {}).get("argument_role") or ""),
+        "argument_role": str(outline.get("argument_role") or ""),
         "title": page.title,
         "subtitle": page.subtitle,
-        "page_mission": str(receipt.get("page_mission") or ""),
+        "page_mission": page_mission,
         "core_message": page.main_message,
         "full_prose": page.full_prose,
         "onscreen_text": page.onscreen_text,
@@ -126,12 +179,12 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "editable_body_text": page.onscreen_text,
         "speaker_notes": page.speaker_notes,
         "source_refs": list(page.source_refs),
-        "consumed_content_unit_ids": list(receipt.get("consumed_content_unit_ids") or []),
-        "must_not_include": list(receipt.get("must_not_include") or []),
+        "consumed_content_unit_ids": consumed_content_unit_ids,
+        "must_not_include": must_not_include,
         "business_relationships": business_relationships,
         "field_provenance": {
             "content": "script-final.md",
-            "page_mission": "script-page-contract",
+            "page_mission": "script-page-contract-or-outline",
             "visual_structure": "stage02-generated",
             "style": "stage02-style-lock",
         },
@@ -144,7 +197,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
     # It deliberately contains no visual decision, style, geometry, or prompt
     # copied from a previous Stage 02 run.
     record["stage02_visual_input"] = {
-        "page_mission": str(receipt.get("page_mission") or ""),
+        "page_mission": page_mission,
         "core_message": page.main_message,
         "full_prose": page.full_prose,
         "onscreen_text": page.onscreen_text,
@@ -152,10 +205,11 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "module_titles": list(page.module_titles),
         "top_level_module_titles": list(page.top_level_module_titles),
         "business_relationships": business_relationships,
+        "stage01_relationship_features": relationship_features,
         "author_visual_notes": page.visual_structure,
         "author_visual_notes_authority": "advisory_only",
         "source_refs": list(page.source_refs),
-        "must_not_include": list(receipt.get("must_not_include") or []),
+        "must_not_include": must_not_include,
         "body_image_canvas": dict(BODY_CANVAS),
         "title_render_mode": "external_text_layer",
         "subtitle_render_mode": "external_text_layer",
@@ -163,25 +217,39 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
     return record
 
 
-def build_stage02_handoff(project: Path, *, script: Path | None = None) -> dict[str, Any]:
+def build_stage02_handoff(
+    project: Path,
+    *,
+    script: Path | None = None,
+    lightweight_stage01_confirmed: bool = False,
+) -> dict[str, Any]:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve() if script else (project / SCRIPT_PATH).resolve()
     if not script.is_file():
         raise FileNotFoundError(f"approved final script is missing: {script}")
 
-    # The handoff requires an explicit Stage 01 approval record, but does not
-    # freeze the approved files. This repository is a single-user script tool,
-    # so in-place edits are consumed immediately by the next handoff build.
     approval_path = project / SCRIPT_APPROVAL
-    if not approval_path.is_file():
+    if not approval_path.is_file() and not lightweight_stage01_confirmed:
         raise FileNotFoundError(f"Stage 01 script approval is missing: {approval_path}")
 
     bindings = {
         "script": {"path": str(script)},
-        "script_approval": _source_binding(project, SCRIPT_APPROVAL),
         "outline": _source_binding(project, OUTLINE_PATH),
         "source_truth": _source_binding(project, SOURCE_TRUTH_PATH),
     }
+    approval_mode = "stage01_approval_file"
+    if approval_path.is_file():
+        bindings["script_approval"] = _source_binding(project, SCRIPT_APPROVAL)
+    else:
+        from cyberppt.commands.script_audit import run_script_audit
+
+        code, audit = run_script_audit(project, script, lightweight=True)
+        if code != 0 or audit.get("status") != "passed":
+            raise ValueError(
+                "lightweight Stage 01 confirmation requires a currently passed "
+                "full-script audit before Stage 02 handoff"
+            )
+        approval_mode = "interactive_lightweight_confirmation"
 
     document = parse_script_path(script)
     outline_payload = _read_json(project / OUTLINE_PATH)
@@ -199,6 +267,7 @@ def build_stage02_handoff(project: Path, *, script: Path | None = None) -> dict[
         "schema": "cyberppt.stage02_handoff.v1",
         "project": str(project),
         "created_at": _utc_now(),
+        "stage01_confirmation_mode": approval_mode,
         "source_bindings": bindings,
         "page_order": [record["page_id"] for record in records],
         "pages": records,
@@ -310,6 +379,14 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
         relationships = visual_input.get("business_relationships")
         if not isinstance(relationships, list):
             issue("BUSINESS_RELATIONSHIPS_INVALID", f"{page_id} business_relationships must be an array.")
+        features = visual_input.get("stage01_relationship_features")
+        if not isinstance(features, dict):
+            issue("STAGE01_RELATIONSHIP_FEATURES_MISSING", f"{page_id} has no structured Stage 01 relationship features.")
+        else:
+            if features.get("authority") != "stage01_semantic_handoff":
+                issue("STAGE01_RELATIONSHIP_FEATURES_AUTHORITY_INVALID", f"{page_id} relationship features have invalid authority.")
+            if not isinstance(features.get("actions"), list) or not features.get("actions"):
+                issue("STAGE01_RELATIONSHIP_ACTIONS_MISSING", f"{page_id} has no structured subject-action-object features.")
         if visual_input.get("author_visual_notes_authority") != "advisory_only":
             issue("AUTHOR_VISUAL_NOTES_AUTHORITY_INVALID", f"{page_id} author visual notes must be advisory only.")
 
@@ -327,9 +404,18 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
     }
 
 
-def prepare_stage02_handoff(project: Path, *, script: Path | None = None) -> dict[str, Any]:
+def prepare_stage02_handoff(
+    project: Path,
+    *,
+    script: Path | None = None,
+    lightweight_stage01_confirmed: bool = False,
+) -> dict[str, Any]:
     project = project.expanduser().resolve()
-    payload = build_stage02_handoff(project, script=script)
+    payload = build_stage02_handoff(
+        project,
+        script=script,
+        lightweight_stage01_confirmed=lightweight_stage01_confirmed,
+    )
     handoff_path = project / HANDOFF_JSON
     write_json_atomic(handoff_path, payload)
     report = audit_stage02_handoff(project, payload)

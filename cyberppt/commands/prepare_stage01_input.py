@@ -56,6 +56,7 @@ def _ensure_page_script_authoring(
         "outline_sha256": _sha256(outline_path),
         "pages": {
             str(page["page_id"]): {
+                "subtitle": str(page.get("subtitle") or ""),
                 "prose": "",
                 "selection": ["", "", ""],
                 "onscreen": "",
@@ -170,6 +171,10 @@ def prepare_outline_input(
         "`new_value_vs_previous`, `reserved_for_later`, `content_units`, "
         "`visual_intent_type`.",
         "Set root `editorial_control_mode` to `required`.",
+        "Treat `compile-outline-draft` only as a deterministic candidate inventory, never as the authored Outline. Set root `editorial_authoring_mode` to `author_driven` and change `editorial_authoring_status` from `mechanical_draft` to `author_edited` only after completing the editorial decisions below.",
+        "For every content page author `non_substitutable_value`, one governing `argument_chain`, grouped `evidence_roles` (`claim`, `reason`, `instance`, `boundary`, `trace_only`), and `excluded_from_onscreen`. Evidence coverage is not page necessity; broad relevance is not direct support.",
+        "Run a deletion test for every onscreen-required unit: if removing it still leaves the audience question fully answered, demote it to full prose, notes, or trace-only. Appendix registration fields, material checklists, operating forms, and procedural inventories default to `excluded_from_onscreen` unless they directly determine the page judgment.",
+        "Do not use audit errors to invent modules or duplicate anchors. First make the professional editorial decision, then use audit only to catch source drift, missing duties, false relations, hierarchy errors, and contract defects.",
         *(
             [
                 "Set root `storyline_contract_mode` to `required` and embed the selected storyline contract directly in `storyline`; do not create a separate Storyline Director artifact.",
@@ -481,16 +486,23 @@ def prepare_page_script_input(
         "Write 完整文字稿 as semantic paragraphs, not one dense block. Split at real argument boundaries (for example background → concrete demand → present gap → page conclusion); never split mechanically by equal length or sentence count.",
         "Treat completeness and page ownership as simultaneous constraints. Every source record assigned to this page must be represented in 完整文字稿 unless the approved Outline records a specific intentional omission; information assigned to a later page must stay out of this page even when it is broadly related.",
         "A page may answer only its approved audience_question and topic_category. Background/necessity pages state the external change, concrete demand and present gap; they must not preview product formation, resource registration, authorization delivery, metering, settlement, cooperation steps or other solution mechanisms reserved for later pages.",
-        "Do not add `副标题` or `上屏结论` merely because the page is a content page. "
-        "When the approved Outline has them, preserve them; when it does not, begin with the source-supported on-screen modules.",
-        "When migrating an already approved script to this subtitle rule, preserve "
-        "its existing `上屏文字` unchanged. Only add or update `副标题`, retain the "
-        "full judgment as semantic metadata, and set the appropriate display mode.",
+        "Do not add `副标题` or a separate `上屏结论` merely because the page is a content page. "
+        "The approved core_message must nevertheless reach the audience-facing layer whenever it carries the page's indispensable judgment. "
+        "Choose the form from the argument: use a separate `上屏结论` for judgment-evidence pages, a concise lead for process or mechanism pages, integrate it into a relation-bearing module for architecture or composition pages, or use a closing result for progression and delivery pages. "
+        "Do not force one fixed slot, repeat the title, duplicate module details, or leave a valuable core_message only in backend metadata. "
+        "When the core_message is only an authoring summary, already fully expressed by the visible relation, or cannot be shown without unsupported strengthening, keep it as metadata and state that editorial reason in the selection notes.",
+        "Use `主判断` as semantic metadata, never by copying its full sentence into "
+        "`上屏文字`. When the page needs a lead, write a shorter audience-facing "
+        "`副标题` that preserves the judgment; the subtitle is carried by the template "
+        "text layer and is not part of the locked body-image text. When migrating an "
+        "older script, remove an exact leading 主判断 copy from `上屏文字`, retain the "
+        "full judgment as semantic metadata, and add or update its concise `副标题`.",
         "The approved core_message is mandatory semantic metadata; its onscreen_conclusion remains optional.",
         "Preserve the approved Outline title exactly. For formal materials, keep the default `formal_plain` title style and do not re-dramatize titles as questions, slogans, journey rhetoric, or promotional claims during page drafting.",
         "The approved title must name the page's actual argumentative function rather than a narrower content fragment. A 建设必要性 page should normally say 建设必要性 explicitly; 需求、背景 or 现状 alone is insufficient when the page also proves why construction is required.",
         "Answer the approved `audience_question`, respect every `must_not_include` exclusion, and do not revive an unresolved split risk while drafting prose or on-screen modules.",
         "Before finalizing each module, trace it to this page's source_refs/content_units and ask whether it directly advances the page_mission. Broad relevance is insufficient. Delete or move any module whose real business question belongs to another page.",
+        "A general premise is not automatically on-screen evidence. Keep industry attributes, document background, and broad context in full prose unless removing them would break the audience's ability to reach this page's approved proposition. Never give a contextual premise its own visible module merely because it appears first in the source or carries argument_duty=premise.",
         "Use `detail_refs` when drafting 完整文字稿 and speaker notes, but do not turn each detail record into an on-screen module.",
         "Never strengthen the core_message from page labels, modules, visual structure, or speaker notes.",
         "The visible layer must be independently readable without speaker narration.",
@@ -511,6 +523,7 @@ def prepare_page_script_input(
         "Compression must preserve source specificity. Keep the source's named business objects in module titles, and keep its concrete duties, processed objects, operating actions, participants, and collaboration actions in the child items. Satisfy the <=30-character rule by adding or splitting true source-supported short items, never by replacing distinctive content with generic labels such as position, role, object, matter, support, or relationship.",
         "Make the visible information architecture explicit. Normally use 2–5 peer top-level business modules for the page skeleton; one umbrella module is allowed only when it owns several true children. When a module needs support, place only true members of that module as indented short details beneath it and separate peer modules with blank lines. Do not flatten a layered topic into an undifferentiated list, and do not invent hierarchy merely to create visual grouping.",
         "Indentation declares a real parent-child taxonomy, not visual grouping. Before nesting, verify that every child answers the same classification question implied by its parent. Never nest actors or participating parties under a construction item, mechanism, platform, carrier, path, process, task, or goal. Fold those actors into the item's short description, or create a separate actor group only when actor roles are independently required on screen.",
+        "When a detail is too long for one concise on-screen line, write a source-specific business subheading first and place the complete natural detail sentence beneath it. The subheading and detail must form a real summary-to-elaboration relation. Do not shorten copy by detaching subordinate phrases such as 随着/通过/根据/围绕 from their governing clause. If one subheading has several details, those details must still answer the same classification question and carry the same argument function; otherwise rewrite them as an explicit chain or separate modules.",
         "Never put compositor instructions such as 四行选择矩阵、阅读顺序、视觉中心、构图说明、泳道/色块/主链呈现 or 第X行｜ coordinates into `上屏文字` or `【视觉结构，不上屏】`. Translate any legitimate business meaning into the semantic relation handoff and leave the concrete layout to Stage 02.",
         "Boundary is opt-in, never a mandatory fourth beat. A boundary, evidence-status, "
         "pending-proof, or research-status module may appear only when it is the primary "

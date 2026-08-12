@@ -69,6 +69,16 @@ class P2StructureTest(unittest.TestCase):
                 first.release()
             self.assertFalse((root / ".lock").exists())
 
+    def test_atomic_write_handles_long_target_names(self) -> None:
+        """Temporary names must not push Windows delivery paths past MAX_PATH."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            deep = root / ("x" * 100)
+            deep.mkdir()
+            target = deep / (("page_001_" + "长文件名" * 20 + ".svg"))
+            atomic_write_text(target, "<svg/>")
+            self.assertEqual("<svg/>", target.read_text(encoding="utf-8"))
+
     def test_prompt_approval_records_hashes_and_stale_state(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "approved.md"

@@ -314,11 +314,13 @@ def _semantic_record_issues(
                     "split_semantic_units",
                 )
             )
-        if record.get("type") == "F" and any(role != "fact" for role in unit_roles):
+        if record.get("type") == "F" and any(
+            role not in {"fact", "change"} for role in unit_roles
+        ):
             issues.append(
                 SourceTruthIssue(
                     "SOURCE_FACT_CONTAINS_RECOMMENDATION",
-                    "Fact records cannot carry judgments, recommendations, or boundaries.",
+                    "Fact/change records cannot carry judgments, recommendations, or boundaries.",
                     ids,
                     "split_semantic_units",
                 )

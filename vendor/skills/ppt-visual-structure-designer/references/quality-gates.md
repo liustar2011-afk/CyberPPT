@@ -46,6 +46,7 @@
 - 业务流、数据流、服务流、控制流混为同一种箭头。
 - 原项目符号数量直接转为模块数量。
 - `decision_relationship`包含行列、泳道、矩阵、卡片数量、上下左右方位、中心框、结果区或收束条等页面几何配方。
+- `stage01_relationship_features`中的主体、动作、方向、条件、分支或反馈未进入选中结构，且没有在`stage01_visual_note_disposition`中记录调整或舍弃理由。
 
 ## G4 单一视觉中心
 
@@ -88,6 +89,10 @@
 - 结构字段包含字体、字号、颜色、线宽、边框、箭头头、材质或光效等实现细节。
 - 页面依赖前页文字才能独立生成。
 - 出现`overlay`字段。
+- `representation_freedom`被当作免除Stage02载体选择的理由；`business_object`只是页标题、抽象概念、语义节点集合或“由执行器决定”的占位语。
+- `visual_hierarchy.primary`没有与可画的业务对象或关系场一致，无法承载核心结论。
+- `spatial_organization`、`relationship_encoding`只复述路径、主链、焦点或阅读顺序，没有对象、动作、接口、边界或结果如何组成关系场。
+- `text_integration_method`只说“文字绑定节点/逐项绑定”，没有具体说明文字贴附的业务对象、动作、接口、边界或结果。
 
 ## G7 整套一致性
 

@@ -455,6 +455,12 @@ def _style_contract_from_payload(
     if style_prompt_v2:
         return style_prompt_v2
     prompt_contract = _strip_visual_structure_meta(_collapse_text(style.get("prompt_contract")))
+    # Style 09 is an authored, self-contained source contract.  The final
+    # prompt must carry this entire contract verbatim under its formal style
+    # lock, rather than letting a downstream compiler select clauses or
+    # recreate a terminal fragment.  Page layout belongs to Stage 02.
+    if int(style.get("id") or 0) == 9 and prompt_contract:
+        return prompt_contract
     scope_rule = _strip_visual_structure_meta(_collapse_text(style.get("scope_rule")))
     semantic_structure_rule = _strip_visual_structure_meta(
         _collapse_text(style.get("semantic_structure_rule"))
@@ -516,8 +522,6 @@ def _style_contract_from_payload(
     if prompt_sequence_rule:
         parts.append(prompt_sequence_rule)
     contract = "\n\n".join(part for part in parts if part)
-    if int(style.get("id") or 0) == 9 and prompt_contract:
-        contract = _compile_style09_contract(contract, semantic_tags)
     return contract
 
 
@@ -744,6 +748,7 @@ def _style09_terminal_execution_lock(style_lock_path: Path | None) -> str:
             for index, line in enumerate(lines)
             if line.startswith("禁止任何图标、徽章、卡片墙")
             or line.startswith("保持扁平2D")
+            or line.startswith("保持纯白底")
         ),
         None,
     )
@@ -798,9 +803,23 @@ def enforce_style09_terminal_lock(
     # line) before appending the authoritative final copy. Line-level removal
     # left every paragraph behind and sent the same high-priority rule three
     # times, diluting the intended focal hierarchy.
-    marker = _STYLE09_TERMINAL_HEADING
-    if marker in body:
-        body = body.split(marker, 1)[0]
+    # Remove the source contract's terminal section before reasserting it at
+    # the true end.  Preserve a Stage 02 module appended after that contract;
+    # otherwise a raw terminal tail makes the send prompt verbose and gives
+    # the same Style 09 rule two competing positions.
+    source_marker = "### Final ImageGen execution lock — hard"
+    module_marker = "【视觉结构设计模块｜不上屏】"
+    marker_index = body.find(source_marker)
+    if marker_index >= 0:
+        module_index = body.find(module_marker, marker_index)
+        if module_index >= 0:
+            body = body[:marker_index] + body[module_index:]
+        else:
+            body = body[:marker_index]
+    else:
+        body = body.replace(lock, "")
+    if people_rule:
+        body = body.replace(people_rule, "")
     lines = [
         line for line in body.splitlines()
         if line.strip() not in {STYLE09_TERMINAL_LOCK_HEADER, people_rule}
@@ -819,6 +838,7 @@ def render_prompt(
     composition_guidance: str = "",
     compiler_version: str = "legacy",
     text_render_mode: str | None = None,
+    include_style_contract: bool = True,
 ) -> str:
     creative_brief = compiler_version == "creative-brief-v1"
     content_lines = (
@@ -887,22 +907,23 @@ def render_prompt(
                 "任何按业务语义选择的视觉载体，其内部不得承载白名单之外的可读文字；空间不足时减少视觉元素或扩大文字区，不得新增微型文字。",
             ]
         )
-    parts.extend(
-        [
-            "",
-            (
-                _creative_brief_style_contract(
-                    style_lock_path,
-                    semantic_tags=style09_semantic_tags,
-                )
-                if creative_brief
-                else style_contract(
-                    style_lock_path,
-                    semantic_tags=style09_semantic_tags,
-                )
-            ),
-        ]
-    )
+    if include_style_contract:
+        parts.extend(
+            [
+                "",
+                (
+                    _creative_brief_style_contract(
+                        style_lock_path,
+                        semantic_tags=style09_semantic_tags,
+                    )
+                    if creative_brief
+                    else style_contract(
+                        style_lock_path,
+                        semantic_tags=style09_semantic_tags,
+                    )
+                ),
+            ]
+        )
     if visual_grammar:
         parts.extend(["", "【视觉组织原则】", visual_grammar])
     if layout_directives:
@@ -923,12 +944,6 @@ def render_prompt(
             ),
         ]
     )
-    terminal_execution_lock = _style09_terminal_execution_lock(style_lock_path)
-    if terminal_execution_lock:
-        parts.extend(["", STYLE09_TERMINAL_LOCK_HEADER, terminal_execution_lock])
-        people_rule = _style09_people_rule(style_lock_path)
-        if people_rule:
-            parts.append(people_rule)
     return "\n".join(parts).strip() + "\n"
 
 

@@ -138,6 +138,14 @@ Markdown用于人工预审和生图脚本组装，JSON用于自动校验、批�
 - `text_bindings`：将证据单元绑定到语义节点；CyberPPT工作台模式还必须用`text_ids`逐项引用`locked_text_items`中的精确正文ID。所有正文ID必须被绑定且只能出现一次，不得引用未知ID。
 - `representation_freedom`：记录载体和媒介是否受来源约束。
 
+`representation_freedom`只记录上游是否限制选择，并不把选择责任交给生图模型。Stage02必须在`image_plan`和`visual_decision`中选定可执行方案：
+
+- `image_plan.business_object`必须是本页选定的、承载关系的具体业务对象或关系场；不得写页面标题、抽象概念、`语义节点/动作/关系`、`可选媒介`等渲染占位语。
+- `visual_hierarchy.primary`必须与该对象或关系场一致，并能说明为何它承载核心结论。
+- `spatial_organization`与`relationship_encoding`必须说清对象、动作、接口、边界或结果如何构成主关系，不能只写`path`、`主链`、`聚焦`等关系标签。
+- `text_integration_method`必须说明每组正文贴附到哪个对象、动作、接口、边界或结果；“逐项绑定语义节点”不是可执行设计。
+- 选择`use_scene: false`时，仍须用具体业务对象及其关系构成图义场；选择场景时，场景必须直接解释该关系，不能作为装饰背景。
+
 ## 内容锁定
 
 `content_lock`必须明确：
@@ -164,10 +172,11 @@ Markdown用于人工预审和生图脚本组装，JSON用于自动校验、批�
 CyberPPT工作台的`visual-design-input.json`使用以下权威边界：
 
 - `business_relationships`：业务关系真值；`decision_relationship`只能由此继承和组织。
+- `stage01_relationship_features`：Stage 01已经识别的主体、动作、方向、条件、分支与反馈；必须逐项核对并在最终结构中落位，或明确说明调整、舍弃理由。
 - `author_visual_notes`：低权重作者备注，固定版式和载体描述不得进入关系真值。
 - `locked_text_items`：带稳定`text_id`的正文唯一来源。
 
-工作台还要求`visual-design-decisions.json`保存每页至少三个结构候选、候选完整证据覆盖、评分维度与总分、选中候选以及输入哈希。正式执行回执由仓库命令生成并绑定执行器、模型、Skill包与产物哈希。
+工作台还要求`visual-design-decisions.json`保存每页至少三个结构候选、候选完整证据覆盖、评分维度与总分、选中候选、输入哈希，以及`stage01_visual_note_disposition`。该字段按`inherited`、`adjusted`、`rejected`三类记录上游建议特征和理由，使继承与改写可审计。正式执行回执由仓库命令生成并绑定执行器、模型、Skill包与产物哈希。
 
 结构指令不得在画面中显示。标题与副标题默认由外部PPT文字层处理，正文按用户指定的生图模式执行。字体、字号、颜色、线条、边框、形状、人物外观和媒介质感由`style_source_ref`对应的风格文件负责。
 

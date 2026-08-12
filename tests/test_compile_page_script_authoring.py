@@ -38,6 +38,7 @@ class CompilePageScriptAuthoringTests(unittest.TestCase):
                     "page_type": "content",
                     "chapter_id": "CH01",
                     "title": "内容页",
+                    "subtitle": "模板层副标题",
                     "core_message": "事实支持判断",
                     "source_refs": ["ST001"],
                     "detail_refs": [],
@@ -84,6 +85,7 @@ class CompilePageScriptAuthoringTests(unittest.TestCase):
             "outline_sha256": _sha256(self.outline_path),
             "pages": {
                 "p03": {
+                    "subtitle": "作者确认的精简副标题",
                     "prose": "事实材料形成完整说明，并支持本页判断。",
                     "selection": [
                         "必留上屏：事实与判断。",
@@ -113,9 +115,14 @@ class CompilePageScriptAuthoringTests(unittest.TestCase):
         chapter = (output / "ch01.md").read_text(encoding="utf-8")
         self.assertIn("## 第2页：第一章", chapter)
         self.assertIn("## 第3页：内容页", chapter)
+        self.assertIn("- 副标题：作者确认的精简副标题", chapter)
+        onscreen = chapter.split("### 上屏文字（严格锁定）", 1)[1].split(
+            "### 逻辑骨架", 1
+        )[0]
+        self.assertNotIn("作者确认的精简副标题", onscreen)
         self.assertIn("### 完整文字稿", chapter)
         self.assertIn('"consumed_content_unit_ids":["CU-p03-01"]', chapter)
-        self.assertIn("事实：原文事实。\n    判断：事实支持判断。", chapter)
+        self.assertIn("事实：原文事实。\n    判断：事实支持判断", chapter)
         self.assertNotIn("左侧", chapter)
 
     def test_rejects_stale_outline_binding(self) -> None:
@@ -127,6 +134,24 @@ class CompilePageScriptAuthoringTests(unittest.TestCase):
             compile_page_script_authoring(
                 self.project, output_dir=self.scripts / "drafts/run-02"
             )
+
+    def test_onscreen_detail_items_have_no_terminal_punctuation(self) -> None:
+        self.authoring["pages"]["p03"]["onscreen"] = (
+            "现状判断\n\n明细项\n- 稳定供给仍有缺口。\n- 服务运营需要统一支撑！"
+        )
+        self.authoring_path.write_text(
+            json.dumps(self.authoring, ensure_ascii=False), encoding="utf-8"
+        )
+        output = self.scripts / "drafts/run-punctuation"
+        compile_page_script_authoring(self.project, output_dir=output)
+        chapter = (output / "ch01.md").read_text(encoding="utf-8")
+        onscreen = chapter.split("### 上屏文字（严格锁定）", 1)[1].split(
+            "### 逻辑骨架", 1
+        )[0]
+        self.assertIn("- 稳定供给仍有缺口", onscreen)
+        self.assertIn("- 服务运营需要统一支撑", onscreen)
+        self.assertNotIn("缺口。", onscreen)
+        self.assertNotIn("支撑！", onscreen)
 
     def test_rejects_consumption_mismatch(self) -> None:
         self.authoring["pages"]["p03"]["consumes"] = []

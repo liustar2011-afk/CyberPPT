@@ -60,7 +60,13 @@ HEADING_FIELD_ALIASES = {
     "完整文字稿": "完整文字稿",
     "文字稿取舍说明": "文字稿取舍说明",
     "证据映射": "证据映射",
+    "证据": "证据",
+    "边界依据": "边界依据",
+    "边界": "边界",
     "上屏文字": "上屏文字",
+    "上屏结论": "上屏结论",
+    "视觉意图类型": "视觉意图类型",
+    "视觉证明": "视觉证明",
     # "逻辑骨架" and "视觉意图与生图构图" are legacy heading names some
     # generators use in place of a real 视觉结构 section; both alias onto
     # the canonical field. When a page uses the canonical "视觉结构（不上屏）"
@@ -581,6 +587,10 @@ _ACTOR_LABEL_RE = re.compile(
     r"(?:单位|主体|资源方|需求方|供给方|模型(?:算法)?方|服务方|实施方|运营方|"
     r"合作方|合作伙伴|机构|企业|院所|高校|客户)$"
 )
+_ACTOR_DUTY_LABEL_RE = re.compile(
+    r"(?:中电联|数智公司|合作伙伴|需求单位|资源方|需求方|供给方|模型(?:算法)?方|"
+    r"服务方|实施方|运营方|合作方|机构|企业|院所|高校|客户)"
+)
 _ACTOR_PARENT_RE = re.compile(r"(?:参与主体|合作主体|主体类型|参与方|合作伙伴|角色|服务对象)$")
 _NON_ACTOR_PARENT_RE = re.compile(r"(?:建设|平台|载体|机制|路径|流程|环节|内容|目标|任务)$")
 
@@ -615,6 +625,108 @@ def _onscreen_parent_child_role_mismatches(text: str) -> tuple[str, ...]:
             and not _ACTOR_PARENT_RE.search(parent)
         ):
             mismatches.append(f"{parent} -> {', '.join(direct_actor_children[:4])}")
+    return tuple(mismatches)
+
+
+_SUBORDINATE_DETAIL_RE = re.compile(
+    r"^[^：:\n]{1,14}[：:]\s*(?:随着|通过|根据|基于|围绕|面向|依托|在(?:.+?条件下|.+?基础上))"
+)
+_SEMANTIC_LINE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("attribute", re.compile(r"(?:是|属于|定位为|覆盖|包括|构成)")),
+    ("change", re.compile(r"(?:加快|深化|提升|增长|变化|转型|演进)")),
+    ("demand", re.compile(r"(?:需要|依赖|要求|关注)")),
+    ("gap", re.compile(r"(?:尚未|不足|缺少|分散|不统一|受阻|难以)")),
+    ("response", re.compile(r"(?:建立|建设|组织|衔接|支持|形成|降低|补齐)")),
+)
+
+
+def _onscreen_subordinate_fragments(text: str) -> tuple[str, ...]:
+    """Find authoring labels followed by a detached subordinate phrase."""
+
+    return tuple(
+        line.strip()
+        for line in text.splitlines()
+        if _SUBORDINATE_DETAIL_RE.search(line.strip())
+    )
+
+
+def _semantic_line_role(text: str) -> str:
+    # A construction noun inside an explicit trend (建设加快) is a change,
+    # not a response.  Resolve high-signal states before broader action verbs.
+    if re.search(r"(?:加快|深化|提升|增长|变化|转型|演进)", text):
+        return "change"
+    if re.search(r"(?:尚未|不足|缺少|分散|不统一|受阻|难以)", text):
+        return "gap"
+    hits = [name for name, pattern in _SEMANTIC_LINE_PATTERNS if pattern.search(text)]
+    return hits[0] if len(hits) == 1 else ""
+
+
+def _onscreen_false_parallel_semantics(text: str) -> tuple[str, ...]:
+    """Flag sibling lists that mix distinct argument functions.
+
+    Indentation is a semantic assertion.  When three or more direct children
+    mix attributes, changes, demands, gaps, or responses, they cannot be
+    rendered as one peer list without an explicit relation rewrite.
+    """
+
+    lines = text.splitlines()
+    nodes = [
+        (index, _line_indent(line), _module_title(line) or "")
+        for index, line in enumerate(lines)
+        if line.strip() and _module_title(line) is not None
+    ]
+    mismatches: list[str] = []
+    for position, (start, indent, parent) in enumerate(nodes):
+        end = len(lines)
+        for next_start, next_indent, _ in nodes[position + 1 :]:
+            if next_indent <= indent:
+                end = next_start
+                break
+        child_lines = [
+            line.strip()
+            for line in lines[start + 1 : end]
+            if line.strip() and _line_indent(line) > indent
+        ]
+        if len(child_lines) < 3:
+            continue
+        # A group of named actors remains one semantic dimension even when
+        # their distinct duties contain words that also occur in demand or
+        # response prose.  Classify the parent-child taxonomy before applying
+        # keyword-based argument-role heuristics.
+        actor_children = [
+            line
+            for line in child_lines
+            if _ACTOR_DUTY_LABEL_RE.search(re.split(r"[：:]", line, maxsplit=1)[0])
+        ]
+        if (
+            len(actor_children) == len(child_lines)
+            and re.search(r"(?:主体|参与方|角色|职责|分工|协同运行)", parent)
+        ):
+            continue
+        # Named alternatives under an explicit option taxonomy (for example,
+        # four cooperation methods with their respective applicability
+        # conditions) are peers by business type.  Words such as "需要" or
+        # "形成" inside the descriptions explain each option; they do not
+        # change the siblings into mixed argument roles.
+        option_labels = [
+            re.split(r"[：:]", line, maxsplit=1)[0].strip()
+            for line in child_lines
+            if re.search(r"[：:]", line)
+        ]
+        if (
+            len(option_labels) == len(child_lines)
+            and len(set(option_labels)) == len(option_labels)
+            and all(1 <= len(label) <= 12 for label in option_labels)
+            and re.search(r"(?:方式|路径|类型|模式|方案)", parent)
+        ):
+            continue
+        roles = [_semantic_line_role(line) for line in child_lines]
+        known = {role for role in roles if role}
+        if len(known) >= 2:
+            rendered = ", ".join(
+                f"{role}:{line}" for role, line in zip(roles, child_lines) if role
+            )
+            mismatches.append(f"{parent} -> {rendered[:240]}")
     return tuple(mismatches)
 
 
@@ -811,6 +923,7 @@ COUNT_WORDS = {
 # with the bare character to game it. This was found and fixed for
 # LAYER_SIGNALS's old bare "层"; keep new entries to the same bar.
 ORDER_SIGNALS = ("①", "②", "③", "④", "⑤", "→", "随后", "依次", "最后一步")
+NUMBERED_ORDER_SIGNAL_RE = re.compile(r"(?m)^\s*(?:\*\*)?\d{2}｜")
 LOOP_SIGNALS = ("回流", "反馈", "复盘", "闭环", "持续校正")
 MATRIX_SIGNALS = ("|---", "×", "矩阵")
 LAYER_SIGNALS = ("自下而上", "自上而下", "底座", "贯穿")
@@ -1296,6 +1409,32 @@ def build_communication_review(
         )
         if lead_matches:
             lead_match_count += 1
+        core_tokens = set(normalized_tokens(page.main_message))
+        visible_tokens = set(
+            normalized_tokens(
+                "\n".join(
+                    part
+                    for part in (page.onscreen_judgment, page.onscreen_text)
+                    if part.strip()
+                )
+            )
+        )
+        core_visible_coverage = (
+            len(core_tokens & visible_tokens) / len(core_tokens)
+            if core_tokens
+            else 1.0
+        )
+        core_message_display_mode = (
+            "explicit_judgment"
+            if page.onscreen_judgment
+            else "lead"
+            if lead_matches
+            else "integrated"
+            if page.main_message and core_visible_coverage >= 0.55
+            else "metadata_only_review"
+            if page.main_message
+            else "not_applicable"
+        )
         visible_judgment_precedes_modules = bool(
             page.onscreen_judgment
             and "上屏结论" in page.field_order
@@ -1321,6 +1460,24 @@ def build_communication_review(
                     "severity": "warning",
                     "message": "Outline does not provide the page mission.",
                     "suggested_action": "Add business_question to the approved Outline.",
+                }
+            )
+        if core_message_display_mode == "metadata_only_review":
+            findings.append(
+                {
+                    "code": "CORE_MESSAGE_AUDIENCE_VISIBILITY_REVIEW",
+                    "severity": "warning",
+                    "message": "The page's core judgment may remain only in authoring metadata.",
+                    "suggested_action": (
+                        "If the judgment is indispensable to the audience, express it as an "
+                        "on-screen conclusion, lead, relation-bearing module, or closing result. "
+                        "Otherwise record in selection notes why the visible relation already "
+                        "expresses it or why direct display would overstate the source."
+                    ),
+                    "evidence": [
+                        page.main_message,
+                        f"visible_coverage={core_visible_coverage:.3f}",
+                    ],
                 }
             )
         if (
@@ -1455,6 +1612,8 @@ def build_communication_review(
                 ),
                 "lead": lead,
                 "lead_matches_main_message": lead_matches,
+                "core_message_display_mode": core_message_display_mode,
+                "core_message_visible_coverage": round(core_visible_coverage, 3),
                 "lead_status": (
                     "pass"
                     if lead_matches
@@ -2356,12 +2515,18 @@ def _full_prose_source_coverage_issues(
     editorial reason in ``intentional_omissions``.
     """
 
+    # ``source_refs`` is the complete evidence inventory, while
+    # ``detail_refs`` explicitly marks retained traceability that does not
+    # have to be narrated record by record.  Requiring those details in full
+    # prose defeats the evidence hierarchy and turns appendices into page
+    # copy.  Boundary evidence remains mandatory unless intentionally omitted.
+    detail_refs = {str(ref) for ref in (contract.get("detail_refs") or [])}
     expected_refs = tuple(
         dict.fromkeys(
             str(ref)
-            for field in ("source_refs", "detail_refs", "boundary_refs")
+            for field in ("source_refs", "boundary_refs")
             for ref in (contract.get(field) or [])
-            if str(ref).strip()
+            if str(ref).strip() and str(ref) not in detail_refs
         )
     )
     omissions: set[str] = set()
@@ -3602,6 +3767,28 @@ def _presentation_issues(
                     evidence=hierarchy_role_hits,
                 )
             )
+        subordinate_hits = _onscreen_subordinate_fragments(page.onscreen_text)
+        if subordinate_hits:
+            issues.append(
+                _issue(
+                    "ONSCREEN_SUBORDINATE_FRAGMENT",
+                    page,
+                    "On-screen label detaches a subordinate phrase from the main clause it modifies.",
+                    "Remove the authoring label and restore a complete natural sentence; keep 随着/通过/根据/围绕 together with its governing proposition.",
+                    evidence=subordinate_hits,
+                )
+            )
+        false_parallel_hits = _onscreen_false_parallel_semantics(page.onscreen_text)
+        if false_parallel_hits:
+            issues.append(
+                _issue(
+                    "ONSCREEN_FALSE_PARALLEL_SEMANTICS",
+                    page,
+                    "Indented siblings mix different argument functions and create a false peer relationship.",
+                    "Make siblings answer one classification question, or rewrite attributes, changes, demands, gaps, and responses as an explicit chain or integrated proposition.",
+                    evidence=false_parallel_hits,
+                )
+            )
         layout_meta_hits = _onscreen_layout_meta_hits(page.onscreen_text)
         if layout_meta_hits:
             issues.append(
@@ -3628,7 +3815,7 @@ def _presentation_issues(
                     "ONSCREEN_DETAIL_PHRASE_TOO_LONG",
                     page,
                     "One or more on-screen detail lines are written as paragraphs instead of short phrases or short sentences.",
-                    "Keep long judgments, legal boundaries, and necessary complete conclusions in their dedicated fields; split each visible detail into a concise label plus one short phrase or sentence.",
+                    "If the detail is substantively long, add a source-specific business subheading and place the complete natural detail sentence beneath it. Keep a true summary-to-elaboration relation; never shorten by detaching 随着/通过/根据/围绕 from its main clause.",
                     evidence=tuple(
                         f"{chars}字：{line}"
                         for line, chars in detail_phrase_overages[:8]
@@ -3706,8 +3893,9 @@ def _presentation_issues(
         or "贯穿主链" in visual
         or "阶段推进" in visual
     )
-    if path_like and not any(
-        signal in page.onscreen_text for signal in ORDER_SIGNALS
+    if path_like and not (
+        any(signal in page.onscreen_text for signal in ORDER_SIGNALS)
+        or NUMBERED_ORDER_SIGNAL_RE.search(page.onscreen_text)
     ):
         issues.append(
             _issue(
@@ -3796,7 +3984,7 @@ def _presentation_issues(
             marker in visual for marker in ("分层剖面", "分层", "横向治理")
         )
         has_order = any(signal in page.onscreen_text for signal in ORDER_SIGNALS) or bool(
-            re.search(r"(?m)^\s*\*\*\d{2}｜", page.onscreen_text)
+            NUMBERED_ORDER_SIGNAL_RE.search(page.onscreen_text)
         )
         has_layer = any(signal in page.onscreen_text for signal in LAYER_SIGNALS) or bool(
             re.search(r"(?m)^\s*\*\*\d{2}｜", page.onscreen_text)
@@ -3843,7 +4031,10 @@ def _presentation_issues(
     if (
         page.page_type == "content"
         and len(page.top_level_module_titles) > MODULE_CEILING
-        and not any(signal in page.onscreen_text for signal in ORDER_SIGNALS)
+        and not (
+            any(signal in page.onscreen_text for signal in ORDER_SIGNALS)
+            or NUMBERED_ORDER_SIGNAL_RE.search(page.onscreen_text)
+        )
     ):
         issues.append(
             _issue(

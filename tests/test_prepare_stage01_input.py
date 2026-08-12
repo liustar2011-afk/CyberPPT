@@ -101,7 +101,9 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("- split_risk: low", text)
         self.assertIn("- core_message: 已有基础支持启动", text)
         self.assertIn("- onscreen_conclusion: 现有基础足以支持项目启动", text)
-        self.assertIn("Do not add `副标题` or `上屏结论` merely because", text)
+        self.assertIn("Do not add `副标题` or a separate `上屏结论` merely because", text)
+        self.assertIn("must nevertheless reach the audience-facing layer", text)
+        self.assertIn("Do not force one fixed slot", text)
         self.assertIn("independently readable without speaker narration", text)
         self.assertIn(
             "source-supported content → the same-strength relation stated by the material",

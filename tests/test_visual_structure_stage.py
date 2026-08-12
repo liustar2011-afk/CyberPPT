@@ -50,8 +50,46 @@ class VisualStructureStageTests(unittest.TestCase):
         self.assertEqual(relationships, visual["business_relationships"])
         self.assertEqual("five horizontal lanes with a bottom result area", visual["author_visual_notes"])
         self.assertEqual("advisory_only", visual["author_visual_notes_authority"])
+        self.assertEqual("stage01_semantic_handoff", visual["stage01_relationship_features"]["authority"])
+        self.assertEqual("Foundation", visual["stage01_relationship_features"]["actors"][0])
+        self.assertEqual("supports", visual["stage01_relationship_features"]["actions"][0]["relation"])
         self.assertEqual("P06-T01", visual["locked_text_items"][0]["text_id"])
         self.assertNotIn("approved_stage01_visual_structure", visual)
+
+    def test_lightweight_handoff_falls_back_to_outline_contract_fields(self) -> None:
+        page = ScriptPage(
+            page_id="p06",
+            sequence=6,
+            heading="Page 6",
+            page_type="content",
+            title="Title",
+            main_message="Message",
+            full_prose="Prose",
+            selection_notes="",
+            evidence_map="",
+            evidence_map_refs=(),
+            source_refs=("S001",),
+            boundary_source_refs=(),
+            boundary="",
+            visual_structure="Relation",
+            onscreen_text="Group\nDetail",
+            module_titles=(),
+            contract_receipt={},
+        )
+
+        record = _page_record(
+            page,
+            {
+                "page_mission": "Outline mission",
+                "must_not_include": ["Excluded claim"],
+                "content_units": [{"unit_id": "p06-U01"}],
+            },
+        )
+
+        self.assertEqual("Outline mission", record["page_mission"])
+        self.assertEqual(["Excluded claim"], record["must_not_include"])
+        self.assertEqual(["p06-U01"], record["consumed_content_unit_ids"])
+        self.assertEqual("Outline mission", record["stage02_visual_input"]["page_mission"])
 
     def test_handoff_audit_ignores_source_hash_drift(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -83,6 +121,13 @@ class VisualStructureStageTests(unittest.TestCase):
                                 {"text_id": "P01-T01", "text": "Text", "ordinal": 1}
                             ],
                             "business_relationships": [],
+                            "stage01_relationship_features": {
+                                "authority": "stage01_semantic_handoff",
+                                "actors": ["Input"],
+                                "actions": [{"subject": "Input", "relation": "supports", "object": "Result"}],
+                                "directions": [], "conditions": [], "branches": [], "feedback": [],
+                                "source_visual_notes": "",
+                            },
                             "author_visual_notes_authority": "advisory_only",
                             "body_image_canvas": {
                                 "width": 2048,
@@ -146,6 +191,13 @@ class VisualStructureStageTests(unittest.TestCase):
                                         {"text_id": "P01-T01", "text": "Text", "ordinal": 1}
                                     ],
                                     "business_relationships": [],
+                                    "stage01_relationship_features": {
+                                        "authority": "stage01_semantic_handoff",
+                                        "actors": ["Input"],
+                                        "actions": [{"subject": "Input", "relation": "supports", "object": "Result"}],
+                                        "directions": [], "conditions": [], "branches": [], "feedback": [],
+                                        "source_visual_notes": "",
+                                    },
                                     "author_visual_notes_authority": "advisory_only",
                                     "body_image_canvas": {
                                         "width": 2048,

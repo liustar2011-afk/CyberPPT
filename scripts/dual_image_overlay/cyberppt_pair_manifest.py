@@ -26,16 +26,10 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.dual_image_overlay.deliverable_prompt import (
-    _style09_terminal_execution_lock,
-    append_composition_guidance,
-    compile_pages,
-    enforce_style09_terminal_lock,
     parse_page_blocks,
     parse_pages,
     render_prompt,
-    source_visual_structure_guidance,
     style_contract,
-    visible_deliverable_lines,
 )
 from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import ensure_output_size
 from scripts.dual_image_overlay.style_library import write_project_style_lock
@@ -87,6 +81,17 @@ def _page_stem(page_number: int, title: str) -> str:
 
 def _sha256_text(value: str) -> str:
     return prompt_sha256(value)
+
+
+def _is_style09_lock(style_lock: Path | None) -> bool:
+    if style_lock is None:
+        return False
+    try:
+        payload = json.loads(style_lock.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    style = payload.get("style") if isinstance(payload, dict) else None
+    return isinstance(style, dict) and int(style.get("id") or 0) == 9
 
 
 def _compiled_script_path(output_dir: Path, source: Path, pages: list[int]) -> Path:
@@ -242,21 +247,11 @@ def _compact_blueprint_prompt(
     parts = [
             f"【页面编码】P{page_number:02d}",
             "【正文画布合同】\n2048×1024（2:1）正文内容区。不得绘制标题、副标题、Logo、页码、页脚或模板外框。",
-            (
-                "【构图优先级｜不上屏】\n页面视觉设计模块对空间关系和主视觉载体具有最高优先级；"
-                "正式风格锁只控制色彩、材质、字体气质和表面语言，不得把页面改造成卡片矩阵、"
-                "左侧分类栏、编号 chips、图标节点或一条文字配一个图标。必须形成一个连续、"
-                "具有真实行业对象和空间关系的主视觉场景，正文作为对象标签、路径节点或场景内工作面板附着其中。"
-            ),
-            "【语义背景｜不上屏】\n" + str(handoff_page.get("core_message") or "").strip(),
             "【严格上屏文字】\n" + str(handoff_page.get("onscreen_text") or "").strip(),
-            "【视觉设计｜不上屏】\n" + visual_prompt.strip(),
+            visual_prompt.strip(),
+            "【生成约束】\n只渲染“严格上屏文字”中的文字；字段名、指令、证据编号和调试信息均不得上屏。",
             "【正式风格锁｜不上屏】\n" + style_contract(style_lock).strip(),
-            "【生成约束】\n只渲染“严格上屏文字”中的文字；语义背景、字段名、指令、证据编号和调试信息均不得上屏。",
         ]
-    terminal_execution_lock = _style09_terminal_execution_lock(style_lock)
-    if terminal_execution_lock:
-        parts.append("【风格09最终执行锁｜最高优先级】\n" + terminal_execution_lock)
     return "\n\n".join(parts)
 
 
@@ -407,13 +402,13 @@ def build_manifest(
     content_page_numbers = [
         number for number in page_numbers if page_roles[number] == "content"
     ]
-    # Style 09 is assembled exclusively from the source-authored style lock.
-    # Do not append the page visual-structure handoff or a synthetic adapter:
-    # that handoff contains internal refs, text bindings and carrier metadata,
-    # not reusable style rules.
-    style09_source_contract = bool(_style09_terminal_execution_lock(style_lock))
+    # Style 09 is a universal surface-language contract, not the owner of a
+    # page's layout. The final prompt must consume the approved Stage 02
+    # visual module for every style; Style 09 is asserted only after that
+    # page-specific module as the final rendering language.
+    style09_source_contract = _is_style09_lock(style_lock)
     effective_compact_blueprint = bool(
-        compact_blueprint and handoff_pages and not style09_source_contract
+        compact_blueprint and handoff_pages
     )
     reference_map = _load_reference_map(project_path)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -460,21 +455,10 @@ def build_manifest(
             for page_number in content_page_numbers
         ) + "\n"
     else:
-        compiled = compile_pages(
-            script,
-            content_page_numbers,
-            style_lock_path=style_lock,
-            composition_guidance_by_page={
-                number: source_visual_structure_guidance(
-                    str(script_pages[number].visual_structure or ""),
-                    "\n".join(visible_deliverable_lines(source_pages[number])),
-                )
-                for number in content_page_numbers
-                if number in script_pages
-            },
-        )
-    with build_lock(output_dir, f"pair-manifest-{compiled_script.stem}"):
-        atomic_write_text(compiled_script, compiled)
+        # Write the compiled audit artifact from the exact final per-page
+        # prompts below.  A separate precompile path previously allowed Stage
+        # 01 visual notes to bypass the approved Stage 02 layout module.
+        compiled = ""
 
     # Compiled prompts no longer carry "## 第N页：" headers; use source page
     # metadata + per-page render_prompt for pair entries.
@@ -486,14 +470,7 @@ def build_manifest(
         prompt = render_prompt(
             page,
             style_lock_path=style_lock,
-            composition_guidance=source_visual_structure_guidance(
-                str(
-                    script_pages.get(page_number).visual_structure
-                    if script_pages.get(page_number) is not None
-                    else ""
-                ),
-                "\n".join(visible_deliverable_lines(page)),
-            ),
+            include_style_contract=False,
         )
         visual_module = (
             load_visual_prompt_module(project_path, page_number)
@@ -555,31 +532,27 @@ def build_manifest(
             require_send=require_send_approval and enrich_mode == "send",
         )
         prompt = enrich.prompt
-        source_visual_structure = source_visual_structure_guidance(
-            str(
-                script_pages.get(page_number).visual_structure
-                if script_pages.get(page_number) is not None
-                else ""
-            ),
-            "\n".join(visible_deliverable_lines(page)),
-        )
-        prompt = append_composition_guidance(prompt, source_visual_structure)
         if visual_module is not None and not effective_compact_blueprint:
-            if not style09_source_contract and "【视觉设计｜不上屏】" not in prompt:
-                prompt = append_visual_prompt_module(prompt, visual_module)
-        # The visual-structure handoff is page-specific composition guidance.
-        # Reassert the source-authored Style 09 lock after that handoff so a
-        # matrix/swim-lane recipe cannot turn the whole page into a generic
-        # infographic or override the shared surface language.
-        prompt = enforce_style09_terminal_lock(prompt, style_lock)
+            # append_visual_prompt_module removes any prior module before
+            # adding the approved current one; do not duplicate its work with
+            # a brittle marker check here.
+            prompt = append_visual_prompt_module(prompt, visual_module)
+        # The complete style contract is the final layer and comes directly
+        # from the selected Style source. Do not synthesize a second Style09
+        # terminal fragment here.
+        if not effective_compact_blueprint and (
+            not require_approved_prompts or style09_source_contract
+        ):
+            prompt = (
+                f"{prompt.rstrip()}\n\n【正式风格锁｜不上屏】\n"
+                f"{style_contract(style_lock).strip()}\n"
+            )
         enrich_ledger.append({"page_number": page_number, **enrich_result_as_dict(enrich)})
         prompt = _full_prompt_for_variants(prompt, output_variants)
         if approval_meta is not None:
             approval_meta["consumed_prompt_sha256"] = _sha256_text(prompt)
             approval_meta.setdefault("consumed_from", "approved_prompt")
-        visual_handoff_metadata = visual_module_metadata(
-            None if style09_source_contract else visual_module
-        )
+        visual_handoff_metadata = visual_module_metadata(visual_module)
         stem = _page_stem(page_number, page.title)
         prompt_file = output_dir / "prompts" / f"p{page_number:02d}.txt"
         atomic_write_text(prompt_file, prompt.rstrip() + "\n")
@@ -605,6 +578,8 @@ def build_manifest(
             },
         }
         _mark_status(full, force_pending=force_pending)
+        if not require_approved_prompts:
+            compiled += f"## p{page_number:02d}\n\n{prompt.rstrip()}\n\n"
         variants: dict[str, dict[str, Any]] = {"full": full}
         if "background" in output_variants:
             background_path = output_dir / f"{stem}_background.png"
@@ -688,6 +663,10 @@ def build_manifest(
     ) + ("\n" if pairs else "")
     with build_lock(output_dir, f"pair-manifest-{compiled_script.stem}"):
         atomic_write_text(compiled_script, compiled)
+
+    if not require_approved_prompts:
+        with build_lock(output_dir, f"pair-manifest-{compiled_script.stem}"):
+            atomic_write_text(compiled_script, compiled.rstrip() + "\n")
 
     manifest = {
         "mode": (

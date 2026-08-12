@@ -32,6 +32,22 @@ def _binding_for(kind: str) -> str:
     return "label"
 
 
+def _execution_design(case: dict[str, Any], focus_text: str) -> dict[str, str]:
+    """Provide domain-neutral but drawable relation fields for regression cases."""
+    relation = str(case["primary_relation"])
+    if relation == "transform":
+        return {"carrier": "受理—分流—责任办理的服务流转场", "role": "服务诉求经过分流接口和责任动作转化为可追踪结果", "organization": "服务诉求进入受理接口，经分类分流落到责任办理，再把反馈结果接回同一服务流", "integration": "诉求文字贴在入口对象，分流和办理文字贴在对应动作接口，结果文字贴在交付端", "encoding": "入口、分流接口、责任动作和反馈出口按真实承接关系连续出现", "placement": "以连续服务流转场作为内容区主结构，入口和结果附着于其两端"}
+    if relation == "evidence":
+        return {"carrier": "证据汇聚到研究判断的论证关系场", "role": "量化和质性证据通过各自依据关系共同支撑研究判断", "organization": "样本趋势和访谈发现从不同证据入口汇入方案判断，判断承担唯一焦点", "integration": "证据文字贴在各自证据对象旁，结论文字贴在被证据支撑的判断对象上", "encoding": "两类证据以有标签的支撑关系汇入同一判断，不形成并列卡片", "placement": "以判断对象和两路证据关系构成内容区主结构"}
+    if relation == "responsibility":
+        return {"carrier": "职责接口汇入共同成果的协同关系场", "role": "决策、执行和监督分别通过职责接口共同交付成果", "organization": "三类责任主体各自连接到所承担的动作接口，并在共同成果处收敛", "integration": "主体文字贴在对应职责接口，成果文字贴在共同交付结果上", "encoding": "用决策、执行、监督三种具名职责关系指向共同成果", "placement": "以职责接口与共同成果构成主关系场，成果为唯一焦点"}
+    if relation == "layer":
+        return {"carrier": "基础能力向采用结果逐层传递的能力依赖场", "role": "基础能力通过核心服务和用户功能逐层支撑采用结果", "organization": "基础能力嵌入核心服务的支撑面，核心服务承接到用户功能并形成采用结果", "integration": "每层文字贴在其承载能力上，采用结果文字贴在最终形成的结果对象上", "encoding": "用基础支撑、服务支撑和形成采用三类依赖关系连续连接", "placement": "以能力依赖场作为内容区主结构，采用结果承担最高权重"}
+    if relation == "compare":
+        return {"carrier": "共同评价标准驱动方案取舍的比较关系场", "role": "同一评价标准作用于两个方案并导向当前选择", "organization": "共同评价标准分别进入方案A和方案B的比较接口，取舍结果从比较中形成", "integration": "标准文字贴在比较依据上，方案文字贴在各自被评价对象上，结论文字贴在选择结果上", "encoding": "同一标准以两条评价关系连接两个方案，比较关系再导向选择结果", "placement": "以共同标准、方案比较和选择结果组成一个连续比较关系场"}
+    return {"carrier": "授权输入经审查门控形成允许输出并回流校正的控制关系场", "role": "授权边界、审查动作、允许输出和反馈记录共同构成受控闭环", "organization": "授权输入穿过审查门控形成允许输出，反馈记录从输出回接审查动作", "integration": "输入文字贴在授权入口，门控文字贴在审查动作，输出和反馈文字贴在对应结果与回流记录上", "encoding": "授权进入、受控输出、结果记录和反馈校正按方向形成一条控制关系", "placement": "以门控动作和受控输入输出关系构成内容区主结构"}
+
+
 def _page_from_case(
     base: dict[str, Any],
     case: dict[str, Any],
@@ -51,6 +67,7 @@ def _page_from_case(
     evidence_ids = list(evidence_by_id)
     focus_ref = case["focus_ref"]
     focus_text = evidence_by_id[focus_ref]["text"]
+    execution = _execution_design(case, focus_text)
     page.update(
         {
             "schema_version": "1.1",
@@ -123,17 +140,10 @@ def _page_from_case(
     page["visual_decision"] = {
         "visual_intent_type": case["visual_intent_type"],
         "visual_thesis": case["core_judgment"],
-        "spatial_organization": (
-            f"Use {', '.join(case['spatial_grammar'])} as one integrated semantic structure; "
-            "keep secondary evidence subordinate to the semantic focus."
-        ),
+        "spatial_organization": execution["organization"],
         "reading_path": [evidence_by_id[item]["text"] for item in case["reading_sequence"]],
-        "text_integration_method": (
-            "Bind each text unit to its semantic node, action, relationship or outcome inside the primary structure."
-        ),
-        "relationship_encoding": (
-            "Preserve the declared direction and edge labels; use adjacency for subordinate relationships."
-        ),
+        "text_integration_method": execution["integration"],
+        "relationship_encoding": execution["encoding"],
         "visual_center_count": 1,
         "visual_hierarchy": {
             "primary": focus_text,
@@ -149,7 +159,7 @@ def _page_from_case(
         "title_render_mode": "external_text_layer",
         "subtitle_render_mode": "external_text_layer",
         "body_render_mode": "in_image",
-        "placement_strategy": "Place each locked text unit with the semantic node or relationship it explains.",
+        "placement_strategy": execution["integration"],
     }
     page["geometry"]["regions"] = [
         {
@@ -173,10 +183,10 @@ def _page_from_case(
     ]
     page["image_plan"] = {
         "use_scene": False,
-        "scene_type": "No medium selected at the structural stage",
-        "business_object": "Semantic nodes, actions, relationships and outcomes",
-        "semantic_role": "Optional medium selected by the final renderer",
-        "placement": "One integrated relationship field with subordinate evidence attached",
+        "scene_type": "No independent scene; the business relationship field carries the page",
+        "business_object": execution["carrier"],
+        "semantic_role": execution["role"],
+        "placement": execution["placement"],
         "front_facing_people": False,
         "identifiable_location": False,
         "factual_event_implication": False,
@@ -302,6 +312,16 @@ def _mutate(page: dict[str, Any], mutation: str) -> dict[str, Any]:
         invalid["generation_handoff"]["structural_guidance"]["additional_constraints"].append(
             "use #123456 borders"
         )
+    elif mutation == "generic_execution_carrier":
+        invalid["image_plan"]["business_object"] = "Semantic nodes, actions, relationships and outcomes"
+        invalid["visual_decision"]["visual_hierarchy"]["primary"] = "Semantic nodes, actions, relationships and outcomes"
+    elif mutation == "generic_text_integration":
+        invalid["visual_decision"]["text_integration_method"] = "Bind each text unit to its semantic node inside the primary structure."
+    elif mutation == "generic_relationship_field":
+        invalid["visual_decision"]["spatial_organization"] = "Use one path as the primary structure and keep secondary evidence subordinate."
+        invalid["visual_decision"]["relationship_encoding"] = "Preserve the declared direction and edge labels."
+        invalid["image_plan"]["semantic_role"] = "Optional medium selected by the final renderer"
+        invalid["image_plan"]["placement"] = "One integrated relationship field"
     else:
         raise ValueError(f"Unknown mutation: {mutation}")
     return invalid

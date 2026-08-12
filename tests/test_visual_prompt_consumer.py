@@ -8,8 +8,6 @@ import unittest
 from cyberppt.visual_prompt_consumer import (
     VISUAL_STRUCTURE_HEADER,
     append_visual_prompt_module,
-    append_style09_surface_adapter,
-    _sanitize_style09_semantic_segment,
     load_visual_prompt_module,
     strip_visual_prompt_module,
 )
@@ -19,15 +17,48 @@ from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
 class VisualPromptConsumerTests(unittest.TestCase):
-    def test_style09_text_integration_drops_stale_placement_clause(self) -> None:
-        self.assertEqual(
-            "Text integration: 各类文字贴近真实对象和工作面。",
-            _sanitize_style09_semantic_segment(
-                "Text integration: 各类文字贴近真实对象和工作面，首期合作结论位于上部唯一结果区。"
-            ),
-        )
+    def test_consumes_visual_spec_design_not_lossy_generation_summary(self) -> None:
+        with TemporaryDirectory() as temp:
+            project = Path(temp)
+            visual = project / "visual"
+            visual.mkdir()
+            (visual / "deck-visual-spec.json").write_text(
+                json.dumps({"pages": [{
+                    "page_number": 6,
+                    "visual_decision": {
+                        "visual_thesis": "专业能力经可信编排形成可调用服务",
+                        "spatial_organization": "一条服务脊柱贯穿能力输入、编排与交付",
+                        "text_integration_method": "文字贴附于对应接口、动作和交付结果",
+                        "relationship_encoding": "用对象的衔接和尺度层级表达输入、编排与交付",
+                        "visual_hierarchy": {"primary": "可信服务脊柱"},
+                    },
+                    "image_plan": {
+                        "business_object": "可信服务脊柱",
+                        "semantic_role": "业务对象和关系共同承载画面",
+                        "use_scene": True,
+                        "scene_type": "电力调度与数据服务协同现场",
+                    },
+                    "structural_decision": {"spatial_grammar": ["path", "convergence"]},
+                    "text_integration": {"placement_strategy": "正文嵌入对应业务节点"},
+                    "avoid": ["等权卡片墙", "图文分离"],
+                }]}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (visual / "generation-prompts.md").write_text(
+                "# Page 6: stale\n[Structural guidance]\n- Visual thesis: LOSSY\n",
+                encoding="utf-8",
+            )
+            module = load_visual_prompt_module(project, 6)
 
-    def test_loads_only_visual_sections_and_preserves_idempotence(self) -> None:
+        assert module is not None
+        self.assertEqual(project / "visual" / "deck-visual-spec.json", module.source_path)
+        self.assertIn("可信服务脊柱", module.prompt_text)
+        self.assertIn("电力调度与数据服务协同现场", module.prompt_text)
+        self.assertIn("文字贴附于对应接口、动作和交付结果", module.prompt_text)
+        self.assertIn("避免：等权卡片墙", module.prompt_text)
+        self.assertNotIn("LOSSY", module.prompt_text)
+
+    def test_compiles_stage02_ir_to_executable_summary_and_preserves_idempotence(self) -> None:
         with TemporaryDirectory() as temp:
             project = Path(temp)
             visual = project / "visual"
@@ -39,16 +70,18 @@ class VisualPromptConsumerTests(unittest.TestCase):
 lock
 
 [Structural guidance]
-- Semantic focus: action / E4
-- Spatial grammar: convergence
-- Primary structure refs: E4, E5
-- Text binding: E4 -> E4 / embedded
+- Visual thesis: 多类能力经统一组织后形成可持续服务
+- Spatial grammar: path, divergence
+- Primary structure refs: E1, E2, E3
+- Reading sequence: E1 -> E2 -> E3
+- Text binding: E1 -> E1 / embedded / locked text ids: P06-T01
+- Additional structural constraint: 标题区留空
 
 [Connector map]
 - E1 -> E2
 
 [Text placement]
-- Body rendering mode: in_image
+- Placement strategy: 正文贴附于对应业务环节和关系
 
 [Required on-screen body text]
 - LOCKED BODY MUST NOT BE IMPORTED
@@ -63,8 +96,13 @@ DO-NOT-IMPORT-STYLE-LOCK
             module = load_visual_prompt_module(project, 6)
             self.assertIsNotNone(module)
             assert module is not None
-            self.assertIn("Semantic focus: action / E4", module.prompt_text)
-            self.assertIn("Text binding: E4 -> E4 / embedded", module.prompt_text)
+            self.assertIn("本页只围绕这一主论断组织画面：多类能力经统一组织后形成可持续服务", module.prompt_text)
+            self.assertIn("按一条连续主路径组织业务环节", module.prompt_text)
+            self.assertIn("按已锁定文字对应的 3 个业务环节顺序阅读", module.prompt_text)
+            self.assertIn("正文贴附于对应业务环节和关系，不形成独立文字墙", module.prompt_text)
+            self.assertIn("标题区留空", module.prompt_text)
+            for forbidden in ("Semantic focus", "E1", "P06-T01", "Text binding", "Connector map", "Representation freedom"):
+                self.assertNotIn(forbidden, module.prompt_text)
             self.assertNotIn("LOCKED BODY MUST NOT BE IMPORTED", module.prompt_text)
             self.assertNotIn("DO-NOT-IMPORT-STYLE-LOCK", module.prompt_text)
             prompt = append_visual_prompt_module("APPROVED LOCKED TEXT", module)
@@ -102,11 +140,9 @@ DO-NOT-IMPORT-STYLE-LOCK
 
         self.assertIsNotNone(module)
         assert module is not None
-        self.assertIn("[Structural guidance]", module.prompt_text)
-        self.assertIn(
-            f"Semantic focus: {focus['kind']} / {focus['ref']}",
-            module.prompt_text,
-        )
+        self.assertIn("【页面版式执行摘要｜不上屏】", module.prompt_text)
+        self.assertNotIn("[Structural guidance]", module.prompt_text)
+        self.assertNotIn(focus["ref"], module.prompt_text)
         self.assertNotIn("[Style source]", module.prompt_text)
         self.assertNotIn(style_source_ref, module.prompt_text)
         self.assertNotIn("Font:", module.prompt_text)
@@ -171,98 +207,12 @@ no equal card wall
             self.assertTrue(pair["visual_structure_handoff"]["consumed"])
             self.assertTrue(pair["full"]["visual_structure_handoff"]["consumed"])
             self.assertIn(VISUAL_STRUCTURE_HEADER, prompt)
-            self.assertIn("controlled delivery spine", prompt)
+            self.assertIn("no equal card wall", prompt)
+            self.assertNotIn("controlled delivery spine", prompt)
             self.assertNotIn("THIS MUST NOT OVERRIDE APPROVED BODY", prompt)
             compiled_text = compiled.read_text(encoding="utf-8")
             self.assertIn(VISUAL_STRUCTURE_HEADER, compiled_text)
-            self.assertIn("controlled delivery spine", compiled_text)
-
-    def test_style09_adapter_keeps_scene_semantics_but_drops_layout_recipe(self) -> None:
-        with TemporaryDirectory() as temp:
-            project = Path(temp)
-            visual = project / "visual"
-            visual.mkdir(exist_ok=True)
-            (visual / "generation-prompts.md").write_text(
-                """# Page 6: Test
-
-[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.
-- Selected visual intent type: closed_loop_operation
-- Visual thesis: 产品形成链与订单履行链通过运营反馈持续优化和退出
-- Decision relationship: 主视觉以五条横向泳道呈现五类服务，右侧另设统一收束条。
-- Semantic focus: action / E2
-- Spatial grammar: feedback
-- Reading sequence: E1 -> E2 -> E3
-- Text binding: E2 -> E2 / embedded
-- Industry scene anchor: controlled delivery surface
-- Recommended composition: six-node swim-lane infographic
-- Industry scene anchor: a monitored service workspace
-- business object: a controlled delivery object; semantic role: primary carrier; placement: center 68%
-- business object: 具有明确起点、交付门控和反馈回路的平台运营闭环
-- Text integration: attach labels to the service boundary
-- Text integration: 阶段文字沿闭环路径附着，门控与退出条件贴近对应节点。
-- Relationship encoding: inputs remain outside until authorized
-- Relationship encoding: 主链按顺时针推进，反馈线单独回到产品形成段，不使用装饰圆环。
-
----
-""",
-                encoding="utf-8",
-            )
-            module = load_visual_prompt_module(project, 6)
-            assert module is not None
-            adapted = append_style09_surface_adapter("APPROVED LOCKED TEXT", module)
-
-        self.assertNotIn("controlled delivery surface", adapted)
-        self.assertNotIn("monitored service workspace", adapted)
-        self.assertNotIn("Decision relationship:", adapted)
-        self.assertNotIn("五条横向泳道", adapted)
-        self.assertNotIn("统一收束条", adapted)
-        self.assertIn("Semantic focus: action / E2", adapted)
-        self.assertIn("Spatial grammar: feedback", adapted)
-        self.assertIn("Reading sequence: E1 -> E2 -> E3", adapted)
-        self.assertIn("Text binding: E2 -> E2 / embedded", adapted)
-        self.assertIn("inputs remain outside until authorized", adapted)
-        self.assertIn(
-            "Dominant semantic carrier: 同一业务对象沿连续状态变化承载业务机制：产品形成链与订单履行链通过运营反馈持续优化和退出。",
-            adapted,
-        )
-        self.assertNotIn("six-node swim-lane infographic", adapted)
-        self.assertNotIn("placement: center 68%", adapted)
-        self.assertNotIn(VISUAL_STRUCTURE_HEADER, adapted)
-        self.assertIn("用一个连续的业务场或具体对象承载文字", adapted)
-        self.assertIn("运营反馈返回产品形成段", adapted)
-        self.assertIn("主关系依次发生", adapted)
-        self.assertNotIn("平台运营闭环", adapted)
-        self.assertNotIn("反馈回路", adapted)
-        self.assertNotIn("反馈线", adapted)
-        self.assertNotIn("顺时针", adapted)
-        self.assertNotIn("闭环路径", adapted)
-        self.assertNotIn("装饰圆环", adapted)
-        self.assertNotIn("整页可见边界最多两级", adapted)
-        self.assertNotIn("同页异形标题条最多一个", adapted)
-
-    def test_style09_adapter_does_not_add_mechanism_carrier_to_other_intents(self) -> None:
-        with TemporaryDirectory() as temp:
-            project = Path(temp)
-            visual = project / "visual"
-            visual.mkdir(exist_ok=True)
-            (visual / "generation-prompts.md").write_text(
-                """# Page 18: Test
-
-[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.
-- Selected visual intent type: evidence_to_judgment
-- Visual thesis: 多类证据共同支撑判断
-- Industry scene anchor: 真实业务证据场
----
-""",
-                encoding="utf-8",
-            )
-            module = load_visual_prompt_module(project, 18)
-            assert module is not None
-            adapted = append_style09_surface_adapter("APPROVED LOCKED TEXT", module)
-
-        self.assertIn("Industry scene anchor: 真实业务证据场", adapted)
-        self.assertNotIn("Dominant semantic carrier:", adapted)
-
+            self.assertIn("no equal card wall", compiled_text)
 
 if __name__ == "__main__":
     unittest.main()

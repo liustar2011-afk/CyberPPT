@@ -10,7 +10,10 @@
     "disconnected_media_and_text": "disconnected_expression",
     "dual_primary_narrative": "dual_primary_narrative",
     "abstract_center": "abstract_center",
-    "style_leak": "style_in_structure"
+    "style_leak": "style_in_structure",
+    "generic_execution_carrier": "executable_carrier_generic",
+    "generic_text_integration": "text_integration_not_executable",
+    "generic_relationship_field": "visual_relationship_not_executable"
   },
   "style_refs": [
     "styles/editorial.json",

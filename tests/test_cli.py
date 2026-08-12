@@ -308,6 +308,25 @@ class CliTests(unittest.TestCase):
         self.assertEqual(0, code)
         self.assertTrue(runner.call_args.kwargs["external_script"])
 
+    def test_final_script_pages_lightweight_confirmation_is_forwarded(self) -> None:
+        with patch("cyberppt.cli.run_final_script_pages", return_value={}) as runner:
+            code = main(
+                [
+                    "final-script-pages",
+                    "project",
+                    "--script",
+                    "script.md",
+                    "--pages",
+                    "1",
+                    "--style-id",
+                    "9",
+                    "--lightweight-stage01-confirmed",
+                ]
+            )
+
+        self.assertEqual(0, code)
+        self.assertTrue(runner.call_args.kwargs["lightweight_stage01_confirmed"])
+
     def test_final_script_pages_rejects_blueprint_only_with_production_build(self) -> None:
         buffer = io.StringIO()
         with (

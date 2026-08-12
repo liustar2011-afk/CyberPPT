@@ -14,6 +14,7 @@ from cyberppt.script_quality_contract import (
     parse_script_markdown,
     resolve_judgment_mode,
 )
+from cyberppt.onscreen_text_rules import normalize_detail_lines
 
 PAGE_START_RE = re.compile(r"^##\s+第(\d+)页[：:]", re.MULTILINE)
 PAGE_CONTRACT_RECEIPT_RE = re.compile(
@@ -76,6 +77,56 @@ def _collect_draft_pages(drafts_dir: Path) -> dict[int, str]:
     if not pages:
         raise ValueError(f"no page headings found under {drafts_dir}")
     return pages
+
+
+def _normalize_assembled_onscreen(pages: dict[int, str]) -> dict[int, str]:
+    """Apply shared Stage 01 visible-copy rules to authoritative drafts.
+
+    ``主判断`` is semantic metadata.  It may guide the page and be compressed
+    into a subtitle, but must not be duplicated verbatim as the first locked
+    body line.  Leaving that duplication in the body makes downstream Stage 02
+    and ImageGen correctly—but undesirably—treat a long authoring judgment as
+    visible copy.
+    """
+    normalized: dict[int, str] = {}
+    for number, block in pages.items():
+        lines = block.splitlines()
+        main_match = re.search(r"(?m)^- 主判断：\s*(.+?)\s*$", block)
+        main_message = main_match.group(1).strip() if main_match else ""
+        subtitle_match = re.search(r"(?m)^- 副标题：\s*(.+?)\s*$", block)
+        for index, line in enumerate(lines):
+            if line.startswith("- 上屏文字：") or line.startswith("### 上屏文字"):
+                end = index + 1
+                while end < len(lines) and not (
+                    lines[end].startswith("### ")
+                    or lines[end].startswith("- ")
+                    or lines[end].startswith("【")
+                    or lines[end].startswith("<!--")
+                ):
+                    end += 1
+                visible_lines = lines[index + 1 : end]
+                # A judgment accidentally copied into the strict body is not
+                # evidence or a module.  Remove only an exact leading match;
+                # any independently authored occurrence remains untouched.
+                if main_message:
+                    first = next(
+                        (offset for offset, value in enumerate(visible_lines) if value.strip()),
+                        None,
+                    )
+                    if first is not None and visible_lines[first].strip() == main_message:
+                        del visible_lines[first]
+                        while visible_lines and not visible_lines[0].strip():
+                            del visible_lines[0]
+                        # A concise subtitle is an authoring decision, not a
+                        # safe mechanical transformation of a full judgment.
+                        # Keep a human-authored subtitle when present; without
+                        # one, remove the duplicate body line and leave the
+                        # semantic metadata intact for Stage 01 to revise.
+                visible = "\n".join(visible_lines)
+                lines[index + 1 : end] = normalize_detail_lines(visible).splitlines()
+                break
+        normalized[number] = "\n".join(lines).rstrip() + "\n"
+    return normalized
 
 
 def _merge_missing_enrichments(
@@ -243,13 +294,13 @@ def assemble_final_script(
         if output_path is not None
         else project / "workbench" / "scripts" / "final" / "script-final.md"
     )
-    pages = _merge_missing_onscreen_conclusions(
+    pages = _normalize_assembled_onscreen(_merge_missing_onscreen_conclusions(
         _merge_missing_enrichments(
             _collect_draft_pages(drafts),
             enrichment_source,
         ),
         project,
-    )
+    ))
     numbers = sorted(pages)
     expected = list(range(numbers[0], numbers[0] + len(numbers)))
     if numbers != expected:
@@ -299,6 +350,8 @@ def assemble_final_script(
         return {
             "schema": "cyberppt.assemble_final_script.v1",
             "mode": "lightweight",
+            "authority_mode": "authoritative",
+            "authoritative_source": str(drafts),
             "project": str(project),
             "output": str(output),
             "page_count": len(numbers),

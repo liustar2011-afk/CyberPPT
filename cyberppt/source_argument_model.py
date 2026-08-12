@@ -77,7 +77,7 @@ SOURCE_TRUTH_CLAIM_ROLES = frozenset(
     {"fact", "change", "problem", "judgment", "recommendation", "boundary", "unresolved"}
 )
 ARGUMENT_DUTIES = frozenset(
-    {"premise", "driver", "consequence", "gap", "response", "support", "detail", "boundary"}
+    {"premise", "driver", "consequence", "gap", "response", "support", "detail", "boundary", "metadata"}
 )
 INFERENCE_ORIGINS = frozenset({"source_implied", "editorial_hypothesis"})
 CONCEPT_RESOLUTIONS = frozenset(

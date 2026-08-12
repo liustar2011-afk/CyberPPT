@@ -216,7 +216,12 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
             else:
                 semantic_units = [
                     {
-                        "text": str(units[ref].get("text") or statement).strip(),
+                        # The atomic statement is already the authored,
+                        # source-faithful proposition.  Re-expanding it to the
+                        # whole source paragraph silently recombines sibling
+                        # facts, recommendations, and boundaries that Stage 00
+                        # deliberately split.
+                        "text": statement,
                         "claim_role": evidence_role,
                         "source_unit_ref": ref,
                     }
@@ -366,15 +371,19 @@ def _clean_title(value: object) -> str:
 
 def _page_content_units(page_id: str, records: list[dict[str, Any]], topic: str) -> tuple[list[dict[str, Any]], list[str]]:
     structural_duties = {"premise", "driver", "consequence", "gap", "response", "boundary"}
-    structural = [
+    eligible = [
         record for record in records
+        if str(record.get("argument_duty") or "") != "metadata"
+    ]
+    structural = [
+        record for record in eligible
         if str(record.get("priority")) != "P2"
         or str(record.get("argument_duty") or "") in structural_duties
     ]
-    details = [str(record.get("id")) for record in records if record not in structural]
-    if not structural and records:
-        structural = [records[0]]
-        details = [str(record.get("id")) for record in records[1:]]
+    details = [str(record.get("id")) for record in eligible if record not in structural]
+    if not structural and eligible:
+        structural = [eligible[0]]
+        details = [str(record.get("id")) for record in eligible[1:]]
 
     boundaries = [
         record
@@ -385,7 +394,15 @@ def _page_content_units(page_id: str, records: list[dict[str, Any]], topic: str)
     primary = [record for record in ordinary if str(record.get("priority")) == "P0"]
     supporting = [record for record in ordinary if record not in primary]
     if not primary and supporting:
-        primary, supporting = supporting[:1], supporting[1:]
+        duty_rank = {"gap": 0, "driver": 1, "response": 2, "consequence": 3, "premise": 4}
+        selected = min(
+            supporting,
+            key=lambda record: duty_rank.get(
+                str(record.get("argument_duty") or ""), 9
+            ),
+        )
+        primary = [selected]
+        supporting = [record for record in supporting if record is not selected]
 
     groups: list[tuple[str, list[dict[str, Any]]]] = []
     if primary:
@@ -410,7 +427,7 @@ def _page_content_units(page_id: str, records: list[dict[str, Any]], topic: str)
             dict.fromkeys(
                 anchor
                 for record in grouped
-                for anchor in _strings(record.get("coverage_anchors")) + _strings(record.get("actors"))
+                for anchor in _strings(record.get("coverage_anchors"))
             )
         )
         if len(anchors) < 2:
@@ -432,8 +449,8 @@ def _page_content_units(page_id: str, records: list[dict[str, Any]], topic: str)
                 "argument_duties": list(dict.fromkeys(
                     str(record.get("argument_duty") or "detail") for record in grouped
                 )),
-                "onscreen_required": role in {"primary", "boundary"} or any(
-                    str(record.get("argument_duty") or "") in structural_duties
+                "onscreen_required": role == "primary" or any(
+                    str(record.get("argument_duty") or "") in structural_duties - {"premise", "boundary"}
                     for record in grouped
                 ),
                 "onscreen_anchors": anchors[:2] if any(
@@ -521,7 +538,11 @@ def compile_outline_draft(
             if not node_records:
                 continue
             content_units, detail_refs = _page_content_units(page_id, node_records, topic)
-            source_refs = [str(record.get("id")) for record in node_records]
+            source_refs = [
+                str(record.get("id"))
+                for record in node_records
+                if str(record.get("argument_duty") or "") != "metadata"
+            ]
             core_message = str(node.get("section_thesis") or node.get("thesis") or "").strip()
             if not core_message:
                 core_message = str(node_records[0].get("statement") or "").strip()
@@ -533,6 +554,9 @@ def compile_outline_draft(
                 if str(record.get("claim_role") or "") in {"boundary", "unresolved"}
             ]
             structural_refs = [ref for unit in content_units for ref in _strings(unit.get("source_refs"))]
+            core_derivation_refs = [
+                ref for ref in structural_refs if ref not in set(boundary_refs)
+            ]
             relation_objects = [
                 str(unit.get("statement") or "").strip()
                 for unit in content_units[:4]
@@ -581,7 +605,7 @@ def compile_outline_draft(
                 "source_gap_ids": [],
                 "gap_handling": "保留 Source Truth 中的状态、边界和未决事项，不提升成熟度。",
                 "core_message_derivation": {
-                    "source_refs": structural_refs,
+                    "source_refs": core_derivation_refs,
                     "supporting_statements": [str(unit.get("statement") or "") for unit in content_units],
                     "derivation": "等强度归纳语义节点对应的原子 Source Truth 记录。",
                     "introduced_relations": [],
@@ -602,10 +626,19 @@ def compile_outline_draft(
                 ],
                 "visual_intent_type": VISUAL_INTENT.get(semantic_role, "judgment_evidence"),
                 "page_necessity": f"{topic}对应独立来源标题和语义命题，需要明确承载其业务判断与状态边界。",
+                # These fields deliberately remain empty in the deterministic
+                # candidate draft.  They are editorial decisions and must be
+                # authored from the communication goal, adjacent pages, and
+                # evidence duties before the Outline can pass its formal gate.
+                "non_substitutable_value": "",
+                "argument_chain": "",
+                "evidence_roles": {},
+                "excluded_from_onscreen": [],
             }
             if semantic_role == "boundary" or (boundary_refs and len(boundary_refs) == len(source_refs)):
                 page["boundary_focus"] = True
                 page["boundary_focus_reason"] = "本页来源全部属于边界或未决事项，边界本身就是页面主题。"
+                page["core_message_derivation"]["source_refs"] = structural_refs
             pages.append(page)
             content_pages.append(page)
             chapter_content.append(page)
@@ -694,6 +727,8 @@ def compile_outline_draft(
         "argument_node_disposition_mode": "required",
         "page_content_unit_coverage_mode": "required",
         "editorial_control_mode": "required",
+        "editorial_authoring_mode": "author_driven",
+        "editorial_authoring_status": "mechanical_draft",
         "storyline_contract_mode": "required",
         "semantic_argument_model_mode": "required",
         "source_truth_mapping_mode": "consumption_manifest",

@@ -15,6 +15,8 @@ from cyberppt.script_quality_contract import (
     _onscreen_detail_phrase_overages,
     _onscreen_layout_meta_hits,
     _onscreen_parent_child_role_mismatches,
+    _onscreen_subordinate_fragments,
+    _onscreen_false_parallel_semantics,
     _onscreen_parallel_structure_issues,
     _necessity_page_closure_issues,
     _onscreen_flow_language_issues,
@@ -336,6 +338,14 @@ class FullProseSourceCoverageTests(unittest.TestCase):
             },
         )
         self.assertNotIn("FULL_PROSE_SOURCE_COVERAGE_GAP", {item.code for item in issues})
+
+    def test_retained_detail_does_not_require_record_by_record_prose(self) -> None:
+        issues = _full_prose_source_coverage_issues(
+            self._page("本页保留核心判断，附件操作字段仅供追溯。"),
+            {"source_refs": ["ST001"], "detail_refs": ["ST001"]},
+            {"ST001": {"statement": "附件列出十二项操作字段和逐项填报要求。"}},
+        )
+        self.assertEqual([], issues)
 
     def test_specific_outline_omission_is_allowed(self) -> None:
         issues = _full_prose_source_coverage_issues(
@@ -1110,6 +1120,32 @@ class ScriptMarkdownParserTests(unittest.TestCase):
         self.assertNotIn("- 证据：", page.onscreen_text)
         self.assertNotIn("S015", page.onscreen_text)
 
+    def test_heading_backend_fields_stay_out_of_onscreen_text(self) -> None:
+        page = parse_script_markdown(
+            """## 第4页：建设背景
+- 页面类型：内容页
+### 上屏文字
+
+驱动背景：新型能源体系加快建设
+### 证据映射（后台，不上屏）
+
+发展变化→ST0007
+### 证据（后台，不上屏）
+
+ST0007
+### 边界依据（后台，不上屏）
+
+ST0020
+【视觉结构，不上屏】
+发展变化指向协同需求。
+"""
+        ).pages[0]
+        self.assertEqual("驱动背景：新型能源体系加快建设", page.onscreen_text)
+        self.assertEqual(("ST0007",), page.evidence_map_refs)
+        self.assertEqual(("ST0007", "ST0020"), page.source_refs)
+        self.assertEqual(("ST0020",), page.boundary_source_refs)
+        self.assertEqual("发展变化指向协同需求。", page.visual_structure)
+
     def test_plain_text_modules_do_not_require_markdown(self) -> None:
         page = parse_script_markdown(
             """## 第1页：示例
@@ -1127,6 +1163,54 @@ class ScriptMarkdownParserTests(unittest.TestCase):
         self.assertEqual("业务演进", page.top_level_module_titles[0])
         self.assertNotIn("**", page.onscreen_text)
         self.assertNotIn("####", page.onscreen_text)
+
+    def test_rejects_detached_subordinate_phrase_after_authoring_label(self) -> None:
+        self.assertEqual(
+            ("驱动背景：随着新型能源体系和新型电力系统加快建设",),
+            _onscreen_subordinate_fragments(
+                "驱动背景：随着新型能源体系和新型电力系统加快建设"
+            ),
+        )
+        self.assertEqual(
+            (),
+            _onscreen_subordinate_fragments(
+                "新型能源体系和新型电力系统加快建设，跨主体数据需求持续增长"
+            ),
+        )
+
+    def test_rejects_mixed_argument_functions_as_indented_peers(self) -> None:
+        text = """行业变化
+    电力行业是基础性、战略性行业
+    新型电力系统建设加快
+    运行保供需要多源数据"""
+        hits = _onscreen_false_parallel_semantics(text)
+        self.assertEqual(1, len(hits))
+        self.assertIn("attribute", hits[0])
+        self.assertIn("change", hits[0])
+        self.assertIn("demand", hits[0])
+
+    def test_accepts_one_dimension_as_indented_peers(self) -> None:
+        text = """跨主体协同
+    跨企业需要数据和模型共同参与
+    跨领域需要电力与气象数据协同
+    跨能力需要模型、专家和技术实施"""
+        self.assertEqual((), _onscreen_false_parallel_semantics(text))
+
+    def test_accepts_named_actor_duties_as_indented_peers(self) -> None:
+        text = """职责承接｜四类主体围绕客户需求协同运行
+    中电联统筹：统筹重大事项、审定规则、协调行业资源
+    数智公司运营：组织产品、服务客户、协同交付与结算
+    合作伙伴供给：提供数据、模型、专业服务和市场渠道
+    需求单位使用反馈：提出业务需求、订购使用并反馈成效"""
+        self.assertEqual((), _onscreen_false_parallel_semantics(text))
+
+    def test_accepts_named_cooperation_methods_with_distinct_conditions(self) -> None:
+        text = """合作方式｜四类路径匹配不同条件
+    标准接入：产品和接口已经成熟，重点完成测试与上架
+    联合产品：资源具备基础，仍需共同形成产品和市场方案
+    场景联合运营：复杂业务问题需要多方能力组合与持续服务
+    战略生态：骨干主体围绕重点资源和示范场景持续合作"""
+        self.assertEqual((), _onscreen_false_parallel_semantics(text))
 
     def test_markdown_and_authoring_meta_in_locked_text_are_errors(self) -> None:
         document = parse_script_markdown(
@@ -1335,6 +1419,8 @@ class ScriptContractAuditTests(unittest.TestCase):
         page = review["pages"][0]
         self.assertEqual("拟建什么性质的能力", page["mission"])
         self.assertTrue(page["lead_matches_main_message"])
+        self.assertEqual("lead", page["core_message_display_mode"])
+        self.assertGreaterEqual(page["core_message_visible_coverage"], 0.55)
         self.assertIn("semantic_coverage", page)
         self.assertEqual("high", review["reading_density_default"])
         self.assertEqual(1, review["reading_density_low_count"])
@@ -1344,6 +1430,33 @@ class ScriptContractAuditTests(unittest.TestCase):
             set(page["story_roles"]),
         )
         self.assertEqual("manual_review", page["review_questions"]["single_mission"])
+
+    def test_communication_review_flags_core_message_left_only_in_metadata(self) -> None:
+        page = parse_script_markdown(
+            """## 第9页：总体定位
+- 页面类型：内容页
+- 页面标题：总体定位
+- 主判断：公共能力定位支撑行业研判
+- 上屏文字：
+
+  **建设基础**
+
+  - 已完成接口登记
+
+- 视觉结构：建设基础支撑后续工作。
+"""
+        )
+        review = build_communication_review(
+            page,
+            {"pages": [{"page_id": "p09", "page_mission": "说明总体定位"}]},
+        )
+
+        result = review["pages"][0]
+        self.assertEqual("metadata_only_review", result["core_message_display_mode"])
+        self.assertIn(
+            "CORE_MESSAGE_AUDIENCE_VISIBILITY_REVIEW",
+            {finding["code"] for finding in result["findings"]},
+        )
 
     def test_effective_density_ignores_markdown_and_uses_adaptive_target(self) -> None:
         page = parse_script_markdown(
@@ -2046,6 +2159,54 @@ class ScriptContractAuditTests(unittest.TestCase):
         )
 
         self.assertIn("PATH_ORDER_SIGNAL_MISSING", {issue.code for issue in issues})
+
+    def test_path_visual_accepts_plain_numbered_modules(self) -> None:
+        script = parse_script_markdown(
+            """## 第12页：研究任务
+- 页面类型：内容页
+- 页面标题：研究任务
+- 主判断：三项任务形成研究证据。
+- 完整文字稿：本阶段依次完成资源摸底、问题量化和首期设计，形成可供后续验证的研究依据。
+- 文字稿取舍说明：必留上屏：01｜资源摸底、02｜问题量化、03｜首期设计
+- 上屏文字：
+01｜资源摸底
+  清单：形成资源与责任清单
+02｜问题量化
+  基线：形成现状与问题基线
+03｜首期设计
+  方案：形成首期业务与技术方案
+- 证据映射：研究任务→S014
+- 证据：S014
+- 边界：不决定投资。
+- 视觉结构：三项任务形成阶段推进路径。
+"""
+        )
+        issues = audit_script_quality(
+            script,
+            strict_outline(
+                {
+                    "page_id": "p12",
+                    "sequence": 12,
+                    "page_type": "content",
+                    "title": "研究任务",
+                    "argument_role": "decision",
+                    "source_refs": ["S014"],
+                    "prerequisite_pages": [],
+                }
+            ),
+            source_truth(
+                {
+                    "id": "S014",
+                    "type": "U",
+                    "status": "待确认",
+                    "statement": "三项研究任务。",
+                }
+            ),
+        )
+
+        codes = {issue.code for issue in issues}
+        self.assertNotIn("PATH_ORDER_SIGNAL_MISSING", codes)
+        self.assertNotIn("ONSCREEN_RELATION_ISOMORPHISM", codes)
 
     def test_declared_count_must_match_modules(self) -> None:
         text = SCRIPT.replace(

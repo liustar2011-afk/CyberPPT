@@ -174,6 +174,26 @@ def audit_visual_design_package(
             issue("BUSINESS_RELATIONSHIPS_MISSING", "Authoritative business relationships are missing.", page_id)
         if source.get("author_visual_notes_authority") != "advisory_only":
             issue("AUTHOR_VISUAL_NOTES_AUTHORITY_INVALID", "Author visual notes must be advisory_only.", page_id)
+        features = source.get("stage01_relationship_features")
+        if not isinstance(features, dict) or not isinstance(features.get("actions"), list) or not features.get("actions"):
+            issue("STAGE01_RELATIONSHIP_FEATURES_MISSING", "Structured Stage 01 relationship features are missing.", page_id)
+
+        disposition = decision.get("stage01_visual_note_disposition")
+        if not isinstance(disposition, dict):
+            issue("STAGE01_VISUAL_NOTE_DISPOSITION_MISSING", "Decision receipt must explain how Stage 01 visual guidance was inherited, adjusted, or rejected.", page_id)
+        else:
+            disposition_items: list[Any] = []
+            for key in ("inherited", "adjusted", "rejected"):
+                values = disposition.get(key)
+                if not isinstance(values, list):
+                    issue("STAGE01_VISUAL_NOTE_DISPOSITION_INVALID", f"Disposition field {key} must be an array.", page_id)
+                    continue
+                disposition_items.extend(values)
+            if not disposition_items:
+                issue("STAGE01_VISUAL_NOTE_DISPOSITION_EMPTY", "At least one Stage 01 visual feature must be dispositioned.", page_id)
+            for item in disposition_items:
+                if not isinstance(item, dict) or not str(item.get("feature") or "").strip() or not str(item.get("reason") or "").strip():
+                    issue("STAGE01_VISUAL_NOTE_DISPOSITION_ITEM_INVALID", "Every disposition item requires feature and reason.", page_id)
 
         expected_lock = _locked_pairs(source)
         expected_text_ids = [item[0] for item in expected_lock]

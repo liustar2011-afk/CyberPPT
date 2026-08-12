@@ -288,10 +288,10 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         )
         self.assertNotIn("扩展风格9：", prompt)
         self.assertNotIn("不进入默认候选", prompt)
-        self.assertIn(
-            "Apply this layout guidance before placing any on-screen text",
-            prompt,
-        )
+        self.assertIn("【本页业务关系与视觉表达意图｜不上屏】", prompt)
+        self.assertIn("不锁定分栏、卡片、框体或文字区", prompt)
+        self.assertIn("将锁定文字就近附着于同一连续业务场", prompt)
+        self.assertNotIn("Apply this layout guidance", prompt)
         self.assertIn("Explain the approved page-specific decision.", prompt)
         self.assertIn("do not render field names or instruction text", prompt)
 

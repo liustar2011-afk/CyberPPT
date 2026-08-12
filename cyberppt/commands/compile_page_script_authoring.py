@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from cyberppt.onscreen_text_rules import strip_terminal_punctuation
+
 
 AUTHORING_SCHEMA = "cyberppt.page_script_authoring.v1"
 RECEIPT_SCHEMA = "cyberppt.page_contract_receipt.v2"
@@ -184,10 +186,11 @@ def _onscreen_with_explicit_hierarchy(text: str) -> str:
         if not lines:
             continue
         rendered = [lines[0].lstrip()]
-        rendered.extend(
-            line if line[:1].isspace() else f"    {line}"
-            for line in lines[1:]
-        )
+        for line in lines[1:]:
+            # Detail items are rendered as child lines; normalize their
+            # terminal punctuation while preserving internal copy.
+            detail = strip_terminal_punctuation(line)
+            rendered.append(detail if line[:1].isspace() else f"    {detail}")
         rendered_groups.append("\n".join(rendered))
     return "\n\n".join(rendered_groups)
 
@@ -196,6 +199,7 @@ def _content_page(page: dict[str, Any], authored: dict[str, Any]) -> str:
     page_id = str(page["page_id"])
     number = _page_number(page_id)
     title = str(page.get("title") or "").strip()
+    subtitle = str(authored.get("subtitle") or page.get("subtitle") or "").strip()
     core_message = str(page.get("core_message") or "").strip()
     source_refs = [str(value) for value in page.get("source_refs") or []]
     detail_refs = {str(value) for value in page.get("detail_refs") or []}
@@ -209,6 +213,10 @@ def _content_page(page: dict[str, Any], authored: dict[str, Any]) -> str:
         "",
         "- 页面类型：内容页",
         f"- 页面标题：{title}",
+    ]
+    if subtitle:
+        lines.append(f"- 副标题：{subtitle}")
+    lines += [
         f"- 主判断：{core_message}",
         f"- 证据：{evidence}",
         f"- 视觉意图类型：{str(page.get('visual_intent_type') or '').strip()}",

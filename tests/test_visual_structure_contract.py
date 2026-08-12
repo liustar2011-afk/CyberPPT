@@ -35,6 +35,13 @@ def _payloads() -> tuple[dict, dict, dict]:
                 ],
                 "author_visual_notes": "put two cards left and right",
                 "author_visual_notes_authority": "advisory_only",
+                "stage01_relationship_features": {
+                    "authority": "stage01_semantic_handoff",
+                    "actors": ["Input"],
+                    "actions": [{"subject": "Input", "relation": "supports", "object": "Result"}],
+                    "directions": [], "conditions": [], "branches": [], "feedback": [],
+                    "source_visual_notes": "put two cards left and right",
+                },
                 "locked_text_items": [
                     {"text_id": "P01-T01", "text": "Locked A", "ordinal": 1},
                     {"text_id": "P01-T02", "text": "Locked B", "ordinal": 2},
@@ -83,6 +90,11 @@ def _payloads() -> tuple[dict, dict, dict]:
         "pages": [
             {
                 "page_id": "p01",
+                "stage01_visual_note_disposition": {
+                    "inherited": [{"feature": "Input supports Result", "reason": "preserves the authoritative relationship"}],
+                    "adjusted": [],
+                    "rejected": [{"feature": "two cards left and right", "reason": "layout advice is not relationship truth"}],
+                },
                 "selected_candidate": "C1",
                 "candidates": candidates,
                 "evidence_units": [

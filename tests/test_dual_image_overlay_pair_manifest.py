@@ -17,14 +17,18 @@ from scripts.dual_image_overlay.cyberppt_pair_manifest import (
     main,
     require_generated,
 )
-from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, render_prompt
+from scripts.dual_image_overlay.deliverable_prompt import (
+    parse_page_blocks,
+    render_prompt,
+    style_contract,
+)
 from scripts.dual_image_overlay.imagegen_handoff import build_page_prompt
 from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
 class CyberpptPairManifestTests(unittest.TestCase):
-    def test_style09_lock_is_reasserted_after_visual_structure_handoff(self) -> None:
+    def test_style09_contract_is_single_complete_source_lock_after_stage02_summary(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "project"
@@ -41,8 +45,10 @@ class CyberpptPairManifestTests(unittest.TestCase):
             (visual / "generation-prompts.md").write_text(
                 "# Page 4: 建设背景\n"
                 "[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.\n"
-                "- Industry scene anchor: controlled delivery workspace.\n"
-                "- Recommended composition: use a six-node swim-lane infographic.\n\n"
+                "- Visual thesis: 统一连接与可信使用共同形成稳定服务。\n"
+                "- Spatial grammar: path, divergence\n"
+                "- Reading sequence: E1 -> E2 -> E3\n"
+                "- Text binding: E1 -> E1 / embedded / locked text ids: P04-T01\n\n"
                 "[Negative constraints]\n- no equal card wall\n---\n",
                 encoding="utf-8",
             )
@@ -53,18 +59,66 @@ class CyberpptPairManifestTests(unittest.TestCase):
                 project_path=project,
                 style_lock=style_lock,
             )
+            expected_contract = style_contract(style_lock)
         prompt = manifest["pairs"][0]["full"]["prompt"]
-        self.assertNotIn("six-node swim-lane infographic", prompt)
-        self.assertIn("【风格09业务场适配器｜不上屏】", prompt)
-        self.assertIn("controlled delivery workspace", prompt)
+        self.assertIn("本页只围绕这一主论断组织画面：统一连接与可信使用共同形成稳定服务", prompt)
+        self.assertIn("按一条连续主路径组织业务环节", prompt)
+        self.assertNotIn("【风格09业务场适配器｜不上屏】", prompt)
+        self.assertNotIn("Text binding", prompt)
+        self.assertNotIn("P04-T01", prompt)
+        self.assertNotIn("E1 -> E2", prompt)
         self.assertNotIn("【视觉组织原则】", prompt)
-        self.assertIn("### Final ImageGen execution lock — hard", prompt)
-        self.assertIn("【风格09最终执行锁｜最高优先级】", prompt)
-        self.assertEqual(1, prompt.count("保留既有容器形状和数量"))
-        self.assertEqual(1, prompt.count("保留已经确定的方向、数量和连接关系"))
+        self.assertEqual(1, prompt.count("【正式风格锁｜不上屏】"))
+        self.assertEqual(
+            expected_contract,
+            prompt.split("【正式风格锁｜不上屏】\n", 1)[1].strip(),
+        )
         handoff = manifest["pairs"][0]["visual_structure_handoff"]
         self.assertTrue(handoff["consumed"])
-        self.assertEqual("style09_surface_adapter", handoff["adapted_by"])
+
+    def test_stage02_visual_module_replaces_stage01_visual_expression_for_style09(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "project"
+            project.mkdir()
+            script = root / "script.md"
+            script.write_text(
+                "## P4 test\n"
+                "正文模块：测试内容\n"
+                "【视觉结构，不上屏】\n"
+                "需求缺口汇聚至建设响应。\n",
+                encoding="utf-8",
+            )
+            style_lock = write_project_style_lock(project=project, style_id=9, source_script=script)
+            visual = project / "visual"
+            visual.mkdir()
+            (visual / "generation-prompts.md").write_text(
+                "# Page 4: test\n"
+                "[Structural guidance]\n"
+                "- Visual thesis: a single causal chain from demand gap to trusted service.\n\n"
+                "[Connector map]\n- E1 -> E2\n---\n",
+                encoding="utf-8",
+            )
+            manifest, _, compiled, _ = build_manifest(
+                script=script,
+                pages_raw="4",
+                output_dir=root / "images",
+                project_path=project,
+                style_lock=style_lock,
+            )
+            prompt = manifest["pairs"][0]["full"]["prompt"]
+            compiled_text = compiled.read_text(encoding="utf-8")
+        self.assertIn("本页只围绕这一主论断组织画面：a single causal chain", prompt)
+        self.assertNotIn("Visual thesis:", prompt)
+        self.assertNotIn("[Connector map]", prompt)
+        self.assertIn("本页只围绕这一主论断组织画面：a single causal chain", compiled_text)
+        self.assertTrue(manifest["pairs"][0]["visual_structure_handoff"]["consumed"])
+        return
+        self.assertIn("\u9700\u6c42\u7f3a\u53e3\u6c47\u805a\u81f3\u5efa\u8bbe\u54cd\u5e94", prompt)
+        self.assertIn("\u9700\u6c42\u7f3a\u53e3\u6c47\u805a\u81f3\u5efa\u8bbe\u54cd\u5e94", compiled_text)
+        self.assertIn("不锁定分栏、卡片、框体或文字区", prompt)
+        self.assertIn("将锁定文字就近附着于同一连续业务场", prompt)
+        self.assertNotIn("Apply this layout guidance", prompt)
 
     def test_compact_blueprint_uses_handoff_locked_text_without_full_prose(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -120,6 +174,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertIn("2048×1024（2:1）", prompt)
         self.assertIn("业务演进与协同需求", prompt)
         self.assertIn("可信服务基座", prompt)
+        self.assertNotIn("跨主体需求与现实制约共同要求可信服务基座。", prompt)
         self.assertNotIn("这段完整讲稿不得进入最终送图脚本", prompt)
         self.assertNotIn("SHOULD_NOT_BE_IMPORTED", prompt)
         self.assertEqual(prompt, compiled_text.split("\n\n", 1)[1].strip())

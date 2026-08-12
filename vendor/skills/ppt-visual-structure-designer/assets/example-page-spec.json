@@ -173,15 +173,15 @@
   "visual_decision": {
     "visual_intent_type": "transformation_pipeline",
     "visual_thesis": "统一分流与责任办理把服务诉求转化为可追踪的反馈结果。",
-    "spatial_organization": "Use path as one integrated semantic structure; keep secondary evidence subordinate to the semantic focus.",
+    "spatial_organization": "服务诉求进入受理接口，经分类分流落到责任办理，再把可追踪反馈接回同一服务流。",
     "reading_path": [
       "服务诉求",
       "分类分流",
       "责任办理",
       "可追踪反馈结果"
     ],
-    "text_integration_method": "Bind each text unit to its semantic node, action, relationship or outcome inside the primary structure.",
-    "relationship_encoding": "Preserve the declared direction and edge labels; use adjacency for subordinate relationships.",
+    "text_integration_method": "服务诉求文字贴在入口对象，分类分流和责任办理文字贴在对应动作接口，反馈结果文字贴在交付端。",
+    "relationship_encoding": "入口、分流接口、责任动作和反馈出口按受理、分流、反馈的具名关系连续承接。",
     "visual_center_count": 1,
     "visual_hierarchy": {
       "primary": "分类分流",
@@ -198,7 +198,7 @@
     "title_render_mode": "external_text_layer",
     "subtitle_render_mode": "external_text_layer",
     "body_render_mode": "in_image",
-    "placement_strategy": "Place each locked text unit with the semantic node or relationship it explains."
+    "placement_strategy": "服务诉求文字贴在入口对象，分类分流和责任办理文字贴在对应动作接口，反馈结果文字贴在交付端。"
   },
   "geometry": {
     "canvas": {
@@ -235,10 +235,10 @@
   },
   "image_plan": {
     "use_scene": false,
-    "scene_type": "No medium selected at the structural stage",
-    "business_object": "Semantic nodes, actions, relationships and outcomes",
-    "semantic_role": "Optional medium selected by the final renderer",
-    "placement": "One integrated relationship field with subordinate evidence attached",
+    "scene_type": "No independent scene; the service-flow relationship field carries the page",
+    "business_object": "受理—分流—责任办理的服务流转场",
+    "semantic_role": "服务诉求经过分流接口和责任动作转化为可追踪结果",
+    "placement": "以连续服务流转场作为内容区主结构，入口和结果附着于其两端",
     "front_facing_people": false,
     "identifiable_location": false,
     "factual_event_implication": false

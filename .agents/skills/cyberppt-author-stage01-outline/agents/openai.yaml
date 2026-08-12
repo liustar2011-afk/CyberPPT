@@ -1,0 +1,4 @@
+interface:
+  display_name: "CyberPPT Stage 01 Outline Author"
+  short_description: "以专业编辑判断完成权威 Stage 01 章节与页面提纲"
+  default_prompt: "Use $cyberppt-author-stage01-outline to turn the current candidate Outline into an author-edited formal Outline."

@@ -88,11 +88,14 @@ python scripts/validate_pptx.py path/to/deck.pptx --manifest path/to/slide_manif
 
 仓库同时提供 Python CLI、npm scripts 和 Makefile。`SKILL.md` 仍是工作流契约；CLI 只负责项目初始化、脚本确认门和仓库脚本的稳定入口。
 
+单人单机 Stage 01 默认精简控制层而不改底稿：用户交互在对话中完成，意见直接修改现有 Outline 和页面脚本；不为交互新增状态文件，也不重复运行无关的全量审计。完整审计模式仅在用户明确要求或交付确需多人/监管审计轨迹时启用。
+
 目录归整规则见 [docs/repository-layout.md](docs/repository-layout.md)。正式项目优先放在 `projects/<project-name>/`，临时运行可放在 `image2pptx_runs/`；根目录 `images/` 只作为历史 scratch 位置，不再作为新流程默认输出目标。
 
 ```bash
 python3 -m cyberppt doctor
 python3 -m cyberppt init projects/example
+python3 -m cyberppt script-audit projects/example --input projects/example/workbench/scripts/final/script-final.md --lightweight
 python3 -m cyberppt prepare-communication-strategy projects/example
 python3 -m cyberppt communication-strategy-check projects/example
 python3 -m cyberppt approve-communication-strategy projects/example --option decision_review

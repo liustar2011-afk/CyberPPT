@@ -80,6 +80,19 @@ def valid_payload() -> dict[str, object]:
 
 
 class SourceTruthContractTests(unittest.TestCase):
+    def test_fact_type_accepts_change_semantic_role(self) -> None:
+        payload = valid_payload()
+        record = payload["records"][0]
+        record["type"] = "F"
+        record["claim_role"] = "change"
+        record["semantic_units"] = [
+            {"text": "市场化程度持续提升", "claim_role": "change"}
+        ]
+
+        codes = {issue.code for issue in audit_source_truth(payload)}
+
+        self.assertNotIn("SOURCE_FACT_CONTAINS_RECOMMENDATION", codes)
+
     def test_strict_compound_record_requires_atomic_semantic_units(self) -> None:
         payload = valid_payload()
         record = payload["records"][0]

@@ -309,7 +309,11 @@ def _chapter_review_audit_command(args: argparse.Namespace) -> int:
 
 def _prepare_visual_structure_command(args: argparse.Namespace) -> int:
     try:
-        path = prepare_visual_structure_stage(Path(args.project), Path(args.script))
+        path = prepare_visual_structure_stage(
+            Path(args.project),
+            Path(args.script),
+            lightweight_stage01_confirmed=args.lightweight_stage01_confirmed,
+        )
     except (FileNotFoundError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
@@ -348,6 +352,7 @@ def _prepare_stage02_handoff_command(args: argparse.Namespace) -> int:
         report = prepare_stage02_handoff(
             Path(args.project),
             script=Path(args.script) if args.script else None,
+            lightweight_stage01_confirmed=args.lightweight_stage01_confirmed,
         )
     except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -603,6 +608,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             require_send_approval=args.require_send_approval,
             build_id=args.build_id,
             external_script=args.external_script,
+            lightweight_stage01_confirmed=args.lightweight_stage01_confirmed,
             blueprint_only=args.blueprint_only,
             no_style_reference=args.no_style_reference,
             skip_image_text_audit=args.skip_image_text_audit,
@@ -793,6 +799,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     prepare_visual_structure.add_argument("project", help="CyberPPT project directory.")
     prepare_visual_structure.add_argument("--script", required=True, help="Approved final script.")
+    prepare_visual_structure.add_argument(
+        "--lightweight-stage01-confirmed",
+        action="store_true",
+        help="Use the current passed lightweight full-script audit and the user's interactive final confirmation without creating Stage 01 approval artifacts.",
+    )
     prepare_visual_structure.set_defaults(func=_prepare_visual_structure_command)
 
     record_visual_structure = subparsers.add_parser(
@@ -822,6 +833,11 @@ def build_parser() -> argparse.ArgumentParser:
     prepare_handoff.add_argument(
         "--script",
         help="Approved final script; defaults to workbench/scripts/final/script-final.md.",
+    )
+    prepare_handoff.add_argument(
+        "--lightweight-stage01-confirmed",
+        action="store_true",
+        help="Use the current passed lightweight full-script audit and the user's interactive final confirmation without creating Stage 01 approval artifacts.",
     )
     prepare_handoff.set_defaults(func=_prepare_stage02_handoff_command)
 
@@ -1141,6 +1157,15 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "Accept a script supplied outside Stage 01. Skips Stage 01 approval and visual-structure gates; "
             "the script remains hash-bound in Stage 02 artifacts."
+        ),
+    )
+    final_script_pages_parser.add_argument(
+        "--lightweight-stage01-confirmed",
+        action="store_true",
+        help=(
+            "Use the interactively confirmed lightweight Stage 01 path. "
+            "Re-runs the current lightweight script audit and requires a passed, "
+            "matching Stage 02 handoff and visual-structure gate; creates no approval file."
         ),
     )
     final_script_pages_parser.add_argument("--pages", required=True, help="Page range, e.g. 7-8 or 7,8.")

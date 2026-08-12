@@ -22,10 +22,36 @@ from cyberppt.source_document_map import (
     prepare_source_map,
 )
 from cyberppt.source_truth_contract import audit_source_truth, load_source_truth
-from cyberppt.stage01_compiler import compile_outline_draft, compile_source_truth
+from cyberppt.stage01_compiler import _page_content_units, compile_outline_draft, compile_source_truth
 
 
 class Stage01CompilerTests(unittest.TestCase):
+    def test_fallback_primary_prefers_page_forming_gap_over_general_premise(self) -> None:
+        records = [
+            {
+                "id": "ST0001",
+                "priority": "P1",
+                "claim_role": "fact",
+                "argument_duty": "premise",
+                "statement": "电力行业覆盖完整产业链。",
+                "coverage_anchors": ["电力行业", "完整产业链"],
+            },
+            {
+                "id": "ST0002",
+                "priority": "P1",
+                "claim_role": "problem",
+                "argument_duty": "gap",
+                "statement": "分散资源尚未形成稳定服务供给。",
+                "coverage_anchors": ["分散资源", "稳定服务供给"],
+            },
+        ]
+        units, _details = _page_content_units("p04", records, "建设必要性")
+        primary = next(unit for unit in units if unit["role"] == "primary")
+        premise = next(unit for unit in units if "premise" in unit["argument_duties"])
+        self.assertEqual(["ST0002"], primary["source_refs"])
+        self.assertTrue(primary["onscreen_required"])
+        self.assertFalse(premise["onscreen_required"])
+
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.project = Path(self.temporary.name) / "project"
@@ -226,6 +252,22 @@ class Stage01CompilerTests(unittest.TestCase):
                                 "actors": ["建设相关方"],
                                 "conditions": ["首期建设"],
                                 "numeric_facts": [],
+                            },
+                            {
+                                "item_id": "AI-004",
+                                "statement": "建设方案封面日期",
+                                "source_unit_refs": [evidence],
+                                "claim_role": "foundation",
+                                "evidence_role": "fact",
+                                "evidence_priority": "P2",
+                                "argument_duty": "metadata",
+                                "importance": "detail",
+                                "status": "existing",
+                                "claim_origin": "source_explicit",
+                                "coverage_anchors": ["建设方案", "封面日期"],
+                                "actors": [],
+                                "conditions": [],
+                                "numeric_facts": [],
                             }
                         ],
                     }
@@ -255,7 +297,7 @@ class Stage01CompilerTests(unittest.TestCase):
         self.assertIn("行业数据资源", review)
         self.assertFalse((self.project / "workbench/stages/00-semantic-understanding/semantic-understanding-audit.json").exists())
 
-    def test_source_truth_and_outline_are_compiled_without_reauthoring(self) -> None:
+    def test_source_truth_compiles_but_outline_requires_professional_authoring(self) -> None:
         truth_path = compile_source_truth(self.project)
         truth = load_source_truth(truth_path)
 
@@ -266,7 +308,11 @@ class Stage01CompilerTests(unittest.TestCase):
         )
         self.assertEqual("AI-001", truth["records"][0]["atomic_item_id"])
         self.assertEqual("fact", truth["records"][0]["claim_role"])
-        self.assertEqual(3, len(truth["records"]))
+        self.assertEqual(
+            truth["records"][0]["statement"],
+            truth["records"][0]["semantic_units"][0]["text"],
+        )
+        self.assertEqual(4, len(truth["records"]))
         self.assertNotIn("retry", truth)
         self.assertTrue(all(record["page_refs"] == [] for record in truth["records"]))
 
@@ -277,7 +323,11 @@ class Stage01CompilerTests(unittest.TestCase):
         outline = json.loads(outline_path.read_text(encoding="utf-8"))
         issues = audit_outline(outline, truth, self.model)
 
-        self.assertEqual([], [item.to_dict() for item in issues])
+        self.assertEqual(
+            {"OUTLINE_AUTHOR_EDIT_REQUIRED"},
+            {item.code for item in issues},
+        )
+        self.assertEqual("mechanical_draft", outline["editorial_authoring_status"])
         self.assertEqual("consumption_manifest", outline["source_truth_mapping_mode"])
         self.assertNotIn("retry", outline)
         self.assertEqual("ending", outline["pages"][-1]["page_type"])
@@ -286,11 +336,26 @@ class Stage01CompilerTests(unittest.TestCase):
             [page["page_type"] for page in outline["pages"]],
         )
         content_page = next(page for page in outline["pages"] if page["page_type"] == "content")
+        content_page["non_substitutable_value"] = "删除本页后，受众无法判断现有基础是否支持后续建设。"
+        content_page["argument_chain"] = "现有资源与能力 → 首期建设基础 → 后续建设判断"
+        content_page["evidence_roles"] = {
+            "claim": content_page["core_message_derivation"]["source_refs"],
+            "boundary": content_page["boundary_refs"],
+            "trace_only": content_page["detail_refs"],
+        }
+        content_page["excluded_from_onscreen"] = list(content_page["detail_refs"])
+        outline["editorial_authoring_status"] = "author_edited"
+        self.assertEqual([], audit_outline(outline, truth, self.model))
         self.assertEqual(["c01", "c01-s01"], content_page["source_argument_node_ids"])
+        metadata_refs = {
+            record["id"] for record in truth["records"]
+            if record["argument_duty"] == "metadata"
+        }
         self.assertEqual(
-            {record["id"] for record in truth["records"]},
+            {record["id"] for record in truth["records"]} - metadata_refs,
             set(content_page["source_refs"]),
         )
+        self.assertTrue(metadata_refs.isdisjoint(content_page["detail_refs"]))
         consumed_refs = {
             source_ref
             for unit in content_page["content_units"]
@@ -304,6 +369,11 @@ class Stage01CompilerTests(unittest.TestCase):
         )
         self.assertTrue(premise_unit["onscreen_required"])
         self.assertGreaterEqual(len(premise_unit["onscreen_anchors"]), 2)
+        self.assertNotIn("建设相关方", premise_unit["coverage_anchors"])
+        self.assertFalse(
+            set(content_page["core_message_derivation"]["source_refs"])
+            & set(content_page["boundary_refs"])
+        )
         self.assertEqual(
             {
                 "node_id": "c01-s01",
@@ -373,13 +443,6 @@ class Stage01CompilerTests(unittest.TestCase):
                 goal,
                 "--lightweight",
             ],
-            [
-                "outline-audit",
-                str(self.project),
-                "--input",
-                str(self.project / "workbench/stages/01-analysis/outline.json"),
-                "--lightweight",
-            ],
         )
         for argv in commands:
             completed = subprocess.run(
@@ -392,6 +455,25 @@ class Stage01CompilerTests(unittest.TestCase):
             )
             self.assertEqual(0, completed.returncode, completed.stderr or completed.stdout)
             self.assertEqual("", completed.stderr)
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "cyberppt",
+                "outline-audit",
+                str(self.project),
+                "--input",
+                str(self.project / "workbench/stages/01-analysis/outline.json"),
+                "--lightweight",
+            ],
+            cwd=Path(__file__).resolve().parents[1],
+            text=True,
+            capture_output=True,
+            encoding="utf-8",
+            check=False,
+        )
+        self.assertEqual(4, completed.returncode)
+        self.assertIn("OUTLINE_AUTHOR_EDIT_REQUIRED", completed.stdout)
         forbidden = (
             "workbench/artifact-ledger.json",
             "workbench/approvals",

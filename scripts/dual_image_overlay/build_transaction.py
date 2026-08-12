@@ -90,14 +90,32 @@ def build_lock(project_path: Path, build_id: str, *, name: str = ".cyberppt-buil
 
 def _atomic_replace(path: Path, writer) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
-    fd, raw_tmp = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    # Keep the temporary basename short.  Including ``path.name`` here made
+    # otherwise-valid deep Windows delivery paths exceed MAX_PATH (the target
+    # SVG name itself can be long), causing mkstemp/os.replace to surface a
+    # misleading ``FileNotFoundError`` for the temporary source.
+    fd, raw_tmp = tempfile.mkstemp(prefix=".cyberppt-tmp-", suffix=".tmp", dir=path.parent)
     tmp = Path(raw_tmp)
     try:
         with os.fdopen(fd, "wb") as handle:
             writer(handle)
             handle.flush()
             os.fsync(handle.fileno())
-        os.replace(tmp, path)
+        # Use the Windows extended-length path form so the final replacement
+        # remains reliable when the destination itself is close to MAX_PATH.
+        # (The short temp basename above protects creation; this protects the
+        # rename operation.)
+        if os.name == "nt":
+            def _extended(value: Path) -> str:
+                resolved = str(value.resolve())
+                if resolved.startswith("\\\\?\\"):
+                    return resolved
+                if resolved.startswith("\\\\"):
+                    return "\\\\?\\UNC\\" + resolved[2:]
+                return "\\\\?\\" + resolved
+            os.replace(_extended(tmp), _extended(path))
+        else:
+            os.replace(tmp, path)
     finally:
         tmp.unlink(missing_ok=True)
     return path

@@ -46,7 +46,7 @@ def test_text_gate_ignores_findings_outside_scope(tmp_path: Path) -> None:
     assert result["valid"] is True
 
 
-def test_independent_ocr_rejects_pseudo_chinese_resource_glyph(tmp_path: Path) -> None:
+def test_independent_ocr_does_not_block_multicharacter_mismatch(tmp_path: Path) -> None:
     result = audit_generated_image_text(
         _image(tmp_path), script_text="资源与能力",
         vision_runner=_vision(),
@@ -54,9 +54,49 @@ def test_independent_ocr_rejects_pseudo_chinese_resource_glyph(tmp_path: Path) -
             {"text": "瓷源与能力", "confidence": .649, "bbox": [[1, 2], [3, 4]]}
         ],
     )
-    assert result["valid"] is False
-    assert result["issues"][0]["expected"] == "资源与能力"
-    assert result["issues"][0]["detector"] == "rapidocr_onnxruntime"
+    assert result["valid"] is True
+
+
+def test_independent_ocr_ignores_shifted_neighbors_and_divider_marks(tmp_path: Path) -> None:
+    result = audit_generated_image_text(
+        _image(tmp_path),
+        script_text=(
+            "行业级连接、可信使用和服务运营成为必要支撑\n"
+            "需求升级｜业务变化扩大跨主体协同范围\n"
+            "供给缺口｜分散资源难以形成稳定服务"
+        ),
+        vision_runner=_vision(),
+        ocr_runner=lambda _path: [
+            {"text": "需求升级I", "confidence": .70, "bbox": []},
+            {"text": "需求升级丨", "confidence": .70, "bbox": []},
+            {"text": "同供给缺口1", "confidence": .72, "bbox": []},
+        ],
+    )
+    assert result["valid"] is True
+
+
+def test_independent_ocr_does_not_infer_interior_glyph_substitution(tmp_path: Path) -> None:
+    result = audit_generated_image_text(
+        _image(tmp_path),
+        script_text="可信接入、资源目录和接口衔接降低资源发现与技术对接成本",
+        vision_runner=_vision(),
+        ocr_runner=lambda _path: [
+            {"text": "接口街接降低资源发现", "confidence": .91, "bbox": [[1, 2], [3, 4]]}
+        ],
+    )
+    assert result["valid"] is True
+
+
+def test_independent_ocr_ignores_short_neighbor_slice(tmp_path: Path) -> None:
+    result = audit_generated_image_text(
+        _image(tmp_path),
+        script_text="资源供给",
+        vision_runner=_vision(),
+        ocr_runner=lambda _path: [
+            {"text": "与供给", "confidence": .75, "bbox": [[1, 2], [3, 4]]}
+        ],
+    )
+    assert result["valid"] is True
 
 
 def test_text_gate_uses_six_overlapping_tiles(tmp_path: Path) -> None:

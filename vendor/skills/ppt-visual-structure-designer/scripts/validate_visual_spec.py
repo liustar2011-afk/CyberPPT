@@ -62,6 +62,24 @@ ABSTRACT_CENTER_RE = re.compile(
     r"(?:generic|abstract|decorative)\s+(?:center|central)\s+(?:box|hub|engine|device)",
     re.IGNORECASE,
 )
+GENERIC_CARRIER_RE = re.compile(
+    r"^(?:semantic nodes?,? actions?,? relationships? and outcomes?|"
+    r"语义节点、动作、关系和结果|标准化数据服务|业务对象和关系|"
+    r"可选媒介|按页面语义确定)$",
+    re.IGNORECASE,
+)
+GENERIC_EXECUTION_RE = re.compile(
+    r"(?:bind each text unit to its semantic node|place each locked text unit with the semantic node|"
+    r"正文(?:直接)?绑定到对应语义节点|正文逐项绑定|由(?:业务)?对象、动作、接口、边界和关系本身承担|"
+    r"preserve the declared direction and edge labels|keep secondary evidence subordinate)",
+    re.IGNORECASE,
+)
+CONCRETE_RELATION_RE = re.compile(
+    r"(?:接口|入口|出口|交付|接入|编排|调度|处理|门控|边界|回流|反馈|汇聚|分流|"
+    r"转换|承接|支撑|约束|协同|对比|依赖|授权|服务|对象|动作|结果|输入|输出|"
+    r"interface|input|output|handoff|gate|boundary|feedback|workflow|service|object|action)",
+    re.IGNORECASE,
+)
 
 
 def add(issues: list[dict[str, Any]], level: str, code: str, message: str, page: int | None = None) -> None:
@@ -230,6 +248,32 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
         add(issues, "error", "front_portrait", "Front-facing people are prohibited by default", n)
     if ip.get("identifiable_location") is not False:
         add(issues, "error", "location", "Identifiable location is prohibited by default", n)
+    if schema_version == "1.1":
+        carrier = str(ip.get("business_object") or "").strip()
+        semantic_role = str(ip.get("semantic_role") or "").strip()
+        primary = str(vd.get("visual_hierarchy", {}).get("primary") or "").strip()
+        organization = str(vd.get("spatial_organization") or "").strip()
+        integration_method = str(vd.get("text_integration_method") or "").strip()
+        encoding = str(vd.get("relationship_encoding") or "").strip()
+        placement = str(ip.get("placement") or "").strip()
+        # Stage 01 may leave carrier/medium free.  Stage 02 may not: its chosen
+        # design must name the relation-bearing object or relationship field.
+        if not carrier or GENERIC_CARRIER_RE.fullmatch(carrier):
+            add(issues, "error", "executable_carrier_generic",
+                "image_plan.business_object must name the selected relation-bearing business object or relationship field, not a page topic or renderer placeholder", n)
+        if not primary or primary == carrier and GENERIC_CARRIER_RE.fullmatch(primary):
+            add(issues, "error", "executable_focus_generic",
+                "visual_hierarchy.primary must name the chosen drawable focus, consistent with the selected carrier", n)
+        if GENERIC_EXECUTION_RE.search(integration_method) or not CONCRETE_RELATION_RE.search(integration_method):
+            add(issues, "error", "text_integration_not_executable",
+                "text_integration_method must say which object, action, interface, boundary or result receives each text group; generic node binding is insufficient", n)
+        relation_text = "\n".join((organization, encoding, semantic_role, placement))
+        if GENERIC_EXECUTION_RE.search(relation_text) or not CONCRETE_RELATION_RE.search(relation_text):
+            add(issues, "error", "visual_relationship_not_executable",
+                "visual design must explain how selected business objects/actions form the relationship field; path/focus labels alone are insufficient", n)
+        if ip.get("use_scene") is False and not CONCRETE_RELATION_RE.search("\n".join((carrier, semantic_role, organization, encoding))):
+            add(issues, "error", "carrier_without_scene_not_executable",
+                "a non-scene page still needs a concrete business-object relationship field, not a renderer handoff", n)
     expression_text = "\n".join(
         str(value or "")
         for value in (

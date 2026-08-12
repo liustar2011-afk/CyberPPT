@@ -144,6 +144,7 @@ def _lightweight_project_manifest(name: str) -> str:
 workflow: cyberppt
 schema: cyberppt.project.v1
 mode: lightweight
+authority_mode: authoritative
 directories:
   source: source
   workbench: workbench
@@ -165,14 +166,14 @@ directories:
   final_scripts: workbench/scripts/final
 status:
   stage: initialized
-  notes: "Lightweight Stage 01 keeps business reasoning and canonical authoring artifacts without control ledgers or approval state."
+  notes: "Authoritative Stage 01 uses canonical Markdown drafts/final script as the source of truth; lightweight controls omit approval ledgers and hash-freshness state."
 """
 
 
 def _lightweight_readme(project_name: str) -> str:
     return f"""# {project_name}
 
-CyberPPT lightweight Stage 01 workspace.
+CyberPPT authoritative Stage 01 workspace (lightweight controls).
 
 ## Flow
 
@@ -182,10 +183,10 @@ CyberPPT lightweight Stage 01 workspace.
 4. Run `prepare-communication-strategy --lightweight`. The agent must analyze the source, present 2-3 communication-goal options, recommend one and let the user select or revise it; never ask blank audience/scenario/action questions.
 5. Run `prepare-outline-input --lightweight --communication-goal <selected-goal>`. The command preserves Storyline Director reasoning inside the authoring task without creating a Director gate. Compare 2-3 routes; when the source has an explicit argument sequence, include the named `source_logic_focused` route, which preserves the source-native thesis and major progression while selectively compressing repetition and detail. Recommend it for introduction- or understanding-led communication unless the selected goal explicitly requires decision/action reordering. Present the chapter/page outline to the user before drafting details.
 6. Run `outline-audit --lightweight` once before presenting the outline. Fix only affected outline content; do not create attempts or escalation state.
-7. Run `prepare-page-script-input --lightweight` for all pages or the current chapter/page. Write canonical chapter Markdown drafts directly and present detailed page content to the user.
-8. Run `assemble-final-script --lightweight`, then one final `script-audit --lightweight`. Present the final script and wait for confirmation.
+7. Run `prepare-page-script-input --lightweight` for all pages or the current chapter/page. Write the authoritative chapter Markdown drafts directly and present detailed page content to the user.
+8. Run `assemble-final-script --lightweight`, then one final `script-audit --lightweight`. The drafts and assembled final script are authoritative Stage 01 artifacts; present the final script and wait for confirmation.
 
-The lightweight path creates no approval JSON, interaction state, generation receipt, retry attempt, escalation, artifact ledger or hash-freshness gate. It retains the full semantic, storyline, outline and page-authoring business rules.
+The authoritative lightweight path creates no page-script-authoring JSON, approval JSON, interaction state, generation receipt, retry attempt, escalation, artifact ledger or hash-freshness gate. `workbench/scripts/drafts/` and `workbench/scripts/final/script-final.md` are the canonical Stage 01 writing artifacts.
 """
 
 

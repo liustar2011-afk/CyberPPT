@@ -210,6 +210,30 @@ class AssembleFinalScriptTests(unittest.TestCase):
             text = Path(str(report["output"])).read_text(encoding="utf-8")
             self.assertNotIn("- 上屏结论：", text)
 
+    def test_moves_leading_main_judgment_out_of_strict_onscreen_body(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "demo"
+            drafts = project / "workbench/scripts/drafts"
+            drafts.mkdir(parents=True)
+            judgment = "数据服务把数据、知识、模型和专业能力组织为可订购服务"
+            drafts.joinpath("page.md").write_text(
+                "## 第1页：数据服务体系\n"
+                "- 页面类型：内容页\n"
+                f"- 主判断：{judgment}\n"
+                "### 上屏文字\n"
+                f"{judgment}\n\n"
+                "**服务形态**\n"
+                "- 数据接口与数据集\n",
+                encoding="utf-8",
+            )
+
+            report = assemble_final_script(project)
+            text = Path(str(report["output"])).read_text(encoding="utf-8")
+
+        body = text.split("### 上屏文字", 1)[1]
+        self.assertNotIn(judgment, body)
+        self.assertIn("服务形态", body)
+
     def test_lightweight_assembly_writes_only_final_script(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp) / "demo"
@@ -227,6 +251,8 @@ class AssembleFinalScriptTests(unittest.TestCase):
             text = output.read_text(encoding="utf-8")
 
             self.assertEqual("lightweight", report["mode"])
+            self.assertEqual("authoritative", report["authority_mode"])
+            self.assertEqual(str(project / "workbench/scripts/drafts"), report["authoritative_source"])
             self.assertIn("script-audit", text)
             self.assertIn("--lightweight", text)
             self.assertFalse(output.with_name("page-contracts.json").exists())

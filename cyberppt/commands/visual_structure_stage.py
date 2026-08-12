@@ -55,6 +55,7 @@ def _write_visual_design_input(project: Path, handoff: Path) -> Path:
                 "locked_on_screen_items": page.get("onscreen_items") or [],
                 "locked_text_items": visual.get("locked_text_items") or [],
                 "business_relationships": visual.get("business_relationships") or [],
+                "stage01_relationship_features": visual.get("stage01_relationship_features") or {},
                 "relationship_authority": "business_relationships",
                 "author_visual_notes": visual.get("author_visual_notes") or "",
                 "author_visual_notes_authority": "advisory_only",
@@ -157,12 +158,21 @@ def _write_skill_request(project: Path, script: Path, design_input: Path) -> Pat
     return output
 
 
-def prepare_visual_structure_stage(project: Path, script: Path) -> Path:
+def prepare_visual_structure_stage(
+    project: Path,
+    script: Path,
+    *,
+    lightweight_stage01_confirmed: bool = False,
+) -> Path:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
     from cyberppt.stage02_handoff import HANDOFF_JSON, prepare_stage02_handoff
 
-    report = prepare_stage02_handoff(project, script=script)
+    report = prepare_stage02_handoff(
+        project,
+        script=script,
+        lightweight_stage01_confirmed=lightweight_stage01_confirmed,
+    )
     if report.get("status") != "passed":
         raise ValueError("Stage 01 to Stage 02 handoff is not passed")
     handoff = project / HANDOFF_JSON
@@ -194,7 +204,7 @@ def prepare_visual_structure_stage(project: Path, script: Path) -> Path:
                 "",
                 "## Required action",
                 "",
-                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Treat business_relationships as authoritative and author_visual_notes as advisory only. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Generate and compare at least three materially different candidates per content page; deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write:",
+                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. For every page, record stage01_visual_note_disposition with inherited, adjusted and rejected feature lists plus reasons. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Generate and compare at least three materially different candidates per content page; deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write:",
                 "",
                 "- `visual/visual-design-decisions.json`",
                 "- `visual/deck-visual-spec.json`",

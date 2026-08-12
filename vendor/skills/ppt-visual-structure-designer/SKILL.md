@@ -107,7 +107,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - 核心结论。
 - 证据单元及优先级。
 - 实体、关系、方向、状态和边界。
-- 关系核对：在CyberPPT工作台中，`visual-design-input.json.business_relationships`是唯一权威关系来源；`author_visual_notes`始终为`advisory_only`。不得从作者备注中的行列、泳道、卡片数量、中心位置、上下左右分区或具体载体反推业务关系，也不得把这些内容继承到`decision_relationship`。其他调用方式必须提供同等结构化的实体、动作、方向、状态、结果和边界；若关系缺失、存在歧义，或锁定文字与关系相互矛盾，应退回上游补齐。
+- 关系核对：在CyberPPT工作台中，`visual-design-input.json.business_relationships`是唯一权威关系来源；`stage01_relationship_features`显式保留上游已识别的主体、动作、方向、条件、分支与反馈，必须逐项核对；`author_visual_notes`始终为`advisory_only`。不得从作者备注中的行列、泳道、卡片数量、中心位置、上下左右分区或具体载体反推业务关系，也不得把这些内容继承到`decision_relationship`。其他调用方式必须提供同等结构化的实体、动作、方向、状态、结果和边界；若关系缺失、存在歧义，或锁定文字与关系相互矛盾，应退回上游补齐。
 
 不得把原文项目符号数量直接等同于视觉模块数量。
 
@@ -148,6 +148,8 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - `visual_hierarchy`。
 - `avoid_on_this_page`。
 
+当上游`representation_freedom`为`free`时，保留该事实，但必须由本阶段完成具体选择：先选能承载主关系的业务对象或关系场，再写清对象如何通过动作、接口、边界或结果形成画面，最后把正文贴附到这些业务部位。不得把“自由”写成“由生图模型自行决定”，也不得以页面标题、抽象概念或“语义节点与关系”替代选定载体。
+
 语义焦点必须承载核心结论，辅助关系不得形成第二套主结构。`decision_relationship`只写业务实体、动作、方向、状态和结果，不写页面几何或阅读版式。具体载体和媒介由内容、外部风格与最终执行器共同决定。
 
 ### 6. 输出双合同
@@ -158,7 +160,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - `<原文件名>_视觉结构设计.json`：机器校验和后续自动化。
 - `<原文件名>_视觉结构校验.json`：校验结果。
 
-CyberPPT工作台模式还必须输出`visual/visual-design-decisions.json`，保留每页至少三项候选、完整证据覆盖、评分维度、选中候选及输入哈希。Skill实际执行完毕后，由仓库命令记录执行器、模型、Skill包哈希和产物哈希；仅生成调用说明不视为执行完成。
+CyberPPT工作台模式还必须输出`visual/visual-design-decisions.json`，保留每页至少三项候选、完整证据覆盖、评分维度、选中候选及输入哈希。每页必须包含`stage01_visual_note_disposition`，分别记录`inherited`、`adjusted`、`rejected`的上游视觉特征及专业理由；不得用一句“已参考”代替逐项处置。Skill实际执行完毕后，由仓库命令记录执行器、模型、Skill包哈希和产物哈希；仅生成调用说明不视为执行完成。
 
 只处理单页时，可输出单页Markdown和单页JSON。
 

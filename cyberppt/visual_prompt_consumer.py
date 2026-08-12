@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -10,66 +11,6 @@ from pathlib import Path
 
 VISUAL_STRUCTURE_HEADER = "【视觉结构设计模块｜不上屏】"
 VISUAL_STRUCTURE_END = "【视觉结构设计模块结束】"
-STYLE09_SURFACE_HEADER = "【风格09业务场适配器｜不上屏】"
-
-# Style 09 needs the page's business object to keep dense prose from
-# collapsing into a generic table, but it must not inherit a page-specific
-# layout recipe (matrix rows, swim lanes, node chains, etc.).  These field
-# labels are authored by the visual-structure stage and are deliberately
-# filtered by the shared adapter below.
-_STYLE09_SEMANTIC_FIELDS = (
-    "Semantic focus:",
-    "Spatial grammar:",
-    "Semantic tags:",
-    "Primary structure refs:",
-    "Secondary structure refs:",
-    "Reading sequence:",
-    "Text binding:",
-    "Representation freedom:",
-    "Industry scene anchor:",
-    "business object:",
-    "Text integration:",
-    "Relationship encoding:",
-)
-
-_LAYOUT_BEARING_TEXT_INTEGRATION_RE = re.compile(
-    r"(?:位于|置于|放在|上部|下部|顶部|底部|左侧|右侧|居中|结果区|结论区|"
-    r"沿.*(?:路径|节点)|贴近.*节点|闭环路径)"
-)
-
-_STYLE09_VISUAL_THESIS_FIELD = "Visual thesis:"
-_STYLE09_CLOSED_LOOP_INTENT = "Selected visual intent type: closed_loop_operation"
-
-_STYLE09_RELATION_NORMALIZATIONS = (
-    ("平台运营闭环", "平台运营关系"),
-    ("反馈回路", "运营反馈返回前序环节"),
-    ("主链按顺时针推进", "主关系依次发生"),
-    ("按顺时针推进", "依次发生"),
-    ("反馈线单独回到", "运营反馈返回"),
-    ("反馈线回到", "运营反馈返回"),
-)
-
-_STYLE09_NEGATIVE_GEOMETRY_CLAUSE_RE = re.compile(
-    r"(?:不使用|不要|不得|禁止).*(?:圆环|箭头|网格|泳道|阶段框|节点链)"
-)
-
-
-def _sanitize_style09_semantic_segment(segment: str) -> str:
-    """Keep text-object semantics but discard stale placement instructions."""
-    if ":" not in segment:
-        return segment
-    prefix, value = segment.split(":", 1)
-    clauses = [part.strip() for part in re.split(r"(?<=[。！？])|，", value) if part.strip()]
-    kept: list[str] = []
-    for clause in clauses:
-        if prefix == "Text integration" and _LAYOUT_BEARING_TEXT_INTEGRATION_RE.search(clause):
-            continue
-        if _STYLE09_NEGATIVE_GEOMETRY_CLAUSE_RE.search(clause):
-            continue
-        for source, replacement in _STYLE09_RELATION_NORMALIZATIONS:
-            clause = clause.replace(source, replacement)
-        kept.append(clause)
-    return f"{prefix}: {'，'.join(kept).rstrip('。')}。" if kept else ""
 
 
 @dataclass(frozen=True)
@@ -94,6 +35,146 @@ def _section(block: str, heading: str) -> str:
     return match.group(1).strip() if match else ""
 
 
+def _field_values(text: str, prefix: str) -> list[str]:
+    return [
+        line.split(":", 1)[1].strip()
+        for line in text.splitlines()
+        if line.strip().lstrip("-").strip().startswith(prefix)
+        and ":" in line
+    ]
+
+
+def _compile_execution_summary(page_block: str) -> str:
+    """Compile Stage 02 review IR into a short, ImageGen-executable layout brief.
+
+    The Stage 02 module intentionally contains IDs, evidence bindings and audit
+    fields.  Those are authoritative for traceability, not visual instructions;
+    only the actual visual thesis, spatial relation and placement constraints
+    cross the production boundary.
+    """
+
+    structural = _section(page_block, "[Structural guidance]")
+    if not structural:
+        structural = _section(
+            page_block,
+            "[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.",
+        )
+    placement = _section(page_block, "[Text placement]")
+    negative = _section(page_block, "[Negative constraints]")
+    thesis = next(iter(_field_values(structural, "Visual thesis:")), "")
+    grammar = next(iter(_field_values(structural, "Spatial grammar:")), "")
+    reading = next(iter(_field_values(structural, "Reading sequence:")), "")
+    constraints = _field_values(structural, "Additional structural constraint:")
+    placement_strategy = next(iter(_field_values(placement, "Placement strategy:")), "")
+
+    directions: list[str] = []
+    if thesis:
+        directions.append(f"本页只围绕这一主论断组织画面：{thesis}")
+    if grammar:
+        grammar_terms = {item.strip() for item in grammar.split(",") if item.strip()}
+        if "path" in grammar_terms:
+            directions.append("按一条连续主路径组织业务环节，保持清晰的前后推进")
+        if "divergence" in grammar_terms:
+            directions.append("允许局部展开或分支，但必须从属于同一主路径，不另起第二套结构")
+        if "convergence" in grammar_terms:
+            directions.append("将相关信息收束到同一主判断，不按条目均分为孤立模块")
+        if "feedback" in grammar_terms:
+            directions.append("用一处从属回接表达反馈，不形成完整环形图或第二条主链")
+    if reading:
+        step_count = len([item for item in reading.split("->") if item.strip()])
+        if step_count > 1:
+            directions.append(f"按已锁定文字对应的 {step_count} 个业务环节顺序阅读")
+    if placement_strategy:
+        directions.append(placement_strategy.rstrip("。") + "，不形成独立文字墙")
+    for constraint in constraints:
+        if constraint and constraint not in directions:
+            directions.append(constraint)
+    directions.extend(
+        item.strip().lstrip("-").strip()
+        for item in negative.splitlines()
+        if item.strip()
+    )
+    if not directions and structural:
+        directions.append("以一个连续、非等权的业务关系场组织已锁定文字")
+    if not directions:
+        raise ValueError("Stage 02 visual module has no executable layout guidance")
+    return "\n".join(["【页面版式执行摘要｜不上屏】", *(f"- {item}" for item in directions)])
+
+
+def _spec_page(payload: object, page_number: int) -> dict[str, object] | None:
+    """Find a page spec in either a one-page or a deck-level Skill artifact."""
+
+    if isinstance(payload, dict):
+        if int(payload.get("page_number") or 0) == page_number:
+            return payload
+        pages = payload.get("pages")
+        if isinstance(pages, list):
+            for page in pages:
+                found = _spec_page(page, page_number)
+                if found is not None:
+                    return found
+    return None
+
+
+def _strings(values: object) -> list[str]:
+    return [str(value).strip() for value in values or [] if str(value).strip()]
+
+
+def _compile_visual_spec(spec: dict[str, object]) -> str:
+    """Translate the approved visual-design decision into an ImageGen brief.
+
+    The spec is the Stage 02 design authority.  Unlike the former
+    ``generation-prompts.md`` summary, this keeps the chosen carrier, focal
+    relationship, scene decision, text-integration method and relationship
+    encoding.  It deliberately omits internal IDs, copied locked text and
+    pixel geometry: those either leak audit IR or turn a design into a brittle
+    drawing recipe.
+    """
+
+    decision = spec.get("visual_decision") if isinstance(spec.get("visual_decision"), dict) else {}
+    image_plan = spec.get("image_plan") if isinstance(spec.get("image_plan"), dict) else {}
+    integration = spec.get("text_integration") if isinstance(spec.get("text_integration"), dict) else {}
+    structural = spec.get("structural_decision") if isinstance(spec.get("structural_decision"), dict) else {}
+    hierarchy = decision.get("visual_hierarchy") if isinstance(decision.get("visual_hierarchy"), dict) else {}
+    focus = hierarchy.get("primary") or image_plan.get("business_object")
+    thesis = str(decision.get("visual_thesis") or "").strip()
+    carrier = str(image_plan.get("business_object") or "").strip()
+    organization = str(decision.get("spatial_organization") or "").strip()
+    integration_method = str(decision.get("text_integration_method") or integration.get("placement_strategy") or "").strip()
+    encoding = str(decision.get("relationship_encoding") or "").strip()
+    semantic_role = str(image_plan.get("semantic_role") or "").strip()
+    scene_type = str(image_plan.get("scene_type") or "").strip()
+    use_scene = image_plan.get("use_scene") is True
+    grammar = _strings(structural.get("spatial_grammar"))
+    avoid = _strings(spec.get("avoid"))
+
+    directions: list[str] = []
+    if thesis:
+        directions.append(f"画面要清晰表达：{thesis}")
+    if carrier:
+        directions.append(f"以“{carrier}”作为承载业务关系的主视觉对象，不把它替换为泛科技装饰")
+    if focus:
+        directions.append(f"唯一视觉焦点是“{focus}”；其他对象、信息和局部场景都服务于该焦点")
+    if organization:
+        directions.append(f"构图组织：{organization}")
+    if integration_method:
+        directions.append(f"图文融合方式：{integration_method}")
+    if encoding:
+        directions.append(f"关系表达：{encoding}")
+    if semantic_role:
+        directions.append(f"业务语义要求：{semantic_role}")
+    if use_scene:
+        directions.append(f"场景仅作为业务关系的组成部分呈现（{scene_type or '按页面语义确定'}），不得脱离文字另作装饰")
+    else:
+        directions.append("不另设装饰性场景；由业务对象、动作、接口、边界和关系本身承担画面表达")
+    if grammar:
+        directions.append(f"空间语法服务于既定关系：{'、'.join(grammar)}")
+    directions.extend(f"避免：{item}" for item in avoid)
+    if not directions:
+        raise ValueError("Stage 02 visual spec has no consumable visual decision")
+    return "\n".join(["【页面视觉设计｜不上屏】", *(f"- {item}" for item in directions)])
+
+
 def load_visual_prompt_module(project: Path, page_number: int) -> VisualPromptModule | None:
     """Load the approved visual-structure handoff for one page, when present.
 
@@ -105,6 +186,22 @@ def load_visual_prompt_module(project: Path, page_number: int) -> VisualPromptMo
     """
 
     project = project.expanduser().resolve()
+    spec_path = project / "visual" / "deck-visual-spec.json"
+    if spec_path.is_file():
+        source = spec_path.read_text(encoding="utf-8-sig")
+        spec = _spec_page(json.loads(source), page_number)
+        if spec is not None:
+            prompt_text = _compile_visual_spec(spec)
+            return VisualPromptModule(
+                page_number=page_number,
+                source_path=spec_path,
+                source_sha256=_sha256_text(source),
+                page_block_sha256=_sha256_text(json.dumps(spec, ensure_ascii=False, sort_keys=True)),
+                prompt_text=prompt_text,
+            )
+
+    # Compatibility fallback for pre-v1.1 projects.  New Stage 02 production
+    # is required to provide and consume the audited visual spec above.
     source_path = project / "visual" / "generation-prompts.md"
     if not source_path.is_file():
         return None
@@ -119,23 +216,7 @@ def load_visual_prompt_module(project: Path, page_number: int) -> VisualPromptMo
             f"visual generation module missing page {page_number}: {source_path}"
         )
     page_block = match.group(1).strip()
-    parts: list[str] = []
-    for heading in (
-        "[Structural guidance]",
-        "[Mandatory composition guidance] Apply this layout guidance before placing any on-screen text. Do not render its field names or instruction text.",
-        "[Connector map]",
-        "[Text placement]",
-        "[Text rendering]",
-        "[Negative constraints]",
-    ):
-        content = _section(page_block, heading)
-        if content:
-            parts.extend([heading, content, ""])
-    if not parts:
-        raise ValueError(
-            f"visual generation module page {page_number} has no consumable sections: {source_path}"
-        )
-    prompt_text = "\n".join(parts).strip()
+    prompt_text = _compile_execution_summary(page_block)
     return VisualPromptModule(
         page_number=page_number,
         source_path=source_path,
@@ -160,73 +241,8 @@ def append_visual_prompt_module(prompt: str, module: VisualPromptModule | None) 
     block = "\n".join(
         [
             VISUAL_STRUCTURE_HEADER,
-            f"source: {module.source_path.as_posix()}",
-            f"page: P{module.page_number:02d}",
-            "The following is composition guidance only. Never render its headings, field names, source path, or instruction prose.",
             module.prompt_text,
             VISUAL_STRUCTURE_END,
-        ]
-    )
-    return f"{base.rstrip()}\n\n{block}\n"
-
-
-def append_style09_surface_adapter(
-    prompt: str,
-    module: VisualPromptModule | None,
-) -> str:
-    """Carry semantic scene cues into Style 09 without importing a layout recipe.
-
-    The regular visual handoff intentionally contains concrete composition
-    directions. Those directions are useful for review, but when they are
-    passed verbatim to Style 09 they turn dense pages into equal-weight
-    matrices, swim lanes, or step chains. Style 09 therefore consumes only
-    the semantic carrier fields and adds a short, generic surface contract.
-    The page's business content remains owned by the compiled prompt.
-    """
-
-    base = strip_visual_prompt_module(prompt)
-    if module is None:
-        return base
-    lines: list[str] = []
-    visual_thesis = ""
-    closed_loop_operation = False
-    for raw_line in module.prompt_text.splitlines():
-        line = raw_line.strip().lstrip("-").strip()
-        if not line:
-            continue
-        if line.startswith(_STYLE09_VISUAL_THESIS_FIELD):
-            visual_thesis = line.split(":", 1)[1].strip().rstrip("。")
-        elif line.startswith(_STYLE09_CLOSED_LOOP_INTENT):
-            closed_loop_operation = True
-        # The visual handoff often packs several labelled facts into one
-        # semicolon-separated line (for example, ``business object`` followed
-        # by ``placement``). Split first so layout-bearing fields cannot hitch
-        # a ride when only the semantic carrier is requested.
-        for segment in re.split(r"[;；]", line):
-            segment = segment.strip()
-            if any(segment.startswith(field) for field in _STYLE09_SEMANTIC_FIELDS):
-                segment = _sanitize_style09_semantic_segment(segment)
-                if segment:
-                    lines.append(f"- {segment}")
-    if closed_loop_operation and visual_thesis:
-        lines = [
-            line
-            for line in lines
-            if not line.startswith(("- Industry scene anchor:", "- business object:"))
-        ]
-        lines.insert(
-            0,
-            "- Dominant semantic carrier: 同一业务对象沿连续状态变化承载业务机制："
-            f"{visual_thesis}。",
-        )
-    block = "\n".join(
-        [
-            STYLE09_SURFACE_HEADER,
-            "以下字段只提供页面业务语义锚点，不上屏；不照抄原页面固定版式。",
-            "用一个连续的业务场或具体对象承载文字，让文字附着于对象、边界、动作或结果；关系可用对齐、色调、留白和少量连接线表达。",
-            *lines,
-            "不要把上述语义字段改造成等宽表格、泳道、步骤卡、连续箭头节点链、图标行或纯信息图。",
-            "业务语义字段只保留先后、反馈、约束、汇聚或分支等事实关系，不从字段名称推导具体造型；连接关系保持轻量、从属，不支配页面。",
         ]
     )
     return f"{base.rstrip()}\n\n{block}\n"

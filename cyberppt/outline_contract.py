@@ -692,7 +692,9 @@ def _page_content_unit_contract_issues(
     pages: list[dict[str, object]],
 ) -> list[AuditIssue]:
     issues: list[AuditIssue] = []
-    structural_duties = {"premise", "driver", "consequence", "gap", "response", "boundary"}
+    # Boundary evidence is mandatory in prose/traceability, but it is opt-in
+    # on screen unless the approved page proposition is itself boundary-led.
+    structural_duties = {"driver", "consequence", "gap", "response"}
     required = (
         outline.get("semantic_argument_model_mode") == "required"
         or outline.get("page_content_unit_coverage_mode") == "required"
@@ -779,7 +781,7 @@ def _page_content_unit_contract_issues(
             if structural_duties.intersection(argument_duties) and onscreen_required is not True:
                 issues.append(AuditIssue(
                     "STRUCTURAL_ARGUMENT_DUTY_HIDDEN",
-                    "承担前提、驱动、结果、缺口、回应或边界职责的内容单元不得只留在讲稿或追溯层；否则页面论证链会从中间开始。",
+                    "承担前提、驱动、结果、缺口或回应职责的内容单元不得只留在讲稿或追溯层；否则页面论证链会从中间开始。",
                     (page_id,),
                     "restore_structural_argument_chain",
                 ))
@@ -793,6 +795,59 @@ def _page_content_unit_contract_issues(
     return issues
 
 
+def _author_driven_editorial_issues(
+    outline: dict[str, object], pages: list[dict[str, object]]
+) -> list[AuditIssue]:
+    """Keep deterministic candidate generation separate from authorship.
+
+    The compiler may inventory evidence and propose pages, but it cannot decide
+    why a page is indispensable, which relation governs its argument, or which
+    retained facts stay off screen.  Those are author decisions, not validation
+    side effects.
+    """
+
+    if outline.get("editorial_authoring_mode") != "author_driven":
+        return []
+    if outline.get("editorial_authoring_status") != "author_edited":
+        return [AuditIssue(
+            "OUTLINE_AUTHOR_EDIT_REQUIRED",
+            "The deterministic Outline is only a candidate inventory. Complete the professional authoring task before formal Outline audit.",
+            retry_strategy="author_outline_from_page_missions",
+        )]
+    issues: list[AuditIssue] = []
+    for page in pages:
+        if page.get("page_type") != "content":
+            continue
+        page_id = _page_id(page)
+        evidence_roles = page.get("evidence_roles")
+        exclusions = page.get("excluded_from_onscreen")
+        if not str(page.get("non_substitutable_value") or "").strip():
+            issues.append(AuditIssue(
+                "NON_SUBSTITUTABLE_VALUE_MISSING",
+                "Author-edited pages must state what the deck loses if this page is removed or merged.",
+                (page_id,), "author_page_indispensability",
+            ))
+        if not str(page.get("argument_chain") or "").strip():
+            issues.append(AuditIssue(
+                "PAGE_ARGUMENT_CHAIN_MISSING",
+                "Author-edited pages must state one governing source-supported argument chain.",
+                (page_id,), "author_page_argument_chain",
+            ))
+        if not isinstance(evidence_roles, dict) or not evidence_roles:
+            issues.append(AuditIssue(
+                "PAGE_EVIDENCE_ROLES_MISSING",
+                "Author-edited pages must assign claim, reason, instance, boundary, or trace-only duties to their evidence groups.",
+                (page_id,), "author_page_evidence_roles",
+            ))
+        if not isinstance(exclusions, list):
+            issues.append(AuditIssue(
+                "ONSCREEN_EXCLUSIONS_MISSING",
+                "Author-edited pages must explicitly record retained evidence that is excluded from the audience-facing layer.",
+                (page_id,), "author_onscreen_exclusions",
+            ))
+    return issues
+
+
 def _structural_argument_duty_issues(
     pages: list[dict[str, object]],
     source_truth: dict[str, object] | None,
@@ -800,7 +855,7 @@ def _structural_argument_duty_issues(
     """Keep indispensable argument-chain records out of trace-only storage."""
     if source_truth is None:
         return []
-    structural_duties = {"premise", "driver", "consequence", "gap", "response", "boundary"}
+    structural_duties = {"driver", "consequence", "gap", "response"}
     records = {
         str(item.get("id") or ""): item
         for item in source_truth.get("records") or []
@@ -856,6 +911,7 @@ def audit_outline(
     issues.extend(_template_issues(pages))
     issues.extend(_content_issues(pages))
     issues.extend(_editorial_control_issues(outline, pages))
+    issues.extend(_author_driven_editorial_issues(outline, pages))
     issues.extend(_weight_issues(outline, pages))
     issues.extend(_content_page_density_issues(pages, source_truth))
     issues.extend(_document_semantic_issues(outline, source_truth))
