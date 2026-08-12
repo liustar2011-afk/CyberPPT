@@ -738,10 +738,23 @@ def _style09_terminal_execution_lock(style_lock_path: Path | None) -> str:
         return ""
     tail = contract.split(marker, 1)[1]
     lines = [line.strip() for line in tail.splitlines() if line.strip()]
-    for line in reversed(lines):
-        if line.startswith("禁止任何图标、徽章、卡片墙") or line.startswith("保持扁平2D"):
-            return line
-    return ""
+    start = next(
+        (
+            index
+            for index, line in enumerate(lines)
+            if line.startswith("禁止任何图标、徽章、卡片墙")
+            or line.startswith("保持扁平2D")
+        ),
+        None,
+    )
+    if start is None:
+        return ""
+    # The terminal section is deliberately authored as several short,
+    # complementary paragraphs (focal hierarchy, semantic imagery, visual
+    # rhythm, and icon policy). Reasserting only its first line at send time
+    # silently weakened all later rules and let dense pages fall back to
+    # equal-weight panels. Preserve the complete terminal tail verbatim.
+    return "\n\n".join(lines[start:])
 
 
 STYLE09_TERMINAL_LOCK_HEADER = "【风格09最终执行锁｜最高优先级】"
@@ -779,10 +792,18 @@ def enforce_style09_terminal_lock(
     people_rule = _style09_people_rule(style_lock_path)
     if not lock:
         return prompt
+    body = str(prompt)
+    # A compiled Style 09 contract already contains the complete terminal
+    # source section. Remove that whole prior section (not merely an identical
+    # line) before appending the authoritative final copy. Line-level removal
+    # left every paragraph behind and sent the same high-priority rule three
+    # times, diluting the intended focal hierarchy.
+    marker = _STYLE09_TERMINAL_HEADING
+    if marker in body:
+        body = body.split(marker, 1)[0]
     lines = [
-        line
-        for line in str(prompt).splitlines()
-        if line.strip() not in {STYLE09_TERMINAL_LOCK_HEADER, lock, people_rule}
+        line for line in body.splitlines()
+        if line.strip() not in {STYLE09_TERMINAL_LOCK_HEADER, people_rule}
     ]
     body = "\n".join(lines).rstrip()
     suffix = f"{STYLE09_TERMINAL_LOCK_HEADER}\n{lock}"
