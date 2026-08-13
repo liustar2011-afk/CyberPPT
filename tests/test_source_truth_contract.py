@@ -221,6 +221,14 @@ class SourceTruthContractTests(unittest.TestCase):
 
         self.assertIn("SOURCE_TRACEABILITY_BROKEN", codes)
 
+    def test_traceability_rejects_unknown_forward_conclusion_reference(self) -> None:
+        payload = valid_payload()
+        payload["conclusions"][0]["source_refs"] = ["S404"]
+
+        codes = {item.code for item in audit_source_truth(payload)}
+
+        self.assertIn("SOURCE_TRACEABILITY_BROKEN", codes)
+
     def test_flags_type_status_conflict(self) -> None:
         payload = valid_payload()
         payload["records"][0]["type"] = "F"

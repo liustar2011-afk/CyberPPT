@@ -129,6 +129,7 @@ class VisualStructureStageTests(unittest.TestCase):
         self.assertEqual("supports", visual["stage01_relationship_features"]["actions"][0]["relation"])
         self.assertEqual("P06-T01", visual["locked_text_items"][0]["text_id"])
         self.assertNotIn("approved_stage01_visual_structure", visual)
+        self.assertNotIn("source_refs", visual)
 
     def test_lightweight_handoff_falls_back_to_outline_contract_fields(self) -> None:
         page = ScriptPage(
