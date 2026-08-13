@@ -430,15 +430,7 @@ def _traceability_issues(
     pages: list[dict[str, object]],
 ) -> list[SourceTruthIssue]:
     record_ids = {str(item.get("id") or "") for item in records}
-    conclusion_ids = {str(item.get("id") or "") for item in conclusions}
-    page_ids = {str(item.get("id") or "") for item in pages}
     broken: set[str] = set()
-    for record in records:
-        source_id = str(record.get("id") or "")
-        if any(ref not in conclusion_ids for ref in _refs(record, "supports")):
-            broken.add(source_id)
-        if any(ref not in page_ids for ref in _refs(record, "page_refs")):
-            broken.add(source_id)
     for item in conclusions + pages:
         item_id = str(item.get("id") or "")
         refs = _refs(item, "source_refs")
@@ -449,7 +441,7 @@ def _traceability_issues(
     return [
         SourceTruthIssue(
             "SOURCE_TRACEABILITY_BROKEN",
-            "Evidence, conclusions, and pages must resolve in both directions.",
+            "Conclusion and page source references must resolve to Source Truth records.",
             tuple(sorted(broken)),
             "traceability_rebuild",
         )

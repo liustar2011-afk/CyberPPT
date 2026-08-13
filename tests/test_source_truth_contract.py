@@ -192,8 +192,7 @@ class SourceTruthContractTests(unittest.TestCase):
         ]
         record = payload["records"][0]
         record["numeric"] = {"raw_value": "100"}
-        record["supports"] = ["C404"]
-        record["page_refs"] = ["p404"]
+        payload["pages"][0]["source_refs"] = ["S404"]
         codes = {item.code for item in audit_source_truth(payload)}
         expected = {
             "SOURCE_NUMERIC_FIELDS_MISSING",
@@ -203,6 +202,24 @@ class SourceTruthContractTests(unittest.TestCase):
             "SOURCE_TRACEABILITY_BROKEN",
         }
         self.assertTrue(expected.issubset(codes), expected - codes)
+
+    def test_traceability_uses_forward_references_only(self) -> None:
+        payload = valid_payload()
+        record = payload["records"][0]
+        record["supports"] = ["C404"]
+        record["page_refs"] = ["p404"]
+
+        codes = {item.code for item in audit_source_truth(payload)}
+
+        self.assertNotIn("SOURCE_TRACEABILITY_BROKEN", codes)
+
+    def test_traceability_rejects_unknown_forward_reference(self) -> None:
+        payload = valid_payload()
+        payload["pages"][0]["source_refs"] = ["S404"]
+
+        codes = {item.code for item in audit_source_truth(payload)}
+
+        self.assertIn("SOURCE_TRACEABILITY_BROKEN", codes)
 
     def test_flags_type_status_conflict(self) -> None:
         payload = valid_payload()
