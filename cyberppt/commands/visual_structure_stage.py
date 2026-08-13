@@ -173,7 +173,8 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     for left, right in zip(reading_keys, reading_keys[1:]):
         graph_edges.append({"from": eid[left], "to": eid[right], "relation": relation, "label": "业务承接"})
         connectors.append({"from": eid[left], "to": eid[right], "type": relation, "direction": direction, "label": "业务承接", "main_chain": True})
-    source_ref = "、".join(str(value) for value in source.get("source_refs") or []) or page_id
+    trace_refs = [str(value).strip() for value in source.get("trace_refs") or [] if str(value).strip()]
+    source_ref = "、".join(trace_refs) or page_id
     evidence_units = [
         {
             "id": eid[key], "text": str(evidence_by_key[key].get("summary") or expected_text[0]),
@@ -204,7 +205,12 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         "connectors": connectors, "final_text": final_text,
         "generation_handoff": {"structural_guidance": {"source": "structural_decision", "additional_constraints": ["Use the selected business relationship field and its text attachment design; do not render instructions or internal text ids.", "Keep one visual focus and do not create an independent text wall or second summary structure."]}, "required_text_ids": expected_ids, "required_text": expected_text, "style_source_ref": "external style lock selected at final-script-pages", "title_exclusion_instruction": "Reserve page title and subtitle for the external PowerPoint text layer; do not render them in the body image."},
         "avoid": ["Do not map each body item to an isolated icon or decorative image.", "Do not create an independent text wall or second result chain."],
-        "qa": {"status": "passed", "score": 94, "blocking_issues": [], "warnings": []},
+        "qa": {
+            "status": "draft",
+            "score": 0,
+            "blocking_issues": [],
+            "warnings": ["Pending visual-structure audit; score is ungraded."],
+        },
     }
 
 
@@ -234,7 +240,7 @@ def execute_visual_structure_stage(project: Path, script: Path) -> dict[str, Pat
     if len(by_id) != len(sources) or {_page_id(item.get("page_id")) for item in sources} != set(by_id):
         _fail("visual design decisions do not cover the current input page set")
     pages = [_build_executable_page(source, by_id[_page_id(source.get("page_id"))]) for source in sources]
-    spec = {"schema_version": "1.1", "deck_id": project.name, "deck_title": str(project.name), "deck_context": {"audience": "项目既定受众", "purpose": "承接已确认业务脚本形成可执行页面视觉设计", "usage_scene": "正式汇报", "narrative": "每页以唯一业务关系场承载已锁定正文", "source_files": [str(design_input_path)]}, "global_profile": "ppt-visual-structure-designer", "content_lock": {"default_mode": "strict", "global_locked_terms": [], "global_forbidden_changes": ["不得改变锁定正文、事实、主体关系或边界"]}, "pages": pages, "deck_rhythm": {"density_pattern": "随页面业务关系复杂度变化", "visual_intent_sequence": [item['visual_decision']['visual_intent_type'] for item in pages], "repetition_control": "连续页面避免复用同一视觉意图和空间语法"}, "capacity_suggestions": [], "qa_summary": {"status": "passed", "average_score": round(sum(item['qa']['score'] for item in pages) / len(pages), 1), "blocking_issues": [], "warnings": []}}
+    spec = {"schema_version": "1.1", "deck_id": project.name, "deck_title": str(project.name), "deck_context": {"audience": "项目既定受众", "purpose": "承接已确认业务脚本形成可执行页面视觉设计", "usage_scene": "正式汇报", "narrative": "每页以唯一业务关系场承载已锁定正文", "source_files": [str(design_input_path)]}, "global_profile": "ppt-visual-structure-designer", "content_lock": {"default_mode": "strict", "global_locked_terms": [], "global_forbidden_changes": ["不得改变锁定正文、事实、主体关系或边界"]}, "pages": pages, "deck_rhythm": {"density_pattern": "随页面业务关系复杂度变化", "visual_intent_sequence": [item['visual_decision']['visual_intent_type'] for item in pages], "repetition_control": "连续页面避免复用同一视觉意图和空间语法"}, "capacity_suggestions": [], "qa_summary": {"status": "draft", "average_score": 0, "blocking_issues": [], "warnings": ["Pending visual-structure audit; average score is ungraded."]}}
     json_path, markdown_path = project / VISUAL_FILES["spec_json"], project / VISUAL_FILES["spec_markdown"]
     write_json_atomic(json_path, spec)
     markdown_path.write_text(_render_visual_structure_markdown(spec) + "\n", encoding="utf-8")
@@ -262,6 +268,10 @@ def _write_visual_design_input(project: Path, handoff: Path) -> Path:
                 "locked_on_screen_text": page.get("onscreen_text"),
                 "locked_on_screen_items": page.get("onscreen_items") or [],
                 "locked_text_items": visual.get("locked_text_items") or [],
+                "trace_refs": list(dict.fromkeys([
+                    *[str(value) for value in page.get("source_refs") or [] if str(value)],
+                    *[str(value) for value in page.get("boundary_source_refs") or [] if str(value)],
+                ])),
                 "onscreen_expression": (
                     visual.get("onscreen_expression")
                     or page.get("onscreen_expression")
@@ -367,8 +377,8 @@ def _write_skill_request(project: Path, script: Path, design_input: Path) -> Pat
             "content_lock": "strict",
             "relationship_authority": "business_relationships",
             "author_visual_notes_authority": "advisory_only",
-            "required_outputs": [
-                VISUAL_FILES["decisions"].as_posix(),
+            "required_outputs": [VISUAL_FILES["decisions"].as_posix()],
+            "compiler_outputs": [
                 VISUAL_FILES["spec_json"].as_posix(),
                 VISUAL_FILES["spec_markdown"].as_posix(),
             ],
@@ -395,6 +405,17 @@ def prepare_visual_structure_stage(
         if not handoff.is_file():
             raise FileNotFoundError(
                 "reuse_current_handoff requires an existing Stage 02 handoff"
+            )
+        from cyberppt.stage02_handoff import audit_stage02_handoff
+
+        report = audit_stage02_handoff(project)
+        if report.get("status") != "passed":
+            codes = ", ".join(
+                item.get("code", "HANDOFF_INVALID")
+                for item in report.get("blocking_issues", [])
+            )
+            raise ValueError(
+                f"reuse_current_handoff requires a current Stage 02 handoff: {codes}"
             )
     else:
         report = prepare_stage02_handoff(
@@ -432,13 +453,11 @@ def prepare_visual_structure_stage(
                 "",
                 "## Required action",
                 "",
-                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. Treat onscreen_expression as a required reading-relation and balance constraint: it governs peer hierarchy, progression, correspondence, feedback or causal direction; it must never be converted directly into a fixed card, column, arrow, loop, pyramid or matrix template. For every page, record stage01_visual_note_disposition with inherited, adjusted and rejected feature lists plus reasons, and record onscreen_expression_disposition with the received form, the chosen reading relation, and the balance strategy. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Generate and compare at least three materially different candidates per content page; deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write:",
+                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. trace_refs are audit-only provenance: use them to justify decisions but never copy them into visual copy or ImageGen prompt material. Treat onscreen_expression as a required reading-relation and balance constraint: it governs peer hierarchy, progression, correspondence, feedback or causal direction; it must never be converted directly into a fixed card, column, arrow, loop, pyramid or matrix template. For every page, record stage01_visual_note_disposition with inherited, adjusted and rejected feature lists plus reasons, and record onscreen_expression_disposition with the received form, the chosen reading relation, and the balance strategy. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Generate and compare at least three materially different candidates per content page; deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write only:",
                 "",
                 "- `visual/visual-design-decisions.json`",
-                "- `visual/deck-visual-spec.json`",
-                "- `visual/script-visual-structure.md`",
                 "",
-                "After the Skill has actually produced these files, record the execution with `python -m cyberppt record-visual-structure-execution <project> --script <script> --executor <surface> --model <model>`, then run `visual-structure-audit`. The audit, not the Skill, rebuilds generation-prompts.md from the current validated package.",
+                "After the Skill has actually produced that decision receipt, run `python -m cyberppt execute-visual-structure <project> --script <script>` to compile `deck-visual-spec.json` and `script-visual-structure.md`; then record the execution with `python -m cyberppt record-visual-structure-execution <project> --script <script> --executor <surface> --model <model>`, and run `visual-structure-audit`. The audit, not the Skill, rebuilds generation-prompts.md from the current validated package.",
                 "",
                 "Do not select a visual style, generate images, SVG, HTML, or PPTX in this stage.",
                 "",
@@ -498,6 +517,8 @@ def record_visual_structure_execution(
             "visual_design_input": str(design_input),
             "visual_design_input_sha256": _sha256(design_input),
             "page_ids": page_ids,
+            "skill_outputs": ["decisions"],
+            "compiler_outputs": ["spec_json", "spec_markdown"],
             "artifact_sha256": {key: _sha256(path) for key, path in artifact_paths.items()},
             "executed_at": _utc_now(),
             "note": note.strip(),
@@ -541,6 +562,16 @@ def _audit_execution_receipt(
     for field, value in expected.items():
         if receipt.get(field) != value:
             issue("EXECUTION_RECEIPT_STALE", f"Execution receipt {field} is stale.")
+    if receipt.get("skill_outputs") != ["decisions"]:
+        issue(
+            "EXECUTION_RECEIPT_OUTPUT_OWNERSHIP_INVALID",
+            "Execution receipt must record visual-design-decisions.json as the only Skill output.",
+        )
+    if receipt.get("compiler_outputs") != ["spec_json", "spec_markdown"]:
+        issue(
+            "EXECUTION_RECEIPT_OUTPUT_OWNERSHIP_INVALID",
+            "Execution receipt must record the visual spec JSON and Markdown as compiler outputs.",
+        )
     receipt_contracts = receipt.get("skill_contract_sha256")
     if receipt_contracts != contracts:
         issue("EXECUTION_RECEIPT_CONTRACT_STALE", "Execution receipt is not bound to the current Skill contract files.")

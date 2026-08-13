@@ -7,10 +7,15 @@ import json
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from cyberppt.artifact_ledger import write_json_atomic
 from cyberppt.script_quality_contract import ScriptPage, parse_script_path
+from cyberppt.semantic_digest import (
+    outline_semantic_digest,
+    script_semantic_digest,
+    source_truth_semantic_digest,
+)
 from cyberppt.onscreen_expression import VALID_EXPRESSION_FORMS, resolve_onscreen_expression
 
 
@@ -20,6 +25,7 @@ HANDOFF_MD = HANDOFF_DIR / "stage02-handoff-review.md"
 HANDOFF_AUDIT = HANDOFF_DIR / "stage02-handoff-audit.json"
 SCRIPT_PATH = Path("workbench/scripts/final/script-final.md")
 OUTLINE_PATH = Path("workbench/stages/01-analysis/outline.json")
+SOURCE_TRUTH_PATH = Path("workbench/stages/01-analysis/source-truth.json")
 BODY_CANVAS = {"width": 2048, "height": 1024, "ratio": "2:1"}
 
 
@@ -46,19 +52,22 @@ def _compact(value: object) -> str:
     return re.sub(r"\s+", "", str(value or ""))
 
 
-def _file_binding(path: Path) -> dict[str, str]:
+def _file_binding(path: Path, semantic_digest: Callable[[Path], str]) -> dict[str, str]:
     path = path.expanduser().resolve()
     if not path.is_file():
         raise FileNotFoundError(f"required Stage 02 handoff source is missing: {path}")
     return {
         "path": str(path),
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "semantic_sha256": semantic_digest(path),
     }
 
 
-def _source_binding(project: Path, relative: Path) -> dict[str, str]:
+def _source_binding(
+    project: Path, relative: Path, semantic_digest: Callable[[Path], str]
+) -> dict[str, str]:
     path = (project / relative).resolve()
-    return _file_binding(path)
+    return _file_binding(path, semantic_digest)
 
 
 def _handoff_authority(payload: dict[str, Any]) -> dict[str, Any]:
@@ -277,8 +286,11 @@ def build_stage02_handoff(
         )
 
     bindings = {
-        "script": _file_binding(script),
-        "outline": _source_binding(project, OUTLINE_PATH),
+        "script": _file_binding(script, script_semantic_digest),
+        "outline": _source_binding(project, OUTLINE_PATH, outline_semantic_digest),
+        "source_truth": _source_binding(
+            project, SOURCE_TRUTH_PATH, source_truth_semantic_digest
+        ),
     }
     from cyberppt.commands.script_audit import run_script_audit
 
@@ -368,7 +380,55 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
     if not isinstance(bindings, dict):
         issue("HANDOFF_BINDINGS_MISSING", "Source bindings are missing.")
         bindings = {}
+    expected_bindings: dict[str, tuple[Path | None, Callable[[Path], str]]] = {
+        "script": (None, script_semantic_digest),
+        "outline": ((project / OUTLINE_PATH).resolve(), outline_semantic_digest),
+    }
+    source_truth = (project / SOURCE_TRUTH_PATH).resolve()
+    if source_truth.is_file():
+        expected_bindings["source_truth"] = (source_truth, source_truth_semantic_digest)
+
+    for name, (expected_path, semantic_digest) in expected_bindings.items():
+        binding = bindings.get(name)
+        if not isinstance(binding, dict) or not binding.get("path"):
+            issue(
+                "HANDOFF_BINDING_STALE",
+                f"Binding {name} is absent or incomplete for the current Stage 01 authority.",
+            )
+            continue
+        path = Path(str(binding["path"])).expanduser().resolve()
+        if name == "script":
+            expected_path = path
+        if not path.is_file():
+            issue("HANDOFF_BINDING_MISSING", f"Binding {name} is missing: {path}")
+            continue
+        if expected_path is not None and path != expected_path:
+            issue(
+                "HANDOFF_BINDING_STALE",
+                f"Binding {name} path changed: recorded {path}, current {expected_path}.",
+            )
+            continue
+        current_sha256 = hashlib.sha256(path.read_bytes()).hexdigest()
+        try:
+            current_semantic_sha256 = semantic_digest(path)
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            issue(
+                "HANDOFF_BINDING_STALE",
+                f"Binding {name} semantic digest cannot be read from {path}: {exc}",
+            )
+            continue
+        if (
+            binding.get("sha256") != current_sha256
+            or binding.get("semantic_sha256") != current_semantic_sha256
+        ):
+            issue(
+                "HANDOFF_BINDING_STALE",
+                f"Binding {name} sha256 or semantic_sha256 differs from the current file: {path}",
+            )
+
     for name, binding in bindings.items():
+        if name in expected_bindings:
+            continue
         if not isinstance(binding, dict) or not binding.get("path"):
             issue("HANDOFF_BINDING_INVALID", f"Binding {name} is incomplete.")
             continue

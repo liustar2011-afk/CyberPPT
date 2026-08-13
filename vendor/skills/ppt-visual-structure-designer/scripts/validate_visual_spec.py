@@ -376,9 +376,11 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
                 f"Style implementation detail must come from style_source_ref, not structural fields: {match.group(0)}",
                 n,
             )
-    if page.get("qa", {}).get("score", 0) < 80:
+    qa = page.get("qa", {})
+    qa_status = str(qa.get("status") or "draft") if isinstance(qa, dict) else "draft"
+    if qa_status in {"reviewed", "passed"} and qa.get("score", 0) < 80:
         add(issues, "error", "qa_score", "QA score below 80", n)
-    elif page.get("qa", {}).get("score", 0) < 90:
+    elif qa_status in {"reviewed", "passed"} and qa.get("score", 0) < 90:
         add(issues, "warning", "qa_score", "QA score below direct-generation threshold 90", n)
 
 

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -13,12 +15,15 @@ from cyberppt.commands.visual_structure_stage import (
     _sha256,
     _skill_root,
     _write_visual_design_input,
+    _write_skill_request,
     assert_visual_structure_ready,
+    prepare_visual_structure_stage,
     visual_structure_required,
 )
 from cyberppt.stage02_handoff import audit_stage02_handoff
 from cyberppt.stage02_handoff import _page_record
 from cyberppt.script_quality_contract import ScriptPage
+from cyberppt.semantic_digest import outline_semantic_digest, script_semantic_digest
 
 
 class VisualStructureStageTests(unittest.TestCase):
@@ -42,7 +47,67 @@ class VisualStructureStageTests(unittest.TestCase):
             page = json.loads(output.read_text(encoding="utf-8"))["pages"][0]
         self.assertEqual("framework_4", page["onscreen_expression"]["form"])
         self.assertNotIn("layout", page["onscreen_expression"])
-        self.assertNotIn("source_refs", page)
+        self.assertEqual(["S001"], page["trace_refs"])
+
+    def test_trace_refs_are_audit_only_and_compilation_is_ungraded(self) -> None:
+        source = {
+            "page_id": "p01", "page_number": 1, "page_title": "Title",
+            "argument_role": "content", "page_mission": "Mission",
+            "core_judgment": "Judgment", "trace_refs": ["TRACE-ONLY-001"],
+            "locked_text_items": [{"text_id": "P01-T01", "text": "Locked text"}],
+            "business_relationships": [{"subject": "Input", "relation": "supports", "objects": ["Result"]}],
+            "body_image_canvas": {"width": 2048, "height": 1024, "ratio": "2:1"},
+            "title_render_mode": "external_text_layer", "subtitle_render_mode": "external_text_layer",
+        }
+        decision = {
+            "page_id": "p01",
+            "evidence_units": [{"key": "e1", "summary": "Evidence", "text_ids": ["P01-T01"]}],
+            "candidates": [
+                {"id": f"c{index}", "semantic_focus": {"evidence_key": "e1"},
+                 "reading_sequence": ["e1"], "spatial_grammar": ["path"],
+                 "direction": "left_to_right", "visual_intent_type": "relationship_field"}
+                for index in range(1, 4)
+            ],
+            "selected_candidate": "c1",
+            "execution_design": {
+                "business_object": "Input to Result relationship", "visual_focus": "Result",
+                "text_integration_method": "Attach text to Result", "spatial_organization": "Input flows to Result",
+                "relationship_encoding": "Show Input supporting Result",
+            },
+        }
+        page = _build_executable_page(source, decision)
+        self.assertEqual("TRACE-ONLY-001", page["evidence_units"][0]["source_ref"])
+        self.assertEqual("draft", page["qa"]["status"])
+        self.assertEqual(0, page["qa"]["score"])
+        with tempfile.TemporaryDirectory() as directory:
+            spec = Path(directory) / "deck.json"
+            prompt = Path(directory) / "prompt.md"
+            spec.write_text(json.dumps({"pages": [page]}, ensure_ascii=False), encoding="utf-8")
+            subprocess.run(
+                [sys.executable, str(_skill_root() / "scripts" / "build_generation_prompt.py"), str(spec), "--output", str(prompt)],
+                check=True,
+            )
+            self.assertNotIn("TRACE-ONLY-001", prompt.read_text(encoding="utf-8"))
+
+    def test_skill_request_assigns_specs_to_the_compiler(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory)
+            script = project / "script.md"
+            script.write_text(
+                "## 第1页：Title\n- 页面类型：内容页\n- 页面标题：Title\n"
+                "- 核心结论：Message\n- 完整文字稿：Prose\n- 上屏文字：\n  - Text\n",
+                encoding="utf-8",
+            )
+            design_input = project / VISUAL_FILES["design_input"]
+            design_input.parent.mkdir()
+            design_input.write_text("{}", encoding="utf-8")
+            request = json.loads(_write_skill_request(project, script, design_input).read_text(encoding="utf-8"))
+
+        self.assertEqual(["visual/visual-design-decisions.json"], request["required_outputs"])
+        self.assertEqual(
+            ["visual/deck-visual-spec.json", "visual/script-visual-structure.md"],
+            request["compiler_outputs"],
+        )
 
     def test_executable_spec_rejects_more_than_seven_evidence_nodes(self) -> None:
         source = {
@@ -166,7 +231,7 @@ class VisualStructureStageTests(unittest.TestCase):
         self.assertEqual(["p06-U01"], record["consumed_content_unit_ids"])
         self.assertEqual("Outline mission", record["stage02_visual_input"]["page_mission"])
 
-    def test_handoff_audit_ignores_source_hash_drift(self) -> None:
+    def test_handoff_audit_reports_source_hash_drift(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             project = Path(directory) / "project"
             project.mkdir()
@@ -216,8 +281,33 @@ class VisualStructureStageTests(unittest.TestCase):
 
             report = audit_stage02_handoff(project, payload)
 
-        self.assertEqual("passed", report["status"])
-        self.assertNotIn("handoff_sha256", report)
+        self.assertEqual("failed", report["status"])
+        self.assertIn("HANDOFF_BINDING_STALE", {item["code"] for item in report["blocking_issues"]})
+
+    def test_prepare_reuse_rejects_a_stale_handoff_before_writing_visual_input(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory)
+            script = project / "script.md"
+            script.write_text(
+                "## 第1页：Title\n- 页面类型：内容页\n- 页面标题：Title\n"
+                "- 核心结论：Message\n- 完整文字稿：Prose\n- 上屏文字：\n  - Text\n",
+                encoding="utf-8",
+            )
+            handoff = project / "workbench" / "stages" / "02-handoff" / "stage02-handoff.json"
+            handoff.parent.mkdir(parents=True)
+            handoff.write_text(
+                json.dumps({
+                    "schema": "cyberppt.stage02_handoff.v1",
+                    "source_bindings": {"script": {"path": str(script), "sha256": "0" * 64, "semantic_sha256": "0" * 64}},
+                    "pages": [],
+                }),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "HANDOFF_BINDING_STALE"):
+                prepare_visual_structure_stage(project, script, reuse_current_handoff=True)
+
+            self.assertFalse((project / VISUAL_FILES["design_input"]).exists())
 
     def test_existing_project_with_visual_artifacts_requires_gate(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -246,13 +336,28 @@ class VisualStructureStageTests(unittest.TestCase):
                 "  - Text\n",
                 encoding="utf-8",
             )
+            stage01 = project / "workbench" / "stages" / "01-analysis"
+            stage01.mkdir(parents=True)
+            outline = stage01 / "outline.json"
+            outline.write_text('{"schema":"outline.v1","pages":[]}', encoding="utf-8")
             handoff = project / "workbench" / "stages" / "02-handoff" / "stage02-handoff.json"
             handoff.parent.mkdir(parents=True)
             handoff.write_text(
                 json.dumps(
                     {
                         "schema": "cyberppt.stage02_handoff.v1",
-                        "source_bindings": {"script": {"path": str(script)}},
+                        "source_bindings": {
+                            "script": {
+                                "path": str(script),
+                                "sha256": _sha256(script),
+                                "semantic_sha256": script_semantic_digest(script),
+                            },
+                            "outline": {
+                                "path": str(outline),
+                                "sha256": _sha256(outline),
+                                "semantic_sha256": outline_semantic_digest(outline),
+                            },
+                        },
                         "pages": [
                             {
                                 "page_id": "p01",
@@ -332,7 +437,7 @@ class VisualStructureStageTests(unittest.TestCase):
                 "  - Changed text\n",
                 encoding="utf-8",
             )
-            with self.assertRaisesRegex(ValueError, "prompt inputs changed"):
+            with self.assertRaisesRegex(ValueError, "HANDOFF_BINDING_STALE"):
                 assert_visual_structure_ready(project, script)
 
 

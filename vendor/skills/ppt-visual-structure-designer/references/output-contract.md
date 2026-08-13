@@ -176,7 +176,7 @@ CyberPPT工作台的`visual-design-input.json`使用以下权威边界：
 - `author_visual_notes`：低权重作者备注，固定版式和载体描述不得进入关系真值。
 - `locked_text_items`：带稳定`text_id`的正文唯一来源。
 
-工作台还要求`visual-design-decisions.json`保存每页至少三个结构候选、候选完整证据覆盖、评分维度与总分、选中候选、输入哈希，以及`stage01_visual_note_disposition`。该字段按`inherited`、`adjusted`、`rejected`三类记录上游建议特征和理由，使继承与改写可审计。正式执行回执由仓库命令生成并绑定执行器、模型、Skill包与产物哈希。
+工作台中Skill只要求生成`visual-design-decisions.json`，保存每页至少三个结构候选、候选完整证据覆盖、评分维度与总分、选中候选、输入哈希，以及`stage01_visual_note_disposition`。`trace_refs`仅用于审计追溯，执行器可将其写为证据单元的`source_ref`，但提示词构建器不得读取它。仓库`execute-visual-structure`唯一生成规格JSON和Markdown；正式执行回执由仓库命令生成并绑定执行器、模型、Skill包、决策回执和编译产物哈希。编译产物的`qa`与`qa_summary`初始为`draft`且未评分，实际审计结果以`validation-report.json`为准。
 
 结构指令不得在画面中显示。标题与副标题默认由外部PPT文字层处理，正文按用户指定的生图模式执行。字体、字号、颜色、线条、边框、形状、人物外观和媒介质感由`style_source_ref`对应的风格文件负责。
 

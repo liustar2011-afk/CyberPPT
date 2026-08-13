@@ -16,9 +16,9 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - 提取页面核心判断、证据单元、业务主体、业务关系和约束边界。
 - 将业务关系转换为空间关系、阅读路径、视觉层级和连接关系。
 - 为每页选择视觉意图类型、语义焦点、空间语法、图文归属和结构退化禁项。
-- 输出人读Markdown视觉脚本和机读JSON视觉规格。
-- 生成可直接传递给整页生图工具的构图提示模块。
-- 运行确定性校验，修复结构错误后再交付。
+- 在CyberPPT工作台模式只输出候选决策回执；仓库执行器负责生成Markdown视觉脚本和机读JSON视觉规格。
+- 不在工作台模式生成生图提示模块；正式审计器在当前合同通过后重建该模块。
+- 为决策回执运行所需的确定性自检，仓库审计器负责最终结构规格校验。
 
 禁止执行以下工作：
 
@@ -160,7 +160,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - `<原文件名>_视觉结构设计.json`：机器校验和后续自动化。
 - `<原文件名>_视觉结构校验.json`：校验结果。
 
-CyberPPT工作台模式还必须输出`visual/visual-design-decisions.json`，保留每页至少三项候选、完整证据覆盖、评分维度、选中候选及输入哈希。每页必须包含`stage01_visual_note_disposition`，分别记录`inherited`、`adjusted`、`rejected`的上游视觉特征及专业理由；不得用一句“已参考”代替逐项处置。Skill实际执行完毕后，由仓库命令记录执行器、模型、Skill包哈希和产物哈希；仅生成调用说明不视为执行完成。
+CyberPPT工作台模式只输出`visual/visual-design-decisions.json`，保留每页至少三项候选、完整证据覆盖、评分维度、选中候选及输入哈希。每页必须包含`stage01_visual_note_disposition`，分别记录`inherited`、`adjusted`、`rejected`的上游视觉特征及专业理由；不得用一句“已参考”代替逐项处置。`trace_refs`仅用于审计追溯，不得进入结构提示或上屏文字。随后由仓库`execute-visual-structure`命令唯一生成`deck-visual-spec.json`与`script-visual-structure.md`，并由仓库命令记录执行器、模型、Skill包和编译产物哈希；仅生成调用说明不视为执行完成。
 
 只处理单页时，可输出单页Markdown和单页JSON。
 
@@ -174,7 +174,7 @@ python3 scripts/build_generation_prompt.py <视觉规格.json> --output <生图�
 
 生成模块必须先给结构指令，再给上屏文字和外部风格来源引用；字段名和指令文字不得成为画面文字。结构模块本身不得复制风格规则。
 
-在CyberPPT工作台模式中，正式`visual-structure-audit`拥有提示词重建权；Skill只交付候选决策回执、JSON规格和Markdown规格，审计通过后再按当前Skill、构建器、输入与决策哈希重建提示词。
+在CyberPPT工作台模式中，正式`visual-structure-audit`拥有提示词重建权；Skill只交付候选决策回执，`execute-visual-structure`编译JSON规格和Markdown规格，审计通过后再按当前Skill、构建器、输入与决策哈希重建提示词。
 
 ### 8. 校验并修复
 
