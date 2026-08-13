@@ -55,7 +55,7 @@ class Stage01CompilerTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.project = Path(self.temporary.name) / "project"
-        init_project(self.project, lightweight=True)
+        init_project(self.project)
         (self.project / "source" / "material.md").write_text(
             "# 建设方案\n\n## 建设基础\n\n现有行业数据资源和专业能力构成首期建设基础。\n",
             encoding="utf-8",
@@ -289,7 +289,7 @@ class Stage01CompilerTests(unittest.TestCase):
     def test_lightweight_semantic_check_renders_review_from_canonical_model(self) -> None:
         self.assertFalse((self.project / SEMANTIC_ARTIFACT).exists())
 
-        code, report = run_semantic_understanding_audit(self.project, lightweight=True)
+        code, report = run_semantic_understanding_audit(self.project)
 
         self.assertEqual(0, code, report["issues"])
         review = (self.project / SEMANTIC_ARTIFACT).read_text(encoding="utf-8")
@@ -328,7 +328,7 @@ class Stage01CompilerTests(unittest.TestCase):
             {item.code for item in issues},
         )
         self.assertEqual("mechanical_draft", outline["editorial_authoring_status"])
-        self.assertEqual("consumption_manifest", outline["source_truth_mapping_mode"])
+        self.assertEqual("frozen", outline["source_truth_mapping_mode"])
         self.assertNotIn("retry", outline)
         self.assertEqual("ending", outline["pages"][-1]["page_type"])
         self.assertEqual(
@@ -391,7 +391,7 @@ class Stage01CompilerTests(unittest.TestCase):
         model_path = self.project / SEMANTIC_ARGUMENT_MODEL
         model_path.write_text(json.dumps(self.model, ensure_ascii=False, indent=2), encoding="utf-8")
 
-        code, report = run_semantic_understanding_audit(self.project, lightweight=True)
+        code, report = run_semantic_understanding_audit(self.project)
 
         self.assertEqual(4, code)
         self.assertIn(
@@ -411,7 +411,7 @@ class Stage01CompilerTests(unittest.TestCase):
         model_path = self.project / SEMANTIC_ARGUMENT_MODEL
         model_path.write_text(json.dumps(self.model, ensure_ascii=False, indent=2), encoding="utf-8")
 
-        code, report = run_semantic_understanding_audit(self.project, lightweight=True)
+        code, report = run_semantic_understanding_audit(self.project)
 
         self.assertEqual(4, code)
         self.assertIn(
@@ -428,20 +428,18 @@ class Stage01CompilerTests(unittest.TestCase):
         goal = "面向建设相关方说明现有基础并确认后续动作。"
 
         commands = (
-            ["compile-source-truth", str(self.project), "--lightweight"],
+            ["compile-source-truth", str(self.project)],
             [
                 "source-truth-audit",
                 str(self.project),
                 "--input",
                 str(self.project / "workbench/stages/01-analysis/source-truth.json"),
-                "--lightweight",
             ],
             [
                 "compile-outline-draft",
                 str(self.project),
                 "--communication-goal",
                 goal,
-                "--lightweight",
             ],
         )
         for argv in commands:
@@ -464,7 +462,6 @@ class Stage01CompilerTests(unittest.TestCase):
                 str(self.project),
                 "--input",
                 str(self.project / "workbench/stages/01-analysis/outline.json"),
-                "--lightweight",
             ],
             cwd=Path(__file__).resolve().parents[1],
             text=True,
@@ -492,28 +489,6 @@ class Stage01CompilerTests(unittest.TestCase):
             [],
             [relative for relative in forbidden if (self.project / relative).exists()],
         )
-
-    def test_compiler_cli_requires_explicit_lightweight_mode(self) -> None:
-        commands = (
-            ["compile-source-truth", str(self.project)],
-            [
-                "compile-outline-draft",
-                str(self.project),
-                "--communication-goal",
-                "说明建设基础。",
-            ],
-        )
-        for argv in commands:
-            completed = subprocess.run(
-                [sys.executable, "-m", "cyberppt", *argv],
-                cwd=Path(__file__).resolve().parents[1],
-                text=True,
-                capture_output=True,
-                encoding="utf-8",
-                check=False,
-            )
-            self.assertEqual(2, completed.returncode)
-            self.assertIn("requires --lightweight", completed.stderr)
 
     def test_outline_recompile_changes_only_the_outline_artifact(self) -> None:
         model_path = self.project / SEMANTIC_ARGUMENT_MODEL

@@ -44,7 +44,7 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("提出 2-3 个方向实质不同的交流目标选项", skill)
         self.assertIn("明确推荐一项", skill)
         self.assertIn("不得直接向用户抛出", skill)
-        self.assertIn("prepare-communication-strategy <project> --lightweight", skill)
+        self.assertIn("prepare-communication-strategy <project>", skill)
         self.assertIn("do not create approval", lite)
         self.assertIn("Do not create a script-hash-bound", lite)
         self.assertIn("2-3 materially", lite)
@@ -57,7 +57,7 @@ class SkillContractTests(unittest.TestCase):
 
         self.assertIn("`script-audit`", skill)
         self.assertIn(
-            "脚本审计未通过时不得批准脚本或进入 Stage 02",
+            "脚本审计未通过时不得进入 Stage 02",
             skill,
         )
         self.assertIn("章内推进", reference)
@@ -110,9 +110,8 @@ class SkillContractTests(unittest.TestCase):
 
         self.assertIn("一个完整业务问题和一个视觉中心", text)
         self.assertIn("不得把源材料每个小节或列表项机械拆成单页", text)
-        self.assertIn("默认最多 3 次", text)
         self.assertIn("换方向重写", text)
-        self.assertIn("不得直接放弃任务", text)
+        self.assertIn("不能沿原策略只做措辞修补", text)
 
     def test_full_image_ppt_is_default_stage02_production_mode(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")

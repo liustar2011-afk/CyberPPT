@@ -30,6 +30,7 @@ from cyberppt.script_quality_contract import (
     _prose_issues,
     _source_consumption_issues,
     _full_prose_source_coverage_issues,
+    _polarity_dropped_terms,
     _page_content_unit_coverage_issues,
     _visual_structure_judgment_issues,
     audit_script_quality,
@@ -367,6 +368,23 @@ class FullProseSourceCoverageTests(unittest.TestCase):
         )
         self.assertEqual([], issues)
 
+    def test_dropped_negation_marker_is_flagged_even_when_overlap_passes(self) -> None:
+        issues = _full_prose_source_coverage_issues(
+            self._page("原始数据经脱敏处理后可对外提供，支撑行业数据服务运营。"),
+            {"source_refs": ["ST001"]},
+            {"ST001": {"statement": "原始数据不得对外提供，仅经脱敏处理后的结果可支撑行业数据服务运营。"}},
+        )
+        codes = {item.code for item in issues}
+        self.assertIn("SOURCE_POLARITY_MISMATCH", codes)
+
+    def test_preserved_negation_marker_does_not_flag_polarity(self) -> None:
+        issues = _full_prose_source_coverage_issues(
+            self._page("原始数据不得对外提供，仅经脱敏处理后的结果可支撑行业数据服务运营。"),
+            {"source_refs": ["ST001"]},
+            {"ST001": {"statement": "原始数据不得对外提供，仅经脱敏处理后的结果可支撑行业数据服务运营。"}},
+        )
+        self.assertNotIn("SOURCE_POLARITY_MISMATCH", {item.code for item in issues})
+
     def test_atomic_content_unit_blocks_partial_prose_coverage(self) -> None:
         page = self._page("新型电力系统加快建设，跨主体协同需求增长。")
         issues = _page_content_unit_coverage_issues(
@@ -398,6 +416,29 @@ class FullProseSourceCoverageTests(unittest.TestCase):
             }]},
         )
         self.assertIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
+
+
+class PolarityDroppedTermsTests(unittest.TestCase):
+    def test_flags_prohibition_dropped_from_authored_text(self) -> None:
+        dropped = _polarity_dropped_terms(
+            "原始数据不得对外提供，仅经脱敏处理后的结果可支撑行业数据服务运营。",
+            "原始数据经脱敏处理后可对外提供，支撑行业数据服务运营。",
+        )
+        self.assertEqual(("不得",), dropped)
+
+    def test_no_flag_when_negation_marker_survives(self) -> None:
+        dropped = _polarity_dropped_terms(
+            "原始数据不得对外提供，仅经脱敏处理后的结果可支撑行业数据服务运营。",
+            "原始数据不得对外提供，仅经脱敏处理后的结果可支撑行业数据服务运营。",
+        )
+        self.assertEqual((), dropped)
+
+    def test_no_flag_when_source_has_no_negation_marker(self) -> None:
+        dropped = _polarity_dropped_terms(
+            "行业数据服务运营基础持续完善。",
+            "行业数据服务运营基础持续完善，能力显著提升。",
+        )
+        self.assertEqual((), dropped)
 
 
 class ProductionAuthoringGuardTests(unittest.TestCase):

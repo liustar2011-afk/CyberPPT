@@ -20,7 +20,6 @@ from cyberppt.commands.visual_structure_stage import (
     _sha256,
     _skill_root,
 )
-from cyberppt.stage01_controls import write_confirmation_request, write_stage01_approval
 from cyberppt.commands.script_gate import stage_script
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, render_prompt
 from scripts.dual_image_overlay.imagegen_handoff import build_page_prompt
@@ -432,6 +431,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             json.dumps(
                 {
                     "schema": "cyberppt.stage02_handoff.v1",
+                    "stage01_confirmation_mode": "interactive_lightweight_confirmation",
                     "source_bindings": {"script": {"path": str(script.resolve())}},
                     "pages": [
                         {
@@ -508,11 +508,12 @@ class FinalScriptPagesTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
-        write_confirmation_request(project, "script")
-        approvals = project / "workbench" / "approvals"
-        approvals.mkdir(parents=True, exist_ok=True)
-        (approvals / "stage01-outline-approved.md").write_text("# approved\n", encoding="utf-8")
-        write_stage01_approval(project, kind="script", note="test")
+        audit_patcher = patch(
+            "cyberppt.commands.script_audit.run_script_audit",
+            return_value=(0, {"status": "passed"}),
+        )
+        audit_patcher.start()
+        self.addCleanup(audit_patcher.stop)
         style_lock = write_project_style_lock(project=project, style_id=style_id, source_script=script)
         script_pages = {
             int(page.page_id[1:]): page
@@ -553,7 +554,13 @@ class FinalScriptPagesTests(unittest.TestCase):
             )
             self._approve_inputs_and_prompts(project, script)
 
-            summary = run_final_script_pages(project=project, script=script, pages_raw="7-8", style_id=4)
+            summary = run_final_script_pages(
+                project=project,
+                script=script,
+                pages_raw="7-8",
+                style_id=4,
+                lightweight_stage01_confirmed=True,
+            )
 
             manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
             lock = json.loads(Path(summary["artifacts"]["template_text_lock"]).read_text(encoding="utf-8"))
@@ -635,7 +642,12 @@ class FinalScriptPagesTests(unittest.TestCase):
             self._approve_inputs_and_prompts(project, script)
 
             with self.assertRaisesRegex(ValueError, "请选择一个 CyberPPT 默认视觉风格"):
-                run_final_script_pages(project=project, script=script, pages_raw="7")
+                run_final_script_pages(
+                    project=project,
+                    script=script,
+                    pages_raw="7",
+                    lightweight_stage01_confirmed=True,
+                )
 
     def test_rejects_markdown_style_lock_with_actionable_message(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -657,6 +669,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                     script=script,
                     pages_raw="1",
                     style_lock=style_lock,
+                    lightweight_stage01_confirmed=True,
                 )
 
     def test_production_build_runs_template_image_ppt_export(self) -> None:
@@ -676,6 +689,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                     pages_raw="1",
                     style_id=4,
                     production_build=True,
+                    lightweight_stage01_confirmed=True,
                 )
 
             command = run.call_args.args[0]
@@ -721,6 +735,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                     pages_raw="7",
                     style_id=5,
                     run_rebuild=True,
+                    lightweight_stage01_confirmed=True,
                 )
 
     def test_semantic_plan_dir_requires_editable_overlay_mode(self) -> None:
@@ -741,6 +756,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                     pages_raw="7",
                     style_id=5,
                     semantic_plan_dir=semantic_plan_dir,
+                    lightweight_stage01_confirmed=True,
                 )
 
     def test_triple_image_mode_builds_full_background_and_ocr_reference_manifest(self) -> None:
@@ -758,6 +774,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                 pages_raw="7",
                 style_id=4,
                 production_mode="editable-overlay-text-reference",
+                lightweight_stage01_confirmed=True,
             )
 
             manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
@@ -787,6 +804,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                     production_mode="editable-overlay-text-reference",
                     generate_images=True,
                     dry_run_images=True,
+                    lightweight_stage01_confirmed=True,
                 )
 
             calls = generate.call_args_list
@@ -817,6 +835,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                     style_id=4,
                     generate_images=True,
                     dry_run_images=True,
+                    lightweight_stage01_confirmed=True,
                 )
 
             append_ledger.assert_not_called()
@@ -848,6 +867,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                         pages_raw="7",
                         style_id=5,
                         production_build=True,
+                        lightweight_stage01_confirmed=True,
                     )
 
                 self.assertEqual(

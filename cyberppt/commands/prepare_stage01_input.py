@@ -1,25 +1,32 @@
-"""Compile deterministic Stage 01 authoring inputs."""
+"""Compile deterministic Stage 01 authoring inputs (lightweight path only)."""
 
 from __future__ import annotations
 
 import json
-import hashlib
 from pathlib import Path
 
-from cyberppt.communication_strategy import (
-    assert_communication_strategy_ready,
-    communication_strategy_binding_issues,
-)
 from cyberppt.semantic_understanding import (
     SEMANTIC_ARTIFACT,
     SEMANTIC_ARGUMENT_MODEL,
-    assert_semantic_understanding_ready,
 )
 from cyberppt.source_argument_model import load_model
-from cyberppt.storyline_director import (
-    assert_storyline_director_ready,
-    storyline_director_authoring_contract,
-)
+
+
+def storyline_director_authoring_contract() -> str:
+    return "\n".join(
+        [
+            "You are the Outline Director. Do not create pages. First define the directed story that the Outline author must follow.",
+            "The source is evidence, not a page inventory. Select and organize evidence around the approved theme and decision destination; preserve all traceability but never give every source item equal narrative or visual weight.",
+            "Treat `source_logic_focused` as a named storyline-route candidate whenever the source has an explicit argument sequence. This route preserves the source-native thesis and major section progression, then selectively compresses repetition, subordinate evidence, inventories, and execution detail inside that progression; it is focused compression, not one page per source section.",
+            "Recommend `source_logic_focused` for first introductions, overview briefings, explanatory peer exchanges, or other goals whose intended outcome is understanding rather than a required approval, cooperation commitment, or immediate action. Audience questions may clarify relevance, but they must not replace the source progression with an action, conversion, or decision funnel.",
+            "Do not select `source_logic_focused` automatically. Compare it with genuinely different audience-led or decision-led routes, and prefer another route when the approved communication goal explicitly requires reordering around a decision or action.",
+            "Separate frontstage communication from backstage strategy. Visible story beats, chapter questions, and the communication destination must follow the approved frontstage purpose and audience action. The backstage intent may guide selection but must not become a visible approval request or decision-seeking headline.",
+            "Every chapter must answer one question and hand a necessary unresolved question to the next chapter. Every future page must have one storyline role, one self-contained core meaning, and explicit transitions from the preceding page and to the following page.",
+            "Do not promote generic value, constraints, boundaries, background, or technical inventories into the main line unless they are the actual subject of the approved communication strategy.",
+            "Use the source argument model's explicit `argument_weight` as the authority for narrative importance. `core` means an independent source proposition and must remain a visible story beat; `supporting`, `detail`, and `constraint` describe subordinate material. A semantic relation explains how propositions connect and has `weight_effect=none`; it never changes either endpoint's argument weight or role. Determine the story beat from the approved proposition, not from a project-specific keyword or a generic layer label.",
+            "Treat `editorial_hypothesis` entries only as candidates. A candidate framing may be selected, rejected, or tested here, but it may not be relabeled as source-explicit, overwrite the source thesis, or retroactively change Stage 00.",
+        ]
+    )
 
 
 def _load(path: Path) -> dict[str, object]:
@@ -31,59 +38,6 @@ def _load(path: Path) -> dict[str, object]:
     return payload
 
 
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest().lower()
-
-
-def _ensure_page_script_authoring(
-    project: Path,
-    outline_path: Path,
-    pages: list[dict[str, object]],
-) -> Path:
-    """Create an explicit page-authoring contract when a project lacks one.
-
-    The compiler consumes this JSON artifact.  Markdown remains a reviewable
-    authoring input, while the JSON carries the exact content-unit consumption
-    declaration and the outline binding used for stale-artifact detection.
-    """
-
-    path = project / "workbench/scripts/page-script-authoring.json"
-    if path.exists():
-        return path
-    payload = {
-        "schema": "cyberppt.page_script_authoring.v1",
-        "project": project.name,
-        "outline_sha256": _sha256(outline_path),
-        "pages": {
-            str(page["page_id"]): {
-                "subtitle": str(page.get("subtitle") or ""),
-                "prose": "",
-                "selection": ["", "", ""],
-                "onscreen": "",
-                "visual": "",
-                "notes": "",
-                "consumes": [
-                    str(unit["unit_id"])
-                    for unit in page.get("content_units", [])
-                    if isinstance(unit, dict)
-                    and unit.get("role") != "boundary"
-                    and unit.get("unit_id")
-                ],
-            }
-            for page in pages
-            if page.get("page_id")
-        },
-    }
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
-    temporary.replace(path)
-    return path
-
-
 def _records(project: Path) -> dict[str, dict[str, object]]:
     truth = _load(project / "workbench/stages/01-analysis/source-truth.json")
     return {
@@ -93,28 +47,16 @@ def _records(project: Path) -> dict[str, dict[str, object]]:
     }
 
 
-def prepare_outline_input(
-    project: Path,
-    *,
-    lightweight: bool = False,
-    communication_goal: str = "",
-) -> Path | str:
+def prepare_outline_input(project: Path, *, communication_goal: str = "") -> str:
     project = project.expanduser().resolve()
-    if lightweight and not communication_goal.strip():
-        raise ValueError("--communication-goal is required with --lightweight")
-    semantic_gate = None if lightweight else assert_semantic_understanding_ready(project)
-    communication_gate = None if lightweight else assert_communication_strategy_ready(project)
-    director_gate = None if lightweight else assert_storyline_director_ready(project)
-    argument_model = None
-    if lightweight:
-        model_path = project / SEMANTIC_ARGUMENT_MODEL
-        if not model_path.is_file():
-            raise FileNotFoundError(
-                "lightweight Outline preparation requires semantic-argument-model.json"
-            )
-        argument_model = load_model(model_path)
-    elif semantic_gate is not None and semantic_gate.get("semantic_argument_model_sha256"):
-        argument_model = load_model(project / SEMANTIC_ARGUMENT_MODEL)
+    if not communication_goal.strip():
+        raise ValueError("--communication-goal is required")
+    model_path = project / SEMANTIC_ARGUMENT_MODEL
+    if not model_path.is_file():
+        raise FileNotFoundError(
+            "lightweight Outline preparation requires semantic-argument-model.json"
+        )
+    argument_model = load_model(model_path)
     truth = _load(project / "workbench/stages/01-analysis/source-truth.json")
     records = {
         str(item.get("id")): item
@@ -125,19 +67,9 @@ def prepare_outline_input(
         "# Outline authoring input",
         "",
         "The whole-document semantic understanding below is the authoritative upstream constraint. Do not replace its business subject, source structure, actors, status distinctions, or decision intent with a generic PPT storyline.",
-        *(
-            [
-                "The Outline must consume the semantic argument model below. Do not rebuild the source thesis from evidence records.",
-                "Source Truth is the factual authority. Keep page-to-evidence mappings in the Outline consumption fields; never write page assignments back into Source Truth records.",
-                "Do not add approval, hash, receipt, retry, attempt, escalation, ledger, or freshness-control fields in lightweight mode.",
-            ]
-            if lightweight
-            else [
-                "The Outline root must copy `semantic_understanding_sha256`, `semantic_source_bundle_sha256`, and, when present, `semantic_source_map_bundle_sha256` from the current semantic gate.",
-                "The Outline must also copy `semantic_argument_model_sha256` and consume the source argument model below. Do not rebuild the source thesis from evidence records.",
-                "Source Truth is frozen after the Source Truth stage. Set `source_truth_mapping_mode` to `consumption_manifest`; record `source_truth_semantic_sha256` and `source_consumption_semantic_sha256` as the authority bindings, while retaining the corresponding raw SHA-256 fields only as byte receipts. Write page-to-evidence mappings only to the independent `source_consumption_manifest`; never write page assignments back into Source Truth records.",
-            ]
-        ),
+        "The Outline must consume the semantic argument model below. Do not rebuild the source thesis from evidence records.",
+        "Source Truth is the factual authority. Keep page-to-evidence mappings in the Outline consumption fields; never write page assignments back into Source Truth records.",
+        "Do not add approval, hash, receipt, retry, attempt, escalation, ledger, or freshness-control fields.",
         "",
         "Before planning pages, preserve the Stage 00 source argument model `document_semantics` and the Source Truth copy: `document_role` says what artifact is being presented; `subject_of_report` says what the presentation is about; `primary_thesis` is the deck-level conclusion; `decision_boundary` limits its maturity; `author_purpose` states what the author is trying to advance; `argument_method` and `supporting_basis` explain how the source argues for that purpose.",
         "Source Truth must be built by reverse coverage from the Stage 00 semantic model. For every protected semantic node (`core`, `constraint`, or a `supporting` subsection with its own heading and at least six evidence refs), create enough atomic Source Truth records to cover every stable `SU-*` evidence ref used by that node; one representative summary record is not complete coverage.",
@@ -175,138 +107,44 @@ def prepare_outline_input(
         "For every content page author `non_substitutable_value`, one governing `argument_chain`, grouped `evidence_roles` (`claim`, `reason`, `instance`, `boundary`, `trace_only`), and `excluded_from_onscreen`. Evidence coverage is not page necessity; broad relevance is not direct support.",
         "Run a deletion test for every onscreen-required unit: if removing it still leaves the audience question fully answered, demote it to full prose, notes, or trace-only. Appendix registration fields, material checklists, operating forms, and procedural inventories default to `excluded_from_onscreen` unless they directly determine the page judgment.",
         "Do not use audit errors to invent modules or duplicate anchors. First make the professional editorial decision, then use audit only to catch source drift, missing duties, false relations, hierarchy errors, and contract defects.",
-        *(
-            [
-                "Set root `storyline_contract_mode` to `required` and embed the selected storyline contract directly in `storyline`; do not create a separate Storyline Director artifact.",
-                "Set root `semantic_argument_model_mode` to `required`; consume Stage 00 node IDs, roles, weights, relations and gaps without hash binding.",
-            ]
-            if lightweight
-            else [
-                "Set root `storyline_contract_mode` to `required`. Copy `storyline_director_sha256` and the complete `storyline` contract from the current Storyline Director gate exactly.",
-                "Set root `semantic_argument_model_mode` to `required`; copy `semantic_argument_model_sha256` exactly from Stage 00.",
-            ]
-        ),
+        "Set root `storyline_contract_mode` to `required` and embed the selected storyline contract directly in `storyline`; do not create a separate Storyline Director artifact.",
+        "Set root `semantic_argument_model_mode` to `required`; consume Stage 00 node IDs, roles, weights, relations and gaps without hash binding.",
+        "",
+        "## selected_communication_goal",
+        "",
+        communication_goal.strip(),
+        "",
+        "Copy the selected goal exactly into the Outline root field `communication_goal`. Derive the concrete `audience`, `communication_purpose`, `decision_task`, `architecture_mode`, `architecture_reason`, and `structure_principle` from that selected goal and the source. `architecture_reason` is required and must explain why the selected architecture fits the material and communication goal; solution is the default architecture for formal proposal material unless the selected goal explicitly requires consulting argumentation, in which case the reason must identify that explicit request.",
+        "Every chapter question, page audience_question, evidence choice and closing action must visibly serve this goal. Do not silently switch audience or turn a peer-exchange goal into an approval request.",
+        "",
+        "## embedded_storyline_director_reasoning",
+        "",
+        storyline_director_authoring_contract(),
+        "",
+        "Before authoring the Outline, compare 2-3 genuinely different source-supported storyline routes for this communication goal. For each route state its audience logic, evidence selection, chapter progression, strengths, and risks. Select and explain one recommended route, then encode only that route in the Outline `storyline` contract.",
+        "Apply the named route guidance above: when the source has an explicit argument sequence, include `source_logic_focused` among the candidates and recommend it for introduction- or understanding-led communication unless the selected goal explicitly requires decision/action reordering.",
+        "The final Outline is a selective argument, not a directory of source sections. Preserve every source fact in traceability where needed, but give page-forming weight only to the chosen route and the semantic model's P0/core propositions.",
+        "Present the completed chapter/page Outline to the user for review before page-detail authoring.",
         "",
     ]
-    if lightweight:
-        lines += [
-            "## selected_communication_goal",
-            "",
-            communication_goal.strip(),
-            "",
-            "Copy the selected goal exactly into the Outline root field `communication_goal`. Derive the concrete `audience`, `communication_purpose`, `decision_task`, `architecture_mode`, `architecture_reason`, and `structure_principle` from that selected goal and the source. `architecture_reason` is required and must explain why the selected architecture fits the material and communication goal; solution is the default architecture for formal proposal material unless the selected goal explicitly requires consulting argumentation, in which case the reason must identify that explicit request.",
-            "Every chapter question, page audience_question, evidence choice and closing action must visibly serve this goal. Do not silently switch audience or turn a peer-exchange goal into an approval request.",
-            "",
-            "## embedded_storyline_director_reasoning",
-            "",
-            storyline_director_authoring_contract(),
-            "",
-            "Before authoring the Outline, compare 2-3 genuinely different source-supported storyline routes for this communication goal. For each route state its audience logic, evidence selection, chapter progression, strengths, and risks. Select and explain one recommended route, then encode only that route in the Outline `storyline` contract.",
-            "Apply the named route guidance above: when the source has an explicit argument sequence, include `source_logic_focused` among the candidates and recommend it for introduction- or understanding-led communication unless the selected goal explicitly requires decision/action reordering.",
-            "The final Outline is a selective argument, not a directory of source sections. Preserve every source fact in traceability where needed, but give page-forming weight only to the chosen route and the semantic model's P0/core propositions.",
-            "Present the completed chapter/page Outline to the user for review before page-detail authoring.",
-            "",
-        ]
-    if communication_gate is not None:
-        selected = communication_gate["selected_option"]
-        posture_fields = [
-            "frontstage_purpose",
-            "backstage_intent",
-            "interaction_posture",
-            "explicit_audience_action",
-            "forbidden_frontstage_frames",
-        ]
-        lines += [
-            "## approved_communication_strategy",
-            "",
-            "The following human-approved communication strategy determines the Outline structure. Copy every named root field exactly; do not silently choose another audience or reporting direction.",
-            f"- communication_strategy_sha256: {communication_gate['communication_strategy_sha256']}",
-            f"- audience: {communication_gate['audience']}",
-            f"- communication_purpose: {communication_gate['communication_purpose']}",
-            f"- decision_task: {communication_gate['decision_task']}",
-            f"- reporting_direction: {communication_gate['option_id']}",
-            f"- user_decision_id: {communication_gate.get('user_decision_id', '')}",
-            f"- architecture_mode: {selected['architecture_mode']}",
-            f"- structure_principle: {selected['structure_principle']}",
-            *[
-                f"- {field}: " + (
-                    json.dumps(communication_gate.get(field), ensure_ascii=False)
-                    if isinstance(communication_gate.get(field), (list, dict))
-                    else str(communication_gate.get(field) or "")
-                )
-                for field in posture_fields
-                if communication_gate.get(field) not in (None, "", [])
-            ],
-            "- audience_concerns: " + json.dumps(
-                communication_gate.get("audience_concerns", []),
-                ensure_ascii=False,
-            ),
-            "",
-            "Use `structure_principle` to determine chapter order. Source truth still controls meaning and evidence; the approved strategy controls how that meaning is organized for this audience.",
-            "Visible agenda, chapter titles, page titles, audience questions, and closing language must follow `frontstage_purpose` and `explicit_audience_action`. `backstage_intent` is not a visible story beat and must never be turned into an approval request, decision headline, or closing call to action.",
-            "Copy all supplied posture fields to the Outline root exactly. None of the literal `forbidden_frontstage_frames` may appear in visible or editorial page fields.",
-            "",
-        ]
-    if director_gate is not None:
-        lines += [
-            "## authoritative_storyline_director",
-            "",
-            "The Outline Director has already organized the approved semantic understanding for this audience. It is authoritative only for evidence selection and ordering; it may not replace source subject, source chapter missions, actor roles, status distinctions, or forbidden inferences.",
-            f"- storyline_director_sha256: {director_gate['storyline_director_sha256']}",
-            "- storyline: " + json.dumps(director_gate["outline_contract"], ensure_ascii=False),
-            "",
-            "Each content page must add `storyline_role`, `transition_from_previous`, and `transition_to_next`. These fields must explain a source-supported relation; generic wording such as 承上启下 is invalid.",
-            "Each content page must add `audience_concern_ids` and `audience_relevance`. Copy only IDs from the approved concern contract and explain why the selected audience needs this page.",
-            "Use Source Truth as evidence selected for the page mission, not as a list of page candidates. Full traceability may live in detail_refs without earning on-screen or page-level weight.",
-            "",
-        ]
-    if semantic_gate is not None:
-        semantic_text = (project / SEMANTIC_ARTIFACT).read_text(encoding="utf-8-sig")
-        lines += [
-            "## semantic_gate_binding",
-            "",
-            f"- semantic_understanding_sha256: {semantic_gate['semantic_understanding_sha256']}",
-            f"- semantic_source_bundle_sha256: {semantic_gate['source_bundle_sha256']}",
-            f"- semantic_source_map_bundle_sha256: {semantic_gate.get('source_map_bundle_sha256', '')}",
-            f"- semantic_argument_model_sha256: {semantic_gate.get('semantic_argument_model_sha256', '')}",
-            "",
-            "## authoritative_semantic_understanding",
-            "",
-            semantic_text.rstrip(),
-            "",
-        ]
-        if argument_model is not None:
-            lines += [
-                "## authoritative_source_argument_model",
-                "",
-                "This model was completed in Stage 00. Use it to select and organize pages; do not change its document_semantics, thesis, node roles, argument_weight, statuses, relations, MECE basis, or source gaps.",
-                json.dumps(argument_model, ensure_ascii=False, indent=2),
-                "",
-                "Every content page must declare `primary_argument_node_id`, `source_argument_node_ids`, and include the same node IDs in `core_message_derivation.argument_node_ids`.",
-                "Every content page must copy `source_argument_node_roles` and `source_argument_node_weights` for its selected nodes. `argument_weight=core` is an authoritative source proposition and must not be replaced by a generic layer label merely because another proposition supports it; relation, role, and weight are separate dimensions.",
-                "Each source node needs one primary page consumer or an explicit allowed merge; a source evidence record alone is not a substitute for node consumption.",
-                "Do not default to one page per source subsection regardless of how much material that subsection has. Before finalizing the page plan, estimate each candidate page's available source material (roughly, the combined length of the Source Truth statements it would cite). If two or more consecutive subsections in the same chapter are each much thinner than the deck's typical page, merge them into one denser page instead of writing several thin standalone pages — a page that can't be filled from real source material should not exist just because the source document gave that content its own subsection heading. The audit enforces this: `outline-audit` flags `CONTENT_PAGE_DENSITY_LOW` for runs of 2+ consecutive same-chapter pages that fall far below the deck's median page volume, with `retry_strategy: merge_thin_adjacent_pages`.",
-                "",
-            ]
-    elif lightweight:
-        semantic_path = project / SEMANTIC_ARTIFACT
-        if not semantic_path.is_file():
-            raise FileNotFoundError(
-                "lightweight Outline preparation requires semantic-understanding.md"
-            )
-        lines += [
-            "## authoritative_semantic_understanding",
-            "",
-            semantic_path.read_text(encoding="utf-8-sig").rstrip(),
-            "",
-            "## authoritative_source_argument_model",
-            "",
-            "Use this model to select and organize pages; do not change its document semantics, thesis, node roles, weights, statuses, relations, MECE basis, inferences, concept distinctions, or source gaps.",
-            json.dumps(argument_model, ensure_ascii=False, indent=2),
-            "",
-            "Every content page must declare `primary_argument_node_id`, `source_argument_node_ids`, and matching roles, weights, statuses and gap handling. Do not default to one page per source subsection; merge adjacent thin material when one source-supported page can carry the relationship more clearly.",
-            "",
-        ]
+    semantic_path = project / SEMANTIC_ARTIFACT
+    if not semantic_path.is_file():
+        raise FileNotFoundError(
+            "lightweight Outline preparation requires semantic-understanding.md"
+        )
+    lines += [
+        "## authoritative_semantic_understanding",
+        "",
+        semantic_path.read_text(encoding="utf-8-sig").rstrip(),
+        "",
+        "## authoritative_source_argument_model",
+        "",
+        "Use this model to select and organize pages; do not change its document semantics, thesis, node roles, weights, statuses, relations, MECE basis, inferences, concept distinctions, or source gaps.",
+        json.dumps(argument_model, ensure_ascii=False, indent=2),
+        "",
+        "Every content page must declare `primary_argument_node_id`, `source_argument_node_ids`, and matching roles, weights, statuses and gap handling. Do not default to one page per source subsection; merge adjacent thin material when one source-supported page can carry the relationship more clearly.",
+        "",
+    ]
     semantics = truth.get("document_semantics")
     lines += ["", "## document_semantics", ""]
     lines.append(json.dumps(semantics, ensure_ascii=False) if isinstance(semantics, dict) else "- missing")
@@ -420,34 +258,12 @@ def prepare_outline_input(
         "- Consolidate records only when they express one complete content unit; preserve distinct objects and relations when aggregation would change meaning.",
         "- Do not manufacture implications merely to turn descriptive material into proof.",
     ]
-    content = "\n".join(lines).rstrip() + "\n"
-    if lightweight:
-        return content
-    output = project / "workbench/stages/01-analysis/outline-authoring-input.md"
-    output.write_text(content, encoding="utf-8")
-    return output
+    return "\n".join(lines).rstrip() + "\n"
 
 
-def prepare_page_script_input(
-    project: Path,
-    page_id: str = "",
-    *,
-    lightweight: bool = False,
-) -> Path | str:
+def prepare_page_script_input(project: Path, page_id: str = "") -> str:
     project = project.expanduser().resolve()
-    if not lightweight:
-        assert_semantic_understanding_ready(project)
-    communication_gate = None if lightweight else assert_communication_strategy_ready(project)
     outline = _load(project / "workbench/stages/01-analysis/outline.json")
-    communication_issues = (
-        []
-        if lightweight
-        else communication_strategy_binding_issues(outline, communication_gate)
-    )
-    if communication_issues:
-        raise ValueError(
-            "outline is not bound to the approved communication strategy; rebuild and audit the outline"
-        )
     records = _records(project)
     pages = [
         item for item in outline.get("pages", [])
@@ -457,27 +273,11 @@ def prepare_page_script_input(
     ]
     if page_id and not pages:
         raise ValueError(f"content page not found: {page_id}")
-    authoring_artifact = None
-    if not lightweight:
-        authoring_artifact = _ensure_page_script_authoring(
-            project,
-            project / "workbench/stages/01-analysis/outline.json",
-            pages,
-        )
     lines = [
         "# Page script authoring input",
         "",
-        *(
-            [
-                "Write the completed pages directly as chapter Markdown files under `workbench/scripts/drafts/`; do not create page-script-authoring.json or another control artifact.",
-                "After completing the requested chapter or pages, present the detailed page content to the user for live review and modification before assembling the final script.",
-            ]
-            if lightweight
-            else [
-                f"Authoritative JSON authoring artifact: `{authoring_artifact}`",
-                "The compiler consumes this JSON artifact. Keep its `outline_sha256` bound to the current Outline and declare every non-boundary `content_unit.unit_id` in each page's `consumes` list.",
-            ]
-        ),
+        "Write the completed pages directly as chapter Markdown files under `workbench/scripts/drafts/`; do not create page-script-authoring.json or another control artifact.",
+        "After completing the requested chapter or pages, present the detailed page content to the user for live review and modification before assembling the final script.",
         "Write the Stage 02 semantic-structure handoff as a separate two-line block: `【视觉结构，不上屏】` followed by the guidance text. Never place that guidance inside `上屏文字`.",
         "This handoff records one core judgment, one primary business relation and direction, the participating roles or objects, and which locked text belongs to which role, action, boundary or result. It is not a page-layout recipe.",
         "Do not prescribe rows, columns, swim lanes, matrices, card counts, top/bottom/left/right/center placement, percentage geometry, summary strips, or a named visual carrier. Leave candidate composition and medium selection to the Stage 02 visual-structure designer.",
@@ -622,49 +422,9 @@ def prepare_page_script_input(
                 )
         else:
             lines.append("  - none")
-        receipt = {
-            "schema": "cyberppt.page_contract_receipt.v2",
-            "page_id": page.get("page_id"),
-            "page_mission": page.get("page_mission") or page.get("page_job"),
-            "audience_question": page.get("audience_question"),
-            "business_question": page.get("business_question"),
-            "must_not_include": page.get("must_not_include", []),
-            "intentional_omissions": page.get("intentional_omissions", []),
-            "split_risk": page.get("split_risk"),
-            "split_risk_reason": page.get("split_risk_reason"),
-            "core_message": page.get("core_message") or page.get("main_message"),
-            "onscreen_conclusion": page.get("onscreen_conclusion") or page.get("onscreen_judgment"),
-            "core_message_derivation": page.get("core_message_derivation") or page.get("judgment_derivation"),
-            "content_relations": page.get("content_relations", []),
-            "onscreen_conclusion_mode": page.get("onscreen_conclusion_mode") or page.get("onscreen_judgment_mode"),
-            "new_value_vs_previous": page.get("new_value_vs_previous"),
-            "reserved_for_later": page.get("reserved_for_later"),
-            "visual_intent_type": page.get("visual_intent_type"),
-            "visual_proof": page.get("visual_proof"),
-            "content_units": content_units,
-            "detail_refs": page.get("detail_refs", []),
-            "boundary_refs": page.get("boundary_refs", []),
-            "new_value_realized": True,
-            "reserved_for_later_respected": True,
-            "audience_question_answered": True,
-            "must_not_include_respected": True,
-            "split_risk_resolved": True,
-        }
-        if lightweight:
-            lines += [
-                "- required Markdown sections: 完整文字稿、文字稿取舍说明（必留上屏/仅讲解/仅追溯）、上屏文字、证据映射、【视觉结构，不上屏】、【演讲者备注】",
-                "- write the finished page directly into its chapter draft; do not emit page-contract receipts or control metadata",
-            ]
-        else:
-            lines += [
-                "- page_contract_receipt (draft transport only; copy unchanged so the final assembler can move it into page-contracts.json):",
-                f"  <!-- cyberppt-page-contract {json.dumps(receipt, ensure_ascii=False, separators=(',', ':'))} -->",
-            ]
+        lines += [
+            "- required Markdown sections: 完整文字稿、文字稿取舍说明（必留上屏/仅讲解/仅追溯）、上屏文字、证据映射、【视觉结构，不上屏】、【演讲者备注】",
+            "- write the finished page directly into its chapter draft; do not emit page-contract receipts or control metadata",
+        ]
         lines.append("")
-    content = "\n".join(lines).rstrip() + "\n"
-    if lightweight:
-        return content
-    suffix = f"-{page_id}" if page_id else ""
-    output = project / "workbench/scripts" / f"page-script-authoring-input{suffix}.md"
-    output.write_text(content, encoding="utf-8")
-    return output
+    return "\n".join(lines).rstrip() + "\n"

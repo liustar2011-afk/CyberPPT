@@ -837,41 +837,37 @@ def run_final_script_pages(
         validate_source_boundary(autonomous_authority)
     if external_script and lightweight_stage01_confirmed:
         raise ValueError("--external-script cannot be combined with --lightweight-stage01-confirmed")
+    if not external_script and autonomous_authority is None and not lightweight_stage01_confirmed:
+        raise ValueError(
+            "final-script-pages requires --lightweight-stage01-confirmed or --external-script"
+        )
     source_mode = (
         "autonomous_contract"
         if autonomous_authority is not None
         else "external_script"
         if external_script
         else "interactive_lightweight_confirmation"
-        if lightweight_stage01_confirmed
-        else "stage01_approved_script"
     )
     project_created = False
     if external_script and not project.exists():
         init_project(project)
         project_created = True
     if not external_script:
-        from cyberppt.stage01_controls import assert_escalation_resolved, assert_stage01_script_approval
         from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
+        from cyberppt.commands.script_audit import run_script_audit
+        from cyberppt.stage02_handoff import load_stage02_handoff
 
-        if lightweight_stage01_confirmed:
-            from cyberppt.commands.script_audit import run_script_audit
-            from cyberppt.stage02_handoff import load_stage02_handoff
-
-            code, audit = run_script_audit(project, script, lightweight=True)
-            if code != 0 or audit.get("status") != "passed":
-                raise ValueError(
-                    "lightweight Stage 01 confirmation requires a currently passed "
-                    "full-script audit before final-script-pages"
-                )
-            handoff = load_stage02_handoff(project, required=True)
-            if handoff.get("stage01_confirmation_mode") != "interactive_lightweight_confirmation":
-                raise ValueError(
-                    "Stage 02 handoff is not bound to interactive lightweight Stage 01 confirmation"
-                )
-        else:
-            assert_escalation_resolved(project, "script")
-            assert_stage01_script_approval(project, script)
+        code, audit = run_script_audit(project, script)
+        if code != 0 or audit.get("status") != "passed":
+            raise ValueError(
+                "lightweight Stage 01 confirmation requires a currently passed "
+                "full-script audit before final-script-pages"
+            )
+        handoff = load_stage02_handoff(project, required=True)
+        if handoff.get("stage01_confirmation_mode") != "interactive_lightweight_confirmation":
+            raise ValueError(
+                "Stage 02 handoff is not bound to interactive lightweight Stage 01 confirmation"
+            )
         assert_visual_structure_ready(project, script)
     if production_mode not in PRODUCTION_MODES:
         raise ValueError(

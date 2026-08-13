@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -8,18 +7,16 @@ from pathlib import Path
 from cyberppt.commands.init_project import init_project
 from cyberppt.semantic_understanding import (
     SEMANTIC_ARGUMENT_MODEL,
-    SEMANTIC_AUDIT_JSON,
-    SEMANTIC_AUDIT_MD,
     SEMANTIC_ARTIFACT,
-    SEMANTIC_MODEL_INPUT,
-    approve_semantic_understanding,
-    assert_semantic_understanding_ready,
+    SEMANTIC_STAGE,
     prepare_semantic_understanding,
-    record_semantic_generation,
     run_semantic_understanding_audit,
-    semantic_binding_issues,
 )
 from cyberppt.source_document_map import prepare_source_map
+
+
+SEMANTIC_AUDIT_JSON = SEMANTIC_STAGE / "semantic-understanding-audit.json"
+SEMANTIC_AUDIT_MD = SEMANTIC_STAGE / "semantic-understanding-audit.md"
 
 
 VALID_SEMANTIC = """# 全文语义理解
@@ -64,71 +61,13 @@ VALID_SEMANTIC = """# 全文语义理解
 class SemanticUnderstandingTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
-        self.project = Path(self.temp.name) / "project"
-        init_project(self.project)
-        (self.project / "source" / "material.txt").write_text(
-            "structured source material", encoding="utf-8"
-        )
 
     def tearDown(self) -> None:
         self.temp.cleanup()
 
-    def _record_and_audit(self) -> tuple[int, dict[str, object]]:
-        record_semantic_generation(
-            self.project,
-            executor="test-runner",
-            model="test-model",
-        )
-        return run_semantic_understanding_audit(self.project)
-
-    def _use_legacy_text_contract(self) -> None:
-        manifest = self.project / "manifest.yml"
-        text = manifest.read_text(encoding="utf-8")
-        text = text.replace("  semantic_argument_model: required\n", "")
-        text = text.replace("  interpretation_contract_mode: strict\n", "")
-        manifest.write_text(text, encoding="utf-8")
-
-    def test_init_creates_required_semantic_gate_and_template(self) -> None:
-        manifest = (self.project / "manifest.yml").read_text(encoding="utf-8")
-        self.assertIn("semantic_understanding: required", manifest)
-        self.assertIn("semantic_argument_model: required", manifest)
-        self.assertIn("interpretation_contract_mode: strict", manifest)
-        self.assertTrue((self.project / SEMANTIC_ARTIFACT).is_file())
-
-    def test_placeholder_artifact_requires_rewrite(self) -> None:
-        code, report = run_semantic_understanding_audit(self.project)
-        self.assertEqual(4, code)
-        self.assertEqual("rewrite_required", report["status"])
-        self.assertTrue(report["issues"])
-
-    def test_new_project_cannot_fall_back_to_prose_only_legacy_contract(self) -> None:
-        (self.project / SEMANTIC_ARTIFACT).write_text(VALID_SEMANTIC, encoding="utf-8")
-        record_semantic_generation(
-            self.project,
-            executor="test-runner",
-            model="test-model",
-        )
-
-        code, report = run_semantic_understanding_audit(self.project)
-        codes = {item["code"] for item in report["issues"]}
-
-        self.assertEqual(4, code)
-        self.assertIn("SEMANTIC_ARGUMENT_MODEL_MISSING", codes)
-        self.assertIn("SEMANTIC_INTERPRETATION_MODE_REQUIRED", codes)
-
-    def test_prepare_compiles_source_content_into_fixed_model_task(self) -> None:
-        payload = prepare_semantic_understanding(self.project)
-        model_input = (self.project / SEMANTIC_MODEL_INPUT).read_text(encoding="utf-8")
-        self.assertIn("structured source material", model_input)
-        self.assertIn("[SU-", model_input)
-        self.assertIn("whole-document semantic editor", model_input)
-        self.assertEqual(64, len(payload["source_map_bundle_sha256"]))
-        self.assertTrue(payload["source_unit_ids"])
-        self.assertEqual(payload["model_input_sha256"], payload["model_input_sha256"].lower())
-
     def test_lightweight_prepare_reads_existing_source_map_without_control_writes(self) -> None:
         lightweight = Path(self.temp.name) / "lightweight"
-        init_project(lightweight, lightweight=True)
+        init_project(lightweight)
         (lightweight / "source" / "material.txt").write_text(
             "source-native business relation and operating arrangement",
             encoding="utf-8",
@@ -140,7 +79,7 @@ class SemanticUnderstandingTests(unittest.TestCase):
             if path.is_file()
         )
 
-        payload = prepare_semantic_understanding(lightweight, lightweight=True)
+        payload = prepare_semantic_understanding(lightweight)
         after = sorted(
             path.relative_to(lightweight).as_posix()
             for path in lightweight.rglob("*")
@@ -160,7 +99,7 @@ class SemanticUnderstandingTests(unittest.TestCase):
 
     def test_lightweight_semantic_check_keeps_substantive_rules_without_receipt_files(self) -> None:
         lightweight = Path(self.temp.name) / "lightweight-audit"
-        init_project(lightweight, lightweight=True)
+        init_project(lightweight)
         (lightweight / "source" / "material.txt").write_text(
             "structured source material", encoding="utf-8"
         )
@@ -168,9 +107,7 @@ class SemanticUnderstandingTests(unittest.TestCase):
         artifact = lightweight / SEMANTIC_ARTIFACT
         artifact.write_text(VALID_SEMANTIC, encoding="utf-8")
 
-        code, report = run_semantic_understanding_audit(
-            lightweight, lightweight=True
-        )
+        code, report = run_semantic_understanding_audit(lightweight)
         codes = {item["code"] for item in report["issues"]}
 
         self.assertEqual(4, code)
@@ -182,61 +119,6 @@ class SemanticUnderstandingTests(unittest.TestCase):
         self.assertFalse((lightweight / SEMANTIC_AUDIT_JSON).exists())
         self.assertFalse((lightweight / SEMANTIC_AUDIT_MD).exists())
         self.assertFalse((lightweight / SEMANTIC_ARGUMENT_MODEL).exists())
-
-    def test_passed_gate_becomes_stale_when_source_changes(self) -> None:
-        self._use_legacy_text_contract()
-        (self.project / SEMANTIC_ARTIFACT).write_text(VALID_SEMANTIC, encoding="utf-8")
-        code, report = self._record_and_audit()
-        self.assertEqual(0, code)
-        self.assertEqual("passed", report["status"])
-        with self.assertRaisesRegex(FileNotFoundError, "human approval"):
-            assert_semantic_understanding_ready(self.project)
-        approval_path = approve_semantic_understanding(self.project, note="test approval")
-        approval = json.loads(approval_path.read_text(encoding="utf-8"))
-        self.assertFalse(any(key.endswith("_sha256") for key in approval))
-        self.assertIsNotNone(assert_semantic_understanding_ready(self.project))
-
-        (self.project / "source" / "material.txt").write_text(
-            "changed source material", encoding="utf-8"
-        )
-        with self.assertRaisesRegex(ValueError, "source materials changed"):
-            assert_semantic_understanding_ready(self.project)
-
-    def test_downstream_artifact_must_bind_both_semantic_hashes(self) -> None:
-        self._use_legacy_text_contract()
-        (self.project / SEMANTIC_ARTIFACT).write_text(VALID_SEMANTIC, encoding="utf-8")
-        code, gate = self._record_and_audit()
-        self.assertEqual(0, code)
-
-        issues = semantic_binding_issues({}, gate)
-        self.assertEqual(
-            {
-                "SEMANTIC_UNDERSTANDING_NOT_BOUND",
-                "SEMANTIC_SOURCE_BUNDLE_NOT_BOUND",
-            },
-            {item["code"] for item in issues},
-        )
-        self.assertEqual(
-            [],
-            semantic_binding_issues(
-                {
-                    "semantic_understanding_sha256": gate["semantic_understanding_sha256"],
-                    "semantic_source_bundle_sha256": gate["source_bundle_sha256"],
-                },
-                gate,
-            ),
-        )
-        strict_gate = dict(gate, source_map_bundle_sha256="a" * 64)
-        strict_payload = {
-            "semantic_understanding_sha256": gate["semantic_understanding_sha256"],
-            "semantic_source_bundle_sha256": gate["source_bundle_sha256"],
-        }
-        self.assertIn(
-            "SEMANTIC_SOURCE_MAP_NOT_BOUND",
-            {item["code"] for item in semantic_binding_issues(strict_payload, strict_gate)},
-        )
-        strict_payload["semantic_source_map_bundle_sha256"] = "a" * 64
-        self.assertEqual([], semantic_binding_issues(strict_payload, strict_gate))
 
 
 if __name__ == "__main__":

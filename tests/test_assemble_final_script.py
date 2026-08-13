@@ -180,13 +180,6 @@ class AssembleFinalScriptTests(unittest.TestCase):
             self.assertIn("- 判断角色：relationship", text)
             self.assertLess(text.index("- 上屏结论："), text.index("- 上屏文字："))
             self.assertNotIn("cyberppt-page-contract", text)
-            contracts = json.loads(
-                Path(str(report["page_contracts"])).read_text(encoding="utf-8")
-            )
-            receipt = contracts["pages"]["p01"]
-            self.assertEqual("结论先行并由正文证据支撑", receipt["onscreen_judgment"])
-            self.assertEqual("semantic_only", receipt["onscreen_judgment_mode"])
-            self.assertEqual("relationship", receipt["judgment_role"])
 
     def test_does_not_manufacture_judgment_when_outline_has_none(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -246,15 +239,16 @@ class AssembleFinalScriptTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            report = assemble_final_script(project, lightweight=True)
+            report = assemble_final_script(project)
             output = Path(str(report["output"]))
             text = output.read_text(encoding="utf-8")
 
             self.assertEqual("lightweight", report["mode"])
-            self.assertEqual("authoritative", report["authority_mode"])
-            self.assertEqual(str(project / "workbench/scripts/drafts"), report["authoritative_source"])
+            self.assertEqual(
+                str((project / "workbench/scripts/drafts").resolve()),
+                report["authoritative_source"],
+            )
             self.assertIn("script-audit", text)
-            self.assertIn("--lightweight", text)
             self.assertFalse(output.with_name("page-contracts.json").exists())
             self.assertFalse((project / "workbench/artifact-ledger.json").exists())
 

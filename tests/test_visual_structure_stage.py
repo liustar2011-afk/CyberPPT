@@ -5,7 +5,6 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from cyberppt.commands.init_project import init_project
 from cyberppt.commands.visual_structure_stage import (
     VISUAL_FILES,
     _build_executable_page,
@@ -195,13 +194,6 @@ class VisualStructureStageTests(unittest.TestCase):
 
         self.assertEqual("passed", report["status"])
         self.assertNotIn("handoff_sha256", report)
-
-    def test_new_projects_register_required_visual_structure_gate(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            project = Path(directory) / "project"
-            init_project(project)
-            self.assertTrue(visual_structure_required(project))
-            self.assertTrue((project / "visual").is_dir())
 
     def test_existing_project_with_visual_artifacts_requires_gate(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

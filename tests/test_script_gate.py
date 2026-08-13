@@ -15,43 +15,6 @@ from cyberppt.commands.script_gate import (
 
 
 class ScriptGateTests(unittest.TestCase):
-    def test_init_project_creates_stage_artifact_ledger_and_stage_dirs(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
-            project = Path(temp) / "client-report"
-
-            init_project(project)
-
-            ledger = json.loads((project / "workbench/artifact-ledger.json").read_text(encoding="utf-8"))
-
-            self.assertEqual("cyberppt.artifact_ledger.v1", ledger["schema"])
-            self.assertEqual([], ledger["artifacts"])
-            manifest = (project / "manifest.yml").read_text(encoding="utf-8")
-            self.assertIn("template_text_locks: workbench/locks/template_text", manifest)
-            self.assertIn("script_audits: workbench/scripts/audits", manifest)
-            self.assertIn("source_units: workbench/stages/00-source-map/source-units.jsonl", manifest)
-            self.assertIn("source_map: required", manifest)
-            self.assertTrue((project / "workbench/stages/00-source-map").is_dir())
-            self.assertTrue((project / "workbench/stages/01-analysis").is_dir())
-            self.assertTrue((project / "workbench/stages/02-blueprint-dual-image").is_dir())
-            self.assertTrue((project / "workbench/stages/03-overlay").is_dir())
-            self.assertTrue((project / "workbench/stages/04-template-rebuild").is_dir())
-            self.assertTrue((project / "workbench/stages/05-qa-delivery").is_dir())
-            self.assertTrue((project / "workbench/runs").is_dir())
-            self.assertTrue((project / "workbench/archive").is_dir())
-            self.assertTrue((project / "workbench/tmp").is_dir())
-            self.assertTrue((project / "workbench/locks/template_text").is_dir())
-            self.assertTrue(
-                (
-                    project
-                    / "workbench"
-                    / "scripts"
-                    / "audits"
-                    / "attempts"
-                ).is_dir()
-            )
-            readme = (project / "README.md").read_text(encoding="utf-8")
-            self.assertIn("python -m cyberppt script-audit", readme)
-
     def test_stage_script_saves_draft_and_manifest_without_approval(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             project = Path(temp) / "client-report"

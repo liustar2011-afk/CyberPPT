@@ -292,7 +292,7 @@ class ArgumentFlowContractTests(unittest.TestCase):
 
         self.assertIn("PAGE_ORDER_REASON_MISSING", codes)
 
-    def test_v2_frozen_source_truth_uses_consumption_manifest(self) -> None:
+    def test_v2_frozen_source_truth_mapping_skips_bidirectional_check(self) -> None:
         page = {
             "page_id": "p10", "sequence": 10, "page_type": "content",
             "page_mission": "璇存槑涓€涓凡纭鐨勮兘鍔涚粨鏋?",
@@ -312,7 +312,7 @@ class ArgumentFlowContractTests(unittest.TestCase):
                 {
                     "schema": "cyberppt.outline.v2",
                     "argument_contract_mode": "strict",
-                    "source_truth_mapping_mode": "consumption_manifest",
+                    "source_truth_mapping_mode": "frozen",
                     "pages": [page],
                 },
                 truth,

@@ -18,7 +18,6 @@ HANDOFF_JSON = HANDOFF_DIR / "stage02-handoff.json"
 HANDOFF_MD = HANDOFF_DIR / "stage02-handoff-review.md"
 HANDOFF_AUDIT = HANDOFF_DIR / "stage02-handoff-audit.json"
 SCRIPT_PATH = Path("workbench/scripts/final/script-final.md")
-SCRIPT_APPROVAL = Path("workbench/approvals/stage01-script-approved.md")
 OUTLINE_PATH = Path("workbench/stages/01-analysis/outline.json")
 SOURCE_TRUTH_PATH = Path("workbench/stages/01-analysis/source-truth.json")
 BODY_CANVAS = {"width": 2048, "height": 1024, "ratio": "2:1"}
@@ -255,29 +254,26 @@ def build_stage02_handoff(
     script = script.expanduser().resolve() if script else (project / SCRIPT_PATH).resolve()
     if not script.is_file():
         raise FileNotFoundError(f"approved final script is missing: {script}")
-
-    approval_path = project / SCRIPT_APPROVAL
-    if not approval_path.is_file() and not lightweight_stage01_confirmed:
-        raise FileNotFoundError(f"Stage 01 script approval is missing: {approval_path}")
+    if not lightweight_stage01_confirmed:
+        raise ValueError(
+            "Stage 02 handoff requires the interactive lightweight Stage 01 confirmation; "
+            "present the final script for user review and pass lightweight_stage01_confirmed=True"
+        )
 
     bindings = {
         "script": _file_binding(script),
         "outline": _source_binding(project, OUTLINE_PATH),
         "source_truth": _source_binding(project, SOURCE_TRUTH_PATH),
     }
-    approval_mode = "stage01_approval_file"
-    if approval_path.is_file():
-        bindings["script_approval"] = _source_binding(project, SCRIPT_APPROVAL)
-    else:
-        from cyberppt.commands.script_audit import run_script_audit
+    from cyberppt.commands.script_audit import run_script_audit
 
-        code, audit = run_script_audit(project, script, lightweight=True)
-        if code != 0 or audit.get("status") != "passed":
-            raise ValueError(
-                "lightweight Stage 01 confirmation requires a currently passed "
-                "full-script audit before Stage 02 handoff"
-            )
-        approval_mode = "interactive_lightweight_confirmation"
+    code, audit = run_script_audit(project, script)
+    if code != 0 or audit.get("status") != "passed":
+        raise ValueError(
+            "lightweight Stage 01 confirmation requires a currently passed "
+            "full-script audit before Stage 02 handoff"
+        )
+    approval_mode = "interactive_lightweight_confirmation"
 
     document = parse_script_path(script)
     outline_payload = _read_json(project / OUTLINE_PATH)

@@ -46,13 +46,7 @@ class CliTests(unittest.TestCase):
         self.assertIn("source-map-check", help_text)
         self.assertIn("prepare-semantic-understanding", help_text)
         self.assertIn("semantic-check", help_text)
-        self.assertIn("record-semantic-generation", help_text)
-        self.assertIn("approve-semantic-understanding", help_text)
-        self.assertIn("prepare-storyline-director", help_text)
-        self.assertIn("storyline-director-check", help_text)
         self.assertIn("script-audit", help_text)
-        self.assertIn("prepare-chapter-review", help_text)
-        self.assertIn("chapter-review-audit", help_text)
         self.assertIn("prepare-visual-structure", help_text)
         self.assertIn("record-visual-structure-execution", help_text)
         self.assertIn("visual-structure-audit", help_text)
@@ -79,55 +73,18 @@ class CliTests(unittest.TestCase):
                 "outline.json",
                 "--source-truth",
                 "source-truth.json",
-                "--attempt",
-                "2",
             ]
         )
 
         self.assertEqual("outline.json", args.outline)
         self.assertEqual("source-truth.json", args.source_truth)
-        self.assertEqual(2, args.attempt)
-
-    def test_prepare_communication_strategy_accepts_lightweight_mode(self) -> None:
-        args = build_parser().parse_args(
-            [
-                "prepare-communication-strategy",
-                "project",
-                "--lightweight",
-            ]
-        )
-
-        self.assertTrue(args.lightweight)
-
-    def test_stage01_commands_accept_lightweight_contract(self) -> None:
-        parser = build_parser()
-        cases = [
-            ["init", "project", "--lightweight"],
-            ["prepare-semantic-understanding", "project", "--lightweight"],
-            ["semantic-check", "project", "--lightweight"],
-            ["source-truth-audit", "project", "--input", "truth.json", "--lightweight"],
-            [
-                "prepare-outline-input",
-                "project",
-                "--lightweight",
-                "--communication-goal",
-                "说明合作价值与参与方式",
-            ],
-            ["outline-audit", "project", "--input", "outline.json", "--lightweight"],
-            ["prepare-page-script-input", "project", "--page", "p01", "--lightweight"],
-            ["assemble-final-script", "project", "--lightweight"],
-            ["script-audit", "project", "--input", "script.md", "--lightweight"],
-        ]
-        for argv in cases:
-            with self.subTest(command=argv[0]):
-                self.assertTrue(parser.parse_args(argv).lightweight)
 
     def test_lightweight_init_omits_control_and_stage02_directories(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp) / "lightweight"
             buffer = io.StringIO()
             with redirect_stdout(buffer):
-                code = main(["init", str(project), "--lightweight"])
+                code = main(["init", str(project)])
 
             self.assertEqual(0, code)
             self.assertIn("mode: lightweight", (project / "manifest.yml").read_text(encoding="utf-8"))
@@ -143,7 +100,7 @@ class CliTests(unittest.TestCase):
     def test_lightweight_semantic_prepare_prints_plain_task_without_json_duplication(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp) / "lightweight"
-            self.assertEqual(0, main(["init", str(project), "--lightweight"]))
+            self.assertEqual(0, main(["init", str(project)]))
             (project / "source/material.txt").write_text(
                 "source-native cooperation arrangement", encoding="utf-8"
             )
@@ -154,7 +111,6 @@ class CliTests(unittest.TestCase):
                     [
                         "prepare-semantic-understanding",
                         str(project),
-                        "--lightweight",
                     ]
                 )
 
@@ -271,10 +227,15 @@ class CliTests(unittest.TestCase):
 
             with (
                 patch(
-                    "cyberppt.stage01_controls.assert_escalation_resolved"
+                    "cyberppt.commands.script_audit.run_script_audit",
+                    return_value=(0, {"status": "passed"}),
                 ),
                 patch(
-                    "cyberppt.stage01_controls.assert_stage01_script_approval"
+                    "cyberppt.stage02_handoff.load_stage02_handoff",
+                    return_value={"stage01_confirmation_mode": "interactive_lightweight_confirmation"},
+                ),
+                patch(
+                    "cyberppt.commands.visual_structure_stage.assert_visual_structure_ready"
                 ),
                 redirect_stderr(buffer),
             ):
@@ -286,6 +247,7 @@ class CliTests(unittest.TestCase):
                         str(script),
                         "--pages",
                         "3",
+                        "--lightweight-stage01-confirmed",
                     ]
                 )
 

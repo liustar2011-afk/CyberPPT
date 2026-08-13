@@ -11,53 +11,38 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 将源材料转化为有证据链、结构合宜、可编辑的演示文稿。证据管理可以使用 MBB 级标准，但表达架构必须根据材料类型选路，不能让咨询方法替代源材料本身。保留证据可追溯性，设置确认门，并以渲染结果而不是文件生成作为完成判断。
 
-## Stage 01 单人轻量主流程（默认，优先级最高）
+## Stage 01 单人轻量主流程
 
-本节覆盖后文针对完整审计模式的 Stage 01 强制条款。单人、单机、一次性生成脚本时，必须默认使用本节；不得因为仓库存在完整门禁命令就自动调用它们。只有用户明确要求完整审计轨迹，或任务客观属于多人持续编辑、监管留痕、可回放审计时，才切换到后文完整模式。
+单人、单机生成脚本的默认且唯一流程。仓库不再提供哈希绑定的审批/升级/重试链；结构化内容校验器（`source-truth-audit`、`outline-audit`、`script-audit` 等）仍照常运行，只是不持久化审批、attempt、escalation 或 artifact ledger 状态。
 
-轻量流程不改变底稿结构，不复制 Source Truth，不建立平行运行目录。继续使用项目现有 `source/`、`workbench/stages/01-analysis/source-truth.json`、`outline.json`、`workbench/scripts/drafts/` 和最终脚本路径。用户交互发生在对话中，不能用确认文件、状态 JSON、哈希或回执代替。
+流程不改变底稿结构，不复制 Source Truth，不建立平行运行目录。继续使用项目现有 `source/`、`workbench/stages/01-analysis/source-truth.json`、`outline.json`、`workbench/scripts/drafts/` 和最终脚本路径。用户交互发生在对话中，不能用确认文件、状态 JSON、哈希或回执代替。
 
 必须保留四个对话节点：
 
-1. **交流目标**：先运行 `python -m cyberppt prepare-communication-strategy <project> --lightweight` 并分析其 `source_outline` 与 `decision_evidence`。基于源材料提出 2-3 个方向实质不同的交流目标选项，逐项说明具体受众、使用场景、希望受众理解或相信什么、希望受众采取什么行动及对应 `source unit_id` 依据，并明确推荐一项。不得直接向用户抛出受众、场景、目标行动等空白问题；用户只需选择、修改或补充建议，收到输入后再确定表达策略。该命令只向当前执行代理输出写作输入，不写沟通策略 JSON、审批、哈希、回执、attempt、manifest 或 ledger。
+1. **交流目标**：先运行 `python -m cyberppt prepare-communication-strategy <project>` 并分析其 `source_outline` 与 `decision_evidence`。基于源材料提出 2-3 个方向实质不同的交流目标选项，逐项说明具体受众、使用场景、希望受众理解或相信什么、希望受众采取什么行动及对应 `source unit_id` 依据，并明确推荐一项。不得直接向用户抛出受众、场景、目标行动等空白问题；用户只需选择、修改或补充建议，收到输入后再确定表达策略。该命令只向当前执行代理输出写作输入，不写沟通策略 JSON、审批、哈希、回执、attempt、manifest 或 ledger。
 2. **章节和页面提纲**：提出章节顺序、章节任务、页面标题、每页核心问题和主要证据；在对话中展示并接受实时修改，用户回应后再写页面详细内容。
 3. **页面详细内容**：提出每页核心信息、完整文字稿、上屏文字、证据引用和视觉结构；长稿可按章展示，收到反馈后直接修改原章节脚本。
 4. **最终全稿**：合稿并完成一次全稿检查后展示最终脚本，等待用户最终确认。
 
-内部执行依次只做一次：`doctor` 与源登记核查；`prepare-semantic-understanding --lightweight` 后只创作唯一语义作者产物 `semantic-argument-model.json`，再运行 `semantic-check --lightweight` 确定性生成审阅 Markdown；运行 `compile-source-truth <project> --lightweight` 将已校验原子事项投影为 Source Truth，再运行一次 `source-truth-audit --lightweight`；提出交流目标；用户选择或修改目标后运行 `compile-outline-draft <project> --communication-goal <goal> --lightweight` 生成完整可编辑提纲初稿，人工调整章节、合并、页数与页序后运行一次 `outline-audit --lightweight`；逐章完成页面内容；`assemble-final-script --lightweight`；最后一次全稿 `script-audit --lightweight`。轻量检查保留业务质量判断，但不写 audit、attempt、receipt、escalation、approval 或 artifact ledger。不得在局部修改后重复全量审计，不得为了同步状态重新执行已经完成且内容未受影响的上游阶段。
+内部执行依次只做一次：`doctor` 与源登记核查；`prepare-semantic-understanding` 后只创作唯一语义作者产物 `semantic-argument-model.json`，再运行 `semantic-check` 确定性生成审阅 Markdown；运行 `compile-source-truth <project>` 将已校验原子事项投影为 Source Truth，再运行一次 `source-truth-audit`；提出交流目标；用户选择或修改目标后运行 `prepare-outline-input <project> --communication-goal <goal>` 生成完整提纲写作输入，人工调整章节、合并、页数与页序后运行一次 `outline-audit`；逐章完成页面内容；`assemble-final-script`；最后一次全稿 `script-audit`。检查保留业务质量判断，但不写 audit、attempt、receipt、escalation、approval 或 artifact ledger。不得在局部修改后重复全量审计，不得为了同步状态重新执行已经完成且内容未受影响的上游阶段。
 
-轻量流程默认不执行或持久化：语义生成回执与批准、沟通策略批准文件、storyline director 独立门禁、Source Truth/Outline 的重试链与审计报告、chapter review 审计、confirmation request、attempt 目录、artifact ledger 以及 SHA 新鲜度绑定。出现问题时只修复检查报告指出的受影响内容；全量重跑必须由用户明确要求。
-
-## 第一阶段架构路由与大纲审计（完整模式）
+流程默认不执行或持久化：语义生成回执与批准、沟通策略批准文件、Source Truth/Outline 的重试链与审计报告、attempt 目录、artifact ledger 以及 SHA 新鲜度绑定。出现问题时只修复检查报告指出的受影响内容；全量重跑必须由用户明确要求。
 
 `solution` 是方案、研究、建设、实施和立项类材料的默认架构。它应保留正式工作顺序：现状与需求；定位、目标与边界；建设内容与应用；实施、投资、风险与保障；判断、审批条件与下一步。`consulting` 仅在用户明确要求或材料明确属于咨询论证时启用；SCR 只服务该路线，不是全仓库默认结构。证据表可以继续采用 MBB 标准，但不得据此把方案材料改写成咨询报告。
 
-`source-truth.json` 是 Source Truth 的唯一结构化事实源，`00-source-analysis.md` 只是由其生成的可读视图。第一阶段必须先执行 `source-truth-audit`，按 F（事实）、J（判断）、R（建议）、B（边界）、U（待核）拆分原子证据，精确定位到段落、表格行或单元格，并完成 P0/P1、数字、表格、状态边界和双向追溯审计。未通过时必须按 `section_sweep -> structured_fact_sweep -> traceability_rebuild` 换方向补抽；达到次数上限后保留当前最佳底稿和缺口清单，不得直接放弃。Source Truth 通过或形成有记录的升级项后，才能进入章节与逐页大纲设计。
+`source-truth.json` 是 Source Truth 的唯一结构化事实源。`source-truth-audit` 按 F（事实）、J（判断）、R（建议）、B（边界）、U（待核）拆分原子证据，精确定位到段落、表格行或单元格，并完成 P0/P1、数字、表格、状态边界和双向追溯审计。未通过时按报告的 `retry_directive` 换方向补抽；只修复受影响内容，不做全量重跑。
 
-语义理解必须先于 Source Truth 和提纲完成源材料论点模型。`semantic-understanding.md` 中的 `cyberppt.semantic_argument_model.v1` 块是唯一的源论点解释合同，必须声明 `document_semantics`、全文主论点、源原生一级/二级节点、论点角色、论点权重、证据、主体、状态、论证关系、MECE 分区和源材料缺口。`argument_weight`（`core`、`supporting`、`detail`、`constraint`）与 `argument_role`、`supports/maps_to` 等论证关系是不同维度；关系的 `weight_effect` 固定为 `none`，不能因“支持某节点”就把该节点降格为支撑层。提纲不得从证据清单重新猜主论点；它只能消费该模型并按受众选择、压缩和排序。建设内容、核心能力、架构、行业优势、合作机制和下一步建议若处于不同语义层，必须保留节点并用显式关系连接，不能因证据重叠而合并；源材料单列的“行业优势与合作价值”必须保留为“中电联有什么能力、有何优势及合作价值”的核心论点。缺少完成事实、责任主体、实施条件、验收指标、真实需求或商业条款时，必须登记为 `source_gap` 并保留待确认/条件性表达，禁止补写成事实、承诺或已建成能力。模型出现问号/替换字符等编码损坏时，语义门禁必须阻断，不能把损坏文本传给下游。严格项目的 `outline-audit` 还必须反向检查每个源论点节点有唯一 `primary_consumer` 或显式允许合并，复制节点的 `argument_role` 和 `argument_weight`，并验证页面核心结论能追溯到节点而不只是追溯到 `S###` 证据。
+语义理解必须先于 Source Truth 和提纲完成源材料论点模型。`semantic-understanding.md` 中的 `cyberppt.semantic_argument_model.v1` 块是唯一的源论点解释合同，必须声明 `document_semantics`、全文主论点、源原生一级/二级节点、论点角色、论点权重、证据、主体、状态、论证关系、MECE 分区和源材料缺口。`argument_weight`（`core`、`supporting`、`detail`、`constraint`）与 `argument_role`、`supports/maps_to` 等论证关系是不同维度；关系的 `weight_effect` 固定为 `none`，不能因“支持某节点”就把该节点降格为支撑层。提纲不得从证据清单重新猜主论点；它只能消费该模型并按受众选择、压缩和排序。建设内容、核心能力、架构、行业优势、合作机制和下一步建议若处于不同语义层，必须保留节点并用显式关系连接，不能因证据重叠而合并。缺少完成事实、责任主体、实施条件、验收指标、真实需求或商业条款时，必须登记为 `source_gap` 并保留待确认/条件性表达，禁止补写成事实、承诺或已建成能力。模型出现问号/替换字符等编码损坏时，语义门禁必须阻断，不能把损坏文本传给下游。`outline-audit` 反向检查每个源论点节点有唯一 `primary_consumer` 或显式允许合并，复制节点的 `argument_role` 和 `argument_weight`，并验证页面核心结论能追溯到节点而不只是追溯到 `S###` 证据。
 
-### 语义消费锁（不可跳过）
-
-语义理解完成后，后续阶段只能消费已批准的论点模型，禁止回到证据目录重新猜测主论点、章节主线或页面结论。严格项目按以下顺序建立并校验绑定：
-
-1. **冻结 Source Truth**：`source-truth.json` 只保存源材料事实、判断、建议、边界和待核项；通过 Source Truth 审计后不得再写入页面分配。页面与证据的关系写入独立的 `workbench/stages/01-analysis/outline-source-consumption.json`。新产物必须优先记录稳定语义摘要，原始文件 SHA-256 仅作为交付收据保留。
-2. **锁定论点到大纲**：`outline.json` 必须声明 `source_truth_mapping_mode: consumption_manifest`、Source Truth 语义摘要、消费清单路径及消费清单语义摘要；每个内容页必须从语义模型复制源原生论点节点、`argument_role`、`argument_weight`、主体、状态、论证关系和 `source_gap`，不得用证据清单替代这些字段。旧项目只有原始 SHA-256 时允许兼容读取，但重新生成后必须升级为语义摘要。
-3. **锁定内容单元到脚本**：每个非边界 `content_unit` 必须有稳定的 `unit_id`。编写脚本前必须生成 `workbench/scripts/page-script-authoring.json` 及其 Markdown 审阅输入；每个内容页的 `consumes` 必须逐项列出本页消费的 `unit_id`，页面合同收据必须写入同一组 `consumed_content_unit_ids`。
-4. **执行消费审计**：运行 `outline-audit` 和 `script-audit` 时，缺少、错配、重复或越过边界的消费声明均为阻断错误。`quality_status=passed_with_warnings` 必须在确认稿中如实展示，但不触发第二套内容复核闸门；`approve-stage01` 是唯一人工决定，消费审计通过且用户确认后即可进入 Stage 02。
-
-上述四项工件必须在项目目录落盘并登记到 `artifact-ledger.json`。门禁采用三层模型：权威内容用稳定语义摘要决定是否失效；原始 SHA-256 只证明某次实际交付的文件字节；派生审计、确认稿和可读报告不得反向控制上游批准。只有语义摘要变化、工件缺失或人工决策边界变化时，才停止下游并重建受影响的消费绑定；时间戳、路径、JSON/Markdown 排版和报告格式变化不得单独导致批准失效。
-
-形成提纲前必须通过沟通策略确认门。语义理解批准后运行 `prepare-communication-strategy`，基于全文语义识别沟通对象、沟通目的和受众决策任务，并形成 2-3 个章节组织方式实质不同的汇报方向；运行 `communication-strategy-check` 后，必须把 `communication-strategy-confirmation.md` 展示给用户。只有用户以 `approve-communication-strategy --option <option_id>` 明确选择方向，才可运行 `prepare-outline-input` 或 `outline-audit`。审批记录只表达用户决定，不绑定文件哈希；提纲根节点仍必须逐项绑定当前候选产物以及已批准的对象、目的、方向、架构模式和结构原则，不得仅保留一个无执行作用的 `audience` 字段，也不得由生成代理静默替用户选择。
-
-第一阶段必须生成结构化逐页大纲并执行 `outline-audit`。若方案类材料未经明确授权采用 `consulting`，审计必须以 `SOLUTION_ARCHITECTURE_REQUIRED` 失败。封面、目录、章节页、内容页和封底必须位于同一连续页面序列，不得把模板页抽离后另列；章节页只写“第X章：XXX”，不承载论点、模块或方法内容。内容页的短 `title` 与 `main_message` 必须分开，不能把整句结论塞进页标题。
+`outline-audit` 生成结构化逐页大纲检查报告。若方案类材料未经明确授权采用 `consulting`，审计必须以 `SOLUTION_ARCHITECTURE_REQUIRED` 失败。封面、目录、章节页、内容页和封底必须位于同一连续页面序列，不得把模板页抽离后另列；章节页只写“第X章：XXX”，不承载论点、模块或方法内容。内容页的短 `title` 与 `main_message` 必须分开，不能把整句结论塞进页标题。
 
 页面聚合以一个完整业务问题和一个视觉中心为单位。不得把源材料每个小节或列表项机械拆成单页，也不得预设页数后硬塞内容；页数随业务问题完整性和页面密度自然确定。方法论、筛选原则和评价维度只能支持源材料的实质内容，不能抢占主体篇幅。
 
-审计失败后必须按 `retry_directive` 换方向重写，不能沿原策略只做措辞修补。默认最多 3 次，每次保留审计问题和新策略；仍未通过时输出 2-3 个可决策选项请求用户选择，不得直接放弃任务。CLI 只负责审计、记录和给出重试方向，实际重写由生成代理完成。
+审计失败后必须按 `retry_directive` 换方向重写，不能沿原策略只做措辞修补。CLI 只负责审计、记录和给出重试方向，实际重写由生成代理完成。
 
-## 原生脚本质量审计（完整模式）
+## 原生脚本质量审计
 
-Outline 通过并获得用户批准后，逐批编写脚本并运行：
+Outline 完成并经用户在对话中确认后，逐批编写脚本并运行：
 
 ```powershell
 python -m cyberppt script-audit <project> --input <script.md>
@@ -65,25 +50,17 @@ python -m cyberppt assemble-final-script <project>
 python -m cyberppt script-audit <project> --input <project>/workbench/scripts/final/script-final.md
 ```
 
-`script-audit` 复用 Outline 和 Source Truth，检查页面合同、来源状态、章内推进、跨页重复、上屏结构与语义图同构、页面密度，以及内容页强制的完整文字稿链路（完整文字稿、文字稿取舍说明、证据映射，且完整文字稿必须在上屏文字之前）。内容页还须提供自然口语的 `【演讲者备注】`（禁「这一页/下一页」等翻页腔），供组装写入 PPT 备注。对 `workbench/scripts/final/` 还会拦截「草稿」「批次」字样与批次横幅。脚本审计未通过时不得批准脚本或进入 Stage 02；必须读取 `retry_scope` 和 `retry_directive`，换方向重写失败页面。批次通过后须先 `assemble-final-script` 合出干净全稿，再执行全稿审计。
+`script-audit` 复用 Outline 和 Source Truth，检查页面合同、来源状态、章内推进、跨页重复、上屏结构与语义图同构、页面密度，以及内容页强制的完整文字稿链路（完整文字稿、文字稿取舍说明、证据映射，且完整文字稿必须在上屏文字之前）。内容页还须提供自然口语的 `【演讲者备注】`（禁「这一页/下一页」等翻页腔），供组装写入 PPT 备注。对 `workbench/scripts/final/` 还会拦截「草稿」「批次」字样与批次横幅。脚本审计未通过时不得进入 Stage 02；必须读取 `retry_scope` 和 `retry_directive`，换方向重写失败页面。批次通过后须先 `assemble-final-script` 合出干净全稿，再执行全稿审计。
 
 完整文字稿是内容表达权威层：对齐源材料中本页主题的主体内容，写成小文章/小章节；禁止上屏颗粒度；必须是章节正文口吻，禁止“本页只确认/首先需要确认…”一类分析旁白（旁白进取舍说明或边界）。上屏文字是完整文字稿的概括化、图形化表达，禁止与文字稿并列各写一套，禁止各自从 Source Truth 分头摘取。审稿时先审文字稿取舍与论证，再审上屏是否忠实压缩。该要求为仓库默认合同。封面、目录、章节页和封底除外。设计见 `docs/superpowers/specs/2026-07-24-page-full-prose-from-source-design.md`。
 
 详细规则读取 `references/script-quality.md`。上屏语义结构纪律（单一主关系、文字归属、反卡片墙和禁止固定版式配方）已吸收进 `references/script-quality.md` 与 `script-audit`；具体构图候选和媒介选择由正式 Stage 02 `ppt-visual-structure-designer` 完成。不得改用 `vendor/ppt-script-visual-redesign` 或个人目录中的旧 `ppt-script`、旧项目管理运行时或旧项目生命周期替代本仓库流程。
 
-## 强制流程（完整模式）
-
-| 阶段 | 必须产出 | 停止条件 | 读取 |
-|---|---|---|---|
-| 1. 分析 | `source-truth.json`、Source Truth 审计与可读视图、沟通策略候选与用户选择、架构路由、连续逐页大纲、脚本及审计记录、图表计划、页面信息密度和组件清单 | 提纲前先确认沟通对象、目的和汇报方向；随后批准架构、章节逻辑、页数和大纲；脚本审计通过后才能批准脚本 | `references/source-analysis.md`, `references/storyline.md`, `references/script-quality.md` |
-| 2. 视觉结构、蓝图、生图与 PPT 生产 | 自动调用 `ppt-visual-structure-designer` 形成并校验 `visual/` 四项合同；再生成 8 种视觉风格、选定风格、逐页正文区 ImageGen 蓝图、脚本锁定记录、所选生产模式需要的图片资产、`page_image_pairs.json`、生产 manifest、PPTX | 视觉结构闸门通过后才可选择风格；第二次确认：用户批准视觉方向、生产模式和进入组装/重建的脚本与图像资产 | `vendor/skills/ppt-visual-structure-designer/SKILL.md`, `references/visual-system.md` |
-| 3. 渲染 QA 与交付 | 对 `final-script-pages` 所选分支输出的 PPTX 做渲染检查、模板层检查、可编辑性检查（适用时）、交付说明和必要返工 | 最终确认：用户批准最终 PPT | `references/ppt-production.md`, `references/quality-assurance.md` |
-
-未经确认不要跨过确认门。用户要求修改时，回到对应阶段修订并重新确认。
+未经用户在对话中确认不要跨过确认节点。用户要求修改时，回到对应阶段修订并重新确认。
 
 ## 主流水线合同
 
-Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-structure-designer`，不得等待用户再次点名。先执行 `prepare-visual-structure`，从正式 `stage02-handoff.json` 派生 `visual/visual-design-input.json` 并形成可追踪调用合同；由 Agent 按 `workbench-handoff` 模式读取该 Skill 及其必需 references，对每个内容页生成并比较至少三种结构上真正不同的候选，再生成 `visual/deck-visual-spec.json`、`visual/script-visual-structure.md`、`visual/generation-prompts.md` 和 `visual/validation-report.json`，最后执行 `visual-structure-audit`。确定性代码只负责输入组装、合同校验和 Prompt 编译，不得用关键词匹配代替 Skill 决定 `visual_intent_type`、主视觉载体或空间组织。该阶段只设计视觉结构，不选择 CyberPPT 风格，不生成图片、HTML、SVG 或 PPTX。`final-script-pages --blueprint-only` 只编译页面编码、2:1正文画布、非上屏语义背景、严格上屏文字、Skill视觉设计模块、正式风格锁和生成约束，不得重新塞入完整文字稿、演讲备注、证据映射或审计元数据。`final-script-pages` 必须优先验证脚本与 Stage 02 交接包的稳定语义摘要，同时保留原始 SHA-256 收据；只有语义内容或正式视觉产物变化时才判定过期并阻断 Stage 02。
+Stage 01 脚本经轻量确认审计通过后，主流程必须自动调用已注册的 `ppt-visual-structure-designer`，不得等待用户再次点名。先执行 `prepare-visual-structure`，从正式 `stage02-handoff.json` 派生 `visual/visual-design-input.json` 并形成可追踪调用合同；由 Agent 按 `workbench-handoff` 模式读取该 Skill 及其必需 references，对每个内容页生成并比较至少三种结构上真正不同的候选，再生成 `visual/deck-visual-spec.json`、`visual/script-visual-structure.md`、`visual/generation-prompts.md` 和 `visual/validation-report.json`，最后执行 `visual-structure-audit`。确定性代码只负责输入组装、合同校验和 Prompt 编译，不得用关键词匹配代替 Skill 决定 `visual_intent_type`、主视觉载体或空间组织。该阶段只设计视觉结构，不选择 CyberPPT 风格，不生成图片、HTML、SVG 或 PPTX。`final-script-pages --blueprint-only` 只编译页面编码、2:1正文画布、非上屏语义背景、严格上屏文字、Skill视觉设计模块、正式风格锁和生成约束，不得重新塞入完整文字稿、演讲备注、证据映射或审计元数据。`final-script-pages` 必须优先验证脚本与 Stage 02 交接包的稳定语义摘要，同时保留原始 SHA-256 收据；只有语义内容或正式视觉产物变化时才判定过期并阻断 Stage 02。
 
 正式生产必须由 `python -m cyberppt final-script-pages` 统一编排，按以下顺序推进：
 
@@ -91,7 +68,7 @@ Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-s
 
 `final-script-pages` 是脚本锁定后的唯一正式编排入口。禁止把直接调用 `codex_oauth_image.py`、`template_image_ppt_export.py`、`python -m cyberppt image-ppt run` 或 `template-rebuild` 当作正式主流程；这些命令只可用于主链内部、故障诊断或明确记录的恢复操作。
 
-当脚本由 Stage 01 之外的系统或人工流程提供时，可使用 `final-script-pages --external-script` 进入 Stage 02；若项目路径不存在，该模式会先按标准模板创建项目。该模式跳过 Stage 01 脚本审批、视觉结构交接和逐页 ImageGen 审批台账，但仍必须经过 Stage 02 的脚本解析、页面范围校验、风格锁、manifest、构建上下文和 artifact ledger；运行摘要必须记录 `source_mode=external_script`、项目是否新建及脚本哈希。未显式指定该参数时，Stage 01 到 Stage 02 的原有门禁不变。
+当脚本由 Stage 01 之外的系统或人工流程提供时，可使用 `final-script-pages --external-script` 进入 Stage 02；若项目路径不存在，该模式会先按标准模板创建项目。该模式跳过 Stage 01 轻量确认、视觉结构交接和逐页 ImageGen 审批台账，但仍必须经过 Stage 02 的脚本解析、页面范围校验、风格锁、manifest、构建上下文和 artifact ledger；运行摘要必须记录 `source_mode=external_script`、项目是否新建及脚本哈希。未显式指定该参数时，必须传入 `--lightweight-stage01-confirmed`。
 
 必须显式选择或沿用一种生产模式：
 
@@ -126,7 +103,7 @@ Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-s
 
 ## 阶段成果物落盘与反向追踪
 
-完整模式下，每一阶段必须落地阶段成果物。所有阶段性结论、脚本、prompt、图片、PPTX、QA、确认记录和返工说明都必须写入仓库项目目录，不能只留在对话中。单人轻量 Stage 01 的用户交流节点不得据此生成控制文件。
+Stage 02 及之后，每一阶段必须落地阶段成果物。所有阶段性结论、脚本、prompt、图片、PPTX、QA、确认记录和返工说明都必须写入仓库项目目录，不能只留在对话中。Stage 01 的用户交流节点不得据此生成控制文件。
 
 ### 对话交付链接（硬规则）
 
@@ -144,7 +121,7 @@ Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-s
 | 可编辑 template-rebuild 分支 | `workbench/stages/04-template-rebuild/` | 可编辑模式使用的 template PPTX、template_rebuild_readiness、source_capture、template-normalized reference、模板层 QA |
 | QA 与交付 | `workbench/stages/05-qa-delivery/` | visual_qa_gate、slide_manifest、side-by-side、局部裁图、最终 deck、交付说明 |
 
-完整模式和 Stage 02 生产必须维护 `artifact-ledger.json`。每个成果物必须记录 `stage`、`page`、`path`、`status`、`depends_on`、`supersedes` 和 `resume_command`；能计算 hash 时还必须记录 SHA-256。`depends_on` 指向上游成果物，`supersedes` 指向被本次返工替代的旧成果物。这样套模板后发现问题时，可以沿 `depends_on` 反查到脚本、full 图或模板层中真正需要修改的来源。单人轻量 Stage 01 不维护该 ledger。
+Stage 02 生产必须维护 `artifact-ledger.json`。每个成果物必须记录 `stage`、`page`、`path`、`status`、`depends_on`、`supersedes` 和 `resume_command`；能计算 hash 时还必须记录 SHA-256。`depends_on` 指向上游成果物，`supersedes` 指向被本次返工替代的旧成果物。这样套模板后发现问题时，可以沿 `depends_on` 反查到脚本、full 图或模板层中真正需要修改的来源。Stage 01 不维护该 ledger。
 
 不得只在对话中说明阶段成果而不写入仓库文件。手工停点、用户确认和返工原因也必须作为成果物登记；未登记的阶段结论不得作为后续阶段的输入。
 
@@ -152,16 +129,7 @@ Stage 01 脚本批准后，主流程必须自动调用已注册的 `ppt-visual-s
 
 每个阶段开始前必须读取上表“读取”列中的全部 reference 文件，并把该阶段关键约束转成执行清单后再行动。不得只根据主文件摘要、记忆、既有脚本或上一轮经验执行。
 
-完整模式 Stage 01 的 `source-truth-audit` / `outline-audit` / `script-audit` 会在报告与 attempt 中写入 `reference_gate`（references 路径与 sha256），使 Reference Gate 可观测；缺少必需 reference 时标记 `missing_references`。轻量模式运行一次语义、Source Truth、Outline 和最终全稿检查，但不写 reference gate、audit 或 attempt 链。
-
-### Stage 01 控制点补强（仅完整模式强制）
-
-1. **exit 5 未决策阻断下游**：存在未关闭升级（`*-escalation.json` 且最新审计非 `passed`、也无决策文件）时：
-   - `source_truth` 未决 → 阻断 `outline-audit`
-   - `outline` 未决 → 阻断 `script-audit`
-   - `script` 未决 → 阻断 `approve-stage01 --kind script`、`approve-script --kind analysis`、`final-script-pages`
-   - 记录决策：`python -m cyberppt resolve-escalation <project> --gate <source_truth|outline|script> --option <option_id>`
-2. **确认请求必须含审计摘要与开放问题**：生成用 `python -m cyberppt confirmation-request <project> --kind outline|script`；批准用 `python -m cyberppt approve-stage01 <project> --kind outline|script`（校验确认请求章节，并检查升级是否已决）。
+Stage 01 的 `source-truth-audit` / `outline-audit` / `script-audit` 运行一次语义、Source Truth、Outline 和最终全稿检查，但不写 reference gate、audit 或 attempt 链；`script` 审计未通过时阻断 `final-script-pages`。
 
 - 阶段开始前必须读取对应 reference 的完整内容；如果终端显示乱码，改用 UTF-8 方式重读，不得跳过。
 - reference 中的具体清单优先于本文件中的摘要描述；如果二者冲突，先停下说明冲突并请求用户确认。

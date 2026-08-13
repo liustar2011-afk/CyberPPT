@@ -10,10 +10,6 @@ from pathlib import Path
 
 from cyberppt import __version__
 from cyberppt.commands.assemble_final_script import assemble_final_script
-from cyberppt.commands.chapter_structure_review import (
-    prepare_chapter_review_input,
-    run_chapter_review_audit,
-)
 from cyberppt.commands.compile_page_script_authoring import (
     compile_page_script_authoring,
 )
@@ -37,28 +33,13 @@ from cyberppt.commands.visual_structure_stage import (
     record_visual_structure_execution,
     run_visual_structure_audit,
 )
-from cyberppt.communication_strategy import (
-    approve_communication_strategy,
-    prepare_communication_strategy,
-    run_communication_strategy_audit,
-)
+from cyberppt.communication_strategy import prepare_communication_strategy
 from cyberppt.paths import ASSETS_DIR, REFERENCES_DIR, SCRIPTS_DIR, SKILL_FILE
 from cyberppt.semantic_understanding import (
-    approve_semantic_understanding,
     prepare_semantic_understanding,
-    record_semantic_generation,
     run_semantic_understanding_audit,
 )
 from cyberppt.source_document_map import prepare_source_map, run_source_map_audit
-from cyberppt.stage01_controls import (
-    write_confirmation_request,
-    write_escalation_decision,
-    write_stage01_approval,
-)
-from cyberppt.storyline_director import (
-    prepare_storyline_director,
-    run_storyline_director_audit,
-)
 from cyberppt.stage02_handoff import (
     HANDOFF_AUDIT,
     HANDOFF_JSON,
@@ -86,9 +67,7 @@ def _doctor() -> int:
 
 def _init_command(args: argparse.Namespace) -> int:
     try:
-        created = init_project(
-            Path(args.path), force=args.force, lightweight=args.lightweight
-        )
+        created = init_project(Path(args.path), force=args.force)
     except FileExistsError as exc:
         print(str(exc), file=sys.stderr)
         return 2
@@ -102,9 +81,7 @@ def _outline_audit_command(args: argparse.Namespace) -> int:
         code, report = run_outline_audit(
             Path(args.project),
             Path(args.input),
-            max_attempts=args.max_attempts,
             source_truth_path=Path(args.source_truth) if args.source_truth else None,
-            lightweight=args.lightweight,
         )
     except (FileNotFoundError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -118,8 +95,6 @@ def _source_truth_audit_command(args: argparse.Namespace) -> int:
         code, report = run_source_truth_audit(
             Path(args.project),
             Path(args.input),
-            max_attempts=args.max_attempts,
-            lightweight=args.lightweight,
         )
     except (FileNotFoundError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -130,8 +105,6 @@ def _source_truth_audit_command(args: argparse.Namespace) -> int:
 
 def _compile_source_truth_command(args: argparse.Namespace) -> int:
     try:
-        if not args.lightweight:
-            raise ValueError("compile-source-truth currently requires --lightweight")
         output = compile_source_truth(
             Path(args.project),
             Path(args.output) if args.output else None,
@@ -145,8 +118,6 @@ def _compile_source_truth_command(args: argparse.Namespace) -> int:
 
 def _compile_outline_draft_command(args: argparse.Namespace) -> int:
     try:
-        if not args.lightweight:
-            raise ValueError("compile-outline-draft currently requires --lightweight")
         output = compile_outline_draft(
             Path(args.project),
             communication_goal=args.communication_goal,
@@ -197,131 +168,32 @@ def _run_autonomous_command(args: argparse.Namespace) -> int:
 
 def _prepare_semantic_understanding_command(args: argparse.Namespace) -> int:
     try:
-        payload = prepare_semantic_understanding(
-            Path(args.project), lightweight=args.lightweight
-        )
+        payload = prepare_semantic_understanding(Path(args.project))
     except (FileNotFoundError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
-    if args.lightweight:
-        print(payload["authoring_task"], end="")
-    else:
-        print(json.dumps(payload, ensure_ascii=False, indent=2))
+    print(payload["authoring_task"], end="")
     return 0
 
 
 def _semantic_check_command(args: argparse.Namespace) -> int:
     try:
-        code, report = run_semantic_understanding_audit(
-            Path(args.project), lightweight=args.lightweight
-        )
+        code, report = run_semantic_understanding_audit(Path(args.project))
     except (FileNotFoundError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return code
-
-
-def _record_semantic_generation_command(args: argparse.Namespace) -> int:
-    try:
-        path = record_semantic_generation(
-            Path(args.project),
-            executor=args.executor,
-            model=args.model,
-            note=args.note,
-        )
-    except (FileNotFoundError, ValueError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(f"semantic_generation_receipt: {path}")
-    return 0
-
-
-def _approve_semantic_understanding_command(args: argparse.Namespace) -> int:
-    try:
-        path = approve_semantic_understanding(Path(args.project), note=args.note)
-    except (FileNotFoundError, ValueError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(f"semantic_understanding_approval: {path}")
-    return 0
 
 
 def _prepare_communication_strategy_command(args: argparse.Namespace) -> int:
     try:
-        payload = prepare_communication_strategy(
-            Path(args.project),
-            lightweight=args.lightweight,
-        )
+        payload = prepare_communication_strategy(Path(args.project))
     except (FileNotFoundError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
     print(json.dumps(payload, ensure_ascii=False, indent=2))
     return 0
-
-
-def _communication_strategy_check_command(args: argparse.Namespace) -> int:
-    try:
-        code, report = run_communication_strategy_audit(Path(args.project))
-    except (FileNotFoundError, ValueError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(json.dumps(report, ensure_ascii=False, indent=2))
-    return code
-
-
-def _approve_communication_strategy_command(args: argparse.Namespace) -> int:
-    try:
-        path = approve_communication_strategy(
-            Path(args.project),
-            option_id=args.option,
-            note=args.note,
-        )
-    except (FileNotFoundError, ValueError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(f"communication_strategy_approval: {path}")
-    return 0
-
-
-def _prepare_storyline_director_command(args: argparse.Namespace) -> int:
-    try:
-        payload = prepare_storyline_director(Path(args.project))
-    except (FileNotFoundError, ValueError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(json.dumps(payload, ensure_ascii=False, indent=2))
-    return 0
-
-
-def _storyline_director_check_command(args: argparse.Namespace) -> int:
-    try:
-        code, report = run_storyline_director_audit(Path(args.project))
-    except (FileNotFoundError, ValueError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(json.dumps(report, ensure_ascii=False, indent=2))
-    return code
-
-
-def _prepare_chapter_review_command(args: argparse.Namespace) -> int:
-    try:
-        path = prepare_chapter_review_input(Path(args.project), args.level)
-    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(f"chapter_review_input: {path}")
-    return 0
-
-
-def _chapter_review_audit_command(args: argparse.Namespace) -> int:
-    try:
-        code, report = run_chapter_review_audit(Path(args.project), args.level)
-    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(json.dumps(report, ensure_ascii=False, indent=2))
-    return code
 
 
 def _prepare_visual_structure_command(args: argparse.Namespace) -> int:
@@ -411,10 +283,6 @@ def _script_audit_command(args: argparse.Namespace) -> int:
             source_truth_path=(
                 Path(args.source_truth) if args.source_truth else None
             ),
-            attempt=args.attempt,
-            max_attempts=args.max_attempts,
-            batch_id=args.batch_id,
-            lightweight=args.lightweight,
         )
     except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -433,7 +301,6 @@ def _assemble_final_script_command(args: argparse.Namespace) -> int:
             enrichment_source=(
                 Path(args.enrichment_source) if args.enrichment_source else None
             ),
-            lightweight=args.lightweight,
         )
     except (FileNotFoundError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
@@ -461,7 +328,6 @@ def _prepare_outline_input_command(args: argparse.Namespace) -> int:
         print(
             prepare_outline_input(
                 Path(args.project),
-                lightweight=args.lightweight,
                 communication_goal=args.communication_goal or "",
             )
         )
@@ -477,7 +343,6 @@ def _prepare_page_script_input_command(args: argparse.Namespace) -> int:
             prepare_page_script_input(
                 Path(args.project),
                 args.page or "",
-                lightweight=args.lightweight,
             )
         )
     except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
@@ -511,45 +376,6 @@ def _approve_script_command(args: argparse.Namespace) -> int:
         print(str(exc), file=sys.stderr)
         return 2
     print(f"approval_recorded: {path}")
-    return 0
-
-
-def _resolve_escalation_command(args: argparse.Namespace) -> int:
-    try:
-        path = write_escalation_decision(
-            Path(args.project),
-            gate=args.gate,
-            option_id=args.option,
-            note=args.note,
-        )
-    except (FileNotFoundError, ValueError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(f"escalation_decision_recorded: {path}")
-    return 0
-
-
-def _confirmation_request_command(args: argparse.Namespace) -> int:
-    try:
-        path = write_confirmation_request(Path(args.project), args.kind)
-    except (FileNotFoundError, RuntimeError, ValueError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(f"confirmation_request: {path}")
-    return 0
-
-
-def _approve_stage01_command(args: argparse.Namespace) -> int:
-    try:
-        path = write_stage01_approval(
-            Path(args.project),
-            kind=args.kind,
-            note=args.note,
-        )
-    except (FileNotFoundError, ValueError) as exc:
-        print(str(exc), file=sys.stderr)
-        return 2
-    print(f"stage01_approval_recorded: {path}")
     return 0
 
 
@@ -672,11 +498,6 @@ def build_parser() -> argparse.ArgumentParser:
     init = subparsers.add_parser("init", help="Create a CyberPPT project workspace.")
     init.add_argument("path", help="Target project directory.")
     init.add_argument("--force", action="store_true", help="Overwrite generated project manifest and README.")
-    init.add_argument(
-        "--lightweight",
-        action="store_true",
-        help="Create only the Stage 01 business-artifact directories; omit approvals, ledgers, attempts, runs, and Stage 02 controls.",
-    )
     init.set_defaults(func=_init_command)
 
     prepare_source_map_parser = subparsers.add_parser(
@@ -724,11 +545,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Prepare the source-bound whole-document semantic-understanding gate.",
     )
     prepare_semantic.add_argument("project", help="CyberPPT project directory.")
-    prepare_semantic.add_argument(
-        "--lightweight",
-        action="store_true",
-        help="Print the complete source-grounded semantic authoring task without writing model inputs, receipts, approvals, or hashes.",
-    )
     prepare_semantic.set_defaults(func=_prepare_semantic_understanding_command)
 
     semantic_check = subparsers.add_parser(
@@ -736,80 +552,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="Audit whole-document semantic understanding before Source Truth.",
     )
     semantic_check.add_argument("project", help="CyberPPT project directory.")
-    semantic_check.add_argument(
-        "--lightweight",
-        action="store_true",
-        help="Run substantive semantic checks once without execution receipts or audit-control files.",
-    )
     semantic_check.set_defaults(func=_semantic_check_command)
-
-    record_semantic = subparsers.add_parser(
-        "record-semantic-generation",
-        help="Bind a model execution receipt to the semantic input and output.",
-    )
-    record_semantic.add_argument("project", help="CyberPPT project directory.")
-    record_semantic.add_argument("--executor", required=True, help="Execution surface, e.g. codex-desktop.")
-    record_semantic.add_argument("--model", required=True, help="Model identifier recorded by the executor.")
-    record_semantic.add_argument("--note", default="", help="Optional execution note.")
-    record_semantic.set_defaults(func=_record_semantic_generation_command)
-
-    approve_semantic = subparsers.add_parser(
-        "approve-semantic-understanding",
-        help="Record human approval of a passed, hash-current semantic artifact.",
-    )
-    approve_semantic.add_argument("project", help="CyberPPT project directory.")
-    approve_semantic.add_argument("--note", default="", help="Optional approval note.")
-    approve_semantic.set_defaults(func=_approve_semantic_understanding_command)
 
     prepare_communication = subparsers.add_parser(
         "prepare-communication-strategy",
         help="Prepare the audience and reporting-direction gate before Outline authoring.",
     )
     prepare_communication.add_argument("project", help="CyberPPT project directory.")
-    prepare_communication.add_argument(
-        "--lightweight",
-        action="store_true",
-        help=(
-            "Read registered source units and print a source-grounded task for "
-            "2-3 recommended communication-goal options without writing gates, "
-            "approvals, hashes, receipts, attempts, manifests, or ledger state."
-        ),
-    )
     prepare_communication.set_defaults(func=_prepare_communication_strategy_command)
-
-    communication_check = subparsers.add_parser(
-        "communication-strategy-check",
-        help="Validate communication options and create the human confirmation request.",
-    )
-    communication_check.add_argument("project", help="CyberPPT project directory.")
-    communication_check.set_defaults(func=_communication_strategy_check_command)
-
-    approve_communication = subparsers.add_parser(
-        "approve-communication-strategy",
-        help="Select and approve one reporting direction before Outline authoring.",
-    )
-    approve_communication.add_argument("project", help="CyberPPT project directory.")
-    approve_communication.add_argument("--option", required=True, help="Selected option id.")
-    approve_communication.add_argument("--note", default="", help="Optional approval note.")
-    approve_communication.set_defaults(func=_approve_communication_strategy_command)
-
-    prepare_director = subparsers.add_parser(
-        "prepare-storyline-director",
-        help="Prepare the story-first directing contract before Outline authoring.",
-    )
-    prepare_director.add_argument("project", help="CyberPPT project directory.")
-    prepare_director.set_defaults(func=_prepare_storyline_director_command)
-
-    director_check = subparsers.add_parser(
-        "storyline-director-check",
-        help="Audit the storyline, chapter questions, evidence-selection rules, and pacing contract.",
-    )
-    director_check.add_argument("project", help="CyberPPT project directory.")
-    director_check.set_defaults(func=_storyline_director_check_command)
 
     outline_audit = subparsers.add_parser(
         "outline-audit",
-        help="Audit a Stage 01 outline and direct rewrite or escalation.",
+        help="Audit a Stage 01 outline and direct rewrite.",
     )
     outline_audit.add_argument("project", help="CyberPPT project directory.")
     outline_audit.add_argument("--input", required=True, help="Outline JSON file to audit.")
@@ -817,34 +571,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--source-truth",
         help="Optional Source Truth JSON; defaults to the project Stage 01 artifact.",
     )
-    outline_audit.add_argument(
-        "--max-attempts",
-        type=int,
-        default=3,
-        help="Maximum changed-direction attempts (1-5; default: 3).",
-    )
-    outline_audit.add_argument(
-        "--lightweight",
-        action="store_true",
-        help="Run semantic, argument-flow, and outline checks once without gates, attempts, escalation, review state, or audit files.",
-    )
     outline_audit.set_defaults(func=_outline_audit_command)
-
-    prepare_chapter_review = subparsers.add_parser(
-        "prepare-chapter-review",
-        help="Prepare chapter-level structure review input and Markdown skeletons.",
-    )
-    prepare_chapter_review.add_argument("project", help="CyberPPT project directory.")
-    prepare_chapter_review.add_argument("--level", choices=["outline", "script"], default="outline")
-    prepare_chapter_review.set_defaults(func=_prepare_chapter_review_command)
-
-    chapter_review_audit = subparsers.add_parser(
-        "chapter-review-audit",
-        help="Audit chapter structure review coverage, consumption, and artifact hashes.",
-    )
-    chapter_review_audit.add_argument("project", help="CyberPPT project directory.")
-    chapter_review_audit.add_argument("--level", choices=["outline", "script"], default="outline")
-    chapter_review_audit.set_defaults(func=_chapter_review_audit_command)
 
     prepare_visual_structure = subparsers.add_parser(
         "prepare-visual-structure",
@@ -911,21 +638,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     source_truth_audit = subparsers.add_parser(
         "source-truth-audit",
-        help="Audit Stage 01 source evidence, change extraction direction, and render Markdown.",
+        help="Audit Stage 01 source evidence and factual/semantic-evidence consistency.",
     )
     source_truth_audit.add_argument("project", help="CyberPPT project directory.")
     source_truth_audit.add_argument("--input", required=True, help="Source Truth JSON file to audit.")
-    source_truth_audit.add_argument(
-        "--max-attempts",
-        type=int,
-        default=3,
-        help="Maximum changed-direction attempts (1-5; default: 3).",
-    )
-    source_truth_audit.add_argument(
-        "--lightweight",
-        action="store_true",
-        help="Run factual and semantic-evidence checks once without approvals, hashes, receipts, attempts, escalation, or audit files.",
-    )
     source_truth_audit.set_defaults(func=_source_truth_audit_command)
 
     compile_truth = subparsers.add_parser(
@@ -937,11 +653,6 @@ def build_parser() -> argparse.ArgumentParser:
         "--output",
         default="",
         help="Optional output path; defaults to the canonical project source-truth.json.",
-    )
-    compile_truth.add_argument(
-        "--lightweight",
-        action="store_true",
-        help="Use the lightweight projection path; no approvals, receipts, attempts, escalations, manifests, or ledgers are created.",
     )
     compile_truth.set_defaults(func=_compile_source_truth_command)
 
@@ -968,33 +679,6 @@ def build_parser() -> argparse.ArgumentParser:
     script_audit.add_argument(
         "--source-truth",
         help="Source Truth JSON; defaults to the project Stage 01 artifact.",
-    )
-    script_audit.add_argument(
-        "--attempt",
-        type=int,
-        help="Explicit attempt number; defaults to the next persisted attempt.",
-    )
-    script_audit.add_argument(
-        "--max-attempts",
-        type=int,
-        default=3,
-        help="Maximum changed-direction attempts (1-5; default: 3).",
-    )
-    script_audit.add_argument(
-        "--batch-id",
-        help=(
-            "Optional unique audit batch identifier. Named batches keep their "
-            "attempt history under audits/batches/<id>/ while refreshing the "
-            "canonical latest report."
-        ),
-    )
-    script_audit.add_argument(
-        "--lightweight",
-        action="store_true",
-        help=(
-            "Run checks without approval/hash gates and without writing audits, "
-            "attempts, receipts, escalation state, or the artifact ledger."
-        ),
     )
     script_audit.set_defaults(func=_script_audit_command)
 
@@ -1024,11 +708,6 @@ def build_parser() -> argparse.ArgumentParser:
         default="",
         help="Optional prior full script used only to restore missing visual-structure lines.",
     )
-    assemble_final.add_argument(
-        "--lightweight",
-        action="store_true",
-        help="Write only script-final.md; omit page-contract sidecars and artifact-ledger updates.",
-    )
     assemble_final.set_defaults(func=_assemble_final_script_command)
 
     compile_authoring = subparsers.add_parser(
@@ -1056,11 +735,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Compile deterministic Outline authoring input.",
     )
     prepare_outline.add_argument("project")
-    prepare_outline.add_argument("--lightweight", action="store_true")
     prepare_outline.add_argument(
         "--communication-goal",
-        default="",
-        help="User-selected or revised communication goal; required with --lightweight.",
+        required=True,
+        help="User-selected or revised communication goal.",
     )
     prepare_outline.set_defaults(func=_prepare_outline_input_command)
 
@@ -1084,11 +762,6 @@ def build_parser() -> argparse.ArgumentParser:
         default="",
         help="Optional Source Truth input; defaults to the canonical project artifact.",
     )
-    compile_outline.add_argument(
-        "--lightweight",
-        action="store_true",
-        help="Use the lightweight compiler path; only the canonical Outline artifact is written.",
-    )
     compile_outline.set_defaults(func=_compile_outline_draft_command)
 
     prepare_page = subparsers.add_parser(
@@ -1097,54 +770,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     prepare_page.add_argument("project")
     prepare_page.add_argument("--page")
-    prepare_page.add_argument("--lightweight", action="store_true")
     prepare_page.set_defaults(func=_prepare_page_script_input_command)
-
-    resolve_escalation = subparsers.add_parser(
-        "resolve-escalation",
-        help="Record a user decision for an open Stage 01 exit-5 escalation.",
-    )
-    resolve_escalation.add_argument("project", help="CyberPPT project directory.")
-    resolve_escalation.add_argument(
-        "--gate",
-        required=True,
-        choices=["source_truth", "outline", "script"],
-        help="Which escalation gate to resolve.",
-    )
-    resolve_escalation.add_argument(
-        "--option",
-        required=True,
-        help="option_id from the escalation JSON options list.",
-    )
-    resolve_escalation.add_argument("--note", default="", help="Optional decision note.")
-    resolve_escalation.set_defaults(func=_resolve_escalation_command)
-
-    confirmation_request = subparsers.add_parser(
-        "confirmation-request",
-        help="Generate a Stage 01 confirmation request with audit summary and open questions.",
-    )
-    confirmation_request.add_argument("project", help="CyberPPT project directory.")
-    confirmation_request.add_argument(
-        "--kind",
-        required=True,
-        choices=["outline", "script"],
-        help="Outline confirmation or script confirmation.",
-    )
-    confirmation_request.set_defaults(func=_confirmation_request_command)
-
-    approve_stage01 = subparsers.add_parser(
-        "approve-stage01",
-        help="Record Stage 01 outline/script approval after a valid confirmation request.",
-    )
-    approve_stage01.add_argument("project", help="CyberPPT project directory.")
-    approve_stage01.add_argument(
-        "--kind",
-        required=True,
-        choices=["outline", "script"],
-        help="Approve outline or script.",
-    )
-    approve_stage01.add_argument("--note", default="", help="Optional approval note.")
-    approve_stage01.set_defaults(func=_approve_stage01_command)
 
     stage_script_parser = subparsers.add_parser(
         "stage-script",

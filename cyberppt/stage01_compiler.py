@@ -731,7 +731,10 @@ def compile_outline_draft(
         "editorial_authoring_status": "mechanical_draft",
         "storyline_contract_mode": "required",
         "semantic_argument_model_mode": "required",
-        "source_truth_mapping_mode": "consumption_manifest",
+        # This compiler never backfills page_refs into Source Truth records
+        # (page-to-evidence mapping lives only in each page's content_units);
+        # "frozen" tells the argument-flow audit to enforce that invariant.
+        "source_truth_mapping_mode": "frozen",
         "source_section_weights": {},
         "document_semantics": semantics,
         "narrative_thesis": thesis,

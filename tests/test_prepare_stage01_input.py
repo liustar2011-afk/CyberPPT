@@ -69,82 +69,6 @@ class PrepareStage01InputTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temporary.cleanup()
 
-    def test_prepare_outline_input_contains_page_job_and_evidence(self) -> None:
-        (self.project / "workbench/stages/01-analysis/outline.json").unlink()
-        output = prepare_outline_input(self.project)
-        text = output.read_text(encoding="utf-8")
-        self.assertIn("`page_mission`", text)
-        self.assertIn("S001 [", text)
-        self.assertIn("原文证据一", text)
-        self.assertIn("Every content page must state one source-supported `core_message`", text)
-        self.assertIn("Each content page must define its semantic center", text)
-        self.assertIn("`page_mission`: required internal editorial responsibility", text)
-        self.assertIn("`audience_question`: required concrete question", text)
-        self.assertIn("`must_not_include`: required non-empty list", text)
-        self.assertIn("`split_risk`: required", text)
-        self.assertIn("editorial_control_mode", text)
-        self.assertIn("`business_question`: optional", text)
-        self.assertIn("source-supported page content", text)
-        self.assertIn("Use `boundary` role when a condition or unresolved item", text)
-        self.assertIn("must never be labeled `primary` or `supporting`", text)
-        self.assertIn("boundary_focus_reason", text)
-        self.assertIn("does not require a boundary-led page", text)
-        self.assertIn("Consolidate records only when they express one complete content unit", text)
-        self.assertIn("independently readable", text)
-
-    def test_prepare_page_script_input_contains_consumption_and_evidence(self) -> None:
-        output = prepare_page_script_input(self.project, "p04")
-        text = output.read_text(encoding="utf-8")
-        self.assertIn("- page_mission: 说明为什么现在可以启动", text)
-        self.assertIn("- audience_question: 现有基础是否足以支持项目启动？", text)
-        self.assertIn('- must_not_include: ["实施步骤", "投资承诺"]', text)
-        self.assertIn("- split_risk: low", text)
-        self.assertIn("- core_message: 已有基础支持启动", text)
-        self.assertIn("- onscreen_conclusion: 现有基础足以支持项目启动", text)
-        self.assertIn("Do not add `副标题` or a separate `上屏结论` merely because", text)
-        self.assertIn("must nevertheless reach the audience-facing layer", text)
-        self.assertIn("Do not force one fixed slot", text)
-        self.assertIn("independently readable without speaker narration", text)
-        self.assertIn(
-            "source-supported content → the same-strength relation stated by the material",
-            text,
-        )
-        self.assertIn("<=30 is required", text)
-        self.assertIn(">30 is a script-audit error", text)
-        self.assertIn("Normally use 2–5 peer top-level business modules", text)
-        self.assertIn("Do not flatten a layered topic", text)
-        self.assertIn("Do not add routine caveats", text)
-        self.assertIn("omit the caveat entirely", text)
-        self.assertIn("Compression must preserve source specificity", text)
-        self.assertIn("concrete duties, processed objects", text)
-        self.assertIn("never by replacing distinctive content with generic labels", text)
-        self.assertNotIn("with a hard minimum of 220", text)
-        self.assertIn("四行选择矩阵", text)
-        self.assertIn("第X行｜ coordinates", text)
-        self.assertIn("Boundary is opt-in, never a mandatory fourth beat", text)
-        self.assertIn("never promote it to a peer on-screen module", text)
-        self.assertIn("preserve a limitation only when the limitation is itself part of the declared page subject", text)
-        self.assertIn("below the legacy 220-character target", text)
-        self.assertIn("at least two evidence-bearing on-screen lines", text)
-        self.assertIn("[primary] 统计基础已经具备 (S001)", text)
-        self.assertIn("- evidence_text:", text)
-        self.assertIn("- boundary_refs: S002", text)
-        self.assertIn("- source_argument_node_weights: {}", text)
-        self.assertIn("- visual_intent_type: hierarchy_support", text)
-        self.assertIn("- visual_proof: 用既有基础托住启动判断", text)
-        self.assertIn("- boundary_constraints:", text)
-        self.assertIn("S002: 原文证据二", text)
-        self.assertIn("internal controls only", text)
-        self.assertIn("must not be copied into coaching tips or speaker notes", text)
-        self.assertIn("cyberppt-page-contract", text)
-        self.assertIn('"new_value_realized":true', text)
-        self.assertIn('"audience_question_answered":true', text)
-        self.assertIn('"must_not_include_respected":true', text)
-        self.assertIn('"split_risk_resolved":true', text)
-        self.assertIn('"onscreen_conclusion":"现有基础足以支持项目启动"', text)
-        self.assertIn('"visual_proof":"用既有基础托住启动判断"', text)
-        self.assertTrue(output.name.endswith("-p04.md"))
-
     def test_prepare_page_script_input_keeps_core_message_when_visible_conclusion_is_empty(self) -> None:
         outline_path = self.project / "workbench/stages/01-analysis/outline.json"
         payload = json.loads(outline_path.read_text(encoding="utf-8"))
@@ -154,7 +78,7 @@ class PrepareStage01InputTests(unittest.TestCase):
         page["onscreen_judgment"] = ""
         outline_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
 
-        text = prepare_page_script_input(self.project, "p04").read_text(encoding="utf-8")
+        text = prepare_page_script_input(self.project, "p04")
         self.assertIn("- core_message: 总体能力框架由五个层次构成", text)
         self.assertIn("- onscreen_conclusion: ", text)
         self.assertIn("Never strengthen the core_message", text)
@@ -189,7 +113,6 @@ class PrepareStage01InputTests(unittest.TestCase):
 
         text = prepare_outline_input(
             self.project,
-            lightweight=True,
             communication_goal="面向合作企业说明合作价值、参与方式与下一步对接事项",
         )
 
@@ -234,9 +157,7 @@ class PrepareStage01InputTests(unittest.TestCase):
         )
 
     def test_lightweight_page_input_keeps_business_rules_without_authoring_controls(self) -> None:
-        text = prepare_page_script_input(
-            self.project, "p04", lightweight=True
-        )
+        text = prepare_page_script_input(self.project, "p04")
 
         self.assertIsInstance(text, str)
         self.assertIn("完整文字稿", text)

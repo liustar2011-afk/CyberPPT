@@ -155,10 +155,6 @@ def approve_script(project: Path, slide: int, kind: str, note: str = "") -> Path
 
     root = _project_root(project)
     kind = _validate_kind(kind)
-    if kind == "analysis":
-        from cyberppt.stage01_controls import assert_escalation_resolved
-
-        assert_escalation_resolved(root, "script")
     status = get_script_status(root, slide, kind)
     if not status.final_paths:
         raise FileNotFoundError(

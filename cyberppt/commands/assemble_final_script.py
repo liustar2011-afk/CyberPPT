@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import re
 from pathlib import Path
 
-from cyberppt.artifact_ledger import append_artifacts
 from cyberppt.script_quality_contract import (
     PAGE_HEADING_RE,
     audit_final_manuscript_form,
@@ -29,10 +27,6 @@ DRAFT_NOISE_RE = re.compile(
     r".*待\s*`?script-audit`?\s*通过后审稿"
     r")"
 )
-
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest().upper()
 
 
 def _extract_page_contracts(text: str) -> dict[str, dict[str, object]]:
@@ -276,8 +270,6 @@ def assemble_final_script(
     output_path: Path | None = None,
     title: str = "",
     enrichment_source: Path | None = None,
-    *,
-    lightweight: bool = False,
 ) -> dict[str, object]:
     """Merge draft batches into a clean final manuscript under scripts/final/."""
 
@@ -317,8 +309,7 @@ def assemble_final_script(
         f"> 页数：{len(numbers)}（p{first:02d}–p{last:02d}）\n"
         f"> 状态：**最终全稿**\n"
         f"> 来源：`workbench/scripts/drafts/` 合稿\n"
-        f"> 下一步：`python -m cyberppt script-audit {project} --input {output}"
-        f"{' --lightweight' if lightweight else ''}`\n\n"
+        f"> 下一步：`python -m cyberppt script-audit {project} --input {output}`\n\n"
         "---\n\n"
     )
     body = "\n".join(pages[number] for number in numbers)
@@ -346,74 +337,13 @@ def assemble_final_script(
 
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(text, encoding="utf-8")
-    if lightweight:
-        return {
-            "schema": "cyberppt.assemble_final_script.v1",
-            "mode": "lightweight",
-            "authority_mode": "authoritative",
-            "authoritative_source": str(drafts),
-            "project": str(project),
-            "output": str(output),
-            "page_count": len(numbers),
-            "first_page": f"p{first:02d}",
-            "last_page": f"p{last:02d}",
-        }
-
-    sidecar = output.with_name("page-contracts.json")
-    outline_path = project / "workbench/stages/01-analysis/outline.json"
-    source_truth_path = project / "workbench/stages/01-analysis/source-truth.json"
-    sidecar_payload = {
-        "schema": "cyberppt.page_contracts.v1",
-        "script": output.name,
-        "script_sha256": _sha256(output),
-        "outline_sha256": _sha256(outline_path) if outline_path.is_file() else "",
-        "source_truth_sha256": _sha256(source_truth_path) if source_truth_path.is_file() else "",
-        "pages": page_contracts,
-    }
-    sidecar.write_text(
-        json.dumps(sidecar_payload, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
-
-    ledger_path = project / "workbench" / "artifact-ledger.json"
-    append_artifacts(
-        ledger_path,
-        [
-            {
-                "id": "script-final",
-                "stage": "01-analysis",
-                "page": None,
-                "path": str(output.relative_to(project)).replace("\\", "/"),
-                "status": "assembled_awaiting_audit",
-                "depends_on": ["workbench/scripts/drafts"],
-                "resume_command": (
-                    f"python -m cyberppt script-audit {project} --input {output}"
-                ),
-                "sha256": _sha256(output),
-            },
-            {
-                "id": "script-page-contracts",
-                "stage": "01-analysis",
-                "page": None,
-                "path": str(sidecar.relative_to(project)).replace("\\", "/"),
-                "status": "assembled_awaiting_audit",
-                "depends_on": ["script-final"],
-                "resume_command": (
-                    f"python -m cyberppt script-audit {project} --input {output}"
-                ),
-                "sha256": _sha256(sidecar),
-            },
-        ],
-        build_id=f"script-assembly-{_sha256(output)[:10]}",
-    )
-
     return {
         "schema": "cyberppt.assemble_final_script.v1",
+        "mode": "lightweight",
+        "authoritative_source": str(drafts),
         "project": str(project),
         "output": str(output),
         "page_count": len(numbers),
         "first_page": f"p{first:02d}",
         "last_page": f"p{last:02d}",
-        "sha256": _sha256(output),
-        "page_contracts": str(sidecar),
     }

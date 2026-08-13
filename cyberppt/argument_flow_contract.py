@@ -821,9 +821,7 @@ def audit_argument_flow(
     issues = validate_page_role_fields(outline)
     dependencies: dict[str, list[str]] = {}
     source_relation_mode = outline.get("schema") == "cyberppt.outline.v2"
-    frozen_source_truth_mapping = (
-        outline.get("source_truth_mapping_mode") == "consumption_manifest"
-    )
+    frozen_source_truth_mapping = outline.get("source_truth_mapping_mode") == "frozen"
 
     for page_id, page in page_index.items():
         prerequisites = _string_list(page, "prerequisite_pages")
@@ -1213,7 +1211,7 @@ def audit_argument_flow(
             issues.append(
                 ArgumentFlowIssue(
                     "SOURCE_TRUTH_PAGE_MAPPING_MUTATED",
-                    "Frozen Source Truth must not contain page assignments; keep them in the consumption manifest.",
+                    "Frozen Source Truth must not contain page assignments; keep page-to-evidence mapping in each page's content_units.",
                     failed_edges=(),
                     source_ids=tuple(sorted(mutated_records)),
                     retry_strategy="remove_page_assignments_from_source_truth",

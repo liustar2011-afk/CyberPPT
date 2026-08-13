@@ -308,13 +308,13 @@ def run_autonomous(
         gates.append({"name": "source-boundary", "status": "passed", "artifact": str(contract.project / "source")})
         prepare_source_map(contract.project)
         _require_passed(gates, "source-map-check", run_source_map_audit(contract.project), contract.project / "workbench/stages/00-source-map/source-map-audit.json")
-        _require_passed(gates, "semantic-check", run_semantic_understanding_audit(contract.project, lightweight=True), contract.project / "workbench/stages/00-semantic-understanding/semantic-understanding.md")
+        _require_passed(gates, "semantic-check", run_semantic_understanding_audit(contract.project), contract.project / "workbench/stages/00-semantic-understanding/semantic-understanding.md")
         compile_source_truth(contract.project)
-        _require_passed(gates, "source-truth-audit", run_source_truth_audit(contract.project, contract.project / SOURCE_TRUTH_PATH, lightweight=True), contract.project / SOURCE_TRUTH_PATH)
-        _require_passed(gates, "outline-audit", run_outline_audit(contract.project, contract.project / OUTLINE_PATH, source_truth_path=contract.project / SOURCE_TRUTH_PATH, lightweight=True), contract.project / OUTLINE_PATH)
+        _require_passed(gates, "source-truth-audit", run_source_truth_audit(contract.project, contract.project / SOURCE_TRUTH_PATH), contract.project / SOURCE_TRUTH_PATH)
+        _require_passed(gates, "outline-audit", run_outline_audit(contract.project, contract.project / OUTLINE_PATH, source_truth_path=contract.project / SOURCE_TRUTH_PATH), contract.project / OUTLINE_PATH)
         authoring = _assert_page_authoring(contract.project)
         gates.append({"name": "page-authoring", "status": "passed", "artifact": str(authoring)})
-        _require_passed(gates, "script-audit", run_script_audit(contract.project, script, lightweight=True), script)
+        _require_passed(gates, "script-audit", run_script_audit(contract.project, script), script)
         validate_source_boundary(contract)
         _require_passed(
             gates,

@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 
 from cyberppt.semantic_understanding import semantic_authoring_contract, semantic_template
-from cyberppt.storyline_director import storyline_director_authoring_contract
+from cyberppt.commands.prepare_stage01_input import storyline_director_authoring_contract
 
 
 class GenericSemanticPromptTests(unittest.TestCase):

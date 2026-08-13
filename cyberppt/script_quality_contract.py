@@ -2643,6 +2643,21 @@ def _source_statement_overlap(statement: str, authored: str, size: int = 4) -> f
     return len(source & shingles(authored)) / len(source)
 
 
+def _polarity_dropped_terms(statement: str, authored: str) -> tuple[str, ...]:
+    """Return source negation markers that vanish from the authored text.
+
+    ``_source_statement_overlap`` scores character-shingle survival and is
+    blind to polarity: dropping "不得"/"禁止" from an otherwise long,
+    shingle-heavy statement barely moves the overlap ratio, so a rewrite that
+    silently inverts a prohibition into its opposite ("不得对外提供" ->
+    "对外提供") can still pass as "covered". Flag that gap directly by
+    requiring every negation marker present in the source statement to also
+    appear in the authored text.
+    """
+
+    return tuple(term for term in NEGATION_TERMS if term in statement and term not in authored)
+
+
 def _source_consumption_issues(
     page: ScriptPage,
     contract: dict[str, object],
@@ -2726,6 +2741,24 @@ def _source_consumption_issues(
             _source_statement_overlap(item, authored)
             for item in source_statements
         ]
+        dropped_negations = _polarity_dropped_terms(statement, authored)
+        if not dropped_negations:
+            for item in source_statements:
+                dropped_negations = _polarity_dropped_terms(item, authored)
+                if dropped_negations:
+                    break
+        if dropped_negations:
+            refs = tuple(str(item) for item in unit.get("source_refs") or [])
+            issues.append(
+                _issue(
+                    "SOURCE_POLARITY_MISMATCH",
+                    page,
+                    "The authored page drops a source negation marker, risking an inverted claim.",
+                    "Restore the source's prohibition/negation wording (or an equivalent negative statement); do not let a shingle-overlap match hide a polarity flip.",
+                    source_ids=refs,
+                    evidence=(statement, *dropped_negations),
+                )
+            )
         threshold = 0.10 if str(unit.get("role") or "") == "primary" else 0.04
         if unit_overlap < threshold and max(fact_overlaps or [0.0]) < threshold:
             refs = tuple(str(item) for item in unit.get("source_refs") or [])
@@ -2820,6 +2853,24 @@ def _full_prose_source_coverage_issues(
                     "Restore the source-specific fact in 完整文字稿, or record a specific intentional omission in the approved Outline.",
                     source_ids=(ref,),
                     evidence=(str(record.get("statement") or ""), f"overlap={overlap:.3f}"),
+                )
+            )
+        dropped_negations: tuple[str, ...] = ()
+        for anchor in anchors:
+            if not anchor.strip():
+                continue
+            dropped_negations = _polarity_dropped_terms(anchor, page.full_prose)
+            if dropped_negations:
+                break
+        if dropped_negations:
+            issues.append(
+                _issue(
+                    "SOURCE_POLARITY_MISMATCH",
+                    page,
+                    "完整文字稿 drops a source negation marker, risking an inverted claim.",
+                    "Restore the source's prohibition/negation wording (or an equivalent negative statement); do not let a shingle-overlap match hide a polarity flip.",
+                    source_ids=(ref,),
+                    evidence=(str(record.get("statement") or ""), *dropped_negations),
                 )
             )
     return issues

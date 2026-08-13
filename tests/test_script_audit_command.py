@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import hashlib
 from pathlib import Path
 import tempfile
 import unittest
@@ -65,58 +64,6 @@ def _write_json(path: Path, payload: object) -> None:
     )
 
 
-def _approve_content_review(project: Path, script: Path) -> None:
-    outline = json.loads(
-        (project / "workbench/stages/01-analysis/outline.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    page_ids = [
-        item["page_id"]
-        for item in outline["pages"]
-        if item.get("page_type") == "content"
-    ]
-    decisions = {
-        "single_mission": True,
-        "module_same_dimension": True,
-        "nonessential_information_removed": True,
-        "cross_page_new_value": True,
-    }
-    review_manifest = project / "review" / "chapter-review-manifest-script.json"
-    _write_json(
-        review_manifest,
-        {
-            "schema": "cyberppt.chapter_review_manifest.v1",
-            "level": "script",
-            "input_sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
-            "reviews": [],
-        },
-    )
-    _write_json(
-        project / "workbench" / "scripts" / "audits" / "content-review.json",
-        {
-            "schema": "cyberppt.content_review.v2",
-            "script_sha256": hashlib.sha256(script.read_bytes()).hexdigest().upper(),
-            "decisions": decisions,
-            "review_provenance": {
-                "reviewer_type": "independent_model",
-                "authoring_separated": True,
-                "authoring_run_id": "authoring-run-test",
-                "reviewer_run_id": "review-run-test",
-                "reviewed_at": "2026-08-03T00:00:00Z",
-                "review_summary": "Independent test review completed.",
-                "chapter_review_manifest_sha256": hashlib.sha256(
-                    review_manifest.read_bytes()
-                ).hexdigest().upper(),
-            },
-            "pages": {
-                page_id: {**decisions, "note": "Page contribution reviewed."}
-                for page_id in page_ids
-            },
-        },
-    )
-
-
 def _build_project(root: Path, script_text: str = VALID_SCRIPT) -> tuple[Path, Path]:
     project = root / "project"
     analysis = project / "workbench" / "stages" / "01-analysis"
@@ -125,8 +72,8 @@ def _build_project(root: Path, script_text: str = VALID_SCRIPT) -> tuple[Path, P
     # Keep the shared fixture above the repository's current reading-density
     # gate while preserving the business meaning used by the tests.
     script_text = script_text.replace(
-        "\u7b49\u4e13\u4e1a\u7cfb\u7edf\u3002",
-        "\u7b49\u4e13\u4e1a\u7cfb\u7edf\u3002\u540e\u7eed\u6210\u679c\u8fd8\u5e94\u652f\u6301\u5468\u671f\u6027\u590d\u76d8\u548c\u8fd0\u8425\u66f4\u65b0\uff0c\u5e76\u5bf9\u6570\u636e\u53e3\u5f84\u3001\u9884\u6d4b\u7ed3\u679c\u3001\u9884\u8b66\u4f9d\u636e\u548c\u6210\u679c\u7248\u672c\u4fdd\u7559\u53ef\u8ffd\u6eaf\u8bb0\u5f55\uff0c\u4f7f\u4e0d\u540c\u5730\u533a\u3001\u4e0d\u540c\u65f6\u95f4\u5c3a\u5ea6\u548c\u4e0d\u540c\u4f7f\u7528\u573a\u666f\u7684\u5206\u6790\u7ed3\u679c\u5177\u5907\u53ef\u6bd4\u8f83\u6027\u4e0e\u53ef\u590d\u6838\u6027\u3002",
+        "等专业系统。",
+        "等专业系统。后续成果还应支持周期性复盘和运营更新，并对数据口径、预测结果、预警依据和成果版本保留可追溯记录，使不同地区、不同时间尺度和不同使用场景的分析结果具备可比较性与可复核性。",
     )
     script.write_text(script_text, encoding="utf-8")
     _write_json(
@@ -195,82 +142,6 @@ def _build_project(root: Path, script_text: str = VALID_SCRIPT) -> tuple[Path, P
     _write_json(
         project / "workbench" / "artifact-ledger.json",
         {"schema": "cyberppt.artifact_ledger.v1", "artifacts": []},
-    )
-    return project, script
-
-
-def _build_failing_project(root: Path) -> tuple[Path, Path]:
-    project, script = _build_project(root)
-    script.write_text(
-        """## 第4页：工作基础
-
-- 页面类型：内容页
-- 页面标题：工作基础
-- 主判断：现有基础能够直接支撑首期建设全国总盘和定期报告。
-- 完整文字稿：本页应以既有统计、研判和协调工作事实为主。若把现有基础能够直接支撑首期建设全国总盘和定期报告写成工作基础页的核心判断，就把尚未进入范围论证的首期建设安排提前固化了。正确写法应先陈述已形成的工作依托，再在范围页讨论首期取舍。
-- 文字稿取舍说明：本页只写本页业务问题主体；邻页议题不展开；建议与边界保持拟/待状态。
-- 证据映射：支撑点1→S006
-- 上屏文字：
-
-  **统计基础**
-
-  - 已形成稳定统计积累。
-
-  **报告基础**
-
-  - 已形成定期报告工作。
-
-- 证据：S006
-- 边界：本页只陈述既有事实。
-- 视觉结构：工作基础链。
-""",
-        encoding="utf-8",
-    )
-    analysis = project / "workbench" / "stages" / "01-analysis"
-    _write_json(
-        analysis / "outline.json",
-        {
-            "schema": "cyberppt.outline.v1",
-            "material_type": "solution",
-            "audience": "project_team",
-            "architecture_mode": "solution",
-            "architecture_reason": "formal solution workflow",
-            "source_section_weights": {},
-            "argument_contract_mode": "strict",
-            "pages": [
-                {
-                    "page_id": "p04",
-                    "sequence": 4,
-                    "page_type": "content",
-                    "title": "工作基础",
-                    "argument_role": "foundation",
-                    "source_refs": ["S006"],
-                    "prerequisite_pages": [],
-                    "main_claim_status": "confirmed",
-                }
-            ],
-            "retry": {"attempt": 1, "max_attempts": 3, "strategy": ""},
-        },
-    )
-    _write_json(
-        analysis / "source-truth.json",
-        {
-            "schema": "cyberppt.source_truth.v1",
-            "sources": [],
-            "coverage_targets": [],
-            "argument_contract_mode": "strict",
-            "records": [
-                {
-                    "id": "S006",
-                    "type": "F",
-                    "status": "已形成",
-                    "statement": "具备统计和报告工作基础。",
-                }
-            ],
-            "conclusions": [],
-            "pages": [],
-            "retry": {"attempt": 1, "max_attempts": 3, "strategy": ""},
-        },
     )
     return project, script
 
@@ -344,11 +215,7 @@ class ScriptAuditCommandTests(unittest.TestCase):
             ledger = project / "workbench" / "artifact-ledger.json"
             ledger_before = ledger.read_bytes()
 
-            code, report = run_script_audit(
-                project,
-                script,
-                lightweight=True,
-            )
+            code, report = run_script_audit(project, script)
 
             self.assertEqual(0, code)
             self.assertEqual("cyberppt.script_check.v1", report["schema"])
@@ -357,170 +224,6 @@ class ScriptAuditCommandTests(unittest.TestCase):
                 (project / "workbench" / "scripts" / "audits").exists()
             )
             self.assertEqual(ledger_before, ledger.read_bytes())
-
-    def test_persists_passed_reports_and_ledger(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project, script = _build_project(Path(temp_dir))
-            _approve_content_review(project, script)
-
-            code, report = run_script_audit(project, script)
-
-            self.assertEqual(0, code)
-            self.assertEqual("passed", report["status"])
-            self.assertEqual("passed_with_warnings", report["quality_status"])
-            self.assertGreater(report["warning_count"], 0)
-            audit_dir = project / "workbench" / "scripts" / "audits"
-            self.assertTrue((audit_dir / "script-audit.json").exists())
-            self.assertTrue((audit_dir / "script-audit.md").exists())
-            self.assertTrue((audit_dir / "attempts" / "attempt-01.json").exists())
-            ledger = json.loads(
-                (project / "workbench" / "artifact-ledger.json").read_text(
-                    encoding="utf-8"
-                )
-            )
-            self.assertTrue(
-                any(
-                    item["path"]
-                    == "workbench/scripts/audits/script-audit.json"
-                    for item in ledger["artifacts"]
-                )
-            )
-
-    def test_structural_success_does_not_require_a_second_content_gate(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project, script = _build_project(Path(temp_dir))
-
-            code, report = run_script_audit(project, script)
-
-            self.assertEqual(0, code)
-            self.assertEqual("passed", report["status"])
-            self.assertEqual("missing", report["content_review"]["status"])
-            self.assertEqual("advisory", report["content_review_gate"])
-
-    def test_stale_content_review_is_not_accepted(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project, script = _build_project(Path(temp_dir))
-            _approve_content_review(project, script)
-            script.write_text(script.read_text(encoding="utf-8") + "\n", encoding="utf-8")
-
-            code, report = run_script_audit(project, script)
-
-            self.assertEqual(0, code)
-            self.assertEqual("passed", report["status"])
-            self.assertEqual("stale", report["content_review"]["status"])
-
-    def test_legacy_boolean_only_content_review_is_unverified(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            project, script = _build_project(Path(tmp))
-            outline = json.loads(
-                (project / "workbench/stages/01-analysis/outline.json").read_text(
-                    encoding="utf-8"
-                )
-            )
-            decisions = {
-                "single_mission": True,
-                "module_same_dimension": True,
-                "nonessential_information_removed": True,
-                "cross_page_new_value": True,
-            }
-            _write_json(
-                project / "workbench/scripts/audits/content-review.json",
-                {
-                    "schema": "cyberppt.content_review.v1",
-                    "script_sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
-                    "decisions": decisions,
-                    "pages": {
-                        page["page_id"]: {**decisions, "note": "auto approved"}
-                        for page in outline["pages"]
-                        if page.get("page_type") == "content"
-                    },
-                },
-            )
-            code, report = run_script_audit(project, script, max_attempts=5)
-            self.assertEqual(0, code)
-            self.assertEqual("passed", report["status"])
-            self.assertEqual("unverified", report["content_review"]["status"])
-
-    def test_same_authoring_and_reviewer_run_is_unverified(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project, script = _build_project(Path(temp_dir))
-            _approve_content_review(project, script)
-            review_path = project / "workbench/scripts/audits/content-review.json"
-            review = json.loads(review_path.read_text(encoding="utf-8"))
-            review["review_provenance"]["reviewer_run_id"] = review[
-                "review_provenance"
-            ]["authoring_run_id"]
-            _write_json(review_path, review)
-
-            code, report = run_script_audit(project, script)
-
-            self.assertEqual(0, code)
-            self.assertEqual("passed", report["status"])
-            self.assertEqual("unverified", report["content_review"]["status"])
-            self.assertFalse(report["content_review"]["identity_valid"])
-
-    def test_attempts_auto_increment_and_change_strategy(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project, script = _build_failing_project(Path(temp_dir))
-
-            code1, report1 = run_script_audit(project, script, max_attempts=3)
-            code2, report2 = run_script_audit(project, script, max_attempts=3)
-
-            self.assertEqual(4, code1)
-            self.assertEqual(4, code2)
-            self.assertEqual(1, report1["attempt"])
-            self.assertEqual(2, report2["attempt"])
-            self.assertNotEqual(
-                report1["retry_directive"]["strategy"],
-                report2["retry_directive"]["strategy"],
-            )
-
-    def test_named_batch_preserves_legacy_attempts_and_is_traceable(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project, script = _build_project(Path(temp_dir))
-            audit_dir = project / "workbench" / "scripts" / "audits"
-            legacy_attempt = audit_dir / "attempts" / "attempt-01.json"
-            _write_json(legacy_attempt, {"legacy": True})
-
-            code, report = run_script_audit(
-                project,
-                script,
-                max_attempts=5,
-                batch_id="stage01-fix-20260810",
-            )
-
-            self.assertEqual(0, code)
-            self.assertEqual("stage01-fix-20260810", report["audit_batch_id"])
-            self.assertEqual({"legacy": True}, json.loads(legacy_attempt.read_text(encoding="utf-8")))
-            batch_dir = audit_dir / "batches" / "stage01-fix-20260810"
-            self.assertTrue((batch_dir / "script-audit.json").exists())
-            self.assertTrue((batch_dir / "script-audit.md").exists())
-            self.assertTrue((batch_dir / "attempts" / "attempt-01.json").exists())
-            latest = json.loads((audit_dir / "script-audit.json").read_text(encoding="utf-8"))
-            self.assertEqual("stage01-fix-20260810", latest["audit_batch_id"])
-
-    def test_named_batch_rejects_path_traversal(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project, script = _build_project(Path(temp_dir))
-
-            with self.assertRaisesRegex(ValueError, "batch_id"):
-                run_script_audit(project, script, batch_id="../outside")
-
-    def test_max_attempt_returns_user_decision_options(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            project, script = _build_failing_project(Path(temp_dir))
-
-            code, report = run_script_audit(
-                project,
-                script,
-                attempt=3,
-                max_attempts=3,
-            )
-
-            self.assertEqual(5, code)
-            self.assertEqual("user_decision_required", report["status"])
-            self.assertGreaterEqual(len(report["options"]), 2)
-            self.assertLessEqual(len(report["options"]), 3)
 
     def test_warnings_only_still_pass(self) -> None:
         warning = ScriptQualityIssue(
@@ -532,7 +235,6 @@ class ScriptAuditCommandTests(unittest.TestCase):
         )
         with tempfile.TemporaryDirectory() as temp_dir:
             project, script = _build_project(Path(temp_dir))
-            _approve_content_review(project, script)
             with patch(
                 "cyberppt.commands.script_audit.audit_script_quality",
                 return_value=[warning],
@@ -548,7 +250,6 @@ class ScriptAuditCommandTests(unittest.TestCase):
                 ["VISUAL_STRUCTURE_TOO_THIN"],
                 [item["code"] for item in report["issues"]],
             )
-            self.assertFalse(report["retry_directive"]["required"])
 
     def test_final_path_rejects_draft_batch_wording(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -569,10 +270,6 @@ class ScriptAuditCommandTests(unittest.TestCase):
             self.assertIn(
                 "FINAL_MANUSCRIPT_DRAFT_BANNER",
                 [item["code"] for item in report["issues"]],
-            )
-            self.assertEqual(
-                "manuscript_form_cleanup",
-                report["retry_directive"]["strategy"],
             )
 
 
