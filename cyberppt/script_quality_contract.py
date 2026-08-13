@@ -10,6 +10,7 @@ import re
 import unicodedata
 
 from cyberppt.paths import repo_path
+from cyberppt.onscreen_expression import audit_expression_balance, resolve_onscreen_expression
 
 # Fallback values, used only if vendor/skills/ppt-script/config/rules.yaml is
 # missing or malformed (e.g. a checkout without the vendor/ skill content, or
@@ -4431,6 +4432,36 @@ def _presentation_issues(
                 "reduce the number of primary nodes.",
                 evidence=(f"nodes={visible_nodes}",),
                 severity="error" if visible_nodes >= 8 else "warning",
+            )
+        )
+    decision = resolve_onscreen_expression(
+        page,
+        page_mission=str((contract or {}).get("page_mission") or ""),
+        business_relationships=page.content_relations,
+        topic_category=str((contract or {}).get("topic_category") or ""),
+    )
+    for finding in audit_expression_balance(page, decision):
+        issues.append(
+            _issue(
+                finding.code,
+                page,
+                finding.message,
+                finding.action,
+                evidence=finding.evidence,
+                severity=finding.severity,
+            )
+        )
+    contrast_hits = _prohibited_contrast_hits(
+        "\n".join((page.onscreen_judgment, page.onscreen_text))
+    )
+    if contrast_hits:
+        issues.append(
+            _issue(
+                "ONSCREEN_CONTRASTIVE_TEMPLATE",
+                page,
+                "Visible copy uses a contrastive or debate-style template.",
+                "Rewrite as a definition, condition, capability, or directional judgment.",
+                evidence=contrast_hits,
             )
         )
     return issues

@@ -35,6 +35,15 @@ class ExpressionDecision:
         }
 
 
+@dataclass(frozen=True)
+class ExpressionAuditFinding:
+    code: str
+    message: str
+    action: str
+    evidence: tuple[str, ...]
+    severity: str = "error"
+
+
 EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
     "framework_4": ExpressionSpec("framework_4", "四模块框架", (4, 4), "parallel_noun"),
     "key_points_3": ExpressionSpec("key_points_3", "三要素结构", (3, 3), "parallel_phrase"),
@@ -165,3 +174,51 @@ def _score_candidates(
     if module_count == 3 and re.search(r"原则|价值|重点", text):
         scores["key_points_3"] += 0.48
     return tuple(sorted(((form, min(round(score, 2), 0.89)) for form, score in scores.items()), key=lambda item: (-item[1], item[0])))
+
+
+def audit_expression_balance(page: Any, decision: ExpressionDecision) -> list[ExpressionAuditFinding]:
+    """Return form-specific text-balance diagnostics without choosing a layout."""
+
+    modules = tuple(str(item).strip() for item in getattr(page, "top_level_module_titles", ()) if str(item).strip())
+    spec = EXPRESSION_SPECS[decision.form]
+    findings: list[ExpressionAuditFinding] = []
+    if not spec.module_range[0] <= len(modules) <= spec.module_range[1]:
+        findings.append(ExpressionAuditFinding(
+            "ONSCREEN_MODULE_COUNT_MISMATCH",
+            f"{spec.label} requires {spec.module_range[0]}–{spec.module_range[1]} top-level modules.",
+            "Revise the visible structure so its peer-module count matches the selected expression form.",
+            (f"actual={len(modules)}",),
+        ))
+    lengths = [len(re.sub(r"\s+", "", item)) for item in modules]
+    if len(lengths) >= 2 and max(lengths) - min(lengths) > 8:
+        findings.append(ExpressionAuditFinding(
+            "ONSCREEN_HEADING_LENGTH_IMBALANCED",
+            "Peer headings have visibly uneven lengths.",
+            "Keep the long business proposition in a child detail and make peer headings comparable in reading weight.",
+            modules,
+            "warning",
+        ))
+    if spec.require_action:
+        inactive = tuple(item for item in modules if not _ACTION_RE.search(item))
+        if inactive:
+            findings.append(ExpressionAuditFinding(
+                "ONSCREEN_FLOW_ACTION_MISSING",
+                "This expression form requires action-bearing peer headings.",
+                "Rewrite peer headings with concise business actions and retain evidence in child details.",
+                inactive,
+            ))
+    if decision.form == "operation_loop" and not any(_LOOP_RE.search(item) for item in modules):
+        findings.append(ExpressionAuditFinding(
+            "ONSCREEN_LOOP_RETURN_MISSING",
+            "An operation loop requires one visible feedback or return node.",
+            "Add a concise feedback, return, or iteration node that closes the operating relation.",
+            modules,
+        ))
+    if decision.form == "comparison_2col" and len(modules) == 2 and abs(lengths[0] - lengths[1]) > 4:
+        findings.append(ExpressionAuditFinding(
+            "ONSCREEN_COMPARISON_DIMENSION_MISMATCH",
+            "The two comparison dimensions have uneven reading weight.",
+            "Use matched dimension labels on both sides of the comparison.",
+            modules,
+        ))
+    return findings
