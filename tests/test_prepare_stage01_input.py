@@ -9,6 +9,7 @@ from cyberppt.commands.prepare_stage01_input import (
     prepare_outline_input,
     prepare_page_script_input,
 )
+from cyberppt.outline_authoring_projection import build_outline_authoring_projection
 
 
 class PrepareStage01InputTests(unittest.TestCase):
@@ -149,6 +150,10 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("A complete process may remain on one page", text)
         self.assertIn("topic_split_reason", text)
         self.assertIn("形成运营合作", text)
+        self.assertIn("outline_authoring_projection", text)
+        self.assertIn("Use its ST/SU IDs", text)
+        self.assertNotIn("authoritative_semantic_understanding", text)
+        self.assertNotIn("authoritative_source_argument_model", text)
         self.assertIn("P0 is page-forming", text)
         self.assertIn("Present the completed chapter/page Outline to the user", text)
         self.assertIn("detailed page content to the user", text)
@@ -156,6 +161,31 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertFalse(
             (self.project / "workbench/stages/01-analysis/outline-authoring-input.md").exists()
         )
+
+    def test_outline_authoring_projection_keeps_nodes_relations_and_priority_lookup(self) -> None:
+        model = {
+            "document_semantics": {"primary_thesis": "主结论"},
+            "document_thesis": {"statement": "主结论"},
+            "section_nodes": [{"id": "N1", "source_heading": "章节", "section_thesis": "命题", "argument_role": "foundation", "argument_weight": "core", "status": "existing", "evidence_refs": ["SU-1"], "allowed_merges": [], "source_gap_ids": ["G1"]}],
+            "subsection_nodes": [{"id": "N2", "parent_id": "N1", "source_heading": "小节", "section_thesis": "小节命题", "argument_role": "detail", "argument_weight": "supporting", "status": "planned", "evidence_refs": ["SU-2"], "allowed_merges": ["N1"]}],
+            "argument_relations": [{"id": "R1", "from": "N2", "to": "N1", "relation": "supports"}],
+            "source_gaps": [{"id": "G1", "statement": "待核"}],
+        }
+        truth = {"records": [
+            {"id": "ST1", "priority": "P0", "statement": "完整 P0", "source_unit_refs": ["SU-1"], "source_locator": {"paragraph": 1}},
+            {"id": "ST2", "priority": "P1", "statement": "完整 P1", "source_unit_refs": ["SU-1"], "source_locator": {"paragraph": 2}},
+            {"id": "ST3", "priority": "P2", "statement": "P2 原文", "semantic_units": [{"text": "P2 摘要", "source_unit_ref": "SU-2"}], "source_unit_refs": ["SU-2"], "source_locator": {"paragraph": 3}},
+        ]}
+
+        projection = build_outline_authoring_projection(model, truth)
+
+        self.assertEqual({"N1", "N2"}, {node["id"] for node in projection["nodes"]})
+        self.assertEqual(["R1"], [item["id"] for item in projection["relations"]])
+        self.assertEqual(["ST1", "ST2"], projection["source_truth_refs_by_node"]["N1"])
+        self.assertEqual("完整 P0", projection["source_truth_records"]["ST1"]["statement"])
+        self.assertEqual("完整 P1", projection["source_truth_records"]["ST2"]["statement"])
+        self.assertEqual(["ST3"], projection["source_truth_refs_by_node"]["N2"])
+        self.assertIn("summary", projection["source_truth_records"]["ST3"])
 
     def test_lightweight_page_input_keeps_business_rules_without_authoring_controls(self) -> None:
         text = prepare_page_script_input(self.project, "p04")

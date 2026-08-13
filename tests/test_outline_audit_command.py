@@ -98,7 +98,7 @@ class OutlineAuditCommandTests(unittest.TestCase):
                 patch(
                     "cyberppt.commands.outline_audit.audit_outline_consumption",
                     return_value=[],
-                ),
+                ) as model_audit,
             ):
                 run_outline_audit(
                     project,
@@ -106,6 +106,8 @@ class OutlineAuditCommandTests(unittest.TestCase):
                 )
 
             self.assertIs(contract_audit.call_args.args[2], argument_model)
+            self.assertEqual([], contract_audit.call_args.kwargs["argument_model_issues"])
+            model_audit.assert_called_once()
 
     def test_lightweight_audit_reports_business_issues_without_control_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

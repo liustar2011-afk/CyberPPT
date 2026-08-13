@@ -6,10 +6,10 @@ import json
 from pathlib import Path
 
 from cyberppt.semantic_understanding import (
-    SEMANTIC_ARTIFACT,
     SEMANTIC_ARGUMENT_MODEL,
 )
 from cyberppt.source_argument_model import load_model
+from cyberppt.outline_authoring_projection import build_outline_authoring_projection
 
 
 def storyline_director_authoring_contract() -> str:
@@ -128,20 +128,11 @@ def prepare_outline_input(project: Path, *, communication_goal: str = "") -> str
         "After page-detail authoring, present the detailed page content to the user: readable full prose, on-screen text, and the speaker explanation logic. Do this before submitting a final script to any automated gate.",
         "",
     ]
-    semantic_path = project / SEMANTIC_ARTIFACT
-    if not semantic_path.is_file():
-        raise FileNotFoundError(
-            "lightweight Outline preparation requires semantic-understanding.md"
-        )
     lines += [
-        "## authoritative_semantic_understanding",
+        "## outline_authoring_projection",
         "",
-        semantic_path.read_text(encoding="utf-8-sig").rstrip(),
-        "",
-        "## authoritative_source_argument_model",
-        "",
-        "Use this model to select and organize pages; do not change its document semantics, thesis, node roles, weights, statuses, relations, MECE basis, inferences, concept distinctions, or source gaps.",
-        json.dumps(argument_model, ensure_ascii=False, indent=2),
+        "This is a structured, de-duplicated editing workset. It is not a new authority artifact. Use its ST/SU IDs to look up the existing semantic-understanding.md, semantic-argument-model.json, and source-truth.json whenever full context is needed.",
+        json.dumps(build_outline_authoring_projection(argument_model, truth), ensure_ascii=False, indent=2),
         "",
         "Every content page must declare `primary_argument_node_id`, `source_argument_node_ids`, and matching roles, weights, statuses and gap handling. Do not default to one page per source subsection; merge adjacent thin material when one source-supported page can carry the relationship more clearly.",
         "",

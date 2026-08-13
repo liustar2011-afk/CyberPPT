@@ -72,6 +72,29 @@ def strict_truth(*records: dict[str, object]) -> dict[str, object]:
 
 
 class ArgumentFlowContractTests(unittest.TestCase):
+    def test_strict_v2_requires_frozen_mapping_without_per_record_mismatch(self) -> None:
+        outline = strict_outline(content_page("p01", 1, "foundation", refs=["S001"]))
+        outline["schema"] = "cyberppt.outline.v2"
+
+        codes = {issue.code for issue in audit_argument_flow(outline, strict_truth(record("S001", "fact")))}
+
+        self.assertIn("SOURCE_TRUTH_MAPPING_MODE_REQUIRED", codes)
+        self.assertNotIn("PAGE_EVIDENCE_MAPPING_MISMATCH", codes)
+
+    def test_frozen_mapping_still_rejects_source_truth_page_assignments(self) -> None:
+        outline = strict_outline(content_page("p01", 1, "foundation", refs=["S001"]))
+        outline.update({"schema": "cyberppt.outline.v2", "source_truth_mapping_mode": "frozen"})
+
+        codes = {
+            issue.code
+            for issue in audit_argument_flow(
+                outline,
+                strict_truth(record("S001", "fact", pages=["p01"])),
+            )
+        }
+
+        self.assertIn("SOURCE_TRUTH_PAGE_MAPPING_MUTATED", codes)
+
     def _topic_partition_payload(self) -> dict[str, object]:
         def page(
             page_id: str,
