@@ -599,8 +599,9 @@ _ACTOR_LABEL_RE = re.compile(
     r"合作方|合作伙伴|机构|企业|院所|高校|客户)$"
 )
 _ACTOR_DUTY_LABEL_RE = re.compile(
-    r"(?:中电联|数智公司|合作伙伴|需求单位|资源方|需求方|供给方|模型(?:算法)?方|"
-    r"服务方|实施方|运营方|合作方|机构|企业|院所|高校|客户)"
+    r"(?:合作伙伴|需求单位|资源方|需求方|供给方|模型(?:算法)?方|"
+    r"服务方|实施方|运营方|合作方|机构|企业|院所|高校|客户|"
+    r"[一-鿿]{1,8}(?:公司|集团|协会|联合会|联))"
 )
 _ACTOR_PARENT_RE = re.compile(r"(?:参与主体|合作主体|主体类型|参与方|合作伙伴|角色|服务对象)$")
 _NON_ACTOR_PARENT_RE = re.compile(r"(?:建设|平台|载体|机制|路径|流程|环节|内容|目标|任务)$")
@@ -969,19 +970,11 @@ DEPTH_DEFENSE_MARKERS = (
     "逐层衔接",
     "逐级收紧",
 )
-MECHANISM_LANE_LABELS = (
-    "资源隔离",
-    "弹性降级",
-    "差异化降级",
-)
-BUSINESS_LANE_LABELS = (
-    "学生实时链路",
-    "教师异步队列",
-    "在线事务链",
-    "异步事件链",
-    "离线分析链",
-    "实时链路",
-    "异步队列",
+# Matched by suffix rather than a fixed vocabulary list, so this generalizes
+# past whichever project's engine/mechanism naming happened to be used first.
+MECHANISM_LANE_LABEL_RE = re.compile(r"[一-鿿]{1,6}(?:隔离|降级)")
+BUSINESS_LANE_LABEL_RE = re.compile(
+    r"[一-鿿]{1,8}(?:链路|队列|事务链|事件链|分析链)"
 )
 SPATIAL_SIGNALS = (
     "左",
@@ -3926,12 +3919,8 @@ def _visual_structure_judgment_issues(page: ScriptPage) -> list[ScriptQualityIss
 
     # 4) Swimlanes peer-stage mechanisms with business chains.
     if "主体泳道" in visual:
-        mechanism_hits = tuple(
-            label for label in MECHANISM_LANE_LABELS if label in visual
-        )
-        business_hits = tuple(
-            label for label in BUSINESS_LANE_LABELS if label in visual
-        )
+        mechanism_hits = tuple(dict.fromkeys(MECHANISM_LANE_LABEL_RE.findall(visual)))
+        business_hits = tuple(dict.fromkeys(BUSINESS_LANE_LABEL_RE.findall(visual)))
         if mechanism_hits and business_hits:
             issues.append(
                 _issue(
