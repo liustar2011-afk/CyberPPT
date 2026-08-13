@@ -262,6 +262,11 @@ def _write_visual_design_input(project: Path, handoff: Path) -> Path:
                 "locked_on_screen_text": page.get("onscreen_text"),
                 "locked_on_screen_items": page.get("onscreen_items") or [],
                 "locked_text_items": visual.get("locked_text_items") or [],
+                "onscreen_expression": (
+                    visual.get("onscreen_expression")
+                    or page.get("onscreen_expression")
+                    or {}
+                ),
                 "business_relationships": visual.get("business_relationships") or [],
                 "stage01_relationship_features": visual.get("stage01_relationship_features") or {},
                 "relationship_authority": "business_relationships",
@@ -428,7 +433,7 @@ def prepare_visual_structure_stage(
                 "",
                 "## Required action",
                 "",
-                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. For every page, record stage01_visual_note_disposition with inherited, adjusted and rejected feature lists plus reasons. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Generate and compare at least three materially different candidates per content page; deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write:",
+                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. Treat onscreen_expression as a required reading-relation and balance constraint: it governs peer hierarchy, progression, correspondence, feedback or causal direction; it must never be converted directly into a fixed card, column, arrow, loop, pyramid or matrix template. For every page, record stage01_visual_note_disposition with inherited, adjusted and rejected feature lists plus reasons, and record onscreen_expression_disposition with the received form, the chosen reading relation, and the balance strategy. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Generate and compare at least three materially different candidates per content page; deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write:",
                 "",
                 "- `visual/visual-design-decisions.json`",
                 "- `visual/deck-visual-spec.json`",

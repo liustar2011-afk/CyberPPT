@@ -178,6 +178,18 @@ def audit_visual_design_package(
         if not isinstance(features, dict) or not isinstance(features.get("actions"), list) or not features.get("actions"):
             issue("STAGE01_RELATIONSHIP_FEATURES_MISSING", "Structured Stage 01 relationship features are missing.", page_id)
 
+        expression = source.get("onscreen_expression")
+        if isinstance(expression, dict) and str(expression.get("form") or "").strip():
+            disposition = decision.get("onscreen_expression_disposition")
+            if not isinstance(disposition, dict):
+                issue("ONSCREEN_EXPRESSION_DISPOSITION_MISSING", "Decision receipt must explain how the on-screen expression form shaped visual reading order and balance.", page_id)
+            elif (
+                str(disposition.get("form") or "").strip() != str(expression.get("form") or "").strip()
+                or not str(disposition.get("reading_relation") or "").strip()
+                or not str(disposition.get("balance_strategy") or "").strip()
+            ):
+                issue("ONSCREEN_EXPRESSION_DISPOSITION_INVALID", "Expression disposition must preserve the received form and state a reading relation plus balance strategy.", page_id)
+
         disposition = decision.get("stage01_visual_note_disposition")
         if not isinstance(disposition, dict):
             issue("STAGE01_VISUAL_NOTE_DISPOSITION_MISSING", "Decision receipt must explain how Stage 01 visual guidance was inherited, adjusted, or rejected.", page_id)

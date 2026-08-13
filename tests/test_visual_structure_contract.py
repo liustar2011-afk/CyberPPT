@@ -46,6 +46,12 @@ def _payloads() -> tuple[dict, dict, dict]:
                     {"text_id": "P01-T01", "text": "Locked A", "ordinal": 1},
                     {"text_id": "P01-T02", "text": "Locked B", "ordinal": 2},
                 ],
+                "onscreen_expression": {
+                    "form": "framework_4",
+                    "source": "relation",
+                    "confidence": 0.92,
+                    "evidence": ["relation:composed_of"],
+                },
             }
         ],
     }
@@ -94,6 +100,11 @@ def _payloads() -> tuple[dict, dict, dict]:
                     "inherited": [{"feature": "Input supports Result", "reason": "preserves the authoritative relationship"}],
                     "adjusted": [],
                     "rejected": [{"feature": "two cards left and right", "reason": "layout advice is not relationship truth"}],
+                },
+                "onscreen_expression_disposition": {
+                    "form": "framework_4",
+                    "reading_relation": "four parallel capability groups",
+                    "balance_strategy": "equal peer prominence with comparable text weight",
                 },
                 "selected_candidate": "C1",
                 "candidates": candidates,
@@ -187,6 +198,10 @@ def test_visual_design_package_blocks_each_cross_artifact_failure() -> None:
     design, decisions, spec = _payloads()
     spec["pages"][0]["structural_decision"]["text_bindings"][1]["text_ids"] = ["P01-T01"]
     cases.append((design, decisions, spec, "TEXT_BINDING_ID_DUPLICATE"))
+
+    design, decisions, spec = _payloads()
+    del decisions["pages"][0]["onscreen_expression_disposition"]
+    cases.append((design, decisions, spec, "ONSCREEN_EXPRESSION_DISPOSITION_MISSING"))
 
     for design, decisions, spec, expected_code in cases:
         report = _audit(copy.deepcopy(design), copy.deepcopy(decisions), copy.deepcopy(spec))

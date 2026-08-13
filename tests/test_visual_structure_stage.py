@@ -12,6 +12,7 @@ from cyberppt.commands.visual_structure_stage import (
     _prompt_inputs_sha256,
     _sha256,
     _skill_root,
+    _write_visual_design_input,
     assert_visual_structure_ready,
     visual_structure_required,
 )
@@ -21,6 +22,26 @@ from cyberppt.script_quality_contract import ScriptPage
 
 
 class VisualStructureStageTests(unittest.TestCase):
+    def test_visual_design_input_carries_expression_as_semantic_constraint(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory)
+            handoff = project / "handoff.json"
+            handoff.write_text(json.dumps({
+                "pages": [{
+                    "page_id": "p01", "page_number": 1, "render_role": "content",
+                    "title": "标题", "argument_role": "framework", "page_mission": "说明体系",
+                    "core_message": "形成能力体系", "full_prose": "说明",
+                    "onscreen_text": "权属确认\n授权管理\n流转审计\n责任闭环",
+                    "onscreen_items": ["权属确认", "授权管理", "流转审计", "责任闭环"],
+                    "onscreen_expression": {"form": "framework_4", "source": "relation", "confidence": 0.92, "evidence": ["relation:composed_of"]},
+                    "stage02_visual_input": {"locked_text_items": [], "business_relationships": [], "stage01_relationship_features": {}},
+                }]
+            }, ensure_ascii=False), encoding="utf-8")
+            output = _write_visual_design_input(project, handoff)
+            page = json.loads(output.read_text(encoding="utf-8"))["pages"][0]
+        self.assertEqual("framework_4", page["onscreen_expression"]["form"])
+        self.assertNotIn("layout", page["onscreen_expression"])
+
     def test_executable_spec_rejects_more_than_seven_evidence_nodes(self) -> None:
         source = {
             "page_id": "p01",
