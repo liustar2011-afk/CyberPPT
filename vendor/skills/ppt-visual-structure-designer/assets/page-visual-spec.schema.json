@@ -760,6 +760,28 @@
         }
       }
     },
+    "expression_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "form",
+        "constraints_sha256",
+        "selected_candidate_id",
+        "fit_status",
+        "reading_relation",
+        "balance_strategy",
+        "deviation_reason"
+      ],
+      "properties": {
+        "form": {"type": "string", "minLength": 1},
+        "constraints_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "selected_candidate_id": {"type": "string", "minLength": 1},
+        "fit_status": {"enum": ["default_profile", "adapted"]},
+        "reading_relation": {"type": "string", "minLength": 1},
+        "balance_strategy": {"type": "string", "minLength": 1},
+        "deviation_reason": {"type": "string"}
+      }
+    },
     "connectors": {
       "type": "array",
       "items": {

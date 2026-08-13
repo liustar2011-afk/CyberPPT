@@ -120,6 +120,7 @@ Markdown用于人工预审和生图脚本组装，JSON用于自动校验、批�
 - `text_integration`
 - `geometry`
 - `image_plan`
+- `expression_contract`
 - `connectors`
 - `final_text`
 - `generation_handoff`
@@ -127,6 +128,22 @@ Markdown用于人工预审和生图脚本组装，JSON用于自动校验、批�
 - `qa`
 
 具体类型以`assets/page-visual-spec.schema.json`和`assets/deck-visual-spec.schema.json`为准。
+
+CyberPPT工作台候选的`expression_fit`必须包含：
+
+```json
+{
+  "form": "framework_4",
+  "constraint_status": "default_profile",
+  "satisfied_constraints": ["four_peer_nodes", "peer_balance"],
+  "reading_relation": "four parallel capability groups are read as peers",
+  "balance_strategy": "comparable prominence and text capacity",
+  "changed_constraints": [],
+  "deviation_reason": ""
+}
+```
+
+`deck-visual-spec.json`的`expression_contract`只保留选择追溯：`form`、`constraints_sha256`、`selected_candidate_id`、`fit_status`、`reading_relation`、`balance_strategy`与`deviation_reason`。它不得包含候选的内部证据解释、提示词或任何固定布局指令。
 
 `schema_version: 1.1`必须包含`structural_decision`：
 

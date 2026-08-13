@@ -8,6 +8,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from cyberppt.onscreen_expression import expression_constraints, expression_constraints_sha256
+
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -114,6 +116,67 @@ def _profile_total(
     return total
 
 
+def _expression_profile(
+    source: dict[str, Any],
+    issue: Any,
+    page_id: str,
+) -> dict[str, object] | None:
+    expression = source.get("onscreen_expression")
+    form = str(expression.get("form") or "").strip() if isinstance(expression, dict) else ""
+    if not form:
+        issue("ONSCREEN_EXPRESSION_CONSTRAINTS_INVALID", "Visual input must declare an on-screen expression form.", page_id)
+        return None
+    try:
+        expected = expression_constraints(form)
+    except ValueError:
+        issue("ONSCREEN_EXPRESSION_CONSTRAINTS_INVALID", "Visual input has an invalid on-screen expression form.", page_id)
+        return None
+    if source.get("expression_constraints") != expected:
+        issue("ONSCREEN_EXPRESSION_CONSTRAINTS_INVALID", "Visual input expression constraints must match the registered profile.", page_id)
+        return None
+    return expected
+
+
+def _audit_expression_fit(
+    candidate: dict[str, Any],
+    constraints: dict[str, object],
+    issue: Any,
+    page_id: str,
+) -> dict[str, Any] | None:
+    candidate_id = str(candidate.get("id") or "")
+    fit = candidate.get("expression_fit")
+    if not isinstance(fit, dict):
+        issue("CANDIDATE_EXPRESSION_FIT_MISSING", f"{candidate_id} has no expression_fit receipt.", page_id)
+        return None
+    form = str(constraints["form"])
+    status = str(fit.get("constraint_status") or "")
+    satisfied = fit.get("satisfied_constraints")
+    changed = fit.get("changed_constraints")
+    reading_relation = str(fit.get("reading_relation") or "").strip()
+    balance_strategy = str(fit.get("balance_strategy") or "").strip()
+    deviation_reason = str(fit.get("deviation_reason") or "").strip()
+    if (
+        str(fit.get("form") or "") != form
+        or status not in {"default_profile", "adapted"}
+        or not isinstance(satisfied, list)
+        or any(not isinstance(value, str) or not value.strip() for value in satisfied)
+        or not reading_relation
+        or not balance_strategy
+        or not isinstance(changed, list)
+        or any(not isinstance(value, str) or not value.strip() for value in changed)
+    ):
+        issue("CANDIDATE_EXPRESSION_FIT_INVALID", f"{candidate_id} has an invalid expression_fit receipt.", page_id)
+        return None
+    required_features = set(str(value) for value in constraints["required_features"])
+    if not required_features.issubset(set(satisfied)) or "relation_pattern" in changed:
+        issue("CANDIDATE_EXPRESSION_CORE_MISSING", f"{candidate_id} does not retain the expression profile core.", page_id)
+    if status == "default_profile" and (changed or deviation_reason):
+        issue("CANDIDATE_EXPRESSION_DEVIATION_INVALID", f"{candidate_id} default profile must not declare a deviation.", page_id)
+    if status == "adapted" and (not changed or not deviation_reason):
+        issue("CANDIDATE_EXPRESSION_DEVIATION_INVALID", f"{candidate_id} adapted profile requires changed constraints and a business reason.", page_id)
+    return fit
+
+
 def audit_visual_design_package(
     design_input_path: Path,
     decisions_path: Path,
@@ -179,6 +242,7 @@ def audit_visual_design_package(
             issue("STAGE01_RELATIONSHIP_FEATURES_MISSING", "Structured Stage 01 relationship features are missing.", page_id)
 
         expression = source.get("onscreen_expression")
+        constraints = _expression_profile(source, issue, page_id)
         if isinstance(expression, dict) and str(expression.get("form") or "").strip():
             disposition = decision.get("onscreen_expression_disposition")
             if not isinstance(disposition, dict):
@@ -235,6 +299,7 @@ def audit_visual_design_package(
         signatures: set[tuple[Any, ...]] = set()
         candidate_scores: dict[str, int] = {}
         candidate_ids: set[str] = set()
+        candidate_records: dict[str, dict[str, Any]] = {}
         for candidate in candidates:
             if not isinstance(candidate, dict):
                 issue("CANDIDATE_INVALID", "Candidate receipt must be an object.", page_id)
@@ -243,6 +308,7 @@ def audit_visual_design_package(
             if not candidate_id or candidate_id in candidate_ids:
                 issue("CANDIDATE_ID_INVALID", f"Candidate id is empty or duplicated: {candidate_id!r}", page_id)
             candidate_ids.add(candidate_id)
+            candidate_records[candidate_id] = candidate
             focus = candidate.get("semantic_focus") if isinstance(candidate.get("semantic_focus"), dict) else {}
             focus_key = str(focus.get("evidence_key") or "")
             if focus_key not in evidence_key_set:
@@ -261,6 +327,8 @@ def audit_visual_design_package(
             if signature in signatures:
                 issue("CANDIDATE_STRUCTURE_DUPLICATE", f"{candidate_id} is not materially different from another candidate.", page_id)
             signatures.add(signature)
+            if constraints is not None:
+                _audit_expression_fit(candidate, constraints, issue, page_id)
             score = _profile_total(profiles, str(candidate.get("score_profile") or ""), issues, page_id)
             if score is not None:
                 candidate_scores[candidate_id] = score
@@ -269,6 +337,28 @@ def audit_visual_design_package(
             issue("SELECTED_CANDIDATE_MISSING", f"Selected candidate does not exist: {selected!r}", page_id)
         elif candidate_scores and candidate_scores.get(selected) != max(candidate_scores.values()):
             issue("SELECTED_CANDIDATE_NOT_HIGHEST", "Selected candidate must have the highest validated score.", page_id)
+
+        if constraints is not None and selected in candidate_records:
+            selected_fit = candidate_records[selected].get("expression_fit")
+            contract = page_spec.get("expression_contract")
+            if not isinstance(contract, dict):
+                issue("SPEC_EXPRESSION_CONTRACT_MISSING", "Spec must retain the selected expression contract.", page_id)
+            elif not isinstance(selected_fit, dict):
+                # The candidate-specific diagnostic above is the authoritative
+                # explanation; do not fabricate a comparison from missing data.
+                pass
+            else:
+                expected_contract = {
+                    "form": constraints["form"],
+                    "constraints_sha256": expression_constraints_sha256(constraints),
+                    "selected_candidate_id": selected,
+                    "fit_status": selected_fit.get("constraint_status"),
+                    "reading_relation": selected_fit.get("reading_relation"),
+                    "balance_strategy": selected_fit.get("balance_strategy"),
+                    "deviation_reason": selected_fit.get("deviation_reason"),
+                }
+                if contract != expected_contract:
+                    issue("SPEC_EXPRESSION_CONTRACT_DRIFTED", "Spec expression contract must match the input profile and selected candidate receipt.", page_id)
 
         locked_items = page_spec.get("content_lock", {}).get("locked_items", [])
         actual_body_lock = [

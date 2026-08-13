@@ -12,6 +12,7 @@ from cyberppt.commands.visual_structure_stage import (
     _build_executable_page,
     _decision_execution_design,
     _prompt_inputs_sha256,
+    _render_visual_structure_markdown,
     _sha256,
     _skill_root,
     _write_visual_design_input,
@@ -24,6 +25,8 @@ from cyberppt.stage02_handoff import audit_stage02_handoff
 from cyberppt.stage02_handoff import _page_record
 from cyberppt.script_quality_contract import ScriptPage
 from cyberppt.semantic_digest import outline_semantic_digest, script_semantic_digest
+from cyberppt.onscreen_expression import expression_constraints
+from cyberppt.onscreen_expression import expression_constraints_sha256
 
 
 class VisualStructureStageTests(unittest.TestCase):
@@ -46,6 +49,8 @@ class VisualStructureStageTests(unittest.TestCase):
             output = _write_visual_design_input(project, handoff)
             page = json.loads(output.read_text(encoding="utf-8"))["pages"][0]
         self.assertEqual("framework_4", page["onscreen_expression"]["form"])
+        self.assertEqual("framework_4", page["expression_constraints"]["form"])
+        self.assertEqual([4, 4], page["expression_constraints"]["node_range"])
         self.assertNotIn("layout", page["onscreen_expression"])
         self.assertEqual(["S001"], page["trace_refs"])
 
@@ -56,6 +61,7 @@ class VisualStructureStageTests(unittest.TestCase):
             "core_judgment": "Judgment", "trace_refs": ["TRACE-ONLY-001"],
             "locked_text_items": [{"text_id": "P01-T01", "text": "Locked text"}],
             "business_relationships": [{"subject": "Input", "relation": "supports", "objects": ["Result"]}],
+            "expression_constraints": expression_constraints("flow_3_5"),
             "body_image_canvas": {"width": 2048, "height": 1024, "ratio": "2:1"},
             "title_render_mode": "external_text_layer", "subtitle_render_mode": "external_text_layer",
         }
@@ -65,7 +71,14 @@ class VisualStructureStageTests(unittest.TestCase):
             "candidates": [
                 {"id": f"c{index}", "semantic_focus": {"evidence_key": "e1"},
                  "reading_sequence": ["e1"], "spatial_grammar": ["path"],
-                 "direction": "left_to_right", "visual_intent_type": "relationship_field"}
+                 "direction": "left_to_right", "visual_intent_type": "relationship_field",
+                 "expression_fit": {
+                     "form": "flow_3_5", "constraint_status": "default_profile",
+                     "satisfied_constraints": ["ordered_progression"],
+                     "reading_relation": "Input progresses to Result",
+                     "balance_strategy": "one focal progression",
+                     "changed_constraints": [], "deviation_reason": "",
+                 }}
                 for index in range(1, 4)
             ],
             "selected_candidate": "c1",
@@ -145,6 +158,62 @@ class VisualStructureStageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "at most 7 business evidence units"):
             _build_executable_page(source, decision)
 
+    def test_executable_spec_retains_selected_expression_contract(self) -> None:
+        source = {
+            "page_id": "p01", "page_number": 1, "page_title": "Title",
+            "page_mission": "Mission detail", "core_judgment": "Judgment",
+            "locked_text_items": [
+                {"text_id": "P01-T01", "text": "Cause"},
+                {"text_id": "P01-T02", "text": "Response"},
+            ],
+            "business_relationships": [{"subject": "Cause", "objects": ["Response"], "relation": "causes"}],
+            "expression_constraints": expression_constraints("causal_chain"),
+        }
+        fit = {
+            "form": "causal_chain", "constraint_status": "adapted",
+            "satisfied_constraints": ["directed_causal_chain"],
+            "reading_relation": "two parallel causes converge before the response",
+            "balance_strategy": "parallel causes have equal weight before convergence",
+            "changed_constraints": ["reading_requirement"],
+            "deviation_reason": "the convergence preserves the causal core",
+        }
+        candidates = [
+            {
+                "id": candidate_id, "semantic_focus": {"kind": "outcome", "evidence_key": "response"},
+                "reading_sequence": ["cause", "response"], "spatial_grammar": [grammar],
+                "direction": "left_to_right", "visual_intent_type": "causal_response",
+                "expression_fit": fit,
+            }
+            for candidate_id, grammar in (("candidate-a", "path"), ("candidate-b", "convergence"), ("candidate-c", "control"))
+        ]
+        decision = {
+            "page_id": "p01", "candidates": candidates, "selected_candidate": "candidate-b",
+            "evidence_units": [
+                {"key": "cause", "summary": "Cause", "text_ids": ["P01-T01"]},
+                {"key": "response", "summary": "Response", "text_ids": ["P01-T02"]},
+            ],
+        }
+
+        page = _build_executable_page(source, decision)
+
+        self.assertEqual({
+            "form": "causal_chain",
+            "constraints_sha256": expression_constraints_sha256(source["expression_constraints"]),
+            "selected_candidate_id": "candidate-b",
+            "fit_status": "adapted",
+            "reading_relation": "two parallel causes converge before the response",
+            "balance_strategy": "parallel causes have equal weight before convergence",
+            "deviation_reason": "the convergence preserves the causal core",
+        }, page["expression_contract"])
+        markdown = _render_visual_structure_markdown({"deck_title": "Test", "pages": [page]})
+        self.assertIn("上屏表达结构与候选取舍", markdown)
+        self.assertIn("causal_chain", markdown)
+        schema_path = Path(__file__).resolve().parents[1] / "vendor/skills/ppt-visual-structure-designer/assets/page-visual-spec.schema.json"
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        contract_schema = schema["properties"]["expression_contract"]
+        self.assertEqual(set(page["expression_contract"]), set(contract_schema["required"]))
+        self.assertFalse(contract_schema["additionalProperties"])
+
     def test_corrupted_optional_execution_design_falls_back_to_concise_relation_design(self) -> None:
         source = {
             "business_relationships": [{"subject": "服务运营", "objects": ["very long audit-only evidence"]}],
@@ -188,6 +257,8 @@ class VisualStructureStageTests(unittest.TestCase):
 
         self.assertEqual(relationships, visual["business_relationships"])
         self.assertEqual("five horizontal lanes with a bottom result area", visual["author_visual_notes"])
+        self.assertEqual("framework_4", record["expression_constraints"]["form"])
+        self.assertEqual(record["expression_constraints"], visual["expression_constraints"])
         self.assertEqual("advisory_only", visual["author_visual_notes_authority"])
         self.assertEqual("stage01_semantic_handoff", visual["stage01_relationship_features"]["authority"])
         self.assertEqual("Foundation", visual["stage01_relationship_features"]["actors"][0])
@@ -256,6 +327,10 @@ class VisualStructureStageTests(unittest.TestCase):
                         "core_message": "Message",
                         "onscreen_text": "Text",
                         "onscreen_items": ["Text"],
+                        "onscreen_expression": {
+                            "form": "key_points_3", "source": "fallback", "confidence": 0.2,
+                        },
+                        "expression_constraints": expression_constraints("key_points_3"),
                         "stage02_visual_input": {
                             "locked_text_items": [
                                 {"text_id": "P01-T01", "text": "Text", "ordinal": 1}
@@ -269,6 +344,7 @@ class VisualStructureStageTests(unittest.TestCase):
                                 "source_visual_notes": "",
                             },
                             "author_visual_notes_authority": "advisory_only",
+                            "expression_constraints": expression_constraints("key_points_3"),
                             "body_image_canvas": {
                                 "width": 2048,
                                 "height": 1024,
@@ -368,6 +444,10 @@ class VisualStructureStageTests(unittest.TestCase):
                                 "core_message": "Message",
                                 "onscreen_text": "Text",
                                 "onscreen_items": ["Text"],
+                                "onscreen_expression": {
+                                    "form": "key_points_3", "source": "fallback", "confidence": 0.2,
+                                },
+                                "expression_constraints": expression_constraints("key_points_3"),
                                 "stage02_visual_input": {
                                     "locked_text_items": [
                                         {"text_id": "P01-T01", "text": "Text", "ordinal": 1}
@@ -381,6 +461,7 @@ class VisualStructureStageTests(unittest.TestCase):
                                         "source_visual_notes": "",
                                     },
                                     "author_visual_notes_authority": "advisory_only",
+                                    "expression_constraints": expression_constraints("key_points_3"),
                                     "body_image_canvas": {
                                         "width": 2048,
                                         "height": 1024,

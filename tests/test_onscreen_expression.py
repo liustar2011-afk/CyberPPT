@@ -3,7 +3,10 @@ from types import SimpleNamespace
 import pytest
 
 from cyberppt.onscreen_expression import (
+    EXPRESSION_SPECS,
     VALID_EXPRESSION_FORMS,
+    expression_constraints,
+    expression_constraints_sha256,
     resolve_onscreen_expression,
     validate_expression_form,
 )
@@ -26,6 +29,34 @@ def test_registry_has_exactly_ten_initial_forms():
         "architecture_layers", "pyramid_argument", "comparison_2col",
         "matrix_2x2", "causal_chain", "actions_3",
     }
+
+
+def test_expression_constraints_cover_all_registered_forms() -> None:
+    assert set(EXPRESSION_SPECS) == set(VALID_EXPRESSION_FORMS)
+    for form in VALID_EXPRESSION_FORMS:
+        contract = expression_constraints(form)
+        assert contract["form"] == form
+        assert contract["node_range"][0] <= contract["node_range"][1]
+        assert contract["relation_pattern"]
+        assert contract["reading_requirement"]
+        assert contract["balance_requirement"]
+        assert contract["anti_patterns"]
+
+
+def test_operation_loop_contract_requires_feedback_without_layout_recipe() -> None:
+    contract = expression_constraints("operation_loop")
+    assert contract["relation_pattern"] == "directed_cycle"
+    assert "feedback_edge_required" in contract["required_features"]
+    assert "arrow_style" not in contract
+    assert "coordinates" not in contract
+
+
+def test_expression_constraints_are_fresh_and_hash_stable() -> None:
+    first = expression_constraints("framework_4")
+    second = expression_constraints("framework_4")
+    assert expression_constraints_sha256(first) == expression_constraints_sha256(second)
+    first["node_range"].append(99)
+    assert expression_constraints("framework_4")["node_range"] == [4, 4]
 
 
 @pytest.mark.parametrize(
