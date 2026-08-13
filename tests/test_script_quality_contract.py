@@ -681,6 +681,58 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
             ),
         )
 
+    def test_flags_flat_long_labelled_details_without_business_group(self) -> None:
+        page = ScriptPage(
+            page_id="p09", sequence=9, heading="", page_type="content",
+            title="", main_message="", full_prose="", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=(),
+            boundary_source_refs=(), boundary="", visual_structure="",
+            onscreen_text=(
+                "数据处理：平台需要组织多主体资源并完成质量核验。\n"
+                "服务交付：服务目录需要面向场景形成可执行交付闭环。\n"
+                "合作推进：合作机制需要明确主体分工和后续联动安排。"
+            ),
+            module_titles=(),
+        )
+
+        self.assertIn(
+            "ONSCREEN_BUSINESS_DETAIL_HIERARCHY_MISSING",
+            {issue.code for issue in _presentation_issues(page)},
+        )
+
+    def test_allows_grouped_business_title_with_complete_details(self) -> None:
+        page = ScriptPage(
+            page_id="p09", sequence=9, heading="", page_type="content",
+            title="", main_message="", full_prose="", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=(),
+            boundary_source_refs=(), boundary="", visual_structure="",
+            onscreen_text=(
+                "服务形成条件\n  平台组织多主体资源并完成质量核验。\n"
+                "运营交付闭环\n  服务目录面向场景形成可执行交付闭环。"
+            ),
+            module_titles=("服务形成条件", "运营交付闭环"),
+        )
+
+        self.assertNotIn(
+            "ONSCREEN_BUSINESS_DETAIL_HIERARCHY_MISSING",
+            {issue.code for issue in _presentation_issues(page)},
+        )
+
+    def test_allows_compact_short_label_phrases(self) -> None:
+        page = ScriptPage(
+            page_id="p09", sequence=9, heading="", page_type="content",
+            title="", main_message="", full_prose="", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=(),
+            boundary_source_refs=(), boundary="", visual_structure="",
+            onscreen_text="数据目录：统一编目\n服务入口：统一受理",
+            module_titles=(),
+        )
+
+        self.assertNotIn(
+            "ONSCREEN_BUSINESS_DETAIL_HIERARCHY_MISSING",
+            {issue.code for issue in _presentation_issues(page)},
+        )
+
     def test_flags_reused_generic_onscreen_label_template(self) -> None:
         page = ScriptPage(
             page_id="p09", sequence=9, heading="", page_type="content",

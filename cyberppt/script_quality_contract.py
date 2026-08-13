@@ -2343,6 +2343,29 @@ def _mechanical_onscreen_label_pattern_hits(page: ScriptPage) -> tuple[str, ...]
     return ()
 
 
+def _onscreen_flat_long_labelled_detail_hits(text: str) -> tuple[str, ...]:
+    """Find long peer labels that need a real business-title parent.
+
+    The check deliberately uses only visible structure: it neither requires a
+    title vocabulary nor assumes a target number of modules.  A genuine title
+    with indented children has only the title at the least indentation level;
+    three long label-value peers do not.
+    """
+
+    lines = [line for line in text.splitlines() if line.strip()]
+    if not lines:
+        return ()
+    peer_indent = min(_line_indent(line) for line in lines)
+    hits: list[str] = []
+    for line in lines:
+        if _line_indent(line) != peer_indent:
+            continue
+        match = re.match(r"\s*[^：:]{1,16}[：:]\s*(.+)", line)
+        if match and _compact_len(match.group(1)) > 18:
+            hits.append(line.strip())
+    return tuple(hits) if len(hits) >= 3 else ()
+
+
 def _boundary_aside_hits(text: str) -> tuple[str, ...]:
     hits = [pattern for pattern in _BOUNDARY_ASIDE_PATTERNS if pattern in text]
     return tuple(hits)
@@ -4118,6 +4141,17 @@ def _presentation_issues(
                 )
             )
         mechanical_label_hits = _mechanical_onscreen_label_pattern_hits(page)
+        flat_detail_hits = _onscreen_flat_long_labelled_detail_hits(page.onscreen_text)
+        if flat_detail_hits:
+            issues.append(
+                _issue(
+                    "ONSCREEN_BUSINESS_DETAIL_HIERARCHY_MISSING",
+                    page,
+                    "Several long on-screen details are flattened into peer labels without a business-title group.",
+                    "Group related propositions under a source-specific business title, then retain each detail as a complete natural sentence. Do not fix this with generic labels such as 需求、措施 or 价值.",
+                    evidence=flat_detail_hits,
+                )
+            )
         if mechanical_label_hits:
             issues.append(
                 _issue(
