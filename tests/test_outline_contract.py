@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from cyberppt.outline_contract import audit_outline, resolve_architecture_mode
+from cyberppt.outline_contract import audit_outline, resolve_architecture_mode, retry_directive
 
 
 def page(
@@ -56,6 +56,95 @@ def outline(*pages: dict[str, object], **overrides: object) -> dict[str, object]
 
 
 class OutlineContractTests(unittest.TestCase):
+    def test_public_audit_mode_projections_and_retry_directives_are_stable(self) -> None:
+        cases = (
+            (
+                "legacy",
+                {},
+                [],
+                {"required": False, "issue_codes": [], "strategies": []},
+            ),
+            (
+                "strict_without_truth",
+                {"argument_contract_mode": "strict"},
+                [
+                    (
+                        "SOURCE_TRUTH_REQUIRED",
+                        "Strict outline audits require the authoritative Source Truth artifact.",
+                        (),
+                        "reconcile_page_evidence_mapping",
+                    )
+                ],
+                {
+                    "required": True,
+                    "issue_codes": ["SOURCE_TRUTH_REQUIRED"],
+                    "strategies": ["reconcile_page_evidence_mapping"],
+                },
+            ),
+            (
+                "mechanical_authoring_candidate",
+                {
+                    "editorial_authoring_mode": "author_driven",
+                    "editorial_authoring_status": "mechanical_draft",
+                },
+                [
+                    (
+                        "OUTLINE_AUTHOR_EDIT_REQUIRED",
+                        "The deterministic Outline is only a candidate inventory. Complete the professional authoring task before formal Outline audit.",
+                        (),
+                        "author_outline_from_page_missions",
+                    )
+                ],
+                {
+                    "required": True,
+                    "issue_codes": ["OUTLINE_AUTHOR_EDIT_REQUIRED"],
+                    "strategies": ["author_outline_from_page_missions"],
+                },
+            ),
+            (
+                "required_model_without_model",
+                {"semantic_argument_model_mode": "required"},
+                [
+                    (
+                        "OUTLINE_ARGUMENT_MODEL_MISSING",
+                        "严格提纲必须消费语义阶段产出的 source argument model。",
+                        (),
+                        "rebuild_from_semantic_argument_model",
+                    ),
+                    (
+                        "PAGE_CONTENT_UNIT_COVERAGE_MODE_REQUIRED",
+                        "正式语义提纲默认必须启用 page_content_unit_coverage_mode=required，防止页面在完整稿和上屏压缩中静默丢失重要内容。",
+                        (),
+                        "rebuild_page_content_units",
+                    ),
+                ],
+                {
+                    "required": True,
+                    "issue_codes": [
+                        "OUTLINE_ARGUMENT_MODEL_MISSING",
+                        "PAGE_CONTENT_UNIT_COVERAGE_MODE_REQUIRED",
+                    ],
+                    "strategies": [
+                        "rebuild_from_semantic_argument_model",
+                        "rebuild_page_content_units",
+                    ],
+                },
+            ),
+        )
+
+        for name, overrides, expected_issues, expected_directive in cases:
+            with self.subTest(name=name):
+                issues = audit_outline(outline(source_section_weights={}, **overrides))
+                projection = [
+                    (issue.code, issue.message, issue.pages, issue.retry_strategy)
+                    for issue in issues
+                ]
+                self.assertEqual(expected_issues, projection)
+                directive = retry_directive(issues)
+                self.assertEqual(expected_directive["required"], directive["required"])
+                self.assertEqual(expected_directive["issue_codes"], directive["issue_codes"])
+                self.assertEqual(expected_directive["strategies"], directive["strategies"])
+
     def test_structural_driver_cannot_live_only_in_detail_refs(self) -> None:
         content = page(
             1,
