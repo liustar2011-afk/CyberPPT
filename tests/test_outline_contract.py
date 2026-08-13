@@ -56,6 +56,20 @@ def outline(*pages: dict[str, object], **overrides: object) -> dict[str, object]
 
 
 class OutlineContractTests(unittest.TestCase):
+    def test_mechanical_candidate_stops_before_formal_content_audit(self) -> None:
+        candidate = outline(
+            page(1, "content", "附件登记要点", message="附件登记要点", refs=[]),
+            editorial_authoring_mode="author_driven",
+            editorial_authoring_status="mechanical_draft",
+            semantic_argument_model_mode="required",
+            argument_contract_mode="strict",
+        )
+
+        self.assertEqual(
+            ["OUTLINE_AUTHOR_EDIT_REQUIRED"],
+            [issue.code for issue in audit_outline(candidate)],
+        )
+
     def test_public_audit_mode_projections_and_retry_directives_are_stable(self) -> None:
         cases = (
             (

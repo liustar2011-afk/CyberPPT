@@ -83,11 +83,17 @@ def audit_outline(
         )
     raw_pages = outline.get("pages")
     pages = [page for page in raw_pages if isinstance(page, dict)] if isinstance(raw_pages, list) else []
+    author_issues = _author_driven_editorial_issues(outline, pages)
+    if author_issues:
+        # A deterministic candidate is source inventory for the professional
+        # author, not a submitted outline.  Do not turn pending editorial
+        # choices into a noisy collection of formal-quality failures.
+        return author_issues
     issues.extend(_title_style_issues(outline, pages))
     issues.extend(_template_issues(pages))
     issues.extend(_content_issues(pages))
     issues.extend(_editorial_control_issues(outline, pages))
-    issues.extend(_author_driven_editorial_issues(outline, pages))
+    issues.extend(author_issues)
     issues.extend(_weight_issues(outline, pages))
     issues.extend(_content_page_density_issues(pages, source_truth))
     issues.extend(_document_semantic_issues(outline, source_truth))
