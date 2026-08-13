@@ -4448,7 +4448,11 @@ def _presentation_issues(
                 finding.message,
                 finding.action,
                 evidence=finding.evidence,
-                severity=finding.severity,
+                severity=(
+                    finding.severity
+                    if decision.source == "explicit"
+                    else "warning"
+                ),
             )
         )
     contrast_hits = _prohibited_contrast_hits(

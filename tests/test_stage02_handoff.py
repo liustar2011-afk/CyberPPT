@@ -114,5 +114,5 @@ def test_handoff_audit_requires_expression_decision() -> None:
         payload = _payload(project, created_at="2026-08-13T00:00:00+00:00", outline_sha256="c" * 64)
         del payload["pages"][0]["onscreen_expression"]
         report = audit_stage02_handoff(project, payload)
-    codes = {item["code"] for item in report["blocking_issues"]}
+    codes = {item["code"] for item in report["warnings"]}
     assert "ONSCREEN_EXPRESSION_MISSING" in codes

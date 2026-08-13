@@ -362,6 +362,9 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
     def issue(code: str, message: str) -> None:
         blocking.append({"code": code, "message": message})
 
+    def warning(code: str, message: str) -> None:
+        warnings.append({"code": code, "message": message})
+
     if payload.get("schema") != "cyberppt.stage02_handoff.v1":
         issue("HANDOFF_SCHEMA_INVALID", "Stage 02 handoff schema is invalid.")
     bindings = payload.get("source_bindings")
@@ -407,7 +410,7 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
                 issue("HANDOFF_REQUIRED_FIELD_MISSING", f"{page_id} is missing {field}.")
         expression = page.get("onscreen_expression")
         if not isinstance(expression, dict):
-            issue("ONSCREEN_EXPRESSION_MISSING", f"{page_id} has no onscreen expression decision.")
+            warning("ONSCREEN_EXPRESSION_MISSING", f"{page_id} has no onscreen expression decision.")
         else:
             if str(expression.get("form") or "") not in VALID_EXPRESSION_FORMS:
                 issue("ONSCREEN_EXPRESSION_FORM_INVALID", f"{page_id} has an invalid onscreen expression form.")
