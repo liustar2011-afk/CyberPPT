@@ -954,22 +954,6 @@ COMPOSITION_PRIMITIVES = (
     "矩阵筛选",
     "闭环回流",
 )
-# Module labels that usually cross-cut / govern a main chain rather than sit as
-# an equal → stage. Peer-staging them on a path/layer list is a common error.
-CROSSCUT_PEER_LABELS = (
-    "横向治理层",
-    "横向治理",
-    "质量与生命周期",
-    "生命周期",
-    "统一模型治理",
-)
-DEPTH_DEFENSE_MARKERS = (
-    "纵深防护",
-    "五层纵深",
-    "纵深",
-    "逐层衔接",
-    "逐级收紧",
-)
 # Matched by suffix rather than a fixed vocabulary list, so this generalizes
 # past whichever project's engine/mechanism naming happened to be used first.
 MECHANISM_LANE_LABEL_RE = re.compile(r"[一-鿿]{1,6}(?:隔离|降级)")
@@ -3073,8 +3057,6 @@ def script_retry_directive(
             "VISUAL_STRUCTURE_CROSSCUT_AS_PEER",
             "VISUAL_STRUCTURE_LAYOUT_RECIPE",
             "VISUAL_STRUCTURE_MULTIPLE_PRIMARY_NARRATIVES",
-            "VISUAL_CENTER_JUDGMENT_MISMATCH",
-            "VISUAL_STRUCTURE_PRIMITIVE_MISMATCH",
             "VISUAL_STRUCTURE_MECHANISM_AS_LANE",
             "ONSCREEN_ANTI_PATTERN",
             "PRIMITIVE_ONSCREEN_MISMATCH",
@@ -3820,19 +3802,14 @@ def _visual_structure_judgment_issues(page: ScriptPage) -> list[ScriptQualityIss
                 "Keep one primary business relation and make every secondary relation subordinate to it; do not add a second narrative in the visual handoff.",
                 evidence=(multiple_primary.group(0).strip(),),
             )
-        )
+    )
     corpus = _page_relation_corpus(page)
-    judgment = f"{page.main_message}\n{page.onscreen_judgment}".strip()
     nodes = _visual_structure_chain_nodes(visual)
 
     # 1) Cross-cutting roles peer-staged on → / 、 lists.
     peer_hits: list[str] = []
     for node in nodes:
         bare = _visual_module_label(node)
-        is_named_crosscut = any(
-            bare == label or bare.endswith(label) or label in bare
-            for label in CROSSCUT_PEER_LABELS
-        )
         patterns = (
             # 「质量与生命周期贯穿主链 / 横向治理贯穿每一层」
             rf"{re.escape(bare)}[^。；;\n]{{0,12}}贯穿",
@@ -3849,7 +3826,7 @@ def _visual_structure_judgment_issues(page: ScriptPage) -> list[ScriptQualityIss
             visual,
         ):
             marked = True
-        if (is_named_crosscut or marked) and (
+        if marked and (
             "→" in visual.split("；", 1)[0].split(";", 1)[0]
             or visual.startswith("分层剖面")
             or visual.startswith("贯穿主链")
@@ -3870,54 +3847,7 @@ def _visual_structure_judgment_issues(page: ScriptPage) -> list[ScriptQualityIss
             )
         )
 
-    # 2) Declared visual center conflicts with the governing judgment.
-    center_match = re.search(
-        r"以(?P<center>[^为，。；;\n]{2,24})为视觉中心",
-        visual,
-    )
-    if center_match and judgment:
-        center = center_match.group("center").strip()
-        if "统一网关" in judgment and "网关" not in center:
-            issues.append(
-                _issue(
-                    "VISUAL_CENTER_JUDGMENT_MISMATCH",
-                    page,
-                    "Visual center does not match the gateway-centered judgment.",
-                    "Put 统一网关 (or 网关治理) at the visual center when the judgment is gateway-led.",
-                    evidence=(center, "统一网关"),
-                    severity="warning",
-                )
-            )
-        if re.search(r"三类引擎|分别支撑三类应用|分别支撑三类", judgment) and re.search(
-            r"(学生|教师|学校)引擎",
-            center,
-        ):
-            issues.append(
-                _issue(
-                    "VISUAL_CENTER_JUDGMENT_MISMATCH",
-                    page,
-                    "Visual center privileges one engine while the judgment treats three engines as peers.",
-                    "Use the shared coordination relation as the semantic focus and leave the concrete carrier open for Stage 02.",
-                    evidence=(center,),
-                    severity="warning",
-                )
-            )
-
-    # 3) Primitive conflicts with judgment vocabulary.
-    if "受控边界" in visual and _has_any(judgment, DEPTH_DEFENSE_MARKERS):
-        depth_hits = tuple(m for m in DEPTH_DEFENSE_MARKERS if m in judgment)[:2]
-        issues.append(
-            _issue(
-                "VISUAL_STRUCTURE_PRIMITIVE_MISMATCH",
-                page,
-                "Boundary-shell primitive used for a depth-defense judgment.",
-                "Describe the dependency or control relation directly and leave the concrete spatial grammar to Stage 02.",
-                evidence=("受控边界", *depth_hits),
-                severity="warning",
-            )
-        )
-
-    # 4) Swimlanes peer-stage mechanisms with business chains.
+    # 2) Swimlanes peer-stage mechanisms with business chains.
     if "主体泳道" in visual:
         mechanism_hits = tuple(dict.fromkeys(MECHANISM_LANE_LABEL_RE.findall(visual)))
         business_hits = tuple(dict.fromkeys(BUSINESS_LANE_LABEL_RE.findall(visual)))

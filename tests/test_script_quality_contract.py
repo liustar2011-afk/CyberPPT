@@ -3413,8 +3413,8 @@ class VisualStructureJudgmentAccuracyTests(unittest.TestCase):
     def test_flags_crosscut_module_peer_staged_on_path(self) -> None:
         page = _judgment_page(
             visual_structure=(
-                "贯穿主链——三类知识来源 → 统一知识对象 → 分层数据服务 → 质量与生命周期；"
-                "一级模块与上屏文字一致。"
+                "贯穿主链——订单创建 → 履约交付 → 结算确认 → 审计追踪；"
+                "审计追踪贯穿主链；一级模块与上屏文字一致。"
             ),
         )
         codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
@@ -3423,8 +3423,8 @@ class VisualStructureJudgmentAccuracyTests(unittest.TestCase):
     def test_allows_crosscut_as_second_clause_not_on_arrow_chain(self) -> None:
         page = _judgment_page(
             visual_structure=(
-                "贯穿主链——三类知识来源 → 统一知识对象 → 分层数据服务；"
-                "质量与生命周期贯穿主链。"
+                "贯穿主链——订单创建 → 履约交付 → 结算确认；"
+                "审计追踪贯穿主链。"
             ),
         )
         codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
@@ -3432,17 +3432,17 @@ class VisualStructureJudgmentAccuracyTests(unittest.TestCase):
 
     def test_flags_horizontal_governance_as_stacked_layer(self) -> None:
         page = _judgment_page(
-            main_message="平台以统一知识治理为底座，并由权限审核贯穿全链",
-            full_prose="从业务关系看，数据资产经过知识加工形成智能能力，横向治理贯穿每一层。" * 2,
+            main_message="供应链从采购到交付持续受质量追溯约束",
+            full_prose="从业务关系看，采购、加工和交付逐层衔接，质量追溯贯穿每一层。" * 2,
             visual_structure=(
-                "分层剖面——自下而上依次呈现数据资产层、知识加工层、智能能力层、"
-                "三类应用层、横向治理层；一级模块与上屏文字一致。"
+                "分层剖面——自下而上依次呈现采购层、加工层、交付层、质量追溯；"
+                "一级模块与上屏文字一致。"
             ),
         )
         codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
         self.assertIn("VISUAL_STRUCTURE_CROSSCUT_AS_PEER", codes)
 
-    def test_flags_gateway_center_mismatch(self) -> None:
+    def test_does_not_infer_a_gateway_visual_center(self) -> None:
         page = _judgment_page(
             main_message="统一网关连接身份组织、知识题库、学习教学和分析报告接口",
             onscreen_judgment="统一网关连接身份组织、知识题库、学习教学和分析报告接口",
@@ -3452,9 +3452,9 @@ class VisualStructureJudgmentAccuracyTests(unittest.TestCase):
             ),
         )
         codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
-        self.assertIn("VISUAL_CENTER_JUDGMENT_MISMATCH", codes)
+        self.assertNotIn("VISUAL_CENTER_JUDGMENT_MISMATCH", codes)
 
-    def test_flags_depth_defense_with_boundary_primitive(self) -> None:
+    def test_does_not_infer_a_depth_defense_visual_primitive(self) -> None:
         page = _judgment_page(
             main_message="安全体系以五层纵深防护构成内容到审计的防护链",
             onscreen_judgment="安全体系以五层纵深防护构成内容到审计的防护链",
@@ -3464,13 +3464,13 @@ class VisualStructureJudgmentAccuracyTests(unittest.TestCase):
             ),
         )
         codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
-        self.assertIn("VISUAL_STRUCTURE_PRIMITIVE_MISMATCH", codes)
+        self.assertNotIn("VISUAL_STRUCTURE_PRIMITIVE_MISMATCH", codes)
 
     def test_flags_mechanism_peer_lanes(self) -> None:
         page = _judgment_page(
-            main_message="学生实时链路与教师异步任务采用隔离资源和差异化降级策略",
+            main_message="订单履约链与风险复核队列采用资源隔离和差异化降级策略",
             visual_structure=(
-                "主体泳道——横向并列学生实时链路、教师异步队列、资源隔离、弹性降级，"
+                "主体泳道——横向并列订单履约链、风险复核队列、资源隔离、弹性降级，"
                 "底部设置统一支撑关系；一级模块与上屏文字一致。"
             ),
         )
