@@ -82,7 +82,6 @@ def _handoff_authority(payload: dict[str, Any]) -> dict[str, Any]:
     return {
         "schema": payload.get("schema"),
         "project": payload.get("project"),
-        "stage01_confirmation_mode": payload.get("stage01_confirmation_mode"),
         "source_bindings": payload.get("source_bindings"),
         "page_order": payload.get("page_order"),
         "pages": payload.get("pages"),
@@ -275,16 +274,13 @@ def build_stage02_handoff(
     script: Path | None = None,
     lightweight_stage01_confirmed: bool = False,
 ) -> dict[str, Any]:
+    # Kept for direct-call compatibility. Authorization is exclusively the
+    # current full-script audit below.
+    _ = lightweight_stage01_confirmed
     project = project.expanduser().resolve()
     script = script.expanduser().resolve() if script else (project / SCRIPT_PATH).resolve()
     if not script.is_file():
         raise FileNotFoundError(f"approved final script is missing: {script}")
-    if not lightweight_stage01_confirmed:
-        raise ValueError(
-            "Stage 02 handoff requires the interactive lightweight Stage 01 confirmation; "
-            "present the final script for user review and pass lightweight_stage01_confirmed=True"
-        )
-
     bindings = {
         "script": _file_binding(script, script_semantic_digest),
         "outline": _source_binding(project, OUTLINE_PATH, outline_semantic_digest),
@@ -297,10 +293,8 @@ def build_stage02_handoff(
     code, audit = run_script_audit(project, script)
     if code != 0 or audit.get("status") != "passed":
         raise ValueError(
-            "lightweight Stage 01 confirmation requires a currently passed "
-            "full-script audit before Stage 02 handoff"
+            "Stage 02 handoff requires a currently passed full-script audit"
         )
-    approval_mode = "interactive_lightweight_confirmation"
 
     document = parse_script_path(script)
     outline_payload = _read_json(project / OUTLINE_PATH)
@@ -318,7 +312,6 @@ def build_stage02_handoff(
         "schema": "cyberppt.stage02_handoff.v1",
         "project": str(project),
         "created_at": _utc_now(),
-        "stage01_confirmation_mode": approval_mode,
         "source_bindings": bindings,
         "page_order": [record["page_id"] for record in records],
         "pages": records,
@@ -524,11 +517,12 @@ def prepare_stage02_handoff(
     lightweight_stage01_confirmed: bool = False,
     reuse_current_handoff: bool = False,
 ) -> dict[str, Any]:
+    # Kept for direct-call compatibility; it cannot authorize Stage 02.
+    _ = lightweight_stage01_confirmed
     project = project.expanduser().resolve()
     payload = build_stage02_handoff(
         project,
         script=script,
-        lightweight_stage01_confirmed=lightweight_stage01_confirmed,
     )
     handoff_path = project / HANDOFF_JSON
     if reuse_current_handoff and handoff_path.is_file():

@@ -396,6 +396,9 @@ def prepare_visual_structure_stage(
     lightweight_stage01_confirmed: bool = False,
     reuse_current_handoff: bool = False,
 ) -> Path:
+    # Kept for direct-call compatibility; handoff preparation is governed by
+    # the current full-script audit, not an interactive-confirmation flag.
+    _ = lightweight_stage01_confirmed
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
     from cyberppt.stage02_handoff import HANDOFF_JSON, prepare_stage02_handoff
@@ -421,7 +424,6 @@ def prepare_visual_structure_stage(
         report = prepare_stage02_handoff(
             project,
             script=script,
-            lightweight_stage01_confirmed=lightweight_stage01_confirmed,
         )
         if report.get("status") != "passed":
             raise ValueError("Stage 01 to Stage 02 handoff is not passed")

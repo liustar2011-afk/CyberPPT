@@ -110,7 +110,9 @@ python3 -m cyberppt script-audit projects/example --input projects/example/workb
 python3 -m cyberppt stage-script projects/example --slide 1 --kind imagegen --phase draft --source prompt.md
 python3 -m cyberppt approve-script projects/example --slide 1 --kind imagegen
 python3 -m cyberppt script-status projects/example --slide 1 --kind imagegen
-python3 -m cyberppt final-script-pages projects/example --script workbench/scripts/final/script-final.md --pages 7-8 --lightweight-stage01-confirmed
+python3 -m cyberppt prepare-stage02-handoff projects/example --script workbench/scripts/final/script-final.md
+python3 -m cyberppt prepare-visual-structure projects/example --script workbench/scripts/final/script-final.md
+python3 -m cyberppt final-script-pages projects/example --script workbench/scripts/final/script-final.md --pages 7-8
 ```
 
 若脚本来自仓库外部、另一个项目或人工编辑，可在 Stage 02 直接接收：
@@ -119,7 +121,7 @@ python3 -m cyberppt final-script-pages projects/example --script workbench/scrip
 python3 -m cyberppt final-script-pages projects/example --script /path/to/external-script.md --pages 1-8 --style-id 4 --external-script
 ```
 
-`--external-script` 只解除 Stage 01 轻量确认、视觉结构交接和逐页 ImageGen 台账的输入绑定；如果项目路径不存在，还会先按标准模板创建 CyberPPT 项目。Stage 02 仍会解析页面、生成风格锁、写入 manifest、构建上下文和 artifact ledger，并记录 `source_mode=external_script`、项目是否新建及外部脚本 SHA-256。默认不带该参数时，必须显式传入 `--lightweight-stage01-confirmed`。
+正式项目的最终全稿只要当前 `script-audit` 通过，即可进入 Stage 02；不再依赖 Stage 01 的交互确认。无论脚本来源如何，均须先通过当前 `script-audit`，再具备通过的 Stage 02 handoff 和视觉结构审计，`final-script-pages` 才会继续。`--external-script` 和 `--lightweight-stage01-confirmed` 均保留为兼容参数：前者只记录 `source_mode=external_script`，后者不再影响授权；两者都不能跳过任何正式门，也不会为不存在的项目自动建项目。
 
 `final-script-pages` 默认按 `build_id` 创建新的构建目录，不覆盖既有版本；`workbench/artifact-ledger.json` 以追加方式记录每次产物，并用 `supersedes` 连接同一路径的历史版本。PPTX 导出必须使用本次运行的明确输出路径，导出工程同时写入 `analysis/export_artifact.json`，续跑不会按文件修改时间猜测旧 PPTX。提示词发送默认 `--prompt-enrich off`，即消费已批准 Prompt 原文；只有明确指定 `deterministic` 或 `send` 才会进行发送时增强。
 

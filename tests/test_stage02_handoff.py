@@ -7,7 +7,12 @@ from typing import Callable
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from cyberppt.stage02_handoff import HANDOFF_JSON, audit_stage02_handoff, prepare_stage02_handoff
+from cyberppt.stage02_handoff import (
+    HANDOFF_JSON,
+    audit_stage02_handoff,
+    build_stage02_handoff,
+    prepare_stage02_handoff,
+)
 from cyberppt.semantic_digest import outline_semantic_digest, script_semantic_digest, source_truth_semantic_digest
 
 
@@ -28,7 +33,6 @@ def _payload(project: Path, *, created_at: str) -> dict[str, object]:
         "schema": "cyberppt.stage02_handoff.v1",
         "project": str(project),
         "created_at": created_at,
-        "stage01_confirmation_mode": "interactive_lightweight_confirmation",
         "source_bindings": {
             "script": _binding(script, script_semantic_digest),
             "outline": _binding(outline, outline_semantic_digest),
@@ -112,6 +116,20 @@ def test_prepare_reuses_current_handoff_when_stage01_authority_is_identical() ->
         assert report["status"] == "passed"
         assert report["reused"] is True
         assert json.loads(handoff_path.read_text(encoding="utf-8"))["created_at"] == old["created_at"]
+
+
+def test_build_handoff_uses_script_audit_without_interactive_confirmation() -> None:
+    with TemporaryDirectory() as directory:
+        project = Path(directory)
+        _write_inputs(project)
+        with patch(
+            "cyberppt.commands.script_audit.run_script_audit",
+            return_value=(0, {"status": "passed"}),
+        ):
+            payload = build_stage02_handoff(project, script=project / "script.md")
+
+    assert "stage01_confirmation_mode" not in payload
+    assert payload["source_bindings"]["script"]["path"] == str((project / "script.md").resolve())
 
 
 def test_prepare_rebuilds_when_a_bound_stage01_input_digest_changes() -> None:

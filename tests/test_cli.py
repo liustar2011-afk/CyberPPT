@@ -232,7 +232,7 @@ class CliTests(unittest.TestCase):
                 ),
                 patch(
                     "cyberppt.stage02_handoff.load_stage02_handoff",
-                    return_value={"stage01_confirmation_mode": "interactive_lightweight_confirmation"},
+                    return_value={},
                 ),
                 patch(
                     "cyberppt.commands.visual_structure_stage.assert_visual_structure_ready"
@@ -281,7 +281,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(0, code)
         self.assertTrue(runner.call_args.kwargs["external_script"])
 
-    def test_final_script_pages_lightweight_confirmation_is_forwarded(self) -> None:
+    def test_final_script_pages_accepts_deprecated_confirmation_flag_without_forwarding(self) -> None:
         with patch("cyberppt.cli.run_final_script_pages", return_value={}) as runner:
             code = main(
                 [
@@ -298,7 +298,7 @@ class CliTests(unittest.TestCase):
             )
 
         self.assertEqual(0, code)
-        self.assertTrue(runner.call_args.kwargs["lightweight_stage01_confirmed"])
+        self.assertNotIn("lightweight_stage01_confirmed", runner.call_args.kwargs)
 
     def test_final_script_pages_rejects_blueprint_only_with_production_build(self) -> None:
         buffer = io.StringIO()

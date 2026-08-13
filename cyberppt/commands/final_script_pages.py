@@ -35,7 +35,6 @@ from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import (
 )
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 from cyberppt.artifact_ledger import append_artifacts, write_json_atomic
-from cyberppt.commands.init_project import init_project
 from cyberppt.script_quality_contract import (
     assert_imagegen_onscreen_readiness,
     parse_script_path,
@@ -804,6 +803,8 @@ def run_final_script_pages(
     no_style_reference: bool = False,
     skip_image_text_audit: bool = False,
 ) -> dict[str, Any]:
+    # Kept for direct-call compatibility. It has no authorization effect.
+    _ = lightweight_stage01_confirmed
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
     style_lock = style_lock.expanduser().resolve() if style_lock else None
@@ -819,12 +820,6 @@ def run_final_script_pages(
     if autonomous_contract_path is not None:
         from cyberppt.autonomous_contract import load_contract, validate_source_boundary
 
-        if external_script:
-            raise ValueError("autonomous contract cannot be combined with --external-script")
-        if not lightweight_stage01_confirmed:
-            raise ValueError(
-                "autonomous contract requires lightweight Stage 01 confirmation"
-            )
         autonomous_authority = load_contract(autonomous_contract_path)
         if autonomous_authority.project != project:
             raise ValueError("autonomous contract targets another project")
@@ -835,40 +830,25 @@ def run_final_script_pages(
         if production_mode != autonomous_authority.production_mode:
             raise ValueError("autonomous contract production mode does not match the contract")
         validate_source_boundary(autonomous_authority)
-    if external_script and lightweight_stage01_confirmed:
-        raise ValueError("--external-script cannot be combined with --lightweight-stage01-confirmed")
-    if not external_script and autonomous_authority is None and not lightweight_stage01_confirmed:
-        raise ValueError(
-            "final-script-pages requires --lightweight-stage01-confirmed or --external-script"
-        )
     source_mode = (
         "autonomous_contract"
         if autonomous_authority is not None
         else "external_script"
         if external_script
-        else "interactive_lightweight_confirmation"
+        else "formal_project_script"
     )
     project_created = False
-    if external_script and not project.exists():
-        init_project(project)
-        project_created = True
-    if not external_script:
-        from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
-        from cyberppt.commands.script_audit import run_script_audit
-        from cyberppt.stage02_handoff import load_stage02_handoff
+    from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
+    from cyberppt.commands.script_audit import run_script_audit
+    from cyberppt.stage02_handoff import load_stage02_handoff
 
-        code, audit = run_script_audit(project, script)
-        if code != 0 or audit.get("status") != "passed":
-            raise ValueError(
-                "lightweight Stage 01 confirmation requires a currently passed "
-                "full-script audit before final-script-pages"
-            )
-        handoff = load_stage02_handoff(project, required=True)
-        if handoff.get("stage01_confirmation_mode") != "interactive_lightweight_confirmation":
-            raise ValueError(
-                "Stage 02 handoff is not bound to interactive lightweight Stage 01 confirmation"
-            )
-        assert_visual_structure_ready(project, script)
+    code, audit = run_script_audit(project, script)
+    if code != 0 or audit.get("status") != "passed":
+        raise ValueError(
+            "final-script-pages requires a currently passed full-script audit"
+        )
+    load_stage02_handoff(project, required=True)
+    assert_visual_structure_ready(project, script)
     if production_mode not in PRODUCTION_MODES:
         raise ValueError(
             f"unsupported production mode: {production_mode}; "
@@ -927,15 +907,14 @@ def run_final_script_pages(
         project_path=project,
         style_lock=style_lock,
         require_approved_prompts=(
-            not external_script
-            and not blueprint_only
+            not blueprint_only
             and autonomous_authority is None
         ),
         production_mode=production_mode,
         prompt_enrich=prompt_enrich,
         require_send_approval=require_send_approval,
         enforce_prompt_freshness=False,
-        compact_blueprint=not external_script,
+        compact_blueprint=True,
     )
     manifest["source_mode"] = source_mode
     manifest["source_script"] = str(script)
@@ -978,8 +957,6 @@ def run_final_script_pages(
             f"python -m cyberppt final-script-pages {project} --script {script} "
             f"--pages {pages_raw} --style-lock {style_lock} --production-mode {production_mode} "
             f"--output-dir {target_dir} --build-id {build_id}"
-            + (" --external-script" if external_script else "")
-            + (" --lightweight-stage01-confirmed" if lightweight_stage01_confirmed else "")
         )
     )
     production_readiness = None

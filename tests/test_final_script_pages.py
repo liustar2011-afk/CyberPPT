@@ -24,6 +24,7 @@ from cyberppt.commands.script_gate import stage_script
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, render_prompt
 from scripts.dual_image_overlay.imagegen_handoff import build_page_prompt
 from cyberppt.script_quality_contract import parse_script_markdown
+from cyberppt.semantic_digest import outline_semantic_digest, source_truth_semantic_digest
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
@@ -431,8 +432,23 @@ class FinalScriptPagesTests(unittest.TestCase):
             json.dumps(
                 {
                     "schema": "cyberppt.stage02_handoff.v1",
-                    "stage01_confirmation_mode": "interactive_lightweight_confirmation",
-                    "source_bindings": {"script": {"path": str(script.resolve())}},
+                    "source_bindings": {
+                        "script": {
+                            "path": str(script.resolve()),
+                            "sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
+                            "semantic_sha256": hashlib.sha256(script.read_bytes()).hexdigest(),
+                        },
+                        "outline": {
+                            "path": str(outline.resolve()),
+                            "sha256": hashlib.sha256(outline.read_bytes()).hexdigest(),
+                            "semantic_sha256": outline_semantic_digest(outline),
+                        },
+                        "source_truth": {
+                            "path": str(source_truth.resolve()),
+                            "sha256": hashlib.sha256(source_truth.read_bytes()).hexdigest(),
+                            "semantic_sha256": source_truth_semantic_digest(source_truth),
+                        },
+                    },
                     "pages": [
                         {
                             "page_id": f"p{page_number:02d}",
@@ -514,6 +530,12 @@ class FinalScriptPagesTests(unittest.TestCase):
         )
         audit_patcher.start()
         self.addCleanup(audit_patcher.stop)
+        handoff_digest_patcher = patch(
+            "cyberppt.stage02_handoff.script_semantic_digest",
+            side_effect=lambda path: hashlib.sha256(path.read_bytes()).hexdigest(),
+        )
+        handoff_digest_patcher.start()
+        self.addCleanup(handoff_digest_patcher.stop)
         style_lock = write_project_style_lock(project=project, style_id=style_id, source_script=script)
         script_pages = {
             int(page.page_id[1:]): page
@@ -559,7 +581,6 @@ class FinalScriptPagesTests(unittest.TestCase):
                 script=script,
                 pages_raw="7-8",
                 style_id=4,
-                lightweight_stage01_confirmed=True,
             )
 
             manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
@@ -596,10 +617,11 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertIn(summary["artifacts"]["template_text_lock"], ledger_paths)
             self.assertIn(summary["artifacts"]["visual_style_lock"], ledger_paths)
 
-    def test_external_script_does_not_require_stage01_or_per_page_approvals(self) -> None:
+    def test_external_script_requires_formal_stage02_gates(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "stage2-only"
+            init_project(project)
             script = root / "vendor-script.md"
             script.write_text(
                 "## P01 外部脚本页面\n"
@@ -607,6 +629,21 @@ class FinalScriptPagesTests(unittest.TestCase):
                 "组件A：输入与输出关系\n",
                 encoding="utf-8",
             )
+
+            with patch(
+                "cyberppt.commands.script_audit.run_script_audit",
+                return_value=(0, {"status": "passed"}),
+            ):
+                with self.assertRaisesRegex(FileNotFoundError, "Stage 02 handoff"):
+                    run_final_script_pages(
+                        project=project,
+                        script=script,
+                        pages_raw="1",
+                        style_id=4,
+                        external_script=True,
+                    )
+
+            self._approve_inputs_and_prompts(project, script)
 
             summary = run_final_script_pages(
                 project=project,
@@ -618,19 +655,17 @@ class FinalScriptPagesTests(unittest.TestCase):
 
             manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
             context = json.loads(Path(summary["artifacts"]["build_context"]).read_text(encoding="utf-8"))
-            manifest_created = (project / "manifest.yml").is_file()
 
         self.assertEqual("external_script", summary["source_mode"])
-        self.assertTrue(summary["project_created"])
+        self.assertFalse(summary["project_created"])
         self.assertEqual("external_script", context["source_mode"])
-        self.assertTrue(context["project_created"])
+        self.assertFalse(context["project_created"])
         self.assertEqual("stage2-only", Path(summary["project"]).name)
-        self.assertTrue(manifest_created)
         self.assertEqual("external_script", manifest["source_mode"])
         self.assertEqual(summary["source_script_sha256"], manifest["source_script_sha256"])
-        self.assertFalse(manifest["prompt_contract"]["approved_prompt_is_source"])
+        self.assertTrue(manifest["prompt_contract"]["approved_prompt_is_source"])
         self.assertTrue(summary["artifacts"]["compiled_deliverable_prompt"].endswith(".md"))
-        self.assertIn("--external-script", summary["resume_command"])
+        self.assertNotIn("--external-script", summary["resume_command"])
 
     def test_requires_default_style_selection_or_explicit_style_lock(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

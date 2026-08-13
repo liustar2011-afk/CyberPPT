@@ -297,9 +297,8 @@ def run_autonomous(
     Content authoring remains an explicit input to the runner: the command
     deliberately refuses candidate Outline, absent page authoring, unexecuted
     visual decisions, and missing ImageGen proof instead of fabricating them.
-    An autonomous contract authorizes deterministic verification; it never
-    waives showing the communication goal, author-edited Outline, and detailed
-    pages to the user in the authoring conversation.
+    An autonomous contract authorizes deterministic verification while keeping
+    the current full-script audit as the sole content precondition for Stage 02.
     """
 
     contract = load_contract(contract_path)
@@ -325,7 +324,6 @@ def run_autonomous(
             prepare_stage02_handoff(
                 contract.project,
                 script=script,
-                lightweight_stage01_confirmed=True,
                 reuse_current_handoff=True,
             ),
             contract.project / "workbench/stages/02-handoff/stage02-handoff.json",
@@ -334,7 +332,6 @@ def run_autonomous(
         invocation = prepare_visual_structure_stage(
             contract.project,
             script,
-            lightweight_stage01_confirmed=True,
             reuse_current_handoff=True,
         )
         gates.append({"name": "visual-structure-prepare", "status": "passed", "artifact": str(invocation)})
@@ -373,7 +370,6 @@ def run_autonomous(
                     generate_images=True,
                     require_images=True,
                     image_timeout=image_timeout,
-                    lightweight_stage01_confirmed=True,
                     autonomous_contract=contract.path,
                     production_build=True,
                 )

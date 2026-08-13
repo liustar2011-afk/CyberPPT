@@ -22,7 +22,7 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 1. **交流目标**：先运行 `python -m cyberppt prepare-communication-strategy <project>` 并分析其 `source_outline` 与 `decision_evidence`。基于源材料提出 2-3 个方向实质不同的交流目标选项，逐项说明具体受众、使用场景、希望受众理解或相信什么、希望受众采取什么行动及对应 `source unit_id` 依据，并明确推荐一项。不得直接向用户抛出受众、场景、目标行动等空白问题；用户只需选择、修改或补充建议，收到输入后再确定表达策略。该命令只向当前执行代理输出写作输入，不写沟通策略 JSON、审批、哈希、回执、attempt、manifest 或 ledger。
 2. **章节和页面提纲**：提出章节顺序、章节任务、页面标题、每页核心问题和主要证据；在对话中展示并接受实时修改，用户回应后再写页面详细内容。
 3. **页面详细内容**：提出每页核心信息、完整文字稿、上屏文字、证据引用和视觉结构；长稿可按章展示，收到反馈后直接修改原章节脚本。
-4. **最终全稿**：合稿并完成一次全稿检查后展示最终脚本，等待用户最终确认。
+4. **最终全稿**：合稿并完成一次全稿 `script-audit`；通过后可进入正式 Stage 02。
 
 内部执行依次只做一次：`doctor` 与源登记核查；`prepare-semantic-understanding` 后只创作唯一语义作者产物 `semantic-argument-model.json`，再运行 `semantic-check` 确定性生成审阅 Markdown；运行 `compile-source-truth <project>` 将已校验原子事项投影为 Source Truth，再运行一次 `source-truth-audit`；提出交流目标；用户选择或修改目标后运行 `prepare-outline-input <project> --communication-goal <goal>` 生成完整提纲写作输入，人工调整章节、合并、页数与页序后运行一次 `outline-audit`；逐章完成页面内容；`assemble-final-script`；最后一次全稿 `script-audit`。检查保留业务质量判断，但不写 audit、attempt、receipt、escalation、approval 或 artifact ledger。不得在局部修改后重复全量审计，不得为了同步状态重新执行已经完成且内容未受影响的上游阶段。
 
@@ -68,7 +68,7 @@ Stage 01 脚本经轻量确认审计通过后，主流程必须自动调用已�
 
 `final-script-pages` 是脚本锁定后的唯一正式编排入口。禁止把直接调用 `codex_oauth_image.py`、`template_image_ppt_export.py`、`python -m cyberppt image-ppt run` 或 `template-rebuild` 当作正式主流程；这些命令只可用于主链内部、故障诊断或明确记录的恢复操作。
 
-当脚本由 Stage 01 之外的系统或人工流程提供时，可使用 `final-script-pages --external-script` 进入 Stage 02；若项目路径不存在，该模式会先按标准模板创建项目。该模式跳过 Stage 01 轻量确认、视觉结构交接和逐页 ImageGen 审批台账，但仍必须经过 Stage 02 的脚本解析、页面范围校验、风格锁、manifest、构建上下文和 artifact ledger；运行摘要必须记录 `source_mode=external_script`、项目是否新建及脚本哈希。未显式指定该参数时，必须传入 `--lightweight-stage01-confirmed`。
+正式项目的最终全稿在当前 `script-audit` 通过后可进入 Stage 02，不依赖 Stage 01 交互确认。无论脚本来自何处，`final-script-pages` 都必须通过当前 `script-audit`、Stage 02 handoff 与视觉结构审计；外部脚本不能绕过这些门。`--external-script` 与 `--lightweight-stage01-confirmed` 仅为兼容参数：前者只记录 `source_mode=external_script`，后者不再影响授权；两者都不能创建项目或跳过正式门。
 
 必须显式选择或沿用一种生产模式：
 
