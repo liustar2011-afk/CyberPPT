@@ -33,6 +33,39 @@ HEADING_TREE_SCHEMA = "cyberppt.source_heading_tree.v1"
 AUDIT_SCHEMA = "cyberppt.source_map_audit.v1"
 
 _TEXT_SUFFIXES = frozenset({".txt", ".md", ".json", ".csv", ".tsv", ".yaml", ".yml"})
+# Only .docx and .md can structurally carry heading markup (Word paragraph
+# styles / "#" syntax); .txt and the other text suffixes never produce
+# headings by design, so they are excluded from the missing-heading check.
+_HEADING_CAPABLE_SUFFIXES = frozenset({".docx", ".md"})
+_MIN_SUBSTANTIVE_UNITS_FOR_HEADING_CHECK = 3
+# Fallback heading detection for sources with zero Word/Markdown-native
+# headings. Deliberately narrow: only unambiguous numbering prefixes used by
+# Chinese formal-document convention (章/节/顿号编号/括号编号/多级数字编号),
+# matched against a short standalone line. This is a safety net for headings
+# that were typed with the right numbering but never given a real heading
+# style — not a general "looks like a heading" classifier, since a wrong
+# guess here would silently inject fabricated chapter structure downstream.
+_HEURISTIC_HEADING_PATTERNS: tuple[tuple[re.Pattern[str], int], ...] = (
+    (re.compile(r"^第[一二三四五六七八九十百千0-9]+章[、：:\s　]*"), 1),
+    (re.compile(r"^第[一二三四五六七八九十百千0-9]+节[、：:\s　]*"), 2),
+    (re.compile(r"^\d+\.\d+(?:[.、．]|\s|$)"), 3),
+    (re.compile(r"^[（(][一二三四五六七八九十百]+[)）]"), 3),
+    (re.compile(r"^[一二三四五六七八九十百]+[、.．]"), 2),
+    (re.compile(r"^\d+[、.．](?!\d)"), 2),
+)
+_MAX_HEURISTIC_HEADING_LENGTH = 40
+
+
+def _heuristic_heading_level(text: str) -> int | None:
+    stripped = text.strip()
+    if not stripped or len(stripped) > _MAX_HEURISTIC_HEADING_LENGTH:
+        return None
+    if stripped[-1] in "。！？；":
+        return None
+    for pattern, level in _HEURISTIC_HEADING_PATTERNS:
+        if pattern.match(stripped):
+            return level
+    return None
 _W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 _A = "{http://schemas.openxmlformats.org/drawingml/2006/main}"
 _R = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
@@ -541,7 +574,8 @@ def _render_source_map(
     lines += ["", "## Original heading tree", ""]
     for heading in headings:
         indent = "  " * max(0, int(heading["level"]) - 1)
-        lines.append(f"{indent}- `{heading['heading_id']}` {heading['title']}")
+        marker = " ⚠ heuristic" if heading.get("detection_method") == "heuristic_pattern" else ""
+        lines.append(f"{indent}- `{heading['heading_id']}` {heading['title']}{marker}")
     if not headings:
         lines.append("- No semantic headings detected.")
     lines += ["", "## Unit inventory", ""]
@@ -556,6 +590,71 @@ def _render_source_map(
     else:
         lines.append("- none")
     return "\n".join(lines).rstrip() + "\n"
+
+
+def _promote_heuristic_headings(
+    source_id: str,
+    source_path: str,
+    units: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], int]:
+    """Reclassify strongly-numbered paragraphs as headings when a source has
+    no Word/Markdown-native headings at all. Every promoted unit/heading is
+    tagged ``detection_method: "heuristic_pattern"`` so it never looks like a
+    real, author-declared heading downstream.
+    """
+
+    duplicate_counts: dict[tuple[str, str], int] = defaultdict(int)
+    heading_stack: list[dict[str, Any]] = []
+    headings: list[dict[str, Any]] = []
+    rewritten: list[dict[str, Any]] = []
+    promoted = 0
+    for unit in units:
+        level = (
+            _heuristic_heading_level(str(unit.get("text") or ""))
+            if unit.get("kind") == "paragraph"
+            else None
+        )
+        if level is None:
+            rewritten.append(
+                {
+                    **unit,
+                    "heading_id": str(heading_stack[-1]["heading_id"]) if heading_stack else None,
+                    "heading_path": [str(item["title"]) for item in heading_stack],
+                }
+            )
+            continue
+        while heading_stack and int(heading_stack[-1]["level"]) >= level:
+            heading_stack.pop()
+        parent_id = str(heading_stack[-1]["heading_id"]) if heading_stack else ""
+        title = str(unit.get("text") or "").strip()
+        heading_id = _heading_id(source_id, level, title, parent_id, duplicate_counts)
+        heading_path = [str(item["title"]) for item in heading_stack] + [title]
+        heading = {
+            "heading_id": heading_id,
+            "source_id": source_id,
+            "source_path": source_path,
+            "title": title,
+            "level": level,
+            "parent_heading_id": parent_id or None,
+            "source_order": unit.get("source_order"),
+            "unit_id": unit.get("unit_id"),
+            "heading_path": heading_path,
+            "detection_method": "heuristic_pattern",
+        }
+        headings.append(heading)
+        heading_stack.append(heading)
+        promoted += 1
+        rewritten.append(
+            {
+                **unit,
+                "kind": "heading",
+                "heading_id": heading_id,
+                "heading_path": heading_path,
+                "outline_level": level,
+                "detection_method": "heuristic_pattern",
+            }
+        )
+    return rewritten, headings, promoted
 
 
 def prepare_source_map(project: Path) -> dict[str, Any]:
@@ -603,9 +702,6 @@ def prepare_source_map(project: Path) -> dict[str, Any]:
                 }
             )
             continue
-        units.extend(source_units)
-        headings.extend(source_headings)
-        warnings.extend(source_warnings)
         if not source_units:
             issues.append(
                 {
@@ -613,6 +709,51 @@ def prepare_source_map(project: Path) -> dict[str, Any]:
                     "message": f"{relative} produced no source units.",
                 }
             )
+        elif not source_headings and path.suffix.casefold() in _HEADING_CAPABLE_SUFFIXES:
+            substantive_units = [
+                item
+                for item in source_units
+                if item.get("kind") in {"paragraph", "table_row", "caption"}
+                and str(item.get("text") or "").strip()
+            ]
+            if len(substantive_units) >= _MIN_SUBSTANTIVE_UNITS_FOR_HEADING_CHECK:
+                promoted_units, promoted_headings, promoted_count = _promote_heuristic_headings(
+                    source_id, relative, source_units
+                )
+                if promoted_count:
+                    source_units = promoted_units
+                    source_headings = promoted_headings
+                    warnings.append(
+                        {
+                            "code": "SOURCE_HEADINGS_HEURISTICALLY_DETECTED",
+                            "message": (
+                                f"{relative} 未使用 Word/Markdown 标题样式，但按编号模式"
+                                f"（第X章/一、/（一）/1.1 等）识别出 {promoted_count} 个疑似标题；"
+                                "这些标题不是原文样式声明的，请核对层级是否正确。"
+                            ),
+                        }
+                    )
+                else:
+                    # A silent zero-heading extraction is worse than an error:
+                    # every downstream stage that is supposed to preserve
+                    # source-native chapter structure treats an empty
+                    # required-heading list as "nothing to check" and passes
+                    # vacuously. Surface this here, at the earliest point it
+                    # can be diagnosed, instead of letting it resurface as an
+                    # unexplained structure problem much later.
+                    issues.append(
+                        {
+                            "code": "SOURCE_HEADINGS_NOT_DETECTED",
+                            "message": (
+                                f"{relative} 有 {len(substantive_units)} 段正文内容，但未识别出任何标题层级；"
+                                "请确认标题是否使用了 Word 的标题段落样式（而不是仅加粗/放大字号），"
+                                "或该源文件确实不含章节结构。"
+                            ),
+                        }
+                    )
+        units.extend(source_units)
+        headings.extend(source_headings)
+        warnings.extend(source_warnings)
     unit_ids = [str(item["unit_id"]) for item in units]
     heading_ids = [str(item["heading_id"]) for item in headings]
     if len(unit_ids) != len(set(unit_ids)):

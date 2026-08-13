@@ -52,6 +52,42 @@ def _write_minimal_docx(path: Path) -> None:
         package.writestr("word/media/image1.png", b"\x89PNG\r\n\x1a\nsource-map-test")
 
 
+HEADINGLESS_DOCUMENT_XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+ <w:body>
+  <w:p><w:r><w:rPr><w:b/></w:rPr><w:t>看起来像标题但只是加粗的正文</w:t></w:r></w:p>
+  <w:p><w:r><w:t>第一段正文说明。</w:t></w:r></w:p>
+  <w:p><w:r><w:t>第二段正文说明。</w:t></w:r></w:p>
+  <w:p><w:r><w:t>第三段正文说明。</w:t></w:r></w:p>
+ </w:body>
+</w:document>
+"""
+
+
+def _write_headingless_docx(path: Path) -> None:
+    with zipfile.ZipFile(path, "w") as package:
+        package.writestr("word/document.xml", HEADINGLESS_DOCUMENT_XML)
+
+
+NUMBERED_BUT_UNSTYLED_DOCUMENT_XML = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+ <w:body>
+  <w:p><w:r><w:t>第一章 总体方案</w:t></w:r></w:p>
+  <w:p><w:r><w:t>本章说明总体方案的构成。</w:t></w:r></w:p>
+  <w:p><w:r><w:t>一、建设背景</w:t></w:r></w:p>
+  <w:p><w:r><w:t>现有基础和能力构成建设背景。</w:t></w:r></w:p>
+  <w:p><w:r><w:t>（一）现有平台</w:t></w:r></w:p>
+  <w:p><w:r><w:t>现有平台已支撑日常运营。</w:t></w:r></w:p>
+ </w:body>
+</w:document>
+"""
+
+
+def _write_numbered_but_unstyled_docx(path: Path) -> None:
+    with zipfile.ZipFile(path, "w") as package:
+        package.writestr("word/document.xml", NUMBERED_BUT_UNSTYLED_DOCUMENT_XML)
+
+
 class SourceDocumentMapTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
@@ -97,6 +133,68 @@ class SourceDocumentMapTests(unittest.TestCase):
         image = next(item for item in units if item["kind"] == "image")
         self.assertTrue(image["metadata"]["requires_visual_interpretation"])
         self.assertEqual("word/media/image1.png", image["metadata"]["media_path"])
+
+    def test_docx_without_heading_styles_is_flagged_instead_of_passing_silently(self) -> None:
+        _write_headingless_docx(self.project / "source" / "material.docx")
+
+        report = prepare_source_map(self.project)
+
+        self.assertEqual("rewrite_required", report["status"])
+        self.assertIn(
+            "SOURCE_HEADINGS_NOT_DETECTED",
+            {item["code"] for item in report["issues"]},
+        )
+
+    def test_numbered_but_unstyled_docx_headings_are_heuristically_promoted(self) -> None:
+        _write_numbered_but_unstyled_docx(self.project / "source" / "material.docx")
+
+        report = prepare_source_map(self.project)
+
+        self.assertEqual("passed", report["status"])
+        self.assertNotIn(
+            "SOURCE_HEADINGS_NOT_DETECTED",
+            {item["code"] for item in report["issues"]},
+        )
+        self.assertIn(
+            "SOURCE_HEADINGS_HEURISTICALLY_DETECTED",
+            {item["code"] for item in report["warnings"]},
+        )
+        titles_and_levels = [(item["title"], item["level"]) for item in report["headings"]]
+        self.assertEqual(
+            [("第一章 总体方案", 1), ("一、建设背景", 2), ("（一）现有平台", 3)],
+            titles_and_levels,
+        )
+        self.assertTrue(
+            all(item.get("detection_method") == "heuristic_pattern" for item in report["headings"])
+        )
+        units = load_source_units(self.project)
+        heading_units = [item for item in units if item["kind"] == "heading"]
+        self.assertEqual(3, len(heading_units))
+        self.assertTrue(
+            all(item.get("detection_method") == "heuristic_pattern" for item in heading_units)
+        )
+        body_unit = next(item for item in units if item["text"] == "现有平台已支撑日常运营。")
+        self.assertEqual(
+            ["第一章 总体方案", "一、建设背景", "（一）现有平台"],
+            body_unit["heading_path"],
+        )
+
+    def test_short_plain_text_source_does_not_trigger_heading_check(self) -> None:
+        # .txt has no heading syntax at all (only .md/.docx can carry
+        # structural headings), so a headingless .txt source must not be
+        # flagged by the same check.
+        (self.project / "source" / "notes.txt").write_text(
+            "第一项\n第二项\n第三项\n第四项\n",
+            encoding="utf-8",
+        )
+
+        report = prepare_source_map(self.project)
+
+        self.assertEqual("passed", report["status"])
+        self.assertNotIn(
+            "SOURCE_HEADINGS_NOT_DETECTED",
+            {item["code"] for item in report["issues"]},
+        )
 
     def test_model_render_uses_source_unit_ids_instead_of_legacy_paragraph_labels(self) -> None:
         (self.project / "source" / "material.txt").write_text("第一项\n第二项\n", encoding="utf-8")
