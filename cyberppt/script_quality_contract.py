@@ -15,6 +15,7 @@ from cyberppt.onscreen_expression import (
     expression_requires_action_headings,
     resolve_onscreen_expression,
 )
+from cyberppt.semantic_expression_models import load_expression_models
 
 # Fallback values, used only if vendor/skills/ppt-script/config/rules.yaml is
 # missing or malformed (e.g. a checkout without the vendor/ skill content, or
@@ -251,7 +252,14 @@ ONSCREEN_CONSTRAINT_DETAIL_TERMS = (
 SPEAKER_NOTES_MIN_CHARS = 60
 VISIBLE_JUDGMENT_MIN_SIMILARITY = 0.04
 VISIBLE_JUDGMENT_TERMINAL_PUNCTUATION = "。；，：？！.!?;,:"
-ONSCREEN_JUDGMENT_MODES = ("locked", "semantic_only")
+# ``semantic_only`` remains an ImageGen-facing legacy mode.  The two new
+# authoring modes govern Stage 01 script review without changing that consumer.
+ONSCREEN_JUDGMENT_MODES = (
+    "locked",
+    "semantic_only",
+    "semantic_alignment",
+    "hidden",
+)
 SEMANTIC_ONLY_JUDGMENT_ROLES = {
     "relationship",
     "positioning",
@@ -855,7 +863,11 @@ def parse_script_markdown(
                 page_type=page_type,
                 title=fields.get("页面标题", heading).strip(),
                 subtitle=fields.get("副标题", "").strip(),
-                main_message=(fields.get("核心结论") or fields.get("主判断", "")).strip(),
+                main_message=(
+                    fields.get("核心结论")
+                    or fields.get("主判断")
+                    or fields.get("页面命题", "")
+                ).strip(),
                 full_prose=fields.get("完整文字稿", "").strip(),
                 prose_paragraph_map=_parse_prose_paragraph_map(
                     fields.get("完整文字稿段落映射", "")
@@ -2213,9 +2225,10 @@ def _negative_foreground_issues(
         hits = _leading_negative_foreground_terms(text)
         if hits:
             evidence.append(f"{field}：{'、'.join(hits)}")
+    selected_problem_slots = _selected_problem_slots(contract)
     for heading in page.top_level_module_titles:
         hits = _negative_foreground_terms(heading)
-        if hits:
+        if hits and not selected_problem_slots:
             evidence.append(f"上屏顶层模块“{heading}”：{'、'.join(hits)}")
     for field, text in (("完整文字稿开头", page.full_prose), ("演讲者备注开头", page.speaker_notes)):
         hits = _opening_negative_foreground_terms(text)
@@ -2240,6 +2253,20 @@ def _negative_foreground_issues(
             evidence=tuple(evidence),
         )
     ]
+
+
+def _selected_problem_slots(contract: dict[str, object]) -> set[str]:
+    """Return explicit, non-implicit problem slots from an author model choice."""
+
+    selection = contract.get("expression_model_selection")
+    mappings = selection.get("source_mapping") if isinstance(selection, dict) else []
+    if not isinstance(mappings, list):
+        return set()
+    return {"complication", "problem", "gap"} & {
+        str(item.get("slot") or "")
+        for item in mappings
+        if isinstance(item, dict) and item.get("implicit") is not True
+    }
 
 
 def _prohibited_colloquial_hits(text: str) -> tuple[str, ...]:
@@ -2987,6 +3014,8 @@ def _page_content_unit_coverage_issues(
     """Verify atomic page content survives both prose and onscreen compression."""
 
     issues: list[ScriptQualityIssue] = []
+    model_covered_refs, model_issues = _model_slot_coverage_issues(page, contract)
+    issues.extend(model_issues)
     units = [
         item for item in (contract.get("content_units") or [])
         if isinstance(item, dict)
@@ -3030,7 +3059,10 @@ def _page_content_unit_coverage_issues(
                         f"overlap={statement_overlap:.3f}",
                     ),
                 ))
-        if unit.get("onscreen_required") is True:
+        if (
+            unit.get("onscreen_required") is True
+            and not set(source_refs).issubset(model_covered_refs)
+        ):
             missing = tuple(
                 anchor for anchor in onscreen_anchors
                 if anchor not in page.onscreen_text
@@ -3045,6 +3077,77 @@ def _page_content_unit_coverage_issues(
                     evidence=(f"unit_id={unit_id}", *missing),
                 ))
     return issues
+
+
+def _model_slot_coverage_issues(
+    page: ScriptPage,
+    contract: dict[str, object],
+) -> tuple[set[str], list[ScriptQualityIssue]]:
+    """Verify visible responsibility for an author-selected expression model.
+
+    The Outline audit has already established that mappings cite only current
+    page evidence.  Here we verify that a non-implicit slot is represented in
+    the audience layer before exempting its units from literal-anchor checks.
+    """
+
+    selection = contract.get("expression_model_selection")
+    if not isinstance(selection, dict) or selection.get("fit") != "selected":
+        return set(), []
+    model = load_expression_models().get(str(selection.get("model_id") or ""))
+    if model is None:
+        return set(), []
+    units = [
+        item for item in (contract.get("content_units") or [])
+        if isinstance(item, dict)
+    ]
+    visible = "\n".join(
+        part for part in (page.onscreen_judgment, page.onscreen_text) if part.strip()
+    )
+    covered_refs: set[str] = set()
+    issues: list[ScriptQualityIssue] = []
+    slot_names = {slot.name for slot in model.slots}
+    for mapping in selection.get("source_mapping") or []:
+        if not isinstance(mapping, dict) or mapping.get("implicit") is True:
+            continue
+        slot = str(mapping.get("slot") or "")
+        refs = {str(ref) for ref in mapping.get("source_refs") or [] if str(ref)}
+        if not refs or slot not in slot_names:
+            continue
+        missing: set[str] = set()
+        for ref in refs:
+            matching_units = [
+                unit for unit in units
+                if ref in {str(value) for value in unit.get("source_refs") or []}
+            ]
+            if not matching_units:
+                missing.add(ref)
+                continue
+            if any(
+                any(
+                    anchor and anchor in visible
+                    for anchor in unit.get("onscreen_anchors") or []
+                )
+                or any(
+                    _source_statement_overlap(str(anchor), visible, size=3) >= 0.55
+                    for anchor in unit.get("onscreen_anchors") or []
+                    if str(anchor).strip()
+                )
+                or _source_statement_overlap(str(unit.get("statement") or ""), visible) >= 0.22
+                for unit in matching_units
+            ):
+                covered_refs.add(ref)
+            else:
+                missing.add(ref)
+        if missing:
+            issues.append(_issue(
+                "EXPRESSION_MODEL_SLOT_ONSCREEN_MISSING",
+                page,
+                "作者选定表达模型的槽位没有在可见文字中承担来源表达职责。",
+                "恢复该槽位的来源特征或调整作者确认的槽位映射；不要只补审计锚点。",
+                source_ids=tuple(sorted(missing)),
+                evidence=(f"model={model.model_id}", f"slot={slot}"),
+            ))
+    return covered_refs, issues
 
 
 def onscreen_semantic_coverage(page: ScriptPage) -> float:
@@ -4495,7 +4598,7 @@ def _preflight_semantic_issues(
                 "ONSCREEN_JUDGMENT_MODE_INVALID",
                 page,
                 str(exc),
-                "Use a supported judgment_role or explicitly set locked/semantic_only.",
+                "Use a supported judgment_role or explicitly set locked, semantic_alignment, hidden, or legacy semantic_only.",
                 evidence=tuple(part for part in (explicit_mode, judgment_role) if part),
                 severity="error",
             )
@@ -4547,7 +4650,7 @@ def _preflight_semantic_issues(
                 "ONSCREEN_JUDGMENT_LOCK_REVIEW",
                 page,
                 "A long relationship or positioning judgment is locked for verbatim display.",
-                "Consider semantic_only so the judgment governs composition without becoming a second title.",
+                "Consider semantic_alignment so the judgment can be source-faithfully compressed without becoming a second title.",
                 evidence=(page.onscreen_judgment,),
                 severity="warning",
             )
@@ -4713,12 +4816,38 @@ def audit_script_quality(
                 )
             )
         if expected_type == "content":
+            explicit_judgment_mode = str(
+                contract.get("onscreen_judgment_mode") or page.onscreen_judgment_mode
+            ).strip()
+            judgment_role = str(
+                contract.get("judgment_role") or page.judgment_role
+            ).strip()
+            try:
+                judgment_mode = resolve_judgment_mode(
+                    explicit_judgment_mode, judgment_role,
+                )
+            except ValueError as exc:
+                issues.append(
+                    _issue(
+                        "ONSCREEN_JUDGMENT_MODE_INVALID",
+                        page,
+                        str(exc),
+                        "Use locked, semantic_alignment, hidden, or the legacy semantic_only mode.",
+                        evidence=tuple(
+                            value for value in (explicit_judgment_mode, judgment_role) if value
+                        ),
+                    )
+                )
+                judgment_mode = "locked"
             expected_judgment = str(
                 contract.get("onscreen_conclusion")
                 or contract.get("onscreen_judgment")
                 or ""
             ).strip()
-            visible_judgment_required = bool(expected_judgment)
+            visible_judgment_required = (
+                judgment_mode in {"locked", "semantic_alignment"}
+                and (bool(expected_judgment) or judgment_mode == "semantic_alignment")
+            )
             if (
                 not page.source_refs
                 or not page.visual_structure
@@ -4755,6 +4884,8 @@ def audit_script_quality(
                             )
                         )
                     if (
+                        judgment_mode == "locked"
+                        and
                         expected_judgment
                         and page.onscreen_judgment != expected_judgment
                     ):

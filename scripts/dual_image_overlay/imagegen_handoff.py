@@ -1196,7 +1196,12 @@ def diagnostic_onscreen_text(
     return page.onscreen_text
 
 
-ONSCREEN_JUDGMENT_MODES = ("locked", "semantic_only")
+ONSCREEN_JUDGMENT_MODES = (
+    "locked",
+    "semantic_only",
+    "semantic_alignment",
+    "hidden",
+)
 
 
 def resolve_onscreen_judgment_mode(

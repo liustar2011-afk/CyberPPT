@@ -34,6 +34,7 @@ from cyberppt.script_quality_contract import (
     _full_prose_paragraph_boundary_issues,
     _polarity_dropped_terms,
     _page_content_unit_coverage_issues,
+    _model_slot_coverage_issues,
     _visual_structure_judgment_issues,
     audit_script_quality,
     assert_imagegen_onscreen_readiness,
@@ -101,6 +102,94 @@ class OnscreenParallelStructureTests(unittest.TestCase):
             "ONSCREEN_PARALLEL_STRUCTURE_INCONSISTENT",
             {item.code for item in issues},
         )
+
+    def test_selected_scqa_can_show_gap_as_an_evidence_module(self) -> None:
+        page = self._page("服务供给断点\n    分散资源尚未形成稳定服务供给")
+        page = replace(
+            page,
+            title="建设背景",
+            main_message="统一服务运营基础形成可交付服务供给",
+            onscreen_judgment="统一服务运营基础形成可交付服务供给",
+            top_level_module_titles=("服务供给断点", "统一服务运营基础"),
+        )
+        contract = {
+            "expression_model_selection": {
+                "model_id": "scqa", "fit": "selected", "source_mapping": [
+                    {"slot": "complication", "source_refs": ["ST032"]},
+                    {"slot": "answer", "source_refs": ["ST032"]},
+                ],
+            },
+        }
+
+        codes = {item.code for item in _negative_foreground_issues(page, contract)}
+
+        self.assertNotIn("NEGATIVE_FOREGROUND_OUTSIDE_BOUNDARY_TOPIC", codes)
+
+
+class ExpressionModelOnscreenCoverageTests(unittest.TestCase):
+    def test_page_proposition_is_a_main_judgment_alias(self) -> None:
+        page = parse_script_markdown(
+            """## 第4页：建设背景
+- 页面类型：内容页
+- 页面标题：建设背景
+- 页面命题：统一服务运营基础组织行业服务供给
+"""
+        ).pages[0]
+
+        self.assertEqual("统一服务运营基础组织行业服务供给", page.main_message)
+
+    def test_scqa_slots_accept_natural_visible_compression(self) -> None:
+        page = ScriptPage(
+            page_id="p04", sequence=4, heading="", page_type="content", title="建设背景",
+            main_message="统一基础组织服务供给", full_prose="来源完整文字稿", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=("S001", "S002", "S003"),
+            boundary_source_refs=(), boundary="", visual_structure="关系", module_titles=(),
+            onscreen_judgment="统一服务运营基础形成可交付服务供给",
+            onscreen_text="行业协同需求增长\n\n分散资源难以稳定组合\n\n可信服务运营基础组织服务供给",
+        )
+        contract = {
+            "expression_model_selection": {
+                "model_id": "scqa", "fit": "selected", "source_mapping": [
+                    {"slot": "situation", "source_refs": ["S001"]},
+                    {"slot": "complication", "source_refs": ["S002"]},
+                    {"slot": "answer", "source_refs": ["S003"]},
+                ],
+            },
+            "content_units": [
+                {"statement": "行业协同需求持续增长。", "source_refs": ["S001"], "onscreen_required": True, "onscreen_anchors": ["行业协同需求持续增长"]},
+                {"statement": "分散资源难以稳定组合形成服务。", "source_refs": ["S002"], "onscreen_required": True, "onscreen_anchors": ["分散资源难以稳定组合"]},
+                {"statement": "可信服务运营基础组织可交付服务供给。", "source_refs": ["S003"], "onscreen_required": True, "onscreen_anchors": ["可信服务运营基础"]},
+            ],
+        }
+
+        covered, issues = _model_slot_coverage_issues(page, contract)
+
+        self.assertEqual({"S001", "S002", "S003"}, covered)
+        self.assertEqual([], issues)
+        self.assertNotIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in _page_content_unit_coverage_issues(page, contract)})
+
+    def test_scqa_answer_must_remain_visible(self) -> None:
+        page = ScriptPage(
+            page_id="p04", sequence=4, heading="", page_type="content", title="建设背景",
+            main_message="统一基础组织服务供给", full_prose="来源完整文字稿", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=("S001", "S002"),
+            boundary_source_refs=(), boundary="", visual_structure="关系", module_titles=(),
+            onscreen_text="行业协同需求增长\n\n分散资源难以稳定组合",
+        )
+        contract = {
+            "expression_model_selection": {"model_id": "scqa", "fit": "selected", "source_mapping": [
+                {"slot": "situation", "source_refs": ["S001"]},
+                {"slot": "answer", "source_refs": ["S002"]},
+            ]},
+            "content_units": [
+                {"statement": "行业协同需求持续增长。", "source_refs": ["S001"], "onscreen_anchors": ["行业协同需求持续增长"]},
+                {"statement": "可信服务运营基础组织可交付服务供给。", "source_refs": ["S002"], "onscreen_anchors": ["可信服务运营基础"]},
+            ],
+        }
+
+        _, issues = _model_slot_coverage_issues(page, contract)
+
+        self.assertIn("EXPRESSION_MODEL_SLOT_ONSCREEN_MISSING", {item.code for item in issues})
 
 
 class NecessityPageContractTests(unittest.TestCase):
@@ -1949,6 +2038,68 @@ class ScriptContractAuditTests(unittest.TestCase):
             )
         }
         self.assertIn("SCRIPT_JUDGMENT_INTRODUCED", punctuated_codes)
+
+    def test_semantic_alignment_allows_source_faithful_visible_compression(self) -> None:
+        outline = strict_outline(
+            {
+                "page_id": "p09",
+                "sequence": 9,
+                "page_type": "content",
+                "title": "总体定位",
+                "core_message": "平台连接行业资源并组织可信服务供给。",
+                "onscreen_judgment_mode": "semantic_alignment",
+                "source_refs": ["S015"],
+            }
+        )
+        script = SCRIPT.replace(
+            "- 主判断：初步定位为面向行业的公共能力。\n",
+            "- 主判断：平台连接行业资源并组织可信服务供给。\n"
+            "- 上屏结论：平台连接资源并形成可信服务供给\n",
+            1,
+        )
+        truth = source_truth(
+            {"id": "S015", "type": "B", "status": "原文陈述", "statement": "平台连接行业资源并组织可信服务供给。"},
+        )
+
+        codes = {
+            issue.code
+            for issue in audit_script_quality(
+                parse_script_markdown(script), outline, truth,
+            )
+        }
+
+        self.assertNotIn("SCRIPT_JUDGMENT_INTRODUCED", codes)
+        self.assertNotIn("ONSCREEN_JUDGMENT_CONTRACT_MISMATCH", codes)
+
+    def test_hidden_mode_rejects_an_independent_visible_judgment(self) -> None:
+        outline = strict_outline(
+            {
+                "page_id": "p09",
+                "sequence": 9,
+                "page_type": "content",
+                "title": "总体定位",
+                "onscreen_judgment_mode": "hidden",
+                "source_refs": ["S015"],
+            }
+        )
+        script = SCRIPT.replace(
+            "- 主判断：初步定位为面向行业的公共能力。\n",
+            "- 主判断：初步定位为面向行业的公共能力。\n"
+            "- 上屏结论：面向行业的公共能力定位支撑行业研判\n",
+            1,
+        )
+        truth = source_truth(
+            {"id": "S015", "type": "B", "status": "原文陈述", "statement": "初步定位。"},
+        )
+
+        codes = {
+            issue.code
+            for issue in audit_script_quality(
+                parse_script_markdown(script), outline, truth,
+            )
+        }
+
+        self.assertIn("SCRIPT_JUDGMENT_INTRODUCED", codes)
 
     @unittest.skipUnless(
         (POWER_PROJECT / "workbench/stages/01-analysis/outline.json").is_file(),

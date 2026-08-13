@@ -123,8 +123,10 @@ description: Professionally design, diagnose, write, or rewrite one CyberPPT con
 人工审阅后，只对目标页所在正式稿运行轻量审计：
 
 ```powershell
-python -m cyberppt script-audit '<project>' --input '<authoritative-page-or-chapter-script>' --lightweight
+python -m cyberppt script-audit '<project>' --input '<authoritative-page-or-chapter-script>'
 ```
+
+当前 CLI 默认输出 `mode: lightweight`，不接受额外的 `--lightweight` 参数。
 
 先判断问题属于页面写作、Outline 契约、Source Truth 角色或状态，还是检查器误报；修复根因，不添加重复锚点句、虚假结论、空模块或同义词替换来消除错误码。局部修改不触发无关上游或全稿级联重审。
 
