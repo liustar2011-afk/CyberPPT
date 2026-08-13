@@ -1,6 +1,6 @@
 # `run-autonomous` contract
 
-`python -m cyberppt run-autonomous /absolute/path/contract.json` composes the existing lightweight Stage 01 and Stage 02 gates. It does not generate semantic interpretation, professional page authoring, or visual decisions by template; those remain required inputs and cause a fail-closed report if missing.
+`python -m cyberppt run-autonomous /absolute/path/contract.json` composes the existing lightweight Stage 01 and Stage 02 gates. It verifies authored artifacts; it does not generate semantic interpretation, professional page authoring, or visual decisions by template, and it does not replace the conversation delivery of the communication goal, author-edited Outline, or detailed pages. Those remain required inputs and cause a fail-closed report if missing.
 
 An Outline is accepted only when it declares `editorial_authoring_mode: author_driven` and `editorial_authoring_status: author_edited`; the deterministic candidate is rejected even if its structural audit otherwise passes. Page authoring is verified from the official Markdown drafts under `workbench/scripts/drafts/`: each content page must contain complete prose, on-screen copy, visual structure, speaker notes, evidence mapping, and the three-bucket selection rationale. The lightweight route never requires or writes `page-script-authoring.json`.
 
