@@ -3015,6 +3015,8 @@ def _page_content_unit_coverage_issues(
 
     issues: list[ScriptQualityIssue] = []
     model_covered_refs, model_issues = _model_slot_coverage_issues(page, contract)
+    if contract.get("source_grounding_mode") == "required":
+        model_covered_refs = set()
     issues.extend(model_issues)
     units = [
         item for item in (contract.get("content_units") or [])
@@ -3061,6 +3063,7 @@ def _page_content_unit_coverage_issues(
                 ))
         if (
             unit.get("onscreen_required") is True
+            and contract.get("source_grounding_mode") != "required"
             and not set(source_refs).issubset(model_covered_refs)
         ):
             missing = tuple(
@@ -3076,6 +3079,82 @@ def _page_content_unit_coverage_issues(
                     source_ids=source_refs,
                     evidence=(f"unit_id={unit_id}", *missing),
                 ))
+    return issues
+
+
+def _visible_module_groups(text: str) -> dict[str, str]:
+    """Map each blank-line-delimited visible group to its top-level title."""
+
+    groups: dict[str, str] = {}
+    for group in (item for item in str(text).split("\n\n") if item.strip()):
+        lines = [line.strip() for line in group.splitlines() if line.strip()]
+        if not lines:
+            continue
+        title = _module_title(lines[0]) or lines[0]
+        groups[title] = "\n".join(lines)
+    return groups
+
+
+def _onscreen_module_provenance_issues(
+    page: ScriptPage,
+    contract: dict[str, object],
+) -> list[ScriptQualityIssue]:
+    """Ensure direct audience modules keep their declared fact boundary."""
+
+    if contract.get("source_grounding_mode") != "required":
+        return []
+    visible_groups = _visible_module_groups(page.onscreen_text)
+    issues: list[ScriptQualityIssue] = []
+    for module in _dict_items(contract, "onscreen_modules"):
+        title = str(module.get("display_title") or "").strip()
+        visible = visible_groups.get(title, "")
+        claim = str(module.get("allowed_visible_claim") or "").strip()
+        characteristics = tuple(
+            str(value).strip()
+            for value in module.get("required_characteristics") or []
+            if str(value).strip()
+        )
+        refs = tuple(str(value) for value in module.get("source_refs") or [] if str(value))
+        if not visible:
+            issues.append(_issue(
+                "ONSCREEN_FACT_PROVENANCE_MISSING",
+                page,
+                "登记的上屏来源模块没有对应的可见模块。",
+                "恢复该模块，或调整正式 Outline 中的来源归属。",
+                source_ids=refs,
+                evidence=(f"module={title}",),
+            ))
+            continue
+        claim_overlap = _source_statement_overlap(claim, visible, size=3)
+        feature_hit = any(
+            feature in visible
+            or _source_statement_overlap(feature, visible, size=3) >= 0.55
+            for feature in characteristics
+        )
+        # A direct module is allowed to shorten a long source paragraph.  The
+        # explicit source-specific characteristic proves its fact boundary;
+        # a modest phrase overlap guards against an unrelated label carrying
+        # the same characteristic by accident.
+        if claim_overlap >= 0.05 and feature_hit:
+            continue
+        mode = str(module.get("derivation_mode") or "")
+        code = (
+            "ONSCREEN_CROSS_SLOT_FACT_MIXING"
+            if mode == "direct"
+            else "ONSCREEN_FACT_PROVENANCE_MISSING"
+        )
+        issues.append(_issue(
+            code,
+            page,
+            "可见模块未保持登记来源事实的对象、状态或表达模型槽位边界。",
+            "拆回直接事实，或在 Outline 中登记 synthesis/relation 并明确关系。",
+            source_ids=refs,
+            evidence=(
+                f"module={title}",
+                f"claim_overlap={claim_overlap:.3f}",
+                f"mode={mode}",
+            ),
+        ))
     return issues
 
 
@@ -4816,6 +4895,7 @@ def audit_script_quality(
                 )
             )
         if expected_type == "content":
+            issues.extend(_onscreen_module_provenance_issues(page, contract))
             explicit_judgment_mode = str(
                 contract.get("onscreen_judgment_mode") or page.onscreen_judgment_mode
             ).strip()

@@ -589,6 +589,53 @@ def _page_content_units(
     return result, list(dict.fromkeys(details))
 
 
+def _onscreen_modules(
+    page_id: str,
+    records: list[dict[str, Any]],
+    expression_model_selection: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    """Derive visible-module provenance without merging source facts.
+
+    A direct visual module has one Source Truth record as its fact boundary.
+    Expression-model mappings may put several records in one slot, but that
+    does not authorize combining their objects, states, or results.
+    """
+
+    slots_by_ref: dict[str, list[str]] = {}
+    selected = (
+        expression_model_selection.get("source_mapping")
+        if isinstance(expression_model_selection, dict)
+        and expression_model_selection.get("fit") == "selected"
+        else []
+    )
+    for mapping in selected if isinstance(selected, list) else []:
+        if not isinstance(mapping, dict) or mapping.get("implicit") is True:
+            continue
+        slot = str(mapping.get("slot") or "").strip()
+        if not slot:
+            continue
+        for ref in _strings(mapping.get("source_refs")):
+            slots_by_ref.setdefault(ref, []).append(slot)
+
+    modules: list[dict[str, Any]] = []
+    for index, record in enumerate(records, start=1):
+        record_id = str(record.get("id") or "").strip()
+        statement = str(record.get("statement") or "").strip()
+        if not record_id or not statement:
+            continue
+        characteristics = _content_unit_anchors(record, "")
+        modules.append({
+            "module_id": f"{page_id}-M{index:02d}",
+            "display_title": characteristics[0] if characteristics else _clean_title(statement),
+            "source_refs": [record_id],
+            "model_slots": list(dict.fromkeys(slots_by_ref.get(record_id, []))),
+            "derivation_mode": "direct",
+            "allowed_visible_claim": statement,
+            "required_characteristics": characteristics,
+        })
+    return modules
+
+
 def refresh_outline_content_units(
     project: Path,
     outline_path: Path | None = None,
@@ -628,6 +675,14 @@ def refresh_outline_content_units(
         )
         page["content_units"] = units
         page["detail_refs"] = details
+        page["onscreen_modules"] = _onscreen_modules(
+            str(page.get("page_id") or ""),
+            page_records,
+            page.get("expression_model_selection")
+            if isinstance(page.get("expression_model_selection"), dict)
+            else None,
+        )
+        page["source_grounding_mode"] = "required"
     target.write_text(json.dumps(outline, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return target
 

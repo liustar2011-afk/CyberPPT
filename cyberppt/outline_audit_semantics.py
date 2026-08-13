@@ -397,3 +397,68 @@ def _expression_model_issues(
                     (page_id,), "declare_implicit_expression_slot",
                 ))
     return issues
+
+
+def _onscreen_module_provenance_issues(
+    pages: list[dict[str, object]],
+) -> list[AuditIssue]:
+    """Validate explicit source boundaries for visible audience modules."""
+
+    issues: list[AuditIssue] = []
+    for page in pages:
+        if page.get("source_grounding_mode") != "required":
+            continue
+        page_id = _page_id(page)
+        page_refs = {
+            str(value) for value in page.get("source_refs") or [] if str(value)
+        }
+        selection = page.get("expression_model_selection")
+        mappings = selection.get("source_mapping") if isinstance(selection, dict) else []
+        mapped_slots = {
+            str(mapping.get("slot") or "")
+            for mapping in mappings if isinstance(mapping, dict)
+            and mapping.get("implicit") is not True
+        }
+        modules = [
+            item for item in page.get("onscreen_modules") or []
+            if isinstance(item, dict)
+        ]
+        if not modules:
+            issues.append(AuditIssue(
+                "SOURCE_GROUNDING_MODULE_INVALID",
+                "启用来源归属的内容页必须声明每个上屏模块的事实边界。",
+                (page_id,), "repair_onscreen_module_provenance",
+            ))
+            continue
+        for module in modules:
+            mode = str(module.get("derivation_mode") or "")
+            refs = {
+                str(value) for value in module.get("source_refs") or [] if str(value)
+            }
+            slots = {
+                str(value) for value in module.get("model_slots") or [] if str(value)
+            }
+            claim = str(module.get("allowed_visible_claim") or "").strip()
+            invalid = (
+                not str(module.get("module_id") or "").strip()
+                or not str(module.get("display_title") or "").strip()
+                or not claim
+                or not refs
+                or not refs.issubset(page_refs)
+                or bool(slots - mapped_slots)
+                or mode not in {"direct", "synthesis", "relation"}
+            )
+            if mode == "direct":
+                invalid |= len(refs) != 1 or len(slots) > 1
+            elif mode in {"synthesis", "relation"}:
+                invalid |= not all(
+                    str(module.get(field) or "").strip()
+                    for field in ("relation", "synthesis_rationale")
+                )
+            if invalid:
+                issues.append(AuditIssue(
+                    "SOURCE_GROUNDING_MODULE_INVALID",
+                    "上屏来源归属模块不满足 direct、synthesis 或 relation 的事实边界契约。",
+                    (page_id,), "repair_onscreen_module_provenance",
+                ))
+    return issues

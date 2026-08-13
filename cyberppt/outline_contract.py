@@ -17,6 +17,7 @@ from cyberppt.outline_audit_density import (
 from cyberppt.outline_audit_semantics import (
     _document_semantic_issues,
     _expression_model_issues,
+    _onscreen_module_provenance_issues,
     _page_content_unit_contract_issues,
     _semantic_derivation_issues,
     _structural_argument_duty_issues,
@@ -102,6 +103,7 @@ def audit_outline(
     issues.extend(_page_content_unit_contract_issues(outline, pages))
     issues.extend(_structural_argument_duty_issues(pages, source_truth))
     issues.extend(_expression_model_issues(pages, source_truth))
+    issues.extend(_onscreen_module_provenance_issues(pages))
     if outline.get("semantic_argument_model_mode") == "required" or semantic_argument_model is not None:
         issues.extend(
             AuditIssue(

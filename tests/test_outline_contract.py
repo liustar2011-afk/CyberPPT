@@ -260,6 +260,36 @@ class OutlineContractTests(unittest.TestCase):
         self.assertNotIn("EXPRESSION_MODEL_SLOT_UNCITED", codes)
         self.assertNotIn("EXPRESSION_MODEL_IMPLICIT_UNDECLARED", codes)
 
+    def test_source_grounding_rejects_multi_source_direct_module(self) -> None:
+        content = page(1, "content", "建设背景", message="需要统一运营基础", refs=["S001", "S002"])
+        content["source_grounding_mode"] = "required"
+        content["onscreen_modules"] = [{
+            "module_id": "p01-M01", "display_title": "服务供给断点",
+            "source_refs": ["S001", "S002"], "model_slots": [],
+            "derivation_mode": "direct", "allowed_visible_claim": "混合事实",
+            "required_characteristics": ["来源特征"],
+        }]
+
+        codes = {issue.code for issue in audit_outline(outline(content))}
+
+        self.assertIn("SOURCE_GROUNDING_MODULE_INVALID", codes)
+
+    def test_source_grounding_accepts_declared_synthesis(self) -> None:
+        content = page(1, "content", "建设背景", message="需要统一运营基础", refs=["S001", "S002"])
+        content["source_grounding_mode"] = "required"
+        content["onscreen_modules"] = [{
+            "module_id": "p01-M01", "display_title": "供需关系",
+            "source_refs": ["S001", "S002"], "model_slots": [],
+            "derivation_mode": "synthesis", "relation": "responds_to",
+            "allowed_visible_claim": "协同需求需要统一运营基础回应",
+            "synthesis_rationale": "来源分别陈述需求和回应，页面明示其回应关系。",
+            "required_characteristics": ["协同需求", "运营基础"],
+        }]
+
+        codes = {issue.code for issue in audit_outline(outline(content))}
+
+        self.assertNotIn("SOURCE_GROUNDING_MODULE_INVALID", codes)
+
 
     def test_formal_v2_outline_defaults_to_plain_declarative_titles(self) -> None:
         payload = outline(

@@ -195,6 +195,28 @@ class CompilePageScriptAuthoringTests(unittest.TestCase):
         self.assertIn("- 模型：scqa", chapter)
         self.assertIn("question＝ST001（隐含推导）：如何回应？", chapter)
 
+    def test_emits_onscreen_provenance_as_non_onscreen_context(self) -> None:
+        page = self.outline["pages"][2]
+        page["onscreen_modules"] = [{
+            "module_id": "p03-M01", "display_title": "服务供给断点",
+            "source_refs": ["ST001"], "model_slots": ["complication"],
+            "derivation_mode": "direct",
+            "allowed_visible_claim": "分散资源尚未形成稳定的行业服务供给",
+            "required_characteristics": ["资源发现", "服务运营机制"],
+        }]
+        self.outline_path.write_text(json.dumps(self.outline, ensure_ascii=False), encoding="utf-8")
+        self.authoring["outline_sha256"] = _sha256(self.outline_path)
+        self.authoring_path.write_text(json.dumps(self.authoring, ensure_ascii=False), encoding="utf-8")
+        output = self.scripts / "drafts/run-provenance"
+
+        compile_page_script_authoring(self.project, output_dir=output)
+
+        chapter = (output / "ch01.md").read_text(encoding="utf-8")
+        self.assertIn("### 上屏来源归属（不上屏）", chapter)
+        self.assertIn("p03-M01｜服务供给断点｜direct｜complication｜ST001", chapter)
+        onscreen = chapter.split("### 上屏文字（严格锁定）", 1)[1].split("### 逻辑骨架", 1)[0]
+        self.assertNotIn("上屏来源归属", onscreen)
+
     def test_emits_default_prose_paragraph_map_for_distinct_source_paragraphs(self) -> None:
         content = self.outline["pages"][2]
         content["source_refs"] = ["ST001", "ST002", "ST003", "ST004"]

@@ -35,6 +35,7 @@ from cyberppt.script_quality_contract import (
     _polarity_dropped_terms,
     _page_content_unit_coverage_issues,
     _model_slot_coverage_issues,
+    _onscreen_module_provenance_issues,
     _visual_structure_judgment_issues,
     audit_script_quality,
     assert_imagegen_onscreen_readiness,
@@ -190,6 +191,76 @@ class ExpressionModelOnscreenCoverageTests(unittest.TestCase):
         _, issues = _model_slot_coverage_issues(page, contract)
 
         self.assertIn("EXPRESSION_MODEL_SLOT_ONSCREEN_MISSING", {item.code for item in issues})
+
+    def test_direct_module_rejects_cross_slot_fact_mixing(self) -> None:
+        page = ScriptPage(
+            page_id="p04", sequence=4, heading="", page_type="content", title="建设背景",
+            main_message="统一基础组织服务供给", full_prose="来源完整文字稿", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=("ST008",),
+            boundary_source_refs=(), boundary="", visual_structure="关系", module_titles=(),
+            onscreen_text=("服务供给断点\n"
+                           "  分散的数据、知识、模型和专业能力尚未形成稳定的数据服务和场景服务供给"),
+        )
+        contract = {
+            "source_grounding_mode": "required",
+            "onscreen_modules": [{
+                "module_id": "p04-M01", "display_title": "服务供给断点",
+                "source_refs": ["ST008"], "model_slots": ["complication"],
+                "derivation_mode": "direct",
+                "allowed_visible_claim": "分散资源尚未形成稳定的行业服务供给",
+                "required_characteristics": ["资源发现", "服务运营机制"],
+            }],
+        }
+
+        codes = {item.code for item in _onscreen_module_provenance_issues(page, contract)}
+
+        self.assertIn("ONSCREEN_CROSS_SLOT_FACT_MIXING", codes)
+
+    def test_direct_module_accepts_source_faithful_shortening(self) -> None:
+        page = ScriptPage(
+            page_id="p04", sequence=4, heading="", page_type="content", title="建设背景",
+            main_message="统一基础组织服务供给", full_prose="来源完整文字稿", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=("ST008",),
+            boundary_source_refs=(), boundary="", visual_structure="关系", module_titles=(),
+            onscreen_text=("服务供给断点\n"
+                           "  分散资源尚未形成稳定的行业服务供给\n"
+                           "  服务运营：供需对接、产品封装、授权执行、服务计量和价值结算尚未形成完整机制"),
+        )
+        contract = {
+            "source_grounding_mode": "required",
+            "onscreen_modules": [{
+                "module_id": "p04-M01", "display_title": "服务供给断点",
+                "source_refs": ["ST008"], "model_slots": ["complication"],
+                "derivation_mode": "direct",
+                "allowed_visible_claim": "分散资源尚未形成稳定的行业服务供给",
+                "required_characteristics": ["服务运营：供需对接、产品封装"],
+            }],
+        }
+
+        codes = {item.code for item in _onscreen_module_provenance_issues(page, contract)}
+
+        self.assertFalse(codes & {"ONSCREEN_FACT_PROVENANCE_MISSING", "ONSCREEN_CROSS_SLOT_FACT_MIXING"})
+
+    def test_source_grounding_replaces_aggregate_unit_onscreen_checks(self) -> None:
+        page = ScriptPage(
+            page_id="p04", sequence=4, heading="", page_type="content", title="建设背景",
+            main_message="统一基础组织服务供给", full_prose="协同需求持续增长；分散资源尚未形成稳定供给。", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=("S001", "S002"),
+            boundary_source_refs=(), boundary="", visual_structure="关系", module_titles=(),
+            onscreen_text="协同需求\n  协同需求持续增长\n\n服务供给断点\n  分散资源尚未形成稳定供给",
+        )
+        contract = {
+            "source_grounding_mode": "required",
+            "content_units": [{
+                "unit_id": "p04-U01", "statement": "协同需求持续增长；分散资源尚未形成稳定供给。",
+                "source_refs": ["S001", "S002"], "onscreen_required": True,
+                "onscreen_anchors": ["不应再由聚合单元审计"],
+            }],
+        }
+
+        codes = {item.code for item in _page_content_unit_coverage_issues(page, contract)}
+
+        self.assertNotIn("ONSCREEN_CONTENT_UNIT_GAP", codes)
 
 
 class NecessityPageContractTests(unittest.TestCase):

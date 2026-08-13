@@ -25,6 +25,7 @@ from cyberppt.source_truth_contract import audit_source_truth, load_source_truth
 from cyberppt.stage01_compiler import (
     _source_locator,
     _page_content_units,
+    _onscreen_modules,
     compile_outline_draft,
     compile_source_truth,
     refresh_outline_content_units,
@@ -123,6 +124,32 @@ class Stage01CompilerTests(unittest.TestCase):
         self.assertEqual(["ST0002", "ST0003"], units[1]["source_refs"])
         self.assertEqual("primary", units[-1]["role"])
         self.assertTrue(all(unit["onscreen_required"] for unit in units))
+
+    def test_onscreen_modules_keep_each_source_fact_separate(self) -> None:
+        records = [
+            {
+                "id": "ST0001", "statement": "协同需求持续增长。",
+                "semantic_units": [{"text": "协同需求持续增长"}],
+            },
+            {
+                "id": "ST0002", "statement": "分散资源尚未形成稳定的行业服务供给。",
+                "semantic_units": [{"text": "分散资源尚未形成稳定的行业服务供给"}],
+            },
+        ]
+        modules = _onscreen_modules("p04", records, {
+            "fit": "selected", "source_mapping": [
+                {"slot": "complication", "source_refs": ["ST0001", "ST0002"]},
+            ],
+        })
+
+        self.assertEqual([["ST0001"], ["ST0002"]], [item["source_refs"] for item in modules])
+        self.assertEqual(["complication"], modules[1]["model_slots"])
+        self.assertEqual("direct", modules[1]["derivation_mode"])
+        self.assertEqual("分散资源尚未形成稳定的行业服务供给", modules[1]["display_title"])
+        self.assertNotIn(
+            "稳定的数据服务和场景服务供给",
+            "\n".join(item["allowed_visible_claim"] for item in modules),
+        )
     def test_fallback_primary_prefers_page_forming_gap_over_general_premise(self) -> None:
         records = [
             {

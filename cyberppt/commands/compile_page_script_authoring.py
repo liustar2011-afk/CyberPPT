@@ -181,6 +181,34 @@ def _expression_model_block(page: dict[str, Any]) -> list[str]:
     return lines
 
 
+def _onscreen_provenance_block(page: dict[str, Any]) -> list[str]:
+    """Render source grounding for authors without leaking it to the audience."""
+
+    lines: list[str] = []
+    for module in page.get("onscreen_modules") or []:
+        if not isinstance(module, dict):
+            continue
+        module_id = str(module.get("module_id") or "").strip()
+        title = str(module.get("display_title") or "").strip()
+        mode = str(module.get("derivation_mode") or "").strip()
+        slots = "、".join(str(value) for value in module.get("model_slots") or [] if str(value)) or "未映射槽位"
+        refs = "、".join(str(value) for value in module.get("source_refs") or [] if str(value)) or "未引用"
+        lines.append(f"- {module_id}｜{title}｜{mode}｜{slots}｜{refs}")
+        claim = str(module.get("allowed_visible_claim") or "").strip()
+        if claim:
+            lines.append(f"  - 允许命题：{claim}")
+        characteristics = "、".join(
+            str(value) for value in module.get("required_characteristics") or []
+            if str(value)
+        )
+        if characteristics:
+            lines.append(f"  - 必留特征：{characteristics}")
+        if mode in {"synthesis", "relation"}:
+            lines.append(f"  - 关系：{str(module.get('relation') or '').strip()}")
+            lines.append(f"  - 综合理由：{str(module.get('synthesis_rationale') or '').strip()}")
+    return lines or ["- 未启用来源归属契约。"]
+
+
 def _template_page(page: dict[str, Any]) -> str:
     page_id = str(page["page_id"])
     number = _page_number(page_id)
@@ -325,6 +353,10 @@ def _content_page(
         "### 表达模型（不上屏）",
         "",
         *_expression_model_block(page),
+        "",
+        "### 上屏来源归属（不上屏）",
+        "",
+        *_onscreen_provenance_block(page),
         "",
         "### 视觉结构（不上屏）",
         "",
