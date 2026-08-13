@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
+import json
 import re
 from typing import Any, Mapping, Sequence
 
@@ -15,6 +17,11 @@ class ExpressionSpec:
     heading_grammar: str
     require_action: bool = False
     require_return_relation: bool = False
+    relation_pattern: str = ""
+    reading_requirement: str = ""
+    balance_requirement: str = ""
+    required_features: tuple[str, ...] = ()
+    anti_patterns: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -45,16 +52,76 @@ class ExpressionAuditFinding:
 
 
 EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
-    "framework_4": ExpressionSpec("framework_4", "四模块框架", (4, 4), "parallel_noun"),
-    "key_points_3": ExpressionSpec("key_points_3", "三要素结构", (3, 3), "parallel_phrase"),
-    "flow_3_5": ExpressionSpec("flow_3_5", "三至五步链路", (3, 5), "verb_object", require_action=True),
-    "operation_loop": ExpressionSpec("operation_loop", "运营闭环", (3, 5), "verb_object", require_action=True, require_return_relation=True),
-    "architecture_layers": ExpressionSpec("architecture_layers", "分层架构", (3, 4), "parallel_noun"),
-    "pyramid_argument": ExpressionSpec("pyramid_argument", "金字塔归纳", (3, 3), "supporting_proposition"),
-    "comparison_2col": ExpressionSpec("comparison_2col", "双列对照", (2, 2), "paired_dimension"),
-    "matrix_2x2": ExpressionSpec("matrix_2x2", "四象限分群", (4, 4), "parallel_segment"),
-    "causal_chain": ExpressionSpec("causal_chain", "因果链", (3, 4), "causal_predicate", require_action=True),
-    "actions_3": ExpressionSpec("actions_3", "三项举措", (3, 3), "verb_object", require_action=True),
+    "framework_4": ExpressionSpec(
+        "framework_4", "四模块框架", (4, 4), "parallel_noun",
+        relation_pattern="peer_modules", reading_requirement="parallel",
+        balance_requirement="four peers have comparable reading weight",
+        required_features=("four_peer_nodes", "peer_balance"),
+        anti_patterns=("forced_sequence", "dominant_center"),
+    ),
+    "key_points_3": ExpressionSpec(
+        "key_points_3", "三要素结构", (3, 3), "parallel_phrase",
+        relation_pattern="peer_key_points", reading_requirement="parallel",
+        balance_requirement="three points jointly support one page judgment",
+        required_features=("three_peer_points", "shared_judgment"),
+        anti_patterns=("invented_causality", "invented_time_order"),
+    ),
+    "flow_3_5": ExpressionSpec(
+        "flow_3_5", "三至五步链路", (3, 5), "verb_object", require_action=True,
+        relation_pattern="directed_sequence", reading_requirement="directed",
+        balance_requirement="each action has a legible place in the progression",
+        required_features=("ordered_progression",),
+        anti_patterns=("unordered_peer_groups",),
+    ),
+    "operation_loop": ExpressionSpec(
+        "operation_loop", "运营闭环", (3, 5), "verb_object", require_action=True,
+        require_return_relation=True, relation_pattern="directed_cycle", reading_requirement="cyclic",
+        balance_requirement="each action participates in a closed operating relation",
+        required_features=("ordered_progression", "feedback_edge_required"),
+        anti_patterns=("linear_only_flow", "missing_feedback_edge"),
+    ),
+    "architecture_layers": ExpressionSpec(
+        "architecture_layers", "分层架构", (3, 4), "parallel_noun",
+        relation_pattern="layered_dependency", reading_requirement="layered",
+        balance_requirement="layers state their carrying, interface, or dependency relation",
+        required_features=("layer_dependency",),
+        anti_patterns=("stacked_text_only",),
+    ),
+    "pyramid_argument": ExpressionSpec(
+        "pyramid_argument", "金字塔归纳", (3, 3), "supporting_proposition",
+        relation_pattern="supporting_convergence", reading_requirement="convergent",
+        balance_requirement="three supports converge on one judgment",
+        required_features=("three_supports", "convergence_required"),
+        anti_patterns=("parallel_conclusions", "missing_convergence"),
+    ),
+    "comparison_2col": ExpressionSpec(
+        "comparison_2col", "双列对照", (2, 2), "paired_dimension",
+        relation_pattern="paired_correspondence", reading_requirement="paired",
+        balance_requirement="both objects use matched comparison dimensions",
+        required_features=("two_objects", "matched_dimensions"),
+        anti_patterns=("unmatched_columns",),
+    ),
+    "matrix_2x2": ExpressionSpec(
+        "matrix_2x2", "四象限分群", (4, 4), "parallel_segment",
+        relation_pattern="two_axis_classification", reading_requirement="two_axis",
+        balance_requirement="each group states why it belongs under both dimensions",
+        required_features=("two_classification_dimensions", "four_classified_positions"),
+        anti_patterns=("unclassified_four_cards",),
+    ),
+    "causal_chain": ExpressionSpec(
+        "causal_chain", "因果链", (3, 4), "causal_predicate", require_action=True,
+        relation_pattern="directed_cause_to_effect", reading_requirement="directed",
+        balance_requirement="each cause is attached to its consequence",
+        required_features=("directed_causal_chain",),
+        anti_patterns=("unordered_peer_groups", "self_loop"),
+    ),
+    "actions_3": ExpressionSpec(
+        "actions_3", "三项举措", (3, 3), "verb_object", require_action=True,
+        relation_pattern="coordinated_actions", reading_requirement="action_oriented",
+        balance_requirement="three actions jointly point to one outcome",
+        required_features=("three_verb_object_actions", "shared_outcome"),
+        anti_patterns=("noun_only_list",),
+    ),
 }
 VALID_EXPRESSION_FORMS = frozenset(EXPRESSION_SPECS)
 
@@ -84,6 +151,31 @@ def validate_expression_form(value: str) -> str:
     if form and form not in VALID_EXPRESSION_FORMS:
         raise ValueError(f"invalid onscreen expression form: {form}")
     return form
+
+
+def expression_constraints(form: str) -> dict[str, object]:
+    """Return a fresh, layout-neutral default profile for an expression form."""
+
+    key = validate_expression_form(form)
+    if not key:
+        raise ValueError("expression form is required")
+    spec = EXPRESSION_SPECS[key]
+    return {
+        "form": spec.key,
+        "node_range": list(spec.module_range),
+        "relation_pattern": spec.relation_pattern,
+        "reading_requirement": spec.reading_requirement,
+        "balance_requirement": spec.balance_requirement,
+        "required_features": list(spec.required_features),
+        "anti_patterns": list(spec.anti_patterns),
+    }
+
+
+def expression_constraints_sha256(constraints: Mapping[str, object]) -> str:
+    """Hash a normalized expression profile for cross-artifact traceability."""
+
+    stable = json.dumps(constraints, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(stable.encode("utf-8")).hexdigest()
 
 
 def resolve_onscreen_expression(

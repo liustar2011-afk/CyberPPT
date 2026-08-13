@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.artifact_ledger import append_artifacts, write_json_atomic
+from cyberppt.onscreen_expression import expression_constraints, expression_constraints_sha256
 from cyberppt.semantic_digest import script_semantic_digest
 from cyberppt.visual_structure_contract import (
     audit_visual_design_package,
@@ -101,6 +102,22 @@ def _decision_execution_design(
     }
 
 
+def _expression_contract(source: dict[str, Any], selected: dict[str, Any]) -> dict[str, object]:
+    constraints = source.get("expression_constraints")
+    fit = selected.get("expression_fit")
+    if not isinstance(constraints, dict) or not isinstance(fit, dict):
+        _fail("selected visual candidate must retain expression constraints and expression_fit")
+    return {
+        "form": str(constraints.get("form") or ""),
+        "constraints_sha256": expression_constraints_sha256(constraints),
+        "selected_candidate_id": str(selected.get("id") or ""),
+        "fit_status": str(fit.get("constraint_status") or ""),
+        "reading_relation": str(fit.get("reading_relation") or ""),
+        "balance_strategy": str(fit.get("balance_strategy") or ""),
+        "deviation_reason": str(fit.get("deviation_reason") or ""),
+    }
+
+
 def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> dict[str, Any]:
     """Compile a Skill decision receipt into one schema-1.1 visual spec.
 
@@ -131,6 +148,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     selected = next((item for item in candidates if isinstance(item, dict) and item.get("id") == selected_id), None)
     if selected is None:
         _fail(f"{page_id}: selected candidate is missing")
+    expression_contract = _expression_contract(source, selected)
     design = _decision_execution_design(source, decision, selected, page_id)
     focus = selected.get("semantic_focus") if isinstance(selected.get("semantic_focus"), dict) else {}
     focus_key = str(focus.get("evidence_key") or "")
@@ -201,6 +219,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         "text_integration": {"title_render_mode": str(source.get("title_render_mode") or "external_text_layer"), "subtitle_render_mode": str(source.get("subtitle_render_mode") or "external_text_layer"), "body_render_mode": "in_image", "placement_strategy": design["text_integration_method"]},
         "geometry": {"canvas": source.get("body_image_canvas") or {"width": 2048, "height": 1024, "ratio": "2:1"}, "title_exclusion_zone": {"x": 0, "y": 0, "w": 2048, "h": 0}, "regions": [{"id": "R_RELATION", "role": "relation-bearing business field", "x": 80, "y": 120, "w": 1888, "h": 800, "priority": "primary"}]},
         "image_plan": {"use_scene": False, "scene_type": "不指定场景，由选定业务关系场承载", "business_object": design["business_object"], "semantic_role": design["relationship_encoding"], "placement": design["spatial_organization"], "front_facing_people": False, "identifiable_location": False, "factual_event_implication": False},
+        "expression_contract": expression_contract,
         "connectors": connectors, "final_text": final_text,
         "generation_handoff": {"structural_guidance": {"source": "structural_decision", "additional_constraints": ["Use the selected business relationship field and its text attachment design; do not render instructions or internal text ids.", "Keep one visual focus and do not create an independent text wall or second summary structure."]}, "required_text_ids": expected_ids, "required_text": expected_text, "style_source_ref": "external style lock selected at final-script-pages", "title_exclusion_instruction": "Reserve page title and subtitle for the external PowerPoint text layer; do not render them in the body image."},
         "avoid": ["Do not map each body item to an isolated icon or decorative image.", "Do not create an independent text wall or second result chain."],
@@ -213,7 +232,21 @@ def _render_visual_structure_markdown(spec: dict[str, Any]) -> str:
     lines = [f"# {spec['deck_title']}视觉结构设计脚本", "", "## 整套视觉设计总则", "", "- 以每页唯一业务关系场承载正文；具体视觉风格仅由最终 Style lock 提供。", ""]
     for page in spec["pages"]:
         vd, sg, structural = page["visual_decision"], page["semantic_graph"], page["structural_decision"]
-        lines += [f"## 第{page['page_number']}页｜{page['page_title']}", "", "### 页面角色", page["page_role"], "", "### 页面使命", page["page_mission"], "", "### 核心结论", page["core_judgment"], "", "### 内容锁定", "- 严格保留 generation_handoff.required_text 所列正文", "", "### 证据单元与语义关系", f"- 主关系：{sg['decision_relationship']}", "", "### 视觉意图", f"- 视觉意图类型：{vd['visual_intent_type']}", f"- 语义焦点：{structural['semantic_focus']['kind']} / {structural['semantic_focus']['ref']}", f"- 空间语法：{', '.join(structural['spatial_grammar'])}", f"- 主结构：{', '.join(structural['primary_refs'])}", f"- 文字归属：{vd['text_integration_method']}", "", "### 页面草图", f"- 唯一业务关系场：{page['image_plan']['business_object']}", "", "### 页面构图", vd['spatial_organization'], "", "### 实景锚点与图文融合", vd['relationship_encoding'], "", "### 元素与空间关系", page['image_plan']['placement'], "", "### 箭头与连接关系", *[f"- {item['from']} -> {item['to']}：{item['label']}" for item in page['connectors']], "", "### 标题与文字渲染", "- 标题与副标题由外部PPT文字层渲染；正文贴附在业务对象、动作、接口、边界或结果上", "", "### 终稿文字", *[f"- {item['text']}" for item in page['final_text']], "", "### 生图执行摘要", f"- {vd['text_integration_method']}", "", "### 禁止事项", *[f"- {item}" for item in page['avoid']], ""]
+        contract = page.get("expression_contract") if isinstance(page.get("expression_contract"), dict) else {}
+        form = str(contract.get("form") or "")
+        constraints = expression_constraints(form) if form else {}
+        expression_lines = ["### 上屏表达结构与候选取舍"]
+        if constraints:
+            expression_lines.extend([
+                f"- 表达结构：{form}（{constraints['relation_pattern']}）",
+                f"- 核心约束：{constraints['reading_requirement']}；{constraints['balance_requirement']}",
+                f"- 已选候选：{contract.get('selected_candidate_id', '')}；适配状态：{contract.get('fit_status', '')}",
+                f"- 阅读关系：{contract.get('reading_relation', '')}",
+                f"- 均衡策略：{contract.get('balance_strategy', '')}",
+            ])
+            if str(contract.get("deviation_reason") or "").strip():
+                expression_lines.append(f"- 偏离理由：{contract['deviation_reason']}")
+        lines += [f"## 第{page['page_number']}页｜{page['page_title']}", "", "### 页面角色", page["page_role"], "", "### 页面使命", page["page_mission"], "", "### 核心结论", page["core_judgment"], "", "### 内容锁定", "- 严格保留 generation_handoff.required_text 所列正文", "", "### 证据单元与语义关系", f"- 主关系：{sg['decision_relationship']}", "", *expression_lines, "", "### 视觉意图", f"- 视觉意图类型：{vd['visual_intent_type']}", f"- 语义焦点：{structural['semantic_focus']['kind']} / {structural['semantic_focus']['ref']}", f"- 空间语法：{', '.join(structural['spatial_grammar'])}", f"- 主结构：{', '.join(structural['primary_refs'])}", f"- 文字归属：{vd['text_integration_method']}", "", "### 页面草图", f"- 唯一业务关系场：{page['image_plan']['business_object']}", "", "### 页面构图", vd['spatial_organization'], "", "### 实景锚点与图文融合", vd['relationship_encoding'], "", "### 元素与空间关系", page['image_plan']['placement'], "", "### 箭头与连接关系", *[f"- {item['from']} -> {item['to']}：{item['label']}" for item in page['connectors']], "", "### 标题与文字渲染", "- 标题与副标题由外部PPT文字层渲染；正文贴附在业务对象、动作、接口、边界或结果上", "", "### 终稿文字", *[f"- {item['text']}" for item in page['final_text']], "", "### 生图执行摘要", f"- {vd['text_integration_method']}", "", "### 禁止事项", *[f"- {item}" for item in page['avoid']], ""]
     return "\n".join(lines)
 
 
@@ -248,6 +281,10 @@ def _write_visual_design_input(project: Path, handoff: Path) -> Path:
     pages: list[dict[str, Any]] = []
     for index, page in enumerate(content_pages):
         visual = page.get("stage02_visual_input") or {}
+        expression = visual.get("onscreen_expression") or page.get("onscreen_expression") or {}
+        constraints = visual.get("expression_constraints") or page.get("expression_constraints")
+        if constraints is None:
+            constraints = expression_constraints(str(expression.get("form") or ""))
         previous_page = content_pages[index - 1] if index else None
         next_page = content_pages[index + 1] if index + 1 < len(content_pages) else None
         pages.append(
@@ -262,11 +299,8 @@ def _write_visual_design_input(project: Path, handoff: Path) -> Path:
                 "locked_on_screen_text": page.get("onscreen_text"),
                 "locked_on_screen_items": page.get("onscreen_items") or [],
                 "locked_text_items": visual.get("locked_text_items") or [],
-                "onscreen_expression": (
-                    visual.get("onscreen_expression")
-                    or page.get("onscreen_expression")
-                    or {}
-                ),
+                "onscreen_expression": expression,
+                "expression_constraints": constraints,
                 "business_relationships": visual.get("business_relationships") or [],
                 "stage01_relationship_features": visual.get("stage01_relationship_features") or {},
                 "relationship_authority": "business_relationships",
@@ -432,7 +466,7 @@ def prepare_visual_structure_stage(
                 "",
                 "## Required action",
                 "",
-                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. Treat onscreen_expression as a required reading-relation and balance constraint: it governs peer hierarchy, progression, correspondence, feedback or causal direction; it must never be converted directly into a fixed card, column, arrow, loop, pyramid or matrix template. For every page, record stage01_visual_note_disposition with inherited, adjusted and rejected feature lists plus reasons, and record onscreen_expression_disposition with the received form, the chosen reading relation, and the balance strategy. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Generate and compare at least three materially different candidates per content page; deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write:",
+                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. Treat expression_constraints as the required reading-relation and balance profile: it governs peer hierarchy, progression, correspondence, feedback or causal direction; it must never be converted directly into a fixed card, column, arrow, loop, pyramid or matrix template. Every candidate must write expression_fit with the received form, satisfied constraints, reading relation, balance strategy, and either an empty default-profile deviation or an adapted-profile changed-constraint list plus business reason that preserves the expression core. For every page, record stage01_visual_note_disposition with inherited, adjusted and rejected feature lists plus reasons, and record onscreen_expression_disposition with the received form, the chosen reading relation, and the balance strategy. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Generate and compare at least three materially different candidates per content page; deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write:",
                 "",
                 "- `visual/visual-design-decisions.json`",
                 "- `visual/deck-visual-spec.json`",

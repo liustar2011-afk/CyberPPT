@@ -6,10 +6,17 @@ import json
 from pathlib import Path
 import tempfile
 
+import pytest
+
 from cyberppt.visual_structure_contract import (
     audit_visual_design_package,
     prompt_contract_hashes,
     sha256,
+)
+from cyberppt.onscreen_expression import (
+    VALID_EXPRESSION_FORMS,
+    expression_constraints,
+    expression_constraints_sha256,
 )
 
 
@@ -22,6 +29,19 @@ PROMPT_BUILDER = (
     / "scripts"
     / "build_generation_prompt.py"
 )
+
+
+def _expression_fit(form: str, *, status: str = "default_profile") -> dict:
+    constraints = expression_constraints(form)
+    return {
+        "form": form,
+        "constraint_status": status,
+        "satisfied_constraints": list(constraints["required_features"]),
+        "reading_relation": f"the candidate preserves {constraints['relation_pattern']}",
+        "balance_strategy": str(constraints["balance_requirement"]),
+        "changed_constraints": [],
+        "deviation_reason": "",
+    }
 
 
 def _payloads() -> tuple[dict, dict, dict]:
@@ -52,6 +72,7 @@ def _payloads() -> tuple[dict, dict, dict]:
                     "confidence": 0.92,
                     "evidence": ["relation:composed_of"],
                 },
+                "expression_constraints": expression_constraints("framework_4"),
             }
         ],
     }
@@ -69,6 +90,7 @@ def _payloads() -> tuple[dict, dict, dict]:
             "direction": "outside_to_center",
             "reading_sequence": ["input", "result"],
             "score_profile": "high",
+            "expression_fit": _expression_fit("framework_4"),
         },
         {
             "id": "C2",
@@ -78,6 +100,7 @@ def _payloads() -> tuple[dict, dict, dict]:
             "direction": "left_to_right",
             "reading_sequence": ["input", "result"],
             "score_profile": "mid",
+            "expression_fit": _expression_fit("framework_4"),
         },
         {
             "id": "C3",
@@ -87,6 +110,7 @@ def _payloads() -> tuple[dict, dict, dict]:
             "direction": "spatial",
             "reading_sequence": ["result", "input"],
             "score_profile": "low",
+            "expression_fit": _expression_fit("framework_4"),
         },
     ]
     decisions = {
@@ -119,6 +143,15 @@ def _payloads() -> tuple[dict, dict, dict]:
         "pages": [
             {
                 "page_id": "P01",
+                "expression_contract": {
+                    "form": "framework_4",
+                    "constraints_sha256": expression_constraints_sha256(expression_constraints("framework_4")),
+                    "selected_candidate_id": "C1",
+                    "fit_status": "default_profile",
+                    "reading_relation": "the candidate preserves peer_modules",
+                    "balance_strategy": "four peers have comparable reading weight",
+                    "deviation_reason": "",
+                },
                 "content_lock": {
                     "locked_items": [
                         {"id": "P01-TITLE", "type": "title", "text": "Title"},
@@ -208,6 +241,80 @@ def test_visual_design_package_blocks_each_cross_artifact_failure() -> None:
         codes = {item["code"] for item in report["blocking_issues"]}
         assert report["status"] == "failed"
         assert expected_code in codes
+
+
+def test_audit_rejects_candidate_without_expression_fit() -> None:
+    design, decisions, spec = _payloads()
+    del decisions["pages"][0]["candidates"][0]["expression_fit"]
+    report = _audit(design, decisions, spec)
+    assert "CANDIDATE_EXPRESSION_FIT_MISSING" in {item["code"] for item in report["blocking_issues"]}
+
+
+def test_audit_rejects_adapted_candidate_without_reason() -> None:
+    design, decisions, spec = _payloads()
+    fit = decisions["pages"][0]["candidates"][0]["expression_fit"]
+    fit.update({"constraint_status": "adapted", "changed_constraints": ["reading_requirement"], "deviation_reason": ""})
+    report = _audit(design, decisions, spec)
+    assert "CANDIDATE_EXPRESSION_DEVIATION_INVALID" in {item["code"] for item in report["blocking_issues"]}
+
+
+def test_audit_rejects_expression_contract_drift() -> None:
+    design, decisions, spec = _payloads()
+    spec["pages"][0]["expression_contract"]["selected_candidate_id"] = "other"
+    report = _audit(design, decisions, spec)
+    assert "SPEC_EXPRESSION_CONTRACT_DRIFTED" in {item["code"] for item in report["blocking_issues"]}
+
+
+def test_audit_rejects_expression_contract_hash_drift() -> None:
+    design, decisions, spec = _payloads()
+    spec["pages"][0]["expression_contract"]["constraints_sha256"] = "0" * 64
+    report = _audit(design, decisions, spec)
+    assert "SPEC_EXPRESSION_CONTRACT_DRIFTED" in {item["code"] for item in report["blocking_issues"]}
+
+
+@pytest.mark.parametrize("form", sorted(VALID_EXPRESSION_FORMS))
+def test_audit_rejects_candidate_that_omits_a_form_core_requirement(form: str) -> None:
+    design, decisions, spec = _payloads()
+    design["pages"][0]["onscreen_expression"]["form"] = form
+    design["pages"][0]["expression_constraints"] = expression_constraints(form)
+    decisions["pages"][0]["onscreen_expression_disposition"]["form"] = form
+    for candidate in decisions["pages"][0]["candidates"]:
+        candidate["expression_fit"] = _expression_fit(form)
+    decisions["pages"][0]["candidates"][0]["expression_fit"]["satisfied_constraints"] = []
+    selected = decisions["pages"][0]["candidates"][0]
+    spec["pages"][0]["expression_contract"] = {
+        "form": form,
+        "constraints_sha256": expression_constraints_sha256(expression_constraints(form)),
+        "selected_candidate_id": selected["id"],
+        "fit_status": "default_profile",
+        "reading_relation": selected["expression_fit"]["reading_relation"],
+        "balance_strategy": selected["expression_fit"]["balance_strategy"],
+        "deviation_reason": "",
+    }
+    report = _audit(design, decisions, spec)
+    assert "CANDIDATE_EXPRESSION_CORE_MISSING" in {item["code"] for item in report["blocking_issues"]}
+
+
+def test_every_registered_form_has_a_default_candidate_profile() -> None:
+    for form in VALID_EXPRESSION_FORMS:
+        design, decisions, spec = _payloads()
+        design["pages"][0]["onscreen_expression"]["form"] = form
+        design["pages"][0]["expression_constraints"] = expression_constraints(form)
+        decisions["pages"][0]["onscreen_expression_disposition"]["form"] = form
+        for candidate in decisions["pages"][0]["candidates"]:
+            candidate["expression_fit"] = _expression_fit(form)
+        selected = decisions["pages"][0]["candidates"][0]
+        spec["pages"][0]["expression_contract"] = {
+            "form": form,
+            "constraints_sha256": expression_constraints_sha256(expression_constraints(form)),
+            "selected_candidate_id": selected["id"],
+            "fit_status": "default_profile",
+            "reading_relation": selected["expression_fit"]["reading_relation"],
+            "balance_strategy": selected["expression_fit"]["balance_strategy"],
+            "deviation_reason": "",
+        }
+        report = _audit(design, decisions, spec)
+        assert report["status"] == "passed", form
 
 
 def test_prompt_builder_resolves_required_copy_by_id_without_evidence_rewrite() -> None:

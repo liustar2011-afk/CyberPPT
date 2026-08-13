@@ -6,6 +6,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from cyberppt.stage02_handoff import HANDOFF_JSON, audit_stage02_handoff, prepare_stage02_handoff
+from cyberppt.onscreen_expression import expression_constraints
 
 
 def _payload(project: Path, *, created_at: str, outline_sha256: str) -> dict[str, object]:
@@ -40,6 +41,7 @@ def _payload(project: Path, *, created_at: str, outline_sha256: str) -> dict[str
                     "evidence": ["fixture"],
                     "candidates": [["key_points_3", 0.2]],
                 },
+                "expression_constraints": expression_constraints("key_points_3"),
                 "stage02_visual_input": {
                     "locked_text_items": [
                         {"text_id": "P01-T01", "text": "验证", "ordinal": 1},
@@ -59,6 +61,7 @@ def _payload(project: Path, *, created_at: str, outline_sha256: str) -> dict[str
                         "source_visual_notes": "",
                     },
                     "author_visual_notes_authority": "advisory_only",
+                    "expression_constraints": expression_constraints("key_points_3"),
                     "body_image_canvas": {"width": 2048, "height": 1024, "ratio": "2:1"},
                 },
             }
@@ -116,6 +119,18 @@ def test_handoff_audit_requires_expression_decision() -> None:
         report = audit_stage02_handoff(project, payload)
     codes = {item["code"] for item in report["warnings"]}
     assert "ONSCREEN_EXPRESSION_MISSING" in codes
+
+
+def test_handoff_audit_rejects_expression_constraints_drift() -> None:
+    with TemporaryDirectory() as directory:
+        project = Path(directory)
+        _write_inputs(project)
+        payload = _payload(project, created_at="2026-08-13T00:00:00+00:00", outline_sha256="c" * 64)
+        payload["pages"][0]["stage02_visual_input"]["expression_constraints"] = expression_constraints("framework_4")
+        report = audit_stage02_handoff(project, payload)
+
+    codes = {item["code"] for item in report["blocking_issues"]}
+    assert "ONSCREEN_EXPRESSION_CONSTRAINTS_INVALID" in codes
 
 
 def test_handoff_audit_does_not_require_source_truth_binding() -> None:

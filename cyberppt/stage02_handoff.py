@@ -11,7 +11,11 @@ from typing import Any
 
 from cyberppt.artifact_ledger import write_json_atomic
 from cyberppt.script_quality_contract import ScriptPage, parse_script_path
-from cyberppt.onscreen_expression import VALID_EXPRESSION_FORMS, resolve_onscreen_expression
+from cyberppt.onscreen_expression import (
+    VALID_EXPRESSION_FORMS,
+    expression_constraints,
+    resolve_onscreen_expression,
+)
 
 
 HANDOFF_DIR = Path("workbench/stages/02-handoff")
@@ -204,6 +208,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         actions=action_text,
         topic_category=str(outline.get("topic_category") or ""),
     ).to_dict()
+    constraints = expression_constraints(str(expression["form"]))
     record: dict[str, Any] = {
         "page_id": normalize_page_id(page.page_id, page.sequence),
         "page_number": page.sequence,
@@ -225,6 +230,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "must_not_include": must_not_include,
         "business_relationships": business_relationships,
         "onscreen_expression": expression,
+        "expression_constraints": constraints,
         "field_provenance": {
             "content": "script-final.md",
             "page_mission": "script-page-contract-or-outline",
@@ -250,6 +256,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "business_relationships": business_relationships,
         "stage01_relationship_features": relationship_features,
         "onscreen_expression": expression,
+        "expression_constraints": constraints,
         "author_visual_notes": page.visual_structure,
         "author_visual_notes_authority": "advisory_only",
         "must_not_include": must_not_include,
@@ -417,6 +424,20 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
             if not isinstance(confidence, (int, float)) or not 0 <= float(confidence) <= 1:
                 issue("ONSCREEN_EXPRESSION_CONFIDENCE_INVALID", f"{page_id} has invalid onscreen expression confidence.")
         visual_input = page.get("stage02_visual_input") or {}
+        expected_constraints: dict[str, object] | None = None
+        if isinstance(expression, dict) and str(expression.get("form") or "") in VALID_EXPRESSION_FORMS:
+            expected_constraints = expression_constraints(str(expression["form"]))
+        page_constraints = page.get("expression_constraints")
+        visual_constraints = visual_input.get("expression_constraints")
+        if (
+            expected_constraints is None
+            or page_constraints != expected_constraints
+            or visual_constraints != expected_constraints
+        ):
+            issue(
+                "ONSCREEN_EXPRESSION_CONSTRAINTS_INVALID",
+                f"{page_id} expression constraints must match the registered profile for its form.",
+            )
         if visual_input.get("body_image_canvas") != BODY_CANVAS:
             issue("BODY_IMAGE_CANVAS_INVALID", f"{page_id} body image canvas must be 2048x1024 (2:1).")
         locked_items = visual_input.get("locked_text_items")
