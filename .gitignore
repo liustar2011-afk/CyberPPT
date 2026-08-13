@@ -44,6 +44,7 @@ build/
 
 # Project-specific working directories
 /projects/
+/out/
 deck/
 *-deck/
 image2pptx_runs/
