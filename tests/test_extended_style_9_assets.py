@@ -20,5 +20,5 @@ def test_style_nine_sample_and_reference_are_available() -> None:
     assert "默认8种风格仍保持1—8不变" in reference
     assert "#FFFFFF" in style09
     assert "#12355B" in style09
-    assert "连接只表达真实关系并保持细、小、从属" in style09
-    assert "保持扁平2D、无图标优先和克制政企气质" in style09
+    assert "连接关系保持少量、纤细、清楚并避开文字" in style09
+    assert "保持纯白底、深蓝主关系、平面2D信息结构和无图标优先" in style09

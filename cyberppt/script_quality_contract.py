@@ -163,6 +163,15 @@ GENERIC_ONSCREEN_RELATION_RE = re.compile(
     r"(?:业务关系[：:]\s*)?(?:以上|上述)(?:内容|要点|依据)"
     r"(?:共同)?(?:构成|形成|支撑|完成)(?:本节|本页)?(?:完整)?(?:内容|判断|任务)"
 )
+# A mechanically authored page often uses the same editorial buckets and
+# generic label sequence regardless of its business topic. Individual words
+# such as "判断" or "对象" are legitimate in a specific sentence, so this rule
+# intentionally requires the repeated combined pattern rather than banning
+# any one word.
+GENERIC_ONSCREEN_GROUP_LABELS = frozenset(("关键判断", "业务事实", "运营要点"))
+GENERIC_ONSCREEN_DETAIL_LABELS = frozenset(
+    ("判断", "事实", "对象", "条件", "动作", "结果", "机制", "衔接", "要求", "依据", "状态", "安排")
+)
 DEFENSIVE_BOUNDARY_COACHING_RE = re.compile(
     r"(反复区分|避免(?:听众)?.{0,12}(?:误解|听成|当成)|"
     r"不要.{0,12}讲成|不是.{0,8}承诺|不构成.{0,8}承诺|"
@@ -1680,12 +1689,24 @@ _ANALYTICAL_VOICE_PATTERNS: tuple[str, ...] = (
     "据此，本页",
 )
 
-# Contrastive negation of the form “不是……而是……” is prohibited in
-# authored slide copy. It usually spends the reader's attention rebutting a
-# discarded frame before stating the actual claim. Require the claim and the
-# distinction to be written directly instead.
-_PROHIBITED_CONTRAST_RE = re.compile(
-    r"(?:不是|并非)[^。！？；\n]{0,100}?(?:，|,)?\s*而是"
+# Negative-contrast rhetoric spends the reader's attention rebutting a
+# discarded frame before stating the actual claim. Formal scripts must state
+# the subject, action, condition, and result directly instead. Keep the
+# patterns explicit and narrow enough not to treat ordinary terms such as
+# “非结构化数据” or “不仅……而且……” as negative contrast.
+_PROHIBITED_CONTRAST_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"(?:并)?不是[^。！？；]{0,100}?(?:，|,)?而(?:是|非|为|在于|应|要|需)"),
+    re.compile(r"(?:并)?不在于[^。！？；]{0,100}?(?:，|,)?而在于"),
+    re.compile(
+        r"(?<![^\s，；。！？：])(?:并)?非"
+        r"(?!结构化|公开|必要|接触式|线性|关系型|实时|敏感|现场|标准)"
+        r"[^。！？；]{1,100}?(?:，|,)?而(?:是|非|为|在于|应|要|需)"
+    ),
+    re.compile(r"而(?:非|不是)[^。！？；]{0,100}"),
+    re.compile(r"(?:不以|不应|不宜|不要|不再|不只|不止于)[^。！？；]{1,100}?(?:，|,)?而(?:是|非|为|在于|应|要|需)"),
+    re.compile(r"与其[^。！？；]{1,100}?不如"),
+    re.compile(r"宁可[^。！？；]{1,100}?也不"),
+    re.compile(r"既非[^。！？；]{1,100}?(?:也|亦)非"),
 )
 
 # Conversational scaffolding is unsuitable for the manuscript layer. Keep this
@@ -1740,6 +1761,75 @@ _BOUNDARY_ASIDE_PATTERNS: tuple[str, ...] = (
     "表述为拟建议",
     "属拟建议",
     "仅为建议",
+)
+
+# These terms signal a page whose lead has been framed around a limitation or
+# discarded state. They are not prohibited as source-supported conditions in
+# ordinary prose; the quality gate only rejects them when they occupy a page's
+# foreground positions (title, judgment, or peer on-screen heading).
+_NEGATIVE_FOREGROUND_TERMS: tuple[str, ...] = (
+    "边界",
+    "不足",
+    "短板",
+    "缺口",
+    "断点",
+    "瓶颈",
+    "痛点",
+    "差距",
+    "局限",
+    "限制",
+    "风险",
+    "挑战",
+    "障碍",
+    "隐患",
+    "薄弱",
+    "缺乏",
+    "滞后",
+    "失效",
+    "故障",
+    "异常",
+    "冲突",
+    "矛盾",
+    "不确定",
+    "泄露",
+    "攻击",
+    "威胁",
+    "不成熟",
+    "不完善",
+    "不统一",
+    "不清晰",
+    "不达标",
+    "失衡",
+    "不等于",
+    "不构成",
+    "尚未",
+    "未形成",
+    "不具备",
+    "待定",
+    "暂停",
+    "停止",
+    "终止",
+)
+_DIRECT_BOUNDARY_ARGUMENT_ROLES = {
+    "boundary",
+    "admission",
+    "security",
+    "governance",
+    "quality",
+    "compliance",
+    "risk",
+    "assurance",
+}
+_DIRECT_BOUNDARY_TOPIC_TERMS = (
+    "边界",
+    "准入",
+    "授权",
+    "权属",
+    "安全",
+    "质量",
+    "合规",
+    "风险",
+    "退出",
 )
 
 # Backend relationship labels must not appear in 上屏文字. They belong in
@@ -2014,7 +2104,137 @@ def _analytical_voice_hits(prose: str) -> tuple[str, ...]:
 
 
 def _prohibited_contrast_hits(text: str) -> tuple[str, ...]:
-    return tuple(dict.fromkeys(match.group(0) for match in _PROHIBITED_CONTRAST_RE.finditer(text)))
+    normalized = re.sub(r"\s+", "", text)
+    return tuple(
+        dict.fromkeys(
+            match.group(0)
+            for pattern in _PROHIBITED_CONTRAST_PATTERNS
+            for match in pattern.finditer(normalized)
+        )
+    )
+
+
+def _prohibited_contrast_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
+    """Reject negative-contrast rhetoric in every authored script field.
+
+    The check stays field-scoped: normalizing whitespace within a field closes
+    line-break evasion, while never concatenating neighboring fields avoids a
+    false match that crosses two unrelated pieces of page metadata.
+    """
+
+    authored_fields = (
+        ("页面标题", page.title),
+        ("副标题", page.subtitle),
+        ("主判断", page.main_message),
+        ("完整文字稿", page.full_prose),
+        ("文字稿取舍说明", page.selection_notes),
+        ("证据映射", page.evidence_map),
+        ("上屏结论", page.onscreen_judgment),
+        ("上屏文字", page.onscreen_text),
+        ("视觉结构", page.visual_structure),
+        ("视觉证明", page.visual_proof),
+        ("边界", page.boundary),
+        ("讲解提示", page.coaching_tip),
+        ("演讲者备注", page.speaker_notes),
+    )
+    evidence = tuple(
+        f"{field}：{hit}"
+        for field, text in authored_fields
+        if text
+        for hit in _prohibited_contrast_hits(text)
+    )
+    if not evidence:
+        return []
+    return [
+        _issue(
+            "PROHIBITED_NEGATIVE_CONTRAST",
+            page,
+            "Authored script uses prohibited negative-contrast rhetoric.",
+            "Rewrite as a direct positive statement of the subject, action, condition, and result; do not frame the claim through a rejected alternative.",
+            evidence=evidence,
+        )
+    ]
+
+
+def _is_direct_boundary_clarification(
+    page: ScriptPage,
+    contract: dict[str, object],
+) -> bool:
+    """Return whether the approved page itself is a boundary-control topic."""
+
+    role = str(contract.get("argument_role") or "").strip()
+    if role not in _DIRECT_BOUNDARY_ARGUMENT_ROLES:
+        return False
+    approved_theme = "\n".join(
+        str(contract.get(field) or "")
+        for field in ("title", "topic_category", "page_mission", "audience_question")
+    )
+    return any(term in approved_theme for term in _DIRECT_BOUNDARY_TOPIC_TERMS)
+
+
+def _negative_foreground_terms(text: str) -> tuple[str, ...]:
+    return tuple(term for term in _NEGATIVE_FOREGROUND_TERMS if term in text)
+
+
+def _leading_negative_foreground_terms(text: str) -> tuple[str, ...]:
+    """Apply foreground screening to the claim lead, not trailing conditions."""
+
+    lead = re.sub(r"\s+", "", text)[:28]
+    return _negative_foreground_terms(lead)
+
+
+def _opening_negative_foreground_terms(text: str) -> tuple[str, ...]:
+    """Find negative framing in a page's opening claim, not later caveats."""
+
+    opening = re.sub(r"\s+", "", text)[:72]
+    return _negative_foreground_terms(opening)
+
+
+def _negative_foreground_issues(
+    page: ScriptPage,
+    contract: dict[str, object],
+) -> list[ScriptQualityIssue]:
+    """Keep non-boundary pages from foregrounding limitations or negatives."""
+
+    if _is_direct_boundary_clarification(page, contract):
+        return []
+
+    evidence: list[str] = []
+    for field, text in (("页面标题", page.title), ("副标题", page.subtitle)):
+        hits = _negative_foreground_terms(text)
+        if hits:
+            evidence.append(f"{field}：{'、'.join(hits)}")
+    for field, text in (("主判断", page.main_message), ("上屏结论", page.onscreen_judgment)):
+        hits = _leading_negative_foreground_terms(text)
+        if hits:
+            evidence.append(f"{field}：{'、'.join(hits)}")
+    for heading in page.top_level_module_titles:
+        hits = _negative_foreground_terms(heading)
+        if hits:
+            evidence.append(f"上屏顶层模块“{heading}”：{'、'.join(hits)}")
+    for field, text in (("完整文字稿开头", page.full_prose), ("演讲者备注开头", page.speaker_notes)):
+        hits = _opening_negative_foreground_terms(text)
+        if hits:
+            evidence.append(f"{field}：{'、'.join(hits)}")
+    visual_focus = re.findall(
+        r"(?:重点呈现|重点|核心|主要|突出|强调|聚焦|围绕)[^。！？；\n]{0,48}",
+        page.visual_structure,
+    )
+    for phrase in visual_focus:
+        hits = _negative_foreground_terms(phrase)
+        if hits:
+            evidence.append(f"视觉结构：{phrase}（{'、'.join(hits)}）")
+    if not evidence:
+        return []
+    return [
+        _issue(
+            "NEGATIVE_FOREGROUND_OUTSIDE_BOUNDARY_TOPIC",
+            page,
+            "A non-boundary page foregrounds boundary, insufficiency, or other negative information.",
+            "Reframe the title and leading script as a positive subject–action–value/result statement. Preserve necessary controls only as subordinate conditions, not as the page's primary narrative.",
+            evidence=tuple(evidence),
+        )
+    ]
 
 
 def _prohibited_colloquial_hits(text: str) -> tuple[str, ...]:
@@ -2102,6 +2322,25 @@ def _generic_onscreen_relation_hits(text: str) -> tuple[str, ...]:
             match.group(0) for match in GENERIC_ONSCREEN_RELATION_RE.finditer(text)
         )
     )
+
+
+def _mechanical_onscreen_label_pattern_hits(page: ScriptPage) -> tuple[str, ...]:
+    """Detect reusable authoring labels standing in for business copy."""
+
+    group_hits = tuple(
+        title
+        for title in page.top_level_module_titles
+        if title in GENERIC_ONSCREEN_GROUP_LABELS
+    )
+    detail_hits: list[str] = []
+    for raw in page.onscreen_text.splitlines():
+        line = strip_authoring_group_marker(raw).strip()
+        match = re.match(r"(?:[-*+•]\s*)?([^：:]{1,12})[：:]", line)
+        if match and match.group(1).strip() in GENERIC_ONSCREEN_DETAIL_LABELS:
+            detail_hits.append(match.group(1).strip())
+    if len(group_hits) >= 2 and len(set(detail_hits)) >= 4:
+        return (*group_hits, *tuple(dict.fromkeys(detail_hits)))
+    return ()
 
 
 def _boundary_aside_hits(text: str) -> tuple[str, ...]:
@@ -2703,6 +2942,8 @@ def script_retry_directive(
             "CONTENT_PROSE_ONSCREEN_GRANULARITY",
             "CONTENT_PROSE_ANALYTICAL_VOICE",
             "CONTENT_BOUNDARY_ASIDE_OVERLOAD",
+            "PROHIBITED_NEGATIVE_CONTRAST",
+            "NEGATIVE_FOREGROUND_OUTSIDE_BOUNDARY_TOPIC",
             "ONSCREEN_BOUNDARY_ASIDE",
             "ONSCREEN_RELATION_META_LABEL",
             "ONSCREEN_COMPOUND_GROUP_HEADING",
@@ -2714,6 +2955,7 @@ def script_retry_directive(
             "ONSCREEN_DETAIL_PHRASE_TOO_LONG",
             "ONSCREEN_LAYOUT_META_LEAK",
             "ONSCREEN_RELATION_ISOMORPHISM",
+            "ONSCREEN_MECHANICAL_LABEL_TEMPLATE",
         }
         for code in codes
     ):
@@ -2800,6 +3042,20 @@ def script_retry_directive(
         instruction = (
             "Remove every draft/batch banner and the words 草稿/批次 from the "
             "final manuscript (prefer `assemble-final-script`), then re-audit."
+        )
+    elif any(
+        code
+        in {
+            "PROHIBITED_NEGATIVE_CONTRAST",
+            "NEGATIVE_FOREGROUND_OUTSIDE_BOUNDARY_TOPIC",
+        }
+        for code in codes
+    ):
+        instruction = (
+            "Rewrite the failed title and leading script as a direct positive "
+            "subject–action–value/result statement. Do not use a rejected "
+            "alternative, and keep necessary control conditions subordinate "
+            "unless the approved page itself is a direct boundary clarification."
         )
     elif any(
         code.startswith("CONTENT_SPEAKER_NOTES")
@@ -3069,19 +3325,6 @@ def _prose_issues(
                 "Full prose uses analytical meta-narration instead of source-chapter voice.",
                 "Rewrite as direct source-topic prose; move page-role asides into 文字稿取舍说明 or 边界.",
                 evidence=analytical_hits,
-            )
-        )
-    contrast_hits = _prohibited_contrast_hits(
-        "\n".join((prose, page.onscreen_text, page.speaker_notes))
-    )
-    if contrast_hits:
-        issues.append(
-            _issue(
-                "PROHIBITED_NOT_BUT_CONTRAST",
-                page,
-                "Authored script uses the prohibited ‘不是……而是……’ contrast pattern.",
-                "State the intended claim directly; express distinctions with definitions, parallel clauses, or 前者/后者 wording.",
-                evidence=contrast_hits,
             )
         )
     colloquial_hits = _prohibited_colloquial_hits(
@@ -3823,6 +4066,17 @@ def _presentation_issues(
                     severity=detail_severity,
                 )
             )
+        mechanical_label_hits = _mechanical_onscreen_label_pattern_hits(page)
+        if mechanical_label_hits:
+            issues.append(
+                _issue(
+                    "ONSCREEN_MECHANICAL_LABEL_TEMPLATE",
+                    page,
+                    "On-screen copy uses generic authoring labels instead of business-specific groups and detail labels.",
+                    "Replace reusable labels with source-specific business objects, actions, conditions, and results. Keep only labels that tell the reader what this page is actually about.",
+                    evidence=mechanical_label_hits,
+                )
+            )
         issues.extend(_onscreen_parallel_structure_issues(page))
         compound_heading_hits = _compound_module_heading_hits(
             _onscreen_heading_candidates(page)
@@ -4299,10 +4553,12 @@ def audit_script_quality(
                     "explicit continuous batches."
                 ),
             )
-        )
+    )
     for page in script.pages:
+        issues.extend(_prohibited_contrast_issues(page))
         contract = pages_by_id.get(page.page_id)
         if contract is None:
+            issues.extend(_negative_foreground_issues(page, {}))
             issues.append(
                 _issue(
                     "SCRIPT_PAGE_NOT_IN_OUTLINE",
@@ -4312,6 +4568,7 @@ def audit_script_quality(
                 )
             )
             continue
+        issues.extend(_negative_foreground_issues(page, contract))
         expected_type = str(contract.get("page_type") or "")
         if expected_type == "chapter" and (
             page.page_type != "chapter"

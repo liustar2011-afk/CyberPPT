@@ -26,6 +26,7 @@ from cyberppt.commands.prepare_stage01_input import (
     prepare_outline_input,
     prepare_page_script_input,
 )
+from cyberppt.commands.run_autonomous import run_autonomous
 from cyberppt.commands.script_audit import run_script_audit
 from cyberppt.commands.script_gate import approve_script, get_script_status, stage_script, status_as_json
 from cyberppt.commands.script_runner import SCRIPT_ALIASES, run_script
@@ -173,6 +174,21 @@ def _source_map_check_command(args: argparse.Namespace) -> int:
     try:
         code, report = run_source_map_audit(Path(args.project))
     except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return code
+
+
+def _run_autonomous_command(args: argparse.Namespace) -> int:
+    try:
+        code, report = run_autonomous(
+            Path(args.contract),
+            generate_images=not args.skip_image_generation,
+            image_timeout=args.image_timeout,
+            resume=args.resume,
+        )
+    except ValueError as exc:
         print(str(exc), file=sys.stderr)
         return 2
     print(json.dumps(report, ensure_ascii=False, indent=2))
@@ -676,6 +692,32 @@ def build_parser() -> argparse.ArgumentParser:
     )
     source_map_check.add_argument("project", help="CyberPPT project directory.")
     source_map_check.set_defaults(func=_source_map_check_command)
+
+    run_autonomous_parser = subparsers.add_parser(
+        "run-autonomous",
+        help="Run a contract-bound lightweight pipeline; stop at the first unmet gate.",
+    )
+    run_autonomous_parser.add_argument(
+        "contract",
+        help="Absolute-path JSON task contract declaring source boundaries and required production.",
+    )
+    run_autonomous_parser.add_argument(
+        "--skip-image-generation",
+        action="store_true",
+        help="Diagnose up to the image gate without contacting ImageGen; contracts requiring images return failed.",
+    )
+    run_autonomous_parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume from current artifacts but revalidate every prior gate before continuing.",
+    )
+    run_autonomous_parser.add_argument(
+        "--image-timeout",
+        type=int,
+        default=600,
+        help="ImageGen timeout in seconds when the contract requires images (default: 600).",
+    )
+    run_autonomous_parser.set_defaults(func=_run_autonomous_command)
 
     prepare_semantic = subparsers.add_parser(
         "prepare-semantic-understanding",

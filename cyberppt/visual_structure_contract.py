@@ -205,6 +205,12 @@ def audit_visual_design_package(
 
         evidence = decision.get("evidence_units")
         evidence = evidence if isinstance(evidence, list) else []
+        if len(evidence) > 7:
+            issue(
+                "EVIDENCE_UNITS_TOO_MANY",
+                "The executable visual-spec schema allows at most seven evidence units; group contiguous locked copy into business evidence units.",
+                page_id,
+            )
         evidence_keys = [str(item.get("key") or "") for item in evidence if isinstance(item, dict)]
         if not evidence_keys or any(not value for value in evidence_keys) or len(evidence_keys) != len(set(evidence_keys)):
             issue("DECISION_EVIDENCE_KEYS_INVALID", "Decision evidence keys must be non-empty and unique.", page_id)

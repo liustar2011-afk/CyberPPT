@@ -56,6 +56,17 @@ class CliTests(unittest.TestCase):
         self.assertIn("prepare-visual-structure", help_text)
         self.assertIn("record-visual-structure-execution", help_text)
         self.assertIn("visual-structure-audit", help_text)
+        self.assertIn("run-autonomous", help_text)
+
+    def test_run_autonomous_accepts_contract_and_image_switch(self) -> None:
+        args = build_parser().parse_args(
+            ["run-autonomous", "contract.json", "--skip-image-generation", "--image-timeout", "120", "--resume"]
+        )
+
+        self.assertEqual("contract.json", args.contract)
+        self.assertTrue(args.skip_image_generation)
+        self.assertTrue(args.resume)
+        self.assertEqual(120, args.image_timeout)
 
     def test_script_audit_accepts_contract_options(self) -> None:
         args = build_parser().parse_args(

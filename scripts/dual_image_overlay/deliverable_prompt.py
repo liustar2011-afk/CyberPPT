@@ -460,7 +460,15 @@ def _style_contract_from_payload(
     # lock, rather than letting a downstream compiler select clauses or
     # recreate a terminal fragment.  Page layout belongs to Stage 02.
     if int(style.get("id") or 0) == 9 and prompt_contract:
-        return prompt_contract
+        safety_rules = (
+            _strip_visual_structure_meta(_collapse_text(style.get("people_rule"))),
+            _strip_visual_structure_meta(_collapse_text(style.get("factuality_rule"))),
+            _strip_visual_structure_meta(
+                _collapse_text(style.get("semantic_image_text_rule"))
+            ),
+            _strip_visual_structure_meta(_collapse_text(style.get("component_rule"))),
+        )
+        return "\n\n".join((prompt_contract, *(rule for rule in safety_rules if rule)))
     scope_rule = _strip_visual_structure_meta(_collapse_text(style.get("scope_rule")))
     semantic_structure_rule = _strip_visual_structure_meta(
         _collapse_text(style.get("semantic_structure_rule"))
@@ -646,6 +654,14 @@ def _creative_brief_style_contract(
     )
     if "不要求沿用原始列表、卡片、栏位或段落排布形式" not in contract:
         contract = f"{contract}\n\n{creative_layout_freedom}"
+    required_guardrails = (
+        "Auxiliary imagery may use clear supporting words, interface text, chart labels, or document-like wording when it improves the visual idea. This auxiliary text does not need to duplicate the locked wording, but must not masquerade as a new factual number, organization claim, or unsupported conclusion.",
+        "Do not introduce organization or person names beyond the locked on-screen text.",
+        "Schematic screens, charts, maps, time bands, interface-like structures, and their supporting labels may organize the composition freely;",
+    )
+    for guardrail in required_guardrails:
+        if guardrail not in contract:
+            contract = f"{contract}\n\n{guardrail}"
     return contract
 
 

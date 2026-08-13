@@ -41,16 +41,12 @@ class PromptApproval:
 
     @property
     def stale(self) -> bool:
-        approved = self.approved_prompt.strip()
-        canonical = self.canonical_prompt.strip()
-        # A user-approved page may carry a narrowly scoped visual-regeneration
-        # note after the compiler-owned prompt.  The note changes art direction
-        # only; the locked copy and compiler contract before the marker must
-        # remain byte-for-byte aligned.  Treat that explicit suffix as an
-        # approved override instead of falsely rejecting the prompt as stale.
-        if APPROVED_OVERRIDE_MARKER in approved:
-            approved = approved.split(APPROVED_OVERRIDE_MARKER, 1)[0].rstrip()
-        return approved != canonical
+        # Approval is meaningful only for the exact compiler output that is
+        # consumed by ImageGen.  Do not silently accept a visual override or
+        # post-approval enrichment: both require a new final approval.
+        return not (
+            self.approved_prompt == self.canonical_prompt == self.consumed_prompt
+        )
 
     def metadata(self) -> dict[str, Any]:
         return {

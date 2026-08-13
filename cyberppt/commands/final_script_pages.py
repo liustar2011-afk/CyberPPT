@@ -22,6 +22,7 @@ from scripts.dual_image_overlay.cyberppt_pair_manifest import (
 )
 from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, parse_pages, template_title
 from scripts.dual_image_overlay.imagegen_handoff import (
+    IMAGEGEN_CANVAS_CONTRACT as BODY_IMAGE_CANVAS_CONTRACT,
     PresentationDecision,
     resolve_presentation_decision,
     select_image_locked_text,
@@ -44,14 +45,6 @@ from cyberppt.script_quality_contract import (
 STAGE_DIR = "workbench/stages/02-blueprint-dual-image"
 TEMPLATE_LOCK_DIR = "workbench/locks/template_text"
 LEDGER_PATH = "workbench/artifact-ledger.json"
-BODY_IMAGE_CANVAS_CONTRACT = (
-    "最高优先级画布约束：输出必须严格为 2048×1024（2:1）的正文内容区图片；"
-    "不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，"
-    "不得继承参考图的画布比例。"
-    "不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由模板文字层承载。"
-)
-
-
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
@@ -105,6 +98,7 @@ def _write_imagegen_attempt_record(
         "attempt": attempt,
         "prompt_path": str(prompt_path.resolve()),
         "prompt_sha256": sha256(prompt.encode("utf-8")).hexdigest(),
+        "base_prompt_sha256": sha256(base_prompt.encode("utf-8")).hexdigest(),
         "prompt_chars": len(prompt),
         "model": model,
         "quality": quality,
@@ -663,8 +657,6 @@ def _generate_manifest_images(
                     f"page {pair.get('page_number')} {variant} requires full image: {full_path}"
                 )
             prompt = str(item.get("prompt", ""))
-            if variant == "full":
-                prompt = f"{BODY_IMAGE_CANVAS_CONTRACT}\n\n{prompt}"
             base_prompt = prompt
             attempt_input_images = list(input_images)
             canvas = str(item.get("canvas") or "2048x1024")
@@ -807,6 +799,7 @@ def run_final_script_pages(
     build_id: str | None = None,
     external_script: bool = False,
     lightweight_stage01_confirmed: bool = False,
+    autonomous_contract: Path | None = None,
     blueprint_only: bool = False,
     no_style_reference: bool = False,
     skip_image_text_audit: bool = False,
@@ -817,10 +810,37 @@ def run_final_script_pages(
     semantic_plan_dir = semantic_plan_dir.expanduser().resolve() if semantic_plan_dir else None
     if not script.is_file():
         raise FileNotFoundError(f"final script not found: {script}")
+    autonomous_contract_path = (
+        autonomous_contract.expanduser().resolve()
+        if autonomous_contract is not None
+        else None
+    )
+    autonomous_authority = None
+    if autonomous_contract_path is not None:
+        from cyberppt.autonomous_contract import load_contract, validate_source_boundary
+
+        if external_script:
+            raise ValueError("autonomous contract cannot be combined with --external-script")
+        if not lightweight_stage01_confirmed:
+            raise ValueError(
+                "autonomous contract requires lightweight Stage 01 confirmation"
+            )
+        autonomous_authority = load_contract(autonomous_contract_path)
+        if autonomous_authority.project != project:
+            raise ValueError("autonomous contract targets another project")
+        if style_lock is not None or style_id != autonomous_authority.style_id:
+            raise ValueError(
+                "autonomous contract requires its declared --style-id and no alternate style lock"
+            )
+        if production_mode != autonomous_authority.production_mode:
+            raise ValueError("autonomous contract production mode does not match the contract")
+        validate_source_boundary(autonomous_authority)
     if external_script and lightweight_stage01_confirmed:
         raise ValueError("--external-script cannot be combined with --lightweight-stage01-confirmed")
     source_mode = (
-        "external_script"
+        "autonomous_contract"
+        if autonomous_authority is not None
+        else "external_script"
         if external_script
         else "interactive_lightweight_confirmation"
         if lightweight_stage01_confirmed
@@ -910,7 +930,11 @@ def run_final_script_pages(
         output_dir=target_dir,
         project_path=project,
         style_lock=style_lock,
-        require_approved_prompts=not external_script and not blueprint_only,
+        require_approved_prompts=(
+            not external_script
+            and not blueprint_only
+            and autonomous_authority is None
+        ),
         production_mode=production_mode,
         prompt_enrich=prompt_enrich,
         require_send_approval=require_send_approval,
@@ -952,11 +976,15 @@ def run_final_script_pages(
         require_generated(manifest)
 
     resume_command = (
-        f"python -m cyberppt final-script-pages {project} --script {script} "
-        f"--pages {pages_raw} --style-lock {style_lock} --production-mode {production_mode} "
-        f"--output-dir {target_dir} --build-id {build_id}"
-        + (" --external-script" if external_script else "")
-        + (" --lightweight-stage01-confirmed" if lightweight_stage01_confirmed else "")
+        f"python -m cyberppt run-autonomous {autonomous_contract_path} --resume"
+        if autonomous_contract_path is not None
+        else (
+            f"python -m cyberppt final-script-pages {project} --script {script} "
+            f"--pages {pages_raw} --style-lock {style_lock} --production-mode {production_mode} "
+            f"--output-dir {target_dir} --build-id {build_id}"
+            + (" --external-script" if external_script else "")
+            + (" --lightweight-stage01-confirmed" if lightweight_stage01_confirmed else "")
+        )
     )
     production_readiness = None
     tool_consumption: dict[str, Any] = {}
@@ -1007,6 +1035,7 @@ def run_final_script_pages(
         "pages": page_numbers,
         "stage": stage_name,
         "source_mode": source_mode,
+        "autonomous_contract": str(autonomous_contract_path) if autonomous_contract_path else None,
         "project_created": project_created,
         "status": status,
         "production_mode": production_mode,
@@ -1060,6 +1089,14 @@ def run_final_script_pages(
         "production_mode": production_mode,
         "stage": stage_name,
         "source_mode": source_mode,
+        "autonomous_contract": (
+            {
+                "path": str(autonomous_contract_path),
+                "sha256": _sha256(autonomous_contract_path),
+            }
+            if autonomous_contract_path is not None
+            else None
+        ),
         "project_created": project_created,
         "status": status,
         "artifacts": {

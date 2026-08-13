@@ -11,7 +11,9 @@ from cyberppt.script_quality_contract import (
     _mechanical_evidence_bullets,
     _compound_module_heading_hits,
     _module_heading_colon_hits,
+    _negative_foreground_issues,
     _generic_onscreen_relation_hits,
+    _mechanical_onscreen_label_pattern_hits,
     _onscreen_detail_phrase_overages,
     _onscreen_layout_meta_hits,
     _onscreen_parent_child_role_mismatches,
@@ -24,6 +26,7 @@ from cyberppt.script_quality_contract import (
     _speaker_placeholder_hits,
     _issue,
     _presentation_issues,
+    _prohibited_contrast_issues,
     _prose_issues,
     _source_consumption_issues,
     _full_prose_source_coverage_issues,
@@ -40,6 +43,7 @@ from cyberppt.script_quality_contract import (
     parse_script_markdown,
     parse_selection_notes,
     selection_notes_are_structured,
+    script_retry_directive,
     text_similarity,
     audience_facing_group_label,
     strip_authoring_group_marker,
@@ -635,6 +639,42 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
                 "国家部署、行业需求和资源问题属于三个并列维度，共同构成建设背景。"
             ),
         )
+
+    def test_flags_reused_generic_onscreen_label_template(self) -> None:
+        page = ScriptPage(
+            page_id="p09", sequence=9, heading="", page_type="content",
+            title="", main_message="", full_prose="", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=(),
+            boundary_source_refs=(), boundary="", visual_structure="",
+            onscreen_text=(
+                "关键判断\n  判断：行业数据服务形成可订购目录。\n  事实：客户需求进入统一受理。\n"
+                "业务事实\n  对象：数据产品和场景服务。\n  条件：权利质量通过核验。\n"
+                "运营要点\n  动作：订单履行形成交付记录。\n  结果：客户完成验收与续约。"
+            ),
+            module_titles=("关键判断", "业务事实", "运营要点"),
+        )
+        self.assertEqual(
+            ("关键判断", "业务事实", "运营要点", "判断", "事实", "对象", "条件", "动作", "结果"),
+            _mechanical_onscreen_label_pattern_hits(page),
+        )
+        self.assertIn(
+            "ONSCREEN_MECHANICAL_LABEL_TEMPLATE",
+            [issue.code for issue in _presentation_issues(page)],
+        )
+
+    def test_allows_business_specific_onscreen_groups(self) -> None:
+        page = ScriptPage(
+            page_id="p09", sequence=9, heading="", page_type="content",
+            title="", main_message="", full_prose="", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=(),
+            boundary_source_refs=(), boundary="", visual_structure="",
+            onscreen_text=(
+                "服务目录\n  查询服务：指标、接口和数据集。\n  知识服务：政策标准和专业文档。\n"
+                "履约闭环\n  订单履行：授权、交付、验收和结算。"
+            ),
+            module_titles=("服务目录", "履约闭环"),
+        )
+        self.assertEqual((), _mechanical_onscreen_label_pattern_hits(page))
 
     def test_flags_layout_metadata_but_keeps_business_count_labels(self) -> None:
         hits = _onscreen_layout_meta_hits(
@@ -1276,6 +1316,154 @@ ST0020
         self.assertEqual("", legacy.scene_role)
         self.assertEqual("", legacy.image_locked_text)
         self.assertEqual("", legacy.visual_proof)
+
+
+class NegativeForegroundRuleTests(unittest.TestCase):
+    def _page(
+        self,
+        *,
+        title: str,
+        main_message: str,
+        onscreen: str = "",
+        prose: str = "",
+        visual_structure: str = "",
+    ) -> ScriptPage:
+        return ScriptPage(
+            page_id="p09",
+            sequence=9,
+            heading=title,
+            page_type="content",
+            title=title,
+            main_message=main_message,
+            full_prose=prose,
+            selection_notes="",
+            evidence_map="",
+            evidence_map_refs=(),
+            source_refs=(),
+            boundary_source_refs=(),
+            boundary="",
+            visual_structure=visual_structure,
+            onscreen_text=onscreen,
+            module_titles=(),
+            top_level_module_titles=("供给缺口",) if onscreen else (),
+            speaker_notes="",
+        )
+
+    def test_non_boundary_page_rejects_negative_foreground_in_title_and_script(self) -> None:
+        page = self._page(
+            title="行业服务供给缺口",
+            main_message="当前供给不足，需形成运营能力。",
+            prose="当前供给不足，需要组织服务能力。后续按产品目录推进。",
+            visual_structure="核心呈现供给缺口与建设任务的对应关系。",
+        )
+        issues = _negative_foreground_issues(
+            page,
+            {
+                "argument_role": "positioning",
+                "title": "行业服务供给缺口",
+                "topic_category": "平台定位",
+            },
+        )
+        self.assertEqual(
+            {"NEGATIVE_FOREGROUND_OUTSIDE_BOUNDARY_TOPIC"},
+            {issue.code for issue in issues},
+        )
+        self.assertEqual("error", issues[0].severity)
+        self.assertIn("页面标题：缺口", issues[0].evidence)
+        self.assertIn("主判断：不足", issues[0].evidence)
+
+    def test_title_cannot_self_exempt_without_direct_boundary_role(self) -> None:
+        page = self._page(
+            title="平台角色与控制边界",
+            main_message="平台组织资源和服务运营。",
+        )
+        issues = _negative_foreground_issues(
+            page,
+            {
+                "argument_role": "positioning",
+                "title": "平台角色与控制边界",
+                "topic_category": "平台定位",
+            },
+        )
+        self.assertEqual(
+            ["NEGATIVE_FOREGROUND_OUTSIDE_BOUNDARY_TOPIC"],
+            [issue.code for issue in issues],
+        )
+
+    def test_direct_boundary_clarification_is_the_only_exception(self) -> None:
+        page = self._page(
+            title="安全边界与准入要求",
+            main_message="按安全、质量和授权要求组织准入。",
+            onscreen="安全边界\n    准入要求：登记后受控使用",
+        )
+        self.assertEqual(
+            [],
+            _negative_foreground_issues(
+                page,
+                {
+                    "argument_role": "assurance",
+                    "title": "安全边界与准入要求",
+                    "topic_category": "安全边界",
+                },
+            ),
+        )
+
+    def test_audit_emits_hard_error_and_retry_for_new_rules(self) -> None:
+        script = parse_script_markdown(
+            """## 第9页：平台定位：连接，而非替代
+- 页面类型：内容页
+- 页面标题：平台定位：连接，而非替代
+- 主判断：供给不足，需要形成服务能力。
+- 完整文字稿：供给不足，需要形成可运营的服务能力。平台通过资源连接与服务组织支撑行业协同。
+- 文字稿取舍说明：
+  - 必留上屏：服务组织
+  - 仅讲解：能力建设
+  - 仅追溯：S001
+- 证据映射：服务组织→S001
+- 上屏文字：
+  **供给缺口**
+    建设动作：组织资源与服务
+- 证据：S001
+- 视觉结构：重点呈现供给缺口与服务组织的关系。
+"""
+        )
+        issues = audit_script_quality(
+            script,
+            strict_outline(
+                {
+                    "page_id": "p09",
+                    "sequence": 9,
+                    "page_type": "content",
+                    "title": "平台定位",
+                    "argument_role": "positioning",
+                    "source_refs": ["S001"],
+                    "prerequisite_pages": [],
+                }
+            ),
+            source_truth(
+                {"id": "S001", "type": "F", "status": "已形成", "statement": "平台组织资源与服务。"}
+            ),
+        )
+        rule_issues = [
+            issue
+            for issue in issues
+            if issue.code
+            in {
+                "PROHIBITED_NEGATIVE_CONTRAST",
+                "NEGATIVE_FOREGROUND_OUTSIDE_BOUNDARY_TOPIC",
+            }
+        ]
+        self.assertEqual(
+            {
+                "PROHIBITED_NEGATIVE_CONTRAST",
+                "NEGATIVE_FOREGROUND_OUTSIDE_BOUNDARY_TOPIC",
+            },
+            {issue.code for issue in rule_issues},
+        )
+        self.assertTrue(all(issue.severity == "error" for issue in rule_issues))
+        directive = script_retry_directive(rule_issues)
+        self.assertEqual("business_prose_first", directive["strategy"])
+        self.assertIn("direct positive", str(directive["instruction"]))
 
 
 class ScriptContractAuditTests(unittest.TestCase):

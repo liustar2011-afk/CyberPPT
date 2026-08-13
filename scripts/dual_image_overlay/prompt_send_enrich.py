@@ -210,12 +210,12 @@ def resolve_send_prompt(
     send_final_path: Path | None = None,
     require_send: bool = False,
 ) -> SendEnrichResult:
-    """Resolve the prompt actually sent to the image backend.
+    """Resolve an optional enrichment block for the final prompt compiler.
 
     mode:
-      - off: approved/canonical prompt unchanged
-      - deterministic: append deterministic enrich block
-      - send: use approved imagegen-send final when available; else deterministic
+      - off: no enrichment
+      - deterministic: return a deterministic non-onscreen block
+      - send: return an approved imagegen-send block; else deterministic
         (or error if require_send)
     """
 
@@ -242,15 +242,19 @@ def resolve_send_prompt(
 
     if mode == "send" and send_final_path is not None and send_final_path.is_file():
         send_text = send_final_path.read_text(encoding="utf-8-sig").strip()
-        assert_locked_text_preserved(source, send_text)
+        if SEND_ENRICH_HEADER not in send_text:
+            raise ValueError(
+                "approved imagegen-send final must be an enrichment block beginning with "
+                f"{SEND_ENRICH_HEADER}"
+            )
         return SendEnrichResult(
-            prompt=send_text,
+            prompt=source,
             mode=mode,
             source_prompt_sha256=source_hash,
             structure_cue=extract_structure_cue(source),
             used_send_script=True,
             send_script_path=str(send_final_path),
-            enrich_block="",
+            enrich_block=send_text,
         )
 
     if mode == "send" and require_send:
@@ -259,10 +263,9 @@ def resolve_send_prompt(
             "run `python -m cyberppt prepare-imagegen-send` then stage/approve kind=imagegen-send"
         )
 
-    enriched = apply_deterministic_enrich(source)
     block = build_deterministic_enrich_block(source)
     return SendEnrichResult(
-        prompt=enriched,
+        prompt=source,
         mode="deterministic" if mode == "deterministic" else "deterministic",
         source_prompt_sha256=source_hash,
         structure_cue=extract_structure_cue(source),

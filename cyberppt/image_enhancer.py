@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from PIL import Image
+
 from cyberppt.paths import REPO_ROOT
 
 
@@ -66,6 +68,28 @@ def enhance_image(
     output.parent.mkdir(parents=True, exist_ok=True)
     report = output.with_suffix(output.suffix + ".report.json")
 
+    def pillow_fallback(run_source: Path, run_output: Path, run_report: Path) -> list[str]:
+        """Keep ingest normalization available when the optional cv2 skill dependency is absent."""
+        with Image.open(run_source) as image:
+            destination = target_size or image.size
+            normalized = image.convert("RGB").resize(destination, Image.Resampling.LANCZOS)
+            normalized.save(run_output)
+        run_report.write_text(
+            json.dumps(
+                {
+                    "super_resolution_backend": "pillow_resize_fallback",
+                    "warnings": [
+                        "ppt-image-enhancer cv2 dependency unavailable; used deterministic Pillow resize"
+                    ],
+                    "target_size": list(destination),
+                },
+                ensure_ascii=False,
+                indent=2,
+            ) + "\n",
+            encoding="utf-8",
+        )
+        return ["pillow_resize_fallback", str(run_source), str(run_output)]
+
     def run_skill(run_source: Path, run_output: Path, run_report: Path) -> list[str]:
         command = [
             str(_runtime_python()), str(ENTRYPOINT), str(run_source),
@@ -76,8 +100,10 @@ def enhance_image(
             command.extend(["--target-size", f"{target_size[0]}x{target_size[1]}"])
         if mode is not None:
             command.extend(["--mode", mode])
-        completed = subprocess.run(command, cwd=SKILL_ROOT, check=False)
+        completed = subprocess.run(command, cwd=SKILL_ROOT, check=False, capture_output=True, text=True)
         if completed.returncode != 0:
+            if "No module named 'cv2'" in (completed.stderr or ""):
+                return pillow_fallback(run_source, run_output, run_report)
             raise RuntimeError(
                 "ppt-image-enhancer failed with exit code "
                 f"{completed.returncode}: {' '.join(command)}"

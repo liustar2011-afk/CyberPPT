@@ -171,9 +171,9 @@ def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
     assert "### 正向构图语言" in contract
     assert "### 表面与组件语言" in contract
     assert "平台、中枢、引擎、中心" in contract
-    assert "每一处直接解释相应的业务对象、动作、状态、边界或结果" in contract
+    assert "每一处都应直接解释相应的业务对象、动作、状态、边界或结果" in contract
     assert "图标默认数量为 0" in contract
-    assert "Stage02 决定业务关系、阅读顺序、对象数量或空间布局" in contract
+    assert "具体选择由页面语义和 Stage02 结构决定" in contract
     assert "semantic_tags:" not in contract
     assert "style09:scope" not in contract
     assert "### Final ImageGen execution lock — hard" in contract
@@ -286,7 +286,7 @@ def test_style_nine_contract_suppresses_duplicate_response_structures() -> None:
     assert "无意义复述" in contract
     assert "删除无语义的边缘装饰、重复容器" in contract
     assert "建设响应" not in contract
-    assert "它们必须解释内容，不作为泛科技装饰" in contract
+    assert "当它们承担页面关系中的输入、承接、协作、控制、交付或结果时" in contract
 
 
 def test_style_nine_contract_preserves_industry_scene_and_rejects_large_document_carriers() -> None:
@@ -296,7 +296,9 @@ def test_style_nine_contract_preserves_industry_scene_and_rejects_large_document
 
     contract = payload["style"]["prompt_contract"]
     assert "行业场景、设备、工作面、信息流、资料、屏幕、设施和人物可按页面语义作为视觉载体" in contract
+    assert "而非退化为淡化背景或无语义装饰" in contract
+    assert "人员动作、资料和信息流可以共同承担主业务关系" in contract
     assert "抽象主题可使用干净的平面关系场" in contract
-    assert "需要多处配图时" in contract
+    assert "需要多处配图或多个局部对象时" in contract
     assert "图标默认数量为 0" in contract
-    assert "不作为泛科技装饰" in contract
+    assert "而非退化为淡化背景或无语义装饰" in contract

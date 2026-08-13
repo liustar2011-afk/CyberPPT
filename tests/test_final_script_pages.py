@@ -148,8 +148,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             )
 
         kwargs = generate.call_args.kwargs
-        self.assertTrue(kwargs["prompt"].startswith(BODY_IMAGE_CANVAS_CONTRACT))
-        self.assertIn("不得输出16:9", kwargs["prompt"])
+        self.assertEqual("页面正文提示词", kwargs["prompt"])
         self.assertEqual("2048x1024", kwargs["size"])
         self.assertEqual([Path("palette-09.png")], kwargs["image_paths"])
         self.assertFalse(kwargs["postprocess"])
@@ -398,6 +397,35 @@ class FinalScriptPagesTests(unittest.TestCase):
             )
         generation_prompts.write_text("\n".join(prompt_pages) + "\n", encoding="utf-8")
         fixture_pages = sorted(parse_page_blocks(script))
+        spec_json.write_text(
+            json.dumps(
+                {
+                    "pages": [
+                        {
+                            "page_number": page_number,
+                            "visual_decision": {
+                                "visual_thesis": "Fixture relationship",
+                                "spatial_organization": "Fixture spatial organization",
+                                "relationship_encoding": "Fixture relation",
+                                "text_integration_method": "Attach locked text to its object",
+                                "visual_hierarchy": {"primary": "Fixture focus"},
+                            },
+                            "image_plan": {
+                                "business_object": "Fixture business object",
+                                "semantic_role": "Fixture semantic role",
+                                "use_scene": False,
+                                "scene_type": "Fixture relationship field",
+                            },
+                            "structural_decision": {"spatial_grammar": ["fixture"]},
+                            "avoid": ["Do not add slide chrome"],
+                        }
+                        for page_number in fixture_pages
+                    ]
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
         handoff = project / "workbench" / "stages" / "02-handoff" / "stage02-handoff.json"
         handoff.parent.mkdir(parents=True, exist_ok=True)
         handoff.write_text(

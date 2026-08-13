@@ -261,10 +261,12 @@ def _relationship_aware_canonical_prompts(
     project_path: Path,
     style_lock: Path,
     page_numbers: list[int],
+    visual_source: str = "auto",
 ) -> dict[int, str]:
     """Compile strict prompts through the same page-intent path used for approval."""
 
     from cyberppt.script_quality_contract import parse_script_markdown
+    from cyberppt.visual_prompt_consumer import load_visual_design
     from scripts.dual_image_overlay.imagegen_handoff import (
         _page_missions,
         _page_visual_contexts,
@@ -288,9 +290,8 @@ def _relationship_aware_canonical_prompts(
     except (FileNotFoundError, ValueError):
         handoff = None
     handoff_pages = handoff_page_map(handoff) if handoff else {}
-    # The approved prompt owns content and the selected style.  The separately
-    # audited visual-structure module is appended only after freshness has
-    # been checked, so it must not be compiled into the approval baseline too.
+    # The final compiler owns content, Stage 02 semantics, and the selected
+    # style together.  Nothing is appended after approval.
     canonical: dict[int, str] = {}
     prior_decisions: list[Any] = []
     prior_semantic_carriers: list[str] = []
@@ -316,6 +317,11 @@ def _relationship_aware_canonical_prompts(
             prior_decisions=tuple(prior_decisions),
             prior_semantic_carriers=tuple(prior_semantic_carriers),
             visual_structure_mode="off",
+            visual_design=load_visual_design(
+                project_path,
+                page_number,
+                allow_legacy=visual_source in {"auto", "legacy-markdown"},
+            ),
         )
         canonical[page_number] = compiled.prompt
         if compiled.presentation is not None:
@@ -341,13 +347,16 @@ def build_manifest(
     require_send_approval: bool = False,
     enforce_prompt_freshness: bool = False,
     compact_blueprint: bool = False,
+    visual_source: str = "auto",
 ) -> tuple[dict[str, Any], Path, Path, list[int]]:
+    if visual_source not in {"auto", "governed-json", "legacy-markdown"}:
+        raise ValueError("visual_source must be auto, governed-json, or legacy-markdown")
     output_variants = output_variants_for_mode(production_mode)
     source_pages = parse_page_blocks(script)
     page_numbers = parse_pages(pages_raw, set(source_pages))
     from cyberppt.script_quality_contract import parse_script_markdown
     from cyberppt.visual_prompt_consumer import (
-        append_visual_prompt_module,
+        load_visual_design,
         load_visual_prompt_module,
         visual_module_metadata,
     )
@@ -416,6 +425,14 @@ def build_manifest(
     approved_prompts: dict[int, tuple[str, Path]] = {}
     relationship_aware_prompts: dict[int, str] = {}
     enrich_mode = (prompt_enrich or "off").strip().lower()
+    if project_path is not None and style_lock is not None and not effective_compact_blueprint:
+        relationship_aware_prompts = _relationship_aware_canonical_prompts(
+            script=script,
+            project_path=project_path,
+            style_lock=style_lock,
+            page_numbers=content_page_numbers,
+            visual_source=visual_source,
+        )
     if require_approved_prompts:
         if project_path is None:
             raise ValueError("per-slide prompt approval requires --project-path")
@@ -435,13 +452,6 @@ def build_manifest(
                     visual_prompt=module.prompt_text,
                     style_lock=style_lock,
                 )
-        else:
-            relationship_aware_prompts = _relationship_aware_canonical_prompts(
-                script=script,
-                project_path=project_path,
-                style_lock=style_lock,
-                page_numbers=content_page_numbers,
-            )
         for page_number in content_page_numbers:
             approved_path = assert_approved_final_script(project_path, page_number, "imagegen")
             approved_prompts[page_number] = (
@@ -467,13 +477,15 @@ def build_manifest(
     for page_number in content_page_numbers:
         page = source_pages[page_number]
         reference_images = reference_map.get(page_number, [])
-        prompt = render_prompt(
-            page,
-            style_lock_path=style_lock,
-            include_style_contract=False,
+        prompt = relationship_aware_prompts.get(page_number) or render_prompt(
+            page, style_lock_path=style_lock
         )
         visual_module = (
-            load_visual_prompt_module(project_path, page_number)
+            load_visual_prompt_module(
+                project_path,
+                page_number,
+                allow_legacy=visual_source in {"auto", "legacy-markdown"},
+            )
             if project_path is not None
             else None
         )
@@ -495,9 +507,12 @@ def build_manifest(
             )
         approval_path: Path | None = None
         approval_meta: dict[str, Any] | None = None
+        current_canonical_prompt = prompt
+        approved_prompt = ""
         if page_number in approved_prompts:
             approved_prompt, approval_path = approved_prompts[page_number]
             canonical_prompt = relationship_aware_prompts.get(page_number, prompt).strip()
+            current_canonical_prompt = canonical_prompt
             approval = build_prompt_approval(
                 approved_path=approval_path,
                 approved_prompt=approved_prompt,
@@ -505,16 +520,10 @@ def build_manifest(
                 consumed_prompt=approved_prompt,
             )
             approval_meta = approval.metadata()
-            if enforce_prompt_freshness:
-                assert_prompt_fresh(approval, page_number=page_number)
-            # Style 09 is a live source-authored contract. Reassembly after a
-            # source style edit must consume the freshly compiled canonical
-            # prompt; a historical approval remains audit evidence only.
-            if style09_source_contract:
-                prompt = canonical_prompt
-                approval_meta["consumed_from"] = "canonical_style09_refresh"
-            else:
-                prompt = approved_prompt
+            # The approval is for complete compiler output.  A source/style
+            # change is stale evidence, never permission to substitute a new
+            # canonical prompt at send time.
+            prompt = approved_prompt
         send_final: Path | None = None
         if project_path is not None and enrich_mode == "send":
             try:
@@ -532,35 +541,43 @@ def build_manifest(
             require_send=require_send_approval and enrich_mode == "send",
         )
         prompt = enrich.prompt
-        if visual_module is not None and not effective_compact_blueprint:
-            # append_visual_prompt_module removes any prior module before
-            # adding the approved current one; do not duplicate its work with
-            # a brittle marker check here.
-            prompt = append_visual_prompt_module(prompt, visual_module)
-        # The complete style contract is the final layer and comes directly
-        # from the selected Style source. Do not synthesize a second Style09
-        # terminal fragment here.
-        if not effective_compact_blueprint and (
-            not require_approved_prompts or style09_source_contract
-        ):
-            prompt = (
-                f"{prompt.rstrip()}\n\n【正式风格锁｜不上屏】\n"
-                f"{style_contract(style_lock).strip()}\n"
-            )
+        # Enrichment is strictly a non-onscreen block.  It is placed before
+        # the one STYLE09 terminal lock; it never owns page semantics or adds
+        # a second style contract.
+        if enrich.enrich_block:
+            prompt = f"{prompt.rstrip()}\n\n{enrich.enrich_block.strip()}\n"
+            if _is_style09_lock(style_lock):
+                from scripts.dual_image_overlay.deliverable_prompt import enforce_style09_terminal_lock
+
+                prompt = enforce_style09_terminal_lock(prompt, style_lock)
         enrich_ledger.append({"page_number": page_number, **enrich_result_as_dict(enrich)})
         prompt = _full_prompt_for_variants(prompt, output_variants)
         if approval_meta is not None:
-            approval_meta["consumed_prompt_sha256"] = _sha256_text(prompt)
-            approval_meta.setdefault("consumed_from", "approved_prompt")
+            # Compare approval after every compiler-owned transformation,
+            # including output-variant compilation and opt-in enrichment.
+            # The old chain checked an earlier source prompt and then merely
+            # overwrote a consumed hash, which certified bytes never sent.
+            assert approval_path is not None
+            approval = build_prompt_approval(
+                approved_path=approval_path,
+                approved_prompt=approved_prompt,
+                canonical_prompt=current_canonical_prompt,
+                consumed_prompt=prompt,
+            )
+            approval_meta = approval.metadata()
+            if enforce_prompt_freshness:
+                assert_prompt_fresh(approval, page_number=page_number)
         visual_handoff_metadata = visual_module_metadata(visual_module)
         stem = _page_stem(page_number, page.title)
         prompt_file = output_dir / "prompts" / f"p{page_number:02d}.txt"
-        atomic_write_text(prompt_file, prompt.rstrip() + "\n")
+        prompt = prompt.rstrip() + "\n"
+        atomic_write_text(prompt_file, prompt)
         full_path = output_dir / f"{stem}_full.png"
         full = {
             "filename": full_path.name,
             "path": str(full_path),
             "prompt": prompt,
+            "prompt_sha256": _sha256_text(prompt),
             "generation_method": FULL_GENERATION_METHOD,
             "operation": "generate",
             "output_role": "full_textual_visual_reference",

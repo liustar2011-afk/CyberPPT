@@ -119,6 +119,14 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     evidence_keys = [str(item.get("key") or "").strip() for item in evidence if isinstance(item, dict)]
     if len(evidence_keys) != len(evidence) or not all(evidence_keys) or len(set(evidence_keys)) != len(evidence_keys):
         _fail(f"{page_id}: evidence keys must be non-empty and unique")
+    # The registered visual-spec schema permits at most seven evidence nodes.
+    # Decisions may bind several contiguous locked strings to a single node,
+    # but must not turn every line of on-screen copy into a graph node.
+    if len(evidence_keys) > 7:
+        _fail(
+            f"{page_id}: visual decision has {len(evidence_keys)} evidence units; "
+            "group contiguous locked copy into at most 7 business evidence units"
+        )
     selected_id = str(decision.get("selected_candidate") or "")
     selected = next((item for item in candidates if isinstance(item, dict) and item.get("id") == selected_id), None)
     if selected is None:
@@ -372,19 +380,26 @@ def prepare_visual_structure_stage(
     script: Path,
     *,
     lightweight_stage01_confirmed: bool = False,
+    reuse_current_handoff: bool = False,
 ) -> Path:
     project = project.expanduser().resolve()
     script = script.expanduser().resolve()
     from cyberppt.stage02_handoff import HANDOFF_JSON, prepare_stage02_handoff
 
-    report = prepare_stage02_handoff(
-        project,
-        script=script,
-        lightweight_stage01_confirmed=lightweight_stage01_confirmed,
-    )
-    if report.get("status") != "passed":
-        raise ValueError("Stage 01 to Stage 02 handoff is not passed")
     handoff = project / HANDOFF_JSON
+    if reuse_current_handoff:
+        if not handoff.is_file():
+            raise FileNotFoundError(
+                "reuse_current_handoff requires an existing Stage 02 handoff"
+            )
+    else:
+        report = prepare_stage02_handoff(
+            project,
+            script=script,
+            lightweight_stage01_confirmed=lightweight_stage01_confirmed,
+        )
+        if report.get("status") != "passed":
+            raise ValueError("Stage 01 to Stage 02 handoff is not passed")
     design_input = _write_visual_design_input(project, handoff)
     skill_root = _skill_root()
     skill = skill_root / "SKILL.md"

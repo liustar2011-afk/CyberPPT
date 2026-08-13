@@ -8,6 +8,7 @@ import unittest
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.visual_structure_stage import (
     VISUAL_FILES,
+    _build_executable_page,
     _decision_execution_design,
     _prompt_inputs_sha256,
     _sha256,
@@ -21,6 +22,42 @@ from cyberppt.script_quality_contract import ScriptPage
 
 
 class VisualStructureStageTests(unittest.TestCase):
+    def test_executable_spec_rejects_more_than_seven_evidence_nodes(self) -> None:
+        source = {
+            "page_id": "p01",
+            "page_number": 1,
+            "page_title": "Title",
+            "page_mission": "Mission",
+            "core_judgment": "Judgment",
+            "locked_text_items": [
+                {"text_id": f"P01-T{index:02d}", "text": f"Text {index}"}
+                for index in range(1, 9)
+            ],
+        }
+        evidence = [
+            {"key": f"e{index}", "summary": f"Evidence {index}", "text_ids": [f"P01-T{index:02d}"]}
+            for index in range(1, 9)
+        ]
+        decision = {
+            "page_id": "p01",
+            "evidence_units": evidence,
+            "candidates": [
+                {
+                    "id": f"c{index}",
+                    "semantic_focus": {"evidence_key": "e1"},
+                    "reading_sequence": [item["key"] for item in evidence],
+                    "spatial_grammar": ["path"],
+                    "direction": "left_to_right",
+                    "visual_intent_type": "data_flow_value_chain",
+                }
+                for index in range(1, 4)
+            ],
+            "selected_candidate": "c1",
+        }
+
+        with self.assertRaisesRegex(ValueError, "at most 7 business evidence units"):
+            _build_executable_page(source, decision)
+
     def test_corrupted_optional_execution_design_falls_back_to_concise_relation_design(self) -> None:
         source = {
             "business_relationships": [{"subject": "服务运营", "objects": ["very long audit-only evidence"]}],

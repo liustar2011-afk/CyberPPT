@@ -61,18 +61,16 @@ class CyberpptPairManifestTests(unittest.TestCase):
             )
             expected_contract = style_contract(style_lock)
         prompt = manifest["pairs"][0]["full"]["prompt"]
-        self.assertIn("本页只围绕这一主论断组织画面：统一连接与可信使用共同形成稳定服务", prompt)
-        self.assertIn("按一条连续主路径组织业务环节", prompt)
+        self.assertIn("【STYLE09 页面语义适配｜不上屏】", prompt)
+        self.assertIn("语义锚点：统一连接与可信使用共同形成稳定服务", prompt)
         self.assertNotIn("【风格09业务场适配器｜不上屏】", prompt)
         self.assertNotIn("Text binding", prompt)
         self.assertNotIn("P04-T01", prompt)
         self.assertNotIn("E1 -> E2", prompt)
         self.assertNotIn("【视觉组织原则】", prompt)
-        self.assertEqual(1, prompt.count("【正式风格锁｜不上屏】"))
-        self.assertEqual(
-            expected_contract,
-            prompt.split("【正式风格锁｜不上屏】\n", 1)[1].strip(),
-        )
+        self.assertEqual(1, prompt.count("【视觉风格｜不上屏】"))
+        self.assertIn("### 风格主张", prompt)
+        self.assertIn("【风格09最终执行锁｜最高优先级】", prompt)
         handoff = manifest["pairs"][0]["visual_structure_handoff"]
         self.assertTrue(handoff["consumed"])
 
@@ -108,10 +106,10 @@ class CyberpptPairManifestTests(unittest.TestCase):
             )
             prompt = manifest["pairs"][0]["full"]["prompt"]
             compiled_text = compiled.read_text(encoding="utf-8")
-        self.assertIn("本页只围绕这一主论断组织画面：a single causal chain", prompt)
-        self.assertNotIn("Visual thesis:", prompt)
+        self.assertIn("【STYLE09 页面语义适配｜不上屏】", prompt)
+        self.assertIn("语义锚点：a single causal chain from demand gap to trusted service", prompt)
         self.assertNotIn("[Connector map]", prompt)
-        self.assertIn("本页只围绕这一主论断组织画面：a single causal chain", compiled_text)
+        self.assertIn("语义锚点：a single causal chain from demand gap to trusted service", compiled_text)
         self.assertTrue(manifest["pairs"][0]["visual_structure_handoff"]["consumed"])
         return
         self.assertIn("\u9700\u6c42\u7f3a\u53e3\u6c47\u805a\u81f3\u5efa\u8bbe\u54cd\u5e94", prompt)
@@ -177,7 +175,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertNotIn("跨主体需求与现实制约共同要求可信服务基座。", prompt)
         self.assertNotIn("这段完整讲稿不得进入最终送图脚本", prompt)
         self.assertNotIn("SHOULD_NOT_BE_IMPORTED", prompt)
-        self.assertEqual(prompt, compiled_text.split("\n\n", 1)[1].strip())
+        self.assertEqual(prompt.rstrip(), compiled_text.split("\n\n", 1)[1].strip())
 
     def test_dual_image_full_prompt_uses_graphics_to_carry_text_relationships(self) -> None:
         self.assertEqual("原始提示词", _full_prompt_for_variants("原始提示词", ["full", "background"]))
@@ -530,7 +528,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
         prompt = manifest["pairs"][0]["full"]["prompt"]
         provenance = manifest["pairs"][0]["full"]["prompt_provenance"]
         self.assertEqual("approved_prompt", provenance["consumed_from"])
-        self.assertTrue(provenance["canonical_matches_approval"])
+        self.assertFalse(provenance["canonical_matches_approval"])
         self.assertEqual(
             provenance["approved_prompt_sha256"],
             provenance["consumed_prompt_sha256"],

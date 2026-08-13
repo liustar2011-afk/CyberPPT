@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from datetime import datetime, timezone
@@ -46,11 +47,38 @@ def _compact(value: object) -> str:
     return re.sub(r"\s+", "", str(value or ""))
 
 
-def _source_binding(project: Path, relative: Path) -> dict[str, str]:
-    path = (project / relative).resolve()
+def _file_binding(path: Path) -> dict[str, str]:
+    path = path.expanduser().resolve()
     if not path.is_file():
         raise FileNotFoundError(f"required Stage 02 handoff source is missing: {path}")
-    return {"path": str(path)}
+    return {
+        "path": str(path),
+        "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+    }
+
+
+def _source_binding(project: Path, relative: Path) -> dict[str, str]:
+    path = (project / relative).resolve()
+    return _file_binding(path)
+
+
+def _handoff_authority(payload: dict[str, Any]) -> dict[str, Any]:
+    """Return the handoff fields that must remain identical for safe reuse.
+
+    ``created_at`` deliberately stays outside this comparison: it is a receipt
+    timestamp, not an input to Stage 02.  Every bound Stage 01 source carries
+    a content digest, so a changed script, outline, Source Truth, or approval
+    cannot be silently reused just because its path is unchanged.
+    """
+
+    return {
+        "schema": payload.get("schema"),
+        "project": payload.get("project"),
+        "stage01_confirmation_mode": payload.get("stage01_confirmation_mode"),
+        "source_bindings": payload.get("source_bindings"),
+        "page_order": payload.get("page_order"),
+        "pages": payload.get("pages"),
+    }
 
 
 def _render_role(page_type: str) -> str:
@@ -233,7 +261,7 @@ def build_stage02_handoff(
         raise FileNotFoundError(f"Stage 01 script approval is missing: {approval_path}")
 
     bindings = {
-        "script": {"path": str(script)},
+        "script": _file_binding(script),
         "outline": _source_binding(project, OUTLINE_PATH),
         "source_truth": _source_binding(project, SOURCE_TRUTH_PATH),
     }
@@ -409,6 +437,7 @@ def prepare_stage02_handoff(
     *,
     script: Path | None = None,
     lightweight_stage01_confirmed: bool = False,
+    reuse_current_handoff: bool = False,
 ) -> dict[str, Any]:
     project = project.expanduser().resolve()
     payload = build_stage02_handoff(
@@ -417,6 +446,16 @@ def prepare_stage02_handoff(
         lightweight_stage01_confirmed=lightweight_stage01_confirmed,
     )
     handoff_path = project / HANDOFF_JSON
+    if reuse_current_handoff and handoff_path.is_file():
+        try:
+            current = _read_json(handoff_path)
+        except (OSError, json.JSONDecodeError, ValueError):
+            current = None
+        if current is not None and _handoff_authority(current) == _handoff_authority(payload):
+            report = audit_stage02_handoff(project, current)
+            if report.get("status") == "passed":
+                return {**report, "reused": True}
+
     write_json_atomic(handoff_path, payload)
     report = audit_stage02_handoff(project, payload)
     write_json_atomic(project / HANDOFF_AUDIT, report)

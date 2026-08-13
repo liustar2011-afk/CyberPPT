@@ -92,7 +92,7 @@ from scripts.dual_image_overlay.build_transaction import atomic_write_text, buil
 
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
 IMAGEGEN_CANVAS_CONTRACT = """【输出尺寸｜不上屏】
-画布尺寸固定为 2048×1024 像素（2:1 横向）。必须按该尺寸与比例构图，不得输出 16:9、4:3、方形或其他比例。"""
+最高优先级画布约束：输出必须严格为 2048×1024 像素（2:1）的正文内容区图片；不得输出16:9完整幻灯片。输入参考图只用于视觉风格与构图语言，不得继承参考图的画布比例。不得绘制页面标题、副标题、页码、页面序号、Logo 或页脚；标题/副标题由 PPT 模板文字层承载。"""
 IMAGEGEN_CHROME_BAN_CONTRACT = """【模板层禁绘｜不上屏】
 正文区图只画业务内容，不绘制页面标题、副标题、页码、页面序号（第N页 / Pxx / Slide N）、Logo、页脚或母版装饰线。
 标题与副标题由 PPT 模板文字层承载，不得在图内另起通栏标题区。
@@ -1893,6 +1893,7 @@ def render_content_first_prompt(
     presentation_decision: PresentationDecision | None = None,
     semantic_context: PageSemanticContext | None = None,
     semantic_composition_contract: str = "",
+    stage02_semantic_adapter: str = "",
     text_render_mode: str = DEFAULT_TEXT_RENDER_MODE,
 ) -> tuple[str, str]:
     """Render a content-first prompt with an explicit text/image boundary."""
@@ -2071,6 +2072,8 @@ def render_content_first_prompt(
             "",
             SEMANTIC_VISUAL_CHROME_CONTRACT,
             "",
+            stage02_semantic_adapter.strip(),
+            "",
             render_content_first_style_contract(
                 style_lock,
                 semantic_tags=style09_semantic_tags,
@@ -2126,6 +2129,8 @@ def render_content_first_prompt(
             "",
             IMAGEGEN_CHROME_BAN_CONTRACT,
             "",
+            stage02_semantic_adapter.strip(),
+            "",
             render_content_first_style_contract(
                 style_lock,
                 semantic_tags=style09_semantic_tags,
@@ -2173,6 +2178,8 @@ def compile_page_prompt(
     visual_structure_mode: str = "off",
     prior_semantic_carriers: tuple[str, ...] = (),
     text_render_mode: str | None = None,
+    visual_design: "VisualDesignIR | None" = None,
+    enrichment_block: str = "",
 ) -> CompiledPagePrompt:
     prompt_compiler = validate_prompt_compiler(prompt_compiler)
     if visual_structure_mode not in {"off", "review"}:
@@ -2188,6 +2195,21 @@ def compile_page_prompt(
         extract_relations=_page_semantic_relations,
     )
     if prompt_compiler == "content-first-v1":
+        stage02_semantic_adapter = ""
+        if visual_design is not None:
+            from scripts.dual_image_overlay.style09_adapter import adapt_style09
+
+            selected_style = _selected_content_first_style(style_lock)
+            if int(selected_style.get("id") or 0) == 9:
+                stage02_semantic_adapter = adapt_style09(visual_design).render_non_onscreen()
+            else:
+                from cyberppt.visual_prompt_consumer import _compile_visual_design
+
+                stage02_semantic_adapter = _compile_visual_design(visual_design)
+        if enrichment_block.strip():
+            stage02_semantic_adapter = "\n\n".join(
+                item for item in (stage02_semantic_adapter, enrichment_block.strip()) if item
+            )
         selected_style = _selected_content_first_style(style_lock)
         resolved_text_render_mode = resolve_text_render_mode(
             style_lock,
@@ -2244,8 +2266,13 @@ def compile_page_prompt(
             presentation_decision=presentation,
             semantic_context=semantic_context,
             semantic_composition_contract=semantic_composition_contract,
+            stage02_semantic_adapter=stage02_semantic_adapter,
             text_render_mode=resolved_text_render_mode,
         )
+        if int(selected_style.get("id") or 0) == 9:
+            from scripts.dual_image_overlay.deliverable_prompt import enforce_style09_terminal_lock
+
+            prompt = enforce_style09_terminal_lock(prompt, style_lock)
         assert_deliverable_prompt(prompt)
         if EVIDENCE_ID_RE.search(prompt):
             raise ValueError(f"{page.page_id} ImageGen prompt still contains evidence IDs")
