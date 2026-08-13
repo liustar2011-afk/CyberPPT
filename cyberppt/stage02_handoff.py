@@ -11,6 +11,7 @@ from typing import Any
 
 from cyberppt.artifact_ledger import write_json_atomic
 from cyberppt.script_quality_contract import ScriptPage, parse_script_path
+from cyberppt.onscreen_expression import VALID_EXPRESSION_FORMS, resolve_onscreen_expression
 
 
 HANDOFF_DIR = Path("workbench/stages/02-handoff")
@@ -189,6 +190,21 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
     relationship_features = _stage01_relationship_features(
         business_relationships, page.visual_structure
     )
+    action_text = tuple(
+        " ".join(
+            str(item.get(field) or "")
+            for field in ("subject", "relation", "object")
+        ).strip()
+        for item in relationship_features["actions"]
+        if isinstance(item, dict)
+    )
+    expression = resolve_onscreen_expression(
+        page,
+        page_mission=page_mission,
+        business_relationships=business_relationships,
+        actions=action_text,
+        topic_category=str(outline.get("topic_category") or ""),
+    ).to_dict()
     record: dict[str, Any] = {
         "page_id": normalize_page_id(page.page_id, page.sequence),
         "page_number": page.sequence,
@@ -209,6 +225,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "consumed_content_unit_ids": consumed_content_unit_ids,
         "must_not_include": must_not_include,
         "business_relationships": business_relationships,
+        "onscreen_expression": expression,
         "field_provenance": {
             "content": "script-final.md",
             "page_mission": "script-page-contract-or-outline",
@@ -233,6 +250,7 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
         "top_level_module_titles": list(page.top_level_module_titles),
         "business_relationships": business_relationships,
         "stage01_relationship_features": relationship_features,
+        "onscreen_expression": expression,
         "author_visual_notes": page.visual_structure,
         "author_visual_notes_authority": "advisory_only",
         "source_refs": list(page.source_refs),
@@ -387,6 +405,17 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
         for field in ("title", "page_mission", "core_message", "onscreen_text"):
             if not str(page.get(field) or "").strip():
                 issue("HANDOFF_REQUIRED_FIELD_MISSING", f"{page_id} is missing {field}.")
+        expression = page.get("onscreen_expression")
+        if not isinstance(expression, dict):
+            issue("ONSCREEN_EXPRESSION_MISSING", f"{page_id} has no onscreen expression decision.")
+        else:
+            if str(expression.get("form") or "") not in VALID_EXPRESSION_FORMS:
+                issue("ONSCREEN_EXPRESSION_FORM_INVALID", f"{page_id} has an invalid onscreen expression form.")
+            if str(expression.get("source") or "") not in {"explicit", "relation", "scored", "fallback"}:
+                issue("ONSCREEN_EXPRESSION_SOURCE_INVALID", f"{page_id} has an invalid onscreen expression source.")
+            confidence = expression.get("confidence")
+            if not isinstance(confidence, (int, float)) or not 0 <= float(confidence) <= 1:
+                issue("ONSCREEN_EXPRESSION_CONFIDENCE_INVALID", f"{page_id} has invalid onscreen expression confidence.")
         visual_input = page.get("stage02_visual_input") or {}
         if visual_input.get("body_image_canvas") != BODY_CANVAS:
             issue("BODY_IMAGE_CANVAS_INVALID", f"{page_id} body image canvas must be 2048x1024 (2:1).")

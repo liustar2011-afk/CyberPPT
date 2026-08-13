@@ -5,7 +5,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from cyberppt.stage02_handoff import HANDOFF_JSON, prepare_stage02_handoff
+from cyberppt.stage02_handoff import HANDOFF_JSON, audit_stage02_handoff, prepare_stage02_handoff
 
 
 def _payload(project: Path, *, created_at: str, outline_sha256: str) -> dict[str, object]:
@@ -33,6 +33,13 @@ def _payload(project: Path, *, created_at: str, outline_sha256: str) -> dict[str
                 "core_message": "先验证再扩展。",
                 "onscreen_text": "验证\n扩展",
                 "onscreen_items": ["验证", "扩展"],
+                "onscreen_expression": {
+                    "form": "key_points_3",
+                    "source": "fallback",
+                    "confidence": 0.2,
+                    "evidence": ["fixture"],
+                    "candidates": [["key_points_3", 0.2]],
+                },
                 "stage02_visual_input": {
                     "locked_text_items": [
                         {"text_id": "P01-T01", "text": "验证", "ordinal": 1},
@@ -98,3 +105,14 @@ def test_prepare_rebuilds_when_a_bound_stage01_input_digest_changes() -> None:
         assert report["status"] == "passed"
         assert "reused" not in report
         assert json.loads(handoff_path.read_text(encoding="utf-8"))["created_at"] == candidate["created_at"]
+
+
+def test_handoff_audit_requires_expression_decision() -> None:
+    with TemporaryDirectory() as directory:
+        project = Path(directory)
+        _write_inputs(project)
+        payload = _payload(project, created_at="2026-08-13T00:00:00+00:00", outline_sha256="c" * 64)
+        del payload["pages"][0]["onscreen_expression"]
+        report = audit_stage02_handoff(project, payload)
+    codes = {item["code"] for item in report["blocking_issues"]}
+    assert "ONSCREEN_EXPRESSION_MISSING" in codes
