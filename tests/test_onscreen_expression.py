@@ -7,6 +7,7 @@ from cyberppt.onscreen_expression import (
     VALID_EXPRESSION_FORMS,
     expression_constraints,
     expression_constraints_sha256,
+    expression_requires_action_headings,
     resolve_onscreen_expression,
     validate_expression_form,
 )
@@ -36,6 +37,7 @@ def test_expression_constraints_cover_all_registered_forms() -> None:
     for form in VALID_EXPRESSION_FORMS:
         contract = expression_constraints(form)
         assert contract["form"] == form
+        assert contract["heading_policy"] == EXPRESSION_SPECS[form].heading_policy
         assert contract["node_range"][0] <= contract["node_range"][1]
         assert contract["relation_pattern"]
         assert contract["reading_requirement"]
@@ -49,6 +51,14 @@ def test_operation_loop_contract_requires_feedback_without_layout_recipe() -> No
     assert "feedback_edge_required" in contract["required_features"]
     assert "arrow_style" not in contract
     assert "coordinates" not in contract
+
+
+def test_action_heading_requirement_belongs_to_expression_form() -> None:
+    assert expression_requires_action_headings("flow_3_5")
+    assert expression_requires_action_headings("operation_loop")
+    assert expression_requires_action_headings("actions_3")
+    assert not expression_requires_action_headings("causal_chain")
+    assert not expression_requires_action_headings("pyramid_argument")
 
 
 def test_expression_constraints_are_fresh_and_hash_stable() -> None:

@@ -15,7 +15,10 @@ class ExpressionSpec:
     label: str
     module_range: tuple[int, int]
     heading_grammar: str
-    require_action: bool = False
+    # This is a page-structure rule, not a wording rule for a particular
+    # source section.  It tells script audit which grammatical family the
+    # visible peer headings must use.
+    heading_policy: str = "parallel_proposition"
     require_return_relation: bool = False
     relation_pattern: str = ""
     reading_requirement: str = ""
@@ -54,6 +57,7 @@ class ExpressionAuditFinding:
 EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
     "framework_4": ExpressionSpec(
         "framework_4", "四模块框架", (4, 4), "parallel_noun",
+        "parallel_fact",
         relation_pattern="peer_modules", reading_requirement="parallel",
         balance_requirement="four peers have comparable reading weight",
         required_features=("four_peer_nodes", "peer_balance"),
@@ -61,20 +65,23 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
     ),
     "key_points_3": ExpressionSpec(
         "key_points_3", "三要素结构", (3, 3), "parallel_phrase",
+        "parallel_proposition",
         relation_pattern="peer_key_points", reading_requirement="parallel",
         balance_requirement="three points jointly support one page judgment",
         required_features=("three_peer_points", "shared_judgment"),
         anti_patterns=("invented_causality", "invented_time_order"),
     ),
     "flow_3_5": ExpressionSpec(
-        "flow_3_5", "三至五步链路", (3, 5), "verb_object", require_action=True,
+        "flow_3_5", "三至五步链路", (3, 5), "verb_object",
+        heading_policy="action",
         relation_pattern="directed_sequence", reading_requirement="directed",
         balance_requirement="each action has a legible place in the progression",
         required_features=("ordered_progression",),
         anti_patterns=("unordered_peer_groups",),
     ),
     "operation_loop": ExpressionSpec(
-        "operation_loop", "运营闭环", (3, 5), "verb_object", require_action=True,
+        "operation_loop", "运营闭环", (3, 5), "verb_object",
+        heading_policy="action",
         require_return_relation=True, relation_pattern="directed_cycle", reading_requirement="cyclic",
         balance_requirement="each action participates in a closed operating relation",
         required_features=("ordered_progression", "feedback_edge_required"),
@@ -82,6 +89,7 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
     ),
     "architecture_layers": ExpressionSpec(
         "architecture_layers", "分层架构", (3, 4), "parallel_noun",
+        "layer_component",
         relation_pattern="layered_dependency", reading_requirement="layered",
         balance_requirement="layers state their carrying, interface, or dependency relation",
         required_features=("layer_dependency",),
@@ -89,6 +97,7 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
     ),
     "pyramid_argument": ExpressionSpec(
         "pyramid_argument", "金字塔归纳", (3, 3), "supporting_proposition",
+        "supporting_proposition",
         relation_pattern="supporting_convergence", reading_requirement="convergent",
         balance_requirement="three supports converge on one judgment",
         required_features=("three_supports", "convergence_required"),
@@ -96,6 +105,7 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
     ),
     "comparison_2col": ExpressionSpec(
         "comparison_2col", "双列对照", (2, 2), "paired_dimension",
+        "paired_dimension",
         relation_pattern="paired_correspondence", reading_requirement="paired",
         balance_requirement="both objects use matched comparison dimensions",
         required_features=("two_objects", "matched_dimensions"),
@@ -103,20 +113,23 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
     ),
     "matrix_2x2": ExpressionSpec(
         "matrix_2x2", "四象限分群", (4, 4), "parallel_segment",
+        "classification_segment",
         relation_pattern="two_axis_classification", reading_requirement="two_axis",
         balance_requirement="each group states why it belongs under both dimensions",
         required_features=("two_classification_dimensions", "four_classified_positions"),
         anti_patterns=("unclassified_four_cards",),
     ),
     "causal_chain": ExpressionSpec(
-        "causal_chain", "因果链", (3, 4), "causal_predicate", require_action=True,
+        "causal_chain", "因果链", (3, 4), "causal_predicate",
+        "causal_predicate",
         relation_pattern="directed_cause_to_effect", reading_requirement="directed",
         balance_requirement="each cause is attached to its consequence",
         required_features=("directed_causal_chain",),
         anti_patterns=("unordered_peer_groups", "self_loop"),
     ),
     "actions_3": ExpressionSpec(
-        "actions_3", "三项举措", (3, 3), "verb_object", require_action=True,
+        "actions_3", "三项举措", (3, 3), "verb_object",
+        heading_policy="action",
         relation_pattern="coordinated_actions", reading_requirement="action_oriented",
         balance_requirement="three actions jointly point to one outcome",
         required_features=("three_verb_object_actions", "shared_outcome"),
@@ -124,6 +137,7 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
     ),
 }
 VALID_EXPRESSION_FORMS = frozenset(EXPRESSION_SPECS)
+ACTION_HEADING_POLICY = "action"
 
 _RELATION_FORMS = {
     "composed_of": "framework_4",
@@ -162,6 +176,7 @@ def expression_constraints(form: str) -> dict[str, object]:
     spec = EXPRESSION_SPECS[key]
     return {
         "form": spec.key,
+        "heading_policy": spec.heading_policy,
         "node_range": list(spec.module_range),
         "relation_pattern": spec.relation_pattern,
         "reading_requirement": spec.reading_requirement,
@@ -169,6 +184,18 @@ def expression_constraints(form: str) -> dict[str, object]:
         "required_features": list(spec.required_features),
         "anti_patterns": list(spec.anti_patterns),
     }
+
+
+def expression_requires_action_headings(form: str) -> bool:
+    """Whether this expression form requires action-bearing peer headings.
+
+    The answer comes only from the selected expression form.  A source
+    heading, a page title, or words such as ``必要性`` must never turn an
+    evidence or argument page into an action page.
+    """
+
+    key = validate_expression_form(form)
+    return bool(key and EXPRESSION_SPECS[key].heading_policy == ACTION_HEADING_POLICY)
 
 
 def expression_constraints_sha256(constraints: Mapping[str, object]) -> str:
@@ -290,7 +317,7 @@ def audit_expression_balance(page: Any, decision: ExpressionDecision) -> list[Ex
             modules,
             "warning",
         ))
-    if spec.require_action:
+    if expression_requires_action_headings(decision.form):
         inactive = tuple(item for item in modules if not _ACTION_RE.search(item))
         if inactive:
             findings.append(ExpressionAuditFinding(

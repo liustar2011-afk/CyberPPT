@@ -169,7 +169,7 @@ class NecessityPageContractTests(unittest.TestCase):
             {item.code for item in _prose_issues(page)},
         )
 
-    def test_isolated_noun_modules_do_not_form_a_causal_flow(self) -> None:
+    def test_evidence_argument_page_does_not_inherit_action_grammar_from_necessity_topic(self) -> None:
         page = self._page(
             title="行业数据服务运营基础的建设必要性",
             onscreen="建设背景\n\n协同需求\n\n供给缺口\n\n建设行业级服务运营基础",
@@ -177,6 +177,7 @@ class NecessityPageContractTests(unittest.TestCase):
         page = ScriptPage(
             **{
                 **page.__dict__,
+                "onscreen_expression_form": "framework_4",
                 "top_level_module_titles": (
                     "建设背景",
                     "协同需求",
@@ -189,10 +190,13 @@ class NecessityPageContractTests(unittest.TestCase):
             item.code
             for item in _onscreen_flow_language_issues(
                 page,
-                {"topic_category": "建设必要性"},
+                {
+                    "topic_category": "建设必要性",
+                    "page_mission": "说明行业服务运营基础为何需要建设",
+                },
             )
         }
-        self.assertIn("ONSCREEN_FLOW_ACTION_MISSING", codes)
+        self.assertNotIn("ONSCREEN_FLOW_ACTION_MISSING", codes)
 
     def test_action_led_causal_modules_form_a_visible_flow(self) -> None:
         page = self._page(
@@ -202,6 +206,7 @@ class NecessityPageContractTests(unittest.TestCase):
         page = ScriptPage(
             **{
                 **page.__dict__,
+                "onscreen_expression_form": "flow_3_5",
                 "top_level_module_titles": (
                     "新型电力系统加快建设",
                     "生产经营与智能应用更依赖跨主体协同",
@@ -226,6 +231,7 @@ class NecessityPageContractTests(unittest.TestCase):
         page = ScriptPage(
             **{
                 **page.__dict__,
+                "onscreen_expression_form": "flow_3_5",
                 "top_level_module_titles": (
                     "新型电力系统建设推动业务持续演进",
                     "业务持续演进带动跨主体协同需求增长",
@@ -253,6 +259,7 @@ class NecessityPageContractTests(unittest.TestCase):
         page = ScriptPage(
             **{
                 **page.__dict__,
+                "onscreen_expression_form": "flow_3_5",
                 "top_level_module_titles": (
                     "新型电力系统加快建设",
                     "生产经营与智能应用越来越依赖多个主体之间的数据知识模型协同",
@@ -411,6 +418,22 @@ class FullProseSourceCoverageTests(unittest.TestCase):
             }]},
         )
         self.assertIn("FULL_PROSE_CONTENT_UNIT_GAP", {item.code for item in issues})
+
+    def test_atomic_content_unit_accepts_high_overlap_natural_rewrite(self) -> None:
+        page = self._page("新能源大规模接入改变电源结构、负荷特征和运行方式，并使设备运行需要更多及时数据支撑。")
+        issues = _page_content_unit_coverage_issues(
+            page,
+            {"content_units": [{
+                "unit_id": "p03-u01",
+                "statement": "新能源大规模接入改变电源结构、负荷特征和运行方式，设备运行需要及时完整的多源数据支撑。",
+                "source_refs": ["ST001"],
+                "full_prose_required": True,
+                "coverage_anchors": ["新能源大规模接入", "不应要求逐字复现的来源片段", "另一个来源片段"],
+                "onscreen_required": False,
+                "onscreen_anchors": [],
+            }]},
+        )
+        self.assertNotIn("FULL_PROSE_CONTENT_UNIT_GAP", {item.code for item in issues})
 
     def test_onscreen_content_unit_requires_business_anchors(self) -> None:
         page = self._page("新能源大规模接入改变电源结构、负荷特征和运行方式。")

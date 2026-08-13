@@ -10,7 +10,11 @@ import re
 import unicodedata
 
 from cyberppt.paths import repo_path
-from cyberppt.onscreen_expression import audit_expression_balance, resolve_onscreen_expression
+from cyberppt.onscreen_expression import (
+    audit_expression_balance,
+    expression_requires_action_headings,
+    resolve_onscreen_expression,
+)
 
 # Fallback values, used only if vendor/skills/ppt-script/config/rules.yaml is
 # missing or malformed (e.g. a checkout without the vendor/ skill content, or
@@ -2455,10 +2459,6 @@ ONSCREEN_FLOW_ACTION_TERMS = (
     "反馈", "回流", "支撑", "完善", "梳理", "实施", "运营", "推广",
     "管理", "确认", "授权", "计量", "结算", "验证", "进入", "转入",
 )
-ONSCREEN_CLOSING_CONNECTORS = ("需要", "建设", "建立", "衔接", "形成")
-ONSCREEN_NECESSITY_CONSTRAINT_TERMS = (
-    "难以", "不足", "缺口", "尚未", "制约", "分散", "不能",
-)
 ONSCREEN_FLOW_HEADING_MAX_CHARS = 24
 FORMULAIC_TRANSITION_TERMS = (
     "因此", "由此", "进而", "综上", "综上所述", "基于此", "鉴于此", "所以",
@@ -2469,23 +2469,25 @@ def _onscreen_flow_language_issues(
     page: ScriptPage,
     contract: dict[str, object],
 ) -> list[ScriptQualityIssue]:
-    """Require flow pages to express motion in their visible language.
+    """Require action language only for action-grammar expression forms.
 
-    A visual arrow cannot manufacture a relation that the locked text does not
-    state.  Top-level modules on a causal/process/loop page therefore need
-    predicates or business actions; causal necessity pages additionally need
-    explicit connectors so the headings read as one continuous argument.
+    ``visual_intent_type`` says what the picture needs to prove.  It is not a
+    title grammar.  The title grammar is selected by the page's resolved
+    ``onscreen_expression_form``; this keeps evidence, architecture and
+    argument pages from being mechanically rewritten as process pages.
     """
 
     modules = tuple(item.strip() for item in page.top_level_module_titles if item.strip())
-    visual = page.visual_structure
-    topic = str(contract.get("topic_category") or "")
-    is_flow = len(modules) >= 3 and (
-        "→" in visual
-        or "必要性" in topic
-        or any(term in visual for term in ("论证链", "主链", "闭环", "依次", "顺序关系", "阶段推进"))
+    decision = resolve_onscreen_expression(
+        page,
+        page_mission=str(contract.get("page_mission") or ""),
+        business_relationships=page.content_relations,
+        topic_category=str(contract.get("topic_category") or ""),
     )
-    if page.page_type != "content" or not is_flow:
+    if (
+        page.page_type != "content"
+        or not expression_requires_action_headings(decision.form)
+    ):
         return []
     issues: list[ScriptQualityIssue] = []
     action_modules = tuple(
@@ -2541,23 +2543,6 @@ def _onscreen_flow_language_issues(
                 evidence=tuple(repeated_steps[:4]),
             )
         )
-    if "必要性" in topic:
-        has_constraint = any(
-            term in module
-            for module in modules[:-1]
-            for term in ONSCREEN_NECESSITY_CONSTRAINT_TERMS
-        )
-        closes = any(term in modules[-1] for term in ONSCREEN_CLOSING_CONNECTORS)
-        if not has_constraint or not closes:
-            issues.append(
-                _issue(
-                    "ONSCREEN_NECESSITY_CHAIN_INCOMPLETE",
-                    page,
-                    "The necessity modules do not establish both a concrete constraint and a construction response.",
-                    "State the constraint with a concrete predicate such as 难以/尚未/不足, then close with the required construction action and its business effect; explicit causal connectives are not required.",
-                    evidence=modules,
-                )
-            )
     return issues
 
 
@@ -2908,7 +2893,14 @@ def _page_content_unit_coverage_issues(
             hits = tuple(anchor for anchor in coverage_anchors if anchor in page.full_prose)
             required_hits = max(2, (len(coverage_anchors) * 2 + 2) // 3)
             statement_overlap = _source_statement_overlap(statement, page.full_prose)
-            if len(hits) < required_hits or statement_overlap < 0.12:
+            # Short anchors prove literal retention where the author keeps the
+            # source wording.  A natural professional rewrite can preserve the
+            # full meaning without repeating two arbitrary clauses verbatim;
+            # high statement overlap is an equivalent proof in that case.
+            if (
+                len(hits) < required_hits
+                and statement_overlap < 0.35
+            ) or statement_overlap < 0.12:
                 issues.append(_issue(
                     "FULL_PROSE_CONTENT_UNIT_GAP",
                     page,
