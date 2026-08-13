@@ -91,8 +91,8 @@ class VisualStructureStageTests(unittest.TestCase):
         }
         page = _build_executable_page(source, decision)
         self.assertEqual("TRACE-ONLY-001", page["evidence_units"][0]["source_ref"])
-        self.assertEqual("draft", page["qa"]["status"])
-        self.assertEqual(0, page["qa"]["score"])
+        self.assertEqual("pending_audit", page["qa"]["status"])
+        self.assertIsNone(page["qa"]["score"])
         with tempfile.TemporaryDirectory() as directory:
             spec = Path(directory) / "deck.json"
             prompt = Path(directory) / "prompt.md"
