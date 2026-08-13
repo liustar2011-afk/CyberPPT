@@ -51,6 +51,19 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("different, source-grounded communication-goal options", lite)
         self.assertIn("Never ask the user", lite)
 
+    def test_single_page_skill_requires_business_title_and_complete_detail_copy(self) -> None:
+        page_skill = (
+            ROOT
+            / ".agents"
+            / "skills"
+            / "cyberppt-write-single-page"
+            / "SKILL.md"
+        ).read_text(encoding="utf-8-sig")
+
+        self.assertIn("业务小标题", page_skill)
+        self.assertIn("完整、自然的明细句", page_skill)
+        self.assertIn("标签：短语", page_skill)
+
     def test_native_script_audit_gate_precedes_stage02(self) -> None:
         skill = SKILL.read_text(encoding="utf-8-sig")
         reference = SCRIPT_QUALITY.read_text(encoding="utf-8-sig")

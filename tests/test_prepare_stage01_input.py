@@ -163,6 +163,7 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIsInstance(text, str)
         self.assertIn("完整文字稿", text)
         self.assertIn("必留上屏/仅讲解/仅追溯", text)
+        self.assertIn("业务小标题\n  完整、自然的明细句。", text)
         self.assertIn("【视觉结构，不上屏】", text)
         self.assertIn("present the detailed page content to the user", text)
         self.assertNotIn("cyberppt-page-contract", text)
