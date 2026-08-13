@@ -163,6 +163,15 @@ GENERIC_ONSCREEN_RELATION_RE = re.compile(
     r"(?:业务关系[：:]\s*)?(?:以上|上述)(?:内容|要点|依据)"
     r"(?:共同)?(?:构成|形成|支撑|完成)(?:本节|本页)?(?:完整)?(?:内容|判断|任务)"
 )
+# A mechanically authored page often uses the same editorial buckets and
+# generic label sequence regardless of its business topic.  Individual words
+# such as "判断" or "对象" are legitimate in a specific sentence, so this rule
+# intentionally requires the repeated *combined* pattern rather than banning
+# any one word.
+GENERIC_ONSCREEN_GROUP_LABELS = frozenset(("关键判断", "业务事实", "运营要点"))
+GENERIC_ONSCREEN_DETAIL_LABELS = frozenset(
+    ("判断", "事实", "对象", "条件", "动作", "结果", "机制", "衔接", "要求", "依据", "状态", "安排")
+)
 DEFENSIVE_BOUNDARY_COACHING_RE = re.compile(
     r"(反复区分|避免(?:听众)?.{0,12}(?:误解|听成|当成)|"
     r"不要.{0,12}讲成|不是.{0,8}承诺|不构成.{0,8}承诺|"
@@ -2104,6 +2113,30 @@ def _generic_onscreen_relation_hits(text: str) -> tuple[str, ...]:
     )
 
 
+def _mechanical_onscreen_label_pattern_hits(page: ScriptPage) -> tuple[str, ...]:
+    """Detect reusable authoring labels standing in for business copy.
+
+    The error is raised only for the known three-group template plus four or
+    more generic detail labels.  This keeps ordinary use of one short
+    functional label valid while blocking a page assembled from a label list.
+    """
+
+    group_hits = tuple(
+        title
+        for title in page.top_level_module_titles
+        if title in GENERIC_ONSCREEN_GROUP_LABELS
+    )
+    detail_hits: list[str] = []
+    for raw in page.onscreen_text.splitlines():
+        line = strip_authoring_group_marker(raw).strip()
+        match = re.match(r"(?:[-*+•]\s*)?([^：:]{1,12})[：:]", line)
+        if match and match.group(1).strip() in GENERIC_ONSCREEN_DETAIL_LABELS:
+            detail_hits.append(match.group(1).strip())
+    if len(group_hits) >= 2 and len(set(detail_hits)) >= 4:
+        return (*group_hits, *tuple(dict.fromkeys(detail_hits)))
+    return ()
+
+
 def _boundary_aside_hits(text: str) -> tuple[str, ...]:
     hits = [pattern for pattern in _BOUNDARY_ASIDE_PATTERNS if pattern in text]
     return tuple(hits)
@@ -2714,6 +2747,7 @@ def script_retry_directive(
             "ONSCREEN_DETAIL_PHRASE_TOO_LONG",
             "ONSCREEN_LAYOUT_META_LEAK",
             "ONSCREEN_RELATION_ISOMORPHISM",
+            "ONSCREEN_MECHANICAL_LABEL_TEMPLATE",
         }
         for code in codes
     ):
@@ -3821,6 +3855,17 @@ def _presentation_issues(
                         for line, chars in detail_phrase_overages[:8]
                     ),
                     severity=detail_severity,
+                )
+            )
+        mechanical_label_hits = _mechanical_onscreen_label_pattern_hits(page)
+        if mechanical_label_hits:
+            issues.append(
+                _issue(
+                    "ONSCREEN_MECHANICAL_LABEL_TEMPLATE",
+                    page,
+                    "On-screen copy uses generic authoring labels instead of business-specific groups and detail labels.",
+                    "Replace the reusable labels with source-specific business objects, actions, conditions, and results. Keep only labels that tell the reader what this page is actually about.",
+                    evidence=mechanical_label_hits,
                 )
             )
         issues.extend(_onscreen_parallel_structure_issues(page))

@@ -12,6 +12,7 @@ from cyberppt.script_quality_contract import (
     _compound_module_heading_hits,
     _module_heading_colon_hits,
     _generic_onscreen_relation_hits,
+    _mechanical_onscreen_label_pattern_hits,
     _onscreen_detail_phrase_overages,
     _onscreen_layout_meta_hits,
     _onscreen_parent_child_role_mismatches,
@@ -635,6 +636,42 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
                 "国家部署、行业需求和资源问题属于三个并列维度，共同构成建设背景。"
             ),
         )
+
+    def test_flags_reused_generic_onscreen_label_template(self) -> None:
+        page = ScriptPage(
+            page_id="p09", sequence=9, heading="", page_type="content",
+            title="", main_message="", full_prose="", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=(),
+            boundary_source_refs=(), boundary="", visual_structure="",
+            onscreen_text=(
+                "关键判断\n  判断：行业数据服务形成可订购目录。\n  事实：客户需求进入统一受理。\n"
+                "业务事实\n  对象：数据产品和场景服务。\n  条件：权利质量通过核验。\n"
+                "运营要点\n  动作：订单履行形成交付记录。\n  结果：客户完成验收与续约。"
+            ),
+            module_titles=("关键判断", "业务事实", "运营要点"),
+        )
+        self.assertEqual(
+            ("关键判断", "业务事实", "运营要点", "判断", "事实", "对象", "条件", "动作", "结果"),
+            _mechanical_onscreen_label_pattern_hits(page),
+        )
+        self.assertIn(
+            "ONSCREEN_MECHANICAL_LABEL_TEMPLATE",
+            [issue.code for issue in _presentation_issues(page)],
+        )
+
+    def test_allows_business_specific_onscreen_groups(self) -> None:
+        page = ScriptPage(
+            page_id="p09", sequence=9, heading="", page_type="content",
+            title="", main_message="", full_prose="", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=(),
+            boundary_source_refs=(), boundary="", visual_structure="",
+            onscreen_text=(
+                "服务目录\n  查询服务：指标、接口和数据集。\n  知识服务：政策标准和专业文档。\n"
+                "履约闭环\n  订单履行：授权、交付、验收和结算。"
+            ),
+            module_titles=("服务目录", "履约闭环"),
+        )
+        self.assertEqual((), _mechanical_onscreen_label_pattern_hits(page))
 
     def test_flags_layout_metadata_but_keeps_business_count_labels(self) -> None:
         hits = _onscreen_layout_meta_hits(
