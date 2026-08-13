@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+import hashlib
+import inspect
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from cyberppt.commands.prepare_stage01_input import (
+    PAGE_SCRIPT_AUTHORING_RULES_PATH,
     prepare_outline_input,
     prepare_page_script_input,
 )
@@ -86,6 +92,68 @@ class PrepareStage01InputTests(unittest.TestCase):
     def test_prepare_page_script_input_rejects_unknown_page(self) -> None:
         with self.assertRaisesRegex(ValueError, "content page not found"):
             prepare_page_script_input(self.project, "p99")
+
+    def test_prepare_page_script_input_reads_static_rules_from_resource(self) -> None:
+        resource = self.project / "page-script-rules.md"
+        resource.write_text(
+            "# Resource marker\n\nunique resource guidance\n", encoding="utf-8"
+        )
+
+        with patch(
+            "cyberppt.commands.prepare_stage01_input.PAGE_SCRIPT_AUTHORING_RULES_PATH",
+            resource,
+        ):
+            text = prepare_page_script_input(self.project, "p04")
+
+        self.assertTrue(text.startswith("# Resource marker\n\nunique resource guidance\n"))
+        self.assertIn("## p04 建设基础", text)
+
+    def test_prepare_page_script_input_reports_missing_rules_resource(self) -> None:
+        missing = self.project / "missing-page-script-rules.md"
+
+        with patch(
+            "cyberppt.commands.prepare_stage01_input.PAGE_SCRIPT_AUTHORING_RULES_PATH",
+            missing,
+        ):
+            with self.assertRaisesRegex(FileNotFoundError, str(missing)):
+                prepare_page_script_input(self.project, "p04")
+
+    def test_prepare_page_script_input_has_no_embedded_static_rule_copy(self) -> None:
+        from cyberppt.commands import prepare_stage01_input
+
+        source = inspect.getsource(prepare_stage01_input.prepare_page_script_input)
+        self.assertNotIn("Never strengthen the core_message", source)
+        self.assertNotIn("Write the completed pages directly", source)
+
+    def test_prepare_page_script_input_matches_pre_resource_output_baseline(self) -> None:
+        text = prepare_page_script_input(self.project, "p04")
+
+        self.assertEqual(len(text), 13826)
+        self.assertEqual(
+            hashlib.sha256(text.encode("utf-8")).hexdigest(),
+            "9fcd8334762bc4b9788199384902fc428590b56a743805a349818d721deef5fd",
+        )
+
+    def test_prepare_page_script_input_cli_emits_resource_backed_output(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "cyberppt",
+                "prepare-page-script-input",
+                str(self.project),
+                "--page",
+                "p04",
+            ],
+            cwd=Path(__file__).resolve().parents[1],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(result.stdout.startswith("# Page script authoring input\n"))
+        self.assertIn("## p04 建设基础", result.stdout)
 
     def test_lightweight_outline_input_embeds_director_reasoning_without_writing_control_file(self) -> None:
         semantic = self.project / "workbench/stages/00-semantic-understanding"
