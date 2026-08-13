@@ -151,6 +151,7 @@ class PrepareStage01InputTests(unittest.TestCase):
         self.assertIn("形成运营合作", text)
         self.assertIn("P0 is page-forming", text)
         self.assertIn("Present the completed chapter/page Outline to the user", text)
+        self.assertIn("detailed page content to the user", text)
         self.assertFalse(outline.exists())
         self.assertFalse(
             (self.project / "workbench/stages/01-analysis/outline-authoring-input.md").exists()

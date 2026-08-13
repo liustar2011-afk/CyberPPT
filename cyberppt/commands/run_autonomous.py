@@ -297,6 +297,9 @@ def run_autonomous(
     Content authoring remains an explicit input to the runner: the command
     deliberately refuses candidate Outline, absent page authoring, unexecuted
     visual decisions, and missing ImageGen proof instead of fabricating them.
+    An autonomous contract authorizes deterministic verification; it never
+    waives showing the communication goal, author-edited Outline, and detailed
+    pages to the user in the authoring conversation.
     """
 
     contract = load_contract(contract_path)

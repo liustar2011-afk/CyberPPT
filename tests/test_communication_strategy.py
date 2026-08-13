@@ -94,6 +94,8 @@ class LightweightCommunicationStrategyTests(unittest.TestCase):
         self.assertIn("必须提出 2-3 个", instructions)
         self.assertIn("明确标出推荐项", instructions)
         self.assertIn("不得直接向用户抛出", instructions)
+        self.assertIn("完成作者编辑后的章节与页面提纲", instructions)
+        self.assertIn("逐页详细内容", instructions)
         self.assertFalse((self.project / COMMUNICATION_ARTIFACT).exists())
 
     def test_lightweight_input_requires_registered_source_units(self) -> None:

@@ -125,6 +125,7 @@ def prepare_outline_input(project: Path, *, communication_goal: str = "") -> str
         "Apply the named route guidance above: when the source has an explicit argument sequence, include `source_logic_focused` among the candidates and recommend it for introduction- or understanding-led communication unless the selected goal explicitly requires decision/action reordering.",
         "The final Outline is a selective argument, not a directory of source sections. Preserve every source fact in traceability where needed, but give page-forming weight only to the chosen route and the semantic model's P0/core propositions.",
         "Present the completed chapter/page Outline to the user for review before page-detail authoring.",
+        "After page-detail authoring, present the detailed page content to the user: readable full prose, on-screen text, and the speaker explanation logic. Do this before submitting a final script to any automated gate.",
         "",
     ]
     semantic_path = project / SEMANTIC_ARTIFACT
