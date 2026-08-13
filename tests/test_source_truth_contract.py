@@ -9,6 +9,7 @@ from cyberppt.source_truth_contract import (
     audit_source_receipts,
     audit_source_truth,
     source_truth_atomicity_warnings,
+    source_truth_diagnostic_warnings,
     collect_source_receipts,
     load_source_truth,
     source_truth_retry_directive,
@@ -296,6 +297,81 @@ class SourceTruthContractTests(unittest.TestCase):
         self.assertEqual(
             ["SOURCE_RECORD_ATOMICITY_WARNING"],
             [item.code for item in source_truth_atomicity_warnings(payload)],
+        )
+
+    def test_diagnostics_flag_related_priority_inversion_without_blocking_audit(self) -> None:
+        payload = valid_payload()
+        driver = payload["records"][0]
+        driver.update({
+            "priority": "P2",
+            "argument_duty": "driver",
+            "semantic_node_ids": ["N001"],
+            "source_unit_refs": ["SU-001"],
+        })
+        boundary = dict(driver)
+        boundary.update({
+            "id": "S002",
+            "priority": "P0",
+            "argument_duty": "boundary",
+            "semantic_node_ids": ["N001"],
+            "source_unit_refs": ["SU-002"],
+        })
+        payload["records"].append(boundary)
+
+        warnings = source_truth_diagnostic_warnings(payload)
+
+        self.assertIn("SOURCE_PRIORITY_NARRATIVE_WARNING", {item.code for item in warnings})
+        self.assertIn(("S001", "S002"), {item.source_ids for item in warnings})
+        self.assertNotIn("SOURCE_PRIORITY_NARRATIVE_WARNING", {item.code for item in audit_source_truth(payload)})
+
+    def test_diagnostics_skip_priority_inversion_without_shared_references(self) -> None:
+        payload = valid_payload()
+        driver = payload["records"][0]
+        driver.update({
+            "priority": "P2",
+            "argument_duty": "driver",
+            "semantic_node_ids": ["N001"],
+            "source_unit_refs": ["SU-001"],
+        })
+        boundary = dict(driver)
+        boundary.update({
+            "id": "S002",
+            "priority": "P0",
+            "argument_duty": "boundary",
+            "semantic_node_ids": ["N002"],
+            "source_unit_refs": ["SU-002"],
+        })
+        payload["records"].append(boundary)
+
+        warnings = source_truth_diagnostic_warnings(payload)
+
+        self.assertNotIn(
+            "SOURCE_PRIORITY_NARRATIVE_WARNING",
+            {item.code for item in warnings},
+        )
+
+    def test_diagnostics_skip_when_structural_priority_is_not_lower(self) -> None:
+        payload = valid_payload()
+        driver = payload["records"][0]
+        driver.update({
+            "priority": "P0",
+            "argument_duty": "driver",
+            "semantic_node_ids": ["N001"],
+            "source_unit_refs": ["SU-001"],
+        })
+        boundary = dict(driver)
+        boundary.update({
+            "id": "S002",
+            "priority": "P2",
+            "argument_duty": "boundary",
+        })
+        payload["records"].append(boundary)
+
+        warnings = source_truth_diagnostic_warnings(payload)
+
+        self.assertNotIn(
+            "SOURCE_PRIORITY_NARRATIVE_WARNING",
+            {item.code for item in warnings},
         )
 
     def test_retry_changes_direction_for_repeated_strategy(self) -> None:

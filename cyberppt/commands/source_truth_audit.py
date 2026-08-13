@@ -7,7 +7,7 @@ from pathlib import Path
 from cyberppt.source_truth_contract import (
     SourceTruthIssue,
     audit_source_truth,
-    source_truth_atomicity_warnings,
+    source_truth_diagnostic_warnings,
     load_source_truth,
     source_truth_retry_directive,
 )
@@ -115,7 +115,20 @@ def run_source_truth_audit(
             for item in semantic_cross_audit.get("issues", [])
             if isinstance(item, dict)
         )
-    warnings = source_truth_atomicity_warnings(payload)
+    warnings = source_truth_diagnostic_warnings(payload)
+    cross_issue_items = (
+        semantic_cross_audit.get("issues", [])
+        if isinstance(semantic_cross_audit, dict)
+        else []
+    )
+    uncovered_source_units = {
+        str(source_id)
+        for item in cross_issue_items
+        if isinstance(item, dict)
+        and item.get("code") == "SOURCE_TRUTH_PROTECTED_EVIDENCE_GAP"
+        for source_id in item.get("source_ids", [])
+        if str(source_id).startswith("SU-")
+    }
     directive = source_truth_retry_directive(issues, "")
     report: dict[str, object] = {
         "schema": "cyberppt.source_truth_audit.v1",
@@ -123,6 +136,23 @@ def run_source_truth_audit(
         "coverage": _coverage_summary(payload),
         "issues": [issue.to_dict() for issue in issues],
         "warnings": [warning.to_dict() for warning in warnings],
+        "warning_count": len(warnings),
+        "repair_summary": {
+            "uncovered_source_units": len(uncovered_source_units),
+            "unresolved_core_claims": sum(
+                item.get("code") == "SEMANTIC_CORE_CLAIM_UNRESOLVED"
+                for item in cross_issue_items
+                if isinstance(item, dict)
+            ),
+            "atomic_split_suggestions": sum(
+                warning.retry_strategy == "split_semantic_units"
+                for warning in warnings
+            ),
+            "priority_review_suggestions": sum(
+                warning.code == "SOURCE_PRIORITY_NARRATIVE_WARNING"
+                for warning in warnings
+            ),
+        },
         "retry_directive": directive,
         "semantic_argument_model": str(project / SEMANTIC_ARGUMENT_MODEL) if argument_model is not None else None,
         "semantic_evidence_cross_audit": semantic_cross_audit,

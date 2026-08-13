@@ -525,7 +525,12 @@ def source_truth_atomicity_warnings(
     warnings: list[SourceTruthIssue] = []
     for record in _items(payload, "records"):
         statement = str(record.get("statement") or record.get("quote") or "").strip()
-        semantic_units = _refs(record, "semantic_units")
+        raw_units = record.get("semantic_units")
+        semantic_units = (
+            [item for item in raw_units if isinstance(item, dict)]
+            if isinstance(raw_units, list)
+            else []
+        )
         clause_count = sum(statement.count(mark) for mark in ("；", ";", "。"))
         if len(statement) >= 100 and clause_count >= 3 and len(semantic_units) <= 1:
             source_id = str(record.get("id") or "")
@@ -539,6 +544,59 @@ def source_truth_atomicity_warnings(
                 )
             )
     return warnings
+
+
+def source_truth_diagnostic_warnings(
+    payload: dict[str, object],
+) -> list[SourceTruthIssue]:
+    """Return advisory structural diagnostics without changing audit validity."""
+
+    warnings = source_truth_atomicity_warnings(payload)
+    records = _items(payload, "records")
+    rank = {"P0": 0, "P1": 1, "P2": 2}
+    structural = {"premise", "driver", "consequence", "gap"}
+    secondary = {"boundary", "metadata", "detail"}
+    for primary in records:
+        primary_duty = str(primary.get("argument_duty") or "")
+        primary_rank = rank.get(str(primary.get("priority") or ""))
+        if primary_duty not in structural or primary_rank is None:
+            continue
+        primary_refs = set(_refs(primary, "semantic_node_ids")) | set(
+            _refs(primary, "source_unit_refs")
+        )
+        if not primary_refs:
+            continue
+        for secondary_record in records:
+            if secondary_record is primary:
+                continue
+            secondary_duty = str(secondary_record.get("argument_duty") or "")
+            secondary_rank = rank.get(str(secondary_record.get("priority") or ""))
+            secondary_refs = set(_refs(secondary_record, "semantic_node_ids")) | set(
+                _refs(secondary_record, "source_unit_refs")
+            )
+            if (
+                secondary_duty in secondary
+                and secondary_rank is not None
+                and primary_rank > secondary_rank
+                and primary_refs & secondary_refs
+            ):
+                ids = tuple(
+                    value
+                    for value in (
+                        str(primary.get("id") or ""),
+                        str(secondary_record.get("id") or ""),
+                    )
+                    if value
+                )
+                warnings.append(
+                    SourceTruthIssue(
+                        "SOURCE_PRIORITY_NARRATIVE_WARNING",
+                        "A related structural record has lower priority than boundary, metadata, or detail evidence.",
+                        ids,
+                        "rebalance_source_priority",
+                    )
+                )
+    return sorted(warnings, key=lambda item: (item.code, item.source_ids))
 
 
 def source_truth_retry_directive(
