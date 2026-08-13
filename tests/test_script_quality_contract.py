@@ -3466,6 +3466,23 @@ class VisualStructureJudgmentAccuracyTests(unittest.TestCase):
         codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
         self.assertIn("VISUAL_STRUCTURE_MECHANISM_AS_LANE", codes)
 
+def test_parser_reads_onscreen_expression_form() -> None:
+    page = parse_script_markdown(
+        """## 第1页：测试
+
+- 页面类型：内容页
+- 上屏表达结构：framework_4
+
+### 上屏文字
+
+权属确认
+授权管理
+流转审计
+责任闭环
+"""
+    ).pages[0]
+    assert page.onscreen_expression_form == "framework_4"
+
 
 if __name__ == "__main__":
     unittest.main()

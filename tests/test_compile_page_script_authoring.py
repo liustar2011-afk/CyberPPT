@@ -163,6 +163,16 @@ class CompilePageScriptAuthoringTests(unittest.TestCase):
                 self.project, output_dir=self.scripts / "drafts/run-03"
             )
 
+    def test_emits_optional_onscreen_expression_form(self) -> None:
+        self.authoring["pages"]["p03"]["onscreen_expression_form"] = "framework_4"
+        self.authoring_path.write_text(
+            json.dumps(self.authoring, ensure_ascii=False), encoding="utf-8"
+        )
+        output = self.scripts / "drafts/run-expression-form"
+        compile_page_script_authoring(self.project, output_dir=output)
+        chapter = (output / "ch01.md").read_text(encoding="utf-8")
+        self.assertIn("- 上屏表达结构：framework_4", chapter)
+
 
 if __name__ == "__main__":
     unittest.main()

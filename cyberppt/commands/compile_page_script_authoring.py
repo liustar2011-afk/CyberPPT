@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.onscreen_text_rules import strip_terminal_punctuation
+from cyberppt.onscreen_expression import validate_expression_form
 
 
 AUTHORING_SCHEMA = "cyberppt.page_script_authoring.v1"
@@ -106,6 +107,11 @@ def _validate_authoring(
         for field in ("prose", "onscreen", "visual", "notes"):
             if not str(authored.get(field) or "").strip():
                 raise ValueError(f"{page_id} authoring field is empty: {field}")
+        if "onscreen_expression_form" in authored:
+            try:
+                validate_expression_form(str(authored.get("onscreen_expression_form") or ""))
+            except ValueError as exc:
+                raise ValueError(f"{page_id} {exc}") from exc
         selection = authored.get("selection")
         if (
             not isinstance(selection, list)
@@ -216,6 +222,9 @@ def _content_page(page: dict[str, Any], authored: dict[str, Any]) -> str:
     ]
     if subtitle:
         lines.append(f"- 副标题：{subtitle}")
+    expression_form = str(authored.get("onscreen_expression_form") or "").strip()
+    if expression_form:
+        lines.append(f"- 上屏表达结构：{expression_form}")
     lines += [
         f"- 主判断：{core_message}",
         f"- 证据：{evidence}",
