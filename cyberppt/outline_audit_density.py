@@ -57,6 +57,11 @@ def _content_page_density_issues(
     was thinner than the page-per-subsection default assumed, and the pages
     should be merged rather than force-padded — merging is the source-
     faithful fix; inventing content to fill a thin page is not.
+
+    An author may explicitly retain a sparse original heading as its own
+    page when that heading has a distinct decision role in the source's
+    chapter structure.  That is an editorial exception, not a default: it
+    requires both the preservation flag and its concrete rationale.
     """
 
     if not isinstance(source_truth, dict):
@@ -116,6 +121,14 @@ def _content_page_density_issues(
         chapter = page.get("chapter_id")
         if chapter != prev_chapter:
             _flush()
+        preserve_heading = (
+            page.get("source_heading_preserved") is True
+            and bool(str(page.get("source_heading_preservation_rationale") or "").strip())
+        )
+        if preserve_heading:
+            _flush()
+            prev_chapter = chapter
+            continue
         if volume > 0 and volume < threshold:
             run.append((page, volume))
         else:

@@ -133,6 +133,8 @@ class SourceDocumentMapTests(unittest.TestCase):
         image = next(item for item in units if item["kind"] == "image")
         self.assertTrue(image["metadata"]["requires_visual_interpretation"])
         self.assertEqual("word/media/image1.png", image["metadata"]["media_path"])
+        paragraph = next(item for item in units if item["kind"] == "paragraph")
+        self.assertEqual(1, paragraph["locator"]["section_paragraph"])
 
     def test_docx_without_heading_styles_is_flagged_instead_of_passing_silently(self) -> None:
         _write_headingless_docx(self.project / "source" / "material.docx")

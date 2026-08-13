@@ -173,6 +173,35 @@ class CompilePageScriptAuthoringTests(unittest.TestCase):
         chapter = (output / "ch01.md").read_text(encoding="utf-8")
         self.assertIn("- 上屏表达结构：framework_4", chapter)
 
+    def test_emits_default_prose_paragraph_map_for_distinct_source_paragraphs(self) -> None:
+        content = self.outline["pages"][2]
+        content["source_refs"] = ["ST001", "ST002", "ST003", "ST004"]
+        content["content_units"] = [
+            {"unit_id": f"CU-p03-0{index}", "statement": f"来源段落{index}", "source_refs": [f"ST00{index}"], "role": "primary"}
+            for index in range(1, 5)
+        ]
+        self.authoring["pages"]["p03"]["consumes"] = [
+            item["unit_id"] for item in content["content_units"]
+        ]
+        self.outline_path.write_text(json.dumps(self.outline, ensure_ascii=False), encoding="utf-8")
+        self.authoring["outline_sha256"] = _sha256(self.outline_path)
+        self.authoring_path.write_text(json.dumps(self.authoring, ensure_ascii=False), encoding="utf-8")
+        (self.stage / "source-truth.json").write_text(
+            json.dumps(
+                {"records": [
+                    {"id": f"ST00{index}", "source_unit_refs": [f"SU-{index}"], "source_locator": {"paragraph": index}}
+                    for index in range(1, 5)
+                ]},
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        output = self.scripts / "drafts/run-paragraph-map"
+        compile_page_script_authoring(self.project, output_dir=output)
+        chapter = (output / "ch01.md").read_text(encoding="utf-8")
+        self.assertIn("### 完整文字稿段落映射（不上屏）", chapter)
+        self.assertIn("- ST001\n- ST002\n- ST003\n- ST004", chapter)
+
 
 if __name__ == "__main__":
     unittest.main()

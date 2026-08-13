@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from cyberppt.argument_flow_contract import (
@@ -12,6 +13,7 @@ from cyberppt.outline_contract import audit_outline, load_outline, retry_directi
 from cyberppt.semantic_understanding import SEMANTIC_ARGUMENT_MODEL
 from cyberppt.source_argument_model import audit_outline_consumption, load_model
 from cyberppt.source_truth_contract import load_source_truth
+from cyberppt.commands.outline_review import render_outline_audit_report, render_outline_review
 
 
 def run_outline_audit(
@@ -22,7 +24,8 @@ def run_outline_audit(
     project = project.expanduser().resolve()
     if not project.exists():
         raise FileNotFoundError(f"project does not exist: {project}")
-    payload = load_outline(input_path.expanduser().resolve(), lightweight=True)
+    input_path = input_path.expanduser().resolve()
+    payload = load_outline(input_path, lightweight=True)
     resolved_source_truth = (
         source_truth_path.expanduser().resolve()
         if source_truth_path is not None
@@ -48,7 +51,7 @@ def run_outline_audit(
     )
     issues = audit_outline(payload, source_truth, argument_model)
     argument_model_issues = (
-        audit_outline_consumption(payload, argument_model)
+        audit_outline_consumption(payload, argument_model, source_truth)
         if payload.get("semantic_argument_model_mode") == "required" or argument_model is not None
         else []
     )
@@ -91,4 +94,9 @@ def run_outline_audit(
         ),
         "mode": "lightweight",
     }
+    output = project / "workbench" / "stages" / "01-analysis" / "outline-audit.json"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    render_outline_audit_report(project, report)
+    render_outline_review(project, input_path, output)
     return (0 if not issues else 4), report

@@ -31,6 +31,7 @@ from cyberppt.script_quality_contract import (
     _prose_issues,
     _source_consumption_issues,
     _full_prose_source_coverage_issues,
+    _full_prose_paragraph_boundary_issues,
     _polarity_dropped_terms,
     _page_content_unit_coverage_issues,
     _visual_structure_judgment_issues,
@@ -434,6 +435,29 @@ class FullProseSourceCoverageTests(unittest.TestCase):
             }]},
         )
         self.assertNotIn("FULL_PROSE_CONTENT_UNIT_GAP", {item.code for item in issues})
+
+    def test_source_paragraph_boundaries_require_a_map_and_preserve_default_groups(self) -> None:
+        records = {
+            f"ST00{index}": {
+                "id": f"ST00{index}",
+                "statement": f"来源段落{index}的独立事实。",
+                "source_unit_refs": [f"SU-{index}"],
+            }
+            for index in range(1, 5)
+        }
+        contract = {"source_refs": list(records), "detail_refs": [], "boundary_refs": []}
+        page = self._page("来源段落1的独立事实。\n\n来源段落2的独立事实。\n\n来源段落3和4的独立事实。")
+        missing = _full_prose_paragraph_boundary_issues(page, contract, records)
+        self.assertIn("FULL_PROSE_PARAGRAPH_MAP_MISSING", {item.code for item in missing})
+        page = replace(
+            page,
+            full_prose=(
+                "来源段落1的独立事实。\n\n来源段落2的独立事实。\n\n"
+                "来源段落3的独立事实。\n\n来源段落4的独立事实。"
+            ),
+            prose_paragraph_map=tuple((((f"ST00{index}",), "") for index in range(1, 5))),
+        )
+        self.assertEqual([], _full_prose_paragraph_boundary_issues(page, contract, records))
 
     def test_onscreen_content_unit_requires_business_anchors(self) -> None:
         page = self._page("新能源大规模接入改变电源结构、负荷特征和运行方式。")

@@ -201,7 +201,34 @@ def _onscreen_with_explicit_hierarchy(text: str) -> str:
     return "\n\n".join(rendered_groups)
 
 
-def _content_page(page: dict[str, Any], authored: dict[str, Any]) -> str:
+def _default_prose_paragraph_map(
+    page: dict[str, Any], records_by_id: dict[str, dict[str, Any]],
+) -> list[str]:
+    """Emit one provenance line per source paragraph when that boundary matters."""
+
+    detail_refs = {str(value) for value in page.get("detail_refs") or []}
+    groups: dict[tuple[str, ...], list[str]] = {}
+    order: dict[tuple[str, ...], int] = {}
+    for ref in (str(value) for value in page.get("source_refs") or []):
+        if ref in detail_refs:
+            continue
+        record = records_by_id.get(ref)
+        if not record:
+            continue
+        unit_refs = tuple(str(value) for value in record.get("source_unit_refs") or [] if str(value))
+        if not unit_refs:
+            continue
+        groups.setdefault(unit_refs, []).append(ref)
+        locator = record.get("source_locator") if isinstance(record.get("source_locator"), dict) else {}
+        order[unit_refs] = min(order.get(unit_refs, 10**9), int(locator.get("paragraph") or 10**9))
+    if len(groups) < 3:
+        return []
+    return [f"- {'、'.join(groups[key])}" for key in sorted(groups, key=lambda key: order[key])]
+
+
+def _content_page(
+    page: dict[str, Any], authored: dict[str, Any], records_by_id: dict[str, dict[str, Any]],
+) -> str:
     page_id = str(page["page_id"])
     number = _page_number(page_id)
     title = str(page.get("title") or "").strip()
@@ -211,6 +238,12 @@ def _content_page(page: dict[str, Any], authored: dict[str, Any]) -> str:
     detail_refs = {str(value) for value in page.get("detail_refs") or []}
     primary_refs = [value for value in source_refs if value not in detail_refs]
     selection = [str(value).strip() for value in authored["selection"]]
+    authored_map = authored.get("prose_paragraph_map")
+    paragraph_map = (
+        [str(value).strip() for value in authored_map if str(value).strip()]
+        if isinstance(authored_map, list)
+        else _default_prose_paragraph_map(page, records_by_id)
+    )
     evidence = "、".join(source_refs)
     primary = "、".join(primary_refs)
     details = "、".join(sorted(detail_refs))
@@ -233,6 +266,10 @@ def _content_page(page: dict[str, Any], authored: dict[str, Any]) -> str:
         "### 完整文字稿",
         "",
         str(authored["prose"]).strip(),
+    ]
+    if paragraph_map:
+        lines += ["", "### 完整文字稿段落映射（不上屏）", "", *paragraph_map]
+    lines += [
         "",
         "### 文字稿取舍说明",
         "",
@@ -293,6 +330,13 @@ def compile_page_script_authoring(
         raise ValueError(f"output directory must be new or empty: {resolved_output}")
 
     outline = _load_json(outline_path)
+    source_truth_path = project / "workbench/stages/01-analysis/source-truth.json"
+    source_truth = _load_json(source_truth_path) if source_truth_path.is_file() else {}
+    records_by_id = {
+        str(record.get("id") or ""): record
+        for record in source_truth.get("records") or []
+        if isinstance(record, dict) and str(record.get("id") or "")
+    }
     authoring = _load_json(resolved_authoring)
     content_contracts = _validate_authoring(
         project, outline_path, outline, authoring
@@ -324,7 +368,7 @@ def compile_page_script_authoring(
         for page in pages:
             page_id = str(page["page_id"])
             if page_id in content_contracts:
-                blocks.append(_content_page(page, authored_pages[page_id]))
+                blocks.append(_content_page(page, authored_pages[page_id], records_by_id))
             else:
                 blocks.append(_template_page(page))
         path = resolved_output / f"{group}.md"

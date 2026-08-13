@@ -17,6 +17,7 @@ from cyberppt.commands.final_script_pages import run_final_script_pages
 from cyberppt.commands.init_project import init_project
 from cyberppt.image_enhancer import enhance_image
 from cyberppt.commands.outline_audit import run_outline_audit
+from cyberppt.commands.outline_review import render_outline_review
 from cyberppt.commands.prepare_imagegen_send import prepare_imagegen_send
 from cyberppt.commands.prepare_stage01_input import (
     prepare_outline_input,
@@ -46,7 +47,7 @@ from cyberppt.stage02_handoff import (
     audit_stage02_handoff,
     prepare_stage02_handoff,
 )
-from cyberppt.stage01_compiler import compile_outline_draft, compile_source_truth
+from cyberppt.stage01_compiler import compile_outline_draft, compile_source_truth, refresh_outline_content_units
 
 
 def _doctor() -> int:
@@ -90,6 +91,21 @@ def _outline_audit_command(args: argparse.Namespace) -> int:
     return code
 
 
+def _render_outline_review_command(args: argparse.Namespace) -> int:
+    try:
+        output = render_outline_review(
+            Path(args.project),
+            Path(args.input),
+            Path(args.audit),
+            output=Path(args.output) if args.output else None,
+        )
+    except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(str(output))
+    return 0
+
+
 def _source_truth_audit_command(args: argparse.Namespace) -> int:
     try:
         code, report = run_source_truth_audit(
@@ -125,6 +141,21 @@ def _compile_outline_draft_command(args: argparse.Namespace) -> int:
             source_truth=Path(args.source_truth) if args.source_truth else None,
         )
     except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(str(output))
+    return 0
+
+
+def _refresh_outline_content_units_command(args: argparse.Namespace) -> int:
+    try:
+        output = refresh_outline_content_units(
+            Path(args.project),
+            outline_path=Path(args.input) if args.input else None,
+            source_truth_path=Path(args.source_truth) if args.source_truth else None,
+            page_id=args.page_id,
+        )
+    except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
     print(str(output))
@@ -569,6 +600,26 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional Source Truth JSON; defaults to the project Stage 01 artifact.",
     )
     outline_audit.set_defaults(func=_outline_audit_command)
+
+    outline_review = subparsers.add_parser(
+        "render-outline-review",
+        help="Render the authoritative Outline and audit report as a Markdown human-review document.",
+    )
+    outline_review.add_argument("project", help="CyberPPT project directory.")
+    outline_review.add_argument("--input", required=True, help="Outline JSON file.")
+    outline_review.add_argument("--audit", required=True, help="Outline audit JSON report.")
+    outline_review.add_argument("--output", help="Markdown output path; defaults to the project Stage 01 review path.")
+    outline_review.set_defaults(func=_render_outline_review_command)
+
+    refresh_units = subparsers.add_parser(
+        "refresh-outline-content-units",
+        help="Refresh only derived content units while preserving authored Outline decisions.",
+    )
+    refresh_units.add_argument("project", help="CyberPPT project directory.")
+    refresh_units.add_argument("--input", help="Outline JSON; defaults to the project authoritative Outline.")
+    refresh_units.add_argument("--source-truth", help="Source Truth JSON; defaults to the project authoritative Source Truth.")
+    refresh_units.add_argument("--page-id", help="Refresh one content page only; defaults to every content page.")
+    refresh_units.set_defaults(func=_refresh_outline_content_units_command)
 
     prepare_visual_structure = subparsers.add_parser(
         "prepare-visual-structure",

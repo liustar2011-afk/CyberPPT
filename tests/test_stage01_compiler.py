@@ -22,10 +22,107 @@ from cyberppt.source_document_map import (
     prepare_source_map,
 )
 from cyberppt.source_truth_contract import audit_source_truth, load_source_truth
-from cyberppt.stage01_compiler import _page_content_units, compile_outline_draft, compile_source_truth
+from cyberppt.stage01_compiler import (
+    _source_locator,
+    _page_content_units,
+    compile_outline_draft,
+    compile_source_truth,
+    refresh_outline_content_units,
+)
 
 
 class Stage01CompilerTests(unittest.TestCase):
+    def test_source_locator_keeps_global_anchor_and_section_relative_ordinal(self) -> None:
+        locator = _source_locator({
+            "source_id": "SRC", "source_path": "source/material.docx",
+            "heading_path": ["第一章", "建设背景"],
+            "locator": {"paragraph": 23, "section_paragraph": 1},
+        })
+        self.assertEqual(23, locator["paragraph"])
+        self.assertEqual(1, locator["section_paragraph"])
+    def test_refresh_content_units_preserves_authored_page_judgment(self) -> None:
+        outline_path = self.project / "workbench/stages/01-analysis/outline.json"
+        truth_path = self.project / "workbench/stages/01-analysis/source-truth.json"
+        outline_path.parent.mkdir(parents=True, exist_ok=True)
+        outline_path.write_text(json.dumps({"pages": [{
+            "page_id": "p04", "page_type": "content", "title": "背景", "topic_category": "背景",
+            "core_message": "作者判断", "source_refs": ["ST0001"], "content_units": [],
+        }]}, ensure_ascii=False), encoding="utf-8")
+        truth_path.write_text(json.dumps({"records": [{
+            "id": "ST0001", "statement": "来源事实。", "priority": "P0", "claim_role": "fact",
+            "argument_duty": "detail", "semantic_units": [{"text": "来源事实需要保留。"}],
+        }]}, ensure_ascii=False), encoding="utf-8")
+
+        refresh_outline_content_units(self.project)
+
+        refreshed = json.loads(outline_path.read_text(encoding="utf-8"))["pages"][0]
+        self.assertEqual("作者判断", refreshed["core_message"])
+        self.assertTrue(refreshed["content_units"])
+
+    def test_content_units_split_large_primary_evidence_and_use_short_anchors(self) -> None:
+        records = [
+            {
+                "id": f"ST000{index}", "priority": "P0", "claim_role": "fact", "argument_duty": "detail",
+                "statement": f"来源事实{index}。", "coverage_anchors": ["这是一段超过三十六个字符且不应要求完整稿逐字复现的长来源锚点。"],
+                "semantic_units": [{"text": f"业务对象{index}需要协同处理，形成明确服务结果。"}],
+            }
+            for index in range(1, 5)
+        ]
+
+        units, details = _page_content_units("p04", records, "建设背景")
+
+        self.assertEqual([], details)
+        self.assertEqual(2, len(units))
+        self.assertEqual("primary", units[0]["role"])
+        self.assertEqual("supporting", units[1]["role"])
+        self.assertTrue(all(len(anchor) <= 36 for unit in units for anchor in unit["coverage_anchors"]))
+
+    def test_semantic_argument_duties_keep_source_stages_onscreen(self) -> None:
+        records = [
+            {
+                "id": f"ST000{index}", "priority": "P0", "claim_role": "fact",
+                "argument_duty": ("premise", "driver", "gap", "response")[index - 1],
+                "statement": f"来源论证阶段{index}。", "coverage_anchors": [f"阶段锚点{index}", "协同运营"],
+            }
+            for index in range(1, 5)
+        ]
+
+        units, details = _page_content_units(
+            "p04", records, "建设背景",
+        )
+
+        self.assertEqual([], details)
+        self.assertEqual([[f"ST000{index}"] for index in range(1, 5)], [unit["source_refs"] for unit in units])
+        self.assertTrue(all(unit["onscreen_required"] for unit in units[1:]))
+
+    def test_selected_scqa_groups_complication_and_keeps_answer_primary(self) -> None:
+        records = [
+            {
+                "id": f"ST000{index}", "priority": "P0", "claim_role": "fact",
+                "argument_duty": "detail", "statement": f"来源段落{index}。",
+                "coverage_anchors": [f"锚点{index}", "数据服务"],
+            }
+            for index in range(1, 5)
+        ]
+        selection = {
+            "model_id": "scqa", "fit": "selected",
+            "source_mapping": [
+                {"slot": "situation", "source_refs": ["ST0001"]},
+                {"slot": "complication", "source_refs": ["ST0002", "ST0003"]},
+                {"slot": "question", "source_refs": ["ST0002", "ST0003"], "implicit": True},
+                {"slot": "answer", "source_refs": ["ST0004"]},
+            ],
+        }
+
+        units, details = _page_content_units(
+            "p04", records, "建设背景", expression_model_selection=selection,
+        )
+
+        self.assertEqual([], details)
+        self.assertEqual(["situation", "complication", "answer"], [unit["model_slot"] for unit in units])
+        self.assertEqual(["ST0002", "ST0003"], units[1]["source_refs"])
+        self.assertEqual("primary", units[-1]["role"])
+        self.assertTrue(all(unit["onscreen_required"] for unit in units))
     def test_fallback_primary_prefers_page_forming_gap_over_general_premise(self) -> None:
         records = [
             {
@@ -50,7 +147,7 @@ class Stage01CompilerTests(unittest.TestCase):
         premise = next(unit for unit in units if "premise" in unit["argument_duties"])
         self.assertEqual(["ST0002"], primary["source_refs"])
         self.assertTrue(primary["onscreen_required"])
-        self.assertFalse(premise["onscreen_required"])
+        self.assertTrue(premise["onscreen_required"])
 
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -344,9 +441,19 @@ class Stage01CompilerTests(unittest.TestCase):
             "trace_only": content_page["detail_refs"],
         }
         content_page["excluded_from_onscreen"] = list(content_page["detail_refs"])
+        chapter_page = next(page for page in outline["pages"] if page["page_type"] == "chapter")
+        chapter_page.update(
+            {
+                "source_section_node_id": "c01",
+                "source_section_title": "建设方案",
+                "title": "建设方案",
+                "editorial_chapter_label": "建设基础",
+            }
+        )
         outline["editorial_authoring_status"] = "author_edited"
         self.assertEqual([], audit_outline(outline, truth, self.model))
-        self.assertEqual(["c01", "c01-s01"], content_page["source_argument_node_ids"])
+        self.assertEqual("c01-s01", content_page["primary_argument_node_id"])
+        self.assertEqual(["c01-s01"], content_page["source_argument_node_ids"])
         metadata_refs = {
             record["id"] for record in truth["records"]
             if record["argument_duty"] == "metadata"
@@ -377,19 +484,16 @@ class Stage01CompilerTests(unittest.TestCase):
         self.assertEqual(
             {
                 "node_id": "c01-s01",
-                "disposition": "merged_page",
+                "disposition": "standalone_page",
                 "page_id": content_page["page_id"],
-                "rationale": "建设基础与父章节主张共同建立本章起始判断。",
-                "merge_reason": "父章节主张与首个子节点构成同一来源主题和同一支撑关系。",
-                "shared_page_topic": "建设基础",
+                "rationale": "建设基础具有独立来源标题、语义命题和证据责任，先编译为独立候选页；仅在后续规划判断确认共享主题与主关系后才可合并。",
             },
             outline["argument_node_dispositions"][0],
         )
 
-    def test_atomic_item_without_evidence_role_still_compiles_using_node_role(self) -> None:
-        # evidence_role/claim_role/argument_duty are no longer authored
-        # per atomic item; they are derived from the item's target semantic
-        # node (argument_role/argument_weight) at compile time instead.
+    def test_strict_atomic_item_requires_semantic_argument_duty(self) -> None:
+        # Evidence role and claim role remain derived from the target node,
+        # while argument duty belongs to the source-faithful atomic claim.
         atomic = self.model["source_coverage"]["assignments"][0]["atomic_items"][0]
         del atomic["evidence_role"]
         del atomic["claim_role"]
@@ -398,13 +502,11 @@ class Stage01CompilerTests(unittest.TestCase):
         model_path.write_text(json.dumps(self.model, ensure_ascii=False, indent=2), encoding="utf-8")
 
         code, report = run_semantic_understanding_audit(self.project)
-        self.assertEqual(0, code)
-
-        truth_path = compile_source_truth(self.project)
-        truth = json.loads(truth_path.read_text(encoding="utf-8"))
-        record = next(item for item in truth["records"] if item["atomic_item_id"] == "AI-001")
-        self.assertEqual("fact", record["claim_role"])
-        self.assertEqual("foundation", record["semantic_argument_role"])
+        self.assertNotEqual(0, code)
+        self.assertIn(
+            "SEMANTIC_ATOMIC_ARGUMENT_DUTY_MISSING",
+            {item["code"] for item in report["issues"]},
+        )
 
     def test_official_cli_executes_new_lightweight_path_without_control_artifacts(self) -> None:
         goal = "面向建设相关方说明现有基础并确认后续动作。"
@@ -463,7 +565,6 @@ class Stage01CompilerTests(unittest.TestCase):
             "workbench/stages/01-analysis/source-truth-audit.json",
             "workbench/stages/01-analysis/source-truth-attempts",
             "workbench/stages/01-analysis/source-truth-escalation.json",
-            "workbench/stages/01-analysis/outline-audit.json",
             "workbench/stages/01-analysis/outline-attempts",
             "workbench/stages/01-analysis/outline-escalation.json",
         )
@@ -471,6 +572,9 @@ class Stage01CompilerTests(unittest.TestCase):
             [],
             [relative for relative in forbidden if (self.project / relative).exists()],
         )
+        self.assertTrue((self.project / "workbench/stages/01-analysis/outline-audit.json").is_file())
+        self.assertTrue((self.project / "workbench/stages/01-analysis/outline-audit.md").is_file())
+        self.assertTrue((self.project / "workbench/stages/01-analysis/outline-human-review.md").is_file())
 
     def test_outline_recompile_changes_only_the_outline_artifact(self) -> None:
         model_path = self.project / SEMANTIC_ARGUMENT_MODEL

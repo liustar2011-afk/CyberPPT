@@ -63,6 +63,7 @@ NON_ONSCREEN_VISUAL_HEADING_RE = re.compile(r"^【视觉结构[，,]\s*不上屏
 # headings so the drawable 上屏文字 block is not silently dropped.
 HEADING_FIELD_ALIASES = {
     "完整文字稿": "完整文字稿",
+    "完整文字稿段落映射": "完整文字稿段落映射",
     "文字稿取舍说明": "文字稿取舍说明",
     "证据映射": "证据映射",
     "证据": "证据",
@@ -100,6 +101,7 @@ PAGE_CONTRACT_FIELDS = {
     "核心结论",
     "主判断",
     "完整文字稿",
+    "完整文字稿段落映射",
     "文字稿取舍说明",
     "证据映射",
     "上屏文字",
@@ -316,6 +318,7 @@ class ScriptPage:
     coaching_tip: str = ""
     speaker_notes: str = ""
     contract_receipt: dict[str, object] | None = None
+    prose_paragraph_map: tuple[tuple[tuple[str, ...], str], ...] = ()
 
     def __post_init__(self) -> None:
         # Callers that predate the top-level/nested distinction (hand-built
@@ -482,6 +485,21 @@ def _source_refs(text: str) -> tuple[str, ...]:
             f"{prefix}{number:0{width}d}" for number in range(start, end + 1)
         )
     return tuple(dict.fromkeys(refs))
+
+
+def _parse_prose_paragraph_map(text: str) -> tuple[tuple[tuple[str, ...], str], ...]:
+    """Parse one off-screen provenance entry for each full-prose paragraph."""
+
+    result: list[tuple[tuple[str, ...], str]] = []
+    for raw in (text or "").splitlines():
+        line = re.sub(r"^\s*(?:[-*]\s*)?", "", raw).strip()
+        if not line:
+            continue
+        refs_text, marker, reason = line.partition("｜合并理由：")
+        refs = _source_refs(refs_text)
+        if refs:
+            result.append((refs, reason.strip() if marker else ""))
+    return tuple(result)
 
 
 def _field_order(body: str) -> tuple[str, ...]:
@@ -839,6 +857,9 @@ def parse_script_markdown(
                 subtitle=fields.get("副标题", "").strip(),
                 main_message=(fields.get("核心结论") or fields.get("主判断", "")).strip(),
                 full_prose=fields.get("完整文字稿", "").strip(),
+                prose_paragraph_map=_parse_prose_paragraph_map(
+                    fields.get("完整文字稿段落映射", "")
+                ),
                 selection_notes=fields.get("文字稿取舍说明", "").strip(),
                 evidence_map=fields.get("证据映射", "").strip(),
                 evidence_map_refs=_source_refs(fields.get("证据映射", "")),
@@ -2864,6 +2885,101 @@ def _full_prose_source_coverage_issues(
     return issues
 
 
+def _full_prose_paragraph_boundary_issues(
+    page: ScriptPage,
+    contract: dict[str, object],
+    records_by_id: dict[str, dict[str, object]],
+) -> list[ScriptQualityIssue]:
+    """Keep source-paragraph reasoning visible in the full-prose layer.
+
+    The rule activates only when a page consumes at least three distinct
+    source paragraphs.  It does not prohibit a deliberate merge, but makes
+    that editorial choice explicit and checks that the mapped prose paragraph
+    actually carries each assigned source record.
+    """
+
+    detail_refs = {str(ref) for ref in (contract.get("detail_refs") or [])}
+    expected_refs = tuple(
+        dict.fromkeys(
+            str(ref)
+            for field in ("source_refs", "boundary_refs")
+            for ref in (contract.get(field) or [])
+            if str(ref).strip() and str(ref) not in detail_refs and ref in records_by_id
+        )
+    )
+    groups: dict[tuple[str, ...], list[str]] = {}
+    for ref in expected_refs:
+        unit_refs = tuple(str(item) for item in records_by_id[ref].get("source_unit_refs") or [] if str(item))
+        if not unit_refs:
+            continue
+        groups.setdefault(unit_refs, []).append(ref)
+    if len(groups) < 3:
+        return []
+
+    paragraphs = tuple(
+        paragraph.strip()
+        for paragraph in re.split(r"\n\s*\n", page.full_prose)
+        if paragraph.strip()
+    )
+    mapping = page.prose_paragraph_map
+    if not mapping:
+        return [_issue(
+            "FULL_PROSE_PARAGRAPH_MAP_MISSING",
+            page,
+            "This page consumes several source paragraphs but does not record how they map into 完整文字稿 paragraphs.",
+            "Add one ‘完整文字稿段落映射’ entry per prose paragraph. Keep source paragraphs separate by default; a combined entry must state 合并理由.",
+            source_ids=expected_refs,
+        )]
+    issues: list[ScriptQualityIssue] = []
+    if len(mapping) != len(paragraphs):
+        issues.append(_issue(
+            "FULL_PROSE_PARAGRAPH_MAP_COUNT_MISMATCH",
+            page,
+            "The paragraph map and 完整文字稿 have different paragraph counts.",
+            "Use one mapping entry for each prose paragraph, in the same order.",
+            evidence=(f"map={len(mapping)}", f"prose={len(paragraphs)}"),
+        ))
+    mapped_refs = tuple(ref for refs, _ in mapping for ref in refs)
+    if set(mapped_refs) != set(expected_refs) or len(mapped_refs) != len(set(mapped_refs)):
+        issues.append(_issue(
+            "FULL_PROSE_PARAGRAPH_MAP_COVERAGE_INVALID",
+            page,
+            "The paragraph map must cover every non-detail page source once and only once.",
+            "Correct the Source Truth IDs in 完整文字稿段落映射; retain details only when the Outline marks them as detail_refs.",
+            source_ids=expected_refs,
+            evidence=mapped_refs,
+        ))
+    group_by_ref = {ref: group for group, refs in groups.items() for ref in refs}
+    for index, (refs, reason) in enumerate(mapping):
+        source_groups = {group_by_ref.get(ref) for ref in refs}
+        source_groups.discard(None)
+        if len(source_groups) > 1 and len(reason) < 8:
+            issues.append(_issue(
+                "FULL_PROSE_PARAGRAPH_MERGE_REASON_MISSING",
+                page,
+                "A full-prose paragraph merges distinct source paragraphs without an editorial reason.",
+                "Keep source paragraphs separate by default, or state a concrete 合并理由 explaining the shared argument duty and retained conclusion.",
+                source_ids=refs,
+            ))
+        if index >= len(paragraphs):
+            continue
+        for ref in refs:
+            record = records_by_id.get(ref)
+            if not record:
+                continue
+            statement = str(record.get("statement") or "")
+            if statement and _source_statement_overlap(statement, paragraphs[index]) < 0.05:
+                issues.append(_issue(
+                    "FULL_PROSE_PARAGRAPH_SOURCE_MISMATCH",
+                    page,
+                    "A mapped source record is not substantively represented in its assigned prose paragraph.",
+                    "Move the source-specific fact into the mapped paragraph or correct the paragraph map.",
+                    source_ids=(ref,),
+                    evidence=(f"paragraph={index + 1}",),
+                ))
+    return issues
+
+
 def _page_content_unit_coverage_issues(
     page: ScriptPage,
     contract: dict[str, object],
@@ -4740,6 +4856,13 @@ def audit_script_quality(
             issues.extend(_source_consumption_issues(page, contract))
             issues.extend(
                 _full_prose_source_coverage_issues(
+                    page,
+                    contract,
+                    records_by_id,
+                )
+            )
+            issues.extend(
+                _full_prose_paragraph_boundary_issues(
                     page,
                     contract,
                     records_by_id,

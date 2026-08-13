@@ -37,6 +37,9 @@ RELATIONS = frozenset(
 )
 RELATION_WEIGHT_EFFECTS = frozenset({"none"})
 ARGUMENT_WEIGHTS = frozenset({"core", "supporting", "detail", "constraint"})
+ARGUMENT_DUTIES = frozenset(
+    {"premise", "driver", "consequence", "gap", "response", "support", "detail", "boundary", "metadata"}
+)
 ARGUMENT_ROLES = frozenset(
     {
         "thesis",
@@ -996,13 +999,10 @@ def validate_model(
                             )
                         )
                     atomic_covered_refs: set[str] = set()
-                    # Atomic items keep only the fields that cannot be derived
-                    # from their target semantic node: the source-faithful
-                    # statement, which source units it covers, and (when it
-                    # genuinely differs from the node) its own status. Role,
-                    # evidence type, priority, and argument duty are derived
-                    # from the target node at Source Truth compile time
-                    # instead of being redeclared and cross-checked here.
+                    # Atomic items carry the source-faithful proposition and
+                    # its local argument duty. A node can contain premise,
+                    # demand, gap and response together, so this duty cannot
+                    # be derived from the node's coarse argument role.
                     for atomic_item in atomic_items:
                         if not isinstance(atomic_item, dict):
                             issues.append(_issue("SEMANTIC_ATOMIC_ITEM_INVALID", "assignment.atomic_items 的每项必须是对象。"))
@@ -1012,6 +1012,7 @@ def validate_model(
                         item_refs = {_text(item) for item in _list(atomic_item.get("source_unit_refs")) if _text(item)}
                         anchors = [_text(item) for item in _list(atomic_item.get("coverage_anchors")) if _text(item)]
                         status = _text(atomic_item.get("status"))
+                        duty = _text(atomic_item.get("argument_duty"))
                         if not item_id or not statement or not item_refs or not status:
                             issues.append(_issue("SEMANTIC_ATOMIC_ITEM_INCOMPLETE", "每个 atomic_item 必须包含 item_id、statement、source_unit_refs 和 status。", node_id=item_id))
                             continue
@@ -1021,6 +1022,10 @@ def validate_model(
                             issues.append(_issue("SEMANTIC_ATOMIC_ITEM_ANCHORS_INSUFFICIENT", "每个原子事项至少保留两个来源特征锚点，不能用通用概括代替具体业务内容。", node_id=item_id))
                         if status not in STATUS_VALUES:
                             issues.append(_issue("SEMANTIC_ATOMIC_STATUS_INVALID", "atomic_item.status 不在受控状态词表中。", node_id=item_id))
+                        if interpretation_mode == "strict" and not duty:
+                            issues.append(_issue("SEMANTIC_ATOMIC_ARGUMENT_DUTY_MISSING", "严格语义理解的每个 atomic_item 必须声明其在来源论证中的 argument_duty，不能由下游按位置或关键词猜测。", node_id=item_id))
+                        elif duty and duty not in ARGUMENT_DUTIES:
+                            issues.append(_issue("SEMANTIC_ATOMIC_ARGUMENT_DUTY_INVALID", "atomic_item.argument_duty 必须为 premise、driver、consequence、gap、response、support、detail、boundary 或 metadata。", node_id=item_id))
                         compatible_targets = [node_lookup[target_id] for target_id in target_ids if target_id in node_lookup]
                         if compatible_targets and status != "mixed" and all(_text(node.get("status")) not in {status, "mixed"} for node in compatible_targets):
                             issues.append(_issue("SEMANTIC_ATOMIC_STATUS_MISMATCH", "原子事项 status 与其目标语义节点均不相容，应保留真实状态并纠正归类。", node_id=item_id))
@@ -1078,6 +1083,7 @@ def node_index(model: dict[str, Any]) -> dict[str, dict[str, Any]]:
 def audit_outline_consumption(
     outline: dict[str, Any],
     model: dict[str, Any] | None,
+    source_truth: dict[str, Any] | None = None,
 ) -> list[dict[str, str]]:
     """Check that an outline consumes semantic nodes instead of source records alone."""
 
@@ -1089,7 +1095,30 @@ def audit_outline_consumption(
         for item in _list(model.get("source_gaps"))
         if isinstance(item, dict) and _text(item.get("id"))
     }
-    pages = [item for item in _list(outline.get("pages")) if isinstance(item, dict) and item.get("page_type") == "content"]
+    all_pages = [item for item in _list(outline.get("pages")) if isinstance(item, dict)]
+    pages = [item for item in all_pages if item.get("page_type") == "content"]
+    subsection_node_ids = {
+        _text(item.get("id"))
+        for item in _list(model.get("subsection_nodes"))
+        if isinstance(item, dict) and _text(item.get("id"))
+    }
+    records_by_node: dict[str, set[str]] = {}
+    if isinstance(source_truth, dict):
+        for record in _list(source_truth.get("records")):
+            if not isinstance(record, dict):
+                continue
+            record_id = _text(record.get("id"))
+            if not record_id or _text(record.get("argument_duty")) == "metadata":
+                continue
+            for node_id in _list(record.get("semantic_node_ids")):
+                node_id = _text(node_id)
+                if node_id:
+                    records_by_node.setdefault(node_id, set()).add(record_id)
+    author_edited = (
+        outline.get("editorial_authoring_mode") == "author_driven"
+        and outline.get("editorial_authoring_status") == "author_edited"
+        and outline.get("semantic_argument_model_mode") == "required"
+    )
     issues: list[dict[str, str]] = []
     primary_consumers: dict[str, list[str]] = {}
     assigned_consumers: dict[str, list[str]] = {}
@@ -1117,6 +1146,19 @@ def audit_outline_consumption(
             # nodes may be cited by several pages without pretending that the
             # source thesis has multiple owners.
             primary_consumers.setdefault(primary, []).append(page_id)
+        if primary in subsection_node_ids and records_by_node:
+            expected_records = records_by_node.get(primary, set())
+            actual_records = {
+                _text(record_id) for record_id in _list(page.get("source_refs"))
+                if _text(record_id)
+            }
+            missing_records = sorted(expected_records - actual_records)
+            if missing_records:
+                issues.append(_issue(
+                    "PAGE_SOURCE_SECTION_COVERAGE_INCOMPLETE",
+                    "内容页主承载原文二级论点时，必须覆盖该论点全部非元数据 Source Truth 记录；代表性首段不能替代完整论证链：" + "、".join(missing_records),
+                    node_id=page_id,
+                ))
         statuses = page.get("source_argument_node_statuses")
         if not isinstance(statuses, dict):
             issues.append(_issue("OUTLINE_ARGUMENT_STATUSES_MISSING", "页面必须复制所消费语义节点的状态，避免把规划/建议写成已建成事实。", node_id=page_id))
@@ -1178,16 +1220,57 @@ def audit_outline_consumption(
         for item in _list(model.get("section_nodes"))
         if isinstance(item, dict) and _text(item.get("id"))
     }
+    if author_edited:
+        core_sections = [
+            item for item in _list(model.get("section_nodes"))
+            if isinstance(item, dict)
+            and _text(item.get("id"))
+            and _text(item.get("argument_weight")) == "core"
+        ]
+        expected_section_ids = [_text(item.get("id")) for item in core_sections]
+        chapter_pages = [item for item in all_pages if item.get("page_type") == "chapter"]
+        actual_section_ids: list[str] = []
+        for chapter in chapter_pages:
+            page_id = _text(chapter.get("page_id"))
+            section_id = _text(chapter.get("source_section_node_id"))
+            expected = next((item for item in core_sections if _text(item.get("id")) == section_id), None)
+            if expected is None:
+                issues.append(_issue(
+                    "SOURCE_SECTION_MAPPING_MISSING",
+                    "作者编辑后的章节页必须映射到语义模型中的一级核心章节节点。",
+                    node_id=page_id,
+                ))
+                continue
+            actual_section_ids.append(section_id)
+            source_title = _text(chapter.get("source_section_title"))
+            expected_title = _text(expected.get("source_heading"))
+            if source_title != expected_title or _text(chapter.get("title")) != expected_title:
+                issues.append(_issue(
+                    "SOURCE_SECTION_TITLE_DRIFTED",
+                    "章节页 title 和 source_section_title 必须等于映射的原文一级章节标题；编辑标签应放在 editorial_chapter_label。",
+                    node_id=page_id,
+                ))
+        if actual_section_ids != expected_section_ids:
+            issues.append(_issue(
+                "SOURCE_SECTION_ORDER_DRIFTED",
+                "章节页必须按语义模型中的一级核心章节顺序逐一呈现，不得重排、漏映射或替换为编辑标题。",
+            ))
     required_nodes = list(_list(model.get("section_nodes"))) + list(_list(model.get("subsection_nodes")))
     for node in required_nodes:
         if not isinstance(node, dict):
             continue
         node_id = _text(node.get("id"))
         primary_requirement = node.get("required_for_primary_consumer")
+        chapter_mapped = any(
+            _text(page.get("source_section_node_id")) == node_id
+            for page in all_pages
+            if page.get("page_type") == "chapter"
+        )
         required_for_primary = primary_requirement is True or (
             node_id in section_node_ids
             and primary_requirement is not False
             and _text(node.get("argument_weight")) == "core"
+            and not chapter_mapped
         )
         if not required_for_primary:
             continue
@@ -1335,6 +1418,32 @@ def audit_outline_consumption(
                         "有意舍弃必须说明其与所选交流目标或故事线的关系，不能以篇幅有限笼统代替。",
                         node_id=node_id,
                     ))
+                if author_edited:
+                    retained_for = {
+                        _text(value) for value in _list(item.get("retained_for"))
+                        if _text(value)
+                    }
+                    allowed_retention = {
+                        "page_script", "implementation_plan",
+                        "single_item_confirmation", "traceability_only",
+                    }
+                    if not retained_for or not retained_for.issubset(allowed_retention):
+                        issues.append(_issue(
+                            "OUTLINE_OMISSION_RETAINED_FOR_MISSING",
+                            "作者编辑后的有意舍弃必须以 retained_for 说明细节保留在页面脚本、实施方案、单项确认或追溯层。",
+                            node_id=node_id,
+                        ))
+                    known_page_ids = {_text(page.get("page_id")) for page in all_pages}
+                    related_page_ids = {
+                        _text(value) for value in _list(item.get("related_page_ids"))
+                        if _text(value)
+                    }
+                    if not related_page_ids.issubset(known_page_ids):
+                        issues.append(_issue(
+                            "OUTLINE_OMISSION_RELATED_PAGE_UNKNOWN",
+                            "有意舍弃项的 related_page_ids 必须引用当前提纲中存在的页面。",
+                            node_id=node_id,
+                        ))
                 if protected and not (
                     item.get("user_authorized_omission") is True
                     and _text(item.get("user_decision_ref"))

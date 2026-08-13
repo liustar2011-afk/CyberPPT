@@ -139,6 +139,8 @@ def _source_locator(unit: dict[str, Any]) -> dict[str, Any]:
     for field in ("paragraph", "table", "table_row", "cell", "line"):
         if locator.get(field) not in (None, ""):
             result["paragraph" if field == "line" else field] = locator[field]
+    if locator.get("section_paragraph") not in (None, ""):
+        result["section_paragraph"] = locator["section_paragraph"]
     if not any(result.get(field) not in (None, "") for field in ("paragraph", "table", "table_row", "cell")):
         result["paragraph"] = int(unit.get("source_order") or 1)
     return result
@@ -388,8 +390,41 @@ def _clean_title(value: object) -> str:
     return text or "业务事项"
 
 
-def _page_content_units(page_id: str, records: list[dict[str, Any]], topic: str) -> tuple[list[dict[str, Any]], list[str]]:
+def _content_unit_anchors(record: dict[str, Any], topic: str) -> list[str]:
+    """Return short source-specific anchors that a human author can preserve.
+
+    Stage 00 may retain long source slices as coverage anchors.  Those slices
+    are appropriate for source traceability but make a Stage 01 prose contract
+    impossible to satisfy: a faithful rewrite need not repeat an arbitrary
+    100-character substring verbatim.  Prefer business clauses from semantic
+    units and retain only short existing anchors as a fallback.
+    """
+
+    candidates: list[str] = []
+    for unit in _items(record.get("semantic_units")):
+        for fragment in re.split(r"[，；。]", str(unit.get("text") or "")):
+            fragment = fragment.strip()
+            if 4 <= len(fragment) <= 36 and fragment not in candidates:
+                candidates.append(fragment)
+    for anchor in _strings(record.get("coverage_anchors")):
+        if 4 <= len(anchor) <= 36 and anchor not in candidates:
+            candidates.append(anchor)
+    if not candidates:
+        candidates = [_clean_title(record.get("statement")), topic]
+    return candidates[:2]
+
+
+def _page_content_units(
+    page_id: str,
+    records: list[dict[str, Any]],
+    topic: str,
+    *,
+    visual_intent_type: str = "",
+    argument_chain: object = None,
+    expression_model_selection: dict[str, Any] | None = None,
+) -> tuple[list[dict[str, Any]], list[str]]:
     structural_duties = {"premise", "driver", "consequence", "gap", "response", "boundary"}
+    visible_argument_duties = structural_duties - {"boundary"}
     eligible = [
         record for record in records
         if str(record.get("argument_duty") or "") != "metadata"
@@ -403,6 +438,29 @@ def _page_content_units(page_id: str, records: list[dict[str, Any]], topic: str)
     if not structural and eligible:
         structural = [eligible[0]]
         details = [str(record.get("id")) for record in eligible[1:]]
+
+    selected_mapping = (
+        expression_model_selection.get("source_mapping")
+        if isinstance(expression_model_selection, dict)
+        and expression_model_selection.get("fit") == "selected"
+        and isinstance(expression_model_selection.get("source_mapping"), list)
+        else []
+    )
+    record_by_id = {str(record.get("id") or ""): record for record in structural}
+    model_groups: list[tuple[str, str, list[dict[str, Any]]]] = []
+    model_record_ids: set[str] = set()
+    for mapping in selected_mapping:
+        if not isinstance(mapping, dict) or mapping.get("implicit") is True:
+            continue
+        slot = str(mapping.get("slot") or "").strip()
+        grouped = [
+            record_by_id[record_id]
+            for record_id in _strings(mapping.get("source_refs"))
+            if record_id in record_by_id
+        ]
+        if slot and grouped:
+            model_groups.append((slot, "primary" if slot == "answer" else "supporting", grouped))
+            model_record_ids.update(str(record.get("id") or "") for record in grouped)
 
     boundaries = [
         record
@@ -423,14 +481,61 @@ def _page_content_units(page_id: str, records: list[dict[str, Any]], topic: str)
         primary = [selected]
         supporting = [record for record in supporting if record is not selected]
 
-    groups: list[tuple[str, list[dict[str, Any]]]] = []
+    groups: list[tuple[str, list[dict[str, Any]], str]] = []
+    for slot, role, grouped in model_groups:
+        groups.append((role, grouped, slot))
+    # A semantic atomic item's argument duty is authored upstream from the
+    # source's meaning.  Preserve consecutive records that carry the same
+    # duty as one source-native content unit; do not pair unrelated P0 records
+    # merely because they are adjacent in the source list.
+    structural_runs: list[tuple[str, list[dict[str, Any]]]] = []
+    for record in ordinary:
+        if str(record.get("id") or "") in model_record_ids:
+            continue
+        duty = str(record.get("argument_duty") or "")
+        if duty not in visible_argument_duties:
+            continue
+        if structural_runs and structural_runs[-1][0] == duty:
+            structural_runs[-1][1].append(record)
+        else:
+            structural_runs.append((duty, [record]))
+    structural_ids = {
+        str(record.get("id") or "")
+        for _duty, run in structural_runs
+        for record in run
+    }
+    structural_primary_assigned = False
+    for duty, run in structural_runs:
+        role = "supporting"
+        if duty in {"gap", "response"} and not structural_primary_assigned:
+            role = "primary"
+            structural_primary_assigned = True
+        groups.append((role, run, ""))
+    if structural_runs and not structural_primary_assigned:
+        duty_rank = {"gap": 0, "driver": 1, "response": 2, "consequence": 3, "premise": 4}
+        primary_index = min(
+            range(len(groups)),
+            key=lambda index: duty_rank.get(structural_runs[index][0], 9),
+        )
+        _role, run, slot = groups[primary_index + len(model_groups)]
+        groups[primary_index + len(model_groups)] = ("primary", run, slot)
+    consumed_ids = structural_ids | model_record_ids
+    primary = [record for record in primary if str(record.get("id") or "") not in consumed_ids]
+    supporting = [record for record in supporting if str(record.get("id") or "") not in consumed_ids]
     if primary:
-        groups.append(("primary", primary))
+        # Do not collapse an entire subsection into one giant "primary"
+        # unit.  Two-record evidence packs retain a meaningful local chain
+        # while avoiding the flat one-record-per-unit anti-pattern.
+        if len(primary) <= 4:
+            for index in range(0, len(primary), 2):
+                groups.append(("primary" if index == 0 else "supporting", primary[index:index + 2], ""))
+        else:
+            groups.append(("primary", primary, ""))
     by_role: dict[str, list[dict[str, Any]]] = {}
     for record in supporting:
         by_role.setdefault(str(record.get("claim_role") or "fact"), []).append(record)
     for role_records in list(by_role.values())[:3]:
-        groups.append(("supporting", role_records))
+        groups.append(("supporting", role_records, ""))
     ungrouped_supporting = [
         record
         for role_records in list(by_role.values())[3:]
@@ -438,17 +543,15 @@ def _page_content_units(page_id: str, records: list[dict[str, Any]], topic: str)
     ]
     details.extend(str(record.get("id")) for record in ungrouped_supporting)
     if boundaries:
-        groups.append(("boundary", boundaries))
+        groups.append(("boundary", boundaries, ""))
 
     result: list[dict[str, Any]] = []
-    for index, (role, grouped) in enumerate(groups, start=1):
-        anchors = list(
-            dict.fromkeys(
-                anchor
-                for record in grouped
-                for anchor in _strings(record.get("coverage_anchors"))
-            )
-        )
+    for index, (role, grouped, model_slot) in enumerate(groups, start=1):
+        anchors = list(dict.fromkeys(
+            anchor
+            for record in grouped
+            for anchor in _content_unit_anchors(record, topic)
+        ))
         if len(anchors) < 2:
             anchors = (anchors + [_clean_title(grouped[0].get("statement")), topic])[:2]
         statements = [
@@ -456,8 +559,7 @@ def _page_content_units(page_id: str, records: list[dict[str, Any]], topic: str)
             for record in grouped
             if str(record.get("statement") or "").strip()
         ]
-        result.append(
-            {
+        unit = {
                 "unit_id": f"{page_id}-U{index:02d}",
                 "statement": "；".join(statements),
                 "source_refs": [str(record.get("id")) for record in grouped],
@@ -468,21 +570,66 @@ def _page_content_units(page_id: str, records: list[dict[str, Any]], topic: str)
                 "argument_duties": list(dict.fromkeys(
                     str(record.get("argument_duty") or "detail") for record in grouped
                 )),
-                "onscreen_required": role == "primary" or any(
-                    str(record.get("argument_duty") or "") in structural_duties - {"premise", "boundary"}
+                "onscreen_required": bool(model_slot) or role == "primary" or any(
+                    str(record.get("argument_duty") or "") in visible_argument_duties
                     for record in grouped
                 ),
-                "onscreen_anchors": anchors[:2] if any(
+                "onscreen_anchors": anchors[:2] if model_slot or any(
                     str(record.get("argument_duty") or "") in structural_duties
                     for record in grouped
                 ) else anchors[:1],
                 "topic_category": topic,
             }
-        )
+        if model_slot:
+            unit["model_slot"] = model_slot
+        result.append(unit)
     if result and not any(item["onscreen_required"] for item in result):
         result[0]["onscreen_required"] = True
         result[0]["onscreen_anchors"] = result[0]["coverage_anchors"][:1]
     return result, list(dict.fromkeys(details))
+
+
+def refresh_outline_content_units(
+    project: Path,
+    outline_path: Path | None = None,
+    source_truth_path: Path | None = None,
+    page_id: str | None = None,
+) -> Path:
+    """Refresh derived content units without changing professional Outline decisions."""
+
+    project = project.expanduser().resolve()
+    target = (outline_path or project / "workbench/stages/01-analysis/outline.json").expanduser().resolve()
+    truth_target = (source_truth_path or project / SOURCE_TRUTH).expanduser().resolve()
+    outline = _read_json(target)
+    truth = _read_json(truth_target)
+    records = {
+        str(record.get("id") or ""): record
+        for record in _items(truth.get("records"))
+        if str(record.get("id") or "")
+    }
+    for page in _items(outline.get("pages")):
+        if str(page.get("page_type") or "") != "content":
+            continue
+        if page_id and str(page.get("page_id") or "") != page_id:
+            continue
+        page_records = [
+            records[record_id]
+            for record_id in _strings(page.get("source_refs"))
+            if record_id in records
+        ]
+        if not page_records:
+            continue
+        units, details = _page_content_units(
+            str(page.get("page_id") or ""), page_records,
+            str(page.get("topic_category") or page.get("title") or ""),
+            visual_intent_type=str(page.get("visual_intent_type") or ""),
+            argument_chain=page.get("argument_chain"),
+            expression_model_selection=page.get("expression_model_selection"),
+        )
+        page["content_units"] = units
+        page["detail_refs"] = details
+    target.write_text(json.dumps(outline, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return target
 
 
 def compile_outline_draft(
@@ -538,10 +685,9 @@ def compile_outline_draft(
         chapter_content: list[dict[str, Any]] = []
         for node in nodes:
             node_id = str(node.get("id") or "")
-            merge_with_section = node in subsections and not chapter_content
             section_id = str(section.get("id") or "")
-            primary_node_id = section_id if merge_with_section else node_id
-            consumed_node_ids = list(dict.fromkeys([primary_node_id, node_id]))
+            primary_node_id = node_id
+            consumed_node_ids = [node_id]
             page_id = f"p{len(pages) + 1:02d}"
             topic = _clean_title(node.get("source_heading"))
             node_records = []
@@ -662,26 +808,14 @@ def compile_outline_draft(
             content_pages.append(page)
             chapter_content.append(page)
             if node in subsections:
-                if merge_with_section:
-                    dispositions.append(
-                        {
-                            "node_id": node_id,
-                            "disposition": "merged_page",
-                            "page_id": page_id,
-                            "rationale": f"{topic}与父章节主张共同建立本章起始判断。",
-                            "merge_reason": "父章节主张与首个子节点构成同一来源主题和同一支撑关系。",
-                            "shared_page_topic": topic,
-                        }
-                    )
-                else:
-                    dispositions.append(
-                        {
-                            "node_id": node_id,
-                            "disposition": "standalone_page",
-                            "page_id": page_id,
-                            "rationale": f"{topic}具有独立来源标题、语义命题和证据责任，先编译为独立候选页；仅在后续规划判断确认共享主题与主关系后才可合并。",
-                        }
-                    )
+                dispositions.append(
+                    {
+                        "node_id": node_id,
+                        "disposition": "standalone_page",
+                        "page_id": page_id,
+                        "rationale": f"{topic}具有独立来源标题、语义命题和证据责任，先编译为独立候选页；仅在后续规划判断确认共享主题与主关系后才可合并。",
+                    }
+                )
         topics = [str(page["topic_category"]) for page in chapter_content]
         page_ids = [str(page["page_id"]) for page in chapter_content]
         if chapter_content:

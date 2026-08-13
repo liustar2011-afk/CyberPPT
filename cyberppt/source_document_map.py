@@ -267,6 +267,7 @@ def _extract_docx(
         relationships = _document_relationships(package)
         heading_stack: list[dict[str, Any]] = []
         paragraph_number = 0
+        section_paragraph_number = 0
         table_number = 0
         source_order = 0
         for child in body:
@@ -277,6 +278,11 @@ def _extract_docx(
                 style_id = _paragraph_style(child)
                 level = _heading_level(child, style_id, styles)
                 if level is not None and text:
+                    # ``paragraph_number`` is a stable document-wide locator.
+                    # Reset the human-facing ordinal at each source heading so
+                    # downstream reports can say “本节第 N 段” without exposing
+                    # Word's global, cover/TOC-inclusive paragraph count.
+                    section_paragraph_number = 0
                     while heading_stack and int(heading_stack[-1]["level"]) >= level:
                         heading_stack.pop()
                     parent_id = str(heading_stack[-1]["heading_id"]) if heading_stack else ""
@@ -317,6 +323,7 @@ def _extract_docx(
                     headings.append(heading)
                     heading_stack.append(heading)
                 elif text:
+                    section_paragraph_number += 1
                     heading_id = str(heading_stack[-1]["heading_id"]) if heading_stack else None
                     heading_path = [str(item["title"]) for item in heading_stack]
                     kind = "caption" if _is_caption(style_id, styles) else "paragraph"
@@ -336,7 +343,10 @@ def _extract_docx(
                             text=text,
                             heading_id=heading_id,
                             heading_path=heading_path,
-                            locator={"paragraph": paragraph_number},
+                            locator={
+                                "paragraph": paragraph_number,
+                                "section_paragraph": section_paragraph_number,
+                            },
                             style_id=style_id,
                         )
                     )

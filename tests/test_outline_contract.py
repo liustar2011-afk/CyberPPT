@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 
 from cyberppt.outline_contract import audit_outline, resolve_architecture_mode, retry_directive
+from cyberppt.outline_audit_density import _content_page_density_issues
 
 
 def page(
@@ -56,6 +57,38 @@ def outline(*pages: dict[str, object], **overrides: object) -> dict[str, object]
 
 
 class OutlineContractTests(unittest.TestCase):
+    def test_explicit_source_heading_preservation_exempts_density_merge(self) -> None:
+        pages = [
+            {
+                "page_id": "p01",
+                "sequence": 1,
+                "page_type": "content",
+                "chapter_id": "c1",
+                "source_refs": ["S001"],
+                "source_heading_preserved": True,
+                "source_heading_preservation_rationale": "原文二级标题单列为合作启动的独立决策动作。",
+            },
+            {
+                "page_id": "p02",
+                "sequence": 2,
+                "page_type": "content",
+                "chapter_id": "c1",
+                "source_refs": ["S002"],
+                "source_heading_preserved": True,
+                "source_heading_preservation_rationale": "原文二级标题单列为合作启动的独立决策动作。",
+            },
+            {"page_id": "p03", "sequence": 3, "page_type": "content", "chapter_id": "c2", "source_refs": ["S003"]},
+            {"page_id": "p04", "sequence": 4, "page_type": "content", "chapter_id": "c2", "source_refs": ["S004"]},
+        ]
+        truth = {"records": [
+            {"id": "S001", "statement": "甲" * 10},
+            {"id": "S002", "statement": "乙" * 10},
+            {"id": "S003", "statement": "丙" * 100},
+            {"id": "S004", "statement": "丁" * 100},
+        ]}
+
+        self.assertEqual([], _content_page_density_issues(pages, truth))
+
     def test_mechanical_candidate_stops_before_formal_content_audit(self) -> None:
         candidate = outline(
             page(1, "content", "附件登记要点", message="附件登记要点", refs=[]),
@@ -199,6 +232,34 @@ class OutlineContractTests(unittest.TestCase):
 
         self.assertIn("PAGE_CONTENT_UNIT_COVERAGE_MODE_REQUIRED", codes)
         self.assertIn("PAGE_CONTENT_UNITS_MISSING", codes)
+
+    def test_selected_scqa_requires_all_required_slots_cited(self) -> None:
+        content = page(1, "content", "建设背景", message="需要统一运营基础", refs=["S001"])
+        content["expression_model_selection"] = {
+            "model_id": "scqa", "fit": "selected", "source_mapping": [],
+        }
+
+        codes = {item.code for item in audit_outline(outline(content), {"records": [{"id": "S001"}]})}
+
+        self.assertIn("EXPRESSION_MODEL_SLOT_UNCITED", codes)
+
+    def test_selected_scqa_allows_cited_implicit_question(self) -> None:
+        content = page(1, "content", "建设背景", message="需要统一运营基础", refs=["S001", "S002", "S003"])
+        content["expression_model_selection"] = {
+            "model_id": "scqa", "fit": "selected",
+            "source_mapping": [
+                {"slot": "situation", "source_refs": ["S001"]},
+                {"slot": "complication", "source_refs": ["S002"]},
+                {"slot": "question", "source_refs": ["S002"], "implicit": True, "statement": "如何回应矛盾？"},
+                {"slot": "answer", "source_refs": ["S003"]},
+            ],
+        }
+
+        codes = {item.code for item in audit_outline(outline(content), {"records": [{"id": f"S00{index}"} for index in range(1, 4)]})}
+
+        self.assertNotIn("EXPRESSION_MODEL_SLOT_UNCITED", codes)
+        self.assertNotIn("EXPRESSION_MODEL_IMPLICIT_UNDECLARED", codes)
+
 
     def test_formal_v2_outline_defaults_to_plain_declarative_titles(self) -> None:
         payload = outline(
@@ -524,6 +585,31 @@ class OutlineContractTests(unittest.TestCase):
         codes = [item.code for item in audit_outline(payload, truth)]
         self.assertIn("RELATION_STRENGTH_UPGRADED", codes)
         self.assertIn("MODALITY_STRENGTH_UPGRADED", codes)
+
+    def test_author_judgment_requires_a_traceable_derivation_and_structured_evidence_roles(self) -> None:
+        content = page(1, "content", "合作启动判断", message="来源已明确合作基础", refs=["S021"])
+        content.update(
+            {
+                "editorial_judgment": "应以首期试点把既有合作基础转化为可验证的协同运营。",
+                "argument_chain": "既有基础→首期试点→协同运营",
+                "evidence_roles": {"claim": ["S021"]},
+                "non_substitutable_value": "把来源事实转化为启动决策。",
+                "excluded_from_onscreen": [],
+            }
+        )
+        payload = outline(
+            content,
+            schema="cyberppt.outline.v2",
+            editorial_authoring_mode="author_driven",
+            editorial_authoring_status="author_edited",
+        )
+        truth = {"records": [{"id": "S021", "statement": "双方已有合作基础。"}]}
+
+        codes = {item.code for item in audit_outline(payload, truth)}
+
+        self.assertIn("EDITORIAL_JUDGMENT_DERIVATION_MISSING", codes)
+        self.assertIn("ARGUMENT_CHAIN_INVALID", codes)
+        self.assertIn("EVIDENCE_ROLE_INVALID", codes)
 
 
 if __name__ == "__main__":

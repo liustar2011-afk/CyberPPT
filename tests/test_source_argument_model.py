@@ -144,6 +144,7 @@ def strict_model() -> tuple[dict[str, object], set[str], list[dict[str, object]]
                         "claim_role": "foundation",
                         "importance": "core",
                         "status": "mixed",
+                        "argument_duty": "premise",
                         "coverage_anchors": ["正文事实", "业务基础"],
                     }
                 ],
@@ -337,6 +338,107 @@ class SourceArgumentModelTests(unittest.TestCase):
             for item in audit_outline_consumption({"pages": []}, model())
         }
         self.assertIn("ARGUMENT_NODE_WITHOUT_PRIMARY_CONSUMER", codes)
+
+    def test_author_edited_outline_chapters_must_preserve_core_source_section_titles_and_order(self) -> None:
+        candidate = model()
+        candidate["section_nodes"].append(
+            {
+                **candidate["section_nodes"][0],
+                "id": "c02",
+                "source_heading": "第二章",
+                "primary_consumer": "chapter-2",
+            }
+        )
+        outline = {
+            "semantic_argument_model_mode": "required",
+            "editorial_authoring_mode": "author_driven",
+            "editorial_authoring_status": "author_edited",
+            "pages": [
+                {
+                    "page_id": "chapter-1",
+                    "page_type": "chapter",
+                    "title": "合作必要性",
+                    "source_section_node_id": "c02",
+                    "source_section_title": "第二章",
+                },
+                {
+                    "page_id": "chapter-2",
+                    "page_type": "chapter",
+                    "title": "第一章",
+                    "source_section_node_id": "c01",
+                    "source_section_title": "第一章",
+                },
+            ],
+        }
+
+        codes = {item["code"] for item in audit_outline_consumption(outline, candidate)}
+
+        self.assertIn("SOURCE_SECTION_TITLE_DRIFTED", codes)
+        self.assertIn("SOURCE_SECTION_ORDER_DRIFTED", codes)
+
+    def test_author_edited_omission_must_name_where_the_detail_is_retained(self) -> None:
+        outline = {
+            "semantic_argument_model_mode": "required",
+            "argument_node_disposition_mode": "required",
+            "editorial_authoring_mode": "author_driven",
+            "editorial_authoring_status": "author_edited",
+            "argument_node_dispositions": [
+                {
+                    "node_id": "c01-s01",
+                    "disposition": "intentional_omission",
+                    "rationale": "该项不进入当前页。",
+                    "omission_reason": "保留为实施阶段材料。",
+                    "related_page_ids": ["p-unknown"],
+                },
+                {
+                    "node_id": "c01-s02",
+                    "disposition": "intentional_omission",
+                    "rationale": "该项不进入当前页。",
+                    "omission_reason": "保留为实施阶段材料。",
+                },
+            ],
+            "pages": [],
+        }
+
+        codes = {item["code"] for item in audit_outline_consumption(outline, model())}
+
+        self.assertIn("OUTLINE_OMISSION_RETAINED_FOR_MISSING", codes)
+        self.assertIn("OUTLINE_OMISSION_RELATED_PAGE_UNKNOWN", codes)
+
+    def test_primary_subsection_page_must_cover_all_of_its_source_truth_records(self) -> None:
+        outline = {
+            "semantic_argument_model_mode": "required",
+            "pages": [{
+                "page_id": "p01",
+                "page_type": "content",
+                "primary_argument_node_id": "c01-s01",
+                "source_argument_node_ids": ["c01-s01"],
+                "source_argument_node_roles": {"c01-s01": "foundation"},
+                "source_argument_node_statuses": {"c01-s01": "existing"},
+                "source_argument_node_weights": {"c01-s01": "supporting"},
+                "core_message_derivation": {"argument_node_ids": ["c01-s01"]},
+                "source_refs": ["S001"],
+            }],
+        }
+        truth = {
+            "records": [
+                {"id": "S001", "semantic_node_ids": ["c01-s01"], "argument_duty": "driver"},
+                {"id": "S002", "semantic_node_ids": ["c01-s01"], "argument_duty": "gap"},
+            ]
+        }
+
+        codes = {
+            item["code"]
+            for item in audit_outline_consumption(outline, model(), truth)
+        }
+
+        self.assertIn("PAGE_SOURCE_SECTION_COVERAGE_INCOMPLETE", codes)
+        outline["pages"][0]["source_refs"].append("S002")
+        codes = {
+            item["code"]
+            for item in audit_outline_consumption(outline, model(), truth)
+        }
+        self.assertNotIn("PAGE_SOURCE_SECTION_COVERAGE_INCOMPLETE", codes)
 
     def test_non_core_section_defaults_to_selective_consumption(self) -> None:
         candidate = model()

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from cyberppt.outline_audit_shared import AuditIssue, _core_message, _onscreen_conclusion, _page_id
+from cyberppt.semantic_expression_models import load_expression_models
 from cyberppt.semantic_fidelity import (
     STRONG_RELATIONS,
     audit_relation_shape,
@@ -108,6 +109,50 @@ def _semantic_derivation_issues(
                 relation_evidence = source_text(relation_refs, records)
                 if relation_name in STRONG_RELATIONS and not strong_relation_supported(relation_name, relation_evidence):
                     issues.append(AuditIssue("RELATION_STRENGTH_UPGRADED", f"Strong relation {relation_name} is not explicitly supported by its cited sources.", (page_id,), "remove_semantic_promotion"))
+        editorial_judgment = str(page.get("editorial_judgment") or "").strip()
+        if not editorial_judgment:
+            continue
+        editorial_derivation = page.get("editorial_judgment_derivation")
+        if not isinstance(editorial_derivation, dict):
+            issues.append(AuditIssue(
+                "EDITORIAL_JUDGMENT_DERIVATION_MISSING",
+                "An editorial_judgment requires a source derivation receipt.",
+                (page_id,),
+                "document_editorial_judgment_derivation",
+            ))
+            continue
+        editorial_refs = [
+            str(ref) for ref in editorial_derivation.get("source_refs", [])
+        ]
+        if not editorial_refs or not set(editorial_refs).issubset(source_refs):
+            issues.append(AuditIssue(
+                "EDITORIAL_JUDGMENT_DERIVATION_INVALID",
+                "Editorial-judgment derivation source_refs must be a non-empty subset of page source_refs.",
+                (page_id,),
+                "document_editorial_judgment_derivation",
+            ))
+        if not editorial_derivation.get("supporting_statements") or not editorial_derivation.get("derivation"):
+            issues.append(AuditIssue(
+                "EDITORIAL_JUDGMENT_DERIVATION_INVALID",
+                "Editorial-judgment derivation must state supporting source text and an equal-strength derivation.",
+                (page_id,),
+                "document_editorial_judgment_derivation",
+            ))
+        if editorial_derivation.get("introduced_relations") or editorial_derivation.get("introduced_modalities"):
+            issues.append(AuditIssue(
+                "EDITORIAL_JUDGMENT_INTRODUCES_MEANING",
+                "An editorial judgment may not introduce relations or modalities absent from the cited material.",
+                (page_id,),
+                "remove_semantic_promotion",
+            ))
+        editorial_evidence = source_text(editorial_refs or source_refs, records)
+        for fidelity_issue in audit_semantic_strength(editorial_judgment, editorial_evidence):
+            issues.append(AuditIssue(
+                fidelity_issue.code,
+                fidelity_issue.message,
+                (page_id,),
+                "remove_semantic_promotion",
+            ))
     return issues
 def _document_semantic_issues(
     outline: dict[str, object], source_truth: dict[str, object] | None
@@ -293,5 +338,62 @@ def _structural_argument_duty_issues(
                     f"Source Truth 记录 {source_id} 承担 {duty} 论证职责，不得只放入 detail_refs、讲稿或追溯层。",
                     (page_id,),
                     "restore_structural_argument_chain",
+                ))
+    return issues
+
+
+def _expression_model_issues(
+    pages: list[dict[str, object]],
+    source_truth: dict[str, object] | None,
+) -> list[AuditIssue]:
+    """Audit only author-selected expression models against page evidence."""
+
+    models = load_expression_models()
+    issues: list[AuditIssue] = []
+    for page in pages:
+        selection = page.get("expression_model_selection")
+        if not isinstance(selection, dict) or selection.get("fit") != "selected":
+            continue
+        page_id = _page_id(page)
+        model_id = str(selection.get("model_id") or "")
+        model = models.get(model_id)
+        if model is None:
+            issues.append(AuditIssue(
+                "EXPRESSION_MODEL_UNKNOWN",
+                f"页面选择了模型库中不存在的表达模型：{model_id}。",
+                (page_id,), "select_known_expression_model",
+            ))
+            continue
+        source_refs = {str(ref) for ref in page.get("source_refs") or [] if str(ref)}
+        mappings = [item for item in selection.get("source_mapping") or [] if isinstance(item, dict)]
+        by_slot = {str(item.get("slot") or ""): item for item in mappings if str(item.get("slot") or "")}
+        for slot in model.slots:
+            mapping = by_slot.get(slot.name)
+            if mapping is None:
+                if slot.required:
+                    issues.append(AuditIssue(
+                        "EXPRESSION_MODEL_SLOT_UNCITED",
+                        f"已选 {model_id} 模型缺少必需槽位 {slot.name} 的来源映射。",
+                        (page_id,), "map_expression_model_slot",
+                    ))
+                continue
+            refs = {str(ref) for ref in mapping.get("source_refs") or [] if str(ref)}
+            if not refs or not refs.issubset(source_refs):
+                issues.append(AuditIssue(
+                    "EXPRESSION_MODEL_SLOT_UNCITED",
+                    f"已选 {model_id} 模型的槽位 {slot.name} 必须引用当前页面 Source Truth。",
+                    (page_id,), "map_expression_model_slot",
+                ))
+            if mapping.get("implicit") is True and not slot.implicit_allowed:
+                issues.append(AuditIssue(
+                    "EXPRESSION_MODEL_IMPLICIT_UNDECLARED",
+                    f"模型 {model_id} 的槽位 {slot.name} 不允许标为隐含推导。",
+                    (page_id,), "remove_unsupported_implicit_slot",
+                ))
+            if mapping.get("implicit") is not True and slot.implicit_allowed and not str(mapping.get("statement") or "").strip() and slot.name == "question":
+                issues.append(AuditIssue(
+                    "EXPRESSION_MODEL_IMPLICIT_UNDECLARED",
+                    f"模型 {model_id} 的问题槽位如非原文直接表述，必须标为 implicit 并说明等强度归纳。",
+                    (page_id,), "declare_implicit_expression_slot",
                 ))
     return issues

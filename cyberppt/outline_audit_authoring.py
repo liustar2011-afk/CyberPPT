@@ -113,6 +113,7 @@ def _author_driven_editorial_issues(
             retry_strategy="author_outline_from_page_missions",
         )]
     issues: list[AuditIssue] = []
+    role_values = {"claim", "reason", "instance", "boundary", "trace_only"}
     for page in pages:
         if page.get("page_type") != "content":
             continue
@@ -131,7 +132,10 @@ def _author_driven_editorial_issues(
                 "Author-edited pages must state one governing source-supported argument chain.",
                 (page_id,), "author_page_argument_chain",
             ))
-        if not isinstance(evidence_roles, dict) or not evidence_roles:
+        if (
+            not str(page.get("editorial_judgment") or "").strip()
+            and (not isinstance(evidence_roles, dict) or not evidence_roles)
+        ):
             issues.append(AuditIssue(
                 "PAGE_EVIDENCE_ROLES_MISSING",
                 "Author-edited pages must assign claim, reason, instance, boundary, or trace-only duties to their evidence groups.",
@@ -142,5 +146,66 @@ def _author_driven_editorial_issues(
                 "ONSCREEN_EXCLUSIONS_MISSING",
                 "Author-edited pages must explicitly record retained evidence that is excluded from the audience-facing layer.",
                 (page_id,), "author_onscreen_exclusions",
+            ))
+        editorial_judgment = str(page.get("editorial_judgment") or "").strip()
+        if not editorial_judgment:
+            continue
+        if not isinstance(page.get("editorial_judgment_derivation"), dict):
+            issues.append(AuditIssue(
+                "EDITORIAL_JUDGMENT_DERIVATION_MISSING",
+                "An editorial_judgment requires a source derivation receipt before formal semantic audit.",
+                (page_id,), "document_editorial_judgment_derivation",
+            ))
+        page_refs = {str(ref) for ref in page.get("source_refs", []) if str(ref)}
+        argument_chain = page.get("argument_chain")
+        if not isinstance(argument_chain, list) or not argument_chain:
+            issues.append(AuditIssue(
+                "ARGUMENT_CHAIN_INVALID",
+                "An editorial judgment requires a structured argument_chain with statement, relation, and source_refs.",
+                (page_id,), "structure_page_argument_chain",
+            ))
+        else:
+            for item in argument_chain:
+                refs = item.get("source_refs") if isinstance(item, dict) else None
+                if (
+                    not isinstance(item, dict)
+                    or not str(item.get("statement") or "").strip()
+                    or not str(item.get("relation") or "").strip()
+                    or not isinstance(refs, list)
+                    or not refs
+                    or not {str(ref) for ref in refs}.issubset(page_refs)
+                ):
+                    issues.append(AuditIssue(
+                        "ARGUMENT_CHAIN_INVALID",
+                        "Each argument-chain link must contain statement, relation, and source_refs within page source_refs.",
+                        (page_id,), "structure_page_argument_chain",
+                    ))
+                    break
+        evidence_roles = page.get("evidence_roles")
+        valid_roles = isinstance(evidence_roles, list) and bool(evidence_roles)
+        claim_refs: set[str] = set()
+        if valid_roles:
+            for item in evidence_roles:
+                refs = item.get("source_refs") if isinstance(item, dict) else None
+                if (
+                    not isinstance(item, dict)
+                    or str(item.get("role") or "") not in role_values
+                    or not isinstance(refs, list)
+                    or not refs
+                    or not {str(ref) for ref in refs}.issubset(page_refs)
+                ):
+                    valid_roles = False
+                    break
+                if item.get("role") == "claim":
+                    claim_refs.update(str(ref) for ref in refs)
+        derivation = page.get("editorial_judgment_derivation")
+        derivation_refs = {
+            str(ref) for ref in derivation.get("source_refs", [])
+        } if isinstance(derivation, dict) else set()
+        if not valid_roles or not derivation_refs.issubset(claim_refs):
+            issues.append(AuditIssue(
+                "EVIDENCE_ROLE_INVALID" if not valid_roles else "EVIDENCE_ROLE_CLAIM_UNCOVERED",
+                "Editorial judgment evidence roles must be structured and their claim role must cover all derivation sources.",
+                (page_id,), "assign_structured_evidence_roles",
             ))
     return issues
