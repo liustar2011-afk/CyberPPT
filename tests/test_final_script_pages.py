@@ -373,9 +373,11 @@ class FinalScriptPagesTests(unittest.TestCase):
         visual_dir.mkdir(parents=True, exist_ok=True)
         spec_json = visual_dir / "deck-visual-spec.json"
         spec_md = visual_dir / "script-visual-structure.md"
+        review_summary = visual_dir / "visual-review-summary.md"
         generation_prompts = visual_dir / "generation-prompts.md"
         spec_json.write_text(json.dumps({"schema": "cyberppt.visual_spec.v1"}), encoding="utf-8")
         spec_md.write_text("# visual structure\n", encoding="utf-8")
+        review_summary.write_text("# visual review summary\n", encoding="utf-8")
         prompt_pages = []
         for page_number in range(1, 31):
             prompt_pages.append(
@@ -515,6 +517,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             **extra_visual_artifacts,
             "spec_json": spec_json,
             "spec_markdown": spec_md,
+            "review_summary": review_summary,
             "generation_prompts": generation_prompts,
         }
         visual_report = visual_dir / "validation-report.json"
