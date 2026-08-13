@@ -116,3 +116,14 @@ def test_handoff_audit_requires_expression_decision() -> None:
         report = audit_stage02_handoff(project, payload)
     codes = {item["code"] for item in report["warnings"]}
     assert "ONSCREEN_EXPRESSION_MISSING" in codes
+
+
+def test_handoff_audit_does_not_require_source_truth_binding() -> None:
+    with TemporaryDirectory() as directory:
+        project = Path(directory)
+        _write_inputs(project)
+        payload = _payload(project, created_at="2026-08-13T00:00:00+00:00", outline_sha256="c" * 64)
+        del payload["source_bindings"]["source_truth"]
+        report = audit_stage02_handoff(project, payload)
+
+    assert report["status"] == "passed"

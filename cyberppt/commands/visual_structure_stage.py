@@ -272,7 +272,6 @@ def _write_visual_design_input(project: Path, handoff: Path) -> Path:
                 "relationship_authority": "business_relationships",
                 "author_visual_notes": visual.get("author_visual_notes") or "",
                 "author_visual_notes_authority": "advisory_only",
-                "source_refs": page.get("source_refs") or [],
                 "must_not_include": page.get("must_not_include") or [],
                 "body_image_canvas": visual.get("body_image_canvas"),
                 "title_render_mode": visual.get("title_render_mode"),

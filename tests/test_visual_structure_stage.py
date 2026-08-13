@@ -33,6 +33,7 @@ class VisualStructureStageTests(unittest.TestCase):
                     "core_message": "形成能力体系", "full_prose": "说明",
                     "onscreen_text": "权属确认\n授权管理\n流转审计\n责任闭环",
                     "onscreen_items": ["权属确认", "授权管理", "流转审计", "责任闭环"],
+                    "source_refs": ["S001"],
                     "onscreen_expression": {"form": "framework_4", "source": "relation", "confidence": 0.92, "evidence": ["relation:composed_of"]},
                     "stage02_visual_input": {"locked_text_items": [], "business_relationships": [], "stage01_relationship_features": {}},
                 }]
@@ -41,6 +42,7 @@ class VisualStructureStageTests(unittest.TestCase):
             page = json.loads(output.read_text(encoding="utf-8"))["pages"][0]
         self.assertEqual("framework_4", page["onscreen_expression"]["form"])
         self.assertNotIn("layout", page["onscreen_expression"])
+        self.assertNotIn("source_refs", page)
 
     def test_executable_spec_rejects_more_than_seven_evidence_nodes(self) -> None:
         source = {

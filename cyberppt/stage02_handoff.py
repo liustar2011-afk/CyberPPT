@@ -20,7 +20,6 @@ HANDOFF_MD = HANDOFF_DIR / "stage02-handoff-review.md"
 HANDOFF_AUDIT = HANDOFF_DIR / "stage02-handoff-audit.json"
 SCRIPT_PATH = Path("workbench/scripts/final/script-final.md")
 OUTLINE_PATH = Path("workbench/stages/01-analysis/outline.json")
-SOURCE_TRUTH_PATH = Path("workbench/stages/01-analysis/source-truth.json")
 BODY_CANVAS = {"width": 2048, "height": 1024, "ratio": "2:1"}
 
 
@@ -281,7 +280,6 @@ def build_stage02_handoff(
     bindings = {
         "script": _file_binding(script),
         "outline": _source_binding(project, OUTLINE_PATH),
-        "source_truth": _source_binding(project, SOURCE_TRUTH_PATH),
     }
     from cyberppt.commands.script_audit import run_script_audit
 
