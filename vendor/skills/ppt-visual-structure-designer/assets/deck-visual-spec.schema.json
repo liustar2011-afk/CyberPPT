@@ -194,13 +194,14 @@
         "status": {
           "enum": [
             "draft",
-            "reviewed",
+          "reviewed",
+            "pending_audit",
             "passed",
             "failed"
           ]
         },
         "average_score": {
-          "type": "number",
+          "type": ["number", "null"],
           "minimum": 0,
           "maximum": 100
         },

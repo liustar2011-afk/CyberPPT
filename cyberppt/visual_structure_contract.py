@@ -177,6 +177,216 @@ def _audit_expression_fit(
     return fit
 
 
+def _required_relationships(source: dict[str, Any]) -> set[tuple[str, str, str]]:
+    """Return the normalized Stage 01 business relations that need a disposition."""
+
+    result: set[tuple[str, str, str, str]] = set()
+    for item in source.get("business_relationships") or []:
+        if not isinstance(item, dict):
+            continue
+        subject, relation = str(item.get("subject") or "").strip(), str(item.get("relation") or "").strip()
+        objects = item.get("objects") if isinstance(item.get("objects"), list) else [item.get("object")]
+        for value in objects:
+            object_ = str(value or "").strip()
+            if subject and relation and object_:
+                result.add((subject, relation, object_))
+    features = source.get("stage01_relationship_features")
+    for item in features.get("actions") if isinstance(features, dict) and isinstance(features.get("actions"), list) else []:
+        if not isinstance(item, dict):
+            continue
+        subject = str(item.get("subject") or "").strip()
+        relation = str(item.get("relation") or "").strip()
+        object_ = str(item.get("object") or "").strip()
+        if subject and relation and object_:
+            result.add((subject, relation, object_))
+    return result
+
+
+def _audit_candidate_selection_rationale(candidate: dict[str, Any], issue: Any, page_id: str) -> None:
+    candidate_id = str(candidate.get("id") or "")
+    rationale = candidate.get("selection_rationale")
+    if not isinstance(rationale, dict):
+        issue("CANDIDATE_SELECTION_RATIONALE_MISSING", f"{candidate_id} has no selection rationale.", page_id)
+        return
+    if not str(rationale.get("mission_fit") or "").strip() or not isinstance(rationale.get("generation_feasibility"), dict):
+        issue("CANDIDATE_SELECTION_RATIONALE_INVALID", f"{candidate_id} must state mission fit and generation feasibility.", page_id)
+
+
+def _audit_rejection_rationale(candidate: dict[str, Any], selected: str, issue: Any, page_id: str) -> None:
+    if str(candidate.get("id") or "") == selected:
+        return
+    rationale = str(candidate.get("rejection_rationale") or "").strip()
+    specific_signal = re.search(
+        r"(?:focus|relation|capacity|reading|coverage|constraint|feedback|text|evidence|焦点|关系|容量|阅读|覆盖|约束|反馈|文字|证据)",
+        rationale,
+        flags=re.IGNORECASE,
+    )
+    generic_only = re.fullmatch(r"(?:lower\s+score|得分更低|较低|美观|一般|不适合)[。.!！ ]*", rationale, flags=re.IGNORECASE)
+    if not rationale or generic_only or not specific_signal:
+        issue(
+            "CANDIDATE_REJECTION_RATIONALE_INVALID",
+            f"{candidate.get('id')!s} needs a concrete counterfactual disadvantage relative to {selected!r}.",
+            page_id,
+        )
+
+
+def _audit_relationship_coverage(
+    source: dict[str, Any],
+    decision: dict[str, Any],
+    expected_text_ids: list[str],
+    evidence_ids: set[str],
+    issue: Any,
+    page_id: str,
+) -> None:
+    required = _required_relationships(source)
+    coverage = decision.get("relationship_coverage")
+    if not isinstance(coverage, list) or not coverage:
+        issue("RELATIONSHIP_COVERAGE_MISSING", "Every authoritative Stage 01 relation needs a visual coverage receipt.", page_id)
+        return
+    covered: set[tuple[str, str, str]] = set()
+    for item in coverage:
+        if not isinstance(item, dict):
+            issue("RELATIONSHIP_COVERAGE_INVALID", "Relationship coverage entries must be objects.", page_id)
+            continue
+        source_name = str(item.get("source") or "").strip()
+        subject = str(item.get("subject") or "").strip()
+        relation = str(item.get("relation") or "").strip()
+        object_ = str(item.get("object") or "").strip()
+        status = str(item.get("visual_status") or "").strip()
+        evidence_refs = [str(value) for value in item.get("evidence_refs") or []]
+        text_ids = [str(value) for value in item.get("text_ids") or []]
+        rationale = str(item.get("rationale") or "").strip()
+        triple = (subject, relation, object_)
+        if (
+            not str(item.get("relation_key") or "").strip()
+            or source_name not in {"business_relationships", "stage01_relationship_features.actions"}
+            or triple not in required
+            or status not in {"primary", "secondary", "not_rendered"}
+            or not rationale
+            or not evidence_refs
+            or not text_ids
+            or set(evidence_refs) - evidence_ids
+            or set(text_ids) - set(expected_text_ids)
+        ):
+            issue("RELATIONSHIP_COVERAGE_INVALID", f"Invalid relationship coverage receipt: {triple!r}.", page_id)
+            continue
+        if status == "not_rendered" and not rationale:
+            issue("RELATIONSHIP_COVERAGE_NOT_RENDERED_INVALID", f"{triple!r} needs a business rationale when not rendered.", page_id)
+        covered.add(triple)
+    missing = sorted(required - covered)
+    if missing:
+        issue("RELATIONSHIP_COVERAGE_MISSING", f"Missing relationship coverage: {missing}", page_id)
+
+
+_FEASIBILITY_DIMENSIONS = {
+    "single_focus",
+    "text_capacity",
+    "relation_clarity",
+    "composition_stability",
+    "anti_pattern_risk",
+}
+
+
+def _audit_generation_feasibility(candidate: dict[str, Any], issue: Any, page_id: str) -> int | None:
+    rationale = candidate.get("selection_rationale")
+    feasibility = rationale.get("generation_feasibility") if isinstance(rationale, dict) else None
+    if not isinstance(feasibility, dict):
+        return None
+    dimensions = feasibility.get("dimensions")
+    try:
+        score = int(feasibility.get("score"))
+    except (TypeError, ValueError):
+        score = -1
+    if (
+        not isinstance(dimensions, dict)
+        or set(dimensions) != _FEASIBILITY_DIMENSIONS
+        or any(not isinstance(value, int) or not 0 <= value <= 20 for value in dimensions.values())
+        or sum(dimensions.values()) != 100
+        or score != 100
+        or not isinstance(feasibility.get("risks"), list)
+    ):
+        issue("CANDIDATE_GENERATION_SCORE_INVALID", f"{candidate.get('id')!s} must provide five 0–20 generation dimensions totaling 100.", page_id)
+        return None
+    return score
+
+
+def _audit_text_capacity(candidate: dict[str, Any], expected_text_ids: list[str], evidence_ids: set[str], issue: Any, page_id: str) -> dict[str, Any] | None:
+    budget = candidate.get("text_capacity_budget")
+    if not isinstance(budget, dict):
+        issue("TEXT_CAPACITY_MISSING", f"{candidate.get('id')!s} has no text capacity budget.", page_id)
+        return None
+    text_ids = [str(value) for value in budget.get("locked_text_ids") or []]
+    counts = budget.get("evidence_text_counts")
+    risk = str(budget.get("risk_level") or "")
+    numeric_keys = ("locked_text_count", "max_lines", "max_chars_per_line")
+    if (
+        text_ids != expected_text_ids
+        or not isinstance(counts, dict)
+        or set(counts) != evidence_ids
+        or any(not isinstance(value, int) or value < 0 for value in counts.values())
+        or any(not isinstance(budget.get(key), int) or budget[key] < 1 for key in numeric_keys)
+        or budget.get("locked_text_count") != len(expected_text_ids)
+        or not str(budget.get("estimated_density") or "").strip()
+        or risk not in {"low", "medium", "high", "blocking"}
+        or not isinstance(budget.get("risks"), list)
+    ):
+        issue("TEXT_CAPACITY_INVALID", f"{candidate.get('id')!s} has an invalid text capacity budget.", page_id)
+        return None
+    if risk == "blocking":
+        issue("TEXT_CAPACITY_BLOCKING", f"{candidate.get('id')!s} exceeds its text capacity budget.", page_id)
+    return budget
+
+
+def _audit_focus_competition(page_spec: dict[str, Any], issue: Any, page_id: str) -> dict[str, Any]:
+    structural = page_spec.get("structural_decision") if isinstance(page_spec.get("structural_decision"), dict) else {}
+    focus = structural.get("semantic_focus") if isinstance(structural.get("semantic_focus"), dict) else {}
+    focus_ref = str(focus.get("ref") or "")
+    p0_ids = {
+        str(item.get("id") or "")
+        for item in page_spec.get("evidence_units") or []
+        if isinstance(item, dict) and item.get("priority") == "P0"
+    }
+    result_bindings = [
+        binding for binding in structural.get("text_bindings") or []
+        if isinstance(binding, dict) and binding.get("binding") == "result"
+    ]
+    result_refs = [str(binding.get("target_ref") or binding.get("evidence_id") or "") for binding in result_bindings]
+    if not focus_ref or focus_ref not in p0_ids or focus_ref not in result_refs or len(result_refs) != 1:
+        issue("FOCUS_COMPETITION_DETECTED", "The selected focus must be the sole P0 result-binding target.", page_id)
+        return {"status": "failed", "primary_ref": focus_ref}
+    return {"status": "passed", "primary_ref": focus_ref}
+
+
+def audit_visual_deck_rhythm(spec: dict[str, Any], decisions: dict[str, Any]) -> dict[str, Any]:
+    """Audit repetition among adjacent content-page visual structures."""
+
+    by_id, _ = _index_pages(decisions.get("pages"))
+    pages = [page for page in spec.get("pages") or [] if isinstance(page, dict) and str(page.get("page_role") or "") != "chapter"]
+    signatures: list[tuple[str, tuple[object, ...], str]] = []
+    for page in pages:
+        structural = page.get("structural_decision") if isinstance(page.get("structural_decision"), dict) else {}
+        focus = structural.get("semantic_focus") if isinstance(structural.get("semantic_focus"), dict) else {}
+        bindings = tuple(sorted(str(item.get("binding") or "") for item in structural.get("text_bindings") or [] if isinstance(item, dict)))
+        signature = (
+            str(page.get("visual_decision", {}).get("visual_intent_type") or ""),
+            tuple(sorted(str(value) for value in structural.get("spatial_grammar") or [])),
+            str(focus.get("kind") or ""),
+            str(page.get("semantic_graph", {}).get("direction") or ""),
+            bindings,
+        )
+        signatures.append((normalize_page_id(page.get("page_id")), signature, str(by_id.get(normalize_page_id(page.get("page_id")), {}).get("rhythm_exception_reason") or "").strip()))
+    blocking, warnings = [], []
+    for index in range(len(signatures) - 1):
+        left, right = signatures[index], signatures[index + 1]
+        if left[1] == right[1]:
+            warnings.append({"code": "DECK_RHYTHM_REPETITION_WARNING", "page_ids": [left[0], right[0]], "message": "Adjacent content pages have the same visual structure signature.", "exception_reason": right[2]})
+    for index in range(len(signatures) - 2):
+        group = signatures[index:index + 3]
+        if group[0][1] == group[1][1] == group[2][1]:
+            blocking.append({"code": "DECK_RHYTHM_REPETITION_BLOCKING", "page_ids": [item[0] for item in group], "message": "Three adjacent content pages repeat the same visual structure signature."})
+    return {"status": "failed" if blocking else "passed", "blocking_issues": blocking, "warnings": warnings}
+
+
 def audit_visual_design_package(
     design_input_path: Path,
     decisions_path: Path,
@@ -329,6 +539,8 @@ def audit_visual_design_package(
             signatures.add(signature)
             if constraints is not None:
                 _audit_expression_fit(candidate, constraints, issue, page_id)
+            _audit_candidate_selection_rationale(candidate, issue, page_id)
+            _audit_generation_feasibility(candidate, issue, page_id)
             score = _profile_total(profiles, str(candidate.get("score_profile") or ""), issues, page_id)
             if score is not None:
                 candidate_scores[candidate_id] = score
@@ -337,6 +549,10 @@ def audit_visual_design_package(
             issue("SELECTED_CANDIDATE_MISSING", f"Selected candidate does not exist: {selected!r}", page_id)
         elif candidate_scores and candidate_scores.get(selected) != max(candidate_scores.values()):
             issue("SELECTED_CANDIDATE_NOT_HIGHEST", "Selected candidate must have the highest validated score.", page_id)
+
+        for candidate in candidate_records.values():
+            _audit_rejection_rationale(candidate, selected, issue, page_id)
+            _audit_text_capacity(candidate, expected_text_ids, evidence_key_set, issue, page_id)
 
         if constraints is not None and selected in candidate_records:
             selected_fit = candidate_records[selected].get("expression_fit")
@@ -416,6 +632,17 @@ def audit_visual_design_package(
         }
         if p0_evidence_ids - bound_evidence_ids:
             issue("P0_TEXT_BINDING_MISSING", f"P0 evidence has no exact text binding: {sorted(p0_evidence_ids - bound_evidence_ids)}", page_id)
+
+        _audit_focus_competition(page_spec, issue, page_id)
+
+        _audit_relationship_coverage(
+            source,
+            decision,
+            expected_text_ids,
+            graph_evidence_ids,
+            issue,
+            page_id,
+        )
 
         author_notes = str(source.get("author_visual_notes") or "").strip()
         decision_relationship = str(page_spec.get("semantic_graph", {}).get("decision_relationship") or "").strip()

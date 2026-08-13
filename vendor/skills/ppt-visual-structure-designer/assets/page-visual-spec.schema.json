@@ -23,7 +23,8 @@
     "final_text",
     "generation_handoff",
     "avoid",
-    "qa"
+    "qa",
+    "quality_contract"
   ],
   "allOf": [
     {
@@ -782,6 +783,17 @@
         "deviation_reason": {"type": "string"}
       }
     },
+    "quality_contract": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "status",
+        "generation_feasibility",
+        "relationship_coverage",
+        "text_capacity",
+        "focus_competition"
+      ]
+    },
     "connectors": {
       "type": "array",
       "items": {
@@ -938,13 +950,14 @@
         "status": {
           "enum": [
             "draft",
-            "reviewed",
+          "reviewed",
+            "pending_audit",
             "passed",
             "failed"
           ]
         },
         "score": {
-          "type": "number",
+          "type": ["number", "null"],
           "minimum": 0,
           "maximum": 100
         },

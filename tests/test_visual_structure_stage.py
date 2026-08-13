@@ -13,6 +13,7 @@ from cyberppt.commands.visual_structure_stage import (
     _decision_execution_design,
     _prompt_inputs_sha256,
     _render_visual_structure_markdown,
+    _render_visual_review_summary,
     _sha256,
     _skill_root,
     _write_visual_design_input,
@@ -196,6 +197,11 @@ class VisualStructureStageTests(unittest.TestCase):
 
         page = _build_executable_page(source, decision)
 
+        self.assertEqual(
+            {"status": "pending_audit", "score": None, "blocking_issues": [], "warnings": []},
+            page["qa"],
+        )
+
         self.assertEqual({
             "form": "causal_chain",
             "constraints_sha256": expression_constraints_sha256(source["expression_constraints"]),
@@ -213,6 +219,21 @@ class VisualStructureStageTests(unittest.TestCase):
         contract_schema = schema["properties"]["expression_contract"]
         self.assertEqual(set(page["expression_contract"]), set(contract_schema["required"]))
         self.assertFalse(contract_schema["additionalProperties"])
+
+    def test_review_summary_contains_p3_minimum_package(self) -> None:
+        spec = {
+            "deck_title": "Test",
+            "pages": [{
+                "page_id": "P01", "page_number": 1, "page_title": "Title", "page_mission": "Mission",
+                "quality_contract": {"generation_feasibility": {"score": 100, "risks": []}, "text_capacity": {"locked_text_count": 2, "risk_level": "low", "risks": []}, "relationship_coverage": {"total": 1}, "focus_competition": {"status": "passed"}},
+                "semantic_graph": {"edges": [{"from": "E1", "to": "E2", "relation": "flow"}]},
+                "structural_decision": {"semantic_focus": {"ref": "E2"}},
+            }],
+        }
+        decisions = {"pages": [{"page_id": "p01", "selected_candidate": "C1", "candidates": [{"id": "C1"}, {"id": "C2", "rejection_rationale": "relation clarity is weaker"}]}]}
+        summary = _render_visual_review_summary(spec, decisions, {"deck_rhythm": {"status": "passed", "blocking_issues": [], "warnings": []}})
+        for heading in ("页面使命", "选中候选", "候选取舍", "关系草图", "锁定文字容量", "可生成性", "关系/焦点风险", "整套节奏结论"):
+            self.assertIn(heading, summary)
 
     def test_corrupted_optional_execution_design_falls_back_to_concise_relation_design(self) -> None:
         source = {
@@ -483,6 +504,7 @@ class VisualStructureStageTests(unittest.TestCase):
                 "execution_receipt",
                 "spec_json",
                 "spec_markdown",
+                "review_summary",
                 "generation_prompts",
             )
             artifacts = {

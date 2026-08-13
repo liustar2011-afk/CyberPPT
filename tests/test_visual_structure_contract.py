@@ -44,6 +44,36 @@ def _expression_fit(form: str, *, status: str = "default_profile") -> dict:
     }
 
 
+def _selection_rationale() -> dict:
+    return {
+        "mission_fit": "The relationship field directly serves the page mission.",
+        "generation_feasibility": {
+            "score": 100,
+            "dimensions": {
+                "single_focus": 20,
+                "text_capacity": 20,
+                "relation_clarity": 20,
+                "composition_stability": 20,
+                "anti_pattern_risk": 20,
+            },
+            "risks": [],
+        },
+    }
+
+
+def _text_capacity_budget() -> dict:
+    return {
+        "locked_text_ids": ["P01-T01", "P01-T02"],
+        "locked_text_count": 2,
+        "evidence_text_counts": {"input": 8, "result": 8},
+        "max_lines": 4,
+        "max_chars_per_line": 24,
+        "estimated_density": "low",
+        "risk_level": "low",
+        "risks": [],
+    }
+
+
 def _payloads() -> tuple[dict, dict, dict]:
     design = {
         "schema": "cyberppt.visual_design_input.v2",
@@ -91,6 +121,9 @@ def _payloads() -> tuple[dict, dict, dict]:
             "reading_sequence": ["input", "result"],
             "score_profile": "high",
             "expression_fit": _expression_fit("framework_4"),
+            "selection_rationale": _selection_rationale(),
+            "rejection_rationale": "",
+            "text_capacity_budget": _text_capacity_budget(),
         },
         {
             "id": "C2",
@@ -101,6 +134,9 @@ def _payloads() -> tuple[dict, dict, dict]:
             "reading_sequence": ["input", "result"],
             "score_profile": "mid",
             "expression_fit": _expression_fit("framework_4"),
+            "selection_rationale": _selection_rationale(),
+            "rejection_rationale": "The selected candidate keeps the result as the single focus.",
+            "text_capacity_budget": _text_capacity_budget(),
         },
         {
             "id": "C3",
@@ -111,6 +147,9 @@ def _payloads() -> tuple[dict, dict, dict]:
             "reading_sequence": ["result", "input"],
             "score_profile": "low",
             "expression_fit": _expression_fit("framework_4"),
+            "selection_rationale": _selection_rationale(),
+            "rejection_rationale": "The selected candidate preserves the input-to-result support relation more clearly.",
+            "text_capacity_budget": _text_capacity_budget(),
         },
     ]
     decisions = {
@@ -132,6 +171,19 @@ def _payloads() -> tuple[dict, dict, dict]:
                 },
                 "selected_candidate": "C1",
                 "candidates": candidates,
+                "relationship_coverage": [
+                    {
+                        "relation_key": "R01",
+                        "source": "business_relationships",
+                        "subject": "Input",
+                        "relation": "supports",
+                        "object": "Result",
+                        "visual_status": "primary",
+                        "evidence_refs": ["E2"],
+                        "text_ids": ["P01-T02"],
+                        "rationale": "The support relation is the page's primary judgment.",
+                    }
+                ],
                 "evidence_units": [
                     {"key": "input"},
                     {"key": "result"},
@@ -165,6 +217,8 @@ def _payloads() -> tuple[dict, dict, dict]:
                 ],
                 "semantic_graph": {"decision_relationship": "Input supports Result"},
                 "structural_decision": {
+                    "semantic_focus": {"kind": "outcome", "ref": "E2"},
+                    "primary_refs": ["E2"],
                     "text_bindings": [
                         {
                             "evidence_id": "E1",
@@ -212,6 +266,48 @@ def test_visual_design_package_passes_complete_candidate_and_text_contract() -> 
     report = _audit(design, decisions, spec)
     assert report["status"] == "passed"
     assert report["blocking_issues"] == []
+
+
+def test_audit_rejects_missing_candidate_quality_rationale() -> None:
+    design, decisions, spec = _payloads()
+    del decisions["pages"][0]["candidates"][0]["selection_rationale"]
+    assert "CANDIDATE_SELECTION_RATIONALE_MISSING" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_unselected_candidate_without_counterfactual() -> None:
+    design, decisions, spec = _payloads()
+    decisions["pages"][0]["candidates"][1]["rejection_rationale"] = "lower score"
+    assert "CANDIDATE_REJECTION_RATIONALE_INVALID" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_uncovered_primary_business_relation() -> None:
+    design, decisions, spec = _payloads()
+    decisions["pages"][0]["relationship_coverage"] = []
+    assert "RELATIONSHIP_COVERAGE_MISSING" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_over_capacity_selected_candidate() -> None:
+    design, decisions, spec = _payloads()
+    decisions["pages"][0]["candidates"][0]["text_capacity_budget"]["risk_level"] = "blocking"
+    assert "TEXT_CAPACITY_BLOCKING" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_competing_primary_focus() -> None:
+    design, decisions, spec = _payloads()
+    spec["pages"][0]["structural_decision"]["text_bindings"].append(
+        {"evidence_id": "E2", "target_ref": "E2", "binding": "result", "text_ids": ["P01-T02"]}
+    )
+    assert "FOCUS_COMPETITION_DETECTED" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
 
 
 def test_visual_design_package_blocks_each_cross_artifact_failure() -> None:

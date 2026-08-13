@@ -16,6 +16,7 @@ from cyberppt.onscreen_expression import expression_constraints, expression_cons
 from cyberppt.semantic_digest import script_semantic_digest
 from cyberppt.visual_structure_contract import (
     audit_visual_design_package,
+    audit_visual_deck_rhythm,
     prompt_contract_hashes,
     skill_bundle_sha256,
 )
@@ -32,6 +33,7 @@ VISUAL_FILES = {
     "spec_markdown": Path("visual/script-visual-structure.md"),
     "generation_prompts": Path("visual/generation-prompts.md"),
     "validation": Path("visual/validation-report.json"),
+    "review_summary": Path("visual/visual-review-summary.md"),
 }
 
 
@@ -115,6 +117,21 @@ def _expression_contract(source: dict[str, Any], selected: dict[str, Any]) -> di
         "reading_relation": str(fit.get("reading_relation") or ""),
         "balance_strategy": str(fit.get("balance_strategy") or ""),
         "deviation_reason": str(fit.get("deviation_reason") or ""),
+    }
+
+
+def _quality_contract(decision: dict[str, Any], selected: dict[str, Any], focus_ref: str) -> dict[str, object]:
+    rationale = selected.get("selection_rationale") if isinstance(selected.get("selection_rationale"), dict) else {}
+    feasibility = rationale.get("generation_feasibility") if isinstance(rationale.get("generation_feasibility"), dict) else {}
+    budget = selected.get("text_capacity_budget") if isinstance(selected.get("text_capacity_budget"), dict) else {}
+    coverage = decision.get("relationship_coverage") if isinstance(decision.get("relationship_coverage"), list) else []
+    return {
+        "status": "pending_audit",
+        "mission_fit": str(rationale.get("mission_fit") or ""),
+        "generation_feasibility": {"score": feasibility.get("score"), "risks": feasibility.get("risks") or []},
+        "relationship_coverage": {key: sum(1 for item in coverage if isinstance(item, dict) and item.get("visual_status") == key) for key in ("primary", "secondary", "not_rendered")} | {"total": len(coverage)},
+        "text_capacity": {"risk_level": budget.get("risk_level"), "locked_text_count": budget.get("locked_text_count"), "risks": budget.get("risks") or []},
+        "focus_competition": {"status": "pending_audit", "primary_ref": focus_ref},
     }
 
 
@@ -202,6 +219,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         for key in evidence_keys
     ]
     focus_id = eid[focus_key]
+    quality_contract = _quality_contract(decision, selected, focus_id)
     final_text = [
         {"id": item_id, "role": "body", "text": text, "region_id": "R_RELATION"}
         for item_id, text in zip(expected_ids, expected_text)
@@ -221,15 +239,11 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         "geometry": {"canvas": source.get("body_image_canvas") or {"width": 2048, "height": 1024, "ratio": "2:1"}, "title_exclusion_zone": {"x": 0, "y": 0, "w": 2048, "h": 0}, "regions": [{"id": "R_RELATION", "role": "relation-bearing business field", "x": 80, "y": 120, "w": 1888, "h": 800, "priority": "primary"}]},
         "image_plan": {"use_scene": False, "scene_type": "不指定场景，由选定业务关系场承载", "business_object": design["business_object"], "semantic_role": design["relationship_encoding"], "placement": design["spatial_organization"], "front_facing_people": False, "identifiable_location": False, "factual_event_implication": False},
         "expression_contract": expression_contract,
+        "quality_contract": quality_contract,
         "connectors": connectors, "final_text": final_text,
         "generation_handoff": {"structural_guidance": {"source": "structural_decision", "additional_constraints": ["Use the selected business relationship field and its text attachment design; do not render instructions or internal text ids.", "Keep one visual focus and do not create an independent text wall or second summary structure."]}, "required_text_ids": expected_ids, "required_text": expected_text, "style_source_ref": "external style lock selected at final-script-pages", "title_exclusion_instruction": "Reserve page title and subtitle for the external PowerPoint text layer; do not render them in the body image."},
         "avoid": ["Do not map each body item to an isolated icon or decorative image.", "Do not create an independent text wall or second result chain."],
-        "qa": {
-            "status": "draft",
-            "score": 0,
-            "blocking_issues": [],
-            "warnings": ["Pending visual-structure audit; score is ungraded."],
-        },
+        "qa": {"status": "pending_audit", "score": None, "blocking_issues": [], "warnings": []},
     }
 
 
@@ -256,6 +270,47 @@ def _render_visual_structure_markdown(spec: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def _render_visual_review_summary(spec: dict[str, Any], decisions: dict[str, Any], validation: dict[str, Any]) -> str:
+    """Render the audit-only P3 reviewer minimum package; never a prompt input."""
+
+    by_id = {_page_id(item.get("page_id")): item for item in decisions.get("pages") or [] if isinstance(item, dict)}
+    lines = [f"# {spec.get('deck_title', '')}视觉质量人工复核摘要", ""]
+    for page in spec.get("pages") or []:
+        if not isinstance(page, dict):
+            continue
+        decision = by_id.get(_page_id(page.get("page_id")), {})
+        selected = str(decision.get("selected_candidate") or "")
+        candidates = [item for item in decision.get("candidates") or [] if isinstance(item, dict)]
+        contract = page.get("quality_contract") if isinstance(page.get("quality_contract"), dict) else {}
+        graph = page.get("semantic_graph") if isinstance(page.get("semantic_graph"), dict) else {}
+        structural = page.get("structural_decision") if isinstance(page.get("structural_decision"), dict) else {}
+        lines += [f"## 第{page.get('page_number', '')}页｜{page.get('page_title', '')}", "", f"- 页面使命：{page.get('page_mission', '')}", f"- 选中候选：{selected}", "- 候选取舍："]
+        for candidate in candidates:
+            if str(candidate.get("id") or "") != selected:
+                lines.append(f"  - {candidate.get('id', '')}：{candidate.get('rejection_rationale', '')}")
+        lines += ["- 关系草图："]
+        for edge in graph.get("edges") or []:
+            if isinstance(edge, dict):
+                lines.append(f"  - {edge.get('from', '')} → {edge.get('to', '')}（{edge.get('relation', '')}）")
+        capacity = contract.get("text_capacity") if isinstance(contract.get("text_capacity"), dict) else {}
+        feasibility = contract.get("generation_feasibility") if isinstance(contract.get("generation_feasibility"), dict) else {}
+        coverage = contract.get("relationship_coverage") if isinstance(contract.get("relationship_coverage"), dict) else {}
+        focus = contract.get("focus_competition") if isinstance(contract.get("focus_competition"), dict) else {}
+        lines += [
+            f"- 锁定文字容量：{capacity.get('locked_text_count')}项；风险={capacity.get('risk_level')}；{', '.join(str(item) for item in capacity.get('risks') or []) or '无'}",
+            f"- 可生成性：{feasibility.get('score')}；风险={', '.join(str(item) for item in feasibility.get('risks') or []) or '无'}",
+            f"- 关系/焦点风险：覆盖={coverage}；焦点={focus}；主焦点={structural.get('semantic_focus', {})}",
+            "",
+        ]
+    rhythm = validation.get("deck_rhythm") if isinstance(validation.get("deck_rhythm"), dict) else {}
+    lines += ["## 整套节奏结论", "", f"- 状态：{rhythm.get('status', 'pending_audit')}"]
+    for issue in rhythm.get("blocking_issues") or []:
+        lines.append(f"- 阻断：{issue.get('code', '')}｜{issue.get('message', '')}")
+    for warning in rhythm.get("warnings") or []:
+        lines.append(f"- 警告：{warning.get('code', '')}｜{warning.get('message', '')}")
+    return "\n".join(lines) + "\n"
+
+
 def execute_visual_structure_stage(project: Path, script: Path) -> dict[str, Path]:
     """Create official Stage02 visual-spec outputs from an executed decision receipt."""
     project, script = project.expanduser().resolve(), script.expanduser().resolve()
@@ -273,7 +328,7 @@ def execute_visual_structure_stage(project: Path, script: Path) -> dict[str, Pat
     if len(by_id) != len(sources) or {_page_id(item.get("page_id")) for item in sources} != set(by_id):
         _fail("visual design decisions do not cover the current input page set")
     pages = [_build_executable_page(source, by_id[_page_id(source.get("page_id"))]) for source in sources]
-    spec = {"schema_version": "1.1", "deck_id": project.name, "deck_title": str(project.name), "deck_context": {"audience": "项目既定受众", "purpose": "承接已确认业务脚本形成可执行页面视觉设计", "usage_scene": "正式汇报", "narrative": "每页以唯一业务关系场承载已锁定正文", "source_files": [str(design_input_path)]}, "global_profile": "ppt-visual-structure-designer", "content_lock": {"default_mode": "strict", "global_locked_terms": [], "global_forbidden_changes": ["不得改变锁定正文、事实、主体关系或边界"]}, "pages": pages, "deck_rhythm": {"density_pattern": "随页面业务关系复杂度变化", "visual_intent_sequence": [item['visual_decision']['visual_intent_type'] for item in pages], "repetition_control": "连续页面避免复用同一视觉意图和空间语法"}, "capacity_suggestions": [], "qa_summary": {"status": "draft", "average_score": 0, "blocking_issues": [], "warnings": ["Pending visual-structure audit; average score is ungraded."]}}
+    spec = {"schema_version": "1.1", "deck_id": project.name, "deck_title": str(project.name), "deck_context": {"audience": "项目既定受众", "purpose": "承接已确认业务脚本形成可执行页面视觉设计", "usage_scene": "正式汇报", "narrative": "每页以唯一业务关系场承载已锁定正文", "source_files": [str(design_input_path)]}, "global_profile": "ppt-visual-structure-designer", "content_lock": {"default_mode": "strict", "global_locked_terms": [], "global_forbidden_changes": ["不得改变锁定正文、事实、主体关系或边界"]}, "pages": pages, "deck_rhythm": {"density_pattern": "随页面业务关系复杂度变化", "visual_intent_sequence": [item['visual_decision']['visual_intent_type'] for item in pages], "repetition_control": "连续页面避免复用同一视觉意图和空间语法"}, "capacity_suggestions": [], "qa_summary": {"status": "pending_audit", "average_score": None, "blocking_issues": [], "warnings": []}}
     json_path, markdown_path = project / VISUAL_FILES["spec_json"], project / VISUAL_FILES["spec_markdown"]
     write_json_atomic(json_path, spec)
     markdown_path.write_text(_render_visual_structure_markdown(spec) + "\n", encoding="utf-8")
@@ -705,7 +760,24 @@ def run_visual_structure_audit(project: Path, script: Path) -> tuple[int, dict[s
         spec_json,
     )
     results["execution_receipt"] = _audit_execution_receipt(project, script, skill_root)
+    results["deck_rhythm"] = audit_visual_deck_rhythm(_read_json(spec_json), _read_json(decisions))
     pre_prompt_passed = all(result.get("status") == "passed" for result in results.values())
+    audited_spec = _read_json(spec_json)
+    page_score = 100 if pre_prompt_passed else None
+    qa_status = "passed" if pre_prompt_passed else "failed"
+    page_issues = [] if pre_prompt_passed else [str(issue.get("code") or "") for result in results.values() for issue in result.get("blocking_issues", []) if isinstance(issue, dict)]
+    rhythm_warnings = [str(issue.get("code") or "") for issue in results["deck_rhythm"].get("warnings", []) if isinstance(issue, dict)]
+    for page in audited_spec.get("pages") or []:
+        if isinstance(page, dict):
+            page["qa"] = {"status": qa_status, "score": page_score, "blocking_issues": page_issues, "warnings": rhythm_warnings}
+            contract = page.get("quality_contract")
+            if isinstance(contract, dict):
+                contract["status"] = qa_status
+                contract["focus_competition"]["status"] = qa_status
+    audited_spec["qa_summary"] = {"status": qa_status, "average_score": page_score, "blocking_issues": page_issues, "warnings": rhythm_warnings}
+    write_json_atomic(spec_json, audited_spec)
+    review_summary = project / VISUAL_FILES["review_summary"]
+    review_summary.write_text(_render_visual_review_summary(audited_spec, _read_json(decisions), {"deck_rhythm": results["deck_rhythm"]}), encoding="utf-8")
     prompt_inputs = _prompt_inputs_sha256(project, script, skill_root)
     previous_inputs = previous_report.get("prompt_inputs_sha256")
     previous_inputs = previous_inputs if isinstance(previous_inputs, dict) else {}
@@ -798,6 +870,7 @@ def _register_visual_artifacts(
         VISUAL_FILES["execution_receipt"],
         VISUAL_FILES["spec_json"],
         VISUAL_FILES["spec_markdown"],
+        VISUAL_FILES["review_summary"],
         VISUAL_FILES["generation_prompts"],
         VISUAL_FILES["validation"],
     ]
@@ -848,6 +921,7 @@ def assert_visual_structure_ready(project: Path, script: Path) -> Path | None:
         "execution_receipt",
         "spec_json",
         "spec_markdown",
+        "review_summary",
         "generation_prompts",
     ):
         path = project / VISUAL_FILES[key]

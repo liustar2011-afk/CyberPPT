@@ -143,6 +143,46 @@ CyberPPT工作台候选的`expression_fit`必须包含：
 }
 ```
 
+CyberPPT工作台候选还必须包含：
+
+```json
+{
+  "selection_rationale": {
+    "mission_fit": "该关系场直接承接页面使命。",
+    "generation_feasibility": {
+      "score": 100,
+      "dimensions": {
+        "single_focus": 20,
+        "text_capacity": 20,
+        "relation_clarity": 20,
+        "composition_stability": 20,
+        "anti_pattern_risk": 20
+      },
+      "risks": []
+    }
+  },
+  "rejection_rationale": "未选候选相对已选方案的具体焦点、关系、容量或阅读劣势。"
+}
+```
+
+每页`relationship_coverage`逐项登记权威业务关系：
+
+```json
+{
+  "relation_key": "R02",
+  "source": "business_relationships",
+  "subject": "资源方",
+  "relation": "authorizes",
+  "object": "运营平台",
+  "visual_status": "primary",
+  "evidence_refs": ["E2"],
+  "text_ids": ["P08-T03"],
+  "rationale": "授权关系是本页权责边界的主判断。"
+}
+```
+
+`visual_status`只能为`primary`、`secondary`或`not_rendered`；后者必须有业务理由，且不得用于页面使命、核心判断或P0证据所必需的关系。候选的可生成性评分不规定颜色、字体、形状、坐标、媒介或固定视觉模板。
+
 `deck-visual-spec.json`的`expression_contract`只保留选择追溯：`form`、`constraints_sha256`、`selected_candidate_id`、`fit_status`、`reading_relation`、`balance_strategy`与`deviation_reason`。它不得包含候选的内部证据解释、提示词或任何固定布局指令。
 
 `schema_version: 1.1`必须包含`structural_decision`：
