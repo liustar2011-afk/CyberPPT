@@ -25,6 +25,7 @@ from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, ren
 from scripts.dual_image_overlay.imagegen_handoff import build_page_prompt
 from cyberppt.script_quality_contract import parse_script_markdown
 from cyberppt.semantic_digest import outline_semantic_digest, source_truth_semantic_digest
+from cyberppt.onscreen_expression import expression_constraints
 from scripts.dual_image_overlay.style_library import write_project_style_lock
 
 
@@ -459,6 +460,14 @@ class FinalScriptPagesTests(unittest.TestCase):
                             "core_message": "Fixture message",
                             "onscreen_text": "Fixture text",
                             "onscreen_items": ["Fixture text"],
+                            "onscreen_expression": {
+                                "form": "key_points_3",
+                                "source": "fallback",
+                                "confidence": 0.2,
+                                "evidence": ["fixture"],
+                                "candidates": [["key_points_3", 0.2]],
+                            },
+                            "expression_constraints": expression_constraints("key_points_3"),
                             "stage02_visual_input": {
                                 "locked_text_items": [
                                     {
@@ -485,6 +494,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                                     "source_visual_notes": "",
                                 },
                                 "author_visual_notes_authority": "advisory_only",
+                                "expression_constraints": expression_constraints("key_points_3"),
                                 "body_image_canvas": {"width": 2048, "height": 1024, "ratio": "2:1"},
                             },
                         }
