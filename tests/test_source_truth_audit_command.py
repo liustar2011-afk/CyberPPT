@@ -93,6 +93,66 @@ class SourceTruthAuditCommandTests(unittest.TestCase):
         self.assertEqual(before_model, (semantic / "semantic-argument-model.json").read_bytes())
         self.assertNotIn(payload["records"][0]["statement"], json.dumps(report, ensure_ascii=False))
 
+    def test_chapter_placement_diagnostic_is_advisory_and_does_not_mutate_inputs(self) -> None:
+        semantic = self.project / "workbench/stages/00-semantic-understanding"
+        source_map = self.project / "workbench/stages/00-source-map"
+        semantic.mkdir(parents=True)
+        source_map.mkdir(parents=True)
+        model_path = semantic / "semantic-argument-model.json"
+        model_path.write_text(
+            json.dumps({
+                "schema": "cyberppt.semantic_argument_model.v1",
+                "document_thesis": {"statement": "主论点", "argument_weight": "core", "evidence_refs": ["S001"]},
+                "section_nodes": [],
+                "subsection_nodes": [{"id": "node-mechanism", "source_heading": "运行机制"}],
+            }, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        (source_map / "source-units.jsonl").write_text(
+            json.dumps({"unit_id": "SU-A", "heading_path": ["实施保障"]}, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        outline_path = self.stage / "outline.json"
+        outline_path.parent.mkdir(parents=True, exist_ok=True)
+        outline_path.write_text(
+            json.dumps({
+                "schema": "cyberppt.outline.v1",
+                "material_type": "方案",
+                "audience": "负责人",
+                "architecture_mode": "solution",
+                "architecture_reason": "测试",
+                "source_section_weights": {},
+                "pages": [{
+                "page_type": "content",
+                "chapter_id": "mechanism",
+                "source_argument_node_ids": ["node-mechanism"],
+                }],
+            }, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        payload = valid_payload()
+        payload["records"][0].update({
+            "semantic_node_ids": ["node-mechanism"],
+            "source_unit_refs": ["SU-A"],
+        })
+        truth_path = self._write(payload)
+        before_truth = truth_path.read_bytes()
+        before_model = model_path.read_bytes()
+        before_outline = outline_path.read_bytes()
+
+        code, report = run_source_truth_audit(self.project, truth_path)
+
+        self.assertEqual(0, code)
+        self.assertEqual("passed", report["status"])
+        self.assertEqual(1, report["repair_summary"]["chapter_placement_suggestions"])
+        self.assertEqual(
+            "suggest_reporting_rehome",
+            report["source_chapter_placement_diagnostics"][0]["outcome"],
+        )
+        self.assertEqual(before_truth, truth_path.read_bytes())
+        self.assertEqual(before_model, model_path.read_bytes())
+        self.assertEqual(before_outline, outline_path.read_bytes())
+
     def test_repair_summary_counts_uncovered_protected_source_units(self) -> None:
         semantic = self.project / "workbench/stages/00-semantic-understanding"
         source_map = self.project / "workbench/stages/00-source-map"

@@ -2,11 +2,78 @@ from __future__ import annotations
 
 import unittest
 
-from cyberppt.semantic_cross_audit import semantic_evidence_cross_issues
+from cyberppt.semantic_cross_audit import (
+    semantic_evidence_cross_issues,
+    source_chapter_placement_suggestions,
+)
 from test_source_argument_model import model, strict_model
 
 
 class SemanticEvidenceCrossAuditTests(unittest.TestCase):
+    def test_placement_suggests_rehome_from_semantic_binding_and_outline_consumer(self) -> None:
+        model = {
+            "subsection_nodes": [{
+                "id": "node-mechanism",
+                "source_heading": "运行机制",
+                "argument_role": "operation",
+            }],
+        }
+        truth = {"records": [{
+            "id": "S001",
+            "semantic_node_ids": ["node-mechanism"],
+            "source_unit_refs": ["SU-A"],
+        }]}
+        outline = {"pages": [{
+            "page_type": "content",
+            "chapter_id": "mechanism",
+            "source_argument_node_ids": ["node-mechanism"],
+        }]}
+
+        suggestions = source_chapter_placement_suggestions(
+            model,
+            truth,
+            source_units=[{"unit_id": "SU-A", "heading_path": ["实施保障"]}],
+            outline=outline,
+        )
+
+        self.assertEqual("suggest_reporting_rehome", suggestions[0]["outcome"])
+        self.assertEqual(["mechanism"], suggestions[0]["suggested_chapter_ids"])
+        self.assertEqual(["semantic_node_scope_match", "source_heading_context_mismatch"], suggestions[0]["reason_codes"])
+
+    def test_placement_suggests_cross_chapter_reference_for_multiple_consumers(self) -> None:
+        model = {"subsection_nodes": [{"id": "node-a", "source_heading": "运行机制"}]}
+        truth = {"records": [{"id": "S001", "semantic_node_ids": ["node-a"], "source_unit_refs": ["SU-A"]}]}
+        outline = {"pages": [
+            {"page_type": "content", "chapter_id": "mechanism", "source_argument_node_ids": ["node-a"]},
+            {"page_type": "content", "chapter_id": "implementation", "source_argument_node_ids": ["node-a"]},
+        ]}
+
+        suggestions = source_chapter_placement_suggestions(
+            model, truth, source_units=[{"unit_id": "SU-A", "heading_path": ["实施保障"]}], outline=outline,
+        )
+
+        self.assertEqual("suggest_cross_chapter_reference", suggestions[0]["outcome"])
+        self.assertEqual(["implementation", "mechanism"], suggestions[0]["suggested_chapter_ids"])
+
+    def test_placement_skips_heading_only_difference_without_semantic_binding(self) -> None:
+        suggestions = source_chapter_placement_suggestions(
+            {"subsection_nodes": []},
+            {"records": []},
+            source_units=[{"unit_id": "SU-A", "heading_path": ["实施保障"]}],
+            outline={"pages": []},
+        )
+
+        self.assertEqual([], suggestions)
+
+    def test_placement_does_not_invent_target_chapter_without_outline(self) -> None:
+        suggestions = source_chapter_placement_suggestions(
+            {"subsection_nodes": [{"id": "node-a", "source_heading": "运行机制"}]},
+            {"records": [{"id": "S001", "semantic_node_ids": ["node-a"], "source_unit_refs": ["SU-A"]}]},
+            source_units=[{"unit_id": "SU-A", "heading_path": ["实施保障"]}],
+        )
+
+        self.assertEqual([], suggestions)
+
     def test_protected_semantic_node_requires_all_source_units_in_truth(self) -> None:
         model = {
             "interpretation_contract_mode": "strict",

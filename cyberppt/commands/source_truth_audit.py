@@ -13,8 +13,12 @@ from cyberppt.source_truth_contract import (
 )
 from cyberppt.semantic_understanding import SEMANTIC_ARGUMENT_MODEL
 from cyberppt.source_argument_model import load_model
-from cyberppt.semantic_cross_audit import semantic_evidence_cross_issues
+from cyberppt.semantic_cross_audit import (
+    semantic_evidence_cross_issues,
+    source_chapter_placement_suggestions,
+)
 from cyberppt.source_document_map import load_source_units
+from cyberppt.outline_contract import load_outline
 
 
 def _coverage_summary(payload: dict[str, object]) -> dict[str, int]:
@@ -116,6 +120,18 @@ def run_source_truth_audit(
             if isinstance(item, dict)
         )
     warnings = source_truth_diagnostic_warnings(payload)
+    source_units = load_source_units(project)
+    outline_path = project / "workbench" / "stages" / "01-analysis" / "outline.json"
+    try:
+        outline = load_outline(outline_path, lightweight=True) if outline_path.is_file() else None
+    except ValueError:
+        outline = None
+    placement_diagnostics = source_chapter_placement_suggestions(
+        argument_model,
+        payload,
+        source_units=source_units,
+        outline=outline,
+    )
     cross_issue_items = (
         semantic_cross_audit.get("issues", [])
         if isinstance(semantic_cross_audit, dict)
@@ -152,10 +168,12 @@ def run_source_truth_audit(
                 warning.code == "SOURCE_PRIORITY_NARRATIVE_WARNING"
                 for warning in warnings
             ),
+            "chapter_placement_suggestions": len(placement_diagnostics),
         },
         "retry_directive": directive,
         "semantic_argument_model": str(project / SEMANTIC_ARGUMENT_MODEL) if argument_model is not None else None,
         "semantic_evidence_cross_audit": semantic_cross_audit,
+        "source_chapter_placement_diagnostics": placement_diagnostics,
         "mode": "lightweight",
     }
     return (0 if not issues else 4), report

@@ -70,6 +70,115 @@ def _semantic_claims(model: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return result
 
 
+def _chapter_consumers(outline: dict[str, Any] | None) -> dict[str, set[str]]:
+    """Map semantic nodes to the approved reporting chapters that consume them."""
+
+    consumers: dict[str, set[str]] = {}
+    if not isinstance(outline, dict):
+        return consumers
+    for page in _items(outline.get("pages")):
+        if _text(page.get("page_type")) != "content":
+            continue
+        chapter_id = _text(page.get("chapter_id"))
+        if not chapter_id:
+            continue
+        for node_id in _refs(page.get("source_argument_node_ids")):
+            consumers.setdefault(node_id, set()).add(chapter_id)
+    return consumers
+
+
+def source_chapter_placement_suggestions(
+    model: dict[str, Any],
+    source_truth: dict[str, Any],
+    *,
+    source_units: list[dict[str, Any]],
+    outline: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    """Suggest author-reviewed reporting placement from structured bindings only.
+
+    A different heading title alone is not meaningful enough to diagnose an
+    original-source placement issue.  A suggestion needs a Source Truth
+    binding to a semantic node, a semantic heading context different from the
+    source unit's context, and an already-approved Outline chapter consuming
+    that node.  The function is deliberately read-only and non-blocking.
+    """
+
+    claims = _semantic_claims(model)
+    consumers = _chapter_consumers(outline)
+    units = {
+        _text(item.get("unit_id")): item
+        for item in source_units
+        if _text(item.get("unit_id"))
+    }
+    node_ids_by_unit: dict[str, set[str]] = {}
+    record_ids_by_unit: dict[str, set[str]] = {}
+    for record in _items(source_truth.get("records")):
+        record_id = _text(record.get("id"))
+        node_ids = {_text(value) for value in _refs(record.get("semantic_node_ids"))}
+        if not node_ids:
+            continue
+        for unit_id in _refs(record.get("source_unit_refs")):
+            if unit_id not in units:
+                continue
+            node_ids_by_unit.setdefault(unit_id, set()).update(node_ids)
+            if record_id:
+                record_ids_by_unit.setdefault(unit_id, set()).add(record_id)
+
+    suggestions: list[dict[str, Any]] = []
+    for unit_id in sorted(node_ids_by_unit):
+        unit = units[unit_id]
+        heading_path = [_text(value) for value in unit.get("heading_path", []) if _text(value)]
+        source_heading = heading_path[-1] if heading_path else ""
+        node_ids = sorted(node_ids_by_unit[unit_id])
+        target_chapters = sorted(
+            {
+                chapter_id
+                for node_id in node_ids
+                for chapter_id in consumers.get(node_id, set())
+            }
+        )
+        semantic_headings = sorted(
+            {
+                _text((claims.get(node_id) or {}).get("source_heading"))
+                for node_id in node_ids
+                if _text((claims.get(node_id) or {}).get("source_heading"))
+            }
+        )
+        if not source_heading or not semantic_headings or source_heading in semantic_headings:
+            continue
+        if not target_chapters:
+            continue
+        outcome = (
+            "suggest_reporting_rehome"
+            if len(target_chapters) == 1
+            else "suggest_cross_chapter_reference"
+        )
+        suggestions.append(
+            {
+                "outcome": outcome,
+                "source_unit_id": unit_id,
+                "source_heading_path": heading_path,
+                "semantic_node_ids": node_ids,
+                "semantic_headings": semantic_headings,
+                "source_truth_record_ids": sorted(record_ids_by_unit.get(unit_id, set())),
+                "suggested_chapter_ids": target_chapters,
+                "reason_codes": [
+                    "semantic_node_scope_match",
+                    "source_heading_context_mismatch",
+                ],
+                "author_action": (
+                    "review_primary_chapter_assignment"
+                    if outcome == "suggest_reporting_rehome"
+                    else "select_primary_chapter_and_cross_references"
+                ),
+            }
+        )
+    return sorted(
+        suggestions,
+        key=lambda item: (str(item["source_unit_id"]), str(item["outcome"])),
+    )
+
+
 def _all_model_refs(model: dict[str, Any]) -> set[str]:
     refs: set[str] = set()
     thesis = model.get("document_thesis")
