@@ -173,6 +173,28 @@ class CompilePageScriptAuthoringTests(unittest.TestCase):
         chapter = (output / "ch01.md").read_text(encoding="utf-8")
         self.assertIn("- 上屏表达结构：framework_4", chapter)
 
+    def test_emits_outline_expression_model_as_non_onscreen_context(self) -> None:
+        self.outline["pages"][2]["expression_model_selection"] = {
+            "model_id": "scqa",
+            "fit": "selected",
+            "fit_reason": "来源形成前提、矛盾与回应链。",
+            "source_mapping": [
+                {"slot": "situation", "source_refs": ["ST001"]},
+                {"slot": "question", "source_refs": ["ST001"], "implicit": True, "statement": "如何回应？"},
+            ],
+        }
+        self.outline_path.write_text(json.dumps(self.outline, ensure_ascii=False), encoding="utf-8")
+        self.authoring["outline_sha256"] = _sha256(self.outline_path)
+        self.authoring_path.write_text(json.dumps(self.authoring, ensure_ascii=False), encoding="utf-8")
+        output = self.scripts / "drafts/run-expression-model"
+
+        compile_page_script_authoring(self.project, output_dir=output)
+
+        chapter = (output / "ch01.md").read_text(encoding="utf-8")
+        self.assertIn("### 表达模型（不上屏）", chapter)
+        self.assertIn("- 模型：scqa", chapter)
+        self.assertIn("question＝ST001（隐含推导）：如何回应？", chapter)
+
     def test_emits_default_prose_paragraph_map_for_distinct_source_paragraphs(self) -> None:
         content = self.outline["pages"][2]
         content["source_refs"] = ["ST001", "ST002", "ST003", "ST004"]

@@ -152,6 +152,35 @@ def _logic_skeleton(page: dict[str, Any]) -> str:
     return "\n".join(lines) or str(page.get("core_message") or "").strip()
 
 
+def _expression_model_block(page: dict[str, Any]) -> list[str]:
+    """Render the Outline's author-selected expression model outside the audience layer."""
+
+    selection = page.get("expression_model_selection")
+    if not isinstance(selection, dict) or selection.get("fit") != "selected":
+        return ["- 模型：source_native", "- 使用方式：沿用来源已证实的论证顺序，不另套表达模型。"]
+    model_id = str(selection.get("model_id") or "source_native").strip()
+    lines = [f"- 模型：{model_id}"]
+    reason = str(selection.get("fit_reason") or "").strip()
+    if reason:
+        lines.append(f"- 匹配理由：{reason}")
+    mappings = selection.get("source_mapping")
+    if isinstance(mappings, list):
+        lines.append("- 槽位映射：")
+        for mapping in mappings:
+            if not isinstance(mapping, dict):
+                continue
+            slot = str(mapping.get("slot") or "未命名槽位").strip()
+            refs = "、".join(str(ref) for ref in mapping.get("source_refs") or [] if str(ref))
+            detail = refs or "未引用"
+            if mapping.get("implicit") is True:
+                detail += "（隐含推导）"
+            statement = str(mapping.get("statement") or "").strip()
+            if statement:
+                detail += f"：{statement}"
+            lines.append(f"  - {slot}＝{detail}")
+    return lines
+
+
 def _template_page(page: dict[str, Any]) -> str:
     page_id = str(page["page_id"])
     number = _page_number(page_id)
@@ -292,6 +321,10 @@ def _content_page(
         "```text",
         _logic_skeleton(page),
         "```",
+        "",
+        "### 表达模型（不上屏）",
+        "",
+        *_expression_model_block(page),
         "",
         "### 视觉结构（不上屏）",
         "",
