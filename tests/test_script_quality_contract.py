@@ -7,6 +7,7 @@ import tempfile
 import unittest
 
 from cyberppt.script_quality_contract import (
+    ScriptDocument,
     ScriptPage,
     _mechanical_evidence_bullets,
     _compound_module_heading_hits,
@@ -33,6 +34,7 @@ from cyberppt.script_quality_contract import (
     _polarity_dropped_terms,
     _page_content_unit_coverage_issues,
     _visual_structure_judgment_issues,
+    _page_relationship_continuity_issues,
     audit_script_quality,
     assert_imagegen_onscreen_readiness,
     build_communication_review,
@@ -3465,6 +3467,160 @@ class VisualStructureJudgmentAccuracyTests(unittest.TestCase):
         )
         codes = {issue.code for issue in _visual_structure_judgment_issues(page)}
         self.assertIn("VISUAL_STRUCTURE_MECHANISM_AS_LANE", codes)
+
+
+class RelationshipContinuityTests(unittest.TestCase):
+    def _page(
+        self,
+        number: int,
+        *,
+        mission: str,
+        core_message: str,
+        onscreen: str = "数据接入 → 模型计算 → 成果发布",
+        visual: str = "以数据接入、模型计算、成果发布构成连续过程链。",
+        relations: list[dict[str, object]] | None = None,
+    ) -> ScriptPage:
+        return ScriptPage(
+            page_id=f"p{number:02d}",
+            sequence=number,
+            heading=f"第{number}页",
+            page_type="content",
+            title=f"页面{number}",
+            main_message=core_message,
+            full_prose="完整文字稿说明数据接入、模型计算和成果发布的业务关系。",
+            selection_notes="",
+            evidence_map="",
+            evidence_map_refs=(),
+            source_refs=("S001",),
+            boundary_source_refs=(),
+            boundary="",
+            visual_structure=visual,
+            onscreen_text=onscreen,
+            module_titles=tuple(onscreen.split(" → ")),
+            contract_receipt={"content_relations": relations or []},
+        )
+
+    def _issues(
+        self,
+        first: ScriptPage,
+        second: ScriptPage | None = None,
+        *,
+        first_contract: dict[str, object] | None = None,
+        second_contract: dict[str, object] | None = None,
+    ) -> list[ScriptQualityIssue]:
+        pages = (first,) if second is None else (first, second)
+        contracts = {
+            page.page_id: {
+                "page_type": "content",
+                "page_mission": page.main_message,
+                "core_message": page.core_message,
+                **(
+                    first_contract
+                    if page.page_id == first.page_id and first_contract
+                    else second_contract or {}
+                ),
+            }
+            for page in pages
+        }
+        return _page_relationship_continuity_issues(ScriptDocument(pages), contracts)
+
+    def test_blocks_duplicate_adjacent_page_responsibility(self) -> None:
+        relation = {"relation": "supports", "subject": "统一目录", "objects": ["服务"]}
+        first = self._page(1, mission="说明统一目录如何支撑服务", core_message="统一目录支撑服务", relations=[relation])
+        second = self._page(2, mission="说明统一目录如何支撑服务", core_message="统一目录支撑服务", relations=[relation])
+
+        codes = {issue.code for issue in self._issues(first, second)}
+
+        self.assertIn("ADJACENT_PAGE_RESPONSIBILITY_DUPLICATE", codes)
+
+    def test_main_audit_exposes_relationship_errors(self) -> None:
+        relation = {"relation": "supports", "subject": "统一目录", "objects": ["服务"]}
+        first = self._page(1, mission="说明统一目录如何支撑服务", core_message="统一目录支撑服务", relations=[relation])
+        second = self._page(2, mission="说明统一目录如何支撑服务", core_message="统一目录支撑服务", relations=[relation])
+        outline = {
+            "pages": [
+                {"page_id": "p01", "page_type": "content", "page_mission": first.main_message, "core_message": first.core_message, "content_relations": [relation], "source_refs": ["S001"]},
+                {"page_id": "p02", "page_type": "content", "page_mission": second.main_message, "core_message": second.core_message, "content_relations": [relation], "source_refs": ["S001"]},
+            ]
+        }
+        truth = {"records": [{"id": "S001", "statement": "统一目录支撑服务。"}]}
+
+        codes = {
+            issue.code
+            for issue in audit_script_quality(ScriptDocument((first, second)), outline, truth)
+        }
+
+        self.assertIn("ADJACENT_PAGE_RESPONSIBILITY_DUPLICATE", codes)
+
+    def test_blocks_current_page_spending_next_page_excluded_scope(self) -> None:
+        first = self._page(1, mission="说明目录基础", core_message="目录支撑服务", onscreen="统一目录；计量结算机制形成服务闭环")
+        second = self._page(2, mission="说明计量结算", core_message="计量结算形成闭环")
+
+        issues = self._issues(first, second, second_contract={"must_not_include": ["计量结算机制"]})
+        match = next(issue for issue in issues if issue.code == "PAGE_SCOPE_PREEMPTED")
+
+        self.assertEqual(("p01", "p02"), match.pages)
+
+    def test_blocks_declared_process_when_visible_layer_is_false_parallel(self) -> None:
+        first = self._page(
+            1,
+            mission="说明处理过程",
+            core_message="数据经模型形成成果",
+            onscreen="数据；模型；成果",
+            visual="展示三项能力模块。",
+            relations=[{"relation": "flows_to", "subject": "数据", "objects": ["模型", "成果"]}],
+        )
+
+        codes = {issue.code for issue in self._issues(first)}
+
+        self.assertIn("DECLARED_RELATION_NOT_VISIBLE", codes)
+        self.assertIn("ONSCREEN_FALSE_RELATION_PARALLEL", codes)
+
+    def test_allows_declared_process_with_visible_relation(self) -> None:
+        first = self._page(
+            1,
+            mission="说明处理过程",
+            core_message="数据经模型形成成果",
+            relations=[{"relation": "flows_to", "subject": "数据", "objects": ["模型", "成果"]}],
+        )
+
+        codes = {issue.code for issue in self._issues(first)}
+
+        self.assertNotIn("DECLARED_RELATION_NOT_VISIBLE", codes)
+        self.assertNotIn("ONSCREEN_FALSE_RELATION_PARALLEL", codes)
+
+    def test_warns_when_declared_prerequisite_is_not_formed(self) -> None:
+        first = self._page(
+            1,
+            mission="说明服务基础",
+            core_message="服务基础已形成",
+            relations=[{"relation": "supports", "subject": "服务基础", "objects": ["服务"], "outputs": ["服务基础"]}],
+        )
+        second = self._page(
+            2,
+            mission="说明后续服务",
+            core_message="后续服务形成稳定闭环",
+            relations=[{"relation": "depends_on", "subject": "后续服务", "objects": ["服务"], "inputs": ["缺失条件"]}],
+        )
+
+        issues = self._issues(first, second)
+        match = next(issue for issue in issues if issue.code == "PAGE_PREREQUISITE_UNFORMED")
+
+        self.assertEqual("warning", match.severity)
+
+    def test_skips_legacy_content_page_without_relations(self) -> None:
+        first = self._page(
+            1,
+            mission="说明处理过程",
+            core_message="数据经模型形成成果",
+            onscreen="数据；模型；成果",
+            visual="展示三项能力模块。",
+        )
+
+        codes = {issue.code for issue in self._issues(first)}
+
+        self.assertNotIn("DECLARED_RELATION_NOT_VISIBLE", codes)
+        self.assertNotIn("ONSCREEN_FALSE_RELATION_PARALLEL", codes)
 
 
 if __name__ == "__main__":
