@@ -3560,29 +3560,6 @@ def _prose_issues(
                         severity="warning",
                     )
                 )
-    if not page.evidence_map or not page.evidence_map_refs:
-        issues.append(
-            _issue(
-                "CONTENT_EVIDENCE_MAP_MISSING",
-                page,
-                "Content page must include an evidence map from support points to Source IDs.",
-                "Add 证据映射 listing each support point and its Source ID(s).",
-            )
-        )
-    elif expected_source_refs:
-        missing = tuple(
-            item for item in expected_source_refs if item not in page.evidence_map_refs
-        )
-        if missing:
-            issues.append(
-                _issue(
-                    "PROSE_SOURCE_COVERAGE_GAP",
-                    page,
-                    "Evidence map does not cover all Source IDs assigned by the Outline.",
-                    "Map every Outline-assigned Source ID to a support point in 证据映射.",
-                    missing,
-                )
-            )
     notes = page.speaker_notes.strip()
     if not notes:
         issues.append(

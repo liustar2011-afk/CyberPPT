@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 import json
 import hashlib
 from pathlib import Path
@@ -343,6 +344,16 @@ class FullProseSourceCoverageTests(unittest.TestCase):
             },
         )
         self.assertNotIn("FULL_PROSE_SOURCE_COVERAGE_GAP", {item.code for item in issues})
+
+    def test_evidence_map_is_optional_when_page_sources_are_declared(self) -> None:
+        page = self._page("页面完整文字稿。")
+        page = replace(page, evidence_map="", evidence_map_refs=())
+
+        issues = _prose_issues(page, expected_source_refs=("ST001",))
+        codes = {item.code for item in issues}
+
+        self.assertNotIn("CONTENT_EVIDENCE_MAP_MISSING", codes)
+        self.assertNotIn("PROSE_SOURCE_COVERAGE_GAP", codes)
 
     def test_retained_detail_does_not_require_record_by_record_prose(self) -> None:
         issues = _full_prose_source_coverage_issues(
