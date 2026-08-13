@@ -184,7 +184,7 @@ def _all_model_refs(model: dict[str, Any]) -> set[str]:
     thesis = model.get("document_thesis")
     if isinstance(thesis, dict):
         refs.update(_refs(thesis.get("evidence_refs")))
-    for field in ("section_nodes", "subsection_nodes", "argument_relations", "heading_semantic_cards"):
+    for field in ("section_nodes", "subsection_nodes", "argument_relations"):
         for item in _items(model.get(field)):
             refs.update(_refs(item.get("evidence_refs")))
     context = model.get("document_semantics")

@@ -386,43 +386,25 @@ class Stage01CompilerTests(unittest.TestCase):
             outline["argument_node_dispositions"][0],
         )
 
-    def test_missing_projection_fields_block_audit_and_compilation(self) -> None:
-        del self.model["source_coverage"]["assignments"][0]["atomic_items"][0]["evidence_role"]
-        model_path = self.project / SEMANTIC_ARGUMENT_MODEL
-        model_path.write_text(json.dumps(self.model, ensure_ascii=False, indent=2), encoding="utf-8")
-
-        code, report = run_semantic_understanding_audit(self.project)
-
-        self.assertEqual(4, code)
-        self.assertIn(
-            "SEMANTIC_SOURCE_TRUTH_PROJECTION_FIELDS_MISSING",
-            {item["code"] for item in report["issues"]},
-        )
-        with self.assertRaisesRegex(
-            ValueError,
-            "SEMANTIC_SOURCE_TRUTH_PROJECTION_FIELDS_MISSING",
-        ):
-            compile_source_truth(self.project)
-
-    def test_structural_argument_duty_cannot_be_downgraded_to_p2(self) -> None:
+    def test_atomic_item_without_evidence_role_still_compiles_using_node_role(self) -> None:
+        # evidence_role/claim_role/argument_duty are no longer authored
+        # per atomic item; they are derived from the item's target semantic
+        # node (argument_role/argument_weight) at compile time instead.
         atomic = self.model["source_coverage"]["assignments"][0]["atomic_items"][0]
-        atomic["argument_duty"] = "driver"
-        atomic["evidence_priority"] = "P2"
+        del atomic["evidence_role"]
+        del atomic["claim_role"]
+        del atomic["argument_duty"]
         model_path = self.project / SEMANTIC_ARGUMENT_MODEL
         model_path.write_text(json.dumps(self.model, ensure_ascii=False, indent=2), encoding="utf-8")
 
         code, report = run_semantic_understanding_audit(self.project)
+        self.assertEqual(0, code)
 
-        self.assertEqual(4, code)
-        self.assertIn(
-            "SEMANTIC_STRUCTURAL_DUTY_DOWNGRADED",
-            {item["code"] for item in report["issues"]},
-        )
-        with self.assertRaisesRegex(
-            ValueError,
-            "SEMANTIC_STRUCTURAL_DUTY_DOWNGRADED",
-        ):
-            compile_source_truth(self.project)
+        truth_path = compile_source_truth(self.project)
+        truth = json.loads(truth_path.read_text(encoding="utf-8"))
+        record = next(item for item in truth["records"] if item["atomic_item_id"] == "AI-001")
+        self.assertEqual("fact", record["claim_role"])
+        self.assertEqual("foundation", record["semantic_argument_role"])
 
     def test_official_cli_executes_new_lightweight_path_without_control_artifacts(self) -> None:
         goal = "面向建设相关方说明现有基础并确认后续动作。"

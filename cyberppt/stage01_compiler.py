@@ -32,6 +32,15 @@ EVIDENCE_TYPE = {
     "unresolved": "U",
 }
 PRIORITY = {"core": "P0", "supporting": "P2", "constraint": "P1", "detail": "P2"}
+# Atomic items no longer redeclare evidence_role/claim_role independently of
+# their target semantic node (Stage 00 authors it once, on the node); this
+# derives the Source Truth evidence_role from the node's own argument_role.
+ARGUMENT_ROLE_TO_EVIDENCE_ROLE = {
+    "thesis": "judgment",
+    "recommendation": "recommendation",
+    "boundary": "boundary",
+    "gap": "unresolved",
+}
 STATUS = {
     "existing": "现状",
     "in_progress": "进行中",
@@ -189,7 +198,15 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
                 raise ValueError(f"atomic item {item_id} references unknown source units: {missing}")
             record_id = _record_id(len(records) + 1)
             item_to_record[item_id] = record_id
-            evidence_role = str(atomic["evidence_role"])
+            target_nodes = [nodes[node_id] for node_id in semantic_node_ids if node_id in nodes]
+            primary_node = target_nodes[0] if target_nodes else {}
+            node_argument_role = str(primary_node.get("argument_role") or "evidence").strip()
+            evidence_role = str(
+                atomic.get("evidence_role")
+                or ARGUMENT_ROLE_TO_EVIDENCE_ROLE.get(node_argument_role, "fact")
+            ).strip()
+            if evidence_role not in EVIDENCE_TYPE:
+                evidence_role = "fact"
             first = units[refs[0]]
             quote = "\n".join(str(units[ref].get("text") or "").strip() for ref in refs).strip()
             origins = {
@@ -201,7 +218,9 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
             if not claim_origin:
                 claim_origin = next((value for value in origins if value), "source_explicit")
             anchors = _strings(atomic.get("coverage_anchors"))
-            importance = str(atomic.get("importance") or "detail").strip()
+            importance = str(
+                atomic.get("importance") or primary_node.get("argument_weight") or "detail"
+            ).strip()
             status = str(atomic.get("status") or "unknown").strip()
             clauses = [
                 clause.strip()
@@ -250,7 +269,7 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
                     "status": STATUS.get(status, status or "待确认"),
                     "semantic_status": status,
                     "claim_role": evidence_role,
-                    "semantic_argument_role": str(atomic.get("claim_role") or ""),
+                    "semantic_argument_role": str(atomic.get("claim_role") or node_argument_role),
                     "argument_duty": str(atomic.get("argument_duty") or "detail"),
                     "semantic_units": semantic_units,
                     "coverage_anchors": anchors,

@@ -91,7 +91,6 @@ class SemanticUnderstandingTests(unittest.TestCase):
         self.assertIn("source-native business relation", payload["authoring_task"])
         self.assertIn("author_purpose", payload["authoring_task"])
         self.assertIn("argument_method", payload["authoring_task"])
-        self.assertIn("heading_semantic_cards", payload["authoring_task"])
         self.assertIn("concept_occurrence_graph", payload["authoring_task"])
         self.assertIn("source_gaps", payload["authoring_task"])
         self.assertNotIn("source_bundle_sha256", payload["authoring_task"])

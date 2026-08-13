@@ -37,7 +37,6 @@ RELATIONS = frozenset(
 )
 RELATION_WEIGHT_EFFECTS = frozenset({"none"})
 ARGUMENT_WEIGHTS = frozenset({"core", "supporting", "detail", "constraint"})
-ARGUMENT_WEIGHT_BUCKETS = ("core", "supporting", "detail", "constraint")
 ARGUMENT_ROLES = frozenset(
     {
         "thesis",
@@ -170,18 +169,9 @@ def empty_model() -> dict[str, Any]:
             "actor_refs": [],
             "claim_origin": "source_explicit",
         },
-        "heading_semantic_cards": [],
         "section_nodes": [],
         "subsection_nodes": [],
         "argument_relations": [],
-        "argument_weighting": {
-            "definition": "论点权重描述源材料自身的论证重要性；core 是独立核心主张，supporting 是证明或展开模块，detail 是保留细节，constraint 是约束条件。论证关系不改变节点权重。",
-            "core_node_ids": [],
-            "supporting_node_ids": [],
-            "detail_node_ids": [],
-            "constraint_node_ids": [],
-            "review_notes": [],
-        },
         "mece_rules": {
             "partition_basis": "",
             "exhaustive_scope": "",
@@ -505,11 +495,6 @@ def _strict_contract_issues(
         for item in sections + subsections
         if isinstance(item, dict) and _text(item.get("id"))
     }
-    known_argument_ids.update(
-        _text(item.get("heading_id"))
-        for item in _list(model.get("heading_semantic_cards"))
-        if isinstance(item, dict) and _text(item.get("heading_id"))
-    )
     for item in inference_items:
         if not isinstance(item, dict):
             issues.append(_issue("SEMANTIC_INFERENCE_INVALID", "inference_register 的每项必须是对象。"))
@@ -547,99 +532,33 @@ def _strict_contract_issues(
                 )
             )
 
-    heading_cards = model.get("heading_semantic_cards")
-    expected_headings = {
-        _text(item.get("heading_id")): item
-        for item in (required_heading_records or [])
-        if isinstance(item, dict) and _text(item.get("heading_id"))
+    # Every heading in the original tree must be interpreted directly by a
+    # section/subsection node (matched on exact title + level).  This replaces
+    # a separate heading_semantic_cards mirror: that structure required every
+    # node to restate the same title/level/role/weight/claim_origin a second
+    # time and then be checked for drift against the node itself, which added
+    # a large amount of authoring and validation surface without covering any
+    # heading a section/subsection node check does not already cover.
+    found_headings = {
+        (_heading_key(node.get("source_heading")), node.get("level"))
+        for node in sections + subsections
+        if isinstance(node, dict) and _text(node.get("source_heading"))
     }
-    if not isinstance(heading_cards, list):
-        issues.append(
-            _issue(
-                "SEMANTIC_HEADING_CARDS_INVALID",
-                "严格语义合同必须声明 heading_semantic_cards 数组。",
-            )
-        )
-        heading_cards = []
-    card_ids: set[str] = set()
-    for card in heading_cards:
-        if not isinstance(card, dict):
-            issues.append(_issue("SEMANTIC_HEADING_CARD_INVALID", "标题语义卡的每项必须是对象。"))
-            continue
-        heading_id = _text(card.get("heading_id"))
-        if not heading_id or heading_id in card_ids:
-            issues.append(_issue("SEMANTIC_HEADING_CARD_ID_INVALID", "标题语义卡 heading_id 必须非空且唯一。", node_id=heading_id))
-        if heading_id:
-            card_ids.add(heading_id)
-        for field in (
-            "source_unit_id",
-            "source_heading",
-            "semantic_function",
-            "author_claim",
-            "argument_role",
-            "argument_weight",
-        ):
-            if not _text(card.get(field)):
-                issues.append(_issue("SEMANTIC_HEADING_CARD_INCOMPLETE", f"标题语义卡缺少 {field}。", node_id=heading_id))
-        if not isinstance(card.get("level"), int) or int(card.get("level", 0)) < 1:
-            issues.append(_issue("SEMANTIC_HEADING_CARD_LEVEL_INVALID", "标题语义卡 level 必须是正整数。", node_id=heading_id))
-        source_unit_ref_issues(card.get("evidence_refs"), owner="标题语义卡 evidence_refs", node_id=heading_id)
-        source_unit_id = _text(card.get("source_unit_id"))
-        if not _SOURCE_UNIT_RE.fullmatch(source_unit_id):
-            issues.append(_issue("SEMANTIC_HEADING_CARD_SOURCE_UNIT_INVALID", "标题语义卡必须绑定一个稳定 source_unit_id。", node_id=heading_id))
-        elif known_source_units is not None and source_unit_id not in known_source_units:
-            issues.append(_issue("SEMANTIC_SOURCE_UNIT_UNKNOWN", "标题语义卡绑定了未知 source_unit_id。", node_id=heading_id))
-        expected = expected_headings.get(heading_id)
-        if expected is not None and (
-            _text(card.get("source_heading")) != _text(expected.get("title"))
-            or card.get("level") != expected.get("level")
-            or source_unit_id != _text(expected.get("unit_id"))
-        ):
-            issues.append(_issue("SEMANTIC_HEADING_CARD_DRIFTED", "标题语义卡必须逐字绑定原始标题、层级和标题 source_unit_id。", node_id=heading_id))
-    missing_cards = sorted(set(expected_headings) - card_ids)
-    if missing_cards:
+    missing_headings = sorted(
+        {
+            _text(item.get("title"))
+            for item in (required_heading_records or [])
+            if isinstance(item, dict)
+            and (_heading_key(item.get("title")), item.get("level")) not in found_headings
+        }
+    )
+    if missing_headings:
         issues.append(
             _issue(
                 "SEMANTIC_SOURCE_HEADINGS_UNINTERPRETED",
-                "原始标题树中仍有标题未形成语义卡：" + "、".join(missing_cards),
+                "原始标题树中仍有标题未被任何语义节点解读：" + "、".join(missing_headings),
             )
         )
-
-    cards_by_id = {
-        _text(item.get("heading_id")): item
-        for item in heading_cards
-        if isinstance(item, dict) and _text(item.get("heading_id"))
-    }
-    cards_by_title: dict[str, list[dict[str, Any]]] = {}
-    for card in cards_by_id.values():
-        cards_by_title.setdefault(_heading_key(card.get("source_heading")), []).append(card)
-    for node in sections + subsections:
-        if not isinstance(node, dict):
-            continue
-        node_id = _text(node.get("id"))
-        matching_cards = cards_by_title.get(_heading_key(node.get("source_heading")), [])
-        if not matching_cards:
-            continue
-        source_heading_id = _text(node.get("source_heading_id"))
-        card = cards_by_id.get(source_heading_id)
-        if card is None or card not in matching_cards:
-            issues.append(
-                _issue(
-                    "SEMANTIC_NODE_HEADING_CARD_NOT_BOUND",
-                    "严格语义节点必须通过 source_heading_id 绑定对应标题语义卡。",
-                    node_id=node_id,
-                )
-            )
-            continue
-        for field in ("argument_role", "argument_weight", "claim_origin"):
-            if _text(node.get(field)) != _text(card.get(field)):
-                issues.append(
-                    _issue(
-                        "SEMANTIC_NODE_HEADING_CARD_DRIFTED",
-                        f"语义节点的 {field} 必须与已绑定标题语义卡一致。",
-                        node_id=node_id,
-                    )
-                )
 
     claim_items: list[tuple[str, dict[str, Any]]] = []
     if isinstance(thesis, dict):
@@ -647,11 +566,6 @@ def _strict_contract_issues(
     claim_items.extend(
         (_text(item.get("id")), item)
         for item in sections + subsections
-        if isinstance(item, dict)
-    )
-    claim_items.extend(
-        (_text(item.get("heading_id")), item)
-        for item in heading_cards
         if isinstance(item, dict)
     )
     for node_id, item in claim_items:
@@ -711,14 +625,17 @@ def _strict_contract_issues(
                     owner=f"{field}[{index}].source_refs",
                 )
 
+    # concept_occurrence_graph is an optional, advisory aid for catching
+    # repeated terms with different meanings. It is validated for internal
+    # consistency when the author chooses to fill it in, but its absence is
+    # not a blocking issue: unlike evidence/status/claim_origin, a missed
+    # homonym does not put a fabricated or mis-stated claim into the model.
     graph = model.get("concept_occurrence_graph")
-    if not isinstance(graph, dict):
-        issues.append(_issue("SEMANTIC_CONCEPT_GRAPH_INVALID", "严格语义合同必须声明 concept_occurrence_graph 对象。"))
-    else:
+    if isinstance(graph, dict) and (graph.get("concepts") or graph.get("relations")):
         concepts = graph.get("concepts")
         graph_relations = graph.get("relations")
-        if not isinstance(concepts, list) or not isinstance(graph_relations, list) or not isinstance(graph.get("review_notes"), list):
-            issues.append(_issue("SEMANTIC_CONCEPT_GRAPH_INVALID", "概念出现图必须包含 concepts、relations 和 review_notes 数组。"))
+        if not isinstance(concepts, list) or not isinstance(graph_relations, list):
+            issues.append(_issue("SEMANTIC_CONCEPT_GRAPH_INVALID", "概念出现图声明时必须包含 concepts 和 relations 数组。"))
             concepts = concepts if isinstance(concepts, list) else []
             graph_relations = graph_relations if isinstance(graph_relations, list) else []
         concept_ids: set[str] = set()
@@ -770,7 +687,6 @@ def validate_model(
     issues: list[dict[str, str]] = []
     if not isinstance(model, dict):
         return [_issue("SEMANTIC_ARGUMENT_MODEL_MISSING", "语义理解必须产出机器可读的源材料论点模型。")]
-    projection_required = model.get("source_truth_projection_mode") == "required"
     corrupted_paths = _walk_corrupted_text(model)
     if corrupted_paths:
         preview = "、".join(corrupted_paths[:8])
@@ -909,37 +825,6 @@ def validate_model(
         parent_level = levels.get(parent_id)
         if not isinstance(node.get("level"), int) or not isinstance(parent_level, int) or node.get("level") != parent_level + 1:
             issues.append(_issue("SEMANTIC_NODE_LEVEL_INVALID", "论点节点 level 必须比 parent_id 的 level 高一级；不得把三级能力/优势条目伪装成二级标题。", node_id=node_id))
-
-    weighting = model.get("argument_weighting")
-    if not isinstance(weighting, dict):
-        issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_MISSING", "语义理解必须声明 argument_weighting，明确哪些节点是核心论点、支撑模块、细节或约束。"))
-    else:
-        if not _text(weighting.get("definition")):
-            issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_INCOMPLETE", "argument_weighting.definition 必须解释论点权重与论证关系的区别。"))
-        bucket_ids: dict[str, list[str]] = {}
-        for bucket in ARGUMENT_WEIGHT_BUCKETS:
-            values = weighting.get(f"{bucket}_node_ids")
-            if not isinstance(values, list):
-                issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_BUCKET_INVALID", f"argument_weighting.{bucket}_node_ids 必须是数组。"))
-                values = []
-            bucket_ids[bucket] = [_text(item) for item in values if _text(item)]
-        assigned: dict[str, str] = {}
-        for bucket, values in bucket_ids.items():
-            if len(values) != len(set(values)):
-                issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_DUPLICATED", f"argument_weighting.{bucket}_node_ids 不得重复。"))
-            for node_id in values:
-                if node_id not in node_ids:
-                    issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_NODE_UNKNOWN", "argument_weighting 引用了不存在的论点节点。", node_id=node_id))
-                if node_id in assigned:
-                    issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_NODE_REUSED", "同一论点节点不得同时被归入多个权重桶。", node_id=node_id))
-                assigned[node_id] = bucket
-        missing_weights = sorted(node_ids - set(assigned))
-        if missing_weights:
-            issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHTING_NODE_MISSING", "每个章节/子章节节点都必须进入一个明确的论点权重桶：" + "、".join(missing_weights)))
-        for node_id, expected_weight in assigned.items():
-            actual_weight = _text((node_index(model).get(node_id) or {}).get("argument_weight"))
-            if actual_weight and actual_weight != expected_weight:
-                issues.append(_issue("SEMANTIC_ARGUMENT_WEIGHT_DRIFTED", "节点 argument_weight 必须与 argument_weighting 的权重桶一致；关系类型不能覆盖该字段。", node_id=node_id))
 
     relations = _list(model.get("argument_relations"))
     if not relations:
@@ -1111,6 +996,13 @@ def validate_model(
                             )
                         )
                     atomic_covered_refs: set[str] = set()
+                    # Atomic items keep only the fields that cannot be derived
+                    # from their target semantic node: the source-faithful
+                    # statement, which source units it covers, and (when it
+                    # genuinely differs from the node) its own status. Role,
+                    # evidence type, priority, and argument duty are derived
+                    # from the target node at Source Truth compile time
+                    # instead of being redeclared and cross-checked here.
                     for atomic_item in atomic_items:
                         if not isinstance(atomic_item, dict):
                             issues.append(_issue("SEMANTIC_ATOMIC_ITEM_INVALID", "assignment.atomic_items 的每项必须是对象。"))
@@ -1119,48 +1011,17 @@ def validate_model(
                         statement = _text(atomic_item.get("statement"))
                         item_refs = {_text(item) for item in _list(atomic_item.get("source_unit_refs")) if _text(item)}
                         anchors = [_text(item) for item in _list(atomic_item.get("coverage_anchors")) if _text(item)]
-                        claim_role = _text(atomic_item.get("claim_role"))
-                        evidence_role = _text(atomic_item.get("evidence_role"))
-                        evidence_priority = _text(atomic_item.get("evidence_priority"))
-                        argument_duty = _text(atomic_item.get("argument_duty"))
-                        importance = _text(atomic_item.get("importance"))
                         status = _text(atomic_item.get("status"))
-                        item_origin = _text(atomic_item.get("claim_origin"))
-                        if not item_id or not statement or not item_refs or not claim_role or not importance or not status:
-                            issues.append(_issue("SEMANTIC_ATOMIC_ITEM_INCOMPLETE", "每个 atomic_item 必须包含 item_id、statement、source_unit_refs、claim_role、importance 和 status。", node_id=item_id))
+                        if not item_id or not statement or not item_refs or not status:
+                            issues.append(_issue("SEMANTIC_ATOMIC_ITEM_INCOMPLETE", "每个 atomic_item 必须包含 item_id、statement、source_unit_refs 和 status。", node_id=item_id))
                             continue
-                        if projection_required and (
-                            evidence_role not in SOURCE_TRUTH_CLAIM_ROLES
-                            or evidence_priority not in {"P0", "P1", "P2"}
-                            or argument_duty not in ARGUMENT_DUTIES
-                            or item_origin not in CLAIM_ORIGINS
-                        ):
-                            issues.append(
-                                _issue(
-                                    "SEMANTIC_SOURCE_TRUTH_PROJECTION_FIELDS_MISSING",
-                                    "source_truth_projection_mode=required 时，每个 atomic_item 必须声明有效的 evidence_role、evidence_priority、argument_duty 和 claim_origin。",
-                                    node_id=item_id,
-                                )
-                            )
-                        if argument_duty in {"premise", "driver", "consequence", "gap", "response"} and evidence_priority == "P2":
-                            issues.append(_issue(
-                                "SEMANTIC_STRUCTURAL_DUTY_DOWNGRADED",
-                                "承担前提、驱动、结果、缺口或回应职责的原子事项不得标为 P2；否则完整论证链会在 Outline 和上屏压缩中被静默删除。",
-                                node_id=item_id,
-                            ))
                         if not item_refs <= refs:
                             issues.append(_issue("SEMANTIC_ATOMIC_ITEM_SOURCE_DISCONNECTED", "atomic_item.source_unit_refs 必须属于当前 assignment。", node_id=item_id))
                         if len(set(anchors)) < 2:
                             issues.append(_issue("SEMANTIC_ATOMIC_ITEM_ANCHORS_INSUFFICIENT", "每个原子事项至少保留两个来源特征锚点，不能用通用概括代替具体业务内容。", node_id=item_id))
-                        if claim_role not in ARGUMENT_ROLES:
-                            issues.append(_issue("SEMANTIC_ATOMIC_ROLE_INVALID", "atomic_item.claim_role 不在受控论证角色中。", node_id=item_id))
-                        if importance not in ARGUMENT_WEIGHTS:
-                            issues.append(_issue("SEMANTIC_ATOMIC_IMPORTANCE_INVALID", "atomic_item.importance 必须为 core、supporting、detail 或 constraint。", node_id=item_id))
                         if status not in STATUS_VALUES:
                             issues.append(_issue("SEMANTIC_ATOMIC_STATUS_INVALID", "atomic_item.status 不在受控状态词表中。", node_id=item_id))
                         compatible_targets = [node_lookup[target_id] for target_id in target_ids if target_id in node_lookup]
-                        if compatible_targets and all(_text(node.get("argument_role")) != claim_role for node in compatible_targets):
-                            issues.append(_issue("SEMANTIC_ATOMIC_ROLE_MISMATCH", "原子事项 claim_role 与其目标语义节点均不相容，应纠正归类或拆分事项。", node_id=item_id))
                         if compatible_targets and status != "mixed" and all(_text(node.get("status")) not in {status, "mixed"} for node in compatible_targets):
                             issues.append(_issue("SEMANTIC_ATOMIC_STATUS_MISMATCH", "原子事项 status 与其目标语义节点均不相容，应保留真实状态并纠正归类。", node_id=item_id))
                         atomic_covered_refs.update(item_refs)

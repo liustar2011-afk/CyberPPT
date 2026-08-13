@@ -80,14 +80,6 @@ def model() -> dict[str, object]:
                 "evidence_refs": ["S001"],
             }
         ],
-        "argument_weighting": {
-            "definition": "core 是独立主张，supporting 是展开模块；关系不改变权重。",
-            "core_node_ids": ["c01", "c01-s02"],
-            "supporting_node_ids": ["c01-s01"],
-            "detail_node_ids": [],
-            "constraint_node_ids": [],
-            "review_notes": [],
-        },
         "mece_rules": {
             "partition_basis": "按源材料章节层级与论证功能划分",
             "exhaustive_scope": "覆盖全文一级、二级论点",
@@ -132,21 +124,6 @@ def strict_model() -> tuple[dict[str, object], set[str], list[dict[str, object]]
     for relation in value["argument_relations"]:
         relation["claim_origin"] = "source_explicit"
         relation["evidence_refs"] = [evidence_unit]
-    value["heading_semantic_cards"] = [
-        {
-            "heading_id": "H-ABCDEF1234-BBBBBBBBBBBB-01",
-            "source_unit_id": heading_unit,
-            "source_heading": "第一章",
-            "level": 1,
-            "semantic_function": "提出章节主张",
-            "author_claim": "交代本章需要成立的判断",
-            "argument_role": "foundation",
-            "argument_weight": "core",
-            "claim_origin": "source_explicit",
-            "evidence_refs": [heading_unit],
-        }
-    ]
-    value["section_nodes"][0]["source_heading_id"] = "H-ABCDEF1234-BBBBBBBBBBBB-01"
     value["inference_register"] = []
     value["concept_occurrence_graph"] = {
         "concepts": [],
@@ -400,12 +377,6 @@ class SourceArgumentModelTests(unittest.TestCase):
             {item["code"] for item in audit_outline_consumption(outline, model())},
         )
 
-    def test_core_weight_is_not_inferred_from_support_relation(self) -> None:
-        broken = model()
-        broken["section_nodes"][0]["argument_weight"] = "supporting"
-        codes = {item["code"] for item in validate_model(broken)}
-        self.assertIn("SEMANTIC_ARGUMENT_WEIGHT_DRIFTED", codes)
-
     def test_flattened_heading3_is_rejected(self) -> None:
         broken = model()
         broken["subsection_nodes"][1]["parent_id"] = "c01-s01"
@@ -574,10 +545,9 @@ class SourceArgumentModelTests(unittest.TestCase):
         }
         self.assertNotIn("SEMANTIC_PROTECTED_SOURCE_OMITTED", codes)
 
-    def test_strict_model_rejects_atomic_role_and_status_mismatch(self) -> None:
+    def test_strict_model_rejects_atomic_status_mismatch(self) -> None:
         value, unit_ids, headings = strict_model()
         item = value["source_coverage"]["assignments"][0]["atomic_items"][0]
-        item["claim_role"] = "cooperation"
         item["status"] = "existing"
         value["section_nodes"][0]["status"] = "planned"
 
@@ -591,7 +561,6 @@ class SourceArgumentModelTests(unittest.TestCase):
             )
         }
 
-        self.assertIn("SEMANTIC_ATOMIC_ROLE_MISMATCH", codes)
         self.assertIn("SEMANTIC_ATOMIC_STATUS_MISMATCH", codes)
 
     def test_source_assignment_must_bind_target_node_evidence(self) -> None:
@@ -632,10 +601,10 @@ class SourceArgumentModelTests(unittest.TestCase):
             {item["code"] for item in issues},
         )
 
-    def test_strict_model_rejects_legacy_evidence_and_missing_heading_card(self) -> None:
+    def test_strict_model_rejects_legacy_evidence_and_uninterpreted_heading(self) -> None:
         value, unit_ids, headings = strict_model()
         value["document_thesis"]["evidence_refs"] = ["S001"]
-        value["heading_semantic_cards"] = []
+        value["section_nodes"][0]["source_heading"] = "无关标题"
 
         codes = {
             item["code"]
@@ -675,12 +644,9 @@ class SourceArgumentModelTests(unittest.TestCase):
 
         self.assertIn("SEMANTIC_EDITORIAL_HYPOTHESIS_PROMOTED", codes)
 
-    def test_source_implied_heading_interpretation_must_be_registered(self) -> None:
+    def test_source_implied_node_interpretation_must_be_registered(self) -> None:
         value, unit_ids, headings = strict_model()
-        heading_id = value["heading_semantic_cards"][0]["heading_id"]
-        evidence_unit = value["heading_semantic_cards"][0]["source_unit_id"]
-        value["heading_semantic_cards"][0]["claim_origin"] = "source_implied"
-        value["heading_semantic_cards"][0]["inference_id"] = "I001"
+        evidence_unit = next(iter(value["document_thesis"]["evidence_refs"]))
         value["section_nodes"][0]["claim_origin"] = "source_implied"
         value["section_nodes"][0]["inference_id"] = "I001"
         value["inference_register"] = [
@@ -689,7 +655,7 @@ class SourceArgumentModelTests(unittest.TestCase):
                 "statement": "该标题隐含一个章节判断",
                 "claim_origin": "source_implied",
                 "basis_refs": [evidence_unit],
-                "affected_node_ids": [heading_id, "c01"],
+                "affected_node_ids": ["c01"],
                 "handling": "保留为有依据的隐含解释",
             }
         ]

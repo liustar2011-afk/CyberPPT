@@ -28,7 +28,7 @@ class GenericSemanticPromptTests(unittest.TestCase):
         semantic = semantic_authoring_contract()
         director = storyline_director_authoring_contract()
 
-        self.assertIn("heading_semantic_cards", semantic)
+        self.assertIn("interpreted by exactly one section/subsection node", semantic)
         self.assertIn("claim_origin", semantic)
         self.assertIn("concept_occurrence_graph", semantic)
         self.assertIn("independent source proposition", director)
