@@ -12,7 +12,9 @@ NS = {
 
 
 def _normalize(value: str) -> str:
-    return value.replace("\r\n", "\n").replace("\r", "\n").strip()
+    # DrawingML normalizes ideographic spaces inside SVG text runs to regular
+    # spaces.  Treat that conversion as formatting, not a content mutation.
+    return value.replace("\r\n", "\n").replace("\r", "\n").replace("\u3000", " ").strip()
 
 
 def pptx_texts(path: Path) -> list[str]:

@@ -117,6 +117,7 @@ def run_image_to_editable_svg(*, project: Path | str, manifest_path: Path | str,
             ocr_layout=_mapping_or_file(full.get("ocr_layout")) or _mapping_or_file(pair.get("ocr_layout")),
             regions=pair.get("regions") if isinstance(pair.get("regions"), list) else None,
             visual_registry=_mapping_or_file(pair.get("visual_registry")),
+            authoring_svg_path=pair.get("authoring_svg"),
         )
         inspection_path = write_inspection(inspection, output / "analysis" / f"p{frame.page_number:02d}-inventory.json")
         page: dict[str, Any] = {"page_number": frame.page_number, "inventory": str(inspection_path), "page_gate": inspection["page_gate"], "manual_required": inspection["manual_required"], "svg": None, "svg_quality": None}

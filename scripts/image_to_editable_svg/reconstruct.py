@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import html
 import json
+import shutil
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
@@ -32,6 +34,17 @@ def _ocr_items(layout: Mapping[str, Any] | None) -> list[dict[str, Any]]:
 
 def _normal_text(value: Any) -> str:
     return "".join(str(value or "").split()).casefold()
+
+
+def _authoring_svg_text(path: Path | str | None) -> set[str]:
+    """Read direct native text from an approved hand-authored SVG source."""
+    if not path:
+        return set()
+    source = Path(path).expanduser().resolve()
+    if not source.is_file():
+        return set()
+    root = ET.fromstring(source.read_text(encoding="utf-8"))
+    return {"".join(node.itertext()).strip() for node in root.iter() if node.tag.rsplit("}", 1)[-1] == "text"}
 
 
 def _match_ocr(script_text: str, items: list[dict[str, Any]], used: set[int]) -> tuple[int | None, dict[str, Any] | None]:
@@ -66,6 +79,7 @@ def inspect_page(
     ocr_layout: Mapping[str, Any] | None = None,
     regions: Iterable[Mapping[str, Any]] | None = None,
     visual_registry: Mapping[str, Any] | None = None,
+    authoring_svg_path: Path | str | None = None,
 ) -> dict[str, Any]:
     """Bind script text to OCR coordinates and inventory all supplied visual regions.
 
@@ -74,6 +88,7 @@ def inspect_page(
     claim a graphic is safe to reproduce.
     """
     ocr = _ocr_items(ocr_layout)
+    authored_text = _authoring_svg_text(authoring_svg_path)
     used: set[int] = set()
     observed_regions: list[dict[str, Any]] = []
     layers: list[dict[str, Any]] = []
@@ -82,8 +97,9 @@ def inspect_page(
         if ocr_index is not None:
             used.add(ocr_index)
         bbox = _bbox((item or {}).get("bbox"), canvas=frame.pixel_size)
-        region = {"id": f"text-{index:03d}", "family": "text", "bbox": bbox, "z_index": 1000 + index, "observed_text": (item or {}).get("text"), "truth_text": str(truth), "truth_source": "script", "locator_source": "ocr" if item else "none", "status": "verified" if item else "manual_required", "realization": "native_text" if item else "manual_required"}
-        if item is None:
+        authoring_match = str(truth).strip() in authored_text
+        region = {"id": f"text-{index:03d}", "family": "text", "bbox": bbox, "z_index": 1000 + index, "observed_text": (item or {}).get("text", truth if authoring_match else None), "truth_text": str(truth), "truth_source": "script", "locator_source": "ocr" if item else ("authoring_svg" if authoring_match else "none"), "status": "verified" if item or authoring_match else "manual_required", "realization": "native_text" if item or authoring_match else "manual_required"}
+        if item is None and not authoring_match:
             region["reason"] = "missing_text_locator"
         observed_regions.append(region)
         layers.append(layer_record(region, frame=frame, index=len(layers)))
@@ -120,7 +136,7 @@ def inspect_page(
     inventory = build_inventory(frame, observed_regions)
     gate = page_gate(layers, frame=frame)
     manual = [item for item in layers if item.get("status") == "manual_required" or item.get("realization") == "manual_required"]
-    return {"schema": "cyberppt.image_to_editable_svg.inspection.v1", "frame": frame.to_dict(), "inventory": inventory, "layers": sorted(layers, key=lambda item: (int(item.get("z_index", 0)), str(item["id"]))), "page_gate": gate, "manual_required": manual}
+    return {"schema": "cyberppt.image_to_editable_svg.inspection.v1", "frame": frame.to_dict(), "inventory": inventory, "layers": sorted(layers, key=lambda item: (int(item.get("z_index", 0)), str(item["id"]))), "page_gate": gate, "manual_required": manual, "authoring_svg_path": str(authoring_svg_path) if authoring_svg_path else None}
 
 
 def prepare_scene_layers(frame: NormalizedFrame, regions: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
@@ -161,6 +177,38 @@ def author_page_svg(result: Mapping[str, Any], out_dir: Path | str) -> Path:
         raise ValueError("cannot author SVG for a page with blocking reconstruction errors")
     out = Path(out_dir).expanduser().resolve()
     out.mkdir(parents=True, exist_ok=True)
+    authored = result.get("authoring_svg_path")
+    if authored:
+        source = Path(str(authored)).expanduser().resolve()
+        if not source.is_file():
+            raise FileNotFoundError(f"authoring SVG is missing: {source}")
+        root = ET.fromstring(source.read_text(encoding="utf-8"))
+        direct_text = {"".join(node.itertext()).strip() for node in root.iter() if node.tag.rsplit("}", 1)[-1] == "text"}
+        required = {str(layer.get("truth_text", "")).strip() for layer in result.get("layers", []) if layer.get("family") == "text"}
+        if not required.issubset(direct_text):
+            raise ValueError("authoring SVG omits approved native text")
+        if not any(node.tag.rsplit("}", 1)[-1] in {"path", "line", "circle", "polygon", "polyline"} for node in root.iter()):
+            raise ValueError("authoring SVG lacks native reconstruction geometry")
+        if frame.source_path in source.read_text(encoding="utf-8") or frame.normalized_path in source.read_text(encoding="utf-8"):
+            raise ValueError("authoring SVG embeds the canonical full-page source")
+        path = out / f"p{frame.page_number:02d}.svg"
+        shutil.copy2(source, path)
+        # Keep prepared image layers valid after the authored SVG is moved from
+        # its project authoring folder into the delivery SVG folder.
+        for node in root.iter():
+            if node.tag.rsplit("}", 1)[-1] != "image":
+                continue
+            href = node.attrib.get("href") or node.attrib.get("{http://www.w3.org/1999/xlink}href")
+            if not href or href.startswith(("data:", "http:", "https:")) or Path(href).is_absolute():
+                continue
+            asset = (source.parent / href).resolve()
+            if not asset.is_file():
+                raise FileNotFoundError(f"authoring SVG image layer is missing: {asset}")
+            destination = (out / href).resolve()
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            if asset != destination:
+                shutil.copy2(asset, destination)
+        return path
     pieces = [f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{frame.pixel_size[0]}" height="{frame.pixel_size[1]}" viewBox="0 0 {frame.pixel_size[0]} {frame.pixel_size[1]}" data-reconstruction-schema="v1">']
     for layer in sorted(result.get("layers", []), key=lambda item: (int(item.get("z_index", 0)), str(item["id"]))):
         family, bbox = layer.get("family"), layer.get("bbox")
