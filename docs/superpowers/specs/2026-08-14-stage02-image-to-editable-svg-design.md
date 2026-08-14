@@ -3,7 +3,10 @@
 ## Decision
 
 Stage 02 will replace the legacy dual-image editable-overlay route with one
-production branch: `image-to-editable-svg`.
+production branch: `image-to-editable-svg`.  This is a complete migration of
+PPT Master's image-to-PPTX reconstruction capability, adapted to CyberPPT's
+approved-script, generated-image, and existing image-text-QA contracts; it is
+not a thin call to the SVG-to-PPTX compiler.
 
 The branch accepts only a generated `full` page image that has already passed
 the existing image-text/typo audit.  It reconstructs that page as editable SVG
@@ -37,17 +40,27 @@ approved final script + Stage 02 visual design
   -> delivery readiness report
 ```
 
-The reconstruction step reads the current approved script as the text truth
-and the audited full image as the visible-surface reference.  It writes a
-single page SVG with native text and native simple geometry, placing only
-independently useful non-text visual layers as image objects.
+The reconstruction step first normalizes the selected input into an ordered
+page-frame roster (one normalized frame maps to exactly one slide) and archives
+the original. It reads the current approved script as text truth and the
+audited full image as visible-surface reference. It then inspects every
+canonical frame, records source sufficiency per region, prepares the minimum
+useful independent layer stack, and writes a single page SVG with native text
+and native simple geometry. Only independently useful non-text visual layers
+are placed as image objects.
 
 ## Page reconstruction contract
 
 Each selected page writes under the current Stage 02 build root:
 
 - `analysis/reconstruction_inventory.json`, describing observed text,
-  graphics, image regions, data graphics, source bboxes, and confidence;
+  graphics, image regions, data graphics, source bboxes, occlusion, z-order,
+  source sufficiency, identity/data verifiability, and confidence;
+- normalized canonical page frames and the original-image provenance needed to
+  trace every frame without overwriting the generated source image;
+- operational layer evidence for each prepared asset: source page/region,
+  source hash, realization method, operation, output path/hash, registration
+  group, z-order, and reference-edit prompt/model when reconstruction occurs;
 - `svg_output/pNN.svg`, the editable page representation;
 - `analysis/pNN-reconstruction-quality.json`, covering source truth binding,
   object realization, reference exclusion, and SVG quality;
@@ -68,6 +81,16 @@ If a required visible region cannot be reliably reconstructed, the page records
 `manual_required` with the region id and reason.  Such a page blocks PPTX
 assembly and delivery.
 
+For scene content, the minimum layer stack is a clean base plus an independent
+subject or foreground layer whenever separate movement, overlap, or animation
+is required. All members of a registered group originate from the same
+canonical page, preserve its canvas and coordinates, and are checked for
+seams, halos, crop drift, and z-order. Non-overlapping objects may share one
+prepared plate and be deterministically split into independent SVG/PPT picture
+objects. A low-resolution but recognizable identity graphic may be
+reference-reconstructed only when silhouette, proportions, colors, lettering,
+and geometry are verifiable; otherwise it is `manual_required`.
+
 ## Gates and errors
 
 The existing image-text audit remains before reconstruction and cannot be
@@ -80,6 +103,14 @@ failed render comparison.
 The CLI reports page-specific failures and retains generated evidence for
 diagnosis.  It does not generate a background image, retry through the removed
 dual-image workflow, or flatten an unresolved page to force delivery.
+
+Where a required scene layer needs reconstruction, the branch uses the same
+canonical page as the reference for every derived layer. Image reconstruction
+uses `text_policy: none`; ordinary slide text is never carried in a generated
+layer. Generated candidates are usable only after file-existence, direct
+inspection, and registration checks. The automation exhausts allowed
+reference-reconstruction attempts before returning `manual_required`; it does
+not invent source wording, data, logos, or a visually similar substitute.
 
 ## Integration boundaries
 
@@ -94,12 +125,16 @@ generation and image-text QA remain upstream owners and are not duplicated.
 1. Manifest and CLI tests reject removed modes and legacy dual-image manifests.
 2. Image generation tests prove a valid `full` image plus valid typo-audit
    receipt is required before reconstruction.
-3. Reconstruction tests use a representative page to assert native script
-   text, no canonical full-page source image packaged as slide media, and SVG
-   quality success.
-4. Failure tests cover `manual_required`, invalid typo receipt, missing script
-   truth, and unverified data graphic; each blocks final assembly.
-5. End-to-end tests compile multiple page SVGs to a PPTX, read its editable
+3. Roster tests cover independent page files, contact sheets, non-grid frames,
+   ordering, and ambiguous-frame blocking.
+4. Reconstruction tests use representative text, simple shape, exact graphic,
+   scene-layer, and shared-plate pages to assert native script text, source
+   sufficiency evidence, registration, independent objects, no canonical
+   full-page source image packaged as slide media, and SVG quality success.
+5. Failure tests cover `manual_required`, invalid typo receipt, missing script
+   truth, unverified identity or data graphic, contaminated layer, and
+   registration drift; each blocks final assembly.
+6. End-to-end tests compile multiple page SVGs to a PPTX, read its editable
    text back, render it, and confirm the delivery-readiness report passes.
 
 ## Non-goals
