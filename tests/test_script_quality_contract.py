@@ -763,6 +763,30 @@ class FullProseSourceCoverageTests(unittest.TestCase):
         )
         self.assertIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
 
+    def test_onscreen_content_unit_accepts_a_long_anchor_split_into_short_lines(self) -> None:
+        page = replace(
+            self._page("中电联数智公司依托平台提供合作服务。"),
+            onscreen_text=(
+                "中电联数智公司依托平台\n"
+                "提供合作对接、技术支撑、产品运营和市场协同等服务"
+            ),
+        )
+        issues = _page_content_unit_coverage_issues(
+            page,
+            {"content_units": [{
+                "unit_id": "p21-u01",
+                "statement": "中电联数智公司依托平台提供合作对接、技术支撑、产品运营和市场协同等服务。",
+                "source_refs": ["ST001"],
+                "full_prose_required": False,
+                "coverage_anchors": [],
+                "onscreen_required": True,
+                "onscreen_anchors": [
+                    "中电联数智公司依托平台提供合作对接、技术支撑、产品运营和市场协同等服务"
+                ],
+            }]},
+        )
+        self.assertNotIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
+
 
 class PolarityDroppedTermsTests(unittest.TestCase):
     def test_flags_prohibition_dropped_from_authored_text(self) -> None:

@@ -3179,8 +3179,17 @@ def _page_content_unit_coverage_issues(
             and not set(source_refs).issubset(model_covered_refs)
         ):
             missing = tuple(
-                anchor for anchor in onscreen_anchors
+                anchor
+                for anchor in onscreen_anchors
                 if anchor not in page.onscreen_text
+                # Long source-specific anchors may need a deliberate line
+                # break for readable on-screen copy.  Preserve the existing
+                # literal contract for short anchors, while accepting a
+                # near-verbatim split when all source phrases survive.
+                and not (
+                    len(anchor) > 30
+                    and _source_statement_overlap(anchor, page.onscreen_text) >= 0.85
+                )
             )
             if missing:
                 issues.append(_issue(
