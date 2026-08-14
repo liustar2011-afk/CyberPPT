@@ -17,6 +17,7 @@ from typing import Any
 from cyberppt.semantic_understanding import SEMANTIC_ARGUMENT_MODEL
 from cyberppt.source_argument_model import load_model, node_index, validate_model
 from cyberppt.source_document_map import SOURCE_REGISTRY, SOURCE_UNITS
+from cyberppt.subtitle_policy import resolve_subtitle_policy
 
 
 SOURCE_TRUTH = Path("workbench/stages/01-analysis/source-truth.json")
@@ -402,16 +403,68 @@ def _content_unit_anchors(record: dict[str, Any], topic: str) -> list[str]:
 
     candidates: list[str] = []
     for unit in _items(record.get("semantic_units")):
-        for fragment in re.split(r"[，；。]", str(unit.get("text") or "")):
-            fragment = fragment.strip()
-            if 4 <= len(fragment) <= 36 and fragment not in candidates:
+        for fragment in re.split(r"[，、；。]", str(unit.get("text") or "")):
+            fragment = _audience_anchor_fragment(fragment)
+            if (
+                4 <= len(fragment) <= 36
+                and not _is_nonvisible_anchor_fragment(fragment)
+                and fragment not in candidates
+            ):
                 candidates.append(fragment)
     for anchor in _strings(record.get("coverage_anchors")):
-        if 4 <= len(anchor) <= 36 and anchor not in candidates:
+        if (
+            4 <= len(anchor) <= 36
+            and not _is_nonvisible_anchor_fragment(anchor)
+            and anchor not in candidates
+        ):
             candidates.append(anchor)
+    # A source sentence may introduce several background factors and then list
+    # the actual decision conditions.  Preserve source order within each class,
+    # but make complete, audience-actionable conditions available before their
+    # lead-in so a short onscreen contract does not stop at a dangling premise.
+    candidates.sort(key=lambda value: 0 if _is_decision_condition_anchor(value) else 1)
     if not candidates:
         candidates = [_clean_title(record.get("statement")), topic]
     return candidates[:2]
+
+
+def _audience_anchor_fragment(value: str) -> str:
+    """Keep the source-native condition when a list item has a lead-in verb.
+
+    ``优先选择真实需求明确`` is a natural source clause, but its reusable
+    visible fact is ``真实需求明确``.  Removing this small decision lead-in
+    does not paraphrase or add a claim; it prevents a dangling instruction from
+    becoming an onscreen label while retaining the original condition.
+    """
+
+    value = str(value or "").strip()
+    return re.sub(r"^(?:.{0,12}?)?(?:优先)?选择", "", value).strip()
+
+
+def _is_nonvisible_anchor_fragment(value: str) -> bool:
+    """Exclude source-only scaffolding and classification boundaries.
+
+    Phrases such as ``本节从……角度`` locate the author in the document; they
+    do not name a business object, action, condition, or conclusion.  They may
+    remain in full prose for traceability, but forcing them on screen produces
+    truncated labels instead of audience-facing information.  The same applies
+    to negative chapter-boundary clauses (for example, ``不构成……新服务类型``):
+    these govern how to read a section, rather than what an audience needs to
+    decide or do on the page.
+    """
+
+    return bool(
+        re.match(r"^本(?:节|章|部分).{0,16}(?:从.+角度|主要从.+|以下)", value)
+        or re.match(r"^对(?:前述|上述|本(?:节|章|部分)).{0,32}(?:排序|说明|阐释|界定)$", value)
+        or re.match(r"^(?:不构成(?:与|为)|不|并非|非).{0,32}(?:类型|事项|内容|范围)?$", value)
+        or re.match(r"^.{0,28}并列的新服务类型$", value)
+    )
+
+
+def _is_decision_condition_anchor(value: str) -> bool:
+    """Recognize a complete, source-native condition in a decision list."""
+
+    return bool(re.search(r"(?:明确|清晰|可验证|可执行|具备条件)", value))
 
 
 def _page_content_units(
@@ -593,12 +646,19 @@ def _onscreen_modules(
     page_id: str,
     records: list[dict[str, Any]],
     expression_model_selection: dict[str, Any] | None = None,
+    *,
+    visual_intent_type: str = "",
 ) -> list[dict[str, Any]]:
-    """Derive visible-module provenance without merging source facts.
+    """Derive source-bounded presentation candidates without merging facts.
 
     A direct visual module has one Source Truth record as its fact boundary.
     Expression-model mappings may put several records in one slot, but that
     does not authorize combining their objects, states, or results.
+
+    The first overview record of a source-native architecture is a page
+    judgment, not a peer body module: its component records carry the visual
+    structure that expands it.  This keeps source traceability separate from
+    visual hierarchy and prevents an overview from being repeated as a card.
     """
 
     slots_by_ref: dict[str, list[str]] = {}
@@ -617,6 +677,11 @@ def _onscreen_modules(
         for ref in _strings(mapping.get("source_refs")):
             slots_by_ref.setdefault(ref, []).append(slot)
 
+    model_id = str((expression_model_selection or {}).get("model_id") or "")
+    architecture_overview = (
+        model_id == "source_native"
+        and str(visual_intent_type or "") == "architecture"
+    )
     modules: list[dict[str, Any]] = []
     for index, record in enumerate(records, start=1):
         record_id = str(record.get("id") or "").strip()
@@ -624,16 +689,68 @@ def _onscreen_modules(
         if not record_id or not statement:
             continue
         characteristics = _content_unit_anchors(record, "")
+        is_overview = (
+            architecture_overview
+            and index == 1
+            and any(marker in statement for marker in ("总体架构", "总体框架"))
+        )
+        is_deployment_detail = (
+            architecture_overview
+            and any(marker in statement for marker in ("平台部署", "部署根据服务对象"))
+        )
         modules.append({
             "module_id": f"{page_id}-M{index:02d}",
             "display_title": characteristics[0] if characteristics else _clean_title(statement),
             "source_refs": [record_id],
             "model_slots": list(dict.fromkeys(slots_by_ref.get(record_id, []))),
             "derivation_mode": "direct",
+            "presentation_role": (
+                "lead" if is_overview else "boundary" if is_deployment_detail else "structure"
+            ),
+            "visible_layer": (
+                "semantic" if is_overview else "notes" if is_deployment_detail else "body"
+            ),
             "allowed_visible_claim": statement,
             "required_characteristics": characteristics,
         })
     return modules
+
+
+def _preserve_authored_module_decisions(
+    candidates: list[dict[str, Any]],
+    authored: object,
+) -> list[dict[str, Any]]:
+    """Keep author-edited display hierarchy when refreshing derived evidence."""
+
+    authored_by_ref = {
+        tuple(_strings(item.get("source_refs"))): item
+        for item in _items(authored)
+        if len(_strings(item.get("source_refs"))) == 1
+    }
+    for candidate in candidates:
+        prior = authored_by_ref.get(tuple(_strings(candidate.get("source_refs"))))
+        if not prior:
+            continue
+        prior_title = str(prior.get("display_title") or "").strip()
+        candidate_title = str(candidate.get("display_title") or "").strip()
+        if prior_title and prior_title != candidate_title:
+            candidate["display_title"] = prior_title
+            # A changed title is evidence of an author-made presentation
+            # decision, so retain its declared visual role as well.
+            for field in ("presentation_role", "visible_layer"):
+                if candidate.get("presentation_role") == "lead":
+                    # Lead facts are semantic thesis by default.  A short
+                    # audience subtitle remains an independent author field.
+                    continue
+                value = prior.get(field)
+                if isinstance(value, str) and value.strip():
+                    candidate[field] = value.strip()
+            continue
+        for field in ("display_title",):
+            value = prior.get(field)
+            if isinstance(value, str) and value.strip():
+                candidate[field] = value.strip()
+    return candidates
 
 
 def refresh_outline_content_units(
@@ -675,13 +792,44 @@ def refresh_outline_content_units(
         )
         page["content_units"] = units
         page["detail_refs"] = details
-        page["onscreen_modules"] = _onscreen_modules(
+        candidates = _onscreen_modules(
             str(page.get("page_id") or ""),
             page_records,
             page.get("expression_model_selection")
             if isinstance(page.get("expression_model_selection"), dict)
             else None,
+            visual_intent_type=str(page.get("visual_intent_type") or ""),
         )
+        page["onscreen_modules"] = _preserve_authored_module_decisions(
+            candidates, page.get("onscreen_modules"),
+        )
+        existing_policy = page.get("subtitle_policy")
+        existing_subtitle = str(page.get("subtitle") or "").strip()
+        if not (
+            isinstance(existing_policy, dict)
+            and str(existing_policy.get("mode") or "") == "authored"
+        ):
+            policy = (
+                {
+                    "mode": "authored",
+                    "subtitle": existing_subtitle,
+                    "rationale": "保留刷新前已有的作者层副标题。",
+                    "source_refs": _strings(page.get("source_refs")),
+                    "derived_from": ["author"],
+                }
+                if existing_subtitle else resolve_subtitle_policy(
+                    core_message=str(page.get("core_message") or ""),
+                    visual_intent_type=str(page.get("visual_intent_type") or ""),
+                    onscreen_expression_form=str(page.get("onscreen_expression_form") or ""),
+                    onscreen_modules=page["onscreen_modules"],
+                    content_units=units,
+                )
+            )
+            page["subtitle_policy"] = policy
+            if policy["mode"] in {"generated", "authored"}:
+                page["subtitle"] = str(policy["subtitle"])
+            else:
+                page.pop("subtitle", None)
         page["source_grounding_mode"] = "required"
     target.write_text(json.dumps(outline, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return target
@@ -855,6 +1003,22 @@ def compile_outline_draft(
                 "evidence_roles": {},
                 "excluded_from_onscreen": [],
             }
+            candidate_modules = _onscreen_modules(
+                page_id,
+                node_records,
+                visual_intent_type=str(page["visual_intent_type"]),
+            )
+            page["onscreen_modules"] = candidate_modules
+            subtitle_policy = resolve_subtitle_policy(
+                core_message=core_message,
+                visual_intent_type=str(page["visual_intent_type"]),
+                onscreen_expression_form="",
+                onscreen_modules=candidate_modules,
+                content_units=content_units,
+            )
+            page["subtitle_policy"] = subtitle_policy
+            if subtitle_policy["mode"] == "generated":
+                page["subtitle"] = str(subtitle_policy["subtitle"])
             if semantic_role == "boundary" or (boundary_refs and len(boundary_refs) == len(source_refs)):
                 page["boundary_focus"] = True
                 page["boundary_focus_reason"] = "本页来源全部属于边界或未决事项，边界本身就是页面主题。"

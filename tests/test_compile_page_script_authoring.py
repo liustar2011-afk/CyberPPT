@@ -173,6 +173,38 @@ class CompilePageScriptAuthoringTests(unittest.TestCase):
         chapter = (output / "ch01.md").read_text(encoding="utf-8")
         self.assertIn("- 上屏表达结构：framework_4", chapter)
 
+    def test_uses_generated_subtitle_and_omits_not_needed_policy(self) -> None:
+        self.authoring["pages"]["p03"]["subtitle"] = ""
+        self.outline["pages"][2]["subtitle"] = "结构页的自动副标题"
+        self.outline["pages"][2]["subtitle_policy"] = {"mode": "generated"}
+        self.outline_path.write_text(
+            json.dumps(self.outline, ensure_ascii=False), encoding="utf-8"
+        )
+        self.authoring["outline_sha256"] = _sha256(self.outline_path)
+        self.authoring_path.write_text(
+            json.dumps(self.authoring, ensure_ascii=False), encoding="utf-8"
+        )
+
+        output = self.scripts / "drafts/run-subtitle-policy"
+        compile_page_script_authoring(self.project, output_dir=output)
+        chapter = (output / "ch01.md").read_text(encoding="utf-8")
+        self.assertIn("- 副标题：结构页的自动副标题", chapter)
+
+        self.outline["pages"][2]["subtitle"] = "不应输出的遗留副标题"
+        self.outline["pages"][2]["subtitle_policy"] = {"mode": "not_needed"}
+        self.outline_path.write_text(
+            json.dumps(self.outline, ensure_ascii=False), encoding="utf-8"
+        )
+        self.authoring["outline_sha256"] = _sha256(self.outline_path)
+        self.authoring_path.write_text(
+            json.dumps(self.authoring, ensure_ascii=False), encoding="utf-8"
+        )
+
+        output = self.scripts / "drafts/run-subtitle-not-needed"
+        compile_page_script_authoring(self.project, output_dir=output)
+        chapter = (output / "ch01.md").read_text(encoding="utf-8")
+        self.assertNotIn("- 副标题：", chapter)
+
     def test_emits_outline_expression_model_as_non_onscreen_context(self) -> None:
         self.outline["pages"][2]["expression_model_selection"] = {
             "model_id": "scqa",

@@ -69,6 +69,19 @@ def _expected_consumes(page: dict[str, Any]) -> list[str]:
     ]
 
 
+def _resolved_subtitle(page: dict[str, Any], authored: dict[str, Any]) -> str:
+    authored_value = str(authored.get("subtitle") or "").strip()
+    if authored_value:
+        return authored_value
+    policy = page.get("subtitle_policy")
+    mode = str(policy.get("mode") or "") if isinstance(policy, dict) else ""
+    if mode in {"generated", "authored"}:
+        return str(page.get("subtitle") or "").strip()
+    if mode in {"not_needed", "author_required"}:
+        return ""
+    return str(page.get("subtitle") or "").strip()
+
+
 def _validate_authoring(
     project: Path,
     outline_path: Path,
@@ -289,7 +302,7 @@ def _content_page(
     page_id = str(page["page_id"])
     number = _page_number(page_id)
     title = str(page.get("title") or "").strip()
-    subtitle = str(authored.get("subtitle") or page.get("subtitle") or "").strip()
+    subtitle = _resolved_subtitle(page, authored)
     core_message = str(page.get("core_message") or "").strip()
     source_refs = [str(value) for value in page.get("source_refs") or []]
     detail_refs = {str(value) for value in page.get("detail_refs") or []}

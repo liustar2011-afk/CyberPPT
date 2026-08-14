@@ -111,6 +111,14 @@ EXPRESSION_SPECS: dict[str, ExpressionSpec] = {
         required_features=("two_objects", "matched_dimensions"),
         anti_patterns=("unmatched_columns",),
     ),
+    "grouped_2": ExpressionSpec(
+        "grouped_2", "双组信息结构", (2, 2), "grouped_proposition",
+        "grouped_proposition",
+        relation_pattern="grouped_elaboration", reading_requirement="grouped",
+        balance_requirement="one group establishes the subject and the other advances its directly supported mechanism or boundary",
+        required_features=("two_distinct_groups", "explicit_group_relation"),
+        anti_patterns=("forced_comparison", "invented_sequence"),
+    ),
     "matrix_2x2": ExpressionSpec(
         "matrix_2x2", "四象限分群", (4, 4), "parallel_segment",
         "classification_segment",
@@ -151,7 +159,7 @@ _RELATION_FORMS = {
     "corresponds_to": "comparison_2col",
 }
 _RETURN_RELATIONS = {"feedback", "feeds_back", "returns_to", "iterates", "loops_to"}
-_ACTION_RE = re.compile(r"推进|建设|完善|强化|提升|形成|构建|汇聚|治理|授权|流通|运营|反馈|迭代|驱动|支撑|带动|促进|实现")
+_ACTION_RE = re.compile(r"推进|建设|完善|强化|提升|形成|构建|汇聚|组织|治理|授权|流通|运营|反馈|迭代|驱动|支撑|带动|促进|实现")
 _LAYER_RE = re.compile(r"层|底座|体系架构")
 _COMPARISON_RE = re.compile(r"现状|目标|当前|未来|主体|方案|对照|比较")
 _MATRIX_RE = re.compile(r"象限|维度|优先级|分群|高低|二维")

@@ -1146,6 +1146,26 @@ def audit_outline_consumption(
             # nodes may be cited by several pages without pretending that the
             # source thesis has multiple owners.
             primary_consumers.setdefault(primary, []).append(page_id)
+        page_source_refs = {_text(record_id) for record_id in _list(page.get("source_refs")) if _text(record_id)}
+        page_records = [
+            record for record in _list(source_truth.get("records"))
+            if isinstance(record, dict)
+            and _text(record.get("id")) in page_source_refs
+        ] if isinstance(source_truth, dict) else []
+        if page_records:
+            shared_nodes = set.intersection(
+                *[{_text(node_id) for node_id in _list(record.get("semantic_node_ids")) if _text(node_id)} for record in page_records]
+            )
+            scoped_nodes = shared_nodes & subsection_node_ids
+            if scoped_nodes and primary not in scoped_nodes:
+                narrowest = max(scoped_nodes, key=lambda node_id: int(index.get(node_id, {}).get("level") or 0))
+                issues.append(_issue(
+                    "PAGE_SOURCE_SCOPE_NODE_TOO_BROAD",
+                    "内容页主语义节点必须采用其来源记录共同关联的最窄原文标题范围，不能以章节级节点替代来源范围：" + narrowest,
+                    node_id=page_id,
+                ))
+        # A subsection heading defines a bounded source topic.  Its primary
+        # page must consume the complete non-metadata record closure.
         if primary in subsection_node_ids and records_by_node:
             expected_records = records_by_node.get(primary, set())
             actual_records = {

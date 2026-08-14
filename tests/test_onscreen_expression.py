@@ -5,6 +5,7 @@ import pytest
 from cyberppt.onscreen_expression import (
     EXPRESSION_SPECS,
     VALID_EXPRESSION_FORMS,
+    audit_expression_balance,
     expression_constraints,
     expression_constraints_sha256,
     expression_requires_action_headings,
@@ -24,11 +25,11 @@ def _page(*, modules=("汇聚治理", "授权流通", "运营服务"), form="", 
     )
 
 
-def test_registry_has_exactly_ten_initial_forms():
+def test_registry_includes_grouped_two_part_structure():
     assert VALID_EXPRESSION_FORMS == {
         "framework_4", "key_points_3", "flow_3_5", "operation_loop",
         "architecture_layers", "pyramid_argument", "comparison_2col",
-        "matrix_2x2", "causal_chain", "actions_3",
+        "grouped_2", "matrix_2x2", "causal_chain", "actions_3",
     }
 
 
@@ -59,6 +60,23 @@ def test_action_heading_requirement_belongs_to_expression_form() -> None:
     assert expression_requires_action_headings("actions_3")
     assert not expression_requires_action_headings("causal_chain")
     assert not expression_requires_action_headings("pyramid_argument")
+
+
+def test_organize_is_accepted_as_an_action_heading() -> None:
+    decision = resolve_onscreen_expression(_page(
+        modules=("组织专项设计", "形成配置复用", "形成统一产品规格"),
+        form="flow_3_5",
+    ))
+    assert not [
+        finding for finding in audit_expression_balance(
+            _page(
+                modules=("组织专项设计", "形成配置复用", "形成统一产品规格"),
+                form="flow_3_5",
+            ),
+            decision,
+        )
+        if finding.code == "ONSCREEN_FLOW_ACTION_MISSING"
+    ]
 
 
 def test_expression_constraints_are_fresh_and_hash_stable() -> None:

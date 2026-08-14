@@ -23,6 +23,7 @@ from cyberppt.source_document_map import (
 )
 from cyberppt.source_truth_contract import audit_source_truth, load_source_truth
 from cyberppt.stage01_compiler import (
+    _content_unit_anchors,
     _source_locator,
     _page_content_units,
     _onscreen_modules,
@@ -33,6 +34,20 @@ from cyberppt.stage01_compiler import (
 
 
 class Stage01CompilerTests(unittest.TestCase):
+    def test_content_unit_anchors_skip_section_framing_and_keep_source_conditions(self) -> None:
+        record = {
+            "statement": "首期方向筛选。",
+            "semantic_units": [
+                {"text": "本节从领域优先级角度，对前述服务在重点领域的组合应用进行排序，不构成与既有服务并列的新服务类型。"},
+                {"text": "平台优先选择真实需求明确、资源权利清晰、交付成果可验证的方向。"},
+            ],
+        }
+
+        self.assertEqual(
+            ["真实需求明确", "资源权利清晰"],
+            _content_unit_anchors(record, "重点服务方向"),
+        )
+
     def test_source_locator_keeps_global_anchor_and_section_relative_ordinal(self) -> None:
         locator = _source_locator({
             "source_id": "SRC", "source_path": "source/material.docx",
@@ -59,6 +74,36 @@ class Stage01CompilerTests(unittest.TestCase):
         refreshed = json.loads(outline_path.read_text(encoding="utf-8"))["pages"][0]
         self.assertEqual("作者判断", refreshed["core_message"])
         self.assertTrue(refreshed["content_units"])
+
+    def test_refresh_content_units_projects_subtitle_policy_without_overwriting_authored_subtitle(self) -> None:
+        outline_path = self.project / "workbench/stages/01-analysis/outline.json"
+        truth_path = self.project / "workbench/stages/01-analysis/source-truth.json"
+        outline_path.parent.mkdir(parents=True, exist_ok=True)
+        core_message = "平台对产品和场景实行全过程阶段门控，产品和场景分别进入持续运营和标准化复制。"
+        outline_path.write_text(json.dumps({"pages": [{
+            "page_id": "p04", "page_type": "content", "title": "生命周期", "topic_category": "生命周期",
+            "core_message": core_message, "source_refs": ["ST0001"], "content_units": [],
+            "visual_intent_type": "phase",
+        }, {
+            "page_id": "p05", "page_type": "content", "title": "既有副标题", "topic_category": "既有副标题",
+            "core_message": core_message, "source_refs": ["ST0001"], "content_units": [],
+            "visual_intent_type": "phase", "subtitle": "既有作者层副标题",
+        }]}, ensure_ascii=False), encoding="utf-8")
+        truth_path.write_text(json.dumps({"records": [{
+            "id": "ST0001", "statement": core_message, "priority": "P0", "claim_role": "fact",
+            "argument_duty": "detail", "semantic_units": [{"text": core_message}],
+        }]}, ensure_ascii=False), encoding="utf-8")
+
+        refresh_outline_content_units(self.project)
+
+        refreshed = json.loads(outline_path.read_text(encoding="utf-8"))["pages"]
+        self.assertEqual("generated", refreshed[0]["subtitle_policy"]["mode"])
+        self.assertEqual(
+            "产品与场景分别在阶段门控下进入持续运营与标准化复制",
+            refreshed[0]["subtitle"],
+        )
+        self.assertEqual("authored", refreshed[1]["subtitle_policy"]["mode"])
+        self.assertEqual("既有作者层副标题", refreshed[1]["subtitle"])
 
     def test_content_units_split_large_primary_evidence_and_use_short_anchors(self) -> None:
         records = [
@@ -150,6 +195,38 @@ class Stage01CompilerTests(unittest.TestCase):
             "稳定的数据服务和场景服务供给",
             "\n".join(item["allowed_visible_claim"] for item in modules),
         )
+
+    def test_source_native_architecture_promotes_overview_to_lead(self) -> None:
+        records = [
+            {
+                "id": "ST0001",
+                "statement": "平台按照五层两贯穿总体架构建设，并遵循统一控制原则。",
+                "semantic_units": [{"text": "五层两贯穿总体架构"}],
+            },
+            {
+                "id": "ST0002",
+                "statement": "五层能力从主体接入到价值实现依次展开。",
+                "semantic_units": [{"text": "五层能力"}],
+            },
+            {
+                "id": "ST0003",
+                "statement": "平台部署根据服务对象和安全要求分级配置。",
+                "semantic_units": [{"text": "分级部署"}],
+            },
+        ]
+
+        modules = _onscreen_modules(
+            "p06", records,
+            {"model_id": "source_native", "fit": "selected"},
+            visual_intent_type="architecture",
+        )
+
+        self.assertEqual("lead", modules[0]["presentation_role"])
+        self.assertEqual("semantic", modules[0]["visible_layer"])
+        self.assertEqual("structure", modules[1]["presentation_role"])
+        self.assertEqual("body", modules[1]["visible_layer"])
+        self.assertEqual("boundary", modules[2]["presentation_role"])
+        self.assertEqual("notes", modules[2]["visible_layer"])
     def test_fallback_primary_prefers_page_forming_gap_over_general_premise(self) -> None:
         records = [
             {

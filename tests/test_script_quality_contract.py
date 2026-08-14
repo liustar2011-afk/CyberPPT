@@ -52,10 +52,14 @@ from cyberppt.script_quality_contract import (
     text_similarity,
     audience_facing_group_label,
     strip_authoring_group_marker,
+    resolve_judgment_mode,
 )
 
 
 class OnscreenParallelStructureTests(unittest.TestCase):
+    def test_default_judgment_mode_keeps_core_message_offscreen(self) -> None:
+        self.assertEqual("semantic_only", resolve_judgment_mode())
+
     def _page(self, text: str) -> ScriptPage:
         return ScriptPage(
             page_id="p09",
@@ -125,6 +129,80 @@ class OnscreenParallelStructureTests(unittest.TestCase):
         codes = {item.code for item in _negative_foreground_issues(page, contract)}
 
         self.assertNotIn("NEGATIVE_FOREGROUND_OUTSIDE_BOUNDARY_TOPIC", codes)
+
+
+class SubtitlePolicyAuditTests(unittest.TestCase):
+    def _script(self, subtitle: str, onscreen_judgment: str = "") -> object:
+        visible_judgment = f"- 上屏结论：{onscreen_judgment}\n" if onscreen_judgment else ""
+        return parse_script_markdown(
+            f"""## 第4页：生命周期管理
+- 页面类型：内容页
+- 页面标题：生命周期管理
+- 副标题：{subtitle}
+- 主判断：平台对产品和场景实行全过程阶段门控，产品和场景分别进入持续运营和标准化复制。
+- 证据：ST0001
+{visible_judgment}
+
+### 完整文字稿
+
+平台对产品和场景实行全过程阶段门控，产品和场景分别进入持续运营和标准化复制，并明确进入条件、审核责任和继续投入决策。
+
+### 文字稿取舍说明
+
+必留上屏：产品生命周期与场景服务生命周期。
+仅讲解：审核责任。
+仅追溯：阶段明细。
+
+### 上屏文字
+
+产品生命周期
+  需求确认 → 运营
+
+场景服务生命周期
+  试点验证 → 复制
+
+### 视觉结构
+
+产品与场景生命周期受共同阶段门控约束，并分别进入运营与复制。
+
+### 演讲者备注
+
+产品和场景通过阶段门控确定后续投入决策。
+"""
+        )
+
+    def _outline(self, subtitle: str) -> dict[str, object]:
+        return {"pages": [{
+            "page_id": "p04", "page_type": "content", "title": "生命周期管理",
+            "core_message": "平台对产品和场景实行全过程阶段门控，产品和场景分别进入持续运营和标准化复制。",
+            "source_refs": ["ST0001"],
+            "subtitle_policy": {
+                "mode": "generated", "subtitle": subtitle, "source_refs": ["ST0001"],
+            },
+            "onscreen_modules": [],
+        }]}
+
+    def _truth(self) -> dict[str, object]:
+        return {"records": [{"id": "ST0001", "statement": "平台对产品和场景实行全过程阶段门控，产品和场景分别进入持续运营和标准化复制。"}]}
+
+    def test_generated_subtitle_must_match_outline_policy(self) -> None:
+        issues = audit_script_quality(self._script("错误副标题"), self._outline("来源副标题"), self._truth())
+
+        self.assertIn("SUBTITLE_POLICY_MISMATCH", {issue.code for issue in issues})
+
+    def test_generated_subtitle_cannot_repeat_page_title(self) -> None:
+        issues = audit_script_quality(self._script("生命周期管理"), self._outline("生命周期管理"), self._truth())
+
+        self.assertIn("SUBTITLE_TITLE_REPEAT", {issue.code for issue in issues})
+
+    def test_not_needed_policy_rejects_long_core_message_as_onscreen_judgment(self) -> None:
+        outline = self._outline("")
+        outline["pages"][0]["subtitle_policy"] = {"mode": "not_needed", "subtitle": ""}
+        core_message = outline["pages"][0]["core_message"]
+
+        issues = audit_script_quality(self._script("", onscreen_judgment=core_message), outline, self._truth())
+
+        self.assertIn("STRUCTURED_PAGE_LONG_JUDGMENT_ONSCREEN", {issue.code for issue in issues})
 
 
 class ExpressionModelOnscreenCoverageTests(unittest.TestCase):
@@ -240,6 +318,56 @@ class ExpressionModelOnscreenCoverageTests(unittest.TestCase):
         codes = {item.code for item in _onscreen_module_provenance_issues(page, contract)}
 
         self.assertFalse(codes & {"ONSCREEN_FACT_PROVENANCE_MISSING", "ONSCREEN_CROSS_SLOT_FACT_MIXING"})
+
+    def test_lead_module_is_verified_against_onscreen_judgment(self) -> None:
+        page = ScriptPage(
+            page_id="p06", sequence=6, heading="", page_type="content", title="总体架构",
+            main_message="五层两贯穿总体架构", full_prose="来源完整文字稿", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=("ST016",),
+            boundary_source_refs=(), boundary="", visual_structure="分层关系", module_titles=(),
+            onscreen_judgment="平台按照五层两贯穿总体架构建设，并遵循统一控制原则",
+            onscreen_text="能力层级\n  主体接入至价值实现",
+        )
+        contract = {
+            "source_grounding_mode": "required",
+            "onscreen_modules": [{
+                "module_id": "p06-M01", "display_title": "总体架构与运行原则",
+                "source_refs": ["ST016"], "model_slots": [], "derivation_mode": "direct",
+                "presentation_role": "lead", "visible_layer": "judgment",
+                "allowed_visible_claim": "平台按照五层两贯穿总体架构建设，并遵循统一控制原则。",
+                "required_characteristics": ["五层两贯穿总体架构建设"],
+            }],
+        }
+
+        codes = {item.code for item in _onscreen_module_provenance_issues(page, contract)}
+
+        self.assertFalse(codes & {"ONSCREEN_FACT_PROVENANCE_MISSING", "ONSCREEN_CROSS_SLOT_FACT_MIXING"})
+
+    def test_model_slot_uses_source_grounded_body_module_without_judgment(self) -> None:
+        page = ScriptPage(
+            page_id="p04", sequence=4, heading="", page_type="content", title="建设背景",
+            main_message="行业需要统一服务运营基础", full_prose="来源完整文字稿", selection_notes="",
+            evidence_map="", evidence_map_refs=(), source_refs=("ST001", "ST002"),
+            boundary_source_refs=(), boundary="", visual_structure="缺口与回应", module_titles=(),
+            onscreen_text="服务运营基础\n  行业发展需要建立统一的连接、可信使用和服务运营基础",
+        )
+        contract = {
+            "source_grounding_mode": "required",
+            "expression_model_selection": {"model_id": "scqa", "fit": "selected", "source_mapping": [
+                {"slot": "answer", "source_refs": ["ST002"]},
+            ]},
+            "content_units": [{"source_refs": ["ST001", "ST002"], "onscreen_anchors": ["无关锚点"]}],
+            "onscreen_modules": [{
+                "module_id": "p04-M02", "display_title": "服务运营基础",
+                "source_refs": ["ST002"], "derivation_mode": "direct", "visible_layer": "body",
+                "allowed_visible_claim": "行业发展需要建立统一的连接、可信使用和服务运营基础。",
+                "required_characteristics": ["统一的连接、可信使用和服务运营基础"],
+            }],
+        }
+
+        _, issues = _model_slot_coverage_issues(page, contract)
+
+        self.assertNotIn("EXPRESSION_MODEL_SLOT_ONSCREEN_MISSING", {item.code for item in issues})
 
     def test_source_grounding_replaces_aggregate_unit_onscreen_checks(self) -> None:
         page = ScriptPage(
@@ -1682,6 +1810,18 @@ class NegativeForegroundRuleTests(unittest.TestCase):
         self.assertEqual("error", issues[0].severity)
         self.assertIn("页面标题：缺口", issues[0].evidence)
         self.assertIn("主判断：不足", issues[0].evidence)
+
+    def test_data_risk_as_service_configuration_condition_is_not_negative_foreground(self) -> None:
+        page = self._page(
+            title="服务交付与服务等级",
+            main_message="服务方案根据数据风险、资源控制要求和客户业务环境确定交付配置。",
+            prose="服务方案根据数据风险、资源控制要求和客户业务环境确定交付配置。",
+        )
+
+        self.assertEqual(
+            [],
+            _negative_foreground_issues(page, {"argument_role": "capability"}),
+        )
 
     def test_title_cannot_self_exempt_without_direct_boundary_role(self) -> None:
         page = self._page(

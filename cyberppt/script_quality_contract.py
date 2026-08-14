@@ -286,8 +286,13 @@ def resolve_judgment_mode(explicit_mode: str = "", judgment_role: str = "") -> s
         return mode
     if role in SEMANTIC_ONLY_JUDGMENT_ROLES:
         return "semantic_only"
-    if role in LOCKED_JUDGMENT_ROLES or not role:
+    if role in LOCKED_JUDGMENT_ROLES:
         return "locked"
+    if not role:
+        # The complete core message is authoring and audit truth.  It is not
+        # a default audience paragraph; authors may supply a short subtitle
+        # when the page needs one.
+        return "semantic_only"
     raise ValueError(f"unsupported judgment_role: {role}")
 
 
@@ -2189,8 +2194,28 @@ def _is_direct_boundary_clarification(
     return any(term in approved_theme for term in _DIRECT_BOUNDARY_TOPIC_TERMS)
 
 
+_CONDITIONAL_RISK_PHRASES: tuple[str, ...] = (
+    "数据风险",
+    "风险控制",
+    "风险管理",
+    "风险评估",
+    "风险防控",
+)
+
+
 def _negative_foreground_terms(text: str) -> tuple[str, ...]:
-    return tuple(term for term in _NEGATIVE_FOREGROUND_TERMS if term in text)
+    hits: list[str] = []
+    for term in _NEGATIVE_FOREGROUND_TERMS:
+        if term not in text:
+            continue
+        if term == "风险":
+            residual = text
+            for phrase in _CONDITIONAL_RISK_PHRASES:
+                residual = residual.replace(phrase, "")
+            if term not in residual:
+                continue
+        hits.append(term)
+    return tuple(hits)
 
 
 def _leading_negative_foreground_terms(text: str) -> tuple[str, ...]:
@@ -2253,6 +2278,88 @@ def _negative_foreground_issues(
             evidence=tuple(evidence),
         )
     ]
+
+
+def _subtitle_policy_issues(
+    page: ScriptPage,
+    contract: dict[str, object],
+) -> list[ScriptQualityIssue]:
+    """Validate optional subtitle policy without making it a body-text rule."""
+
+    policy = contract.get("subtitle_policy")
+    if not isinstance(policy, dict):
+        return []
+    mode = str(policy.get("mode") or "").strip()
+    expected = str(policy.get("subtitle") or "").strip()
+    raw_policy_refs = policy.get("source_refs")
+    policy_refs = {
+        str(value).strip()
+        for value in raw_policy_refs
+        if str(value).strip()
+    } if isinstance(raw_policy_refs, list) else set(_source_refs(str(raw_policy_refs or "")))
+    issues: list[ScriptQualityIssue] = []
+    if mode not in {"generated", "not_needed", "author_required", "authored"}:
+        issues.append(
+            _issue(
+                "SUBTITLE_POLICY_MODE_INVALID", page,
+                "Outline subtitle policy has an unsupported mode.",
+                "Use generated, not_needed, author_required, or authored.",
+            )
+        )
+        return issues
+    if mode == "generated":
+        if not expected or page.subtitle != expected:
+            issues.append(
+                _issue(
+                    "SUBTITLE_POLICY_MISMATCH", page,
+                    "Generated subtitle does not match the approved Outline policy.",
+                    "Use the generated subtitle or change the Outline policy to authored after review.",
+                    evidence=tuple(value for value in (expected, page.subtitle) if value),
+                )
+            )
+        if expected and expected == page.title:
+            issues.append(
+                _issue(
+                    "SUBTITLE_TITLE_REPEAT", page,
+                    "Generated subtitle repeats the page title instead of advancing the page judgment.",
+                    "Use a short source-grounded relation or set the policy to author_required.",
+                    evidence=(expected,),
+                )
+            )
+    if mode in {"not_needed", "author_required"} and page.subtitle:
+        issues.append(
+            _issue(
+                "SUBTITLE_POLICY_MISMATCH", page,
+                "Outline policy does not permit a visible subtitle on this page.",
+                "Remove the subtitle or mark the approved policy authored with source references.",
+                evidence=(page.subtitle,),
+            )
+        )
+    core_message = str(contract.get("core_message") or page.core_message or "").strip()
+    if (
+        mode == "not_needed"
+        and page.onscreen_judgment
+        and page.onscreen_judgment == core_message
+        and _compact_len(core_message) >= 32
+    ):
+        issues.append(
+            _issue(
+                "STRUCTURED_PAGE_LONG_JUDGMENT_ONSCREEN", page,
+                "A page marked not_needed puts its long core judgment back into the on-screen body.",
+                "Keep the body focused on its approved information structure; generate or author a short subtitle only when the page needs one.",
+                evidence=(page.onscreen_judgment,),
+            )
+        )
+    if mode in {"generated", "authored"} and policy_refs and not policy_refs <= set(page.source_refs):
+        issues.append(
+            _issue(
+                "SUBTITLE_UNGROUNDED", page,
+                "Subtitle policy cites evidence outside this page's approved source scope.",
+                "Restrict subtitle_policy.source_refs to the page's approved evidence.",
+                evidence=tuple(sorted(policy_refs - set(page.source_refs))),
+            )
+        )
+    return issues
 
 
 def _selected_problem_slots(contract: dict[str, object]) -> set[str]:
@@ -3107,7 +3214,24 @@ def _onscreen_module_provenance_issues(
     issues: list[ScriptQualityIssue] = []
     for module in _dict_items(contract, "onscreen_modules"):
         title = str(module.get("display_title") or "").strip()
-        visible = visible_groups.get(title, "")
+        visible_layer = str(module.get("visible_layer") or "body").strip()
+        if visible_layer in {"notes", "semantic"}:
+            # Deployment and other retained supporting facts remain in the
+            # semantic / full-prose layer; they are not audience modules.
+            continue
+        if visible_layer == "judgment":
+            if title in visible_groups:
+                issues.append(_issue(
+                    "ONSCREEN_LEAD_DUPLICATES_STRUCTURE",
+                    page,
+                    "承担页面导语职责的来源事实不得同时作为并列上屏模块重复呈现。",
+                    "将该事实保留在上屏结论，并由下方结构模块展开其组成或职责。",
+                    source_ids=tuple(str(value) for value in module.get("source_refs") or [] if str(value)),
+                    evidence=(f"module={title}",),
+                ))
+            visible = page.onscreen_judgment
+        else:
+            visible = visible_groups.get(title, "")
         claim = str(module.get("allowed_visible_claim") or "").strip()
         characteristics = tuple(
             str(value).strip()
@@ -3182,6 +3306,39 @@ def _model_slot_coverage_issues(
     visible = "\n".join(
         part for part in (page.onscreen_judgment, page.onscreen_text) if part.strip()
     )
+    visible_groups = _visible_module_groups(page.onscreen_text)
+    grounded_modules = _dict_items(contract, "onscreen_modules")
+
+    def _grounded_ref_is_visible(ref: str) -> bool:
+        """Use the author-declared body module as model-slot evidence.
+
+        Content units may aggregate several source records.  When explicit
+        source-grounded modules exist, the visible body module is the more
+        precise evidence that a selected model slot reached the audience.
+        """
+
+        for module in grounded_modules:
+            refs = {str(value) for value in module.get("source_refs") or [] if str(value)}
+            if ref not in refs or str(module.get("visible_layer") or "body") != "body":
+                continue
+            group = visible_groups.get(str(module.get("display_title") or "").strip(), "")
+            if not group:
+                continue
+            claim = str(module.get("allowed_visible_claim") or "")
+            characteristics = [
+                str(value) for value in module.get("required_characteristics") or [] if str(value)
+            ]
+            if (
+                _source_statement_overlap(claim, group, size=3) >= 0.05
+                and any(
+                    feature in group
+                    or _source_statement_overlap(feature, group, size=3) >= 0.55
+                    for feature in characteristics
+                )
+            ):
+                return True
+        return False
+
     covered_refs: set[str] = set()
     issues: list[ScriptQualityIssue] = []
     slot_names = {slot.name for slot in model.slots}
@@ -3194,6 +3351,9 @@ def _model_slot_coverage_issues(
             continue
         missing: set[str] = set()
         for ref in refs:
+            if _grounded_ref_is_visible(ref):
+                covered_refs.add(ref)
+                continue
             matching_units = [
                 unit for unit in units
                 if ref in {str(value) for value in unit.get("source_refs") or []}
@@ -4895,6 +5055,7 @@ def audit_script_quality(
                 )
             )
         if expected_type == "content":
+            issues.extend(_subtitle_policy_issues(page, contract))
             issues.extend(_onscreen_module_provenance_issues(page, contract))
             explicit_judgment_mode = str(
                 contract.get("onscreen_judgment_mode") or page.onscreen_judgment_mode

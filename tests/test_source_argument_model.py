@@ -440,6 +440,50 @@ class SourceArgumentModelTests(unittest.TestCase):
         }
         self.assertNotIn("PAGE_SOURCE_SECTION_COVERAGE_INCOMPLETE", codes)
 
+    def test_primary_section_page_does_not_inherit_every_descendant_record(self) -> None:
+        outline = {
+            "semantic_argument_model_mode": "required",
+            "pages": [{
+                "page_id": "p01",
+                "page_type": "content",
+                "primary_argument_node_id": "c01",
+                "source_argument_node_ids": ["c01"],
+                "source_argument_node_roles": {"c01": "foundation"},
+                "source_argument_node_statuses": {"c01": "existing"},
+                "source_argument_node_weights": {"c01": "core"},
+                "core_message_derivation": {"argument_node_ids": ["c01"]},
+                "source_refs": ["S001"],
+            }],
+        }
+        truth = {"records": [
+            {"id": "S001", "semantic_node_ids": ["c01"], "argument_duty": "detail"},
+            {"id": "S002", "semantic_node_ids": ["c01"], "argument_duty": "detail"},
+        ]}
+
+        codes = {item["code"] for item in audit_outline_consumption(outline, model(), truth)}
+
+        self.assertNotIn("PAGE_SOURCE_SECTION_COVERAGE_INCOMPLETE", codes)
+
+    def test_page_primary_node_must_use_narrowest_shared_subsection_scope(self) -> None:
+        outline = {"semantic_argument_model_mode": "required", "pages": [{
+            "page_id": "p01", "page_type": "content",
+            "primary_argument_node_id": "c01",
+            "source_argument_node_ids": ["c01"],
+            "source_argument_node_roles": {"c01": "foundation"},
+            "source_argument_node_statuses": {"c01": "existing"},
+            "source_argument_node_weights": {"c01": "core"},
+            "core_message_derivation": {"argument_node_ids": ["c01"]},
+            "source_refs": ["S001"],
+        }]}
+        truth = {"records": [{
+            "id": "S001", "semantic_node_ids": ["c01", "c01-s01"],
+            "argument_duty": "detail",
+        }]}
+
+        codes = {item["code"] for item in audit_outline_consumption(outline, model(), truth)}
+
+        self.assertIn("PAGE_SOURCE_SCOPE_NODE_TOO_BROAD", codes)
+
     def test_non_core_section_defaults_to_selective_consumption(self) -> None:
         candidate = model()
         candidate["section_nodes"][0]["argument_weight"] = "detail"
