@@ -1,0 +1,38 @@
+{
+  "schema": "cyberppt.image_to_editable_svg.render_compare.v1",
+  "valid": true,
+  "geometry": {
+    "schema": "cyberppt.dual_image.qa_render_geometry.v1",
+    "pptx": "/Volumes/DOC/CyberPPT/assets/palette-samples/editable-reconstruction-20260814/output-v3/exports/editable_svg.pptx",
+    "slide_width_in": 18.4792,
+    "slide_height_in": 9.2396,
+    "slide_count": 2,
+    "valid": true,
+    "slides": [
+      {
+        "slide_index": 1,
+        "text_box_count": 28,
+        "overlap_count": 0,
+        "overlaps": [],
+        "out_of_bounds_count": 0,
+        "out_of_bounds": [],
+        "valid": true
+      },
+      {
+        "slide_index": 2,
+        "text_box_count": 35,
+        "overlap_count": 0,
+        "overlaps": [],
+        "out_of_bounds_count": 0,
+        "out_of_bounds": [],
+        "valid": true
+      }
+    ]
+  },
+  "rendered_pages": [
+    "/Volumes/DOC/CyberPPT/assets/palette-samples/editable-reconstruction-20260814/output-v3/rendered/slide-1.jpg",
+    "/Volumes/DOC/CyberPPT/assets/palette-samples/editable-reconstruction-20260814/output-v3/rendered/slide-2.jpg"
+  ],
+  "expected_page_count": 2,
+  "error": null
+}

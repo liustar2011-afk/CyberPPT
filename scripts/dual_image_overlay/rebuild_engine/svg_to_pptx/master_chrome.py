@@ -32,6 +32,7 @@ from typing import Any
 from xml.sax.saxutils import escape
 
 EMU_PER_PX = 9525  # 914400 EMU/inch / 96 px/inch
+TEMPLATE_SURFACE_COLOR = 'F7F6F0'
 
 
 def _px_to_emu(px: float) -> int:
@@ -54,13 +55,13 @@ def strip_full_canvas_background(svg_text: str, width: int, height: int) -> str:
     """Remove the page's own full-canvas opaque background rect.
 
     Every page SVG in this pipeline conventionally opens with
-    ``<rect x="0" y="0" width="<canvas_w>" height="<canvas_h>" fill="#FFFFFF"/>``
+    ``<rect x="0" y="0" width="<canvas_w>" height="<canvas_h>" fill="#F7F6F0"/>``
     as its very first shape (see CHART_STYLE_GUIDE.md §5.3). On a body page
     that uses the injected chrome layout, that rect — once converted to a
     slide shape — paints on top of the *layout's* chrome (PPTX always
     z-orders slide content above its layout), silently hiding the header
     divider, logo, and footer bar even though they are correctly present in
-    the file. The layout itself carries its own full-canvas white background
+    the file. The layout itself carries its own full-canvas ivory background
     behind the chrome (see ``inject_chrome_layout``), so the slide doesn't
     need one — stripping this single boilerplate rect is sufficient; no
     change to how the rest of the page is authored is required.
@@ -261,14 +262,14 @@ def inject_chrome_layout(
 
     shapes_xml = []
     shape_id = 99
-    # Layout-level white background, painted first (bottom of z-order) so the
-    # canvas reads white even though the per-page slide's own background rect
+    # Layout-level ivory background, painted first (bottom of z-order) so the
+    # canvas reads ivory even though the per-page slide's own background rect
     # is stripped (see strip_full_canvas_background) to let this layout's
     # chrome show through instead of being painted over.
     canvas_w = chrome.get('canvas_width', 1280)
     canvas_h = chrome.get('canvas_height', 720)
     shapes_xml.append(_shape_xml(shape_id, 'ChromeCanvasBackground',
-                                  {'x': 0, 'y': 0, 'w': canvas_w, 'h': canvas_h}, '#FFFFFF'))
+                                  {'x': 0, 'y': 0, 'w': canvas_w, 'h': canvas_h}, TEMPLATE_SURFACE_COLOR))
     shape_id += 1
     if 'top_divider' in chrome:
         shapes_xml.append(_shape_xml(shape_id, 'ChromeTopDivider', chrome['top_divider'],

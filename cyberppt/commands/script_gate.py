@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import shutil
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
@@ -10,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 
-SCRIPT_KINDS = {"pptx", "imagegen", "blueprint", "analysis"}
+SCRIPT_KINDS = {"pptx", "imagegen", "imagegen-send", "blueprint", "analysis"}
 SCRIPT_PHASES = {"draft", "final"}
 
 
@@ -62,9 +63,20 @@ def _ensure_plaintext(source: Path) -> None:
         raise ValueError(f"script must be UTF-8 plaintext: {source}") from exc
 
 
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest().lower()
+
+
 def _script_dir(project: Path, kind: str, phase: str) -> Path:
     if kind == "imagegen":
         return project / "workbench" / "prompts" / "imagegen"
+    if kind == "imagegen-send":
+        # Send-layer prompts stay beside ImageGen scripts under send/ for audit.
+        return project / "workbench" / "prompts" / "imagegen" / "send"
     if phase == "draft":
         return project / "workbench" / "scripts" / "drafts"
     return project / "workbench" / "scripts" / "final"
@@ -115,7 +127,11 @@ def stage_script(
 
     target = _script_path(root, slide, kind, phase, source.suffix or ".txt")
     target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(source, target)
+    if source.resolve() != target.resolve():
+        shutil.copyfile(source, target)
+    else:
+        # Source was already written to the canonical ledger path.
+        _ensure_plaintext(target)
 
     manifest = _read_manifest(root)
     manifest.setdefault("entries", []).append(
@@ -155,10 +171,44 @@ def approve_script(project: Path, slide: int, kind: str, note: str = "") -> Path
             "approved": True,
             "approved_at": _utc_now(),
             "approved_artifacts": status.final_paths,
+            "approved_hashes": {
+                artifact: _sha256(Path(artifact)) for artifact in status.final_paths
+            },
+            "approved_manifest_entry_count": len(
+                _read_manifest(root).get("entries", [])
+            ),
             "note": note,
         },
     )
     return path
+
+
+def assert_approved_final_script(project: Path, slide: int, kind: str) -> Path:
+    """Return the current final artifact after an affirmative user approval.
+
+    This is a single-user workflow: approval records express intent, rather
+    than freezing file bytes.  Hashes remain in the record as provenance but
+    editing the staged file in place no longer invalidates the approval.
+    """
+
+    root = _project_root(project)
+    kind = _validate_kind(kind)
+    status = get_script_status(root, slide, kind)
+    if not status.final_paths:
+        raise FileNotFoundError(
+            f"no final {kind} script saved for {_slide_slug(slide)}; stage a final script before generation"
+        )
+    approval_path = Path(status.approval_path)
+    if not approval_path.is_file():
+        raise PermissionError(
+            f"missing user approval for final {kind} script on {_slide_slug(slide)}: {approval_path}"
+        )
+    approval = json.loads(approval_path.read_text(encoding="utf-8-sig"))
+    if approval.get("approved") is not True:
+        raise PermissionError(f"final {kind} script approval is not affirmative: {approval_path}")
+    if not status.ready_to_generate:
+        raise PermissionError(status.reason)
+    return Path(status.final_paths[0])
 
 
 def get_script_status(project: Path, slide: int, kind: str) -> ScriptStatus:
@@ -170,13 +220,42 @@ def get_script_status(project: Path, slide: int, kind: str) -> ScriptStatus:
     final_paths = sorted(str(path) for path in final_dir.glob(f"{_slide_slug(slide)}-{kind}-final.*"))
     approval_path = _approval_path(root, slide, kind)
     approval_exists = approval_path.exists()
-    ready = bool(final_paths and approval_exists)
-    if ready:
-        reason = "final script is saved and user approval is recorded"
-    elif not final_paths:
+    ready = False
+    if not final_paths:
         reason = "final script is not saved"
-    else:
+    elif not approval_exists:
         reason = "user approval is not recorded"
+    else:
+        try:
+            approval = json.loads(approval_path.read_text(encoding="utf-8-sig"))
+        except (OSError, json.JSONDecodeError):
+            reason = "user approval record is unreadable"
+        else:
+            if approval.get("approved") is not True:
+                reason = "user approval is not affirmative"
+            else:
+                manifest_entries = _read_manifest(root).get("entries", [])
+                approved_count = approval.get("approved_manifest_entry_count")
+                if isinstance(approved_count, int):
+                    newer_entries = manifest_entries[approved_count:]
+                else:
+                    approved_at = str(approval.get("approved_at") or "")
+                    newer_entries = [
+                        entry
+                        for entry in manifest_entries
+                        if str(entry.get("saved_at") or "") > approved_at
+                    ]
+                newer_draft = any(
+                    entry.get("slide") == slide
+                    and entry.get("kind") == kind
+                    and entry.get("phase") == "draft"
+                    for entry in newer_entries
+                )
+                if newer_draft:
+                    reason = "a newer draft is waiting for final staging and user approval"
+                else:
+                    ready = True
+                    reason = "final script is saved and user approval is recorded"
     return ScriptStatus(
         project=str(root),
         slide=slide,

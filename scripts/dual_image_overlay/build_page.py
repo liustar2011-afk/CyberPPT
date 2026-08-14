@@ -22,6 +22,8 @@ from .alignment import AlignmentTransform, estimate_alignment
 from .container_workspace import build_container_workspace, write_container_workspace
 from .layout_qa import check_layout
 from .normalize import CANVAS, normalize_image
+from .office_render import office_candidates as _office_candidates
+from .office_render import office_failure_evidence as _office_failure_evidence
 from .office_textbox_fit import apply_office_textbox_fit
 from .qa_registry import write_page_quality_report
 from .render_compare_flow import attach_render_compare_measurement, run_render_compare_for_page
@@ -51,9 +53,9 @@ def _command_path(name: str) -> str | None:
 
 
 def _render_pptx_preview(pptx_path: Path, exports: Path) -> Path:
-    soffice = _command_path("soffice") or _command_path("libreoffice")
+    soffice_candidates = _office_candidates()
     pdftoppm = _command_path("pdftoppm")
-    if not soffice:
+    if not soffice_candidates:
         raise RuntimeError("soffice/libreoffice is required for --render-preview")
     if not pdftoppm:
         raise RuntimeError("pdftoppm is required for --render-preview")
@@ -61,27 +63,40 @@ def _render_pptx_preview(pptx_path: Path, exports: Path) -> Path:
     exports.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
-        subprocess.run(
-            [
-                soffice,
-                "--headless",
-                "--convert-to",
-                "pdf",
-                "--outdir",
-                str(temp_path),
-                str(pptx_path),
-            ],
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
         pdf_path = temp_path / f"{pptx_path.stem}.pdf"
-        if not pdf_path.exists():
-            matches = sorted(temp_path.glob("*.pdf"))
-            if not matches:
-                raise RuntimeError("LibreOffice did not create a PDF preview")
-            pdf_path = matches[0]
+        failures: list[str] = []
+        last_error: BaseException | None = None
+        for soffice in soffice_candidates:
+            try:
+                with tempfile.TemporaryDirectory(prefix="cyberppt-soffice-profile-") as profile_dir:
+                    subprocess.run(
+                        [
+                            str(soffice),
+                            f"-env:UserInstallation={Path(profile_dir).resolve().as_uri()}",
+                            "--headless",
+                            "--convert-to",
+                            "pdf",
+                            "--outdir",
+                            str(temp_path),
+                            str(pptx_path),
+                        ],
+                        check=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                    )
+                if not pdf_path.is_file():
+                    matches = sorted(temp_path.glob("*.pdf"))
+                    if not matches:
+                        raise RuntimeError("conversion exited successfully but did not create a PDF preview")
+                    pdf_path = matches[0]
+                break
+            except (OSError, subprocess.CalledProcessError, RuntimeError) as error:
+                last_error = error
+                failures.append(_office_failure_evidence(soffice, error))
+        else:
+            evidence = "\n  ".join(failures)
+            raise RuntimeError(f"All LibreOffice preview attempts failed:\n  {evidence}") from last_error
         target_pdf = exports / "page-render.pdf"
         shutil.copyfile(pdf_path, target_pdf)
         prefix = temp_path / "page-render"

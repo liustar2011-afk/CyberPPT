@@ -1,0 +1,4 @@
+interface:
+  display_name: "CyberPPT 专业单页脚本"
+  short_description: "从页面使命、论证链和视觉语法专业创作或重构单张内容页"
+  default_prompt: "使用 $cyberppt-write-single-page，基于当前项目的 Outline、Source Truth、来源单元与相邻页契约，专业设计、编写或重构一张 CyberPPT 内容页。"

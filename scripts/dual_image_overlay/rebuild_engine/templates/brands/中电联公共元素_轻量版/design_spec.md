@@ -91,6 +91,9 @@ These page templates are part of the chrome-only brand boundary for non-content 
 
 ## VIII. Runtime Rule
 
+The PPT template surface is ivory `#F7F6F0`; preserve this as the base color for
+the canvas behind body-page content and the injected master chrome.
+
 When this brand is copied into `<project_path>/templates/`, Strategist must treat it as a chrome-only public-element preset:
 
 - Lock `master_elements.svg`, `logo.png`, `cover_bg.jpg`, `01_cover.svg`, `02_agenda.svg`, `03_section.svg`, `04_ending.svg`, `brand_rules.json`, protected regions, non-content page template regions, cover base regions, and public chrome placement.

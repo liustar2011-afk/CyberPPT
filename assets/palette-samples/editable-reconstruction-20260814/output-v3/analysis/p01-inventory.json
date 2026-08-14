@@ -1,0 +1,1589 @@
+{
+  "schema": "cyberppt.image_to_editable_svg.inspection.v1",
+  "frame": {
+    "page_number": 1,
+    "source_path": "/Volumes/DOC/CyberPPT/assets/palette-samples/palette-04.png",
+    "source_sha256": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+    "normalized_path": "/Volumes/DOC/CyberPPT/assets/palette-samples/editable-reconstruction-20260814/output-v3/canonical_frames/p01-canonical.png",
+    "pixel_size": [
+      1774,
+      887
+    ]
+  },
+  "inventory": {
+    "schema": "cyberppt.image_to_editable_svg.inventory.v1",
+    "frame": {
+      "page_number": 1,
+      "source_path": "/Volumes/DOC/CyberPPT/assets/palette-samples/palette-04.png",
+      "source_sha256": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "normalized_path": "/Volumes/DOC/CyberPPT/assets/palette-samples/editable-reconstruction-20260814/output-v3/canonical_frames/p01-canonical.png",
+      "pixel_size": [
+        1774,
+        887
+      ]
+    },
+    "regions": [
+      {
+        "id": "text-000",
+        "family": "text",
+        "bbox": [
+          432.0,
+          338.0,
+          260.0,
+          30.0
+        ],
+        "z_index": 1000,
+        "observed_text": "首期服务方向围绕",
+        "truth_text": "首期服务方向围绕",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-001",
+        "family": "text",
+        "bbox": [
+          432.0,
+          376.0,
+          260.0,
+          30.0
+        ],
+        "z_index": 1001,
+        "observed_text": "需求明确、资源清晰、",
+        "truth_text": "需求明确、资源清晰、",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-002",
+        "family": "text",
+        "bbox": [
+          432.0,
+          416.0,
+          260.0,
+          30.0
+        ],
+        "z_index": 1002,
+        "observed_text": "成果可验、价格可执行",
+        "truth_text": "成果可验、价格可执行",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-003",
+        "family": "text",
+        "bbox": [
+          432.0,
+          454.0,
+          285.0,
+          30.0
+        ],
+        "z_index": 1003,
+        "observed_text": "的领域，优先形成可展示、",
+        "truth_text": "的领域，优先形成可展示、",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-004",
+        "family": "text",
+        "bbox": [
+          432.0,
+          495.0,
+          285.0,
+          30.0
+        ],
+        "z_index": 1004,
+        "observed_text": "可交付、可复制的行业服务。",
+        "truth_text": "可交付、可复制的行业服务。",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-005",
+        "family": "text",
+        "bbox": [
+          475.0,
+          620.0,
+          75.0,
+          20.0
+        ],
+        "z_index": 1005,
+        "observed_text": "需求明确",
+        "truth_text": "需求明确",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-006",
+        "family": "text",
+        "bbox": [
+          560.0,
+          620.0,
+          75.0,
+          20.0
+        ],
+        "z_index": 1006,
+        "observed_text": "资源清晰",
+        "truth_text": "资源清晰",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-007",
+        "family": "text",
+        "bbox": [
+          650.0,
+          620.0,
+          75.0,
+          20.0
+        ],
+        "z_index": 1007,
+        "observed_text": "成果可验",
+        "truth_text": "成果可验",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-008",
+        "family": "text",
+        "bbox": [
+          735.0,
+          620.0,
+          75.0,
+          20.0
+        ],
+        "z_index": 1008,
+        "observed_text": "价格可执行",
+        "truth_text": "价格可执行",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-009",
+        "family": "text",
+        "bbox": [
+          825.0,
+          38.0,
+          535.0,
+          36.0
+        ],
+        "z_index": 1009,
+        "observed_text": "一、选择原则｜优先形成可验证产品和场景",
+        "truth_text": "一、选择原则｜优先形成可验证产品和场景",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-010",
+        "family": "text",
+        "bbox": [
+          923.0,
+          101.0,
+          110.0,
+          30.0
+        ],
+        "z_index": 1010,
+        "observed_text": "首期标准",
+        "truth_text": "首期标准",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-011",
+        "family": "text",
+        "bbox": [
+          923.0,
+          139.0,
+          350.0,
+          23.0
+        ],
+        "z_index": 1011,
+        "observed_text": "重点选择真实需求明确、资源权利清晰、",
+        "truth_text": "重点选择真实需求明确、资源权利清晰、",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-012",
+        "family": "text",
+        "bbox": [
+          923.0,
+          163.0,
+          350.0,
+          23.0
+        ],
+        "z_index": 1012,
+        "observed_text": "交付成果可验证、商务价格可执行、",
+        "truth_text": "交付成果可验证、商务价格可执行、",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-013",
+        "family": "text",
+        "bbox": [
+          923.0,
+          187.0,
+          300.0,
+          23.0
+        ],
+        "z_index": 1013,
+        "observed_text": "持续服务有条件的服务方向。",
+        "truth_text": "持续服务有条件的服务方向。",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-014",
+        "family": "text",
+        "bbox": [
+          1430.0,
+          101.0,
+          105.0,
+          30.0
+        ],
+        "z_index": 1014,
+        "observed_text": "推进方式",
+        "truth_text": "推进方式",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-015",
+        "family": "text",
+        "bbox": [
+          1425.0,
+          139.0,
+          290.0,
+          23.0
+        ],
+        "z_index": 1015,
+        "observed_text": "按照成熟一项、推进一项的原则，",
+        "truth_text": "按照成熟一项、推进一项的原则，",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-016",
+        "family": "text",
+        "bbox": [
+          1425.0,
+          163.0,
+          290.0,
+          23.0
+        ],
+        "z_index": 1016,
+        "observed_text": "先形成样例、试点和首批客户，",
+        "truth_text": "先形成样例、试点和首批客户，",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-017",
+        "family": "text",
+        "bbox": [
+          1425.0,
+          187.0,
+          220.0,
+          23.0
+        ],
+        "z_index": 1017,
+        "observed_text": "再逐步纳入正式运营。",
+        "truth_text": "再逐步纳入正式运营。",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-018",
+        "family": "text",
+        "bbox": [
+          825.0,
+          241.0,
+          575.0,
+          36.0
+        ],
+        "z_index": 1018,
+        "observed_text": "二、六类重点｜围绕已有基础形成首期示范",
+        "truth_text": "二、六类重点｜围绕已有基础形成首期示范",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-019",
+        "family": "text",
+        "bbox": [
+          900.0,
+          325.0,
+          230.0,
+          28.0
+        ],
+        "z_index": 1019,
+        "observed_text": "设备可靠性与生产运行服务",
+        "truth_text": "设备可靠性与生产运行服务",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-020",
+        "family": "text",
+        "bbox": [
+          1205.0,
+          325.0,
+          230.0,
+          28.0
+        ],
+        "z_index": 1020,
+        "observed_text": "绿色低碳与电碳因子服务",
+        "truth_text": "绿色低碳与电碳因子服务",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-021",
+        "family": "text",
+        "bbox": [
+          1505.0,
+          325.0,
+          220.0,
+          28.0
+        ],
+        "z_index": 1021,
+        "observed_text": "电力供需与市场经营服务",
+        "truth_text": "电力供需与市场经营服务",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-022",
+        "family": "text",
+        "bbox": [
+          850.0,
+          532.0,
+          245.0,
+          28.0
+        ],
+        "z_index": 1022,
+        "observed_text": "燃料价格预测与供应链服务",
+        "truth_text": "燃料价格预测与供应链服务",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-023",
+        "family": "text",
+        "bbox": [
+          1175.0,
+          532.0,
+          265.0,
+          28.0
+        ],
+        "z_index": 1023,
+        "observed_text": "科研教育与高质量数据集服务",
+        "truth_text": "科研教育与高质量数据集服务",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-024",
+        "family": "text",
+        "bbox": [
+          1505.0,
+          532.0,
+          220.0,
+          28.0
+        ],
+        "z_index": 1024,
+        "observed_text": "科技成果可信转化服务",
+        "truth_text": "科技成果可信转化服务",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-025",
+        "family": "text",
+        "bbox": [
+          825.0,
+          701.0,
+          600.0,
+          36.0
+        ],
+        "z_index": 1025,
+        "observed_text": "三、动态调整｜储备方向条件成熟后纳入正式运营",
+        "truth_text": "三、动态调整｜储备方向条件成熟后纳入正式运营",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-026",
+        "family": "text",
+        "bbox": [
+          920.0,
+          765.0,
+          115.0,
+          28.0
+        ],
+        "z_index": 1026,
+        "observed_text": "储备培育",
+        "truth_text": "储备培育",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "text-027",
+        "family": "text",
+        "bbox": [
+          1400.0,
+          765.0,
+          130.0,
+          28.0
+        ],
+        "z_index": 1027,
+        "observed_text": "跨行业探索",
+        "truth_text": "跨行业探索",
+        "truth_source": "script",
+        "locator_source": "ocr",
+        "status": "verified",
+        "realization": "native_text",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "p01-power-plant",
+        "family": "scene",
+        "bbox": [
+          0.0,
+          0.0,
+          700.0,
+          285.0
+        ],
+        "asset_path": "/Volumes/DOC/CyberPPT/assets/palette-samples/editable-reconstruction-20260814/assets/p01-power-plant.png",
+        "z_index": 10,
+        "realization": "registered_layer",
+        "status": "pending",
+        "source_page": 1,
+        "source_region": "p01-power-plant",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "p01-control-room",
+        "family": "scene",
+        "bbox": [
+          0.0,
+          285.0,
+          420.0,
+          360.0
+        ],
+        "asset_path": "/Volumes/DOC/CyberPPT/assets/palette-samples/editable-reconstruction-20260814/assets/p01-control-room.png",
+        "z_index": 11,
+        "realization": "registered_layer",
+        "status": "pending",
+        "source_page": 1,
+        "source_region": "p01-control-room",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "p01-clipboard",
+        "family": "scene",
+        "bbox": [
+          0.0,
+          620.0,
+          740.0,
+          267.0
+        ],
+        "asset_path": "/Volumes/DOC/CyberPPT/assets/palette-samples/editable-reconstruction-20260814/assets/p01-clipboard.png",
+        "z_index": 12,
+        "realization": "registered_layer",
+        "status": "pending",
+        "source_page": 1,
+        "source_region": "p01-clipboard",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "p01-section-one",
+        "family": "simple_geometry",
+        "bbox": [
+          825.0,
+          35.0,
+          535.0,
+          44.0
+        ],
+        "fill": "#0B3567",
+        "z_index": 13,
+        "realization": "native_geometry",
+        "status": "verified",
+        "source_page": 1,
+        "source_region": "p01-section-one",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "p01-section-two",
+        "family": "simple_geometry",
+        "bbox": [
+          825.0,
+          239.0,
+          575.0,
+          44.0
+        ],
+        "fill": "#0B3567",
+        "z_index": 14,
+        "realization": "native_geometry",
+        "status": "verified",
+        "source_page": 1,
+        "source_region": "p01-section-two",
+        "identity_verified": false,
+        "data_verified": false
+      },
+      {
+        "id": "p01-section-three",
+        "family": "simple_geometry",
+        "bbox": [
+          825.0,
+          699.0,
+          600.0,
+          44.0
+        ],
+        "fill": "#0B3567",
+        "z_index": 15,
+        "realization": "native_geometry",
+        "status": "verified",
+        "source_page": 1,
+        "source_region": "p01-section-three",
+        "identity_verified": false,
+        "data_verified": false
+      }
+    ]
+  },
+  "layers": [
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "p01-power-plant",
+      "family": "scene",
+      "bbox": [
+        0.0,
+        0.0,
+        700.0,
+        285.0
+      ],
+      "asset_path": "/Volumes/DOC/CyberPPT/assets/palette-samples/editable-reconstruction-20260814/assets/p01-power-plant.png",
+      "z_index": 10,
+      "realization": "registered_layer",
+      "status": "pending",
+      "source_page": 1,
+      "source_region": "p01-power-plant",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "p01-control-room",
+      "family": "scene",
+      "bbox": [
+        0.0,
+        285.0,
+        420.0,
+        360.0
+      ],
+      "asset_path": "/Volumes/DOC/CyberPPT/assets/palette-samples/editable-reconstruction-20260814/assets/p01-control-room.png",
+      "z_index": 11,
+      "realization": "registered_layer",
+      "status": "pending",
+      "source_page": 1,
+      "source_region": "p01-control-room",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "p01-clipboard",
+      "family": "scene",
+      "bbox": [
+        0.0,
+        620.0,
+        740.0,
+        267.0
+      ],
+      "asset_path": "/Volumes/DOC/CyberPPT/assets/palette-samples/editable-reconstruction-20260814/assets/p01-clipboard.png",
+      "z_index": 12,
+      "realization": "registered_layer",
+      "status": "pending",
+      "source_page": 1,
+      "source_region": "p01-clipboard",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "p01-section-one",
+      "family": "simple_geometry",
+      "bbox": [
+        825.0,
+        35.0,
+        535.0,
+        44.0
+      ],
+      "fill": "#0B3567",
+      "z_index": 13,
+      "realization": "native_geometry",
+      "status": "verified",
+      "source_page": 1,
+      "source_region": "p01-section-one",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "p01-section-two",
+      "family": "simple_geometry",
+      "bbox": [
+        825.0,
+        239.0,
+        575.0,
+        44.0
+      ],
+      "fill": "#0B3567",
+      "z_index": 14,
+      "realization": "native_geometry",
+      "status": "verified",
+      "source_page": 1,
+      "source_region": "p01-section-two",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "p01-section-three",
+      "family": "simple_geometry",
+      "bbox": [
+        825.0,
+        699.0,
+        600.0,
+        44.0
+      ],
+      "fill": "#0B3567",
+      "z_index": 15,
+      "realization": "native_geometry",
+      "status": "verified",
+      "source_page": 1,
+      "source_region": "p01-section-three",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-000",
+      "family": "text",
+      "bbox": [
+        432.0,
+        338.0,
+        260.0,
+        30.0
+      ],
+      "z_index": 1000,
+      "observed_text": "首期服务方向围绕",
+      "truth_text": "首期服务方向围绕",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-001",
+      "family": "text",
+      "bbox": [
+        432.0,
+        376.0,
+        260.0,
+        30.0
+      ],
+      "z_index": 1001,
+      "observed_text": "需求明确、资源清晰、",
+      "truth_text": "需求明确、资源清晰、",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-002",
+      "family": "text",
+      "bbox": [
+        432.0,
+        416.0,
+        260.0,
+        30.0
+      ],
+      "z_index": 1002,
+      "observed_text": "成果可验、价格可执行",
+      "truth_text": "成果可验、价格可执行",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-003",
+      "family": "text",
+      "bbox": [
+        432.0,
+        454.0,
+        285.0,
+        30.0
+      ],
+      "z_index": 1003,
+      "observed_text": "的领域，优先形成可展示、",
+      "truth_text": "的领域，优先形成可展示、",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-004",
+      "family": "text",
+      "bbox": [
+        432.0,
+        495.0,
+        285.0,
+        30.0
+      ],
+      "z_index": 1004,
+      "observed_text": "可交付、可复制的行业服务。",
+      "truth_text": "可交付、可复制的行业服务。",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-005",
+      "family": "text",
+      "bbox": [
+        475.0,
+        620.0,
+        75.0,
+        20.0
+      ],
+      "z_index": 1005,
+      "observed_text": "需求明确",
+      "truth_text": "需求明确",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-006",
+      "family": "text",
+      "bbox": [
+        560.0,
+        620.0,
+        75.0,
+        20.0
+      ],
+      "z_index": 1006,
+      "observed_text": "资源清晰",
+      "truth_text": "资源清晰",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-007",
+      "family": "text",
+      "bbox": [
+        650.0,
+        620.0,
+        75.0,
+        20.0
+      ],
+      "z_index": 1007,
+      "observed_text": "成果可验",
+      "truth_text": "成果可验",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-008",
+      "family": "text",
+      "bbox": [
+        735.0,
+        620.0,
+        75.0,
+        20.0
+      ],
+      "z_index": 1008,
+      "observed_text": "价格可执行",
+      "truth_text": "价格可执行",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-009",
+      "family": "text",
+      "bbox": [
+        825.0,
+        38.0,
+        535.0,
+        36.0
+      ],
+      "z_index": 1009,
+      "observed_text": "一、选择原则｜优先形成可验证产品和场景",
+      "truth_text": "一、选择原则｜优先形成可验证产品和场景",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-010",
+      "family": "text",
+      "bbox": [
+        923.0,
+        101.0,
+        110.0,
+        30.0
+      ],
+      "z_index": 1010,
+      "observed_text": "首期标准",
+      "truth_text": "首期标准",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-011",
+      "family": "text",
+      "bbox": [
+        923.0,
+        139.0,
+        350.0,
+        23.0
+      ],
+      "z_index": 1011,
+      "observed_text": "重点选择真实需求明确、资源权利清晰、",
+      "truth_text": "重点选择真实需求明确、资源权利清晰、",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-012",
+      "family": "text",
+      "bbox": [
+        923.0,
+        163.0,
+        350.0,
+        23.0
+      ],
+      "z_index": 1012,
+      "observed_text": "交付成果可验证、商务价格可执行、",
+      "truth_text": "交付成果可验证、商务价格可执行、",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-013",
+      "family": "text",
+      "bbox": [
+        923.0,
+        187.0,
+        300.0,
+        23.0
+      ],
+      "z_index": 1013,
+      "observed_text": "持续服务有条件的服务方向。",
+      "truth_text": "持续服务有条件的服务方向。",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-014",
+      "family": "text",
+      "bbox": [
+        1430.0,
+        101.0,
+        105.0,
+        30.0
+      ],
+      "z_index": 1014,
+      "observed_text": "推进方式",
+      "truth_text": "推进方式",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-015",
+      "family": "text",
+      "bbox": [
+        1425.0,
+        139.0,
+        290.0,
+        23.0
+      ],
+      "z_index": 1015,
+      "observed_text": "按照成熟一项、推进一项的原则，",
+      "truth_text": "按照成熟一项、推进一项的原则，",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-016",
+      "family": "text",
+      "bbox": [
+        1425.0,
+        163.0,
+        290.0,
+        23.0
+      ],
+      "z_index": 1016,
+      "observed_text": "先形成样例、试点和首批客户，",
+      "truth_text": "先形成样例、试点和首批客户，",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-017",
+      "family": "text",
+      "bbox": [
+        1425.0,
+        187.0,
+        220.0,
+        23.0
+      ],
+      "z_index": 1017,
+      "observed_text": "再逐步纳入正式运营。",
+      "truth_text": "再逐步纳入正式运营。",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-018",
+      "family": "text",
+      "bbox": [
+        825.0,
+        241.0,
+        575.0,
+        36.0
+      ],
+      "z_index": 1018,
+      "observed_text": "二、六类重点｜围绕已有基础形成首期示范",
+      "truth_text": "二、六类重点｜围绕已有基础形成首期示范",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-019",
+      "family": "text",
+      "bbox": [
+        900.0,
+        325.0,
+        230.0,
+        28.0
+      ],
+      "z_index": 1019,
+      "observed_text": "设备可靠性与生产运行服务",
+      "truth_text": "设备可靠性与生产运行服务",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-020",
+      "family": "text",
+      "bbox": [
+        1205.0,
+        325.0,
+        230.0,
+        28.0
+      ],
+      "z_index": 1020,
+      "observed_text": "绿色低碳与电碳因子服务",
+      "truth_text": "绿色低碳与电碳因子服务",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-021",
+      "family": "text",
+      "bbox": [
+        1505.0,
+        325.0,
+        220.0,
+        28.0
+      ],
+      "z_index": 1021,
+      "observed_text": "电力供需与市场经营服务",
+      "truth_text": "电力供需与市场经营服务",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-022",
+      "family": "text",
+      "bbox": [
+        850.0,
+        532.0,
+        245.0,
+        28.0
+      ],
+      "z_index": 1022,
+      "observed_text": "燃料价格预测与供应链服务",
+      "truth_text": "燃料价格预测与供应链服务",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-023",
+      "family": "text",
+      "bbox": [
+        1175.0,
+        532.0,
+        265.0,
+        28.0
+      ],
+      "z_index": 1023,
+      "observed_text": "科研教育与高质量数据集服务",
+      "truth_text": "科研教育与高质量数据集服务",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-024",
+      "family": "text",
+      "bbox": [
+        1505.0,
+        532.0,
+        220.0,
+        28.0
+      ],
+      "z_index": 1024,
+      "observed_text": "科技成果可信转化服务",
+      "truth_text": "科技成果可信转化服务",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-025",
+      "family": "text",
+      "bbox": [
+        825.0,
+        701.0,
+        600.0,
+        36.0
+      ],
+      "z_index": 1025,
+      "observed_text": "三、动态调整｜储备方向条件成熟后纳入正式运营",
+      "truth_text": "三、动态调整｜储备方向条件成熟后纳入正式运营",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-026",
+      "family": "text",
+      "bbox": [
+        920.0,
+        765.0,
+        115.0,
+        28.0
+      ],
+      "z_index": 1026,
+      "observed_text": "储备培育",
+      "truth_text": "储备培育",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    },
+    {
+      "schema": "cyberppt.image_to_editable_svg.layer.v1",
+      "id": "text-027",
+      "family": "text",
+      "bbox": [
+        1400.0,
+        765.0,
+        130.0,
+        28.0
+      ],
+      "z_index": 1027,
+      "observed_text": "跨行业探索",
+      "truth_text": "跨行业探索",
+      "truth_source": "script",
+      "locator_source": "ocr",
+      "status": "verified",
+      "realization": "native_text",
+      "identity_verified": false,
+      "data_verified": false,
+      "canvas": [
+        1774,
+        887
+      ],
+      "source_hash": "4e9b60a23189fe5536af3116db397d3e60f87d3c955fc0cd03c215a7c71133fd",
+      "registration_group": "page-001",
+      "registration_valid": true
+    }
+  ],
+  "page_gate": {
+    "schema": "cyberppt.image_to_editable_svg.page_gate.v1",
+    "valid": true,
+    "blocking_errors": [],
+    "blocking_count": 0
+  },
+  "manual_required": []
+}

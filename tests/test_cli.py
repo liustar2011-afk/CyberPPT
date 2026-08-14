@@ -11,8 +11,6 @@ from pathlib import Path
 from unittest.mock import patch
 
 from cyberppt.cli import build_parser, main
-from cyberppt.commands.analysis_expression_gate import approve_analysis_artifact, stage_analysis_artifact
-from cyberppt.commands.init_project import init_project
 from cyberppt.commands.script_runner import SCRIPT_ALIASES
 
 
@@ -39,137 +37,186 @@ class CliTests(unittest.TestCase):
         self.assertIn("stage-script", help_text)
         self.assertIn("approve-script", help_text)
         self.assertIn("script-status", help_text)
-        self.assertIn("rebuild-dual-image", help_text)
+        self.assertIn("image-to-editable-svg", help_text)
+        self.assertNotIn("rebuild-dual-image", help_text)
         self.assertIn("final-script-pages", help_text)
-        self.assertIn("produce", help_text)
+        self.assertIn("enhance-image", help_text)
+        self.assertIn("outline-audit", help_text)
+        self.assertIn("source-truth-audit", help_text)
+        self.assertIn("prepare-source-map", help_text)
+        self.assertIn("source-map-check", help_text)
+        self.assertIn("prepare-semantic-understanding", help_text)
+        self.assertIn("semantic-check", help_text)
+        self.assertIn("script-audit", help_text)
+        self.assertIn("prepare-visual-structure", help_text)
+        self.assertIn("record-visual-structure-execution", help_text)
+        self.assertIn("visual-structure-audit", help_text)
+        self.assertIn("run-autonomous", help_text)
 
-    def test_help_lists_analysis_expression_commands(self) -> None:
-        help_text = build_parser().format_help()
+    def test_run_autonomous_accepts_contract_and_image_switch(self) -> None:
+        args = build_parser().parse_args(
+            ["run-autonomous", "contract.json", "--skip-image-generation", "--image-timeout", "120", "--resume"]
+        )
 
-        self.assertIn("stage-business-script", help_text)
-        self.assertIn("analysis-expression-status", help_text)
-        self.assertIn("adopt-analysis-expression-contract", help_text)
+        self.assertEqual("contract.json", args.contract)
+        self.assertTrue(args.skip_image_generation)
+        self.assertTrue(args.resume)
+        self.assertEqual(120, args.image_timeout)
 
-    def test_help_lists_speaker_notes_review_commands(self) -> None:
-        help_text = build_parser().format_help()
+    def test_script_audit_accepts_contract_options(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "script-audit",
+                "project",
+                "--input",
+                "script.md",
+                "--outline",
+                "outline.json",
+                "--source-truth",
+                "source-truth.json",
+            ]
+        )
 
-        self.assertIn("stage-speaker-notes-review", help_text)
-        self.assertIn("approve-speaker-notes-review", help_text)
+        self.assertEqual("outline.json", args.outline)
+        self.assertEqual("source-truth.json", args.source_truth)
 
-    def test_speaker_notes_review_commands_print_record_paths(self) -> None:
-        pending = Path("/tmp/speaker_notes_review.pending-confirmation.json")
-        approval = Path("/tmp/speaker_notes_review.approved.json")
-        output = io.StringIO()
+    def test_lightweight_init_omits_control_and_stage02_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "lightweight"
+            buffer = io.StringIO()
+            with redirect_stdout(buffer):
+                code = main(["init", str(project)])
 
-        with (
-            patch("cyberppt.cli.stage_speaker_notes_review", return_value=pending) as stage,
-            redirect_stdout(output),
-        ):
-            stage_code = main(
+            self.assertEqual(0, code)
+            self.assertIn("mode: lightweight", (project / "manifest.yml").read_text(encoding="utf-8"))
+            self.assertTrue((project / "workbench/stages/01-analysis").is_dir())
+            self.assertTrue((project / "workbench/scripts/drafts").is_dir())
+            self.assertFalse((project / "workbench/artifact-ledger.json").exists())
+            self.assertFalse((project / "workbench/approvals").exists())
+            self.assertFalse((project / "workbench/decisions").exists())
+            self.assertFalse((project / "workbench/runs").exists())
+            self.assertFalse((project / "workbench/stages/02-visual").exists())
+            self.assertFalse((project / "workbench/stages/01-analysis/outline-attempts").exists())
+
+    def test_lightweight_semantic_prepare_prints_plain_task_without_json_duplication(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "lightweight"
+            self.assertEqual(0, main(["init", str(project)]))
+            (project / "source/material.txt").write_text(
+                "source-native cooperation arrangement", encoding="utf-8"
+            )
+            self.assertEqual(0, main(["prepare-source-map", str(project)]))
+            buffer = io.StringIO()
+            with redirect_stdout(buffer):
+                code = main(
+                    [
+                        "prepare-semantic-understanding",
+                        str(project),
+                    ]
+                )
+
+            output = buffer.getvalue()
+            self.assertEqual(0, code)
+            self.assertTrue(output.startswith("# CyberPPT whole-document semantic model task"))
+            self.assertIn("source-native cooperation arrangement", output)
+            self.assertNotIn('"authoring_task":', output)
+            self.assertNotIn("source_bundle_sha256", output)
+
+    def test_script_audit_input_error_returns_two(self) -> None:
+        buffer = io.StringIO()
+        with redirect_stderr(buffer):
+            code = main(
                 [
-                    "stage-speaker-notes-review",
-                    "/tmp/project",
-                    "--manifest",
-                    "/tmp/speaker_notes_manifest.json",
-                    "--pages",
-                    "1-3",
+                    "script-audit",
+                    "missing-project",
+                    "--input",
+                    "missing-script.md",
                 ]
             )
 
-        self.assertEqual(0, stage_code)
-        self.assertIn(str(pending), output.getvalue())
-        stage.assert_called_once_with(Path("/tmp/project"), Path("/tmp/speaker_notes_manifest.json"), "1-3")
+        self.assertEqual(2, code)
+        self.assertIn("project does not exist", buffer.getvalue())
 
-        output = io.StringIO()
-        with (
-            patch("cyberppt.cli.approve_speaker_notes_review", return_value=approval) as approve,
-            redirect_stdout(output),
-        ):
-            approve_code = main(
-                [
-                    "approve-speaker-notes-review",
-                    "/tmp/project",
-                    "--option-id",
-                    "confirm_speaker_notes",
-                    "--note",
-                    "ready",
-                ]
-            )
-
-        self.assertEqual(0, approve_code)
-        self.assertIn(str(approval), output.getvalue())
-        approve.assert_called_once_with(Path("/tmp/project"), "confirm_speaker_notes", "ready")
-
-    def test_produce_verify_routes_to_status_machine(self) -> None:
-        output = io.StringIO()
+    def test_source_truth_audit_returns_audit_exit_code(self) -> None:
+        buffer = io.StringIO()
         with (
             patch(
-                "cyberppt.cli.verify_production",
-                return_value={"schema": "cyberppt.production_readiness.v1", "status": "deliverable_ready"},
-            ) as verify,
-            redirect_stdout(output),
+                "cyberppt.cli.run_source_truth_audit",
+                return_value=(4, {"status": "rewrite_required"}),
+            ),
+            redirect_stdout(buffer),
         ):
-            code = main(["produce", "verify", "/tmp/project", "--pages", "1"])
-
-        self.assertEqual(0, code)
-        self.assertEqual("deliverable_ready", json.loads(output.getvalue())["status"])
-        verify.assert_called_once_with(Path("/tmp/project"), "1")
-
-    def test_production_alias_help_requires_explicit_project(self) -> None:
-        parser = build_parser()
-        help_text = parser.format_help()
-
-        for alias in (
-            "body-blueprint-prompts",
-            "image-ppt",
-            "pair-manifest",
-            "source-capture",
-            "speaker-notes",
-            "template-rebuild",
-        ):
-            with self.subTest(alias):
-                self.assertIn(f"{alias} requires --project <path>", help_text)
-
-    def test_analysis_expression_status_json_includes_pending_choices(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            project = Path(tmp) / "client-report"
-            init_project(project)
-            stage_analysis_artifact(
-                project,
-                "source_analysis",
-                "## 输入盘点\n源文件\n## 证据表\n| ID | 论点 | 来源位置 |\n|---|---|---|\n| E01 | 供需平衡 | 第3页 |\n"
-                "## 开放数据冲突\n无\n## 内容脑暴\n方向比较\n## 页面物料池\n供需平衡\n",
-                "证据完整",
-                [{"id": "leadership_review", "label": "领导审定型"}],
-            )
-            approve_analysis_artifact(project, "source_analysis", "leadership_review")
-            source = (
-                "## 汇报对象\n分管领导\n## 汇报目的\n审定工作安排\n## 内容重点\n供需研判\n"
-                "## 证据\n预测数据\n## 优势\n基础扎实\n## 边界\n不替代执行方案\n"
-                "## 推荐方向\n领导审定型\n"
-            )
-            stage_analysis_artifact(
-                project,
-                "reporting_direction",
-                source,
-                "领导审定型",
+            code = main(
                 [
-                    {"id": "leadership_review", "label": "领导审定型"},
-                    {"id": "execution_alignment", "label": "执行对齐型"},
-                ],
+                    "source-truth-audit",
+                    "project",
+                    "--input",
+                    "source-truth.json",
+                ]
+            )
+        self.assertEqual(4, code)
+        self.assertIn('"status": "rewrite_required"', buffer.getvalue())
+
+    def test_prepare_source_map_command_compiles_stable_units(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "project"
+            (project / "source").mkdir(parents=True)
+            (project / "source" / "material.md").write_text(
+                "# 主张\n证据。\n",
+                encoding="utf-8",
             )
             buffer = io.StringIO()
-
             with redirect_stdout(buffer):
-                code = main(["analysis-expression-status", str(project), "--json"])
+                code = main(["prepare-source-map", str(project)])
 
-        payload = json.loads(buffer.getvalue())
-        self.assertEqual(3, code)
-        self.assertEqual("reporting_direction", payload["next_gate"])
-        self.assertEqual("pending_confirmation", payload["gates"]["reporting_direction"]["status"])
-        self.assertIn("question", payload["gates"]["reporting_direction"])
-        self.assertEqual([], payload["gates"]["reporting_direction"]["validation_failures"])
-        self.assertEqual("leadership_review", payload["gates"]["reporting_direction"]["options"][0]["id"])
+            self.assertEqual(0, code)
+            self.assertTrue(
+                (project / "workbench/stages/00-source-map/source-units.jsonl").is_file()
+            )
+            self.assertIn('"status": "passed"', buffer.getvalue())
+
+    def test_outline_audit_accepts_source_truth_option(self) -> None:
+        args = build_parser().parse_args(
+            [
+                "outline-audit",
+                "project",
+                "--input",
+                "outline.json",
+                "--source-truth",
+                "source-truth.json",
+            ]
+        )
+
+        self.assertEqual("source-truth.json", args.source_truth)
+
+    def test_outline_audit_returns_rewrite_exit_code(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "project"
+            project.mkdir()
+            outline = root / "outline.json"
+            outline.write_text(
+                json.dumps(
+                    {
+                        "schema": "cyberppt.outline.v1",
+                        "material_type": "建设方案",
+                        "audience": "项目组内部讨论",
+                        "architecture_mode": "consulting",
+                        "architecture_reason": "default",
+                        "user_requested_architecture": False,
+                        "source_section_weights": {},
+                        "pages": [],
+                        "retry": {"attempt": 1, "max_attempts": 3, "strategy": "consulting_default"},
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            buffer = io.StringIO()
+            with redirect_stdout(buffer):
+                code = main(["outline-audit", str(project), "--input", str(outline)])
+        self.assertEqual(4, code)
+        self.assertIn('"status": "rewrite_required"', buffer.getvalue())
 
     def test_final_script_pages_requires_explicit_style_choice(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -179,7 +226,20 @@ class CliTests(unittest.TestCase):
             script.write_text("## 第3页：测试页\n组件A：内容\n", encoding="utf-8")
             buffer = io.StringIO()
 
-            with redirect_stderr(buffer):
+            with (
+                patch(
+                    "cyberppt.commands.script_audit.run_script_audit",
+                    return_value=(0, {"status": "passed"}),
+                ),
+                patch(
+                    "cyberppt.stage02_handoff.load_stage02_handoff",
+                    return_value={},
+                ),
+                patch(
+                    "cyberppt.commands.visual_structure_stage.assert_visual_structure_ready"
+                ),
+                redirect_stderr(buffer),
+            ):
                 code = main(
                     [
                         "final-script-pages",
@@ -188,6 +248,7 @@ class CliTests(unittest.TestCase):
                         str(script),
                         "--pages",
                         "3",
+                        "--lightweight-stage01-confirmed",
                     ]
                 )
 
@@ -195,28 +256,47 @@ class CliTests(unittest.TestCase):
         self.assertIn("请选择一个 CyberPPT 默认视觉风格", buffer.getvalue())
         self.assertIn("4. 象牙白 + 深蓝强调", buffer.getvalue())
 
-    def test_rebuild_dual_image_routes_to_template_rebuild(self) -> None:
-        with patch("cyberppt.cli.run_script", return_value=3) as run_script:
-            code = main(["rebuild-dual-image", "--project", "/tmp/project", "page_image_pairs.json", "--no-export"])
+    def test_removed_dual_image_rebuild_command_is_rejected(self) -> None:
+        with self.assertRaises(SystemExit):
+            main(["rebuild-dual-image"])
 
-        self.assertEqual(3, code)
-        run_script.assert_called_once_with(
-            "template-rebuild",
-            ["--project", "/tmp/project", "page_image_pairs.json", "--no-export"],
-        )
+    def test_final_script_pages_external_script_is_forwarded(self) -> None:
+        with patch("cyberppt.cli.run_final_script_pages", return_value={}) as runner:
+            code = main(
+                [
+                    "final-script-pages",
+                    "project",
+                    "--script",
+                    "external.md",
+                    "--pages",
+                    "1",
+                    "--style-id",
+                    "4",
+                    "--external-script",
+                ]
+            )
 
-    def test_rebuild_dual_image_uses_project_for_real_generation_guard(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            project = Path(tmp) / "client-report"
-            init_project(project)
-            buffer = io.StringIO()
+        self.assertEqual(0, code)
+        self.assertTrue(runner.call_args.kwargs["external_script"])
 
-            with redirect_stderr(buffer):
-                code = main(["rebuild-dual-image", "--project", str(project), "page_image_pairs.json"])
+    def test_final_script_pages_accepts_deprecated_confirmation_flag_without_forwarding(self) -> None:
+        with patch("cyberppt.cli.run_final_script_pages", return_value={}) as runner:
+            code = main(
+                [
+                    "final-script-pages",
+                    "project",
+                    "--script",
+                    "script.md",
+                    "--pages",
+                    "1",
+                    "--style-id",
+                    "9",
+                    "--lightweight-stage01-confirmed",
+                ]
+            )
 
-        self.assertEqual(2, code)
-        self.assertIn("source_analysis approval is required", buffer.getvalue())
-        self.assertNotIn("Traceback", buffer.getvalue())
+        self.assertEqual(0, code)
+        self.assertNotIn("lightweight_stage01_confirmed", runner.call_args.kwargs)
 
     def test_final_script_pages_rejects_blueprint_only_with_production_build(self) -> None:
         buffer = io.StringIO()
@@ -253,13 +333,12 @@ class CliTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 0)
         self.assertIn("Check PPTX structure", completed.stdout)
 
-    def test_image_ppt_help_requires_project_context(self) -> None:
+    def test_image_ppt_help_is_forwarded_to_underlying_script(self) -> None:
         completed = subprocess.run(
             [sys.executable, "-m", "cyberppt", "image-ppt", "--help"],
             check=False,
             capture_output=True,
             text=True,
         )
-        self.assertEqual(completed.returncode, 2)
-        self.assertIn("production-capable aliases require exactly one --project <path>", completed.stderr)
-        self.assertNotIn("Traceback", completed.stderr)
+        self.assertEqual(completed.returncode, 0)
+        self.assertIn("Generate image-based PPT inside the CEC template", completed.stdout)

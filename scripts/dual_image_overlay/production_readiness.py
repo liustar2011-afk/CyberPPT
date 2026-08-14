@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Iterable
 
 
 REQUIRED_TOOLS = (
@@ -112,10 +112,12 @@ def build_production_readiness(
     stage: str,
     artifacts: dict[str, str | None],
     reports: dict[str, dict[str, Any]],
+    required_tools: Iterable[str] = REQUIRED_TOOLS,
 ) -> dict[str, Any]:
+    required_tools = tuple(required_tools)
     page_understanding = summarize_page_understanding_readiness(reports.get("source_capture"))
     tool_consumption = {}
-    for name in REQUIRED_TOOLS:
+    for name in required_tools:
         artifact = artifacts.get(name)
         tool_consumption[name] = {
             "ran": bool(artifact),
@@ -130,7 +132,7 @@ def build_production_readiness(
     failed_reports = [
         {"tool": name, "code": "tool_report_failed"}
         for name, report in reports.items()
-        if name in REQUIRED_TOOLS and isinstance(report, dict) and not _report_passes(name, report)
+        if name in required_tools and isinstance(report, dict) and not _report_passes(name, report)
     ]
     blocking.extend(failed_reports)
     page_understanding_blocking = _page_understanding_blocking_errors(page_understanding)

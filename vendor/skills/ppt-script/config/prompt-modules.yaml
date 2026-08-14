@@ -1,0 +1,287 @@
+schema: ppt-script.prompt-modules.v1
+modules:
+  stage1-router:
+    path: system-prompt/stage1/00-router.md
+    stage: stage1
+  stage1-deep-reading-kernel:
+    path: system-prompt/stage1/05-deep-reading-kernel.md
+    stage: stage1
+  stage1-source-understanding:
+    path: system-prompt/stage1/10-source-understanding.md
+    stage: stage1
+  stage1-semantic-understanding:
+    path: system-prompt/stage1/15-semantic-understanding.md
+    stage: stage1
+  stage1-source-truth:
+    path: system-prompt/stage1/20-source-truth-map.md
+    stage: stage1
+  stage1-faithful-reading:
+    path: system-prompt/stage1/12-faithful-reading.md
+    stage: stage1
+  stage1-decision-reading:
+    path: system-prompt/stage1/13-decision-reading.md
+    stage: stage1
+  stage1-reconciliation:
+    path: system-prompt/stage1/14-reconciliation.md
+    stage: stage1
+  stage1-evidence-graph:
+    path: system-prompt/stage1/15-evidence-graph.md
+    stage: stage1
+  stage1-experience-retrieval:
+    path: system-prompt/stage1/16-experience-retrieval.md
+    stage: stage1
+  editorial-semantic-planning:
+    path: system-prompt/stage1/16-editorial-semantic-planning.md
+    stage: stage1
+  editorial-independent:
+    path: system-prompt/stage1/17-editorial-independent-judgment.md
+    stage: stage1
+  editorial-storyline-candidates:
+    path: system-prompt/stage1/18-editorial-storyline-candidates.md
+    stage: stage1
+  editorial-storyline:
+    path: system-prompt/stage1/18-editorial-storyline-verdict.md
+    stage: stage1
+  editorial-outline:
+    path: system-prompt/stage1/19-editorial-outline-review.md
+    stage: stage1
+  editorial-red-team:
+    path: system-prompt/stage1/19-editorial-red-team.md
+    stage: stage1
+  editorial-red-team-response:
+    path: system-prompt/stage1/21-editorial-red-team-response.md
+    stage: stage1
+  stage1-storyline:
+    path: system-prompt/stage1/30-storyline-design.md
+    stage: stage1
+  stage1-chapter-contracts:
+    path: system-prompt/stage1/40-section-contracts.md
+    stage: stage1
+  stage1-page-contracts:
+    path: system-prompt/stage1/50-page-contracts.md
+    stage: stage1
+  stage1-page-script:
+    path: system-prompt/stage1/60-page-script.md
+    stage: stage1
+  stage1-speaker-notes:
+    path: system-prompt/stage1/70-speaker-notes.md
+    stage: stage1
+  stage1-quality-review:
+    path: system-prompt/stage1/80-quality-review.md
+    stage: stage1
+  stage2-visual-router:
+    path: system-prompt/stage2/00-visual-router.md
+    stage: stage2
+  stage2-visual-semantics:
+    path: system-prompt/stage2/10-visual-semantics.md
+    stage: stage2
+  stage2-layout-selection:
+    path: system-prompt/stage2/20-layout-selection.md
+    stage: stage2
+  stage2-image-script:
+    path: system-prompt/stage2/30-image-generation-script.md
+    stage: stage2
+  stage2-text-separation:
+    path: system-prompt/stage2/40-text-separation.md
+    stage: stage2
+  stage2-editable-ppt:
+    path: system-prompt/stage2/50-editable-ppt.md
+    stage: stage2
+  stage2-visual-qa:
+    path: system-prompt/stage2/60-visual-qa.md
+    stage: stage2
+persistent_stage1_modules:
+- stage1-deep-reading-kernel
+# 仓库方法论：由 context-pack 按写作配置与当前焦点阶段自动嵌入活动上下文。
+# 文件路径相对仓库根；不得把项目事实写入这些文件。
+methodology_references:
+  persistent:
+  - references/source-grounding.md
+  by_writing_profile:
+    government-soe-formal:
+    - references/government-soe-writing.md
+    - references/government-soe-title-rules.md
+    - references/government-soe-chapter-patterns.md
+    - references/government-soe-context-matrix.md
+    - references/government-soe-report-types.md
+  by_workflow_stage:
+    source-understanding:
+    - references/material-types.md
+    semantic-understanding:
+    - references/material-types.md
+    storyline:
+    - references/chapter-planning.md
+    chapter-contracts:
+    - references/chapter-planning.md
+    page-contracts:
+    - references/chapter-planning.md
+    - references/page-types.md
+    page-script:
+    - references/script-writing.md
+    - references/page-types.md
+    - references/speaker-notes.md
+    - references/quality-gates.md
+    speaker-notes:
+    - references/speaker-notes.md
+    quality-review:
+    - references/evaluation-framework.md
+    - references/quality-gates.md
+    - references/optimization-protocol.md
+    editorial-semantic-planning:
+    - references/chapter-planning.md
+    editorial-independent:
+    - references/chapter-planning.md
+    editorial-storyline-candidates:
+    - references/chapter-planning.md
+    editorial-storyline:
+    - references/chapter-planning.md
+    editorial-outline:
+    - references/chapter-planning.md
+    editorial-red-team:
+    - references/chapter-planning.md
+    editorial-red-team-response:
+    - references/chapter-planning.md
+    visual-handoff:
+    - references/semantic-diagrams.md
+    - references/diagram-library.md
+    visual-semantics:
+    - references/semantic-diagrams.md
+    - references/diagram-library.md
+  # 项目已有 pages/p*.md 时，即使焦点退回提纲审稿，仍加载写页方法论，避免改稿脱方法。
+  when_pages_present:
+  - references/script-writing.md
+  - references/speaker-notes.md
+  - references/quality-gates.md
+workflow_stage_modules:
+  source-understanding:
+  - stage1-router
+  - stage1-source-understanding
+  semantic-understanding:
+  - stage1-router
+  - stage1-source-understanding
+  - stage1-semantic-understanding
+  source-truth:
+  - stage1-router
+  - stage1-source-truth
+  cognitive-reading:
+  - stage1-router
+  - stage1-faithful-reading
+  - stage1-decision-reading
+  cognitive-reconciliation:
+  - stage1-router
+  - stage1-reconciliation
+  - stage1-evidence-graph
+  storyline:
+  - stage1-router
+  - stage1-storyline
+  chapter-contracts:
+  - stage1-router
+  - stage1-chapter-contracts
+  page-contracts:
+  - stage1-router
+  - stage1-page-contracts
+  page-script:
+  - stage1-router
+  - stage1-page-script
+  speaker-notes:
+  - stage1-router
+  - stage1-speaker-notes
+  quality-review:
+  - stage1-router
+  - stage1-quality-review
+  visual-handoff:
+  - stage2-visual-router
+  - stage2-visual-semantics
+  - stage2-layout-selection
+  - stage2-image-script
+  - stage2-visual-qa
+  visual-semantics:
+  - stage2-visual-router
+  - stage2-visual-semantics
+  - stage2-layout-selection
+  visual-script:
+  - stage2-visual-router
+  - stage2-image-script
+  - stage2-text-separation
+  - stage2-editable-ppt
+  visual-quality:
+  - stage2-visual-router
+  - stage2-visual-qa
+  experience-retrieval:
+  - stage1-router
+  - stage1-experience-retrieval
+  editorial-independent:
+  - stage1-router
+  - editorial-independent
+  editorial-semantic-planning:
+  - stage1-router
+  - editorial-semantic-planning
+  editorial-storyline-candidates:
+  - stage1-router
+  - editorial-storyline-candidates
+  editorial-storyline:
+  - stage1-router
+  - editorial-storyline
+  editorial-outline:
+  - stage1-router
+  - editorial-outline
+  editorial-red-team:
+  - stage1-router
+  - editorial-red-team
+  editorial-red-team-response:
+  - stage1-router
+  - editorial-red-team-response
+state_focus:
+  INITIALIZED:
+  - source-understanding
+  - semantic-understanding
+  SOURCE_READY:
+  - semantic-understanding
+  SEMANTIC_READY:
+  - semantic-understanding
+  - source-truth
+  SOURCE_TRUTH_READY:
+  - cognitive-reading
+  - cognitive-reconciliation
+  COGNITIVE_READY:
+  - editorial-semantic-planning
+  SEMANTIC_PLANNING_READY:
+  - editorial-independent
+  EDITORIAL_JUDGMENT_READY:
+  - editorial-storyline-candidates
+  STORYLINE_CANDIDATES_READY:
+  - editorial-storyline
+  STORYLINE_READY:
+  - editorial-storyline
+  - chapter-contracts
+  - page-contracts
+  - experience-retrieval
+  EDITORIAL_STORYLINE_APPROVED:
+  - chapter-contracts
+  - page-contracts
+  - experience-retrieval
+  PAGE_PLAN_READY:
+  - editorial-outline
+  OUTLINE_EDITORIAL_APPROVED:
+  - editorial-red-team
+  RED_TEAM_REVIEW_READY:
+  - editorial-red-team-response
+  EDITORIAL_APPROVED:
+  - page-script
+  - speaker-notes
+  - experience-retrieval
+  SCRIPT_READY:
+  - quality-review
+  - speaker-notes
+  - experience-retrieval
+  SCRIPT_VALIDATED:
+  - visual-handoff
+  - visual-semantics
+  - visual-script
+  - visual-quality
+  VISUAL_READY:
+  - visual-quality
+  DELIVERED:
+  - quality-review
+  - visual-quality
+  - experience-retrieval

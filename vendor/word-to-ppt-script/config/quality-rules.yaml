@@ -1,0 +1,61 @@
+quality:
+  p0_coverage_required: 1.0
+  duplicate_similarity_warning: 0.72
+  duplicate_similarity_error: 0.86
+  duplicate_min_chars: 45
+  speaker_notes_min_chars: 70
+  speaker_notes_max_chars: 520
+  max_consecutive_visual_intent: 2
+  max_content_modules: 5
+  min_content_modules: 2
+  min_order_signal_modules: 3
+  max_detail_body_chars: 90
+  max_small_title_chars: 10
+  min_visible_bullets: 6
+  min_onscreen_full_ratio: 0.20
+  max_onscreen_full_ratio: 0.45
+  max_onscreen_full_ratio_min_full_chars: 300
+  source_id_patterns:
+    - "\\b(?:SRC|SU|A|P0)-[A-Za-z0-9_-]+\\b"
+    - "\\bS\\d{3,}\\b"
+  require_page_boundary_fields: true
+  require_visual_contract: true
+  require_speaker_notes: true
+  require_source_refs: true
+  template_page_business_text_forbidden: true
+  preserve_filename_in_revise_mode: true
+classification_dimensions:
+  service_type:
+    - "数据接口"
+    - "数据集"
+    - "知识服务"
+    - "模型服务"
+    - "监测报告"
+    - "场景服务"
+  fee_type:
+    - "服务费"
+    - "使用费"
+    - "实施费"
+    - "资源费"
+    - "保障费"
+    - "运营费"
+    - "结算价"
+  access_method:
+    - "接口调用"
+    - "结果交付"
+    - "数据集交付"
+    - "知识库访问"
+  deployment_mode:
+    - "共享环境"
+    - "专属实例"
+    - "私有化部署"
+  processing_location:
+    - "平台处理"
+    - "源端处理"
+    - "数据留域"
+    - "联合计算"
+  service_cycle:
+    - "单次交付"
+    - "周期更新"
+    - "持续监测"
+    - "年度运营"

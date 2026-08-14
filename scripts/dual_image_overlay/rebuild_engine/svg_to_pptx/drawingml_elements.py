@@ -50,8 +50,12 @@ def _resolve_external_image(svg_dir: Path, href: str) -> Path:
         svg_dir.parent / 'images' / href,
         svg_dir.parent / 'templates' / href,
     ):
-        if candidate.exists():
-            return candidate
+        # Collapse ``..`` segments before probing.  On Windows an otherwise
+        # valid project asset can cross the legacy MAX_PATH boundary solely
+        # because the raw SVG href contains ``../images``.
+        normalized = candidate.resolve(strict=False)
+        if normalized.exists():
+            return normalized
     raise FileNotFoundError(f'External image not found: {href}')
 
 

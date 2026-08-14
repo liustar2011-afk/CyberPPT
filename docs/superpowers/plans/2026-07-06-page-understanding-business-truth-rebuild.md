@@ -1349,7 +1349,6 @@ pdftoppm -png -r 150 projects/power-trusted-data-space-p12-p13/outputs/renders/p
 
 Expected: page 13 stage-6 flow text remains one editable text block, with no overlap and no business text mutation.
 
-- [ ] **Step 5: GitNexus final scope check**
 
 Run:
 
@@ -1357,7 +1356,6 @@ Run:
 python3 -m pytest tests/test_dual_image_overlay_template_rebuild.py tests/test_dual_image_overlay_page_understanding.py tests/test_dual_image_overlay_text_truth.py tests/test_dual_image_overlay_block_fit.py -q
 ```
 
-Then run GitNexus `detect_changes(scope="all", repo="CyberPPT", worktree="/Volumes/DOC/CyberPPT")` before commit.
 
 - [ ] **Step 6: Commit task**
 

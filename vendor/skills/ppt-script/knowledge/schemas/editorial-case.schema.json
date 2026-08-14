@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ppt-script.editorial-case.v1",
+  "title": "ppt-script approved editorial case",
+  "description": "Structural contract for a reusable editorial-method case. Recursive semantic fact-contamination checks are authoritatively enforced by validate_editorial_case(); schema validation alone is not semantic admission.",
+  "type": "object",
+  "required": [
+    "schema",
+    "case_id",
+    "status",
+    "issue_type",
+    "original_result",
+    "user_feedback",
+    "accepted_revision",
+    "root_cause",
+    "reusable_principle",
+    "applicable_conditions",
+    "do_not_copy_conditions"
+  ],
+  "properties": {
+    "schema": {"const": "ppt-script.editorial-case.v1"},
+    "case_id": {"type": "string", "pattern": "^EDITORIAL-CASE-[0-9A-Za-z][0-9A-Za-z.-]*$"},
+    "status": {"enum": ["candidate", "approved", "rejected", "archived"]},
+    "issue_type": {"$ref": "#/$defs/non_placeholder_text"},
+    "original_result": {"$ref": "#/$defs/non_placeholder_text"},
+    "user_feedback": {"$ref": "#/$defs/non_placeholder_text"},
+    "accepted_revision": {"$ref": "#/$defs/non_placeholder_text"},
+    "root_cause": {"$ref": "#/$defs/non_placeholder_text"},
+    "reusable_principle": {
+      "type": "object",
+      "required": ["principle", "allowed_transformations"],
+      "properties": {
+        "principle": {"$ref": "#/$defs/non_placeholder_text"},
+        "allowed_transformations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/non_placeholder_text"}
+        }
+      }
+    },
+    "applicable_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/non_placeholder_text"}
+    },
+    "do_not_copy_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/non_placeholder_text"}
+    }
+  },
+  "$defs": {
+    "non_placeholder_text": {
+      "type": "string",
+      "pattern": ".*\\S.*",
+      "not": {
+        "pattern": "(?:[Tt][Oo][Dd]|[Tt][Bb][Dd]|[Pp][Ll][Aa][Cc][Ee][Hh][Oo][Ll][Dd][Ee][Rr]|待生成|待填写|待补充|待完善|待确认|占位)"
+      }
+    }
+  },
+  "additionalProperties": true
+}

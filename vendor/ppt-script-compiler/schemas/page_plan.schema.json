@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PagePlan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["presentation_title", "overall_thesis", "narrative_arc", "pages", "unassigned_core_asset_ids"],
+  "properties": {
+    "presentation_title": {"type": "string"},
+    "overall_thesis": {"type": "string"},
+    "narrative_arc": {"type": "array", "items": {"type": "string"}},
+    "pages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["page_id", "order", "page_type", "page_role", "page_mission", "core_judgment", "audience_question", "relationship_type", "source_asset_ids", "must_include", "must_not_include", "previous_page_relation", "next_page_relation", "split_risk", "notes"],
+        "properties": {
+          "page_id": {"type": "string", "pattern": "^P[0-9]{2,3}$"},
+          "order": {"type": "integer", "minimum": 1},
+          "page_type": {"type": "string", "enum": ["cover", "content", "closing"]},
+          "page_role": {"type": "string"},
+          "page_mission": {"type": "string"},
+          "core_judgment": {"type": "string"},
+          "audience_question": {"type": "string"},
+          "relationship_type": {"type": "string", "enum": ["single_judgment", "process", "architecture", "hierarchy", "comparison", "cause_effect", "problem_solution", "timeline", "input_output", "multi_foundation", "matrix", "map", "other"]},
+          "source_asset_ids": {"type": "array", "items": {"type": "string", "pattern": "^A[0-9]{3,5}$"}},
+          "must_include": {"type": "array", "items": {"type": "string"}},
+          "must_not_include": {"type": "array", "items": {"type": "string"}},
+          "previous_page_relation": {"type": "string"},
+          "next_page_relation": {"type": "string"},
+          "split_risk": {"type": "string", "enum": ["low", "medium", "high"]},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "unassigned_core_asset_ids": {"type": "array", "items": {"type": "string", "pattern": "^A[0-9]{3,5}$"}}
+  }
+}

@@ -30,10 +30,15 @@ from script_text_overlay import (  # noqa: E402
     resolve_overlay_coordinate_context,
     validate_explicit_semantic_plan,
 )
+from scripts.dual_image_overlay.ppt_master_runtime_bridge import (  # noqa: E402
+    resolve_host_root,
+    resolve_shared_resource,
+    runtime_descriptor,
+)
 
 
 class DualImageOverlaySemanticPlanTests(unittest.TestCase):
-    def test_scale_bbox_keeps_current_generation_canvas_coordinates(self) -> None:
+    def test_scale_bbox_from_generated_image_to_canvas(self) -> None:
         self.assertEqual(CANVAS, (1672, 941))
         bbox = scale_bbox([167.2, 94.1, 334.4, 188.2], source_size=(1672, 941))
         self.assertEqual(bbox, [167.2, 94.1, 334.4, 188.2])
@@ -42,7 +47,7 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
         bbox = relative_bbox([100, 50, 500, 250], [0.25, 0.1, 0.75, 0.9])
         self.assertEqual(bbox, [200.0, 70.0, 400.0, 230.0])
 
-    def test_normalize_image_writes_current_canvas(self) -> None:
+    def test_normalize_image_writes_1280x720(self) -> None:
         with TemporaryDirectory() as directory:
             root = Path(directory)
             source = root / "source.png"
@@ -52,7 +57,7 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
             normalize_image(source, target)
 
             with Image.open(target) as image:
-                self.assertEqual(image.size, CANVAS)
+                self.assertEqual(image.size, (1672, 941))
 
     def test_load_semantic_plan_requires_explicit_containers_and_items(self) -> None:
         with TemporaryDirectory() as directory:
@@ -118,7 +123,7 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
 
             plan = load_semantic_plan(path)
 
-            self.assertEqual(plan.image_size, {"width": CANVAS[0], "height": CANVAS[1]})
+            self.assertEqual(plan.image_size, {"width": 1672, "height": 941})
             self.assertEqual(plan.containers[0].bbox, [80.0, 40.0, 1592.0, 160.0])
             self.assertEqual(plan.containers[0].text_safe_bbox, [100.0, 60.0, 1570.0, 140.0])
             self.assertEqual(plan.items[0].bbox, [100.0, 60.0, 1570.0, 140.0])
@@ -186,7 +191,18 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
 
         self.assertIsNotNone(core)
         self.assertEqual((1280, 720), core.CANVAS)
-        self.assertIn("vendor/ppt_master_slide_image_rebuild/scripts/dual_image_rebuild_pptx.py", str(core.__file__))
+        self.assertIn(
+            "vendor/ppt_master_slide_image_rebuild/scripts/dual_image_rebuild_pptx.py",
+            str(core.__file__).replace("\\", "/"),
+        )
+
+    def test_runtime_bridge_reports_local_vendor_runtime(self) -> None:
+        descriptor = runtime_descriptor()
+        self.assertEqual("cyberppt_vendor", descriptor.source)
+        self.assertIsNone(resolve_host_root())
+        checker = resolve_shared_resource("svg_quality_checker")
+        self.assertIsNotNone(checker)
+        self.assertIn("CyberPPT", str(checker))
 
     def test_ability_card_uses_container_slots_instead_of_item_bbox(self) -> None:
         plan = _ability_plan()
@@ -254,7 +270,7 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
         self.assertGreater(by_text["身份认证"].x, 560)
         self.assertLess(by_text["身份认证"].x, 590)
 
-    def test_explicit_semantic_plan_is_normalized_to_current_canvas_before_persistence(self) -> None:
+    def test_explicit_semantic_plan_is_normalized_to_1280_canvas_before_persistence(self) -> None:
         plan = {
             "image_size": {"width": 1920, "height": 941},
             "inputs": {"script_truth": "script.md", "visual_element_registry": "registry.json"},
@@ -433,9 +449,9 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
         item = layout["items"][0]
 
         self.assertEqual("visual_element_registry", container["text_zone_source"])
-        self.assertEqual([380.56, 176.65, 856.72, 430.73], container["text_safe_bbox"])
+        self.assertEqual([88.0, 39.0, 208.0, 103.0], container["text_safe_bbox"])
         self.assertEqual("icon_zone", container["reserved_zones"][0]["name"])
-        self.assertEqual([380.56, 176.65, 856.72, 430.73], item["bbox"])
+        self.assertEqual([88.0, 39.0, 208.0, 103.0], item["bbox"])
         self.assertEqual("visual_element_registry", item["text_zone_source"])
         self.assertEqual("icon_zone", item["reserved_zones"][0]["name"])
 
@@ -460,7 +476,7 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
         by_text = {item["text"]: item for item in layout["items"]}
 
         self.assertEqual("ability_card_slots", by_text["目录管理"]["layout_strategy"])
-        self.assertLess(by_text["• 目录版本管理"]["bbox"][1], 300)
+        self.assertLess(by_text["• 目录版本管理"]["bbox"][1], 220)
         self.assertGreater(by_text["• 目录版本管理"]["bbox"][1], by_text["目录管理"]["bbox"][1])
 
     def test_ability_card_text_avoids_registry_icon_zone(self) -> None:
@@ -537,7 +553,7 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
 
         self.assertEqual({"width": 1672.0, "height": 941.0}, context["coordinate_space"])
         self.assertEqual({"width": 1672.0, "height": 941.0}, context["source_coordinate_space"])
-        self.assertEqual("normalized_1672x941", context["coordinate_space_source"])
+        self.assertEqual("preserved_1672x941", context["coordinate_space_source"])
         self.assertTrue(context["warnings"])
         self.assertEqual("coordinate_space_mismatch", context["warnings"][0]["code"])
         self.assertEqual(context, layout["coordinate_context"])
@@ -574,7 +590,7 @@ class DualImageOverlaySemanticPlanTests(unittest.TestCase):
 
         self.assertEqual({"width": 1920.0, "height": 941.0}, context["semantic_input_space"])
         self.assertEqual({"width": 1920.0, "height": 941.0}, context["visual_registry_input_space"])
-        self.assertLessEqual(layout["items"][0]["bbox"][2], CANVAS[0])
+        self.assertLessEqual(layout["items"][0]["bbox"][2], 1672)
         self.assertTrue(
             any(
                 item["code"]

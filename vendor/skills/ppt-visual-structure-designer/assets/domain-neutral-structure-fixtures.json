@@ -1,0 +1,534 @@
+{
+  "schema": "ppt-visual-structure-domain-neutral-fixtures.v1",
+  "failure_mutations": {
+    "missing_primary_relation": "primary_relation",
+    "unbound_p0_evidence": "p0_text_binding",
+    "dual_visual_center": "visual_center",
+    "replicated_roles": "role_replication",
+    "duplicated_primary_expression": "duplicate_primary_expression",
+    "layout_recipe_in_relationship": "layout_recipe",
+    "disconnected_media_and_text": "disconnected_expression",
+    "dual_primary_narrative": "dual_primary_narrative",
+    "abstract_center": "abstract_center",
+    "style_leak": "style_in_structure",
+    "generic_execution_carrier": "executable_carrier_generic",
+    "generic_text_integration": "text_integration_not_executable",
+    "generic_relationship_field": "visual_relationship_not_executable"
+  },
+  "style_refs": [
+    "styles/editorial.json",
+    "styles/institutional.json",
+    "styles/minimal.json"
+  ],
+  "cases": [
+    {
+      "id": "single-judgment-and-evidence",
+      "category": "single_judgment_and_evidence",
+      "domain": "research_analysis",
+      "page_role": "证据支撑",
+      "page_title": "多类证据共同支持研究结论",
+      "page_mission": "让观众理解不同证据如何共同支持一个研究判断。",
+      "core_judgment": "样本趋势与访谈发现相互印证，方案A更符合当前约束。",
+      "visual_intent_type": "single_judgment_anchor",
+      "primary_relation": "evidence",
+      "direction": "outside_to_center",
+      "semantic_focus_kind": "outcome",
+      "focus_ref": "E3",
+      "spatial_grammar": [
+        "anchor"
+      ],
+      "semantic_tags": [
+        "evidence",
+        "support"
+      ],
+      "primary_refs": [
+        "E3"
+      ],
+      "secondary_refs": [
+        "E1",
+        "E2"
+      ],
+      "reading_sequence": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "evidence_units": [
+        {
+          "id": "E1",
+          "text": "样本趋势",
+          "kind": "metric",
+          "priority": "P0",
+          "status": "已观察"
+        },
+        {
+          "id": "E2",
+          "text": "访谈发现",
+          "kind": "fact",
+          "priority": "P1",
+          "status": "已归纳"
+        },
+        {
+          "id": "E3",
+          "text": "方案A更符合当前约束",
+          "kind": "judgment",
+          "priority": "P0",
+          "status": "研究判断"
+        }
+      ],
+      "edges": [
+        {
+          "from": "E1",
+          "to": "E3",
+          "relation": "supports",
+          "label": "量化证据"
+        },
+        {
+          "from": "E2",
+          "to": "E3",
+          "relation": "supports",
+          "label": "质性证据"
+        }
+      ]
+    },
+    {
+      "id": "input-transform-output",
+      "category": "input_transform_output",
+      "domain": "public_service",
+      "page_role": "流程路径",
+      "page_title": "服务诉求转化为可追踪办理结果",
+      "page_mission": "让观众理解服务诉求如何经过分流和办理形成可追踪结果。",
+      "core_judgment": "统一分流与责任办理把服务诉求转化为可追踪的反馈结果。",
+      "visual_intent_type": "transformation_pipeline",
+      "primary_relation": "transform",
+      "direction": "left_to_right",
+      "semantic_focus_kind": "action",
+      "focus_ref": "E2",
+      "spatial_grammar": [
+        "path"
+      ],
+      "semantic_tags": [
+        "transform",
+        "accountability"
+      ],
+      "primary_refs": [
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "secondary_refs": [
+        "E1"
+      ],
+      "reading_sequence": [
+        "E1",
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "evidence_units": [
+        {
+          "id": "E1",
+          "text": "服务诉求",
+          "kind": "fact",
+          "priority": "P0",
+          "status": "待受理"
+        },
+        {
+          "id": "E2",
+          "text": "分类分流",
+          "kind": "process",
+          "priority": "P0",
+          "status": "处理动作"
+        },
+        {
+          "id": "E3",
+          "text": "责任办理",
+          "kind": "process",
+          "priority": "P0",
+          "status": "处理动作"
+        },
+        {
+          "id": "E4",
+          "text": "可追踪反馈结果",
+          "kind": "result",
+          "priority": "P0",
+          "status": "服务结果"
+        }
+      ],
+      "edges": [
+        {
+          "from": "E1",
+          "to": "E2",
+          "relation": "enters",
+          "label": "受理"
+        },
+        {
+          "from": "E2",
+          "to": "E3",
+          "relation": "routes",
+          "label": "分流"
+        },
+        {
+          "from": "E3",
+          "to": "E4",
+          "relation": "produces",
+          "label": "反馈"
+        }
+      ]
+    },
+    {
+      "id": "multi-party-responsibility",
+      "category": "multi_party_responsibility",
+      "domain": "organizational_governance",
+      "page_role": "主体协同",
+      "page_title": "多方职责围绕共同成果形成协同",
+      "page_mission": "让观众理解不同主体如何通过清晰职责共同交付成果。",
+      "core_judgment": "决策、执行与监督职责清晰衔接，才能稳定形成共同成果。",
+      "visual_intent_type": "role_responsibility_map",
+      "primary_relation": "responsibility",
+      "direction": "spatial",
+      "semantic_focus_kind": "outcome",
+      "focus_ref": "E4",
+      "spatial_grammar": [
+        "interface",
+        "network"
+      ],
+      "semantic_tags": [
+        "responsibility",
+        "coordination"
+      ],
+      "primary_refs": [
+        "E1",
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "secondary_refs": [],
+      "reading_sequence": [
+        "E1",
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "evidence_units": [
+        {
+          "id": "E1",
+          "text": "决策责任方",
+          "kind": "actor",
+          "priority": "P0",
+          "status": "明确职责"
+        },
+        {
+          "id": "E2",
+          "text": "执行责任方",
+          "kind": "actor",
+          "priority": "P0",
+          "status": "明确职责"
+        },
+        {
+          "id": "E3",
+          "text": "监督责任方",
+          "kind": "actor",
+          "priority": "P0",
+          "status": "明确职责"
+        },
+        {
+          "id": "E4",
+          "text": "共同交付成果",
+          "kind": "result",
+          "priority": "P0",
+          "status": "共同目标"
+        }
+      ],
+      "edges": [
+        {
+          "from": "E1",
+          "to": "E4",
+          "relation": "decides",
+          "label": "决策"
+        },
+        {
+          "from": "E2",
+          "to": "E4",
+          "relation": "delivers",
+          "label": "执行"
+        },
+        {
+          "from": "E3",
+          "to": "E4",
+          "relation": "assures",
+          "label": "监督"
+        }
+      ]
+    },
+    {
+      "id": "layered-dependency",
+      "category": "layered_dependency",
+      "domain": "product_planning",
+      "page_role": "总体架构",
+      "page_title": "能力依赖逐层转化为采用结果",
+      "page_mission": "让观众理解基础能力如何逐层支撑服务、功能与采用结果。",
+      "core_judgment": "基础能力先形成核心服务，再支撑用户功能，最终产生采用结果。",
+      "visual_intent_type": "layered_architecture",
+      "primary_relation": "layer",
+      "direction": "bottom_to_top",
+      "semantic_focus_kind": "state",
+      "focus_ref": "E3",
+      "spatial_grammar": [
+        "layer"
+      ],
+      "semantic_tags": [
+        "dependency",
+        "enablement"
+      ],
+      "primary_refs": [
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "secondary_refs": [
+        "E1"
+      ],
+      "reading_sequence": [
+        "E1",
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "evidence_units": [
+        {
+          "id": "E1",
+          "text": "基础能力",
+          "kind": "capability",
+          "priority": "P0",
+          "status": "基础条件"
+        },
+        {
+          "id": "E2",
+          "text": "核心服务",
+          "kind": "capability",
+          "priority": "P0",
+          "status": "服务能力"
+        },
+        {
+          "id": "E3",
+          "text": "用户功能",
+          "kind": "capability",
+          "priority": "P0",
+          "status": "产品能力"
+        },
+        {
+          "id": "E4",
+          "text": "采用结果",
+          "kind": "result",
+          "priority": "P0",
+          "status": "目标结果"
+        }
+      ],
+      "edges": [
+        {
+          "from": "E1",
+          "to": "E2",
+          "relation": "supports",
+          "label": "基础支撑"
+        },
+        {
+          "from": "E2",
+          "to": "E3",
+          "relation": "enables",
+          "label": "服务支撑"
+        },
+        {
+          "from": "E3",
+          "to": "E4",
+          "relation": "produces",
+          "label": "形成采用"
+        }
+      ]
+    },
+    {
+      "id": "comparison-decision",
+      "category": "comparison_decision",
+      "domain": "program_management",
+      "page_role": "对比论证",
+      "page_title": "共同标准支持方案取舍",
+      "page_mission": "让观众理解两个方案如何在共同标准下形成取舍结论。",
+      "core_judgment": "在相同约束和评价标准下，方案B更适合作为当前推进方向。",
+      "visual_intent_type": "comparison_tension",
+      "primary_relation": "compare",
+      "direction": "spatial",
+      "semantic_focus_kind": "outcome",
+      "focus_ref": "E4",
+      "spatial_grammar": [
+        "tension"
+      ],
+      "semantic_tags": [
+        "compare",
+        "decision"
+      ],
+      "primary_refs": [
+        "E1",
+        "E2",
+        "E4"
+      ],
+      "secondary_refs": [
+        "E3"
+      ],
+      "reading_sequence": [
+        "E3",
+        "E1",
+        "E2",
+        "E4"
+      ],
+      "evidence_units": [
+        {
+          "id": "E1",
+          "text": "方案A",
+          "kind": "fact",
+          "priority": "P0",
+          "status": "候选方案"
+        },
+        {
+          "id": "E2",
+          "text": "方案B",
+          "kind": "fact",
+          "priority": "P0",
+          "status": "候选方案"
+        },
+        {
+          "id": "E3",
+          "text": "共同评价标准",
+          "kind": "constraint",
+          "priority": "P0",
+          "status": "决策依据"
+        },
+        {
+          "id": "E4",
+          "text": "选择方案B",
+          "kind": "judgment",
+          "priority": "P0",
+          "status": "取舍结论"
+        }
+      ],
+      "edges": [
+        {
+          "from": "E3",
+          "to": "E1",
+          "relation": "evaluates",
+          "label": "同一标准"
+        },
+        {
+          "from": "E3",
+          "to": "E2",
+          "relation": "evaluates",
+          "label": "同一标准"
+        },
+        {
+          "from": "E1",
+          "to": "E4",
+          "relation": "compared_for",
+          "label": "对比"
+        },
+        {
+          "from": "E2",
+          "to": "E4",
+          "relation": "selected_as",
+          "label": "取舍"
+        }
+      ]
+    },
+    {
+      "id": "boundary-and-feedback",
+      "category": "boundary_and_feedback",
+      "domain": "public_service",
+      "page_role": "风险边界",
+      "page_title": "授权边界与反馈记录共同约束输出",
+      "page_mission": "让观众理解输入如何经过授权门控形成允许输出并留下反馈记录。",
+      "core_judgment": "只有授权输入通过审查门控，才能形成允许输出，并由反馈记录持续校正门控。",
+      "visual_intent_type": "risk_control_boundary",
+      "primary_relation": "boundary",
+      "direction": "closed_loop",
+      "semantic_focus_kind": "action",
+      "focus_ref": "E2",
+      "spatial_grammar": [
+        "boundary",
+        "feedback"
+      ],
+      "semantic_tags": [
+        "boundary",
+        "control",
+        "feedback"
+      ],
+      "primary_refs": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "secondary_refs": [
+        "E4"
+      ],
+      "reading_sequence": [
+        "E1",
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "evidence_units": [
+        {
+          "id": "E1",
+          "text": "授权输入",
+          "kind": "constraint",
+          "priority": "P0",
+          "status": "允许进入"
+        },
+        {
+          "id": "E2",
+          "text": "审查门控",
+          "kind": "process",
+          "priority": "P0",
+          "status": "控制动作"
+        },
+        {
+          "id": "E3",
+          "text": "允许输出",
+          "kind": "result",
+          "priority": "P0",
+          "status": "受控结果"
+        },
+        {
+          "id": "E4",
+          "text": "反馈记录",
+          "kind": "fact",
+          "priority": "P0",
+          "status": "持续记录"
+        }
+      ],
+      "edges": [
+        {
+          "from": "E1",
+          "to": "E2",
+          "relation": "enters",
+          "label": "授权进入"
+        },
+        {
+          "from": "E2",
+          "to": "E3",
+          "relation": "allows",
+          "label": "受控输出"
+        },
+        {
+          "from": "E3",
+          "to": "E4",
+          "relation": "records",
+          "label": "结果记录"
+        },
+        {
+          "from": "E4",
+          "to": "E2",
+          "relation": "feeds_back",
+          "label": "反馈校正"
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,17 @@
 from .builder import build_page_scene_graph
 from .coordinate import COORDINATE_CONTEXT_SCHEMA, normalize_bbox, resolve_coordinate_context
+from .copy_edit import COPY_EDIT_SCHEMA, edit_scene_graph_copy, edit_text_node, validate_semantic_safe_revision
+from .constrained_reflow import CONSTRAINED_REFLOW_SCHEMA, apply_recognized_constrained_reflow
 from .gate import GATE_SCHEMA, build_scene_graph_gate
 from .layout import LAYOUT_PLAN_SCHEMA, build_layout_plan_from_scene_graph
+from .layout_reference_adapter import LAYOUT_REFERENCE_ADAPTER_SCHEMA, adapt_layout_reference
+from .page_svg_ir import PAGE_SVG_IR_SCHEMA, PageSvgIRValidationError, compile_scene_graph_to_page_svg_ir, validate_page_svg_ir
+from .text_metrics import avoid_reserved_zones, fit_text_to_safe_bbox, measure_line, measure_text
+from .image_assets import IMAGE_ASSET_SCHEMA, asset_id_for_source, image_asset_manifest, register_image_asset, validate_image_asset_contract
+from .illustration_assets import ILLUSTRATION_ASSET_SCHEMA, materialize_recognized_illustration_assets
+from .qa_fusion import QA_FUSION_SCHEMA, build_qa_fusion_report, run_ppt_master_svg_checker, write_qa_fusion_report
+from .svg_renderer import render_page_svg_ir
+from ..standalone_runtime import check_standalone_runtime
 from .render_qa import RENDER_QA_SCHEMA, build_render_qa
 from .schema import (
     BINDING_TYPES,
@@ -28,6 +38,8 @@ __all__ = [
     "BINDING_TYPES",
     "BLOCKING_ISSUE_CODES",
     "COORDINATE_CONTEXT_SCHEMA",
+    "COPY_EDIT_SCHEMA",
+    "CONSTRAINED_REFLOW_SCHEMA",
     "LOCATOR_ONLY_AUTHORITIES",
     "NORMALIZED_CANVAS",
     "SCHEMA",
@@ -36,11 +48,15 @@ __all__ = [
     "build_page_scene_graph",
     "build_scene_graph_gate",
     "build_layout_plan_from_scene_graph",
+    "compile_scene_graph_to_page_svg_ir",
     "build_render_qa",
     "CoordinateContext",
     "GATE_SCHEMA",
     "GateIssue",
     "LAYOUT_PLAN_SCHEMA",
+    "LAYOUT_REFERENCE_ADAPTER_SCHEMA",
+    "PAGE_SVG_IR_SCHEMA",
+    "PageSvgIRValidationError",
     "LayoutIntent",
     "PageSceneGraph",
     "Relation",
@@ -53,4 +69,27 @@ __all__ = [
     "resolve_coordinate_context",
     "scene_graph_from_dict",
     "scene_graph_to_dict",
+    "validate_page_svg_ir",
+    "avoid_reserved_zones",
+    "fit_text_to_safe_bbox",
+    "measure_line",
+    "measure_text",
+    "IMAGE_ASSET_SCHEMA",
+    "ILLUSTRATION_ASSET_SCHEMA",
+    "asset_id_for_source",
+    "image_asset_manifest",
+    "register_image_asset",
+    "validate_image_asset_contract",
+    "QA_FUSION_SCHEMA",
+    "build_qa_fusion_report",
+    "run_ppt_master_svg_checker",
+    "write_qa_fusion_report",
+    "render_page_svg_ir",
+    "adapt_layout_reference",
+    "materialize_recognized_illustration_assets",
+    "check_standalone_runtime",
+    "edit_scene_graph_copy",
+    "edit_text_node",
+    "validate_semantic_safe_revision",
+    "apply_recognized_constrained_reflow",
 ]

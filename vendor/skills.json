@@ -1,0 +1,22 @@
+{
+  "schema": "cyberppt.vendor_skills.v1",
+  "skills": [
+    {
+      "name": "ppt-script",
+      "path": "vendor/skills/ppt-script",
+      "stage": "stage01"
+    },
+    {
+      "name": "ppt-visual-structure-designer",
+      "path": "vendor/skills/ppt-visual-structure-designer",
+      "stage": "stage01-to-stage02"
+    },
+    {
+      "name": "ppt-image-enhancer",
+      "version": "1.0.0",
+      "path": "vendor/ppt-image-enhancer-skill-v1.0.0",
+      "stage": "stage02-post-generation",
+      "entrypoint": "enhance.py"
+    }
+  ]
+}

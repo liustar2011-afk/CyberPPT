@@ -9,12 +9,17 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.dual_image_overlay.style_library import default_style_choices, load_style_lock
+from scripts.dual_image_overlay.visual_grammar import (
+    creative_brief_visual_grammar,
+    default_visual_grammar,
+)
+from cyberppt.script_quality_contract import strip_authoring_group_marker
 
 
 PAGE_HEADING_RE = re.compile(
@@ -27,7 +32,6 @@ QUOTED_EVIDENCE_LABEL_RE = re.compile(r"标签[\"“']?\s*[（(]E\d+.*?[)）][\"
 COMPONENT_PREFIX_RE = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+[（(].*?[)）]\s*[—-]+")
 COMPONENT_PREFIX_SIMPLE_RE = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+[：:]\s*")
 COMPONENT_LINE_RE = re.compile(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+")
-PAGE_TYPE_LINE_RE = re.compile(r"^页面类型\s*[:：]\s*(?P<page_type>.+?)\s*$")
 TITLE_REFERENCE_RE = re.compile(r"本页结论标题.*")
 TEMPLATE_TITLE_RE = re.compile(r"本页结论标题[^\"“”]*[\"“](?P<title>[^\"”]+)[\"”]")
 TEMPLATE_TITLE_MAX_CHARS = 42
@@ -139,7 +143,7 @@ def _drop_line(line: str) -> bool:
         return True
     if FENCE_RE.match(stripped):
         return True
-    if PAGE_TYPE_LINE_RE.match(stripped):
+    if stripped.startswith("页面角色"):
         return True
     if re.match(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+", stripped) and (
         "——" in stripped or "标签" in stripped or "下方" in stripped or "主体" in stripped or "（" in stripped
@@ -152,20 +156,109 @@ def _drop_line(line: str) -> bool:
 
 def _clean_line(line: str) -> str:
     line = line.strip()
+    line = strip_authoring_group_marker(line)
     line = TITLE_REFERENCE_RE.sub("", line)
     line = QUOTED_EVIDENCE_LABEL_RE.sub("", line)
     line = EVIDENCE_LABEL_RE.sub("", line)
     line = COMPONENT_PREFIX_RE.sub("", line)
     line = COMPONENT_PREFIX_SIMPLE_RE.sub("", line)
+    # Strip parenthetical noise on 上屏文字 headers only.
+    line = re.sub(r"^上屏文字（[^）]+）", "上屏文字", line)
+    line = re.sub(r"^上屏文字\([^)]+\)", "上屏文字", line)
     line = re.sub(r"——\s*", "", line)
     line = re.sub(r"\s+", " ", line)
     return line.strip(" ：:")
 
 
+# Boundary / 禁止项 are authoring + human-QA fields only. ImageGen prompts must not
+# receive invisible boundary prose — rely on well-authored 上屏文字 instead.
+_BOUNDARY_HEADER_RE = re.compile(
+    r"^(?:Boundary\s*\(do not show on slide\)|禁止项)",
+    re.I,
+)
+_CONTENT_FIELD_STARTERS = ("核心判断", "上屏文字", "禁止项", "Boundary")
+
+
+def _filter_imagegen_content_lines(lines: list[str]) -> list[str]:
+    """Keep drawable 上屏 lines; drop thesis-field and boundary/constraint blocks.
+
+    Thesis belongs in script-final 上屏文字 (lead). Boundary stays in script-final /
+    human QA parsing — never inject Boundary/禁止项 into ImageGen prompts.
+    """
+
+    content: list[str] = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if line.startswith("核心判断"):
+            i += 1
+            continue
+        if not _BOUNDARY_HEADER_RE.match(line):
+            content.append(line)
+            i += 1
+            continue
+        # Drop labeled boundary line, or header-only + following body until next field.
+        if re.search(r"[：:]\s*\S", line):
+            i += 1
+            continue
+        i += 1
+        while i < len(lines) and not lines[i].startswith(_CONTENT_FIELD_STARTERS):
+            i += 1
+    return content
+
+
+def _strip_visual_structure_meta(text: str) -> str:
+    """Remove composition-meta asides; keep actionable icon/style guidance."""
+
+    cleaned = text
+    cleaned = re.sub(
+        r"\s*Do not rely on 「视觉结构」 fields\.?",
+        "",
+        cleaned,
+        flags=re.I,
+    )
+    cleaned = re.sub(
+        r"\s*Do not use 「视觉结构」 or backend layout fields as composition input\.?",
+        "",
+        cleaned,
+        flags=re.I,
+    )
+    cleaned = re.sub(r"\s*请勿依赖「视觉结构」[^。]*。?", "", cleaned)
+    return cleaned.strip()
+
+
 def visible_deliverable_lines(page: PageBlock) -> list[str]:
+    # Final manuscripts carry authoring fields around the drawable layer.  When
+    # this compiler receives a full manuscript, select the explicit 上屏文字
+    # block rather than trying to delete every non-drawable field line-by-line.
+    raw_lines = page.text.splitlines()
+    onscreen_start = next(
+        (
+            index
+            for index, line in enumerate(raw_lines)
+            if re.match(
+                r"^\s*(?:-\s*)?(?:#{1,6}\s*)?上屏文字(?:（严格锁定）)?[：:]?\s*$",
+                line,
+            )
+        ),
+        None,
+    )
+    if onscreen_start is not None:
+        selected: list[str] = []
+        for raw in raw_lines[onscreen_start + 1 :]:
+            if re.match(r"^\s*(?:-\s*)?#{1,6}\s+", raw):
+                break
+            if re.match(r"^\s*(?:-\s*){1,2}上屏(?:模块|顶层模块)清单[：:]", raw):
+                break
+            if re.match(r"^\s*-\s*(?:证据|边界|视觉结构|讲解提示|演讲者备注)[：:]", raw):
+                break
+            if raw.strip().startswith("【演讲者备注】"):
+                break
+            selected.append(raw)
+        raw_lines = selected
     lines: list[str] = []
     seen: set[str] = set()
-    for raw in page.text.splitlines():
+    for raw in raw_lines:
         if _drop_line(raw):
             continue
         cleaned = _clean_line(raw)
@@ -178,11 +271,26 @@ def visible_deliverable_lines(page: PageBlock) -> list[str]:
     return lines
 
 
+def exact_visible_deliverable_lines(page: PageBlock) -> list[str]:
+    """Preserve controlled handoff text exactly for creative-brief compilation.
+
+    ``imagegen_handoff.content_lock_text`` has already removed backend-only
+    fields.  The legacy cleaner performs useful compatibility normalization but
+    also removes meaningful punctuation such as ``——``.  The new compiler keeps
+    every non-empty controlled line verbatim.
+    """
+
+    lines: list[str] = []
+    for raw in page.text.splitlines():
+        line = raw.strip()
+        if line and not FENCE_RE.match(line):
+            lines.append(line)
+    return lines
+
+
 def _clean_structure_directive(line: str) -> str:
     line = line.strip()
     line = TITLE_REFERENCE_RE.sub("", line)
-    line = re.sub(r"^组件[A-ZＡ-Ｚ一二三四五六七八九十0-9]+", "", line)
-    line = re.sub(r"^[（(]([^）)]+)[）)]\s*[—-]*\s*", r"\1，", line)
     line = re.sub(r"，?\s*右下角小标签[\"“']?\s*[（(]E\d+.*?[)）][\"”']?", "", line)
     line = re.sub(r"，?\s*标签[\"“']?\s*[（(]E\d+.*?[)）][\"”']?", "", line)
     line = QUOTED_EVIDENCE_LABEL_RE.sub("", line)
@@ -212,16 +320,6 @@ def layout_density_directives(page: PageBlock) -> list[str]:
             directives.append(cleaned)
             seen.add(key)
     return directives
-
-
-def page_type_directive(page: PageBlock) -> str:
-    """Return a non-visible page-type instruction for ImageGen composition."""
-
-    for raw in page.text.splitlines():
-        match = PAGE_TYPE_LINE_RE.match(raw.strip())
-        if match:
-            return match.group("page_type").strip()
-    return "内容页"
 
 
 def template_title(page: PageBlock) -> str:
@@ -259,27 +357,187 @@ def _extract_hex_colors(text: str) -> list[str]:
     return colors
 
 
-def _style_contract_from_payload(payload: dict[str, Any]) -> str | None:
+_STYLE09_CONDITIONAL_HEADING = "### 条件构图规则（编译器按需选择）"
+_STYLE09_TERMINAL_HEADING = "### Final ImageGen execution lock — hard"
+_STYLE09_TAG_LINE_RE = re.compile(r"(?m)^semantic_tags:\s*\[([^\]]*)\]\s*$")
+_STYLE09_SCOPE_COMMENT_RE = re.compile(r"(?m)^\s*<!--\s*style09:[^>]+-->\s*$")
+
+
+def _style09_page_semantic_tags(page: PageBlock, content_lines: list[str]) -> frozenset[str]:
+    """Infer composable Style 09 clause tags from the locked page content."""
+
+    corpus = "\n".join((page.title, *content_lines))
+    compact = re.sub(r"\s+", "", corpus)
+    labels = [page.title]
+    for raw_line in content_lines:
+        line = re.sub(r"^\s*[-*•]+\s*", "", raw_line).strip("* ")
+        if not line:
+            continue
+        label = re.split(r"[：:]", line, maxsplit=1)[0].strip()
+        if len(label) <= 24:
+            labels.append(label)
+    label_corpus = "\n".join(labels)
+    tags: set[str] = set()
+    if len(compact) >= 180 or len([line for line in content_lines if line.strip()]) >= 6:
+        tags.add("dense_text")
+    if re.search(r"(?:多个维度|多维|维度|方面|层级|架构|视图)", label_corpus):
+        tags.add("multi_dimension")
+    if re.search(
+        r"(?:分类|类别|矩阵|分为|分成|层级|架构|方向|[一二三四五六七八九十\d]+(?:类|层|个方向))",
+        label_corpus,
+    ) or re.search(r"[一二三四五六七八九十\d]+类", corpus):
+        tags.add("classification")
+    if "矩阵" in label_corpus:
+        tags.add("matrix")
+    if re.search(
+        r"(?:流程|步骤|阶段|路径|生命周期|输入输出|形成链|履行链|反馈链|业务链)",
+        label_corpus,
+    ):
+        tags.update(("flow", "sequence"))
+    has_input = bool(re.search(r"(?:输入|需求侧|供给侧|来源)", label_corpus))
+    has_output = bool(re.search(r"(?:输出|交付结果|成果|服务对象)", label_corpus))
+    if has_input and has_output:
+        tags.add("input_output")
+    boundary_terms = set(
+        re.findall(r"权利|责任|授权|准入|门控|边界|范围|受控|控制", corpus)
+    )
+    if len(boundary_terms) >= 3 or re.search(
+        r"(?:权利边界|授权范围|准入条件|受控输出|控制边界|安全合规|权利|授权)",
+        label_corpus,
+    ):
+        tags.update(("boundary", "authorization"))
+    if re.search(r"(?:反馈|回流|复盘|返回前序)", label_corpus):
+        tags.add("feedback")
+    if re.search(r"(?:闭环|闭合|循环|反馈环|回流|返回前序)", label_corpus):
+        tags.add("loop")
+    return frozenset(tags)
+
+
+def _compile_style09_contract(
+    contract: str,
+    semantic_tags: frozenset[str] | None,
+) -> str:
+    """Strip authoring metadata and select tagged Style 09 clauses for one page."""
+
+    contract = _STYLE09_SCOPE_COMMENT_RE.sub("", contract)
+    if _STYLE09_CONDITIONAL_HEADING not in contract or _STYLE09_TERMINAL_HEADING not in contract:
+        return _STYLE09_TAG_LINE_RE.sub("", contract)
+    before, tail = contract.split(_STYLE09_CONDITIONAL_HEADING, 1)
+    conditional, after = tail.split(_STYLE09_TERMINAL_HEADING, 1)
+    matches = list(re.finditer(r"(?m)^####\s+(.+?)\s*$", conditional))
+    selected: list[str] = []
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(conditional)
+        block = conditional[match.start() : end].strip()
+        tag_match = _STYLE09_TAG_LINE_RE.search(block)
+        block_tags = {
+            tag.strip()
+            for tag in (tag_match.group(1).split(",") if tag_match else [])
+            if tag.strip()
+        }
+        if semantic_tags is None or not block_tags or block_tags.intersection(semantic_tags):
+            selected.append(_STYLE09_TAG_LINE_RE.sub("", block).strip())
+    parts = [before.rstrip()]
+    if selected:
+        parts.append("### 本页命中的条件构图规则\n\n" + "\n\n".join(selected))
+    parts.append(f"{_STYLE09_TERMINAL_HEADING}{after}")
+    return "\n\n".join(part for part in parts if part).strip()
+
+
+def _style_contract_from_payload(
+    payload: dict[str, Any],
+    semantic_tags: frozenset[str] | None = None,
+) -> str | None:
     style = payload.get("style")
     if not isinstance(style, dict):
         return None
-    colors = style.get("colors") if isinstance(style.get("colors"), dict) else {}
-    color_values = [
-        ("背景", colors.get("background")),
-        ("标题", colors.get("title")),
-        ("正文", colors.get("body")),
-        ("强调", colors.get("accent")),
-    ]
-    color_text = "，".join(f"{label}{value}" for label, value in color_values if value)
-    style_name = _collapse_text(style.get("name")) or "项目视觉锁定"
-    return (
-        f"视觉锁定：{style_name}；{color_text or '按锁定色板执行'}。"
-        "采用正式内部汇报语气、清晰层级、克制图形和紧凑信息密度；"
-        "版式必须服从本页内容锁定和构图要求。"
+    style_prompt_v2 = _collapse_text(style.get("style_prompt_v2"))
+    if style_prompt_v2:
+        return style_prompt_v2
+    prompt_contract = _strip_visual_structure_meta(_collapse_text(style.get("prompt_contract")))
+    # Style 09 is an authored, self-contained source contract.  The final
+    # prompt must carry this entire contract verbatim under its formal style
+    # lock, rather than letting a downstream compiler select clauses or
+    # recreate a terminal fragment.  Page layout belongs to Stage 02.
+    if int(style.get("id") or 0) == 9 and prompt_contract:
+        safety_rules = (
+            _strip_visual_structure_meta(_collapse_text(style.get("people_rule"))),
+            _strip_visual_structure_meta(_collapse_text(style.get("factuality_rule"))),
+            _strip_visual_structure_meta(
+                _collapse_text(style.get("semantic_image_text_rule"))
+            ),
+            _strip_visual_structure_meta(_collapse_text(style.get("component_rule"))),
+        )
+        return "\n\n".join((prompt_contract, *(rule for rule in safety_rules if rule)))
+    scope_rule = _strip_visual_structure_meta(_collapse_text(style.get("scope_rule")))
+    semantic_structure_rule = _strip_visual_structure_meta(
+        _collapse_text(style.get("semantic_structure_rule"))
     )
+    scene_layer_rule = _strip_visual_structure_meta(_collapse_text(style.get("scene_layer_rule")))
+    semantic_image_rule = _strip_visual_structure_meta(
+        _collapse_text(style.get("semantic_image_rule"))
+    )
+    people_rule = _strip_visual_structure_meta(_collapse_text(style.get("people_rule")))
+    factuality_rule = _strip_visual_structure_meta(_collapse_text(style.get("factuality_rule")))
+    semantic_image_text_rule = _strip_visual_structure_meta(
+        _collapse_text(style.get("semantic_image_text_rule"))
+    )
+    default_text_render_mode = _collapse_text(style.get("default_text_render_mode"))
+    truth_lock = _collapse_text(style.get("truth_lock"))
+    visual_freedom = _collapse_text(style.get("visual_freedom"))
+    content_visual_rule = _strip_visual_structure_meta(_collapse_text(style.get("content_visual_rule")))
+    icon_rule = _strip_visual_structure_meta(_collapse_text(style.get("icon_rule")))
+    density_rule = _collapse_text(style.get("density_rule"))
+    carrier_router = _collapse_text(style.get("carrier_router"))
+    component_rule = (
+        ""
+        if int(style.get("id") or 0) == 9 and prompt_contract
+        else _collapse_text(style.get("component_rule"))
+    )
+    deck_consistency_rule = _collapse_text(style.get("deck_consistency_rule"))
+    prompt_sequence_rule = _collapse_text(style.get("prompt_sequence_rule"))
+    parts = [prompt_contract]
+    # Styles with an explicit two-layer contract must send that priority into
+    # ImageGen. Legacy styles keep their existing prompt behavior unchanged.
+    if semantic_structure_rule:
+        parts.extend(part for part in (scope_rule, semantic_structure_rule, scene_layer_rule) if part)
+    if semantic_image_rule:
+        parts.append(semantic_image_rule)
+    if people_rule:
+        parts.append(people_rule)
+    if factuality_rule:
+        parts.append(factuality_rule)
+    if semantic_image_text_rule:
+        parts.append(semantic_image_text_rule)
+    if default_text_render_mode:
+        parts.append(f"默认文字渲染模式：{default_text_render_mode}。")
+    if truth_lock:
+        parts.append(truth_lock)
+    if visual_freedom:
+        parts.append(visual_freedom)
+    if content_visual_rule:
+        parts.append(content_visual_rule)
+    if icon_rule:
+        parts.append(icon_rule)
+    if density_rule:
+        parts.append(density_rule)
+    if carrier_router:
+        parts.append(carrier_router)
+    if component_rule:
+        parts.append(component_rule)
+    if deck_consistency_rule:
+        parts.append(deck_consistency_rule)
+    if prompt_sequence_rule:
+        parts.append(prompt_sequence_rule)
+    contract = "\n\n".join(part for part in parts if part)
+    return contract
 
 
-def style_contract(style_lock_path: Path | None) -> str:
+def style_contract(
+    style_lock_path: Path | None,
+    *,
+    semantic_tags: frozenset[str] | None = None,
+) -> str:
     if style_lock_path is None:
         raise ValueError(
             "missing visual style lock. 直接上传脚本转换前必须先选择 CyberPPT 默认 8 种风格之一，"
@@ -290,44 +548,488 @@ def style_contract(style_lock_path: Path | None) -> str:
     except json.JSONDecodeError:
         payload = {}
     if payload:
-        contract = _style_contract_from_payload(payload)
+        contract = _style_contract_from_payload(payload, semantic_tags)
         if contract:
             return contract
     text = style_lock_path.read_text(encoding="utf-8")
     colors = _extract_hex_colors(text)
     color_text = "、".join(colors[:8]) if colors else "以该视觉锁定文件为准"
+    return f"核心色板：{color_text}。"
+
+
+def _creative_brief_style_contract(
+    style_lock_path: Path | None,
+    *,
+    semantic_tags: frozenset[str] | None = None,
+) -> str:
+    """Remove bitmap-inapplicable or text-expanding clauses for the new compiler."""
+
+    contract = style_contract(style_lock_path, semantic_tags=semantic_tags)
+    contract = re.sub(
+        r"允许根据画面容量压缩、取舍和重组文字，但不得改变原意，?",
+        "完整、准确呈现锁定的上屏文字，不得压缩、删减、改写或重组，",
+        contract,
+    )
+    contract = re.sub(
+        r"(?:may|can)\s+(?:compress|shorten|summarize|paraphrase)[^.]*\.",
+        (
+            "Render the locked on-screen text completely and exactly; do not compress, "
+            "shorten, summarize, paraphrase, or reorganize it."
+        ),
+        contract,
+        flags=re.I,
+    )
+    contract = re.sub(
+        r"factual numbers and labels must be verified and remain editable\.?",
+        (
+            "Keep every locked factual number and label exact. Auxiliary visuals may contain "
+            "supporting words or non-evidentiary labels, but must not present invented numbers "
+            "or claims as locked facts."
+        ),
+        contract,
+        flags=re.I,
+    )
+    contract = re.sub(
+        r"Auxiliary semantic imagery may use a small amount of clear Chinese labels,"
+        r"\s*interface text, chart labels, or document wording when it directly clarifies"
+        r"\s*the nearby business object or relationship\.",
+        (
+            "Auxiliary imagery may use clear supporting words, interface text, chart labels, "
+            "or document-like wording when it improves the visual idea. This auxiliary text "
+            "does not need to duplicate the locked wording, but must not masquerade as a new "
+            "factual number, organization claim, or unsupported conclusion."
+        ),
+        contract,
+        flags=re.I,
+    )
+    contract = re.sub(
+        r"Auxiliary imagery may use only a small amount of clear supporting text when it "
+        r"directly clarifies a nearby business object\.",
+        (
+            "Auxiliary imagery may use concise supporting text when it improves the overall "
+            "visual idea. It does not need a one-to-one mapping to the locked modules."
+        ),
+        contract,
+        flags=re.I,
+    )
+    contract = re.sub(
+        r"Keep real organization and person names in the editable text layer only\.",
+        "Do not introduce organization or person names beyond the locked on-screen text.",
+        contract,
+        flags=re.I,
+    )
+    contract = re.sub(
+        r"Generic, non-location-specific facilities, layered workspaces, control consoles, "
+        r"equipment rooms, and industrial scenes may be used as (?:restrained )?illustrative "
+        r"carriers when they map to the locked content\.",
+        (
+            "Choose scenes, visual metaphors, facilities, workspaces, control environments, "
+            "industrial imagery, or abstract editorial forms freely according to the strongest "
+            "overall composition."
+        ),
+        contract,
+        flags=re.I,
+    )
+    contract = re.sub(
+        r"Schematic screens, charts, maps, and interface labels may organize the composition, "
+        r"but generated values are non-evidentiary;",
+        (
+            "Schematic screens, charts, maps, time bands, interface-like structures, and their "
+            "supporting labels may organize the composition freely;"
+        ),
+        contract,
+        flags=re.I,
+    )
+    contract = re.sub(
+        r"在不改变原脚本结构的前提下，",
+        (
+            "只需保持锁定上屏文字完整准确；不要求沿用原始列表、卡片、栏位或段落"
+            "排布形式，整体构图、视觉隐喻和辅助表达均可自由发挥；"
+        ),
+        contract,
+    )
+    creative_layout_freedom = (
+        "只需保持锁定上屏文字完整准确；不要求沿用原始列表、卡片、栏位或段落"
+        "排布形式，整体构图、视觉隐喻和辅助表达均可自由发挥。"
+    )
+    if "不要求沿用原始列表、卡片、栏位或段落排布形式" not in contract:
+        contract = f"{contract}\n\n{creative_layout_freedom}"
+    required_guardrails = (
+        "Auxiliary imagery may use clear supporting words, interface text, chart labels, or document-like wording when it improves the visual idea. This auxiliary text does not need to duplicate the locked wording, but must not masquerade as a new factual number, organization claim, or unsupported conclusion.",
+        "Do not introduce organization or person names beyond the locked on-screen text.",
+        "Schematic screens, charts, maps, time bands, interface-like structures, and their supporting labels may organize the composition freely;",
+    )
+    for guardrail in required_guardrails:
+        if guardrail not in contract:
+            contract = f"{contract}\n\n{guardrail}"
+    return contract
+
+
+def uses_compact_style_contract(style_lock_path: Path | None) -> bool:
+    if style_lock_path is None or not style_lock_path.is_file():
+        return False
+    try:
+        payload = json.loads(style_lock_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    style = payload.get("style")
+    return isinstance(style, dict) and bool(_collapse_text(style.get("style_prompt_v2")))
+
+
+def _style_contract_owns_visual_grammar(style_lock_path: Path | None) -> bool:
+    """Return whether global visual grammar is already owned by the style lock."""
+
+    if uses_compact_style_contract(style_lock_path):
+        return True
+    if style_lock_path is None or not style_lock_path.is_file():
+        return False
+    try:
+        payload = json.loads(style_lock_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    style = payload.get("style")
     return (
-        f"视觉锁定：核心色板 {color_text}。"
-        "采用正式内部汇报语气、清晰层级、克制图形和紧凑信息密度；"
-        "版式必须服从本页内容锁定和构图要求。"
+        isinstance(style, dict)
+        and int(style.get("id") or 0) == 9
+        and bool(_collapse_text(style.get("prompt_contract")))
     )
 
 
-def render_prompt(page: PageBlock, *, style_lock_path: Path | None = None) -> str:
-    body = "\n".join(f"- {line}" for line in visible_deliverable_lines(page))
-    layout_directives = "\n".join(f"- {line}" for line in layout_density_directives(page))
-    page_type = page_type_directive(page)
-    return f"""## 第{page.page_number}页：{template_title(page)}
+def _resolve_text_render_mode(
+    style_lock_path: Path | None,
+    explicit: str | None,
+) -> str:
+    value = str(explicit or "").strip()
+    if not value and style_lock_path is not None and style_lock_path.is_file():
+        try:
+            payload = json.loads(style_lock_path.read_text(encoding="utf-8"))
+            style = payload.get("style") if isinstance(payload, dict) else None
+            if isinstance(style, dict):
+                value = str(style.get("default_text_render_mode") or "").strip()
+        except (OSError, json.JSONDecodeError):
+            value = ""
+    value = value or "full_image"
+    if value not in {"full_image", "semantic_visual", "editable_overlay"}:
+        raise ValueError(
+            "unsupported text render mode: "
+            f"{value}; choose full_image, semantic_visual, or editable_overlay"
+        )
+    return value
 
-【页面类型】
-本页类型：{page_type}。此信息只用于构图，不得作为页面可见文字。
 
-【内容锁定】
-{body}
+def _semantic_visual_lines(lines: list[str]) -> list[str]:
+    """Keep concrete nouns/actions while removing the sentence-layout lock."""
 
-【构图指令】
-生成正式内部汇报的正文内容区成稿图。
-仅生成正文内容区；模板标题、页眉页脚、页码、Logo 和公共外框不绘制。
-不得出现证据编号、来源、脚注、制作注释、占位符、乱码或水印。
+    anchors: list[str] = []
+    for line in lines:
+        parts = [
+            part.strip(" -*")
+            for part in re.split(r"[，,、；;。:：→—\-]+", line)
+            if part.strip(" -*")
+        ]
+        if not parts:
+            continue
+        compact = " / ".join(parts[:8])
+        if len(compact) > 120:
+            compact = compact[:120].rstrip("/ ")
+        if compact and compact not in anchors:
+            anchors.append(compact)
+    return anchors
 
-{style_contract(style_lock_path)}
 
-【结构密度】
-保持高信息密度，完整保留本页内容、关键数字、判断句、清单项和结构关系；不得擅自合并、删减或改写业务术语。
-{layout_directives}
+def _style09_terminal_execution_lock(style_lock_path: Path | None) -> str:
+    """Read Style 09's source-authored terminal lock from the refreshed contract."""
 
-图形关系、容器和连接线边界清楚，文字清晰可读；页面类型不得改作通用内容页。
-""".strip() + "\n"
+    if style_lock_path is None:
+        return ""
+    # Legacy callers may still pass a plain-text style description (the
+    # content-first compiler accepts that form for styles 1–8).  Style 09
+    # enforcement is optional, so a non-JSON lock must not break those callers.
+    try:
+        payload = load_style_lock(style_lock_path)
+    except (OSError, ValueError, TypeError):
+        return ""
+    style = payload.get("style") if isinstance(payload.get("style"), dict) else payload
+    if int(style.get("id") or 0) != 9:
+        return ""
+    contract = str(style.get("prompt_contract") or "")
+    marker = "### Final ImageGen execution lock — hard"
+    if marker not in contract:
+        return ""
+    tail = contract.split(marker, 1)[1]
+    lines = [line.strip() for line in tail.splitlines() if line.strip()]
+    start = next(
+        (
+            index
+            for index, line in enumerate(lines)
+            if line.startswith("禁止任何图标、徽章、卡片墙")
+            or line.startswith("保持扁平2D")
+            or line.startswith("保持纯白底")
+        ),
+        None,
+    )
+    if start is None:
+        return ""
+    # The terminal section is deliberately authored as several short,
+    # complementary paragraphs (focal hierarchy, semantic imagery, visual
+    # rhythm, and icon policy). Reasserting only its first line at send time
+    # silently weakened all later rules and let dense pages fall back to
+    # equal-weight panels. Preserve the complete terminal tail verbatim.
+    return "\n\n".join(lines[start:])
+
+
+STYLE09_TERMINAL_LOCK_HEADER = "【风格09最终执行锁｜最高优先级】"
+
+
+def _style09_people_rule(style_lock_path: Path | None) -> str:
+    """Return Style 09's people constraint for final prompt reassertion."""
+
+    if style_lock_path is None:
+        return ""
+    try:
+        payload = load_style_lock(style_lock_path)
+    except (OSError, ValueError, TypeError):
+        return ""
+    style = payload.get("style") if isinstance(payload.get("style"), dict) else payload
+    if int(style.get("id") or 0) != 9:
+        return ""
+    return _strip_visual_structure_meta(_collapse_text(style.get("people_rule")))
+
+
+def enforce_style09_terminal_lock(
+    prompt: str,
+    style_lock_path: Path | None,
+) -> str:
+    """Keep Style 09's execution lock at the actual end of the prompt.
+
+    Visual-structure handoff is appended after the compiled prompt.  Without
+    reasserting the lock here, page-level carrier language (for example a
+    matrix or swim-lane recipe) can silently outrank the source-authored Style
+    09 surface rules.  Remove earlier copies and add one final copy so the
+    precedence contract is true in the string sent to ImageGen.
+    """
+
+    lock = _style09_terminal_execution_lock(style_lock_path)
+    people_rule = _style09_people_rule(style_lock_path)
+    if not lock:
+        return prompt
+    body = str(prompt)
+    # A compiled Style 09 contract already contains the complete terminal
+    # source section. Remove that whole prior section (not merely an identical
+    # line) before appending the authoritative final copy. Line-level removal
+    # left every paragraph behind and sent the same high-priority rule three
+    # times, diluting the intended focal hierarchy.
+    # Remove the source contract's terminal section before reasserting it at
+    # the true end.  Preserve a Stage 02 module appended after that contract;
+    # otherwise a raw terminal tail makes the send prompt verbose and gives
+    # the same Style 09 rule two competing positions.
+    source_marker = "### Final ImageGen execution lock — hard"
+    module_marker = "【视觉结构设计模块｜不上屏】"
+    marker_index = body.find(source_marker)
+    if marker_index >= 0:
+        module_index = body.find(module_marker, marker_index)
+        if module_index >= 0:
+            body = body[:marker_index] + body[module_index:]
+        else:
+            body = body[:marker_index]
+    else:
+        body = body.replace(lock, "")
+    if people_rule:
+        body = body.replace(people_rule, "")
+    lines = [
+        line for line in body.splitlines()
+        if line.strip() not in {STYLE09_TERMINAL_LOCK_HEADER, people_rule}
+    ]
+    body = "\n".join(lines).rstrip()
+    suffix = f"{STYLE09_TERMINAL_LOCK_HEADER}\n{lock}"
+    if people_rule:
+        suffix = f"{suffix}\n{people_rule}"
+    return f"{body}\n\n{suffix}\n"
+
+
+def render_prompt(
+    page: PageBlock,
+    *,
+    style_lock_path: Path | None = None,
+    composition_guidance: str = "",
+    compiler_version: str = "legacy",
+    text_render_mode: str | None = None,
+    include_style_contract: bool = True,
+) -> str:
+    creative_brief = compiler_version == "creative-brief-v1"
+    content_lines = (
+        exact_visible_deliverable_lines(page)
+        if creative_brief
+        else _filter_imagegen_content_lines(visible_deliverable_lines(page))
+    )
+    style09_semantic_tags = _style09_page_semantic_tags(page, content_lines)
+    resolved_text_render_mode = _resolve_text_render_mode(style_lock_path, text_render_mode)
+    semantic_visual = resolved_text_render_mode in {"semantic_visual", "editable_overlay"}
+    if semantic_visual:
+        semantic_lines = _semantic_visual_lines(content_lines)
+        body = "\n".join(f"- {line}" for line in semantic_lines)
+    else:
+        body = "\n".join(f"- {line}" for line in content_lines)
+    compact_style = uses_compact_style_contract(style_lock_path)
+    style_owns_visual_grammar = _style_contract_owns_visual_grammar(style_lock_path)
+    layout_directives = (
+        [] if style_owns_visual_grammar else layout_density_directives(page)
+    )
+    visual_grammar = (
+        creative_brief_visual_grammar()
+        if creative_brief
+        else ("" if style_owns_visual_grammar else default_visual_grammar().render())
+    )
+    parts = [
+        f"【页面编码】P{page.page_number:02d}｜{page.title}",
+        "以上为提示词元数据，仅用于按页追踪；不得在生成图中渲染页面编码或页面标题。",
+        "",
+    ]
+    if composition_guidance.strip() and (not compact_style or creative_brief):
+        parts.extend(
+            [
+                _source_visual_expression_header(),
+                composition_guidance.strip(),
+                "",
+            ]
+        )
+    parts.extend(
+        [
+        (
+            "【事实语义参考｜仅供理解，不在图内排版】"
+            if semantic_visual
+            else "【内容锁定】"
+        ),
+        body,
+        (
+            "正文、数字、主体名称和完整结论由后续 PPT 可编辑文字层承载；默认不要在图片中生成长句、伪中文或新增标签。"
+            if semantic_visual
+            else ""
+        ),
+        "",
+        "【构图指令】",
+        "画布 2048×1024（2:1）。只生成正文内容区成稿图。",
+        "不要生成页面标题、副标题、Logo、页脚、页码或任何页面外框。",
+        "No evidence IDs, watermarks, debug marks, or placeholders.",
+        "Do not invent section labels like meta headers; only render 上屏文字 modules.",
+        ]
+    )
+    if not semantic_visual:
+        parts.extend(
+            [
+                "可读文字严格白名单：图中只允许逐条完整呈现【内容锁定】中的字符串；除此之外不得出现任何可读文字。页面任务、核心意思、页面逻辑、视觉结构、语义关系和所有不上屏区块只决定构图，其中未在白名单逐字出现的词句不得渲染、摘录、改写、缩写或组合成标题、中心结论、标签、流程节点或总结框。",
+                "共享父级标题与子角色标题必须分层：父级只呈现一次且不得替代任何子角色标题；复合父级拆分后，所有并列子角色必须完整呈现，并使用同一层级、同一形式。只允许拆出原文已经明确列出的子角色，不得新增分类或事实。共享谓词、共享限定语和父级说明不得复制或改写到每个并列子项；除非原文逐项明确陈述，否则子项只呈现原文已有名称。",
+                "不得从说明句中大量抽取词语另做标签、按钮、图例、流程节点或项目符号；不得把同一内容以正文和拆分标签重复呈现。",
+                "任何按业务语义选择的视觉载体，其内部不得承载白名单之外的可读文字；空间不足时减少视觉元素或扩大文字区，不得新增微型文字。",
+            ]
+        )
+    if include_style_contract:
+        parts.extend(
+            [
+                "",
+                (
+                    _creative_brief_style_contract(
+                        style_lock_path,
+                        semantic_tags=style09_semantic_tags,
+                    )
+                    if creative_brief
+                    else style_contract(
+                        style_lock_path,
+                        semantic_tags=style09_semantic_tags,
+                    )
+                ),
+            ]
+        )
+    if visual_grammar:
+        parts.extend(["", "【视觉组织原则】", visual_grammar])
+    if layout_directives:
+        parts.extend(
+            [
+                "",
+                "【结构密度】",
+                "\n".join(f"- {line}" for line in layout_directives),
+            ]
+        )
+    parts.extend(
+        [
+            "",
+            (
+                "忠实于【事实语义参考】表达业务对象、动作和关系；不要把参考短语逐字排版进图片。"
+                if semantic_visual
+                else "忠实于【内容锁定】：核心模块、关键数字与业务术语须可读；不得近义替换或生成伪文字。"
+            ),
+        ]
+    )
+    return "\n".join(parts).strip() + "\n"
+
+
+def append_composition_guidance(prompt: str, guidance: str) -> str:
+    """Append source-authored relationships without turning them into a layout recipe."""
+
+    guidance = str(guidance or "").strip()
+    if not guidance or guidance in prompt:
+        return prompt
+    block = _source_visual_expression_header()
+    return f"{prompt.rstrip()}\n\n{block}\n{guidance}\n"
+
+
+def _source_visual_expression_header() -> str:
+    return (
+        "【本页业务关系与视觉表达意图｜不上屏】以下内容只锁定业务对象、动作、状态、"
+        "边界、因果与收束关系，不锁定分栏、卡片、框体或文字区。将锁定文字就近附着于"
+        "同一连续业务场中的相关对象、动作或状态，使图形与文字共同表达关系；不得把每个"
+        "语义分句自动拆成独立面板，也不得另建一套与文字分离或重复的图形结构。"
+    )
+
+
+def source_visual_structure_guidance(value: str, visible_text: str = "") -> str:
+    """Keep visual relations without leaking non-visible copy into ImageGen.
+
+    Stage 01 visual notes may quote a semantic focus to explain composition.  A
+    quoted phrase is especially likely to be copied verbatim by an image model,
+    even when the surrounding block is marked non-visible.  Preserve quoted
+    text only when it already occurs in the locked visible-text corpus;
+    otherwise replace it with a non-lexical reference to the semantic focus.
+    """
+
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    excluded_markers = (
+        "阅读出口",
+        "交给P",
+        "交给 P",
+        "下一页",
+        "视觉结构只表达",
+        "不上屏",
+        "不预设固定版式",
+        "不预设固定版式或",
+    )
+    compact_visible = re.sub(r"\s+", "", str(visible_text or ""))
+
+    def sanitize_quote(match: re.Match[str]) -> str:
+        quoted = next(
+            (group for group in match.groups() if group is not None),
+            "",
+        ).strip()
+        if quoted and re.sub(r"\s+", "", quoted) in compact_visible:
+            return match.group(0)
+        return "该语义焦点"
+
+    text = re.sub(
+        r"“([^”]+)”|‘([^’]+)’|「([^」]+)」|『([^』]+)』|\"([^\"]+)\"",
+        sanitize_quote,
+        text,
+    )
+    sentences = re.split(r"(?<=[。！？])\s*", text)
+    kept = [
+        sentence.strip()
+        for sentence in sentences
+        if sentence.strip()
+        and not any(marker in sentence for marker in excluded_markers)
+        and not re.search(r"\bP\d{1,3}\b", sentence, flags=re.I)
+    ]
+    return "".join(kept).strip()
 
 
 def assert_deliverable_prompt(prompt: str) -> None:
@@ -348,21 +1050,36 @@ def assert_deliverable_prompt(prompt: str) -> None:
             raise ValueError(f"Deliverable prompt still contains forbidden marker: {pattern}")
 
 
-def compile_pages(script_path: Path, pages: Iterable[int], style_lock_path: Path | None = None) -> str:
+def compile_pages(
+    script_path: Path,
+    pages: Iterable[int],
+    style_lock_path: Path | None = None,
+    composition_guidance_by_page: Mapping[int, str] | None = None,
+) -> str:
     blocks = parse_page_blocks(script_path)
-    return compile_page_blocks(blocks, pages, style_lock_path=style_lock_path)
+    return compile_page_blocks(
+        blocks,
+        pages,
+        style_lock_path=style_lock_path,
+        composition_guidance_by_page=composition_guidance_by_page,
+    )
 
 
 def compile_page_blocks(
     blocks: dict[int, PageBlock],
     pages: Iterable[int],
     style_lock_path: Path | None = None,
+    composition_guidance_by_page: Mapping[int, str] | None = None,
 ) -> str:
     rendered: list[str] = []
     for page_number in pages:
         if page_number not in blocks:
             raise ValueError(f"Page {page_number} not found")
-        prompt = render_prompt(blocks[page_number], style_lock_path=style_lock_path)
+        prompt = render_prompt(
+            blocks[page_number],
+            style_lock_path=style_lock_path,
+            composition_guidance=(composition_guidance_by_page or {}).get(page_number, ""),
+        )
         assert_deliverable_prompt(prompt)
         rendered.append(prompt)
     return "\n".join(rendered)

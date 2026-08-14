@@ -1,6 +1,6 @@
 ﻿---
 name: cyber-ppt
-description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、业务材料或原始数据转成高密度、可编辑的央企、政府内部汇报 PPTX 时使用；也适用于需要结构化分析、视觉风格探索、详细图表和渲染质检的 PPT。
+description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案材料或原始数据转成结构清晰、高密度、可审计的 PPTX 时使用；也适用于方案型汇报、咨询论证、视觉风格探索、详细图表和渲染质检。
 ---
 
 <!-- ENCODING-GUARD: This file is UTF-8. In Windows PowerShell 5.1, use `Get-Content -Encoding UTF8`; if Chinese text appears garbled, reread with UTF-8 before summarizing or acting. -->
@@ -9,43 +9,75 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、业务�
 
 ## 概览
 
-将源材料转化为有证据链、可编辑、适用于央企、政府及其直属单位内部汇报的演示文稿。默认采用正式、客观、审慎的表达，并以材料类型、汇报任务和受众自适应组织页面；保留证据可追溯性、确认门和渲染验收标准。
+将源材料转化为有证据链、结构合宜、可编辑的演示文稿。证据管理可以使用 MBB 级标准，但表达架构必须根据材料类型选路，不能让咨询方法替代源材料本身。保留证据可追溯性，设置确认门，并以渲染结果而不是文件生成作为完成判断。
 
-## 强制流程
+## Stage 01 单人轻量主流程
 
-| 阶段 | 必须产出 | 停止条件 | 读取 |
-|---|---|---|---|
-| 1. 分析 | 证据表、冲突记录、材料类型与汇报任务识别、内容脑暴、可选分析工具、汇报主线、逐页计划、图表计划、页面信息密度和组件清单 | 第一次确认：用户批准汇报主线、页数、逐页计划、每页信息结构和密度目标 | `references/source-analysis.md`, `references/storyline.md`, `references/internal-reporting-style.md` |
-| 2. 蓝图与 full 图 PPT 生产 | 8 种视觉风格、选定风格、逐页正文区 ImageGen 蓝图、脚本锁定记录、ImageGen full 图、`page_image_pairs.json`、`speaker_notes_manifest.json`、`template_image_manifest.json`、套模板后的图片型 PPTX | 第二次确认：用户批准视觉方向、全部页面正文区 full 图、讲稿备注稿和进入图片型 PPT 组装的脚本/图像资产 | `references/visual-system.md` |
-| 3. 渲染 QA 与交付 | 对 `template_image_ppt_export.py` 组装出的 PPTX 做渲染检查、模板层检查、交付说明和必要返工；正文区主要内容以 full 图承载，标题、副标题、Logo、页脚、页码和公共模板元素由 PPT 管线生成 | 最终确认：用户批准套模板后的图片型 PPT | `references/ppt-production.md`, `references/quality-assurance.md` |
+单人、单机生成脚本的默认且唯一流程。仓库不再提供哈希绑定的审批/升级/重试链；结构化内容校验器（`source-truth-audit`、`outline-audit`、`script-audit` 等）仍照常运行，只是不持久化审批、attempt、escalation 或 artifact ledger 状态。
 
-未经确认不要跨过确认门。用户要求修改时，回到对应阶段修订并重新确认。
+流程不改变底稿结构，不复制 Source Truth，不建立平行运行目录。继续使用项目现有 `source/`、`workbench/stages/01-analysis/source-truth.json`、`outline.json`、`workbench/scripts/drafts/` 和最终脚本路径。用户交互发生在对话中，不能用确认文件、状态 JSON、哈希或回执代替。
+
+必须保留四个对话节点：
+
+1. **交流目标**：先运行 `python -m cyberppt prepare-communication-strategy <project>` 并分析其 `source_outline` 与 `decision_evidence`。基于源材料提出 2-3 个方向实质不同的交流目标选项，逐项说明具体受众、使用场景、希望受众理解或相信什么、希望受众采取什么行动及对应 `source unit_id` 依据，并明确推荐一项。不得直接向用户抛出受众、场景、目标行动等空白问题；用户只需选择、修改或补充建议，收到输入后再确定表达策略。该命令只向当前执行代理输出写作输入，不写沟通策略 JSON、审批、哈希、回执、attempt、manifest 或 ledger。
+2. **章节和页面提纲**：提出章节顺序、章节任务、页面标题、每页核心问题和主要证据；在对话中展示并接受实时修改，用户回应后再写页面详细内容。
+3. **页面详细内容**：提出每页核心信息、完整文字稿、上屏文字、证据引用和视觉结构；长稿可按章展示，收到反馈后直接修改原章节脚本。
+4. **最终全稿**：合稿并完成一次全稿 `script-audit`；通过后可进入正式 Stage 02。
+
+内部执行依次只做一次：`doctor` 与源登记核查；`prepare-semantic-understanding` 后只创作唯一语义作者产物 `semantic-argument-model.json`，再运行 `semantic-check` 确定性生成审阅 Markdown；运行 `compile-source-truth <project>` 将已校验原子事项投影为 Source Truth，再运行一次 `source-truth-audit`；提出交流目标；用户选择或修改目标后运行 `prepare-outline-input <project> --communication-goal <goal>` 生成完整提纲写作输入，人工调整章节、合并、页数与页序后运行一次 `outline-audit`；逐章完成页面内容；`assemble-final-script`；最后一次全稿 `script-audit`。检查保留业务质量判断，但不写 audit、attempt、receipt、escalation、approval 或 artifact ledger。不得在局部修改后重复全量审计，不得为了同步状态重新执行已经完成且内容未受影响的上游阶段。
+
+流程默认不执行或持久化：语义生成回执与批准、沟通策略批准文件、Source Truth/Outline 的重试链与审计报告、attempt 目录、artifact ledger 以及 SHA 新鲜度绑定。出现问题时只修复检查报告指出的受影响内容；全量重跑必须由用户明确要求。
+
+`solution` 是方案、研究、建设、实施和立项类材料的默认架构。它应保留正式工作顺序：现状与需求；定位、目标与边界；建设内容与应用；实施、投资、风险与保障；判断、审批条件与下一步。`consulting` 仅在用户明确要求或材料明确属于咨询论证时启用；SCR 只服务该路线，不是全仓库默认结构。证据表可以继续采用 MBB 标准，但不得据此把方案材料改写成咨询报告。
+
+`source-truth.json` 是 Source Truth 的唯一结构化事实源。`source-truth-audit` 按 F（事实）、J（判断）、R（建议）、B（边界）、U（待核）拆分原子证据，精确定位到段落、表格行或单元格，并完成 P0/P1、数字、表格、状态边界和双向追溯审计。未通过时按报告的 `retry_directive` 换方向补抽；只修复受影响内容，不做全量重跑。
+
+语义理解必须先于 Source Truth 和提纲完成源材料论点模型。`semantic-understanding.md` 中的 `cyberppt.semantic_argument_model.v1` 块是唯一的源论点解释合同，必须声明 `document_semantics`、全文主论点、源原生一级/二级节点、论点角色、论点权重、证据、主体、状态、论证关系、MECE 分区和源材料缺口。`argument_weight`（`core`、`supporting`、`detail`、`constraint`）与 `argument_role`、`supports/maps_to` 等论证关系是不同维度；关系的 `weight_effect` 固定为 `none`，不能因“支持某节点”就把该节点降格为支撑层。提纲不得从证据清单重新猜主论点；它只能消费该模型并按受众选择、压缩和排序。建设内容、核心能力、架构、行业优势、合作机制和下一步建议若处于不同语义层，必须保留节点并用显式关系连接，不能因证据重叠而合并。缺少完成事实、责任主体、实施条件、验收指标、真实需求或商业条款时，必须登记为 `source_gap` 并保留待确认/条件性表达，禁止补写成事实、承诺或已建成能力。模型出现问号/替换字符等编码损坏时，语义门禁必须阻断，不能把损坏文本传给下游。`outline-audit` 反向检查每个源论点节点有唯一 `primary_consumer` 或显式允许合并，复制节点的 `argument_role` 和 `argument_weight`，并验证页面核心结论能追溯到节点而不只是追溯到 `S###` 证据。
+
+`outline-audit` 生成结构化逐页大纲检查报告。若方案类材料未经明确授权采用 `consulting`，审计必须以 `SOLUTION_ARCHITECTURE_REQUIRED` 失败。封面、目录、章节页、内容页和封底必须位于同一连续页面序列，不得把模板页抽离后另列；章节页只写“第X章：XXX”，不承载论点、模块或方法内容。内容页的短 `title` 与 `main_message` 必须分开，不能把整句结论塞进页标题。
+
+页面聚合以一个完整业务问题和一个视觉中心为单位。不得把源材料每个小节或列表项机械拆成单页，也不得预设页数后硬塞内容；页数随业务问题完整性和页面密度自然确定。方法论、筛选原则和评价维度只能支持源材料的实质内容，不能抢占主体篇幅。
+
+审计失败后必须按 `retry_directive` 换方向重写，不能沿原策略只做措辞修补。CLI 只负责审计、记录和给出重试方向，实际重写由生成代理完成。
+
+## 原生脚本质量审计
+
+Outline 完成并经用户在对话中确认后，逐批编写脚本并运行：
+
+```powershell
+python -m cyberppt script-audit <project> --input <script.md>
+python -m cyberppt assemble-final-script <project>
+python -m cyberppt script-audit <project> --input <project>/workbench/scripts/final/script-final.md
+```
+
+`script-audit` 复用 Outline 和 Source Truth，检查页面合同、来源状态、章内推进、跨页重复、上屏结构与语义图同构、页面密度，以及内容页强制的完整文字稿链路（完整文字稿、文字稿取舍说明、证据映射，且完整文字稿必须在上屏文字之前）。内容页还须提供自然口语的 `【演讲者备注】`（禁「这一页/下一页」等翻页腔），供组装写入 PPT 备注。对 `workbench/scripts/final/` 还会拦截「草稿」「批次」字样与批次横幅。脚本审计未通过时不得进入 Stage 02；必须读取 `retry_scope` 和 `retry_directive`，换方向重写失败页面。批次通过后须先 `assemble-final-script` 合出干净全稿，再执行全稿审计。
+
+完整文字稿是内容表达权威层：对齐源材料中本页主题的主体内容，写成小文章/小章节；禁止上屏颗粒度；必须是章节正文口吻，禁止“本页只确认/首先需要确认…”一类分析旁白（旁白进取舍说明或边界）。上屏文字是完整文字稿的概括化、图形化表达，禁止与文字稿并列各写一套，禁止各自从 Source Truth 分头摘取。审稿时先审文字稿取舍与论证，再审上屏是否忠实压缩。该要求为仓库默认合同。封面、目录、章节页和封底除外。设计见 `docs/superpowers/specs/2026-07-24-page-full-prose-from-source-design.md`。
+
+详细规则读取 `references/script-quality.md`。上屏语义结构纪律（单一主关系、文字归属、反卡片墙和禁止固定版式配方）已吸收进 `references/script-quality.md` 与 `script-audit`；具体构图候选和媒介选择由正式 Stage 02 `ppt-visual-structure-designer` 完成。不得改用 `vendor/ppt-script-visual-redesign` 或个人目录中的旧 `ppt-script`、旧项目管理运行时或旧项目生命周期替代本仓库流程。
+
+未经用户在对话中确认不要跨过确认节点。用户要求修改时，回到对应阶段修订并重新确认。
 
 ## 主流水线合同
 
-默认生产主线必须按以下顺序推进：
+Stage 01 脚本经轻量确认审计通过后，主流程必须自动调用已注册的 `ppt-visual-structure-designer`，不得等待用户再次点名。先执行 `prepare-visual-structure`，从正式 `stage02-handoff.json` 派生 `visual/visual-design-input.json` 并形成可追踪调用合同；由 Agent 按 `workbench-handoff` 模式读取该 Skill 及其必需 references，对每个内容页生成并比较至少三种结构上真正不同的候选，再生成 `visual/deck-visual-spec.json`、`visual/script-visual-structure.md`、`visual/generation-prompts.md` 和 `visual/validation-report.json`，最后执行 `visual-structure-audit`。确定性代码只负责输入组装、合同校验和 Prompt 编译，不得用关键词匹配代替 Skill 决定 `visual_intent_type`、主视觉载体或空间组织。该阶段只设计视觉结构，不选择 CyberPPT 风格，不生成图片、HTML、SVG 或 PPTX。`final-script-pages --blueprint-only` 只编译页面编码、2:1正文画布、非上屏语义背景、严格上屏文字、Skill视觉设计模块、正式风格锁和生成约束，不得重新塞入完整文字稿、演讲备注、证据映射或审计元数据。`final-script-pages` 必须优先验证脚本与 Stage 02 交接包的稳定语义摘要，同时保留原始 SHA-256 收据；只有语义内容或正式视觉产物变化时才判定过期并阻断 Stage 02。
 
-`脚本锁定 -> 正文区 ImageGen full 图 -> 业务稿生成 speaker_notes_manifest -> template_image_ppt_export -> 渲染 QA -> 交付`
+正式生产必须由 `python -m cyberppt final-script-pages` 统一编排，按以下顺序推进：
 
-项目化生产命令必须使用显式项目路径推进，不得跳过状态机：
+`脚本锁定 -> final-script-pages -> 所选生图分支 -> 所选 PPT 分支 -> 渲染 QA -> 交付`
 
-```bash
-python3 -m cyberppt produce prepare <project> --pages <range>
-python3 -m cyberppt produce assemble <project> --pages <range>
-python3 -m cyberppt produce verify <project> --pages <range>
-```
+`final-script-pages` 是脚本锁定后的唯一正式编排入口。禁止把直接调用 ImageGen 后端、SVG-to-PPTX 导出器或任何历史重建脚本当作正式主流程；诊断命令不得绕过正式门禁。
 
-`produce prepare` 只准备已批准输入并停在 speaker notes 审批；`produce assemble` 只消费已批准的 notes、template text lock 和 full 图，不得重新生成图片；`produce verify` 完成渲染比对、full-image strict manifest 校验和 delivery promotion。只有 `produce verify` 全部通过后，才允许写入 `deliverable_ready`。
+正式项目的最终全稿在当前 `script-audit` 通过后可进入 Stage 02，不依赖 Stage 01 交互确认。无论脚本来自何处，`final-script-pages` 都必须通过当前 `script-audit`、Stage 02 handoff 与视觉结构审计；外部脚本不能绕过这些门。`--external-script` 与 `--lightweight-stage01-confirmed` 仅为兼容参数：前者只记录 `source_mode=external_script`，后者不再影响授权；两者都不能创建项目或跳过正式门。
 
-第二阶段生产路径为 `full_image_ppt`。正式第二阶段不得要求 full/background 双图资产，不再生成 no-text background，不再执行 OCR、overlay、semantic_plan、source_capture 或 `template_rebuild`。旧 `dual_image_editable_overlay`、OCR 和 `template_rebuild` 只可作为 legacy/advanced 路径，不属于主流程第二阶段。
+生产模式唯一为 `image-to-editable-svg`：生成并文字审计同一张 full 图，以脚本为文字 truth、OCR 为坐标证据，盘点每个可见区域并准备已注册图层，再生成可编辑 SVG 与原生 PPTX。风格10的 `truth_lock` 锁定事实真值，`visual_freedom` 只释放镜头、场景、对象、材质和视觉隐喻；二者不能替代重建证据。
 
 含义如下：
 
 1. **脚本锁定**：逐页保存并确认脚本、内容锁定、模板文字层锁定、视觉锁定和必要的 ImageGen prompt。脚本是后续 full 图和模板文字层的 truth，不得把 ImageGen 图中文字或 OCR 当作最终标题层来源。
-2. **正文区 ImageGen full 图**：只生成正文区 ImageGen full 图；full 图不包含标题、副标题、Logo、页码、页脚、蓝线或公共模板元素。
-3. **template_image_ppt_export**：使用 `scripts/dual_image_overlay/rebuild_engine/template_image_ppt_export.py` 将 full 图放入模板正文区，并由 PPT 管线生成标题、副标题、Logo、页脚、页码、蓝线和公共元素。
-4. **speaker_notes**：使用 `scripts/speaker_notes.py` 从业务稿/页面内容稿生成 `speaker_notes_manifest.json` 和 `speaker_notes_llm_prompt.md`。PPT 封装优先消费该 manifest 写入备注区；不得把绘图脚本的组件清单直接当作演讲备注。大模型优化只能在该 prompt 约束下进行，且不得新增事实、改写数字或把边界事项写成既定事实。
-4. **渲染 QA 与交付**：最终验收对象是套模板后的 PPTX 渲染结果，不是单独的 full 图片资产。正文区主要内容以 full 图承载；需要可编辑正文层时必须另行启用 legacy/advanced 路径并显式记录交付模式。
+2. **统一生图后端**：通过 `final-script-pages --generate-images` 调用 Codex OAuth 生图后端。不得由导出器临时发起正式生图，也不得在主链外逐页调用后端后冒充主链产物。
+3. **重建组装**：从同页 audited full 图建立 inventory、图层注册、SVG quality 和 native SVG-to-PPTX 组装。不得生成无字底图、文字参考图或任何截图式保底层。
+4. **渲染 QA 与交付**：最终验收对象是 PPTX 渲染、文字回读和图层证据，不是单独图片。任何 `manual_required` 均阻断交付。
 
 允许用户手工指定走到哪一步，例如只到脚本、只到 ImageGen full、只到图片型 PPT 组装或只做 QA。手工停点必须记录当前停点、已完成工件、未执行后续步骤和恢复命令；不得把停点产物冒充最终交付物。
 
@@ -55,7 +87,7 @@ python3 -m cyberppt produce verify <project> --pages <range>
 
 模板文字层必须有独立 truth。默认从脚本锁定阶段生成 `template_text_lock`，至少记录每页 `page`、`title`、`subtitle`、`section`、`template_variant`、`page_badge_enabled`、`footer_enabled`、`source`、`approved`、`depends_on` 和 `resume_command`。该锁定文件必须登记进 `artifact-ledger.json`，并作为 `template_image_ppt_export` 的模板层输入。
 
-不得从 full 图或 OCR 猜测标题和副标题。第二阶段不得进入 OCR；如果 full 图中误画了标题、副标题、页码或 Logo，应标记为正文区图像污染，要求重新生成 full 图，而不是把这些像素识别成可靠标题层。
+不得从 full 图或 OCR 猜测标题和副标题。可编辑分支的 OCR 只用于正文信息层，模板标题和副标题仍以 `template_text_lock` 为准；如果 full 图中误画了标题、副标题、页码或 Logo，应标记为正文区图像污染并重新生成，不得把这些像素提升为模板 truth。
 
 中途接入 full 图时必须提供 `template_text_lock` 或等价标题层 metadata。等价 metadata 必须能覆盖 `template_image_ppt_export` 所需的标题、副标题、模板开关和来源追踪，并登记到 ledger；不能只提供 full 图后让后续脚本猜标题。
 
@@ -63,19 +95,25 @@ python3 -m cyberppt produce verify <project> --pages <range>
 
 ## 阶段成果物落盘与反向追踪
 
-每一阶段必须落地阶段成果物。所有阶段性结论、脚本、prompt、图片、PPTX、QA、确认记录和返工说明都必须写入仓库项目目录，不能只留在对话中。
+Stage 02 及之后，每一阶段必须落地阶段成果物。所有阶段性结论、脚本、prompt、图片、PPTX、QA、确认记录和返工说明都必须写入仓库项目目录，不能只留在对话中。Stage 01 的用户交流节点不得据此生成控制文件。
+
+### 对话交付链接（硬规则）
+
+每一轮对话只要新建、重新生成或更新了仓库文件，最终回复必须逐项提供本轮产出物的可点击 Markdown 链接；阶段成果物必须优先列出，不得只报告“已完成”、文件名、普通文本路径、目录路径或口头说明。链接必须指向实际落盘文件，并使用当前环境可打开的绝对路径；例如：`[script-final.md](D:/CyberPPT/projects/<project>/workbench/scripts/final/script-final.md)`。
+
+至少必须链接：本轮更新的权威输入、正式阶段成果、审计或 QA 报告、人工确认稿、问题消费记录以及用于生成该成果的项目级生成器。若某项尚未生成、已失效或不能交付，仍须链接现有状态文件，并在链接旁明确标记其状态。不得用一个目录链接代替多个关键成果文件，也不得要求用户自行到目录中查找。
 
 默认落点：
 
 | 阶段 | 目录 | 典型成果物 |
 |---|---|---|
 | 分析 | `workbench/stages/01-analysis/` | 证据表、冲突记录、issue tree、SCR、逐页大纲、页面密度和组件清单 |
-| 蓝图与 full 图 PPT 生产 | `workbench/stages/02-blueprint-dual-image/` | 风格锁定、`slide_content_lock`、`template_text_lock`、ImageGen prompt、full 图、`page_image_pairs.json`、`template_image_manifest.json`、图片型 PPTX |
-| Legacy overlay 转换（非主线） | `workbench/stages/03-overlay/` | 仅 legacy/advanced 路径使用的 semantic_plan、text mapping、office_textbox_fit、overlay PPTX、overlay render、局部 QA |
-| Legacy 套模板（非主线） | `workbench/stages/04-template-rebuild/` | 仅 legacy/advanced 路径使用的 template PPTX、template_rebuild_readiness、source_capture、template-normalized reference、模板层 QA |
+| 蓝图、生图与重建生产 | `workbench/stages/02-blueprint-dual-image/` | 风格锁定、`slide_content_lock`、`template_text_lock`、ImageGen prompt、经审计的 full、`page_image_pairs.json`、reconstruction inventory、SVG quality、可编辑 PPTX |
+| 重建分析 | `workbench/stages/03-overlay/` | 历史目录名；新生产在 Stage 02 build 内写入 inventory、注册图层、文字回读和渲染对照 |
+| 旧模板重建 | `workbench/stages/04-template-rebuild/` | 历史目录名；不得作为新生产路径或交付依据 |
 | QA 与交付 | `workbench/stages/05-qa-delivery/` | visual_qa_gate、slide_manifest、side-by-side、局部裁图、最终 deck、交付说明 |
 
-项目必须维护 `artifact-ledger.json`。每个成果物必须记录 `stage`、`page`、`path`、`status`、`depends_on`、`supersedes` 和 `resume_command`；能计算 hash 时还必须记录 SHA-256。`depends_on` 指向上游成果物，`supersedes` 指向被本次返工替代的旧成果物。这样套模板后发现问题时，可以沿 `depends_on` 反查到脚本、full 图或模板层中真正需要修改的来源。
+Stage 02 生产必须维护 `artifact-ledger.json`。每个成果物必须记录 `stage`、`page`、`path`、`status`、`depends_on`、`supersedes` 和 `resume_command`；能计算 hash 时还必须记录 SHA-256。`depends_on` 指向上游成果物，`supersedes` 指向被本次返工替代的旧成果物。这样套模板后发现问题时，可以沿 `depends_on` 反查到脚本、full 图或模板层中真正需要修改的来源。Stage 01 不维护该 ledger。
 
 不得只在对话中说明阶段成果而不写入仓库文件。手工停点、用户确认和返工原因也必须作为成果物登记；未登记的阶段结论不得作为后续阶段的输入。
 
@@ -83,13 +121,15 @@ python3 -m cyberppt produce verify <project> --pages <range>
 
 每个阶段开始前必须读取上表“读取”列中的全部 reference 文件，并把该阶段关键约束转成执行清单后再行动。不得只根据主文件摘要、记忆、既有脚本或上一轮经验执行。
 
+Stage 01 的 `source-truth-audit` / `outline-audit` / `script-audit` 运行一次语义、Source Truth、Outline 和最终全稿检查，但不写 reference gate、audit 或 attempt 链；`script` 审计未通过时阻断 `final-script-pages`。
+
 - 阶段开始前必须读取对应 reference 的完整内容；如果终端显示乱码，改用 UTF-8 方式重读，不得跳过。
 - reference 中的具体清单优先于本文件中的摘要描述；如果二者冲突，先停下说明冲突并请求用户确认。
-- 第一阶段必须读取 `source-analysis.md`、`storyline.md` 和 `internal-reporting-style.md` 后再产出证据表、材料类型与汇报任务识别、内容脑暴、汇报主线、逐页计划和页面信息密度清单。
-- 第二阶段必须读取 `visual-system.md` 后再生成风格样张；默认必须逐项使用固定 8 种 CyberPPT 视觉风格，不得用扩展风格替代，除非用户明确要求替换。
+- 第一阶段必须读取 `source-analysis.md` 和 `storyline.md` 后再完成材料路由，并产出证据表、内容脑暴、方案型章节或咨询型 SCR、逐页大纲和页面信息密度清单；进入逐页脚本时必须读取 `script-quality.md` 并运行 `script-audit`。内容页必须按页证据包写出完整文字稿（小文章/小章节完整性，禁止上屏颗粒度），并强制填写 `文字稿取舍说明` 与 `证据映射`，然后再写上屏文字。
+- 第二阶段必须读取 `visual-system.md` 后再生成风格样张；默认必须逐项使用固定 8 种 CyberPPT 视觉风格，不得用扩展风格替代，除非用户明确要求替换。显式选择风格10时，必须执行“语义结构优先、证据组件增强、语义配图参与表达”的合同：先按页面使命和决策关系选择视觉意图，再从风格10的高阶载体路由中选择与语义一致的主框架；允许ImageGen用无文字的行业场景、业务物件、工作空间和视觉隐喻承载已批准动作与关系，且配图必须嵌入主链、删除后会削弱业务解释；KPI、微图表、侧栏、地图、时间带和结论带仍必须由真实证据触发，不得为追求高密度编造文字、数字或事实。
 - 第二阶段的逐页正文区蓝图子阶段即使已经选好风格，也必须重新对照 `visual-system.md`，声明锁定的风格编号、色板、正文区网格、正文区图表语言和信息密度规则，防止逐页生成时风格漂移。
 - 第三阶段必须读取 `ppt-production.md` 和 `quality-assurance.md` 后再生成 PPTX 和渲染检查。
-- 第二阶段不得进入 OCR、overlay、semantic_plan、source_capture 或 `template_rebuild`；默认生产入口是 `template_image_ppt_export.py` / `python3 -m cyberppt image-ppt run`。
+- 第二阶段只允许 `image-to-editable-svg`。OCR 仅作为文字定位证据，不能产生旧式图片层或改变脚本文字 truth；正式入口为 `python -m cyberppt final-script-pages`。
 
 ## 默认页面结构策略（页眉页脚 / 页码徽章 / 保密声明）
 
@@ -107,50 +147,40 @@ python3 -m cyberppt produce verify <project> --pages <range>
 - 若用户在某个项目中明确要求启用页码徽章、页脚或保密声明，必须在该项目的视觉系统锁定记录（对应 `stage2_visual_lock` 或等价 manifest）中显式记录 `page_badge_enabled=true` / `footer_enabled=true` / 保密声明具体文字，此时上述豁免失效，全部原有强制检查条款照常执行。
 - 来源说明、证据 ID、caveat 等内容在默认策略下改为内容区内联小字，仍必须通过证据可追溯性检查；不得以"页脚已关闭"为由省略来源和证据标注本身。
 
-## 默认内部汇报文风与结构策略
+## 第一步：证据分析 + 内容脑暴 + SCR + 页面密度规划
 
-全仓库默认文风适用于央企、政府及其直属单位内部汇报，项目默认配置为 `internal_public_sector`，结构策略为 `source_and_task_adaptive`。先识别材料类型、汇报任务和受众，再确定全篇主线及页面组织；不得固定全篇或单页目录顺序。
-
-页面标题和正文应遵循 `references/internal-reporting-style.md`：标题围绕事项、进展、安排、依据、需请示或需协调内容，正文按材料需要组织事实依据、工作内容、责任、时限、风险和协同事项。不得默认使用外部咨询话术。
-
-SCR、假设树、对标矩阵可作为分析工具，但不作为默认最终呈现话术。只有用户明确指定外部咨询、商业提案、董事会或投资者材料时，才可采用相应表达，并记录覆盖原因。
-
-## 第一步：证据分析 + 内容脑暴 + 汇报主线 + 页面密度规划
-
-第一步不是“读完材料后给一个单版大纲”。它要先把源材料变成可审计的证据底表，识别材料类型和汇报任务，再用脑暴形成可选汇报主线，最后确定适配材料的页面组织、图表计划和页面信息密度规则。
+第一步不是“读完材料后给一个单版大纲”。它要先把源材料变成可审计的证据底表，再用脑暴发散多条可选故事线，最后收敛成 SCR、逐页大纲、图表计划和页面信息密度规则。
 
 ### 第一步硬性要求
 
 1. 所有事实、数字、判断、建议、caveat 和 SO WHAT 都必须能追溯到源材料位置或明确标记为缺口。
-2. 必须建立证据表，记录来源位置、期间、单位、置信度、冲突、caveat、含义和推荐视觉。
-3. 必须先完成材料类型与汇报任务识别，记录材料类型、汇报目的、受众、推荐组织方式、适配依据和待确认事项；不得预设固定章节顺序。
-4. 必须完成内容脑暴子步骤：提出 2-3 条可选汇报主线；需要时可使用 issue tree、hypothesis tree、SCR 或对标矩阵等分析工具，并比较证据强度、风险缺口、适用受众和不推荐原因。
-5. 必须形成页面物料池：关键数字、对比、排名、变化、漏斗、矩阵、表格、注释、图例、微图表、边栏洞察和可用证据 ID。
-6. 必须输出推荐汇报主线，而不是只给一个看似合理的大纲。
-7. 必须为每页定义信息密度和组件清单，包括信息区数量、主图与侧栏比例、表格/注释/图例/微图表数量、证据 ID、页面要点和低密度风险。
-8. 不得让用户只确认页标题；第一次确认必须覆盖汇报主线、页数、逐页计划、图表计划、信息密度和组件清单。
+2. 必须建立 MBB 标准证据表，记录来源位置、期间、单位、置信度、冲突、caveat、含义和推荐视觉。
+3. 必须完成内容脑暴子步骤：提出 2-3 条可选故事线，建立 issue tree 或 hypothesis tree，并比较证据强度、风险缺口、适用受众和不推荐原因。
+4. 必须形成页面物料池：关键数字、对比、排名、变化、漏斗、矩阵、表格、注释、图例、微图表、边栏洞察和可用证据 ID。
+5. 必须输出推荐故事线，而不是只给一个看似合理的大纲。
+6. 必须为每页定义信息密度和组件清单，包括信息区数量、主图与侧栏比例、表格/注释/图例/微图表数量、证据 ID、SO WHAT 和低密度风险。
+7. 不得让用户只确认页标题；第一次确认必须覆盖故事线、页数、逐页论点、图表计划、信息密度和组件清单。
 
 ### 第一步工作顺序
 
 1. 盘点输入文件和材料角色。
 2. 抽取事实、数字、表格、图形、论点、日期、单位和来源。
 3. 建立证据表，并标记冲突、缺口和仅方向性判断。
-4. 识别材料类型、汇报任务和受众，明确推荐组织方式及待确认事项。
-5. 基于证据表做内容脑暴，提出 2-3 条可选汇报主线；需要时使用 SCR、issue tree、hypothesis tree 或对标矩阵辅助分析。
-6. 比较主线，选择推荐路径并说明取舍。
-7. 生成逐页计划：页面标题或页面要点、角色、详细说明、证据、caveat、图表计划、视觉、含义、承接。
+4. 基于证据表做内容脑暴，提出 2-3 条可选故事线和 issue tree / hypothesis tree。
+5. 比较故事线，选择推荐路径并说明取舍。
+6. 将推荐路径收敛为全篇 SCR。
+7. 生成逐页计划：结论标题、角色、详细论证、证据、caveat、图表计划、视觉、含义、承接。
 8. 为每页补齐页面信息密度和组件清单，作为第二步蓝图输入。
 
 ### 第一步确认输出
 
 第一次确认必须包含：
 
-- 证据表摘要；
+- MBB 证据表摘要；
 - 开放数据冲突、缺失证据和 caveat；
-- 材料类型与汇报任务识别；
-- 2-3 条可选汇报主线与推荐理由；
-- 推荐组织方式和适配依据；
-- 逐页计划和图表计划；
+- 2-3 条可选故事线与推荐理由；
+- 推荐 SCR；
+- 逐页大纲和图表计划；
 - 逐页页面信息密度和组件清单；
 - 需要用户决策或补充的数据问题。
 
@@ -191,9 +221,10 @@ SCR、假设树、对标矩阵可作为分析工具，但不作为默认最终�
 1. 直接通过当前对话发送 8 张固定样张图片，并在图片外列出编号、名称、色板、语气、优势和风险。
 2. 等待用户选择或要求替换风格。
 3. 锁定视觉系统：页面尺寸、安全边距、正文区网格、字体层级、图表语言、表格样式、模板层元素、强调色和密度规则。
-4. 基于第一步确认的逐页计划，使用 `scripts/body_blueprint_prompt.py` 为每页编译正文内容区 prompt，再为每页生成一张正文区 ImageGen 蓝图；除非用户明确跳过 ImageGen，不得用脚本绘图、PPT、HTML、SVG、canvas 或低保真 mockup 替代。
-5. 每页蓝图前先生成 `slide_content_lock`；每页蓝图确认后冻结 `blueprint_component_signature` 和 `visual_element_registry`，并记录路径、SHA-256、页面角色、复杂视觉资产区域、可编辑文本区域、原生组件清单、证据 ID 和预期信息密度。
-6. 检查风格漂移、信息密度下降、封面过密、内容页过稀和生成文字污染。
+4. **生图前送图脚本门禁（强制）**：先把将送入 ImageGen 的明文 prompt 编译并落盘到 `workbench/prompts/imagegen/`，在当前对话中展示；只编入主判断、上屏文字、视觉结构与清洗后的边界，不得编入完整文字稿、取舍说明、证据映射、证据编号或讲解提示。封面/目录/章节/封底不生成正文区 ImageGen。用户可修改或批准；**未经批准不得调用 ImageGen**。可用 `scripts/dual_image_overlay/imagegen_handoff.py` 与 `python -m cyberppt stage-script / approve-script --kind imagegen`。
+5. 基于已批准的送图脚本，为每页生成一张正文区 ImageGen 蓝图/full 候选图；除非用户明确跳过 ImageGen，不得用脚本绘图、PPT、HTML、SVG、canvas 或低保真 mockup 替代。
+6. 每页蓝图前先生成 `slide_content_lock`；每页蓝图确认后冻结 `blueprint_component_signature` 和 `visual_element_registry`，并记录路径、SHA-256、页面角色、复杂视觉资产区域、可编辑文本区域、原生组件清单、证据 ID 和预期信息密度。
+7. 检查风格漂移、信息密度下降、封面过密、内容页过稀和生成文字污染。
 
 ### 第二步确认输出
 
@@ -222,40 +253,55 @@ SCR、假设树、对标矩阵可作为分析工具，但不作为默认最终�
 - 如果用户明确跳过 ImageGen，必须记录 `imagegen_skipped_by_user=true`、用户提供的模板/截图/品牌指南/视觉规范路径和替代依据；不得声称该页是 ImageGen 蓝图。
 - `visual_element_inventory_targets` 和 `blueprint_measurement_targets` 只是第二阶段记录 metadata，用于第三阶段还原准备；不得因此把蓝图降级成脚本草图、线框图、默认卡片页或低保真 dashboard。
 
-## 第三步：full-image PPT 组装与交付
+## 第三步：复杂视觉保真 + 主要文字可编辑
 
-默认第三步采用 `full_image_ppt`：消费已批准的正文区 full 图、`template_text_lock`、`speaker_notes_manifest` 和图片审批记录，生成图片型 PPTX，再通过 `produce verify` 才能进入 `deliverable_ready`。正文区主要内容是 full 图，默认不要求正文区主要文字可编辑；模板层标题、副标题、Logo、页码、页脚和公共元素必须由 PPT 管线生成并可校验。
+采用“复杂视觉保真 + 主要文字可编辑”的混合还原策略。最大优先级是保留原图的整体设计质感、构图、视觉完成度和高级感，同时保证主要文字内容可以在 PPT 中直接编辑。不要把整页简单铺成一张背景图。
 
 ### 硬性要求
 
-1. 必须使用 `python3 -m cyberppt produce prepare <project> --pages <range>` 准备生产输入，并停在 speaker notes 人工审批。
-2. 必须使用 `python3 -m cyberppt produce assemble <project> --pages <range>` 组装 PPTX；该步骤只消费已批准资产，不得重跑 OCR、overlay、semantic_plan、source_capture、template_rebuild 或图片生成。
-3. 必须使用 `python3 -m cyberppt produce verify <project> --pages <range>` 做渲染比对、full-image strict manifest 校验、依赖 hash 校验和 delivery promotion。
-4. 默认 `full_image_ppt` 不要求正文区主要文字可编辑；但必须如实记录 `body_content_editable=false`、`template_text_editable=true` 和 `speaker_notes_required=true`。
-5. 模板文字层必须来自批准的 `template_text_lock`，不得从 full 图、OCR、文件名或人工目测推断。
-6. 交付 readiness 必须依赖当前 assembly、approved images、speaker notes、template text lock、visual report、strict report、delivery manifest 和最终 PPTX 的 hash；任一依赖变化，`deliverable_ready` 失效。
-7. 如果用户明确要求正文区对象级/文字级可编辑，必须切换到下方 Legacy/Advanced editable rebuild，并在 ledger、run summary 和交付说明中标记该模式不是默认主线。
+1. 主要文字不得整体作为图片保留，必须使用 PPT 原生文本框重建。
+2. 必须可编辑的文字包括：主标题、副标题、正文段落、金句、关键数字、关键词、结论框文字、注释文字、页脚说明、章节名、页码。
+3. 复杂视觉区域内部的小字，如果拆分会明显破坏视觉质感，可以保留为图片，但需要在最终说明中标注。
+4. 不要为了视觉保真，把所有文字都压成图片。
+5. 不要为了全量可编辑，把复杂视觉效果重建成低质感的 PPT 默认图形。
+6. ImageGen 蓝图只允许作为构图、层级、密度和视觉语言参考；不得将整页蓝图或大面积蓝图截图作为最终 PPTX 背景。
+7. 内容页中的折线图、柱状图、坐标轴、标签、关键数字、表格、对比条、流程箭头和 SO WHAT 默认必须使用 PowerPoint 原生文本和形状重建；标题、副标题、页眉页脚、页码、Logo 和蓝线由模板/母版/可编辑文字层生成。
+8. 如果某页经复杂视觉扫描后确认无复杂视觉资产，且蓝图允许完全原生重建，则该页最终通常可达到 `pictures=0`；否则必须逐项说明图片、SVG、custom geometry 或 freeform 资产的必要性。
+9. 第三阶段交付不是“生成 PPTX + strict QA”，而是“逐页蓝图对照通过 + PPTX 结构通过”。两者任一失败都不得交付确认。
+10. 已批准正文区蓝图是正文区视觉验收基准，不是灵感图或内容结构参考。正文区底色、表面系统、SO WHAT、分栏关系、主图形态、图标锚点、密度和留白节奏都必须逐项对照；模板层标题、副标题、页眉页脚、页码、Logo 和蓝线另按模板 QA 检查。
+11. 每页生成 PPTX 前必须先写 `blueprint_reconstruction_plan`，拆解蓝图的版式、密度、表面系统和锚点。没有该记录不得生成该页。
 
-### 默认模式：full 图 + 模板组装 PPT
+### 统一入口与生产模式
 
-第二阶段生产路径为 `full_image_ppt`。该模式只生成正文区 ImageGen full 图，并通过 `template_image_ppt_export.py` 放入 PPT 模板正文区；标题、副标题、Logo、页脚、页码、蓝线和公共模板元素由模板层生成。
+脚本批准后必须进入 `python -m cyberppt final-script-pages`，不得把生图后端或导出器作为常规入口。唯一生产模式为 `image-to-editable-svg`：只接受通过文字审计的正文区 ImageGen full 图，按页面盘点、注册图层和可编辑 SVG 重建后导出原生 PPTX；标题、副标题、Logo、页脚、页码、蓝线和公共模板元素仍由模板文字层生成。
 
-第二阶段不得进入 OCR、overlay、semantic_plan、source_capture 或 `template_rebuild`，不得生成 no-text background，也不得把 background 作为必需资产。正文区主要内容以 full 图承载；这意味着正文区文字通常不可编辑，必须在交付说明中如实标记。
+同一张 full 图既是重建证据也是唯一视觉来源。OCR 只用于定位，脚本锁定的文字是最终 truth。禁止生成或依赖无字底图、纯文字参考图、整页截图背景或其他旧式叠层资产。
 
-旧 `dual_image_editable_overlay`、OCR、semantic_plan、source_capture 和 `template_rebuild` 只可作为 legacy/advanced 路径。只有用户明确要求恢复主要正文可编辑、要求对象级还原，或明确点名 legacy overlay/rebuild 时，才允许启用，并必须在 run summary、ledger 和交付说明中标记该路径不是第二阶段主线。
+正式命令形态：
+
+```powershell
+python -m cyberppt final-script-pages <project> `
+  --script <final-script.md> `
+  --pages <range> `
+  --production-mode image-to-editable-svg `
+  --generate-images `
+  --production-build
+```
+
+恢复已有图片时可省略 `--generate-images` 并使用 `--require-images`；强制重生仅使用 `--force-images`。不得直接调用 `codex_oauth_image.py` 代替上述入口。
 
 已批准的第二阶段正文区 ImageGen 蓝图默认晋升为 `full` 候选图，不得无理由从零重新 text-to-image 生成另一张 full 图。只有当蓝图未达到最终交付质量或用户要求重做时，才允许基于已批准蓝图做定向重绘，并必须记录原因。
 
-full 图生成前必须先用 `scripts/dual_image_overlay/deliverable_prompt.py` 或 `template_image_ppt_export.py` 把项目脚本编译成最终交付 prompt。该 prompt 必须使用项目自身视觉锁定，不得用外部仓库 style preset 覆盖项目风格；生成图必须面向最终客户交付，不得画入证据编号、来源编号、caveat、脚注、口径说明、标题占位条、页码、Logo、页脚、公共元素或调试标记。
+full 图生成前必须由 `final-script-pages` 调用项目 prompt 编译链生成最终交付 prompt。该 prompt 必须使用项目自身视觉锁定，不得用外部仓库 style preset 覆盖项目风格；生成图必须面向最终客户交付，不得画入证据编号、来源编号、caveat、脚注、口径说明、标题占位条、页码、Logo、页脚、公共元素或调试标记。
 
 ### 手工停点与阶段恢复
 
-用户可以明确要求停在任一子步骤：`script_locked`、`full_generated`、`image_ppt_exported`、`qa_rendered` 或 `deliverable_ready`。执行者必须尊重该停点，不得擅自继续到下一步。
+用户可以明确要求停在任一子步骤：`script_locked`、`full_generated`、`svg_reconstructed`、`qa_rendered` 或 `deliverable_ready`。执行者必须尊重该停点，不得擅自继续到下一步。
 
 每次停点输出必须包含：
 
 - 当前停点名称；
-- 已完成工件路径，包括脚本、prompt、full、`page_image_pairs.json`、`template_image_manifest.json`、图片型 PPTX、渲染图和 QA 文件中已存在的部分；
+- 已完成工件路径，包括脚本、prompt、audited full、`page_image_pairs.json`、reconstruction inventory、editable SVG、PPTX、渲染图和 QA 文件中已存在的部分；
 - 未执行的后续步骤；
 - 恢复命令或恢复入口；
 - 明确标注该停点产物是否可交付。
@@ -270,9 +316,9 @@ full 图生成前必须先用 `scripts/dual_image_overlay/deliverable_prompt.py`
 
 1. 模板阶段可以暴露正文区问题，但不能成为正文区修补点。
 2. 只重跑受影响页面和受影响阶段；不得无理由重跑全 deck。
-3. 如果问题来自脚本或内容 truth，回到脚本锁定；如果问题来自 full 图，回到 full 图生成；如果问题来自模板层，回到 `template_image_ppt_export`。
-4. 重新生成 full 图后必须重新执行 `template_image_ppt_export`，并重新渲染套模板后的页面。
-5. 最终 deck 只能合并通过 QA 的最新 image-ppt page，不得混用旧 full 图、旧 template page 或旧截图。
+3. 如果问题来自脚本或内容 truth，回到脚本锁定；如果问题来自 full 图，回到主链生图步骤；如果问题来自模板层，回到 `final-script-pages` 对应组装分支。
+4. 重新生成图片资产后必须通过 `final-script-pages` 重新执行所选生产分支，并重新渲染页面。
+5. 最终 deck 只能合并通过 QA 的最新重建页面，不得混用旧 full 图、旧重建页或旧截图。
 
 ### 第三阶段用户确认提示
 
@@ -313,11 +359,7 @@ full 图生成前必须先用 `scripts/dual_image_overlay/deliverable_prompt.py`
 
 合并后的每一页必须和对应的已验收单页渲染图进行对照。如果出现背景色变化、页面尺寸变化、对象偏移、字体变化、图片丢失、SVG 变形、图表错位或信息密度下降，则合并失败，必须修复合并流程，而不是重新生成页面。
 
-## Legacy/Advanced: editable rebuild
-
-以下规则只适用于用户明确要求正文区对象级/文字级可编辑、要求 legacy overlay/rebuild，或明确启用 `dual_image_editable_overlay` 的 advanced 路径。默认 `full_image_ppt` 主线不适用本节的正文区可编辑硬门槛。
-
-### Legacy/Advanced: 双硬门槛：可编辑性与视觉语义必须同时成立
+### 双硬门槛：可编辑性与视觉语义必须同时成立
 
 `结构可编辑` 和 `视觉还原` 是同等硬门槛，不是二选一，也不得互相覆盖。最终 PPTX 必须同时满足“信息结构可编辑”和“视觉语义高保真”。
 
@@ -331,7 +373,7 @@ full 图生成前必须先用 `scripts/dual_image_overlay/deliverable_prompt.py`
 - `qa_expectations` 必须声明 `dual_gate_required: true`、`visual_semantics_required: true` 和 `all_key_text_editable: true`；缺失即视为第三阶段失败。
 - `visual_qa_gate.json` 必须分别给出 `editable_information_layer_pass` 和 `visual_semantics_preserved`。任一为 `false`，`deliverable_allowed` 必须为 `false`。
 
-### Legacy/Advanced: pictures=0 非目标原则
+### pictures=0 非目标原则
 
 `pictures=0` 不是第三阶段目标，也不是视觉合格证明。
 
@@ -354,7 +396,7 @@ full 图生成前必须先用 `scripts/dual_image_overlay/deliverable_prompt.py`
 - 简化蓝图视觉重心；
 - 主动避免触发图片、曲线、异形或复杂视觉门。
 
-### Legacy/Advanced: 还原策略
+### 还原策略
 
 1. 先识别页面结构，将画面拆成“复杂视觉资产层”和“可编辑信息层”。
 2. 复杂视觉资产层优先从原图裁切/提取为高清图片素材嵌入 PPTX。
@@ -365,7 +407,7 @@ full 图生成前必须先用 `scripts/dual_image_overlay/deliverable_prompt.py`
 7. 品牌 Logo、商标、产品 UI、人物、商品图、官方图标不要手绘或伪造，优先保留为原图裁切图片素材。
 8. 如果图表数据无法从图片准确反推，请按视觉比例近似重建，并在说明里标注“数据为视觉近似”。
 
-### Legacy/Advanced: PPTX 生成工具选择门
+### PPTX 生成工具选择门
 
 第三阶段正式 PPTX 页面必须使用 PptxGenJS / pptx-generator 生成。PptxGenJS 是承载和排版引擎，用于放置原生文本、矩形、表格、基础线条、图表组件、已追踪 SVG path、PPT custom geometry 和高密度 freeform；它不是把复杂视觉降级为 PowerPoint preset shape 的许可。
 
@@ -373,11 +415,11 @@ full 图生成前必须先用 `scripts/dual_image_overlay/deliverable_prompt.py`
 
 每页 manifest 必须记录 `generation_engine.tool="pptxgenjs"` 或等价 `pptx-generator`，并声明 `visual_fidelity_not_reduced=true`。`generation_engine.tool` 为 `python-pptx`、`python_pptx`、`html-to-ppt`、`screenshot-to-ppt` 或其他正式生成引擎，均视为第三阶段失败。
 
-### Legacy/Advanced: SVG / custom geometry 优先门
+### SVG / custom geometry 优先门
 
 当蓝图中存在曲线、弧线、扇形、环形缺口、流带、异形边界、非矩形区域、复杂图标轮廓或用户要求 1:1 的几何敏感视觉时，必须优先使用 SVG path、PPT custom geometry 或高密度 freeform 还原。
 
-### Legacy/Advanced: 图标库优先门
+### 图标库优先门
 
 第三阶段涉及通用图标、徽章、节点内符号、SO WHAT 图标或解释栏图标时，必须优先从 `assets/icons/` 选择已验证 SVG 图标，不得临时手写复杂 SVG 图标。使用图标库是为避免断线、不连续、路径粗糙和风格漂移；图标不要求与 ImageGen 蓝图里的随机图标完全一致，但必须语义近似、风格统一、线宽/填充一致，并进入 `visual_element_registry` 做坐标反测。
 
@@ -405,7 +447,7 @@ full 图生成前必须先用 `scripts/dual_image_overlay/deliverable_prompt.py`
 
 SVG path、PPT custom geometry 和高密度 freeform 是几何敏感视觉的优先实现方式。`pictures=0`、可编辑性、PptxGenJS 原生对象或 PowerPoint preset shape 都不能覆盖该门槛。
 
-### Legacy/Advanced: preset shape 准入门
+### preset shape 准入门
 
 复杂 PowerPoint preset shape 默认不得进入正式页面。只有同时满足以下条件才允许：
 
@@ -417,13 +459,13 @@ SVG path、PPT custom geometry 和高密度 freeform 是几何敏感视觉的优
 
 否则必须改用 SVG path、custom geometry、高密度 freeform 或稳定原生对象组合。
 
-### Legacy/Advanced: PowerPoint 兼容与损坏处理门
+### PowerPoint 兼容与损坏处理门
 
 每页 PPTX 生成后，必须用 PowerPoint 打开并导出 PNG。只有完整页面 PPTX 能被 PowerPoint 打开并成功导出当前页 PNG，才允许进入 visual QA、manifest approved 状态和用户确认。ZIP/结构预检通过不等于 PowerPoint 兼容通过。
 
 如果 PowerPoint 无法打开页面，必须按顺序执行：
 
-1. 删除当前页旧 PPTX、旧 PNG、旧 QA 文件，防止旧文件残留；
+1. 不得删除当前页旧 PPTX、旧 PNG、旧 QA 文件；为本轮建立独立 `build_id` 输出目录，若确需覆盖只能显式使用 `--overwrite`，先移动至 `backup/` 并在 artifact ledger 中记录版本关系；
 2. 扫描 slide XML 中零尺寸、负尺寸、负坐标、异常 ext/off、非法透明度和非法线宽；
 3. 逐组隔离对象，定位首次导致 PowerPoint 打不开的对象或对象组；
 4. 用 PowerPoint-safe SVG path、custom geometry、高密度 freeform 或稳定原生对象组合替代坏对象；
@@ -432,26 +474,26 @@ SVG path、PPT custom geometry 和高密度 freeform 是几何敏感视觉的优
 
 不得在完成对象隔离前切换生成引擎；不得在任何情况下切换到 `python-pptx`。
 
-### Legacy/Advanced: 隔离文件不是交付物
+### 隔离文件不是交付物
 
 兼容性定位过程中产生的空白 PPTX、半成品 PPTX、分组测试 PPTX 和对象隔离 PPTX，只能命名为 `isolation-*` 或 `compat-test-*`，只能用于定位问题。
 
 这些文件不得命名为 `slide-XX.pptx`，不得写入 manifest，不得进入 visual QA，不得给用户确认，不得作为最终页面或合并来源。只有完整蓝图页面通过 PowerPoint 打开和渲染后，才能写入 `pages/slide-XX.pptx`。
 
-### Legacy/Advanced 图片资产准入门
+### 图片资产准入门
 
-仅在用户明确要求 Legacy/Advanced editable rebuild、对象级还原或主要正文可编辑时，制作每页 PPTX 前必须先建立图片资产准入表；没有准入表不得开始该 legacy 页面生成。该门不适用于默认 `full_image_ppt` 正文区 full 图。
+制作每页 PPTX 前必须先建立图片资产准入表；没有准入表不得开始生成该页。
 
 | 区域 | 默认是否允许图片 | 判定 |
 |---|---|---|
-| 标题、副标题、正文、关键数字、页脚、页码、SO WHAT | 否 | Legacy/Advanced editable rebuild 的主要信息层，必须可编辑 |
+| 标题、副标题、正文、关键数字、页脚、页码、SO WHAT | 否 | 主要信息层，必须可编辑 |
 | 折线图、柱状图、坐标轴、标签、对比条、简单流程箭头、基础表格 | 否 | 简单图表/基础图形，必须原生重建 |
 | 照片、官方 Logo、产品 UI、复杂插画、复杂纹理、3D、玻璃拟态、光影材质 | 可 | 原生重建会明显降质时才允许 |
 | 大面积或整页蓝图截图 | 否 | 蓝图是参考，不是交付背景 |
 
-Legacy/Advanced editable rebuild 中，每个图片资产都必须记录：来源、保留原因、覆盖区域、是否牺牲可编辑性。若无法给出必要性，改用原生对象重建。默认 `full_image_ppt` 的正文区 approved full image 作为交付模式本身的资产记录，不按该 legacy 准入表要求原生重建正文。
+每个图片资产都必须记录：来源、保留原因、覆盖区域、是否牺牲可编辑性。若无法给出必要性，改用原生对象重建。
 
-### Legacy/Advanced: slide_manifest.json 硬门槛
+### slide_manifest.json 硬门槛
 
 第三阶段每页进入 PPTX 生成前必须先写 `slide_manifest.json`，并在生成后按实际 PPTX 更新。没有 manifest、manifest 缺页、manifest 字段不完整，均视为第三阶段失败，不得交付确认。
 
@@ -557,7 +599,7 @@ Legacy/Advanced editable rebuild 中，每个图片资产都必须记录：来�
 - 任一页面包含表格、矩阵、行动清单、风险清单或网格化管理表时，`qa_expectations.table_semantic_typography_required` 和 `qa_expectations.table_density_check_required` 必须为 `true`，并提供 `table_text_objects` 与 `table_density_check`。
 - 违反字面规则就是违反规则本身；不得以“视觉保真”“按蓝图还原”“用户只看渲染图”“后续会改”为理由绕过 manifest。
 
-### Legacy/Advanced: 第三阶段高保真蓝图还原门
+### 第三阶段高保真蓝图还原门
 
 第三阶段必须是高保真蓝图还原阶段，不存在“低保真正式交付”“普通还原正式交付”“语义相似即可交付”或“一次性草稿先行”。
 
@@ -741,7 +783,7 @@ Legacy/Advanced editable rebuild 中，每个图片资产都必须记录：来�
 - 触发精确追踪门但没有 trace crop、trace debug、追踪方法或 manifest 记录，视为流程失败，不得进入逐页确认。
 - 用户指出曲线、流带、弧线或异形边界偏差后，必须立即把该页 `visual_qa_gate.json` 的 `curve_fidelity_pass=false` 且 `deliverable_allowed=false`，并对用户指出区域重新执行局部对照流程。
 
-### Legacy/Advanced: 标签避让与曲线质量门
+### 标签避让与曲线质量门
 
 当页面包含中心图、流程图、架构图、生态图、矩阵图、时间线、路径图或任何图标/节点/曲线密集区域时，必须执行标签避让检查。该检查不能由 `strict QA`、图片数量、可编辑性或字号检查替代。
 
@@ -752,7 +794,7 @@ Legacy/Advanced editable rebuild 中，每个图片资产都必须记录：来�
 - 使用原生几何重建复杂图时，必须在 manifest 或 `visual_qa_gate.json` 中记录 `label_collision_check`。缺失即失败。
 - 任一主图标签与图标/节点/曲线/圆环/箭头发生可见重叠，视为 High/Critical，不得交付确认。
 
-### Legacy/Advanced: 空间锚点与相对位置还原门
+### 空间锚点与相对位置还原门
 
 当页面包含中心图、流程图、架构图、生态图、矩阵图、时间线、路径图、图标密集图，或任何“图标 + 节点 + 标签 + 箭头/曲线”的组合时，必须执行空间锚点检查。该检查不能由标签避让、曲线追踪、字号检查或 `pictures` 数量替代。
 
@@ -827,7 +869,7 @@ manifest 必须包含 `spatial_registration_check`，至少记录：
 - `checked_groups[].status` 只能是 `passed` 或 `failed`；不得使用 `mostly_passed`、`passed_with_tolerance`、`minor_issue`、`acceptable` 等模糊状态。出现非 `passed` 即失败。
 - 用户指出文字、图标、节点或箭头“偏移”“不在原位”“和原图位置不一样”后，必须立即把该页 `visual_qa_gate.json` 的 `spatial_registration_pass=false` 且 `deliverable_allowed=false`，重新裁局部图并对照锚点。
 
-### Legacy/Advanced: 容器边界、连续文本与表格语义门
+### 容器边界、连续文本与表格语义门
 
 第三阶段必须按蓝图记录每段文字的归属容器。归属容器包括卡片、面板、图表区、表格单元格、结论条、SO WHAT、标题区、页脚区、图标节点、流程节点、KPI 框和注释框。文字是否合格按归属容器判定，不按整页画布判定。
 
@@ -881,7 +923,7 @@ manifest 中必须按需记录：
 - `trace_debug_artifact` 必须显示曲线覆盖、采样点或边界对照；只画一个粗略外框不合格。
 - 曲线弯曲幅度、端点、宽度变化、交叠顺序或视觉重心明显偏离蓝图，即使结构 QA 通过，也必须返工。
 
-### Legacy/Advanced: 最终视觉 QA 闸门
+### 最终视觉 QA 闸门
 
 第三阶段每次交付确认前必须生成 `visual_qa_gate.json`。没有该文件，不得交付确认。该文件必须逐页给出明确布尔判定，不得使用“基本”“大致”“看起来还行”等模糊表述。
 
@@ -959,7 +1001,7 @@ manifest 中必须按需记录：
 - 最终回复不得只说 QA 通过，必须同时说明视觉 QA 是否通过。
 - 如果视觉 QA 失败，必须继续返工或明确标记为“未通过，不能确认”，不得把失败页作为合格交付。
 
-### Legacy/Advanced: 错误解释与纠正
+### 错误解释与纠正
 
 | 错误解释 | 正确做法 |
 |---|---|
@@ -984,7 +1026,7 @@ manifest 中必须按需记录：
 | “曲线用几个点连起来也能表达意思” | 错。核心曲线不得用少量折线点冒充；必须使用 path/freeform/custom geometry 或足够密集采样。 |
 | “我已经给了渲染图，用户会自己看问题” | 错。交付前必须主动填写 visual QA 闸门；发现失败必须拦截，不得转嫁给用户验错。 |
 
-### Legacy/Advanced: 文字重建要求
+### 文字重建要求
 
 1. 必须复现原图的字体气质、字号层级、字重、颜色、行距、字距、对齐方式和位置。
 2. 如果无法识别字体，请选择最接近原图视觉气质的系统字体。
@@ -994,7 +1036,7 @@ manifest 中必须按需记录：
 6. 如果完全按原图排版会导致 PPT 原生文字观感明显变差，可以在不改变含义的前提下做轻微排版微调。
 7. 正文不得用过小字号换取密度；必须使用固定 Typography Scale。若空间不足，优先精炼文字、重组版式或拆分信息，而不是继续缩字。
 
-### Legacy/Advanced: 固定 Typography Scale
+### 固定 Typography Scale
 
 全篇固定 15 个文字层级：`C0` 为封面/章节幕专用，`T1-T14` 为内容页层级。制作和 QA 都必须按这些名称检查字号、权重和可读性。`T1` 和 `T14` 中的页脚/页码部分默认不启用（见本文件"默认页面结构策略"），仅用户明确要求时才使用。
 
@@ -1018,7 +1060,7 @@ manifest 中必须按需记录：
 
 用户图中 1-8 的映射：1=T2，2=T3，3=T6/T4，4=T7，5=T14，6=T11/T12/T13，7=T10，8=T14。
 
-### Legacy/Advanced: 设计还原要求
+### 设计还原要求
 
 1. 保持原图的版式、比例、视觉重心、阅读顺序和留白节奏。
 2. 保持原图的颜色、对比度、明暗关系、光源方向、阴影强度和空间层次。
@@ -1029,7 +1071,7 @@ manifest 中必须按需记录：
 7. 页面必须遵循已选风格的统一页面表面系统，不得把每个模块擅自改成大面积白卡片；必须按蓝图记录的底色、色阶、边框、栏头和分隔线还原。
 8. 如果主图表的语义依赖曲线、流带、弧线或异形边界，必须按精确追踪门还原，不得改成视觉语义不同的基础图表。
 
-### Legacy/Advanced: 输出与检查
+### 输出与检查
 
 1. 输出一个 PPTX 文件。
 2. 同时渲染 PPTX 预览图，与原始图片做视觉对照。
@@ -1047,10 +1089,11 @@ manifest 中必须按需记录：
 - 第一阶段必须包含内容脑暴子步骤：基于证据表提出 2-3 条可选故事线，建立 issue tree 或 hypothesis tree，比较每条故事线的核心结论、证据强度、风险缺口和适用受众，再推荐一条路径。
 - 第一次确认不能只确认页标题。必须同时确认故事线、页数、逐页论点、页面信息密度和组件清单，包括每页几个信息区、主图与侧栏比例、表格/注释/图例/微图表数量、关键证据 ID 和 SO WHAT。
 - 页面信息密度和组件清单是第二阶段逐页蓝图的输入，不得在蓝图阶段重新降级成宽松卡片或稀疏大字报。
-- 全篇使用 SCR，并让每页内容页标题成为可辩护的结论。标题必须经得起 MBB 式挑战：什么证据支持它，什么 caveat 可能推翻它，它改变什么决策？
+- 只有咨询路线全篇使用 SCR。方案路线按正式工作顺序组织章节；内容页仍需有可辩护的 `main_message`，并回答证据、限制和决策含义。
 - 默认展示 8 个固定 CyberPPT 视觉风格。可以根据材料类型推荐一个，但最终让用户选择。
 - 视觉样张必须是独立完整的 16:9 页面；不得使用拼图、缩略图墙或压缩多页画布。
 - 风格样张确认前必须直接通过当前对话发送 8 张独立 16:9 图片。优先使用内置样张 `assets/palette-samples/palette-01.png` 到 `palette-08.png`，或生成新的 8 张真实图片。
+- ImageGen 调用前必须先把送图明文脚本落盘并在对话中展示，经用户修改或批准；送图脚本不得夹带完整文字稿/证据编号等后台字段。
 - 不得只生成 Markdown、文本列表、表格、样式说明、网页、HTML、URL、文件夹路径、文件列表或 `stage2_style_options.md` 作为第二阶段交付；这些只能作为图片旁的辅助说明，不能替代当前对话中的 8 张独立样张图片。
 - 如果使用网页辅助，网页只能作为附加浏览方式；不得把网页作为风格确认的唯一依据。
 - 只用源文件不等于跳过视觉样张；“只用源文件”只约束事实、数据、文字和结论来源，不取消固定 8 张视觉样张展示。
@@ -1061,11 +1104,10 @@ manifest 中必须按需记录：
 - 脚本可以组织 prompt、保存/复制/重命名 ImageGen 输出图片、生成 metadata、manifest、QA 报告、对照图或检查用 overlay；但不能作为第二阶段逐页蓝图的最终图像生成器。
 - 只有用户明确要求时才跳过 ImageGen。跳过时要记录原因，并使用用户提供的模板、参考图或视觉规范。
 - 将 ImageGen 文字和数字视为不可靠。生成图只作为视觉构图和艺术方向参考。
-- 默认 `full_image_ppt` 必须守住 full 图审批、模板文字层、speaker notes、渲染比对和依赖 freshness 门槛；不得把中间 PPTX 冒充最终交付。
-- Legacy/Advanced editable rebuild 必须同时守住可编辑信息层和视觉语义高保真两个硬门槛；不得让其中一个目标压过另一个目标。
-- Legacy/Advanced PPTX 还原时必须先区分复杂视觉资产层和可编辑信息层；主要文字必须使用独立可编辑 PowerPoint 文本框重建。
-- Legacy/Advanced 不得用整页截图作为捷径。最终主要文字必须可编辑，不能整体烘焙进图片。
-- Legacy/Advanced 复杂视觉区域可以裁切为图片保留质感，但必须说明哪些内容因此牺牲了可编辑性。
+- 第三阶段必须同时守住可编辑信息层和视觉语义高保真两个硬门槛；不得让其中一个目标压过另一个目标。
+- PPTX 还原时必须先区分复杂视觉资产层和可编辑信息层；主要文字必须使用独立可编辑 PowerPoint 文本框重建。
+- 不得用整页截图作为捷径。最终主要文字必须可编辑，不能整体烘焙进图片。
+- 复杂视觉区域可以裁切为图片保留质感，但必须说明哪些内容因此牺牲了可编辑性。
 - 不要停留在图表骨架。每一页内容页都必须包含结论、证据、解读，以及业务含义或 SO WHAT。
 - 默认咨询式封面保持低密度：标题、副标题、版本/日期/语境即可；除非用户明确要求，不添加 KPI 卡片或图表。
 - 布局前先锁定页面尺寸。坐标系、视觉参考、渲染图和输出文件必须使用同一长宽比。

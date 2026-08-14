@@ -1,0 +1,46 @@
+visual_intents:
+  causal_chain:
+    relationships: [cause, driver, constraint, conclusion]
+    carrier: "directed causal chain or converging drivers"
+  evidence_to_judgment:
+    relationships: [evidence, support, judgment]
+    carrier: "evidence streams converging on one judgment"
+  operating_chain:
+    relationships: [input, action, output]
+    carrier: "single-direction business chain"
+  closed_loop_operation:
+    relationships: [process, feedback, iteration]
+    carrier: "closed-loop process with one feedback return"
+  stage_gate_lifecycle:
+    relationships: [stage, gate, continue, stop]
+    carrier: "stage-gate chain with explicit decision exits"
+  branching_path:
+    relationships: [common_input, branch, convergence]
+    carrier: "one input splitting into distinct paths"
+  layered_architecture:
+    relationships: [layer, foundation, cross_cutting]
+    carrier: "stacked capability layers with cross-cutting bands"
+  dual_view_mapping:
+    relationships: [view_a, mapping, view_b]
+    carrier: "two coordinated views with explicit mapping"
+  multi_party_ecosystem:
+    relationships: [actor, responsibility, exchange]
+    carrier: "directed multi-party collaboration network"
+  taxonomy_to_service:
+    relationships: [taxonomy, service_family, customer_use]
+    carrier: "hierarchical service taxonomy"
+  financial_flow:
+    relationships: [revenue, cost, allocation, settlement]
+    carrier: "money and responsibility flow"
+  two_axis_matrix:
+    relationships: [dimension_a, dimension_b, position]
+    carrier: "two-axis decision matrix"
+  priority_portfolio:
+    relationships: [priority, maturity, sequence]
+    carrier: "priority portfolio with unequal emphasis"
+  control_framework:
+    relationships: [control_chain, object_classes, rules]
+    carrier: "control process plus protected object classes"
+  template:
+    relationships: [template]
+    carrier: "template layer only; no business body image"

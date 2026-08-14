@@ -5,95 +5,165 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+AGENTS = ROOT / "AGENTS.md"
 SKILL = ROOT / "SKILL.md"
 SOURCE_ANALYSIS = ROOT / "references" / "source-analysis.md"
-STORYLINE = ROOT / "references" / "storyline.md"
-README = ROOT / "README.md"
+SCRIPT_QUALITY = ROOT / "references" / "script-quality.md"
+LITE_SKILL = ROOT / "vendor" / "word-to-ppt-script" / "SKILL.md"
 
 
 class SkillContractTests(unittest.TestCase):
-    def test_readme_documents_analysis_expression_gate(self) -> None:
-        text = README.read_text(encoding="utf-8-sig")
-
-        self.assertIn("analysis-expression-status", text)
-        self.assertIn("business script", text)
-        self.assertIn("蓝图输入", text)
-
-    def test_stage_one_references_default_to_adaptive_internal_reporting(self) -> None:
-        source_text = SOURCE_ANALYSIS.read_text(encoding="utf-8-sig")
-        storyline_text = STORYLINE.read_text(encoding="utf-8-sig")
-        readme_text = README.read_text(encoding="utf-8-sig")
-
-        self.assertIn("材料类型与汇报任务识别", source_text)
-        self.assertIn("不得固定章节顺序", storyline_text)
-        self.assertIn("页面标题或页面要点", storyline_text)
-        self.assertIn("央企、政府内部汇报", readme_text)
-        self.assertNotIn("咨询风格的 PowerPoint", readme_text)
-
-    def test_default_writing_style_uses_internal_reporting_and_adaptive_structure(self) -> None:
-        text = SKILL.read_text(encoding="utf-8-sig")
-
-        self.assertIn("`references/internal-reporting-style.md`", text)
-        self.assertIn("央企、政府及其直属单位内部汇报", text)
-        self.assertIn("`source_and_task_adaptive`", text)
-        self.assertIn("不得固定全篇或单页目录顺序", text)
-        self.assertIn("SCR、假设树、对标矩阵可作为分析工具", text)
-
-    def test_full_image_ppt_is_default_stage02_production_mode(self) -> None:
-        text = SKILL.read_text(encoding="utf-8-sig")
-
-        self.assertIn("第二阶段生产路径为 `full_image_ppt`", text)
-        self.assertIn("只生成正文区 ImageGen full 图", text)
-        self.assertIn("不再生成 no-text background", text)
-
-    def test_ocr_overlay_and_template_rebuild_are_not_stage02_mainline(self) -> None:
-        text = SKILL.read_text(encoding="utf-8-sig")
-
-        self.assertIn("第二阶段不得进入 OCR、overlay、semantic_plan、source_capture 或 `template_rebuild`", text)
-        self.assertIn("`template_image_ppt_export.py`", text)
-
-    def test_main_pipeline_names_script_full_image_and_image_ppt_export(self) -> None:
-        text = SKILL.read_text(encoding="utf-8-sig")
-
-        self.assertIn("脚本锁定 -> 正文区 ImageGen full 图 -> 业务稿生成 speaker_notes_manifest -> template_image_ppt_export -> 渲染 QA -> 交付", text)
-        self.assertIn("正文区主要内容以 full 图承载", text)
-
-    def test_speaker_notes_are_business_script_artifacts_not_drawing_script_fallback(self) -> None:
-        text = SKILL.read_text(encoding="utf-8-sig")
-
-        self.assertIn("`speaker_notes_manifest.json`", text)
-        self.assertIn("从业务稿/页面内容稿生成", text)
-        self.assertIn("不得把绘图脚本的组件清单直接当作演讲备注", text)
-        self.assertIn("大模型优化只能在该 prompt 约束下进行", text)
-
-    def test_ppt_generation_uses_full_image_stage02_not_dual_image_stage(self) -> None:
-        text = SKILL.read_text(encoding="utf-8-sig")
-
-        self.assertIn("正式第二阶段不得要求 full/background 双图资产", text)
-        self.assertIn("旧 `dual_image_editable_overlay`、OCR 和 `template_rebuild` 只可作为 legacy/advanced 路径", text)
-
-    def test_canonical_docs_expose_produce_state_machine(self) -> None:
+    def test_every_completed_step_surfaces_clickable_artifact_links(self) -> None:
+        agents = AGENTS.read_text(encoding="utf-8-sig")
         skill = SKILL.read_text(encoding="utf-8-sig")
-        readme = README.read_text(encoding="utf-8-sig")
-        layout = (ROOT / "docs" / "repository-layout.md").read_text(encoding="utf-8-sig")
+        lite = LITE_SKILL.read_text(encoding="utf-8-sig")
 
-        for text in (skill, readme, layout):
-            self.assertIn("python3 -m cyberppt produce prepare", text)
-            self.assertIn("python3 -m cyberppt produce assemble", text)
-            self.assertIn("python3 -m cyberppt produce verify", text)
+        self.assertIn("当任何一个阶段或环节任务完成时", agents)
+        self.assertIn("可点击 Markdown 链接提交到屏幕上", agents)
+        self.assertIn("当前环境可打开的绝对路径", agents)
+        self.assertIn("本环节无文件产出", agents)
+        self.assertIn("对话交付链接（硬规则）", skill)
+        self.assertIn("可点击 Markdown 链接", skill)
+        self.assertIn("After any stage or step completes", lite)
+        self.assertIn("clickable Markdown link to its absolute path", lite)
 
-    def test_default_docs_do_not_claim_legacy_overlay_mainline(self) -> None:
-        readme = README.read_text(encoding="utf-8-sig")
-        layout = (ROOT / "docs" / "repository-layout.md").read_text(encoding="utf-8-sig")
+    def test_single_user_stage01_uses_conversation_not_control_artifacts(self) -> None:
+        skill = SKILL.read_text(encoding="utf-8-sig")
+        lite = LITE_SKILL.read_text(encoding="utf-8-sig")
 
-        self.assertNotIn("第三阶段默认使用 `dual_image_editable_overlay`", readme)
-        self.assertNotIn("full/background pair manifests", layout)
-        self.assertNotIn("主要文字可编辑”的混合还原策略生成 PPTX", readme)
-        self.assertNotIn("## 第三步：复杂视觉保真 + 主要文字可编辑", skill := SKILL.read_text(encoding="utf-8-sig"))
-        self.assertIn("## Legacy/Advanced: editable rebuild", skill)
-        self.assertIn("默认 `full_image_ppt` 不要求正文区主要文字可编辑", skill)
-        self.assertNotIn("关键原则：`结构可编辑` 和 `视觉还原` 是同等硬门槛", readme)
-        self.assertIn("Legacy/Advanced editable rebuild 才要求结构可编辑与视觉还原同时成立", readme)
+        for checkpoint in (
+            "交流目标",
+            "章节和页面提纲",
+            "页面详细内容",
+            "最终全稿",
+        ):
+            self.assertIn(checkpoint, skill)
+        self.assertIn("用户交互发生在对话中", skill)
+        self.assertIn("不改变底稿结构", skill)
+        self.assertIn("局部修改后重复全量审计", skill)
+        self.assertIn("提出 2-3 个方向实质不同的交流目标选项", skill)
+        self.assertIn("明确推荐一项", skill)
+        self.assertIn("不得直接向用户抛出", skill)
+        self.assertIn("prepare-communication-strategy <project>", skill)
+        self.assertIn("do not create approval", lite)
+        self.assertIn("Do not create a script-hash-bound", lite)
+        self.assertIn("2-3 materially", lite)
+        self.assertIn("different, source-grounded communication-goal options", lite)
+        self.assertIn("Never ask the user", lite)
+
+    def test_single_page_skill_requires_business_title_and_complete_detail_copy(self) -> None:
+        page_skill = (
+            ROOT
+            / ".agents"
+            / "skills"
+            / "cyberppt-write-single-page"
+            / "SKILL.md"
+        ).read_text(encoding="utf-8-sig")
+
+        self.assertIn("业务小标题", page_skill)
+        self.assertIn("完整、自然的明细句", page_skill)
+        self.assertIn("标签：短语", page_skill)
+
+    def test_native_script_audit_gate_precedes_stage02(self) -> None:
+        skill = SKILL.read_text(encoding="utf-8-sig")
+        reference = SCRIPT_QUALITY.read_text(encoding="utf-8-sig")
+
+        self.assertIn("`script-audit`", skill)
+        self.assertIn(
+            "脚本审计未通过时不得进入 Stage 02",
+            skill,
+        )
+        self.assertIn("章内推进", reference)
+        self.assertIn("上屏结构与语义图同构", reference)
+        self.assertIn("VISUAL_STRUCTURE_STYLE_ONLY", reference)
+        self.assertIn("跨页重复", reference)
+        self.assertIn("状态升级", reference)
+        self.assertIn("vendor/ppt-script-visual-redesign", skill)
+
+    def test_stage01_visual_structure_is_a_semantic_handoff(self) -> None:
+        reference = SCRIPT_QUALITY.read_text(encoding="utf-8-sig")
+
+        self.assertIn("Stage 01 只锁定内容关系，不提前锁定页面版式", reference)
+        self.assertIn("`视觉结构（不上屏）`语义合同", reference)
+        self.assertIn("ppt-visual-structure-designer", reference)
+        self.assertIn("VISUAL_STRUCTURE_LAYOUT_RECIPE", reference)
+
+    def test_old_ppt_script_runtime_is_not_required(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertNotIn("scripts/project_manager.py", text)
+        self.assertNotIn("context-pack", text)
+
+    def test_source_truth_contract_precedes_outline(self) -> None:
+        skill = SKILL.read_text(encoding="utf-8-sig")
+        reference = SOURCE_ANALYSIS.read_text(encoding="utf-8-sig")
+
+        self.assertIn("`source-truth.json` 是 Source Truth 的唯一结构化事实源", skill)
+        self.assertIn("`source-truth-audit`", skill)
+        self.assertIn("F / J / R / B / U", reference)
+        self.assertIn("structured_fact_sweep", reference)
+        self.assertIn("traceability_rebuild", reference)
+
+    def test_stage01_defaults_to_solution_architecture(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("`solution` 是方案、研究、建设、实施和立项类材料的默认架构", text)
+        self.assertIn("`consulting` 仅在用户明确要求或材料明确属于咨询论证时启用", text)
+        self.assertIn("SOLUTION_ARCHITECTURE_REQUIRED", text)
+
+    def test_solution_outline_preserves_continuous_page_sequence(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("封面、目录、章节页、内容页和封底必须位于同一连续页面序列", text)
+        self.assertIn("章节页只写“第X章：XXX”", text)
+        self.assertIn("`title` 与 `main_message` 必须分开", text)
+
+    def test_page_aggregation_and_retry_contract_are_explicit(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("一个完整业务问题和一个视觉中心", text)
+        self.assertIn("不得把源材料每个小节或列表项机械拆成单页", text)
+        self.assertIn("换方向重写", text)
+        self.assertIn("不能沿原策略只做措辞修补", text)
+
+    def test_stage02_contract_advertises_only_audited_full_image_svg_pptx_route(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("`image-to-editable-svg`", text)
+        self.assertIn("文字审计", text)
+        self.assertIn("可编辑 SVG", text)
+        self.assertIn("manual_required", text)
+
+    def test_stage02_docs_do_not_advertise_dual_image_production(self) -> None:
+        documentation = "\n".join(
+            path.read_text(encoding="utf-8-sig")
+            for path in (
+                SKILL,
+                ROOT / "README.md",
+                ROOT / "references" / "dual-image-editable-overlay.md",
+            )
+        )
+
+        for legacy_mode in (
+            "editable-overlay",
+            "editable-overlay-text-reference",
+            "dual_image_editable_overlay",
+        ):
+            self.assertNotIn(legacy_mode, documentation)
+
+    def test_main_pipeline_names_final_script_pages_as_the_orchestrator(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("脚本锁定 -> final-script-pages -> 所选生图分支 -> 所选 PPT 分支 -> 渲染 QA -> 交付", text)
+        self.assertIn("`final-script-pages` 是脚本锁定后的唯一正式编排入口", text)
+        self.assertIn("`final-script-pages --generate-images` 调用 Codex OAuth 生图后端", text)
+
+    def test_ppt_generation_requires_audited_full_image_reconstruction(self) -> None:
+        text = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("唯一生产模式为 `image-to-editable-svg`", text)
+        self.assertIn("页面盘点、注册图层和可编辑 SVG 重建", text)
+        self.assertIn("禁止生成或依赖无字底图", text)
 
     def test_manual_stop_points_are_allowed_but_must_record_state(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
@@ -106,7 +176,7 @@ class SkillContractTests(unittest.TestCase):
         text = SKILL.read_text(encoding="utf-8-sig")
 
         self.assertIn("套模板后发现正文区问题，必须回到对应页的 full 图或脚本锁定返工", text)
-        self.assertIn("重新生成 full 图后必须重新执行 `template_image_ppt_export`", text)
+        self.assertIn("重新生成图片资产后必须通过 `final-script-pages` 重新执行所选生产分支", text)
 
     def test_each_stage_must_persist_traceable_artifacts(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")

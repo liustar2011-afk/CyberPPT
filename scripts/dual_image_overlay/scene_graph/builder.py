@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import re
+from dataclasses import replace
 from typing import Any, Mapping
 
 from .coordinate import normalize_bbox, resolve_coordinate_context
+from .layout_reference_adapter import adapt_layout_reference
 from .schema import BBox, LayoutIntent, PageSceneGraph, Relation, TextBinding, TextNode, VisualNode
 
 
@@ -499,6 +501,7 @@ def build_page_scene_graph(
     image_size: Mapping[str, Any],
     semantic_layout_plan: Mapping[str, Any] | None = None,
     source_capture_page: Mapping[str, Any] | None = None,
+    layout_reference: Mapping[str, Any] | None = None,
 ) -> PageSceneGraph:
     containers = semantic_plan.get("containers", [])
     semantic_boxes = [
@@ -521,6 +524,23 @@ def build_page_scene_graph(
     visual_nodes = _semantic_container_nodes(semantic_plan, context)
     existing_ids = {node.node_id for node in visual_nodes}
     visual_nodes.extend(node for node in _visual_nodes(visual_registry, context) if node.node_id not in existing_ids)
+    recognized = adapt_layout_reference(layout_reference, coordinate_context=context)
+    recognized_by_id = {node.node_id: node for node in recognized["visual_nodes"]}
+    visual_nodes = [
+        replace(
+            node,
+            attributes={**node.attributes, **recognized_by_id[node.node_id].attributes},
+            source={
+                **node.source,
+                "recognized_layout_source": recognized_by_id[node.node_id].source,
+            },
+        )
+        if node.node_id in recognized_by_id
+        else node
+        for node in visual_nodes
+    ]
+    existing_ids = {node.node_id for node in visual_nodes}
+    visual_nodes.extend(node for node in recognized["visual_nodes"] if node.node_id not in existing_ids)
     text_nodes = _text_nodes(
         script_sections,
         semantic_plan,
@@ -528,7 +548,13 @@ def build_page_scene_graph(
         semantic_layout_plan=semantic_layout_plan,
         source_capture_page=source_capture_page,
     )
-    relations = _dedupe_relations([*_relations(visual_nodes), *_semantic_layout_relations(semantic_layout_plan, visual_nodes)])
+    relations = _dedupe_relations(
+        [
+            *_relations(visual_nodes),
+            *_semantic_layout_relations(semantic_layout_plan, visual_nodes),
+            *recognized["relations"],
+        ]
+    )
     layout_intents = _dedupe_intents([*_layout_intents(text_nodes, visual_nodes, relations), *_neighbor_layout_intents(semantic_layout_plan, text_nodes, visual_nodes)])
     return PageSceneGraph(
         page=page_number,
@@ -547,5 +573,6 @@ def build_page_scene_graph(
             "builder": "scene_graph.builder.v1",
             "semantic_layout_plan_consumed": bool(semantic_layout_plan),
             "source_capture_page_consumed": bool(source_capture_page),
+            "layout_reference": recognized["metadata"],
         },
     )

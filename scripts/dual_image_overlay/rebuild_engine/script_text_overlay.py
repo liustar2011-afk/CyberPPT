@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import html
-import importlib.util
 import json
 import re
 import sys
@@ -18,8 +17,14 @@ from PIL import Image, ImageStat
 
 if __package__:
     from .template_image_ppt_export import extract_content, image_visible_text, page_role, parse_page_blocks
+    from ..ppt_master_runtime_bridge import load_layout_core, runtime_descriptor
 else:
     from template_image_ppt_export import extract_content, image_visible_text, page_role, parse_page_blocks
+    try:
+        from ppt_master_runtime_bridge import load_layout_core, runtime_descriptor
+    except ModuleNotFoundError:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+        from ppt_master_runtime_bridge import load_layout_core, runtime_descriptor
 
 
 MODULE_PREFIX_RE = re.compile(r"^模块[一二三四五六七八九十百千万0-9]+[:：]\s*")
@@ -1220,8 +1225,8 @@ def resolve_overlay_coordinate_context(
         warnings=warnings,
     )
     source_space = actual_size or semantic_input_space
-    coordinate_space = _size_dict(*NORMALIZED_CANVAS_SIZE)
-    source = f"normalized_{NORMALIZED_CANVAS_SIZE[0]}x{NORMALIZED_CANVAS_SIZE[1]}"
+    coordinate_space = actual_size or semantic_input_space or _size_dict(*NORMALIZED_CANVAS_SIZE)
+    source = f"preserved_{int(coordinate_space['width'])}x{int(coordinate_space['height'])}"
 
     for name, size in (("semantic_plan_image_size", plan_size), ("visual_registry_canvas", registry_size)):
         if size and not _sizes_close(size, coordinate_space):
@@ -1591,6 +1596,7 @@ def build_semantic_layout_plan(
         "schema": "cyberppt.dual_image.semantic_layout_plan.v1",
         "layout_policy": "semantic_container_safe_bbox_first",
         "ppt_master_core_policy": "container_role_and_text_role_first",
+        "ppt_master_runtime": runtime_descriptor().to_dict(),
         "coordinate_context": coordinate_context,
         "truth_policy": {
             "geometry_truth": "semantic_plan.containers[].text_safe_bbox",
@@ -1673,28 +1679,9 @@ def _apply_ppt_master_core_layout(items: list[dict[str, Any]]) -> list[dict[str,
 
 
 def _load_vendored_ppt_master_core() -> Any | None:
-    repo_root = Path(__file__).resolve().parents[3]
-    scripts_dir = repo_root / "vendor" / "ppt_master_slide_image_rebuild" / "scripts"
-    module_path = scripts_dir / "dual_image_rebuild_pptx.py"
-    if not module_path.is_file():
-        return None
-    module_name = "_cyberppt_vendored_ppt_master_dual_image_rebuild"
-    cached = sys.modules.get(module_name)
-    if cached is not None:
-        return cached
-    if str(scripts_dir) not in sys.path:
-        sys.path.insert(0, str(scripts_dir))
-    spec = importlib.util.spec_from_file_location(module_name, module_path)
-    if spec is None or spec.loader is None:
-        return None
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
-    try:
-        spec.loader.exec_module(module)
-    except Exception:
-        sys.modules.pop(module_name, None)
-        return None
-    return module
+    # Kept as a compatibility name for existing callers and tests. The bridge
+    # now owns host-versus-vendor selection and module caching.
+    return load_layout_core()
 
 
 def _registry_element_record(

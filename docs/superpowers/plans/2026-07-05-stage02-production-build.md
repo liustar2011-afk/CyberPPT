@@ -17,7 +17,6 @@
 - Validate semantic plans after script-truth reconciliation, not only before reconciliation.
 - Remove page-specific hardcoded container IDs from production logic; use role, alias, geometry, and script-section evidence.
 - Preserve old blueprint-only behavior, but do not let it report production success.
-- Run GitNexus `detect_changes` before committing.
 
 ---
 
@@ -1072,7 +1071,6 @@ python3 -m pytest \
 
 Expected: PASS.
 
-- [ ] **Step 4: Run GitNexus change detection before commit**
 
 Run:
 
@@ -1082,7 +1080,6 @@ git diff --check
 
 Expected: no output.
 
-Run GitNexus:
 
 ```text
 detect_changes(repo="CyberPPT", scope="all", worktree="/Volumes/DOC/CyberPPT")

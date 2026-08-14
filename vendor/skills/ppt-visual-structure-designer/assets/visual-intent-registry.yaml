@@ -1,0 +1,74 @@
+registry_version: "1.1"
+intents:
+  - id: single_judgment_anchor
+    relations: [judgment, evidence]
+    spatial_grammar: [anchor]
+    required_structure: [judgment, evidence, support_direction]
+  - id: multi_semantic_foundation
+    relations: [support]
+    spatial_grammar: [anchor, layer]
+    required_structure: [distinct_foundations, shared_focus, support_direction]
+  - id: evidence_to_judgment
+    relations: [evidence, converge]
+    spatial_grammar: [path, convergence]
+    required_structure: [evidence, inference_direction, judgment]
+  - id: scene_embedded_flow
+    relations: [flow]
+    spatial_grammar: [path]
+    required_structure: [participants, action_sequence, context]
+  - id: transformation_pipeline
+    relations: [transform]
+    spatial_grammar: [path]
+    required_structure: [input, transformation, state_change, output]
+  - id: convergence_to_capability
+    relations: [converge]
+    spatial_grammar: [convergence]
+    required_structure: [sources, convergence_point, formed_outcome]
+  - id: capability_to_outcomes
+    relations: [diverge]
+    spatial_grammar: [divergence]
+    required_structure: [source_capability, outcomes, outcome_priority]
+  - id: layered_architecture
+    relations: [layer]
+    spatial_grammar: [layer]
+    required_structure: [levels, dependency_direction, crosscutting_relation]
+  - id: dual_engine_synergy
+    relations: [exchange, support]
+    spatial_grammar: [interface]
+    required_structure: [role_a, role_b, exchange, shared_outcome]
+  - id: closed_loop_operation
+    relations: [loop]
+    spatial_grammar: [path, feedback]
+    required_structure: [start, main_path, feedback_target, return_direction]
+  - id: comparison_tension
+    relations: [compare]
+    spatial_grammar: [tension]
+    required_structure: [shared_basis, alternatives, differences, judgment]
+  - id: phased_roadmap
+    relations: [flow, milestone]
+    spatial_grammar: [path]
+    required_structure: [phases, sequence, milestone, phase_weight]
+  - id: network_ecosystem
+    relations: [exchange, network]
+    spatial_grammar: [network]
+    required_structure: [typed_nodes, typed_exchange, direction, boundary]
+  - id: policy_to_action
+    relations: [control, transform]
+    spatial_grammar: [control, path]
+    required_structure: [constraint_source, constrained_target, action, outcome]
+  - id: risk_control_boundary
+    relations: [boundary, control]
+    spatial_grammar: [boundary]
+    required_structure: [inside, outside, entry_condition, control, allowed_output]
+  - id: data_flow_value_chain
+    relations: [flow, transform, boundary]
+    spatial_grammar: [path, boundary]
+    required_structure: [data_state, control, transformation, value_outcome]
+  - id: role_responsibility_map
+    relations: [responsibility]
+    spatial_grammar: [interface, network]
+    required_structure: [actors, responsibilities, deliverables, interfaces]
+  - id: problem_cause_resolution
+    relations: [cause, transform]
+    spatial_grammar: [tension, path]
+    required_structure: [problem, causes, intervention, outcome]

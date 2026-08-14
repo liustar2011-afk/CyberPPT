@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ppt-script.experience-case.v1",
+  "title": "ppt-script approved experience case",
+  "type": "object",
+  "required": [
+    "schema", "case_id", "title", "task_type", "report_subtype", "audience_level",
+    "issue_type", "tags", "original_output", "revised_output", "reasons",
+    "applicable_conditions", "do_not_apply_when", "positive_patterns", "anti_patterns",
+    "source_project", "created_at", "status"
+  ],
+  "properties": {
+    "schema": {"const": "ppt-script.experience-case.v1"},
+    "case_id": {"type": "string", "pattern": "^CASE-"},
+    "status": {"enum": ["draft", "approved", "rejected", "archived"]},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "reasons": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "applicable_conditions": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "do_not_apply_when": {"type": "array", "items": {"type": "string"}},
+    "positive_patterns": {"type": "array", "items": {"type": "string"}},
+    "anti_patterns": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

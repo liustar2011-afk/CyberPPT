@@ -1,0 +1,25 @@
+schema: ppt-script.cognition-scorecard.v1
+scale: 0-5
+criteria:
+  - id: intent
+    name: 材料真实意图识别
+    weight: 15
+  - id: core-proposition
+    name: 核心命题准确性
+    weight: 20
+  - id: cross-section
+    name: 跨章节证据综合
+    weight: 20
+  - id: state-boundary
+    name: 主体、状态与边界准确性
+    weight: 20
+  - id: conflict
+    name: 冲突与研究空白识别
+    weight: 15
+  - id: decision-relevance
+    name: 决策相关性
+    weight: 10
+comparison_arms:
+  - no-skill
+  - prior-version
+  - current-version

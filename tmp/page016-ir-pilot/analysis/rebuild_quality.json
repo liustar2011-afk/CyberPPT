@@ -1,0 +1,55 @@
+{
+  "pages": [
+    {
+      "page_number": 16,
+      "title": "接口与集成体系",
+      "rebuild_mode": "template_body_region",
+      "semantic_plan": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\analysis\\semantic_plan\\page_016_semantic_plan.json",
+      "semantic_plan_gate": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\analysis\\semantic_plan_gate\\page_016_semantic_plan_gate.json",
+      "semantic_layout_plan": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\analysis\\semantic_layout_plan\\page_016_layout_plan.json",
+      "scene_graph": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\analysis\\scene_graph\\page_016_scene_graph.json",
+      "scene_graph_gate": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\analysis\\scene_graph_gate\\page_016_scene_graph_gate.json",
+      "page_layout_plan": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\analysis\\page_layout_plan\\page_016_layout_plan.json",
+      "page_svg_ir": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\analysis\\page_svg_ir\\page_016_page_svg_ir.json",
+      "qa_fusion": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\analysis\\qa_fusion\\page_016_qa_fusion.json",
+      "svg_export_source": "page_svg_ir",
+      "svg_path": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\svg_output\\page_016_接口与集成体系.svg",
+      "semantic_source": "D:\\CyberPPT\\projects\\talent-training-center-knowledge-assets-ai-application-20260730\\workbench\\stages\\02-blueprint-dual-image\\page016_dual_editable\\semantic_plan.json",
+      "editable_text_layout_source": "scene_graph_layout",
+      "visual_registry_source": null,
+      "semantic_containers": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\analysis\\semantic_containers\\page_016_containers.json",
+      "image_size_check": {
+        "status": "preserved_1774x887",
+        "source_full_size": [
+          1774,
+          887
+        ],
+        "source_background_size": [
+          1774,
+          887
+        ],
+        "full_size": [
+          1774,
+          887
+        ],
+        "background_size": [
+          1774,
+          887
+        ],
+        "output_size": [
+          1774,
+          887
+        ],
+        "full_output_path": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\images\\normalized\\page_016_接口与集成体系_full_1774x887.png",
+        "background_output_path": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\images\\normalized\\page_016_接口与集成体系_background_1774x887.png",
+        "output_path": "D:\\CyberPPT\\tmp\\page016-ir-pilot\\images\\normalized\\page_016_接口与集成体系_background_1774x887.png"
+      },
+      "text_color_check": {
+        "white_text_boxes": 2,
+        "total_text_boxes": 22
+      },
+      "visible_image_variant": "background",
+      "editable_text_visibility": "visible"
+    }
+  ]
+}

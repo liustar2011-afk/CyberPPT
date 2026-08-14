@@ -20,6 +20,7 @@ import json
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +35,8 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.dual_image_overlay.workspace_layout_qa import (  # noqa: E402
     check_page_layout_overlaps,
 )
+from scripts.dual_image_overlay.office_render import office_candidates as _office_candidates  # noqa: E402
+from scripts.dual_image_overlay.office_render import office_failure_evidence as _render_failure_evidence  # noqa: E402
 
 
 def _emu_to_px(value: int, *, dpi: int = 96) -> float:
@@ -125,22 +128,47 @@ def check_pptx_geometry(pptx_path: Path, *, dpi: int = 96) -> dict[str, Any]:
 
 
 def render_to_png(pptx_path: Path, out_dir: Path, *, dpi: int = 150) -> list[Path]:
-    """Render the pptx to PDF (LibreOffice) then to PNG (poppler). Best-effort."""
-    soffice = shutil.which("soffice") or shutil.which("libreoffice")
+    """Render the PPTX to PDF (LibreOffice) then to PNG (poppler)."""
+    soffice_candidates = _office_candidates()
     pdftoppm = shutil.which("pdftoppm")
-    if not soffice or not pdftoppm:
-        print(
-            "Warning: soffice/pdftoppm not found on PATH; skipping render, geometry check still ran.",
-            file=sys.stderr,
-        )
-        return []
+    if not soffice_candidates:
+        raise RuntimeError("No soffice/libreoffice executable was found; render QA cannot run.")
+    if not pdftoppm:
+        raise RuntimeError("pdftoppm was not found on PATH; render QA cannot run.")
     out_dir.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        [soffice, "--headless", "--convert-to", "pdf", "--outdir", str(out_dir), str(pptx_path)],
-        check=True,
-        capture_output=True,
-    )
     pdf_path = out_dir / (pptx_path.stem + ".pdf")
+    failures: list[str] = []
+    last_error: BaseException | None = None
+    for soffice in soffice_candidates:
+        try:
+            # A disposable profile prevents a stale or concurrent desktop
+            # LibreOffice profile from aborting a headless conversion.
+            with tempfile.TemporaryDirectory(prefix="cyberppt-soffice-profile-") as profile_dir:
+                subprocess.run(
+                    [
+                        str(soffice),
+                        f"-env:UserInstallation={Path(profile_dir).resolve().as_uri()}",
+                        "--headless",
+                        "--convert-to",
+                        "pdf",
+                        "--outdir",
+                        str(out_dir),
+                        str(pptx_path),
+                    ],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+            if not pdf_path.is_file():
+                raise RuntimeError("conversion exited successfully but did not create the expected PDF")
+            break
+        except (OSError, subprocess.CalledProcessError, RuntimeError) as error:
+            last_error = error
+            failures.append(_render_failure_evidence(soffice, error))
+    else:
+        evidence = "\n  ".join(failures)
+        raise RuntimeError(f"All LibreOffice render attempts failed:\n  {evidence}") from last_error
+
     subprocess.run(
         [pdftoppm, "-jpeg", "-r", str(dpi), str(pdf_path), str(out_dir / "slide")],
         check=True,

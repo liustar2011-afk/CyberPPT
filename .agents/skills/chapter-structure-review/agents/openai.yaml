@@ -1,0 +1,4 @@
+interface:
+  display_name: "章结构审阅"
+  short_description: "审阅Outline或页面脚本的章内推进、合并、去重与上屏结构"
+  default_prompt: "使用 $chapter-structure-review 对当前章节做结构审阅，按实际阶段输出 review Markdown，并给出可执行的消费顺序。"

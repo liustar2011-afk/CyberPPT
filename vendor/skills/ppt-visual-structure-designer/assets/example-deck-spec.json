@@ -1,0 +1,372 @@
+{
+  "schema_version": "1.1",
+  "deck_id": "example-public-service-transformation",
+  "deck_title": "????????????",
+  "deck_context": {
+    "audience": "???????????????????",
+    "purpose": "??????????????????????",
+    "usage_scene": "?????????",
+    "narrative": "?????????????????????????????",
+    "source_files": [
+      "example-input.md"
+    ]
+  },
+  "global_profile": "external-style-lock",
+  "content_lock": {
+    "default_mode": "strict",
+    "global_locked_terms": [
+      "????",
+      "????",
+      "????",
+      "???????"
+    ],
+    "global_forbidden_changes": [
+      "????????",
+      "????????",
+      "????????"
+    ]
+  },
+  "pages": [
+    {
+      "schema_version": "1.1",
+      "page_id": "P02",
+      "page_number": 2,
+      "page_title": "服务诉求转化为可追踪办理结果",
+      "page_role": "流程路径",
+      "page_mission": "让观众理解服务诉求如何经过分流和办理形成可追踪结果。",
+      "core_judgment": "统一分流与责任办理把服务诉求转化为可追踪的反馈结果。",
+      "content_lock": {
+        "mode": "strict",
+        "locked_items": [
+          {
+            "id": "T1",
+            "type": "title",
+            "text": "服务诉求转化为可追踪办理结果",
+            "source_ref": "domain-neutral fixture input-transform-output"
+          },
+          {
+            "id": "B1",
+            "type": "body",
+            "text": "服务诉求",
+            "source_ref": "domain-neutral fixture input-transform-output"
+          },
+          {
+            "id": "B2",
+            "type": "body",
+            "text": "分类分流",
+            "source_ref": "domain-neutral fixture input-transform-output"
+          },
+          {
+            "id": "B3",
+            "type": "body",
+            "text": "责任办理",
+            "source_ref": "domain-neutral fixture input-transform-output"
+          },
+          {
+            "id": "B4",
+            "type": "body",
+            "text": "可追踪反馈结果",
+            "source_ref": "domain-neutral fixture input-transform-output"
+          }
+        ],
+        "allowed_transformations": [
+          "line_break",
+          "grouping",
+          "position_change"
+        ],
+        "forbidden_transformations": [
+          "change facts",
+          "change actors",
+          "change relationships"
+        ]
+      },
+      "evidence_units": [
+        {
+          "id": "E1",
+          "text": "服务诉求",
+          "kind": "fact",
+          "priority": "P0",
+          "status": "待受理",
+          "source_ref": "domain-neutral fixture input-transform-output"
+        },
+        {
+          "id": "E2",
+          "text": "分类分流",
+          "kind": "process",
+          "priority": "P0",
+          "status": "处理动作",
+          "source_ref": "domain-neutral fixture input-transform-output"
+        },
+        {
+          "id": "E3",
+          "text": "责任办理",
+          "kind": "process",
+          "priority": "P0",
+          "status": "处理动作",
+          "source_ref": "domain-neutral fixture input-transform-output"
+        },
+        {
+          "id": "E4",
+          "text": "可追踪反馈结果",
+          "kind": "result",
+          "priority": "P0",
+          "status": "服务结果",
+          "source_ref": "domain-neutral fixture input-transform-output"
+        }
+      ],
+      "semantic_graph": {
+        "primary_relation": "transform",
+        "direction": "left_to_right",
+        "nodes": [
+          "E1",
+          "E2",
+          "E3",
+          "E4"
+        ],
+        "edges": [
+          {
+            "from": "E1",
+            "to": "E2",
+            "relation": "enters",
+            "label": "受理"
+          },
+          {
+            "from": "E2",
+            "to": "E3",
+            "relation": "routes",
+            "label": "分流"
+          },
+          {
+            "from": "E3",
+            "to": "E4",
+            "relation": "produces",
+            "label": "反馈"
+          }
+        ],
+        "decision_relationship": "统一分流与责任办理把服务诉求转化为可追踪的反馈结果。"
+      },
+      "structural_decision": {
+        "semantic_focus": {
+          "kind": "action",
+          "ref": "E2"
+        },
+        "spatial_grammar": [
+          "path"
+        ],
+        "semantic_tags": [
+          "transform",
+          "accountability"
+        ],
+        "primary_refs": [
+          "E2",
+          "E3",
+          "E4"
+        ],
+        "secondary_refs": [
+          "E1"
+        ],
+        "reading_sequence": [
+          "E1",
+          "E2",
+          "E3",
+          "E4"
+        ],
+        "text_bindings": [
+          {
+            "evidence_id": "E1",
+            "target_ref": "E1",
+            "binding": "label"
+          },
+          {
+            "evidence_id": "E2",
+            "target_ref": "E2",
+            "binding": "embedded"
+          },
+          {
+            "evidence_id": "E3",
+            "target_ref": "E3",
+            "binding": "embedded"
+          },
+          {
+            "evidence_id": "E4",
+            "target_ref": "E4",
+            "binding": "result"
+          }
+        ],
+        "representation_freedom": {
+          "carrier": "free",
+          "medium": "free",
+          "reason": "The source fixes semantic relationships but leaves carrier and medium open."
+        }
+      },
+      "visual_decision": {
+        "visual_intent_type": "transformation_pipeline",
+        "visual_thesis": "统一分流与责任办理把服务诉求转化为可追踪的反馈结果。",
+        "spatial_organization": "服务诉求进入受理接口，经分类分流落到责任办理，再把可追踪反馈接回同一服务流。",
+        "reading_path": [
+          "服务诉求",
+          "分类分流",
+          "责任办理",
+          "可追踪反馈结果"
+        ],
+        "text_integration_method": "服务诉求文字贴在入口对象，分类分流和责任办理文字贴在对应动作接口，反馈结果文字贴在交付端。",
+        "relationship_encoding": "入口、分流接口、责任动作和反馈出口按受理、分流、反馈的具名关系连续承接。",
+        "visual_center_count": 1,
+        "visual_hierarchy": {
+          "primary": "分类分流",
+          "secondary": [
+            "责任办理",
+            "可追踪反馈结果"
+          ],
+          "tertiary": [
+            "服务诉求"
+          ]
+        }
+      },
+      "text_integration": {
+        "title_render_mode": "external_text_layer",
+        "subtitle_render_mode": "external_text_layer",
+        "body_render_mode": "in_image",
+        "placement_strategy": "服务诉求文字贴在入口对象，分类分流和责任办理文字贴在对应动作接口，反馈结果文字贴在交付端。"
+      },
+      "geometry": {
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "ratio": "16:9"
+        },
+        "title_exclusion_zone": {
+          "x": 0,
+          "y": 0,
+          "w": 1280,
+          "h": 105
+        },
+        "regions": [
+          {
+            "id": "R1",
+            "role": "primary_structure",
+            "x": 80,
+            "y": 130,
+            "w": 820,
+            "h": 500,
+            "priority": "primary"
+          },
+          {
+            "id": "R2",
+            "role": "subordinate_evidence",
+            "x": 920,
+            "y": 180,
+            "w": 280,
+            "h": 390,
+            "priority": "secondary"
+          }
+        ]
+      },
+      "image_plan": {
+        "use_scene": false,
+        "scene_type": "No independent scene; the service-flow relationship field carries the page",
+        "business_object": "受理—分流—责任办理的服务流转场",
+        "semantic_role": "服务诉求经过分流接口和责任动作转化为可追踪结果",
+        "placement": "以连续服务流转场作为内容区主结构，入口和结果附着于其两端",
+        "front_facing_people": false,
+        "identifiable_location": false,
+        "factual_event_implication": false
+      },
+      "connectors": [
+        {
+          "from": "E1",
+          "to": "E2",
+          "type": "enters",
+          "direction": "left_to_right",
+          "label": "受理",
+          "main_chain": true
+        },
+        {
+          "from": "E2",
+          "to": "E3",
+          "type": "routes",
+          "direction": "left_to_right",
+          "label": "分流",
+          "main_chain": true
+        },
+        {
+          "from": "E3",
+          "to": "E4",
+          "type": "produces",
+          "direction": "left_to_right",
+          "label": "反馈",
+          "main_chain": false
+        }
+      ],
+      "final_text": [
+        {
+          "id": "F1",
+          "role": "module",
+          "text": "服务诉求",
+          "region_id": "R2"
+        },
+        {
+          "id": "F2",
+          "role": "result",
+          "text": "分类分流",
+          "region_id": "R1"
+        },
+        {
+          "id": "F3",
+          "role": "module",
+          "text": "责任办理",
+          "region_id": "R1"
+        },
+        {
+          "id": "F4",
+          "role": "module",
+          "text": "可追踪反馈结果",
+          "region_id": "R1"
+        }
+      ],
+      "generation_handoff": {
+        "structural_guidance": {
+          "source": "structural_decision",
+          "additional_constraints": [
+            "keep one primary structure",
+            "bind every P0 evidence unit",
+            "do not duplicate one judgment as another primary region"
+          ]
+        },
+        "required_text": [
+          "服务诉求",
+          "分类分流",
+          "责任办理",
+          "可追踪反馈结果"
+        ],
+        "style_source_ref": "external-style-lock",
+        "title_exclusion_instruction": "Reserve the top title area for an external PowerPoint text layer. Do not draw title, subtitle, logo or page number."
+      },
+      "avoid": [
+        "equal treatment of unequal semantic roles",
+        "one visual object per bullet",
+        "a second primary structure"
+      ],
+      "qa": {
+        "status": "passed",
+        "score": 96,
+        "blocking_issues": [],
+        "warnings": []
+      }
+    }
+  ],
+  "deck_rhythm": {
+    "density_pattern": "?????????????????????",
+    "visual_intent_sequence": [
+      "transformation_pipeline"
+    ],
+    "repetition_control": "??????????"
+  },
+  "capacity_suggestions": [],
+  "qa_summary": {
+    "status": "passed",
+    "average_score": 96,
+    "blocking_issues": [],
+    "warnings": []
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "PPT脚本工作台"
+  short_description: "源材料解读、章节规划、脚本编写、评估优化与视觉转译"
+  default_prompt: "使用 $ppt-script 深度读取全部源材料，完成材料分析、Source Truth Map、理解闸门、章节规划和PPT脚本全流程；活动上下文不得替代原文。"

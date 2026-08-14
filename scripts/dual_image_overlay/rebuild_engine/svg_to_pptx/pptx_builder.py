@@ -152,9 +152,25 @@ def _as_dict(value: Any) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
 
 
+def _windows_extended_path(path: Path) -> str:
+    """Return a Windows long-path-safe absolute filesystem path."""
+    resolved = str(path.resolve())
+    if os.name != "nt" or resolved.startswith("\\\\?\\"):
+        return resolved
+    if resolved.startswith("\\\\"):
+        return "\\\\?\\UNC\\" + resolved[2:]
+    return "\\\\?\\" + resolved
+
+
 def _create_writable_work_dir(output_path: Path) -> Path:
     """Create a real writable work directory for PPTX assembly."""
-    parents = [output_path.parent, Path.cwd(), Path(tempfile.gettempdir())]
+    # PPTX extraction creates several nested package directories.  On Windows,
+    # putting that workspace beside a deeply nested delivery path can exceed
+    # MAX_PATH even when the final PPTX name itself is valid.
+    if os.name == "nt":
+        parents = [Path(tempfile.gettempdir()), output_path.parent, Path.cwd()]
+    else:
+        parents = [output_path.parent, Path.cwd(), Path(tempfile.gettempdir())]
     seen: set[str] = set()
     errors: list[str] = []
 
@@ -1230,7 +1246,10 @@ def create_pptx_with_native_svg(
                 if file_path.is_file():
                     arcname = file_path.relative_to(extract_dir)
                     zf.write(file_path, arcname)
-        shutil.move(str(temp_output_path), str(output_path))
+        shutil.move(
+            _windows_extended_path(temp_output_path),
+            _windows_extended_path(output_path),
+        )
         permission_warnings = _relax_output_permissions(output_path)
 
         if conversion_trace_path and conversion_trace is not None:

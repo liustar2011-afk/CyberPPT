@@ -15,6 +15,7 @@ import mimetypes
 import os
 from pathlib import Path
 import re
+import shutil
 import sys
 import time
 from typing import Any
@@ -22,7 +23,8 @@ from urllib import error, request
 
 
 DEFAULT_MODEL = "gpt-image-2"
-DEFAULT_SIZE = "1672x941"
+DEFAULT_SIZE = "2048x1024"
+ENHANCED_OUTPUT_SCALE = 2
 DEFAULT_QUALITY = "high"
 DEFAULT_OUTPUT_FORMAT = "png"
 DEFAULT_TIMEOUT = 600
@@ -169,7 +171,7 @@ def validate_gpt_image_2_size(size: str) -> None:
         return
     parsed = _parse_size(size)
     if parsed is None:
-        _die("size must be auto or WIDTHxHEIGHT, for example 1672x941.")
+        _die("size must be auto or WIDTHxHEIGHT, for example 2048x1024.")
     width, height = parsed
     max_edge = max(width, height)
     min_edge = min(width, height)
@@ -488,23 +490,97 @@ def _extract_responses_text(body: str) -> str:
     return text
 
 
-def _write_image(image_b64: str, output_path: Path, *, force: bool) -> None:
+def ensure_output_size(output_path: Path, size: str) -> tuple[int, int]:
+    """Enhance and normalize an ingested image through the registered vendor skill."""
+
+    if size == "auto":
+        return (-1, -1)
+    parsed = _parse_size(size)
+    if parsed is None:
+        return (-1, -1)
+    target_width, target_height = parsed
+    from cyberppt.image_enhancer import enhance_image
+
+    enhanced_width = target_width * ENHANCED_OUTPUT_SCALE
+    enhanced_height = target_height * ENHANCED_OUTPUT_SCALE
+    enhance_image(
+        output_path,
+        output=output_path,
+        backend="builtin",
+        scale=float(ENHANCED_OUTPUT_SCALE),
+        target_size=(enhanced_width, enhanced_height),
+        mode="chart_heavy",
+    )
+    print(
+        f"Enhanced image at {ENHANCED_OUTPUT_SCALE}x pixel density "
+        f"({enhanced_width}x{enhanced_height}) for logical canvas "
+        f"{target_width}x{target_height}: {output_path}",
+        file=sys.stderr,
+    )
+    return (enhanced_width, enhanced_height)
+
+
+def raw_output_path(output_path: Path) -> Path:
+    """Return the sibling path used to preserve the backend's unmodified PNG."""
+
+    return output_path.with_name(f"{output_path.stem}_raw.png")
+
+
+def _write_image(
+    image_b64: str,
+    output_path: Path,
+    *,
+    force: bool,
+    size: str | None = None,
+    postprocess: bool = True,
+) -> None:
     if len(image_b64) > MAX_CODEX_BASE64_CHARS:
         _die("Image payload exceeded size limit.")
-    if output_path.exists() and not force:
-        _die(f"Output already exists: {output_path} (use --force to overwrite)")
+    raw_path = raw_output_path(output_path)
+    existing = [path for path in (output_path, raw_path) if path.exists()]
+    if existing and not force:
+        _die(
+            "Output already exists: "
+            + ", ".join(str(path) for path in existing)
+            + " (use --force to overwrite)"
+        )
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_bytes(base64.b64decode(image_b64))
+    raw_path.write_bytes(base64.b64decode(image_b64))
+    shutil.copyfile(raw_path, output_path)
+    try:
+        from PIL import Image
+
+        with Image.open(raw_path) as raw_image:
+            raw_size = raw_image.size
+        print(
+            f"Wrote raw backend image {raw_size[0]}x{raw_size[1]}: {raw_path}",
+            file=sys.stderr,
+        )
+    except ImportError:
+        print(f"Wrote raw backend image: {raw_path}", file=sys.stderr)
+    if size and postprocess:
+        final_size = ensure_output_size(output_path, size)
+        if final_size != (-1, -1):
+            print(
+                f"Final output image {final_size[0]}x{final_size[1]}: {output_path}",
+                file=sys.stderr,
+            )
 
 
-def _write_images(payloads: list[str], output_paths: list[Path], *, force: bool) -> None:
+def _write_images(
+    payloads: list[str],
+    output_paths: list[Path],
+    *,
+    force: bool,
+    size: str | None = None,
+) -> None:
     if len(payloads) < len(output_paths):
         _die(
             f"Codex returned {len(payloads)} image(s), but {len(output_paths)} independent image(s) were required. "
             "Do not accept a stitched comparison image as a substitute."
         )
     for payload, output_path in zip(payloads, output_paths):
-        _write_image(payload, output_path, force=force)
+        _write_image(payload, output_path, force=force, size=size)
         print(f"Wrote {output_path}")
 
 
@@ -519,6 +595,7 @@ def run_codex_image(
     force: bool = False,
     dry_run: bool = False,
     timeout: int = DEFAULT_TIMEOUT,
+    postprocess: bool = True,
 ) -> Path:
     """Generate or edit one image through Codex OAuth."""
     image_paths = image_paths or []
@@ -572,7 +649,7 @@ def run_codex_image(
         endpoint_label = "responses"
     elapsed = time.time() - started
     print(f"Codex OAuth image completed via {endpoint_label} in {elapsed:.1f}s.", file=sys.stderr)
-    _write_image(payloads[0], output_path, force=force)
+    _write_image(payloads[0], output_path, force=force, size=size, postprocess=postprocess)
     print(f"Wrote {output_path}")
     return output_path
 
@@ -626,7 +703,7 @@ def run_codex_multi_image_once(
     payloads = _extract_responses_payloads(response_text)
     elapsed = time.time() - started
     print(f"Codex OAuth multi-image request completed in {elapsed:.1f}s.", file=sys.stderr)
-    _write_images(payloads, output_paths, force=force)
+    _write_images(payloads, output_paths, force=force, size=size)
     return output_paths
 
 
