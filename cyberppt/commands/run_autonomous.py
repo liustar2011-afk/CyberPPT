@@ -220,47 +220,41 @@ def _assert_production_proof(contract: AutonomousContract, result: dict[str, Any
             if isinstance(pair, dict):
                 for variant in variants:
                     _assert_actual_send(manifest_path=manifest_path, pair=pair, variant=variant)
-    if contract.production_mode != "full-image":
-        readiness = result.get("production_readiness")
-        readiness_path = contract.project / "analysis" / "template_rebuild_readiness.json"
-        if (
-            not isinstance(readiness, dict)
-            or readiness.get("status") != "production_ready"
-            or readiness.get("valid") is not True
-        ):
-            raise GateBlocked(
-                "editable-rebuild",
-                "editable-overlay production did not reach production_ready",
-                readiness_path,
-            )
-        if not readiness_path.is_file():
-            raise GateBlocked(
-                "editable-rebuild",
-                "template rebuild readiness report is missing",
-                readiness_path,
-            )
-        rebuild_readiness = _read_json(readiness_path)
-        if (
-            rebuild_readiness.get("valid") is not True
-            or rebuild_readiness.get("status") != "ready_for_delivery"
-        ):
-            raise GateBlocked(
-                "editable-rebuild",
-                "template rebuild readiness did not pass delivery QA",
-                readiness_path,
-            )
-        rebuild_artifacts = rebuild_readiness.get("artifacts")
-        exported_pptx = (
-            rebuild_artifacts.get("exported_pptx")
-            if isinstance(rebuild_artifacts, dict)
-            else None
+    readiness = result.get("production_readiness")
+    readiness_path = Path(str(artifacts.get("delivery_readiness") or "")).expanduser()
+    if (
+        not isinstance(readiness, dict)
+        or readiness.get("status") != "production_ready"
+        or readiness.get("valid") is not True
+    ):
+        raise GateBlocked(
+            "image-to-editable-svg",
+            "image-to-editable-svg production did not reach production_ready",
+            readiness_path,
         )
-        if not exported_pptx or not Path(str(exported_pptx)).is_file():
-            raise GateBlocked(
-                "editable-rebuild",
-                "editable-overlay production has no verified exported PPTX",
-                readiness_path,
-            )
+    if not readiness_path.is_file():
+        raise GateBlocked(
+            "image-to-editable-svg",
+            "image-to-editable-svg delivery readiness report is missing",
+            readiness_path,
+        )
+    delivery_readiness = _read_json(readiness_path)
+    if (
+        delivery_readiness.get("status") != "production_ready"
+        or (delivery_readiness.get("delivery_readiness") or {}).get("valid") is not True
+    ):
+        raise GateBlocked(
+            "image-to-editable-svg",
+            "image-to-editable-svg delivery readiness did not pass QA",
+            readiness_path,
+        )
+    exported_pptx = artifacts.get("exported_pptx")
+    if not exported_pptx or not Path(str(exported_pptx)).is_file():
+        raise GateBlocked(
+            "image-to-editable-svg",
+            "image-to-editable-svg production has no verified exported PPTX",
+            readiness_path,
+        )
     return manifest_path
 
 

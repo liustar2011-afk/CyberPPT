@@ -20,6 +20,7 @@ import json
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -124,23 +125,90 @@ def check_pptx_geometry(pptx_path: Path, *, dpi: int = 96) -> dict[str, Any]:
     }
 
 
-def render_to_png(pptx_path: Path, out_dir: Path, *, dpi: int = 150) -> list[Path]:
-    """Render the pptx to PDF (LibreOffice) then to PNG (poppler). Best-effort."""
-    soffice = shutil.which("soffice") or shutil.which("libreoffice")
-    pdftoppm = shutil.which("pdftoppm")
-    if not soffice or not pdftoppm:
-        print(
-            "Warning: soffice/pdftoppm not found on PATH; skipping render, geometry check still ran.",
-            file=sys.stderr,
-        )
-        return []
-    out_dir.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        [soffice, "--headless", "--convert-to", "pdf", "--outdir", str(out_dir), str(pptx_path)],
-        check=True,
-        capture_output=True,
+def _office_candidates() -> list[Path]:
+    """Return Office executables in preferred order, including Codex's runtime.
+
+    Homebrew LibreOffice can occasionally abort in a headless sandbox (exit
+    status 134).  The desktop runtime bundles an isolated LibreOffice build,
+    so keep it as a deterministic fallback instead of silently skipping the
+    visual render.
+    """
+    candidates = [
+        Path(command)
+        for command in (shutil.which("soffice"), shutil.which("libreoffice"))
+        if command
+    ]
+    bundled = (
+        Path.home()
+        / ".cache"
+        / "codex-runtimes"
+        / "codex-primary-runtime"
+        / "dependencies"
+        / "bin"
+        / "override"
+        / "soffice"
     )
+    if bundled.is_file():
+        candidates.append(bundled)
+
+    unique: list[Path] = []
+    for candidate in candidates:
+        if candidate not in unique:
+            unique.append(candidate)
+    return unique
+
+
+def _render_failure_evidence(candidate: Path, error: BaseException) -> str:
+    if isinstance(error, subprocess.CalledProcessError):
+        return (
+            f"{candidate} exited {error.returncode}; "
+            f"stdout={error.stdout!r}; stderr={error.stderr!r}"
+        )
+    return f"{candidate} could not be started: {error}"
+
+
+def render_to_png(pptx_path: Path, out_dir: Path, *, dpi: int = 150) -> list[Path]:
+    """Render the PPTX to PDF (LibreOffice) then to PNG (poppler)."""
+    soffice_candidates = _office_candidates()
+    pdftoppm = shutil.which("pdftoppm")
+    if not soffice_candidates:
+        raise RuntimeError("No soffice/libreoffice executable was found; render QA cannot run.")
+    if not pdftoppm:
+        raise RuntimeError("pdftoppm was not found on PATH; render QA cannot run.")
+    out_dir.mkdir(parents=True, exist_ok=True)
     pdf_path = out_dir / (pptx_path.stem + ".pdf")
+    failures: list[str] = []
+    last_error: BaseException | None = None
+    for soffice in soffice_candidates:
+        try:
+            # A disposable profile prevents a stale or concurrent desktop
+            # LibreOffice profile from aborting a headless conversion.
+            with tempfile.TemporaryDirectory(prefix="cyberppt-soffice-profile-") as profile_dir:
+                subprocess.run(
+                    [
+                        str(soffice),
+                        f"-env:UserInstallation={Path(profile_dir).resolve().as_uri()}",
+                        "--headless",
+                        "--convert-to",
+                        "pdf",
+                        "--outdir",
+                        str(out_dir),
+                        str(pptx_path),
+                    ],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+            if not pdf_path.is_file():
+                raise RuntimeError("conversion exited successfully but did not create the expected PDF")
+            break
+        except (OSError, subprocess.CalledProcessError, RuntimeError) as error:
+            last_error = error
+            failures.append(_render_failure_evidence(soffice, error))
+    else:
+        evidence = "\n  ".join(failures)
+        raise RuntimeError(f"All LibreOffice render attempts failed:\n  {evidence}") from last_error
+
     subprocess.run(
         [pdftoppm, "-jpeg", "-r", str(dpi), str(pdf_path), str(out_dir / "slide")],
         check=True,

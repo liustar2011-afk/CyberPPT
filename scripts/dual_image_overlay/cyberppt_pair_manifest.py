@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
-"""Build CyberPPT-owned dual-image pair manifests.
+"""Build CyberPPT full-image manifests for editable-SVG reconstruction.
 
-This is the CyberPPT side of the "approved body blueprint -> full/background
-images -> editable PPT" pipeline. It can promote approved blueprint PNGs to
-full images, compiles final-deliverable content-region prompts for repairs, writes
-a page_image_pairs.json compatible with the editable overlay rebuild step, and
-verifies that the expected image files exist.
+This creates the audited full-image input consumed by the Stage 02
+image-to-editable-SVG reconstruction route.
 
 It intentionally does not import any legacy image-pair batch generator or
 external style preset system.
@@ -54,13 +51,9 @@ CONTENT_REGION = {"x": 0, "y": 0, "width": 2048, "height": 1024}
 # API-valid 16-multiple canvas used for ImageGen request + full-image ingest resize.
 GENERATION_SIZE = {"width": 2048, "height": 1024}
 GENERATION_SIZE_TEXT = f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}"
-FULL_IMAGE_MODE = "full-image"
-DUAL_IMAGE_MODE = "editable-overlay"
-TRIPLE_IMAGE_MODE = "editable-overlay-text-reference"
-PRODUCTION_MODES = (FULL_IMAGE_MODE, DUAL_IMAGE_MODE, TRIPLE_IMAGE_MODE)
+FULL_IMAGE_MODE = "image-to-editable-svg"
+PRODUCTION_MODES = (FULL_IMAGE_MODE,)
 FULL_GENERATION_METHOD = "text_to_image_generate_full"
-BACKGROUND_GENERATION_METHOD = "image_to_image_edit_from_full"
-TEXT_REFERENCE_GENERATION_METHOD = "image_to_image_edit_from_full"
 BLUEPRINT_PATTERNS = (
     "slide-{page:03d}-blueprint.png",
     "slide-{page:02d}-blueprint.png",
@@ -161,67 +154,10 @@ def _load_reference_map(project_path: Path | None) -> dict[int, list[dict[str, A
     return result
 
 
-FULL_DUAL_IMAGE_CONTAINER_CONTRACT = """【双图文字可分离规则｜不上屏】
-使用一幅完整的生成式视觉构图组织页面表达。通过具有设计感的图形形态、色带、路径、箭头、空间层次、聚合、分支、支撑、包裹与状态变化，直观呈现模块之间的主线和逻辑关系。
-图形构图是主要组织层，不受插图矩形容器限制；可根据技术方案或业务关系选择架构图、流程图、分层图、关系场或其他有设计感的表达。
-生成页面前先区分主体、支撑、输入、输出、分支、汇聚、闭环、层级、对比、因果与结论等关系角色，再决定视觉主线；不得仅按文本顺序机械排列或连接。
-页面级标题、正文、编号、关键数字、外围标签和结论嵌入视觉主线，位于稳定、低纹理、对比充分的文字承载面上；图形可以环绕、承托、连接和引导文字，但不得穿过字形或侵入正文安全区。
-可使用少量实景、近实景或物件型语义图作为辅助点缀。只有这类独立语义插图需要完整位于边界清晰的矩形容器内；矩形仅指图片区域，不是正文卡片、页面分栏或通用排版单元。
-小型语义图默认不生成可读文字，以场景、物体、动作和状态点题；界面截图、图表或离开标签便无法理解的专业插图才允许少量必要的图内文字，并与容器内图形共同保留。
-不得拆成半屏文字加半屏图片；不得把可靠脚本复制成图内文字墙。视觉载体的数量、位置、尺寸和形态由本页逻辑决定。"""
-
-
-def _full_prompt_for_variants(prompt: str, output_variants: list[str]) -> str:
-    """Keep the approved script prompt unchanged for every output mode.
-
-    The script compiler is the single source of prompt truth.  Dual-image
-    background generation uses its own operation prompt, but must not mutate
-    or append a second generic contract to the approved full-image prompt.
-    """
-
-    return prompt
-
-
-def _background_prompt(page_number: int) -> str:
-    return f"""请将输入图作为唯一视觉母版进行 image-to-image 编辑，只生成第【{page_number}】页正文内容区的无文字背景图。
-
-【核心任务】
-参照输入的 full 正文内容区图片，生成同一内容区、同一构图、同一图形关系的无文字底稿。不要重新文生图，不要更换构图，不要生成同主题新图。输出图必须可以直接作为 PPT 正文区底图，与 full 图形成同版式的图片版页面组合。
-
-必须严格保留：输入图的画布比例、整体版式、空间结构、配色、材质、图形关系、流程线、关系箭头、容器、底座、语义小图、背景装饰、阴影、留白、浅色文字承载面、模块标签条和所有非文字图形元素的位置与尺度。
-
-插图容器识别规则：先识别边界清晰的矩形或圆形插图容器。照片、界面、图表、教材、文件或设备画面均属于插图；插图容器内部的全部像素和文字视为一个不可拆分的整体。
-
-必须保留：所有插图容器及其内部的全部像素和文字，包括界面标签、图表刻度、教材封面、文件内容和设备铭牌。不得删除、翻译、纠正、重写或重新生成插图容器内部的文字。
-
-必须删除：插图容器之外的页面级标题、正文、编号、标签、结论文字、页码、水印、伪文字、乱码和文字残影。删除后相应区域应恢复为完整的纯色/浅色/低纹理承载面或原本的底层材质。
-
-禁止：在插图容器之外新增任何文字、数字、乱码、符号或水印；禁止生成完整 PPT 页面、页眉、页脚、中电联公共元素；禁止改变图形语义关系；禁止出现模糊补丁、涂抹块、局部重绘错位、重复元素或新装饰。
-
-不得在输入图不存在关系型图形的位置新增流程图、架构图、拓扑图、节点连线图、模块框、图标卡片、连接线、方向箭头、分支、回路或层级框线。
-"""
-
-
-def _text_reference_prompt(page_number: int) -> str:
-    return f"""Edit the supplied full content image for page {page_number} into an OCR reference.
-Keep the exact canvas, text positions, line breaks, font scale hierarchy, and reading order.
-Remove every non-text visual element, photograph, icon, chart mark, connector, texture, decoration, shadow, and background scene.
-Render all readable text and numbers in high-contrast dark text on a plain white background.
-Do not add, rewrite, translate, summarize, correct, or omit any text. Do not generate slide chrome, logo, title bar, footer, or page number.
-This image is only an OCR aid; it will never be used as the visible PowerPoint background."""
-
-
 def output_variants_for_mode(production_mode: str) -> list[str]:
-    if production_mode == FULL_IMAGE_MODE:
-        return ["full"]
-    if production_mode == DUAL_IMAGE_MODE:
-        return ["full", "background"]
-    if production_mode == TRIPLE_IMAGE_MODE:
-        return ["full", "background", "text_reference"]
-    raise ValueError(
-        f"unsupported production mode: {production_mode}; "
-        f"expected one of {', '.join(PRODUCTION_MODES)}"
-    )
+    if production_mode != FULL_IMAGE_MODE:
+        raise ValueError("unsupported production mode; expected image-to-editable-svg")
+    return ["full"]
 
 
 def _mark_status(item: dict[str, Any], *, force_pending: bool = False) -> None:
@@ -551,7 +487,6 @@ def build_manifest(
 
                 prompt = enforce_style09_terminal_lock(prompt, style_lock)
         enrich_ledger.append({"page_number": page_number, **enrich_result_as_dict(enrich)})
-        prompt = _full_prompt_for_variants(prompt, output_variants)
         if approval_meta is not None:
             # Compare approval after every compiler-owned transformation,
             # including output-variant compilation and opt-in enrichment.
@@ -598,43 +533,6 @@ def build_manifest(
         if not require_approved_prompts:
             compiled += f"## p{page_number:02d}\n\n{prompt.rstrip()}\n\n"
         variants: dict[str, dict[str, Any]] = {"full": full}
-        if "background" in output_variants:
-            background_path = output_dir / f"{stem}_background.png"
-            background = {
-                "filename": background_path.name,
-                "path": str(background_path),
-                "prompt": _background_prompt(page_number),
-                "generation_method": BACKGROUND_GENERATION_METHOD,
-                "operation": "edit",
-                "input_variant": "full",
-                "depends_on_full_path": str(full_path),
-                "requires_input_image": True,
-                "output_role": "no_text_visible_background",
-                "aspect_ratio": "content-region",
-                "image_size": "2x-content-region",
-                "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
-            }
-            _mark_status(background, force_pending=force_pending)
-            variants["background"] = background
-        if "text_reference" in output_variants:
-            text_reference_path = output_dir / f"{stem}_text_reference.png"
-            text_reference = {
-                "filename": text_reference_path.name,
-                "path": str(text_reference_path),
-                "prompt": _text_reference_prompt(page_number),
-                "generation_method": TEXT_REFERENCE_GENERATION_METHOD,
-                "operation": "edit",
-                "input_variant": "full",
-                "depends_on_full_path": str(full_path),
-                "requires_input_image": True,
-                "output_role": "ocr_only_text_reference",
-                "visible_in_ppt": False,
-                "aspect_ratio": "content-region",
-                "image_size": "2x-content-region",
-                "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
-            }
-            _mark_status(text_reference, force_pending=force_pending)
-            variants["text_reference"] = text_reference
         required_image_text = [
             line
             for line in select_image_locked_text(script_pages[page_number]).splitlines()
@@ -686,11 +584,7 @@ def build_manifest(
             atomic_write_text(compiled_script, compiled.rstrip() + "\n")
 
     manifest = {
-        "mode": (
-            "cyberppt-full-image-only"
-            if production_mode == FULL_IMAGE_MODE
-            else "cyberppt-dual-image-pair"
-        ),
+        "mode": "cyberppt-image-to-editable-svg",
         "production_mode": production_mode,
         "requested_pages": page_numbers,
         "content_page_numbers": content_page_numbers,
@@ -713,16 +607,12 @@ def build_manifest(
             "failure_action": "regenerate_image",
         },
         "generation_contract": {
-            "mode": "full-image-only" if production_mode == FULL_IMAGE_MODE else production_mode,
+            "mode": FULL_IMAGE_MODE,
             "owner": "CyberPPT",
             "slide_canvas": CANVAS,
             "content_region": CONTENT_REGION,
             "generation_size": GENERATION_SIZE,
-            "rule": (
-                "Generate full content-area images only; PPT title, subtitle and enterprise chrome are handled by template/export code."
-                if production_mode == FULL_IMAGE_MODE
-                else "Generate a full reference plus a derived no-text background; rebuild editable text through OCR/semantic overlay."
-            ),
+            "rule": "Generate one audited full content-area image for registered editable-SVG reconstruction; PPT title, subtitle and enterprise chrome are handled by template/export code.",
         },
         "project_path": str(project_path.resolve()) if project_path else "",
         "source_script": str(compiled_script.resolve()),
@@ -765,7 +655,6 @@ def require_generated(manifest: dict[str, Any]) -> None:
     for pair in manifest.get("pairs", []):
         page_number = pair.get("page_number", "?")
         full_item = pair.get("full") or {}
-        full_path_value = str(full_item.get("path", ""))
         provenance = full_item.get("prompt_provenance") or {}
         prompt_contract = manifest.get("prompt_contract", {})
         if prompt_contract.get("approved_prompt_is_source"):
@@ -775,28 +664,11 @@ def require_generated(manifest: dict[str, Any]) -> None:
             contract_errors.append(
                 f"page {page_number} full.generation_method must be {FULL_GENERATION_METHOD}"
             )
-        if (manifest.get("text_audit_contract") or {}).get("required_before_enhancement"):
-            text_audit = full_item.get("text_audit") or {}
-            if text_audit.get("valid") is not True:
-                contract_errors.append(
-                    f"page {page_number} full image has no passed pre-enhancement text audit"
-                )
-        if "background" in output_variants:
-            background_item = pair.get("background") or {}
-            if background_item.get("generation_method") != BACKGROUND_GENERATION_METHOD:
-                contract_errors.append(
-                    f"page {page_number} background.generation_method must be {BACKGROUND_GENERATION_METHOD}"
-                )
-            if background_item.get("operation") != "edit":
-                contract_errors.append(f"page {page_number} background.operation must be edit")
-            if str(background_item.get("depends_on_full_path", "")) != full_path_value:
-                contract_errors.append(f"page {page_number} background must depend on full.path")
-        if "text_reference" in output_variants:
-            text_item = pair.get("text_reference") or {}
-            if text_item.get("visible_in_ppt") is not False:
-                contract_errors.append(f"page {page_number} text_reference.visible_in_ppt must be false")
-            if str(text_item.get("depends_on_full_path", "")) != full_path_value:
-                contract_errors.append(f"page {page_number} text_reference must depend on full.path")
+        text_audit = full_item.get("text_audit") or {}
+        if text_audit.get("valid") is not True:
+            contract_errors.append(
+                f"page {page_number} full image has no passed image-text audit"
+            )
         for variant in output_variants:
             item = pair.get(variant) or {}
             path = Path(str(item.get("path", "")))
@@ -816,7 +688,7 @@ def require_generated(manifest: dict[str, Any]) -> None:
 
 
 def _normalize_ingest_image(path: Path) -> None:
-    """Resize a stored full/background image to the project generation canvas."""
+    """Resize a stored full image to the project generation canvas."""
 
     ensure_output_size(path, GENERATION_SIZE_TEXT)
 
@@ -876,7 +748,7 @@ def _copy_full_images_from_blueprints(
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Create CyberPPT dual-image pair manifests.")
+    parser = argparse.ArgumentParser(description="Create CyberPPT image-to-editable-SVG manifests.")
     parser.add_argument("--script", required=True, type=Path)
     parser.add_argument("--pages", default="all")
     parser.add_argument("--output-dir", required=True, type=Path)
@@ -887,7 +759,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--production-mode", choices=PRODUCTION_MODES, default=FULL_IMAGE_MODE)
     parser.add_argument("--resume", action="store_true", help="Reuse existing images in output-dir if present.")
     parser.add_argument("--force", action="store_true", help="Mark images pending and overwrite copied cache images.")
-    parser.add_argument("--require-generated", action="store_true", help="Fail if full/background images are missing.")
+    parser.add_argument("--require-generated", action="store_true", help="Fail if the audited full image is missing.")
     parser.add_argument("--copy-images-from", type=Path, help="Optional existing page_image_pairs.json to seed image files.")
     parser.add_argument(
         "--promote-blueprints-from",

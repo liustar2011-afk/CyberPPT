@@ -11,8 +11,6 @@ from PIL import Image
 from cyberppt.commands.init_project import init_project
 from cyberppt.commands.script_gate import approve_script, stage_script
 from scripts.dual_image_overlay.cyberppt_pair_manifest import (
-    _background_prompt,
-    _full_prompt_for_variants,
     build_manifest,
     main,
     require_generated,
@@ -177,41 +175,17 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertNotIn("SHOULD_NOT_BE_IMPORTED", prompt)
         self.assertEqual(prompt.rstrip(), compiled_text.split("\n\n", 1)[1].strip())
 
-    def test_dual_image_full_prompt_uses_graphics_to_carry_text_relationships(self) -> None:
-        self.assertEqual("原始提示词", _full_prompt_for_variants("原始提示词", ["full", "background"]))
-        return
-        prompt = _full_prompt_for_variants("原始提示词", ["full", "background"])
-
-        self.assertIn("使用一幅完整的生成式视觉构图组织页面表达", prompt)
-        self.assertIn("图形构图是主要组织层", prompt)
-        self.assertIn("不受插图矩形容器限制", prompt)
-        self.assertIn("主体、支撑、输入、输出、分支、汇聚、闭环、层级、对比、因果与结论", prompt)
-        self.assertIn("不得仅按文本顺序机械排列或连接", prompt)
-        self.assertNotIn("每个锁定模块及其名称只能承担一个主要关系角色并出现一次", prompt)
-        self.assertNotIn("不得再作为外围节点、关系标签、重复卡片或第二个同名对象出现", prompt)
-        self.assertNotIn("不得新增脚本未提供的结果分类文字、标签或结论", prompt)
-        self.assertNotIn("不得把模块处理成等权分栏、卡片墙或重复面板", prompt)
-        self.assertIn("图形可以环绕、承托、连接和引导文字", prompt)
-        self.assertIn("少量实景、近实景或物件型语义图作为辅助点缀", prompt)
-        self.assertIn("只有这类独立语义插图需要完整位于边界清晰的矩形容器内", prompt)
-        self.assertNotIn("不得逐项配图、逐项转成图标", prompt)
-        self.assertIn("不得把可靠脚本复制成图内文字墙", prompt)
-        self.assertIn("不得拆成半屏文字加半屏图片", prompt)
-        self.assertNotIn("PPT 原生可编辑形状", prompt)
-        self.assertNotIn("后续原生重建", prompt)
-        self.assertEqual(
-            "原始提示词",
-            _full_prompt_for_variants("原始提示词", ["full"]),
-        )
-
-    def test_background_prompt_preserves_text_inside_illustration_containers(self) -> None:
-        prompt = _background_prompt(8)
-
-        self.assertIn("插图容器内部的全部像素和文字视为一个不可拆分的整体", prompt)
-        self.assertIn("界面标签、图表刻度、教材封面、文件内容和设备铭牌", prompt)
-        self.assertIn("不得删除、翻译、纠正、重写或重新生成", prompt)
-        self.assertIn("插图容器之外的页面级标题、正文、编号、标签、结论文字", prompt)
-        self.assertIn("不得在输入图不存在关系型图形的位置新增流程图、架构图", prompt)
+    def test_removed_dual_modes_are_rejected(self) -> None:
+        for mode in ("full-image", "editable-overlay", "editable-overlay-text-reference"):
+            with self.assertRaisesRegex(ValueError, "image-to-editable-svg"):
+                build_manifest(
+                    script=Path(__file__),
+                    pages_raw="1",
+                    output_dir=Path(__file__).parent / "unused",
+                    project_path=None,
+                    style_lock=None,
+                    production_mode=mode,
+                )
 
     def test_promotes_approved_blueprint_to_full_image(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -254,7 +228,8 @@ class CyberpptPairManifestTests(unittest.TestCase):
                 full_size = image.size
 
         self.assertEqual(code, 0)
-        self.assertEqual("cyberppt-full-image-only", manifest["mode"])
+        self.assertEqual("cyberppt-image-to-editable-svg", manifest["mode"])
+        self.assertEqual("image-to-editable-svg", manifest["production_mode"])
         self.assertEqual(["full"], manifest["output_variants"])
         self.assertEqual("Generated", full_status)
         self.assertEqual((4096, 2048), full_size)
@@ -292,7 +267,8 @@ class CyberpptPairManifestTests(unittest.TestCase):
 
         self.assertEqual(code, 0)
         self.assertTrue(style_lock_exists)
-        self.assertEqual("cyberppt-full-image-only", manifest["mode"])
+        self.assertEqual("cyberppt-image-to-editable-svg", manifest["mode"])
+        self.assertEqual("image-to-editable-svg", manifest["production_mode"])
         self.assertEqual(["full"], manifest["output_variants"])
         self.assertEqual("text_to_image_generate_full", pair["full"]["generation_method"])
         self.assertEqual({"width": 2048, "height": 1024}, manifest["generation_contract"]["slide_canvas"])
@@ -301,7 +277,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
             manifest["generation_contract"]["content_region"],
         )
         self.assertEqual({"width": 2048, "height": 1024}, manifest["generation_contract"]["generation_size"])
-        self.assertEqual("full-image-only", manifest["generation_contract"]["mode"])
+        self.assertEqual("image-to-editable-svg", manifest["generation_contract"]["mode"])
         self.assertEqual("2048x1024", pair["full"]["canvas"])
         self.assertNotIn("background", pair)
 
@@ -365,13 +341,36 @@ class CyberpptPairManifestTests(unittest.TestCase):
                         "full": {
                             "path": str(full),
                             "status": "Generated",
-                            "generation_method": "text_to_image_generate_full",
+                        "generation_method": "text_to_image_generate_full",
+                        "text_audit": {"valid": True},
                         },
                     }
                 ]
             }
 
             require_generated(manifest)
+
+    def test_require_generated_rejects_full_image_without_text_audit(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            full = root / "page_full.png"
+            full.write_bytes(b"full")
+            manifest = {
+                "production_mode": "image-to-editable-svg",
+                "pairs": [
+                    {
+                        "page_number": 1,
+                        "full": {
+                            "path": str(full),
+                            "status": "Generated",
+                            "generation_method": "text_to_image_generate_full",
+                        },
+                    }
+                ],
+            }
+
+            with self.assertRaisesRegex(ValueError, "image-text audit"):
+                require_generated(manifest)
 
     def test_strict_manifest_uses_hash_bound_approved_prompt(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

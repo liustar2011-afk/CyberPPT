@@ -25,7 +25,6 @@ SCRIPT_ALIASES: dict[str, str] = {
     "pair-manifest": "dual_image_overlay/cyberppt_pair_manifest.py",
     "rework-report": "build_rework_report.py",
     "source-capture": "dual_image_overlay/source_capture.py",
-    "template-rebuild": "dual_image_overlay/template_rebuild.py",
     "validate": "validate_pptx.py",
 }
 

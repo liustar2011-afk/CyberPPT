@@ -38,7 +38,7 @@ class AutonomousContractTests(unittest.TestCase):
                 "stage01": True,
                 "stage02": True,
                 "style_id": 9,
-                "production_mode": "editable-overlay",
+                "production_mode": "image-to-editable-svg",
                 "images": True,
                 "prompt_files": True,
                 "image_qa": True,
@@ -155,17 +155,11 @@ class RunAutonomousTests(AutonomousContractTests):
         output = self.project / "workbench" / "stages" / "02-blueprint-dual-image" / "build"
         output.mkdir(parents=True)
         full = output / "full.png"
-        background = output / "background.png"
         full.write_bytes(b"full")
-        background.write_bytes(b"background")
         attempts = output / "prompts" / "attempts"
         attempts.mkdir(parents=True)
         full_prompt = "actual full send prompt\n"
-        background_prompt = "actual background send prompt\n"
-        for variant, prompt, inputs in (
-            ("full", full_prompt, []),
-            ("background", background_prompt, [str(full.resolve())]),
-        ):
+        for variant, prompt, inputs in (("full", full_prompt, []),):
             sent = attempts / f"page-001-{variant}-attempt-01-sent.txt"
             sent.write_text(prompt, encoding="utf-8", newline="")
             (attempts / f"page-001-{variant}-attempt-01-request.json").write_text(
@@ -180,22 +174,26 @@ class RunAutonomousTests(AutonomousContractTests):
                 encoding="utf-8",
             )
         manifest = output / "page_image_pairs.json"
-        manifest.write_text(json.dumps({"production_mode": "editable-overlay", "pairs": [{"page_number": 1, "full": {"path": str(full), "status": "Generated", "prompt_sha256": sha256(full_prompt.encode("utf-8")).hexdigest(), "text_audit": {"valid": True}}, "background": {"path": str(background), "status": "Generated", "prompt_sha256": sha256(background_prompt.encode("utf-8")).hexdigest()}}]}), encoding="utf-8")
+        manifest.write_text(json.dumps({"production_mode": "image-to-editable-svg", "pairs": [{"page_number": 1, "full": {"path": str(full), "status": "Generated", "prompt_sha256": sha256(full_prompt.encode("utf-8")).hexdigest(), "text_audit": {"valid": True}}}]}), encoding="utf-8")
         analysis = self.project / "analysis"
         analysis.mkdir()
         exported = analysis / "editable-deck.pptx"
         exported.write_bytes(b"pptx")
-        (analysis / "template_rebuild_readiness.json").write_text(
+        delivery_readiness = analysis / "delivery_readiness.json"
+        delivery_readiness.write_text(
             json.dumps({
-                "valid": True,
-                "status": "ready_for_delivery",
-                "artifacts": {"exported_pptx": str(exported)},
+                "status": "production_ready",
+                "delivery_readiness": {"valid": True},
             }),
             encoding="utf-8",
         )
         production = {
             "status": "production_ready",
-            "artifacts": {"page_image_pairs": str(manifest)},
+            "artifacts": {
+                "page_image_pairs": str(manifest),
+                "delivery_readiness": str(delivery_readiness),
+                "exported_pptx": str(exported),
+            },
             "production_readiness": {"valid": True, "status": "production_ready"},
         }
         (visual / "visual-design-decisions.json").write_text("{}", encoding="utf-8")

@@ -18,10 +18,9 @@ class ScriptRunnerTests(unittest.TestCase):
     def test_pair_manifest_alias_is_registered(self) -> None:
         self.assertEqual("cyberppt_pair_manifest.py", script_path("pair-manifest").name)
 
-    def test_image_ppt_alias_is_registered(self) -> None:
-        path = script_path("image-ppt")
-
-        self.assertEqual("template_image_ppt_export.py", path.name)
+    def test_removed_template_rebuild_alias_is_not_registered(self) -> None:
+        with self.assertRaises(KeyError):
+            script_path("template-rebuild")
 
     def test_unknown_alias_raises_key_error(self) -> None:
         with self.assertRaises(KeyError):

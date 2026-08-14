@@ -11,8 +11,8 @@ assets, project workspaces, and generated artifacts.
 | `SKILL.md` | Canonical workflow contract | Keep phase gates, reference gates, and delivery rules here. Do not replace it with CLI-only behavior. |
 | `cyberppt/` | Installable Python package and CLI | Keep stable command routing, project scaffolding, and package helpers here. Do not put generated project artifacts here. |
 | `scripts/` | Repo-owned workflow tools | Keep runnable helper scripts here when docs and tests call them directly. Avoid storing one-off outputs under this tree. |
-| `scripts/dual_image_overlay/` | CyberPPT-owned dual-image pipeline | Keep overlay, template rebuild, scene graph, QA, and rebuild-mode logic together. |
-| `scripts/dual_image_overlay/rebuild_engine/` | Internalized dual-image rebuild runtime | Treat as a vendored runtime now owned by CyberPPT. Do not split it during layout cleanup. |
+| `scripts/dual_image_overlay/` | Shared Stage 02 utilities | Retain image-text QA, scene graph, SVG-to-PPTX, and other reusable helpers; do not add a dual-image production route. |
+| `scripts/image_to_editable_svg/` | Audited full-image reconstruction | Inventory registered layers, author fidelity-gated editable SVG, then assemble native PPTX. |
 | `references/` | Stage-specific workflow references | Keep required reads and QA contracts here. References should describe behavior, not store project outputs. |
 | `assets/` | Reusable public assets | Keep sample palettes and reusable icon libraries here. Generated slide images do not belong here. |
 | `docs/` | Repository documentation, specs, and plans | Keep repo layout docs, design specs, and implementation plans here. |
@@ -40,9 +40,9 @@ delivery files:
 | `source/` | User-provided source materials and raw inputs. |
 | `workbench/artifact-ledger.json` | Durable artifact index with dependencies, status, and resume commands. |
 | `workbench/stages/01-analysis/` | Evidence tables, conflicts, SCR, storylines, page plans, density plans. |
-| `workbench/stages/02-blueprint-dual-image/` | Style lock, content locks, ImageGen prompts, full/background pair manifests. |
-| `workbench/stages/03-overlay/` | Dual-image overlay artifacts, semantic plans, text mapping, fit and layout QA. |
-| `workbench/stages/04-template-rebuild/` | Template assembly jobs, source capture, readiness records, normalized references. |
+| `workbench/stages/02-blueprint-dual-image/` | Historical directory name retained for compatibility; store style/content locks, ImageGen prompts, audited full-image manifest, reconstruction inventory and SVG/PPTX readiness artifacts. |
+| `workbench/stages/03-overlay/` | Legacy location only; new runs write no overlay artifacts here. |
+| `workbench/stages/04-template-rebuild/` | Legacy location only; new runs write no template-rebuild artifacts here. |
 | `workbench/stages/05-qa-delivery/` | Visual QA, side-by-side checks, final manifests, delivery notes. |
 | `workbench/locks/` | Slide content locks, template text locks, visual locks, and related truth files. |
 | `workbench/prompts/` | Plaintext prompt artifacts that require review or reuse. |
@@ -68,8 +68,7 @@ through `supersedes`. Export consumers use the run's explicit artifact path (or
 - Do not move existing `image2pptx_runs/` directories casually. Many run ledgers
   and QA files contain absolute paths, so migration needs a deliberate manifest
   rewrite.
-- Do not move `vendor/ppt_master_slide_image_rebuild/` or
-  `scripts/dual_image_overlay/rebuild_engine/` as part of routine hygiene.
+- Do not move `vendor/ppt_master_slide_image_rebuild/` as part of routine hygiene.
 - Do not add new generated images, decks, QA renders, or source materials at the
   repository root. Put them under a project workspace and register durable
   artifacts in `workbench/artifact-ledger.json`.

@@ -125,7 +125,7 @@ class FinalScriptPagesTests(unittest.TestCase):
 
     def test_full_image_payload_forces_body_region_two_to_one_canvas(self) -> None:
         manifest = {
-            "production_mode": "full-image",
+            "production_mode": "image-to-editable-svg",
             "pairs": [
                 {
                     "page_number": 4,
@@ -160,7 +160,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             reference = Path(tmp) / "palette-09.png"
             reference.write_bytes(b"reference")
             manifest = {
-                "production_mode": "full-image",
+                "production_mode": "image-to-editable-svg",
                 "pairs": [
                     {
                         "page_number": 4,
@@ -263,7 +263,7 @@ class FinalScriptPagesTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / "page-004.png"
             manifest = {
-                "production_mode": "full-image",
+                "production_mode": "image-to-editable-svg",
                 "pairs": [
                     {
                         "page_number": 4,
@@ -726,7 +726,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                     lightweight_stage01_confirmed=True,
                 )
 
-    def test_production_build_runs_template_image_ppt_export(self) -> None:
+    def test_production_build_runs_image_to_editable_svg_export(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "client-report"
@@ -735,8 +735,15 @@ class FinalScriptPagesTests(unittest.TestCase):
             script.write_text("## 第1页：测试\n正文\n", encoding="utf-8")
             self._approve_inputs_and_prompts(project, script)
 
-            with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
-                run.return_value = Mock(returncode=0)
+            expected = {
+                "status": "production_ready",
+                "artifacts": {"reconstruction_inventory": "inventory", "svg_output": "svg", "reconstruction_quality": "quality", "delivery_readiness": "readiness", "exported_pptx": "deck.pptx"},
+                "delivery_readiness": {"tool_consumption": {}},
+            }
+            with (
+                patch("cyberppt.commands.final_script_pages.require_generated"),
+                patch("cyberppt.commands.final_script_pages._run_image_to_editable_svg_build", return_value=expected) as build,
+            ):
                 summary = run_final_script_pages(
                     project=project,
                     script=script,
@@ -746,23 +753,13 @@ class FinalScriptPagesTests(unittest.TestCase):
                     lightweight_stage01_confirmed=True,
                 )
 
-            command = run.call_args.args[0]
-
         self.assertEqual("02-production-build", summary["stage"])
         self.assertEqual("production_ready", summary["status"])
-        self.assertEqual("completed", summary["image_ppt_build"]["status"])
-        self.assertIn("-m", command)
-        self.assertIn("cyberppt", command)
-        self.assertIn("image-ppt", command)
-        self.assertIn("run", command)
-        self.assertIn("--script", command)
-        self.assertIn(str(script.resolve()), command)
-        self.assertIn("--pages", command)
-        self.assertIn("1", command)
-        self.assertIn(str(Path(summary["artifacts"]["image_ppt_output_dir"])), command)
+        self.assertEqual("production_ready", summary["image_to_editable_svg_build"]["status"])
+        build.assert_called_once()
         self.assertIsNone(summary["rebuild"])
         self.assertEqual({}, summary["tool_consumption"])
-        self.assertIsNone(summary["production_readiness"])
+        self.assertEqual(expected["delivery_readiness"], summary["production_readiness"])
 
     def test_run_rebuild_requires_editable_overlay_mode(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -782,7 +779,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             )
             self._approve_inputs_and_prompts(project, script)
 
-            with self.assertRaisesRegex(ValueError, "--run-rebuild requires an editable-overlay"):
+            with self.assertRaisesRegex(ValueError, "--run-rebuild was removed"):
                 run_final_script_pages(
                     project=project,
                     script=script,
@@ -803,7 +800,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             script.write_text("## 第7页：态势感知能力\n正文\n", encoding="utf-8")
             self._approve_inputs_and_prompts(project, script)
 
-            with self.assertRaisesRegex(ValueError, "--semantic-plan-dir requires an editable-overlay"):
+            with self.assertRaisesRegex(ValueError, "--semantic-plan-dir was removed"):
                 run_final_script_pages(
                     project=project,
                     script=script,
@@ -813,7 +810,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                     lightweight_stage01_confirmed=True,
                 )
 
-    def test_triple_image_mode_builds_full_background_and_ocr_reference_manifest(self) -> None:
+    def test_removed_triple_image_mode_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "client-report"
@@ -822,25 +819,14 @@ class FinalScriptPagesTests(unittest.TestCase):
             script.write_text("## 第7页：测试\n正文\n", encoding="utf-8")
             self._approve_inputs_and_prompts(project, script)
 
-            summary = run_final_script_pages(
-                project=project,
-                script=script,
-                pages_raw="7",
-                style_id=4,
-                production_mode="editable-overlay-text-reference",
-                lightweight_stage01_confirmed=True,
-            )
+            with self.assertRaisesRegex(ValueError, "unsupported production mode"):
+                run_final_script_pages(
+                    project=project, script=script, pages_raw="7", style_id=4,
+                    production_mode="editable-overlay-text-reference",
+                    lightweight_stage01_confirmed=True,
+                )
 
-            manifest = json.loads(Path(summary["artifacts"]["page_image_pairs"]).read_text(encoding="utf-8"))
-            pair = manifest["pairs"][0]
-
-        self.assertEqual("editable-overlay-text-reference", summary["production_mode"])
-        self.assertEqual(["full", "background", "text_reference"], manifest["output_variants"])
-        self.assertEqual("edit", pair["background"]["operation"])
-        self.assertEqual("edit", pair["text_reference"]["operation"])
-        self.assertFalse(pair["text_reference"]["visible_in_ppt"])
-
-    def test_main_chain_routes_all_triple_image_variants_through_codex_oauth(self) -> None:
+    def test_main_chain_rejects_removed_triple_image_mode(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "client-report"
@@ -849,8 +835,8 @@ class FinalScriptPagesTests(unittest.TestCase):
             script.write_text("## 第7页：测试\n正文\n", encoding="utf-8")
             self._approve_inputs_and_prompts(project, script)
 
-            with patch("cyberppt.commands.final_script_pages.run_codex_image") as generate:
-                summary = run_final_script_pages(
+            with self.assertRaisesRegex(ValueError, "unsupported production mode"):
+                run_final_script_pages(
                     project=project,
                     script=script,
                     pages_raw="7",
@@ -861,13 +847,6 @@ class FinalScriptPagesTests(unittest.TestCase):
                     lightweight_stage01_confirmed=True,
                 )
 
-            calls = generate.call_args_list
-
-        self.assertEqual(3, len(calls))
-        self.assertEqual([], calls[0].kwargs["image_paths"])
-        self.assertEqual(1, len(calls[1].kwargs["image_paths"]))
-        self.assertEqual(1, len(calls[2].kwargs["image_paths"]))
-        self.assertEqual("codex_oauth_image", summary["image_generation"]["backend"])
 
     def test_image_dry_run_does_not_reserve_artifact_ledger_ids(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -894,7 +873,7 @@ class FinalScriptPagesTests(unittest.TestCase):
 
             append_ledger.assert_not_called()
 
-    def test_production_build_failure_reports_image_ppt_command(self) -> None:
+    def test_production_build_requires_audited_full_image_before_reconstruction(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "client-report"
@@ -912,28 +891,15 @@ class FinalScriptPagesTests(unittest.TestCase):
             )
             self._approve_inputs_and_prompts(project, script, style_id=5)
 
-            with patch("cyberppt.commands.final_script_pages.subprocess.run") as run:
-                run.return_value = Mock(returncode=3)
-                with self.assertRaises(RuntimeError) as caught:
-                    run_final_script_pages(
-                        project=project,
-                        script=script,
-                        pages_raw="7",
-                        style_id=5,
-                        production_build=True,
-                        lightweight_stage01_confirmed=True,
-                    )
-
-                self.assertEqual(
-                    Path(__file__).resolve().parents[1],
-                    run.call_args.kwargs["cwd"],
+            with self.assertRaisesRegex(ValueError, "full image has no passed image-text audit"):
+                run_final_script_pages(
+                    project=project,
+                    script=script,
+                    pages_raw="7",
+                    style_id=5,
+                    production_build=True,
+                    lightweight_stage01_confirmed=True,
                 )
-
-        message = str(caught.exception)
-        self.assertIn("image-ppt production build failed with exit code 3", message)
-        self.assertIn("image-ppt", message)
-        self.assertNotIn("source_capture", message)
-        self.assertNotIn("semantic_plan", message)
 
 
 if __name__ == "__main__":

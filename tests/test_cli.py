@@ -37,7 +37,8 @@ class CliTests(unittest.TestCase):
         self.assertIn("stage-script", help_text)
         self.assertIn("approve-script", help_text)
         self.assertIn("script-status", help_text)
-        self.assertIn("rebuild-dual-image", help_text)
+        self.assertIn("image-to-editable-svg", help_text)
+        self.assertNotIn("rebuild-dual-image", help_text)
         self.assertIn("final-script-pages", help_text)
         self.assertIn("enhance-image", help_text)
         self.assertIn("outline-audit", help_text)
@@ -255,12 +256,9 @@ class CliTests(unittest.TestCase):
         self.assertIn("请选择一个 CyberPPT 默认视觉风格", buffer.getvalue())
         self.assertIn("4. 象牙白 + 深蓝强调", buffer.getvalue())
 
-    def test_rebuild_dual_image_routes_to_template_rebuild(self) -> None:
-        with patch("cyberppt.cli.run_script", return_value=3) as run_script:
-            code = main(["rebuild-dual-image", "page_image_pairs.json", "--no-export"])
-
-        self.assertEqual(3, code)
-        run_script.assert_called_once_with("template-rebuild", ["page_image_pairs.json", "--no-export"])
+    def test_removed_dual_image_rebuild_command_is_rejected(self) -> None:
+        with self.assertRaises(SystemExit):
+            main(["rebuild-dual-image"])
 
     def test_final_script_pages_external_script_is_forwarded(self) -> None:
         with patch("cyberppt.cli.run_final_script_pages", return_value={}) as runner:

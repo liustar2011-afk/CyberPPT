@@ -82,12 +82,10 @@ def load_contract(path: Path) -> AutonomousContract:
     if not isinstance(style_id, int) or not 1 <= style_id <= 10:
         raise ContractError("required.style_id must be an integer from 1 through 10")
     production_mode = required.get("production_mode")
-    if production_mode not in {
-        "full-image",
-        "editable-overlay",
-        "editable-overlay-text-reference",
-    }:
-        raise ContractError("required.production_mode is unsupported")
+    if production_mode != "image-to-editable-svg":
+        raise ContractError(
+            "required.production_mode must be image-to-editable-svg"
+        )
 
     return AutonomousContract(
         path=path,

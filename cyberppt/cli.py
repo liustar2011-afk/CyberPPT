@@ -444,8 +444,13 @@ def _prepare_imagegen_send_command(args: argparse.Namespace) -> int:
     return 0
 
 
-def _rebuild_dual_image_command(args: argparse.Namespace) -> int:
-    return run_script("template-rebuild", args.rebuild_args)
+def _image_to_editable_svg_command(args: argparse.Namespace) -> int:
+    completed = subprocess.run(
+        [sys.executable, "-m", "scripts.image_to_editable_svg", *args.reconstruction_args],
+        cwd=Path(__file__).resolve().parents[1],
+        check=False,
+    )
+    return completed.returncode
 
 
 def _enhance_image_command(args: argparse.Namespace) -> int:
@@ -474,10 +479,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             style_id=args.style_id,
             style_name=args.style_name,
             output_dir=Path(args.output_dir) if args.output_dir else None,
-            semantic_plan_dir=Path(args.semantic_plan_dir) if args.semantic_plan_dir else None,
             require_images=args.require_images,
-            run_rebuild=args.run_rebuild,
-            rebuild_args=args.rebuild_arg or [],
             production_build=args.production_build,
             production_mode=args.production_mode,
             generate_images=args.generate_images,
@@ -872,13 +874,13 @@ def build_parser() -> argparse.ArgumentParser:
     script_status_parser.add_argument("--json", action="store_true", help="Print machine-readable status.")
     script_status_parser.set_defaults(func=_script_status_command)
 
-    rebuild_dual_image_parser = subparsers.add_parser(
-        "rebuild-dual-image",
+    image_to_editable_svg_parser = subparsers.add_parser(
+        "image-to-editable-svg",
         add_help=False,
-        help="Run the dual-image rebuild flow from a page_image_pairs.json manifest.",
+        help="Run the direct image-to-editable-SVG reconstruction command.",
     )
-    rebuild_dual_image_parser.add_argument("rebuild_args", nargs=argparse.REMAINDER)
-    rebuild_dual_image_parser.set_defaults(func=_rebuild_dual_image_command)
+    image_to_editable_svg_parser.add_argument("reconstruction_args", nargs=argparse.REMAINDER)
+    image_to_editable_svg_parser.set_defaults(func=_image_to_editable_svg_command)
 
     final_script_pages_parser = subparsers.add_parser(
         "final-script-pages",
@@ -931,9 +933,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     final_script_pages_parser.add_argument(
         "--production-mode",
-        choices=("full-image", "editable-overlay", "editable-overlay-text-reference"),
-        default="full-image",
-        help="Select the full-image deck path or the restored editable overlay branch.",
+        choices=("image-to-editable-svg",),
+        default="image-to-editable-svg",
+        help="Generate one audited full image and reconstruct it as editable SVG.",
     )
     final_script_pages_parser.add_argument(
         "--generate-images",
@@ -979,33 +981,19 @@ def build_parser() -> argparse.ArgumentParser:
         help="With --prompt-enrich send, fail unless each page has an approved imagegen-send final.",
     )
     final_script_pages_parser.add_argument(
-        "--semantic-plan-dir",
-        help="Optional semantic plan directory for an editable-overlay production mode.",
-    )
-    final_script_pages_parser.add_argument(
         "--require-images",
         action="store_true",
         help="Fail unless expected full image files already exist.",
     )
     final_script_pages_parser.add_argument(
-        "--run-rebuild",
-        action="store_true",
-        help="Run template-rebuild for an editable-overlay production mode.",
-    )
-    final_script_pages_parser.add_argument(
         "--production-build",
         action="store_true",
-        help="Run the selected production branch: image-ppt or editable template-rebuild.",
+        help="Run the image-to-editable-SVG production build.",
     )
     final_script_pages_parser.add_argument(
         "--blueprint-only",
         action="store_true",
         help="Only create full-image prompts and page_image_pairs.json; never report production_ready.",
-    )
-    final_script_pages_parser.add_argument(
-        "--rebuild-arg",
-        action="append",
-        help="Additional argument forwarded to template-rebuild in editable-overlay mode.",
     )
     final_script_pages_parser.set_defaults(func=_final_script_pages_command)
 

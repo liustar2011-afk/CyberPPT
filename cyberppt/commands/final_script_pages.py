@@ -4,18 +4,14 @@ from __future__ import annotations
 
 import json
 import shutil
-import subprocess
-import sys
 from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
 from scripts.dual_image_overlay.cyberppt_pair_manifest import (
-    DUAL_IMAGE_MODE,
     FULL_IMAGE_MODE,
     PRODUCTION_MODES,
-    TRIPLE_IMAGE_MODE,
     build_manifest,
     output_variants_for_mode,
     require_generated,
@@ -29,6 +25,7 @@ from scripts.dual_image_overlay.imagegen_handoff import (
     select_page_visual_intent_type,
 )
 from scripts.dual_image_overlay.production_readiness import build_production_readiness
+from scripts.image_to_editable_svg.orchestrator import run_image_to_editable_svg
 from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import (
     ensure_output_size,
     run_codex_image,
@@ -351,253 +348,20 @@ def _append_ledger(project: Path, records: list[dict[str, Any]], *, build_id: st
     return append_artifacts(project / LEDGER_PATH, records, build_id=build_id)
 
 
-def _template_rebuild_failure_message(project: Path, returncode: int) -> str:
-    readiness_path = project / "analysis" / "template_rebuild_readiness.json"
-    source_gate_path = project / "analysis" / "source_capture_gate.json"
-    page_quality_path = project / "analysis" / "page_quality_report.json"
-    lines = [
-        f"template rebuild quality gate failed with exit code {returncode}.",
-        "Stop delivery progression; generated PPTX, if any, is an intermediate artifact only.",
-    ]
-    if readiness_path.is_file():
-        readiness = _read_json(readiness_path)
-        lines.append(f"readiness: {readiness_path}")
-        lines.append(f"status: {readiness.get('status')}")
-        lines.append(f"valid: {readiness.get('valid')}")
-        checks = readiness.get("checks")
-        if isinstance(checks, dict):
-            failed = [key for key, value in checks.items() if value is False]
-            if failed:
-                lines.append("failed_checks: " + ", ".join(failed))
-        artifacts = readiness.get("artifacts")
-        if isinstance(artifacts, dict) and artifacts.get("exported_pptx"):
-            lines.append(f"intermediate_pptx: {artifacts['exported_pptx']}")
-    else:
-        lines.append(f"readiness: missing ({readiness_path})")
-
-    if source_gate_path.is_file():
-        source_gate = _read_json(source_gate_path)
-        gap_counts = source_gate.get("gap_counts")
-        if isinstance(gap_counts, dict) and gap_counts:
-            lines.append("blocking_gap_counts: " + ", ".join(f"{key}={value}" for key, value in gap_counts.items()))
-        blocking = source_gate.get("blocking_gaps")
-        if isinstance(blocking, list) and blocking:
-            lines.append("blocking_gaps:")
-            for gap in blocking[:12]:
-                if not isinstance(gap, dict):
-                    continue
-                page = gap.get("page_number")
-                code = gap.get("code")
-                message = gap.get("message")
-                lines.append(f"- page {page}: {code} - {message}")
-            if len(blocking) > 12:
-                lines.append(f"- ... {len(blocking) - 12} more")
-    else:
-        lines.append(f"source_capture_gate: missing ({source_gate_path})")
-
-    if page_quality_path.is_file():
-        page_quality = _read_json(page_quality_path)
-        lines.append(f"page_quality_report: {page_quality_path}")
-        lines.append(f"page_quality_valid: {page_quality.get('valid')}")
-        blocking = page_quality.get("blocking_errors")
-        if isinstance(blocking, list) and blocking:
-            lines.append("page_quality_blocking_errors:")
-            for item in blocking[:12]:
-                if isinstance(item, dict):
-                    lines.append(f"- {item.get('id')}: {item.get('description')}")
-            if len(blocking) > 12:
-                lines.append(f"- ... {len(blocking) - 12} more")
-    else:
-        lines.append(f"page_quality_report: missing ({page_quality_path})")
-    return "\n".join(lines)
-
-
-def _template_rebuild_artifacts(project: Path) -> dict[str, str | None]:
-    artifacts = {
-        "template_rebuild_readiness": project / "analysis" / "template_rebuild_readiness.json",
-        "source_capture": project / "analysis" / "source_capture.json",
-        "source_capture_gate": project / "analysis" / "source_capture_gate.json",
-        "template_gate": project / "analysis" / "template_gate.json",
-        "page_quality_report": project / "analysis" / "page_quality_report.json",
-    }
-    return {key: str(path) if path.exists() else None for key, path in artifacts.items()}
-
-
-def _artifact_if_file(path: Path | str | None) -> str | None:
-    if path is None:
-        return None
-    candidate = Path(path)
-    return str(candidate.resolve()) if candidate.is_file() else None
-
-
-def _artifact_if_dir_has_files(path: Path | str | None, pattern: str = "*.json") -> str | None:
-    if path is None:
-        return None
-    candidate = Path(path)
-    return str(candidate.resolve()) if candidate.is_dir() and any(candidate.glob(pattern)) else None
-
-
-def _first_artifact_file(*paths: Path | str | None) -> str | None:
-    for path in paths:
-        artifact = _artifact_if_file(path)
-        if artifact:
-            return artifact
-    return None
-
-
-def _first_artifact_dir(*paths: Path | str | None, pattern: str = "*.json") -> str | None:
-    for path in paths:
-        artifact = _artifact_if_dir_has_files(path, pattern)
-        if artifact:
-            return artifact
-    return None
-
-
-def _first_matching_file(directory: Path, pattern: str) -> str | None:
-    matches = sorted(directory.glob(pattern)) if directory.is_dir() else []
-    return str(matches[0].resolve()) if matches else None
-
-
-def _stage02_production_artifacts(project: Path) -> dict[str, str | None]:
-    analysis = project / "analysis"
-    readiness_path = analysis / "template_rebuild_readiness.json"
-    readiness = _read_json(readiness_path) if readiness_path.is_file() else {}
-    readiness_artifacts = readiness.get("artifacts")
-    if not isinstance(readiness_artifacts, dict):
-        readiness_artifacts = {}
-    exported_pptx = readiness_artifacts.get("exported_pptx")
-    if not exported_pptx:
-        pointer_path = analysis / "export_artifact.json"
-        if pointer_path.is_file():
-            try:
-                pointer = _read_json(pointer_path)
-            except (OSError, ValueError, json.JSONDecodeError):
-                pointer = {}
-            exported_pptx = pointer.get("path") if isinstance(pointer, dict) else None
-            if exported_pptx and isinstance(pointer, dict):
-                expected_hash = str(pointer.get("sha256") or "").lower()
-                actual_hash = str(_sha256(Path(str(exported_pptx))) or "").lower()
-                if expected_hash and expected_hash != actual_hash:
-                    exported_pptx = None
-
-    semantic_plan_dir = readiness_artifacts.get("semantic_plan_dir") or analysis / "semantic_plan"
-    scene_graph_dir = readiness_artifacts.get("scene_graph_gate_dir") or analysis / "scene_graph_gate"
-    visual_registry_dir = (
-        readiness_artifacts.get("measured_visual_registry")
-        or readiness_artifacts.get("draft_visual_registry")
-        or analysis / "visual_registry"
-    )
-    return {
-        "source_capture": _first_artifact_file(
-            readiness_artifacts.get("source_capture"),
-            analysis / "source_capture.json",
-        ),
-        "semantic_binding": _first_artifact_file(
-            readiness_artifacts.get("semantic_binding"),
-            analysis / "semantic_binding" / "semantic_binding_index.json",
-        ),
-        "semantic_plan": _first_artifact_dir(semantic_plan_dir, pattern="*.json"),
-        "scene_graph": _first_artifact_dir(scene_graph_dir, pattern="*.json"),
-        "visual_registry": _first_artifact_dir(visual_registry_dir, pattern="*.json"),
-        "container_workspace": _first_artifact_file(
-            readiness_artifacts.get("container_workspace"),
-            analysis / "container_workspace" / "container_workspace_index.json",
-        ),
-        "workspace_assignment": _first_artifact_file(
-            readiness_artifacts.get("workspace_assignment"),
-            analysis / "workspace_assignment" / "workspace_assignment_index.json",
-        ),
-        "office_textbox_fit": _first_artifact_file(analysis / "office_textbox_fit.json"),
-        "editable_pptx": _first_artifact_file(exported_pptx),
-        "render_compare": _first_artifact_file(
-            readiness_artifacts.get("render_compare"),
-            _first_matching_file(analysis, "page_*_render_compare.json"),
-        ),
-        "qa_registry": _first_artifact_file(
-            readiness_artifacts.get("page_quality_report"),
-            analysis / "page_quality_report.json",
-        ),
-    }
-
-
-def _stage02_production_reports(artifacts: dict[str, str | None]) -> dict[str, dict[str, Any]]:
-    reports: dict[str, dict[str, Any]] = {}
-    for name, artifact in artifacts.items():
-        if not artifact or not artifact.endswith(".json"):
-            continue
-        try:
-            reports[name] = _read_json(Path(artifact))
-        except (OSError, json.JSONDecodeError, ValueError):
-            continue
-    return reports
-
-
-def _expected_pptx(path: Path | None) -> str | None:
-    return str(path) if path is not None and path.is_file() else None
-
-
-def _image_ppt_artifacts(
+def _run_image_to_editable_svg_build(
+    *,
+    project: Path,
+    manifest_path: Path,
     output_dir: Path,
-    name: str,
-    *,
-    expected_pptx: Path | None = None,
-) -> dict[str, str | None]:
-    project_dir = output_dir / f"{name}_template_image_project"
-    return {
-        "template_image_manifest": str(output_dir / "template_image_manifest.json"),
-        "template_image_prompts": str(output_dir / "template_image_prompts.md"),
-        "template_image_project": str(project_dir),
-        "exported_pptx": _expected_pptx(expected_pptx),
-    }
-
-
-def _run_image_ppt_build(
-    *,
-    script: Path,
     pages_raw: str,
-    output_dir: Path,
-    name: str,
-    page_image_manifest: Path,
 ) -> dict[str, Any]:
-    expected_pptx = output_dir / "exports" / f"{name}.pptx"
-    command = [
-        sys.executable,
-        "-m",
-        "cyberppt",
-        "image-ppt",
-        "run",
-        "--script",
-        str(script),
-        "--pages",
-        pages_raw,
-        "--output-dir",
-        str(output_dir),
-        "--name",
-        name,
-        "--page-image-manifest",
-        str(page_image_manifest),
-        "--pptx-output",
-        str(expected_pptx),
-    ]
-    # The project flow may be invoked after another stage has changed the
-    # process working directory.  Keep the child CLI anchored at the repository
-    # root so ``python -m cyberppt`` resolves the local package consistently.
-    repository_root = Path(__file__).resolve().parents[2]
-    completed = subprocess.run(command, check=False, cwd=repository_root)
-    status = "completed" if completed.returncode == 0 else "failed"
-    artifacts = _image_ppt_artifacts(output_dir, name, expected_pptx=expected_pptx)
-    result = {
-        "command": command,
-        "returncode": completed.returncode,
-        "status": status,
-        "artifacts": artifacts,
-    }
-    if completed.returncode != 0:
-        raise RuntimeError(
-            f"image-ppt production build failed with exit code {completed.returncode}.\n"
-            f"command: {' '.join(command)}"
-        )
-    return result
+    """Use the only Stage 02 production route: audited full image -> SVG -> PPTX."""
+    return run_image_to_editable_svg(
+        project=project,
+        manifest_path=manifest_path,
+        output_dir=output_dir / "editable_svg",
+        requested_pages=[int(value) for value in pages_raw.split(",") if value.strip()],
+    )
 
 
 def _generate_manifest_images(
@@ -749,29 +513,6 @@ def _generate_manifest_images(
     }
 
 
-def _run_editable_rebuild(
-    *,
-    project: Path,
-    manifest_path: Path,
-    semantic_plan_dir: Path | None,
-    rebuild_args: list[str] | None,
-) -> dict[str, Any]:
-    command = [sys.executable, "-m", "cyberppt", "template-rebuild", str(manifest_path)]
-    if semantic_plan_dir is not None:
-        command.extend(["--semantic-plan-dir", str(semantic_plan_dir)])
-    command.extend(rebuild_args or [])
-    completed = subprocess.run(command, check=False)
-    result = {
-        "command": command,
-        "returncode": completed.returncode,
-        "status": "completed" if completed.returncode == 0 else "failed",
-        "artifacts": _template_rebuild_artifacts(project),
-    }
-    if completed.returncode != 0:
-        raise RuntimeError(_template_rebuild_failure_message(project, completed.returncode))
-    return result
-
-
 def run_final_script_pages(
     *,
     project: Path,
@@ -854,10 +595,10 @@ def run_final_script_pages(
             f"unsupported production mode: {production_mode}; "
             f"expected one of {', '.join(PRODUCTION_MODES)}"
         )
-    if run_rebuild and production_mode == FULL_IMAGE_MODE:
-        raise ValueError("--run-rebuild requires an editable-overlay production mode")
-    if semantic_plan_dir is not None and production_mode == FULL_IMAGE_MODE:
-        raise ValueError("--semantic-plan-dir requires an editable-overlay production mode")
+    if run_rebuild:
+        raise ValueError("--run-rebuild was removed; use --production-build for image-to-editable-svg")
+    if semantic_plan_dir is not None:
+        raise ValueError("--semantic-plan-dir was removed with the editable-overlay route")
     _ensure_project_dirs(project)
     if style_lock is not None and (style_id is not None or style_name):
         raise ValueError("--style-lock cannot be combined with --style-id or --style-name")
@@ -943,11 +684,7 @@ def run_final_script_pages(
             skip_text_audit=skip_image_text_audit,
         )
         _write_json(manifest_path, manifest)
-    if require_images or (
-        production_mode != FULL_IMAGE_MODE
-        and (production_build or run_rebuild)
-        and not dry_run_images
-    ):
+    if require_images or (production_build and not dry_run_images):
         require_generated(manifest)
 
     resume_command = (
@@ -961,43 +698,26 @@ def run_final_script_pages(
     )
     production_readiness = None
     tool_consumption: dict[str, Any] = {}
-    stage_name = "02-production-build" if production_build else "02-blueprint-dual-image"
+    stage_name = "02-production-build" if production_build else "02-blueprint-image-to-editable-svg"
     if blueprint_only:
         status = "blueprint_created"
     elif generate_images and not dry_run_images:
         status = "image_assets_generated"
     else:
         status = "ready_for_image_generation" if not require_images else "image_assets_verified"
-    image_ppt_build: dict[str, Any] | None = None
+    image_to_editable_svg_build: dict[str, Any] | None = None
     rebuild_status: dict[str, Any] | None = None
-    image_ppt_output_dir = target_dir / "image_ppt"
-    # The exporter appends ``_template_image_project`` plus a timestamped file
-    # name.  Use a stable compact build name so Windows paths remain below the
-    # legacy MAX_PATH limit even for deeply nested projects.
-    image_ppt_name = f"deck_{sha256(slug.encode('utf-8')).hexdigest()[:10]}"
-    if production_build and production_mode == FULL_IMAGE_MODE:
-        image_ppt_build = _run_image_ppt_build(
-            script=script,
-            pages_raw=pages_raw,
-            output_dir=image_ppt_output_dir,
-            name=image_ppt_name,
-            page_image_manifest=manifest_path,
-        )
-        status = "production_ready"
-    elif production_build or run_rebuild:
-        rebuild_status = _run_editable_rebuild(
+    image_ppt_output_dir = target_dir / "editable_svg"
+    if production_build:
+        image_to_editable_svg_build = _run_image_to_editable_svg_build(
             project=project,
             manifest_path=manifest_path,
-            semantic_plan_dir=semantic_plan_dir,
-            rebuild_args=rebuild_args,
+            output_dir=target_dir,
+            pages_raw=pages_raw,
         )
-        production_readiness = build_production_readiness(
-            stage=stage_name,
-            artifacts=_stage02_production_artifacts(project),
-            reports=_stage02_production_reports(_stage02_production_artifacts(project)),
-        )
+        production_readiness = image_to_editable_svg_build["delivery_readiness"]
         tool_consumption = production_readiness["tool_consumption"]
-        status = production_readiness["status"]
+        status = image_to_editable_svg_build["status"]
     run_summary = {
         "schema": "cyberppt.final_script_pages_run.v1",
         "build_id": build_id,
@@ -1019,30 +739,24 @@ def run_final_script_pages(
             "visual_style_lock": str(style_lock),
             "output_dir": str(target_dir),
             "image_ppt_output_dir": str(image_ppt_output_dir),
-            "template_image_manifest": (
-                image_ppt_build["artifacts"]["template_image_manifest"] if image_ppt_build else None
-            ),
-            "template_image_project": (
-                image_ppt_build["artifacts"]["template_image_project"] if image_ppt_build else None
-            ),
-            "exported_pptx": image_ppt_build["artifacts"]["exported_pptx"] if image_ppt_build else None,
+            "reconstruction_inventory": image_to_editable_svg_build["artifacts"].get("reconstruction_inventory") if image_to_editable_svg_build else None,
+            "svg_output": image_to_editable_svg_build["artifacts"].get("svg_output") if image_to_editable_svg_build else None,
+            "reconstruction_quality": image_to_editable_svg_build["artifacts"].get("reconstruction_quality") if image_to_editable_svg_build else None,
+            "delivery_readiness": image_to_editable_svg_build["artifacts"].get("delivery_readiness") if image_to_editable_svg_build else None,
+            "exported_pptx": image_to_editable_svg_build["artifacts"].get("exported_pptx") if image_to_editable_svg_build else None,
             "semantic_plan_dir": str(semantic_plan_dir) if semantic_plan_dir else None,
         },
         "next_steps": [
             (
-                "Generate the full image and assemble it through image-ppt."
-                if production_mode == FULL_IMAGE_MODE
-                else "Generate full/background assets, then rebuild editable text through OCR and semantic overlay."
+                "Generate the audited full image, then reconstruct it into editable SVG and PPTX."
             ),
             (
-                "Optionally generate text_reference as an OCR-only third image."
-                if production_mode == TRIPLE_IMAGE_MODE
-                else "Use the selected production branch without mixing its artifacts with another branch."
+                "A page with manual_required evidence cannot be exported; complete its verified reconstruction first."
             ),
         ],
         "resume_command": resume_command,
         "rebuild": rebuild_status,
-        "image_ppt_build": image_ppt_build,
+        "image_to_editable_svg_build": image_to_editable_svg_build,
         "image_generation": image_generation,
         "prompt_enrich": manifest.get("prompt_enrich"),
         "tool_consumption": tool_consumption,
@@ -1091,12 +805,12 @@ def run_final_script_pages(
             },
         },
     }
-    if image_ppt_build:
+    if image_to_editable_svg_build and image_to_editable_svg_build["artifacts"].get("exported_pptx"):
         build_context["artifacts"]["exported_pptx"] = {
-            "path": image_ppt_build["artifacts"].get("exported_pptx"),
+            "path": image_to_editable_svg_build["artifacts"].get("exported_pptx"),
             "sha256": (
-                _sha256(Path(image_ppt_build["artifacts"]["exported_pptx"]))
-                if image_ppt_build["artifacts"].get("exported_pptx")
+                _sha256(Path(image_to_editable_svg_build["artifacts"]["exported_pptx"]))
+                if image_to_editable_svg_build["artifacts"].get("exported_pptx")
                 else None
             ),
         }
@@ -1156,7 +870,7 @@ def run_final_script_pages(
             resume_command=resume_command,
         ),
     ]
-    exported_pptx = image_ppt_build["artifacts"].get("exported_pptx") if image_ppt_build else None
+    exported_pptx = image_to_editable_svg_build["artifacts"].get("exported_pptx") if image_to_editable_svg_build else None
     if exported_pptx:
         ledger_records.append(
             _artifact_record(

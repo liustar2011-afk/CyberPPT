@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import subprocess
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+import pytest
 from pptx import Presentation
 from pptx.util import Emu, Inches
 
+from scripts.dual_image_overlay import qa_render_page
 from scripts.dual_image_overlay.qa_render_page import check_pptx_geometry
 
 
@@ -78,3 +81,36 @@ def test_ignores_empty_text_shapes() -> None:
 
         assert report["slides"][0]["text_box_count"] == 0
         assert report["valid"] is True
+
+
+def test_render_retries_bundled_office_after_homebrew_abort(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    pptx_path = tmp_path / "deck.pptx"
+    pptx_path.write_bytes(b"pptx")
+    output = tmp_path / "render"
+    homebrew = Path("/opt/homebrew/bin/soffice")
+    bundled = Path("/runtime/override/soffice")
+    calls: list[list[str]] = []
+
+    monkeypatch.setattr(qa_render_page, "_office_candidates", lambda: [homebrew, bundled])
+    monkeypatch.setattr(
+        qa_render_page.shutil,
+        "which",
+        lambda command: "/usr/bin/pdftoppm" if command == "pdftoppm" else None,
+    )
+
+    def run(command: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        calls.append(command)
+        if command[0] == str(homebrew):
+            raise subprocess.CalledProcessError(134, command, output="homebrew stdout", stderr="homebrew aborted")
+        if command[0] == str(bundled):
+            (output / "deck.pdf").write_bytes(b"pdf")
+        else:
+            (output / "slide-1.jpg").write_bytes(b"jpg")
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(qa_render_page.subprocess, "run", run)
+
+    assert qa_render_page.render_to_png(pptx_path, output) == [output / "slide-1.jpg"]
+    assert [call[0] for call in calls] == [str(homebrew), str(bundled), "/usr/bin/pdftoppm"]

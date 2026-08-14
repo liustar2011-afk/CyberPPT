@@ -126,19 +126,30 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("换方向重写", text)
         self.assertIn("不能沿原策略只做措辞修补", text)
 
-    def test_full_image_ppt_is_default_stage02_production_mode(self) -> None:
+    def test_stage02_contract_advertises_only_audited_full_image_svg_pptx_route(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
-        self.assertIn("`full-image`（默认）", text)
-        self.assertIn("只生成正文区 ImageGen full 图", text)
-        self.assertIn("不得把 background 作为必需资产", text)
+        self.assertIn("`image-to-editable-svg`", text)
+        self.assertIn("文字审计", text)
+        self.assertIn("可编辑 SVG", text)
+        self.assertIn("manual_required", text)
 
-    def test_ocr_overlay_and_template_rebuild_are_explicit_mainline_branches(self) -> None:
-        text = SKILL.read_text(encoding="utf-8-sig")
+    def test_stage02_docs_do_not_advertise_dual_image_production(self) -> None:
+        documentation = "\n".join(
+            path.read_text(encoding="utf-8-sig")
+            for path in (
+                SKILL,
+                ROOT / "README.md",
+                ROOT / "references" / "dual-image-editable-overlay.md",
+            )
+        )
 
-        self.assertIn("`editable-overlay`", text)
-        self.assertIn("`editable-overlay-text-reference`", text)
-        self.assertIn("可编辑模式按合同进入这些步骤", text)
+        for legacy_mode in (
+            "editable-overlay",
+            "editable-overlay-text-reference",
+            "dual_image_editable_overlay",
+        ):
+            self.assertNotIn(legacy_mode, documentation)
 
     def test_main_pipeline_names_final_script_pages_as_the_orchestrator(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
@@ -147,12 +158,12 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("`final-script-pages` 是脚本锁定后的唯一正式编排入口", text)
         self.assertIn("`final-script-pages --generate-images` 调用 Codex OAuth 生图后端", text)
 
-    def test_ppt_generation_keeps_full_image_default_and_editable_branches(self) -> None:
+    def test_ppt_generation_requires_audited_full_image_reconstruction(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
 
-        self.assertIn("默认模式为 `full-image`", text)
-        self.assertIn("用户明确要求主要正文可编辑、对象级还原、双图法或三图法时", text)
-        self.assertIn("选择 `editable-overlay` 或 `editable-overlay-text-reference`", text)
+        self.assertIn("唯一生产模式为 `image-to-editable-svg`", text)
+        self.assertIn("页面盘点、注册图层和可编辑 SVG 重建", text)
+        self.assertIn("禁止生成或依赖无字底图", text)
 
     def test_manual_stop_points_are_allowed_but_must_record_state(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")
