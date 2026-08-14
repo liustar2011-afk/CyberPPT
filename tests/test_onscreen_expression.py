@@ -79,6 +79,23 @@ def test_organize_is_accepted_as_an_action_heading() -> None:
     ]
 
 
+def test_source_native_operations_are_accepted_as_action_headings() -> None:
+    modules = (
+        "订单约束与服务权益下发",
+        "服务请求与交付结果计量",
+        "客户确认与合作伙伴结算",
+        "运营分析反馈产品优化",
+    )
+    decision = resolve_onscreen_expression(_page(modules=modules, form="operation_loop"))
+    assert not [
+        finding for finding in audit_expression_balance(
+            _page(modules=modules, form="operation_loop"),
+            decision,
+        )
+        if finding.code == "ONSCREEN_FLOW_ACTION_MISSING"
+    ]
+
+
 def test_expression_constraints_are_fresh_and_hash_stable() -> None:
     first = expression_constraints("framework_4")
     second = expression_constraints("framework_4")

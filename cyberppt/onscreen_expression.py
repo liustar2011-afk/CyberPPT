@@ -159,7 +159,10 @@ _RELATION_FORMS = {
     "corresponds_to": "comparison_2col",
 }
 _RETURN_RELATIONS = {"feedback", "feeds_back", "returns_to", "iterates", "loops_to"}
-_ACTION_RE = re.compile(r"推进|建设|完善|强化|提升|形成|构建|汇聚|组织|治理|授权|流通|运营|反馈|迭代|驱动|支撑|带动|促进|实现")
+_ACTION_RE = re.compile(
+    r"推进|建设|完善|强化|提升|形成|构建|汇聚|组织|治理|授权|流通|运营|反馈|迭代|驱动|支撑|带动|促进|实现"
+    r"|执行|下发|记录|计量|确认|对账|结算|汇总|开展"
+)
 _LAYER_RE = re.compile(r"层|底座|体系架构")
 _COMPARISON_RE = re.compile(r"现状|目标|当前|未来|主体|方案|对照|比较")
 _MATRIX_RE = re.compile(r"象限|维度|优先级|分群|高低|二维")
