@@ -1,0 +1,28 @@
+{
+  "schema": "cyberppt.analysis_expression.pending_confirmation.v1",
+  "gate": "reporting_direction",
+  "status": "pending_confirmation",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/reporting_direction.md",
+  "source_sha256": "5a9ed50fcfd8aa8dd06fb54b90f97e3b835c76c92327cc9b5ad8fb7f0287144c",
+  "recommendation": "leadership_review",
+  "question": "请选择本次汇报主线。",
+  "options": [
+    {
+      "id": "leadership_review",
+      "label": "领导审定型建设方案"
+    },
+    {
+      "id": "technical_blueprint",
+      "label": "数据模型平台能力蓝图"
+    },
+    {
+      "id": "scenario_implementation",
+      "label": "场景牵引型实施路线"
+    },
+    {
+      "id": "resource_risk",
+      "label": "资源保障与风险边界请示"
+    }
+  ],
+  "created_at": "2026-07-10T05:59:14.048112+00:00"
+}

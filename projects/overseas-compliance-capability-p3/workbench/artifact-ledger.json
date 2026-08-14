@@ -1,0 +1,75 @@
+{
+  "schema": "cyberppt.artifact_ledger.v1",
+  "artifacts": [
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "3",
+      "path": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/stages/02-blueprint-dual-image/pages_003_003/script-final_cyberppt_deliverable_p3_p3.md",
+      "status": "ready_for_image_generation",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/scripts/final/script-final.md",
+        "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3 --script /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/scripts/final/script-final.md --pages 3 --style-lock /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/locks/visual_style_lock.json",
+      "sha256": "5395dc1c6719f5b508b64ad4aeb686e85c700cb1828b56b2b3c7f2d4f0e9b370",
+      "updated_at": "2026-07-05T09:54:58+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "3",
+      "path": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/stages/02-blueprint-dual-image/pages_003_003/page_image_pairs.json",
+      "status": "ready_for_image_generation",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/stages/02-blueprint-dual-image/pages_003_003/script-final_cyberppt_deliverable_p3_p3.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3 --script /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/scripts/final/script-final.md --pages 3 --style-lock /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/locks/visual_style_lock.json",
+      "sha256": "40641dff2e353f90ecd91e76fdb35f3647ed85cb0d95f9ba75b408a53d3d1db0",
+      "updated_at": "2026-07-05T09:54:58+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "3",
+      "path": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/locks/template_text/pages_003_003_template_text_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/scripts/final/script-final.md",
+        "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/stages/02-blueprint-dual-image/pages_003_003/page_image_pairs.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3 --script /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/scripts/final/script-final.md --pages 3 --style-lock /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/locks/visual_style_lock.json",
+      "sha256": "734716d0768b4cddeaaff3b4281518f0e8b09bf20e7422ec8243381673308f98",
+      "updated_at": "2026-07-05T09:54:58+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "3",
+      "path": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/locks/visual_style_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/scripts/final/script-final.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3 --script /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/scripts/final/script-final.md --pages 3 --style-lock /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/locks/visual_style_lock.json",
+      "sha256": "a41832487f56a96abe9837344cf656ed9a0f635aa4f6224d2c99a0974d9644c6",
+      "updated_at": "2026-07-05T09:54:58+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "3",
+      "path": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/stages/02-blueprint-dual-image/pages_003_003/pages_003_003_final_script_pages_run.json",
+      "status": "ready_for_image_generation",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/stages/02-blueprint-dual-image/pages_003_003/script-final_cyberppt_deliverable_p3_p3.md",
+        "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/stages/02-blueprint-dual-image/pages_003_003/page_image_pairs.json",
+        "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/locks/template_text/pages_003_003_template_text_lock.json",
+        "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3 --script /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/scripts/final/script-final.md --pages 3 --style-lock /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/locks/visual_style_lock.json",
+      "sha256": "3b47db73393737c9f6886b0b41dcc65a6fcbe75391f3250f257283407ae2379b",
+      "updated_at": "2026-07-05T09:54:58+00:00"
+    }
+  ]
+}

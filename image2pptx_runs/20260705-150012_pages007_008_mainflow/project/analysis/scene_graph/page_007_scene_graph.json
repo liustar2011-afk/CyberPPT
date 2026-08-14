@@ -1,0 +1,1345 @@
+{
+  "schema": "cyberppt.page_scene_graph.v1",
+  "page": 7,
+  "coordinate_context": {
+    "schema": "cyberppt.scene_graph.coordinate_context.v1",
+    "semantic_input_space": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "visual_registry_input_space": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "image_size": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "semantic_plan_image_size": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "visual_registry_canvas": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "semantic_bbox_extent": {
+      "width": 1202.0,
+      "height": 615.0
+    },
+    "warnings": [],
+    "normalized_canvas": {
+      "width": 1280.0,
+      "height": 720.0
+    },
+    "coordinate_space": {
+      "width": 1280.0,
+      "height": 720.0
+    }
+  },
+  "truth_sources": {
+    "script": {
+      "authority": "text_truth"
+    },
+    "ocr": {
+      "authority": "locator_evidence_only"
+    },
+    "visual_registry": {
+      "authority": "visual_geometry"
+    },
+    "semantic_plan": {
+      "authority": "container_geometry"
+    }
+  },
+  "visual_nodes": [
+    {
+      "node_id": "p7_node_1",
+      "node_type": "container",
+      "semantic_role": "process_node",
+      "bbox": [
+        64.0,
+        100.0,
+        162.0,
+        182.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_node_1",
+          "role": "process_node",
+          "bbox": [
+            64.0,
+            100.0,
+            162.0,
+            182.0
+          ],
+          "text_safe_bbox": [
+            64.0,
+            100.0,
+            162.0,
+            182.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_node_2",
+      "node_type": "container",
+      "semantic_role": "process_node",
+      "bbox": [
+        196.0,
+        100.0,
+        294.0,
+        182.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_node_2",
+          "role": "process_node",
+          "bbox": [
+            196.0,
+            100.0,
+            294.0,
+            182.0
+          ],
+          "text_safe_bbox": [
+            196.0,
+            100.0,
+            294.0,
+            182.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_node_3",
+      "node_type": "container",
+      "semantic_role": "process_node",
+      "bbox": [
+        328.0,
+        100.0,
+        426.0,
+        182.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_node_3",
+          "role": "process_node",
+          "bbox": [
+            328.0,
+            100.0,
+            426.0,
+            182.0
+          ],
+          "text_safe_bbox": [
+            328.0,
+            100.0,
+            426.0,
+            182.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_node_4",
+      "node_type": "container",
+      "semantic_role": "process_node",
+      "bbox": [
+        460.0,
+        100.0,
+        558.0,
+        182.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_node_4",
+          "role": "process_node",
+          "bbox": [
+            460.0,
+            100.0,
+            558.0,
+            182.0
+          ],
+          "text_safe_bbox": [
+            460.0,
+            100.0,
+            558.0,
+            182.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_node_5",
+      "node_type": "container",
+      "semantic_role": "process_node",
+      "bbox": [
+        592.0,
+        100.0,
+        690.0,
+        182.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_node_5",
+          "role": "process_node",
+          "bbox": [
+            592.0,
+            100.0,
+            690.0,
+            182.0
+          ],
+          "text_safe_bbox": [
+            592.0,
+            100.0,
+            690.0,
+            182.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_node_6",
+      "node_type": "container",
+      "semantic_role": "process_node",
+      "bbox": [
+        592.0,
+        262.0,
+        690.0,
+        344.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_node_6",
+          "role": "process_node",
+          "bbox": [
+            592.0,
+            262.0,
+            690.0,
+            344.0
+          ],
+          "text_safe_bbox": [
+            592.0,
+            262.0,
+            690.0,
+            344.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_node_7",
+      "node_type": "container",
+      "semantic_role": "process_node",
+      "bbox": [
+        460.0,
+        262.0,
+        558.0,
+        344.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_node_7",
+          "role": "process_node",
+          "bbox": [
+            460.0,
+            262.0,
+            558.0,
+            344.0
+          ],
+          "text_safe_bbox": [
+            460.0,
+            262.0,
+            558.0,
+            344.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_node_8",
+      "node_type": "container",
+      "semantic_role": "process_node",
+      "bbox": [
+        328.0,
+        262.0,
+        426.0,
+        344.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_node_8",
+          "role": "process_node",
+          "bbox": [
+            328.0,
+            262.0,
+            426.0,
+            344.0
+          ],
+          "text_safe_bbox": [
+            328.0,
+            262.0,
+            426.0,
+            344.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_node_9",
+      "node_type": "container",
+      "semantic_role": "process_node",
+      "bbox": [
+        196.0,
+        262.0,
+        294.0,
+        344.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_node_9",
+          "role": "process_node",
+          "bbox": [
+            196.0,
+            262.0,
+            294.0,
+            344.0
+          ],
+          "text_safe_bbox": [
+            196.0,
+            262.0,
+            294.0,
+            344.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_node_10",
+      "node_type": "container",
+      "semantic_role": "process_node",
+      "bbox": [
+        64.0,
+        262.0,
+        162.0,
+        344.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_node_10",
+          "role": "process_node",
+          "bbox": [
+            64.0,
+            262.0,
+            162.0,
+            344.0
+          ],
+          "text_safe_bbox": [
+            64.0,
+            262.0,
+            162.0,
+            344.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_feedback_label",
+      "node_type": "container",
+      "semantic_role": "edge_label",
+      "bbox": [
+        925.0,
+        290.0,
+        1190.0,
+        322.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_feedback_label",
+          "role": "edge_label",
+          "bbox": [
+            925.0,
+            290.0,
+            1190.0,
+            322.0
+          ],
+          "text_safe_bbox": [
+            925.0,
+            290.0,
+            1190.0,
+            322.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_trigger_1",
+      "node_type": "container",
+      "semantic_role": "trigger_tag",
+      "bbox": [
+        62.0,
+        464.0,
+        212.0,
+        487.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_trigger_1",
+          "role": "trigger_tag",
+          "bbox": [
+            62.0,
+            464.0,
+            212.0,
+            487.0
+          ],
+          "text_safe_bbox": [
+            62.0,
+            464.0,
+            212.0,
+            487.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_trigger_2",
+      "node_type": "container",
+      "semantic_role": "trigger_tag",
+      "bbox": [
+        260.0,
+        464.0,
+        410.0,
+        487.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_trigger_2",
+          "role": "trigger_tag",
+          "bbox": [
+            260.0,
+            464.0,
+            410.0,
+            487.0
+          ],
+          "text_safe_bbox": [
+            260.0,
+            464.0,
+            410.0,
+            487.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_trigger_3",
+      "node_type": "container",
+      "semantic_role": "trigger_tag",
+      "bbox": [
+        458.0,
+        464.0,
+        608.0,
+        487.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_trigger_3",
+          "role": "trigger_tag",
+          "bbox": [
+            458.0,
+            464.0,
+            608.0,
+            487.0
+          ],
+          "text_safe_bbox": [
+            458.0,
+            464.0,
+            608.0,
+            487.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_trigger_4",
+      "node_type": "container",
+      "semantic_role": "trigger_tag",
+      "bbox": [
+        656.0,
+        464.0,
+        806.0,
+        487.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_trigger_4",
+          "role": "trigger_tag",
+          "bbox": [
+            656.0,
+            464.0,
+            806.0,
+            487.0
+          ],
+          "text_safe_bbox": [
+            656.0,
+            464.0,
+            806.0,
+            487.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_trigger_5",
+      "node_type": "container",
+      "semantic_role": "trigger_tag",
+      "bbox": [
+        854.0,
+        464.0,
+        1004.0,
+        487.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_trigger_5",
+          "role": "trigger_tag",
+          "bbox": [
+            854.0,
+            464.0,
+            1004.0,
+            487.0
+          ],
+          "text_safe_bbox": [
+            854.0,
+            464.0,
+            1004.0,
+            487.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_trigger_6",
+      "node_type": "container",
+      "semantic_role": "trigger_tag",
+      "bbox": [
+        1052.0,
+        464.0,
+        1202.0,
+        487.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_trigger_6",
+          "role": "trigger_tag",
+          "bbox": [
+            1052.0,
+            464.0,
+            1202.0,
+            487.0
+          ],
+          "text_safe_bbox": [
+            1052.0,
+            464.0,
+            1202.0,
+            487.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    },
+    {
+      "node_id": "p7_sowhat",
+      "node_type": "container",
+      "semantic_role": "so_what_band",
+      "bbox": [
+        92.0,
+        580.0,
+        1188.0,
+        615.0
+      ],
+      "source": {
+        "kind": "semantic_plan"
+      },
+      "confidence": 1.0,
+      "attributes": {
+        "raw": {
+          "id": "p7_sowhat",
+          "role": "so_what_band",
+          "bbox": [
+            92.0,
+            580.0,
+            1188.0,
+            615.0
+          ],
+          "text_safe_bbox": [
+            92.0,
+            580.0,
+            1188.0,
+            615.0
+          ],
+          "fill": "#23312D",
+          "align": "center",
+          "max_lines": 4
+        }
+      }
+    }
+  ],
+  "text_nodes": [
+    {
+      "node_id": "text_semantic_1",
+      "text": "1  企业入库\n企业类型 / 业务范围 / 目标区域 / 应用需求",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_node_1",
+        "placement": "inside",
+        "safe_bbox": [
+          64.0,
+          100.0,
+          162.0,
+          182.0
+        ]
+      },
+      "style": {
+        "font_size": 11,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "layout_bbox": [
+          64.0,
+          100.0,
+          162.0,
+          182.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_2",
+      "text": "2  角色识别\n投资运营 / 规划设计 / EPC / 装备制造 / 运维等",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_node_2",
+        "placement": "inside",
+        "safe_bbox": [
+          196.0,
+          100.0,
+          294.0,
+          182.0
+        ]
+      },
+      "style": {
+        "font_size": 11,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "layout_bbox": [
+          196.0,
+          100.0,
+          294.0,
+          182.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_3",
+      "text": "3  授权取证\n基础评价 / 专项评价 / 对外传播授权",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_node_3",
+        "placement": "inside",
+        "safe_bbox": [
+          328.0,
+          100.0,
+          426.0,
+          182.0
+        ]
+      },
+      "style": {
+        "font_size": 11,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "layout_bbox": [
+          328.0,
+          100.0,
+          426.0,
+          182.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_4",
+      "text": "4  数据治理\n清洗 / 校验 / 去重 / 口径统一 / 版本管理",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_node_4",
+        "placement": "inside",
+        "safe_bbox": [
+          460.0,
+          100.0,
+          558.0,
+          182.0
+        ]
+      },
+      "style": {
+        "font_size": 11,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "layout_bbox": [
+          460.0,
+          100.0,
+          558.0,
+          182.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_5",
+      "text": "5  证据入库\n按证据类型 / 能力维度 / 场景 / 授权边界入库",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_node_5",
+        "placement": "inside",
+        "safe_bbox": [
+          592.0,
+          100.0,
+          690.0,
+          182.0
+        ]
+      },
+      "style": {
+        "font_size": 10,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "layout_bbox": [
+          592.0,
+          100.0,
+          690.0,
+          182.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_6",
+      "text": "6  能力评价\n评价模型 / 证据等级 / 场景适配规则",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_node_6",
+        "placement": "inside",
+        "safe_bbox": [
+          592.0,
+          262.0,
+          690.0,
+          344.0
+        ]
+      },
+      "style": {
+        "font_size": 11,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "layout_bbox": [
+          592.0,
+          262.0,
+          690.0,
+          344.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_7",
+      "text": "7  专家复核\n重大结论 / 关键证据 / 风险提示 / 争议事项",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_node_7",
+        "placement": "inside",
+        "safe_bbox": [
+          460.0,
+          262.0,
+          558.0,
+          344.0
+        ]
+      },
+      "style": {
+        "font_size": 11,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "layout_bbox": [
+          460.0,
+          262.0,
+          558.0,
+          344.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_8",
+      "text": "8  结果生成\n画像报告 / 评价结果 / 证明材料 / 专题报告",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_node_8",
+        "placement": "inside",
+        "safe_bbox": [
+          328.0,
+          262.0,
+          426.0,
+          344.0
+        ]
+      },
+      "style": {
+        "font_size": 11,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "layout_bbox": [
+          328.0,
+          262.0,
+          426.0,
+          344.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_9",
+      "text": "9  场景调用\n投标 / 融资 / 供应链 / 国别进入 / 监测传播",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_node_9",
+        "placement": "inside",
+        "safe_bbox": [
+          196.0,
+          262.0,
+          294.0,
+          344.0
+        ]
+      },
+      "style": {
+        "font_size": 10,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "layout_bbox": [
+          196.0,
+          262.0,
+          294.0,
+          344.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_10",
+      "text": "10  反馈更新\n使用反馈 / 异议处理 / 补证修正 / 规则修订",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_node_10",
+        "placement": "inside",
+        "safe_bbox": [
+          64.0,
+          262.0,
+          162.0,
+          344.0
+        ]
+      },
+      "style": {
+        "font_size": 11,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "layout_bbox": [
+          64.0,
+          262.0,
+          162.0,
+          344.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_11",
+      "text": "回流至数据治理 / 证据入库",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "arrow_label",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_feedback_label",
+        "placement": "inside",
+        "safe_bbox": [
+          925.0,
+          290.0,
+          1190.0,
+          322.0
+        ]
+      },
+      "style": {
+        "font_size": 15,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "layout_bbox": [
+          925.0,
+          290.0,
+          1190.0,
+          322.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_12",
+      "text": "项目新增/完工",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_trigger_1",
+        "placement": "inside",
+        "safe_bbox": [
+          62.0,
+          464.0,
+          212.0,
+          487.0
+        ]
+      },
+      "style": {
+        "font_size": 14,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "layout_bbox": [
+          62.0,
+          464.0,
+          212.0,
+          487.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_13",
+      "text": "证书到期/更新",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_trigger_2",
+        "placement": "inside",
+        "safe_bbox": [
+          260.0,
+          464.0,
+          410.0,
+          487.0
+        ]
+      },
+      "style": {
+        "font_size": 14,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "layout_bbox": [
+          260.0,
+          464.0,
+          410.0,
+          487.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_14",
+      "text": "行政处罚/信用修复",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_trigger_3",
+        "placement": "inside",
+        "safe_bbox": [
+          458.0,
+          464.0,
+          608.0,
+          487.0
+        ]
+      },
+      "style": {
+        "font_size": 14,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "layout_bbox": [
+          458.0,
+          464.0,
+          608.0,
+          487.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_15",
+      "text": "国别规则变化",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_trigger_4",
+        "placement": "inside",
+        "safe_bbox": [
+          656.0,
+          464.0,
+          806.0,
+          487.0
+        ]
+      },
+      "style": {
+        "font_size": 14,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "layout_bbox": [
+          656.0,
+          464.0,
+          806.0,
+          487.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_16",
+      "text": "风险事件变化",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_trigger_5",
+        "placement": "inside",
+        "safe_bbox": [
+          854.0,
+          464.0,
+          1004.0,
+          487.0
+        ]
+      },
+      "style": {
+        "font_size": 14,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "layout_bbox": [
+          854.0,
+          464.0,
+          1004.0,
+          487.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_17",
+      "text": "企业补证",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_trigger_6",
+        "placement": "inside",
+        "safe_bbox": [
+          1052.0,
+          464.0,
+          1202.0,
+          487.0
+        ]
+      },
+      "style": {
+        "font_size": 14,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "layout_bbox": [
+          1052.0,
+          464.0,
+          1202.0,
+          487.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    },
+    {
+      "node_id": "text_semantic_18",
+      "text": "核心逻辑：以授权取证和证据入库为基础，用模型评价形成结果，再通过场景调用和反馈更新形成可持续运营闭环。",
+      "truth_source": {
+        "kind": "script"
+      },
+      "semantic_role": "body",
+      "binding": {
+        "type": "container_text",
+        "target_id": "p7_sowhat",
+        "placement": "inside",
+        "safe_bbox": [
+          92.0,
+          580.0,
+          1188.0,
+          615.0
+        ]
+      },
+      "style": {
+        "font_size": 18,
+        "fill": "#23312D",
+        "font_family": "Microsoft YaHei",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "layout_bbox": [
+          92.0,
+          580.0,
+          1188.0,
+          615.0
+        ],
+        "layout_source": "semantic_layout_plan",
+        "layout_strategy": "container_safe_bbox"
+      }
+    }
+  ],
+  "relations": [],
+  "layout_intents": [],
+  "gates": {},
+  "gate_issues": [],
+  "metadata": {
+    "builder": "scene_graph.builder.v1",
+    "semantic_layout_plan_consumed": true,
+    "source_capture_page_consumed": false
+  }
+}

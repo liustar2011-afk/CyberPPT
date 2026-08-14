@@ -1,0 +1,24 @@
+{
+  "schema": "cyberppt.dual_image.structure_inference_set.v1",
+  "valid": false,
+  "page_count": 2,
+  "container_count": 0,
+  "pages": [
+    {
+      "schema": "cyberppt.dual_image.structure_inference.v1",
+      "page_number": 3,
+      "valid": false,
+      "container_count": 0,
+      "containers": [],
+      "text_items": []
+    },
+    {
+      "schema": "cyberppt.dual_image.structure_inference.v1",
+      "page_number": 4,
+      "valid": false,
+      "container_count": 0,
+      "containers": [],
+      "text_items": []
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "cyberppt.page_image_pairs.v1",
+  "project_path": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-145635_pages007_008_dual_image",
+  "pages": [
+    {
+      "page": 7,
+      "full": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-145635_pages007_008_dual_image/images/page_007_full.png",
+      "background": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-145635_pages007_008_dual_image/images/page_007_background.png",
+      "status": "approved_for_overlay"
+    },
+    {
+      "page": 8,
+      "full": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-145635_pages007_008_dual_image/images/page_008_full.png",
+      "background": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-145635_pages007_008_dual_image/images/page_008_background.png",
+      "status": "approved_for_overlay"
+    }
+  ]
+}

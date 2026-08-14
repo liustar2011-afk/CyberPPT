@@ -1,0 +1,34 @@
+{
+  "schema": "cyberppt.template_assembly.v1",
+  "page": 6,
+  "title": "总体架构",
+  "source_overlay_pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v12_clear_band_labels.pptx",
+  "output_pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v2_enlarged.pptx",
+  "template_text_lock": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/workbench/locks/template_text/page_006_template_text_lock.json",
+  "content_transform": {
+    "mode": "uniform_scale_centered_below_red_divider",
+    "scale": 0.842,
+    "placed_region_px": {
+      "x": 101.12,
+      "y": 104.0,
+      "width": 1077.76,
+      "height": 606.24
+    },
+    "red_divider_px": {
+      "x": 0,
+      "y": 94,
+      "width": 1280,
+      "height": 7
+    },
+    "red_divider_clearance_px": 3.0
+  },
+  "chrome": {
+    "title": true,
+    "red_divider": true,
+    "logo": true,
+    "page_number": "6"
+  },
+  "supersedes": [
+    "template_assembly/page_006_template_assembled_总体架构.pptx"
+  ]
+}

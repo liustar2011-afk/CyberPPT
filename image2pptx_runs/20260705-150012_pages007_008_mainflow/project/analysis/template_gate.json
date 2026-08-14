@@ -1,0 +1,13 @@
+{
+  "schema": "cyberppt.dual_image.template_gate.v1",
+  "valid": false,
+  "checks": {
+    "spec_lock_available": true,
+    "brand_rules_available": true,
+    "master_chrome_available": true,
+    "svg_output_available": true,
+    "pptx_exported": false
+  },
+  "export_requested": true,
+  "exported_pptx": null
+}

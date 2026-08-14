@@ -1,0 +1,358 @@
+{
+  "schema": "cyberppt.artifact_ledger.v1",
+  "artifacts": [
+    {
+      "stage": "template_text_lock",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/workbench/locks/template_text/page_006_template_text_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v12_clear_band_labels.pptx"
+      ],
+      "supersedes": [],
+      "resume_command": "rerun template assembly from v12 overlay with this template_text_lock",
+      "sha256": "05daa769aa6a5973f1cea3c4cee30c58b3e068bedb9d02259d85da65f9f071ed"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/workbench/stages/04-template-rebuild/page_006_template_assembly.json",
+      "status": "generated",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/workbench/locks/template_text/page_006_template_text_lock.json",
+        "image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v12_clear_band_labels.pptx"
+      ],
+      "supersedes": [],
+      "resume_command": "rerun template assembly script for page 006",
+      "sha256": "0638a5af1cbc2894c249afa8acff36ad6d6c908a0607bc919521fcc2e3f65451"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构.pptx",
+      "status": "generated",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/workbench/locks/template_text/page_006_template_text_lock.json",
+        "image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v12_clear_band_labels.pptx"
+      ],
+      "supersedes": [],
+      "resume_command": "rerun template assembly script for page 006",
+      "sha256": "78a2643a40f062ecd4bc1d18dad06eb1eee1ffc7a9c0639e8067bfdcaa9749b4"
+    },
+    {
+      "stage": "qa_delivery",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render/page_006_template_assembled_总体架构.png",
+      "status": "rendered",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构.pptx"
+      ],
+      "supersedes": [],
+      "resume_command": "rerender template assembly PPTX with soffice and pdftoppm",
+      "sha256": "b62eb23d0070f9652e4a3a98a841bef7273018c16d3ee42a72a5d30e5d175a99"
+    },
+    {
+      "stage": "qa_delivery",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/workbench/stages/05-qa-delivery/page_006_template_assembly_visual_check.json",
+      "status": "passed_for_user_review",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render/page_006_template_assembled_总体架构.png",
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构.pptx"
+      ],
+      "supersedes": [],
+      "resume_command": "reopen render PNG and update visual check JSON",
+      "sha256": "675872a0ce98d35f1fff6f3a9731f10119c7f51af68c95274b4db7a19762d30e"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/workbench/stages/04-template-rebuild/page_006_template_assembly_v2_enlarged.json",
+      "status": "generated",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/workbench/locks/template_text/page_006_template_text_lock.json",
+        "image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v12_clear_band_labels.pptx"
+      ],
+      "supersedes": [
+        "workbench/stages/04-template-rebuild/page_006_template_assembly.json"
+      ],
+      "resume_command": "rerun enlarged template assembly v2",
+      "sha256": "0ba5425e0d05bca096d57d09b7a650d1ff998631a7a48f6df2c82e50bdf1c6da"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v2_enlarged.pptx",
+      "status": "generated",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/workbench/locks/template_text/page_006_template_text_lock.json",
+        "image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v12_clear_band_labels.pptx"
+      ],
+      "supersedes": [
+        "template_assembly/page_006_template_assembled_总体架构.pptx"
+      ],
+      "resume_command": "rerun enlarged template assembly v2",
+      "sha256": "3caeac9d0ed61daaf9a6926cb3cbc18a5c398b4b064063659dc63f5a0a3770ee"
+    },
+    {
+      "stage": "qa_delivery",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v2/page_006_template_assembled_总体架构_v2_enlarged.png",
+      "status": "rendered",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v2_enlarged.pptx"
+      ],
+      "supersedes": [
+        "template_assembly/render/page_006_template_assembled_总体架构.png"
+      ],
+      "resume_command": "rerender enlarged template assembly v2",
+      "sha256": "4e22ab2fcbe4908d51f7f6bd1a0277aba7b7ae4db5a1780602e8ea9d7c688adf"
+    },
+    {
+      "stage": "qa_delivery",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/workbench/stages/05-qa-delivery/page_006_template_assembly_visual_check_v2_enlarged.json",
+      "status": "passed_for_user_review",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v2/page_006_template_assembled_总体架构_v2_enlarged.png",
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v2_enlarged.pptx"
+      ],
+      "supersedes": [
+        "workbench/stages/05-qa-delivery/page_006_template_assembly_visual_check.json"
+      ],
+      "resume_command": "review enlarged v2 render and update QA",
+      "sha256": "7efcf9342fef15b8f039a0c2910035ab1d68aae63bb417b3106ef7b4faef3a3f"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/workbench/stages/04-template-rebuild/page_006_template_assembly_v3_refined_chrome.json",
+      "status": "generated",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/workbench/locks/template_text/page_006_template_text_lock.json",
+        "image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v12_clear_band_labels.pptx"
+      ],
+      "supersedes": [
+        "workbench/stages/04-template-rebuild/page_006_template_assembly_v2_enlarged.json"
+      ],
+      "resume_command": "rerun refined chrome template assembly v3",
+      "sha256": "0a388b3b6d2f787589ce21a463fe8d340982272c643fcfb95ed54d296d1c4f5a"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v3_refined_chrome.pptx",
+      "status": "generated",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/workbench/locks/template_text/page_006_template_text_lock.json",
+        "image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v12_clear_band_labels.pptx"
+      ],
+      "supersedes": [
+        "template_assembly/page_006_template_assembled_总体架构_v2_enlarged.pptx"
+      ],
+      "resume_command": "rerun refined chrome template assembly v3",
+      "sha256": "a43557742dbe65fe1da518ff7d6baf90a41ef8dff77a1f90836b3b3053fe7c58"
+    },
+    {
+      "stage": "qa_delivery",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v3/page_006_template_assembled_总体架构_v3_refined_chrome.png",
+      "status": "rendered",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v3_refined_chrome.pptx"
+      ],
+      "supersedes": [
+        "template_assembly/render_v2/page_006_template_assembled_总体架构_v2_enlarged.png"
+      ],
+      "resume_command": "rerender refined chrome template assembly v3",
+      "sha256": "80c30be8e3f7f8142d8267843da8682e8366b5d49ee099bc63bb1cb1bf758a7e"
+    },
+    {
+      "stage": "qa_delivery",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/workbench/stages/05-qa-delivery/page_006_template_assembly_visual_check_v3_refined_chrome.json",
+      "status": "passed_for_user_review",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v3/page_006_template_assembled_总体架构_v3_refined_chrome.png",
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v3_refined_chrome.pptx"
+      ],
+      "supersedes": [
+        "workbench/stages/05-qa-delivery/page_006_template_assembly_visual_check_v2_enlarged.json"
+      ],
+      "resume_command": "review refined chrome v3 render and update QA",
+      "sha256": "7ca816396b9710a77b8272922d7bc290725afaaa519e082bea21e8f5186df777"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/workbench/stages/04-template-rebuild/page_006_template_assembly_v4_master_chrome.json",
+      "status": "generated",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/workbench/locks/template_text/page_006_template_text_lock.json",
+        "image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v12_clear_band_labels.pptx"
+      ],
+      "supersedes": [
+        "workbench/stages/04-template-rebuild/page_006_template_assembly_v3_refined_chrome.json"
+      ],
+      "resume_command": "rerun master chrome template assembly v4",
+      "sha256": "02978fb1a7a0eec399ca5a4d760793330860c72d8e340fb8c9909ac9d5874d1d"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v4_master_chrome.pptx",
+      "status": "generated",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/workbench/locks/template_text/page_006_template_text_lock.json",
+        "image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v12_clear_band_labels.pptx"
+      ],
+      "supersedes": [
+        "template_assembly/page_006_template_assembled_总体架构_v3_refined_chrome.pptx"
+      ],
+      "resume_command": "rerun master chrome template assembly v4",
+      "sha256": "90870864f86541928c2521abae67c95ac659fe1cb4423d3f3fe1ee8d8164011c"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/workbench/stages/04-template-rebuild/page_006_template_assembly_v5_master_chrome_office_clean.json",
+      "status": "generated",
+      "depends_on": [
+        "template_assembly/page_006_template_assembled_总体架构_v4_master_chrome.pptx"
+      ],
+      "supersedes": [
+        "workbench/stages/04-template-rebuild/page_006_template_assembly_v4_master_chrome.json"
+      ],
+      "resume_command": "open v4 in PowerPoint, save normalized copy as v5, then verify clean reopen",
+      "sha256": "d30398c1aa56caac76883e6be542c289d7dbb0a958d7fd4541feb1e880728ab3"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v5_master_chrome_office_clean.pptx",
+      "status": "office_clean",
+      "depends_on": [
+        "template_assembly/page_006_template_assembled_总体架构_v4_master_chrome.pptx"
+      ],
+      "supersedes": [
+        "template_assembly/page_006_template_assembled_总体架构_v4_master_chrome.pptx"
+      ],
+      "resume_command": "use PowerPoint-normalized v5 output",
+      "sha256": "bd5688b343f55881f9499d79ad9dbbe79cc5f28bee17a65187a7ed25971ebb18"
+    },
+    {
+      "stage": "qa_delivery",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v5/page_006_template_assembled_总体架构_v5_master_chrome_office_clean.png",
+      "status": "rendered",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v5_master_chrome_office_clean.pptx"
+      ],
+      "supersedes": [
+        "template_assembly/render_v4/page_006_template_assembled_总体架构_v4_master_chrome.png"
+      ],
+      "resume_command": "rerender v5 office clean PPTX",
+      "sha256": "80c30be8e3f7f8142d8267843da8682e8366b5d49ee099bc63bb1cb1bf758a7e"
+    },
+    {
+      "stage": "qa_delivery",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/workbench/stages/05-qa-delivery/page_006_template_assembly_visual_check_v5_master_chrome_office_clean.json",
+      "status": "passed_for_user_review",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v5/page_006_template_assembled_总体架构_v5_master_chrome_office_clean.png",
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v5_master_chrome_office_clean.pptx"
+      ],
+      "supersedes": [
+        "workbench/stages/05-qa-delivery/page_006_template_assembly_visual_check_v3_refined_chrome.json"
+      ],
+      "resume_command": "review v5 render and office clean QA",
+      "sha256": "87182aa9ceb826d744cb8da95ab0f5fd4cc2d2dfcdca0d2ceb13be3414451c86"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/workbench/stages/04-template-rebuild/page_006_template_assembly_v6_dynamic_slide_number.json",
+      "status": "generated",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v5_master_chrome_office_clean.pptx"
+      ],
+      "supersedes": [
+        "workbench/stages/04-template-rebuild/page_006_template_assembly_v5_master_chrome_office_clean.json"
+      ],
+      "resume_command": "convert master page number to slidenum field",
+      "sha256": "7191d718da527fb153fdda43d467ba29c3cb73b5b01f52ede36617c74de4fa7e"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v6_dynamic_slide_number.pptx",
+      "status": "generated",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v5_master_chrome_office_clean.pptx"
+      ],
+      "supersedes": [
+        "template_assembly/page_006_template_assembled_总体架构_v5_master_chrome_office_clean.pptx"
+      ],
+      "resume_command": "convert master page number to slidenum field",
+      "sha256": "d5bba6b5bf3557c2f3fd156cd6ec44dbf43625b1b79185a20681c4487c8483cf"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/workbench/stages/04-template-rebuild/page_006_template_assembly_v7_dynamic_slide_number_no_offset.json",
+      "status": "generated",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v6_dynamic_slide_number.pptx"
+      ],
+      "supersedes": [
+        "workbench/stages/04-template-rebuild/page_006_template_assembly_v6_dynamic_slide_number.json"
+      ],
+      "resume_command": "remove presentation.firstSlideNum; keep master slidenum field",
+      "sha256": "bc4ef559acea3c428ab23599d09c39563d7196e8f60705125a00fbb0bab71c15"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v7_dynamic_slide_number_no_offset.pptx",
+      "status": "generated",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v6_dynamic_slide_number.pptx"
+      ],
+      "supersedes": [
+        "template_assembly/page_006_template_assembled_总体架构_v6_dynamic_slide_number.pptx"
+      ],
+      "resume_command": "remove presentation.firstSlideNum; keep master slidenum field",
+      "sha256": "b3978bec5f71da297f232d32517bd9e05eb04307a7cd2b750e11e9058d16a7d6"
+    },
+    {
+      "stage": "qa_delivery",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v7/page_006_template_assembled_总体架构_v7_dynamic_slide_number_no_offset.png",
+      "status": "rendered",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v7_dynamic_slide_number_no_offset.pptx"
+      ],
+      "supersedes": [
+        "template_assembly/render_v5/page_006_template_assembled_总体架构_v5_master_chrome_office_clean.png"
+      ],
+      "resume_command": "render v7 no firstSlideNum dynamic page-number version",
+      "sha256": "6e06116feafa89fc33a2ed22823b2653452718b950b2634e7ae986c8bef29193"
+    },
+    {
+      "stage": "qa_delivery",
+      "page": 6,
+      "path": "image2pptx_runs/20260705-110458_page006_dual_image/workbench/stages/05-qa-delivery/page_006_template_assembly_visual_check_v7_dynamic_slide_number_no_offset.json",
+      "status": "passed_for_user_review",
+      "depends_on": [
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v7/page_006_template_assembled_总体架构_v7_dynamic_slide_number_no_offset.png",
+        "image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v7_dynamic_slide_number_no_offset.pptx"
+      ],
+      "supersedes": [
+        "workbench/stages/05-qa-delivery/page_006_template_assembly_visual_check_v5_master_chrome_office_clean.json"
+      ],
+      "resume_command": "review v7 no firstSlideNum dynamic page-number QA",
+      "sha256": "87e80b994619d52ffe7bba5b712d92497745f2e9d780663ffbe6fda91c128da4"
+    }
+  ]
+}

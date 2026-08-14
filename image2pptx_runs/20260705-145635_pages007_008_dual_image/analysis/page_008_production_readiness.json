@@ -1,0 +1,13 @@
+{
+  "schema": "cyberppt.dual_image.production_readiness.v1",
+  "page": 8,
+  "valid": true,
+  "delivery_mode": "dual_image_editable_overlay",
+  "checks": {
+    "full_image_present": true,
+    "background_no_text": true,
+    "semantic_plan_containers_present": true,
+    "editable_text_layer_present": true,
+    "template_rebuild_required": true
+  }
+}

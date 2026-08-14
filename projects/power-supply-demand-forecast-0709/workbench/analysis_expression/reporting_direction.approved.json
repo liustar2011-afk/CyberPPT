@@ -1,0 +1,11 @@
+{
+  "schema": "cyberppt.analysis_expression.approval.v1",
+  "gate": "reporting_direction",
+  "approved": true,
+  "approved_at": "2026-07-10T06:02:02.218101+00:00",
+  "pending_confirmation": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/reporting_direction.pending-confirmation.json",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/reporting_direction.md",
+  "source_sha256": "5a9ed50fcfd8aa8dd06fb54b90f97e3b835c76c92327cc9b5ad8fb7f0287144c",
+  "option_id": "leadership_review",
+  "note": "用户确认采用领导审定型建设方案。"
+}

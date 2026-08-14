@@ -1,0 +1,1020 @@
+{
+  "image_size": {
+    "width": 1280,
+    "height": 720
+  },
+  "items": [
+    {
+      "text": "通过知识产权全周期存证与侵权监测，覆盖研发到维权全生命周期，杜绝侵权泄露并为维权提供完整证据链",
+      "bbox": [
+        170.0,
+        22.0,
+        1110.0,
+        43.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "模块一：数据来源方",
+      "bbox": [
+        52.0,
+        94.0,
+        160.0,
+        109.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "知识产权权利人：",
+      "bbox": [
+        26.0,
+        154.0,
+        139.0,
+        172.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "专利、软著、集成电路",
+      "bbox": [
+        26.0,
+        180.0,
+        151.0,
+        197.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "布图设计、技术秘密等",
+      "bbox": [
+        26.0,
+        203.0,
+        152.0,
+        220.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "知识产权数据，覆盖",
+      "bbox": [
+        26.0,
+        226.0,
+        138.0,
+        243.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "研发、申请、授权、",
+      "bbox": [
+        26.0,
+        250.0,
+        139.0,
+        266.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "使用、维权五阶段",
+      "bbox": [
+        26.0,
+        273.0,
+        139.0,
+        290.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "五阶段全覆盖",
+      "bbox": [
+        50.0,
+        317.0,
+        139.0,
+        331.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "01",
+      "bbox": [
+        48.0,
+        352.0,
+        69.0,
+        374.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "研发阶段",
+      "bbox": [
+        80.0,
+        356.0,
+        137.0,
+        370.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "02",
+      "bbox": [
+        48.0,
+        384.0,
+        69.0,
+        407.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "申请阶段",
+      "bbox": [
+        80.0,
+        389.0,
+        137.0,
+        403.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "03",
+      "bbox": [
+        48.0,
+        418.0,
+        69.0,
+        440.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "授权阶段",
+      "bbox": [
+        80.0,
+        422.0,
+        137.0,
+        436.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "04",
+      "bbox": [
+        48.0,
+        451.0,
+        69.0,
+        473.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "使用阶段",
+      "bbox": [
+        80.0,
+        455.0,
+        137.0,
+        469.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "05",
+      "bbox": [
+        48.0,
+        485.0,
+        69.0,
+        507.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "维权阶段",
+      "bbox": [
+        80.0,
+        489.0,
+        137.0,
+        503.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "模块二：技术支撑方与底座加工",
+      "bbox": [
+        337.0,
+        94.0,
+        526.0,
+        109.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "技术支撑方：",
+      "bbox": [
+        311.0,
+        153.0,
+        396.0,
+        170.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "提供全网侵权监测技术，自动抓取侵权证据",
+      "bbox": [
+        311.0,
+        179.0,
+        572.0,
+        194.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "加工链条（对照九环节标准覆盖情况，本场景覆盖最完整）",
+      "bbox": [
+        274.0,
+        236.0,
+        592.0,
+        252.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "1",
+      "bbox": [
+        239.0,
+        278.0,
+        249.0,
+        291.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "数据授权",
+      "bbox": [
+        219.0,
+        382.0,
+        272.0,
+        397.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "授权范围、",
+      "bbox": [
+        216.0,
+        416.0,
+        274.0,
+        431.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "使用期限、",
+      "bbox": [
+        216.0,
+        440.0,
+        274.0,
+        455.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "访问权限",
+      "bbox": [
+        216.0,
+        464.0,
+        274.0,
+        479.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "精细化管控",
+      "bbox": [
+        216.0,
+        487.0,
+        275.0,
+        502.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "2",
+      "bbox": [
+        318.0,
+        278.0,
+        327.0,
+        291.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "受控接入",
+      "bbox": [
+        296.0,
+        382.0,
+        349.0,
+        397.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "“可用不可见、",
+      "bbox": [
+        295.0,
+        416.0,
+        352.0,
+        431.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "用途可控",
+      "bbox": [
+        297.0,
+        440.0,
+        352.0,
+        455.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "可计量”",
+      "bbox": [
+        302.0,
+        464.0,
+        348.0,
+        479.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "3",
+      "bbox": [
+        395.0,
+        278.0,
+        405.0,
+        291.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "可信计算",
+      "bbox": [
+        374.0,
+        382.0,
+        426.0,
+        397.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "全网侵权",
+      "bbox": [
+        374.0,
+        416.0,
+        426.0,
+        431.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "监测技术",
+      "bbox": [
+        374.0,
+        440.0,
+        426.0,
+        455.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "手段",
+      "bbox": [
+        388.0,
+        464.0,
+        414.0,
+        479.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "4",
+      "bbox": [
+        466.0,
+        278.0,
+        475.0,
+        291.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "成果输出",
+      "bbox": [
+        445.0,
+        382.0,
+        497.0,
+        397.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "固化权属",
+      "bbox": [
+        445.0,
+        416.0,
+        497.0,
+        431.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "证据、侵权",
+      "bbox": [
+        441.0,
+        440.0,
+        501.0,
+        455.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "鉴定报告",
+      "bbox": [
+        445.0,
+        464.0,
+        497.0,
+        479.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "5",
+      "bbox": [
+        539.0,
+        278.0,
+        548.0,
+        291.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "调用计量",
+      "bbox": [
+        518.0,
+        382.0,
+        570.0,
+        397.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "使用计量",
+      "bbox": [
+        518.0,
+        416.0,
+        570.0,
+        431.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "杜绝超范围",
+      "bbox": [
+        512.0,
+        440.0,
+        576.0,
+        455.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "使用",
+      "bbox": [
+        531.0,
+        464.0,
+        557.0,
+        479.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "6",
+      "bbox": [
+        613.0,
+        278.0,
+        623.0,
+        291.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "审计留痕",
+      "bbox": [
+        592.0,
+        382.0,
+        644.0,
+        397.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "全生命周期",
+      "bbox": [
+        586.0,
+        416.0,
+        650.0,
+        431.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "数据上链",
+      "bbox": [
+        592.0,
+        440.0,
+        644.0,
+        455.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "存证",
+      "bbox": [
+        605.0,
+        464.0,
+        631.0,
+        479.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "目录发布、主体认证、收益结算非本场景原文展开重点",
+      "bbox": [
+        275.0,
+        531.0,
+        587.0,
+        545.0
+      ],
+      "confidence": 0.95,
+      "source": "vision-json"
+    },
+    {
+      "text": "模块三：服务产品",
+      "bbox": [
+        738.0,
+        94.0,
+        817.0,
+        109.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "固化的权属证据：",
+      "bbox": [
+        703.0,
+        247.0,
+        810.0,
+        265.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "可独立用于",
+      "bbox": [
+        725.0,
+        279.0,
+        788.0,
+        295.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "权属举证",
+      "bbox": [
+        731.0,
+        302.0,
+        783.0,
+        319.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "侵权鉴定报告：",
+      "bbox": [
+        703.0,
+        443.0,
+        808.0,
+        461.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "对接司法鉴定机构",
+      "bbox": [
+        705.0,
+        476.0,
+        811.0,
+        492.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "出具，为维权提供",
+      "bbox": [
+        705.0,
+        500.0,
+        811.0,
+        516.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "完整证据链",
+      "bbox": [
+        725.0,
+        524.0,
+        790.0,
+        540.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "模块四：空间运营方与第三方服务方",
+      "bbox": [
+        916.0,
+        94.0,
+        1089.0,
+        109.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "空间运营方：",
+      "bbox": [
+        923.0,
+        151.0,
+        1010.0,
+        168.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "中电联统筹知识产权保护规则，",
+      "bbox": [
+        923.0,
+        177.0,
+        1091.0,
+        193.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "对接国家知识产权局实现",
+      "bbox": [
+        923.0,
+        201.0,
+        1068.0,
+        217.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "数据互通，不承担底层监测",
+      "bbox": [
+        923.0,
+        225.0,
+        1081.0,
+        241.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "技术研发",
+      "bbox": [
+        923.0,
+        249.0,
+        975.0,
+        265.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "第三方服务方：",
+      "bbox": [
+        923.0,
+        300.0,
+        1014.0,
+        317.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "司法鉴定机构（侵权鉴定）：",
+      "bbox": [
+        923.0,
+        337.0,
+        1089.0,
+        354.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "对接司法鉴定机构出具报告",
+      "bbox": [
+        923.0,
+        364.0,
+        1082.0,
+        380.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "律师事务所/知识产权代理机构/",
+      "bbox": [
+        923.0,
+        418.0,
+        1087.0,
+        434.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "法院：",
+      "bbox": [
+        923.0,
+        440.0,
+        959.0,
+        456.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "侵权投诉、行政维权、司法诉讼",
+      "bbox": [
+        923.0,
+        470.0,
+        1092.0,
+        486.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "全流程在线服务，作为第三方",
+      "bbox": [
+        923.0,
+        494.0,
+        1082.0,
+        510.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "服务流程产出需非独立产品",
+      "bbox": [
+        923.0,
+        518.0,
+        1074.0,
+        534.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "模块五：用户方",
+      "bbox": [
+        1184.0,
+        94.0,
+        1252.0,
+        109.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "知识产权权利人：",
+      "bbox": [
+        1150.0,
+        282.0,
+        1257.0,
+        299.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "接受全周期",
+      "bbox": [
+        1170.0,
+        313.0,
+        1232.0,
+        329.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "保护服务的",
+      "bbox": [
+        1170.0,
+        337.0,
+        1232.0,
+        353.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "受益者",
+      "bbox": [
+        1183.0,
+        361.0,
+        1219.0,
+        377.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "可信机制贯穿全程全生命周期",
+      "bbox": [
+        117.0,
+        628.0,
+        318.0,
+        644.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "存证固化权属证据（数据可信）",
+      "bbox": [
+        117.0,
+        653.0,
+        318.0,
+        669.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "授权范围/期限/计量精细化管控，",
+      "bbox": [
+        447.0,
+        623.0,
+        641.0,
+        640.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "“可用不可见、用途可控可计量”",
+      "bbox": [
+        447.0,
+        646.0,
+        641.0,
+        663.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "（授权可信）",
+      "bbox": [
+        494.0,
+        670.0,
+        581.0,
+        686.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "侵权证据自动抓取上链固化、",
+      "bbox": [
+        770.0,
+        623.0,
+        958.0,
+        640.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "对接司法鉴定出具报告",
+      "bbox": [
+        790.0,
+        647.0,
+        938.0,
+        663.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "（结果可信）",
+      "bbox": [
+        832.0,
+        670.0,
+        897.0,
+        686.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "杜绝超范围使用与盗版侵权，",
+      "bbox": [
+        1060.0,
+        623.0,
+        1248.0,
+        640.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    },
+    {
+      "text": "降低维权成本、提升维权效率",
+      "bbox": [
+        1060.0,
+        647.0,
+        1248.0,
+        663.0
+      ],
+      "confidence": 0.97,
+      "source": "vision-json"
+    }
+  ]
+}

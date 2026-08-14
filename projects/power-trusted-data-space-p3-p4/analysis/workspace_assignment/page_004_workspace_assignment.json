@@ -1,0 +1,10 @@
+{
+  "schema": "cyberppt.dual_image.workspace_assignment.v1",
+  "stage": "template",
+  "page_number": 4,
+  "valid": false,
+  "assignment_count": 0,
+  "error_count": 0,
+  "assignments": [],
+  "issues": []
+}

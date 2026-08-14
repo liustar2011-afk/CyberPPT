@@ -1,0 +1,22 @@
+{
+  "schema": "cyberppt.template_assembly_visual_check.v1",
+  "page": 6,
+  "version": "v7_dynamic_slide_number_no_offset",
+  "pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v7_dynamic_slide_number_no_offset.pptx",
+  "render_png": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v7/page_006_template_assembled_总体架构_v7_dynamic_slide_number_no_offset.png",
+  "render_pdf": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v7/page_006_template_assembled_总体架构_v7_dynamic_slide_number_no_offset.pdf",
+  "checks": {
+    "opened_in_microsoft_powerpoint_without_repaired_title": true,
+    "public_elements_in_slide_master": true,
+    "page_number_is_dynamic_slidenum_field": true,
+    "presentation_firstSlideNum_not_set": true,
+    "standalone_preview_page_number_expected": "1",
+    "merged_deck_page_number_behavior": "PowerPoint computes the slide number from deck position",
+    "red_divider_not_blocked": true,
+    "content_centered_below_red_divider": true
+  },
+  "visual_notes": [
+    "已移除 presentation.firstSlideNum=6。单页独立预览显示 1 是动态页码字段的正常行为；进入完整 deck 后由 PowerPoint 根据页序自动计算。"
+  ],
+  "deliverable_allowed_for_user_review": true
+}

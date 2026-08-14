@@ -1,0 +1,13 @@
+{
+  "schema": "cyberppt.template_assembly.v1",
+  "page": 6,
+  "version": "v5_master_chrome_office_clean",
+  "title": "总体架构",
+  "source": "PowerPoint-normalized copy of v4_master_chrome",
+  "output_pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v5_master_chrome_office_clean.pptx",
+  "public_elements_injected_via": "slide master",
+  "office_repair_status": "verified_clean_on_reopen",
+  "supersedes": [
+    "template_assembly/page_006_template_assembled_总体架构_v4_master_chrome.pptx"
+  ]
+}

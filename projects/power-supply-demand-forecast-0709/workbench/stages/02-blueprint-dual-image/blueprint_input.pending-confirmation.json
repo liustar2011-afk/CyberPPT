@@ -1,0 +1,23 @@
+{
+  "schema": "cyberppt.blueprint_input.pending_confirmation.v1",
+  "status": "pending_confirmation",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/blueprint_input.md",
+  "source_sha256": "1954d570b6c804193c9eb9ef4fd642f501ef4775bcb0c6977b0e0129dec5d583",
+  "business_script": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/business_script.md",
+  "business_script_sha256": "3816af8df7fc470d4fa29e191ef4ade169dd6da92fcc58e623658ae35e527db9",
+  "style_lock": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/locks/visual_style_lock.json",
+  "style_lock_sha256": "0a7d6c88a15d743e18da1171281954c3029c9e837a718706ad243267a9e8e2f0",
+  "recommendation": "confirm_blueprint_input",
+  "question": "是否确认含页面类型指令的逐页生图脚本？",
+  "options": [
+    {
+      "id": "confirm_blueprint_input",
+      "label": "确认生图脚本"
+    },
+    {
+      "id": "revise_blueprint_input",
+      "label": "返回调整生图脚本"
+    }
+  ],
+  "created_at": "2026-07-10T07:50:46+00:00"
+}

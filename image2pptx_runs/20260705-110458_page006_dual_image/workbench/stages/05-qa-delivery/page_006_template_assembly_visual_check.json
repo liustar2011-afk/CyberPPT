@@ -1,0 +1,23 @@
+{
+  "schema": "cyberppt.template_assembly_visual_check.v1",
+  "page": 6,
+  "pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构.pptx",
+  "render_png": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render/page_006_template_assembled_总体架构.png",
+  "render_pdf": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render/page_006_template_assembled_总体架构.pdf",
+  "checks": {
+    "pptx_opened_by_soffice_export": true,
+    "template_title_present": true,
+    "title_text": "总体架构",
+    "logo_present": true,
+    "red_divider_present": true,
+    "page_number_present": true,
+    "body_content_below_red_divider": true,
+    "body_content_not_colliding_with_page_number": true,
+    "obvious_text_overflow_visible_in_render": false,
+    "obvious_template_collision_visible_in_render": false
+  },
+  "visual_notes": [
+    "人工查看渲染 PNG：标题/Logo/红线/页码正常；正文区整体缩放后位于模板内容区内，未见明显遮挡或越界。"
+  ],
+  "deliverable_allowed_for_user_review": true
+}

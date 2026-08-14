@@ -1,0 +1,404 @@
+{
+  "image_size": {
+    "width": 1280,
+    "height": 720
+  },
+  "items": [
+    {
+      "text": "1",
+      "bbox": [
+        84.0,
+        121.0,
+        101.0,
+        144.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "企业入库",
+      "bbox": [
+        58.0,
+        258.0,
+        127.0,
+        276.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "明确企业类型、\n业务范围、\n目标区域、\n应用需求",
+      "bbox": [
+        50.0,
+        300.0,
+        132.0,
+        411.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "2",
+      "bbox": [
+        212.0,
+        121.0,
+        229.0,
+        144.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "企业角色识别",
+      "bbox": [
+        179.0,
+        258.0,
+        263.0,
+        276.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "投资运营、\n规划设计、\nEPC总包、\n装备制造、\n运维服务、\n供应链服务",
+      "bbox": [
+        184.0,
+        300.0,
+        258.0,
+        432.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "3",
+      "bbox": [
+        340.0,
+        121.0,
+        356.0,
+        144.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "授权取证",
+      "bbox": [
+        316.0,
+        258.0,
+        377.0,
+        276.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "基础评价授权 /\n专项评价授权 /\n对外传播授权",
+      "bbox": [
+        302.0,
+        300.0,
+        391.0,
+        360.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "4",
+      "bbox": [
+        462.0,
+        121.0,
+        478.0,
+        144.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "数据治理",
+      "bbox": [
+        437.0,
+        258.0,
+        500.0,
+        276.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "清洗、校验、\n去重、分类、\n口径统一、\n版本管理",
+      "bbox": [
+        432.0,
+        300.0,
+        505.0,
+        385.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "5",
+      "bbox": [
+        587.0,
+        121.0,
+        604.0,
+        144.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "证据入库",
+      "bbox": [
+        560.0,
+        258.0,
+        624.0,
+        276.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "按证据类型、\n能力维度、\n适用场景、\n授权边界\n组织入库",
+      "bbox": [
+        557.0,
+        300.0,
+        630.0,
+        411.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "6",
+      "bbox": [
+        708.0,
+        121.0,
+        724.0,
+        144.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "能力评价",
+      "bbox": [
+        682.0,
+        258.0,
+        744.0,
+        276.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "按评价模型、\n证据等级、\n场景适配规则\n形成评价结论",
+      "bbox": [
+        680.0,
+        300.0,
+        750.0,
+        386.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "7",
+      "bbox": [
+        829.0,
+        121.0,
+        846.0,
+        144.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "专家复核",
+      "bbox": [
+        803.0,
+        258.0,
+        866.0,
+        276.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "对重大结论、\n关键证据、\n风险提示、\n争议事项\n进行复核",
+      "bbox": [
+        801.0,
+        300.0,
+        874.0,
+        411.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "8",
+      "bbox": [
+        955.0,
+        121.0,
+        972.0,
+        144.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "结果生成",
+      "bbox": [
+        930.0,
+        258.0,
+        992.0,
+        276.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "画像报告、\n能力评价结果、\n证明材料、\n专题报告、\n风险提示",
+      "bbox": [
+        929.0,
+        300.0,
+        1000.0,
+        411.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "9",
+      "bbox": [
+        1075.0,
+        121.0,
+        1092.0,
+        144.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "场景调用",
+      "bbox": [
+        1049.0,
+        258.0,
+        1113.0,
+        276.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "投标、融资、\n供应链、\n国别进入、\n行业监测、\n国际传播",
+      "bbox": [
+        1049.0,
+        300.0,
+        1118.0,
+        432.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "10",
+      "bbox": [
+        1190.0,
+        121.0,
+        1212.0,
+        144.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "反馈更新",
+      "bbox": [
+        1169.0,
+        258.0,
+        1230.0,
+        276.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "使用反馈、\n异议处理、\n补证修正、\n规则修订",
+      "bbox": [
+        1168.0,
+        300.0,
+        1233.0,
+        385.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "项目新增/完工",
+      "bbox": [
+        121.0,
+        596.0,
+        217.0,
+        615.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "证书到期/更新",
+      "bbox": [
+        320.0,
+        596.0,
+        418.0,
+        615.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "行政处罚/信用修复",
+      "bbox": [
+        523.0,
+        596.0,
+        620.0,
+        615.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "国别规则变化",
+      "bbox": [
+        725.0,
+        596.0,
+        816.0,
+        615.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "风险事件变化",
+      "bbox": [
+        915.0,
+        596.0,
+        1006.0,
+        615.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "企业补证",
+      "bbox": [
+        1125.0,
+        596.0,
+        1188.0,
+        615.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    }
+  ]
+}

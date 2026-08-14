@@ -1,0 +1,39 @@
+{
+  "schema": "cyberppt.template_assembly_visual_check.v1",
+  "page": 6,
+  "version": "v2_enlarged",
+  "pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构_v2_enlarged.pptx",
+  "render_png": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v2/page_006_template_assembled_总体架构_v2_enlarged.png",
+  "render_pdf": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/render_v2/page_006_template_assembled_总体架构_v2_enlarged.pdf",
+  "checks": {
+    "pptx_opened_by_soffice_export": true,
+    "template_title_present": true,
+    "title_text": "总体架构",
+    "body_text_layer_preserved_samples": true,
+    "logo_present": true,
+    "red_divider_present": true,
+    "red_divider_not_blocked": true,
+    "content_centered_below_red_divider": true,
+    "content_enlarged_from_previous_template": true,
+    "placed_region_px": {
+      "x": 101.12,
+      "y": 104.0,
+      "width": 1077.76,
+      "height": 606.24
+    },
+    "red_divider_px": {
+      "x": 0,
+      "y": 94,
+      "width": 1280,
+      "height": 7
+    },
+    "red_divider_clearance_px": 3.0,
+    "page_number_present": true,
+    "obvious_text_overflow_visible_in_render": false,
+    "obvious_template_collision_visible_in_render": false
+  },
+  "visual_notes": [
+    "按用户要求放大并居中内容区；正文区从红线下方开始，未遮挡红线；人工查看渲染 PNG 未见明显模板层碰撞。"
+  ],
+  "deliverable_allowed_for_user_review": true
+}

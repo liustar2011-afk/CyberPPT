@@ -1,0 +1,77 @@
+{
+  "schema": "cyberppt.explicit_semantic_plan.v1",
+  "page_number": 8,
+  "image_size": {
+    "width": 1280,
+    "height": 720
+  },
+  "inputs": {
+    "source_capture": true,
+    "visual_element_registry": false,
+    "script_truth": false,
+    "geometry_truth": "semantic_binding"
+  },
+  "geometry_truth": "semantic_containers",
+  "text_truth": "script_truth_plus_ocr_locator",
+  "containers": [
+    {
+      "id": "dark_band_1",
+      "role": "dark_band",
+      "bbox": [
+        57.78,
+        139.36,
+        871.53,
+        180.47000000000003
+      ],
+      "text_safe_bbox": [
+        57.78,
+        139.36,
+        871.53,
+        180.47000000000003
+      ],
+      "aliases": [],
+      "source": {
+        "kind": "source_capture"
+      },
+      "confidence": 0.7
+    }
+  ],
+  "items": [
+    {
+      "id": "text_001",
+      "container_id": "dark_band_1",
+      "display_text": "左侧：六类证据资源",
+      "source_text": "左侧：六类证据资源",
+      "role": "dark_band_text",
+      "bbox": [
+        114.94,
+        150.87,
+        238.94,
+        167.31
+      ],
+      "word_wrap": true,
+      "source": {
+        "kind": "ocr_locator"
+      },
+      "confidence": 0.75
+    },
+    {
+      "id": "text_009",
+      "container_id": "dark_band_1",
+      "display_text": "中部：九宫格能力维度",
+      "source_text": "中部：九宫格能力维度",
+      "role": "dark_band_text",
+      "bbox": [
+        540.22,
+        150.87,
+        682.63,
+        168.14000000000001
+      ],
+      "word_wrap": true,
+      "source": {
+        "kind": "ocr_locator"
+      },
+      "confidence": 0.75
+    }
+  ]
+}

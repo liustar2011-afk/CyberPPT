@@ -1,0 +1,9 @@
+{
+  "schema": "cyberppt.blueprint_image_review.approval.v1",
+  "approved": true,
+  "approved_at": "2026-07-10T09:59:31+00:00",
+  "pending_confirmation": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/blueprint_image_review.pending-confirmation.json",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/stages/02-blueprint-dual-image/blueprint_image_review.json",
+  "option_id": "confirm_blueprint_images",
+  "note": "按用户要求放弃 OCR，直接以现有 19 张 full 图封装图片版 PPT。"
+}

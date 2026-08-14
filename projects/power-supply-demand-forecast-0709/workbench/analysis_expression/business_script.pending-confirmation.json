@@ -1,0 +1,21 @@
+{
+  "schema": "cyberppt.analysis_expression.pending_confirmation.v1",
+  "gate": "business_script",
+  "status": "pending_confirmation",
+  "artifact": "/Volumes/DOC/CyberPPT/projects/power-supply-demand-forecast-0709/workbench/analysis_expression/business_script.md",
+  "source_sha256": "3816af8df7fc470d4fa29e191ef4ade169dd6da92fcc58e623658ae35e527db9",
+  "recommendation": "confirm_business_script",
+  "question": "是否确认与已确认页面设计一致的19页页面内容业务稿？",
+  "options": [
+    {
+      "id": "confirm_business_script",
+      "label": "确认业务稿"
+    },
+    {
+      "id": "revise_business_script",
+      "label": "返回调整业务稿"
+    }
+  ],
+  "created_at": "2026-07-10T07:47:43.265323+00:00",
+  "source_analysis_sha256": "76a283dcce79cc18b37aac1490a7b55ddf0588a36b8a70d38d87f28c96a79d46"
+}

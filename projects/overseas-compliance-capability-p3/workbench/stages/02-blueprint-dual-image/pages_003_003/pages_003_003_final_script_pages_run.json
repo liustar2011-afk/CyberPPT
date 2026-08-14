@@ -1,0 +1,26 @@
+{
+  "schema": "cyberppt.final_script_pages_run.v1",
+  "created_at": "2026-07-05T09:54:58+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3",
+  "source_script": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/scripts/final/script-final.md",
+  "pages": [
+    3
+  ],
+  "stage": "02-blueprint-dual-image",
+  "status": "ready_for_image_generation",
+  "artifacts": {
+    "compiled_deliverable_prompt": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/stages/02-blueprint-dual-image/pages_003_003/script-final_cyberppt_deliverable_p3_p3.md",
+    "page_image_pairs": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/stages/02-blueprint-dual-image/pages_003_003/page_image_pairs.json",
+    "template_text_lock": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/locks/template_text/pages_003_003_template_text_lock.json",
+    "visual_style_lock": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/locks/visual_style_lock.json",
+    "output_dir": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/stages/02-blueprint-dual-image/pages_003_003",
+    "semantic_plan_dir": null
+  },
+  "next_steps": [
+    "Generate each full image from the pair manifest full.prompt.",
+    "Generate each no-text background from the corresponding background.prompt.",
+    "Rerun this command with --require-images --run-rebuild after image files exist."
+  ],
+  "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3 --script /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/scripts/final/script-final.md --pages 3 --style-lock /Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/locks/visual_style_lock.json",
+  "rebuild": null
+}

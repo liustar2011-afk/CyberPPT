@@ -1,0 +1,29 @@
+{
+  "schema": "cyberppt.final_script_pages_run.v1",
+  "created_at": "2026-07-05T15:34:20+00:00",
+  "project": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4",
+  "source_script": "/Volumes/DOC/ppt脚本示例/ppt脚本规则库/0629/script-imagegen.md",
+  "pages": [
+    3,
+    4
+  ],
+  "stage": "02-blueprint-dual-image",
+  "status": "ready_for_image_generation",
+  "artifacts": {
+    "compiled_deliverable_prompt": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/workbench/stages/02-blueprint-dual-image/pages_003_004/script-imagegen_cyberppt_deliverable_p3_p4.md",
+    "page_image_pairs": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/workbench/stages/02-blueprint-dual-image/pages_003_004/page_image_pairs.json",
+    "template_text_lock": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/workbench/locks/template_text/pages_003_004_template_text_lock.json",
+    "visual_style_lock": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/workbench/locks/visual_style_lock.json",
+    "output_dir": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/workbench/stages/02-blueprint-dual-image/pages_003_004",
+    "semantic_plan_dir": null
+  },
+  "next_steps": [
+    "Generate each full image from the pair manifest full.prompt.",
+    "Generate each no-text background from the corresponding background.prompt.",
+    "Rerun this command with --require-images --run-rebuild after image files exist."
+  ],
+  "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4 --script /Volumes/DOC/ppt脚本示例/ppt脚本规则库/0629/script-imagegen.md --pages 3-4 --style-lock /Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p3-p4/workbench/locks/visual_style_lock.json",
+  "rebuild": null,
+  "tool_consumption": {},
+  "production_readiness": null
+}

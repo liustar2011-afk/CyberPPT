@@ -1,0 +1,1796 @@
+{
+  "schema": "cyberppt.dual_image.structure_inference.v1",
+  "page_number": 8,
+  "valid": true,
+  "container_count": 7,
+  "containers": [
+    {
+      "id": "inferred_row_band_top",
+      "role": "row_band",
+      "x": 96.94,
+      "y": 124.64,
+      "w": 1063.84,
+      "h": 125.63,
+      "bbox": [
+        96.94,
+        124.64,
+        1160.78,
+        250.26999999999998
+      ],
+      "text_safe_bbox": {
+        "x": 96.94,
+        "y": 124.64,
+        "w": 1063.84,
+        "h": 125.63
+      },
+      "source": "structure_inference",
+      "text_count": 8
+    },
+    {
+      "id": "inferred_panel_01",
+      "role": "repeated_panel",
+      "x": 134.72,
+      "y": 270.18,
+      "w": 137.72,
+      "h": 260.05,
+      "bbox": [
+        134.72,
+        270.18,
+        272.44,
+        530.23
+      ],
+      "text_safe_bbox": {
+        "x": 134.72,
+        "y": 270.18,
+        "w": 137.72,
+        "h": 260.05
+      },
+      "source": "structure_inference",
+      "text_count": 4
+    },
+    {
+      "id": "inferred_panel_02",
+      "role": "repeated_panel",
+      "x": 377.88,
+      "y": 270.18,
+      "w": 162.9,
+      "h": 268.69,
+      "bbox": [
+        377.88,
+        270.18,
+        540.78,
+        538.87
+      ],
+      "text_safe_bbox": {
+        "x": 377.88,
+        "y": 270.18,
+        "w": 162.9,
+        "h": 268.69
+      },
+      "source": "structure_inference",
+      "text_count": 6
+    },
+    {
+      "id": "inferred_panel_03",
+      "role": "repeated_panel",
+      "x": 536.75,
+      "y": 270.18,
+      "w": 160.97,
+      "h": 268.69,
+      "bbox": [
+        536.75,
+        270.18,
+        697.72,
+        538.87
+      ],
+      "text_safe_bbox": {
+        "x": 536.75,
+        "y": 270.18,
+        "w": 160.97,
+        "h": 268.69
+      },
+      "source": "structure_inference",
+      "text_count": 6
+    },
+    {
+      "id": "inferred_panel_04",
+      "role": "repeated_panel",
+      "x": 703.38,
+      "y": 270.18,
+      "w": 153.21,
+      "h": 268.69,
+      "bbox": [
+        703.38,
+        270.18,
+        856.59,
+        538.87
+      ],
+      "text_safe_bbox": {
+        "x": 703.38,
+        "y": 270.18,
+        "w": 153.21,
+        "h": 268.69
+      },
+      "source": "structure_inference",
+      "text_count": 6
+    },
+    {
+      "id": "inferred_panel_05",
+      "role": "repeated_panel",
+      "x": 1009.5,
+      "y": 159.18,
+      "w": 167.75,
+      "h": 499.73,
+      "bbox": [
+        1009.5,
+        159.18,
+        1177.25,
+        658.9100000000001
+      ],
+      "text_safe_bbox": {
+        "x": 1009.5,
+        "y": 159.18,
+        "w": 167.75,
+        "h": 499.73
+      },
+      "source": "structure_inference",
+      "text_count": 11
+    },
+    {
+      "id": "inferred_row_band_bottom",
+      "role": "row_band",
+      "x": 134.72,
+      "y": 547.27,
+      "w": 1042.53,
+      "h": 73.82,
+      "bbox": [
+        134.72,
+        547.27,
+        1177.25,
+        621.0899999999999
+      ],
+      "text_safe_bbox": {
+        "x": 134.72,
+        "y": 547.27,
+        "w": 1042.53,
+        "h": 73.82
+      },
+      "source": "structure_inference",
+      "text_count": 10
+    }
+  ],
+  "text_items": [
+    {
+      "id": "text_001",
+      "text": "左侧：六类证据资源",
+      "rendered_text": "左侧：六类证据资源",
+      "container_id": "inferred_row_band_top",
+      "bbox": {
+        "x": 114.94,
+        "y": 150.87,
+        "w": 124.0,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#FFFFFF",
+        "font_weight": "400",
+        "align": "center",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_002",
+      "text": "企业主体数据",
+      "rendered_text": "企业主体数据",
+      "container_id": "inferred_row_band_top",
+      "bbox": {
+        "x": 152.72,
+        "y": 214.18,
+        "w": 101.72,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_003",
+      "text": "海外项目数据",
+      "rendered_text": "海外项目数据",
+      "container_id": "inferred_panel_01",
+      "bbox": {
+        "x": 152.72,
+        "y": 288.18,
+        "w": 101.72,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_004",
+      "text": "技术装备数据",
+      "rendered_text": "技术装备数据",
+      "container_id": "inferred_panel_01",
+      "bbox": {
+        "x": 152.72,
+        "y": 361.36,
+        "w": 101.72,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_005",
+      "text": "财务信用数据",
+      "rendered_text": "财务信用数据",
+      "container_id": "inferred_panel_01",
+      "bbox": {
+        "x": 152.72,
+        "y": 424.67,
+        "w": 101.72,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_006",
+      "text": "E&S/HSE与合规数据",
+      "rendered_text": "E&S/HSE与合规数据",
+      "container_id": "inferred_panel_01",
+      "bbox": {
+        "x": 152.72,
+        "y": 495.79,
+        "w": 98.81,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "400",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.97
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_007",
+      "text": "国别市场与",
+      "rendered_text": "国别市场与",
+      "container_id": "inferred_row_band_bottom",
+      "bbox": {
+        "x": 152.72,
+        "y": 565.27,
+        "w": 101.72,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_008",
+      "text": "风险数据",
+      "rendered_text": "风险数据",
+      "container_id": "inferred_row_band_bottom",
+      "bbox": {
+        "x": 152.72,
+        "y": 587.47,
+        "w": 67.81,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_009",
+      "text": "中部：九宫格能力维度",
+      "rendered_text": "中部：九宫格能力维度",
+      "container_id": "inferred_row_band_top",
+      "bbox": {
+        "x": 540.22,
+        "y": 150.87,
+        "w": 142.41,
+        "h": 17.27
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#FFFFFF",
+        "font_weight": "400",
+        "align": "center",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.99
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_010",
+      "text": "1",
+      "rendered_text": "1",
+      "container_id": "inferred_row_band_top",
+      "bbox": {
+        "x": 395.88,
+        "y": 214.18,
+        "w": 11.62,
+        "h": 18.09
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.99
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_011",
+      "text": "主体治理与",
+      "rendered_text": "主体治理与",
+      "container_id": "inferred_panel_02",
+      "bbox": {
+        "x": 414.28,
+        "y": 288.18,
+        "w": 100.75,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_012",
+      "text": "合规能力",
+      "rendered_text": "合规能力",
+      "container_id": "inferred_panel_02",
+      "bbox": {
+        "x": 424.94,
+        "y": 310.38,
+        "w": 77.5,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_013",
+      "text": "2",
+      "rendered_text": "2",
+      "container_id": "inferred_row_band_top",
+      "bbox": {
+        "x": 554.75,
+        "y": 214.18,
+        "w": 10.66,
+        "h": 18.09
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.99
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_014",
+      "text": "财务稳健与",
+      "rendered_text": "财务稳健与",
+      "container_id": "inferred_panel_03",
+      "bbox": {
+        "x": 572.19,
+        "y": 288.18,
+        "w": 100.75,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_015",
+      "text": "信用履约能力",
+      "rendered_text": "信用履约能力",
+      "container_id": "inferred_panel_03",
+      "bbox": {
+        "x": 564.44,
+        "y": 310.38,
+        "w": 115.28,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_016",
+      "text": "3",
+      "rendered_text": "3",
+      "container_id": "inferred_row_band_top",
+      "bbox": {
+        "x": 721.38,
+        "y": 214.18,
+        "w": 11.62,
+        "h": 18.09
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.99
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_017",
+      "text": "国际项目经验与",
+      "rendered_text": "国际项目经验与",
+      "container_id": "inferred_panel_04",
+      "bbox": {
+        "x": 722.34,
+        "y": 288.18,
+        "w": 116.25,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_018",
+      "text": "交付能力",
+      "rendered_text": "交付能力",
+      "container_id": "inferred_panel_04",
+      "bbox": {
+        "x": 741.72,
+        "y": 310.38,
+        "w": 78.47,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_019",
+      "text": "4",
+      "rendered_text": "4",
+      "container_id": "inferred_panel_02",
+      "bbox": {
+        "x": 395.88,
+        "y": 361.36,
+        "w": 11.62,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.99
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_020",
+      "text": "技术装备数据",
+      "rendered_text": "技术装备数据",
+      "container_id": "inferred_panel_02",
+      "bbox": {
+        "x": 414.28,
+        "y": 424.67,
+        "w": 100.75,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_021",
+      "text": "系统集成能力",
+      "rendered_text": "系统集成能力",
+      "container_id": "inferred_panel_02",
+      "bbox": {
+        "x": 405.56,
+        "y": 446.87,
+        "w": 117.22,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_022",
+      "text": "5",
+      "rendered_text": "5",
+      "container_id": "inferred_panel_03",
+      "bbox": {
+        "x": 554.75,
+        "y": 361.36,
+        "w": 10.66,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.99
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_023",
+      "text": "5. E&S/ESG/HSE能力",
+      "rendered_text": "5. E&S/ESG/HSE能力",
+      "container_id": "inferred_panel_03",
+      "bbox": {
+        "x": 559.59,
+        "y": 424.67,
+        "w": 119.16,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "400",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_024",
+      "text": "能力",
+      "rendered_text": "能力",
+      "container_id": "inferred_panel_03",
+      "bbox": {
+        "x": 600.28,
+        "y": 446.87,
+        "w": 39.72,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_025",
+      "text": "6",
+      "rendered_text": "6",
+      "container_id": "inferred_panel_04",
+      "bbox": {
+        "x": 721.38,
+        "y": 361.36,
+        "w": 11.62,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.99
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_026",
+      "text": "供应链责任",
+      "rendered_text": "供应链责任",
+      "container_id": "inferred_panel_04",
+      "bbox": {
+        "x": 737.84,
+        "y": 424.67,
+        "w": 99.78,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_027",
+      "text": "能力",
+      "rendered_text": "能力",
+      "container_id": "inferred_panel_04",
+      "bbox": {
+        "x": 767.88,
+        "y": 446.87,
+        "w": 38.75,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_028",
+      "text": "7",
+      "rendered_text": "7",
+      "container_id": "inferred_panel_02",
+      "bbox": {
+        "x": 395.88,
+        "y": 503.6,
+        "w": 11.62,
+        "h": 17.27
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.99
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_029",
+      "text": "属地化经营与",
+      "rendered_text": "属地化经营与",
+      "container_id": "inferred_row_band_bottom",
+      "bbox": {
+        "x": 405.56,
+        "y": 565.27,
+        "w": 116.25,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_030",
+      "text": "伙伴协同能力",
+      "rendered_text": "伙伴协同能力",
+      "container_id": "inferred_row_band_bottom",
+      "bbox": {
+        "x": 405.56,
+        "y": 587.47,
+        "w": 116.25,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_031",
+      "text": "8",
+      "rendered_text": "8",
+      "container_id": "inferred_panel_03",
+      "bbox": {
+        "x": 554.75,
+        "y": 503.6,
+        "w": 10.66,
+        "h": 17.27
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.99
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_032",
+      "text": "国别适配评价",
+      "rendered_text": "国别适配评价",
+      "container_id": "inferred_row_band_bottom",
+      "bbox": {
+        "x": 573.16,
+        "y": 565.27,
+        "w": 99.78,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_033",
+      "text": "风险应对能力",
+      "rendered_text": "风险应对能力",
+      "container_id": "inferred_row_band_bottom",
+      "bbox": {
+        "x": 563.47,
+        "y": 587.47,
+        "w": 116.25,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_034",
+      "text": "9",
+      "rendered_text": "9",
+      "container_id": "inferred_panel_04",
+      "bbox": {
+        "x": 721.38,
+        "y": 503.6,
+        "w": 11.62,
+        "h": 17.27
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.99
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_035",
+      "text": "数据可信与",
+      "rendered_text": "数据可信与",
+      "container_id": "inferred_row_band_bottom",
+      "bbox": {
+        "x": 737.84,
+        "y": 565.27,
+        "w": 99.78,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_036",
+      "text": "证据管理能力",
+      "rendered_text": "证据管理能力",
+      "container_id": "inferred_row_band_bottom",
+      "bbox": {
+        "x": 737.84,
+        "y": 587.47,
+        "w": 99.78,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_037",
+      "text": "企业类型适配",
+      "rendered_text": "企业类型适配",
+      "container_id": "inferred_row_band_top",
+      "bbox": {
+        "x": 1019.75,
+        "y": 142.64,
+        "w": 122.06,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#FFFFFF",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.99
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_038",
+      "text": "投资运营企业",
+      "rendered_text": "投资运营企业",
+      "container_id": "inferred_row_band_top",
+      "bbox": {
+        "x": 1027.5,
+        "y": 177.18,
+        "w": 115.28,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_039",
+      "text": "规划设计企业",
+      "rendered_text": "规划设计企业",
+      "container_id": "inferred_row_band_top",
+      "bbox": {
+        "x": 1027.5,
+        "y": 214.18,
+        "w": 115.28,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_040",
+      "text": "EPC总承包企业",
+      "rendered_text": "EPC总承包企业",
+      "container_id": "inferred_panel_05",
+      "bbox": {
+        "x": 1027.5,
+        "y": 247.07,
+        "w": 129.81,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_041",
+      "text": "装备制造企业",
+      "rendered_text": "装备制造企业",
+      "container_id": "inferred_panel_05",
+      "bbox": {
+        "x": 1027.5,
+        "y": 288.18,
+        "w": 115.28,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_042",
+      "text": "运维服务企业",
+      "rendered_text": "运维服务企业",
+      "container_id": "inferred_panel_05",
+      "bbox": {
+        "x": 1027.5,
+        "y": 310.38,
+        "w": 115.28,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_043",
+      "text": "平台集成企业",
+      "rendered_text": "平台集成企业",
+      "container_id": "inferred_panel_05",
+      "bbox": {
+        "x": 1027.5,
+        "y": 350.67,
+        "w": 115.28,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_044",
+      "text": "供应链服务企业",
+      "rendered_text": "供应链服务企业",
+      "container_id": "inferred_panel_05",
+      "bbox": {
+        "x": 1027.5,
+        "y": 385.2,
+        "w": 131.75,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_045",
+      "text": "场景适配",
+      "rendered_text": "场景适配",
+      "container_id": "inferred_panel_05",
+      "bbox": {
+        "x": 1038.16,
+        "y": 436.18,
+        "w": 84.28,
+        "h": 16.44
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#FFFFFF",
+        "font_weight": "700",
+        "align": "center",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "ocr_unmatched",
+        "confidence": 0.99
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_046",
+      "text": "基础画像评价",
+      "rendered_text": "基础画像评价",
+      "container_id": "inferred_panel_05",
+      "bbox": {
+        "x": 1027.5,
+        "y": 467.42,
+        "w": 115.28,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_047",
+      "text": "投标预审评价",
+      "rendered_text": "投标预审评价",
+      "container_id": "inferred_panel_05",
+      "bbox": {
+        "x": 1027.5,
+        "y": 495.79,
+        "w": 115.28,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_048",
+      "text": "融资保险评价",
+      "rendered_text": "融资保险评价",
+      "container_id": "inferred_panel_05",
+      "bbox": {
+        "x": 1027.5,
+        "y": 530.73,
+        "w": 115.28,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_049",
+      "text": "供应链准入评价",
+      "rendered_text": "供应链准入评价",
+      "container_id": "inferred_panel_05",
+      "bbox": {
+        "x": 1027.5,
+        "y": 565.27,
+        "w": 131.75,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_050",
+      "text": "国别适配评价",
+      "rendered_text": "国别适配评价",
+      "container_id": "inferred_panel_05",
+      "bbox": {
+        "x": 1027.5,
+        "y": 587.47,
+        "w": 115.28,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    },
+    {
+      "id": "text_051",
+      "text": "传播展示评价",
+      "rendered_text": "传播展示评价",
+      "container_id": "inferred_panel_05",
+      "bbox": {
+        "x": 1027.5,
+        "y": 625.29,
+        "w": 115.28,
+        "h": 15.62
+      },
+      "style": {
+        "font_family": "Microsoft YaHei",
+        "font_size_px": 12.0,
+        "font_size_pt": 9.0,
+        "applied_font_size_px": null,
+        "applied_font_size_pt": null,
+        "fill": "#0B1F3D",
+        "font_weight": "700",
+        "align": "left",
+        "word_wrap": true,
+        "typography_role": null
+      },
+      "source": {
+        "kind": "script_matched",
+        "confidence": 0.98
+      },
+      "layout": {
+        "line_count": 1,
+        "needs_wrapping": false
+      }
+    }
+  ]
+}

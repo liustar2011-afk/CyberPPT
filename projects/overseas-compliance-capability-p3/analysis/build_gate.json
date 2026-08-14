@@ -1,0 +1,59 @@
+{
+  "schema": "cyberppt.dual_image.page_quality_report.v1",
+  "stage": "build",
+  "page_number": 3,
+  "project_path": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3",
+  "valid": true,
+  "status": "passed",
+  "rule_count": 1,
+  "passed_count": 1,
+  "blocking_error_count": 0,
+  "warning_count": 0,
+  "checks": [
+    {
+      "id": "build.template_gate_pass",
+      "stage": "build",
+      "severity": "error",
+      "description": "Template rebuild must consume required template files and export state.",
+      "kind": "report_valid",
+      "passed": true,
+      "blocking": false,
+      "evidence_required": true,
+      "evidence": {
+        "report_path": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/analysis/template_gate.json",
+        "report_path_exists": true
+      },
+      "observed": {
+        "schema": "cyberppt.dual_image.template_gate.v1",
+        "valid": true,
+        "checks": {
+          "spec_lock_available": true,
+          "brand_rules_available": true,
+          "master_chrome_available": true,
+          "svg_output_available": true,
+          "pptx_exported": true
+        }
+      }
+    }
+  ],
+  "blocking_errors": [],
+  "warnings": [],
+  "artifacts": {
+    "pair_manifest": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/workbench/stages/02-blueprint-dual-image/pages_003_003/page_image_pairs.json",
+    "source_capture": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/analysis/source_capture.json",
+    "source_capture_gate": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/analysis/source_capture_gate.json",
+    "template_gate": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/analysis/template_gate.json",
+    "scene_graph_gates": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/analysis/scene_graph_gate",
+    "container_workspace": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/analysis/container_workspace",
+    "workspace_assignment": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/analysis/workspace_assignment",
+    "visual_reference": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/qa/visual-reference/template-normalized-reference.png",
+    "rendered_preview": null,
+    "exported_pptx": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/exports/overseas-compliance-capability-p3_20260705_190804.pptx",
+    "visual_qa_gate": "/Volumes/DOC/CyberPPT/projects/overseas-compliance-capability-p3/analysis/visual_qa_gate.json"
+  },
+  "extra": {
+    "rebuild_mode": "template_body_region",
+    "visual_reference_mode": "template_normalized_reference",
+    "export_requested": true
+  }
+}

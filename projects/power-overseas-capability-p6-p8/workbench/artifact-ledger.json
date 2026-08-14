@@ -1,0 +1,75 @@
+{
+  "schema": "cyberppt.artifact_ledger.v1",
+  "artifacts": [
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "6-8",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/stages/02-blueprint-dual-image/pages_006_008/final-script-pages-6-8-normalized_cyberppt_deliverable_p6_p8.md",
+      "status": "ready_for_image_generation",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md",
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8 --script /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md --pages 6-8 --style-lock /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/visual_style_lock.json",
+      "sha256": "d3e88566020acf9026b051355f1cdcfcafa0f1e75de50d6a8722bc7eecb73b99",
+      "updated_at": "2026-07-05T12:25:15+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "6-8",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/stages/02-blueprint-dual-image/pages_006_008/page_image_pairs.json",
+      "status": "ready_for_image_generation",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/stages/02-blueprint-dual-image/pages_006_008/final-script-pages-6-8-normalized_cyberppt_deliverable_p6_p8.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8 --script /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md --pages 6-8 --style-lock /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/visual_style_lock.json",
+      "sha256": "c6158c62a6984108a4d98c1f170f02644c34897c94b7e6a899c862024754b915",
+      "updated_at": "2026-07-05T12:25:15+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "6-8",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/template_text/pages_006_008_template_text_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md",
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/stages/02-blueprint-dual-image/pages_006_008/page_image_pairs.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8 --script /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md --pages 6-8 --style-lock /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/visual_style_lock.json",
+      "sha256": "4eb2c18ee9768a7bfe304da0d23cf8685d68d1c4260d63440a73e1d53783f0b1",
+      "updated_at": "2026-07-05T12:25:15+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "6-8",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/visual_style_lock.json",
+      "status": "approved",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8 --script /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md --pages 6-8 --style-lock /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/visual_style_lock.json",
+      "sha256": "dd0a6cb2ec7f194a018ba9130f137325c1e4811571b32cbf1cb9c3f1b7ae28c2",
+      "updated_at": "2026-07-05T12:25:15+00:00"
+    },
+    {
+      "stage": "02-blueprint-dual-image",
+      "page": "6-8",
+      "path": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/stages/02-blueprint-dual-image/pages_006_008/pages_006_008_final_script_pages_run.json",
+      "status": "ready_for_image_generation",
+      "depends_on": [
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/stages/02-blueprint-dual-image/pages_006_008/final-script-pages-6-8-normalized_cyberppt_deliverable_p6_p8.md",
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/stages/02-blueprint-dual-image/pages_006_008/page_image_pairs.json",
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/template_text/pages_006_008_template_text_lock.json",
+        "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/visual_style_lock.json"
+      ],
+      "supersedes": [],
+      "resume_command": "python3 -m cyberppt final-script-pages /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8 --script /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/source/final-script-pages-6-8-normalized.md --pages 6-8 --style-lock /Volumes/DOC/CyberPPT/projects/power-overseas-capability-p6-p8/workbench/locks/visual_style_lock.json",
+      "sha256": "65367110373efd52db8d80a76017889698ff01ec0b3db1a77b5a08ad690c3f91",
+      "updated_at": "2026-07-05T12:25:15+00:00"
+    }
+  ]
+}

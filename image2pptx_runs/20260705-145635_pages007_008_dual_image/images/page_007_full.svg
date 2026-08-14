@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+  <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+    <path d="M2,2 L10,6 L2,10 Z" fill="#1F5B4D"/>
+  </marker>
+  <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+    <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#9DA8A2" flood-opacity="0.24"/>
+  </filter>
+</defs>
+<rect width="1280" height="720" fill="#F5F6F2"/><path d="M0 0 H1280 V720 H0 Z" fill="#F7F8F4"/><path d="M0 0 H1280 V112 H0 Z" fill="#ECF1EB"/><path d="M28 114 C220 82, 410 132, 610 102 S1010 66, 1252 116" fill="none" stroke="#D9E2DC" stroke-width="2"/><text x="48" y="58" font-family="Arial Unicode MS" font-size="30" font-weight="700" fill="#1F5B4D">闭环运行链路</text>
+<text x="48" y="91" font-family="Arial Unicode MS" font-size="17" fill="#68746F">企业入库到场景调用，再通过反馈与事件触发持续更新</text>
+<g filter="url(#shadow)"><rect x="40" y="150" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="62" cy="174" r="15" fill="#1F5B4D"/>
+<text x="62" y="180" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">1</text>
+<g filter="url(#shadow)"><rect x="166" y="150" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="188" cy="174" r="15" fill="#1F5B4D"/>
+<text x="188" y="180" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">2</text>
+<g filter="url(#shadow)"><rect x="292" y="150" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="314" cy="174" r="15" fill="#1F5B4D"/>
+<text x="314" y="180" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">3</text>
+<g filter="url(#shadow)"><rect x="418" y="150" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="440" cy="174" r="15" fill="#1F5B4D"/>
+<text x="440" y="180" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">4</text>
+<g filter="url(#shadow)"><rect x="544" y="150" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="566" cy="174" r="15" fill="#1F5B4D"/>
+<text x="566" y="180" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">5</text>
+<g filter="url(#shadow)"><rect x="544" y="320" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="566" cy="344" r="15" fill="#1F5B4D"/>
+<text x="566" y="350" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">6</text>
+<g filter="url(#shadow)"><rect x="418" y="320" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="440" cy="344" r="15" fill="#1F5B4D"/>
+<text x="440" y="350" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">7</text>
+<g filter="url(#shadow)"><rect x="292" y="320" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="314" cy="344" r="15" fill="#1F5B4D"/>
+<text x="314" y="350" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">8</text>
+<g filter="url(#shadow)"><rect x="166" y="320" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="188" cy="344" r="15" fill="#1F5B4D"/>
+<text x="188" y="350" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">9</text>
+<g filter="url(#shadow)"><rect x="40" y="320" width="112" height="118" rx="12" fill="#FFFFFF" stroke="#D0DBD4" stroke-width="2"/></g>
+<circle cx="62" cy="344" r="15" fill="#1F5B4D"/>
+<text x="62" y="350" text-anchor="middle" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#FFFFFF">10</text>
+<line x1="154" y1="209" x2="164" y2="209" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="280" y1="209" x2="290" y2="209" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="406" y1="209" x2="416" y2="209" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="532" y1="209" x2="542" y2="209" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="600" y1="276" x2="600" y2="312" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="542" y1="379" x2="532" y2="379" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="416" y1="379" x2="406" y2="379" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="290" y1="379" x2="280" y2="379" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="164" y1="379" x2="154" y2="379" stroke="#1F5B4D" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M1014 374 C1155 384,1182 240,656 210" fill="none" stroke="#1F5B4D" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#arrow)"/>
+<text x="1028" y="356" font-family="Arial Unicode MS" font-size="16" font-weight="700" fill="#1F5B4D">回流至数据治理 / 证据入库</text>
+<text x="48" y="520" font-family="Arial Unicode MS" font-size="22" font-weight="700" fill="#1F5B4D">更新触发因素</text>
+<rect x="46" y="548" width="172" height="58" rx="18" fill="#EAF3ED" stroke="#BBD3C4" stroke-width="2"/>
+<line x1="132" y1="548" x2="1092" y2="450" stroke="#6D8B7A" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+<rect x="242" y="548" width="172" height="58" rx="18" fill="#EAF3ED" stroke="#BBD3C4" stroke-width="2"/>
+<line x1="328" y1="548" x2="1092" y2="450" stroke="#6D8B7A" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+<rect x="438" y="548" width="172" height="58" rx="18" fill="#EAF3ED" stroke="#BBD3C4" stroke-width="2"/>
+<line x1="524" y1="548" x2="1092" y2="450" stroke="#6D8B7A" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+<rect x="634" y="548" width="172" height="58" rx="18" fill="#EAF3ED" stroke="#BBD3C4" stroke-width="2"/>
+<line x1="720" y1="548" x2="1092" y2="450" stroke="#6D8B7A" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+<rect x="830" y="548" width="172" height="58" rx="18" fill="#EAF3ED" stroke="#BBD3C4" stroke-width="2"/>
+<line x1="916" y1="548" x2="1092" y2="450" stroke="#6D8B7A" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+<rect x="1026" y="548" width="172" height="58" rx="18" fill="#EAF3ED" stroke="#BBD3C4" stroke-width="2"/>
+<line x1="1112" y1="548" x2="1092" y2="450" stroke="#6D8B7A" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+<rect x="46" y="618" width="1188" height="62" rx="18" fill="#FFFFFF" stroke="#D8E1DB" stroke-width="2"/><text x="82" y="181" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="start">1 企业入库</text>
+<text x="54" y="214" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">企业类型 / 业务范围</text>
+<text x="54" y="226" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">目标区域 / 应用需求</text>
+<text x="208" y="181" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="start">2 角色识别</text>
+<text x="180" y="214" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">投资运营 / 规划设计</text>
+<text x="180" y="226" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">EPC / 装备制造</text>
+<text x="180" y="238" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">运维等</text>
+<text x="334" y="181" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="start">3 授权取证</text>
+<text x="306" y="214" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">基础评价 / 专项评价</text>
+<text x="306" y="226" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">对外传播授权</text>
+<text x="460" y="181" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="start">4 数据治理</text>
+<text x="432" y="214" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">清洗 / 校验 / 去重</text>
+<text x="432" y="226" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">口径统一 / 版本管理</text>
+<text x="586" y="181" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="start">5 证据入库</text>
+<text x="558" y="214" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">按证据类型 / 能力维度</text>
+<text x="558" y="226" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">场景 / 授权边界入库</text>
+<text x="586" y="351" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="start">6 能力评价</text>
+<text x="558" y="384" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">评价模型 / 证据等级</text>
+<text x="558" y="396" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">场景适配规则</text>
+<text x="460" y="351" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="start">7 专家复核</text>
+<text x="432" y="384" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">重大结论 / 关键证据</text>
+<text x="432" y="396" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">风险提示 / 争议事项</text>
+<text x="334" y="351" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="start">8 结果生成</text>
+<text x="306" y="384" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">画像报告 / 评价结果</text>
+<text x="306" y="396" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">证明材料 / 专题报告</text>
+<text x="208" y="351" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="start">9 场景调用</text>
+<text x="180" y="384" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">投标 / 融资</text>
+<text x="180" y="396" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">供应链 / 国别进入</text>
+<text x="180" y="408" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">监测传播</text>
+<text x="82" y="351" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="start">10 反馈更新</text>
+<text x="54" y="384" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">使用反馈 / 异议处理</text>
+<text x="54" y="396" font-family="Arial Unicode MS" font-size="10" font-weight="400" fill="#23312D" text-anchor="start">补证修正 / 规则修订</text>
+<text x="132" y="581" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="middle">项目新增/完工</text>
+<text x="328" y="581" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="middle">证书到期/更新</text>
+<text x="524" y="581" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="middle">行政处罚/信用修复</text>
+<text x="720" y="581" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="middle">国别规则变化</text>
+<text x="916" y="581" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="middle">风险事件变化</text>
+<text x="1112" y="581" font-family="Arial Unicode MS" font-size="15" font-weight="700" fill="#1F5B4D" text-anchor="middle">企业补证</text>
+<text x="640" y="648" font-family="Arial Unicode MS" font-size="18" font-weight="700" fill="#23312D" text-anchor="middle">核心逻辑：以授权取证和证据入库为基础，用模型评价形成结果，再通过场景调用和反馈更新形成可持续运营闭环。</text></svg>

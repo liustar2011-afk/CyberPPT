@@ -1,0 +1,382 @@
+{
+  "image_size": {
+    "width": 1280,
+    "height": 720
+  },
+  "items": [
+    {
+      "text": "海外电力项目审查规则趋严、能力证明维度扩展、企业材料组织分散、业务场景调用频繁，",
+      "bbox": [
+        135.0,
+        46.0,
+        1188.0,
+        75.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "推动企业能力表达转向规则映射、证据支撑、场景调用和动态更新的综合能力证明。",
+      "bbox": [
+        135.0,
+        88.0,
+        1019.0,
+        119.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "1",
+      "bbox": [
+        52.0,
+        176.0,
+        66.0,
+        203.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "审查规则趋严",
+      "bbox": [
+        97.0,
+        180.0,
+        229.0,
+        203.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "采购预审：项目适配审查",
+      "bbox": [
+        92.0,
+        255.0,
+        277.0,
+        277.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "融资尽调：E&S风险管理",
+      "bbox": [
+        92.0,
+        340.0,
+        278.0,
+        362.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "E&S/HSE：项目关键条件",
+      "bbox": [
+        92.0,
+        425.0,
+        288.0,
+        448.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "供应链尽责：合规责任管理",
+      "bbox": [
+        92.0,
+        509.0,
+        292.0,
+        532.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "2",
+      "bbox": [
+        383.0,
+        176.0,
+        396.0,
+        203.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "能力维度扩展",
+      "bbox": [
+        426.0,
+        180.0,
+        558.0,
+        203.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "项目履约：业绩、合同、",
+      "bbox": [
+        417.0,
+        242.0,
+        579.0,
+        264.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "质量安全",
+      "bbox": [
+        417.0,
+        274.0,
+        497.0,
+        296.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "治理合规：反腐败、制裁、",
+      "bbox": [
+        417.0,
+        325.0,
+        584.0,
+        348.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "税务",
+      "bbox": [
+        417.0,
+        358.0,
+        459.0,
+        380.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "E&S/HSE：环境、安全、",
+      "bbox": [
+        417.0,
+        409.0,
+        575.0,
+        432.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "劳工社区",
+      "bbox": [
+        417.0,
+        443.0,
+        500.0,
+        464.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "国别适配：准入、属地、",
+      "bbox": [
+        417.0,
+        493.0,
+        584.0,
+        516.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "风险应对",
+      "bbox": [
+        417.0,
+        526.0,
+        499.0,
+        548.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "3",
+      "bbox": [
+        697.0,
+        176.0,
+        711.0,
+        203.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "企业材料分散",
+      "bbox": [
+        733.0,
+        180.0,
+        866.0,
+        203.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "多部门留存：材料分散",
+      "bbox": [
+        731.0,
+        259.0,
+        890.0,
+        281.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "口径不统一：标准不一",
+      "bbox": [
+        731.0,
+        342.0,
+        890.0,
+        364.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "版本难追溯：来源与时点不清",
+      "bbox": [
+        731.0,
+        426.0,
+        949.0,
+        448.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "复用效率低：反复整理",
+      "bbox": [
+        731.0,
+        510.0,
+        890.0,
+        532.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "4",
+      "bbox": [
+        1001.0,
+        176.0,
+        1015.0,
+        203.0
+      ],
+      "confidence": 0.99,
+      "source": "vision-json"
+    },
+    {
+      "text": "业务场景高频",
+      "bbox": [
+        1047.0,
+        180.0,
+        1180.0,
+        203.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "投标预审：能力与证据审查",
+      "bbox": [
+        1041.0,
+        259.0,
+        1238.0,
+        281.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "融资保险：合规与风险沟通",
+      "bbox": [
+        1041.0,
+        344.0,
+        1238.0,
+        366.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "供应链准入：质量与交付证明",
+      "bbox": [
+        1041.0,
+        429.0,
+        1254.0,
+        451.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "市场准入：国别适配证明",
+      "bbox": [
+        1041.0,
+        513.0,
+        1238.0,
+        535.0
+      ],
+      "confidence": 0.96,
+      "source": "vision-json"
+    },
+    {
+      "text": "规则可映射",
+      "bbox": [
+        180.0,
+        627.0,
+        347.0,
+        665.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "证据可追溯",
+      "bbox": [
+        445.0,
+        627.0,
+        613.0,
+        665.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "场景可调用",
+      "bbox": [
+        717.0,
+        627.0,
+        884.0,
+        665.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    },
+    {
+      "text": "结果可更新",
+      "bbox": [
+        980.0,
+        627.0,
+        1149.0,
+        665.0
+      ],
+      "confidence": 0.98,
+      "source": "vision-json"
+    }
+  ]
+}

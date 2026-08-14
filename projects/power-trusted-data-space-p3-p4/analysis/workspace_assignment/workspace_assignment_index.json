@@ -1,0 +1,30 @@
+{
+  "schema": "cyberppt.dual_image.workspace_assignment_set.v1",
+  "stage": "template",
+  "valid": false,
+  "page_count": 2,
+  "assignment_count": 0,
+  "error_count": 0,
+  "pages": [
+    {
+      "schema": "cyberppt.dual_image.workspace_assignment.v1",
+      "stage": "template",
+      "page_number": 3,
+      "valid": false,
+      "assignment_count": 0,
+      "error_count": 0,
+      "assignments": [],
+      "issues": []
+    },
+    {
+      "schema": "cyberppt.dual_image.workspace_assignment.v1",
+      "stage": "template",
+      "page_number": 4,
+      "valid": false,
+      "assignment_count": 0,
+      "error_count": 0,
+      "assignments": [],
+      "issues": []
+    }
+  ]
+}

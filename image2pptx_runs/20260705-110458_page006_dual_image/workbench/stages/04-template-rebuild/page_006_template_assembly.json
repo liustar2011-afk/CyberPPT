@@ -1,0 +1,31 @@
+{
+  "schema": "cyberppt.template_assembly.v1",
+  "page": 6,
+  "title": "总体架构",
+  "source_overlay_pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/exports/page_006_dual_image_editable_overlay_v12_clear_band_labels.pptx",
+  "output_pptx": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/template_assembly/page_006_template_assembled_总体架构.pptx",
+  "template_text_lock": "/Volumes/DOC/CyberPPT/image2pptx_runs/20260705-110458_page006_dual_image/workbench/locks/template_text/page_006_template_text_lock.json",
+  "content_transform": {
+    "mode": "uniform_scale_into_body_region",
+    "scale": 0.7694444444444445,
+    "body_region_px": {
+      "x": 58,
+      "y": 122,
+      "width": 1164,
+      "height": 554
+    },
+    "placed_region_px": {
+      "x": 147.55555555555554,
+      "y": 122,
+      "width": 984.8888888888889,
+      "height": 554.0
+    }
+  },
+  "chrome": {
+    "title": true,
+    "red_divider": true,
+    "logo": true,
+    "page_number": "6"
+  },
+  "editable_preservation": "source slide XML objects transformed; text boxes and shapes remain PPT objects where they were PPT objects in source overlay"
+}

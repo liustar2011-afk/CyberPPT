@@ -1,0 +1,75 @@
+{
+  "schema": "cyberppt.artifact_ledger.v1",
+  "artifacts": [
+    {
+      "stage": "blueprint_dual_image",
+      "page": "7-8",
+      "path": "image2pptx_runs/20260705-145635_pages007_008_dual_image/workbench/stages/02-blueprint-dual-image/pages_007_008_deliverable_prompts.md",
+      "status": "generated",
+      "depends_on": [],
+      "supersedes": [],
+      "resume_command": "python3 scripts/generate_power_overseas_p7_p8.py",
+      "sha256": "109010590b9a96c8ed0b8b3af346debc4cb79b77d598e5640852473620353597"
+    },
+    {
+      "stage": "blueprint_dual_image",
+      "page": "7-8",
+      "path": "image2pptx_runs/20260705-145635_pages007_008_dual_image/images/page_image_pairs.json",
+      "status": "generated",
+      "depends_on": [],
+      "supersedes": [],
+      "resume_command": "python3 scripts/generate_power_overseas_p7_p8.py",
+      "sha256": "95f8f448e261e236f8e60c48101c5831d69582b37bf44783d3c85c700b71ac17"
+    },
+    {
+      "stage": "overlay",
+      "page": "7-8",
+      "path": "image2pptx_runs/20260705-145635_pages007_008_dual_image/exports/page_007_dual_image_editable_overlay.pptx",
+      "status": "generated",
+      "depends_on": [],
+      "supersedes": [],
+      "resume_command": "python3 scripts/generate_power_overseas_p7_p8.py",
+      "sha256": "5aac9abf819473517a9cfa0c7d6c5ae6a7ab6d5d7c17b4c6b014a4eac0f03198"
+    },
+    {
+      "stage": "overlay",
+      "page": "7-8",
+      "path": "image2pptx_runs/20260705-145635_pages007_008_dual_image/exports/page_008_dual_image_editable_overlay.pptx",
+      "status": "generated",
+      "depends_on": [],
+      "supersedes": [],
+      "resume_command": "python3 scripts/generate_power_overseas_p7_p8.py",
+      "sha256": "2cd84cb94647a65e072a46a991af447fefe965e67a151702c8f320790ce78d1d"
+    },
+    {
+      "stage": "template_rebuild",
+      "page": "7-8",
+      "path": "image2pptx_runs/20260705-145635_pages007_008_dual_image/template_assembly/pages_007_008_template_assembled.pptx",
+      "status": "generated",
+      "depends_on": [],
+      "supersedes": [],
+      "resume_command": "python3 scripts/generate_power_overseas_p7_p8.py",
+      "sha256": "b03af7ab1bfca7eb7edcd9e03f4870e5ab5ee1fe8843f0f21abcb8a8a7b8b1c1"
+    },
+    {
+      "stage": "qa_delivery",
+      "page": "7-8",
+      "path": "image2pptx_runs/20260705-145635_pages007_008_dual_image/template_assembly/render/pages_007_008_template_assembled-1.png",
+      "status": "rendered",
+      "depends_on": [],
+      "supersedes": [],
+      "resume_command": "python3 scripts/generate_power_overseas_p7_p8.py",
+      "sha256": "d75f41be1d74e9fb98bf08168e4dc1a5fb577fe7ad10ae5e2a2e7804270cc5af"
+    },
+    {
+      "stage": "qa_delivery",
+      "page": "7-8",
+      "path": "image2pptx_runs/20260705-145635_pages007_008_dual_image/workbench/stages/05-qa-delivery/pages_007_008_visual_check.json",
+      "status": "passed_for_user_review",
+      "depends_on": [],
+      "supersedes": [],
+      "resume_command": "python3 scripts/generate_power_overseas_p7_p8.py",
+      "sha256": "6e913567f0439f302bc087883e5f8b7ac539a96658bc9ffbf7dac2b02908c46c"
+    }
+  ]
+}

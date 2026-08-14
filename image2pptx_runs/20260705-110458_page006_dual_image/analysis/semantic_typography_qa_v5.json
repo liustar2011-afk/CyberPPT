@@ -1,0 +1,596 @@
+{
+  "schema": "cyberppt.dual_image.semantic_typography_qa.v1",
+  "valid": true,
+  "checks": {
+    "semantic_parallel_weight_contract_applied": true,
+    "ocr_initial_bold_not_used_as_truth": true
+  },
+  "groups": [
+    {
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "target_bold": true,
+      "items": 47
+    },
+    {
+      "group": "body",
+      "semantic_weight_class": "body",
+      "target_bold": false,
+      "items": 98
+    },
+    {
+      "group": "bullet_marker",
+      "semantic_weight_class": "bullet_marker",
+      "target_bold": false,
+      "items": 94
+    },
+    {
+      "group": "index",
+      "semantic_weight_class": "index",
+      "target_bold": true,
+      "items": 15
+    }
+  ],
+  "corrections": [
+    {
+      "index": 0,
+      "text": "数据基础",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 1,
+      "text": "（多源汇聚）",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 2,
+      "text": "企业/业务数据",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 12,
+      "text": "内部职能数据",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 22,
+      "text": "外部公共数据",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 32,
+      "text": "外部专业机构数据",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 42,
+      "text": "核心能力评估空间（评估模型与能力引擎）",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 43,
+      "text": "1",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 44,
+      "text": "目录管理",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 53,
+      "text": "2",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 54,
+      "text": "身份认证",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 63,
+      "text": "3",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 64,
+      "text": "授权控制",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 73,
+      "text": "4",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 74,
+      "text": "规则调用",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 83,
+      "text": "5",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 84,
+      "text": "证据管理",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 93,
+      "text": "6",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 94,
+      "text": "能力评估",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 103,
+      "text": "7",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 104,
+      "text": "结果生成",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 113,
+      "text": "8",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 114,
+      "text": "版本溯源",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 123,
+      "text": "9",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 124,
+      "text": "证书审核",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 133,
+      "text": "反馈迭代",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 134,
+      "text": "证据支撑",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 135,
+      "text": "对象/证据池（评估对象与关键证据沉淀）",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 136,
+      "text": "企业主体",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 137,
+      "text": "海外项目",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 138,
+      "text": "技术设备",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 139,
+      "text": "财务信用",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 140,
+      "text": "E&S/HSE",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 141,
+      "text": "合规",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 142,
+      "text": "国别市场",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 143,
+      "text": "与风险",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 144,
+      "text": "结果应用",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 145,
+      "text": "（多场景赋能）",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 146,
+      "text": "企业应用",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 157,
+      "text": "外部合作伙伴应用",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 168,
+      "text": "行业组织应用",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 179,
+      "text": "运营保障",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 180,
+      "text": "（安全合规）",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 181,
+      "text": "1",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 182,
+      "text": "分类分级",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 187,
+      "text": "2",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 188,
+      "text": "授权管理",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 193,
+      "text": "3",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 194,
+      "text": "权限控制",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 199,
+      "text": "4",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 200,
+      "text": "数据脱敏",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 205,
+      "text": "5",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 206,
+      "text": "发布审核",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 211,
+      "text": "6",
+      "group": "index",
+      "semantic_weight_class": "index",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 212,
+      "text": "审计追踪",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 217,
+      "text": "服务价值层",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 218,
+      "text": "（能力输出与服务支撑）",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 219,
+      "text": "基础评估服务",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 226,
+      "text": "专项评估服务",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 233,
+      "text": "监测订阅服务",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 240,
+      "text": "国际交流服务",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    },
+    {
+      "index": 247,
+      "text": "生态协作服务",
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "from_bold": false,
+      "to_bold": true,
+      "code": "semantic_parallel_bold_normalized"
+    }
+  ],
+  "correction_count": 62,
+  "error_count": 0
+}

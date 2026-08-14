@@ -1,0 +1,1040 @@
+{
+  "schema": "cyberppt.dual_image.semantic_plan.v1",
+  "page_number": 8,
+  "image_size": {
+    "width": 1280,
+    "height": 720
+  },
+  "inputs": {
+    "script_truth": "image2pptx_runs/20260705-150012_pages007_008_mainflow/source_script.md"
+  },
+  "geometry_truth": "semantic_containers",
+  "text_truth": "semantic_display_text",
+  "containers": [
+    {
+      "id": "p8_evidence_title",
+      "role": "section_header",
+      "bbox": [
+        98,
+        112,
+        262,
+        142
+      ],
+      "text_safe_bbox": [
+        98,
+        112,
+        262,
+        142
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_dim_title",
+      "role": "section_header",
+      "bbox": [
+        538,
+        112,
+        748,
+        142
+      ],
+      "text_safe_bbox": [
+        538,
+        112,
+        748,
+        142
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_type_title",
+      "role": "section_header",
+      "bbox": [
+        1018,
+        112,
+        1186,
+        142
+      ],
+      "text_safe_bbox": [
+        1018,
+        112,
+        1186,
+        142
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_scene_title",
+      "role": "section_header",
+      "bbox": [
+        1030,
+        384,
+        1174,
+        414
+      ],
+      "text_safe_bbox": [
+        1030,
+        384,
+        1174,
+        414
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_ev_1",
+      "role": "source_card",
+      "bbox": [
+        98,
+        174,
+        262,
+        194
+      ],
+      "text_safe_bbox": [
+        98,
+        174,
+        262,
+        194
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_ev_2",
+      "role": "source_card",
+      "bbox": [
+        98,
+        232,
+        262,
+        252
+      ],
+      "text_safe_bbox": [
+        98,
+        232,
+        262,
+        252
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_ev_3",
+      "role": "source_card",
+      "bbox": [
+        98,
+        290,
+        262,
+        310
+      ],
+      "text_safe_bbox": [
+        98,
+        290,
+        262,
+        310
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_ev_4",
+      "role": "source_card",
+      "bbox": [
+        98,
+        348,
+        262,
+        368
+      ],
+      "text_safe_bbox": [
+        98,
+        348,
+        262,
+        368
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_ev_5",
+      "role": "source_card",
+      "bbox": [
+        98,
+        406,
+        262,
+        426
+      ],
+      "text_safe_bbox": [
+        98,
+        406,
+        262,
+        426
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_ev_6",
+      "role": "source_card",
+      "bbox": [
+        98,
+        464,
+        262,
+        484
+      ],
+      "text_safe_bbox": [
+        98,
+        464,
+        262,
+        484
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_dim_1",
+      "role": "ability_card",
+      "bbox": [
+        462,
+        188,
+        552,
+        230
+      ],
+      "text_safe_bbox": [
+        462,
+        188,
+        552,
+        230
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_dim_2",
+      "role": "ability_card",
+      "bbox": [
+        617,
+        188,
+        707,
+        230
+      ],
+      "text_safe_bbox": [
+        617,
+        188,
+        707,
+        230
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_dim_3",
+      "role": "ability_card",
+      "bbox": [
+        772,
+        188,
+        862,
+        230
+      ],
+      "text_safe_bbox": [
+        772,
+        188,
+        862,
+        230
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_dim_4",
+      "role": "ability_card",
+      "bbox": [
+        462,
+        300,
+        552,
+        342
+      ],
+      "text_safe_bbox": [
+        462,
+        300,
+        552,
+        342
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_dim_5",
+      "role": "ability_card",
+      "bbox": [
+        617,
+        300,
+        707,
+        342
+      ],
+      "text_safe_bbox": [
+        617,
+        300,
+        707,
+        342
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_dim_6",
+      "role": "ability_card",
+      "bbox": [
+        772,
+        300,
+        862,
+        342
+      ],
+      "text_safe_bbox": [
+        772,
+        300,
+        862,
+        342
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_dim_7",
+      "role": "ability_card",
+      "bbox": [
+        462,
+        412,
+        552,
+        454
+      ],
+      "text_safe_bbox": [
+        462,
+        412,
+        552,
+        454
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_dim_8",
+      "role": "ability_card",
+      "bbox": [
+        617,
+        412,
+        707,
+        454
+      ],
+      "text_safe_bbox": [
+        617,
+        412,
+        707,
+        454
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_dim_9",
+      "role": "ability_card",
+      "bbox": [
+        772,
+        412,
+        862,
+        454
+      ],
+      "text_safe_bbox": [
+        772,
+        412,
+        862,
+        454
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_type_1",
+      "role": "tag",
+      "bbox": [
+        1006,
+        161,
+        1098,
+        176
+      ],
+      "text_safe_bbox": [
+        1006,
+        161,
+        1098,
+        176
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_type_2",
+      "role": "tag",
+      "bbox": [
+        1114,
+        161,
+        1206,
+        176
+      ],
+      "text_safe_bbox": [
+        1114,
+        161,
+        1206,
+        176
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_type_3",
+      "role": "tag",
+      "bbox": [
+        1006,
+        193,
+        1098,
+        208
+      ],
+      "text_safe_bbox": [
+        1006,
+        193,
+        1098,
+        208
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_type_4",
+      "role": "tag",
+      "bbox": [
+        1114,
+        193,
+        1206,
+        208
+      ],
+      "text_safe_bbox": [
+        1114,
+        193,
+        1206,
+        208
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_type_5",
+      "role": "tag",
+      "bbox": [
+        1006,
+        225,
+        1098,
+        240
+      ],
+      "text_safe_bbox": [
+        1006,
+        225,
+        1098,
+        240
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_type_6",
+      "role": "tag",
+      "bbox": [
+        1114,
+        225,
+        1206,
+        240
+      ],
+      "text_safe_bbox": [
+        1114,
+        225,
+        1206,
+        240
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_type_7",
+      "role": "tag",
+      "bbox": [
+        1006,
+        257,
+        1098,
+        272
+      ],
+      "text_safe_bbox": [
+        1006,
+        257,
+        1098,
+        272
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_scene_1",
+      "role": "tag",
+      "bbox": [
+        1006,
+        435,
+        1098,
+        450
+      ],
+      "text_safe_bbox": [
+        1006,
+        435,
+        1098,
+        450
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_scene_2",
+      "role": "tag",
+      "bbox": [
+        1114,
+        435,
+        1206,
+        450
+      ],
+      "text_safe_bbox": [
+        1114,
+        435,
+        1206,
+        450
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_scene_3",
+      "role": "tag",
+      "bbox": [
+        1006,
+        467,
+        1098,
+        482
+      ],
+      "text_safe_bbox": [
+        1006,
+        467,
+        1098,
+        482
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_scene_4",
+      "role": "tag",
+      "bbox": [
+        1114,
+        467,
+        1206,
+        482
+      ],
+      "text_safe_bbox": [
+        1114,
+        467,
+        1206,
+        482
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_scene_5",
+      "role": "tag",
+      "bbox": [
+        1006,
+        499,
+        1098,
+        514
+      ],
+      "text_safe_bbox": [
+        1006,
+        499,
+        1098,
+        514
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_scene_6",
+      "role": "tag",
+      "bbox": [
+        1114,
+        499,
+        1206,
+        514
+      ],
+      "text_safe_bbox": [
+        1114,
+        499,
+        1206,
+        514
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    },
+    {
+      "id": "p8_sowhat",
+      "role": "so_what_band",
+      "bbox": [
+        100,
+        624,
+        1180,
+        650
+      ],
+      "text_safe_bbox": [
+        100,
+        624,
+        1180,
+        650
+      ],
+      "fill": "#23312D",
+      "align": "center",
+      "max_lines": 4
+    }
+  ],
+  "items": [
+    {
+      "display_text": "六类证据资源",
+      "source_text": "六类证据资源",
+      "role": "body",
+      "container_id": "p8_evidence_title",
+      "font_size": 20,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "九类能力维度",
+      "source_text": "九类能力维度",
+      "role": "body",
+      "container_id": "p8_dim_title",
+      "font_size": 20,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "企业类型适配",
+      "source_text": "企业类型适配",
+      "role": "body",
+      "container_id": "p8_type_title",
+      "font_size": 18,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "场景适配",
+      "source_text": "场景适配",
+      "role": "body",
+      "container_id": "p8_scene_title",
+      "font_size": 18,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "企业主体数据",
+      "source_text": "企业主体数据",
+      "role": "body",
+      "container_id": "p8_ev_1",
+      "font_size": 14,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "海外项目数据",
+      "source_text": "海外项目数据",
+      "role": "body",
+      "container_id": "p8_ev_2",
+      "font_size": 14,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "技术装备数据",
+      "source_text": "技术装备数据",
+      "role": "body",
+      "container_id": "p8_ev_3",
+      "font_size": 14,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "财务信用数据",
+      "source_text": "财务信用数据",
+      "role": "body",
+      "container_id": "p8_ev_4",
+      "font_size": 14,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "E&S/HSE与合规数据",
+      "source_text": "E&S/HSE与合规数据",
+      "role": "body",
+      "container_id": "p8_ev_5",
+      "font_size": 14,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "国别市场与风险数据",
+      "source_text": "国别市场与风险数据",
+      "role": "body",
+      "container_id": "p8_ev_6",
+      "font_size": 14,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "1  主体治理与合规能力",
+      "source_text": "1  主体治理与合规能力",
+      "role": "body",
+      "container_id": "p8_dim_1",
+      "font_size": 12,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "2  财务稳健与信用履约能力",
+      "source_text": "2  财务稳健与信用履约能力",
+      "role": "body",
+      "container_id": "p8_dim_2",
+      "font_size": 12,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "3  国际项目经验与交付能力",
+      "source_text": "3  国际项目经验与交付能力",
+      "role": "body",
+      "container_id": "p8_dim_3",
+      "font_size": 12,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "4  技术装备与系统集成能力",
+      "source_text": "4  技术装备与系统集成能力",
+      "role": "body",
+      "container_id": "p8_dim_4",
+      "font_size": 12,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "5  E&S/ESG/HSE能力",
+      "source_text": "5  E&S/ESG/HSE能力",
+      "role": "body",
+      "container_id": "p8_dim_5",
+      "font_size": 12,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "6  供应链责任能力",
+      "source_text": "6  供应链责任能力",
+      "role": "body",
+      "container_id": "p8_dim_6",
+      "font_size": 12,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "7  属地化经营与伙伴协同能力",
+      "source_text": "7  属地化经营与伙伴协同能力",
+      "role": "body",
+      "container_id": "p8_dim_7",
+      "font_size": 12,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "8  国别适配与风险应对能力",
+      "source_text": "8  国别适配与风险应对能力",
+      "role": "body",
+      "container_id": "p8_dim_8",
+      "font_size": 12,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "9  数据可信与证据管理能力",
+      "source_text": "9  数据可信与证据管理能力",
+      "role": "body",
+      "container_id": "p8_dim_9",
+      "font_size": 12,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "left",
+      "word_wrap": true
+    },
+    {
+      "display_text": "投资运营企业",
+      "source_text": "投资运营企业",
+      "role": "body",
+      "container_id": "p8_type_1",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "400",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "规划设计企业",
+      "source_text": "规划设计企业",
+      "role": "body",
+      "container_id": "p8_type_2",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "400",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "EPC总承包企业",
+      "source_text": "EPC总承包企业",
+      "role": "body",
+      "container_id": "p8_type_3",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "400",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "装备制造企业",
+      "source_text": "装备制造企业",
+      "role": "body",
+      "container_id": "p8_type_4",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "400",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "运维服务企业",
+      "source_text": "运维服务企业",
+      "role": "body",
+      "container_id": "p8_type_5",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "400",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "平台集成企业",
+      "source_text": "平台集成企业",
+      "role": "body",
+      "container_id": "p8_type_6",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "400",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "供应链服务企业",
+      "source_text": "供应链服务企业",
+      "role": "body",
+      "container_id": "p8_type_7",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "400",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "基础画像评价",
+      "source_text": "基础画像评价",
+      "role": "body",
+      "container_id": "p8_scene_1",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "400",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "投标预审评价",
+      "source_text": "投标预审评价",
+      "role": "body",
+      "container_id": "p8_scene_2",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "400",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "融资保险评价",
+      "source_text": "融资保险评价",
+      "role": "body",
+      "container_id": "p8_scene_3",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "400",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "供应链准入评价",
+      "source_text": "供应链准入评价",
+      "role": "body",
+      "container_id": "p8_scene_4",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "400",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "国别适配评价",
+      "source_text": "国别适配评价",
+      "role": "body",
+      "container_id": "p8_scene_5",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "400",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "传播展示评价",
+      "source_text": "传播展示评价",
+      "role": "body",
+      "container_id": "p8_scene_6",
+      "font_size": 11,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "400",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    },
+    {
+      "display_text": "评价模型不是单一打分表，而是“证据资源 × 能力维度 × 企业类型 × 应用场景”的组合支撑体系。",
+      "source_text": "评价模型不是单一打分表，而是“证据资源 × 能力维度 × 企业类型 × 应用场景”的组合支撑体系。",
+      "role": "body",
+      "container_id": "p8_sowhat",
+      "font_size": 18,
+      "font_family": "Microsoft YaHei",
+      "font_weight": "700",
+      "fill": "#23312D",
+      "align": "center",
+      "word_wrap": true
+    }
+  ]
+}

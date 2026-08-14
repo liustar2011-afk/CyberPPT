@@ -1,0 +1,37 @@
+{
+  "schema": "cyberppt.dual_image.semantic_typography_qa.v1",
+  "valid": true,
+  "checks": {
+    "semantic_parallel_weight_contract_applied": true,
+    "ocr_initial_bold_not_used_as_truth": true
+  },
+  "groups": [
+    {
+      "group": "parallel_title",
+      "semantic_weight_class": "title",
+      "target_bold": true,
+      "items": 47
+    },
+    {
+      "group": "body",
+      "semantic_weight_class": "body",
+      "target_bold": false,
+      "items": 98
+    },
+    {
+      "group": "bullet_marker",
+      "semantic_weight_class": "bullet_marker",
+      "target_bold": false,
+      "items": 94
+    },
+    {
+      "group": "index",
+      "semantic_weight_class": "index",
+      "target_bold": true,
+      "items": 15
+    }
+  ],
+  "corrections": [],
+  "correction_count": 0,
+  "error_count": 0
+}

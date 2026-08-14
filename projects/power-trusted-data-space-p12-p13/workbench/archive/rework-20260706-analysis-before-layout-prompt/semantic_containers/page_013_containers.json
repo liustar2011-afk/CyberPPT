@@ -1,0 +1,19 @@
+{
+  "page_number": 13,
+  "background_image": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/images/normalized/page_013_场景六_科技金融赋能服务_background_1280x720.png",
+  "semantic_plan": "/Volumes/DOC/CyberPPT/projects/power-trusted-data-space-p12-p13/analysis/semantic_plan/page_013_semantic_plan.json",
+  "containers": [
+    {
+      "id": "dark_band_1",
+      "role": "dark_band",
+      "x": 27.75,
+      "y": 173.07,
+      "w": 1220.62,
+      "h": 36.18,
+      "background": "dark",
+      "fill": "#FFFFFF",
+      "align": "center",
+      "max_lines": 1
+    }
+  ]
+}

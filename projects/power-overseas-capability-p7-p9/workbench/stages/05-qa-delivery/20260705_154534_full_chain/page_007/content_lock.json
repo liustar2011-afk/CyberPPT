@@ -1,0 +1,8 @@
+{
+  "schema": "cyberppt.slide_content_lock.v1",
+  "slide": 7,
+  "source_script": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/source/final-script-pages-7-9-normalized.md",
+  "text_mapping": "/Volumes/DOC/CyberPPT/projects/power-overseas-capability-p7-p9/analysis/ocr/page_007_text_mapping.json",
+  "text_count": 36,
+  "truth_source": "script_truth_plus_dual_image_recognition"
+}

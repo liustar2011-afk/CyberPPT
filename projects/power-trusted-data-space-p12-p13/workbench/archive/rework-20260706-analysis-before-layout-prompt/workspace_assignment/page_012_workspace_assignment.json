@@ -1,0 +1,2818 @@
+{
+  "schema": "cyberppt.dual_image.workspace_assignment.v1",
+  "stage": "template",
+  "page_number": 12,
+  "valid": false,
+  "assignment_count": 97,
+  "error_count": 9,
+  "assignments": [
+    {
+      "text_index": 0,
+      "text": "主判断：通过知识产权全周期存证与侵权监测，覆盖研发到维权全生命周期，杜绝侵权泄露并为维权提供完整证据链",
+      "role": "body",
+      "container_id": "inferred_row_band_top",
+      "assigned_slot": "inferred_row_band_top_body_slot",
+      "slot_bbox": {
+        "x": 254.0,
+        "y": 172.21,
+        "w": 931.97,
+        "h": 71.48
+      },
+      "original_bbox": {
+        "x": 184.69,
+        "y": 117.98,
+        "w": 852.5,
+        "h": 17.27
+      },
+      "final_bbox": {
+        "x": 254.0,
+        "y": 172.21,
+        "w": 852.5,
+        "h": 17.27
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 1,
+      "text": "知识产权全生命周期（覆盖五阶段）",
+      "role": "body",
+      "container_id": "inferred_row_band_top",
+      "assigned_slot": "inferred_row_band_top_body_slot",
+      "slot_bbox": {
+        "x": 254.0,
+        "y": 172.21,
+        "w": 931.97,
+        "h": 71.48
+      },
+      "original_bbox": {
+        "x": 516.0,
+        "y": 159.09,
+        "w": 285.78,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 516.0,
+        "y": 172.21,
+        "w": 285.78,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 2,
+      "text": "研发阶段",
+      "role": "body",
+      "container_id": "inferred_row_band_top",
+      "assigned_slot": "inferred_row_band_top_body_slot",
+      "slot_bbox": {
+        "x": 254.0,
+        "y": 172.21,
+        "w": 931.97,
+        "h": 71.48
+      },
+      "original_bbox": {
+        "x": 186.62,
+        "y": 192.8,
+        "w": 71.69,
+        "h": 15.62
+      },
+      "final_bbox": {
+        "x": 254.0,
+        "y": 192.8,
+        "w": 71.69,
+        "h": 15.62
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 3,
+      "text": "①",
+      "role": "body",
+      "container_id": "inferred_row_band_top",
+      "assigned_slot": "inferred_row_band_top_body_slot",
+      "slot_bbox": {
+        "x": 254.0,
+        "y": 172.21,
+        "w": 931.97,
+        "h": 71.48
+      },
+      "original_bbox": {
+        "x": 214.72,
+        "y": 213.36,
+        "w": 13.56,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 254.0,
+        "y": 213.36,
+        "w": 13.56,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 4,
+      "text": "申请阶段",
+      "role": "body",
+      "container_id": "inferred_row_band_top",
+      "assigned_slot": "inferred_row_band_top_body_slot",
+      "slot_bbox": {
+        "x": 254.0,
+        "y": 172.21,
+        "w": 931.97,
+        "h": 71.48
+      },
+      "original_bbox": {
+        "x": 431.72,
+        "y": 192.8,
+        "w": 71.69,
+        "h": 15.62
+      },
+      "final_bbox": {
+        "x": 431.72,
+        "y": 192.8,
+        "w": 71.69,
+        "h": 15.62
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 5,
+      "text": "②",
+      "role": "body",
+      "container_id": "inferred_row_band_top",
+      "assigned_slot": "inferred_row_band_top_body_slot",
+      "slot_bbox": {
+        "x": 254.0,
+        "y": 172.21,
+        "w": 931.97,
+        "h": 71.48
+      },
+      "original_bbox": {
+        "x": 459.81,
+        "y": 213.36,
+        "w": 13.56,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 459.81,
+        "y": 213.36,
+        "w": 13.56,
+        "h": 12.33
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 6,
+      "text": "授权阶段",
+      "role": "body",
+      "container_id": "inferred_row_band_top",
+      "assigned_slot": "inferred_row_band_top_body_slot",
+      "slot_bbox": {
+        "x": 254.0,
+        "y": 172.21,
+        "w": 931.97,
+        "h": 71.48
+      },
+      "original_bbox": {
+        "x": 653.56,
+        "y": 192.8,
+        "w": 70.72,
+        "h": 15.62
+      },
+      "final_bbox": {
+        "x": 653.56,
+        "y": 192.8,
+        "w": 70.72,
+        "h": 15.62
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 7,
+      "text": "③",
+      "role": "body",
+      "container_id": "inferred_row_band_top",
+      "assigned_slot": "inferred_row_band_top_body_slot",
+      "slot_bbox": {
+        "x": 254.0,
+        "y": 172.21,
+        "w": 931.97,
+        "h": 71.48
+      },
+      "original_bbox": {
+        "x": 681.66,
+        "y": 213.36,
+        "w": 13.56,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 681.66,
+        "y": 213.36,
+        "w": 13.56,
+        "h": 12.33
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 8,
+      "text": "使用阶段",
+      "role": "body",
+      "container_id": "inferred_row_band_top",
+      "assigned_slot": "inferred_row_band_top_body_slot",
+      "slot_bbox": {
+        "x": 254.0,
+        "y": 172.21,
+        "w": 931.97,
+        "h": 71.48
+      },
+      "original_bbox": {
+        "x": 874.44,
+        "y": 192.8,
+        "w": 70.72,
+        "h": 15.62
+      },
+      "final_bbox": {
+        "x": 874.44,
+        "y": 192.8,
+        "w": 70.72,
+        "h": 15.62
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 9,
+      "text": "④",
+      "role": "body",
+      "container_id": "inferred_row_band_top",
+      "assigned_slot": "inferred_row_band_top_body_slot",
+      "slot_bbox": {
+        "x": 254.0,
+        "y": 172.21,
+        "w": 931.97,
+        "h": 71.48
+      },
+      "original_bbox": {
+        "x": 901.56,
+        "y": 213.36,
+        "w": 13.56,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 901.56,
+        "y": 213.36,
+        "w": 13.56,
+        "h": 12.33
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 10,
+      "text": "维权阶段",
+      "role": "body",
+      "container_id": "inferred_row_band_top",
+      "assigned_slot": "inferred_row_band_top_body_slot",
+      "slot_bbox": {
+        "x": 254.0,
+        "y": 172.21,
+        "w": 931.97,
+        "h": 71.48
+      },
+      "original_bbox": {
+        "x": 1097.25,
+        "y": 192.8,
+        "w": 70.72,
+        "h": 15.62
+      },
+      "final_bbox": {
+        "x": 1097.25,
+        "y": 192.8,
+        "w": 70.72,
+        "h": 15.62
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 11,
+      "text": "⑤",
+      "role": "body",
+      "container_id": "inferred_row_band_top",
+      "assigned_slot": "inferred_row_band_top_body_slot",
+      "slot_bbox": {
+        "x": 254.0,
+        "y": 172.21,
+        "w": 931.97,
+        "h": 71.48
+      },
+      "original_bbox": {
+        "x": 1119.53,
+        "y": 213.36,
+        "w": 13.56,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 1119.53,
+        "y": 213.36,
+        "w": 13.56,
+        "h": 12.33
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 12,
+      "text": "模块一：数据来源方",
+      "role": "body",
+      "container_id": "inferred_panel_01",
+      "assigned_slot": "inferred_panel_01_body_slot",
+      "slot_bbox": {
+        "x": 18.47,
+        "y": 326.05,
+        "w": 174.53,
+        "h": 191.44
+      },
+      "original_bbox": {
+        "x": 36.47,
+        "y": 270.91,
+        "w": 138.53,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 36.47,
+        "y": 326.05,
+        "w": 138.53,
+        "h": 13.16
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 13,
+      "text": "知识产权权利人：",
+      "role": "body",
+      "container_id": "inferred_panel_01",
+      "assigned_slot": "inferred_panel_01_body_slot",
+      "slot_bbox": {
+        "x": 18.47,
+        "y": 326.05,
+        "w": 174.53,
+        "h": 191.44
+      },
+      "original_bbox": {
+        "x": 50.03,
+        "y": 385.2,
+        "w": 108.5,
+        "h": 13.98
+      },
+      "final_bbox": {
+        "x": 50.03,
+        "y": 385.2,
+        "w": 108.5,
+        "h": 13.98
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 14,
+      "text": "专利、软著、集成电路",
+      "role": "body",
+      "container_id": "inferred_panel_01",
+      "assigned_slot": "inferred_panel_01_body_slot",
+      "slot_bbox": {
+        "x": 18.47,
+        "y": 326.05,
+        "w": 174.53,
+        "h": 191.44
+      },
+      "original_bbox": {
+        "x": 50.03,
+        "y": 404.93,
+        "w": 109.47,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 50.03,
+        "y": 404.93,
+        "w": 109.47,
+        "h": 12.33
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 15,
+      "text": "布图设计、技术秘密等",
+      "role": "body",
+      "container_id": "inferred_panel_01",
+      "assigned_slot": "inferred_panel_01_body_slot",
+      "slot_bbox": {
+        "x": 18.47,
+        "y": 326.05,
+        "w": 174.53,
+        "h": 191.44
+      },
+      "original_bbox": {
+        "x": 50.03,
+        "y": 424.67,
+        "w": 109.47,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 50.03,
+        "y": 424.67,
+        "w": 109.47,
+        "h": 12.33
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 16,
+      "text": "知识产权数据，覆盖",
+      "role": "body",
+      "container_id": "inferred_panel_01",
+      "assigned_slot": "inferred_panel_01_body_slot",
+      "slot_bbox": {
+        "x": 18.47,
+        "y": 326.05,
+        "w": 174.53,
+        "h": 191.44
+      },
+      "original_bbox": {
+        "x": 50.03,
+        "y": 446.04,
+        "w": 97.84,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 50.03,
+        "y": 446.04,
+        "w": 97.84,
+        "h": 12.33
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 17,
+      "text": "研发、申请、授权、",
+      "role": "body",
+      "container_id": "inferred_panel_01",
+      "assigned_slot": "inferred_panel_01_body_slot",
+      "slot_bbox": {
+        "x": 18.47,
+        "y": 326.05,
+        "w": 174.53,
+        "h": 191.44
+      },
+      "original_bbox": {
+        "x": 50.03,
+        "y": 461.67,
+        "w": 100.75,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 50.03,
+        "y": 461.67,
+        "w": 100.75,
+        "h": 12.33
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 18,
+      "text": "使用、维权五阶段",
+      "role": "body",
+      "container_id": "inferred_panel_01",
+      "assigned_slot": "inferred_panel_01_body_slot",
+      "slot_bbox": {
+        "x": 18.47,
+        "y": 326.05,
+        "w": 174.53,
+        "h": 191.44
+      },
+      "original_bbox": {
+        "x": 50.03,
+        "y": 487.16,
+        "w": 96.88,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 50.03,
+        "y": 487.16,
+        "w": 96.88,
+        "h": 12.33
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 19,
+      "text": "技术支撑方与底座加工",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 308.69,
+        "y": 270.91,
+        "w": 217.97,
+        "h": 13.98
+      },
+      "final_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 13.98
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 20,
+      "text": "技术支撑方：",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 277.69,
+        "y": 303.39,
+        "w": 77.5,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 246.5,
+        "y": 451.18,
+        "w": 77.5,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 21,
+      "text": "技术支撑方：提供全网侵权监测技术，自动抓取侵权证据",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 276.72,
+        "y": 324.36,
+        "w": 278.03,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 22,
+      "text": "加工链条（对照九环节标注覆盖情况，本场景覆盖最完整）",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 278.66,
+        "y": 355.19,
+        "w": 305.16,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 23,
+      "text": "1",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 239.91,
+        "y": 385.2,
+        "w": 6.78,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 239.91,
+        "y": 451.18,
+        "w": 6.78,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 24,
+      "text": "数据授权",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 217.62,
+        "y": 437.0,
+        "w": 52.31,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 217.62,
+        "y": 451.18,
+        "w": 52.31,
+        "h": 13.16
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 25,
+      "text": "授权范围、",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 218.59,
+        "y": 461.67,
+        "w": 51.34,
+        "h": 10.69
+      },
+      "final_bbox": {
+        "x": 218.59,
+        "y": 461.67,
+        "w": 51.34,
+        "h": 10.69
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 26,
+      "text": "使用期限、",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 218.59,
+        "y": 474.0,
+        "w": 51.34,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 218.59,
+        "y": 474.0,
+        "w": 51.34,
+        "h": 11.51
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 27,
+      "text": "访问权限",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 218.59,
+        "y": 487.16,
+        "w": 51.34,
+        "h": 10.69
+      },
+      "final_bbox": {
+        "x": 218.59,
+        "y": 487.16,
+        "w": 51.34,
+        "h": 10.69
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 28,
+      "text": "精细化管控",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 217.62,
+        "y": 499.49,
+        "w": 53.28,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 217.62,
+        "y": 499.49,
+        "w": 53.28,
+        "h": 11.51
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 29,
+      "text": "2",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 307.72,
+        "y": 385.2,
+        "w": 6.78,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 307.72,
+        "y": 451.18,
+        "w": 6.78,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 30,
+      "text": "受控接入",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 284.47,
+        "y": 437.0,
+        "w": 53.28,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 270.72,
+        "y": 451.18,
+        "w": 53.28,
+        "h": 13.16
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 31,
+      "text": "“可用不可见、",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 283.5,
+        "y": 461.67,
+        "w": 64.91,
+        "h": 10.69
+      },
+      "final_bbox": {
+        "x": 259.09,
+        "y": 461.67,
+        "w": 64.91,
+        "h": 10.69
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 32,
+      "text": "用途可控",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 284.47,
+        "y": 474.0,
+        "w": 51.34,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 272.66,
+        "y": 474.0,
+        "w": 51.34,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 33,
+      "text": "可计量”",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 284.47,
+        "y": 487.16,
+        "w": 45.53,
+        "h": 10.69
+      },
+      "final_bbox": {
+        "x": 278.47,
+        "y": 487.16,
+        "w": 45.53,
+        "h": 10.69
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 34,
+      "text": "3",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 376.5,
+        "y": 385.2,
+        "w": 6.78,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 376.5,
+        "y": 412.2,
+        "w": 6.78,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 35,
+      "text": "可信计算",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 353.25,
+        "y": 437.0,
+        "w": 53.28,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 353.25,
+        "y": 437.0,
+        "w": 53.28,
+        "h": 13.16
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 36,
+      "text": "全网侵权",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 353.25,
+        "y": 461.67,
+        "w": 52.31,
+        "h": 10.69
+      },
+      "final_bbox": {
+        "x": 353.25,
+        "y": 461.67,
+        "w": 52.31,
+        "h": 10.69
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 37,
+      "text": "监测技术",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 353.25,
+        "y": 474.0,
+        "w": 52.31,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 353.25,
+        "y": 474.0,
+        "w": 52.31,
+        "h": 11.51
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 38,
+      "text": "手段",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 364.88,
+        "y": 487.16,
+        "w": 29.06,
+        "h": 10.69
+      },
+      "final_bbox": {
+        "x": 364.88,
+        "y": 487.16,
+        "w": 29.06,
+        "h": 10.69
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 39,
+      "text": "4",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 444.31,
+        "y": 385.2,
+        "w": 7.75,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 444.31,
+        "y": 412.2,
+        "w": 7.75,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 40,
+      "text": "成果输出",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 421.06,
+        "y": 437.0,
+        "w": 52.31,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 421.06,
+        "y": 437.0,
+        "w": 52.31,
+        "h": 13.16
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 41,
+      "text": "固化权属证据、",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 414.28,
+        "y": 461.67,
+        "w": 67.81,
+        "h": 10.69
+      },
+      "final_bbox": {
+        "x": 414.28,
+        "y": 461.67,
+        "w": 67.81,
+        "h": 10.69
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 42,
+      "text": "侵权鉴定报告",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 414.28,
+        "y": 474.0,
+        "w": 68.78,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 414.28,
+        "y": 474.0,
+        "w": 68.78,
+        "h": 11.51
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 43,
+      "text": "5",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 514.06,
+        "y": 385.2,
+        "w": 7.75,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 514.06,
+        "y": 412.2,
+        "w": 7.75,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 44,
+      "text": "调用计量",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 489.84,
+        "y": 437.0,
+        "w": 53.28,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 480.72,
+        "y": 437.0,
+        "w": 53.28,
+        "h": 13.16
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 45,
+      "text": "使用计量",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 489.84,
+        "y": 461.67,
+        "w": 52.31,
+        "h": 10.69
+      },
+      "final_bbox": {
+        "x": 481.69,
+        "y": 461.67,
+        "w": 52.31,
+        "h": 10.69
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 46,
+      "text": "杜绝超范围",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 488.88,
+        "y": 474.0,
+        "w": 55.22,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 478.78,
+        "y": 474.0,
+        "w": 55.22,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 47,
+      "text": "使用",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 504.38,
+        "y": 487.16,
+        "w": 26.16,
+        "h": 10.69
+      },
+      "final_bbox": {
+        "x": 504.38,
+        "y": 487.16,
+        "w": 26.16,
+        "h": 10.69
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 48,
+      "text": "6",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 579.94,
+        "y": 385.2,
+        "w": 7.75,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 526.25,
+        "y": 412.2,
+        "w": 7.75,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 49,
+      "text": "审计留痕",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 556.69,
+        "y": 437.0,
+        "w": 53.28,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 480.72,
+        "y": 437.0,
+        "w": 53.28,
+        "h": 13.16
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 50,
+      "text": "全生命周期",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 556.69,
+        "y": 461.67,
+        "w": 52.31,
+        "h": 10.69
+      },
+      "final_bbox": {
+        "x": 481.69,
+        "y": 461.67,
+        "w": 52.31,
+        "h": 10.69
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 51,
+      "text": "数据上链",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 556.69,
+        "y": 474.0,
+        "w": 52.31,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 481.69,
+        "y": 474.0,
+        "w": 52.31,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 52,
+      "text": "存证",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 570.25,
+        "y": 487.16,
+        "w": 27.12,
+        "h": 10.69
+      },
+      "final_bbox": {
+        "x": 506.88,
+        "y": 487.16,
+        "w": 27.12,
+        "h": 10.69
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 53,
+      "text": "7 目录发布",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 237.0,
+        "y": 530.73,
+        "w": 64.91,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 237.0,
+        "y": 530.73,
+        "w": 64.91,
+        "h": 12.33
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 54,
+      "text": "非本场景反文",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 237.0,
+        "y": 547.18,
+        "w": 65.88,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 237.0,
+        "y": 547.18,
+        "w": 65.88,
+        "h": 11.51
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 55,
+      "text": "展开重点",
+      "role": "body",
+      "container_id": "inferred_panel_02",
+      "assigned_slot": "inferred_panel_02_body_slot",
+      "slot_bbox": {
+        "x": 199.62,
+        "y": 451.18,
+        "w": 124.38,
+        "h": 135.38
+      },
+      "original_bbox": {
+        "x": 251.53,
+        "y": 558.69,
+        "w": 38.75,
+        "h": 9.87
+      },
+      "final_bbox": {
+        "x": 251.53,
+        "y": 558.69,
+        "w": 38.75,
+        "h": 9.87
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 56,
+      "text": "8 主体认证",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 358.09,
+        "y": 530.73,
+        "w": 66.84,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 358.09,
+        "y": 530.73,
+        "w": 66.84,
+        "h": 12.33
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 57,
+      "text": "非本场景反文",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 358.09,
+        "y": 547.18,
+        "w": 65.88,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 358.09,
+        "y": 547.18,
+        "w": 65.88,
+        "h": 11.51
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 58,
+      "text": "展开重点",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 373.59,
+        "y": 558.69,
+        "w": 38.75,
+        "h": 9.87
+      },
+      "final_bbox": {
+        "x": 373.59,
+        "y": 558.69,
+        "w": 38.75,
+        "h": 9.87
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 59,
+      "text": "9 收益结算",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 482.09,
+        "y": 530.73,
+        "w": 65.88,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 468.12,
+        "y": 530.73,
+        "w": 65.88,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 60,
+      "text": "非本场景反文",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 482.09,
+        "y": 547.18,
+        "w": 64.91,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 469.09,
+        "y": 547.18,
+        "w": 64.91,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 61,
+      "text": "展开重点",
+      "role": "body",
+      "container_id": "inferred_panel_03",
+      "assigned_slot": "inferred_panel_03_body_slot",
+      "slot_bbox": {
+        "x": 344.0,
+        "y": 412.2,
+        "w": 190.0,
+        "h": 174.36
+      },
+      "original_bbox": {
+        "x": 496.62,
+        "y": 558.69,
+        "w": 38.75,
+        "h": 9.87
+      },
+      "final_bbox": {
+        "x": 495.25,
+        "y": 558.69,
+        "w": 38.75,
+        "h": 9.87
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 62,
+      "text": "模块三：服务产品",
+      "role": "body",
+      "container_id": "inferred_panel_05",
+      "assigned_slot": "inferred_panel_05_body_slot",
+      "slot_bbox": {
+        "x": 498.0,
+        "y": 172.21,
+        "w": 321.78,
+        "h": 104.82
+      },
+      "original_bbox": {
+        "x": 671.0,
+        "y": 270.91,
+        "w": 118.19,
+        "h": 13.98
+      },
+      "final_bbox": {
+        "x": 671.0,
+        "y": 263.05,
+        "w": 118.19,
+        "h": 13.98
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": false
+    },
+    {
+      "text_index": 63,
+      "text": "固化的权属证据：",
+      "role": "body",
+      "container_id": "inferred_panel_05",
+      "assigned_slot": "inferred_panel_05_body_slot",
+      "slot_bbox": {
+        "x": 498.0,
+        "y": 172.21,
+        "w": 321.78,
+        "h": 104.82
+      },
+      "original_bbox": {
+        "x": 705.88,
+        "y": 344.09,
+        "w": 78.47,
+        "h": 14.8
+      },
+      "final_bbox": {
+        "x": 705.88,
+        "y": 262.23,
+        "w": 78.47,
+        "h": 14.8
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": false
+    },
+    {
+      "text_index": 64,
+      "text": "可独立用于",
+      "role": "body",
+      "container_id": "inferred_panel_05",
+      "assigned_slot": "inferred_panel_05_body_slot",
+      "slot_bbox": {
+        "x": 498.0,
+        "y": 172.21,
+        "w": 321.78,
+        "h": 104.82
+      },
+      "original_bbox": {
+        "x": 704.91,
+        "y": 367.11,
+        "w": 63.94,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 704.91,
+        "y": 264.7,
+        "w": 63.94,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 65,
+      "text": "权属举证",
+      "role": "body",
+      "container_id": "inferred_panel_05",
+      "assigned_slot": "inferred_panel_05_body_slot",
+      "slot_bbox": {
+        "x": 498.0,
+        "y": 172.21,
+        "w": 321.78,
+        "h": 104.82
+      },
+      "original_bbox": {
+        "x": 705.88,
+        "y": 385.2,
+        "w": 51.34,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 705.88,
+        "y": 265.52,
+        "w": 51.34,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 66,
+      "text": "侵权鉴定报告：",
+      "role": "body",
+      "container_id": "inferred_panel_05",
+      "assigned_slot": "inferred_panel_05_body_slot",
+      "slot_bbox": {
+        "x": 498.0,
+        "y": 172.21,
+        "w": 321.78,
+        "h": 104.82
+      },
+      "original_bbox": {
+        "x": 706.84,
+        "y": 461.67,
+        "w": 77.5,
+        "h": 13.98
+      },
+      "final_bbox": {
+        "x": 706.84,
+        "y": 263.05,
+        "w": 77.5,
+        "h": 13.98
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": false
+    },
+    {
+      "text_index": 67,
+      "text": "对接司法鉴定机构",
+      "role": "body",
+      "container_id": "inferred_panel_05",
+      "assigned_slot": "inferred_panel_05_body_slot",
+      "slot_bbox": {
+        "x": 498.0,
+        "y": 172.21,
+        "w": 321.78,
+        "h": 104.82
+      },
+      "original_bbox": {
+        "x": 705.88,
+        "y": 474.0,
+        "w": 83.31,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 705.88,
+        "y": 264.7,
+        "w": 83.31,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 68,
+      "text": "出具，为维权",
+      "role": "body",
+      "container_id": "inferred_panel_05",
+      "assigned_slot": "inferred_panel_05_body_slot",
+      "slot_bbox": {
+        "x": 498.0,
+        "y": 172.21,
+        "w": 321.78,
+        "h": 104.82
+      },
+      "original_bbox": {
+        "x": 705.88,
+        "y": 499.49,
+        "w": 72.66,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 705.88,
+        "y": 264.7,
+        "w": 72.66,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 69,
+      "text": "提供完整证据链",
+      "role": "body",
+      "container_id": "inferred_panel_05",
+      "assigned_slot": "inferred_panel_05_body_slot",
+      "slot_bbox": {
+        "x": 498.0,
+        "y": 172.21,
+        "w": 321.78,
+        "h": 104.82
+      },
+      "original_bbox": {
+        "x": 705.88,
+        "y": 522.1,
+        "w": 84.28,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 705.88,
+        "y": 264.7,
+        "w": 84.28,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 70,
+      "text": "空间运营方与第三方服务方",
+      "role": "body",
+      "container_id": "inferred_panel_06",
+      "assigned_slot": "inferred_panel_06_body_slot",
+      "slot_bbox": {
+        "x": 978.0,
+        "y": 307.59,
+        "w": 155.75,
+        "h": 90.46
+      },
+      "original_bbox": {
+        "x": 853.12,
+        "y": 270.91,
+        "w": 222.81,
+        "h": 13.98
+      },
+      "final_bbox": {
+        "x": 978.0,
+        "y": 307.59,
+        "w": 155.75,
+        "h": 13.98
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 71,
+      "text": "空间运营方",
+      "role": "body",
+      "container_id": "inferred_panel_06",
+      "assigned_slot": "inferred_panel_06_body_slot",
+      "slot_bbox": {
+        "x": 978.0,
+        "y": 307.59,
+        "w": 155.75,
+        "h": 90.46
+      },
+      "original_bbox": {
+        "x": 919.97,
+        "y": 303.39,
+        "w": 76.53,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 978.0,
+        "y": 307.59,
+        "w": 76.53,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 72,
+      "text": "中电联统筹知识产权保护规则，",
+      "role": "body",
+      "container_id": "inferred_panel_06",
+      "assigned_slot": "inferred_panel_06_body_slot",
+      "slot_bbox": {
+        "x": 978.0,
+        "y": 307.59,
+        "w": 155.75,
+        "h": 90.46
+      },
+      "original_bbox": {
+        "x": 895.75,
+        "y": 324.36,
+        "w": 220.0,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 978.0,
+        "y": 324.36,
+        "w": 155.75,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 73,
+      "text": "对接国家知识产权局实现数据互通，",
+      "role": "body",
+      "container_id": "inferred_panel_06",
+      "assigned_slot": "inferred_panel_06_body_slot",
+      "slot_bbox": {
+        "x": 978.0,
+        "y": 307.59,
+        "w": 155.75,
+        "h": 90.46
+      },
+      "original_bbox": {
+        "x": 895.75,
+        "y": 344.09,
+        "w": 220.0,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 978.0,
+        "y": 344.09,
+        "w": 155.75,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 74,
+      "text": "不承担底层监测技术研发",
+      "role": "body",
+      "container_id": "inferred_panel_06",
+      "assigned_slot": "inferred_panel_06_body_slot",
+      "slot_bbox": {
+        "x": 978.0,
+        "y": 307.59,
+        "w": 155.75,
+        "h": 90.46
+      },
+      "original_bbox": {
+        "x": 895.75,
+        "y": 355.19,
+        "w": 139.5,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 978.0,
+        "y": 355.19,
+        "w": 139.5,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 75,
+      "text": "第三方服务方",
+      "role": "body",
+      "container_id": "inferred_panel_06",
+      "assigned_slot": "inferred_panel_06_body_slot",
+      "slot_bbox": {
+        "x": 978.0,
+        "y": 307.59,
+        "w": 155.75,
+        "h": 90.46
+      },
+      "original_bbox": {
+        "x": 913.19,
+        "y": 413.98,
+        "w": 86.22,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 978.0,
+        "y": 386.54,
+        "w": 86.22,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": false
+    },
+    {
+      "text_index": 76,
+      "text": "司法鉴定机构（侵权鉴定）",
+      "role": "body",
+      "container_id": "inferred_panel_06",
+      "assigned_slot": "inferred_panel_06_body_slot",
+      "slot_bbox": {
+        "x": 978.0,
+        "y": 307.59,
+        "w": 155.75,
+        "h": 90.46
+      },
+      "original_bbox": {
+        "x": 895.75,
+        "y": 437.0,
+        "w": 153.06,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 978.0,
+        "y": 385.72,
+        "w": 153.06,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": false
+    },
+    {
+      "text_index": 77,
+      "text": "律师事务所 / 知识产权代理机构 / 法院",
+      "role": "body",
+      "container_id": "inferred_panel_06",
+      "assigned_slot": "inferred_panel_06_body_slot",
+      "slot_bbox": {
+        "x": 978.0,
+        "y": 307.59,
+        "w": 155.75,
+        "h": 90.46
+      },
+      "original_bbox": {
+        "x": 894.78,
+        "y": 487.16,
+        "w": 220.0,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 978.0,
+        "y": 386.54,
+        "w": 155.75,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": false
+    },
+    {
+      "text_index": 78,
+      "text": "（侵权投诉、行政维权、司法诉讼",
+      "role": "body",
+      "container_id": "inferred_panel_06",
+      "assigned_slot": "inferred_panel_06_body_slot",
+      "slot_bbox": {
+        "x": 978.0,
+        "y": 307.59,
+        "w": 155.75,
+        "h": 90.46
+      },
+      "original_bbox": {
+        "x": 895.75,
+        "y": 509.36,
+        "w": 220.0,
+        "h": 11.51
+      },
+      "final_bbox": {
+        "x": 978.0,
+        "y": 386.54,
+        "w": 155.75,
+        "h": 11.51
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": false
+    },
+    {
+      "text_index": 79,
+      "text": "全流程在线服务，作为第三方服务",
+      "role": "body",
+      "container_id": "inferred_panel_06",
+      "assigned_slot": "inferred_panel_06_body_slot",
+      "slot_bbox": {
+        "x": 978.0,
+        "y": 307.59,
+        "w": 155.75,
+        "h": 90.46
+      },
+      "original_bbox": {
+        "x": 895.75,
+        "y": 522.1,
+        "w": 220.0,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 978.0,
+        "y": 385.72,
+        "w": 155.75,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": false
+    },
+    {
+      "text_index": 80,
+      "text": "流程产出而非独立产品）",
+      "role": "body",
+      "container_id": "inferred_panel_06",
+      "assigned_slot": "inferred_panel_06_body_slot",
+      "slot_bbox": {
+        "x": 978.0,
+        "y": 307.59,
+        "w": 155.75,
+        "h": 90.46
+      },
+      "original_bbox": {
+        "x": 895.75,
+        "y": 547.18,
+        "w": 220.0,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 978.0,
+        "y": 385.72,
+        "w": 155.75,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": false
+    },
+    {
+      "text_index": 81,
+      "text": "模块五：用户方",
+      "role": "body",
+      "container_id": "inferred_panel_07",
+      "assigned_slot": "inferred_panel_07_body_slot",
+      "slot_bbox": {
+        "x": 1178.0,
+        "y": 252.91,
+        "w": 69.97,
+        "h": 239.09
+      },
+      "original_bbox": {
+        "x": 1127.28,
+        "y": 270.91,
+        "w": 100.75,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 1178.0,
+        "y": 270.91,
+        "w": 69.97,
+        "h": 13.16
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 82,
+      "text": "知识产权权利人：",
+      "role": "body",
+      "container_id": "inferred_panel_07",
+      "assigned_slot": "inferred_panel_07_body_slot",
+      "slot_bbox": {
+        "x": 1178.0,
+        "y": 252.91,
+        "w": 69.97,
+        "h": 239.09
+      },
+      "original_bbox": {
+        "x": 1123.41,
+        "y": 424.67,
+        "w": 106.56,
+        "h": 13.98
+      },
+      "final_bbox": {
+        "x": 1178.0,
+        "y": 424.67,
+        "w": 69.97,
+        "h": 13.98
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 83,
+      "text": "接受全周期保护",
+      "role": "body",
+      "container_id": "inferred_panel_07",
+      "assigned_slot": "inferred_panel_07_body_slot",
+      "slot_bbox": {
+        "x": 1178.0,
+        "y": 252.91,
+        "w": 69.97,
+        "h": 239.09
+      },
+      "original_bbox": {
+        "x": 1123.41,
+        "y": 446.04,
+        "w": 92.03,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 1178.0,
+        "y": 446.04,
+        "w": 69.97,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 84,
+      "text": "服务的受益者",
+      "role": "body",
+      "container_id": "inferred_panel_07",
+      "assigned_slot": "inferred_panel_07_body_slot",
+      "slot_bbox": {
+        "x": 1178.0,
+        "y": 252.91,
+        "w": 69.97,
+        "h": 239.09
+      },
+      "original_bbox": {
+        "x": 1123.41,
+        "y": 461.67,
+        "w": 78.47,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 1178.0,
+        "y": 461.67,
+        "w": 69.97,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 85,
+      "text": "可信机制",
+      "role": "body",
+      "container_id": "inferred_row_band_bottom",
+      "assigned_slot": "inferred_row_band_bottom_body_slot",
+      "slot_bbox": {
+        "x": 408.0,
+        "y": 587.56,
+        "w": 242.0,
+        "h": 86.97
+      },
+      "original_bbox": {
+        "x": 49.06,
+        "y": 605.56,
+        "w": 52.31,
+        "h": 14.8
+      },
+      "final_bbox": {
+        "x": 408.0,
+        "y": 605.56,
+        "w": 52.31,
+        "h": 14.8
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 86,
+      "text": "贯穿全程",
+      "role": "body",
+      "container_id": "inferred_row_band_bottom",
+      "assigned_slot": "inferred_row_band_bottom_body_slot",
+      "slot_bbox": {
+        "x": 408.0,
+        "y": 587.56,
+        "w": 242.0,
+        "h": 86.97
+      },
+      "original_bbox": {
+        "x": 49.06,
+        "y": 631.87,
+        "w": 52.31,
+        "h": 14.8
+      },
+      "final_bbox": {
+        "x": 408.0,
+        "y": 631.87,
+        "w": 52.31,
+        "h": 14.8
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 87,
+      "text": "全生命周期存证固化",
+      "role": "body",
+      "container_id": "inferred_row_band_bottom",
+      "assigned_slot": "inferred_row_band_bottom_body_slot",
+      "slot_bbox": {
+        "x": 408.0,
+        "y": 587.56,
+        "w": 242.0,
+        "h": 86.97
+      },
+      "original_bbox": {
+        "x": 205.03,
+        "y": 605.56,
+        "w": 107.53,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 408.0,
+        "y": 605.56,
+        "w": 107.53,
+        "h": 13.16
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 88,
+      "text": "权属证据（数据可信）",
+      "role": "body",
+      "container_id": "inferred_row_band_bottom",
+      "assigned_slot": "inferred_row_band_bottom_body_slot",
+      "slot_bbox": {
+        "x": 408.0,
+        "y": 587.56,
+        "w": 242.0,
+        "h": 86.97
+      },
+      "original_bbox": {
+        "x": 205.03,
+        "y": 631.87,
+        "w": 119.16,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 408.0,
+        "y": 631.87,
+        "w": 119.16,
+        "h": 13.16
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 89,
+      "text": "授权范围/期限/计量精细化管控，",
+      "role": "body",
+      "container_id": "inferred_row_band_bottom",
+      "assigned_slot": "inferred_row_band_bottom_body_slot",
+      "slot_bbox": {
+        "x": 408.0,
+        "y": 587.56,
+        "w": 242.0,
+        "h": 86.97
+      },
+      "original_bbox": {
+        "x": 426.88,
+        "y": 605.56,
+        "w": 193.75,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 426.88,
+        "y": 605.56,
+        "w": 193.75,
+        "h": 13.16
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 90,
+      "text": "授权使用可用不可见、用途可控可计量",
+      "role": "body",
+      "container_id": "inferred_row_band_bottom",
+      "assigned_slot": "inferred_row_band_bottom_body_slot",
+      "slot_bbox": {
+        "x": 408.0,
+        "y": 587.56,
+        "w": 242.0,
+        "h": 86.97
+      },
+      "original_bbox": {
+        "x": 426.88,
+        "y": 631.87,
+        "w": 199.56,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 426.88,
+        "y": 631.87,
+        "w": 199.56,
+        "h": 12.33
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 91,
+      "text": "（授权可信）",
+      "role": "body",
+      "container_id": "inferred_row_band_bottom",
+      "assigned_slot": "inferred_row_band_bottom_body_slot",
+      "slot_bbox": {
+        "x": 408.0,
+        "y": 587.56,
+        "w": 242.0,
+        "h": 86.97
+      },
+      "original_bbox": {
+        "x": 426.88,
+        "y": 644.2,
+        "w": 74.59,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 426.88,
+        "y": 644.2,
+        "w": 74.59,
+        "h": 12.33
+      },
+      "fit_actions": [],
+      "inside_slot": true
+    },
+    {
+      "text_index": 92,
+      "text": "侵权证据自动抓取上链固化、",
+      "role": "body",
+      "container_id": "inferred_row_band_bottom",
+      "assigned_slot": "inferred_row_band_bottom_body_slot",
+      "slot_bbox": {
+        "x": 408.0,
+        "y": 587.56,
+        "w": 242.0,
+        "h": 86.97
+      },
+      "original_bbox": {
+        "x": 737.84,
+        "y": 605.56,
+        "w": 171.47,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 478.53,
+        "y": 605.56,
+        "w": 171.47,
+        "h": 13.16
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 93,
+      "text": "对接司法鉴定出具报告",
+      "role": "body",
+      "container_id": "inferred_row_band_bottom",
+      "assigned_slot": "inferred_row_band_bottom_body_slot",
+      "slot_bbox": {
+        "x": 408.0,
+        "y": 587.56,
+        "w": 242.0,
+        "h": 86.97
+      },
+      "original_bbox": {
+        "x": 737.84,
+        "y": 631.87,
+        "w": 127.88,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 522.12,
+        "y": 631.87,
+        "w": 127.88,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 94,
+      "text": "（结果可信）",
+      "role": "body",
+      "container_id": "inferred_row_band_bottom",
+      "assigned_slot": "inferred_row_band_bottom_body_slot",
+      "slot_bbox": {
+        "x": 408.0,
+        "y": 587.56,
+        "w": 242.0,
+        "h": 86.97
+      },
+      "original_bbox": {
+        "x": 737.84,
+        "y": 644.2,
+        "w": 74.59,
+        "h": 12.33
+      },
+      "final_bbox": {
+        "x": 575.41,
+        "y": 644.2,
+        "w": 74.59,
+        "h": 12.33
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 95,
+      "text": "杜绝超范围使用与盗版侵权，",
+      "role": "body",
+      "container_id": "inferred_row_band_bottom",
+      "assigned_slot": "inferred_row_band_bottom_body_slot",
+      "slot_bbox": {
+        "x": 408.0,
+        "y": 587.56,
+        "w": 242.0,
+        "h": 86.97
+      },
+      "original_bbox": {
+        "x": 997.47,
+        "y": 605.56,
+        "w": 170.5,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 479.5,
+        "y": 605.56,
+        "w": 170.5,
+        "h": 13.16
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    },
+    {
+      "text_index": 96,
+      "text": "降低维权成本、提升维权效率",
+      "role": "body",
+      "container_id": "inferred_row_band_bottom",
+      "assigned_slot": "inferred_row_band_bottom_body_slot",
+      "slot_bbox": {
+        "x": 408.0,
+        "y": 587.56,
+        "w": 242.0,
+        "h": 86.97
+      },
+      "original_bbox": {
+        "x": 997.47,
+        "y": 631.87,
+        "w": 170.5,
+        "h": 13.16
+      },
+      "final_bbox": {
+        "x": 479.5,
+        "y": 631.87,
+        "w": 170.5,
+        "h": 13.16
+      },
+      "fit_actions": [
+        "assign_to_work_slot"
+      ],
+      "inside_slot": true
+    }
+  ],
+  "issues": [
+    {
+      "severity": "error",
+      "code": "assigned_text_outside_slot",
+      "text_index": 62,
+      "container_id": "inferred_panel_05",
+      "slot_id": "inferred_panel_05_body_slot"
+    },
+    {
+      "severity": "error",
+      "code": "assigned_text_outside_slot",
+      "text_index": 63,
+      "container_id": "inferred_panel_05",
+      "slot_id": "inferred_panel_05_body_slot"
+    },
+    {
+      "severity": "error",
+      "code": "assigned_text_outside_slot",
+      "text_index": 66,
+      "container_id": "inferred_panel_05",
+      "slot_id": "inferred_panel_05_body_slot"
+    },
+    {
+      "severity": "error",
+      "code": "assigned_text_outside_slot",
+      "text_index": 75,
+      "container_id": "inferred_panel_06",
+      "slot_id": "inferred_panel_06_body_slot"
+    },
+    {
+      "severity": "error",
+      "code": "assigned_text_outside_slot",
+      "text_index": 76,
+      "container_id": "inferred_panel_06",
+      "slot_id": "inferred_panel_06_body_slot"
+    },
+    {
+      "severity": "error",
+      "code": "assigned_text_outside_slot",
+      "text_index": 77,
+      "container_id": "inferred_panel_06",
+      "slot_id": "inferred_panel_06_body_slot"
+    },
+    {
+      "severity": "error",
+      "code": "assigned_text_outside_slot",
+      "text_index": 78,
+      "container_id": "inferred_panel_06",
+      "slot_id": "inferred_panel_06_body_slot"
+    },
+    {
+      "severity": "error",
+      "code": "assigned_text_outside_slot",
+      "text_index": 79,
+      "container_id": "inferred_panel_06",
+      "slot_id": "inferred_panel_06_body_slot"
+    },
+    {
+      "severity": "error",
+      "code": "assigned_text_outside_slot",
+      "text_index": 80,
+      "container_id": "inferred_panel_06",
+      "slot_id": "inferred_panel_06_body_slot"
+    }
+  ]
+}
