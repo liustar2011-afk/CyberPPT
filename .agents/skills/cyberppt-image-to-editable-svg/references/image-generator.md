@@ -97,7 +97,7 @@ Use them as identity anchors. Do not create another user-facing image-color choi
 
 **Declared-inference fallback — when an existing `spec_lock.md` omits the `image_rendering` key** (see [`failure-recovery.md`](../workflows/governance/failure-recovery.md) §2):
 
-This fallback covers a missing key only. An empty or invalid value stops for lock repair. Outside the active [`quick-generate`](../workflows/profiles/quick-generate.md) profile, if `spec_lock.md` itself is absent, stop at [`generate-pptx.md`](../workflows/generate-pptx.md) Step 5 before prompt assembly or image generation; do not use `design_spec.md` as a substitute.
+This fallback covers a missing key only. An empty or invalid value stops for lock repair. Outside the active [`quick-generate`](references/quick-generate-full.md) profile, if `spec_lock.md` itself is absent, stop at [`generate-pptx.md`](../workflows/generate-pptx.md) Step 5 before prompt assembly or image generation; do not use `design_spec.md` as a substitute.
 
 | Signal | Maps to |
 |---|---|
@@ -629,7 +629,7 @@ The CLI validates the file behind every `Generated` row before skipping it, iter
 
 **Configuration sources**:
 - Current process environment variables
-- First `.env` found in this order: current working directory, skill directory (e.g. `~/.agents/skills/ppt-master/.env`), clone repo root, `~/.ppt-master/.env`
+- First `.env` found in this order: current working directory, this CyberPPT Skill directory, then the CyberPPT repository root.
 
 Precedence:
 - Current process environment wins

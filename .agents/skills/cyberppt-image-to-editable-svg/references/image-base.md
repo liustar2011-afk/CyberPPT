@@ -13,7 +13,7 @@ Active when at least one resource row has `Acquire Via: ai` / `web` / `slice`, o
 | Mode | Trigger |
 |---|---|
 | Default Generate | `generate-ppt` workflow, `design_spec.md §VIII` image rows present |
-| Quick Generate | [`quick-generate`](../workflows/profiles/quick-generate.md) is active and the current main agent has resolved one or more required images in active context |
+| Quick Generate | [`quick-generate`](references/quick-generate-full.md) is active and the current main agent has resolved one or more required images in active context |
 | Standalone | Direct request against an existing project |
 
 ---

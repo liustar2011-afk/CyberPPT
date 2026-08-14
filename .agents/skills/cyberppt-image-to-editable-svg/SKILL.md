@@ -170,7 +170,7 @@ pose, lighting, and style. Do not trim registered full-canvas layers;
 transparent pixels retain alignment.
 
 When one or more scene layers require reference editing or reconstruction, use
-[`image-generator.md`](../../references/image-generator.md) §4.4's registered
+[`image-generator.md`](references/image-generator.md) §4.4's registered
 reconstruction group as the primitive:
 
 - create one clean base by removing **all** scene subjects/foreground objects,
@@ -265,8 +265,8 @@ branded/data graphic is unresolved evidence and blocks successful delivery.
 
 When any `image_layer` or low-resolution `source_graphic` requires reference
 editing or generation, load
-[`image-base.md`](../../references/image-base.md) and
-[`image-generator.md`](../../references/image-generator.md). The current Codex
+[`image-base.md`](references/image-base.md) and
+[`image-generator.md`](references/image-generator.md). The current Codex
 main agent resolves the layer stack directly, uses Codex's native
 reference-image capability, and finishes every required layer before SVG
 authoring. Do not adapt `image_gen.py`, its generic manifest, or provider

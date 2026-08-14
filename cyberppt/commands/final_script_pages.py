@@ -25,7 +25,7 @@ from scripts.dual_image_overlay.imagegen_handoff import (
     select_page_visual_intent_type,
 )
 from scripts.dual_image_overlay.production_readiness import build_production_readiness
-from scripts.image_to_editable_svg.orchestrator import run_image_to_editable_svg
+from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruction
 from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import (
     ensure_output_size,
     run_codex_image,
@@ -355,8 +355,8 @@ def _run_image_to_editable_svg_build(
     output_dir: Path,
     pages_raw: str,
 ) -> dict[str, Any]:
-    """Use the only Stage 02 production route: audited full image -> SVG -> PPTX."""
-    return run_image_to_editable_svg(
+    """Use the internal PPT-Master-equivalent reconstruction runtime."""
+    return run_stage02_reconstruction(
         project=project,
         manifest_path=manifest_path,
         output_dir=output_dir / "editable_svg",
