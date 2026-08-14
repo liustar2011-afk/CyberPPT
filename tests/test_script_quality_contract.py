@@ -108,6 +108,31 @@ class OnscreenParallelStructureTests(unittest.TestCase):
             {item.code for item in issues},
         )
 
+    def test_object_taxonomy_rejects_crosscut_controls_as_members(self) -> None:
+        mismatches = _onscreen_false_parallel_semantics(
+            "权利对象类型\n"
+            "    既有资源：保持原有归属并按授权使用\n"
+            "    客户专属：依客户合同管理\n"
+            "    加工成果：明确归属和使用许可\n"
+            "    联合成果：明确权利归属和收益分配\n"
+            "    运行信息：依平台规则使用\n"
+            "    二次使用：训练、微调和扩展须另行授权\n"
+            "    终止处理：撤销授权、返还删除并完成结算\n"
+        )
+
+        self.assertTrue(any(item.startswith("权利对象类型 ->") for item in mismatches))
+
+    def test_object_taxonomy_allows_same_dimension_members(self) -> None:
+        mismatches = _onscreen_false_parallel_semantics(
+            "权利对象分类\n"
+            "    既有资源：保持原有归属并按授权使用\n"
+            "    客户专属资源：依客户合同管理；不得跨客户、公开发布或形成越界通用产品\n"
+            "    联合成果：形成权利归属、使用范围和收益分配安排\n"
+            "    平台运行信息：依法律、合同、保密要求和平台规则，用于安全审计和计量结算\n"
+        )
+
+        self.assertFalse(mismatches)
+
     def test_selected_scqa_can_show_gap_as_an_evidence_module(self) -> None:
         page = self._page("服务供给断点\n    分散资源尚未形成稳定服务供给")
         page = replace(

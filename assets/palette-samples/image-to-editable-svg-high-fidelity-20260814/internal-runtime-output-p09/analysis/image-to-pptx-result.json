@@ -1,0 +1,476 @@
+{
+  "schema": "cyberppt.image_to_pptx.stage02.v1",
+  "status": "production_ready",
+  "runtime_project": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime",
+  "svg_roster": [
+    "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime/svg_output/02.svg"
+  ],
+  "svg_quality": [
+    {
+      "file": "02.svg",
+      "path": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime/svg_output/02.svg",
+      "exists": true,
+      "errors": [],
+      "warnings": [
+        "<text> (x=240, y=237; text='初验') exceeds <g id=\"construction-copy\"> data-pptx-bounds on the vertical axis: content (240.0, 220.0)-(284.5, 244.0), container (164.0, 25.0)-(654.0, 240.0), overflow horizontal 0.0%, vertical 1.9%; expand the root module bounds into available non-overlapping space; otherwise reflow the text",
+        "<text> (x=490, y=237; text='终验') exceeds <g id=\"construction-copy\"> data-pptx-bounds on the vertical axis: content (490.0, 220.0)-(534.5, 244.0), container (164.0, 25.0)-(654.0, 240.0), overflow horizontal 0.0%, vertical 1.9%; expand the root module bounds into available non-overlapping space; otherwise reflow the text",
+        "<text> (x=149, y=444; text='持续运营评价原则') exceeds <g id=\"operations-copy\"> data-pptx-bounds on the vertical axis: content (149.0, 423.6)-(362.7, 452.4), container (149.0, 428.0)-(999.0, 600.0), overflow horizontal 0.0%, vertical 2.6%; expand the root module bounds into available non-overlapping space; otherwise reflow the text",
+        "Detected 6 paragraph-like line run(s) split across sibling <text> elements (<g id=\"construction-copy\"> x=164.0, y=82.0..108.0, 2 lines; <g id=\"target-cards\"> x=366.0, y=345.0..368.0, 2 lines; <g id=\"operations-copy\"> x=149.0, y=532.0..578.0, 3 lines; +3 more). If each run is one prose paragraph, combine it into one <text>: keep its first line as direct text and use direct <tspan> children with the parent x and positive relative dy values for later lines. An all-<tspan> form may start with dy=\"0\". Keep semantically independent text frames separate."
+      ],
+      "info": {
+        "viewbox": "0 0 1280 640",
+        "fonts": [
+          "Microsoft YaHei"
+        ],
+        "text_elements": 39,
+        "tspan_elements": 4
+      },
+      "passed": true,
+      "source_sha256": "aba64525772ec557514b5b97620bca048cd39ad7d301e669328d805a9b834bc8"
+    }
+  ],
+  "visual_review": {
+    "schema": "cyberppt.image_to_pptx.visual_review.v1",
+    "issues": [],
+    "requires_rebuild": false,
+    "valid": true,
+    "path": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime/analysis/visual-review.json"
+  },
+  "artifacts": {
+    "reconstruction_inventory": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime/analysis/reconstruction_inventory.json",
+    "svg_output": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime/svg_output",
+    "reconstruction_quality": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/analysis",
+    "text_content_qa": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/analysis/text_content_qa.json",
+    "render_compare": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime/analysis/visual-review.json",
+    "exported_pptx": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/exports/editable_svg.pptx"
+  },
+  "reports": {
+    "reconstruction_inventory": {
+      "valid": true
+    },
+    "reconstruction_quality": {
+      "valid": true,
+      "pages": [
+        {
+          "file": "02.svg",
+          "path": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime/svg_output/02.svg",
+          "exists": true,
+          "errors": [],
+          "warnings": [
+            "<text> (x=240, y=237; text='初验') exceeds <g id=\"construction-copy\"> data-pptx-bounds on the vertical axis: content (240.0, 220.0)-(284.5, 244.0), container (164.0, 25.0)-(654.0, 240.0), overflow horizontal 0.0%, vertical 1.9%; expand the root module bounds into available non-overlapping space; otherwise reflow the text",
+            "<text> (x=490, y=237; text='终验') exceeds <g id=\"construction-copy\"> data-pptx-bounds on the vertical axis: content (490.0, 220.0)-(534.5, 244.0), container (164.0, 25.0)-(654.0, 240.0), overflow horizontal 0.0%, vertical 1.9%; expand the root module bounds into available non-overlapping space; otherwise reflow the text",
+            "<text> (x=149, y=444; text='持续运营评价原则') exceeds <g id=\"operations-copy\"> data-pptx-bounds on the vertical axis: content (149.0, 423.6)-(362.7, 452.4), container (149.0, 428.0)-(999.0, 600.0), overflow horizontal 0.0%, vertical 2.6%; expand the root module bounds into available non-overlapping space; otherwise reflow the text",
+            "Detected 6 paragraph-like line run(s) split across sibling <text> elements (<g id=\"construction-copy\"> x=164.0, y=82.0..108.0, 2 lines; <g id=\"target-cards\"> x=366.0, y=345.0..368.0, 2 lines; <g id=\"operations-copy\"> x=149.0, y=532.0..578.0, 3 lines; +3 more). If each run is one prose paragraph, combine it into one <text>: keep its first line as direct text and use direct <tspan> children with the parent x and positive relative dy values for later lines. An all-<tspan> form may start with dy=\"0\". Keep semantically independent text frames separate."
+          ],
+          "info": {
+            "viewbox": "0 0 1280 640",
+            "fonts": [
+              "Microsoft YaHei"
+            ],
+            "text_elements": 39,
+            "tspan_elements": 4
+          },
+          "passed": true,
+          "source_sha256": "aba64525772ec557514b5b97620bca048cd39ad7d301e669328d805a9b834bc8"
+        }
+      ]
+    },
+    "svg_output": {
+      "valid": true
+    },
+    "text_content_qa": {
+      "schema": "cyberppt.dual_image.text_content_qa.v1",
+      "valid": true,
+      "order_sensitive": false,
+      "checks": {
+        "text_count_matches": true,
+        "pptx_text_matches_expected": true
+      },
+      "expected_texts": [
+        "建设期",
+        "总体要求",
+        "数据供得出、流得动、用得好、保安全，",
+        "建设可信连接、统一目录和安全管控等能力。",
+        "建设节点",
+        "2026年12月",
+        "初验",
+        "2027年6月",
+        "终验",
+        "主体接入",
+        "总体建设任务完成时，",
+        "实现600家以上数据",
+        "流通利用主体接入。",
+        "行业流通",
+        "支持5个以上重点行业的",
+        "跨区域、跨行业数据",
+        "流通利用。",
+        "产品发布",
+        "发布不少于1200个",
+        "数据产品。",
+        "示范场景",
+        "打造20个以上示范性强、",
+        "带动性广的典型应用场景。",
+        "运营期",
+        "持续运营评价原则",
+        "01 真实使用",
+        "有效产品应有独立标识、明确",
+        "版本、权利依据、质量说明和",
+        "真实使用记录。",
+        "02 服务质量",
+        "服务等级、质量责任和客户",
+        "支持要求落实到产品说明及",
+        "合同文件。",
+        "03 经营效果",
+        "检验产品价格、资源投入和",
+        "持续服务责任是否匹配。",
+        "04 安全合规",
+        "将分类分级、权利核查、用途",
+        "限定和风险处置贯穿全过程。"
+      ],
+      "actual_texts": [
+        "建设期",
+        "总体要求",
+        "数据供得出、流得动、用得好、保安全，",
+        "建设可信连接、统一目录和安全管控等能力。",
+        "建设节点",
+        "2026年12月",
+        "初验",
+        "2027年6月",
+        "终验",
+        "主体接入",
+        "总体建设任务完成时，",
+        "实现600家以上数据",
+        "流通利用主体接入。",
+        "行业流通",
+        "支持5个以上重点行业的",
+        "跨区域、跨行业数据",
+        "流通利用。",
+        "产品发布",
+        "发布不少于1200个",
+        "数据产品。",
+        "示范场景",
+        "打造20个以上示范性强、",
+        "带动性广的典型应用场景。",
+        "运营期",
+        "持续运营评价原则",
+        "01 真实使用",
+        "有效产品应有独立标识、明确",
+        "版本、权利依据、质量说明和",
+        "真实使用记录。",
+        "02 服务质量",
+        "服务等级、质量责任和客户",
+        "支持要求落实到产品说明及",
+        "合同文件。",
+        "03 经营效果",
+        "检验产品价格、资源投入和",
+        "持续服务责任是否匹配。",
+        "04 安全合规",
+        "将分类分级、权利核查、用途",
+        "限定和风险处置贯穿全过程。"
+      ],
+      "mismatches": [],
+      "error_count": 0
+    },
+    "render_compare": {
+      "valid": true,
+      "review": {
+        "schema": "cyberppt.image_to_pptx.visual_review.v1",
+        "issues": [],
+        "requires_rebuild": false,
+        "valid": true,
+        "path": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime/analysis/visual-review.json"
+      }
+    },
+    "exported_pptx": {
+      "valid": true
+    }
+  },
+  "text_content_qa": {
+    "schema": "cyberppt.dual_image.text_content_qa.v1",
+    "valid": true,
+    "order_sensitive": false,
+    "checks": {
+      "text_count_matches": true,
+      "pptx_text_matches_expected": true
+    },
+    "expected_texts": [
+      "建设期",
+      "总体要求",
+      "数据供得出、流得动、用得好、保安全，",
+      "建设可信连接、统一目录和安全管控等能力。",
+      "建设节点",
+      "2026年12月",
+      "初验",
+      "2027年6月",
+      "终验",
+      "主体接入",
+      "总体建设任务完成时，",
+      "实现600家以上数据",
+      "流通利用主体接入。",
+      "行业流通",
+      "支持5个以上重点行业的",
+      "跨区域、跨行业数据",
+      "流通利用。",
+      "产品发布",
+      "发布不少于1200个",
+      "数据产品。",
+      "示范场景",
+      "打造20个以上示范性强、",
+      "带动性广的典型应用场景。",
+      "运营期",
+      "持续运营评价原则",
+      "01 真实使用",
+      "有效产品应有独立标识、明确",
+      "版本、权利依据、质量说明和",
+      "真实使用记录。",
+      "02 服务质量",
+      "服务等级、质量责任和客户",
+      "支持要求落实到产品说明及",
+      "合同文件。",
+      "03 经营效果",
+      "检验产品价格、资源投入和",
+      "持续服务责任是否匹配。",
+      "04 安全合规",
+      "将分类分级、权利核查、用途",
+      "限定和风险处置贯穿全过程。"
+    ],
+    "actual_texts": [
+      "建设期",
+      "总体要求",
+      "数据供得出、流得动、用得好、保安全，",
+      "建设可信连接、统一目录和安全管控等能力。",
+      "建设节点",
+      "2026年12月",
+      "初验",
+      "2027年6月",
+      "终验",
+      "主体接入",
+      "总体建设任务完成时，",
+      "实现600家以上数据",
+      "流通利用主体接入。",
+      "行业流通",
+      "支持5个以上重点行业的",
+      "跨区域、跨行业数据",
+      "流通利用。",
+      "产品发布",
+      "发布不少于1200个",
+      "数据产品。",
+      "示范场景",
+      "打造20个以上示范性强、",
+      "带动性广的典型应用场景。",
+      "运营期",
+      "持续运营评价原则",
+      "01 真实使用",
+      "有效产品应有独立标识、明确",
+      "版本、权利依据、质量说明和",
+      "真实使用记录。",
+      "02 服务质量",
+      "服务等级、质量责任和客户",
+      "支持要求落实到产品说明及",
+      "合同文件。",
+      "03 经营效果",
+      "检验产品价格、资源投入和",
+      "持续服务责任是否匹配。",
+      "04 安全合规",
+      "将分类分级、权利核查、用途",
+      "限定和风险处置贯穿全过程。"
+    ],
+    "mismatches": [],
+    "error_count": 0
+  },
+  "release_gate": {
+    "valid": true,
+    "manual_adjustments": "local_only"
+  },
+  "delivery_readiness": {
+    "schema": "cyberppt.stage02.production_readiness.v1",
+    "stage": "02-production-build",
+    "status": "production_ready",
+    "valid": true,
+    "checks": {
+      "all_required_tools_consumed": true,
+      "all_consumed_reports_pass": true,
+      "blocking_count": 0,
+      "page_understanding_available": false,
+      "page_understanding_consumed": false,
+      "script_truth_verified": false,
+      "fit_review_queue_clear": false
+    },
+    "page_understanding_readiness": {
+      "page_understanding_available": false,
+      "page_understanding_count": 0,
+      "page_understanding_consumed": false,
+      "page_understanding_consumed_count": 0,
+      "script_truth_verified": false,
+      "fit_review_queue_clear": false
+    },
+    "tool_consumption": {
+      "reconstruction_inventory": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime/analysis/reconstruction_inventory.json"
+      },
+      "svg_output": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime/svg_output"
+      },
+      "reconstruction_quality": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/analysis"
+      },
+      "text_content_qa": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/analysis/text_content_qa.json"
+      },
+      "render_compare": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime/analysis/visual-review.json"
+      },
+      "exported_pptx": {
+        "ran": true,
+        "artifact": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/exports/editable_svg.pptx"
+      }
+    },
+    "blocking_errors": [],
+    "reports": {
+      "reconstruction_inventory": {
+        "valid": true
+      },
+      "reconstruction_quality": {
+        "valid": true,
+        "pages": [
+          {
+            "file": "02.svg",
+            "path": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime/svg_output/02.svg",
+            "exists": true,
+            "errors": [],
+            "warnings": [
+              "<text> (x=240, y=237; text='初验') exceeds <g id=\"construction-copy\"> data-pptx-bounds on the vertical axis: content (240.0, 220.0)-(284.5, 244.0), container (164.0, 25.0)-(654.0, 240.0), overflow horizontal 0.0%, vertical 1.9%; expand the root module bounds into available non-overlapping space; otherwise reflow the text",
+              "<text> (x=490, y=237; text='终验') exceeds <g id=\"construction-copy\"> data-pptx-bounds on the vertical axis: content (490.0, 220.0)-(534.5, 244.0), container (164.0, 25.0)-(654.0, 240.0), overflow horizontal 0.0%, vertical 1.9%; expand the root module bounds into available non-overlapping space; otherwise reflow the text",
+              "<text> (x=149, y=444; text='持续运营评价原则') exceeds <g id=\"operations-copy\"> data-pptx-bounds on the vertical axis: content (149.0, 423.6)-(362.7, 452.4), container (149.0, 428.0)-(999.0, 600.0), overflow horizontal 0.0%, vertical 2.6%; expand the root module bounds into available non-overlapping space; otherwise reflow the text",
+              "Detected 6 paragraph-like line run(s) split across sibling <text> elements (<g id=\"construction-copy\"> x=164.0, y=82.0..108.0, 2 lines; <g id=\"target-cards\"> x=366.0, y=345.0..368.0, 2 lines; <g id=\"operations-copy\"> x=149.0, y=532.0..578.0, 3 lines; +3 more). If each run is one prose paragraph, combine it into one <text>: keep its first line as direct text and use direct <tspan> children with the parent x and positive relative dy values for later lines. An all-<tspan> form may start with dy=\"0\". Keep semantically independent text frames separate."
+            ],
+            "info": {
+              "viewbox": "0 0 1280 640",
+              "fonts": [
+                "Microsoft YaHei"
+              ],
+              "text_elements": 39,
+              "tspan_elements": 4
+            },
+            "passed": true,
+            "source_sha256": "aba64525772ec557514b5b97620bca048cd39ad7d301e669328d805a9b834bc8"
+          }
+        ]
+      },
+      "svg_output": {
+        "valid": true
+      },
+      "text_content_qa": {
+        "schema": "cyberppt.dual_image.text_content_qa.v1",
+        "valid": true,
+        "order_sensitive": false,
+        "checks": {
+          "text_count_matches": true,
+          "pptx_text_matches_expected": true
+        },
+        "expected_texts": [
+          "建设期",
+          "总体要求",
+          "数据供得出、流得动、用得好、保安全，",
+          "建设可信连接、统一目录和安全管控等能力。",
+          "建设节点",
+          "2026年12月",
+          "初验",
+          "2027年6月",
+          "终验",
+          "主体接入",
+          "总体建设任务完成时，",
+          "实现600家以上数据",
+          "流通利用主体接入。",
+          "行业流通",
+          "支持5个以上重点行业的",
+          "跨区域、跨行业数据",
+          "流通利用。",
+          "产品发布",
+          "发布不少于1200个",
+          "数据产品。",
+          "示范场景",
+          "打造20个以上示范性强、",
+          "带动性广的典型应用场景。",
+          "运营期",
+          "持续运营评价原则",
+          "01 真实使用",
+          "有效产品应有独立标识、明确",
+          "版本、权利依据、质量说明和",
+          "真实使用记录。",
+          "02 服务质量",
+          "服务等级、质量责任和客户",
+          "支持要求落实到产品说明及",
+          "合同文件。",
+          "03 经营效果",
+          "检验产品价格、资源投入和",
+          "持续服务责任是否匹配。",
+          "04 安全合规",
+          "将分类分级、权利核查、用途",
+          "限定和风险处置贯穿全过程。"
+        ],
+        "actual_texts": [
+          "建设期",
+          "总体要求",
+          "数据供得出、流得动、用得好、保安全，",
+          "建设可信连接、统一目录和安全管控等能力。",
+          "建设节点",
+          "2026年12月",
+          "初验",
+          "2027年6月",
+          "终验",
+          "主体接入",
+          "总体建设任务完成时，",
+          "实现600家以上数据",
+          "流通利用主体接入。",
+          "行业流通",
+          "支持5个以上重点行业的",
+          "跨区域、跨行业数据",
+          "流通利用。",
+          "产品发布",
+          "发布不少于1200个",
+          "数据产品。",
+          "示范场景",
+          "打造20个以上示范性强、",
+          "带动性广的典型应用场景。",
+          "运营期",
+          "持续运营评价原则",
+          "01 真实使用",
+          "有效产品应有独立标识、明确",
+          "版本、权利依据、质量说明和",
+          "真实使用记录。",
+          "02 服务质量",
+          "服务等级、质量责任和客户",
+          "支持要求落实到产品说明及",
+          "合同文件。",
+          "03 经营效果",
+          "检验产品价格、资源投入和",
+          "持续服务责任是否匹配。",
+          "04 安全合规",
+          "将分类分级、权利核查、用途",
+          "限定和风险处置贯穿全过程。"
+        ],
+        "mismatches": [],
+        "error_count": 0
+      },
+      "render_compare": {
+        "valid": true,
+        "review": {
+          "schema": "cyberppt.image_to_pptx.visual_review.v1",
+          "issues": [],
+          "requires_rebuild": false,
+          "valid": true,
+          "path": "/Volumes/DOC/CyberPPT/assets/palette-samples/image-to-editable-svg-high-fidelity-20260814/internal-runtime-output-p09/image_to_pptx_runtime/analysis/visual-review.json"
+        }
+      },
+      "exported_pptx": {
+        "valid": true
+      }
+    }
+  }
+}

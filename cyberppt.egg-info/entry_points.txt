@@ -1,0 +1,2 @@
+[console_scripts]
+cyberppt = cyberppt.cli:main

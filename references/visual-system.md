@@ -1,4 +1,4 @@
-﻿# 视觉系统与 ImageGen 探索
+# 视觉系统与 ImageGen 探索
 
 ## 默认视觉风格探索
 
@@ -320,115 +320,641 @@
 
 直接通过当前对话发送 8 张独立图片，并简要比较语气、密度、优势和风险。需要时给出推荐风格。网页、拼图或总览图只能作为辅助浏览，不能作为确认依据。停止并请求第二次确认，然后再进入混合还原 PPTX。
 
-## 扩展风格9：纯白 + 深蓝领导汇报
+## 扩展风格9：纯白 + 深蓝可编辑重建领导汇报
 
-默认8种风格仍保持1—8不变。风格9仅供显式选择，可通过 ID `9` 调用。
+默认8种风格仍保持1—8不变。风格9仅供显式选择，可通过 ID `9` 调用。风格10保持独立，不受本风格规则影响。
 
-Palette: white #FFFFFF, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1, surface #F7F8FA, blue light #1A4A7A, blue lighter #E8EEF5, blue dark #0C243E, warning #B86A00, error #C42B1C.
+Palette: background white `#FFFFFF`, deep blue `#12355B`, title `#101820`, body `#303030`, secondary `#6F7275`, divider `#C9CDD1`, surface `#F7F8FA`, blue-light `#E8EEF5`, blue-mid `#5B7A99`, blue-dark `#0C243E`, warning `#B86A00`, error `#C42B1C`.
 
-Identity: senior leadership briefing / speech-support — editorial, restrained, scene-led, content-led, highly readable, non-dashboard.
+Identity: senior leadership briefing / speech-support — scene-led, reconstruction-friendly, content-led, highly readable, restrained, non-dashboard.
 
-### 风格主张
+### Style proposition
 
-Style 09 是纯白底上的深蓝编辑式领导汇报：画面先让人感知到与主题有关的业务对象、动作、环境或结果，再自然读到文字及其关系。它服务于页面的既定判断和版式。
+Style 09 is a pure-white, deep-blue executive briefing style designed as a **high-quality visual blueprint for later reconstruction into an editable PowerPoint slide**.
 
-### 正向构图语言
+The page should first make the audience perceive the real business objects, actions, operating context, boundaries, or outcomes behind the message, and then let the locked text explain or anchor those relationships.
 
-- 以纯白留白、深蓝主关系、浅蓝灰辅助面和克制细线建立清晰、安静而有张力的视觉秩序；文字、对象、场景和关系在同一画面中共同表达。
-- 形成清楚的视觉焦点与阅读主线：优先让真实业务对象、连续行业场景、关键动作、结果状态或开放关系场承担主载体。对于能源、电力、数据服务等行业主题，允许以设施、设备、作业界面、运行现场、人员动作、资料与信息流共同构成可读的业务关系场；这些不是背景点缀，而应直接解释上屏文字中的对象、动作、边界或结果。平台、中枢、引擎、中心等抽象业务概念应通过真实业务对象、业务关系、工作场景或结果状态表达其含义，不自动转译为物理展台、圆盘、机械核心、发光装置或其他象征性实体；具体选择由页面语义和 Stage02 结构决定。
-- 用尺度、裁切、前后层次、明暗、对齐、留白和局部色场形成主次；需要多处配图或多个局部对象时，每一处都应直接解释相应的业务对象、动作、状态、边界或结果，并共享同一业务关系场和阅读主线，不形成彼此独立的图片窗、缩略图拼贴或照片墙。
-- 锁定文字保持完整、清晰、舒展；文字像编辑注释或业务信息一样贴近对象、接口、动作、边界和结果，而非落入独立的文字孤岛。
-- 行业场景、设备、工作面、信息流、资料、屏幕、设施和人物可按页面语义作为视觉载体；当它们承担页面关系中的输入、承接、协作、控制、交付或结果时，应给予足够画幅和可辨识细节，而非退化为淡化背景或无语义装饰。屏幕可作为嵌入工作现场的局部业务证据，呈现与现场动作、设备或对象相连的必要信息；不得单独生成完整产品 UI、Dashboard 或产品展示界面。人物可作为真实操作、协作或服务动作的线索，但不作为正面肖像或摆拍办公主视觉。抽象主题可使用干净的平面关系场。
+The key principle is:
 
-### 表面与组件语言
+**Complex visuals are allowed; editable reconstruction boundaries must remain simple.**
 
-- 信息结构以平面2D、正视、哑光和编辑式留白为主。真实业务场景与真实物体可保留自然透视和物理体积；信息模块、文字承载面、关系结构和抽象业务概念保持平面，不通过立体底座、悬浮平台、挤出、透视盒或舞台式造型建立层级。避免展陈、SaaS 界面、未来概念海报式的夸张光效或材质。
-- 深蓝用于主关系、关键判断和必要强调，浅蓝灰承担辅助层级或局部承载，暖色只在语义确有风险、异常或待处理含义时使用。
-- 连接关系保持少量、纤细、清楚并避开文字；箭头只在方向必须明确时使用。边界、色场和局部承载面应服务关系和阅读，不替代业务语义。
-- 图标默认数量为 0。只有页面上屏内容明确需要某一具体符号或图标时，才可使用小型、扁平、从属的图标；不得以图标代替业务对象、关系或文字。
-- 中文字体统一使用微软雅黑（Microsoft YaHei）或现代无衬线黑体：清晰、中性、稳健、适合政企领导汇报；避免书法体、宋体式装饰、圆体或夸张展示字体。所有可读文字的视觉字号不得小于 14pt 等效尺寸；字号层级和版式比例继续服从全局 Typography Scale 。
+The output must look like a polished senior-leadership briefing page, not like a wireframe or low-fidelity mockup. Reconstruction friendliness must never become an excuse for generic cards, placeholder boxes, or visually weak layouts.
 
-### 完整性与整洁
+### White-background system — hard
 
-- 所有视觉元素共同强化同一页既定主判断；避免把同一判断、关系或结论在画面中作无意义复述。
-- 删除无语义的边缘装饰、重复容器和只增加“科技感”的素材，把空间让给真正承载文字意义的对象、场景和关系。
-- 页面表达应整洁但不均质：允许多图、多对象和多处局部细节，只要它们共同形成可读的主次、节奏和业务解释，并处于同一业务关系场中。
-- 不得根据文字条目数量自动生成等宽、等高、等权卡片、栏目或模块；视觉分组、尺度和位置由业务关系、判断主次和阅读顺序决定。局部使用平面矩形或浅色承载面时，也不得演化为卡片墙。
+The full page background must remain pure white `#FFFFFF`.
+
+Do not tint the whole canvas ivory, beige, cream, warm gray, paper-white, blue-gray, or off-white.
+
+Light gray-blue surfaces such as `#F7F8FA` and `#E8EEF5` may appear only as local semantic support fields, grouping surfaces, evidence zones, or boundary cues. White must remain the dominant page surface.
+
+Use whitespace, alignment, scale, thin dividers, local tonal fields, and semantic relationships to create hierarchy rather than relying on large colored cards.
+
+### Scene-led business expression
+
+Prefer authentic business objects, operational environments, physical infrastructure, working surfaces, documents, information flows, equipment, or restrained human actions when they directly explain the page content.
+
+For energy, power, data-service, infrastructure, industrial, or operational topics, the visual carrier may combine facilities, equipment, operating environments, working actions, information flows, records, and outputs into one coherent business relationship field.
+
+Scenes are not decorative backgrounds. Every major scene or object should help explain at least one actual actor, action, interface, boundary, transformation, delivery, or result in the locked content.
+
+Abstract business concepts such as platform, hub, engine, center, capability base, or operating system should be expressed through real business relationships, controlled working contexts, flows, boundaries, or outcomes. Do not automatically turn these words into a giant physical platform, circular stage, mechanical core, glowing sphere, control console, or symbolic machine.
+
+When the page is fundamentally abstract and a realistic scene would not improve understanding, use a clean flat relationship field instead.
+
+### One coherent business relationship field
+
+Build one clear reading path and one coherent page-level business relationship field.
+
+Use scale, crop, alignment, whitespace, local contrast, restrained overlap, and natural foreground/background relationships to create emphasis.
+
+Multiple visual objects or scene fragments may coexist, but they must belong to the same business relationship field and support the same page judgment.
+
+Do not create unrelated image windows, photo mosaics, screenshot galleries, or independent visual islands.
+
+Do not derive the layout from the number of text items. Four text items do not imply four equal cards, four equal columns, four equal stages, or four equal modules.
+
+### PowerPoint reconstruction friendliness — hard
+
+Treat the generated image as a **reconstruction-friendly visual blueprint**, not as flattened final artwork.
+
+Preserve high visual quality while keeping editable information structurally separable from complex visual assets.
+
+Design the page as two visually integrated but reconstructable layers:
+
+**Visual asset layer**
+- authentic scenes;
+- physical objects;
+- infrastructure;
+- complex illustrations;
+- non-standard semantic imagery;
+- textures or irregular visual forms that may need to remain bitmap or traced assets.
+
+**Editable information layer**
+- locked text;
+- labels;
+- numbers;
+- annotations;
+- simple connectors;
+- standard charts;
+- tables;
+- standard business shapes and boundaries that should later be rebuilt natively in PowerPoint.
+
+The two layers may visually interact, but their boundaries should remain clear enough for later extraction, measurement, OCR, bounding-box detection, SVG tracing, or native PowerPoint reconstruction.
+
+### Editable text-safe zones — hard
+
+Every editable text region must occupy a visually clean, high-contrast, geometrically simple **text-safe zone**.
+
+A text-safe zone should have:
+
+- stable rectangular or near-rectangular geometry;
+- sufficient internal padding;
+- uniform or nearly uniform background;
+- no important image detail behind the text;
+- no connector passing through the text;
+- no overlapping object crossing the text area;
+- no perspective distortion;
+- no rotated, curved, vertical, or perspective text.
+
+Place locked text directly beside, above, or below the related business object, scene, action, interface, boundary, or result.
+
+Prefer integration through **proximity, alignment, grouping, shared baselines, shared geometry, and short connectors** rather than by physically overlapping text with imagery.
+
+Avoid placing editable text across photographs, illustrations, complex textures, irregular shapes, device screens, documents, dense diagrams, connectors, or visually busy areas.
+
+Maintain a clear visual buffer between editable text and complex imagery. Important physical objects, hands, devices, illustration edges, lines, arrows, or high-contrast textures must not intrude into the text-safe zone.
+
+### Text-safe zones do not imply cards — hard
+
+A clean text-safe zone is not automatically a card.
+
+Do not create independent rounded rectangles, equal modules, boxed captions, or card containers merely to hold text.
+
+Prefer, in this order:
+
+1. whitespace;
+2. alignment;
+3. local tonal contrast;
+4. shared baselines;
+5. thin dividers;
+6. subtle flat support fields;
+7. a container only when the business relationship genuinely requires one.
+
+If a local surface is used, keep it flat, restrained, and subordinate. Do not let repeated local surfaces evolve into a card wall.
+
+### Locked Chinese text — hard
+
+Keep all locked Chinese text complete, unchanged, and in its original order.
+
+Do not summarize, rewrite, shorten, relabel, fragment, paraphrase, or convert paragraphs into compressed tags.
+
+Render only the locked Chinese text explicitly supplied in the page script. Do not invent additional titles, labels, captions, numbers, footnotes, interface copy, document paragraphs, signage, decorative English words, or microtext.
+
+Use one coherent editable text block for one coherent semantic paragraph whenever possible.
+
+Prefer horizontal text. Prefer left-aligned body text. Centered text should be limited to short labels, short conclusions, or cases where the page structure clearly requires it.
+
+Do not fragment one sentence into multiple independent text objects for decorative composition.
+
+Chinese typography should visually resemble **Microsoft YaHei** or a clean contemporary sans-serif: neutral, stable, professional, and highly readable.
+
+All readable text should remain at normal senior-presentation viewing scale. If space becomes tight, simplify the visual composition before reducing the text size.
+
+### Do not bake editable text into visual objects — hard
+
+Do not embed important editable text into:
+
+- device screens;
+- documents;
+- dashboards;
+- interface panels;
+- photographs;
+- equipment surfaces;
+- arrows;
+- icons;
+- circular badges;
+- physical signage;
+- perspective planes;
+- irregular shapes;
+- illustrations.
+
+If an object requires semantic identification, place the editable label adjacent to the object in a clean text-safe zone.
+
+Screens, documents, charts, interfaces, and equipment may contain **text-free visual structure** such as blocks, highlighted regions, simplified sections, check states, approval marks, output groups, or schematic cues. They should not contain important readable microtext that would later need to be recreated manually.
+
+### Reconstructable connectors
+
+Use only the connectors required to explain direction, dependency, transfer, or relationship.
+
+Prefer:
+
+- straight lines;
+- simple elbow connectors;
+- short thin arrows;
+- shallow curves only when semantically necessary;
+- clear start and end anchors;
+- minimal crossings.
+
+Do not use decorative flowing lines, glowing data streams, multi-strand trajectories, tangled curves, dense network meshes, or complex path geometry unless the curve itself carries essential business meaning.
+
+Keep connectors away from locked text and maintain visible separation between line endpoints and text boxes.
+
+### Charts, tables, and standard business structures
+
+For standard business charts, tables, matrices, simple processes, comparison structures, and standard diagrams, use ImageGen to define:
+
+- hierarchy;
+- relative scale;
+- visual emphasis;
+- spacing;
+- grouping;
+- composition;
+- semantic relationships.
+
+Do not add decorative complexity that would make native PowerPoint reconstruction unnecessarily difficult.
+
+Use non-standard chart geometry, complex curves, irregular flows, or specialized diagram shapes only when they materially improve the page’s semantic argument.
+
+Standard charts, tables, process arrows, labels, numbers, and simple boundaries should look as if they can later be rebuilt cleanly with native PowerPoint objects.
+
+### Scene and image-asset isolation
+
+Complex scenes and non-standard visual assets may remain visually rich, but keep their edges and occupied areas sufficiently distinct from editable text.
+
+Do not interweave critical editable text deeply into a scene.
+
+Do not allow one complex visual asset to spread behind several unrelated text regions merely for visual continuity.
+
+A complex image area should be isolatable as one meaningful visual asset or a small number of meaningful visual asset regions when later reconstruction requires it.
+
+### Surface, material, and depth
+
+Keep the information structure predominantly flat, frontal, matte, and editorial.
+
+Real business scenes and real physical objects may retain natural perspective, realistic material cues, and restrained physical volume.
+
+Editable information modules, text-safe zones, relationship structures, standard business shapes, and abstract business concepts should remain flat and easy to reconstruct.
+
+Prefer:
+
+- subtle depth;
+- natural material cues;
+- restrained physical layering;
+- shallow spatial separation;
+- realistic object volume only where it serves the scene.
+
+Avoid:
+
+- glossy isometric 3D;
+- floating platforms;
+- glassmorphism;
+- extruded panels;
+- perspective boxes;
+- stage-like structures;
+- giant abstract spheres;
+- glowing consoles;
+- decorative volumetric UI;
+- exaggerated futuristic lighting.
+
+### Icon policy
+
+Icon count is `0` by default.
+
+Use a small flat icon only when the page script explicitly requires a specific symbol and when that symbol materially improves recognition.
+
+Icons must remain secondary, small, flat, and embedded within an existing semantic region.
+
+Do not assign one icon to every bullet. Do not create icon rows, icon grids, icon badges, icon cards, or icon-led composition. Do not use icons to replace real business objects, actions, relationships, or locked text.
+
+### Clean reconstruction hierarchy
+
+The page should remain visually sophisticated but structurally legible.
+
+A later reconstruction system should be able to infer, with reasonable confidence:
+
+- where each editable text region begins and ends;
+- which text belongs to which business object or scene;
+- which elements are complex image assets;
+- which connectors can be rebuilt natively;
+- which standard diagrams, charts, tables, and boundaries should be reconstructed with PowerPoint shapes;
+- the intended reading order and hierarchy.
+
+Do not intentionally lower visual complexity, information density, or aesthetic quality merely to make measurement easier.
+
+The goal is not a wireframe. The goal is **high-end visual design with clean reconstruction boundaries**.
 
 ### Final ImageGen execution lock — hard
 
 This block must be repeated verbatim at the absolute end of every Style 09 ImageGen prompt and overrides conflicting carrier language elsewhere:
 
-保持纯白底、深蓝主关系、平面2D信息结构和无图标优先。先遵从页面既定的主判断、业务关系和阅读顺序，再用一个清楚的视觉焦点组织场景、对象、文字与证据；主次通过尺度、裁切、留白、对比和自然前后层次建立。行业设施、设备、运行现场、工作面、人员动作、资料和信息流可以共同承担主业务关系，且应直接解释锁定文字中的对象、动作、边界或结果，不要把它们缩成空泛背景。平台、中枢、引擎、中心等抽象业务概念通过真实业务对象、业务关系、工作场景或结果状态表达，不自动画成物理展台、圆盘、机械核心、发光装置或悬浮平台。真实场景与真实物体可以保留自然透视和体积，信息模块、文字承载面、关系结构和抽象概念保持平面，不用立体底座、挤出、透视盒或舞台式造型建立层级。锁定中文必须完整清晰，字体视觉接近 Microsoft YaHei 或现代无衬线黑体，所有可读文字的视觉字号不得小于 14pt 等效尺寸，并贴近对应对象、动作、接口、边界或结果。多处配图和局部对象可以共存，但必须共享同一业务关系场和阅读主线，不形成独立图片窗、缩略图拼贴或照片墙；不得根据文字条目数量自动生成等宽、等高、等权卡片或模块。屏幕可作为嵌入工作现场的局部业务证据，不单独生成完整产品 UI 或 Dashboard；人物可作为真实操作、协作或服务动作线索，但不作为正面肖像或摆拍办公主视觉。连接线和承载面保持克制、清楚、服务关系。图标默认数量为0，不得以图标、徽章或抽象符号替代业务对象、关系或文字。最终效果应像高级领导汇报中的编辑式业务页面：整洁、有焦点、有图文融合，也保留足够的构图自由度。
+Use a pure white `#FFFFFF` background with deep-blue hierarchy and a scene-led senior leadership briefing aesthetic. Treat the generated image as a high-quality reconstruction-friendly visual blueprint for later conversion into an editable PowerPoint slide. Preserve visual sophistication, but keep editable information structurally separable from complex visual assets. Prefer authentic business objects, operational environments, infrastructure, actions, boundaries, information flows, and outcomes when they directly explain the locked content; use a clean flat relationship field when a realistic scene would not improve understanding. Build one coherent business relationship field and one clear reading path. Do not derive the composition from the number of text items and do not automatically create equal cards, equal columns, equal rows, equal stages, or equal modules. Keep all locked Chinese text complete, unchanged, and clearly readable. Place editable text in clean high-contrast text-safe zones with stable geometry, sufficient padding, and no important visual detail, connector, object, texture, or image behind the text. Integrate text and visuals through proximity, alignment, grouping, shared geometry, and hierarchy rather than destructive overlap. Text-safe zones do not imply cards: prefer whitespace, alignment, local tonal contrast, thin dividers, and subtle flat fields before using containers. Do not bake important editable text into screens, documents, devices, photographs, arrows, icons, badges, perspective surfaces, or irregular shapes; place labels adjacent to the related object instead. Keep complex scenes and non-standard visual assets spatially distinct enough to isolate later when necessary. Prefer reconstructable connectors such as straight lines, simple elbow connectors, short arrows, and shallow curves with clear anchors; avoid decorative flowing lines and complex trajectories unless they carry essential business meaning. Standard charts, tables, labels, numbers, process arrows, and business shapes should emphasize hierarchy and semantic clarity and remain suitable for native PowerPoint reconstruction. Real scenes and physical objects may keep natural perspective and volume; editable information structures remain flat, frontal, matte, and easy to rebuild. Icon count is zero by default. Avoid dashboards, screenshot collections, card walls, glossy 3D objects, floating platforms, glassmorphism, giant symbolic machines, dense network meshes, and scene-for-scene's-sake decoration. The final result must look like a polished senior-leadership editorial business page — visually rich where needed, highly readable, semantically grounded, and structurally clear enough for editable reconstruction.
 
-## 扩展风格10：象牙白 + 深蓝双层语义汇报2
+## 扩展风格10：纯白 + 深蓝双层语义领导汇报
 
-默认8种风格仍保持1—8不变。风格10是仅供显式选择的扩展风格，可通过 ID `10` 调用，不进入默认候选。
+默认8种风格仍保持1—8不变。风格10是仅供显式选择的扩展风格，可通过 ID `10` 调用，不进入默认候选。风格09保持独立，不受本风格规则影响。
 
-Palette: ivory #F7F6F0, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
+Palette: background white `#FFFFFF`, deep blue `#12355B`, title `#101820`, body `#303030`, secondary `#6F7275`, divider `#C9CDD1`, surface `#F7F8FA`, surface-alt `#EEF3F8`, blue-light `#E8EEF5`, blue-mid `#5B7A99`, blue-dark `#0C243E`, caution `#B86A00`, error `#C42B1C`.
 
-Create a high-end senior leadership briefing page in a structured editorial business-infographic style: authoritative, calm, polished, content-led and presentation-ready.
+Identity: senior leadership semantic editorial briefing — argument-led, content-led, highly readable, polished, restrained, presentation-ready. This is not a dashboard style, not a generic infographic style, and not a scene-for-scene’s-sake style.
 
-Build one integrated, asymmetric and unequally weighted composition with one dominant judgment and one clear reading path. Use one main page-level structure, two to five primary content regions, one outcome or conclusion region, and only a few essential connectors. Derive the composition from the actual page semantics rather than from the number of text items.
+### Style proposition
 
-Locked Chinese text — hard:
+Style 10 is a pure-white, deep-blue executive briefing system built for pages that must communicate **one dominant judgment** and then reveal **the supporting semantic structure beneath it**.
 
-Keep all locked Chinese text complete, unchanged and in its original order. Do not summarize, rewrite, shorten, relabel or convert paragraphs into compressed tags. Allocate space for the locked text before adding scenes, evidence, icons or decoration.
+Its defining characteristic is **two-layer semantic reading**:
 
-Use one complete and clearly readable text region for each primary content region. Do not split one paragraph across several small boxes. Keep body text at normal senior-presentation reading scale, visually equivalent to approximately 24–30 px at 1280 × 720. Do not create miniature captions, secondary microcopy or dense annotation layers.
+- **Layer 1**: the audience immediately grasps the page’s central judgment, message, or business conclusion.
+- **Layer 2**: the audience then understands the supporting structure — the actors, inputs, actions, boundaries, evidence, mechanisms, or outputs that explain why that judgment holds.
 
-Place the locked text directly beside, above, below or partially within the related business object or scene, so text and visual material form one semantic unit. Make their relationship visible through shared geometry, alignment, proximity, grouping or short connectors.
+The page should therefore feel like a **semantic editorial page**, not a card wall, not a software UI, and not a decorative poster.
 
-Scene-supported semantic expression:
+### White-background system — hard
 
-Prefer realistic or semi-realistic scenes with page-specific business meaning. Each scene must visibly communicate the corresponding business action, transformation, judgment or outcome, rather than merely showing a related office, device, document pile or workplace.
+The full page background must remain pure white `#FFFFFF`.
 
-Express each primary business action through one dominant large-scale semantic structure and, only when necessary, one supporting evidence object. Use no more than two semantic visual elements within one primary content region.
+Do not tint the whole canvas ivory, beige, warm gray, blue-gray, cream, paper-white, or off-white.
 
-Translate business meaning into presentation-scale forms, such as:
+Light gray-blue surfaces such as `#F7F8FA`, `#EEF3F8`, and `#E8EEF5` may be used only as **local semantic support fields** for grouping, evidence, boundaries, or secondary hierarchy. They must never expand into the visual equivalent of a full-page tinted background.
 
-- heterogeneous source materials converging into one structured outline;
-- two knowledge or evidence fields compared with one clearly highlighted gap;
-- several conditions feeding one content blueprint that produces distinct outputs;
-- one content object moving through review, approval, use and feedback;
-- multiple foundations jointly supporting one shared judgment;
-- a controlled boundary separating inputs, processing and approved outputs.
+White is the dominant page surface. Use whitespace, thin dividers, alignment, scale, restrained local fields, and semantic relationships to create structure rather than relying on large colored cards.
 
-Use large shapes, clear grouping, selective highlights, controlled overlap, restrained directional extension and short thin connectors. The semantic meaning must remain legible from normal presentation viewing distance.
+### Semantic fidelity — hard
 
-Do not express meaning mainly through miniature document pages, file-browser lists, dense tables, multi-row matrices, full software interfaces, repeated dashboard panels or collections of small screenshots. Screens, documents and charts should function as simplified semantic objects, not as containers for detailed information.
+The image must visually communicate the page’s actual business meaning.
 
-Text and semantic evidence discipline — hard:
+Every major visual element should correspond to at least one of the following:
 
-Render only the locked Chinese text explicitly provided in the page script. Do not invent additional titles, labels, captions, numbers, footnotes, interface copy, document paragraphs, signage or decorative microtext.
+- an actor;
+- an object;
+- a capability;
+- a process;
+- a relationship;
+- a boundary;
+- an outcome;
+- a meaningful business context.
 
-Screens, documents, charts and interfaces may contain clear text-free visual structures, including large blocks, major sections, highlighted differences, check states, approval marks, contrast regions, output groups and simplified diagrams. Do not use blank or generic screens when a screen is expected to explain a business action, but do not fill it with readable microtext.
+Do not invent business facts, business entities, technical modules, organizational structures, metrics, claims, interface text, or explanatory labels that are not present in the page script.
 
-When space is insufficient, simplify the composition, reduce scene detail, remove supporting evidence, enlarge the text region or reduce the number of visual fragments. Never solve space pressure by shrinking the locked text, splitting it into tiny fragments or adding smaller explanatory text.
+Decorative elements must not introduce new semantic claims.
 
-Component and hierarchy discipline:
+### Dominant visual thesis
+
+Create **one dominant visual thesis per page**.
+
+The dominant thesis may be expressed through:
+
+- one primary semantic structure;
+- one strong relationship field;
+- one controlled scene-plus-structure composition;
+- one outcome-centered argument field;
+- one process with clear causal or directional logic;
+- one comparison or one bounded transformation.
+
+Do **not** force a centered hero object.
+Do **not** assume the page needs a single large device, circular hub, physical platform, giant console, abstract sphere, symbolic “engine”, or other oversized centerpiece.
+
+The dominant idea is more important than a dominant object.
+
+### Visual carrier selection
+
+Choose the visual carrier from the page semantics.
+
+Preferred carriers include:
+
+- structured editorial diagram;
+- scene + semantic overlay;
+- process or flow relationship field;
+- comparison field;
+- bounded transformation field;
+- outcome-led argument field;
+- evidence-supported business object field;
+- restrained conceptual metaphor when it materially improves comprehension.
+
+A realistic scene is **allowed and often useful**, but it is **not mandatory**.
+Use a realistic or semi-realistic scene only when it improves understanding of the page’s meaning.
+
+Do not force control rooms, offices, laptops, meeting scenes, document piles, industrial facilities, or generic technology environments onto pages that are fundamentally about structure, judgment, boundary, mechanism, comparison, or relationship.
+
+### Spatial organization
+
+Build one integrated composition with **unequal emphasis** and **one clear reading path**.
+
+Let the content determine:
+
+- position;
+- scale;
+- grouping;
+- distance;
+- direction;
+- overlap;
+- visual carrier.
 
 Use:
 
-- one dominant page-level structure;
+- one page-level semantic structure;
 - two to five primary content regions;
-- one large semantic object per region;
+- one outcome or conclusion region when needed;
+- only a few essential connectors.
+
+Do not derive the layout from the number of bullets or paragraphs.
+Do not automatically translate text items into equal columns, equal rows, equal cards, equal stages, or equal modules.
+
+The composition should feel **integrated, editorial, and meaning-driven** rather than modular by default.
+
+### Two-layer semantic expression
+
+Layer the page so the audience first reads the main judgment, and then the supporting semantic logic.
+
+Recommended pattern:
+
+- **Primary layer**: one large, clear semantic relationship or business meaning field;
+- **Secondary layer**: a small number of supporting structures, evidence objects, business sub-relationships, or controlled scene cues that explain or reinforce the first layer.
+
+This does **not** mean “headline on top, details below” as a rigid template.
+It means the page should reveal its meaning in a deliberate order.
+
+The second layer should deepen understanding, not compete with the first layer.
+
+### Locked Chinese text — hard
+
+Keep all locked Chinese text complete, unchanged, and in its original order.
+
+Do not:
+
+- summarize;
+- paraphrase;
+- shorten;
+- relabel;
+- rewrite;
+- fragment one paragraph into scattered micro-labels;
+- convert paragraphs into decorative tags or shorthand labels.
+
+Render only the locked Chinese text explicitly supplied in the page script.
+
+Do not invent:
+
+- additional titles;
+- captions;
+- document text;
+- interface copy;
+- chart labels;
+- footnotes;
+- signage;
+- microcopy;
+- decorative English words.
+
+Each primary content region should have one complete and clearly readable text region.
+
+Place the locked text beside, above, below, or partially within the related semantic object or relationship field so that text and visual structure form one semantic unit.
+
+Typography should remain fully legible at normal executive-presentation viewing distance. Prefer Chinese text rendering visually close to **Microsoft YaHei** or a clean modern sans-serif. Keep body text at normal senior-presentation reading scale, visually equivalent to approximately 24–30 px at 1280 × 720; all readable text should remain comfortably above micro-caption scale.
+
+If space becomes tight, simplify the composition, reduce scene detail, remove secondary evidence, or enlarge the text region.
+Never solve space pressure by shrinking the locked text excessively, splitting it into tiny fragments, or adding smaller explanatory text.
+
+### Scene discipline
+
+If using scenes, use them as **semantic carriers**, not as decoration.
+
+A valid scene should visibly express:
+
+- an action;
+- a collaboration;
+- a transformation;
+- a review or approval process;
+- a controlled operating context;
+- an output state;
+- a business boundary.
+
+Scenes should not merely show:
+
+- a generic office;
+- a person at a laptop;
+- an arbitrary meeting room;
+- a polished but empty industrial environment;
+- a decorative control center;
+- a stock-like “technology atmosphere”.
+
+People should be absent or minimal.
+If people appear, they should function only as restrained cues for action, coordination, or service — never as front-facing hero portraits or staged office photography.
+
+Screens and devices may appear only as supporting evidence within a broader semantic field.
+Avoid isolated UI screenshots, product displays, full dashboards, and repeated devices.
+
+### Semantic objects and evidence objects
+
+Express each primary business meaning through:
+
+- one dominant semantic object, relationship field, or structured visual field;
+- and, only when necessary, one supporting evidence object.
+
+Examples of semantic translation include:
+
+- heterogeneous source materials converging into one structured output;
+- several foundations jointly supporting one shared judgment;
+- a controlled boundary separating inputs, processing, and approved outputs;
+- multiple conditions feeding one blueprint that generates several results;
+- one business object moving through review, approval, use, and feedback;
+- one comparison field with a clearly highlighted gap, distinction, or asymmetry;
+- one shared mechanism coordinating several actors or resources.
+
+Do not express meaning mainly through:
+
+- miniature document pages;
+- dense tables;
+- tiny charts;
+- file-browser lists;
+- complex software interfaces;
+- screenshot collections;
+- repeated dashboard fragments.
+
+Documents, screens, and charts may exist as simplified semantic evidence objects, but they must not dominate the page by turning into detailed information containers.
+
+### Text-free semantic evidence discipline
+
+Screens, documents, charts, and interfaces may contain clear **text-free visual structures**, including:
+
+- large blocks;
+- major sections;
+- highlighted differences;
+- check states;
+- approval marks;
+- contrast regions;
+- output groups;
+- simplified diagrams.
+
+Do not use blank or generic screens when a screen is expected to explain a business action, but do not fill it with readable microtext.
+
+When space is insufficient, simplify the composition, reduce scene detail, remove supporting evidence, enlarge the text region, or reduce visual fragments.
+Never solve space pressure by shrinking locked text or creating dense annotation layers.
+
+### Component hierarchy discipline
+
+Use:
+
+- one dominant page-level semantic structure;
+- two to five primary content regions;
+- one large semantic object or relationship field per region;
 - at most one supporting evidence object per region;
-- no more than four to six essential connectors across the page;
-- no more than one or two small auxiliary icons on a typical page.
+- four to six essential connectors at most across the page.
 
-Do not automatically translate four text items into four equal columns, four equal rows or four equally detailed stages. Use unequal width, scale, density and visual weight according to the page judgment. The core judgment or principal business relationship must dominate; supporting regions remain quieter and subordinate.
+Use unequal width, unequal scale, and unequal visual weight according to the business judgment.
 
-Icons are optional and strictly secondary. Keep them small, simple, deep blue and embedded within an existing text, scene or business region. Do not give icons independent cards, circular badges, decorative containers or dedicated display areas. Icons must not determine the composition, create extra modules, form icon rows or replace semantic scenes.
+The core judgment or principal relationship must dominate.
+Supporting regions must remain quieter and subordinate.
 
-Screens and devices may appear only as supporting evidence inside a broader working or operational scene. Avoid repeated devices, isolated UI screenshots, dashboards, SaaS interfaces and product-display layouts.
+### Surface, material, and depth
 
-Use broad flat fields, ivory or white content regions, deep-blue headings, thin dividers, restrained connectors, matte materials and very shallow depth.
+Use a **pure white page surface**, deep-blue hierarchy, thin gray-blue dividers, restrained connectors, matte materials, and subtle local surface differentiation.
 
-Avoid equal card walls, equal modular grids, left-text / center-image / right-text layouts, panoramic posters, giant hero illustrations, abstract data landscapes, dense flowing-line fields, radial hubs, generic timelines, step-card sequences, software-architecture diagrams, icon grids, glossy 3D objects, glassmorphism, neon glow and floating icons.
+Depth should be **shallow and disciplined**.
 
-People should be absent or minimal. Reference images may inform palette, spacing, scene mood, material restraint and overall polish only; do not copy their fixed layout scaffold.
+Prefer:
 
-Priority: locked Chinese text and core judgment → business relationships → large-scale semantic scenes and objects → evidence and outcomes → boundaries and connectors → auxiliary symbols.
+- slight layering;
+- soft spatial separation;
+- restrained material contrast;
+- minimal natural object volume where needed;
+- natural perspective only for real-world scenes or physical objects.
 
-Final result: a calm, highly readable executive-report page with complete locked text, strong hierarchy, few components, page-specific semantic scenes, large-scale visual meaning and no invented or unreadable microtext.
+Avoid:
+
+- glossy 3D objects;
+- floating platforms;
+- glassmorphism;
+- shiny isometric structures;
+- glowing consoles;
+- exaggerated perspective boxes;
+- decorative volumetric UI;
+- futuristic stage-like constructions;
+- large tinted background panels that visually replace the pure-white canvas.
+
+The page should feel polished and high-end, but not theatrical.
+
+### Icon policy
+
+Icons are optional and strictly secondary.
+
+Use icons only when they improve recognition of a specific concept and only if the page script truly benefits from them.
+
+If icons are used:
+
+- keep them small;
+- keep them simple;
+- keep them subordinate;
+- keep them integrated into an existing semantic or text region;
+- use deep blue or neutral monochrome treatment.
+
+Do not:
+
+- create icon rows;
+- create icon grids;
+- give icons dedicated cards;
+- use circular icon badges as a repeated system;
+- use icons as the primary storytelling device;
+- assign one icon to every bullet;
+- let icons determine the composition.
+
+### Readability and editorial polish
+
+Maintain a calm, authoritative, presentation-ready tone.
+
+Prefer:
+
+- generous but purposeful pure-white space;
+- clear local grouping;
+- deliberate alignment;
+- strong hierarchy;
+- stable reading order;
+- integrated text-image relationships;
+- businesslike restraint;
+- selective deep-blue emphasis;
+- restrained light gray-blue semantic fields only where needed.
+
+Avoid:
+
+- equal card walls;
+- generic modular dashboards;
+- left-text / center-image / right-text clichés;
+- panoramic posters;
+- giant hero illustrations without semantic discipline;
+- abstract data landscapes;
+- dense flowing-line fields;
+- radial hubs;
+- generic timelines;
+- step-card sequences;
+- software-architecture diagrams as a default visual language;
+- icon grids;
+- decorative technology motifs.
+
+### Creative freedom
+
+Within the semantic, palette, typography, and hard constraints above, make appropriate professional art-direction decisions.
+
+Do not mechanically translate each sentence into a separate object.
+Do not over-literalize the script.
+
+Combine related content into coherent visual wholes.
+Prefer visual synthesis over visual enumeration.
+
+The final page should look like an experienced editorial art director designed a senior leadership briefing page that is visually polished, semantically accurate, and easy to understand in a presentation setting.
+
+### Priority order
+
+When constraints compete, follow this order:
+
+1. locked Chinese text and core judgment;
+2. semantic fidelity and business relationships;
+3. dominant visual thesis and reading path;
+4. visual carrier appropriate to page meaning;
+5. supporting evidence and outcomes;
+6. boundaries and connectors;
+7. local surface treatment;
+8. auxiliary symbols and decoration.
+
+### Final ImageGen execution lock — hard
+
+This block must be repeated verbatim at the absolute end of every Style 10 ImageGen prompt and overrides conflicting carrier or background language elsewhere:
+
+Keep the full page background pure white #FFFFFF. Do not tint the whole canvas ivory, beige, warm gray, cream, paper-white, blue-gray, or off-white. Light gray-blue surfaces may appear only as restrained local semantic support fields and must never become the page background. Create a pure-white, deep-blue senior leadership semantic editorial page with one dominant visual thesis and one clear reading path. First communicate the page’s central judgment, then reveal the supporting semantic structure beneath it. Build an integrated composition with unequal emphasis; do not derive the layout from the number of text items and do not automatically create equal cards, equal columns, equal rows, equal stages, or equal modules. Choose the visual carrier from the page semantics: a structured editorial diagram, a scene-plus-structure field, a process relationship field, a comparison field, a bounded transformation field, an outcome-led argument field, or another semantically justified carrier. A realistic scene is allowed only when it improves understanding and must function as a semantic carrier rather than decoration. Keep all locked Chinese text complete, unchanged, and clearly readable; do not summarize, rewrite, relabel, fragment, or invent any additional visible text. Place each text region close to its related semantic object or relationship so text and visual structure form one semantic unit. Every major visual element must correspond to a real actor, object, capability, process, relationship, boundary, outcome, or meaningful business context; decorative elements must not introduce new semantic claims. Use deep-blue hierarchy, thin restrained dividers and connectors, matte materials, subtle local gray-blue fields, and only shallow controlled depth on the pure-white canvas. Avoid dashboards, software UI layouts, screenshot collections, icon grids, equal card walls, glossy 3D objects, floating platforms, radial hubs, giant symbolic machines, decorative control centers, and scene-for-scene’s-sake compositions. Icons, if any, must remain small, secondary, and embedded. The final result should feel polished, authoritative, highly readable, content-led, semantically precise, and presentation-ready for a senior leadership briefing.

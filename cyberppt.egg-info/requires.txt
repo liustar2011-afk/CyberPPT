@@ -1,0 +1,3 @@
+pyyaml
+rapidocr-onnxruntime<2,>=1.4
+python-pptx

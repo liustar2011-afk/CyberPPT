@@ -685,6 +685,10 @@ _SEMANTIC_LINE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("gap", re.compile(r"(?:尚未|不足|缺少|分散|不统一|受阻|难以)")),
     ("response", re.compile(r"(?:建立|建设|组织|衔接|支持|形成|降低|补齐)")),
 )
+_OBJECT_TAXONOMY_PARENT_RE = re.compile(r"(?:对象|资源|成果).*(?:类型|分类)|(?:类型|分类).*(?:对象|资源|成果)")
+_TAXONOMY_CROSSCUT_LABEL_RE = re.compile(
+    r"(?:使用用途|二次使用|终止处理|留存结算|共同约束|适用范围|授权(?:要求|限制)?|退出(?:处理|安排)?)"
+)
 
 
 def _onscreen_subordinate_fragments(text: str) -> tuple[str, ...]:
@@ -760,11 +764,24 @@ def _onscreen_false_parallel_semantics(text: str) -> tuple[str, ...]:
             for line in child_lines
             if re.search(r"[：:]", line)
         ]
+        # A rights-object taxonomy may not absorb rules that govern every
+        # object or the whole lifecycle.  Such controls need their own
+        # crosscutting relation instead of becoming another object type.
+        crosscut_labels = [
+            label
+            for label in option_labels
+            if _TAXONOMY_CROSSCUT_LABEL_RE.search(label)
+        ]
+        if _OBJECT_TAXONOMY_PARENT_RE.search(parent) and crosscut_labels:
+            mismatches.append(
+                f"{parent} -> crosscut_constraint:{', '.join(crosscut_labels[:4])}"
+            )
+            continue
         if (
             len(option_labels) == len(child_lines)
             and len(set(option_labels)) == len(option_labels)
             and all(1 <= len(label) <= 12 for label in option_labels)
-            and re.search(r"(?:方式|路径|类型|模式|方案)", parent)
+            and re.search(r"(?:方式|路径|类型|分类|模式|方案)", parent)
         ):
             continue
         roles = [_semantic_line_role(line) for line in child_lines]
