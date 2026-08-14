@@ -35,6 +35,8 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.dual_image_overlay.workspace_layout_qa import (  # noqa: E402
     check_page_layout_overlaps,
 )
+from scripts.dual_image_overlay.office_render import office_candidates as _office_candidates  # noqa: E402
+from scripts.dual_image_overlay.office_render import office_failure_evidence as _render_failure_evidence  # noqa: E402
 
 
 def _emu_to_px(value: int, *, dpi: int = 96) -> float:
@@ -123,48 +125,6 @@ def check_pptx_geometry(pptx_path: Path, *, dpi: int = 96) -> dict[str, Any]:
         "valid": all(slide["valid"] for slide in slides_report),
         "slides": slides_report,
     }
-
-
-def _office_candidates() -> list[Path]:
-    """Return Office executables in preferred order, including Codex's runtime.
-
-    Homebrew LibreOffice can occasionally abort in a headless sandbox (exit
-    status 134).  The desktop runtime bundles an isolated LibreOffice build,
-    so keep it as a deterministic fallback instead of silently skipping the
-    visual render.
-    """
-    candidates = [
-        Path(command)
-        for command in (shutil.which("soffice"), shutil.which("libreoffice"))
-        if command
-    ]
-    bundled = (
-        Path.home()
-        / ".cache"
-        / "codex-runtimes"
-        / "codex-primary-runtime"
-        / "dependencies"
-        / "bin"
-        / "override"
-        / "soffice"
-    )
-    if bundled.is_file():
-        candidates.append(bundled)
-
-    unique: list[Path] = []
-    for candidate in candidates:
-        if candidate not in unique:
-            unique.append(candidate)
-    return unique
-
-
-def _render_failure_evidence(candidate: Path, error: BaseException) -> str:
-    if isinstance(error, subprocess.CalledProcessError):
-        return (
-            f"{candidate} exited {error.returncode}; "
-            f"stdout={error.stdout!r}; stderr={error.stderr!r}"
-        )
-    return f"{candidate} could not be started: {error}"
 
 
 def render_to_png(pptx_path: Path, out_dir: Path, *, dpi: int = 150) -> list[Path]:

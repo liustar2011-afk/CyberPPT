@@ -5,14 +5,84 @@ import subprocess
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from PIL import Image, ImageDraw
 
 
 ROOT = Path(__file__).resolve().parents[1]
 
+from scripts.dual_image_overlay import build_page
+from scripts.dual_image_overlay.office_render import MAX_FAILURE_OUTPUT_CHARS, office_failure_evidence
+
 
 class DualImageOverlayBuildPageTests(unittest.TestCase):
+    def test_office_failure_evidence_bounds_process_output(self) -> None:
+        error = subprocess.CalledProcessError(
+            134,
+            ["soffice"],
+            stderr="x" * (MAX_FAILURE_OUTPUT_CHARS + 1),
+        )
+
+        evidence = office_failure_evidence(Path("/fake/soffice"), error)
+
+        self.assertIn("[truncated 1 chars]", evidence)
+        self.assertLess(len(evidence), MAX_FAILURE_OUTPUT_CHARS + 200)
+
+    def test_render_preview_retries_bundled_soffice_after_path_failure(self) -> None:
+        with TemporaryDirectory() as directory:
+            tmp_path = Path(directory)
+            pptx_path = tmp_path / "page.pptx"
+            exports = tmp_path / "exports"
+            bundled = tmp_path / "bundled-soffice"
+            pptx_path.write_bytes(b"pptx")
+            bundled.write_text("bundled", encoding="utf-8")
+            commands: list[list[str]] = []
+
+            def fake_run(command, **kwargs):
+                commands.append(command)
+                if command[0] == "/fake/soffice":
+                    raise subprocess.CalledProcessError(134, command, stderr="Abort trap: 6")
+                if "--convert-to" in command:
+                    out_dir = Path(command[command.index("--outdir") + 1])
+                    (out_dir / "page.pdf").write_bytes(b"pdf")
+                else:
+                    Path(command[-1] + ".png").write_bytes(b"png")
+
+            with (
+                patch.object(build_page, "_office_candidates", return_value=[Path("/fake/soffice"), bundled]),
+                patch.object(build_page, "_command_path", return_value="/fake/pdftoppm"),
+                patch.object(build_page.subprocess, "run", side_effect=fake_run),
+            ):
+                rendered = build_page._render_pptx_preview(pptx_path, exports)
+            self.assertEqual(exports / "page-render.png", rendered)
+            self.assertTrue((exports / "page-render.pdf").is_file())
+            self.assertTrue(any(command[0] == str(bundled) for command in commands))
+            self.assertTrue(any(argument.startswith("-env:UserInstallation=") for argument in commands[1]))
+
+    def test_render_preview_reports_all_office_failures(self) -> None:
+        with TemporaryDirectory() as directory:
+            tmp_path = Path(directory)
+            pptx_path = tmp_path / "page.pptx"
+            bundled = tmp_path / "bundled-soffice"
+            pptx_path.write_bytes(b"pptx")
+            bundled.write_text("bundled", encoding="utf-8")
+
+            with (
+                patch.object(build_page, "_office_candidates", return_value=[Path("/fake/soffice"), bundled]),
+                patch.object(build_page, "_command_path", return_value="/fake/pdftoppm"),
+                patch.object(
+                    build_page.subprocess,
+                    "run",
+                    side_effect=subprocess.CalledProcessError(134, ["soffice"], stderr="Abort trap: 6"),
+                ),
+                self.assertRaisesRegex(RuntimeError, "All LibreOffice preview attempts failed") as error,
+            ):
+                build_page._render_pptx_preview(pptx_path, tmp_path / "exports")
+
+        self.assertIn("/fake/soffice", str(error.exception))
+        self.assertIn(str(bundled), str(error.exception))
+
     def test_build_page_creates_pptx_and_qa_artifacts(self) -> None:
         with TemporaryDirectory() as directory:
             tmp_path = Path(directory)
