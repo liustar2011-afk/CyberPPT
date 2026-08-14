@@ -70,6 +70,9 @@ def audit_outline(
     outline: dict[str, object],
     source_truth: dict[str, object] | None = None,
     semantic_argument_model: dict[str, object] | None = None,
+    *,
+    argument_flow_issues: list[object] | None = None,
+    argument_model_issues: list[dict[str, str]] | None = None,
 ) -> list[AuditIssue]:
     issues: list[AuditIssue] = []
     if (
@@ -112,8 +115,12 @@ def audit_outline(
                 (item["node_id"],) if item.get("node_id") else (),
                 "rebuild_from_semantic_argument_model",
             )
-            for item in audit_outline_consumption(
-                outline, semantic_argument_model, source_truth
+            for item in (
+                argument_model_issues
+                if argument_model_issues is not None
+                else audit_outline_consumption(
+                    outline, semantic_argument_model, source_truth
+                )
             )
         )
     if outline.get("argument_contract_mode", "legacy") == "strict":
@@ -133,7 +140,11 @@ def audit_outline(
                     issue.pages,
                     issue.retry_strategy,
                 )
-                for issue in audit_argument_flow(outline, source_truth)
+                for issue in (
+                    argument_flow_issues
+                    if argument_flow_issues is not None
+                    else audit_argument_flow(outline, source_truth)
+                )
             )
     return sorted(issues, key=lambda item: ((item.pages or ("",))[0], item.code))
 
