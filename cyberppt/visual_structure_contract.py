@@ -407,8 +407,8 @@ def audit_visual_design_package(
 
     if design_input.get("schema") != "cyberppt.visual_design_input.v2":
         issue("VISUAL_DESIGN_INPUT_SCHEMA_INVALID", "visual-design-input.json must use cyberppt.visual_design_input.v2.")
-    if decisions.get("schema") != "cyberppt.visual_design_decisions.v2":
-        issue("VISUAL_DECISIONS_SCHEMA_INVALID", "visual-design-decisions.json must use cyberppt.visual_design_decisions.v2.")
+    if decisions.get("schema") != "cyberppt.visual_design_decisions.v3":
+        issue("VISUAL_DECISIONS_SCHEMA_INVALID", "visual-design-decisions.json must use cyberppt.visual_design_decisions.v3.")
     if decisions.get("source_sha256") != sha256(design_input_path):
         issue("VISUAL_DECISIONS_INPUT_STALE", "Visual decisions are not bound to the current visual-design-input.json.")
 
@@ -519,6 +519,13 @@ def audit_visual_design_package(
                 issue("CANDIDATE_ID_INVALID", f"Candidate id is empty or duplicated: {candidate_id!r}", page_id)
             candidate_ids.add(candidate_id)
             candidate_records[candidate_id] = candidate
+            visual_thesis = str(candidate.get("visual_thesis") or "").strip()
+            if len(visual_thesis) < 8:
+                issue(
+                    "CANDIDATE_VISUAL_THESIS_MISSING",
+                    f"{candidate_id} must state the visible relationship that proves the page judgment.",
+                    page_id,
+                )
             focus = candidate.get("semantic_focus") if isinstance(candidate.get("semantic_focus"), dict) else {}
             focus_key = str(focus.get("evidence_key") or "")
             if focus_key not in evidence_key_set:
@@ -553,6 +560,82 @@ def audit_visual_design_package(
         for candidate in candidate_records.values():
             _audit_rejection_rationale(candidate, selected, issue, page_id)
             _audit_text_capacity(candidate, expected_text_ids, evidence_key_set, issue, page_id)
+
+        execution_design = decision.get("execution_design")
+        required_execution_text = (
+            "business_object",
+            "visual_focus",
+            "text_integration_method",
+            "spatial_organization",
+            "relationship_encoding",
+            "semantic_role",
+            "scene_type",
+        )
+        if not isinstance(execution_design, dict) or any(
+            not str(execution_design.get(key) or "").strip()
+            for key in required_execution_text
+        ) or not isinstance(execution_design.get("use_scene"), bool):
+            issue(
+                "EXECUTION_DESIGN_INVALID",
+                "Selected execution design must preserve its carrier, scene policy, semantic role, composition, and text integration.",
+                page_id,
+            )
+
+        if selected in candidate_records:
+            selected_candidate = candidate_records[selected]
+            visual_decision = page_spec.get("visual_decision")
+            actual_thesis = (
+                str(visual_decision.get("visual_thesis") or "").strip()
+                if isinstance(visual_decision, dict)
+                else ""
+            )
+            expected_thesis = str(selected_candidate.get("visual_thesis") or "").strip()
+            if actual_thesis != expected_thesis:
+                issue(
+                    "SPEC_VISUAL_THESIS_DRIFTED",
+                    "Spec visual thesis must match the selected Stage 02 candidate.",
+                    page_id,
+                )
+            if isinstance(execution_design, dict):
+                image_plan = page_spec.get("image_plan")
+                image_plan = image_plan if isinstance(image_plan, dict) else {}
+                expected_scene = {
+                    "business_object": execution_design.get("business_object"),
+                    "semantic_role": execution_design.get("semantic_role"),
+                    "use_scene": execution_design.get("use_scene"),
+                    "scene_type": execution_design.get("scene_type"),
+                }
+                actual_scene = {key: image_plan.get(key) for key in expected_scene}
+                if actual_scene != expected_scene:
+                    issue(
+                        "SPEC_SCENE_POLICY_DRIFTED",
+                        "Spec image plan must match the selected carrier and scene policy.",
+                        page_id,
+                    )
+                visual_decision = page_spec.get("visual_decision")
+                visual_decision = visual_decision if isinstance(visual_decision, dict) else {}
+                hierarchy = visual_decision.get("visual_hierarchy")
+                hierarchy = hierarchy if isinstance(hierarchy, dict) else {}
+                expected_execution = {
+                    "visual_focus": execution_design.get("visual_focus"),
+                    "spatial_organization": execution_design.get("spatial_organization"),
+                    "text_integration_method": execution_design.get("text_integration_method"),
+                    "relationship_encoding": execution_design.get("relationship_encoding"),
+                    "placement": execution_design.get("spatial_organization"),
+                }
+                actual_execution = {
+                    "visual_focus": hierarchy.get("primary"),
+                    "spatial_organization": visual_decision.get("spatial_organization"),
+                    "text_integration_method": visual_decision.get("text_integration_method"),
+                    "relationship_encoding": visual_decision.get("relationship_encoding"),
+                    "placement": image_plan.get("placement"),
+                }
+                if actual_execution != expected_execution:
+                    issue(
+                        "SPEC_EXECUTION_DESIGN_DRIFTED",
+                        "Spec composition must match the selected executable design.",
+                        page_id,
+                    )
 
         if constraints is not None and selected in candidate_records:
             selected_fit = candidate_records[selected].get("expression_fit")

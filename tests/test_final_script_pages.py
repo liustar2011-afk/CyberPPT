@@ -405,13 +405,43 @@ class FinalScriptPagesTests(unittest.TestCase):
                 {
                     "pages": [
                         {
+                            "page_id": f"P{page_number:02d}",
                             "page_number": page_number,
+                            "page_role": "evidence",
+                            "page_mission": "Fixture mission",
+                            "core_judgment": "Fixture message",
+                            "content_lock": {
+                                "locked_items": [
+                                    {
+                                        "id": f"P{page_number:02d}-T01",
+                                        "type": "body",
+                                        "text": "Fixture text",
+                                    }
+                                ],
+                                "allowed_transformations": ["line_break", "grouping"],
+                                "forbidden_transformations": ["change facts"],
+                            },
+                            "evidence_units": [
+                                {
+                                    "id": "E1",
+                                    "text": "Fixture evidence",
+                                    "kind": "evidence",
+                                    "priority": "P0",
+                                }
+                            ],
+                            "semantic_graph": {
+                                "decision_relationship": "Fixture evidence supports fixture result"
+                            },
                             "visual_decision": {
                                 "visual_thesis": "Fixture relationship",
                                 "spatial_organization": "Fixture spatial organization",
+                                "reading_path": ["Fixture evidence", "Fixture result"],
                                 "relationship_encoding": "Fixture relation",
                                 "text_integration_method": "Attach locked text to its object",
-                                "visual_hierarchy": {"primary": "Fixture focus"},
+                                "visual_hierarchy": {
+                                    "primary": "Fixture focus",
+                                    "secondary": ["Fixture evidence"],
+                                },
                             },
                             "image_plan": {
                                 "business_object": "Fixture business object",
@@ -420,6 +450,21 @@ class FinalScriptPagesTests(unittest.TestCase):
                                 "scene_type": "Fixture relationship field",
                             },
                             "structural_decision": {"spatial_grammar": ["fixture"]},
+                            "text_integration": {
+                                "title_render_mode": "external_text_layer",
+                                "subtitle_render_mode": "external_text_layer",
+                                "body_render_mode": "in_image",
+                            },
+                            "geometry": {
+                                "canvas": {"width": 2048, "height": 1024, "ratio": "2:1"}
+                            },
+                            "final_text": [
+                                {"id": f"P{page_number:02d}-T01", "text": "Fixture text"}
+                            ],
+                            "generation_handoff": {
+                                "required_text": ["Fixture text"],
+                                "title_exclusion_instruction": "Do not render title or subtitle.",
+                            },
                             "avoid": ["Do not add slide chrome"],
                         }
                         for page_number in fixture_pages
@@ -498,6 +543,8 @@ class FinalScriptPagesTests(unittest.TestCase):
                                 "author_visual_notes_authority": "advisory_only",
                                 "expression_constraints": expression_constraints("key_points_3"),
                                 "body_image_canvas": {"width": 2048, "height": 1024, "ratio": "2:1"},
+                                "title_render_mode": "external_text_layer",
+                                "subtitle_render_mode": "external_text_layer",
                             },
                         }
                         for page_number in fixture_pages
@@ -554,10 +601,19 @@ class FinalScriptPagesTests(unittest.TestCase):
             int(page.page_id[1:]): page
             for page in parse_script_markdown(script.read_text(encoding="utf-8")).pages
         }
+        from cyberppt.page_artifact_spec import load_project_page_artifact_specs
+        from scripts.dual_image_overlay.imagegen_handoff import compile_page_prompt
+
+        artifact_specs = load_project_page_artifact_specs(project, style_lock=style_lock)
         for page_number in parse_page_blocks(script):
             prompt = project / f"prompt-{page_number}.md"
             prompt.write_text(
-                build_page_prompt(script_pages[page_number], style_lock),
+                compile_page_prompt(
+                    script_pages[page_number],
+                    style_lock,
+                    prompt_compiler="artifact-spec-v2",
+                    artifact_spec=artifact_specs[page_number],
+                ).prompt,
                 encoding="utf-8",
             )
             stage_script(project, page_number, "imagegen", "final", prompt)
@@ -614,8 +670,10 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertIn("#12355B", prompt)
             self.assertNotIn("【完整内容语义｜仅供理解，不要求逐字上屏】", prompt)
             self.assertNotIn("【页面逻辑｜不上屏】", prompt)
-            self.assertIn("【锁定关键文字】", prompt)
-            self.assertIn("【完整上屏内容】", prompt)
+            self.assertIn("[1. Deliverable / 成品规格]", prompt)
+            self.assertIn("[8. Typography & exact text / 文字资产合同]", prompt)
+            self.assertIn("[9. Hard constraints / 硬约束]", prompt)
+            self.assertEqual("artifact-spec-v2", manifest["prompt_contract"]["compiler"])
             self.assertEqual("态势感知能力要从工具堆叠转向风险闭环", lock["records"][0]["title"])
             self.assertEqual("运营保障机制需要责任、流程和审计同时落地", lock["records"][1]["title"])
             self.assertIn("presentation", lock["records"][0])

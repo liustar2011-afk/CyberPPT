@@ -10,10 +10,9 @@ Before any ImageGen call, CyberPPT must:
 Page mission, core meaning, and source-supported content relations are passed before 上屏文字
 so the model can understand the page responsibility without inventing an argument.
 They are context fields, not extra labels to render; the drawable text layer remains 上屏文字.
-The default content-first compiler sends the page task, core judgment, locked on-screen copy,
-and a compact page logic contract. Each page remains a standalone ImageGen prompt, while source
-prose and repeated design theory stay out of the model context.
-Legacy compilers remain available for comparison and rollback.
+The formal artifact-spec-v2 compiler projects the audited Stage 02 handoff, selected visual
+design, exact text contract, and style lock into one nine-section deliverable specification.
+Legacy compilers remain explicitly available for comparison and rollback.
 """
 
 from __future__ import annotations
@@ -43,6 +42,7 @@ from cyberppt.semantic_intent import (
     validate_semantic_structure,
 )
 from cyberppt.composition_resolver import resolve_composition, validate_composition
+from cyberppt.page_artifact_spec import PageArtifactSpec, load_project_page_artifact_specs
 from cyberppt.visual_carrier_resolver import (
     select_visual_carrier,
     validate_visual_carrier,
@@ -75,6 +75,7 @@ from scripts.dual_image_overlay.page_semantics import (
     derive_page_semantics,
 )
 from scripts.dual_image_overlay.prompt_compiler import (
+    ARTIFACT_PROMPT_COMPILER,
     CompiledPagePrompt,
     DEFAULT_PROMPT_COMPILER,
     DEFAULT_TEXT_RENDER_MODE,
@@ -89,6 +90,7 @@ from scripts.dual_image_overlay.script_parser import (
     load_page_visual_intent_overrides,
 )
 from scripts.dual_image_overlay.build_transaction import atomic_write_text, build_lock
+from scripts.dual_image_overlay.artifact_prompt import render_artifact_prompt
 
 EVIDENCE_ID_RE = re.compile(r"S\d{3}")
 IMAGEGEN_CANVAS_CONTRACT = """【输出尺寸｜不上屏】
@@ -2185,12 +2187,48 @@ def compile_page_prompt(
     text_render_mode: str | None = None,
     visual_design: "VisualDesignIR | None" = None,
     enrichment_block: str = "",
+    artifact_spec: PageArtifactSpec | None = None,
 ) -> CompiledPagePrompt:
     prompt_compiler = validate_prompt_compiler(prompt_compiler)
     if visual_structure_mode not in {"off", "review"}:
         raise ValueError("visual_structure_mode must be 'off' or 'review'")
     if visual_structure_mode == "review" and prompt_compiler != "content-first-v1":
         raise ValueError("visual structure review mode requires content-first-v1")
+    if prompt_compiler == ARTIFACT_PROMPT_COMPILER:
+        if artifact_spec is None:
+            raise ValueError("artifact-spec-v2 requires artifact_spec")
+        if visual_design is not None or enrichment_block.strip():
+            raise ValueError(
+                "artifact-spec-v2 accepts only artifact_spec; visual_design and enrichment are separate prompt authorities"
+            )
+        prompt = render_artifact_prompt(artifact_spec, style_lock=style_lock)
+        relation = artifact_spec.relationships[0] if artifact_spec.relationships else "artifact_spec"
+        art_direction = artifact_spec.art_direction
+        return CompiledPagePrompt(
+            prompt=prompt,
+            compiler_version=prompt_compiler,
+            relation=relation,
+            injected_rule_ids=(
+                "artifact.deliverable",
+                "artifact.communication_goal",
+                "artifact.visual_thesis",
+                "artifact.evidence_relationships",
+                "artifact.visual_carrier",
+                "artifact.composition",
+                "artifact.art_direction",
+                "artifact.typography",
+                "artifact.hard_constraints",
+            ),
+            style_selection={
+                "id": art_direction.style_id,
+                "slug": art_direction.style_slug,
+                "name": art_direction.style_name,
+                "style_lock": str(style_lock),
+            },
+            image_locked_text="\n".join(artifact_spec.typography.visible_text),
+            text_render_mode="full_image",
+            artifact_spec=artifact_spec,
+        )
     semantic_context = derive_page_semantics(
         page,
         page_mission=page_mission,
@@ -2414,11 +2452,12 @@ def write_chapter_handoff(
     style_lock: Path,
     pages: list[int],
     batch_name: str,
-    prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
+    prompt_compiler: str = ARTIFACT_PROMPT_COMPILER,
     compare_with: str | None = None,
     visual_structure_mode: str = "off",
     text_render_mode: str | None = None,
 ) -> dict[str, Path]:
+    prompt_compiler = validate_prompt_compiler(prompt_compiler)
     if compare_with is not None and compare_with not in PROMPT_COMPILERS:
         raise ValueError(f"unsupported comparison compiler: {compare_with}")
     if visual_structure_mode not in {"off", "review"}:
@@ -2428,10 +2467,26 @@ def write_chapter_handoff(
     missions = _page_missions(project)
     visual_contexts = _page_visual_contexts(project)
     visual_intent_overrides = _page_visual_intent_overrides(project)
+    if ARTIFACT_PROMPT_COMPILER in {prompt_compiler, compare_with}:
+        from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
+
+        assert_visual_structure_ready(project, script)
+    artifact_specs = (
+        load_project_page_artifact_specs(project, style_lock=style_lock)
+        if ARTIFACT_PROMPT_COMPILER in {prompt_compiler, compare_with}
+        else {}
+    )
     out_dir = project / "workbench" / "prompts" / "imagegen"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    if prompt_compiler == "content-first-v1":
+    if prompt_compiler == ARTIFACT_PROMPT_COMPILER:
+        compilation_rules = [
+            "- 每页提示词由通过审计的 Stage 02 handoff、deck visual spec 与 style lock 投影生成。",
+            "- 九段顺序固定：成品规格、页面使命、视觉论点、证据关系、视觉载体、空间组织、视觉语言、文字资产、硬约束。",
+            "- 上屏文字逐字来自 content lock；不注入证据编号、文字 ID、源材料、作者构图备注或额外 enrichment。",
+            "- 审批稿、canonical prompt 与 manifest 必须复用同一编译结果。",
+        ]
+    elif prompt_compiler == "content-first-v1":
         compilation_rules = [
             "- 每页独立完整，可直接送入 ImageGen，不依赖批次级公共提示。",
             "- 送入：页面任务、核心判断、主导关系标签、锁定关键文字、完整上屏与页面语义关系、画布尺寸，以及所选风格的气质与配色。",
@@ -2508,6 +2563,7 @@ def write_chapter_handoff(
             visual_structure_mode=visual_structure_mode,
             prior_semantic_carriers=tuple(prior_semantic_carriers),
             text_render_mode=text_render_mode,
+            artifact_spec=artifact_specs.get(page_number),
         )
         if compiled.presentation is not None:
             prior_decisions.append(compiled.presentation)
@@ -2541,6 +2597,7 @@ def write_chapter_handoff(
                 prior_decisions=tuple(prior_decisions[:-1]),
                 visual_structure_mode="off",
                 text_render_mode=text_render_mode,
+                artifact_spec=artifact_specs.get(page_number),
             )
             comparison_page = PagePromptDiagnostics(
                 page_id=page.page_id,
@@ -2657,7 +2714,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--prompt-compiler",
         choices=PROMPT_COMPILERS,
-        default=DEFAULT_PROMPT_COMPILER,
+        default=ARTIFACT_PROMPT_COMPILER,
     )
     parser.add_argument(
         "--compare-with",

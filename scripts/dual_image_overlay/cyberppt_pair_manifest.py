@@ -42,6 +42,13 @@ from scripts.dual_image_overlay.build_transaction import (
     build_lock,
 )
 from cyberppt.commands.script_gate import assert_approved_final_script
+from cyberppt.page_artifact_spec import PageArtifactSpec, load_project_page_artifact_specs
+from scripts.dual_image_overlay.artifact_prompt import assert_artifact_prompt_contract
+from scripts.dual_image_overlay.prompt_compiler import (
+    ARTIFACT_PROMPT_COMPILER,
+    DEFAULT_PROMPT_COMPILER,
+    validate_prompt_compiler,
+)
 
 
 # Stage 02 images are body-only assets.  Their native contract is 2:1; the
@@ -198,11 +205,12 @@ def _relationship_aware_canonical_prompts(
     style_lock: Path,
     page_numbers: list[int],
     visual_source: str = "auto",
+    prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
+    artifact_specs: dict[int, PageArtifactSpec] | None = None,
 ) -> dict[int, str]:
     """Compile strict prompts through the same page-intent path used for approval."""
 
     from cyberppt.script_quality_contract import parse_script_markdown
-    from cyberppt.visual_prompt_consumer import load_visual_design
     from scripts.dual_image_overlay.imagegen_handoff import (
         _page_missions,
         _page_visual_contexts,
@@ -216,6 +224,33 @@ def _relationship_aware_canonical_prompts(
         for page in document.pages
         if page.page_type == "content"
     }
+    if prompt_compiler == ARTIFACT_PROMPT_COMPILER:
+        missing_script_pages = [number for number in page_numbers if number not in pages]
+        if missing_script_pages:
+            raise ValueError(
+                "artifact compiler cannot resolve requested content pages in the approved script: "
+                + ", ".join(f"P{number:02d}" for number in missing_script_pages)
+            )
+        specs = artifact_specs or {}
+        missing = [number for number in page_numbers if number not in specs]
+        if missing:
+            raise ValueError(
+                "artifact prompt projection is missing requested pages: "
+                + ", ".join(f"P{number:02d}" for number in missing)
+            )
+        return {
+            page_number: compile_page_prompt(
+                pages[page_number],
+                style_lock,
+                prompt_compiler=ARTIFACT_PROMPT_COMPILER,
+                artifact_spec=specs[page_number],
+            ).prompt
+            for page_number in page_numbers
+            if page_number in pages
+        }
+
+    from cyberppt.visual_prompt_consumer import load_visual_design
+
     missions = _page_missions(project_path)
     contexts = _page_visual_contexts(project_path)
     overrides = _page_visual_intent_overrides(project_path)
@@ -284,7 +319,13 @@ def build_manifest(
     enforce_prompt_freshness: bool = False,
     compact_blueprint: bool = False,
     visual_source: str = "auto",
+    prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
 ) -> tuple[dict[str, Any], Path, Path, list[int]]:
+    prompt_compiler = validate_prompt_compiler(prompt_compiler)
+    if prompt_compiler == ARTIFACT_PROMPT_COMPILER and (
+        project_path is None or style_lock is None
+    ):
+        raise ValueError("artifact-spec-v2 requires project_path and style_lock")
     if visual_source not in {"auto", "governed-json", "legacy-markdown"}:
         raise ValueError("visual_source must be auto, governed-json, or legacy-markdown")
     output_variants = output_variants_for_mode(production_mode)
@@ -355,12 +396,25 @@ def build_manifest(
     effective_compact_blueprint = bool(
         compact_blueprint and handoff_pages
     )
+    if prompt_compiler == ARTIFACT_PROMPT_COMPILER and effective_compact_blueprint:
+        raise ValueError("artifact-spec-v2 cannot be combined with compact_blueprint")
+    if require_approved_prompts and effective_compact_blueprint:
+        raise ValueError("compact_blueprint is a legacy preview and cannot enter approved production")
     reference_map = _load_reference_map(project_path)
     output_dir.mkdir(parents=True, exist_ok=True)
     compiled_script = _compiled_script_path(output_dir, script, page_numbers)
     approved_prompts: dict[int, tuple[str, Path]] = {}
     relationship_aware_prompts: dict[int, str] = {}
+    artifact_specs = (
+        load_project_page_artifact_specs(project_path, style_lock=style_lock)
+        if prompt_compiler == ARTIFACT_PROMPT_COMPILER
+        and project_path is not None
+        and style_lock is not None
+        else {}
+    )
     enrich_mode = (prompt_enrich or "off").strip().lower()
+    if prompt_compiler == ARTIFACT_PROMPT_COMPILER and enrich_mode != "off":
+        raise ValueError("artifact-spec-v2 cannot be changed by prompt enrichment after approval")
     if project_path is not None and style_lock is not None and not effective_compact_blueprint:
         relationship_aware_prompts = _relationship_aware_canonical_prompts(
             script=script,
@@ -368,6 +422,8 @@ def build_manifest(
             style_lock=style_lock,
             page_numbers=content_page_numbers,
             visual_source=visual_source,
+            prompt_compiler=prompt_compiler,
+            artifact_specs=artifact_specs,
         )
     if require_approved_prompts:
         if project_path is None:
@@ -390,8 +446,16 @@ def build_manifest(
                 )
         for page_number in content_page_numbers:
             approved_path = assert_approved_final_script(project_path, page_number, "imagegen")
+            approved_text = approved_path.read_text(encoding="utf-8-sig")
+            if prompt_compiler == ARTIFACT_PROMPT_COMPILER:
+                spec = artifact_specs[page_number]
+                assert_artifact_prompt_contract(
+                    approved_text,
+                    expected_visible_text=spec.typography.visible_text,
+                    style_id=spec.art_direction.style_id,
+                )
             approved_prompts[page_number] = (
-                approved_path.read_text(encoding="utf-8-sig"),
+                approved_text,
                 approved_path,
             )
         # Keep explicit page delimiters in the compiled deliverable so the
@@ -535,13 +599,21 @@ def build_manifest(
         variants: dict[str, dict[str, Any]] = {"full": full}
         required_image_text = [
             line
-            for line in select_image_locked_text(script_pages[page_number]).splitlines()
+            for line in (
+                "\n".join(artifact_specs[page_number].typography.visible_text)
+                if prompt_compiler == ARTIFACT_PROMPT_COMPILER
+                else select_image_locked_text(script_pages[page_number])
+            ).splitlines()
             if line.strip()
         ]
-        allowed_image_text = "\n".join(
-            value
-            for value in (script_pages[page_number].onscreen_text, *required_image_text)
-            if str(value).strip()
+        allowed_image_text = (
+            "\n".join(required_image_text)
+            if prompt_compiler == ARTIFACT_PROMPT_COMPILER
+            else "\n".join(
+                value
+                for value in (script_pages[page_number].onscreen_text, *required_image_text)
+                if str(value).strip()
+            )
         )
         pairs.append(
             {
@@ -633,6 +705,7 @@ def build_manifest(
             "freshness_enforced": bool(require_approved_prompts and enforce_prompt_freshness),
             "canonical_prompt_is_diagnostic_only": bool(require_approved_prompts),
             "compact_blueprint": effective_compact_blueprint,
+            "compiler": prompt_compiler,
         },
         "prompt_enrich": {
             "mode": enrich_mode,

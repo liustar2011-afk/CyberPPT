@@ -655,7 +655,8 @@ def run_final_script_pages(
         prompt_enrich=prompt_enrich,
         require_send_approval=require_send_approval,
         enforce_prompt_freshness=False,
-        compact_blueprint=True,
+        compact_blueprint=False,
+        prompt_compiler="artifact-spec-v2",
     )
     manifest["source_mode"] = source_mode
     manifest["source_script"] = str(script)

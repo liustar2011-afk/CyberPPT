@@ -59,9 +59,29 @@ def _page_id(value: object) -> str:
     _fail(f"invalid visual page id: {raw!r}")
 
 
+def _render_business_relationships(value: object) -> str:
+    """Render Stage 01 relation records as plain business sentences."""
+
+    sentences: list[str] = []
+    for item in value if isinstance(value, list) else []:
+        if not isinstance(item, dict):
+            continue
+        subject = str(item.get("subject") or "").strip()
+        relation = str(item.get("relation") or "").strip()
+        objects = item.get("objects")
+        if not isinstance(objects, list):
+            objects = [item.get("object")]
+        for raw_object in objects:
+            object_ = str(raw_object or "").strip()
+            sentence = " ".join(part for part in (subject, relation, object_) if part)
+            if sentence and sentence not in sentences:
+                sentences.append(sentence)
+    return "；".join(sentences) or "业务关系"
+
+
 def _decision_execution_design(
     source: dict[str, Any], decision: dict[str, Any], selected: dict[str, Any], page_id: str
-) -> dict[str, str]:
+) -> dict[str, object]:
     design = decision.get("execution_design")
     if not isinstance(design, dict):
         design = {}
@@ -76,7 +96,15 @@ def _decision_execution_design(
     missing = [key for key, value in normalized.items() if not value]
     corrupted = [key for key, value in normalized.items() if "?" in value]
     if not missing and not corrupted:
-        return normalized
+        return {
+            **normalized,
+            "semantic_role": str(design.get("semantic_role") or normalized["relationship_encoding"]).strip(),
+            "use_scene": design.get("use_scene") if isinstance(design.get("use_scene"), bool) else False,
+            "scene_type": str(
+                design.get("scene_type")
+                or "不使用实景，由选定业务关系场承载"
+            ).strip(),
+        }
     # Older receipts may contain a non-authoritative experimental field that
     # was damaged by a console encoding round-trip.  The selected candidate,
     # authoritative relationships, and exact copy are still sound.  Compile
@@ -95,13 +123,17 @@ def _decision_execution_design(
     focus_label = focus_label or subject
     if len(focus_label) > 28:
         focus_label = focus_label[:28].rstrip("，。；：")
-    return {
+    fallback: dict[str, object] = {
         "business_object": f"{subject}中围绕“{focus_label}”形成的业务关系场",
         "visual_focus": f"“{focus_label}”所承接的业务对象、动作与结果",
         "text_integration_method": f"将“{focus_label}”对应正文贴附在主业务对象及其承接动作上；其余正文贴附到输入、条件、接口或结果，不独立成文字栏",
         "spatial_organization": f"以“{focus_label}”为唯一视觉焦点，围绕{subject}把输入、承接动作与结果组织为连续关系场；辅助信息仅贴附于对应对象",
         "relationship_encoding": f"通过{subject}中对象、动作、条件与结果的承接关系表达本页判断；不以逐条文字或装饰对象代替业务关系",
+        "semantic_role": f"以{subject}的对象、动作和结果关系证明本页判断",
+        "use_scene": False,
+        "scene_type": "不使用实景，由选定业务关系场承载",
     }
+    return fallback
 
 
 def _expression_contract(source: dict[str, Any], selected: dict[str, Any]) -> dict[str, object]:
@@ -232,12 +264,12 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         "page_mission": str(source["page_mission"]), "core_judgment": str(source["core_judgment"]),
         "content_lock": {"mode": "strict", "locked_items": locked_items, "allowed_transformations": ["line_break", "grouping", "position_change"], "forbidden_transformations": ["change facts, numbers, dates or units", "change actors, responsibilities or status", "add presentation copy not listed in required_text"]},
         "evidence_units": evidence_units,
-        "semantic_graph": {"primary_relation": relation, "direction": direction, "nodes": [eid[key] for key in evidence_keys], "edges": graph_edges, "decision_relationship": str(source.get("business_relationships") or "业务关系")},
+        "semantic_graph": {"primary_relation": relation, "direction": direction, "nodes": [eid[key] for key in evidence_keys], "edges": graph_edges, "decision_relationship": _render_business_relationships(source.get("business_relationships"))},
         "structural_decision": {"semantic_focus": {"kind": str(focus.get("kind") or "relationship"), "ref": focus_id}, "spatial_grammar": grammar, "semantic_tags": [str(selected.get("visual_intent_type") or "relationship")], "primary_refs": [focus_id], "secondary_refs": [eid[key] for key in evidence_keys if key != focus_key], "reading_sequence": [eid[key] for key in reading_keys], "text_bindings": [{"evidence_id": eid[key], "target_ref": eid[key], "binding": "result" if key == focus_key else "embedded", "text_ids": text_ids_by_evidence[key]} for key in evidence_keys], "representation_freedom": {"carrier": "free", "medium": "free", "reason": "上游仅锁定业务关系和正文，Stage02已选定具体业务关系场与文字贴附方式"}},
-        "visual_decision": {"visual_intent_type": str(selected.get("visual_intent_type") or "relationship_field"), "visual_thesis": str(source["core_judgment"]), "spatial_organization": design["spatial_organization"], "reading_path": [str(evidence_by_key[key].get("summary") or "") for key in reading_keys], "text_integration_method": design["text_integration_method"], "relationship_encoding": design["relationship_encoding"], "visual_center_count": 1, "visual_hierarchy": {"primary": design["visual_focus"], "secondary": [str(evidence_by_key[key].get("summary") or "") for key in evidence_keys if key != focus_key], "tertiary": []}},
+        "visual_decision": {"visual_intent_type": str(selected.get("visual_intent_type") or "relationship_field"), "visual_thesis": str(selected.get("visual_thesis") or source["core_judgment"]), "spatial_organization": design["spatial_organization"], "reading_path": [str(evidence_by_key[key].get("summary") or "") for key in reading_keys], "text_integration_method": design["text_integration_method"], "relationship_encoding": design["relationship_encoding"], "visual_center_count": 1, "visual_hierarchy": {"primary": design["visual_focus"], "secondary": [str(evidence_by_key[key].get("summary") or "") for key in evidence_keys if key != focus_key], "tertiary": []}},
         "text_integration": {"title_render_mode": str(source.get("title_render_mode") or "external_text_layer"), "subtitle_render_mode": str(source.get("subtitle_render_mode") or "external_text_layer"), "body_render_mode": "in_image", "placement_strategy": design["text_integration_method"]},
         "geometry": {"canvas": source.get("body_image_canvas") or {"width": 2048, "height": 1024, "ratio": "2:1"}, "title_exclusion_zone": {"x": 0, "y": 0, "w": 2048, "h": 0}, "regions": [{"id": "R_RELATION", "role": "relation-bearing business field", "x": 80, "y": 120, "w": 1888, "h": 800, "priority": "primary"}]},
-        "image_plan": {"use_scene": False, "scene_type": "不指定场景，由选定业务关系场承载", "business_object": design["business_object"], "semantic_role": design["relationship_encoding"], "placement": design["spatial_organization"], "front_facing_people": False, "identifiable_location": False, "factual_event_implication": False},
+        "image_plan": {"use_scene": bool(design["use_scene"]), "scene_type": str(design["scene_type"]), "business_object": design["business_object"], "semantic_role": str(design["semantic_role"]), "placement": design["spatial_organization"], "front_facing_people": False, "identifiable_location": False, "factual_event_implication": False},
         "expression_contract": expression_contract,
         "quality_contract": quality_contract,
         "connectors": connectors, "final_text": final_text,
@@ -544,11 +576,11 @@ def prepare_visual_structure_stage(
                 "",
                 "## Required action",
                 "",
-                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. trace_refs are audit-only provenance: use them to justify decisions but never copy them into visual copy or ImageGen prompt material. Treat expression_constraints as the required reading-relation and balance profile: it governs peer hierarchy, progression, correspondence, feedback or causal direction; it must never be converted directly into a fixed card, column, arrow, loop, pyramid or matrix template. Every candidate must write expression_fit with the received form, satisfied constraints, reading relation, balance strategy, and either an empty default-profile deviation or an adapted-profile changed-constraint list plus business reason that preserves the expression core. For every page, record stage01_visual_note_disposition with the received form, chosen reading relation and balance strategy, plus inherited, adjusted and rejected upstream visual features and reasons. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Generate and compare at least three materially different candidates per content page; deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write only:",
+                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Write cyberppt.visual_design_decisions.v3. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. trace_refs are audit-only provenance: use them to justify decisions but never copy them into visual copy or ImageGen prompt material. Treat expression_constraints as the required reading-relation and balance profile: it governs peer hierarchy, progression, correspondence, feedback or causal direction; it must never be converted directly into a fixed card, column, arrow, loop, pyramid or matrix template. Every candidate must provide its own visual_thesis and expression_fit with the received form, satisfied constraints, reading relation, balance strategy, and either an empty default-profile deviation or an adapted-profile changed-constraint list plus business reason that preserves the expression core. Each selected page decision must provide execution_design.business_object, visual_focus, semantic_role, use_scene (boolean), scene_type, text_integration_method, spatial_organization and relationship_encoding; these selected scene/carrier fields are authoritative and must survive unchanged into deck-visual-spec.json. For every page, record stage01_visual_note_disposition with the received form, chosen reading relation and balance strategy, plus inherited, adjusted and rejected upstream visual features and reasons. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Generate and compare at least three materially different candidates per content page; deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write only:",
                 "",
                 "- `visual/visual-design-decisions.json`",
                 "",
-                "After the Skill has actually produced that decision receipt, run `python -m cyberppt execute-visual-structure <project> --script <script>` to compile `deck-visual-spec.json` and `script-visual-structure.md`; then record the execution with `python -m cyberppt record-visual-structure-execution <project> --script <script> --executor <surface> --model <model>`, and run `visual-structure-audit`. The audit, not the Skill, rebuilds generation-prompts.md from the current validated package.",
+                "After the Skill has actually produced that decision receipt, run `python -m cyberppt execute-visual-structure <project> --script <script>` to compile `deck-visual-spec.json` and `script-visual-structure.md`; then record the execution with `python -m cyberppt record-visual-structure-execution <project> --script <script> --executor <surface> --model <model>`, and run `visual-structure-audit`. The audit, not the Skill, rebuilds generation-prompts.md as a legacy structural preview. Formal ImageGen handoff uses the repository artifact-spec-v2 compiler over the audited Stage 02 handoff, deck visual spec and style lock.",
                 "",
                 "Do not select a visual style, generate images, SVG, HTML, or PPTX in this stage.",
                 "",

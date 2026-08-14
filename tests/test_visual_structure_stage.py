@@ -31,6 +31,142 @@ from cyberppt.onscreen_expression import expression_constraints_sha256
 
 
 class VisualStructureStageTests(unittest.TestCase):
+    def test_selected_visual_thesis_and_scene_policy_reach_executable_spec(self) -> None:
+        source = {
+            "page_id": "p01",
+            "page_number": 1,
+            "page_title": "Title",
+            "argument_role": "content",
+            "page_mission": "Explain how governed inputs become an auditable result",
+            "core_judgment": "Unified governance turns inputs into results.",
+            "locked_text_items": [
+                {"text_id": "P01-T01", "text": "Governed input"},
+                {"text_id": "P01-T02", "text": "Auditable result"},
+            ],
+            "business_relationships": [
+                {"subject": "Governance hub", "relation": "transforms", "objects": ["Auditable result"]}
+            ],
+            "expression_constraints": expression_constraints("flow_3_5"),
+            "body_image_canvas": {"width": 2048, "height": 1024, "ratio": "2:1"},
+            "title_render_mode": "external_text_layer",
+            "subtitle_render_mode": "external_text_layer",
+        }
+        candidates = [
+            {
+                "id": f"c{index}",
+                "visual_thesis": "Inputs converge through one governance hub and emerge as an auditable result.",
+                "semantic_focus": {"kind": "outcome", "evidence_key": "result"},
+                "reading_sequence": ["input", "result"],
+                "spatial_grammar": ["convergence"],
+                "direction": "outside_to_anchor",
+                "visual_intent_type": "input_to_result",
+                "expression_fit": {
+                    "form": "flow_3_5",
+                    "constraint_status": "default_profile",
+                    "satisfied_constraints": ["ordered_progression"],
+                    "reading_relation": "input converges into an auditable result",
+                    "balance_strategy": "one dominant result",
+                    "changed_constraints": [],
+                    "deviation_reason": "",
+                },
+            }
+            for index in range(1, 4)
+        ]
+        decision = {
+            "page_id": "p01",
+            "evidence_units": [
+                {"key": "input", "summary": "Governed input", "text_ids": ["P01-T01"]},
+                {"key": "result", "summary": "Auditable result", "text_ids": ["P01-T02"]},
+            ],
+            "candidates": candidates,
+            "selected_candidate": "c1",
+            "execution_design": {
+                "business_object": "governance hub in an operating environment",
+                "visual_focus": "the auditable result leaving the hub",
+                "text_integration_method": "attach each locked phrase to its related input or result",
+                "spatial_organization": "inputs converge on the hub before one result exits",
+                "relationship_encoding": "convergence and output direction encode transformation",
+                "semantic_role": "the operating hub proves that governance creates the result",
+                "use_scene": True,
+                "scene_type": "integrated governance operations scene",
+            },
+        }
+
+        page = _build_executable_page(source, decision)
+
+        self.assertEqual(candidates[0]["visual_thesis"], page["visual_decision"]["visual_thesis"])
+        self.assertNotEqual(source["core_judgment"], page["visual_decision"]["visual_thesis"])
+        self.assertTrue(page["image_plan"]["use_scene"])
+        self.assertEqual("integrated governance operations scene", page["image_plan"]["scene_type"])
+        self.assertEqual(
+            "the operating hub proves that governance creates the result",
+            page["image_plan"]["semantic_role"],
+        )
+
+    def test_business_relationships_compile_to_plain_relation_sentence(self) -> None:
+        source = {
+            "page_id": "p01",
+            "page_number": 1,
+            "page_title": "Title",
+            "page_mission": "Explain the governed service relationship",
+            "core_judgment": "Governance enables service delivery.",
+            "locked_text_items": [
+                {"text_id": "P01-T01", "text": "Input"},
+                {"text_id": "P01-T02", "text": "Result"},
+            ],
+            "business_relationships": [
+                {"subject": "Input", "relation": "supports", "objects": ["Result", "Audit"]}
+            ],
+            "expression_constraints": expression_constraints("flow_3_5"),
+        }
+        candidates = [
+            {
+                "id": f"c{index}",
+                "visual_thesis": "Input visibly supports both the result and its audit trail.",
+                "semantic_focus": {"kind": "outcome", "evidence_key": "result"},
+                "reading_sequence": ["input", "result"],
+                "spatial_grammar": ["path"],
+                "direction": "left_to_right",
+                "visual_intent_type": "support_relationship",
+                "expression_fit": {
+                    "form": "flow_3_5",
+                    "constraint_status": "default_profile",
+                    "satisfied_constraints": ["ordered_progression"],
+                    "reading_relation": "input supports the result",
+                    "balance_strategy": "one result remains primary",
+                    "changed_constraints": [],
+                    "deviation_reason": "",
+                },
+            }
+            for index in range(1, 4)
+        ]
+        page = _build_executable_page(
+            source,
+            {
+                "page_id": "p01",
+                "evidence_units": [
+                    {"key": "input", "summary": "Input", "text_ids": ["P01-T01"]},
+                    {"key": "result", "summary": "Result", "text_ids": ["P01-T02"]},
+                ],
+                "candidates": candidates,
+                "selected_candidate": "c1",
+                "execution_design": {
+                    "business_object": "input-to-result relationship field",
+                    "visual_focus": "Result",
+                    "text_integration_method": "attach text to the related object",
+                    "spatial_organization": "Input leads to Result with Audit as a secondary outcome",
+                    "relationship_encoding": "directed support relationship",
+                    "semantic_role": "the relationship field proves traceable support",
+                    "use_scene": False,
+                    "scene_type": "flat business relationship field",
+                },
+            },
+        )
+
+        relationship = page["semantic_graph"]["decision_relationship"]
+        self.assertEqual("Input supports Result；Input supports Audit", relationship)
+        self.assertNotIn("[{", relationship)
+
     def test_visual_design_input_carries_expression_as_semantic_constraint(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             project = Path(directory)
