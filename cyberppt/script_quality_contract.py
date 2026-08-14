@@ -1986,10 +1986,11 @@ def _onscreen_layout_meta_hits(text: str) -> tuple[str, ...]:
 def _onscreen_detail_phrase_overages(text: str) -> tuple[tuple[str, int], ...]:
     """Return ``(line, body_chars)`` for overlong labelled detail lines.
 
-    Module headings and standalone labels are intentionally ignored.  A line
-    becomes a detail candidate only when it contains a label/value separator;
-    this keeps the rule focused on the sentence that would otherwise become a
-    paragraph inside a card, lane, or matrix cell.
+    Module headings and standalone labels are intentionally ignored. A line
+    becomes a detail candidate when it contains a label/value separator, is a
+    nested item, or is a top-level sentence with terminal punctuation. This
+    keeps the rule focused on copy that would otherwise become a paragraph
+    inside a card, lane, or matrix cell.
     """
 
     overages: list[tuple[str, int]] = []
@@ -2007,6 +2008,10 @@ def _onscreen_detail_phrase_overages(text: str) -> tuple[tuple[str, int], ...]:
             # A nested/bulleted line without a label is still a detail line;
             # the author should give it a short functional label rather than
             # hiding a paragraph behind a list marker.
+            body = line
+        elif re.search(r"[。！？；;]$", line):
+            # A top-level sentence is visible body copy, not a module label.
+            # Keep its length subject to the same paragraph guard as details.
             body = line
         else:
             continue
