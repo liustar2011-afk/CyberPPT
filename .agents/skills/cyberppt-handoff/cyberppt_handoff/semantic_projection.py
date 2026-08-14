@@ -6,6 +6,10 @@ from typing import Any
 from .mappings import ARGUMENT_DUTY, IMPORTANCE_TO_WEIGHT
 from .source_projection import _anchors, _flatten_sections
 
+
+def layer_four_page_node_id(page: dict[str, Any]) -> str:
+    return f"L4-{str(page.get('page_id') or '').upper()}"
+
 def _node_importance(arg_id: str, page_plan: dict[str, Any]) -> str:
     rank = {"low": 0, "medium": 1, "high": 2}
     current = "low"
@@ -68,8 +72,70 @@ def _project_semantic_model(payloads: dict[str, dict[str, Any]], nf_to_st: dict[
             "level": 2, "status": "mixed", "evidence_refs": source_units, "actor_refs": [], "primary_consumer": _primary_page_for_arg(node_id, page_plan),
             "subsection_ids": [], "allowed_merges": [], "claim_origin": claim_origin, "source_gap_ids": [], "projection_only": True,
         })
+    for page in page_plan.get("pages") or []:
+        if not isinstance(page, dict) or page.get("page_type") != "content":
+            continue
+        fact_ids = [
+            str(value)
+            for value in ((page.get("evidence") or {}).get("normalized_fact_ids") or [])
+        ]
+        source_units = sorted(
+            {
+                block_map.get(str(ev.get("block_id")))
+                for nf in fact_ids
+                for ev in normalized_by_id.get(nf, {}).get("evidence") or []
+                if block_map.get(str(ev.get("block_id")))
+            }
+        )
+        subsection_nodes.append(
+            {
+                "id": layer_four_page_node_id(page),
+                "parent_id": str(page.get("section_id") or ""),
+                "source_heading_id": None,
+                "source_heading": str(page.get("title_intent") or ""),
+                "section_thesis": str(page.get("key_judgment") or ""),
+                "thesis": str(page.get("key_judgment") or ""),
+                "argument_role": str(page.get("argument_role") or "source_exposition"),
+                "argument_weight": IMPORTANCE_TO_WEIGHT.get(
+                    str(page.get("importance") or "low"), "detail"
+                ),
+                "level": 3,
+                "status": (
+                    "proposed"
+                    if page.get("judgment_basis") == "planning_inference"
+                    else "mixed"
+                ),
+                "evidence_refs": source_units,
+                "actor_refs": [],
+                "primary_consumer": f"p{int(page.get('order') or 0):02d}",
+                "required_for_primary_consumer": True,
+                "subsection_ids": [],
+                "allowed_merges": [],
+                "claim_origin": (
+                    "source_implied"
+                    if page.get("judgment_basis") == "planning_inference"
+                    else "source_explicit"
+                ),
+                "source_gap_ids": [],
+                "authority_ref": str(page.get("page_id") or ""),
+                "projection_only": True,
+            }
+        )
     arg_by_fact: dict[str, list[str]] = defaultdict(list)
     for node in subsection_nodes:
+        if str(node.get("id") or "").startswith("L4-"):
+            page_id = str(node.get("authority_ref") or "")
+            page = next(
+                (
+                    item
+                    for item in page_plan.get("pages") or []
+                    if isinstance(item, dict) and str(item.get("page_id") or "") == page_id
+                ),
+                {},
+            )
+            for nf in ((page.get("evidence") or {}).get("normalized_fact_ids") or []):
+                arg_by_fact[str(nf)].append(str(node["id"]))
+            continue
         original = next((item for item in argument.get("reconstructed_chain") or [] if isinstance(item, dict) and str(item.get("node_id")) == node["id"]), {})
         for nf in original.get("normalized_fact_ids") or []:
             arg_by_fact[str(nf)].append(str(node["id"]))

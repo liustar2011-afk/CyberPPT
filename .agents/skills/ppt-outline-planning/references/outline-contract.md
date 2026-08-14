@@ -10,6 +10,12 @@ Evidence responsibilities are `claim`, `reason`, `instance`, `boundary`, and `tr
 
 `source_explicit` follows explicit source support. `source_synthesis` consolidates source-supported items without a new factual claim. `planning_inference` requires `inference_rationale`. Any cited layer-three inferred relation requires `evidence.inference_note`.
 
-The planner may reorder arguments, consolidate duplication, split overloaded source sections, combine source sections only when they support one judgment, and bridge a logic gap only as labeled planning inference. It may not invent source facts or upgrade inference strength.
+The default planning policy is source locked and government-official. The planner preserves source chapter titles, content titles, source order, content coverage, and factual strength. It may split an overloaded source heading only for slide capacity and may consolidate genuinely duplicate content without changing its topic, conditions, responsibility, state, or source order. Reframing, renaming, or reordering requires an explicit user request. It may not invent source facts or upgrade inference strength.
+
+When `outline-workpack.json.planning_policy.source_structure_mode` is `locked`, every section-divider and content page declares `source_heading_ids` and one `primary_source_heading_id`. The primary ID must appear in `source_heading_ids`; every ID must exist in `source_heading_outline`. The page title matches the primary source heading after only mechanical numbering normalization. A capacity split may append `（一）`, `（二）`, and so on, but may not replace the source heading with a newly invented judgment. Multiple source IDs are permitted when duplicate source content is consolidated, while the primary heading remains the page's title and order owner.
+
+The locked agenda page uses the source agenda title recorded in `source_metadata.agenda_title`, defaulting to `目录`. It may not be renamed as a problem path, communication path, or interpretive judgment. Primary source-heading order must be nondecreasing; repeated primary IDs are permitted only as capacity splits or duplicate-content consolidation.
+
+When an outline workpack exists, `deck-brief.json.workpack_binding` must match the workpack request and planning-policy hashes, and `task_understanding.writing_style_mode` / `source_structure_mode` must match the workpack policy. The validator rejects semantic inputs changed after workpack preparation. Projects without an `outline-workpack.json` retain the legacy structural validation path.
 
 The strengthened v0.5 `page-plan.json` contract uses `schema_version: 1.1`. `ppt-outline.md` is generated from validated JSON and is a human view, not an independent authority.

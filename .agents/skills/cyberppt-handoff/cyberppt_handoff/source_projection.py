@@ -216,6 +216,7 @@ def _project_source_truth(payloads: dict[str, dict[str, Any]], units: list[dict[
         "records": records,
         "conclusions": [{"id": "C001", "statement": str(payloads["deck"].get("deck_strategy", {}).get("deck_thesis") or ""), "source_refs": [item["id"] for item in records if item["priority"] == "P0"] or [item["id"] for item in records[:1]]}],
         "pages": [],
+        "retry": {"attempt": 1, "max_attempts": 3, "strategy": "projection_only"},
         "intentional_source_unit_omissions": [],
     }
     return truth, nf_to_st

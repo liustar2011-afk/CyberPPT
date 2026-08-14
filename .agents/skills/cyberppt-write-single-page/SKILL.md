@@ -11,6 +11,7 @@ description: Professionally design, diagnose, write, or rewrite one CyberPPT con
 
 - 先读适用 `AGENTS.md`，并按仓库要求先用 Graft 获取正式上下文。
 - 只消费用户指定项目的当前事实源、语义理解、Source Truth、Outline、目标页和相邻页契约，不参考旧项目产物。
+- 默认采用政府公文式、央企正式交流语体。不得改写已验证 Outline 的页面标题；如确需改名、重排或改变叙事路径，必须先修改权威 Outline 并重新验证，单页脚本不能自行覆盖标题。
 - 用户要求分析或审阅时保持只读；要求编写或重做时只修改目标页及根因修复必需的正式上游契约。
 - 轻量 Stage 01 只使用正式 `python -m cyberppt ... --lightweight` 命令；不创建 approval、receipt、attempt、escalation、ledger、哈希绑定或平行流程。
 - 不合并最终全稿，不进入 Stage 02，不生成图片或 PPTX。
@@ -80,7 +81,7 @@ description: Professionally design, diagnose, write, or rewrite one CyberPPT con
 
 正式脚本的完整文字稿、上屏文字和备注不得使用“不是……而是……”“而非”“非……而……”及其他以否定前项衬托正项的近义句式；直接以正向的“主体—动作—条件/结果”陈述判断。
 
-除页面主题直接为边界澄清外，页面标题和正式脚本不得以前景化边界、不足或其他负面信息作为主叙事；直接以正向的“主体—行动—价值/结果”表述页面判断。
+页面标题以已验证 Outline 为准，包括源材料明确使用的边界、问题和不足类标题，不得为追求正向叙事自行改写。标题以下的正式脚本使用正式、稳健、克制的政府公文式表达，严格保留源材料的事实强度、条件、责任和状态。
 
 ### 5. 压缩为可独立阅读的上屏文字
 

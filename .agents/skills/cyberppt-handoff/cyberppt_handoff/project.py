@@ -8,6 +8,7 @@ from .io import json_sha256, load_inputs
 from .mappings import ARGUMENT_DUTY
 from .source_projection import _project_source_units, _project_source_truth, _source_registry, _heading_tree
 from .semantic_projection import _project_semantic_model
+from .semantic_projection import layer_four_page_node_id
 from .outline_projection import _project_outline
 from .render_projection import _semantic_review_markdown, _outline_review_markdown
 
@@ -22,9 +23,25 @@ def build_projection(foundation_dir: Path | str, semantic_dir: Path | str, outli
         if isinstance(node, dict):
             for nf in node.get("normalized_fact_ids") or []:
                 arg_by_fact[str(nf)].append(str(node.get("node_id")))
+    for page in payloads["page_plan"].get("pages") or []:
+        if not isinstance(page, dict) or page.get("page_type") != "content":
+            continue
+        page_node_id = layer_four_page_node_id(page)
+        for nf in ((page.get("evidence") or {}).get("normalized_fact_ids") or []):
+            if page_node_id not in arg_by_fact[str(nf)]:
+                arg_by_fact[str(nf)].append(page_node_id)
+    semantic_node_by_id = {
+        str(node.get("id")): node
+        for field in ("section_nodes", "subsection_nodes")
+        for node in semantic_model.get(field) or []
+        if isinstance(node, dict) and node.get("id")
+    }
     for record in source_truth["records"]:
         record["semantic_node_ids"] = arg_by_fact.get(str(record.get("authority_ref")), [])
-        node_roles = [str(next((node.get("role") for node in payloads["argument"].get("reconstructed_chain") or [] if isinstance(node, dict) and str(node.get("node_id")) == node_id), "other")) for node_id in record["semantic_node_ids"]]
+        node_roles = [
+            str(semantic_node_by_id.get(node_id, {}).get("argument_role") or "other")
+            for node_id in record["semantic_node_ids"]
+        ]
         if node_roles:
             record["argument_duty"] = ARGUMENT_DUTY.get(node_roles[0], "detail")
     source_truth["document_semantics"] = semantic_model["document_semantics"]

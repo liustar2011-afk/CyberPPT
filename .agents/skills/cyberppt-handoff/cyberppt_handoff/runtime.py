@@ -22,7 +22,6 @@ def run_outline_audit(project_dir: Path | str, cyberppt_root: Path | str) -> dic
         str(project),
         "--input",
         str(outline),
-        "--lightweight",
     ]
     env = os.environ.copy()
     current = env.get("PYTHONPATH", "")
