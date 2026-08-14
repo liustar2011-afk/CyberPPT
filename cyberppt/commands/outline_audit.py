@@ -49,11 +49,17 @@ def run_outline_audit(
         if source_truth is not None
         else []
     )
-    issues = audit_outline(payload, source_truth, argument_model)
     argument_model_issues = (
         audit_outline_consumption(payload, argument_model, source_truth)
         if payload.get("semantic_argument_model_mode") == "required" or argument_model is not None
         else []
+    )
+    issues = audit_outline(
+        payload,
+        source_truth,
+        argument_model,
+        argument_flow_issues=argument_issues,
+        argument_model_issues=argument_model_issues,
     )
     # audit_outline() already includes audit_outline_consumption().  Keep the
     # raw result for the report, but do not append it a second time.

@@ -822,6 +822,14 @@ def audit_argument_flow(
     dependencies: dict[str, list[str]] = {}
     source_relation_mode = outline.get("schema") == "cyberppt.outline.v2"
     frozen_source_truth_mapping = outline.get("source_truth_mapping_mode") == "frozen"
+    if source_relation_mode and not frozen_source_truth_mapping:
+        issues.append(
+            ArgumentFlowIssue(
+                "SOURCE_TRUTH_MAPPING_MODE_REQUIRED",
+                "Strict v2 Outlines must set source_truth_mapping_mode=frozen; page-to-evidence ownership belongs in the Outline, not Source Truth page_refs.",
+                retry_strategy="declare_frozen_source_truth_mapping",
+            )
+        )
 
     for page_id, page in page_index.items():
         prerequisites = _string_list(page, "prerequisite_pages")
@@ -1217,7 +1225,7 @@ def audit_argument_flow(
                     retry_strategy="remove_page_assignments_from_source_truth",
                 )
             )
-    else:
+    elif not source_relation_mode:
         for source_id, record in record_index.items():
             declared = set(_string_list(record, "page_refs"))
             actual = actual_pages_by_source.get(source_id, set())
