@@ -1,0 +1,9 @@
+{
+  "schema_version":"1.0","artifact_type":"source_fact_base","source":{"source_file":"方案.docx","source_format":".docx","conversion_engine":"Microsoft MarkItDown"},
+  "input_markdown":"sample-source.md","markdown_sha256":"abc123","semantics":{"entry_status":"source_assertion_candidates","truth_policy":"source only"},
+  "entries":[
+    {"fact_id":"fact-0001","fact_type":"statement","text":"项目已进入实施准备阶段。","heading_path":["一、项目背景"],"claim_status":"source_assertion","verification_status":"unverified","semantic_role":"unclassified","source_ref":{"block_id":"blk-0001","line_start":10,"line_end":10}},
+    {"fact_id":"fact-0002","fact_type":"statement","text":"建设目标是建立统一服务入口。","heading_path":["一、项目背景"],"claim_status":"source_assertion","verification_status":"unverified","semantic_role":"unclassified","source_ref":{"block_id":"blk-0002","line_start":12,"line_end":12}},
+    {"fact_id":"fact-0003","fact_type":"statement","text":"首期完成基础能力部署。","heading_path":["二、实施安排"],"claim_status":"source_assertion","verification_status":"unverified","semantic_role":"unclassified","source_ref":{"block_id":"blk-0003","line_start":22,"line_end":22}}
+  ],"warnings":[]
+}
