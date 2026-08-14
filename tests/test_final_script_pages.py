@@ -680,7 +680,7 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertTrue(summary["artifacts"]["compiled_deliverable_prompt"].endswith(".md"))
         self.assertNotIn("--external-script", summary["resume_command"])
 
-    def test_requires_default_style_selection_or_explicit_style_lock(self) -> None:
+    def test_uses_configured_default_style_without_explicit_style_lock(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "client-report"
@@ -689,13 +689,19 @@ class FinalScriptPagesTests(unittest.TestCase):
             script.write_text("## 第7页：态势感知能力\n组件A：内容\n", encoding="utf-8")
             self._approve_inputs_and_prompts(project, script)
 
-            with self.assertRaisesRegex(ValueError, "请选择一个 CyberPPT 默认视觉风格"):
-                run_final_script_pages(
-                    project=project,
-                    script=script,
-                    pages_raw="7",
-                    lightweight_stage01_confirmed=True,
+            run_final_script_pages(
+                project=project,
+                script=script,
+                pages_raw="7",
+                lightweight_stage01_confirmed=True,
+            )
+
+            style_lock = json.loads(
+                (project / "workbench/locks/visual_style_lock.json").read_text(
+                    encoding="utf-8"
                 )
+            )
+            self.assertEqual(10, style_lock["style"]["id"])
 
     def test_rejects_markdown_style_lock_with_actionable_message(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

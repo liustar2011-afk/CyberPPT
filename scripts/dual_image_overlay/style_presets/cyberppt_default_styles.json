@@ -1,5 +1,6 @@
 {
   "schema": "cyberppt.default_visual_styles.v1",
+  "default_style_id": 10,
   "source_reference": "references/visual-system.md",
   "sample_dir": "assets/palette-samples",
   "styles": [

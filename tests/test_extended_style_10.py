@@ -25,9 +25,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_style_ten_is_style_nine_rule_replacement_explicit_extension() -> None:
-    styles = load_style_library()["styles"]
+    library = load_style_library()
+    styles = library["styles"]
     assert [style["id"] for style in styles] == list(range(1, 11))
+    assert library["default_style_id"] == 10
 
+    assert resolve_default_style()["id"] == 10
     style_ten = resolve_default_style(style_id=10)
     assert style_ten["slug"] == "light_tech_business_dense"
     assert style_ten["extension_only"] is True

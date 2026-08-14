@@ -48,12 +48,14 @@ def resolve_default_style(
     style_name: str | None = None,
     path: Path = STYLE_LIBRARY_PATH,
 ) -> dict[str, Any]:
-    if style_id is None and not style_name:
-        raise ValueError(
-            "请选择一个 CyberPPT 默认视觉风格后再转换脚本。可用选项：\n"
-            + default_style_choices(path)
-        )
     library = load_style_library(path)
+    if style_id is None and not style_name:
+        default_style_id = library.get("default_style_id")
+        if not isinstance(default_style_id, int):
+            raise ValueError(
+                f"style library has no valid default_style_id: {path}"
+            )
+        style_id = default_style_id
     normalized_name = (style_name or "").strip()
     for style in library["styles"]:
         if style_id is not None and int(style["id"]) == int(style_id):
