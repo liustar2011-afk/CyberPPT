@@ -1,0 +1,6 @@
+{
+  "schema_version":"1.0","artifact_type":"ppt_deck_brief","deck_id":"deck-0001",
+  "task_understanding":{"requested_output":"ppt_outline","audience":"公司领导","purpose":"建设方案汇报","constraints":[],"assumptions":[]},
+  "deck_strategy":{"working_title":"项目建设汇报","deck_type":"leadership_briefing","core_question":"当前阶段和下一步是什么？","deck_thesis":"项目已进入实施准备，应围绕统一入口目标推进首期部署。","narrative_mode":"background_to_plan","decision_path":["阶段","目标","实施"],"page_budget":{"target":4,"min":4,"max":4,"includes_template_pages":true}},
+  "sections":[{"section_id":"deck-sec-01","order":1,"title_intent":"总体判断","section_mission":"说明阶段、目标和实施抓手。","section_thesis":"项目已进入实施准备并明确首期方向。","argument_roles":["background","goal","implementation"],"page_ids":["P02","P03"]}]
+}

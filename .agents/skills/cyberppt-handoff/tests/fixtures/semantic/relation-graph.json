@@ -1,0 +1,4 @@
+{"schema_version":"1.0","artifact_type":"relation_graph","relations":[
+  {"relation_id":"rel-0001","from_concept_id":"concept-0001","relation_type":"has_goal","to_concept_id":"concept-0002","basis":"explicit","normalized_fact_ids":["nf-0002"],"confidence":"high"},
+  {"relation_id":"rel-0002","from_concept_id":"concept-0001","relation_type":"builds","to_concept_id":"concept-0003","basis":"inferred","normalized_fact_ids":["nf-0003"],"confidence":"medium","inference_rationale":"章节语境推断。"}
+]}

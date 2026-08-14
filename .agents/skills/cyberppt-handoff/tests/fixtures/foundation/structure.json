@@ -1,0 +1,14 @@
+{
+  "schema_version":"1.0","artifact_type":"document_structure","input_markdown":"sample-source.md","markdown_sha256":"abc123",
+  "source":{"source_file":"方案.docx","source_format":".docx","conversion_engine":"Microsoft MarkItDown"},
+  "document":{"title":"项目方案","heading_count":2,"block_count":3},
+  "outline":[
+    {"section_id":"sec-0001","level":1,"title":"一、项目背景","line":8,"children":[]},
+    {"section_id":"sec-0002","level":1,"title":"二、实施安排","line":20,"children":[]}
+  ],
+  "blocks":[
+    {"block_id":"blk-0001","type":"paragraph","text":"项目已进入实施准备阶段。","line_start":10,"line_end":10,"section_id":"sec-0001","heading_path":["一、项目背景"]},
+    {"block_id":"blk-0002","type":"paragraph","text":"建设目标是建立统一服务入口。","line_start":12,"line_end":12,"section_id":"sec-0001","heading_path":["一、项目背景"]},
+    {"block_id":"blk-0003","type":"paragraph","text":"首期完成基础能力部署。","line_start":22,"line_end":22,"section_id":"sec-0002","heading_path":["二、实施安排"]}
+  ],"warnings":[]
+}

@@ -1,0 +1,5 @@
+{"schema_version":"1.0","artifact_type":"concept_base","concepts":[
+  {"concept_id":"concept-0001","canonical_name":"项目","aliases":[],"concept_type":"project","definition":"项目。","normalized_fact_ids":["nf-0001","nf-0002","nf-0003"],"confidence":"high"},
+  {"concept_id":"concept-0002","canonical_name":"统一服务入口","aliases":[],"concept_type":"capability","definition":"建设目标。","normalized_fact_ids":["nf-0002"],"confidence":"high"},
+  {"concept_id":"concept-0003","canonical_name":"基础能力部署","aliases":[],"concept_type":"deliverable","definition":"首期成果。","normalized_fact_ids":["nf-0003"],"confidence":"high"}
+]}

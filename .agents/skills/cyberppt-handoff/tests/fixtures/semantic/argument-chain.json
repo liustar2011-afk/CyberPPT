@@ -1,0 +1,9 @@
+{"schema_version":"1.0","artifact_type":"argument_chain","source_chain":[
+  {"node_id":"src-arg-0001","order":1,"role":"background","statement":"项目进入实施准备。","normalized_fact_ids":["nf-0001"],"section_ids":["sec-0001"]},
+  {"node_id":"src-arg-0002","order":2,"role":"goal","statement":"建设统一服务入口。","normalized_fact_ids":["nf-0002"],"section_ids":["sec-0001"]},
+  {"node_id":"src-arg-0003","order":3,"role":"implementation","statement":"首期部署基础能力。","normalized_fact_ids":["nf-0003"],"section_ids":["sec-0002"]}
+],"reconstructed_chain":[
+  {"node_id":"norm-arg-0001","order":1,"role":"background","statement":"项目已经进入实施准备。","normalized_fact_ids":["nf-0001"],"section_ids":["sec-0001"]},
+  {"node_id":"norm-arg-0002","order":2,"role":"goal","statement":"实施围绕统一服务入口目标展开。","normalized_fact_ids":["nf-0002"],"section_ids":["sec-0001"]},
+  {"node_id":"norm-arg-0003","order":3,"role":"implementation","statement":"首期先部署基础能力。","normalized_fact_ids":["nf-0003"],"section_ids":["sec-0002"]}
+],"diagnostics":[]}
