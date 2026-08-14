@@ -10,9 +10,39 @@ SKILL = ROOT / "SKILL.md"
 SOURCE_ANALYSIS = ROOT / "references" / "source-analysis.md"
 SCRIPT_QUALITY = ROOT / "references" / "script-quality.md"
 LITE_SKILL = ROOT / "vendor" / "word-to-ppt-script" / "SKILL.md"
+OUTLINE_SKILL = ROOT / ".agents" / "skills" / "ppt-outline-planning" / "SKILL.md"
+PAGE_SKILL = ROOT / ".agents" / "skills" / "cyberppt-write-single-page" / "SKILL.md"
+PAGE_AUTHORING = (
+    ROOT
+    / ".agents"
+    / "skills"
+    / "cyberppt-write-single-page"
+    / "references"
+    / "professional-page-authoring.md"
+)
+PROJECT_AGENTS = ROOT / "projects" / "AGENTS.md"
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_source_foundation_defaults_to_government_style_and_source_titles(self) -> None:
+        planning = OUTLINE_SKILL.read_text(encoding="utf-8-sig")
+        project_rules = PROJECT_AGENTS.read_text(encoding="utf-8-sig")
+
+        self.assertIn("政府公文式", planning)
+        self.assertIn("默认保留源材料章节标题、内容标题和顺序", planning)
+        self.assertIn("仅因单页容量拆页", planning)
+        self.assertIn("合并重复内容", planning)
+        self.assertNotIn("never mechanically copy them into a deck", planning)
+        self.assertIn("只有用户明确要求", project_rules)
+
+    def test_single_page_writer_cannot_rewrite_validated_outline_title_by_default(self) -> None:
+        skill = PAGE_SKILL.read_text(encoding="utf-8-sig")
+        authoring = PAGE_AUTHORING.read_text(encoding="utf-8-sig")
+
+        self.assertIn("不得改写已验证 Outline 的页面标题", skill)
+        self.assertIn("政府公文式", skill)
+        self.assertIn("页面标题由已验证 Outline 锁定", authoring)
+
     def test_every_completed_step_surfaces_clickable_artifact_links(self) -> None:
         agents = AGENTS.read_text(encoding="utf-8-sig")
         skill = SKILL.read_text(encoding="utf-8-sig")

@@ -4,6 +4,7 @@ from typing import Any, Iterable
 
 from .mappings import CHAIN_ROLE_TO_DUTY, PAGE_ROLE, VISUAL_INTENT
 from .source_projection import _anchors
+from .semantic_projection import layer_four_page_node_id
 
 def _expand_evidence_ids(
     ids: Iterable[str],
@@ -69,9 +70,20 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
     task = deck.get("task_understanding") or {}
     page_map = {str(page.get("page_id")): _cyber_page_id(page) for page in page_plan.get("pages") or [] if isinstance(page, dict)}
     chapter_map: dict[str, str] = {}
+    divider_section_ids = {
+        str(page.get("section_id"))
+        for page in page_plan.get("pages") or []
+        if isinstance(page, dict)
+        and page.get("page_type") == "template"
+        and str(page.get("template_kind") or page.get("template_role") or "")
+        == "section_divider"
+        and page.get("section_id")
+    }
     for index, section in enumerate(deck.get("sections") or [], start=1):
         if isinstance(section, dict) and section.get("section_id"):
-            chapter_map[str(section["section_id"])] = f"C{index}"
+            section_id = str(section["section_id"])
+            if section_id in divider_section_ids:
+                chapter_map[section_id] = f"C{index}"
     st_by_id = {str(item.get("id")): item for item in source_truth.get("records") or [] if isinstance(item, dict)}
     semantic_nodes = {str(item.get("id")): item for group in (semantic_model.get("section_nodes") or [], semantic_model.get("subsection_nodes") or []) for item in group if isinstance(item, dict)}
     argument_by_id = {str(item.get("node_id")): item for item in payloads["argument"].get("reconstructed_chain") or [] if isinstance(item, dict)}
@@ -82,7 +94,8 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
         cyber_id = _cyber_page_id(page)
         if page.get("page_type") == "template":
             kind_map = {"cover": "cover", "agenda": "agenda", "section_divider": "chapter", "closing": "ending"}
-            item = {"page_id": cyber_id, "sequence": int(page.get("order") or 0), "page_type": kind_map.get(str(page.get("template_kind")), str(page.get("template_kind") or "cover")), "title": str(page.get("title_intent") or ""), "page_mission": str(page.get("page_mission") or ""), "projection_only": True, "authority_ref": str(page.get("page_id") or "")}
+            template_kind = str(page.get("template_kind") or page.get("template_role") or "cover")
+            item = {"page_id": cyber_id, "sequence": int(page.get("order") or 0), "page_type": kind_map.get(template_kind, template_kind), "title": str(page.get("title_intent") or ""), "page_mission": str(page.get("page_mission") or ""), "projection_only": True, "authority_ref": str(page.get("page_id") or "")}
             if page.get("section_id") in chapter_map:
                 item["chapter_id"] = chapter_map[str(page.get("section_id"))]
             pages_out.append(item)
@@ -93,6 +106,9 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
         source_refs = [nf_to_st[nf_id] for nf_id in direct_fact_ids if nf_id in nf_to_st]
         roles = page.get("evidence_roles") if isinstance(page.get("evidence_roles"), dict) else {}
         evidence_roles_out = _project_evidence_roles(roles, payloads, nf_to_st, direct_fact_ids)
+        evidence_roles_dict = {
+            item["role"]: item["source_refs"] for item in evidence_roles_out
+        }
         chain_out: list[dict[str, Any]] = []
         content_units: list[dict[str, Any]] = []
         for index, node in enumerate(page.get("argument_chain") or [], start=1):
@@ -124,17 +140,18 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
         detail_refs = list(role_map.get("trace_only", []))
         boundary_refs = list(role_map.get("boundary", []))
         requested_arg_ids = [str(x) for x in page_evidence.get("argument_node_ids") or []]
-        arg_ids = []
+        page_node_id = layer_four_page_node_id(page)
+        arg_ids = [page_node_id] if page_node_id in semantic_nodes else []
         for arg_id in requested_arg_ids:
             node_fact_ids = {str(value) for value in argument_by_id.get(arg_id, {}).get("normalized_fact_ids") or []}
             if node_fact_ids and node_fact_ids.issubset(allowed_fact_ids):
                 arg_ids.append(arg_id)
-        primary_arg = arg_ids[0] if arg_ids else ""
+        primary_arg = page_node_id if page_node_id in arg_ids else (arg_ids[0] if arg_ids else "")
         reserved_items = page.get("reserved_for_later") if isinstance(page.get("reserved_for_later"), list) else []
         reserved_text = "；".join(f"{item.get('topic')} → {page_map.get(str(item.get('target_page')), str(item.get('target_page')))}" for item in reserved_items if isinstance(item, dict)) or "无"
         allowed_claim_roles = sorted({str(st_by_id.get(ref, {}).get("claim_role") or "fact") for ref in source_refs})
         item = {
-            "page_id": cyber_id, "sequence": int(page.get("order") or 0), "page_type": "content", "chapter_id": chapter_map.get(str(page.get("section_id")), str(page.get("section_id") or "")),
+            "page_id": cyber_id, "sequence": int(page.get("order") or 0), "page_type": "content",
             "title": str(page.get("title_intent") or ""), "page_mission": str(page.get("page_mission") or ""), "page_job": str(page.get("page_mission") or ""),
             "audience_question": str(page.get("audience_question") or ""), "business_question": str(page.get("audience_question") or ""),
             "core_message": str(page.get("key_judgment") or ""), "non_substitutable_value": str(page.get("non_substitutable_value") or ""),
@@ -153,15 +170,17 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
             "source_gap_ids": [], "gap_handling": "Preserve upstream diagnostics and epistemic boundaries; adapter adds no gap inference.",
             "core_message_derivation": {"source_refs": source_refs, "supporting_statements": [str(node.get("statement") or "") for node in page.get("argument_chain") or [] if isinstance(node, dict)], "derivation": f"Projection of layer-four judgment_basis={page.get('judgment_basis')}", "introduced_relations": list(page_evidence.get("relation_ids") or []) if page.get("judgment_basis") == "planning_inference" else [], "introduced_modalities": [], "argument_node_ids": arg_ids},
             "source_refs": source_refs, "detail_refs": detail_refs, "boundary_refs": boundary_refs, "content_units": content_units,
-            "content_relations": [{"subject": str(page.get("title_intent") or ""), "objects": [str(node.get("statement") or "") for node in page.get("argument_chain") or [] if isinstance(node, dict)], "relation": "argument_chain", "source_refs": source_refs}],
+            "content_relations": [{"subject": str(page.get("title_intent") or ""), "objects": [str(node.get("statement") or "") for node in page.get("argument_chain") or [] if isinstance(node, dict)], "relation": "contains", "source_refs": source_refs}],
             "visual_intent_type": VISUAL_INTENT.get(str(page.get("content_strategy") or "other"), "judgment_evidence"),
-            "page_necessity": str(page.get("non_substitutable_value") or ""), "argument_chain": chain_out, "evidence_roles": evidence_roles_out,
+            "page_necessity": str(page.get("non_substitutable_value") or ""), "argument_chain": chain_out, "evidence_roles": evidence_roles_dict,
             "excluded_from_onscreen": detail_refs, "projection_only": True, "authority_ref": str(page.get("page_id") or ""),
         }
         if page.get("split_risk_reason"):
             item["split_risk_reason"] = str(page["split_risk_reason"])
         if page.get("inference_rationale"):
             item["planning_inference_rationale"] = str(page["inference_rationale"])
+        if str(page.get("section_id") or "") in chapter_map:
+            item["chapter_id"] = chapter_map[str(page.get("section_id"))]
         pages_out.append(item)
     section_by_id = {str(item.get("section_id")): item for item in deck.get("sections") or [] if isinstance(item, dict)}
     chapter_missions = []
@@ -184,7 +203,7 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
         "architecture_mode": "solution", "architecture_reason": "Compatibility projection of an already validated layer-four deck; no CyberPPT re-planning is performed.",
         "structure_principle": str(strategy.get("narrative_mode") or "custom"), "title_style_mode": "formal_plain", "argument_contract_mode": "projection",
         "core_message_derivation_mode": "required", "topic_partition_mode": "required", "page_sequence_mode": "required", "argument_node_disposition_mode": "projection",
-        "page_content_unit_coverage_mode": "required", "editorial_control_mode": "required", "editorial_authoring_mode": "author_driven", "editorial_authoring_status": "author_edited",
+        "page_content_unit_coverage_mode": "required", "editorial_control_mode": "projection", "editorial_authoring_mode": "projection", "editorial_authoring_status": "validated_upstream",
         "storyline_contract_mode": "projection", "semantic_argument_model_mode": "projection", "source_truth_mapping_mode": "frozen", "source_section_weights": {},
         "document_semantics": semantic_model.get("document_semantics") or {}, "narrative_thesis": str(strategy.get("deck_thesis") or ""),
         "storyline": {"theme": str(strategy.get("deck_thesis") or ""), "decision_destination": str(task.get("purpose") or ""), "story_arc": [str(item.get("section_thesis") or "") for item in deck.get("sections") or [] if isinstance(item, dict)], "chapter_missions": chapter_missions, "selection_rules": ["Consume validated layer-four page architecture without re-planning."], "exclusion_rules": ["Do not upgrade inferred or unverified upstream claims."], "page_rules": ["One audience question, one core message, one governing argument chain per content page."]},
