@@ -171,7 +171,12 @@ def main() -> int:
         pages = [p for p in pages if p.get("page_number") == args.page]
         if not pages:
             raise SystemExit(f"Page {args.page} not found")
-    output = "\n\n---\n\n".join(page_prompt(p) for p in pages)
+    header = (
+        "# Legacy structural prompt preview\n\n"
+        "> Compatibility and visual-structure review artifact only. CyberPPT production uses "
+        "artifact-spec-v2 over the audited Stage 02 handoff, deck visual spec, and style lock.\n"
+    )
+    output = header + "\n\n---\n\n".join(page_prompt(p) for p in pages)
     Path(args.output).write_text(output + "\n", encoding="utf-8")
     print(f"Created {args.output}")
     return 0

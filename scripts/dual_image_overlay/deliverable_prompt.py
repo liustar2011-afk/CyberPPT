@@ -824,12 +824,20 @@ def enforce_style09_terminal_lock(
     # otherwise a raw terminal tail makes the send prompt verbose and gives
     # the same Style 09 rule two competing positions.
     source_marker = "### Final ImageGen execution lock — hard"
-    module_marker = "【视觉结构设计模块｜不上屏】"
+    continuation_markers = (
+        "【视觉结构设计模块｜不上屏】",
+        "[8. Typography & exact text / 文字资产合同]",
+    )
     marker_index = body.find(source_marker)
     if marker_index >= 0:
-        module_index = body.find(module_marker, marker_index)
-        if module_index >= 0:
-            body = body[:marker_index] + body[module_index:]
+        continuation_indices = [
+            body.find(marker, marker_index)
+            for marker in continuation_markers
+            if body.find(marker, marker_index) >= 0
+        ]
+        continuation_index = min(continuation_indices) if continuation_indices else -1
+        if continuation_index >= 0:
+            body = body[:marker_index] + body[continuation_index:]
         else:
             body = body[:marker_index]
     else:

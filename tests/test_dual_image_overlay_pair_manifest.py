@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 import json
 import tempfile
 import unittest
@@ -21,11 +22,52 @@ from scripts.dual_image_overlay.deliverable_prompt import (
     style_contract,
 )
 from scripts.dual_image_overlay.imagegen_handoff import build_page_prompt
+from scripts.dual_image_overlay.artifact_prompt import SECTION_HEADINGS, render_artifact_prompt
 from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.dual_image_overlay.style_library import write_project_style_lock
+from tests.test_artifact_prompt import _spec
 
 
 class CyberpptPairManifestTests(unittest.TestCase):
+    def test_artifact_manifest_consumes_the_approved_nine_section_prompt_verbatim(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "project"
+            init_project(project)
+            script = root / "script.md"
+            script.write_text(
+                "## 第2页：治理结果\n\n- 页面类型：内容页\n- 页面标题：治理结果\n- 主判断：治理结果可追溯。\n- 上屏文字：\n\n  Governed input\n  Traceable result\n",
+                encoding="utf-8",
+            )
+            style_lock = write_project_style_lock(project=project, style_id=10, source_script=script)
+            spec = replace(_spec(), page_id="P02", page_number=2)
+            approved = root / "approved.md"
+            approved.write_text(render_artifact_prompt(spec), encoding="utf-8")
+            stage_script(project, 2, "imagegen", "final", approved)
+            approve_script(project, 2, "imagegen")
+
+            with patch(
+                "scripts.dual_image_overlay.cyberppt_pair_manifest.load_project_page_artifact_specs",
+                return_value={2: spec},
+            ):
+                manifest, _, compiled, _ = build_manifest(
+                    script=script,
+                    pages_raw="2",
+                    output_dir=root / "images",
+                    project_path=project,
+                    style_lock=style_lock,
+                    require_approved_prompts=True,
+                    prompt_compiler="artifact-spec-v2",
+                )
+                compiled_text = compiled.read_text(encoding="utf-8")
+
+        consumed = manifest["pairs"][0]["full"]["prompt"]
+        self.assertEqual(render_artifact_prompt(spec), consumed)
+        self.assertEqual("artifact-spec-v2", manifest["prompt_contract"]["compiler"])
+        self.assertFalse(manifest["prompt_contract"]["compact_blueprint"])
+        self.assertEqual(SECTION_HEADINGS[0], consumed.splitlines()[0])
+        self.assertIn(SECTION_HEADINGS[-1], compiled_text)
+
     def test_style09_contract_is_single_complete_source_lock_after_stage02_summary(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

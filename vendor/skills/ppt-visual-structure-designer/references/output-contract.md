@@ -165,6 +165,25 @@ CyberPPT工作台候选还必须包含：
 }
 ```
 
+工作台决策回执schema固定为`cyberppt.visual_design_decisions.v3`。每个候选必须包含自己的`visual_thesis`；每页选中决策还必须包含完整的执行设计：
+
+```json
+{
+  "execution_design": {
+    "business_object": "承载主关系的具体业务对象或关系场",
+    "visual_focus": "唯一视觉焦点及其业务含义",
+    "semantic_role": "该对象如何证明页面判断",
+    "use_scene": false,
+    "scene_type": "选中的非场景关系场或真实业务场景",
+    "text_integration_method": "每组正文如何贴附到对象、动作、接口、边界或结果",
+    "spatial_organization": "对象、动作与结果如何形成阅读路径",
+    "relationship_encoding": "方向、依赖、转化、边界或反馈如何被看见"
+  }
+}
+```
+
+`execution_design`不是可选建议。仓库编译器必须将其中的载体、场景、语义角色、空间组织、关系编码和文字融合策略原样投影到`deck-visual-spec.json`；审计器应阻断缺失或漂移。
+
 每页`relationship_coverage`逐项登记权威业务关系：
 
 ```json
@@ -233,7 +252,9 @@ CyberPPT工作台的`visual-design-input.json`使用以下权威边界：
 - `author_visual_notes`：低权重作者备注，固定版式和载体描述不得进入关系真值。
 - `locked_text_items`：带稳定`text_id`的正文唯一来源。
 
-工作台中Skill只要求生成`visual-design-decisions.json`，保存每页至少三个结构候选、候选完整证据覆盖、评分维度与总分、选中候选、输入哈希，以及`stage01_visual_note_disposition`。`trace_refs`仅用于审计追溯，执行器可将其写为证据单元的`source_ref`，但提示词构建器不得读取它。仓库`execute-visual-structure`唯一生成规格JSON和Markdown；正式执行回执由仓库命令生成并绑定执行器、模型、Skill包、决策回执和编译产物哈希。编译产物的`qa`与`qa_summary`初始为`draft`且未评分，实际审计结果以`validation-report.json`为准。
+工作台中Skill只要求生成`visual-design-decisions.json`，保存每页至少三个结构候选、候选各自的`visual_thesis`、候选完整证据覆盖、评分维度与总分、选中候选、完整`execution_design`、输入哈希，以及`stage01_visual_note_disposition`。`trace_refs`仅用于审计追溯，执行器可将其写为证据单元的`source_ref`，但提示词构建器不得读取它。仓库`execute-visual-structure`唯一生成规格JSON和Markdown；正式执行回执由仓库命令生成并绑定执行器、模型、Skill包、决策回执和编译产物哈希。编译产物的`qa`与`qa_summary`初始为`draft`且未评分，实际审计结果以`validation-report.json`为准。
+
+`generation-prompts.md`是由视觉审计器重建的旧结构预览，只用于人工检查和兼容诊断。CyberPPT正式ImageGen提示词由`artifact-spec-v2`从已审计的Stage 02 handoff、`deck-visual-spec.json`和style lock投影；审批、canonical和manifest必须复用同一份九段式结果。
 
 结构指令不得在画面中显示。标题与副标题默认由外部PPT文字层处理，正文按用户指定的生图模式执行。字体、字号、颜色、线条、边框、形状、人物外观和媒介质感由`style_source_ref`对应的风格文件负责。
 

@@ -114,6 +114,7 @@ def _payloads() -> tuple[dict, dict, dict]:
     candidates = [
         {
             "id": "C1",
+            "visual_thesis": "Input converges on the result so the support relationship is immediately visible.",
             "visual_intent_type": "evidence_to_judgment",
             "semantic_focus": {"kind": "outcome", "evidence_key": "result"},
             "spatial_grammar": ["convergence"],
@@ -127,6 +128,7 @@ def _payloads() -> tuple[dict, dict, dict]:
         },
         {
             "id": "C2",
+            "visual_thesis": "Input and result form one directed transformation path.",
             "visual_intent_type": "input_output",
             "semantic_focus": {"kind": "action", "evidence_key": "input"},
             "spatial_grammar": ["path"],
@@ -140,6 +142,7 @@ def _payloads() -> tuple[dict, dict, dict]:
         },
         {
             "id": "C3",
+            "visual_thesis": "The contrast between input state and result state exposes the value created.",
             "visual_intent_type": "comparison",
             "semantic_focus": {"kind": "state", "evidence_key": "input"},
             "spatial_grammar": ["tension"],
@@ -153,7 +156,7 @@ def _payloads() -> tuple[dict, dict, dict]:
         },
     ]
     decisions = {
-        "schema": "cyberppt.visual_design_decisions.v2",
+        "schema": "cyberppt.visual_design_decisions.v3",
         "source_sha256": "set-when-written",
         "score_profiles": profiles,
         "pages": [
@@ -171,6 +174,16 @@ def _payloads() -> tuple[dict, dict, dict]:
                 },
                 "selected_candidate": "C1",
                 "candidates": candidates,
+                "execution_design": {
+                    "business_object": "Input-to-result support relationship field",
+                    "visual_focus": "Result",
+                    "text_integration_method": "Attach each locked phrase to its related object",
+                    "spatial_organization": "Input converges on Result",
+                    "relationship_encoding": "Directed support relationship",
+                    "semantic_role": "The relationship field proves that input supports the result",
+                    "use_scene": False,
+                    "scene_type": "Flat business relationship field",
+                },
                 "relationship_coverage": [
                     {
                         "relation_key": "R01",
@@ -216,6 +229,22 @@ def _payloads() -> tuple[dict, dict, dict]:
                     {"id": "E2", "priority": "P0"},
                 ],
                 "semantic_graph": {"decision_relationship": "Input supports Result"},
+                "visual_decision": {
+                    "visual_thesis": "Input converges on the result so the support relationship is immediately visible.",
+                    "spatial_organization": "Input converges on Result",
+                    "text_integration_method": "Attach each locked phrase to its related object",
+                    "relationship_encoding": "Directed support relationship",
+                    "visual_hierarchy": {
+                        "primary": "Result",
+                    },
+                },
+                "image_plan": {
+                    "business_object": "Input-to-result support relationship field",
+                    "semantic_role": "The relationship field proves that input supports the result",
+                    "use_scene": False,
+                    "scene_type": "Flat business relationship field",
+                    "placement": "Input converges on Result",
+                },
                 "structural_decision": {
                     "semantic_focus": {"kind": "outcome", "ref": "E2"},
                     "primary_refs": ["E2"],
@@ -266,6 +295,41 @@ def test_visual_design_package_passes_complete_candidate_and_text_contract() -> 
     report = _audit(design, decisions, spec)
     assert report["status"] == "passed"
     assert report["blocking_issues"] == []
+
+
+def test_audit_rejects_candidate_without_visual_thesis() -> None:
+    design, decisions, spec = _payloads()
+    del decisions["pages"][0]["candidates"][0]["visual_thesis"]
+    assert "CANDIDATE_VISUAL_THESIS_MISSING" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_selected_visual_thesis_or_scene_drift() -> None:
+    design, decisions, spec = _payloads()
+    spec["pages"][0]["visual_decision"]["visual_thesis"] = "Different thesis"
+    spec["pages"][0]["image_plan"]["use_scene"] = True
+    codes = {item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]}
+    assert "SPEC_VISUAL_THESIS_DRIFTED" in codes
+    assert "SPEC_SCENE_POLICY_DRIFTED" in codes
+
+
+def test_audit_rejects_incomplete_execution_design() -> None:
+    design, decisions, spec = _payloads()
+    del decisions["pages"][0]["execution_design"]["semantic_role"]
+    assert "EXECUTION_DESIGN_INVALID" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_selected_execution_composition_drift() -> None:
+    design, decisions, spec = _payloads()
+    spec["pages"][0]["visual_decision"]["spatial_organization"] = "A different layout recipe"
+    spec["pages"][0]["visual_decision"]["visual_hierarchy"]["primary"] = "A different focus"
+    spec["pages"][0]["image_plan"]["placement"] = "A different placement"
+    assert "SPEC_EXECUTION_DESIGN_DRIFTED" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
 
 
 def test_audit_rejects_missing_candidate_quality_rationale() -> None:

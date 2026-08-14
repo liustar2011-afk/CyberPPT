@@ -3,12 +3,20 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from scripts.dual_image_overlay.creative_brief import CreativeBrief
 
+if TYPE_CHECKING:
+    from cyberppt.page_artifact_spec import PageArtifactSpec
 
-PROMPT_COMPILERS = ("legacy", "creative-brief-v1", "content-first-v1")
+ARTIFACT_PROMPT_COMPILER = "artifact-spec-v2"
+PROMPT_COMPILERS = (
+    "legacy",
+    "creative-brief-v1",
+    "content-first-v1",
+    ARTIFACT_PROMPT_COMPILER,
+)
 DEFAULT_PROMPT_COMPILER = "content-first-v1"
 TEXT_RENDER_MODES = ("full_image", "semantic_visual", "editable_overlay")
 DEFAULT_TEXT_RENDER_MODE = "full_image"
@@ -57,6 +65,7 @@ class CompiledPagePrompt:
     editable_body_text: str = ""
     semantic_structure: dict[str, Any] | None = None
     text_render_mode: str = DEFAULT_TEXT_RENDER_MODE
+    artifact_spec: "PageArtifactSpec | None" = None
 
     def build_metadata(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -78,11 +87,14 @@ class CompiledPagePrompt:
             payload["editable_body_text"] = self.editable_body_text
         if self.semantic_structure is not None:
             payload["semantic_structure"] = dict(self.semantic_structure)
+        if self.artifact_spec is not None:
+            payload["artifact_spec"] = self.artifact_spec.to_dict()
         return payload
 
 
 __all__ = [
     "CompiledPagePrompt",
+    "ARTIFACT_PROMPT_COMPILER",
     "DEFAULT_PROMPT_COMPILER",
     "DEFAULT_TEXT_RENDER_MODE",
     "PROMPT_COMPILERS",

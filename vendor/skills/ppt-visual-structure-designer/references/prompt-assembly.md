@@ -1,93 +1,52 @@
 # 整页生图提示模块组装
 
-## 组装顺序
+## CyberPPT正式合同
 
-严格按以下顺序输出：
+CyberPPT把GPT Image输出视为可交付的视觉资产，不把它描述成普通插画请求。正式提示词只能由仓库`artifact-spec-v2`编译器从三项已审计来源投影：
 
-1. 内容和文字锁定。
-2. 结构指引。
-3. 连接关系。
-4. 文字放置和标题区约束。
-5. 上屏正文。
-6. 外部风格来源引用。
+1. `workbench/stages/02-handoff/stage02-handoff.json`：页面使命、核心判断、锁定文字和成品画布。
+2. `visual/deck-visual-spec.json`：选中的视觉论点、业务关系、载体/场景策略、空间组织和文字归属。
+3. 项目style lock：唯一视觉语言合同。
 
-结构字段名和说明文字不得被画进页面。结构模块不得复制风格正文。
+Skill不得自行拼接正式提示词，也不得把候选理由、作者版式备注、`trace_refs`、证据ID或文字ID送给ImageGen。
 
-## 结构指引模板
+## 九段式artifact spec
 
-```text
-[Structural guidance]
-- Selected visual intent type: <visual_intent_type>
-- Visual thesis: <visual_thesis>
-- Decision relationship: <decision_relationship>
-- Semantic focus: <kind> / <ref>
-- Spatial grammar: <spatial_grammar>
-- Semantic tags: <semantic_tags>
-- Primary structure refs: <primary_refs>
-- Secondary structure refs: <secondary_refs>
-- Reading sequence: <reading_sequence>
-- Text binding: <evidence_id> -> <target_ref> / <binding> / locked text ids: <text_ids>
-- Representation freedom: carrier=<carrier>; medium=<medium>; reason=<reason>
-```
-
-该模块只描述语义结构，不指定载体、媒介或风格。具体载体和媒介仅在来源明确约束时通过`representation_freedom`标记为`constrained`或`*_required`。
-
-`text_ids`仅用于把证据和语义节点绑定到精确锁定正文，不得画出ID。提示词中的正文必须由`required_text_ids`按顺序解析`final_text`得到；不得把证据解释文字、候选理由或作者备注扩写成额外上屏文字。
-
-`Decision relationship`必须是纯业务关系句，只包含实体、动作、方向、状态、约束和结果。不得复制上游脚本中的行列、泳道、卡片、中心方位、结果区、收束条或阅读版式；这些内容即使标注“不上屏”也不能进入结构提示模块。
-
-## 标题区
-
-默认写明：
+正式编译结果严格按以下顺序，标题必须唯一且不得改序：
 
 ```text
-Reserve the top title area for an external PowerPoint text layer. Do not draw the page title, subtitle, page number, logo, or template header inside the generated image.
+[1. Deliverable / 成品规格]
+[2. Communication goal / 页面使命｜不上屏]
+[3. Visual thesis / 核心视觉论点｜不上屏]
+[4. Evidence & relationships / 证据与关系｜不上屏]
+[5. Visual carrier / 视觉载体｜不上屏]
+[6. Composition / 空间组织｜不上屏]
+[7. Art direction / 视觉语言｜不上屏]
+[8. Typography & exact text / 文字资产合同]
+[9. Hard constraints / 硬约束]
 ```
 
-正文是否在图中生成由`body_render_mode`决定。用户要求完整全图生图时，正文必须逐字提供，不使用省略。
+各段权威边界：
 
-## 媒介和文字
+- `Deliverable`声明成品类型、2048×1024（2:1）正文画布、页面角色及标题/页码/Logo/页脚等外部PPT层。
+- `Communication goal`只解释页面要完成的沟通任务，不作为可见文案。
+- `Visual thesis`必须直接来自选中候选自己的`visual_thesis`，不是`core_judgment`的复制品。
+- `Evidence & relationships`只使用已审计证据摘要和纯业务关系句；不得出现`E1`、`P07-T01`等后台ID。
+- `Visual carrier`必须保留`execution_design`选中的`business_object`、`semantic_role`、`use_scene`与`scene_type`，不得由编译器重新猜测。
+- `Composition`使用已选空间组织、阅读路径、焦点、关系编码、文字融合与连接语义，不导入未选候选。
+- `Art direction`只读取style lock。Style09终端执行锁必须唯一且位于提示词绝对结尾。
+- `Typography & exact text`是唯一可见文字合同，逐字来自`content_lock`、`final_text`和`generation_handoff.required_text`的一致交集。
+- `Hard constraints`声明画布、模板禁绘、事实禁编、后台字段禁绘和逐页退化禁项。
 
-提示中必须说明：
+审批稿、canonical prompt、manifest prompt和实际发送prompt必须复用这一编译结果。用户可以在审批阶段修改完整九段式prompt，但进入manifest前仍必须通过九段结构、可见文字、后台ID和Style09终端锁校验；审批后不得追加enrichment或另一套风格/构图模块。
 
-- 所选媒介承担什么业务含义；媒介自由时不得提前指定。
-- 哪些文字归属于哪些对象、动作、关系或结果。
-- 哪些连接是主链，哪些只用邻接或边界表达。
-- 媒介与文字不能形成两个互不关联的结构。
+## 旧结构预览
 
-## 结构约束与风格来源
-
-结构约束只描述结构退化，例如：
-
-- keep one primary structure
-- bind every P0 evidence unit
-- do not duplicate one judgment as another primary region
-- do not map bullet count directly to visual-object count
-- do not create a second process, result chain or summary narrative
-- do not separate a complete text structure from an unrelated visual region
-- do not substitute an abstract center for a semantic node or relation
-
-字体、字号、颜色、线条、边框、形状、人物表现、阴影和材质不得写入结构模块。只输出：
-
-```text
-[Style source]
-<style_source_ref>
-```
-
-最终提示词编译器负责读取该来源并装配风格；视觉结构消费者不得把`[Style source]`当作构图正文导入。
-
-CyberPPT工作台必须由正式审计器执行本步骤。只在当前Skill包、构建器、校验器、schema、`visual-design-input.json`、候选决策回执和视觉规格哈希全部与上次报告一致时才允许复用既有提示词；任一变化都必须重建。
-
-## 生成器交接
-
-JSON规格生成提示模块：
+以下命令仍可为独立Skill调用或旧项目生成`generation-prompts.md`结构预览：
 
 ```bash
 python3 scripts/build_generation_prompt.py deck.json --output deck_prompts.md
-```
-
-只生成某页：
-
-```bash
 python3 scripts/build_generation_prompt.py deck.json --page 7 --output page_07_prompt.md
 ```
+
+该输出仅用于人工结构审阅和兼容诊断，不是CyberPPT生产提示词来源，不得追加到`artifact-spec-v2`结果中。

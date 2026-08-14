@@ -117,7 +117,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 
 工作台输入给出`expression_constraints`时，每个候选还必须写入`expression_fit`：保留收到的`form`，说明满足的中性结构约束、阅读关系与信息均衡策略。`constraint_status`只能为`default_profile`或`adapted`；默认档案的`changed_constraints`与`deviation_reason`必须为空，适配档案必须列出改动项并说明业务理由及保留的表达核心。表达档案约束关系与阅读，不得推导为卡片、列、箭头、循环、金字塔或矩阵等固定视觉模板。
 
-每个候选还必须写入`selection_rationale`：包含页面使命适配说明，以及由`single_focus`、`text_capacity`、`relation_clarity`、`composition_stability`、`anti_pattern_risk`五项组成的可生成性评分；每项为0–20整数，总分必须为100，并列出风险。未选候选必须写入相对已选方案的具体`rejection_rationale`，说明焦点、关系、容量或阅读上的实际劣势；不得只写“得分更低”“不够美观”“一般”或“不适合”。
+每个候选还必须写入候选自身的`visual_thesis`和`selection_rationale`：`visual_thesis`必须说明画面要证明的对象关系，不能复用页面核心结论充当占位；`selection_rationale`包含页面使命适配说明，以及由`single_focus`、`text_capacity`、`relation_clarity`、`composition_stability`、`anti_pattern_risk`五项组成的可生成性评分；每项为0–20整数，总分必须为100，并列出风险。未选候选必须写入相对已选方案的具体`rejection_rationale`，说明焦点、关系、容量或阅读上的实际劣势；不得只写“得分更低”“不够美观”“一般”或“不适合”。
 
 每页必须写入`relationship_coverage`，逐项登记`business_relationships`与`stage01_relationship_features.actions`中的关键关系，标记为`primary`、`secondary`或有业务理由的`not_rendered`，并引用当前证据单元和锁定文字ID。页面使命、核心判断或P0证据所必需的关系不得标记为`not_rendered`。
 
@@ -166,7 +166,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - `<原文件名>_视觉结构设计.json`：机器校验和后续自动化。
 - `<原文件名>_视觉结构校验.json`：校验结果。
 
-CyberPPT工作台模式只输出`visual/visual-design-decisions.json`，保留每页至少三项候选、完整证据覆盖、候选评分维度、`selection_rationale`、未选候选的`rejection_rationale`、`relationship_coverage`、选中候选、`expression_fit`及输入哈希。每页必须包含`stage01_visual_note_disposition`，分别记录`inherited`、`adjusted`、`rejected`的上游视觉特征及专业理由；不得用一句“已参考”代替逐项处置。`trace_refs`仅用于审计追溯，不得进入结构提示或上屏文字。随后由仓库`execute-visual-structure`命令唯一生成`deck-visual-spec.json`与`script-visual-structure.md`，并由仓库命令记录执行器、模型、Skill包和编译产物哈希；仅生成调用说明不视为执行完成。
+CyberPPT工作台模式只输出`visual/visual-design-decisions.json`，schema固定为`cyberppt.visual_design_decisions.v3`，保留每页至少三项候选、每项候选自己的`visual_thesis`、完整证据覆盖、候选评分维度、`selection_rationale`、未选候选的`rejection_rationale`、`relationship_coverage`、选中候选、`expression_fit`及输入哈希。每页还必须提供`execution_design`，完整写明`business_object`、`visual_focus`、`semantic_role`、布尔值`use_scene`、`scene_type`、`text_integration_method`、`spatial_organization`和`relationship_encoding`。每页必须包含`stage01_visual_note_disposition`，分别记录`inherited`、`adjusted`、`rejected`的上游视觉特征及专业理由；不得用一句“已参考”代替逐项处置。`trace_refs`仅用于审计追溯，不得进入结构提示或上屏文字。随后由仓库`execute-visual-structure`命令唯一生成`deck-visual-spec.json`与`script-visual-structure.md`，并由仓库命令记录执行器、模型、Skill包和编译产物哈希；仅生成调用说明不视为执行完成。
 
 只处理单页时，可输出单页Markdown和单页JSON。
 
@@ -178,9 +178,9 @@ CyberPPT工作台模式只输出`visual/visual-design-decisions.json`，保留�
 python3 scripts/build_generation_prompt.py <视觉规格.json> --output <生图提示.md>
 ```
 
-生成模块必须先给结构指令，再给上屏文字和外部风格来源引用；字段名和指令文字不得成为画面文字。结构模块本身不得复制风格规则。
+该脚本只为独立Skill调用或旧项目生成结构预览，不是CyberPPT正式生产提示词。结构预览必须先给结构指令，再给上屏文字和外部风格来源引用；字段名和指令文字不得成为画面文字。结构模块本身不得复制风格规则。
 
-在CyberPPT工作台模式中，正式`visual-structure-audit`拥有提示词重建权；Skill只交付候选决策回执，`execute-visual-structure`编译JSON规格和Markdown规格，审计通过后再按当前Skill、构建器、输入与决策哈希重建提示词。
+在CyberPPT工作台模式中，`visual-structure-audit`重建的`generation-prompts.md`仅用于结构预览和兼容诊断；不得把它追加、替换或提升为正式ImageGen prompt。正式提示词由仓库`artifact-spec-v2`编译器从已审计的Stage 02 handoff、`deck-visual-spec.json`和style lock投影为九段式artifact spec，并在审批、canonical和manifest链路复用同一结果。
 
 ### 8. 校验并修复
 
