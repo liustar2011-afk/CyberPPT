@@ -20,6 +20,13 @@ _RELATION_VISIBILITY_SIGNALS = {
     "supports": ("支撑", "保障", "赋能", "服务于", "→", "->"),
     "depends_on": ("依赖", "以", "为基础", "前提", "→", "->"),
     "composed_of": ("构成", "由", "分层", "层级", "包括", "→", "->"),
+    # The Outline projection emits "contains" (not "composed_of") for every
+    # heading-containment relation -- onscreen_expression.py's _RELATION_FORMS
+    # already treats the two as synonyms for form selection, but this table
+    # never gained a "contains" entry, so DECLARED_RELATION_NOT_VISIBLE fired
+    # on essentially every content page that has real sub-headings, no matter
+    # how the module structure was written.
+    "contains": ("构成", "由", "分层", "层级", "包括", "→", "->"),
     "collaborates_with": ("协同", "配合", "共同", "联动", "→", "->"),
     "feedback_to": ("反馈", "回流", "闭环", "迭代", "循环", "→", "->"),
 }

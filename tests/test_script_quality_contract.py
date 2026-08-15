@@ -4279,6 +4279,37 @@ class RelationshipContinuityTests(unittest.TestCase):
         self.assertNotIn("DECLARED_RELATION_NOT_VISIBLE", codes)
         self.assertNotIn("ONSCREEN_FALSE_RELATION_PARALLEL", codes)
 
+    def test_contains_relation_is_recognized_as_a_composed_of_synonym(self) -> None:
+        # The Outline projection emits "contains" (not "composed_of") for
+        # every heading-containment relation; the visibility signal table
+        # must recognize it the same way onscreen_expression.py already does.
+        first = self._page(
+            1,
+            mission="说明总体定位的三大方向",
+            core_message="总体定位由三大方向构成",
+            onscreen="定位判断；国家节点方向；运营平台方向；协同载体方向",
+            visual="三大方向共同构成总体定位。",
+            relations=[{"relation": "contains", "subject": "总体定位", "objects": ["国家节点方向"]}],
+        )
+
+        codes = {issue.code for issue in self._issues(first)}
+
+        self.assertNotIn("DECLARED_RELATION_NOT_VISIBLE", codes)
+
+    def test_contains_relation_still_blocks_when_no_signal_is_visible(self) -> None:
+        first = self._page(
+            1,
+            mission="说明总体定位的三大方向",
+            core_message="总体定位由三大方向构成",
+            onscreen="国家节点方向；运营平台方向；协同载体方向",
+            visual="三个模块并排展示。",
+            relations=[{"relation": "contains", "subject": "总体定位", "objects": ["国家节点方向"]}],
+        )
+
+        codes = {issue.code for issue in self._issues(first)}
+
+        self.assertIn("DECLARED_RELATION_NOT_VISIBLE", codes)
+
     def test_warns_when_declared_prerequisite_is_not_formed(self) -> None:
         first = self._page(
             1,
