@@ -7,6 +7,7 @@ from hashlib import sha256
 from pathlib import Path
 from unittest.mock import patch
 
+import cyberppt.commands.run_autonomous as run_autonomous_module
 from cyberppt.autonomous_contract import ContractError, load_contract, validate_source_boundary
 from cyberppt.commands.run_autonomous import GateBlocked, _assert_page_authoring, run_autonomous
 
@@ -79,6 +80,15 @@ class AutonomousContractTests(unittest.TestCase):
 
 
 class RunAutonomousTests(AutonomousContractTests):
+    def _write_valid_source_foundation_handoff(self) -> Path:
+        report = self.project / "integration" / "cyberppt-handoff-report.json"
+        report.parent.mkdir(parents=True, exist_ok=True)
+        report.write_text(
+            json.dumps({"projection_validation": {"status": "ok"}}),
+            encoding="utf-8",
+        )
+        return report
+
     def _write_stage01_inputs(self) -> Path:
         analysis = self.project / "workbench" / "stages" / "01-analysis"
         analysis.mkdir(parents=True)
@@ -119,6 +129,7 @@ class RunAutonomousTests(AutonomousContractTests):
         script = self.project / "workbench" / "scripts" / "final" / "script-final.md"
         script.parent.mkdir(parents=True)
         script.write_text("# final\n\n" + page, encoding="utf-8")
+        self._write_valid_source_foundation_handoff()
         return script
 
     def test_failed_semantic_gate_short_circuits_before_stage02(self) -> None:
@@ -136,6 +147,50 @@ class RunAutonomousTests(AutonomousContractTests):
         self.assertEqual("semantic-check", report["failed_gate"])
         handoff.assert_not_called()
         self.assertTrue(Path(str(report["report_path"])).is_file())
+
+    def test_invalid_source_foundation_handoff_blocks_before_legacy_preparation(self) -> None:
+        self._write_stage01_inputs()
+        report = self._write_valid_source_foundation_handoff()
+        report.write_text(
+            json.dumps({"projection_validation": {"status": "error"}}),
+            encoding="utf-8",
+        )
+
+        with patch("cyberppt.commands.run_autonomous.prepare_source_map") as prepare:
+            code, result = run_autonomous(self._contract())
+
+        self.assertEqual(1, code)
+        self.assertEqual("source-foundation", result["failed_gate"])
+        prepare.assert_not_called()
+
+    def test_valid_source_foundation_handoff_does_not_recompile_source_truth(self) -> None:
+        self._write_stage01_inputs()
+        report = self._write_valid_source_foundation_handoff()
+        with (
+            patch("cyberppt.commands.run_autonomous.prepare_source_map"),
+            patch(
+                "cyberppt.commands.run_autonomous.run_source_map_audit",
+                return_value=(0, {"status": "passed"}),
+            ),
+            patch(
+                "cyberppt.commands.run_autonomous.run_semantic_understanding_audit",
+                return_value=(0, {"status": "passed"}),
+            ),
+            patch(
+                "cyberppt.commands.run_autonomous.run_source_truth_audit",
+                return_value=(1, {"status": "rewrite_required"}),
+            ),
+            patch.object(run_autonomous_module, "compile_source_truth", create=True) as compile_truth,
+        ):
+            code, result = run_autonomous(self._contract())
+
+        self.assertEqual(1, code)
+        self.assertEqual("source-truth-audit", result["failed_gate"])
+        source_foundation_gate = next(
+            gate for gate in result["gates"] if gate["name"] == "source-foundation"
+        )
+        self.assertEqual(str(report.resolve()), source_foundation_gate["artifact"])
+        compile_truth.assert_not_called()
 
     def test_candidate_outline_is_rejected_before_page_authoring(self) -> None:
         self._write_stage01_inputs()
@@ -203,7 +258,6 @@ class RunAutonomousTests(AutonomousContractTests):
             patch("cyberppt.commands.run_autonomous.prepare_source_map"),
             patch("cyberppt.commands.run_autonomous.run_source_map_audit", return_value=(0, {"status": "passed"})),
             patch("cyberppt.commands.run_autonomous.run_semantic_understanding_audit", return_value=(0, {"status": "passed"})),
-            patch("cyberppt.commands.run_autonomous.compile_source_truth"),
             patch("cyberppt.commands.run_autonomous.run_source_truth_audit", return_value=(0, {"status": "passed"})),
             patch("cyberppt.commands.run_autonomous.run_outline_audit", return_value=(0, {"status": "passed"})),
             patch("cyberppt.commands.run_autonomous.run_script_audit", return_value=(0, {"status": "passed"})),
@@ -234,7 +288,6 @@ class RunAutonomousTests(AutonomousContractTests):
             patch("cyberppt.commands.run_autonomous.prepare_source_map"),
             patch("cyberppt.commands.run_autonomous.run_source_map_audit", return_value=(0, {"status": "passed"})),
             patch("cyberppt.commands.run_autonomous.run_semantic_understanding_audit", return_value=(0, {"status": "passed"})),
-            patch("cyberppt.commands.run_autonomous.compile_source_truth"),
             patch("cyberppt.commands.run_autonomous.run_source_truth_audit", return_value=(0, {"status": "passed"})),
             patch("cyberppt.commands.run_autonomous.run_outline_audit", return_value=(0, {"status": "passed"})),
             patch("cyberppt.commands.run_autonomous.run_script_audit", return_value=(0, {"status": "passed"})),
@@ -259,7 +312,6 @@ class RunAutonomousTests(AutonomousContractTests):
             patch("cyberppt.commands.run_autonomous.prepare_source_map"),
             patch("cyberppt.commands.run_autonomous.run_source_map_audit", return_value=(0, {"status": "passed"})),
             patch("cyberppt.commands.run_autonomous.run_semantic_understanding_audit", return_value=(0, {"status": "passed"})),
-            patch("cyberppt.commands.run_autonomous.compile_source_truth"),
             patch("cyberppt.commands.run_autonomous.run_source_truth_audit", return_value=(0, {"status": "passed"})),
             patch("cyberppt.commands.run_autonomous.run_outline_audit", return_value=(0, {"status": "passed"})),
             patch("cyberppt.commands.run_autonomous.run_script_audit", return_value=(0, {"status": "passed"})),

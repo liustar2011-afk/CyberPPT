@@ -14,13 +14,20 @@ For every task that reads source material or creates, regenerates, repairs, audi
 6. existing `cyberppt-write-single-page`
 7. existing final-script, Stage 02, image/SVG/PPTX pipeline
 
+### Outline route selection
+
+Choose exactly one route after the mandatory Source Foundation invocation:
+
+- **Foundation-native:** use `ppt-outline-planning` to author and validate `deck-brief.json`/`page-plan.json`, then use `cyberppt-handoff` to project them. Do not run `compile-outline-draft` or `cyberppt-author-stage01-outline` over the approved Foundation-native Outline.
+- **Legacy compatibility:** only for an existing compatibility project or an explicit legacy request. Run `compile-outline-draft` as a source-bounded candidate inventory, then call `cyberppt-author-stage01-outline`, then run `outline-audit`. Do not mix this route with Foundation-native page planning.
+
 ## Default writing and structure policy
 
 默认采用政府公文式、央企正式交流语体，默认按源材料内容写作并保留章节标题、内容标题和先后顺序。只允许因 PPT 单页容量进行连续拆页，或在不改变主题归属、事实强度、责任、条件、状态和源顺序的前提下合并重复内容。
 
 不得自行增加“问题路径”“交流路径”、咨询式金句、营销标题或源材料没有的章节逻辑。目录使用源材料目录标题，源材料没有明确目录标题时使用“目录”。只有用户明确要求重构叙事、咨询化、路演化、改名、重排或压缩重组时，才可解除默认锁定；一般的领导汇报、合作交流或高端交流用途不构成重构授权。
 
-For an existing project with approved source-foundation outputs, reuse and validate those outputs before downstream work; do not rebuild them merely to satisfy the invocation. The compatibility projection compiler may still be run when the user explicitly requests regeneration, but only after the mandatory Skill invocation. Do not silently route source-material or Outline work through the legacy front end.
+For an existing project with approved source-foundation outputs, reuse and validate those outputs before downstream work; do not rebuild them merely to satisfy the invocation. Select the Foundation-native route by default. The compatibility projection compiler may still be run only under the explicit Legacy compatibility route and only after the mandatory Skill invocation. Do not silently route source-material or Outline work through the legacy front end.
 
 ## Authority
 

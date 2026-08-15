@@ -15,7 +15,9 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 单人、单机生成脚本的默认且唯一运行流程。凡任务涉及源材料、Source Truth、语义论点模型、Outline/page plan、`compile-source-truth`、`compile-outline-draft`、Outline 重跑、Outline 修复或 Outline 审计，必须先调用仓库 Skill `cyberppt-source-foundation`；已有项目可以复用已验证的 Source Foundation 产物，但不得跳过该 Skill。完成前置调用后，才进入本轻量 Stage 01 运行流程。仓库不再提供哈希绑定的审批/升级/重试链；结构化内容校验器（`source-truth-audit`、`outline-audit`、`script-audit` 等）仍照常运行，只是不持久化审批、attempt、escalation 或 artifact ledger 状态。
 
-流程不改变底稿结构，不复制 Source Truth，不建立平行运行目录。继续使用项目现有 `source/`、`workbench/stages/01-analysis/source-truth.json`、`outline.json`、`workbench/scripts/drafts/` 和最终脚本路径。用户交互发生在对话中，不能用确认文件、状态 JSON、哈希或回执代替。
+流程不改变底稿结构，不复制 Source Truth，不建立平行运行目录。继续使用项目现有 `source/`、`workbench/stages/01-analysis/source-truth.json`、`outline.json`、`workbench/scripts/drafts/` 和最终脚本路径。用户交互发生在对话中，不能用确认文件、状态 JSON、哈希或回执代替。`run-autonomous` 例外同样必须先消费通过 `integration/cyberppt-handoff-report.json` 的 Foundation 投影，并不得重新编译覆盖该投影的 Source Truth。
+
+Outline 路线必须二选一，不得混用：Foundation-native 路线由 `ppt-outline-planning` 编写并验证 `deck-brief.json`/`page-plan.json`，再由 `cyberppt-handoff` 投影；Legacy compatibility 路线才运行 `compile-outline-draft`，并随后调用 `cyberppt-author-stage01-outline` 完成作者化。`compile-outline-draft` 仅用于兼容投影，不得覆盖已验证的 Foundation-native Outline。
 
 必须保留四个对话节点：
 

@@ -24,7 +24,6 @@ from cyberppt.semantic_understanding import run_semantic_understanding_audit
 from cyberppt.source_document_map import prepare_source_map, run_source_map_audit
 from cyberppt.stage02_handoff import audit_stage02_handoff, prepare_stage02_handoff
 from cyberppt.script_quality_contract import parse_script_path
-from cyberppt.stage01_compiler import compile_source_truth
 from scripts.imagegen_pipeline.page_manifest import output_variants_for_mode
 
 
@@ -33,6 +32,7 @@ OUTLINE_PATH = "workbench/stages/01-analysis/outline.json"
 SOURCE_TRUTH_PATH = "workbench/stages/01-analysis/source-truth.json"
 DRAFTS_DIR = "workbench/scripts/drafts"
 FINAL_SCRIPT_PATH = "workbench/scripts/final/script-final.md"
+SOURCE_FOUNDATION_REPORT = "integration/cyberppt-handoff-report.json"
 
 
 class GateBlocked(RuntimeError):
@@ -66,6 +66,32 @@ def _require_passed(
     if code != 0 or status != "passed":
         raise GateBlocked(name, f"{name} did not pass (status={status!r}, exit_code={code})", artifact)
     gates.append({"name": name, "status": "passed", "artifact": str(artifact)})
+
+
+def _require_source_foundation(project: Path) -> Path:
+    report_path = project / SOURCE_FOUNDATION_REPORT
+    if not report_path.is_file():
+        raise GateBlocked(
+            "source-foundation",
+            "validated Source Foundation handoff is missing",
+            report_path,
+        )
+    try:
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise GateBlocked(
+            "source-foundation",
+            f"invalid Source Foundation handoff: {exc.msg}",
+            report_path,
+        ) from exc
+    validation = report.get("projection_validation") if isinstance(report, dict) else None
+    if not isinstance(validation, dict) or validation.get("status") != "ok":
+        raise GateBlocked(
+            "source-foundation",
+            "Source Foundation projection validation is not ok",
+            report_path,
+        )
+    return report_path
 
 
 def _assert_page_authoring(project: Path) -> Path:
@@ -286,13 +312,14 @@ def run_autonomous(
     image_timeout: int = 600,
     resume: bool = False,
 ) -> tuple[int, dict[str, Any]]:
-    """Run existing deterministic gates in order and never skip a failed gate.
+    """Run deterministic gates after validating the Source Foundation handoff.
 
     Content authoring remains an explicit input to the runner: the command
     deliberately refuses candidate Outline, absent page authoring, unexecuted
     visual decisions, and missing ImageGen proof instead of fabricating them.
     An autonomous contract authorizes deterministic verification while keeping
     the current full-script audit as the sole content precondition for Stage 02.
+    The projected Source Truth is audited in place and is never recompiled here.
     """
 
     contract = load_contract(contract_path)
@@ -302,10 +329,11 @@ def run_autonomous(
     try:
         validate_source_boundary(contract)
         gates.append({"name": "source-boundary", "status": "passed", "artifact": str(contract.project / "source")})
+        foundation_report = _require_source_foundation(contract.project)
+        gates.append({"name": "source-foundation", "status": "passed", "artifact": str(foundation_report)})
         prepare_source_map(contract.project)
         _require_passed(gates, "source-map-check", run_source_map_audit(contract.project), contract.project / "workbench/stages/00-source-map/source-map-audit.json")
         _require_passed(gates, "semantic-check", run_semantic_understanding_audit(contract.project), contract.project / "workbench/stages/00-semantic-understanding/semantic-understanding.md")
-        compile_source_truth(contract.project)
         _require_passed(gates, "source-truth-audit", run_source_truth_audit(contract.project, contract.project / SOURCE_TRUTH_PATH), contract.project / SOURCE_TRUTH_PATH)
         _require_passed(gates, "outline-audit", run_outline_audit(contract.project, contract.project / OUTLINE_PATH, source_truth_path=contract.project / SOURCE_TRUTH_PATH), contract.project / OUTLINE_PATH)
         authoring = _assert_page_authoring(contract.project)
