@@ -5,8 +5,7 @@ import importlib.util
 import json
 from pathlib import Path
 import tempfile
-
-import pytest
+import unittest
 
 from cyberppt.visual_structure_contract import (
     audit_visual_design_package,
@@ -228,7 +227,12 @@ def _payloads() -> tuple[dict, dict, dict]:
                     {"id": "E1", "priority": "P0"},
                     {"id": "E2", "priority": "P0"},
                 ],
-                "semantic_graph": {"decision_relationship": "Input supports Result"},
+                "semantic_graph": {
+                    "decision_relationship": "Input supports Result",
+                    "business_relationships": [
+                        {"subject": "Input", "objects": ["Result"], "relation": "supports"}
+                    ],
+                },
                 "visual_decision": {
                     "visual_thesis": "Input converges on the result so the support relationship is immediately visible.",
                     "spatial_organization": "Input converges on Result",
@@ -432,27 +436,56 @@ def test_audit_rejects_expression_contract_hash_drift() -> None:
     assert "SPEC_EXPRESSION_CONTRACT_DRIFTED" in {item["code"] for item in report["blocking_issues"]}
 
 
-@pytest.mark.parametrize("form", sorted(VALID_EXPRESSION_FORMS))
-def test_audit_rejects_candidate_that_omits_a_form_core_requirement(form: str) -> None:
-    design, decisions, spec = _payloads()
-    design["pages"][0]["onscreen_expression"]["form"] = form
-    design["pages"][0]["expression_constraints"] = expression_constraints(form)
-    decisions["pages"][0]["onscreen_expression_disposition"]["form"] = form
-    for candidate in decisions["pages"][0]["candidates"]:
-        candidate["expression_fit"] = _expression_fit(form)
-    decisions["pages"][0]["candidates"][0]["expression_fit"]["satisfied_constraints"] = []
-    selected = decisions["pages"][0]["candidates"][0]
-    spec["pages"][0]["expression_contract"] = {
-        "form": form,
-        "constraints_sha256": expression_constraints_sha256(expression_constraints(form)),
-        "selected_candidate_id": selected["id"],
-        "fit_status": "default_profile",
-        "reading_relation": selected["expression_fit"]["reading_relation"],
-        "balance_strategy": selected["expression_fit"]["balance_strategy"],
-        "deviation_reason": "",
-    }
-    report = _audit(design, decisions, spec)
-    assert "CANDIDATE_EXPRESSION_CORE_MISSING" in {item["code"] for item in report["blocking_issues"]}
+def test_audit_rejects_candidate_that_omits_a_form_core_requirement() -> None:
+    for form in sorted(VALID_EXPRESSION_FORMS):
+        design, decisions, spec = _payloads()
+        design["pages"][0]["onscreen_expression"]["form"] = form
+        design["pages"][0]["expression_constraints"] = expression_constraints(form)
+        decisions["pages"][0]["onscreen_expression_disposition"]["form"] = form
+        for candidate in decisions["pages"][0]["candidates"]:
+            candidate["expression_fit"] = _expression_fit(form)
+        decisions["pages"][0]["candidates"][0]["expression_fit"]["satisfied_constraints"] = []
+        selected = decisions["pages"][0]["candidates"][0]
+        spec["pages"][0]["expression_contract"] = {
+            "form": form,
+            "constraints_sha256": expression_constraints_sha256(expression_constraints(form)),
+            "selected_candidate_id": selected["id"],
+            "fit_status": "default_profile",
+            "reading_relation": selected["expression_fit"]["reading_relation"],
+            "balance_strategy": selected["expression_fit"]["balance_strategy"],
+            "deviation_reason": "",
+        }
+        report = _audit(design, decisions, spec)
+        assert "CANDIDATE_EXPRESSION_CORE_MISSING" in {
+            item["code"] for item in report["blocking_issues"]
+        }, form
+
+
+class VisualRelationshipContractTests(unittest.TestCase):
+    def test_audit_rejects_business_relationship_drift(self) -> None:
+        design, decisions, spec = _payloads()
+        spec["pages"][0]["semantic_graph"]["business_relationships"][0][
+            "relation"
+        ] = "contains"
+
+        report = _audit(design, decisions, spec)
+
+        self.assertIn(
+            "BUSINESS_RELATIONSHIP_DRIFT",
+            {item["code"] for item in report["blocking_issues"]},
+        )
+
+    def test_audit_accepts_page_without_authoritative_business_relationships(self) -> None:
+        design, decisions, spec = _payloads()
+        design["pages"][0]["business_relationships"] = []
+        design["pages"][0]["stage01_relationship_features"]["actions"] = []
+        decisions["pages"][0]["relationship_coverage"] = []
+        spec["pages"][0]["semantic_graph"]["business_relationships"] = []
+
+        report = _audit(design, decisions, spec)
+
+        self.assertEqual("passed", report["status"])
+        self.assertEqual([], report["blocking_issues"])
 
 
 def test_every_registered_form_has_a_default_candidate_profile() -> None:

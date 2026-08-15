@@ -15,8 +15,8 @@ from typing import Any, Iterable, Sequence
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts.dual_image_overlay.deliverable_prompt import parse_pages
-from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_codex_vision_text
+from scripts.imagegen_pipeline.deliverable_prompt import parse_pages
+from scripts.imagegen_pipeline.providers.codex_oauth_image import run_codex_vision_text
 
 
 PAGE_HEADING_RE = re.compile(r"^##\s*第\s*(?P<num>\d+)\s*页(?:[:：]|\s+)(?P<title>.+?)\s*$", re.M)

@@ -33,6 +33,18 @@ class EvidenceSpec:
 
 
 @dataclass(frozen=True)
+class RelationshipSpec:
+    subject: str
+    relation: str
+    objects: tuple[str, ...]
+    direction: str = ""
+    condition: str = ""
+    modality: str = ""
+    basis: str = ""
+    confidence: str = ""
+
+
+@dataclass(frozen=True)
 class VisualCarrierSpec:
     business_object: str
     semantic_role: str
@@ -91,7 +103,7 @@ class PageArtifactSpec:
     communication_goal: CommunicationGoalSpec
     visual_thesis: str
     evidence: tuple[EvidenceSpec, ...]
-    relationships: tuple[str, ...]
+    relationships: tuple[RelationshipSpec, ...]
     visual_carrier: VisualCarrierSpec
     composition: CompositionSpec
     art_direction: ArtDirectionSpec
@@ -117,8 +129,8 @@ def _strings(value: object) -> tuple[str, ...]:
 
 
 def _style_metadata(style_lock: Path) -> ArtDirectionSpec:
-    from scripts.dual_image_overlay.deliverable_prompt import style_contract
-    from scripts.dual_image_overlay.style_library import load_style_lock
+    from scripts.imagegen_pipeline.deliverable_prompt import style_contract
+    from scripts.imagegen_pipeline.style_library import load_style_lock
 
     payload = load_style_lock(style_lock)
     raw_style = payload.get("style") if isinstance(payload, dict) else None
@@ -164,6 +176,39 @@ def _body_lock(visual_page: Mapping[str, object]) -> tuple[str, ...]:
     )
 
 
+def _business_relationships(
+    value: object,
+    field: str,
+) -> tuple[RelationshipSpec, ...]:
+    if not isinstance(value, list):
+        raise ValueError(f"artifact spec requires {field} to be an array")
+    relationships: list[RelationshipSpec] = []
+    for index, item in enumerate(value, 1):
+        if not isinstance(item, dict):
+            raise ValueError(f"artifact spec {field}[{index}] must be an object")
+        raw_objects = item.get("objects")
+        objects = _strings(raw_objects)
+        if not objects:
+            raise ValueError(f"artifact spec requires {field}[{index}].objects")
+        relationships.append(
+            RelationshipSpec(
+                subject=_required_text(
+                    item.get("subject"), f"{field}[{index}].subject"
+                ),
+                relation=_required_text(
+                    item.get("relation"), f"{field}[{index}].relation"
+                ),
+                objects=objects,
+                direction=str(item.get("direction") or "").strip(),
+                condition=str(item.get("condition") or "").strip(),
+                modality=str(item.get("modality") or "").strip(),
+                basis=str(item.get("basis") or "").strip(),
+                confidence=str(item.get("confidence") or "").strip(),
+            )
+        )
+    return tuple(relationships)
+
+
 def build_page_artifact_spec(
     *,
     handoff_page: Mapping[str, object],
@@ -171,6 +216,7 @@ def build_page_artifact_spec(
     style_lock: Path,
     handoff_sha256: str,
     visual_source_sha256: str,
+    planning_policy: Mapping[str, object] | None = None,
 ) -> PageArtifactSpec:
     """Build the nine-part projection without introducing a new authority."""
 
@@ -245,9 +291,34 @@ def build_page_artifact_spec(
 
     semantic_graph = visual_page.get("semantic_graph")
     semantic_graph = semantic_graph if isinstance(semantic_graph, dict) else {}
-    relationships = (
-        _required_text(semantic_graph.get("decision_relationship"), "decision relationship"),
-    )
+    handoff_relationships = visual_input.get("business_relationships")
+    visual_relationships = semantic_graph.get("business_relationships")
+    if handoff_relationships == [] and visual_relationships == []:
+        relationships = ()
+    elif (
+        handoff_relationships is None or handoff_relationships == []
+    ) and (
+        visual_relationships is None or visual_relationships == []
+    ):
+        relationships = (
+            RelationshipSpec(
+                subject=_required_text(
+                    semantic_graph.get("decision_relationship"),
+                    "decision relationship",
+                ),
+                relation="",
+                objects=(),
+            ),
+        )
+    else:
+        if handoff_relationships != visual_relationships:
+            raise ValueError(
+                "artifact spec business relationship drifted between handoff and visual spec"
+            )
+        relationships = _business_relationships(
+            visual_relationships,
+            "business relationships",
+        )
     visual_decision = visual_page.get("visual_decision")
     visual_decision = visual_decision if isinstance(visual_decision, dict) else {}
     hierarchy = visual_decision.get("visual_hierarchy")
@@ -279,6 +350,15 @@ def build_page_artifact_spec(
         str(generation_handoff.get("title_exclusion_instruction") or "").strip(),
     )))
     page_constraints = tuple(value for value in page_constraints if value)
+    policy = planning_policy if isinstance(planning_policy, Mapping) else {}
+    if (
+        str(policy.get("source_structure_mode") or "").strip() == "locked"
+        or str(policy.get("source_content_mode") or "").strip() == "preserve"
+    ):
+        page_constraints = tuple(dict.fromkeys((
+            *page_constraints,
+            "Preserve the approved source actors, relationships, conditions, status, and factual strength without reinterpretation.",
+        )))
 
     return PageArtifactSpec(
         page_id=visual_id,
@@ -386,6 +466,9 @@ def load_project_page_artifact_specs(
             style_lock=style_lock,
             handoff_sha256=handoff_sha,
             visual_source_sha256=visual_sha,
+            planning_policy=handoff.get("planning_policy")
+            if isinstance(handoff.get("planning_policy"), dict)
+            else None,
         )
         for page_number, handoff_page in content_handoff.items()
     }

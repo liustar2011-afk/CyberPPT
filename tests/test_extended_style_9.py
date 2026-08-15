@@ -5,15 +5,15 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from cyberppt.cli import build_parser
-from scripts.dual_image_overlay.cyberppt_pair_manifest import main as pair_manifest_main
-from scripts.dual_image_overlay.deliverable_prompt import (
+from scripts.imagegen_pipeline.page_manifest import main as pair_manifest_main
+from scripts.imagegen_pipeline.deliverable_prompt import (
     PageBlock,
     _style09_page_semantic_tags,
     enforce_style09_terminal_lock,
     style_contract,
 )
-from scripts.dual_image_overlay.imagegen_handoff import render_content_first_style_contract
-from scripts.dual_image_overlay.style_library import (
+from scripts.imagegen_pipeline.imagegen_handoff import render_content_first_style_contract
+from scripts.imagegen_pipeline.style_library import (
     default_style_choices,
     load_style_lock,
     load_style_library,
@@ -121,12 +121,11 @@ def test_style_nine_lock_records_extension_selection() -> None:
     assert payload["style"]["name"] == "纯白 + 深蓝领导汇报"
     assert payload["policy"]["selected_from_default_8"] is False
     assert payload["policy"]["selected_from_extension"] is True
-    assert "### 风格主张" in payload["style"]["prompt_contract"]
-    assert "图标默认数量为0" in payload["style"]["prompt_contract"]
-    assert "连接关系保持少量、纤细、清楚并避开文字" in payload["style"]["prompt_contract"]
-    assert "### 正向构图语言" in payload["style"]["prompt_contract"]
-    assert "### 完整性与整洁" in payload["style"]["prompt_contract"]
-    assert "图标默认数量为 0" in payload["style"]["prompt_contract"]
+    assert "### Style proposition" in payload["style"]["prompt_contract"]
+    assert "Icon count is `0` by default" in payload["style"]["prompt_contract"]
+    assert "### Reconstructable connectors" in payload["style"]["prompt_contract"]
+    assert "### One coherent business relationship field" in payload["style"]["prompt_contract"]
+    assert "### Clean reconstruction hierarchy" in payload["style"]["prompt_contract"]
     assert "Final ImageGen execution lock" in payload["style"]["prompt_contract"]
     assert payload["reference_image"]["required_for_every_page"] is True
     assert payload["reference_image"]["path"].endswith("palette-09.png")
@@ -167,13 +166,11 @@ def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         contract = render_content_first_style_contract(lock)
 
-    assert "### 风格主张" in contract
-    assert "### 正向构图语言" in contract
-    assert "### 表面与组件语言" in contract
-    assert "平台、中枢、引擎、中心" in contract
-    assert "每一处都应直接解释相应的业务对象、动作、状态、边界或结果" in contract
-    assert "图标默认数量为 0" in contract
-    assert "具体选择由页面语义和 Stage02 结构决定" in contract
+    assert "### Style proposition" in contract
+    assert "### One coherent business relationship field" in contract
+    assert "### Surface, material, and depth" in contract
+    assert "platform, hub, engine, center" in contract
+    assert "Icon count is `0` by default" in contract
     assert "semantic_tags:" not in contract
     assert "style09:scope" not in contract
     assert "### Final ImageGen execution lock — hard" in contract

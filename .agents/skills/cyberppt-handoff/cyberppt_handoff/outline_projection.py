@@ -6,6 +6,98 @@ from .mappings import CHAIN_ROLE_TO_DUTY, PAGE_ROLE, VISUAL_INTENT
 from .source_projection import _anchors
 from .semantic_projection import layer_four_page_node_id
 
+POLICY_FIELDS = (
+    "writing_style_mode",
+    "source_structure_mode",
+    "source_title_mode",
+    "source_order_mode",
+    "source_content_mode",
+    "capacity_split_allowed",
+    "duplicate_content_merge_allowed",
+    "reframing_requires_explicit_user_request",
+    "agenda_mode",
+)
+
+
+def _project_planning_policy(
+    payloads: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    workpack_policy = (payloads.get("workpack") or {}).get("planning_policy") or {}
+    task = payloads["deck"].get("task_understanding") or {}
+    return {
+        field: workpack_policy[field] if field in workpack_policy else task[field]
+        for field in POLICY_FIELDS
+        if field in workpack_policy or field in task
+    }
+
+
+def _project_page_relationships(
+    page: dict[str, Any],
+    payloads: dict[str, dict[str, Any]],
+    nf_to_st: dict[str, str],
+) -> list[dict[str, Any]]:
+    evidence = page.get("evidence") if isinstance(page.get("evidence"), dict) else {}
+    relation_ids = [str(value) for value in evidence.get("relation_ids") or []]
+    if not relation_ids:
+        return []
+    allowed_fact_ids = {
+        str(value) for value in evidence.get("normalized_fact_ids") or []
+    }
+    relation_by_id = {
+        str(item.get("relation_id")): item
+        for item in payloads["relations"].get("relations") or []
+        if isinstance(item, dict) and item.get("relation_id")
+    }
+    concept_by_id = {
+        str(item.get("concept_id")): item
+        for item in payloads["concepts"].get("concepts") or []
+        if isinstance(item, dict) and item.get("concept_id")
+    }
+    relationships: list[dict[str, Any]] = []
+    for relation_id in relation_ids:
+        relation = relation_by_id.get(relation_id)
+        if relation is None:
+            raise ValueError(f"page references unknown relation: {relation_id}")
+        from_id = str(relation.get("from_concept_id") or "")
+        to_id = str(relation.get("to_concept_id") or "")
+        from_concept = concept_by_id.get(from_id)
+        to_concept = concept_by_id.get(to_id)
+        if from_concept is None or not str(from_concept.get("canonical_name") or "").strip():
+            raise ValueError(
+                f"relation references unknown or unnamed concept: {from_id}"
+            )
+        if to_concept is None or not str(to_concept.get("canonical_name") or "").strip():
+            raise ValueError(
+                f"relation references unknown or unnamed concept: {to_id}"
+            )
+        relation_fact_ids = [
+            str(value)
+            for value in relation.get("normalized_fact_ids") or []
+            if str(value) in allowed_fact_ids
+        ]
+        relationships.append(
+            {
+                "subject": str(from_concept["canonical_name"]).strip(),
+                "relation": str(relation.get("relation_type") or "").strip(),
+                "objects": [str(to_concept["canonical_name"]).strip()],
+                "direction": str(
+                    relation.get("direction") or "subject_to_objects"
+                ).strip(),
+                "condition": str(relation.get("condition") or "").strip(),
+                "modality": str(relation.get("modality") or "").strip(),
+                "basis": str(relation.get("basis") or "").strip(),
+                "confidence": str(relation.get("confidence") or "").strip(),
+                "source_refs": [
+                    nf_to_st[nf_id]
+                    for nf_id in relation_fact_ids
+                    if nf_id in nf_to_st
+                ],
+                "authority_ref": relation_id,
+            }
+        )
+    return relationships
+
+
 def _expand_evidence_ids(
     ids: Iterable[str],
     payloads: dict[str, dict[str, Any]],
@@ -170,7 +262,9 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
             "source_gap_ids": [], "gap_handling": "Preserve upstream diagnostics and epistemic boundaries; adapter adds no gap inference.",
             "core_message_derivation": {"source_refs": source_refs, "supporting_statements": [str(node.get("statement") or "") for node in page.get("argument_chain") or [] if isinstance(node, dict)], "derivation": f"Projection of layer-four judgment_basis={page.get('judgment_basis')}", "introduced_relations": list(page_evidence.get("relation_ids") or []) if page.get("judgment_basis") == "planning_inference" else [], "introduced_modalities": [], "argument_node_ids": arg_ids},
             "source_refs": source_refs, "detail_refs": detail_refs, "boundary_refs": boundary_refs, "content_units": content_units,
-            "content_relations": [{"subject": str(page.get("title_intent") or ""), "objects": [str(node.get("statement") or "") for node in page.get("argument_chain") or [] if isinstance(node, dict)], "relation": "contains", "source_refs": source_refs}],
+            "content_relations": _project_page_relationships(
+                page, payloads, nf_to_st
+            ),
             "visual_intent_type": VISUAL_INTENT.get(str(page.get("content_strategy") or "other"), "judgment_evidence"),
             "page_necessity": str(page.get("non_substitutable_value") or ""), "argument_chain": chain_out, "evidence_roles": evidence_roles_dict,
             "excluded_from_onscreen": detail_refs, "projection_only": True, "authority_ref": str(page.get("page_id") or ""),
@@ -179,6 +273,14 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
             item["split_risk_reason"] = str(page["split_risk_reason"])
         if page.get("inference_rationale"):
             item["planning_inference_rationale"] = str(page["inference_rationale"])
+        for field in (
+            "source_heading_ids",
+            "primary_source_heading_id",
+            "subtitle_policy",
+        ):
+            if field in page:
+                value = page[field]
+                item[field] = list(value) if isinstance(value, list) else dict(value) if isinstance(value, dict) else value
         if str(page.get("section_id") or "") in chapter_map:
             item["chapter_id"] = chapter_map[str(page.get("section_id"))]
         pages_out.append(item)
@@ -209,4 +311,7 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
         "storyline": {"theme": str(strategy.get("deck_thesis") or ""), "decision_destination": str(task.get("purpose") or ""), "story_arc": [str(item.get("section_thesis") or "") for item in deck.get("sections") or [] if isinstance(item, dict)], "chapter_missions": chapter_missions, "selection_rules": ["Consume validated layer-four page architecture without re-planning."], "exclusion_rules": ["Do not upgrade inferred or unverified upstream claims."], "page_rules": ["One audience question, one core message, one governing argument chain per content page."]},
         "chapter_page_orders": chapter_orders, "argument_node_dispositions": dispositions, "pages": pages_out,
     }
+    planning_policy = _project_planning_policy(payloads)
+    if planning_policy:
+        outline["planning_policy"] = planning_policy
     return outline, page_map

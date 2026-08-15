@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 from cyberppt.script_quality_contract import parse_script_path
-from scripts.dual_image_overlay.imagegen_handoff import audit_page_semantic_intent
+from scripts.imagegen_pipeline.imagegen_handoff import audit_page_semantic_intent
 
 
 def build_audit(script: Path) -> dict[str, object]:

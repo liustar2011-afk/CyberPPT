@@ -17,7 +17,7 @@ An Outline is accepted only when it declares `editorial_authoring_mode: author_d
     "stage01": true,
     "stage02": true,
     "style_id": 9,
-    "production_mode": "editable-overlay",
+    "production_mode": "image-to-editable-svg",
     "images": true,
     "prompt_files": true,
     "image_qa": true
@@ -29,7 +29,7 @@ The source directory must contain exactly the `source.allow` files (the reposito
 
 The visual stage is deliberately two-step: the runner prepares the handoff, then stops at `visual-structure-authoring` until the registered `ppt-visual-structure-designer` has authored `visual/visual-design-decisions.json`. On resume it compiles the decision package, records execution, audits it, and rebuilds the current visual prompt package. The explicit autonomous contract is the only authority that lets the downstream generator use the current audited visual prompts without fabricating per-page user-approval records.
 
-It writes `status: completed` only after the current script audit, Stage 02 handoff, visual execution receipt, visual structure audit, every expected content-page image pair, passed full-image text QA, and a hash-bound actual ImageGen send record for every generated variant.
+It writes `status: completed` only after the current script audit, Stage 02 handoff, visual execution receipt, visual structure audit, every expected content-page image, passed full-image text QA, and a hash-bound actual ImageGen send record for every generated page.
 
 Use `--skip-image-generation` only to diagnose the chain before ImageGen. When the contract requires images, that option returns a failed `image-production` gate and cannot produce a completed report.
 

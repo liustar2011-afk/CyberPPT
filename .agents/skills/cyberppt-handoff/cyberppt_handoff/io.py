@@ -36,6 +36,8 @@ def load_inputs(foundation_dir: Path, semantic_dir: Path, outline_dir: Path) -> 
         if not path.is_file():
             raise FileNotFoundError(f"Required handoff input is missing: {path}")
         payloads[name] = read_json(path)
+    workpack = outline_dir / "outline-workpack.json"
+    payloads["workpack"] = read_json(workpack) if workpack.is_file() else {}
     if payloads["semantic_report"].get("status") != "ok":
         raise ValueError("semantic-report.json must report status: ok")
     if payloads["outline_report"].get("status") != "ok":

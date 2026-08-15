@@ -64,6 +64,16 @@ def validate_projection(projection: dict[str, Any]) -> dict[str, Any]:
     page_map = authority.get("page_to_cyberppt_page") if isinstance(authority.get("page_to_cyberppt_page"), dict) else {}
     cyber_to_authority = {str(cyber): str(source) for source, cyber in page_map.items()}
     direct_source_truth = authority.get("page_direct_source_truth") if isinstance(authority.get("page_direct_source_truth"), dict) else {}
+    direct_relation_ids = authority.get("page_direct_relation_ids") if isinstance(authority.get("page_direct_relation_ids"), dict) else {}
+    direct_relationships = authority.get("page_direct_relationships") if isinstance(authority.get("page_direct_relationships"), dict) else {}
+    source_heading_ownership = authority.get("page_source_heading_ownership") if isinstance(authority.get("page_source_heading_ownership"), dict) else {}
+    policy_authority = authority.get("planning_policy") if isinstance(authority.get("planning_policy"), dict) else {}
+    if policy_authority and outline.get("planning_policy") != policy_authority:
+        _issue(
+            errors,
+            "planning_policy_projection_drift",
+            "Projected planning_policy must equal the authoritative outline workpack policy.",
+        )
     for page in pages:
         if page.get("page_type") != "content":
             continue
@@ -84,6 +94,52 @@ def validate_projection(projection: dict[str, Any]) -> dict[str, Any]:
         unknown = sorted(refs - st_ids)
         for ref in unknown:
             _issue(errors, "unknown_source_truth_ref", "CyberPPT page references unknown projected Source Truth", page_id=page_id, source_truth_id=ref)
+        raw_relationships = page.get("content_relations")
+        relationships = [
+            item for item in raw_relationships or [] if isinstance(item, dict)
+        ]
+        expected_relationships = direct_relationships.get(authority_page_id, [])
+        if raw_relationships != expected_relationships:
+            _issue(
+                errors,
+                "page_relationship_semantic_drift",
+                "Projected business relationships must exactly preserve every authoritative semantic field.",
+                page_id=page_id,
+                expected=expected_relationships,
+                actual=raw_relationships,
+            )
+        relationship_ids = [str(item.get("authority_ref") or "") for item in relationships]
+        expected_relation_ids = [str(value) for value in direct_relation_ids.get(authority_page_id, [])]
+        if relationship_ids != expected_relation_ids:
+            _issue(
+                errors,
+                "page_relationship_projection_drift",
+                "Projected business relationships must exactly match the page's declared relation IDs.",
+                page_id=page_id,
+                expected=expected_relation_ids,
+                actual=relationship_ids,
+            )
+        for relationship in relationships:
+            relation_refs = {str(ref) for ref in relationship.get("source_refs") or []}
+            outside = sorted(relation_refs - refs)
+            if outside:
+                _issue(
+                    errors,
+                    "relationship_ref_outside_page",
+                    "Projected relationship may only consume Source Truth already declared by its page.",
+                    page_id=page_id,
+                    source_truth_ids=outside,
+                )
+        expected_ownership = source_heading_ownership.get(authority_page_id, {})
+        for field, expected in expected_ownership.items():
+            if page.get(field) != expected:
+                _issue(
+                    errors,
+                    "source_heading_ownership_drift",
+                    "Projected source-heading ownership must remain unchanged.",
+                    page_id=page_id,
+                    field=field,
+                )
         for unit in page.get("content_units") or []:
             if not isinstance(unit, dict):
                 _issue(errors, "invalid_content_unit", "Projected page content_units must contain objects", page_id=page_id)

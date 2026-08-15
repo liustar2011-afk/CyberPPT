@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
@@ -47,13 +48,23 @@ def build_projection(foundation_dir: Path | str, semantic_dir: Path | str, outli
     source_truth["document_semantics"] = semantic_model["document_semantics"]
     source_truth["coverage_targets"] = [{"id": f"T{index:03d}", "kind": "semantic_node", "label": str(node.get("source_heading") or node.get("id")), "semantic_node_id": str(node.get("id")), "priority": {"core":"P0","supporting":"P1","detail":"P2","constraint":"P1"}.get(str(node.get("argument_weight")), "P2"), "required": True, "record_refs": [record["id"] for record in source_truth["records"] if str(node.get("id")) in record.get("semantic_node_ids", [])]} for index, node in enumerate(semantic_model.get("subsection_nodes") or [], start=1)]
     outline, page_map = _project_outline(payloads, source_truth, semantic_model, nf_to_st)
+    authoritative_names = [
+        "structure", "fact_base", "normalized", "concepts", "relations",
+        "argument", "deck", "page_plan",
+    ]
+    if payloads.get("workpack"):
+        authoritative_names.append("workpack")
     authority_map = {
         "schema": "source-material-foundation.cyberppt_authority_map.v1", "authority_mode": "projection_only",
-        "authoritative_inputs": {name: json_sha256(payloads[name]) for name in ("structure", "fact_base", "normalized", "concepts", "relations", "argument", "deck", "page_plan")},
+        "authoritative_inputs": {name: json_sha256(payloads[name]) for name in authoritative_names},
+        "planning_policy": deepcopy(outline.get("planning_policy") or {}),
         "block_to_source_unit": block_map, "section_to_heading_unit": section_map, "normalized_fact_to_source_truth": nf_to_st,
         "page_to_cyberppt_page": page_map,
         "page_direct_normalized_facts": {str(page.get("page_id")): [str(value) for value in ((page.get("evidence") or {}).get("normalized_fact_ids") or [])] for page in payloads["page_plan"].get("pages") or [] if isinstance(page, dict) and page.get("page_type") == "content"},
         "page_direct_source_truth": {str(page.get("page_id")): [nf_to_st[str(value)] for value in ((page.get("evidence") or {}).get("normalized_fact_ids") or []) if str(value) in nf_to_st] for page in payloads["page_plan"].get("pages") or [] if isinstance(page, dict) and page.get("page_type") == "content"},
+        "page_direct_relation_ids": {str(page.get("page_id")): [str(value) for value in ((page.get("evidence") or {}).get("relation_ids") or [])] for page in payloads["page_plan"].get("pages") or [] if isinstance(page, dict) and page.get("page_type") == "content"},
+        "page_direct_relationships": {str(page.get("authority_ref")): deepcopy(page.get("content_relations") or []) for page in outline.get("pages") or [] if isinstance(page, dict) and page.get("page_type") == "content" and page.get("authority_ref")},
+        "page_source_heading_ownership": {str(page.get("page_id")): {field: page.get(field) for field in ("source_heading_ids", "primary_source_heading_id", "subtitle_policy") if field in page} for page in payloads["page_plan"].get("pages") or [] if isinstance(page, dict) and page.get("page_type") == "content"},
         "relation_to_projected_relation": {str(item.get("relation_id")): str(item.get("relation_id")) for item in payloads["relations"].get("relations") or [] if isinstance(item, dict)},
         "argument_node_to_semantic_node": {str(item.get("node_id")): str(item.get("node_id")) for item in payloads["argument"].get("reconstructed_chain") or [] if isinstance(item, dict)},
     }

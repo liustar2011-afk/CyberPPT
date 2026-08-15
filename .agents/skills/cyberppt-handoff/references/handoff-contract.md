@@ -25,6 +25,10 @@ Outline directory:
 - `page-plan.json`
 - `outline-report.json` with `status: ok`
 
+Optional outline authority:
+
+- `outline-workpack.json`; when present, its `planning_policy` is projected unchanged into `outline.json`. The file may be absent for legacy projects.
+
 ## Output tree
 
 ```text
@@ -64,6 +68,25 @@ The projected `cyberppt.semantic_argument_model.v1` is an interoperability view.
 ## Outline projection
 
 Layer-four content pages become `cyberppt.outline.v2` content pages. The adapter maps audience question, page mission, key judgment, non-substitutable value, page boundaries, governing argument chain, evidence roles, content units, visual intent and transitions without re-planning page order.
+
+When the layer-four page declares `source_heading_ids`, `primary_source_heading_id`, or `subtitle_policy`, those fields are preserved unchanged. A locked planning policy therefore remains machine-readable downstream; it is not inferred again from the projected title or prose.
+
+## Relationship authority
+
+`page-plan.json.evidence.relation_ids` is the page-level relationship selector. Each selected ID must resolve to one existing `relation-graph.json` record. The adapter projects that record's `subject`, `relation`, `objects`, `direction`, `condition`, `modality`, `basis`, `confidence`, source references, and authority ID without changing its semantic type or factual strength.
+
+If a page declares no relationship IDs, `content_relations` is an empty array. The adapter must not insert a generic `contains` relationship or derive a replacement from prose, titles, or visual suggestions.
+
+The projected relationship list remains authoritative through Stage 02:
+
+1. `outline.json.pages[].content_relations`
+2. `stage02-handoff.json.pages[].stage02_visual_input.business_relationships`
+3. `deck-visual-spec.json.pages[].semantic_graph.business_relationships`
+4. `PageArtifactSpec.relationships`
+
+Each transition requires exact equality before the next projection is built. Stage 02 `connectors` and `semantic_graph.edges` are visual-composition decisions only; they may encode reading order but never replace, broaden, or modify the authoritative business relationships.
+
+`PageArtifactSpec` retains the semantic relationship fields needed by the image model and deliberately removes audit-only `source_refs` and `authority_ref`. The final nine-part prompt must contain neither those relationship identifiers nor Source Truth, evidence, text-lock, or region identifiers. Provenance remains available in the bound source artifacts and hashes.
 
 ## Validation levels
 

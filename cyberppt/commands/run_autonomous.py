@@ -25,7 +25,7 @@ from cyberppt.source_document_map import prepare_source_map, run_source_map_audi
 from cyberppt.stage02_handoff import audit_stage02_handoff, prepare_stage02_handoff
 from cyberppt.script_quality_contract import parse_script_path
 from cyberppt.stage01_compiler import compile_source_truth
-from scripts.dual_image_overlay.cyberppt_pair_manifest import output_variants_for_mode
+from scripts.imagegen_pipeline.page_manifest import output_variants_for_mode
 
 
 REPORT_PATH = "workbench/stages/00-autonomous/run-report.json"
@@ -371,7 +371,7 @@ def run_autonomous(
                 raise GateBlocked(
                     "image-production",
                     str(exc),
-                    contract.project / "workbench/stages/02-blueprint-dual-image",
+                    contract.project / "workbench/stages/02-imagegen",
                 ) from exc
             manifest = _assert_production_proof(contract, production)
             gates.append({"name": "image-production", "status": "passed", "artifact": str(manifest)})

@@ -21,12 +21,12 @@ from cyberppt.commands.visual_structure_stage import (
     _skill_root,
 )
 from cyberppt.commands.script_gate import stage_script
-from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, render_prompt
-from scripts.dual_image_overlay.imagegen_handoff import build_page_prompt
+from scripts.imagegen_pipeline.deliverable_prompt import parse_page_blocks, render_prompt
+from scripts.imagegen_pipeline.imagegen_handoff import build_page_prompt
 from cyberppt.script_quality_contract import parse_script_markdown
 from cyberppt.semantic_digest import outline_semantic_digest, source_truth_semantic_digest
 from cyberppt.onscreen_expression import expression_constraints
-from scripts.dual_image_overlay.style_library import write_project_style_lock
+from scripts.imagegen_pipeline.style_library import write_project_style_lock
 
 
 class FinalScriptPagesTests(unittest.TestCase):
@@ -602,7 +602,7 @@ class FinalScriptPagesTests(unittest.TestCase):
             for page in parse_script_markdown(script.read_text(encoding="utf-8")).pages
         }
         from cyberppt.page_artifact_spec import load_project_page_artifact_specs
-        from scripts.dual_image_overlay.imagegen_handoff import compile_page_prompt
+        from scripts.imagegen_pipeline.imagegen_handoff import compile_page_prompt
 
         artifact_specs = load_project_page_artifact_specs(project, style_lock=style_lock)
         for page_number in parse_page_blocks(script):

@@ -8,8 +8,8 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Mapping
 
-from scripts.dual_image_overlay.text_content_qa import build_text_content_qa
-from scripts.dual_image_overlay.production_readiness import build_production_readiness
+from scripts.presentation_qa.text_content import build_text_content_qa
+from scripts.imagegen_pipeline.production_readiness import build_production_readiness
 
 from .quick import create_quick_project
 from .review import write_review
@@ -25,7 +25,7 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _script_lines(script: Path, page_number: int) -> list[str]:
-    from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks
+    from scripts.imagegen_pipeline.deliverable_prompt import parse_page_blocks
 
     page = parse_page_blocks(script).get(page_number)
     if page is None:

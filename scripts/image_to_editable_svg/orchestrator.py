@@ -6,11 +6,11 @@ import json
 from pathlib import Path
 from typing import Any, Mapping
 
-from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks
-from scripts.dual_image_overlay.production_readiness import build_production_readiness
-from scripts.dual_image_overlay.qa_render_page import check_pptx_geometry, render_to_png
-from scripts.dual_image_overlay.rebuild_engine.svg_to_pptx.pptx_builder import create_pptx_with_native_svg
-from scripts.dual_image_overlay.text_content_qa import build_text_content_qa
+from scripts.imagegen_pipeline.deliverable_prompt import parse_page_blocks
+from scripts.imagegen_pipeline.production_readiness import build_production_readiness
+from scripts.presentation_qa.render_page import check_pptx_geometry, render_to_png
+from scripts.image_to_pptx_runtime.svg_to_pptx.pptx_package.builder import create_pptx_with_native_svg
+from scripts.presentation_qa.text_content import build_text_content_qa
 
 from .reconstruct import author_page_svg, inspect_page, write_inspection
 from .roster import build_roster

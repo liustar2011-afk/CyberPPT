@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.commands.script_gate import assert_approved_final_script, stage_script
-from scripts.dual_image_overlay.prompt_send_enrich import (
+from scripts.imagegen_pipeline.prompt_send_enrich import (
     build_deterministic_enrich_block,
     llm_enrich_brief,
 )

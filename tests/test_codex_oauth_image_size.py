@@ -13,8 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = (
     ROOT
     / "scripts"
-    / "dual_image_overlay"
-    / "rebuild_engine"
+    / "imagegen_pipeline"
+    / "providers"
     / "codex_oauth_image.py"
 )
 

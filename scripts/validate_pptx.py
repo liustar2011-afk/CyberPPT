@@ -105,17 +105,7 @@ VISUAL_QA_REQUIRED_FIELDS = (
     "blueprint_background_not_used",
     "deliverable_allowed",
 )
-DUAL_IMAGE_OVERLAY_MODE = "dual_image_editable_overlay"
 FULL_IMAGE_PPT_MODE = "full_image_ppt"
-DUAL_IMAGE_REQUIRED_QA = (
-    "background_snapshot_editable_text",
-    "background_has_no_text",
-    "all_key_text_editable",
-    "text_content_matches_lock",
-    "container_overflow_pass",
-    "visual_semantics_preserved",
-    "background_image_declared",
-)
 TABLE_PROSE_SEMANTIC_ROLES = {
     "table_body",
     "table_action",
@@ -399,43 +389,11 @@ def find_visual_qa_slide(visual_qa: dict[str, Any], slide_number: int) -> dict[s
     return None
 
 
-def is_dual_image_overlay_entry(entry: dict[str, Any]) -> bool:
-    return str(entry.get("delivery_mode") or "") == DUAL_IMAGE_OVERLAY_MODE
-
-
 def is_full_image_ppt_entry(entry: dict[str, Any]) -> bool:
     return str(entry.get("delivery_mode") or "") == FULL_IMAGE_PPT_MODE
 
 
-def dual_image_background_exception_allowed(entry: dict[str, Any]) -> bool:
-    if not is_dual_image_overlay_entry(entry):
-        return False
-    qa = entry.get("qa_expectations")
-    if not isinstance(qa, dict):
-        return False
-    if any(qa.get(field) is not True for field in DUAL_IMAGE_REQUIRED_QA):
-        return False
-    if int(qa.get("layout_qa_error_count", 0) or 0) != 0:
-        return False
-
-    image_assets = entry.get("image_assets")
-    if not isinstance(image_assets, list) or len(image_assets) != 1:
-        return False
-    asset = image_assets[0]
-    if not isinstance(asset, dict):
-        return False
-    return (
-        asset.get("role") == "no_text_background"
-        and asset.get("covers_full_slide") is True
-        and asset.get("background_image_declared") is True
-        and asset.get("background_has_no_text") is True
-        and asset.get("editable_text_overlay") is True
-    )
-
-
 def visual_qa_required_fields_for_manifest(entry: dict[str, Any]) -> tuple[str, ...]:
-    if is_dual_image_overlay_entry(entry):
-        return (*VISUAL_QA_REQUIRED_FIELDS, "background_snapshot_declared_and_no_text")
     return VISUAL_QA_REQUIRED_FIELDS
 
 
@@ -459,20 +417,7 @@ def apply_manifest_slide_warning_exceptions(
                 )
             )
             continue
-        if (
-            entry is not None
-            and warning.get("code") == "FULL_SLIDE_BACKGROUND_RISK"
-            and dual_image_background_exception_allowed(entry)
-        ):
-            adjusted.append(
-                issue(
-                    "DECLARED_DUAL_IMAGE_BACKGROUND",
-                    "Full-slide no-text background is allowed for dual_image_editable_overlay mode.",
-                    slide=slide_number,
-                )
-            )
-        else:
-            adjusted.append(warning)
+        adjusted.append(warning)
     return adjusted
 
 

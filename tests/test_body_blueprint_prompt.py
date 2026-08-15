@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 from scripts.body_blueprint_prompt import compile_body_blueprint_prompts, load_style, main
-from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks
+from scripts.imagegen_pipeline.deliverable_prompt import parse_page_blocks
 
 
 class BodyBlueprintPromptTests(unittest.TestCase):

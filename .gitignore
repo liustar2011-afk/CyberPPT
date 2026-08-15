@@ -12,49 +12,26 @@ node_modules/
 dist/
 build/
 
-# Private source materials and generated presentation outputs
-*.docx
-*.doc
-*.pdf
-*.xlsx
-*.xls
-*.csv
-*.tsv
-*.pptx
-*.ppt
-*.key
-*.pages
-
-# Rendered previews and generated media
-*.png
-*.jpg
-*.jpeg
-*.webp
-*.gif
-*.svg
-*.mp4
-*.mov
-
-# Public README examples
-!assets/
-!assets/palette-samples/
-!assets/palette-samples/*.png
-!assets/icons/
-!assets/icons/**/*.svg
-
 # Project-specific working directories
 /projects/
 /out/
-deck/
-*-deck/
-image2pptx_runs/
-images/
-output/
-outputs/
-preview/
-previews/
-reports/
-validation/
+/deck/
+/*-deck/
+/image2pptx_runs/
+/images/
+/output/
+/outputs/
+/preview/
+/previews/
+/reports/
+/validation/
+/tmp/
+/prompts/attempts/
+/qa_render/
+/rendered/
+/**/*_rendered/
+/**/*_ocr/
+/**/*_diff/
 
 # Vendored PPT image enhancer: keep source, exclude bootstrapped/generated runtime state
 vendor/ppt-image-enhancer-skill-v1.0.0/.venv/

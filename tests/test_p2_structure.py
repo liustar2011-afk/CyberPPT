@@ -5,16 +5,16 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.dual_image_overlay.build_transaction import (
+from scripts.imagegen_pipeline.build_transaction import (
     BuildLock,
     BuildLockError,
     atomic_write_text,
 )
-from scripts.dual_image_overlay.prompt_approval import (
+from scripts.imagegen_pipeline.prompt_approval import (
     assert_prompt_fresh,
     build_prompt_approval,
 )
-from scripts.dual_image_overlay.script_parser import (
+from scripts.imagegen_pipeline.script_parser import (
     load_page_context_bundle,
     load_page_missions,
 )

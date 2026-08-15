@@ -2,9 +2,9 @@ from __future__ import annotations
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from scripts.dual_image_overlay.deliverable_prompt import PageBlock, render_prompt
-from scripts.dual_image_overlay.style_library import write_project_style_lock
-from scripts.dual_image_overlay.visual_grammar import default_visual_grammar
+from scripts.imagegen_pipeline.deliverable_prompt import PageBlock, render_prompt
+from scripts.imagegen_pipeline.style_library import write_project_style_lock
+from scripts.imagegen_pipeline.visual_grammar import default_visual_grammar
 
 _SHORT_LINES = (
     (

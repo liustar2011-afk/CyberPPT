@@ -1,6 +1,10 @@
 from types import SimpleNamespace
+import unittest
 
-import pytest
+try:
+    import pytest
+except ModuleNotFoundError as exc:
+    raise unittest.SkipTest("pytest is not installed") from exc
 
 from cyberppt.onscreen_expression import (
     EXPRESSION_SPECS,

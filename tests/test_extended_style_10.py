@@ -5,15 +5,15 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from cyberppt.cli import build_parser
-from scripts.dual_image_overlay.cyberppt_pair_manifest import main as pair_manifest_main
-from scripts.dual_image_overlay.deliverable_prompt import (
+from scripts.imagegen_pipeline.page_manifest import main as pair_manifest_main
+from scripts.imagegen_pipeline.deliverable_prompt import (
     PageBlock,
     render_prompt,
     style_contract,
     uses_compact_style_contract,
 )
-from scripts.dual_image_overlay.imagegen_handoff import compile_page_prompt
-from scripts.dual_image_overlay.style_library import (
+from scripts.imagegen_pipeline.imagegen_handoff import compile_page_prompt
+from scripts.imagegen_pipeline.style_library import (
     default_style_choices,
     load_style_library,
     resolve_default_style,

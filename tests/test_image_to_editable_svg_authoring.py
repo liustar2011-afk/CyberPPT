@@ -4,7 +4,7 @@ from PIL import Image
 
 from scripts.image_to_editable_svg.reconstruct import author_page_svg, inspect_page
 from scripts.image_to_editable_svg.roster import normalize_full_page
-from scripts.dual_image_overlay.text_content_qa import _normalize
+from scripts.presentation_qa.text_content import _normalize
 
 
 def test_prepared_authoring_svg_preserves_native_reconstruction(tmp_path: Path) -> None:

@@ -108,9 +108,7 @@ Stage 02 及之后，每一阶段必须落地阶段成果物。所有阶段性�
 | 阶段 | 目录 | 典型成果物 |
 |---|---|---|
 | 分析 | `workbench/stages/01-analysis/` | 证据表、冲突记录、issue tree、SCR、逐页大纲、页面密度和组件清单 |
-| 蓝图、生图与重建生产 | `workbench/stages/02-blueprint-dual-image/` | 风格锁定、`slide_content_lock`、`template_text_lock`、ImageGen prompt、经审计的 full、`page_image_pairs.json`、reconstruction inventory、SVG quality、可编辑 PPTX |
-| 重建分析 | `workbench/stages/03-overlay/` | 历史目录名；新生产在 Stage 02 build 内写入 inventory、注册图层、文字回读和渲染对照 |
-| 旧模板重建 | `workbench/stages/04-template-rebuild/` | 历史目录名；不得作为新生产路径或交付依据 |
+| 生图与可编辑重建生产 | `workbench/stages/02-imagegen/` | 风格锁定、`slide_content_lock`、`template_text_lock`、九段式 ImageGen prompt、经审计的 full、`page_image_pairs.json`、reconstruction inventory、SVG quality、可编辑 PPTX |
 | QA 与交付 | `workbench/stages/05-qa-delivery/` | visual_qa_gate、slide_manifest、side-by-side、局部裁图、最终 deck、交付说明 |
 
 Stage 02 生产必须维护 `artifact-ledger.json`。每个成果物必须记录 `stage`、`page`、`path`、`status`、`depends_on`、`supersedes` 和 `resume_command`；能计算 hash 时还必须记录 SHA-256。`depends_on` 指向上游成果物，`supersedes` 指向被本次返工替代的旧成果物。这样套模板后发现问题时，可以沿 `depends_on` 反查到脚本、full 图或模板层中真正需要修改的来源。Stage 01 不维护该 ledger。

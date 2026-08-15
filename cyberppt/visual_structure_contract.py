@@ -240,6 +240,8 @@ def _audit_relationship_coverage(
 ) -> None:
     required = _required_relationships(source)
     coverage = decision.get("relationship_coverage")
+    if not required and (coverage is None or coverage == []):
+        return
     if not isinstance(coverage, list) or not coverage:
         issue("RELATIONSHIP_COVERAGE_MISSING", "Every authoritative Stage 01 relation needs a visual coverage receipt.", page_id)
         return
@@ -443,12 +445,16 @@ def audit_visual_design_package(
             continue
 
         relationships = source.get("business_relationships")
-        if not isinstance(relationships, list) or not relationships:
-            issue("BUSINESS_RELATIONSHIPS_MISSING", "Authoritative business relationships are missing.", page_id)
+        if not isinstance(relationships, list):
+            issue("BUSINESS_RELATIONSHIPS_MISSING", "Authoritative business relationships must be an array, including an empty array when the source declares none.", page_id)
         if source.get("author_visual_notes_authority") != "advisory_only":
             issue("AUTHOR_VISUAL_NOTES_AUTHORITY_INVALID", "Author visual notes must be advisory_only.", page_id)
         features = source.get("stage01_relationship_features")
-        if not isinstance(features, dict) or not isinstance(features.get("actions"), list) or not features.get("actions"):
+        if (
+            not isinstance(features, dict)
+            or not isinstance(features.get("actions"), list)
+            or (bool(relationships) and not features.get("actions"))
+        ):
             issue("STAGE01_RELATIONSHIP_FEATURES_MISSING", "Structured Stage 01 relationship features are missing.", page_id)
 
         expression = source.get("onscreen_expression")
@@ -674,6 +680,13 @@ def audit_visual_design_package(
         ]
         if final_text != expected_lock:
             issue("SPEC_FINAL_TEXT_DRIFTED", "final_text must match the input text ids and text exactly and in order.", page_id)
+        semantic_graph = page_spec.get("semantic_graph") if isinstance(page_spec.get("semantic_graph"), dict) else {}
+        if semantic_graph.get("business_relationships") != source.get("business_relationships"):
+            issue(
+                "BUSINESS_RELATIONSHIP_DRIFT",
+                "Spec business relationships must match the authoritative Stage 02 design input exactly.",
+                page_id,
+            )
         handoff = page_spec.get("generation_handoff") if isinstance(page_spec.get("generation_handoff"), dict) else {}
         if [str(value) for value in handoff.get("required_text_ids") or []] != expected_text_ids:
             issue("SPEC_REQUIRED_TEXT_IDS_DRIFTED", "required_text_ids must match every locked body-text id in order.", page_id)

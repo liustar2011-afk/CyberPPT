@@ -86,6 +86,7 @@ def _handoff_authority(payload: dict[str, Any]) -> dict[str, Any]:
     return {
         "schema": payload.get("schema"),
         "project": payload.get("project"),
+        "planning_policy": payload.get("planning_policy"),
         "source_bindings": payload.get("source_bindings"),
         "page_order": payload.get("page_order"),
         "pages": payload.get("pages"),
@@ -149,7 +150,7 @@ def _stage01_relationship_features(
         for item in relationships
         if isinstance(item, dict) and str(item.get("subject") or "").strip()
     ))
-    actions: list[dict[str, str]] = []
+    actions: list[dict[str, Any]] = []
     for item in relationships:
         if not isinstance(item, dict):
             continue
@@ -158,7 +159,21 @@ def _stage01_relationship_features(
         for obj in item.get("objects") or []:
             text = str(obj or "").strip()
             if text:
-                actions.append({"subject": subject, "relation": relation, "object": text})
+                action: dict[str, Any] = {
+                    "subject": subject,
+                    "relation": relation,
+                    "object": text,
+                }
+                for field in (
+                    "direction",
+                    "condition",
+                    "modality",
+                    "basis",
+                    "confidence",
+                ):
+                    if field in item:
+                        action[field] = item[field]
+                actions.append(action)
 
     clauses = [
         value.strip(" ；。\n")
@@ -246,6 +261,20 @@ def _page_record(page: ScriptPage, outline: dict[str, Any] | None) -> dict[str, 
             "style": "stage02-style-lock",
         },
     }
+    for field in (
+        "source_heading_ids",
+        "primary_source_heading_id",
+        "subtitle_policy",
+    ):
+        if field in outline:
+            value = outline[field]
+            record[field] = (
+                list(value)
+                if isinstance(value, list)
+                else dict(value)
+                if isinstance(value, dict)
+                else value
+            )
     if render_role != "content":
         record["stage02_visual_input"] = None
         return record
@@ -323,6 +352,9 @@ def build_stage02_handoff(
         "page_order": [record["page_id"] for record in records],
         "pages": records,
     }
+    planning_policy = outline_payload.get("planning_policy")
+    if isinstance(planning_policy, dict):
+        payload["planning_policy"] = dict(planning_policy)
     return payload
 
 
@@ -376,6 +408,27 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
 
     if payload.get("schema") != "cyberppt.stage02_handoff.v1":
         issue("HANDOFF_SCHEMA_INVALID", "Stage 02 handoff schema is invalid.")
+    outline_path = (project / OUTLINE_PATH).resolve()
+    outline_payload = _read_json(outline_path) if outline_path.is_file() else {}
+    outline_pages = (
+        outline_payload.get("pages")
+        if isinstance(outline_payload.get("pages"), list)
+        else []
+    )
+    outline_map = {
+        normalize_page_id(item.get("page_id"), item.get("page_number")): item
+        for item in outline_pages
+        if isinstance(item, dict) and (item.get("page_id") or item.get("page_number"))
+    }
+    expected_policy = outline_payload.get("planning_policy")
+    actual_policy = payload.get("planning_policy")
+    if (
+        isinstance(expected_policy, dict) or isinstance(actual_policy, dict)
+    ) and actual_policy != expected_policy:
+        issue(
+            "HANDOFF_PLANNING_POLICY_DRIFT",
+            "Stage 02 handoff planning_policy must match the current Outline exactly.",
+        )
     bindings = payload.get("source_bindings")
     if not isinstance(bindings, dict):
         issue("HANDOFF_BINDINGS_MISSING", "Source bindings are missing.")
@@ -477,6 +530,7 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
             if not isinstance(confidence, (int, float)) or not 0 <= float(confidence) <= 1:
                 issue("ONSCREEN_EXPRESSION_CONFIDENCE_INVALID", f"{page_id} has invalid onscreen expression confidence.")
         visual_input = page.get("stage02_visual_input") or {}
+        outline_page = outline_map.get(page_id, {})
         expected_constraints: dict[str, object] | None = None
         if isinstance(expression, dict) and str(expression.get("form") or "") in VALID_EXPRESSION_FORMS:
             expected_constraints = expression_constraints(str(expression["form"]))
@@ -506,13 +560,28 @@ def audit_stage02_handoff(project: Path, payload: dict[str, Any] | None = None) 
         relationships = visual_input.get("business_relationships")
         if not isinstance(relationships, list):
             issue("BUSINESS_RELATIONSHIPS_INVALID", f"{page_id} business_relationships must be an array.")
+            relationships = []
+        expected_relationships = outline_page.get("content_relations") or []
+        if (
+            relationships != expected_relationships
+            or (
+                "business_relationships" in page
+                and page.get("business_relationships") != expected_relationships
+            )
+        ):
+            issue(
+                "HANDOFF_BUSINESS_RELATIONSHIP_DRIFT",
+                f"{page_id} business relationships must match the current Outline exactly.",
+            )
         features = visual_input.get("stage01_relationship_features")
         if not isinstance(features, dict):
             issue("STAGE01_RELATIONSHIP_FEATURES_MISSING", f"{page_id} has no structured Stage 01 relationship features.")
         else:
             if features.get("authority") != "stage01_semantic_handoff":
                 issue("STAGE01_RELATIONSHIP_FEATURES_AUTHORITY_INVALID", f"{page_id} relationship features have invalid authority.")
-            if not isinstance(features.get("actions"), list) or not features.get("actions"):
+            if not isinstance(features.get("actions"), list) or (
+                relationships and not features.get("actions")
+            ):
                 issue("STAGE01_RELATIONSHIP_ACTIONS_MISSING", f"{page_id} has no structured subject-action-object features.")
         if visual_input.get("author_visual_notes_authority") != "advisory_only":
             issue("AUTHOR_VISUAL_NOTES_AUTHORITY_INVALID", f"{page_id} author visual notes must be advisory only.")

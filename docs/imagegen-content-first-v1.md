@@ -1,8 +1,8 @@
-# ImageGen content-first-v1 兼容链路
+# ImageGen content-first-v1 对照编译器
 
-`content-first-v1`保留为旧项目兼容、对照和回滚编译器。新的CyberPPT正式提示词链路默认使用[`artifact-spec-v2`](imagegen-artifact-spec-v2.md)。
+`content-first-v1`仅保留用于提示词对照测试。CyberPPT正式提示词链路使用[`artifact-spec-v2`](imagegen-artifact-spec-v2.md)。
 
-正式脚本生成入口是 `python -m scripts.dual_image_overlay.imagegen_handoff`。
+正式脚本生成入口是 `python -m scripts.imagegen_pipeline.imagegen_handoff`。
 入口通过 `compile_page_prompt` 输入页面任务、核心判断、精简页面逻辑、
 锁定关键文字和完整页面语义，并把结果写入 `workbench/prompts/imagegen/` 等待审阅。
 
@@ -13,7 +13,7 @@
 
 不得新增未经页面内容支持的上屏文字；可以增加不带文字的行业场景、业务动作、环境细节和视觉隐喻，让画面参与解释，而不是形成“文字排版 + 装饰图片”。
 
-`content-first-v1`、`legacy`和`creative-brief-v1`仅作为显式兼容/回滚编译器：
+`content-first-v1`、`legacy`和`creative-brief-v1`不得成为正式生产默认值，只可显式用于测试：
 
 ```text
 --prompt-compiler content-first-v1

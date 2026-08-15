@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from scripts.dual_image_overlay.prompt_diagnostics import (
+from scripts.imagegen_pipeline.prompt_diagnostics import (
     PagePromptDiagnostics,
     analyze_generated_text_fidelity,
     analyze_prompt,

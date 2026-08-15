@@ -35,8 +35,6 @@ def test_build_visual_qa_gate_writes_top_level_valid_for_quality_registry(tmp_pa
             "overlay.png",
             "--pixel-diff-report",
             str(diff),
-            "--delivery-mode",
-            "dual_image_editable_overlay",
             "--out",
             str(out),
         ],
@@ -52,3 +50,4 @@ def test_build_visual_qa_gate_writes_top_level_valid_for_quality_registry(tmp_pa
     assert payload["valid"] is True
     assert payload["deliverable_allowed"] is True
     assert payload["slides"][0]["deliverable_allowed"] is True
+    assert payload["slides"][0]["blueprint_background_not_used"] is True

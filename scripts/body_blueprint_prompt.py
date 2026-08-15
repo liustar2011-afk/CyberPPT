@@ -9,7 +9,7 @@ from typing import Any, Iterable, Sequence
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts.dual_image_overlay.deliverable_prompt import (
+from scripts.imagegen_pipeline.deliverable_prompt import (
     PageBlock,
     layout_density_directives,
     parse_page_blocks,
@@ -19,7 +19,7 @@ from scripts.dual_image_overlay.deliverable_prompt import (
 )
 
 
-DEFAULT_PRESET_DIR = Path(__file__).parent / "dual_image_overlay" / "style_presets"
+DEFAULT_PRESET_DIR = Path(__file__).parent / "imagegen_pipeline" / "style_presets"
 
 
 def available_style_presets(preset_dir: Path = DEFAULT_PRESET_DIR) -> dict[str, Path]:

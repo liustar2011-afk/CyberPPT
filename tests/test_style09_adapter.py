@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from cyberppt.visual_prompt_consumer import VisualDesignIR
-from scripts.dual_image_overlay.style09_adapter import adapt_style09
+from scripts.imagegen_pipeline.style09_adapter import adapt_style09
 
 
 def _design(*, use_scene: bool) -> VisualDesignIR:

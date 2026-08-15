@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 import hashlib
 import json
 import re
@@ -264,7 +265,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         "page_mission": str(source["page_mission"]), "core_judgment": str(source["core_judgment"]),
         "content_lock": {"mode": "strict", "locked_items": locked_items, "allowed_transformations": ["line_break", "grouping", "position_change"], "forbidden_transformations": ["change facts, numbers, dates or units", "change actors, responsibilities or status", "add presentation copy not listed in required_text"]},
         "evidence_units": evidence_units,
-        "semantic_graph": {"primary_relation": relation, "direction": direction, "nodes": [eid[key] for key in evidence_keys], "edges": graph_edges, "decision_relationship": _render_business_relationships(source.get("business_relationships"))},
+        "semantic_graph": {"primary_relation": relation, "direction": direction, "nodes": [eid[key] for key in evidence_keys], "edges": graph_edges, "decision_relationship": _render_business_relationships(source.get("business_relationships")), "business_relationships": deepcopy(source.get("business_relationships") or [])},
         "structural_decision": {"semantic_focus": {"kind": str(focus.get("kind") or "relationship"), "ref": focus_id}, "spatial_grammar": grammar, "semantic_tags": [str(selected.get("visual_intent_type") or "relationship")], "primary_refs": [focus_id], "secondary_refs": [eid[key] for key in evidence_keys if key != focus_key], "reading_sequence": [eid[key] for key in reading_keys], "text_bindings": [{"evidence_id": eid[key], "target_ref": eid[key], "binding": "result" if key == focus_key else "embedded", "text_ids": text_ids_by_evidence[key]} for key in evidence_keys], "representation_freedom": {"carrier": "free", "medium": "free", "reason": "上游仅锁定业务关系和正文，Stage02已选定具体业务关系场与文字贴附方式"}},
         "visual_decision": {"visual_intent_type": str(selected.get("visual_intent_type") or "relationship_field"), "visual_thesis": str(selected.get("visual_thesis") or source["core_judgment"]), "spatial_organization": design["spatial_organization"], "reading_path": [str(evidence_by_key[key].get("summary") or "") for key in reading_keys], "text_integration_method": design["text_integration_method"], "relationship_encoding": design["relationship_encoding"], "visual_center_count": 1, "visual_hierarchy": {"primary": design["visual_focus"], "secondary": [str(evidence_by_key[key].get("summary") or "") for key in evidence_keys if key != focus_key], "tertiary": []}},
         "text_integration": {"title_render_mode": str(source.get("title_render_mode") or "external_text_layer"), "subtitle_render_mode": str(source.get("subtitle_render_mode") or "external_text_layer"), "body_render_mode": "in_image", "placement_strategy": design["text_integration_method"]},

@@ -23,14 +23,14 @@ CyberPPT正式链路把GPT Image输出定义为可交付的PPT正文视觉资产
 正式入口：
 
 ```bash
-python -m scripts.dual_image_overlay.imagegen_handoff \
+python -m scripts.imagegen_pipeline.imagegen_handoff \
   <project> --script <approved-script.md> --style-lock <style-lock.json> \
   --pages 1-10 --batch-name chapter01
 ```
 
 审批、canonical prompt、manifest和实际发送复用同一编译结果。批准稿允许人工修改，但进入manifest前必须再次通过九段顺序、段落非空、精确可见文字、后台ID禁入和Style09唯一终端锁校验。批准后不得追加prompt enrichment。
 
-`visual/generation-prompts.md`和compact blueprint仅保留为旧结构预览/兼容诊断，不能进入已审批生产链路。旧编译器仍可显式指定：
+`visual/generation-prompts.md`和compact blueprint仅用于结构预览和诊断，不能进入已审批生产链路。其他编译器仅可用于明确的对照测试：
 
 ```text
 --prompt-compiler content-first-v1

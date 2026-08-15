@@ -59,6 +59,6 @@ Expected: PASS.
 
 - [ ] **Step 5: Verify the production entry point consumes the default**
 
-Run: `PYTHONPATH=. python -c 'from scripts.dual_image_overlay.style_library import resolve_default_style; assert resolve_default_style()["id"] == 10'`
+Run: `PYTHONPATH=. python -c 'from scripts.imagegen_pipeline.style_library import resolve_default_style; assert resolve_default_style()["id"] == 10'`
 
 Expected: Exit code 0.

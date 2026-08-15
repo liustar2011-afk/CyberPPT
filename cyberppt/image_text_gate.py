@@ -95,7 +95,7 @@ def audit_generated_image_text(
     if not image_path.is_file():
         raise FileNotFoundError(f"generated image for text audit not found: {image_path}")
     if vision_runner is None:
-        from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import run_codex_vision_text
+        from scripts.imagegen_pipeline.providers.codex_oauth_image import run_codex_vision_text
 
         vision_runner = run_codex_vision_text
     ocr_runner = ocr_runner or _rapidocr

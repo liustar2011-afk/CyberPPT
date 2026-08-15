@@ -5,6 +5,7 @@ import hashlib
 from pathlib import Path
 from typing import Callable
 from tempfile import TemporaryDirectory
+import unittest
 from unittest.mock import patch
 
 from cyberppt.stage02_handoff import (
@@ -133,6 +134,29 @@ def test_build_handoff_uses_script_audit_without_interactive_confirmation() -> N
 
     assert "stage01_confirmation_mode" not in payload
     assert payload["source_bindings"]["script"]["path"] == str((project / "script.md").resolve())
+    assert "planning_policy" not in payload
+
+
+def test_build_handoff_preserves_outline_planning_policy() -> None:
+    policy = {
+        "writing_style_mode": "government_official",
+        "source_structure_mode": "locked",
+    }
+    with TemporaryDirectory() as directory:
+        project = Path(directory)
+        _write_inputs(project)
+        outline = project / "workbench/stages/01-analysis/outline.json"
+        outline.write_text(
+            json.dumps({"schema": "outline.v1", "planning_policy": policy, "pages": []}),
+            encoding="utf-8",
+        )
+        with patch(
+            "cyberppt.commands.script_audit.run_script_audit",
+            return_value=(0, {"status": "passed"}),
+        ):
+            payload = build_stage02_handoff(project, script=project / "script.md")
+
+    assert payload["planning_policy"] == policy
 
 
 def test_prepare_rebuilds_when_a_bound_stage01_input_digest_changes() -> None:
@@ -191,3 +215,62 @@ def test_handoff_audit_rejects_expression_constraints_drift() -> None:
 
     codes = {item["code"] for item in report["blocking_issues"]}
     assert "ONSCREEN_EXPRESSION_CONSTRAINTS_INVALID" in codes
+
+
+def test_handoff_audit_rejects_policy_and_business_relationship_drift() -> None:
+    policy = {
+        "writing_style_mode": "government_official",
+        "source_structure_mode": "locked",
+    }
+    relationship = {
+        "subject": "项目",
+        "relation": "has_goal",
+        "objects": ["统一服务入口"],
+        "direction": "subject_to_objects",
+        "condition": "",
+        "modality": "",
+        "basis": "explicit",
+        "confidence": "high",
+        "source_refs": ["ST0002"],
+        "authority_ref": "rel-0001",
+    }
+    with TemporaryDirectory() as directory:
+        project = Path(directory)
+        _write_inputs(project)
+        outline = project / "workbench/stages/01-analysis/outline.json"
+        outline.write_text(
+            json.dumps(
+                {
+                    "schema": "outline.v1",
+                    "planning_policy": policy,
+                    "pages": [
+                        {
+                            "page_id": "p01",
+                            "page_type": "content",
+                            "content_relations": [relationship],
+                        }
+                    ],
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        payload = _payload(project, created_at="2026-08-13T00:00:00+00:00")
+        payload["planning_policy"] = {
+            "writing_style_mode": "consulting",
+            "source_structure_mode": "flexible",
+        }
+        payload["pages"][0]["stage02_visual_input"]["business_relationships"] = []
+        report = audit_stage02_handoff(project, payload)
+
+    codes = {item["code"] for item in report["blocking_issues"]}
+    assert "HANDOFF_PLANNING_POLICY_DRIFT" in codes
+    assert "HANDOFF_BUSINESS_RELATIONSHIP_DRIFT" in codes
+
+
+class Stage02PolicyAndRelationshipTests(unittest.TestCase):
+    def test_build_preserves_outline_planning_policy(self) -> None:
+        test_build_handoff_preserves_outline_planning_policy()
+
+    def test_audit_rejects_policy_and_relationship_drift(self) -> None:
+        test_handoff_audit_rejects_policy_and_business_relationship_drift()

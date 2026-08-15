@@ -9,28 +9,28 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
-from scripts.dual_image_overlay.cyberppt_pair_manifest import (
+from scripts.imagegen_pipeline.page_manifest import (
     FULL_IMAGE_MODE,
     PRODUCTION_MODES,
     build_manifest,
     output_variants_for_mode,
     require_generated,
 )
-from scripts.dual_image_overlay.deliverable_prompt import parse_page_blocks, parse_pages, template_title
-from scripts.dual_image_overlay.imagegen_handoff import (
+from scripts.imagegen_pipeline.deliverable_prompt import parse_page_blocks, parse_pages, template_title
+from scripts.imagegen_pipeline.imagegen_handoff import (
     IMAGEGEN_CANVAS_CONTRACT as BODY_IMAGE_CANVAS_CONTRACT,
     PresentationDecision,
     resolve_presentation_decision,
     select_image_locked_text,
     select_page_visual_intent_type,
 )
-from scripts.dual_image_overlay.production_readiness import build_production_readiness
+from scripts.imagegen_pipeline.production_readiness import build_production_readiness
 from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruction
-from scripts.dual_image_overlay.rebuild_engine.codex_oauth_image import (
+from scripts.imagegen_pipeline.providers.codex_oauth_image import (
     ensure_output_size,
     run_codex_image,
 )
-from scripts.dual_image_overlay.style_library import write_project_style_lock
+from scripts.imagegen_pipeline.style_library import write_project_style_lock
 from cyberppt.artifact_ledger import append_artifacts, write_json_atomic
 from cyberppt.script_quality_contract import (
     assert_imagegen_onscreen_readiness,
@@ -38,7 +38,7 @@ from cyberppt.script_quality_contract import (
 )
 
 
-STAGE_DIR = "workbench/stages/02-blueprint-dual-image"
+STAGE_DIR = "workbench/stages/02-imagegen"
 TEMPLATE_LOCK_DIR = "workbench/locks/template_text"
 LEDGER_PATH = "workbench/artifact-ledger.json"
 def _utc_now() -> str:
@@ -240,8 +240,6 @@ def _ensure_project_dirs(project: Path) -> None:
     for relative in (
         STAGE_DIR,
         TEMPLATE_LOCK_DIR,
-        "workbench/stages/03-overlay",
-        "workbench/stages/04-template-rebuild",
         "workbench/stages/05-qa-delivery",
         "outputs/pages",
         "outputs/renders",

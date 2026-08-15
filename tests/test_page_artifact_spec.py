@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 import json
 from pathlib import Path
 import tempfile
@@ -41,6 +42,20 @@ class PageArtifactSpecTests(unittest.TestCase):
                 "body_image_canvas": {"width": 2048, "height": 1024, "ratio": "2:1"},
                 "title_render_mode": "external_text_layer",
                 "subtitle_render_mode": "external_text_layer",
+                "business_relationships": [
+                    {
+                        "subject": "项目",
+                        "relation": "has_goal",
+                        "objects": ["统一服务入口"],
+                        "direction": "subject_to_objects",
+                        "condition": "",
+                        "modality": "",
+                        "basis": "explicit",
+                        "confidence": "high",
+                        "source_refs": ["ST0002"],
+                        "authority_ref": "rel-0001",
+                    }
+                ],
             },
         }
         visual_page = {
@@ -66,6 +81,20 @@ class PageArtifactSpecTests(unittest.TestCase):
             "semantic_graph": {
                 "primary_relation": "transform",
                 "decision_relationship": "Governance hub transforms input into traceable result",
+                "business_relationships": [
+                    {
+                        "subject": "项目",
+                        "relation": "has_goal",
+                        "objects": ["统一服务入口"],
+                        "direction": "subject_to_objects",
+                        "condition": "",
+                        "modality": "",
+                        "basis": "explicit",
+                        "confidence": "high",
+                        "source_refs": ["ST0002"],
+                        "authority_ref": "rel-0001",
+                    }
+                ],
             },
             "structural_decision": {
                 "spatial_grammar": ["convergence", "path"],
@@ -125,6 +154,10 @@ class PageArtifactSpecTests(unittest.TestCase):
                 style_lock=style_lock,
                 handoff_sha256="a" * 64,
                 visual_source_sha256="b" * 64,
+                planning_policy={
+                    "source_structure_mode": "locked",
+                    "source_content_mode": "preserve",
+                },
             )
 
         self.assertEqual("powerpoint_body_visual_asset", spec.deliverable.asset_type)
@@ -135,10 +168,69 @@ class PageArtifactSpecTests(unittest.TestCase):
         self.assertEqual("Governance operations hub", spec.visual_carrier.business_object)
         self.assertTrue(spec.visual_carrier.use_scene)
         self.assertEqual("Pure white editorial art direction.", spec.art_direction.contract)
+        relationship = spec.relationships[0]
+        self.assertEqual("项目", relationship.subject)
+        self.assertEqual("has_goal", relationship.relation)
+        self.assertEqual(("统一服务入口",), relationship.objects)
+        self.assertEqual("subject_to_objects", relationship.direction)
+        self.assertEqual("explicit", relationship.basis)
+        self.assertEqual("high", relationship.confidence)
+        self.assertIn(
+            "Preserve the approved source actors, relationships, conditions, status, and factual strength without reinterpretation.",
+            spec.hard_constraints.page_constraints,
+        )
         serialized = json.dumps(spec.to_dict(), ensure_ascii=False)
-        for backend_id in ("E1", "E2", "P07-T01", "P07-T02", "P07-TITLE"):
+        for backend_id in (
+            "E1",
+            "E2",
+            "P07-T01",
+            "P07-T02",
+            "P07-TITLE",
+            "ST0002",
+            "rel-0001",
+        ):
             self.assertNotIn(backend_id, serialized)
         self.assertNotIn("Do not discuss the next chapter", serialized)
+
+    def test_rejects_business_relationship_drift_between_handoff_and_visual_spec(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            changed_visual = deepcopy(visual_page)
+            changed_visual["semantic_graph"]["business_relationships"][0]["objects"] = [
+                "未经授权的其他目标"
+            ]
+
+            with self.assertRaisesRegex(ValueError, "business relationship"):
+                build_page_artifact_spec(
+                    handoff_page=handoff_page,
+                    visual_page=changed_visual,
+                    style_lock=style_lock,
+                    handoff_sha256="a" * 64,
+                    visual_source_sha256="b" * 64,
+                )
+
+    def test_legacy_empty_handoff_can_use_visual_decision_relationship(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            handoff_page["stage02_visual_input"]["business_relationships"] = []
+            del visual_page["semantic_graph"]["business_relationships"]
+
+            spec = build_page_artifact_spec(
+                handoff_page=handoff_page,
+                visual_page=visual_page,
+                style_lock=style_lock,
+                handoff_sha256="a" * 64,
+                visual_source_sha256="b" * 64,
+            )
+
+        self.assertEqual(
+            "Governance hub transforms input into traceable result",
+            spec.relationships[0].subject,
+        )
+        self.assertEqual("", spec.relationships[0].relation)
+        self.assertEqual((), spec.relationships[0].objects)
 
     def test_rejects_cross_artifact_content_drift(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

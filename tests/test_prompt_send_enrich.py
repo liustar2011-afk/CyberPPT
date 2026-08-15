@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from scripts.dual_image_overlay.prompt_send_enrich import (
+from scripts.imagegen_pipeline.prompt_send_enrich import (
     SEND_ENRICH_HEADER,
     apply_deterministic_enrich,
     assert_locked_text_preserved,

@@ -10,7 +10,7 @@ from typing import Any
 
 from PIL import Image, ImageChops, ImageStat
 
-from scripts.dual_image_overlay.qa_render_page import render_to_png
+from scripts.presentation_qa.render_page import render_to_png
 
 
 VISUAL_DIFF_THRESHOLD = 12.0

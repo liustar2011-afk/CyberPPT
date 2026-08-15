@@ -170,7 +170,6 @@ class SkillContractTests(unittest.TestCase):
             for path in (
                 SKILL,
                 ROOT / "README.md",
-                ROOT / "references" / "dual-image-editable-overlay.md",
             )
         )
 

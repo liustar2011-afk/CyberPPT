@@ -166,6 +166,13 @@ class VisualStructureStageTests(unittest.TestCase):
         relationship = page["semantic_graph"]["decision_relationship"]
         self.assertEqual("Input supports Result；Input supports Audit", relationship)
         self.assertNotIn("[{", relationship)
+        self.assertEqual(
+            source["business_relationships"],
+            page["semantic_graph"]["business_relationships"],
+        )
+        self.assertNotEqual(
+            page["semantic_graph"]["business_relationships"], page["connectors"]
+        )
 
     def test_visual_design_input_carries_expression_as_semantic_constraint(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -405,14 +412,33 @@ class VisualStructureStageTests(unittest.TestCase):
             module_titles=(),
             contract_receipt={"page_mission": "Mission"},
         )
-        relationships = [
-            {"subject": "Foundation", "objects": ["Pilot"], "relation": "supports"}
-        ]
+        relationships = [{
+            "subject": "Foundation",
+            "objects": ["Pilot"],
+            "relation": "supports",
+            "direction": "subject_to_objects",
+            "condition": "when ready",
+            "modality": "proposed",
+            "basis": "explicit",
+            "confidence": "high",
+            "source_refs": ["S001"],
+            "authority_ref": "R001",
+        }]
+        outline = {
+            "argument_role": "evidence",
+            "source_heading_ids": ["sec-0002"],
+            "primary_source_heading_id": "sec-0002",
+            "subtitle_policy": {"mode": "not_needed", "subtitle": ""},
+            "content_relations": relationships,
+        }
 
-        record = _page_record(page, {"argument_role": "evidence", "content_relations": relationships})
+        record = _page_record(page, outline)
         visual = record["stage02_visual_input"]
 
         self.assertEqual(relationships, visual["business_relationships"])
+        self.assertEqual(["sec-0002"], record["source_heading_ids"])
+        self.assertEqual("sec-0002", record["primary_source_heading_id"])
+        self.assertEqual(outline["subtitle_policy"], record["subtitle_policy"])
         self.assertEqual("five horizontal lanes with a bottom result area", visual["author_visual_notes"])
         self.assertEqual("framework_4", record["expression_constraints"]["form"])
         self.assertEqual(record["expression_constraints"], visual["expression_constraints"])
@@ -420,6 +446,14 @@ class VisualStructureStageTests(unittest.TestCase):
         self.assertEqual("stage01_semantic_handoff", visual["stage01_relationship_features"]["authority"])
         self.assertEqual("Foundation", visual["stage01_relationship_features"]["actors"][0])
         self.assertEqual("supports", visual["stage01_relationship_features"]["actions"][0]["relation"])
+        self.assertEqual(
+            "subject_to_objects",
+            visual["stage01_relationship_features"]["actions"][0]["direction"],
+        )
+        self.assertEqual(
+            "explicit",
+            visual["stage01_relationship_features"]["actions"][0]["basis"],
+        )
         self.assertEqual("P06-T01", visual["locked_text_items"][0]["text_id"])
         self.assertNotIn("approved_stage01_visual_structure", visual)
         self.assertNotIn("source_refs", visual)

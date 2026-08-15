@@ -6,7 +6,7 @@ from tempfile import TemporaryDirectory
 from pptx import Presentation
 from pptx.util import Inches
 
-from scripts.dual_image_overlay.text_content_qa import build_text_content_qa
+from scripts.presentation_qa.text_content import build_text_content_qa
 
 
 def _make_pptx(path: Path, texts: list[str]) -> None:

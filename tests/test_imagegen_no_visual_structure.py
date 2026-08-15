@@ -8,8 +8,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from cyberppt.script_quality_contract import parse_script_markdown
-from scripts.dual_image_overlay.deliverable_prompt import PageBlock, render_prompt
-from scripts.dual_image_overlay.imagegen_handoff import (
+from scripts.imagegen_pipeline.deliverable_prompt import PageBlock, render_prompt
+from scripts.imagegen_pipeline.imagegen_handoff import (
     VISUAL_INTENT_TEMPLATES,
     _page_visual_contexts,
     _page_visual_intent_overrides,
@@ -18,7 +18,7 @@ from scripts.dual_image_overlay.imagegen_handoff import (
     content_lock_text,
     select_page_visual_intent_type,
 )
-from scripts.dual_image_overlay.style_library import write_project_style_lock
+from scripts.imagegen_pipeline.style_library import write_project_style_lock
 
 
 SCRIPT_WITH_VISUAL_STRUCTURE = """## 第9页：总体定位
@@ -284,7 +284,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertLess(prompt.index("Page-specific visual intent"), prompt.index("上屏文字"))
         self.assertLess(
             prompt.index("Page-specific visual intent"),
-            prompt.index("### 核心视觉语法"),
+            prompt.index("### Style proposition"),
         )
         self.assertNotIn("扩展风格9：", prompt)
         self.assertNotIn("不进入默认候选", prompt)

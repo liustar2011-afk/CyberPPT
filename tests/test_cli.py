@@ -218,7 +218,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(4, code)
         self.assertIn('"status": "rewrite_required"', buffer.getvalue())
 
-    def test_final_script_pages_requires_explicit_style_choice(self) -> None:
+    def test_final_script_pages_requires_stage02_handoff_before_generation(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "client-report"
@@ -253,8 +253,7 @@ class CliTests(unittest.TestCase):
                 )
 
         self.assertEqual(2, code)
-        self.assertIn("请选择一个 CyberPPT 默认视觉风格", buffer.getvalue())
-        self.assertIn("4. 象牙白 + 深蓝强调", buffer.getvalue())
+        self.assertIn("Stage 02 handoff is missing requested page 3", buffer.getvalue())
 
     def test_removed_dual_image_rebuild_command_is_rejected(self) -> None:
         with self.assertRaises(SystemExit):
@@ -332,13 +331,3 @@ class CliTests(unittest.TestCase):
         )
         self.assertEqual(completed.returncode, 0)
         self.assertIn("Check PPTX structure", completed.stdout)
-
-    def test_image_ppt_help_is_forwarded_to_underlying_script(self) -> None:
-        completed = subprocess.run(
-            [sys.executable, "-m", "cyberppt", "image-ppt", "--help"],
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-        self.assertEqual(completed.returncode, 0)
-        self.assertIn("Generate image-based PPT inside the CEC template", completed.stdout)

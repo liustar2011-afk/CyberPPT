@@ -11,7 +11,7 @@ from cyberppt.semantic_intent import (
     resolve_semantic_intent,
     validate_semantic_structure,
 )
-from scripts.dual_image_overlay.imagegen_handoff import audit_page_semantic_intent
+from scripts.imagegen_pipeline.imagegen_handoff import audit_page_semantic_intent
 
 
 SCRIPT = """## 第1页：运行闭环

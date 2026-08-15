@@ -16,6 +16,8 @@ if str(HANDOFF_SKILL) not in sys.path:
     sys.path.insert(0, str(HANDOFF_SKILL))
 
 from cyberppt_handoff.runtime import run_outline_audit
+from cyberppt_handoff.project import build_projection
+from cyberppt_handoff.validate import validate_projection
 
 
 class SourceFoundationIntegrationTests(unittest.TestCase):
@@ -129,7 +131,37 @@ class SourceFoundationIntegrationTests(unittest.TestCase):
             self.assertEqual("projection", outline["editorial_control_mode"])
             self.assertEqual("projection", outline["editorial_authoring_mode"])
             self.assertNotIn("chapter_id", content_page)
-            self.assertEqual("contains", content_page["content_relations"][0]["relation"])
+            self.assertEqual(
+                "government_official",
+                outline["planning_policy"]["writing_style_mode"],
+            )
+            self.assertEqual(
+                "locked",
+                outline["planning_policy"]["source_structure_mode"],
+            )
+            self.assertEqual(["sec-0001"], content_page["source_heading_ids"])
+            self.assertEqual(
+                "sec-0001", content_page["primary_source_heading_id"]
+            )
+            self.assertEqual(
+                {
+                    "subject": "项目",
+                    "relation": "has_goal",
+                    "objects": ["统一服务入口"],
+                    "direction": "subject_to_objects",
+                    "condition": "",
+                    "modality": "",
+                    "basis": "explicit",
+                    "confidence": "high",
+                    "source_refs": ["ST0002"],
+                    "authority_ref": "rel-0001",
+                },
+                content_page["content_relations"][0],
+            )
+            self.assertNotIn(
+                "contains",
+                {item["relation"] for item in content_page["content_relations"]},
+            )
             self.assertTrue(content_page["primary_argument_node_id"].startswith("L4-"))
             self.assertIn(
                 content_page["primary_argument_node_id"],
@@ -158,6 +190,88 @@ class SourceFoundationIntegrationTests(unittest.TestCase):
                     for ref in content_page["source_refs"]
                 )
             )
+
+    def test_page_without_declared_relation_does_not_invent_contains(self) -> None:
+        fixtures = HANDOFF_SKILL / "tests" / "fixtures"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            outline_dir = root / "outline"
+            outline_dir.mkdir()
+            for source in (fixtures / "outline").iterdir():
+                if source.is_file():
+                    (outline_dir / source.name).write_bytes(source.read_bytes())
+            page_plan_path = outline_dir / "page-plan.json"
+            page_plan = json.loads(page_plan_path.read_text(encoding="utf-8"))
+            content_page = next(
+                page
+                for page in page_plan["pages"]
+                if page.get("page_type") == "content"
+            )
+            content_page["evidence"]["relation_ids"] = []
+            page_plan_path.write_text(
+                json.dumps(page_plan, ensure_ascii=False), encoding="utf-8"
+            )
+
+            projection = build_projection(
+                fixtures / "foundation", fixtures / "semantic", outline_dir
+            )
+
+        projected_page = next(
+            page
+            for page in projection["outline"]["pages"]
+            if page.get("page_type") == "content"
+        )
+        self.assertEqual([], projected_page["content_relations"])
+
+    def test_projection_validation_rejects_relationship_semantic_drift(self) -> None:
+        fixtures = HANDOFF_SKILL / "tests" / "fixtures"
+        projection = build_projection(
+            fixtures / "foundation", fixtures / "semantic", fixtures / "outline"
+        )
+        projected_page = next(
+            page
+            for page in projection["outline"]["pages"]
+            if page.get("page_type") == "content" and page.get("content_relations")
+        )
+        projected_page["content_relations"][0]["relation"] = "contains"
+
+        report = validate_projection(projection)
+
+        self.assertEqual("error", report["status"])
+        self.assertIn(
+            "page_relationship_semantic_drift",
+            {item["code"] for item in report["errors"]},
+        )
+
+    def test_partial_workpack_policy_uses_deck_fallback_without_validation_drift(self) -> None:
+        fixtures = HANDOFF_SKILL / "tests" / "fixtures"
+        with tempfile.TemporaryDirectory() as tmp:
+            outline_dir = Path(tmp) / "outline"
+            outline_dir.mkdir()
+            for source in (fixtures / "outline").iterdir():
+                if source.is_file():
+                    (outline_dir / source.name).write_bytes(source.read_bytes())
+            workpack_path = outline_dir / "outline-workpack.json"
+            workpack = json.loads(workpack_path.read_text(encoding="utf-8"))
+            workpack["planning_policy"] = {"source_structure_mode": "locked"}
+            workpack_path.write_text(
+                json.dumps(workpack, ensure_ascii=False), encoding="utf-8"
+            )
+
+            projection = build_projection(
+                fixtures / "foundation", fixtures / "semantic", outline_dir
+            )
+            report = validate_projection(projection)
+
+        self.assertEqual("ok", report["status"])
+        self.assertEqual(
+            projection["outline"]["planning_policy"],
+            projection["authority_map"]["planning_policy"],
+        )
+        self.assertEqual(
+            "government_official",
+            projection["outline"]["planning_policy"]["writing_style_mode"],
+        )
 
 
 if __name__ == "__main__":

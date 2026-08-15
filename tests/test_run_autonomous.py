@@ -152,7 +152,7 @@ class RunAutonomousTests(AutonomousContractTests):
         visual = self.project / "visual"
         visual.mkdir()
         (visual / "generation-prompts.md").write_text("prompt", encoding="utf-8")
-        output = self.project / "workbench" / "stages" / "02-blueprint-dual-image" / "build"
+        output = self.project / "workbench" / "stages" / "02-imagegen" / "build"
         output.mkdir(parents=True)
         full = output / "full.png"
         full.write_bytes(b"full")

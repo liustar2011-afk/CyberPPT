@@ -16,7 +16,7 @@ class ScriptRunnerTests(unittest.TestCase):
         self.assertEqual("body_blueprint_prompt.py", script_path("body-blueprint-prompts").name)
 
     def test_pair_manifest_alias_is_registered(self) -> None:
-        self.assertEqual("cyberppt_pair_manifest.py", script_path("pair-manifest").name)
+        self.assertEqual("page_manifest.py", script_path("pair-manifest").name)
 
     def test_removed_template_rebuild_alias_is_not_registered(self) -> None:
         with self.assertRaises(KeyError):
@@ -30,7 +30,7 @@ class ScriptRunnerTests(unittest.TestCase):
         with patch("cyberppt.commands.script_runner.subprocess.run") as run:
             run.return_value = Mock(returncode=0)
 
-            self.assertEqual(0, run_script("image-ppt", ["plan"]))
+            self.assertEqual(0, run_script("validate", ["--help"]))
 
         self.assertEqual(REPO_ROOT, run.call_args.kwargs["cwd"])
         pythonpath = run.call_args.kwargs["env"]["PYTHONPATH"].split(";")

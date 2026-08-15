@@ -4,11 +4,15 @@ from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import json
+import unittest
 
-import pytest
+try:
+    import pytest
+except ModuleNotFoundError as exc:
+    raise unittest.SkipTest("pytest is not installed") from exc
 
 from cyberppt.script_quality_contract import parse_script_markdown
-from scripts.dual_image_overlay.imagegen_handoff import (
+from scripts.imagegen_pipeline.imagegen_handoff import (
     CONTENT_FIRST_ONSCREEN_STORY_CONTRACT,
     CONTENT_FIRST_SEMANTIC_ONLY_STORY_CONTRACT,
     CONTENT_FIRST_SEMANTIC_ONLY_WITH_LOCKED_STORY_CONTRACT,
@@ -25,9 +29,9 @@ from scripts.dual_image_overlay.imagegen_handoff import (
     select_image_locked_text,
     select_page_visual_intent_type,
 )
-from scripts.dual_image_overlay.prompt_diagnostics import analyze_prompt
-from scripts.dual_image_overlay.style_library import write_project_style_lock
-from scripts.dual_image_overlay.visual_grammar import creative_brief_visual_grammar
+from scripts.imagegen_pipeline.prompt_diagnostics import analyze_prompt
+from scripts.imagegen_pipeline.style_library import write_project_style_lock
+from scripts.imagegen_pipeline.visual_grammar import creative_brief_visual_grammar
 
 
 SCRIPT = """## 第18页：平台支撑与安全运行
@@ -741,7 +745,7 @@ def test_low_confidence_fallback_omits_logic_contract_even_for_semantic_only() -
 
 
 def test_business_relations_outrank_module_title_chains() -> None:
-    from scripts.dual_image_overlay.imagegen_handoff import _page_semantic_relations
+    from scripts.imagegen_pipeline.imagegen_handoff import _page_semantic_relations
 
     page = replace(
         _page(),
@@ -768,7 +772,7 @@ def test_business_relations_outrank_module_title_chains() -> None:
 
 
 def test_semantic_keeps_subject_before_structure_verb_marker() -> None:
-    from scripts.dual_image_overlay.imagegen_handoff import _page_semantic_relations
+    from scripts.imagegen_pipeline.imagegen_handoff import _page_semantic_relations
 
     page = replace(
         _page(),
@@ -798,7 +802,7 @@ def test_semantic_keeps_subject_before_structure_verb_marker() -> None:
 
 
 def test_labeled_relation_keeps_semicolon_clauses_together() -> None:
-    from scripts.dual_image_overlay.imagegen_handoff import _page_semantic_relations
+    from scripts.imagegen_pipeline.imagegen_handoff import _page_semantic_relations
 
     page = replace(
         _page(),
@@ -822,7 +826,7 @@ def test_labeled_relation_keeps_semicolon_clauses_together() -> None:
 
 
 def test_component_relation_semicolon_clauses_stay_intact() -> None:
-    from scripts.dual_image_overlay.imagegen_handoff import _page_semantic_relations
+    from scripts.imagegen_pipeline.imagegen_handoff import _page_semantic_relations
 
     page = replace(
         _page(),
@@ -847,7 +851,7 @@ def test_component_relation_semicolon_clauses_stay_intact() -> None:
 
 
 def test_semantic_relations_dedupe_bullet_leftovers_from_onscreen() -> None:
-    from scripts.dual_image_overlay.imagegen_handoff import _page_semantic_relations
+    from scripts.imagegen_pipeline.imagegen_handoff import _page_semantic_relations
 
     meaning = (
         "业务含义：统一底座和横向治理使三类应用共享知识标准，"
@@ -875,7 +879,7 @@ def test_semantic_relations_dedupe_bullet_leftovers_from_onscreen() -> None:
 
 
 def test_page_logic_contract_uses_chinese_spatial_rules() -> None:
-    from scripts.dual_image_overlay.imagegen_handoff import render_page_logic_contract
+    from scripts.imagegen_pipeline.imagegen_handoff import render_page_logic_contract
 
     page = replace(
         _page(),
@@ -925,7 +929,7 @@ def test_style09_hides_page_layout_recipe_but_keeps_semantic_relation() -> None:
 
 
 def test_visual_center_reaches_prompt_and_proof_fallback() -> None:
-    from scripts.dual_image_overlay.imagegen_handoff import build_page_prompt
+    from scripts.imagegen_pipeline.imagegen_handoff import build_page_prompt
 
     page = replace(
         _page(),

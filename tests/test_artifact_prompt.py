@@ -16,15 +16,16 @@ from cyberppt.page_artifact_spec import (
     EvidenceSpec,
     HardConstraintSpec,
     PageArtifactSpec,
+    RelationshipSpec,
     TypographySpec,
     VisualCarrierSpec,
 )
-from scripts.dual_image_overlay.artifact_prompt import (
+from scripts.imagegen_pipeline.artifact_prompt import (
     SECTION_HEADINGS,
     assert_artifact_prompt_contract,
     render_artifact_prompt,
 )
-from scripts.dual_image_overlay.imagegen_handoff import compile_page_prompt
+from scripts.imagegen_pipeline.imagegen_handoff import compile_page_prompt
 
 
 def _spec(*, style_id: int = 10, contract: str = "Pure white editorial direction.") -> PageArtifactSpec:
@@ -48,7 +49,18 @@ def _spec(*, style_id: int = 10, contract: str = "Pure white editorial direction
             EvidenceSpec("An authoritative input enters the hub", "process", "P0"),
             EvidenceSpec("One auditable outcome exits the hub", "result", "P0"),
         ),
-        relationships=("Governance hub transforms input into traceable result",),
+        relationships=(
+            RelationshipSpec(
+                subject="项目",
+                relation="has_goal",
+                objects=("统一服务入口",),
+                direction="subject_to_objects",
+                condition="",
+                modality="",
+                basis="explicit",
+                confidence="high",
+            ),
+        ),
         visual_carrier=VisualCarrierSpec(
             business_object="Governance operations hub",
             semantic_role="The hub proves transformation and traceability",
@@ -118,6 +130,13 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertEqual(1, prompt.count("Pure white editorial direction."))
         self.assertEqual(1, prompt.count("Governed input"))
         self.assertEqual(1, prompt.count("Traceable result"))
+        self.assertIn(
+            "- 项目 --has_goal--> 统一服务入口 | direction=subject_to_objects | basis=explicit | confidence=high",
+            prompt,
+        )
+        for audit_id in ("rel-0001", "ST0002", "NF-0002"):
+            self.assertNotIn(audit_id, prompt)
+        self.assertNotIn("--contains-->", prompt)
         self.assertTrue(prompt.rstrip().endswith("Do not create a text wall."))
         assert_artifact_prompt_contract(prompt, expected_visible_text=("Governed input", "Traceable result"))
 

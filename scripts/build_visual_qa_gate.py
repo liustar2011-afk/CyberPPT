@@ -43,7 +43,6 @@ def main() -> int:
     parser.add_argument("--overlay-comparison", required=True)
     parser.add_argument("--pixel-diff-report", required=True)
     parser.add_argument("--local-crop", action="append", default=[])
-    parser.add_argument("--delivery-mode", default="native_rebuild")
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
 
@@ -84,12 +83,8 @@ def main() -> int:
         if field in {"blueprint_background_not_used", "background_snapshot_declared_and_no_text"}:
             continue
         entry[field] = passed
-    if args.delivery_mode == "dual_image_editable_overlay":
-        entry["blueprint_background_not_used"] = False
-        entry["background_snapshot_declared_and_no_text"] = passed
-    else:
-        entry["blueprint_background_not_used"] = passed
-        entry["background_snapshot_declared_and_no_text"] = False
+    entry["blueprint_background_not_used"] = passed
+    entry["background_snapshot_declared_and_no_text"] = False
 
     payload = {
         "schema": "cyberppt.visual_qa_gate.v1",
