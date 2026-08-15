@@ -38,6 +38,18 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("必须先调用仓库 Skill `cyberppt-source-foundation`", root_skill)
         self.assertIn("即使用户没有点名、项目已经存在", agents)
         self.assertIn("OUTLINE rerun", project_rules)
+        self.assertIn("integration/cyberppt-handoff-report.json", agents)
+        self.assertIn("不得重新编译覆盖该投影的 Source Truth", root_skill)
+
+    def test_outline_routes_are_mutually_exclusive(self) -> None:
+        agents = AGENTS.read_text(encoding="utf-8-sig")
+        project_rules = PROJECT_AGENTS.read_text(encoding="utf-8-sig")
+        root_skill = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("Foundation-native", project_rules)
+        self.assertIn("legacy compatibility", project_rules)
+        self.assertIn("已验证的 Foundation-native Outline 不得再经过", agents)
+        self.assertIn("`compile-outline-draft` 仅用于兼容投影", root_skill)
 
     def test_source_foundation_defaults_to_government_style_and_source_titles(self) -> None:
         planning = OUTLINE_SKILL.read_text(encoding="utf-8-sig")
