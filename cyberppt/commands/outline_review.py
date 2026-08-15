@@ -115,7 +115,7 @@ def render_outline_review_markdown(outline: dict[str, Any], audit: dict[str, Any
                 "",
                 f"- 受众问题：{_text(page.get('audience_question')) or '未声明'}",
                 f"- 页面使命：{_text(page.get('page_mission')) or '未声明'}",
-                f"- 核心判断：{_text(page.get('core_message')) or _text(page.get('main_message')) or '未声明'}",
+                f"- 核心判断：{_text(page.get('core_message')) or _text(page.get('key_judgment')) or _text(page.get('main_message')) or '未声明'}",
                 f"- 不可替代价值：{_text(page.get('non_substitutable_value')) or '未声明'}",
                 f"- 证据范围：{_refs(page.get('source_refs'))}",
             ])

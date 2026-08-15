@@ -255,6 +255,48 @@ class SourceFoundationIntegrationTests(unittest.TestCase):
         )
         self.assertEqual([], projected_page["content_relations"])
 
+    def test_projection_uses_explicit_evidence_roles_and_judgment_receipt(self) -> None:
+        fixtures = HANDOFF_SKILL / "tests" / "fixtures"
+        with tempfile.TemporaryDirectory() as tmp:
+            outline_dir = Path(tmp) / "outline"
+            outline_dir.mkdir()
+            for source in (fixtures / "outline").iterdir():
+                if source.is_file():
+                    (outline_dir / source.name).write_bytes(source.read_bytes())
+            page_plan_path = outline_dir / "page-plan.json"
+            page_plan = json.loads(page_plan_path.read_text(encoding="utf-8"))
+            content_page = next(
+                page for page in page_plan["pages"] if page.get("page_type") == "content"
+            )
+            fact_id = content_page["evidence"]["normalized_fact_ids"][0]
+            content_page["evidence_roles"] = [{
+                "role": "claim",
+                "source_refs": [fact_id],
+            }]
+            content_page["judgment_derivation"] = {
+                "source_refs": [fact_id],
+                "supporting_statements": ["统一服务入口"],
+                "derivation": "保留来源判断。",
+                "introduced_relations": [],
+                "introduced_modalities": [],
+            }
+            page_plan_path.write_text(
+                json.dumps(page_plan, ensure_ascii=False), encoding="utf-8"
+            )
+
+            projection = build_projection(
+                fixtures / "foundation", fixtures / "semantic", outline_dir
+            )
+
+        projected_page = next(
+            page for page in projection["outline"]["pages"]
+            if page.get("page_type") == "content"
+        )
+        self.assertEqual(
+            projected_page["core_message_derivation"]["source_refs"],
+            projected_page["evidence_roles"]["claim"],
+        )
+
     def test_projection_validation_rejects_relationship_semantic_drift(self) -> None:
         fixtures = HANDOFF_SKILL / "tests" / "fixtures"
         projection = build_projection(

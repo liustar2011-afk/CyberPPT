@@ -26,9 +26,20 @@ def _page_id(page: dict[str, object]) -> str:
 
 
 def _core_message(page: dict[str, object]) -> str:
-    """Read the v2 semantic center while retaining v1 compatibility."""
+    """Read one semantic center across layer-four and CyberPPT field names."""
 
-    return str(page.get("core_message") or page.get("main_message") or "").strip()
+    return str(
+        page.get("core_message")
+        or page.get("key_judgment")
+        or page.get("main_message")
+        or ""
+    ).strip()
+
+
+def _judgment_field_conflict(page: dict[str, object]) -> bool:
+    core = str(page.get("core_message") or "").strip()
+    key = str(page.get("key_judgment") or "").strip()
+    return bool(core and key and _text(core) != _text(key))
 
 
 def _page_mission(page: dict[str, object]) -> str:

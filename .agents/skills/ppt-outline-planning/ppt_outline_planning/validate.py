@@ -66,6 +66,60 @@ def _title_matches_source(title: Any, source_title: Any) -> bool:
     )
 
 
+def _page_evidence_ids(page: dict[str, Any]) -> set[str]:
+    evidence = page.get("evidence") if isinstance(page.get("evidence"), dict) else {}
+    return {
+        str(value)
+        for field in ("normalized_fact_ids", "relation_ids", "argument_node_ids")
+        for value in evidence.get(field) or []
+        if str(value)
+    }
+
+
+def _role_map(value: Any) -> dict[str, list[str]] | None:
+    if isinstance(value, dict):
+        return {
+            role: [str(item) for item in refs if str(item)]
+            for role, refs in value.items()
+            if role in EVIDENCE_ROLE_KEYS and isinstance(refs, list)
+        }
+    if isinstance(value, list):
+        result: dict[str, list[str]] = {role: [] for role in EVIDENCE_ROLE_KEYS}
+        for item in value:
+            if not isinstance(item, dict):
+                return None
+            role = str(item.get("role") or "")
+            refs = item.get("source_refs")
+            if role not in EVIDENCE_ROLE_KEYS or not isinstance(refs, list) or not refs:
+                return None
+            result[role].extend(str(ref) for ref in refs if str(ref))
+        return result
+    return None
+
+
+def _title_only_chain(page: dict[str, Any], workpack: dict[str, Any] | None) -> bool:
+    chain = page.get("argument_chain")
+    if not isinstance(chain, list) or not chain:
+        return False
+    statements = [
+        _normalized_title(item.get("statement"))
+        for item in chain
+        if isinstance(item, dict) and str(item.get("statement") or "").strip()
+    ]
+    if len(statements) != len(chain) or not statements:
+        return False
+    titles = {_normalized_title(page.get("title_intent"))}
+    for heading in (workpack or {}).get("source_heading_outline") or []:
+        if not isinstance(heading, dict):
+            continue
+        if str(heading.get("section_id") or heading.get("heading_id") or "") in {
+            str(value) for value in page.get("source_heading_ids") or []
+        }:
+            titles.add(_normalized_title(heading.get("title")))
+    titles.discard("")
+    return bool(titles) and all(statement in titles for statement in statements)
+
+
 def _validate_workpack(
     workpack: dict[str, Any],
     semantic_payloads: dict[str, dict[str, Any]],
@@ -528,6 +582,27 @@ def validate_outline_outputs(semantic_dir:Path|str,outline_dir:Path|str,*,write_
         for field in ("audience_question","page_mission","key_judgment","non_substitutable_value","argument_role","must_not_include","reserved_for_later","split_risk","transition_from_previous","transition_to_next"):
             value=page.get(field)
             if value is None or value=="" or (field=="must_not_include" and value==[]): _err(errors,"missing_page_boundary_field",f"Content page requires {field}",page_id=pid,field=field)
+        key_judgment = str(page.get("key_judgment") or "").strip()
+        core_message = str(page.get("core_message") or "").strip()
+        if key_judgment and core_message and key_judgment != core_message:
+            _err(errors,"judgment_field_conflict","key_judgment and core_message must express one identical semantic center",page_id=pid)
+        judgment = key_judgment or core_message
+        if not judgment:
+            _err(errors,"missing_page_judgment","Content page requires key_judgment (core_message is accepted only as a compatibility alias)",page_id=pid)
+        receipt = page.get("judgment_derivation") or page.get("core_message_derivation")
+        if not isinstance(receipt, dict):
+            _err(errors,"judgment_derivation_missing","Every content page judgment requires an explicit judgment_derivation receipt",page_id=pid)
+        else:
+            receipt_refs = {str(value) for value in receipt.get("source_refs") or [] if str(value)}
+            outside = sorted(receipt_refs - _page_evidence_ids(page))
+            if not receipt_refs:
+                _err(errors,"judgment_derivation_refs_missing","judgment_derivation.source_refs must be non-empty",page_id=pid)
+            if outside:
+                _err(errors,"judgment_derivation_outside_page","judgment_derivation.source_refs must be declared by the page evidence",page_id=pid,ids=outside)
+            if not receipt.get("supporting_statements") or not str(receipt.get("derivation") or "").strip():
+                _err(errors,"judgment_derivation_incomplete","judgment_derivation must state supporting_statements and an equal-strength derivation",page_id=pid)
+            if receipt.get("introduced_relations") or receipt.get("introduced_modalities"):
+                _err(errors,"judgment_derivation_introduces_meaning","judgment_derivation may not introduce relations or modalities absent from the cited material",page_id=pid)
         if page.get("split_risk") in {"medium","high"} and not str(page.get("split_risk_reason") or "").strip(): _err(errors,"missing_split_risk_reason","Medium/high split risk requires split_risk_reason",page_id=pid)
         evidence=page.get("evidence") if isinstance(page.get("evidence"),dict) else {}; nfs=[str(x) for x in evidence.get("normalized_fact_ids") or []]; rels=[str(x) for x in evidence.get("relation_ids") or []]; args=[str(x) for x in evidence.get("argument_node_ids") or []]
         if not nfs: _err(errors,"missing_direct_fact_grounding","Every content page requires at least one direct normalized_fact_id",page_id=pid)
@@ -545,6 +620,8 @@ def validate_outline_outputs(semantic_dir:Path|str,outline_dir:Path|str,*,write_
         chain=page.get("argument_chain")
         if not isinstance(chain,list) or not chain: _err(errors,"invalid_argument_chain","argument_chain must be non-empty",page_id=pid)
         else:
+            if _title_only_chain(page, workpack_payload):
+                _err(errors,"title_only_argument_chain","An argument_chain cannot use only the page or source chapter title as its argument",page_id=pid)
             for idx,node in enumerate(chain,1):
                 if not isinstance(node,dict): _err(errors,"invalid_argument_chain","argument_chain entries must be objects",page_id=pid,index=idx); continue
                 if node.get("role") not in ARGUMENT_CHAIN_ROLES: _err(errors,"invalid_argument_chain_role","Unknown argument role",page_id=pid,index=idx)
@@ -554,11 +631,12 @@ def validate_outline_outputs(semantic_dir:Path|str,outline_dir:Path|str,*,write_
                 outside=sorted(refs-page_evidence)
                 if outside: _err(errors,"argument_chain_evidence_outside_page","Chain evidence must already be declared by page",page_id=pid,index=idx,ids=outside)
         roles=page.get("evidence_roles")
-        if not isinstance(roles,dict): _err(errors,"invalid_evidence_roles","evidence_roles must be object",page_id=pid)
+        role_map = _role_map(roles)
+        if role_map is None: _err(errors,"invalid_evidence_roles","evidence_roles must use explicit role records or a role-to-reference object",page_id=pid)
         else:
             assigned={}
             for role in EVIDENCE_ROLE_KEYS:
-                refs=roles.get(role)
+                refs=role_map.get(role)
                 if not isinstance(refs,list): _err(errors,"invalid_evidence_roles",f"evidence_roles.{role} must be array",page_id=pid); continue
                 for ref in refs: assigned.setdefault(str(ref),[]).append(role)
             for ref,names in assigned.items():

@@ -641,6 +641,82 @@ class OutlineContractTests(unittest.TestCase):
         self.assertIn("ARGUMENT_CHAIN_INVALID", codes)
         self.assertIn("EVIDENCE_ROLE_INVALID", codes)
 
+    def test_key_judgment_and_core_message_share_the_same_semantic_center(self) -> None:
+        content = page(
+            1,
+            "content",
+            "建设目标与能力框架",
+            message="总体能力框架由五个层次构成，各层分别承担相应职责",
+            refs=["S021"],
+        )
+        content["core_message"] = "总体能力框架由五个层次构成，各层分别承担相应职责"
+        content["key_judgment"] = "另一条页面判断"
+        content["core_message_derivation"] = {
+            "source_refs": ["S021"],
+            "supporting_statements": ["总体能力框架由五个层次构成。"],
+            "derivation": "保留原文构成关系。",
+            "introduced_relations": [],
+            "introduced_modalities": [],
+        }
+        payload = outline(
+            content,
+            schema="cyberppt.outline.v2",
+            core_message_derivation_mode="required",
+            source_section_weights={},
+        )
+        codes = {item.code for item in audit_outline(
+            payload,
+            {"records": [{"id": "S021", "statement": "总体能力框架由五个层次构成。"}]},
+        )}
+        self.assertIn("JUDGMENT_FIELD_CONFLICT", codes)
+
+    def test_key_judgment_requires_the_canonical_derivation_receipt(self) -> None:
+        content = page(1, "content", "建设目标与能力框架", message="", refs=["S021"])
+        content["key_judgment"] = "总体能力框架由五个层次构成。"
+        payload = outline(
+            content,
+            schema="cyberppt.outline.v2",
+            core_message_derivation_mode="required",
+            source_section_weights={},
+        )
+        codes = {item.code for item in audit_outline(
+            payload,
+            {"records": [{"id": "S021", "statement": "总体能力框架由五个层次构成。"}]},
+        )}
+        self.assertIn("CORE_MESSAGE_DERIVATION_MISSING", codes)
+
+    def test_author_edited_outline_rejects_title_only_argument_chain(self) -> None:
+        content = page(1, "content", "合作启动判断", message="来源已明确合作基础", refs=["S021"])
+        content.update({
+            "editorial_judgment": "合作基础需要通过真实条件验证。",
+            "editorial_judgment_derivation": {
+                "source_refs": ["S021"],
+                "supporting_statements": ["双方已有合作基础。"],
+                "derivation": "保留来源判断。",
+                "introduced_relations": [],
+                "introduced_modalities": [],
+            },
+            "argument_chain": [{
+                "statement": "合作启动判断",
+                "relation": "supports",
+                "source_refs": ["S021"],
+            }],
+            "evidence_roles": [{"role": "claim", "source_refs": ["S021"]}],
+            "non_substitutable_value": "明确合作启动条件。",
+            "excluded_from_onscreen": [],
+        })
+        payload = outline(
+            content,
+            schema="cyberppt.outline.v2",
+            editorial_authoring_mode="author_driven",
+            editorial_authoring_status="author_edited",
+        )
+        codes = {item.code for item in audit_outline(
+            payload,
+            {"records": [{"id": "S021", "statement": "双方已有合作基础。"}]},
+        )}
+        self.assertIn("TITLE_ONLY_ARGUMENT_CHAIN", codes)
+
 
 if __name__ == "__main__":
     unittest.main()

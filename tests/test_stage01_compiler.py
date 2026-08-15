@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -768,12 +769,12 @@ class Stage01CompilerTests(unittest.TestCase):
         )
 
     def test_real_v16_outline_has_no_empty_chapters_or_template_author_fields(self) -> None:
-        project = Path(
-            "/Volumes/DOC/CyberPPT/projects/"
-            "power-data-infrastructure-cooperation-v16-20260815"
-        )
+        project_value = os.environ.get("CYBERPPT_V16_PROJECT")
+        if not project_value:
+            self.skipTest("set CYBERPPT_V16_PROJECT to run the optional V16 regression fixture")
+        project = Path(project_value).expanduser()
         if not project.is_dir():
-            self.skipTest("real V16 project is not mounted")
+            self.skipTest("CYBERPPT_V16_PROJECT is not mounted")
         with tempfile.TemporaryDirectory() as tmp:
             outline_path = compile_outline_draft(
                 project,
@@ -827,12 +828,12 @@ class Stage01CompilerTests(unittest.TestCase):
         self.assertTrue(all(page["evidence_roles"] == [] for page in contents))
 
     def test_real_v16_candidate_core_message_covers_all_p04_source_truth(self) -> None:
-        project = Path(
-            "/Volumes/DOC/CyberPPT/projects/"
-            "power-data-infrastructure-cooperation-v16-20260815"
-        )
+        project_value = os.environ.get("CYBERPPT_V16_PROJECT")
+        if not project_value:
+            self.skipTest("set CYBERPPT_V16_PROJECT to run the optional V16 regression fixture")
+        project = Path(project_value).expanduser()
         if not project.is_dir():
-            self.skipTest("real V16 project is not mounted")
+            self.skipTest("CYBERPPT_V16_PROJECT is not mounted")
         with tempfile.TemporaryDirectory() as tmp:
             outline_path = compile_outline_draft(
                 project,
