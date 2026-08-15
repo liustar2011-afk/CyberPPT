@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import sys
 from typing import Any
 
 
@@ -36,6 +37,20 @@ def load_inputs(foundation_dir: Path, semantic_dir: Path, outline_dir: Path) -> 
         if not path.is_file():
             raise FileNotFoundError(f"Required handoff input is missing: {path}")
         payloads[name] = read_json(path)
+    planning_skill = Path(__file__).resolve().parents[2] / "ppt-outline-planning"
+    if str(planning_skill) not in sys.path:
+        sys.path.insert(0, str(planning_skill))
+    from ppt_outline_planning.validate import validate_fact_coverage
+
+    current_coverage = validate_fact_coverage(
+        Path(semantic_dir), Path(outline_dir)
+    )
+    if current_coverage.get("status") != "ok":
+        codes = ", ".join(
+            str(item.get("code") or "OUTLINE_VALIDATION_FAILED")
+            for item in current_coverage.get("errors") or []
+        )
+        raise ValueError(f"Current PPT outline fact coverage failed before handoff: {codes}")
     workpack = outline_dir / "outline-workpack.json"
     payloads["workpack"] = read_json(workpack) if workpack.is_file() else {}
     if payloads["semantic_report"].get("status") != "ok":

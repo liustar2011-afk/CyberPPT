@@ -9,6 +9,8 @@ from .prepare import REQUIRED_FILES, _json_sha256
 
 REPORT_SCHEMA_VERSION="1.0"
 EVIDENCE_ROLE_KEYS=("claim","reason","instance","boundary","trace_only")
+FACT_DISPOSITION_VALUES={"page","shared","detail","trace","deferred_to","intentional_omission"}
+NON_CONTENT_FACT_TYPES={"metadata","trace","trace_only","attachment","attachment_reference","reference","administrative"}
 FORBIDDEN_DOWNSTREAM_FIELDS={"body_text","final_copy","screen_text","bullets","speaker_notes","image_prompt","layout","colors","fonts"}
 ARGUMENT_CHAIN_ROLES={"premise","driver","background","problem","cause","constraint","gap","response","claim","reason","instance","mechanism","condition","consequence","judgment","conclusion","recommendation","implementation","support","detail","boundary","evidence","other"}
 
@@ -239,6 +241,236 @@ def _validate_workpack(
         previous_order = max(previous_order, current_order)
 
 
+def _fact_source_headings(
+    fact: dict[str, Any],
+    headings: list[dict[str, Any]],
+) -> list[str]:
+    """Map normalized-fact evidence lines to the nearest source headings."""
+
+    if not headings:
+        return []
+    ordered = sorted(
+        (item for item in headings if item.get("section_id") and item.get("line") is not None),
+        key=lambda item: int(item.get("line") or 0),
+    )
+    result: list[str] = []
+    for evidence in fact.get("evidence") or []:
+        if not isinstance(evidence, dict) or evidence.get("line_start") is None:
+            continue
+        line = int(evidence.get("line_start") or 0)
+        candidates = [item for item in ordered if int(item.get("line") or 0) <= line]
+        if candidates:
+            section_id = str(candidates[-1]["section_id"])
+            if section_id not in result:
+                result.append(section_id)
+    return result
+
+
+def _fact_dispositions(
+    plan: dict[str, Any],
+    page_order: dict[str, int],
+    fact_ids: set[str],
+    errors: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    raw = plan.get("fact_dispositions")
+    if raw is None:
+        return {}
+    if not isinstance(raw, list):
+        _err(errors, "invalid_fact_dispositions", "fact_dispositions must be an array")
+        return {}
+    result: dict[str, dict[str, Any]] = {}
+    for index, item in enumerate(raw):
+        if not isinstance(item, dict):
+            _err(errors, "invalid_fact_disposition", "Each fact disposition must be an object", index=index)
+            continue
+        fact_id = str(item.get("normalized_fact_id") or "")
+        disposition = str(item.get("disposition") or "")
+        if not fact_id or fact_id not in fact_ids:
+            _err(errors, "unknown_fact_disposition", "Fact disposition must reference a known normalized fact", index=index, normalized_fact_id=fact_id)
+            continue
+        if fact_id in result:
+            _err(errors, "duplicate_fact_disposition", "Each normalized fact may have at most one fact disposition", normalized_fact_id=fact_id)
+            continue
+        if disposition not in FACT_DISPOSITION_VALUES:
+            _err(errors, "invalid_fact_disposition", "Unsupported normalized fact disposition", normalized_fact_id=fact_id, disposition=disposition)
+            continue
+        rationale = str(item.get("rationale") or "").strip()
+        if not rationale:
+            _err(errors, "fact_disposition_rationale_missing", "Fact dispositions require a rationale", normalized_fact_id=fact_id, disposition=disposition)
+        page_ids = [str(value) for value in item.get("page_ids") or [] if str(value)]
+        unknown_pages = sorted(set(page_ids) - set(page_order))
+        if unknown_pages:
+            _err(errors, "unknown_fact_disposition_page", "Fact disposition references an unknown page", normalized_fact_id=fact_id, page_ids=unknown_pages)
+        target = str(item.get("deferred_to") or item.get("target_page") or "")
+        if disposition == "deferred_to":
+            if not target:
+                _err(errors, "deferred_fact_target_missing", "deferred_to requires a later target page", normalized_fact_id=fact_id)
+            elif target not in page_order:
+                _err(errors, "unknown_fact_disposition_page", "deferred_to references an unknown page", normalized_fact_id=fact_id, deferred_to=target)
+            elif page_ids and page_order[target] <= max(page_order.get(page_id, 0) for page_id in page_ids):
+                _err(errors, "invalid_deferred_fact_target", "deferred_to target must be later than the declared source page", normalized_fact_id=fact_id, deferred_to=target, page_ids=page_ids)
+            elif not page_ids and page_order[target] <= 1:
+                _err(errors, "invalid_deferred_fact_target", "deferred_to target must be a later page", normalized_fact_id=fact_id, deferred_to=target)
+        if disposition in {"page", "shared"} and not page_ids:
+            _err(errors, "fact_page_ownership_missing", "Page/shared fact disposition requires page_ids", normalized_fact_id=fact_id, disposition=disposition)
+        if disposition in {"detail", "trace"} and not page_ids:
+            _err(errors, "fact_page_ownership_missing", "Detail/trace fact disposition requires page_ids", normalized_fact_id=fact_id, disposition=disposition)
+        result[fact_id] = {
+            **item,
+            "normalized_fact_id": fact_id,
+            "disposition": disposition,
+            "page_ids": page_ids,
+            "deferred_to": target or None,
+            "rationale": rationale,
+        }
+    return result
+
+
+def _fact_coverage(
+    normalized: dict[str, Any],
+    plan: dict[str, Any],
+    workpack: dict[str, Any] | None,
+    errors: list[dict[str, Any]],
+) -> dict[str, Any]:
+    pages = [page for page in plan.get("pages") or [] if isinstance(page, dict)]
+    page_order = {
+        str(page.get("page_id")): int(page.get("order") or 0)
+        for page in pages
+        if page.get("page_id")
+    }
+    facts = [fact for fact in normalized.get("facts") or [] if isinstance(fact, dict)]
+    fact_by_id = {
+        str(fact.get("normalized_fact_id")): fact
+        for fact in facts
+        if fact.get("normalized_fact_id")
+    }
+    important = [
+        fact for fact in facts
+        if str(fact.get("fact_type") or "").strip().lower() not in NON_CONTENT_FACT_TYPES
+    ]
+    important_ids = {str(fact["normalized_fact_id"]) for fact in important}
+    dispositions = _fact_dispositions(plan, page_order, set(fact_by_id), errors)
+    workpack_headings = (workpack or {}).get("source_heading_outline") or []
+
+    page_refs: dict[str, list[str]] = {fact_id: [] for fact_id in fact_by_id}
+    page_roles: dict[str, dict[str, list[str]]] = {fact_id: {} for fact_id in fact_by_id}
+    page_heading_ids: dict[str, list[str]] = {}
+    for page in pages:
+        page_id = str(page.get("page_id") or "")
+        if not page_id:
+            continue
+        page_heading_ids[page_id] = [
+            str(value)
+            for value in page.get("source_heading_ids") or []
+            if str(value)
+        ]
+        evidence = page.get("evidence") if isinstance(page.get("evidence"), dict) else {}
+        refs = [str(value) for value in evidence.get("normalized_fact_ids") or [] if str(value)]
+        roles = page.get("evidence_roles") if isinstance(page.get("evidence_roles"), dict) else {}
+        for fact_id in refs:
+            if fact_id not in page_refs:
+                continue
+            if page_id not in page_refs[fact_id]:
+                page_refs[fact_id].append(page_id)
+            for role, role_refs in roles.items():
+                if isinstance(role_refs, list) and fact_id in {str(value) for value in role_refs}:
+                    page_roles[fact_id].setdefault(str(role), []).append(page_id)
+
+    items: list[dict[str, Any]] = []
+    unresolved: list[str] = []
+    for fact in important:
+        fact_id = str(fact["normalized_fact_id"])
+        refs = page_refs[fact_id]
+        declared = dispositions.get(fact_id)
+        source_heading_ids = _fact_source_headings(fact, workpack_headings)
+        cross_page = any(
+            source_heading_ids
+            and not set(source_heading_ids).intersection(page_heading_ids.get(page_id, []))
+            for page_id in refs
+        )
+        if declared:
+            disposition = str(declared["disposition"])
+            if disposition in {"page", "shared"}:
+                declared_pages = sorted(set(declared.get("page_ids") or []), key=lambda value: page_order.get(value, 0))
+                actual_pages = sorted(set(refs), key=lambda value: page_order.get(value, 0))
+                if declared_pages != actual_pages:
+                    _err(
+                        errors,
+                        "fact_page_ownership_mismatch",
+                        "Explicit fact page ownership must equal the page plan's direct fact references",
+                        normalized_fact_id=fact_id,
+                        declared_page_ids=declared_pages,
+                        actual_page_ids=actual_pages,
+                    )
+            disposition_status = disposition
+        elif not refs:
+            _err(
+                errors,
+                "uncovered_important_normalized_fact",
+                "Every important normalized fact requires page evidence, detail/trace handling, a later-page deferral, or a justified intentional omission",
+                normalized_fact_id=fact_id,
+                statement=fact.get("statement"),
+            )
+            unresolved.append(fact_id)
+            disposition_status = "unresolved"
+        elif cross_page:
+            _err(
+                errors,
+                "cross_page_fact_ownership_missing",
+                "A fact used across pages or outside its source heading requires explicit page/shared ownership or deferred handling",
+                normalized_fact_id=fact_id,
+                page_ids=refs,
+                source_heading_ids=source_heading_ids,
+            )
+            unresolved.append(fact_id)
+            disposition_status = "unresolved"
+        else:
+            role_names = sorted(page_roles[fact_id])
+            disposition_status = "trace" if "trace_only" in role_names else ("detail" if "detail" in role_names else "page")
+        item = {
+            "normalized_fact_id": fact_id,
+            "statement": fact.get("statement"),
+            "fact_type": fact.get("fact_type"),
+            "source_assertion_ids": [str(value) for value in fact.get("source_assertion_ids") or []],
+            "source_block_ids": sorted({str(value.get("block_id")) for value in fact.get("evidence") or [] if isinstance(value, dict) and value.get("block_id")}),
+            "source_heading_ids": source_heading_ids,
+            "page_ids": refs,
+            "roles": sorted(page_roles[fact_id]),
+            "disposition": disposition_status,
+            "deferred_to": declared.get("deferred_to") if declared else None,
+            "rationale": declared.get("rationale") if declared else None,
+        }
+        items.append(item)
+    return {
+        "schema": "ppt_outline_fact_coverage.v1",
+        "status": "error" if unresolved or any(item.get("code", "").startswith(("fact_", "uncovered_", "cross_page_", "deferred_", "unknown_fact_")) for item in errors) else "ok",
+        "important_fact_ids": sorted(important_ids),
+        "excluded_fact_ids": sorted(set(fact_by_id) - important_ids),
+        "resolved_fact_ids": [item["normalized_fact_id"] for item in items if item["disposition"] != "unresolved"],
+        "unresolved_fact_ids": sorted(set(unresolved)),
+        "items": items,
+    }
+
+
+def validate_fact_coverage(semantic_dir: Path | str, outline_dir: Path | str) -> dict[str, Any]:
+    """Validate only the source-fact coverage contract before handoff."""
+
+    semantic = Path(semantic_dir)
+    outline = Path(outline_dir)
+    normalized = _read(semantic / "normalized-facts.json")
+    plan = _read(outline / "page-plan.json")
+    workpack_path = outline / "outline-workpack.json"
+    workpack = _read(workpack_path) if workpack_path.is_file() else None
+    errors: list[dict[str, Any]] = []
+    coverage = _fact_coverage(normalized, plan, workpack, errors)
+    return {
+        "schema_version": REPORT_SCHEMA_VERSION,
+        "status": "ok" if not errors else "error",
+        "errors": errors,
+        "coverage": coverage,
+    }
+
+
 def validate_outline_outputs(semantic_dir:Path|str,outline_dir:Path|str,*,write_report:bool=False)->dict[str,Any]:
     semantic=Path(semantic_dir); outline=Path(outline_dir)
     normalized,concepts,relations,argument,semantic_report=_semantic(semantic)
@@ -258,9 +490,11 @@ def validate_outline_outputs(semantic_dir:Path|str,outline_dir:Path|str,*,write_
     sections=deck.get("sections") if isinstance(deck.get("sections"),list) else []; section_by_id={str(s.get("section_id")):s for s in sections if isinstance(s,dict) and s.get("section_id")}
     pages=plan.get("pages") if isinstance(plan.get("pages"),list) else []
     workpack_path=outline/"outline-workpack.json"
+    workpack_payload: dict[str, Any] | None = None
     if workpack_path.is_file():
+        workpack_payload = _read(workpack_path)
         _validate_workpack(
-            _read(workpack_path),
+            workpack_payload,
             {
                 "normalized-facts.json": normalized,
                 "concept-base.json": concepts,
@@ -343,10 +577,11 @@ def validate_outline_outputs(semantic_dir:Path|str,outline_dir:Path|str,*,write_
     for section_id,section in section_by_id.items():
         planned=[str(x) for x in section.get("page_ids") or []]; actual=[str(p.get("page_id")) for p in pages if isinstance(p,dict) and str(p.get("section_id") or "")==section_id]
         if planned!=actual: _err(errors,"section_page_mismatch","Section page_ids must match page plan",section_id=section_id,planned=planned,actual=actual)
+    coverage = _fact_coverage(normalized, plan, workpack_payload, errors)
     budget=strategy.get("page_budget") if isinstance(strategy.get("page_budget"),dict) else {}
     target=budget.get("target"); minimum=budget.get("min"); maximum=budget.get("max")
     if not all(isinstance(v,int) and v>0 for v in (target,minimum,maximum)): _err(errors,"invalid_page_budget","page_budget target/min/max must be positive integers")
     elif not minimum<=len(pages)<=maximum: _err(errors,"page_count_out_of_range","Page count outside budget",actual=len(pages),min=minimum,max=maximum)
-    result={"schema_version":REPORT_SCHEMA_VERSION,"artifact_type":"ppt_outline_validation_report","status":"ok" if not errors else "error","errors":errors,"warnings":warnings,"counts":{"sections":len(sections),"pages":len(pages),"content_pages":content_count,"template_pages":template_count,"evidence_references":evidence_count}}
+    result={"schema_version":REPORT_SCHEMA_VERSION,"artifact_type":"ppt_outline_validation_report","status":"ok" if not errors else "error","errors":errors,"warnings":warnings,"coverage":coverage,"counts":{"sections":len(sections),"pages":len(pages),"content_pages":content_count,"template_pages":template_count,"evidence_references":evidence_count,"important_normalized_facts":len(coverage["important_fact_ids"]),"resolved_normalized_facts":len(coverage["resolved_fact_ids"]),"unresolved_normalized_facts":len(coverage["unresolved_fact_ids"])} }
     if write_report: _write(outline/"outline-report.json",result)
     return result

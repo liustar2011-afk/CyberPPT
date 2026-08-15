@@ -8,6 +8,18 @@ Every content page defines `title_intent`, `page_mission`, `audience_question`, 
 
 Evidence responsibilities are `claim`, `reason`, `instance`, `boundary`, and `trace_only`. One evidence ID may have only one page-level responsibility. Every content page must name at least one direct `normalized_fact_id`; relation IDs and argument-node IDs cannot replace direct source-grounded facts.
 
+The outline root may declare `fact_dispositions` for important normalized facts that need an explicit cross-page decision:
+
+```json
+[
+  {"normalized_fact_id":"nf-005","disposition":"deferred_to","deferred_to":"p11","rationale":"后页承接该事实。"},
+  {"normalized_fact_id":"nf-007","disposition":"page","page_ids":["p05"],"rationale":"明确由 p05 承接建设背景中的平台基础。"},
+  {"normalized_fact_id":"nf-022","disposition":"shared","page_ids":["p10","p12"],"rationale":"两页分别承担服务定义与重点方向。"}
+]
+```
+
+`page` and `shared` declarations must match the plan's direct page evidence. `detail` and `trace` retain a fact without promoting it to a peer on-screen module. `deferred_to` must name an existing later page. `intentional_omission` must carry a rationale. Important facts without direct page evidence or one of these explicit dispositions block validation.
+
 `source_explicit` follows explicit source support. `source_synthesis` consolidates source-supported items without a new factual claim. `planning_inference` requires `inference_rationale`. Any cited layer-three inferred relation requires `evidence.inference_note`.
 
 The default planning policy is source locked and government-official. The planner preserves source chapter titles, content titles, source order, content coverage, and factual strength. It may split an overloaded source heading only for slide capacity and may consolidate genuinely duplicate content without changing its topic, conditions, responsibility, state, or source order. Reframing, renaming, or reordering requires an explicit user request. It may not invent source facts or upgrade inference strength.

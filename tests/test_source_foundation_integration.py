@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -17,10 +18,41 @@ if str(HANDOFF_SKILL) not in sys.path:
 
 from cyberppt_handoff.runtime import run_outline_audit
 from cyberppt_handoff.project import build_projection
+from cyberppt_handoff.io import load_inputs
 from cyberppt_handoff.validate import validate_projection
 
 
 class SourceFoundationIntegrationTests(unittest.TestCase):
+    def test_handoff_revalidates_current_outline_before_projection(self) -> None:
+        fixtures = HANDOFF_SKILL / "tests" / "fixtures"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            foundation = root / "foundation"
+            semantic = root / "semantic"
+            outline = root / "outline"
+            for source, target in (
+                (fixtures / "foundation", foundation),
+                (fixtures / "semantic", semantic),
+                (fixtures / "outline", outline),
+            ):
+                shutil.copytree(source, target)
+
+            page_plan_path = outline / "page-plan.json"
+            page_plan = json.loads(page_plan_path.read_text(encoding="utf-8"))
+            content_page = next(page for page in page_plan["pages"] if page.get("page_type") == "content")
+            fact_id = str(content_page["evidence"]["normalized_fact_ids"][-1])
+            content_page["evidence"]["normalized_fact_ids"].remove(fact_id)
+            for role, refs in content_page["evidence_roles"].items():
+                content_page["evidence_roles"][role] = [ref for ref in refs if ref != fact_id]
+            for node in content_page["argument_chain"]:
+                node["evidence"]["normalized_fact_ids"] = [
+                    ref for ref in node["evidence"].get("normalized_fact_ids", []) if ref != fact_id
+                ]
+            page_plan_path.write_text(json.dumps(page_plan, ensure_ascii=False), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "uncovered_important_normalized_fact"):
+                load_inputs(foundation, semantic, outline)
+
     def test_handoff_runtime_uses_current_outline_audit_cli(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "repo"

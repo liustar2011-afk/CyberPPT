@@ -4,6 +4,7 @@ import json
 import sys
 import tempfile
 import unittest
+from copy import deepcopy
 from pathlib import Path
 
 
@@ -403,6 +404,161 @@ class LockedOutlineValidationTests(unittest.TestCase):
 
         report = self._validate(mutate_deck=mutate, mutate_plan=mutate_plan)
         self.assertEqual("ok", report["status"])
+
+    def _validate_with_extra_fact(
+        self,
+        *,
+        fact: dict[str, object],
+        mutate_plan=None,
+    ) -> dict[str, object]:
+        payloads = semantic_payloads()
+        payloads["normalized-facts.json"]["facts"].append(fact)
+        workpack = build_outline_workpack(
+            payloads,
+            source_structure=source_structure_payload(),
+        )
+        deck, plan = valid_locked_outline(workpack)
+        if mutate_plan:
+            mutate_plan(deck, plan)
+        with tempfile.TemporaryDirectory() as directory:
+            semantic_dir, outline_dir = write_validation_fixture(
+                Path(directory), payloads, workpack, deck, plan
+            )
+            return validate_outline_outputs(semantic_dir, outline_dir)
+
+    @staticmethod
+    def _requirement_fact(fact_id: str = "nf-005") -> dict[str, object]:
+        return {
+            "normalized_fact_id": fact_id,
+            "statement": "复杂业务需要跨主体组织多类能力。",
+            "fact_type": "requirement",
+            "verification_status": "unverified",
+            "confidence": "high",
+            "source_assertion_ids": ["fact-0003"],
+            "evidence": [{"fact_id": "fact-0003", "block_id": "blk-0003", "line_start": 14, "line_end": 14}],
+        }
+
+    def _add_later_content_page(
+        self,
+        plan: dict[str, object],
+        *,
+        fact_id: str,
+        source_heading_id: str = "sec-0003",
+    ) -> None:
+        page = deepcopy(plan["pages"][3])
+        page.update(
+            {
+                "page_id": "P05",
+                "order": 5,
+                "page_type": "content",
+                "title_intent": "二、商务报价与收益分配",
+                "source_heading_ids": [source_heading_id],
+                "primary_source_heading_id": source_heading_id,
+                "evidence": {"normalized_fact_ids": [fact_id], "relation_ids": [], "argument_node_ids": []},
+                "argument_chain": [{"role": "claim", "statement": "页面承接该事实。", "evidence": {"normalized_fact_ids": [fact_id]}}],
+                "evidence_roles": {"claim": [fact_id], "reason": [], "instance": [], "boundary": [], "trace_only": []},
+            }
+        )
+        plan["pages"][4] = page
+
+    def test_uncovered_important_normalized_fact_blocks_outline(self) -> None:
+        report = self._validate_with_extra_fact(fact=self._requirement_fact())
+
+        self.assertEqual("error", report["status"])
+        self.assertIn(
+            "uncovered_important_normalized_fact",
+            {item["code"] for item in report["errors"]},
+        )
+        self.assertEqual(
+            ["nf-005"],
+            report["coverage"]["unresolved_fact_ids"],
+        )
+
+    def test_cross_page_fact_requires_explicit_page_ownership(self) -> None:
+        def mutate_plan(deck, plan):
+            deck["sections"][0]["page_ids"] = ["P03", "P04", "P05"]
+            self._add_later_content_page(plan, fact_id="nf-007")
+
+        report = self._validate_with_extra_fact(
+            fact=self._requirement_fact("nf-007"),
+            mutate_plan=mutate_plan,
+        )
+
+        self.assertIn(
+            "cross_page_fact_ownership_missing",
+            {item["code"] for item in report["errors"]},
+        )
+
+    def test_explicit_page_ownership_resolves_cross_page_fact(self) -> None:
+        def mutate_plan(deck, plan):
+            deck["sections"][0]["page_ids"] = ["P03", "P04", "P05"]
+            self._add_later_content_page(plan, fact_id="nf-007")
+            plan["fact_dispositions"] = [
+                {
+                    "normalized_fact_id": "nf-007",
+                    "disposition": "page",
+                    "page_ids": ["P05"],
+                    "rationale": "页面明确承接建设背景中的协同要求。",
+                }
+            ]
+
+        report = self._validate_with_extra_fact(
+            fact=self._requirement_fact("nf-007"),
+            mutate_plan=mutate_plan,
+        )
+
+        self.assertEqual("ok", report["status"])
+        item = next(item for item in report["coverage"]["items"] if item["normalized_fact_id"] == "nf-007")
+        self.assertEqual("page", item["disposition"])
+
+    def test_explicit_deferred_to_later_page_resolves_unassigned_fact(self) -> None:
+        def mutate_plan(deck, plan):
+            plan["fact_dispositions"] = [
+                {
+                    "normalized_fact_id": "nf-005",
+                    "disposition": "deferred_to",
+                    "deferred_to": "P05",
+                    "rationale": "后页承接该能力要求。",
+                }
+            ]
+
+        report = self._validate_with_extra_fact(
+            fact=self._requirement_fact("nf-005"),
+            mutate_plan=mutate_plan,
+        )
+
+        self.assertEqual("ok", report["status"])
+        item = next(item for item in report["coverage"]["items"] if item["normalized_fact_id"] == "nf-005")
+        self.assertEqual("deferred_to", item["disposition"])
+        self.assertEqual("P05", item["deferred_to"])
+
+    def test_explicit_shared_ownership_resolves_cross_page_fact(self) -> None:
+        def mutate_plan(deck, plan):
+            deck["sections"][0]["page_ids"] = ["P03", "P04", "P05"]
+            self._add_later_content_page(plan, fact_id="NF-0002")
+            plan["fact_dispositions"] = [
+                {
+                    "normalized_fact_id": "nf-005",
+                    "disposition": "deferred_to",
+                    "deferred_to": "P05",
+                    "rationale": "测试额外事实留待后页。",
+                },
+                {
+                    "normalized_fact_id": "NF-0002",
+                    "disposition": "shared",
+                    "page_ids": ["P04", "P05"],
+                    "rationale": "前页说明背景，后页承接平台回应。",
+                }
+            ]
+
+        report = self._validate_with_extra_fact(
+            fact=self._requirement_fact("nf-005"),
+            mutate_plan=mutate_plan,
+        )
+
+        self.assertEqual("ok", report["status"])
+        item = next(item for item in report["coverage"]["items"] if item["normalized_fact_id"] == "NF-0002")
+        self.assertEqual("shared", item["disposition"])
 
 
 if __name__ == "__main__":
