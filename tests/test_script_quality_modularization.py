@@ -185,6 +185,75 @@ BASELINE_SCRIPT = """## 第1页：统一服务运营
 本页说明统一服务运营如何将分散资源转化为稳定供给。先从需求接入开始，再说明能力编排如何连接资源与交付要求，最后落到可复用、可审阅的服务结果，帮助听众理解运营基础的实际作用。
 """
 
+# BASELINE_SCRIPT covers a single-module "### 上屏文字" heading-style field
+# with no leading blank line. It cannot exercise three structural patterns
+# that real authored pages use and that later proved bug-prone:
+#   1. "- 上屏文字：" colon-bullet field declaration followed by a blank line,
+#      then indented multi-module content (used to lose the first module's
+#      leading indentation -- see _field_blocks in parsing.py).
+#   2. Two or more top-level on-screen modules, which is the minimum needed
+#      to exercise module-hierarchy checks (false-parallel-semantics, module
+#      counting) at all.
+#   3. A "必要性" (necessity) topic page, which requires on-screen modules to
+#      state both a concrete constraint and a construction response
+#      (ONSCREEN_NECESSITY_CHAIN_INCOMPLETE).
+# BASELINE_SCRIPT_2 exists specifically to close that coverage gap.
+BASELINE_SCRIPT_2 = """## 第4页：一、建设背景
+- 页面类型：内容页
+- 页面标题：一、建设背景
+- 主判断：分散资源尚未形成稳定的行业服务供给，需要建立统一连接、可信使用和服务运营基础。
+- 证据：ST002
+- 证据映射：ST002
+
+### 完整文字稿
+
+电力行业协同需求持续增长，但分散资源尚未形成稳定的行业服务供给，需要建立统一连接、可信使用和服务运营基础。
+
+### 文字稿取舍说明
+
+必留上屏：①需求侧变化、②供给侧现状两组要点。
+仅讲解：需求侧和供给侧的具体业务表现。
+仅追溯：无。
+
+- 上屏文字：
+
+  ①需求侧变化
+    产业地位：国民经济基础性、战略性行业
+    数字化转型：数智化程度持续提升
+
+  ②供给侧现状
+    资源分布：分散于各主体，标识口径不统一
+    对接机制：授权计量结算尚不完整
+- 上屏模块清单：["①需求侧变化", "产业地位", "数字化转型", "②供给侧现状", "资源分布", "对接机制"]
+- 上屏顶层模块清单：["①需求侧变化", "②供给侧现状"]
+- 视觉结构：需求侧证据链与供给侧证据链的对照关系，共同指向同一个缺口判断。
+
+### 演讲者备注
+
+需求侧持续增长，供给侧尚未形成稳定服务，两者共同构成建设本方案的必要性依据。
+"""
+
+BASELINE_OUTLINE_2 = {
+    "pages": [{
+        "page_id": "p04",
+        "page_type": "content",
+        "title": "一、建设背景",
+        "argument_role": "foundation",
+        "topic_category": "一、建设背景",
+        "core_message": "分散资源尚未形成稳定的行业服务供给，需要建立统一连接、可信使用和服务运营基础。",
+        "source_refs": ["ST002"],
+    }],
+}
+
+BASELINE_SOURCE_TRUTH_2 = {
+    "records": [{
+        "id": "ST002",
+        "statement": "分散资源尚未形成稳定的行业服务供给，需要建立统一连接、可信使用和服务运营基础。",
+    }],
+}
+
+BASELINE_PATH_2 = Path(__file__).parent / "fixtures" / "script_quality_contract_baseline_2.json"
+
 BASELINE_OUTLINE = {
     "pages": [{
         "page_id": "p01",
@@ -566,3 +635,34 @@ class ScriptQualityCompatibilityTests(unittest.TestCase):
         }
         expected = json.loads(BASELINE_PATH.read_text(encoding="utf-8"))
         self.assertEqual(expected, actual)
+
+    def test_second_baseline_fixture_matches_current_contract(self) -> None:
+        # Covers the structural patterns BASELINE_SCRIPT cannot exercise (see
+        # the comment above BASELINE_SCRIPT_2): a "- 字段：" colon-bullet field
+        # declared blank with content starting on a later line, two or more
+        # top-level on-screen modules, and a foundation/necessity-topic page.
+        # This is the regression guard for the indentation-loss and
+        # false-parallel-semantics bugs found and fixed on 2026-08-16.
+        module = importlib.import_module("cyberppt.script_quality_contract")
+        document = module.parse_script_markdown(BASELINE_SCRIPT_2)
+        actual = {
+            "document": serialize_document(document),
+            "issues": serialize_issues(
+                module.audit_script_quality(
+                    document, BASELINE_OUTLINE_2, BASELINE_SOURCE_TRUTH_2,
+                )
+            ),
+        }
+        expected = json.loads(BASELINE_PATH_2.read_text(encoding="utf-8"))
+        self.assertEqual(expected, actual)
+
+        page = document.pages[0]
+        lines = [line for line in page.onscreen_text.splitlines() if line.strip()]
+        first_module_indent = len(lines[0]) - len(lines[0].lstrip(" "))
+        second_module_line = next(line for line in lines if "②供给侧现状" in line)
+        second_module_indent = len(second_module_line) - len(second_module_line.lstrip(" "))
+        self.assertEqual(
+            first_module_indent,
+            second_module_indent,
+            "the first top-level on-screen module lost its leading indentation",
+        )
