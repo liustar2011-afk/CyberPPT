@@ -457,9 +457,20 @@ def _presentation_issues(
                 "Name the layers, support relation, or top-to-bottom reading order.",
             )
         )
-    count = _declared_count(page.onscreen_text)
+    architecture_page = (
+        layer_like
+        or page.visual_intent_type.strip() in LAYER_LIKE_INTENT_TYPES
+        or any(marker in page.title for marker in ("架构", "分层"))
+    )
+    count = _declared_count(
+        page.onscreen_text,
+        architecture_page=architecture_page,
+    )
     if count is None:
-        count = _declared_count(page.main_message)
+        count = _declared_count(
+            page.main_message,
+            architecture_page=architecture_page,
+        )
         approved_core = str(
             (contract or {}).get("core_message")
             or (contract or {}).get("main_message")

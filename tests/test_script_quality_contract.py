@@ -3017,6 +3017,68 @@ class ScriptContractAuditTests(unittest.TestCase):
 
         self.assertIn("DECLARED_COUNT_MISMATCH", {issue.code for issue in issues})
 
+    def test_architecture_layer_count_does_not_override_peer_page_modules(self) -> None:
+        page = ScriptPage(
+            page_id="p06",
+            sequence=6,
+            heading="总体架构",
+            page_type="content",
+            title="总体架构",
+            main_message="五层两贯穿总体架构",
+            full_prose="五层两贯穿总体架构支撑能力链、贯穿保障和运行环境组合。",
+            selection_notes="",
+            evidence_map="",
+            evidence_map_refs=(),
+            source_refs=(),
+            boundary_source_refs=(),
+            boundary="",
+            visual_structure="架构关系",
+            onscreen_text=(
+                "总体框架\n"
+                "  统一原则与总体布局\n"
+                "能力链与贯穿保障\n"
+                "  能力链与保障关系\n"
+                "运行环境组合\n"
+                "  分级部署与运行支撑"
+            ),
+            module_titles=("总体框架", "能力链与贯穿保障", "运行环境组合"),
+        )
+
+        issues = _presentation_issues(
+            page,
+            {"core_message": "平台按照五层两贯穿总体架构建设，并遵循统一控制原则"},
+        )
+
+        self.assertNotIn("DECLARED_COUNT_MISMATCH", {issue.code for issue in issues})
+
+    def test_explicit_architecture_layer_modules_keep_count_contract(self) -> None:
+        page = _judgment_page(
+            page_id="p06",
+            title="总体架构",
+            main_message="五层模块构成总体架构",
+            visual_structure="架构关系",
+            onscreen_text="模块一\n模块二\n模块三",
+            module_titles=("模块一", "模块二", "模块三"),
+        )
+
+        issues = _presentation_issues(page)
+
+        self.assertIn("DECLARED_COUNT_MISMATCH", {issue.code for issue in issues})
+
+    def test_non_architecture_layer_count_keeps_count_contract(self) -> None:
+        page = _judgment_page(
+            page_id="p10",
+            title="业务步骤",
+            main_message="五层步骤形成业务流程",
+            visual_structure="关系",
+            onscreen_text="步骤一\n步骤二\n步骤三",
+            module_titles=("步骤一", "步骤二", "步骤三"),
+        )
+
+        issues = _presentation_issues(page)
+
+        self.assertIn("DECLARED_COUNT_MISMATCH", {issue.code for issue in issues})
+
     def test_approved_semantic_count_does_not_redefine_visible_group_count(self) -> None:
         script = parse_script_markdown(
             """## 第9页：能力架构

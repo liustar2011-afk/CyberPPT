@@ -1249,12 +1249,22 @@ def onscreen_story_roles(page: ScriptPage) -> dict[str, bool]:
         "closure": conclusion,
     }
 
-def _declared_count(text: str) -> int | None:
-    match = re.search(
-        r"([二两三四五六七八])(?:类能力|类任务|类断点|项任务|个模块|步|层)",
-        text,
+def _declared_count(text: str, *, architecture_page: bool = False) -> int | None:
+    pattern = re.compile(
+        r"([二两三四五六七八])(?P<unit>类能力|类任务|类断点|项任务|个模块|步|层)"
     )
-    return COUNT_WORDS.get(match.group(1)) if match else None
+    for match in pattern.finditer(text):
+        if (
+            architecture_page
+            and match.group("unit") == "层"
+            and not re.match(
+                r"(?:模块|能力模块|业务模块|架构模块|同级模块|并列模块)",
+                text[match.end() :],
+            )
+        ):
+            continue
+        return COUNT_WORDS[match.group(1)]
+    return None
 
 def _has_any(text: str, terms: tuple[str, ...]) -> bool:
     return any(term in text for term in terms)
