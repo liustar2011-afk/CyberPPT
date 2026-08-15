@@ -31,7 +31,8 @@ def _chain(page: dict[str, Any]) -> list[str]:
             statement = statement[:93] + "…"
         refs = _refs(item.get("source_refs"))
         if statement:
-            result.append(f"{refs}：{statement}")
+            relation = _text(item.get("relation"))
+            result.append(f"{refs}{('｜' + relation) if relation else ''}：{statement}")
     return result
 
 
@@ -61,11 +62,16 @@ def _expression_model(page: dict[str, Any]) -> list[str]:
 def render_outline_review_markdown(outline: dict[str, Any], audit: dict[str, Any]) -> str:
     """Produce the human gate document from the canonical Outline and audit report."""
 
+    authoring_mode = _text(outline.get("editorial_authoring_mode"))
+    authoring_status = _text(outline.get("editorial_authoring_status"))
+    is_candidate = authoring_mode == "author_driven" and authoring_status != "author_edited"
+    title = "# 候选 Outline（待作者化）" if is_candidate else "# 正式 Outline 人工审阅稿"
     lines = [
-        "# 正式 Outline 人工审阅稿",
+        title,
         "",
         f"- 交流目标：{_text(outline.get('communication_goal')) or '未声明'}",
         f"- 叙事主张：{_text(outline.get('narrative_thesis')) or '未声明'}",
+        f"- 作者状态：{authoring_status or '未声明'}{('（待作者化）' if is_candidate else '')}",
         f"- 审计结论：**{_text(audit.get('status')) or 'unknown'}**",
         f"- 审计模式：{_text(audit.get('mode')) or 'unknown'}；论证契约：{_text(audit.get('argument_contract_mode')) or 'legacy'}",
         "",

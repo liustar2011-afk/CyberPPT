@@ -126,7 +126,8 @@ def _author_driven_editorial_issues(
                 "Author-edited pages must state what the deck loses if this page is removed or merged.",
                 (page_id,), "author_page_indispensability",
             ))
-        if not str(page.get("argument_chain") or "").strip():
+        argument_chain = page.get("argument_chain")
+        if not isinstance(argument_chain, list) or not argument_chain:
             issues.append(AuditIssue(
                 "PAGE_ARGUMENT_CHAIN_MISSING",
                 "Author-edited pages must state one governing source-supported argument chain.",
@@ -134,7 +135,7 @@ def _author_driven_editorial_issues(
             ))
         if (
             not str(page.get("editorial_judgment") or "").strip()
-            and (not isinstance(evidence_roles, dict) or not evidence_roles)
+            and (not isinstance(evidence_roles, list) or not evidence_roles)
         ):
             issues.append(AuditIssue(
                 "PAGE_EVIDENCE_ROLES_MISSING",
@@ -157,7 +158,6 @@ def _author_driven_editorial_issues(
                 (page_id,), "document_editorial_judgment_derivation",
             ))
         page_refs = {str(ref) for ref in page.get("source_refs", []) if str(ref)}
-        argument_chain = page.get("argument_chain")
         if not isinstance(argument_chain, list) or not argument_chain:
             issues.append(AuditIssue(
                 "ARGUMENT_CHAIN_INVALID",
