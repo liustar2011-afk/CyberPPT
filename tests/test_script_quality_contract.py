@@ -1443,6 +1443,36 @@ class ContentUnitConsumptionTests(unittest.TestCase):
 
 
 class ScriptMarkdownParserTests(unittest.TestCase):
+    def test_first_onscreen_line_keeps_its_indentation_when_field_starts_blank(self) -> None:
+        # A blank line right after "- 上屏文字：" (content starting on the next
+        # line, a common and recommended layout) must not lose the leading
+        # indentation of the first content line. A naive strip() on the
+        # joined block used to eat exactly that indentation, making the first
+        # top-level module look like it sat at indent 0 while its siblings
+        # kept their real indent -- corrupting every downstream check that
+        # infers module hierarchy from indentation (false-parallel-semantics,
+        # module counting).
+        script = (
+            "## 第1页：测试\n"
+            "- 页面类型：内容页\n"
+            "- 上屏文字：\n"
+            "\n"
+            "  ①分组一\n"
+            "    子项甲：内容\n"
+            "\n"
+            "  ②分组二\n"
+            "    子项乙：内容\n"
+        )
+        page = parse_script_markdown(script).pages[0]
+        lines = page.onscreen_text.splitlines()
+        first_indent = len(lines[0]) - len(lines[0].lstrip(" "))
+        second_group_indent = next(
+            len(line) - len(line.lstrip(" "))
+            for line in lines
+            if "②分组二" in line
+        )
+        self.assertEqual(first_indent, second_group_indent)
+
     def test_parse_script_path_prefers_verified_sidecar(self) -> None:
         script = "## 第1页：测试\n\n- 页面类型：内容页\n- 页面标题：测试\n"
         legacy = {

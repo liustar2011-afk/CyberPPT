@@ -180,7 +180,25 @@ def _field_blocks(body: str) -> dict[str, str]:
             blocks[active] = [match.group(2).strip()]
         elif active:
             blocks[active].append(raw_line.rstrip())
-    return {key: "\n".join(lines).strip() for key, lines in blocks.items()}
+    result: dict[str, str] = {}
+    for key, lines in blocks.items():
+        # Drop only genuinely blank leading/trailing lines. A naive
+        # ``"\n".join(lines).strip()`` also character-strips the joined
+        # string, which eats the leading indentation of the first content
+        # line whenever the field declaration line itself was empty (a
+        # common, even recommended, layout: ``- 上屏文字：`` followed by a
+        # blank line, then indented module content). That asymmetric loss
+        # made the first top-level on-screen module look like it sat at
+        # indent 0 while its siblings kept their real indent, corrupting the
+        # module-hierarchy checks downstream.
+        start = 0
+        end = len(lines)
+        while start < end and not lines[start].strip():
+            start += 1
+        while end > start and not lines[end - 1].strip():
+            end -= 1
+        result[key] = "\n".join(lines[start:end])
+    return result
 
 
 def _source_refs(text: str) -> tuple[str, ...]:

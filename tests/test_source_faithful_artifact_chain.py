@@ -218,6 +218,28 @@ class SourceFaithfulArtifactChainTests(unittest.TestCase):
             hashlib.sha256(second.encode("utf-8")).hexdigest(),
         )
 
+    def test_content_unit_anchors_stay_short_enough_for_phrase_based_onscreen_text(
+        self,
+    ) -> None:
+        # A PPT slide is not a Word paragraph: on-screen anchors must be short
+        # enough to survive inside a compressed, phrase-based module instead
+        # of forcing a full source clause onto the screen verbatim.
+        fixtures = HANDOFF_SKILL / "tests" / "fixtures"
+        projection = build_projection(
+            fixtures / "foundation",
+            fixtures / "semantic",
+            fixtures / "outline",
+        )
+        outline = projection["outline"]
+        for page in outline["pages"]:
+            for unit in page.get("content_units") or []:
+                for anchor in (*unit.get("coverage_anchors", []), *unit.get("onscreen_anchors", [])):
+                    self.assertLessEqual(
+                        len(anchor),
+                        20,
+                        f"{page['page_id']} {unit['unit_id']} anchor too long: {anchor!r}",
+                    )
+
 
 if __name__ == "__main__":
     unittest.main()

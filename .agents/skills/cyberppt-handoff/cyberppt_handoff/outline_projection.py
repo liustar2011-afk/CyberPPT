@@ -238,13 +238,26 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
             primary_role = next(iter(role_membership), "reason") if len(role_membership) == 1 else "reason"
             unit_role = "primary" if primary_role == "claim" else "boundary" if primary_role == "boundary" else "supporting"
             onscreen = primary_role in {"claim", "reason", "instance"}
+            # Split each cited statement into its natural clauses (on Chinese
+            # punctuation) instead of blindly slicing the first N characters.
+            # A raw character cut mid-clause forces a full-length source
+            # sentence onto the slide to satisfy anchor coverage; a PPT page
+            # is not a Word paragraph and must stay phrase/structured.
             anchors = []
             for st_id in node_refs:
                 statement = str(st_by_id.get(st_id, {}).get("statement") or "")
-                if statement and statement not in anchors:
-                    anchors.append(statement[:36])
+                if not statement:
+                    continue
+                for chunk in _anchors(statement, []):
+                    # A clause without an early comma can still run long; cap it
+                    # so the anchor stays achievable inside a short on-screen
+                    # phrase instead of forcing a full source clause onto the
+                    # slide.
+                    chunk = chunk[:20]
+                    if chunk and chunk not in anchors:
+                        anchors.append(chunk)
             if len(anchors) < 2:
-                anchors.extend(_anchors(str(node.get("statement") or ""), []))
+                anchors.extend(chunk[:20] for chunk in _anchors(str(node.get("statement") or ""), []))
             anchors = list(dict.fromkeys(anchors))[:2]
             content_units.append({
                 "unit_id": f"{cyber_id}-U{index:02d}", "statement": str(node.get("statement") or ""), "source_refs": node_refs,
