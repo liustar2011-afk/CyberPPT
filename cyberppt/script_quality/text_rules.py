@@ -192,6 +192,12 @@ _DIRECT_BOUNDARY_ARGUMENT_ROLES = {
     "compliance",
     "risk",
     "assurance",
+    # "foundation" pages implement the skill's own documented "需求—供给缺口—
+    # 必要性" argument prototype (see argument-and-visual-grammars.md): they
+    # must foreground a genuine supply/demand gap to justify why the deck's
+    # whole proposal exists. Without this, no wording can pass both this rule
+    # and the argument-chain requirement to state the gap.
+    "foundation",
 }
 
 _DIRECT_BOUNDARY_TOPIC_TERMS = (
@@ -204,6 +210,8 @@ _DIRECT_BOUNDARY_TOPIC_TERMS = (
     "合规",
     "风险",
     "退出",
+    "背景",
+    "必要性",
 )
 
 _CONDITIONAL_RISK_PHRASES: tuple[str, ...] = (

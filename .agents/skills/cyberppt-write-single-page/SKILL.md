@@ -24,7 +24,7 @@ description: Professionally design, diagnose, write, or rewrite one CyberPPT con
 
 按目标页所需范围读取：
 
-1. Outline 中的页面使命、受众问题、核心信息、来源引用、内容单元、内容关系、禁止内容、后置内容和视觉意图。
+1. Outline 中的页面使命、受众问题、核心信息、来源引用、内容单元、内容关系、禁止内容、后置内容和视觉意图。写上屏文字前必须逐条核对 `content_units[].onscreen_anchors`/`coverage_anchors`：这些是审计器要求逐字或高重合度出现在上屏文字/完整文字稿里的源文原句片段，不是写完再等审计报错才处理的选项。同时读取页面的 `argument_role` 和（如存在）`expression_model_selection`：前者决定该页是否允许在上屏顶层模块标题中出现"缺口/不足/风险"等负面前景词（只有 boundary/security/quality/compliance/risk/assurance/foundation 等角色允许），后者的 `source_mapping` 中若某槽位标记为 `complication`/`problem`/`gap` 且非 `implicit`，同样可以豁免负面前景检查。
 2. Source Truth 中全部相关事实、主体、动作、对象、条件、状态、数字、来源单元和语义节点。
 3. `source-units.jsonl` 中对应正文、列表或表格原文，核对来源顺序与标题路径。
 4. 前后页的页面使命、核心结论、页面落点和保留内容。

@@ -1886,6 +1886,25 @@ class NegativeForegroundRuleTests(unittest.TestCase):
         self.assertIn("页面标题：缺口", issues[0].evidence)
         self.assertIn("主判断：不足", issues[0].evidence)
 
+    def test_foundation_gap_necessity_page_is_not_negative_foreground(self) -> None:
+        page = self._page(
+            title="一、建设背景",
+            main_message="分散资源尚未形成稳定的行业服务供给，需要建立统一连接、可信使用和服务运营基础。",
+            prose="行业协同需求持续增长，但分散资源尚未形成稳定的行业服务供给。",
+            onscreen="核心结论：需求持续增长 → 供给尚未形成稳定服务 → 需要建立统一基础\n  ①需求侧变化类型：说明\n  ②供给侧建设需求类型：说明",
+        )
+        self.assertEqual(
+            [],
+            _negative_foreground_issues(
+                page,
+                {
+                    "argument_role": "foundation",
+                    "title": "一、建设背景",
+                    "topic_category": "一、建设背景",
+                },
+            ),
+        )
+
     def test_data_risk_as_service_configuration_condition_is_not_negative_foreground(self) -> None:
         page = self._page(
             title="服务交付与服务等级",
