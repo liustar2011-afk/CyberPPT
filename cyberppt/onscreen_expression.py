@@ -303,6 +303,14 @@ def _score_candidates(
         scores["pyramid_argument"] += 0.55
     if module_count == 3 and re.search(r"原则|价值|重点", text):
         scores["key_points_3"] += 0.48
+    if module_count:
+        # A keyword hit (e.g. "对照" inside prose that just happens to
+        # describe two sides of an argument) must not outrank a form the
+        # page's actual module count cannot satisfy -- structure is a hard
+        # constraint, wording is only a hint among forms structure allows.
+        for form, spec in EXPRESSION_SPECS.items():
+            if not spec.module_range[0] <= module_count <= spec.module_range[1]:
+                scores[form] = 0.0
     return tuple(sorted(((form, min(round(score, 2), 0.89)) for form, score in scores.items()), key=lambda item: (-item[1], item[0])))
 
 
@@ -313,11 +321,19 @@ def audit_expression_balance(page: Any, decision: ExpressionDecision) -> list[Ex
     spec = EXPRESSION_SPECS[decision.form]
     findings: list[ExpressionAuditFinding] = []
     if not spec.module_range[0] <= len(modules) <= spec.module_range[1]:
+        fitting = sorted(
+            other.key
+            for other in EXPRESSION_SPECS.values()
+            if other.module_range[0] <= len(modules) <= other.module_range[1]
+        )
+        action = "Revise the visible structure so its peer-module count matches the selected expression form."
+        if fitting:
+            action += f" Forms that already fit {len(modules)} module(s): {', '.join(fitting)}."
         findings.append(ExpressionAuditFinding(
             "ONSCREEN_MODULE_COUNT_MISMATCH",
             f"{spec.label} requires {spec.module_range[0]}–{spec.module_range[1]} top-level modules.",
-            "Revise the visible structure so its peer-module count matches the selected expression form.",
-            (f"actual={len(modules)}",),
+            action,
+            (f"actual={len(modules)}", *(f"fits:{form}" for form in fitting)),
         ))
     lengths = [len(re.sub(r"\s+", "", item)) for item in modules]
     if len(lengths) >= 2 and max(lengths) - min(lengths) > 8:
