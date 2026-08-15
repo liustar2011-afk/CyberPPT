@@ -1343,6 +1343,35 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
         self.assertEqual(1, len(issues))
         self.assertEqual("error", issues[0].severity)
 
+    def test_standalone_long_sentence_without_trailing_punctuation_is_still_blocked(self) -> None:
+        # Dropping the colon, the indent, AND the trailing period used to be
+        # a loophole: _onscreen_detail_phrase_overages fell through to
+        # `continue` for a top-level, unlabeled, punctuation-free line no
+        # matter how long it was, so an author could paste a full source
+        # sentence onto the slide by simply not ending it with 。/！/？/；.
+        page = parse_script_markdown(
+            "## 第1页：订单履行\n"
+            "- 页面类型：内容页\n"
+            "- 完整文字稿：订单履行贯通客户购买、系统执行与合作伙伴结算。\n"
+            "- 上屏文字：\n"
+            "平台以订单履行为主线，贯通客户购买、系统执行与合作伙伴结算，使各方结算依据保持一致\n"
+            "订单约束\n"
+            "  产品规格：版本、范围与期限。\n"
+            "- 视觉结构：订单履行贯通服务执行与结算。\n"
+        ).pages[0]
+
+        issues = [
+            issue
+            for issue in _presentation_issues(
+                page,
+                strict_detail_phrase_length=True,
+            )
+            if issue.code == "ONSCREEN_DETAIL_PHRASE_TOO_LONG"
+        ]
+
+        self.assertEqual(1, len(issues))
+        self.assertEqual("error", issues[0].severity)
+
     def test_imagegen_blocks_requested_page_with_paragraph_like_onscreen_copy(self) -> None:
         document = parse_script_markdown(
             "## 第21页：合作对象与合作方式\n"

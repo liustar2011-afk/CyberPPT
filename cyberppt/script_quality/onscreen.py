@@ -741,13 +741,19 @@ def _onscreen_layout_meta_hits(text: str) -> tuple[str, ...]:
     return tuple(dict.fromkeys(hits))
 
 def _onscreen_detail_phrase_overages(text: str) -> tuple[tuple[str, int], ...]:
-    """Return ``(line, body_chars)`` for overlong labelled detail lines.
+    """Return ``(line, body_chars)`` for overlong visible on-screen lines.
 
-    Module headings and standalone labels are intentionally ignored. A line
-    becomes a detail candidate when it contains a label/value separator, is a
-    nested item, or is a top-level sentence with terminal punctuation. This
-    keeps the rule focused on copy that would otherwise become a paragraph
-    inside a card, lane, or matrix cell.
+    Module headings (short, no terminal punctuation, recognized by
+    ``MODULE_RE``/``_module_title``) are intentionally ignored -- they carry
+    their own length discipline via the module-heading grammar. Every other
+    non-empty visible line is a detail candidate, regardless of whether it
+    carries a label, sits at top-level indent, or ends without punctuation.
+    A prior version of this rule exempted unlabeled, unindented,
+    punctuation-free top-level lines entirely; that exemption was a loophole
+    an author could use to paste a full source sentence onto the slide
+    (a PPT slide is not a Word paragraph) as long as it dodged a colon, an
+    indent, and a trailing period. Closing it here means the same 30/60-char
+    ceiling applies to literally every visible line.
     """
 
     overages: list[tuple[str, int]] = []
@@ -761,17 +767,8 @@ def _onscreen_detail_phrase_overages(text: str) -> tuple[tuple[str, int], ...]:
         parts = re.split(r"[：:]", line, maxsplit=1)
         if len(parts) == 2 and parts[1].strip():
             body = parts[1]
-        elif raw_indent > 0 or had_bullet:
-            # A nested/bulleted line without a label is still a detail line;
-            # the author should give it a short functional label rather than
-            # hiding a paragraph behind a list marker.
-            body = line
-        elif re.search(r"[。！？；;]$", line):
-            # A top-level sentence is visible body copy, not a module label.
-            # Keep its length subject to the same paragraph guard as details.
-            body = line
         else:
-            continue
+            body = line
         body_chars = meaningful_char_count(body)
         if body_chars > ONSCREEN_DETAIL_PHRASE_WARNING_CHARS:
             overages.append((line, body_chars))
