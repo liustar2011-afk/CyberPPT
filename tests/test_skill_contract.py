@@ -24,6 +24,21 @@ PROJECT_AGENTS = ROOT / "projects" / "AGENTS.md"
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_source_foundation_is_mandatory_before_source_and_outline_work(self) -> None:
+        agents = AGENTS.read_text(encoding="utf-8-sig")
+        project_rules = PROJECT_AGENTS.read_text(encoding="utf-8-sig")
+        source_foundation = (
+            ROOT / ".agents" / "skills" / "cyberppt-source-foundation" / "SKILL.md"
+        ).read_text(encoding="utf-8-sig")
+        root_skill = SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("必须先调用", agents)
+        self.assertIn("invoke the repository skill `cyberppt-source-foundation` first", project_rules)
+        self.assertIn("Invocation is mandatory", source_foundation)
+        self.assertIn("必须先调用仓库 Skill `cyberppt-source-foundation`", root_skill)
+        self.assertIn("即使用户没有点名、项目已经存在", agents)
+        self.assertIn("OUTLINE rerun", project_rules)
+
     def test_source_foundation_defaults_to_government_style_and_source_titles(self) -> None:
         planning = OUTLINE_SKILL.read_text(encoding="utf-8-sig")
         project_rules = PROJECT_AGENTS.read_text(encoding="utf-8-sig")

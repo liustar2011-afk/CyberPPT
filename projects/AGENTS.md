@@ -4,7 +4,7 @@ This file applies to `projects/**` and intentionally overrides the repository-le
 
 ## Default source-material route
 
-For new projects that begin from DOCX, PDF, PPTX, XLSX, Markdown, or similar source material, use the repository skill `cyberppt-source-foundation` as the default front end:
+For every task that reads source material or creates, regenerates, repairs, audits, or hands off Source Truth, semantic models, an Outline, or a page plan, invoke the repository skill `cyberppt-source-foundation` first. This is mandatory even for existing projects, an OUTLINE rerun, or a task described as legacy Stage 01. For new projects, the full source-foundation front end is required:
 
 1. `source-to-markdown`
 2. `source-structure-factbase`
@@ -20,7 +20,7 @@ For new projects that begin from DOCX, PDF, PPTX, XLSX, Markdown, or similar sou
 
 不得自行增加“问题路径”“交流路径”、咨询式金句、营销标题或源材料没有的章节逻辑。目录使用源材料目录标题，源材料没有明确目录标题时使用“目录”。只有用户明确要求重构叙事、咨询化、路演化、改名、重排或压缩重组时，才可解除默认锁定；一般的领导汇报、合作交流或高端交流用途不构成重构授权。
 
-Do not rerun `prepare-semantic-understanding`, `compile-source-truth`, or `compile-outline-draft` over approved source-foundation outputs unless the user explicitly asks to use the legacy CyberPPT front end.
+For an existing project with approved source-foundation outputs, reuse and validate those outputs before downstream work; do not rebuild them merely to satisfy the invocation. The compatibility projection compiler may still be run when the user explicitly requests regeneration, but only after the mandatory Skill invocation. Do not silently route source-material or Outline work through the legacy front end.
 
 ## Authority
 
@@ -34,4 +34,4 @@ Keep the existing conversational gates for communication goal, PPT outline, page
 
 ## Legacy route
 
-The old Stage 00 / early Stage 01 chain remains available only for backward compatibility or explicit user requests. Existing projects are not automatically migrated.
+The old Stage 00 / early Stage 01 chain remains available only for backward-compatible runtime operations after the mandatory Source Foundation invocation, or for explicit user requests that genuinely require legacy compatibility. Existing projects are not automatically migrated, but they are not exempt from the Skill invocation.

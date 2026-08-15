@@ -1,13 +1,13 @@
 ---
 name: cyberppt-source-foundation
-description: Use when converting source documents into a trustworthy CyberPPT outline and page-authoring handoff, especially when the legacy CyberPPT source analysis or semantic stages are too mechanical or unreliable.
+description: Mandatory first skill for any CyberPPT task involving source materials, Source Truth, semantic models, Outlines, page plans, source-faithful regeneration, or Outline audit; also use it to validate and reuse an existing project's foundation before compatibility compilation.
 ---
 
 # CyberPPT Source Foundation
 
 ## Purpose
 
-Use the repository's high-quality source-material front end before CyberPPT page authoring. This is the default route for new source-material-to-PPT work unless the user explicitly requests the legacy Stage 00/early Stage 01 flow.
+Use this skill before any CyberPPT task involving source materials, Source Truth, semantic models, Outlines, page plans, or their regeneration/audit. Invocation is mandatory for new and existing projects, including requests phrased as "rerun OUTLINE", "repair Stage 01", or "use legacy Stage 01". For an existing project, first determine whether approved source-foundation outputs can be reused; reuse is valid, but skipping this Skill is not. The compatibility projection is a downstream runtime artifact and never a reason to bypass the source foundation contract.
 
 Authoritative chain:
 
@@ -24,7 +24,7 @@ The projection is a compatibility artifact only. It must never become a second s
 5. Use `ppt-outline-planning` to author `deck-brief.json` and `page-plan.json`; validate them and render `ppt-outline.md`. Present the outline to the user for the existing human gate.
 6. After outline approval, run `scripts/source_foundation_handoff.py <foundation-dir> <semantic-dir> <outline-dir> -o <project> --cyberppt-root . --force`.
 7. Read `integration/cyberppt-handoff-report.json`. Proceed only when projection validation is `ok`; runtime audit must be recorded when the local CyberPPT checkout is available.
-8. Continue with the existing `cyberppt-write-single-page` skill. Do not rerun legacy semantic understanding, Source Truth authoring, or mechanical outline compilation over the approved foundation outputs.
+8. Continue with the existing `cyberppt-write-single-page` skill. Do not rerun legacy semantic understanding, Source Truth authoring, or mechanical outline compilation over approved foundation outputs unless the user explicitly requests regeneration; if regeneration is requested, invoke this Skill first and treat the compiler as a compatibility projection only.
 
 ## Authority rules
 
