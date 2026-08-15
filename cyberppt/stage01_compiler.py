@@ -16,7 +16,7 @@ from typing import Any
 
 from cyberppt.semantic_understanding import SEMANTIC_ARGUMENT_MODEL
 from cyberppt.source_argument_model import load_model, node_index, validate_model
-from cyberppt.source_document_map import SOURCE_REGISTRY, SOURCE_UNITS
+from cyberppt.source_document_map import SOURCE_HEADING_TREE, SOURCE_REGISTRY, SOURCE_UNITS
 from cyberppt.subtitle_policy import resolve_subtitle_policy
 
 
@@ -108,6 +108,159 @@ def _items(value: object) -> list[dict[str, Any]]:
 
 def _strings(value: object) -> list[str]:
     return [str(item).strip() for item in value if str(item).strip()] if isinstance(value, list) else []
+
+
+def _top_level_section_nodes(project: Path, model: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return section nodes whose source heading has no represented ancestor.
+
+    ``section_nodes`` is a semantic collection, not a promise that every item
+    is a chapter.  Some semantic models contain a lower source heading in that
+    collection while retaining its ancestor as another section node.  The
+    source heading tree is the authority for that parent/child relationship;
+    do not infer hierarchy from the section node's declared level alone.
+    """
+
+    sections = _items(model.get("section_nodes"))
+    heading_path = project / SOURCE_HEADING_TREE
+    if not heading_path.is_file():
+        return sections
+    headings = _items(_read_json(heading_path).get("headings"))
+    by_source_heading_id: dict[str, dict[str, Any]] = {}
+    for heading in headings:
+        for field in ("unit_id", "heading_id"):
+            source_heading_id = str(heading.get(field) or "")
+            if source_heading_id:
+                by_source_heading_id[source_heading_id] = heading
+    represented_ids = {
+        str(section.get("source_heading_id") or "")
+        for section in sections
+        if str(section.get("source_heading_id") or "")
+    }
+    result: list[dict[str, Any]] = []
+    for section in sections:
+        source_heading_id = str(section.get("source_heading_id") or "")
+        heading = by_source_heading_id.get(source_heading_id)
+        path = _strings(heading.get("heading_path")) if heading else []
+        represented_ancestor = False
+        if path:
+            for ancestor in headings:
+                ancestor_ids = {
+                    str(ancestor.get(field) or "")
+                    for field in ("unit_id", "heading_id")
+                }
+                ancestor_path = _strings(ancestor.get("heading_path"))
+                if (
+                    represented_ids.intersection(ancestor_ids)
+                    and len(ancestor_path) < len(path)
+                    and path[: len(ancestor_path)] == ancestor_path
+                ):
+                    represented_ancestor = True
+                    break
+        if not represented_ancestor:
+            result.append(section)
+    return result
+
+
+def _candidate_page_groups(
+    project: Path,
+    model: dict[str, Any],
+    truth: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Project Source Truth coverage targets into source-ordered page groups.
+
+    The semantic model contains two different hierarchies: source-section
+    nodes and later page-consumer nodes.  The latter are the only nodes that
+    may become candidate content pages.  In particular, a page-consumer node
+    can be parented by a synthetic semantic root rather than by the section
+    node that happens to carry the same source heading.  Walking only
+    ``subsection_nodes`` below the selected section nodes therefore silently
+    drops valid pages.  Source units provide the authoritative chapter path;
+    Source Truth coverage targets provide the authoritative page inventory.
+    """
+
+    semantic_nodes = node_index(model)
+    subsection_ids = {
+        str(node.get("id") or "")
+        for node in _items(model.get("subsection_nodes"))
+        if str(node.get("id") or "")
+    }
+    records_by_node: dict[str, list[dict[str, Any]]] = {}
+    records_by_id = {
+        str(record.get("id") or ""): record
+        for record in _items(truth.get("records"))
+        if str(record.get("id") or "")
+    }
+    for record in records_by_id.values():
+        if str(record.get("argument_duty") or "") == "metadata":
+            continue
+        for node_id in _strings(record.get("semantic_node_ids")):
+            records_by_node.setdefault(node_id, []).append(record)
+
+    target_order: list[str] = []
+    for target in _items(truth.get("coverage_targets")):
+        node_id = str(target.get("semantic_node_id") or "")
+        if node_id and node_id not in target_order:
+            target_order.append(node_id)
+    # Keep the projection usable for hand-authored/minimal fixtures that do
+    # not carry coverage_targets yet, while still requiring a real page
+    # consumer and source records.
+    if not target_order:
+        target_order = [
+            str(node.get("id") or "")
+            for node in _items(model.get("subsection_nodes"))
+            if str(node.get("id") or "")
+        ]
+
+    source_units = _source_units(project)
+    groups: dict[str, dict[str, Any]] = {}
+    ordered_groups: list[dict[str, Any]] = []
+    for node_id in target_order:
+        if node_id not in subsection_ids:
+            continue
+        node = semantic_nodes.get(node_id)
+        if not isinstance(node, dict) or not str(node.get("primary_consumer") or "").strip():
+            continue
+        node_records = records_by_node.get(node_id, [])
+        if not node_records:
+            continue
+
+        evidence_refs = _strings(node.get("evidence_refs"))
+        record_refs = [
+            ref
+            for record in node_records
+            for ref in _strings(record.get("source_unit_refs"))
+        ]
+        source_candidates = [
+            source_units[ref]
+            for ref in evidence_refs + record_refs
+            if ref in source_units and isinstance(source_units[ref], dict)
+        ]
+        source_candidates.sort(key=lambda item: int(item.get("source_order") or 0))
+        heading_path = _strings(source_candidates[0].get("heading_path")) if source_candidates else []
+        chapter_title = heading_path[0] if heading_path else ""
+        if not chapter_title:
+            chapter_title = str(node.get("source_heading") or "").strip()
+        if not chapter_title:
+            chapter_title = "未命名章节"
+
+        group = groups.get(chapter_title)
+        if group is None:
+            group = {
+                "chapter_title": chapter_title,
+                "nodes": [],
+                "first_source_order": int(source_candidates[0].get("source_order") or 0)
+                if source_candidates
+                else len(ordered_groups),
+                "source_group_order": len(ordered_groups),
+            }
+            groups[chapter_title] = group
+            ordered_groups.append(group)
+        group["nodes"].append(node)
+
+    ordered_groups.sort(
+        key=lambda item: (int(item["first_source_order"]), int(item["source_group_order"]))
+    )
+    return ordered_groups
 
 
 def _source_units(project: Path) -> dict[str, dict[str, Any]]:
@@ -867,11 +1020,55 @@ def compile_outline_draft(
     for record in records:
         for node_id in _strings(record.get("semantic_node_ids")):
             record_by_node.setdefault(node_id, []).append(record)
-    sections = _items(model.get("section_nodes"))
-    subsections = _items(model.get("subsection_nodes"))
-    subsections_by_parent: dict[str, list[dict[str, Any]]] = {}
-    for node in subsections:
-        subsections_by_parent.setdefault(str(node.get("parent_id") or ""), []).append(node)
+    chapter_groups = _candidate_page_groups(project, model, truth)
+    page_nodes = [
+        node
+        for group in chapter_groups
+        for node in group["nodes"]
+    ]
+    page_node_ids = {str(node.get("id") or "") for node in page_nodes}
+    support_nodes_by_page: dict[str, list[dict[str, Any]]] = {}
+    page_node_order = {
+        str(node.get("id") or ""): index
+        for index, node in enumerate(page_nodes)
+    }
+    page_node_record_ids = {
+        str(node.get("id") or ""): {
+            str(record.get("id") or "")
+            for record in record_by_node.get(str(node.get("id") or ""), [])
+            if str(record.get("id") or "")
+        }
+        for node in page_nodes
+    }
+    for support_node in _items(model.get("subsection_nodes")):
+        support_id = str(support_node.get("id") or "")
+        if not support_id or support_id in page_node_ids:
+            continue
+        support_records = {
+            str(record.get("id") or "")
+            for record in record_by_node.get(support_id, [])
+            if str(record.get("id") or "")
+        }
+        if not support_records:
+            continue
+        support_title = _clean_title(support_node.get("source_heading"))
+        candidates = []
+        for page_node in page_nodes:
+            page_id = str(page_node.get("id") or "")
+            overlap = len(support_records & page_node_record_ids.get(page_id, set()))
+            if overlap:
+                candidates.append(
+                    (
+                        support_title == _clean_title(page_node.get("source_heading")),
+                        overlap,
+                        -page_node_order[page_id],
+                        page_id,
+                    )
+                )
+        if not candidates:
+            continue
+        target_page_node_id = max(candidates)[-1]
+        support_nodes_by_page.setdefault(target_page_node_id, []).append(support_node)
 
     pages: list[dict[str, Any]] = []
     pages.append({"page_id": "p01", "sequence": 1, "page_type": "cover", "title": _clean_title((model.get("document_semantics") or {}).get("subject_of_report"))})
@@ -881,9 +1078,9 @@ def compile_outline_draft(
     chapter_orders: list[dict[str, Any]] = []
     content_pages: list[dict[str, Any]] = []
 
-    for section_index, section in enumerate(sections, start=1):
+    for section_index, chapter_group in enumerate(chapter_groups, start=1):
         chapter_id = f"C{section_index}"
-        chapter_title = _clean_title(section.get("source_heading"))
+        chapter_title = str(chapter_group["chapter_title"])
         pages.append(
             {
                 "page_id": f"p{len(pages) + 1:02d}",
@@ -893,15 +1090,17 @@ def compile_outline_draft(
                 "title": chapter_title,
             }
         )
-        nodes = subsections_by_parent.get(str(section.get("id") or ""), [])
-        if not nodes:
-            nodes = [section]
+        nodes = list(chapter_group["nodes"])
         chapter_content: list[dict[str, Any]] = []
         for node in nodes:
             node_id = str(node.get("id") or "")
-            section_id = str(section.get("id") or "")
             primary_node_id = node_id
             consumed_node_ids = [node_id]
+            evidence_node_ids = [
+                str(support.get("id") or "")
+                for support in support_nodes_by_page.get(node_id, [])
+                if str(support.get("id") or "")
+            ]
             page_id = f"p{len(pages) + 1:02d}"
             topic = _clean_title(node.get("source_heading"))
             node_records = []
@@ -912,8 +1111,6 @@ def compile_outline_draft(
                     if record_id and record_id not in seen_record_ids:
                         seen_record_ids.add(record_id)
                         node_records.append(record)
-            if not node_records and node is section:
-                node_records = record_by_node.get(str(section.get("id") or ""), [])
             if not node_records:
                 continue
             content_units, detail_refs = _page_content_units(page_id, node_records, topic)
@@ -947,20 +1144,21 @@ def compile_outline_draft(
                 "page_type": "content",
                 "chapter_id": chapter_id,
                 "title": topic,
-                "page_mission": f"说明{topic}在全文论证中的业务含义、状态和证据边界。",
-                "page_job": f"说明{topic}在全文论证中的业务含义、状态和证据边界。",
+                "page_mission": "",
+                "page_job": "",
                 "core_message": core_message,
-                "audience_question": f"{topic}具体包含什么，当前处于什么状态？",
-                "business_question": f"{topic}的业务含义和状态是什么？",
+                "audience_question": "",
+                "business_question": "",
                 "topic_category": topic,
-                "must_not_include": ["未经来源确认的承诺、结果或责任"],
-                "split_risk": "low",
-                "new_value_vs_previous": f"建立对{topic}的独立、可回查认识。",
-                "reserved_for_later": "相邻主题、实施细节和未确认事项由其责任页面继续展开。",
-                "storyline_role": f"回答本章关于{topic}的独立问题。",
-                "transition_from_previous": "由前一主题的已知条件进入本主题的业务判断。",
-                "transition_to_next": "以本主题形成的判断作为下一主题的理解前提。",
-                "page_order_reason": f"保持来源章节顺序，并在本章第{len(chapter_content) + 1}个位置处理{topic}。",
+                "must_not_include": [],
+                "split_risk": "",
+                "split_risk_reason": "",
+                "new_value_vs_previous": "",
+                "reserved_for_later": "",
+                "storyline_role": "",
+                "transition_from_previous": "",
+                "transition_to_next": "",
+                "page_order_reason": "",
                 "argument_role": page_role,
                 "allowed_claim_roles": sorted({str(record.get("claim_role") or "fact") for record in node_records}),
                 "forbidden_claim_roles": [],
@@ -968,7 +1166,7 @@ def compile_outline_draft(
                 "main_claim_status": "proposed" if boundary_refs else "confirmed",
                 "primary_argument_node_id": primary_node_id,
                 "source_argument_node_ids": consumed_node_ids,
-                "source_evidence_node_ids": [],
+                "source_evidence_node_ids": evidence_node_ids,
                 "source_argument_node_roles": {
                     consumed_node_id: str(semantic_nodes.get(consumed_node_id, {}).get("argument_role") or "evidence")
                     for consumed_node_id in consumed_node_ids
@@ -1004,14 +1202,14 @@ def compile_outline_draft(
                     }
                 ],
                 "visual_intent_type": VISUAL_INTENT.get(semantic_role, "judgment_evidence"),
-                "page_necessity": f"{topic}对应独立来源标题和语义命题，需要明确承载其业务判断与状态边界。",
+                "page_necessity": "",
                 # These fields deliberately remain empty in the deterministic
                 # candidate draft.  They are editorial decisions and must be
                 # authored from the communication goal, adjacent pages, and
                 # evidence duties before the Outline can pass its formal gate.
                 "non_substitutable_value": "",
-                "argument_chain": "",
-                "evidence_roles": {},
+                "argument_chain": [],
+                "evidence_roles": [],
                 "excluded_from_onscreen": [],
             }
             candidate_modules = _onscreen_modules(
@@ -1037,23 +1235,38 @@ def compile_outline_draft(
             pages.append(page)
             content_pages.append(page)
             chapter_content.append(page)
-            if node in subsections:
+            dispositions.append(
+                {
+                    "node_id": node_id,
+                    "disposition": "standalone_page",
+                    "page_id": page_id,
+                    "rationale": f"{topic}具有独立来源标题、语义命题和证据责任，先编译为独立候选页；仅在后续规划判断确认共享主题与主关系后才可合并。",
+                }
+            )
+            for support_node in support_nodes_by_page.get(node_id, []):
+                support_id = str(support_node.get("id") or "")
                 dispositions.append(
                     {
-                        "node_id": node_id,
-                        "disposition": "standalone_page",
+                        "node_id": support_id,
+                        "disposition": "merged_page",
                         "page_id": page_id,
-                        "rationale": f"{topic}具有独立来源标题、语义命题和证据责任，先编译为独立候选页；仅在后续规划判断确认共享主题与主关系后才可合并。",
+                        "rationale": f"{support_node.get('source_heading') or support_id}与{topic}共享来源标题和证据范围，作为支撑语义节点合并承载；页面主论点仍由 {node_id} 承担。",
+                        "merge_reason": "同一来源事项已由更具体的页面承载节点拆分表达，保留本节点作为支撑语义而不重复成页。",
+                        "shared_page_topic": topic,
+                        "cross_chapter_reason": "该节点是同一来源事项的支撑语义投影，保留在对应页面的证据节点字段中，不另造页面或改变其来源章节。",
                     }
                 )
+        if not chapter_content:
+            pages.pop()
+            continue
         topics = [str(page["topic_category"]) for page in chapter_content]
         page_ids = [str(page["page_id"]) for page in chapter_content]
         if chapter_content:
             chapter_missions.append(
                 {
                     "chapter_id": chapter_id,
-                    "chapter_question": f"{chapter_title}需要回答哪些来源支持的业务问题？",
-                    "mission": str(section.get("section_thesis") or f"说明{chapter_title}。"),
+                    "chapter_question": "",
+                    "mission": "",
                     "topic_categories": topics,
                     "max_content_pages": len(chapter_content),
                 }
@@ -1076,26 +1289,12 @@ def compile_outline_draft(
             "title": "交流与后续事项",
         }
     )
-    for index, page in enumerate(content_pages):
-        previous = content_pages[index - 1] if index > 0 else None
-        following = content_pages[index + 1] if index + 1 < len(content_pages) else None
-        page["transition_from_previous"] = (
-            f"承接《{previous['title']}》形成的判断，进一步说明《{page['title']}》。"
-            if previous
-            else f"从本章问题进入《{page['title']}》的来源判断。"
-        )
-        page["transition_to_next"] = (
-            f"本页判断完成后，下一页继续回答《{following['title']}》的业务问题。"
-            if following
-            else "本页完成正文论证，并将后续动作交给正式封底。"
-        )
-
     semantics = dict(truth.get("document_semantics") or model.get("document_semantics") or {})
     thesis = str((model.get("document_thesis") or {}).get("statement") or semantics.get("primary_thesis") or "")
     payload = {
         "schema": "cyberppt.outline.v2",
         "material_type": str(semantics.get("document_role") or "正式材料"),
-        "audience": "交流目标所述受众",
+        "audience": "",
         "communication_goal": communication_goal.strip(),
         "communication_purpose": communication_goal.strip(),
         "decision_task": str(semantics.get("decision_intent") or communication_goal).strip(),
@@ -1124,7 +1323,7 @@ def compile_outline_draft(
         "storyline": {
             "theme": thesis,
             "decision_destination": communication_goal.strip(),
-            "story_arc": [str(item.get("section_thesis") or item.get("source_heading") or "") for item in sections],
+            "story_arc": [str(item["chapter_title"]) for item in chapter_groups],
             "chapter_missions": chapter_missions,
             "selection_rules": [
                 "全部受保护语义节点进入候选页或明确合并处置",

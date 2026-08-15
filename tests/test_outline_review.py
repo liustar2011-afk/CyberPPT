@@ -27,7 +27,7 @@ class OutlineReviewTests(unittest.TestCase):
                         "core_message": "先核验资源、客户与权利条件。", "non_substitutable_value": "避免无条件启动。",
                         "source_refs": ["ST0001", "ST0002"],
                         "evidence_roles": [{"role": "claim", "source_refs": ["ST0001", "ST0002"]}],
-                        "argument_chain": [{"statement": "资源、客户与权利条件需要同步核验。", "source_refs": ["ST0001"]}],
+                        "argument_chain": [{"statement": "资源、客户与权利条件需要同步核验。", "relation": "supports", "source_refs": ["ST0001"]}],
                         "excluded_from_onscreen": ["不展示登记字段"], "reserved_for_later": "后页进入试点。",
                         "source_heading_preserved": True, "source_heading_preservation_rationale": "原文单列筛选动作。",
                     },
@@ -40,6 +40,21 @@ class OutlineReviewTests(unittest.TestCase):
         self.assertIn("ST0001、ST0002", markdown)
         self.assertIn("原文目录保留：原文单列筛选动作。", markdown)
         self.assertIn("严格 Outline 审计通过", markdown)
+        self.assertIn("ST0001｜supports：资源、客户与权利条件需要同步核验。", markdown)
+
+    def test_candidate_review_title_is_status_aware(self) -> None:
+        markdown = render_outline_review_markdown(
+            {
+                "editorial_authoring_mode": "author_driven",
+                "editorial_authoring_status": "mechanical_draft",
+                "pages": [],
+            },
+            {"status": "rewrite_required", "issues": []},
+        )
+
+        self.assertIn("# 候选 Outline（待作者化）", markdown)
+        self.assertIn("作者状态：mechanical_draft（待作者化）", markdown)
+        self.assertNotIn("# 正式 Outline 人工审阅稿", markdown)
 
     def test_renderer_writes_default_project_review_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -27,6 +27,7 @@ from cyberppt.stage01_compiler import (
     _source_locator,
     _page_content_units,
     _onscreen_modules,
+    _top_level_section_nodes,
     compile_outline_draft,
     compile_source_truth,
     refresh_outline_content_units,
@@ -580,13 +581,40 @@ class Stage01CompilerTests(unittest.TestCase):
             [page["page_type"] for page in outline["pages"]],
         )
         content_page = next(page for page in outline["pages"] if page["page_type"] == "content")
+        self.assertEqual([], content_page["argument_chain"])
+        self.assertEqual([], content_page["evidence_roles"])
+        self.assertEqual("", content_page["page_mission"])
+        self.assertEqual("", content_page["audience_question"])
+        content_page.update({
+            "page_mission": "判断现有行业数据资源与专业能力能否支撑首期建设。",
+            "page_job": "判断现有行业数据资源与专业能力能否支撑首期建设。",
+            "audience_question": "首期建设需要哪些现有基础？",
+            "business_question": "首期建设需要哪些现有基础？",
+            "must_not_include": ["后续未确认的责任边界"],
+            "split_risk": "low",
+            "new_value_vs_previous": "明确现有基础与后续建设之间的支撑关系。",
+            "reserved_for_later": "后续动作另行确认。",
+            "storyline_role": "foundation",
+            "transition_from_previous": "进入现有建设基础。",
+            "transition_to_next": "为后续动作确认提供基础。",
+            "page_order_reason": "先说明来源材料中的既有基础。",
+            "page_necessity": "没有本页无法判断既有基础是否构成后续建设前提。",
+        })
         content_page["non_substitutable_value"] = "删除本页后，受众无法判断现有基础是否支持后续建设。"
-        content_page["argument_chain"] = "现有资源与能力 → 首期建设基础 → 后续建设判断"
-        content_page["evidence_roles"] = {
-            "claim": content_page["core_message_derivation"]["source_refs"],
-            "boundary": content_page["boundary_refs"],
-            "trace_only": content_page["detail_refs"],
-        }
+        content_page["argument_chain"] = [{
+            "statement": "现有资源与能力构成首期建设基础。",
+            "relation": "supports",
+            "source_refs": content_page["core_message_derivation"]["source_refs"],
+        }]
+        content_page["evidence_roles"] = [
+            {"role": role, "source_refs": refs}
+            for role, refs in (
+                ("claim", content_page["core_message_derivation"]["source_refs"]),
+                ("boundary", content_page["boundary_refs"]),
+                ("trace_only", content_page["detail_refs"]),
+            )
+            if refs
+        ]
         content_page["excluded_from_onscreen"] = list(content_page["detail_refs"])
         chapter_page = next(page for page in outline["pages"] if page["page_type"] == "chapter")
         chapter_page.update(
@@ -637,6 +665,116 @@ class Stage01CompilerTests(unittest.TestCase):
             },
             outline["argument_node_dispositions"][0],
         )
+
+    def test_candidate_outline_excludes_section_nodes_with_represented_source_ancestors(self) -> None:
+        model = json.loads((self.project / SEMANTIC_ARGUMENT_MODEL).read_text(encoding="utf-8"))
+        compile_source_truth(self.project)
+        child_heading = json.loads(
+            (self.project / SOURCE_HEADING_TREE).read_text(encoding="utf-8")
+        )["headings"][1]
+        model["section_nodes"].append({
+            "id": "c01-lower",
+            "source_heading_id": child_heading["heading_id"],
+            "source_heading": child_heading["title"],
+            "section_thesis": "下级标题不应再次成为章节页。",
+            "argument_role": "foundation",
+            "argument_weight": "detail",
+            "level": 1,
+            "status": "existing",
+            "evidence_refs": [next(iter(self.unit_ids))],
+            "actor_refs": ["建设相关方"],
+            "primary_consumer": "",
+            "subsection_ids": [],
+            "allowed_merges": [],
+            "claim_origin": "source_explicit",
+        })
+        (self.project / SEMANTIC_ARGUMENT_MODEL).write_text(
+            json.dumps(model, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+
+        self.assertEqual(
+            ["c01"],
+            [node["id"] for node in _top_level_section_nodes(self.project, model)],
+        )
+
+        outline_path = compile_outline_draft(
+            self.project,
+            communication_goal="面向建设相关方说明现有基础并确认后续动作。",
+        )
+        outline = json.loads(outline_path.read_text(encoding="utf-8"))
+        chapters = [page for page in outline["pages"] if page["page_type"] == "chapter"]
+        self.assertEqual(1, len(chapters))
+        self.assertEqual("建设方案", chapters[0]["title"])
+        self.assertEqual(
+            0,
+            sum(
+                not any(
+                    page.get("page_type") == "content"
+                    and page.get("chapter_id") == chapter.get("chapter_id")
+                    for page in outline["pages"]
+                )
+                for chapter in chapters
+            ),
+        )
+
+    def test_real_v16_outline_has_no_empty_chapters_or_template_author_fields(self) -> None:
+        project = Path(
+            "/Volumes/DOC/CyberPPT/projects/"
+            "power-data-infrastructure-cooperation-v16-20260815"
+        )
+        if not project.is_dir():
+            self.skipTest("real V16 project is not mounted")
+        with tempfile.TemporaryDirectory() as tmp:
+            outline_path = compile_outline_draft(
+                project,
+                communication_goal="面向合作相关方核对来源材料并确认后续动作。",
+                output=Path(tmp) / "outline.json",
+            )
+            outline = json.loads(outline_path.read_text(encoding="utf-8"))
+        pages = outline["pages"]
+        chapters = [page for page in pages if page["page_type"] == "chapter"]
+        contents = [page for page in pages if page["page_type"] == "content"]
+        self.assertEqual(5, len(chapters))
+        self.assertEqual(23, len(contents))
+        self.assertEqual(
+            [
+                "第一章　总体概述",
+                "第二章　行业服务体系",
+                "第三章　平台运营机制",
+                "第四章　合作机制与保障体系",
+                "第五章　合作推进建议",
+            ],
+            [page["title"] for page in chapters],
+        )
+        self.assertEqual(
+            ["L4-P04", "L4-P05", "L4-P06", "L4-P07", "L4-P08", "L4-P10", "L4-P11", "L4-P12", "L4-P13", "L4-P15", "L4-P16", "L4-P17", "L4-P18", "L4-P20", "L4-P21", "L4-P22", "L4-P23", "L4-P24", "L4-P26", "L4-P27", "L4-P28", "L4-P29", "L4-P30"],
+            [page["primary_argument_node_id"] for page in contents],
+        )
+        self.assertEqual(31, len(outline["argument_node_dispositions"]))
+        self.assertEqual(
+            {"rec-01", "rec-02", "rec-03", "rec-04", "rec-05", "rec-06", "rec-07", "rec-08"},
+            {
+                item["node_id"]
+                for item in outline["argument_node_dispositions"]
+                if item["disposition"] == "merged_page"
+            },
+        )
+        self.assertEqual("", outline["audience"])
+        self.assertEqual(
+            0,
+            sum(
+                not any(
+                    page.get("page_type") == "content"
+                    and page.get("chapter_id") == chapter.get("chapter_id")
+                    for page in pages
+                )
+                for chapter in chapters
+            ),
+        )
+        self.assertTrue(all(page["page_mission"] == "" for page in contents))
+        self.assertTrue(all(page["audience_question"] == "" for page in contents))
+        self.assertTrue(all(page["argument_chain"] == [] for page in contents))
+        self.assertTrue(all(page["evidence_roles"] == [] for page in contents))
 
     def test_strict_atomic_item_requires_semantic_argument_duty(self) -> None:
         # Evidence role and claim role remain derived from the target node,

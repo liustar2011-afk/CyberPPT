@@ -1135,6 +1135,13 @@ def audit_outline_consumption(
         for node_id in assigned_ids:
             if node_id:
                 assigned_consumers.setdefault(node_id, []).append(page_id)
+        evidence_ids = [
+            _text(item)
+            for item in _list(page.get("source_evidence_node_ids"))
+            if _text(item)
+        ]
+        for node_id in evidence_ids:
+            assigned_consumers.setdefault(node_id, []).append(page_id)
         if len(assigned_ids) != len(set(assigned_ids)):
             issues.append(_issue("OUTLINE_ARGUMENT_NODE_DUPLICATED", "页面 source_argument_node_ids 不得重复声明同一语义节点。", node_id=page_id))
         for node_id in assigned_ids:
