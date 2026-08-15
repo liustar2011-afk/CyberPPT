@@ -15,9 +15,9 @@ Authoritative chain:
 
 The projection is a compatibility artifact only. It must never become a second semantic authority.
 
-## Outline route selection
+## Canonical route
 
-Choose exactly one downstream route. The Foundation-native route uses `ppt-outline-planning` and `cyberppt-handoff`; do not run `compile-outline-draft` or `cyberppt-author-stage01-outline` over its approved outputs. The Legacy compatibility route may use `compile-outline-draft` only for an existing compatibility project or an explicit legacy request, followed by `cyberppt-author-stage01-outline` and the lightweight Outline audit. The two routes must not be mixed.
+The only formal route is `cyberppt-source-foundation` → `business-semantic-understanding` → `ppt-outline-planning` → `cyberppt-handoff` → `cyberppt-write-single-page`. `compile-outline-draft` and `cyberppt-author-stage01-outline` are internal compatibility implementations for old-project migration only; they are not a second user-facing route and must not run over approved Source Foundation outputs.
 
 ## Required sequence
 

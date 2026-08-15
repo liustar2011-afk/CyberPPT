@@ -14,12 +14,11 @@ For every task that reads source material or creates, regenerates, repairs, audi
 6. existing `cyberppt-write-single-page`
 7. existing final-script, Stage 02, image/SVG/PPTX pipeline
 
-### Outline route selection
+### Canonical route
 
-Choose exactly one route after the mandatory Source Foundation invocation:
+The only formal route is `cyberppt-source-foundation` → `business-semantic-understanding` → `ppt-outline-planning` → `cyberppt-handoff` → `cyberppt-write-single-page`.
 
-- **Foundation-native:** use `ppt-outline-planning` to author and validate `deck-brief.json`/`page-plan.json`, then use `cyberppt-handoff` to project them. Do not run `compile-outline-draft` or `cyberppt-author-stage01-outline` over the approved Foundation-native Outline.
-- **Legacy compatibility:** only for an existing compatibility project or an explicit legacy request. Run `compile-outline-draft` as a source-bounded candidate inventory, then call `cyberppt-author-stage01-outline`, then run `outline-audit`. Do not mix this route with Foundation-native page planning.
+`compile-outline-draft` and `cyberppt-author-stage01-outline` remain internal compatibility implementations for migration of old projects only. They are not a user-facing route, are not valid for new projects, and must not run over approved Source Foundation outputs.
 
 ## Default writing and structure policy
 
@@ -27,7 +26,7 @@ Choose exactly one route after the mandatory Source Foundation invocation:
 
 不得自行增加“问题路径”“交流路径”、咨询式金句、营销标题或源材料没有的章节逻辑。目录使用源材料目录标题，源材料没有明确目录标题时使用“目录”。只有用户明确要求重构叙事、咨询化、路演化、改名、重排或压缩重组时，才可解除默认锁定；一般的领导汇报、合作交流或高端交流用途不构成重构授权。
 
-For an existing project with approved source-foundation outputs, reuse and validate those outputs before downstream work; do not rebuild them merely to satisfy the invocation. Select the Foundation-native route by default. The compatibility projection compiler may still be run only under the explicit Legacy compatibility route and only after the mandatory Skill invocation. Do not silently route source-material or Outline work through the legacy front end.
+For an existing project with approved source-foundation outputs, reuse and validate those outputs before downstream work; do not rebuild them merely to satisfy the invocation. New projects and fresh reruns always use the canonical route. Old compatibility implementations may be used only internally during migration and must never become a second user-facing workflow.
 
 ## Authority
 
@@ -39,6 +38,6 @@ A compatibility projection may map IDs and fields only. It must not add evidence
 
 Keep the existing conversational gates for communication goal, PPT outline, page detail, and final script. The outline gate must show the generated `ppt-outline.md` and its page missions, audience questions, core judgments, non-substitutable values, governing argument chains, evidence roles, exclusions, and reserved-later content.
 
-## Legacy route
+## Compatibility boundary
 
-The old Stage 00 / early Stage 01 chain remains available only for backward-compatible runtime operations after the mandatory Source Foundation invocation, or for explicit user requests that genuinely require legacy compatibility. Existing projects are not automatically migrated, but they are not exempt from the Skill invocation.
+The old Stage 00 / early Stage 01 chain remains available only as an internal migration boundary. It is not a formal user route, and existing projects are not automatically migrated.

@@ -19,7 +19,7 @@
 - 必须在四处停下并展示实际内容：提出交流目标建议；提出章节和页面提纲；提出页面详细内容；提交最终全稿。交流目标节点必须先读取并分析源材料，提出一个忠于原稿且有源依据的方向；不得提供多个选项，不得把用户目标、作者推断或泛化措辞升级为源材料事实、源材料判断或页面主结论。用户可修改或补充该方向；不得直接向用户抛出受众、场景、目标行动等空白问题。前三处收到用户输入后直接修改现有权威提纲或页面脚本，第四处等待最终确认。
 - 例外：用户明确授权并提供 `autonomous_lightweight` 任务合同时，可运行 `python -m cyberppt run-autonomous <contract.json>`，但项目必须先有 `integration/cyberppt-handoff-report.json` 且 `projection_validation.status=ok`；runner 不得重新编译或覆盖 Foundation 投影的 Source Truth。该命令以失败闭环门禁替代上述对话停点，但不得把此例外用于跳过作者产物、全稿审计、Stage 02 handoff、视觉结构、实际送图提示词、图片或图片 QA。只有其 `run-report.json` 的 `status=completed` 才能对外称"完成"。
 - 默认只做一次源登记核查、一次语义检查、一次 Source Truth 检查、一次 Outline 检查、写作期间按需局部检查和合稿后一次全稿检查。局部修改不得触发无关上游阶段或全稿的级联重审。
-- Stage 01 采用"作者任务在前、规则质检在后"的正式工作方式，并区分两条互斥的 Outline 路线。Foundation-native 路线使用 `ppt-outline-planning` 完成 `deck-brief.json`/`page-plan.json`，再由 `cyberppt-handoff` 投影到 CyberPPT；已验证的 Foundation-native Outline 不得再经过 `compile-outline-draft` 或 `cyberppt-author-stage01-outline`。Legacy compatibility 路线仅用于既有兼容项目或用户明确要求的旧链路：`compile-outline-draft` 只生成完整候选清单，随后必须调用 `cyberppt-author-stage01-outline` 完成页面使命、不可替代价值、主论证链、证据职责和不上屏取舍，才运行一次 Outline 轻量审计。两条路线不得混用。页面脚本使用 `cyberppt-write-single-page` 逐页专业编写，审计只作为来源、关系、层级和契约底线，不替代编辑判断。
+- Stage 01 采用"作者任务在前、规则质检在后"的正式工作方式，唯一正式路线是 `cyberppt-source-foundation` → `business-semantic-understanding` → `ppt-outline-planning` → `cyberppt-handoff` → `cyberppt-write-single-page`。`compile-outline-draft` 与 `cyberppt-author-stage01-outline` 仅作为旧项目迁移的内部兼容实现保留，不构成用户可选择的第二条路线，不得用于新项目或已验证 Foundation 产物。审计只作为来源、关系、层级和契约底线，不替代编辑判断。
 - 不得根据审计错误机械增加页面、上屏模块、锚点句或附件字段。来源覆盖只证明可追溯，不证明内容与页面使命直接相关；附件登记字段、材料清单、操作表单和实施明细默认保留在完整稿、讲解或追溯层，只有直接决定页面判断时才可提升为页面结构。
 - 继续使用项目现有 `source/`、Source Truth、Outline、章节脚本和最终脚本路径；不得复制底稿或建立另一套事实源。
 

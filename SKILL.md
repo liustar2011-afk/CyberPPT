@@ -17,7 +17,7 @@ description: 当用户需要把 DOCX、PDF、TXT、XLSX、研究报告、方案�
 
 流程不改变底稿结构，不复制 Source Truth，不建立平行运行目录。继续使用项目现有 `source/`、`workbench/stages/01-analysis/source-truth.json`、`outline.json`、`workbench/scripts/drafts/` 和最终脚本路径。用户交互发生在对话中，不能用确认文件、状态 JSON、哈希或回执代替。`run-autonomous` 例外同样必须先消费通过 `integration/cyberppt-handoff-report.json` 的 Foundation 投影，并不得重新编译覆盖该投影的 Source Truth。
 
-Outline 路线必须二选一，不得混用：Foundation-native 路线由 `ppt-outline-planning` 编写并验证 `deck-brief.json`/`page-plan.json`，再由 `cyberppt-handoff` 投影；Legacy compatibility 路线才运行 `compile-outline-draft`，并随后调用 `cyberppt-author-stage01-outline` 完成作者化。`compile-outline-draft` 仅用于兼容投影，不得覆盖已验证的 Foundation-native Outline。
+Outline 唯一正式路线是 `cyberppt-source-foundation` → `business-semantic-understanding` → `ppt-outline-planning` → `cyberppt-handoff` → `cyberppt-write-single-page`。`compile-outline-draft` 与 `cyberppt-author-stage01-outline` 仅作为旧项目迁移的内部兼容实现，不是用户可选择的第二条路线，不得用于新项目或覆盖已验证的 Source Foundation 产物。
 
 必须保留四个对话节点：
 
