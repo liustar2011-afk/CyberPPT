@@ -442,6 +442,11 @@ ONSCREEN_FLOW_ACTION_TERMS = (
 
 ONSCREEN_FLOW_HEADING_MAX_CHARS = 24
 
+ONSCREEN_CLOSING_CONNECTORS = ("需要", "建设", "建立", "衔接", "形成")
+ONSCREEN_NECESSITY_CONSTRAINT_TERMS = (
+    "难以", "不足", "缺口", "尚未", "制约", "分散", "不能",
+)
+
 def _load_module_ceiling() -> int:
     """Read page_composition.onscreen_zones.modules.max from rules.yaml.
 
@@ -1212,6 +1217,24 @@ def _onscreen_flow_language_issues(
                 evidence=tuple(repeated_steps[:4]),
             )
         )
+    topic = str(contract.get("topic_category") or "")
+    if "必要性" in topic:
+        has_constraint = any(
+            term in module
+            for module in modules[:-1]
+            for term in ONSCREEN_NECESSITY_CONSTRAINT_TERMS
+        )
+        closes = any(term in modules[-1] for term in ONSCREEN_CLOSING_CONNECTORS) if modules else False
+        if not has_constraint or not closes:
+            issues.append(
+                _issue(
+                    "ONSCREEN_NECESSITY_CHAIN_INCOMPLETE",
+                    page,
+                    "The necessity modules do not establish both a concrete constraint and a construction response.",
+                    "State the constraint with a concrete predicate such as 难以/尚未/不足, then close with the required construction action and its business effect; explicit causal connectives are not required.",
+                    evidence=modules,
+                )
+            )
     return issues
 
 def onscreen_semantic_coverage(page: ScriptPage) -> float:

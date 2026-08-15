@@ -514,6 +514,32 @@ class NecessityPageContractTests(unittest.TestCase):
         }
         self.assertNotIn("ONSCREEN_FLOW_ACTION_MISSING", codes)
 
+    def test_necessity_page_without_constraint_or_closing_action_is_blocked(self) -> None:
+        page = self._page(
+            title="行业数据服务运营基础的建设必要性",
+            onscreen="新型电力系统加快建设",
+        )
+        page = ScriptPage(
+            **{
+                **page.__dict__,
+                "onscreen_expression_form": "flow_3_5",
+                "top_level_module_titles": (
+                    "新型电力系统加快建设",
+                    "生产经营与智能应用更依赖跨主体协同",
+                    "跨主体数据协同需求持续增长",
+                    "数据服务和场景服务的组织方式",
+                ),
+            }
+        )
+        codes = {
+            item.code
+            for item in _onscreen_flow_language_issues(
+                page,
+                {"topic_category": "建设必要性"},
+            )
+        }
+        self.assertIn("ONSCREEN_NECESSITY_CHAIN_INCOMPLETE", codes)
+
     def test_action_led_causal_modules_form_a_visible_flow(self) -> None:
         page = self._page(
             title="行业数据服务运营基础的建设必要性",
