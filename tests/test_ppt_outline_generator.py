@@ -133,7 +133,7 @@ class FormalOutlineGeneratorTests(unittest.TestCase):
             self.assertEqual(str(output.resolve()), result["output"])
             self.assertEqual({"sec-0002", "sec-0003"}, set(spec["pages"]))
             self.assertEqual("一、建设背景", spec["pages"]["sec-0002"]["source_title"])
-            self.assertEqual([], spec["pages"]["sec-0002"]["source_fact_ids"])
+            self.assertEqual(["NF-0002"], spec["pages"]["sec-0002"]["source_fact_ids"])
             self.assertEqual("", spec["pages"]["sec-0002"]["authoring"]["key_judgment"])
             self.assertEqual("trace_only", spec["planning"]["default_attachment_disposition"])
 

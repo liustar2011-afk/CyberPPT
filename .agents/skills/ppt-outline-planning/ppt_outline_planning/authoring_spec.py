@@ -7,12 +7,11 @@ from pathlib import Path
 from typing import Any
 
 from .generate import (
-    NON_CONTENT_FACT_TYPES,
     _content_heading_ids,
     _fact_ids,
     _heading_maps,
     _load_inputs,
-    _nearest_heading_ids,
+    _page_facts,
 )
 
 
@@ -56,17 +55,12 @@ def _text(value: Any) -> str:
 def _fact_ids_for_heading(
     facts: list[dict[str, Any]],
     heading_id: str,
-    headings: list[dict[str, Any]],
+    by_id: dict[str, dict[str, Any]],
+    parents: dict[str, str | None],
+    content_ids: set[str],
+    fallback_heading_id: str,
 ) -> list[str]:
-    values: list[str] = []
-    ordered = {str(item.get("section_id")): item for item in headings}
-    for fact in facts:
-        if _text(fact.get("fact_type")).lower() in NON_CONTENT_FACT_TYPES:
-            continue
-        nearest = _nearest_heading_ids(fact, headings)
-        if heading_id in nearest and fact.get("normalized_fact_id"):
-            values.append(str(fact["normalized_fact_id"]))
-    return values
+    return _fact_ids(_page_facts(facts, heading_id, by_id, parents, content_ids, fallback_heading_id))
 
 
 def _argument_nodes_for_heading(
@@ -136,9 +130,11 @@ def prepare_authoring_spec(
     )
     concepts = _read(Path(semantic_dir).expanduser().resolve() / "concept-base.json")
     relations = _read(Path(semantic_dir).expanduser().resolve() / "relation-graph.json")
-    by_id, _parents = _heading_maps(workpack)
+    by_id, parents = _heading_maps(workpack)
     headings = list(by_id.values())
     content_ids = _content_heading_ids(headings)
+    content_id_set = set(content_ids)
+    fallback_heading_id = content_ids[0]
     facts = [
         item
         for item in normalized.get("facts") or []
@@ -147,7 +143,7 @@ def prepare_authoring_spec(
     pages: dict[str, Any] = {}
     for heading_id in content_ids:
         heading = by_id[heading_id]
-        fact_ids = _fact_ids_for_heading(facts, heading_id, headings)
+        fact_ids = _fact_ids_for_heading(facts, heading_id, by_id, parents, content_id_set, fallback_heading_id)
         fact_set = set(fact_ids)
         pages[heading_id] = {
             "source_heading_id": heading_id,
