@@ -25,6 +25,8 @@ Outline directory:
 - `page-plan.json`
 - `outline-report.json` with `status: ok`
 
+When the layer-four Outline declares `editorial_authoring_mode=author_driven`, both `deck-brief.json` and `page-plan.json` must declare `editorial_authoring_status=author_edited`. A structural `status: ok` candidate with `mechanical_draft` status is not handoff-eligible and is rejected with `OUTLINE_AUTHORING_INCOMPLETE`.
+
 Optional outline authority:
 
 - `outline-workpack.json`; when present, its `planning_policy` is projected unchanged into `outline.json`. The file may be absent for legacy projects.

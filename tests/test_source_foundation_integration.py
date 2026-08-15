@@ -53,6 +53,33 @@ class SourceFoundationIntegrationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "uncovered_important_normalized_fact"):
                 load_inputs(foundation, semantic, outline)
 
+    def test_handoff_rejects_mechanical_outline_even_when_structural_report_is_ok(self) -> None:
+        fixtures = HANDOFF_SKILL / "tests" / "fixtures"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            foundation = root / "foundation"
+            semantic = root / "semantic"
+            outline = root / "outline"
+            for source, target in (
+                (fixtures / "foundation", foundation),
+                (fixtures / "semantic", semantic),
+                (fixtures / "outline", outline),
+            ):
+                shutil.copytree(source, target)
+            deck_path = outline / "deck-brief.json"
+            deck = json.loads(deck_path.read_text(encoding="utf-8"))
+            deck["editorial_authoring_mode"] = "author_driven"
+            deck["editorial_authoring_status"] = "mechanical_draft"
+            deck_path.write_text(json.dumps(deck, ensure_ascii=False), encoding="utf-8")
+            page_path = outline / "page-plan.json"
+            plan = json.loads(page_path.read_text(encoding="utf-8"))
+            plan["editorial_authoring_mode"] = "author_driven"
+            plan["editorial_authoring_status"] = "mechanical_draft"
+            page_path.write_text(json.dumps(plan, ensure_ascii=False), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "OUTLINE_AUTHORING_INCOMPLETE"):
+                load_inputs(foundation, semantic, outline)
+
     def test_handoff_runtime_uses_current_outline_audit_cli(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "repo"

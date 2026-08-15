@@ -6,6 +6,8 @@ Required semantic inputs are `normalized-facts.json`, `concept-base.json`, `rela
 
 Every content page defines `title_intent`, `page_mission`, `audience_question`, `key_judgment`, `non_substitutable_value`, `judgment_basis`, `argument_role`, page evidence, one governing `argument_chain`, `evidence_roles`, non-empty `must_not_include`, `reserved_for_later`, `split_risk`, transitions, content strategy and abstract visual logic.
 
+The root authoring status is a real gate, not descriptive metadata. A deterministic producer must leave `editorial_authoring_status` at `mechanical_draft`. Only after page-level editorial decisions are complete may it set `author_edited`; at that point every content page must include a judgment derivation, structured `excluded_from_onscreen` items (`source_refs` plus a reason), and `authoring_decisions.deletion_test` / `authoring_decisions.evidence_selection`. `key_judgment` is canonical; a compatibility `core_message` must match it exactly. Pages whose source title begins with `附件` must also declare `authoring_decisions.attachment_disposition`; promoting one to `main_deck` requires a business-judgment rationale.
+
 Evidence responsibilities are `claim`, `reason`, `instance`, `boundary`, and `trace_only`. One evidence ID may have only one page-level responsibility. Every content page must name at least one direct `normalized_fact_id`; relation IDs and argument-node IDs cannot replace direct source-grounded facts.
 
 The outline root may declare `fact_dispositions` for important normalized facts that need an explicit cross-page decision:
@@ -31,3 +33,7 @@ The locked agenda page uses the source agenda title recorded in `source_metadata
 When an outline workpack exists, `deck-brief.json.workpack_binding` must match the workpack request and planning-policy hashes, and `task_understanding.writing_style_mode` / `source_structure_mode` must match the workpack policy. The validator rejects semantic inputs changed after workpack preparation. Projects without an `outline-workpack.json` retain the legacy structural validation path.
 
 The strengthened v0.5 `page-plan.json` contract uses `schema_version: 1.1`. `ppt-outline.md` is generated from validated JSON and is a human view, not an independent authority.
+
+正式生成器还要求每个内容页声明 `primary_argument_node_id`、`source_argument_node_ids`、`source_evidence_node_ids`、`source_argument_node_roles`、`source_argument_node_weights`、`source_argument_node_statuses` 和 `core_message_derivation.argument_node_ids`。这些字段把页面绑定到层三论点链；`concept_ids` 与 `relation_ids` 必须分别解析到 `concept-base.json` 和 `relation-graph.json`，关系所引用的事实不得超出页面直接事实范围。
+
+根层状态分为结构校验、来源绑定、作者化和交接资格。候选 `mechanical_draft` 可以得到结构 `status: ok`，但 `gates.handoff_status` 必须为 `blocked`。作者编辑完成且校验通过后，才可进入 handoff。附件默认 `trace_only`，主稿升格必须有作者处置和业务判断理由。页面预算和合并组属于作者化规划约束，生成器不得仅依据页数自动合并源主题。

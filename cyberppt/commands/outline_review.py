@@ -20,7 +20,34 @@ def _items(value: object) -> list[dict[str, Any]]:
 
 
 def _refs(value: object) -> str:
-    return "、".join(_text(item) for item in value if _text(item)) if isinstance(value, list) else "—"
+    if not isinstance(value, list):
+        return "—"
+    rendered: list[str] = []
+    for item in value:
+        if isinstance(item, dict):
+            refs = _refs(item.get("source_refs"))
+            reason = _text(item.get("reason"))
+            if refs != "—" and reason:
+                rendered.append(f"{refs}（{reason}）")
+            elif refs != "—":
+                rendered.append(refs)
+        elif _text(item):
+            rendered.append(_text(item))
+    return "、".join(rendered) or "—"
+
+
+def _reserved(value: object) -> str:
+    if isinstance(value, list):
+        items = []
+        for item in value:
+            if not isinstance(item, dict):
+                continue
+            topic = _text(item.get("topic"))
+            target = _text(item.get("target_page"))
+            if topic and target:
+                items.append(f"{topic} → {target}")
+        return "；".join(items) or "无"
+    return _text(value) or "无"
 
 
 def _chain(page: dict[str, Any]) -> list[str]:
@@ -115,7 +142,7 @@ def render_outline_review_markdown(outline: dict[str, Any], audit: dict[str, Any
                 "",
                 f"- 受众问题：{_text(page.get('audience_question')) or '未声明'}",
                 f"- 页面使命：{_text(page.get('page_mission')) or '未声明'}",
-                f"- 核心判断：{_text(page.get('core_message')) or _text(page.get('main_message')) or '未声明'}",
+                f"- 核心判断：{_text(page.get('core_message')) or _text(page.get('key_judgment')) or _text(page.get('main_message')) or '未声明'}",
                 f"- 不可替代价值：{_text(page.get('non_substitutable_value')) or '未声明'}",
                 f"- 证据范围：{_refs(page.get('source_refs'))}",
             ])
@@ -132,7 +159,7 @@ def render_outline_review_markdown(outline: dict[str, Any], audit: dict[str, Any
             lines.extend(_expression_model(page))
             excluded = _refs(page.get("excluded_from_onscreen"))
             lines.append(f"- 不上屏取舍：{excluded}")
-            lines.append(f"- 后页保留：{_text(page.get('reserved_for_later')) or '无'}")
+            lines.append(f"- 后页保留：{_reserved(page.get('reserved_for_later'))}")
             if page.get("source_heading_preserved") is True:
                 lines.append(
                     "- 原文目录保留："

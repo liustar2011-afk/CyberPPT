@@ -14,6 +14,26 @@ from cyberppt.commands.outline_review import (
 
 
 class OutlineReviewTests(unittest.TestCase):
+    def test_markdown_renders_layer_four_key_judgment(self) -> None:
+        markdown = render_outline_review_markdown(
+            {
+                "pages": [
+                    {"page_type": "chapter", "chapter_id": "C1", "title": "第一章"},
+                    {
+                        "page_type": "content",
+                        "page_id": "p04",
+                        "chapter_id": "C1",
+                        "title": "建设背景",
+                        "key_judgment": "分散资源尚未形成稳定的行业服务供给。",
+                    },
+                ],
+            },
+            {"status": "ok", "issues": []},
+        )
+
+        self.assertIn("核心判断：分散资源尚未形成稳定的行业服务供给。", markdown)
+        self.assertNotIn("核心判断：未声明", markdown)
+
     def test_markdown_carries_page_judgment_evidence_and_directory_exception(self) -> None:
         markdown = render_outline_review_markdown(
             {

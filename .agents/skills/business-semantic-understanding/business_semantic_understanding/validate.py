@@ -10,7 +10,7 @@ FACT_TYPES = {
     "actor", "organization", "project", "platform", "service", "capability",
     "requirement", "goal", "metric", "process", "deliverable", "constraint",
     "relationship", "event", "policy_basis", "problem", "technology", "dataset",
-    "scenario", "responsibility", "condition", "other",
+    "scenario", "responsibility", "condition", "metadata", "other",
 }
 NORMALIZATION_TYPES = {"verbatim", "canonicalized", "merged"}
 CONFIDENCE_LEVELS = {"high", "medium", "low"}

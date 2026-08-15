@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from pathlib import Path
 import re
 from typing import Any
 
 from .prepare import REQUIRED_FILES, _json_sha256
+from .authoring import authoring_issues
+from .status import build_layer4_status
 
 REPORT_SCHEMA_VERSION="1.0"
 EVIDENCE_ROLE_KEYS=("claim","reason","instance","boundary","trace_only")
@@ -35,6 +38,116 @@ def _semantic(semantic:Path)->tuple[dict[str,Any],dict[str,Any],dict[str,Any],di
         if not path.is_file(): raise FileNotFoundError(f"Missing layer-three artifact: {path}")
         values.append(_read(path))
     return tuple(values)  # type: ignore[return-value]
+
+
+def _semantic_binding_issues(
+    plan: dict[str, Any],
+    argument: dict[str, Any],
+    concepts: dict[str, Any],
+    relations: dict[str, Any],
+) -> list[dict[str, Any]]:
+    if plan.get("semantic_argument_model_mode") != "required":
+        return []
+    errors: list[dict[str, Any]] = []
+    registry = {
+        str(item.get("id")): item
+        for item in plan.get("argument_node_registry") or []
+        if isinstance(item, dict) and item.get("id")
+    }
+    for group in (argument.get("source_chain") or [], argument.get("reconstructed_chain") or []):
+        for item in group:
+            if not isinstance(item, dict) or not item.get("node_id"):
+                continue
+            node_id = str(item["node_id"])
+            registry.setdefault(
+                node_id,
+                {
+                    "id": node_id,
+                    "argument_role": item.get("argument_role") or item.get("role") or "other",
+                    "argument_weight": item.get("argument_weight") or "detail",
+                    "status": item.get("status") or "mixed",
+                    "evidence_refs": list(item.get("normalized_fact_ids") or []),
+                },
+            )
+    concept_ids = {
+        str(item.get("concept_id"))
+        for item in concepts.get("concepts") or []
+        if isinstance(item, dict) and item.get("concept_id")
+    }
+    relation_by_id = {
+        str(item.get("relation_id")): item
+        for item in relations.get("relations") or []
+        if isinstance(item, dict) and item.get("relation_id")
+    }
+    pages = [item for item in plan.get("pages") or [] if isinstance(item, dict) and item.get("page_type") == "content"]
+    for page in pages:
+        page_id = str(page.get("page_id") or "?")
+        primary = str(page.get("primary_argument_node_id") or "")
+        assigned = [str(value) for value in page.get("source_argument_node_ids") or [] if str(value)]
+        if not primary or not assigned:
+            _err(errors, "semantic_argument_binding_missing", "内容页必须绑定主论点节点和消费节点列表", page_id=page_id)
+            continue
+        if primary not in assigned:
+            _err(errors, "semantic_primary_argument_unassigned", "主论点节点必须包含在页面消费节点列表中", page_id=page_id)
+        unknown = sorted(set(assigned) - set(registry))
+        if unknown:
+            _err(errors, "semantic_argument_node_unknown", "页面引用了未登记的层三论点节点", page_id=page_id, node_ids=unknown)
+        for field in ("source_argument_node_roles", "source_argument_node_weights", "source_argument_node_statuses"):
+            values = page.get(field)
+            if not isinstance(values, dict) or set(assigned) - set(str(key) for key in values):
+                _err(errors, "semantic_argument_metadata_missing", "页面必须复制所消费论点节点的角色、权重和状态", page_id=page_id, field=field)
+        derivation = page.get("core_message_derivation") or page.get("judgment_derivation")
+        if not isinstance(derivation, dict) or not set(assigned).issubset({str(value) for value in derivation.get("argument_node_ids") or []}):
+            _err(errors, "semantic_argument_derivation_missing", "页面核心判断推导必须覆盖全部页面论点节点", page_id=page_id)
+        evidence = page.get("evidence") if isinstance(page.get("evidence"), dict) else {}
+        direct_fact_ids = {str(value) for value in evidence.get("normalized_fact_ids") or []}
+        page_concept_ids = [str(value) for value in evidence.get("concept_ids") or [] if str(value)]
+        unknown_concepts = sorted(set(page_concept_ids) - concept_ids)
+        if unknown_concepts:
+            _err(errors, "unknown_concept", "页面引用了不存在的概念节点", page_id=page_id, concept_ids=unknown_concepts)
+        relation_ids = [str(value) for value in evidence.get("relation_ids") or [] if str(value)]
+        unknown_relations = sorted(set(relation_ids) - set(relation_by_id))
+        if unknown_relations:
+            _err(errors, "unknown_relation", "页面引用了不存在的关系节点", page_id=page_id, relation_ids=unknown_relations)
+        for relation_id in relation_ids:
+            relation = relation_by_id.get(relation_id) or {}
+            relation_fact_ids = {str(value) for value in relation.get("normalized_fact_ids") or []}
+            if not relation_fact_ids.issubset(direct_fact_ids):
+                _err(errors, "relation_fact_outside_page", "页面关系只能消费页面已声明的直接事实", page_id=page_id, relation_id=relation_id)
+            if relation.get("basis") == "inferred" and not str(evidence.get("inference_note") or "").strip():
+                _err(errors, "inferred_relation_note_missing", "页面消费推断关系时必须保留上游推断说明", page_id=page_id, relation_id=relation_id)
+    try:
+        from cyberppt.source_argument_model import audit_outline_consumption
+
+        model_nodes = []
+        page_consumers: dict[str, list[str]] = {}
+        for page in pages:
+            for node_id in page.get("source_argument_node_ids") or []:
+                page_consumers.setdefault(str(node_id), []).append(str(page.get("page_id") or ""))
+        for node_id, node in registry.items():
+            consumers = page_consumers.get(node_id, [])
+            model_nodes.append({
+                "id": node_id,
+                "parent_id": (node.get("source_heading_ids") or [""])[0],
+                "source_heading": node.get("source_heading") or "",
+                "argument_role": node.get("argument_role") or "other",
+                "argument_weight": node.get("argument_weight") or "detail",
+                "status": node.get("status") or "mixed",
+                "evidence_refs": list(node.get("evidence_refs") or []),
+                "primary_consumer": consumers[0] if consumers else "",
+                "allowed_merges": consumers,
+                "required_for_primary_consumer": False,
+                "source_gap_ids": [],
+            })
+        audit_outline = deepcopy(plan)
+        audit_outline["semantic_argument_model_mode"] = "projection"
+        audit_outline["argument_node_disposition_mode"] = "projection"
+        model = {"section_nodes": [], "subsection_nodes": model_nodes, "argument_relations": [], "source_gaps": []}
+        for item in audit_outline_consumption(audit_outline, model, None):
+            _err(errors, str(item.get("code") or "argument_model_audit_error"), str(item.get("message") or "语义论点消费审计失败"), node_id=item.get("node_id"))
+    except (ImportError, ModuleNotFoundError):
+        _err(errors, "argument_consumption_audit_unavailable", "无法加载既有语义论点消费审计器")
+    return errors
 
 
 def _normalized_title(value: Any) -> str:
@@ -506,6 +619,18 @@ def validate_outline_outputs(semantic_dir:Path|str,outline_dir:Path|str,*,write_
             pages,
             errors,
         )
+    for issue in authoring_issues(
+        plan,
+        [page for page in pages if isinstance(page, dict)],
+        workpack=workpack_payload,
+    ):
+        context = issue.get("context") if isinstance(issue.get("context"), dict) else {}
+        _err(
+            errors,
+            str(issue.get("code") or "authoring_contract_error"),
+            str(issue.get("message") or "Outline authoring contract failed."),
+            **context,
+        )
     orders=[p.get("order") for p in pages if isinstance(p,dict)]
     if orders!=list(range(1,len(pages)+1)): _err(errors,"non_contiguous_page_order","Page order must be contiguous and match array order",orders=orders)
     page_ids=[str(p.get("page_id")) for p in pages if isinstance(p,dict) and p.get("page_id")]
@@ -513,6 +638,11 @@ def validate_outline_outputs(semantic_dir:Path|str,outline_dir:Path|str,*,write_
     nf_ids={str(x.get("normalized_fact_id")) for x in normalized.get("facts") or [] if isinstance(x,dict)}
     relation_by_id={str(x.get("relation_id")):x for x in relations.get("relations") or [] if isinstance(x,dict)}
     arg_ids={str(x.get("node_id")) for group in (argument.get("source_chain") or [],argument.get("reconstructed_chain") or []) for x in group if isinstance(x,dict)}
+    arg_ids.update(
+        str(item.get("id"))
+        for item in plan.get("argument_node_registry") or []
+        if isinstance(item, dict) and item.get("id")
+    )
     page_order={str(p.get("page_id")):int(p.get("order")) for p in pages if isinstance(p,dict) and p.get("page_id") and isinstance(p.get("order"),int)}
     content_count=0; template_count=0; evidence_count=0
     for page in pages:
@@ -525,9 +655,31 @@ def validate_outline_outputs(semantic_dir:Path|str,outline_dir:Path|str,*,write_
             continue
         if page.get("page_type")!="content": _err(errors,"invalid_page_type","page_type must be template or content",page_id=pid); continue
         content_count+=1
-        for field in ("audience_question","page_mission","key_judgment","non_substitutable_value","argument_role","must_not_include","reserved_for_later","split_risk","transition_from_previous","transition_to_next"):
+        key_judgment = str(page.get("key_judgment") or "").strip()
+        compatibility_core_message = str(page.get("core_message") or "").strip()
+        if key_judgment and compatibility_core_message and key_judgment != compatibility_core_message:
+            _err(
+                errors,
+                "semantic_center_alias_conflict",
+                "key_judgment is the canonical layer-four field; an optional core_message alias must match it exactly.",
+                page_id=pid,
+            )
+        for field in ("audience_question","page_mission","non_substitutable_value","argument_role","must_not_include","reserved_for_later","split_risk","transition_from_previous","transition_to_next"):
             value=page.get(field)
             if value is None or value=="" or (field=="must_not_include" and value==[]): _err(errors,"missing_page_boundary_field",f"Content page requires {field}",page_id=pid,field=field)
+        if plan.get("editorial_authoring_mode") != "author_driven":
+            if not key_judgment:
+                _err(errors,"missing_page_boundary_field","Content page requires key_judgment",page_id=pid,field="key_judgment")
+        elif plan.get("editorial_authoring_status") == "author_edited":
+            if not key_judgment:
+                _err(errors,"missing_page_boundary_field","Content page requires key_judgment",page_id=pid,field="key_judgment")
+            if page.get("judgment_status") != "author_edited":
+                _err(errors,"outline_judgment_status_incomplete","author_edited pages must record judgment_status: author_edited",page_id=pid)
+        else:
+            if key_judgment:
+                _err(errors,"outline_judgment_before_authoring","Candidate pages may not carry a business key_judgment before authoring",page_id=pid)
+            if page.get("judgment_status") != "authoring_required":
+                _err(errors,"outline_judgment_status_incomplete","Candidate pages must record judgment_status: authoring_required",page_id=pid)
         if page.get("split_risk") in {"medium","high"} and not str(page.get("split_risk_reason") or "").strip(): _err(errors,"missing_split_risk_reason","Medium/high split risk requires split_risk_reason",page_id=pid)
         evidence=page.get("evidence") if isinstance(page.get("evidence"),dict) else {}; nfs=[str(x) for x in evidence.get("normalized_fact_ids") or []]; rels=[str(x) for x in evidence.get("relation_ids") or []]; args=[str(x) for x in evidence.get("argument_node_ids") or []]
         if not nfs: _err(errors,"missing_direct_fact_grounding","Every content page requires at least one direct normalized_fact_id",page_id=pid)
@@ -578,10 +730,12 @@ def validate_outline_outputs(semantic_dir:Path|str,outline_dir:Path|str,*,write_
         planned=[str(x) for x in section.get("page_ids") or []]; actual=[str(p.get("page_id")) for p in pages if isinstance(p,dict) and str(p.get("section_id") or "")==section_id]
         if planned!=actual: _err(errors,"section_page_mismatch","Section page_ids must match page plan",section_id=section_id,planned=planned,actual=actual)
     coverage = _fact_coverage(normalized, plan, workpack_payload, errors)
+    errors.extend(_semantic_binding_issues(plan, argument, concepts, relations))
     budget=strategy.get("page_budget") if isinstance(strategy.get("page_budget"),dict) else {}
     target=budget.get("target"); minimum=budget.get("min"); maximum=budget.get("max")
     if not all(isinstance(v,int) and v>0 for v in (target,minimum,maximum)): _err(errors,"invalid_page_budget","page_budget target/min/max must be positive integers")
     elif not minimum<=len(pages)<=maximum: _err(errors,"page_count_out_of_range","Page count outside budget",actual=len(pages),min=minimum,max=maximum)
     result={"schema_version":REPORT_SCHEMA_VERSION,"artifact_type":"ppt_outline_validation_report","status":"ok" if not errors else "error","errors":errors,"warnings":warnings,"coverage":coverage,"counts":{"sections":len(sections),"pages":len(pages),"content_pages":content_count,"template_pages":template_count,"evidence_references":evidence_count,"important_normalized_facts":len(coverage["important_fact_ids"]),"resolved_normalized_facts":len(coverage["resolved_fact_ids"]),"unresolved_normalized_facts":len(coverage["unresolved_fact_ids"])} }
+    result["gates"] = build_layer4_status(deck, plan, result)
     if write_report: _write(outline/"outline-report.json",result)
     return result

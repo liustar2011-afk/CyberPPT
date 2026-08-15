@@ -31,7 +31,9 @@ The semantic directory contains exactly four required reasoning artifacts plus t
 
 ### normalized fact types
 
-`actor`, `organization`, `project`, `platform`, `service`, `capability`, `requirement`, `goal`, `metric`, `process`, `deliverable`, `constraint`, `relationship`, `event`, `policy_basis`, `problem`, `technology`, `dataset`, `scenario`, `responsibility`, `condition`, `other`
+`actor`, `organization`, `project`, `platform`, `service`, `capability`, `requirement`, `goal`, `metric`, `process`, `deliverable`, `constraint`, `relationship`, `event`, `policy_basis`, `problem`, `technology`, `dataset`, `scenario`, `responsibility`, `condition`, `metadata`, `other`
+
+`metadata` is for facts sourced from the `preamble` chunk (`semantic-workpack.json` groups any source assertion with no enclosing heading into a `section_id: "preamble"` chunk — cover title, subtitle, issuing organization, publication date, table-of-contents entries, running headers/footers). These facts carry no business claim and must never be normalized as `other` or any business type. Downstream layer-four page evidence and fact-coverage gates treat `metadata` as non-substantive and exclude it from required page coverage — do not use `metadata` for anything that is actually part of the document's business argument, even if it appears early in the document.
 
 ### concept types
 

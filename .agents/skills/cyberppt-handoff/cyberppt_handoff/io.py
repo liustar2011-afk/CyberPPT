@@ -57,4 +57,11 @@ def load_inputs(foundation_dir: Path, semantic_dir: Path, outline_dir: Path) -> 
         raise ValueError("semantic-report.json must report status: ok")
     if payloads["outline_report"].get("status") != "ok":
         raise ValueError("outline-report.json must report status: ok")
+    deck_status = payloads["deck"].get("editorial_authoring_status")
+    plan_status = payloads["page_plan"].get("editorial_authoring_status")
+    deck_mode = payloads["deck"].get("editorial_authoring_mode")
+    plan_mode = payloads["page_plan"].get("editorial_authoring_mode")
+    if "author_driven" in {deck_mode, plan_mode} or deck_status is not None or plan_status is not None:
+        if deck_mode != "author_driven" or plan_mode != "author_driven" or deck_status != "author_edited" or plan_status != "author_edited":
+            raise ValueError("OUTLINE_AUTHORING_INCOMPLETE: cyberppt-handoff requires an author_edited Outline")
     return payloads

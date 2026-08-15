@@ -14,6 +14,7 @@ if str(PLANNING_SKILL) not in sys.path:
     sys.path.insert(0, str(PLANNING_SKILL))
 
 from ppt_outline_planning.prepare import build_outline_workpack
+from ppt_outline_planning.render import render_outline_markdown
 from ppt_outline_planning.validate import validate_outline_outputs
 
 
@@ -314,6 +315,111 @@ class LockedOutlineValidationTests(unittest.TestCase):
     def test_valid_source_locked_outline_passes(self) -> None:
         report = self._validate()
         self.assertEqual("ok", report["status"])
+
+    def test_author_edited_outline_requires_explicit_authoring_decisions(self) -> None:
+        def mutate_deck(deck):
+            deck["editorial_authoring_mode"] = "author_driven"
+            deck["editorial_authoring_status"] = "author_edited"
+            deck["core_message_derivation_mode"] = "required"
+
+        def mutate_plan(plan):
+            plan["editorial_authoring_mode"] = "author_driven"
+            plan["editorial_authoring_status"] = "author_edited"
+            plan["core_message_derivation_mode"] = "required"
+
+        report = self._validate(mutate_deck=mutate_deck, mutate_plan=mutate_plan)
+        codes = {item["code"] for item in report["errors"]}
+
+        self.assertIn("authoring_exclusions_missing", codes)
+        self.assertIn("authoring_decisions_missing", codes)
+        self.assertIn("authoring_judgment_derivation_missing", codes)
+
+    def test_author_edited_outline_passes_when_decisions_are_explicit(self) -> None:
+        def mutate_deck(deck):
+            deck["editorial_authoring_mode"] = "author_driven"
+            deck["editorial_authoring_status"] = "author_edited"
+            deck["core_message_derivation_mode"] = "required"
+
+        def mutate_plan(plan):
+            plan["editorial_authoring_mode"] = "author_driven"
+            plan["editorial_authoring_status"] = "author_edited"
+            plan["core_message_derivation_mode"] = "required"
+            page = plan["pages"][3]
+            page["judgment_status"] = "author_edited"
+            page["audience_question"] = "合作方需要确认建设背景的哪一项判断？"
+            page["page_mission"] = "让合作方确认建设背景的独立业务判断。"
+            page["judgment_derivation"] = {
+                "source_refs": ["NF-0002"],
+                "supporting_statements": ["建设背景正文。"],
+                "derivation": "建设背景正文。",
+                "introduced_relations": [],
+                "introduced_modalities": [],
+            }
+            page["excluded_from_onscreen"] = [
+                {"source_refs": ["NF-0002"], "reason": "保留在完整稿和追溯层，不另设上屏模块。"}
+            ]
+            page["authoring_decisions"] = {
+                "deletion_test": "删除本页将丢失源材料对建设背景的独立说明。",
+                "evidence_selection": "上屏只保留建设背景的主判断，登记和执行细项不形成模块。",
+                "attachment_disposition": "not_applicable",
+            }
+
+        report = self._validate(mutate_deck=mutate_deck, mutate_plan=mutate_plan)
+        codes = {item["code"] for item in report["errors"]}
+
+        self.assertEqual("ok", report["status"])
+        self.assertNotIn("authoring_exclusions_missing", codes)
+        self.assertNotIn("authoring_decisions_missing", codes)
+        self.assertNotIn("authoring_judgment_derivation_missing", codes)
+
+    def test_author_edited_attachment_requires_promotion_decision(self) -> None:
+        def mutate_deck(deck):
+            deck["editorial_authoring_mode"] = "author_driven"
+            deck["editorial_authoring_status"] = "author_edited"
+
+        def mutate_plan(plan):
+            plan["editorial_authoring_mode"] = "author_driven"
+            plan["editorial_authoring_status"] = "author_edited"
+            page = plan["pages"][3]
+            page["title_intent"] = "附件一 合作伙伴资源登记"
+            page["excluded_from_onscreen"] = []
+            page["judgment_derivation"] = {
+                "source_refs": ["NF-0002"],
+                "supporting_statements": ["建设背景正文。"],
+                "derivation": "建设背景正文。",
+                "introduced_relations": [],
+                "introduced_modalities": [],
+            }
+            page["authoring_decisions"] = {
+                "deletion_test": "删除本页将丢失附件登记支撑。",
+                "evidence_selection": "附件字段只保留追溯用途。",
+            }
+
+        report = self._validate(mutate_deck=mutate_deck, mutate_plan=mutate_plan)
+        self.assertIn(
+            "attachment_promotion_decision_missing",
+            {item["code"] for item in report["errors"]},
+        )
+
+    def test_render_exposes_authoring_boundary_decisions(self) -> None:
+        workpack = build_outline_workpack(
+            semantic_payloads(),
+            source_structure=source_structure_payload(),
+        )
+        deck, plan = valid_locked_outline(workpack)
+        page = plan["pages"][3]
+        page["excluded_from_onscreen"] = [
+            {"source_refs": ["NF-0002"], "reason": "保留在追溯层。"}
+        ]
+        page["authoring_decisions"] = {
+            "deletion_test": "删除本页将丢失建设背景判断。",
+            "evidence_selection": "只保留直接支撑判断的证据。",
+        }
+
+        markdown = render_outline_markdown(deck, plan)
+
+        self.assertIn("不上屏取舍：NF-0002（保留在追溯层。）", markdown)
+        self.assertIn("作者删除测试：删除本页将丢失建设背景判断。", markdown)
 
     def test_stale_workpack_is_rejected(self) -> None:
         def mutate(payloads):

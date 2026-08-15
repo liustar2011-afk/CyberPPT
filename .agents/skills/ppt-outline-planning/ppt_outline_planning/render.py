@@ -29,22 +29,51 @@ def _reserved_text(items:object)->str:
     if not isinstance(items,list) or not items: return "无"
     parts=[f"{item.get('topic','')} → {item.get('target_page','')}" for item in items if isinstance(item,dict)]
     return "；".join(parts) if parts else "无"
+def _excluded_text(items:object)->str:
+    if not isinstance(items,list) or not items: return "无"
+    parts=[]
+    for item in items:
+        if isinstance(item,dict):
+            refs="、".join(str(ref) for ref in item.get("source_refs") or [] if str(ref))
+            reason=str(item.get("reason") or "").strip()
+            if refs and reason: parts.append(f"{refs}（{reason}）")
+            elif refs: parts.append(refs)
+        elif str(item).strip():
+            parts.append(str(item).strip())
+    return "；".join(parts) if parts else "无"
+def _authoring_decision_lines(decisions:object)->list[str]:
+    if not isinstance(decisions,dict): return []
+    lines=[]
+    if str(decisions.get("deletion_test") or "").strip(): lines.append(f"- 作者删除测试：{decisions['deletion_test']}")
+    if str(decisions.get("evidence_selection") or "").strip(): lines.append(f"- 作者证据取舍：{decisions['evidence_selection']}")
+    if str(decisions.get("attachment_disposition") or "").strip(): lines.append(f"- 附件处置：{decisions['attachment_disposition']}")
+    if str(decisions.get("attachment_promotion_rationale") or "").strip(): lines.append(f"- 附件升格理由：{decisions['attachment_promotion_rationale']}")
+    return lines
 def _page_lines(page:dict[str,Any])->list[str]:
     lines=[f"### {page.get('page_id','')} {page.get('title_intent','')}".rstrip()]
     if page.get("page_type")=="template": return lines+[f"- 页面类型：模板页 / {page.get('template_kind','')}",f"- 页面使命：{page.get('page_mission','')}"]
     evidence=page.get("evidence") or {}
     lines += ["- 页面类型：内容页",f"- 页面使命：{page.get('page_mission','')}",f"- 受众问题：{page.get('audience_question','')}",f"- 核心判断：{page.get('key_judgment','')}",f"- 不可替代价值：{page.get('non_substitutable_value','')}",f"- 判断依据：{page.get('judgment_basis','')}",f"- 论证角色：{page.get('argument_role','')}",f"- 证据：{_evidence_text(evidence)}",f"- 内容策略：{page.get('content_strategy','')}",f"- 建议视觉逻辑：{page.get('suggested_visual_logic','')}",f"- 重要性：{page.get('importance','')}","- 主论证链："]
     lines.extend(_argument_chain_lines(page.get("argument_chain")) or ["  - 无"])
-    lines += [f"- 证据职责：{_evidence_role_text(page.get('evidence_roles'))}",f"- 本页禁止：{'；'.join(str(x) for x in (page.get('must_not_include') or [])) or '无'}",f"- 后页保留：{_reserved_text(page.get('reserved_for_later'))}",f"- 拆页风险：{page.get('split_risk','')}"]
+    lines += [f"- 证据职责：{_evidence_role_text(page.get('evidence_roles'))}",f"- 不上屏取舍：{_excluded_text(page.get('excluded_from_onscreen'))}",f"- 本页禁止：{'；'.join(str(x) for x in (page.get('must_not_include') or [])) or '无'}",f"- 后页保留：{_reserved_text(page.get('reserved_for_later'))}",f"- 拆页风险：{page.get('split_risk','')}"]
+    lines.extend(_authoring_decision_lines(page.get("authoring_decisions")))
     if page.get("split_risk_reason"): lines.append(f"- 拆页风险说明：{page['split_risk_reason']}")
     if page.get("transition_from_previous"): lines.append(f"- 与前页衔接：{page['transition_from_previous']}")
     if page.get("transition_to_next"): lines.append(f"- 向后页交接：{page['transition_to_next']}")
     if page.get("inference_rationale"): lines.append(f"- 推断依据：{page['inference_rationale']}")
     if evidence.get("inference_note"): lines.append(f"- 推断关系说明：{evidence['inference_note']}")
     return lines
-def render_outline_markdown(deck_brief:dict[str,Any],page_plan:dict[str,Any])->str:
+def render_outline_markdown(deck_brief:dict[str,Any],page_plan:dict[str,Any],report:dict[str,Any]|None=None)->str:
     task=deck_brief.get("task_understanding") or {}; strategy=deck_brief.get("deck_strategy") or {}; budget=strategy.get("page_budget") or {}; decision_path=strategy.get("decision_path") or []
+    gates = (report or {}).get("gates") if isinstance((report or {}).get("gates"), dict) else {}
     lines=["# PPT提纲","","## 整体设计",f"- 工作标题：{strategy.get('working_title','')}",f"- 汇报类型：{strategy.get('deck_type','')}",f"- 受众：{task.get('audience','')}",f"- 汇报目的：{task.get('purpose','')}",f"- 核心问题：{strategy.get('core_question','')}",f"- 核心判断：{strategy.get('deck_thesis','')}",f"- 叙事模式：{strategy.get('narrative_mode','')}",f"- 决策路径：{' → '.join(str(x) for x in decision_path)}",f"- 页数预算：{budget.get('target','')}页（{budget.get('min','')}—{budget.get('max','')}页，含模板页）"]
+    if gates:
+        lines.extend([
+            f"- 结构校验：{gates.get('structural_status','')}",
+            f"- 来源绑定：{gates.get('source_binding_status','')}",
+            f"- 作者化状态：{gates.get('authoring_status','')}",
+            f"- 交接资格：{gates.get('handoff_status','')}",
+        ])
     if task.get("constraints"): lines.append(f"- 约束：{'；'.join(str(x) for x in task['constraints'])}")
     if task.get("assumptions"): lines.append(f"- 假设：{'；'.join(str(x) for x in task['assumptions'])}")
     lines.append("")
@@ -65,4 +94,4 @@ def render_outline_directory(outline_dir:Path|str,*,output_path:Path|str|None=No
     if not deck_path.is_file() or not page_path.is_file(): raise FileNotFoundError("deck-brief.json and page-plan.json are required before rendering")
     deck=json.loads(deck_path.read_text(encoding="utf-8")); pages=json.loads(page_path.read_text(encoding="utf-8")); target=Path(output_path) if output_path is not None else outline/"ppt-outline.md"
     if target.exists() and not force: raise FileExistsError(f"PPT outline already exists: {target}")
-    target.parent.mkdir(parents=True,exist_ok=True); target.write_text(render_outline_markdown(deck,pages),encoding="utf-8"); return target
+    target.parent.mkdir(parents=True,exist_ok=True); target.write_text(render_outline_markdown(deck,pages,report),encoding="utf-8"); return target

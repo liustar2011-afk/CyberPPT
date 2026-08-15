@@ -19,7 +19,7 @@ Read `references/handoff-contract.md` before export. Read `references/cyberppt-p
 
 ## Workflow
 
-1. Require `semantic-report.json` and `outline-report.json` with `status: ok`.
+1. Require `semantic-report.json` and `outline-report.json` with `status: ok`. When the layer-four files declare `editorial_authoring_mode: author_driven`, require both `deck-brief.json` and `page-plan.json` to declare `editorial_authoring_status: author_edited`; a mechanical candidate is structurally reviewable but handoff-blocked.
 2. Validate the in-memory projection:
 
 ```bash
