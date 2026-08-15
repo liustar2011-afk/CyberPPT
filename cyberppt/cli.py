@@ -19,6 +19,7 @@ from cyberppt.image_enhancer import enhance_image
 from cyberppt.commands.outline_audit import run_outline_audit
 from cyberppt.commands.outline_review import render_outline_review
 from cyberppt.commands.prepare_imagegen_send import prepare_imagegen_send
+from cyberppt.commands.preview_page_anchors import preview_page_anchors
 from cyberppt.commands.prepare_stage01_input import (
     prepare_outline_input,
     prepare_page_script_input,
@@ -377,6 +378,20 @@ def _prepare_page_script_input_command(args: argparse.Namespace) -> int:
     except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
+    return 0
+
+
+def _preview_page_anchors_command(args: argparse.Namespace) -> int:
+    try:
+        report = preview_page_anchors(
+            Path(args.project),
+            args.page or "",
+            outline_path=Path(args.outline) if args.outline else None,
+        )
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
 
 
@@ -821,6 +836,21 @@ def build_parser() -> argparse.ArgumentParser:
     prepare_page.add_argument("project")
     prepare_page.add_argument("--page")
     prepare_page.set_defaults(func=_prepare_page_script_input_command)
+
+    preview_anchors = subparsers.add_parser(
+        "preview-page-anchors",
+        help=(
+            "List a page's onscreen_anchors/coverage_anchors from outline.json "
+            "(with lengths and source refs) before authoring the page script."
+        ),
+    )
+    preview_anchors.add_argument("project", help="CyberPPT project directory.")
+    preview_anchors.add_argument("--page", required=True, help="Outline page_id, e.g. p04.")
+    preview_anchors.add_argument(
+        "--outline",
+        help="Outline JSON; defaults to the project Stage 01 artifact.",
+    )
+    preview_anchors.set_defaults(func=_preview_page_anchors_command)
 
     stage_script_parser = subparsers.add_parser(
         "stage-script",
