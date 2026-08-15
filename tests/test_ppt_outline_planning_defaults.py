@@ -168,6 +168,13 @@ def valid_locked_outline(
                 "audience_question": "源材料如何说明建设背景？",
                 "page_mission": "说明建设背景。",
                 "key_judgment": "建设背景正文。",
+                "judgment_derivation": {
+                    "source_refs": ["NF-0002"],
+                    "supporting_statements": ["建设背景正文。"],
+                    "derivation": "保留来源事实的原有强度。",
+                    "introduced_relations": [],
+                    "introduced_modalities": [],
+                },
                 "non_substitutable_value": "完整承接源材料建设背景。",
                 "judgment_basis": "source_explicit",
                 "argument_role": "background",
@@ -315,6 +322,66 @@ class LockedOutlineValidationTests(unittest.TestCase):
         report = self._validate()
         self.assertEqual("ok", report["status"])
 
+    def test_content_judgment_requires_explicit_derivation_receipt(self) -> None:
+        def mutate(plan):
+            del plan["pages"][3]["judgment_derivation"]
+
+        report = self._validate(mutate_plan=mutate)
+        self.assertIn(
+            "judgment_derivation_missing",
+            {item["code"] for item in report["errors"]},
+        )
+
+    def test_judgment_derivation_must_use_declared_page_evidence(self) -> None:
+        def mutate(plan):
+            plan["pages"][3]["judgment_derivation"]["source_refs"] = ["NF-9999"]
+
+        report = self._validate(mutate_plan=mutate)
+        self.assertIn(
+            "judgment_derivation_outside_page",
+            {item["code"] for item in report["errors"]},
+        )
+
+    def test_judgment_derivation_cannot_introduce_undeclared_meaning(self) -> None:
+        def mutate(plan):
+            plan["pages"][3]["judgment_derivation"]["introduced_relations"] = ["causes"]
+
+        report = self._validate(mutate_plan=mutate)
+        self.assertIn(
+            "judgment_derivation_introduces_meaning",
+            {item["code"] for item in report["errors"]},
+        )
+
+    def test_title_only_argument_chain_is_rejected(self) -> None:
+        def mutate(plan):
+            plan["pages"][3]["argument_chain"] = [{
+                "role": "background",
+                "statement": "建设背景",
+                "evidence": {"normalized_fact_ids": ["NF-0002"]},
+            }]
+
+        report = self._validate(mutate_plan=mutate)
+        self.assertIn(
+            "title_only_argument_chain",
+            {item["code"] for item in report["errors"]},
+        )
+
+    def test_evidence_roles_use_explicit_refs_not_chain_positions(self) -> None:
+        def mutate(plan):
+            page = plan["pages"][3]
+            page["evidence_roles"] = [{
+                "role": "claim",
+                "source_refs": ["NF-0002"],
+            }]
+            page["argument_chain"] = [{
+                "role": "background",
+                "statement": "建设背景正文。",
+                "evidence": {"normalized_fact_ids": ["NF-0002"]},
+            }]
+
+        report = self._validate(mutate_plan=mutate)
+        self.assertEqual("ok", report["status"])
+
     def test_stale_workpack_is_rejected(self) -> None:
         def mutate(payloads):
             payloads["normalized-facts.json"]["facts"][1]["statement"] = "已经变化。"
@@ -457,6 +524,13 @@ class LockedOutlineValidationTests(unittest.TestCase):
                 "evidence": {"normalized_fact_ids": [fact_id], "relation_ids": [], "argument_node_ids": []},
                 "argument_chain": [{"role": "claim", "statement": "页面承接该事实。", "evidence": {"normalized_fact_ids": [fact_id]}}],
                 "evidence_roles": {"claim": [fact_id], "reason": [], "instance": [], "boundary": [], "trace_only": []},
+                "judgment_derivation": {
+                    "source_refs": [fact_id],
+                    "supporting_statements": ["页面承接该事实。"],
+                    "derivation": "保留来源事实。",
+                    "introduced_relations": [],
+                    "introduced_modalities": [],
+                },
             }
         )
         plan["pages"][4] = page

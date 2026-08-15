@@ -56,6 +56,22 @@ class OutlineReviewTests(unittest.TestCase):
         self.assertIn("作者状态：mechanical_draft（待作者化）", markdown)
         self.assertNotIn("# 正式 Outline 人工审阅稿", markdown)
 
+    def test_markdown_uses_key_judgment_when_reviewing_layer_four_outline(self) -> None:
+        markdown = render_outline_review_markdown(
+            {
+                "pages": [
+                    {"page_type": "chapter", "chapter_id": "C1", "title": "第一章"},
+                    {
+                        "page_type": "content", "page_id": "p01", "chapter_id": "C1",
+                        "title": "背景", "key_judgment": "来源判断保持一致。",
+                    },
+                ],
+            },
+            {"status": "passed", "issues": []},
+        )
+
+        self.assertIn("核心判断：来源判断保持一致。", markdown)
+
     def test_renderer_writes_default_project_review_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

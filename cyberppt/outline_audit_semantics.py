@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from cyberppt.outline_audit_shared import AuditIssue, _core_message, _onscreen_conclusion, _page_id
+from cyberppt.outline_audit_shared import AuditIssue, _core_message, _judgment_field_conflict, _onscreen_conclusion, _page_id
 from cyberppt.semantic_expression_models import load_expression_models
 from cyberppt.semantic_fidelity import (
     STRONG_RELATIONS,
@@ -34,6 +34,13 @@ def _semantic_derivation_issues(
         if page.get("page_type") != "content":
             continue
         page_id = _page_id(page)
+        if _judgment_field_conflict(page):
+            issues.append(AuditIssue(
+                "JUDGMENT_FIELD_CONFLICT",
+                "key_judgment and core_message must express one identical semantic center.",
+                (page_id,),
+                "keep_one_canonical_judgment",
+            ))
         main = _core_message(page)
         onscreen = _onscreen_conclusion(page)
         if onscreen and not main:

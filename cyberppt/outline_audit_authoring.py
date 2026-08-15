@@ -165,6 +165,18 @@ def _author_driven_editorial_issues(
                 (page_id,), "structure_page_argument_chain",
             ))
         else:
+            title = _text(page.get("title"))
+            if title and all(
+                isinstance(item, dict)
+                and _text(item.get("statement")) == title
+                for item in argument_chain
+            ):
+                issues.append(AuditIssue(
+                    "TITLE_ONLY_ARGUMENT_CHAIN",
+                    "An argument_chain cannot use only the page or chapter title as its argument.",
+                    (page_id,),
+                    "derive_argument_chain_from_evidence",
+                ))
             for item in argument_chain:
                 refs = item.get("source_refs") if isinstance(item, dict) else None
                 if (
