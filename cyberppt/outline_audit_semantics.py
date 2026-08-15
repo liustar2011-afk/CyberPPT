@@ -97,7 +97,15 @@ def _semantic_derivation_issues(
         for fidelity_issue in audit_semantic_strength(output_text, evidence_text):
             issues.append(AuditIssue(fidelity_issue.code, fidelity_issue.message, (page_id,), "remove_semantic_promotion"))
         relations = page.get("content_relations")
-        if outline.get("schema") == "cyberppt.outline.v2":
+        # Source Foundation handoff produces a v2 compatibility projection,
+        # while its contract explicitly preserves pages with no declared
+        # source relationship as an empty list.  The projection validator
+        # already checks exact relationship preservation; the legacy v2
+        # requirement for a non-empty relation list must not reject it here.
+        if (
+            outline.get("schema") == "cyberppt.outline.v2"
+            and outline.get("authority_mode") != "projection_only"
+        ):
             for relation_issue in audit_relation_shape(relations):
                 issues.append(AuditIssue(relation_issue.code, relation_issue.message, (page_id,), "complete_content_relations"))
         if isinstance(relations, list):

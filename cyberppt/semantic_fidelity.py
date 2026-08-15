@@ -34,7 +34,26 @@ STRONG_RELATIONS = frozenset(
         "sufficient_for",
     }
 )
-VALID_RELATIONS = OBJECTIVE_RELATIONS | STRONG_RELATIONS
+# Source Material Foundation keeps a richer, source-native relationship
+# vocabulary.  Handoff is a projection boundary and must preserve those
+# labels verbatim; accepting them here prevents the downstream audit from
+# rewriting or inventing a relationship merely to satisfy its older list.
+SOURCE_FOUNDATION_RELATIONS = frozenset(
+    {
+        "flows_to",
+        "outputs",
+        "precedes",
+        "measures",
+        "governs",
+        "provides",
+        "operates",
+        "collaborates_with",
+        "serves",
+        "constrains",
+        "relates_to",
+    }
+)
+VALID_RELATIONS = OBJECTIVE_RELATIONS | STRONG_RELATIONS | SOURCE_FOUNDATION_RELATIONS
 RELATION_SOURCE_MARKERS = {
     "causes": ("导致", "造成", "引起"),
     "requires": ("需要", "必须", "要求"),
