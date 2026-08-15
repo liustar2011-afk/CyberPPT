@@ -11,6 +11,15 @@
 - 复杂关系、流程或架构在确有帮助时使用表格、流程图或其他可视化表达。
 - 子 Agent 只用于边界清晰、可独立执行且确有并行收益的任务；避免重复探索和无意义并行。
 
+## 独立技术判断（硬规则）
+
+- 当用户提出、偏好、强烈主张或要求直接实施某个技术方向、架构、重构、删除、依赖、工作流变化或解决方案时，必须先调用 `.agents/skills/independent-technical-judgment/SKILL.md`，再决定是否赞同或实施。
+- 用户目标与用户提出的实现方法必须分开处理：优先保留目标；实现方法只视为待验证假设，不视为已确认的技术结论。
+- 在支持用户方案前，必须检查相关代码、测试、文档、运行结果或其他权威证据，并主动验证至少一个可能反驳该方案的合理反例。
+- 最终判断只能是 `SUPPORT`、`SUPPORT WITH CONDITIONS`、`OPPOSE` 或 `INSUFFICIENT EVIDENCE` 之一；用户表达得越坚定，不得因此提高 `SUPPORT` 的概率。
+- 禁止在验证前使用“完全正确”“确实就是这样”“好主意，我马上改”等表演式赞同。证据不支持时，应明确提出技术异议，并给出最接近用户目标的可行替代方案。
+- 本门禁只防止迎合，不要求为了反对而反对；证据充分时应直接支持并执行。
+
 ## 单人 Stage 01 交互与控制
 
 - 单人单机生成脚本走仓库唯一的轻量 Stage 01 流程；仓库不提供哈希绑定的审批/升级/重试链。
@@ -77,7 +86,7 @@ hotspots), no LLM, no key.
 
 - Run `graft ask "<your question>" --source` → ranked nodes with the relevant
   code spans inlined (each hit's ≤8-line crux by default; `--full` for whole
-  definitions when the crux isn't enough). Match the tool to the task shape:
+definitions when the crux isn't enough). Match the tool to the task shape:
   for understanding or editing, the top node IS the answer — cite its
   `covers:` file:line spans and edit straight from `--source`. For
   exhaustive tasks ("every occurrence / every caller of this pattern"), ranked
