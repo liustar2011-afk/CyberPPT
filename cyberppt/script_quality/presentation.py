@@ -411,12 +411,23 @@ def _presentation_issues(
         any(signal in page.onscreen_text for signal in ORDER_SIGNALS)
         or NUMBERED_ORDER_SIGNAL_RE.search(page.onscreen_text)
     ):
+        path_lines = tuple(
+            line.strip()
+            for line in visual.splitlines()
+            if line.strip() and (
+                (re.search(r"(?<!阅读)路径", line))
+                or "贯穿主链" in line
+                or "阶段推进" in line
+            )
+        )
         issues.append(
             _issue(
                 "PATH_ORDER_SIGNAL_MISSING",
                 page,
                 "Path visual lacks an on-screen order signal.",
-                "Add numbered steps, arrows, or explicit sequence words matching the path.",
+                f"Add one of {ORDER_SIGNALS} (or a numbered '01｜…' line) to 上屏文字, "
+                "placed on the modules that realize the path line quoted in evidence.",
+                evidence=path_lines,
             )
         )
     loop_like = "闭环" in visual or "闭环回流" in visual
