@@ -845,7 +845,7 @@ def _build_outline(
 
     argument_dispositions: list[dict[str, Any]] = []
     for heading_id in _content_heading_ids(headings):
-        title = _text(by_id.get(heading_id, {}).get("title"))
+        heading_title = _text(by_id.get(heading_id, {}).get("title"))
         node_ids = _page_argument_nodes(
             argument_registry,
             [heading_id],

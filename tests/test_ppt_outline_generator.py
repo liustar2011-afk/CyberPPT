@@ -254,6 +254,7 @@ class FormalOutlineGeneratorTests(unittest.TestCase):
                 "建设背景正文形成源材料论证起点。",
                 next(page for page in content if page["primary_source_heading_id"] == "sec-0002")["argument_chain"][0]["statement"],
             )
+            self.assertEqual("方案", deck["deck_strategy"]["working_title"])
 
     def test_authoring_spec_compiles_to_author_edited_outline(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
