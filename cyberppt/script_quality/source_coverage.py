@@ -449,14 +449,16 @@ def _page_content_unit_coverage_issues(
                 anchor
                 for anchor in onscreen_anchors
                 if anchor not in page.onscreen_text
-                # Long source-specific anchors may need a deliberate line
-                # break for readable on-screen copy.  Preserve the existing
-                # literal contract for short anchors, while accepting a
-                # near-verbatim split when all source phrases survive.
-                and not (
-                    len(anchor) > 30
-                    and _source_statement_overlap(anchor, page.onscreen_text) >= 0.85
-                )
+                # A PPT slide is not a Word paragraph: a compressed,
+                # phrase-based rewrite of the anchor (dropped connector,
+                # reordered clause, swapped near-synonym) should not hard-fail
+                # as long as the source-specific content clearly survives.
+                # This overlap fallback used to only apply to anchors over 30
+                # characters; short anchors got zero tolerance, which is
+                # backwards -- a short anchor is exactly the case where a
+                # natural author edit is most likely to touch a couple of
+                # characters. Apply the same overlap bar regardless of length.
+                and _source_statement_overlap(anchor, page.onscreen_text) < 0.85
             )
             if missing:
                 issues.append(_issue(

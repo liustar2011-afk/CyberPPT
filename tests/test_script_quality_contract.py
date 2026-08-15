@@ -816,6 +816,49 @@ class FullProseSourceCoverageTests(unittest.TestCase):
         )
         self.assertIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
 
+    def test_onscreen_content_unit_accepts_a_short_anchor_with_a_minor_edit(self) -> None:
+        # A short (<=30 char) anchor used to require an exact substring match
+        # with zero tolerance, which is backwards: a short anchor is exactly
+        # where a natural phrase-based rewrite is most likely to touch a
+        # connector or swap a near-synonym. The overlap fallback (already
+        # used for long anchors) should apply here too.
+        page = replace(
+            self._page("新能源大规模接入改变电源结构、负荷特征和运行方式。"),
+            onscreen_text="新能源大规模接入，改变电源结构",
+        )
+        issues = _page_content_unit_coverage_issues(
+            page,
+            {"content_units": [{
+                "unit_id": "p03-u01",
+                "statement": "新能源大规模接入改变电源结构和运行方式。",
+                "source_refs": ["ST001"],
+                "full_prose_required": True,
+                "coverage_anchors": ["新能源大规模接入", "电源结构", "运行方式"],
+                "onscreen_required": True,
+                "onscreen_anchors": ["新能源大规模接入改变电源结构"],
+            }]},
+        )
+        self.assertNotIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
+
+    def test_onscreen_content_unit_still_blocks_a_short_anchor_rewritten_beyond_recognition(self) -> None:
+        page = replace(
+            self._page("新能源大规模接入改变电源结构、负荷特征和运行方式。"),
+            onscreen_text="行业面临多方面的运营挑战",
+        )
+        issues = _page_content_unit_coverage_issues(
+            page,
+            {"content_units": [{
+                "unit_id": "p03-u01",
+                "statement": "新能源大规模接入改变电源结构和运行方式。",
+                "source_refs": ["ST001"],
+                "full_prose_required": True,
+                "coverage_anchors": ["新能源大规模接入", "电源结构", "运行方式"],
+                "onscreen_required": True,
+                "onscreen_anchors": ["新能源大规模接入改变电源结构"],
+            }]},
+        )
+        self.assertIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
+
     def test_onscreen_content_unit_accepts_a_long_anchor_split_into_short_lines(self) -> None:
         page = replace(
             self._page("中电联数智公司依托平台提供合作服务。"),
