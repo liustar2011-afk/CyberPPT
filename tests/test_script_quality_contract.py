@@ -22,6 +22,7 @@ from cyberppt.script_quality_contract import (
     _onscreen_subordinate_fragments,
     _onscreen_false_parallel_semantics,
     _onscreen_parallel_structure_issues,
+    _onscreen_redundant_restatement_issues,
     _necessity_page_closure_issues,
     _onscreen_flow_language_issues,
     _formulaic_transition_issues,
@@ -1371,6 +1372,48 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
 
         self.assertEqual(1, len(issues))
         self.assertEqual("error", issues[0].severity)
+
+    def test_redundant_closing_line_that_restates_module_content_is_flagged(self) -> None:
+        page = parse_script_markdown(
+            "## 第1页：六方面基础\n"
+            "- 页面类型：内容页\n"
+            "- 完整文字稿：六方面基础支撑首期启动，共性能力仍需完善。\n"
+            "- 上屏文字：\n"
+            "六方面既有基础。\n"
+            "\n"
+            "  ①组织与制度基础\n"
+            "    组织制度：领导小组统筹重大事项。\n"
+            "    实施推进：已完成方案论证，进入实施准备。\n"
+            "\n"
+            "已完成方案论证，进入实施准备。\n"
+            "- 视觉结构：三组基础共同支撑首期启动。\n"
+        ).pages[0]
+
+        issues = _onscreen_redundant_restatement_issues(page)
+
+        self.assertEqual(1, len(issues))
+        self.assertEqual("ONSCREEN_REDUNDANT_RESTATEMENT", issues[0].code)
+        self.assertEqual("warning", issues[0].severity)
+
+    def test_short_headline_and_boundary_lines_are_not_flagged_as_redundant(self) -> None:
+        page = parse_script_markdown(
+            "## 第1页：六方面基础\n"
+            "- 页面类型：内容页\n"
+            "- 完整文字稿：六方面基础支撑首期启动，共性能力仍需完善。\n"
+            "- 上屏文字：\n"
+            "六方面既有基础，包括以下三组。\n"
+            "\n"
+            "  ①组织与制度基础\n"
+            "    组织制度：领导小组统筹重大事项。\n"
+            "    实施推进：已完成方案论证，进入实施准备。\n"
+            "\n"
+            "共性能力和资源供给仍需在合作中逐步完善。\n"
+            "- 视觉结构：三组基础共同支撑首期启动。\n"
+        ).pages[0]
+
+        issues = _onscreen_redundant_restatement_issues(page)
+
+        self.assertEqual([], issues)
 
     def test_imagegen_blocks_requested_page_with_paragraph_like_onscreen_copy(self) -> None:
         document = parse_script_markdown(

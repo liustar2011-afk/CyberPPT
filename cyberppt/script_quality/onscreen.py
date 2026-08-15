@@ -8,7 +8,7 @@ from cyberppt.onscreen_expression import (
 )
 from cyberppt.paths import repo_path
 
-from .common import _compact_len, normalized_tokens
+from .common import _compact_len, normalized_tokens, text_similarity
 from .models import ScriptDocument, ScriptPage, ScriptQualityIssue, _issue
 from .parsing import (
     MODULE_RE,
@@ -1100,6 +1100,74 @@ def _onscreen_parallel_structure_issues(page: ScriptPage) -> list[ScriptQualityI
                 )
             )
     return issues
+
+def _onscreen_redundant_restatement_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
+    """Flag a free-standing on-screen line that just restates module content.
+
+    A short headline above the modules or a closing line below them is a
+    legitimate way to state a page's judgment or a boundary that has no
+    natural home inside any single module. It stops being legitimate when
+    that line is functionally the same sentence as content already spelled
+    out inside a module's own detail lines -- a slide should not say the
+    same thing twice just because the anchor-coverage check would accept
+    either location for the source clause it is chasing.
+    """
+
+    if page.page_type != "content":
+        return []
+    lines = page.onscreen_text.splitlines()
+
+    def heading_title(line: str) -> str | None:
+        title = _module_title(line)
+        if title is None:
+            return None
+        stripped = line.strip()
+        if re.search(r"[：:]", stripped) and not stripped.startswith("**"):
+            return None
+        return title
+
+    module_indents = [_line_indent(line) for line in lines if heading_title(line) is not None]
+    if not module_indents:
+        return []
+    base_indent = min(module_indents)
+
+    detail_lines: list[str] = []
+    free_lines: list[str] = []
+    for raw in lines:
+        line = strip_authoring_group_marker(raw).strip()
+        if not line:
+            continue
+        indent = _line_indent(raw)
+        if heading_title(raw) is not None and indent <= base_indent:
+            continue
+        if indent > base_indent:
+            detail_lines.append(line)
+        elif heading_title(raw) is None:
+            free_lines.append(line)
+    if not detail_lines or not free_lines:
+        return []
+
+    detail_corpus = "\n".join(detail_lines)
+    hits = tuple(
+        f"{line}（overlap={round(score, 2)}）"
+        for line in free_lines
+        if len(re.sub(r"\s+", "", line)) >= 8
+        for score in (text_similarity(line, detail_corpus),)
+        if score >= 0.35
+    )
+    if not hits:
+        return []
+    return [
+        _issue(
+            "ONSCREEN_REDUNDANT_RESTATEMENT",
+            page,
+            "A free-standing on-screen line restates content already covered by the module details.",
+            "Remove the restated line, or fold its genuinely new part into the module it overlaps with instead of repeating the same content twice.",
+            evidence=hits,
+            severity="warning",
+        )
+    ]
+
 
 def _necessity_page_closure_issues(
     page: ScriptPage,
