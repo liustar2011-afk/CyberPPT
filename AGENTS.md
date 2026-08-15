@@ -13,7 +13,8 @@
 
 ## 单人 Stage 01 交互与控制
 
-- 单人单机生成脚本走仓库唯一的轻量 Stage 01 流程；仓库不提供哈希绑定的审批/升级/重试链。
+- 单人单机生成脚本在完成 Source Foundation 前置调用后，走仓库唯一的轻量 Stage 01 运行流程；仓库不提供哈希绑定的审批/升级/重试链。
+- 强制 Skill 入口：凡任务涉及源材料读取、Source Truth、语义论点模型、Outline/page plan、`compile-source-truth`、`compile-outline-draft`、Outline 重跑、Outline 修复或 Outline 审计，必须先调用仓库内 `cyberppt-source-foundation` Skill，即使用户没有点名、项目已经存在或任务被描述为 legacy Stage 01。已有项目若具备已验证的 Source Foundation 产物，可以复用并核对其状态；这不要求无意义地重建上游事实，但不得跳过 Skill 调用。只有纯 Stage 02 视觉、图片、SVG、PPTX QA 或已锁定最终脚本任务可以不调用该 Skill。
 - 用户交互发生在对话中，不得为交互节点新增确认文件、状态 JSON、哈希、回执、attempt、manifest 或平行运行目录。
 - 必须在四处停下并展示实际内容：提出交流目标建议；提出章节和页面提纲；提出页面详细内容；提交最终全稿。交流目标节点必须先读取并分析源材料，提出一个忠于原稿且有源依据的方向；不得提供多个选项，不得把用户目标、作者推断或泛化措辞升级为源材料事实、源材料判断或页面主结论。用户可修改或补充该方向；不得直接向用户抛出受众、场景、目标行动等空白问题。前三处收到用户输入后直接修改现有权威提纲或页面脚本，第四处等待最终确认。
 - 例外：用户明确授权并提供 `autonomous_lightweight` 任务合同时，可运行 `python -m cyberppt run-autonomous <contract.json>`，以命令的失败闭环门禁替代上述对话停点；不得把此例外用于跳过作者产物、全稿审计、Stage 02 handoff、视觉结构、实际送图提示词、图片或图片 QA。只有其 `run-report.json` 的 `status=completed` 才能对外称"完成"。
