@@ -140,10 +140,19 @@ Stage 01 脚本经轻量确认审计通过后，主流程自动调用仓库注�
 常用开发检查：
 
 ```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install -e '.[test]'
+make env-check
 make doctor
 make test
+make test-unittest
 make test-validate-pptx
 ```
+
+仓库内的 Make 目标会优先使用 `.venv/bin/python`，不依赖系统全局的
+`python3` 或 `pytest`。测试依赖通过 `pyproject.toml` 的 `test` extra
+安装；`make test` 是 pytest 全量入口，`make test-unittest` 保留用于
+兼容性回归。
 
 ## 许可
 
