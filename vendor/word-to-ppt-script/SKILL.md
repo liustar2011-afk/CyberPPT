@@ -101,13 +101,15 @@ script check; those commands do not write gate state:
    writing `01-source-normalized.md`/`02-source-truth-map.md` as separate
    files. In CyberPPT, run `python -m cyberppt
    prepare-communication-strategy <project> --lightweight`, analyze its
-   `source_outline` and `decision_evidence`, and present 2-3 materially
-   different, source-grounded communication-goal options. Each option states
-   the concrete audience, use scenario, intended understanding or belief,
-   explicit audience action, and supporting source unit IDs. Mark one option
-   as recommended. Never ask the user to supply audience, scenario, or desired
-   action from a blank slate; the user selects, revises, or supplements the
-   proposed options. This command writes no gate, approval, hash, receipt,
+   `source_outline` and `decision_evidence`, and present one source-faithful
+   communication-goal direction. It states the concrete audience, use
+   scenario, intended understanding or belief, explicit audience action, and
+   supporting source unit IDs. Do not offer multiple communication-goal
+   options. User wording may constrain audience, use, or delivery, but must not
+   be promoted into a source fact, source judgment, or page conclusion without
+   direct source support. Never ask the user to supply audience, scenario, or
+   desired action from a blank slate; the user selects, revises, or supplements
+   the proposed direction. This command writes no gate, approval, hash, receipt,
    attempt, manifest, or ledger file.
 2. **Page boundaries.** Sketch one primary question and one owner per page
    directly (Gate 3's rules still apply: no duplicate primary ownership, no

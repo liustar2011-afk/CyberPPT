@@ -19,7 +19,7 @@ The projection is a compatibility artifact only. It must never become a second s
 
 1. Run `scripts/source_foundation_pipeline.py <source> -o <project>/workbench/source-foundation --prepare-semantic --report`.
 2. Use `business-semantic-understanding` to author the four semantic outputs in the prepared semantic directory, then run its validator with `--report`.
-3. Before planning pages, derive 2-3 source-supported communication-goal candidates from the semantic outputs and recommend one. After the user chooses or edits the goal, continue.
+3. Before planning pages, derive one source-faithful communication-goal direction from the semantic outputs and present it as the recommendation. Do not offer multiple options. The user's wording may constrain audience, use, or delivery, but must not be promoted into a source fact, source judgment, or page conclusion without direct source support. After the user edits or confirms the direction, continue.
 4. Run `scripts/source_foundation_outline.py <semantic-dir> -o <outline-dir> --request-text "<selected communication goal and constraints>"`.
 5. Use `ppt-outline-planning` to author `deck-brief.json` and `page-plan.json`; validate them and render `ppt-outline.md`. Present the outline to the user for the existing human gate.
 6. After outline approval, run `scripts/source_foundation_handoff.py <foundation-dir> <semantic-dir> <outline-dir> -o <project> --cyberppt-root . --force`.

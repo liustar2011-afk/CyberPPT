@@ -2,7 +2,7 @@
 
 The full hash-bound communication-strategy gate (candidate/audit/approval
 files) has been removed; this module now only prepares the source-grounded
-input the agent uses to propose communication-goal options in conversation.
+input the agent uses to propose one communication-goal direction in conversation.
 """
 
 from __future__ import annotations
@@ -163,6 +163,7 @@ def _lightweight_communication_strategy_input(project: Path) -> dict[str, Any]:
         "schema": "cyberppt.lightweight_communication_strategy_input.v1",
         "mode": "lightweight",
         "status": "agent_recommendation_required",
+        "recommendation_policy": "single_source_faithful_direction",
         "source_units": str(source_units_path),
         "source_count": len(
             {str(item.get("source_id")) for item in units if item.get("source_id")}
@@ -172,8 +173,10 @@ def _lightweight_communication_strategy_input(project: Path) -> dict[str, Any]:
         "decision_evidence": _lightweight_goal_evidence(units),
         "instructions": [
             "先阅读并分析 source_outline 与 decision_evidence，再与用户讨论交流目标。",
-            "必须提出 2-3 个由源材料支持、方向实质不同的交流目标选项，并明确标出推荐项。",
-            "每个选项必须说明具体受众、使用场景、希望受众理解或相信什么、希望受众采取什么行动，并引用至少两个 source unit_id 作为依据。",
+            "必须提出一个忠于原稿的交流目标方向，并明确标出为推荐方向；不得提供多个交流目标选项。",
+            "推荐方向只能对原稿做等强度压缩：每个事实、判断或建议都必须能回溯到 source unit_id/source statement；不得把用户目标、作者推断或泛化措辞升级为源材料事实、源材料判断或页面主结论（来源未直接表达时不得添加“合作必要性”等表述）。",
+            "用户目标只作为受众、用途或交付约束；可以说明受众、使用场景、希望理解或采取的行动，但不能把这些约束改写成来源事实、原稿判断或新的核心结论。",
+            "推荐方向必须引用至少两个 source unit_id；引用不足时缩小表达，不得用推断补足证据。",
             "不得直接向用户抛出受众、场景、目标行动等空白问题；用户只需选择、修改或补充已经形成的建议。",
             "在当前对话中展示建议并等待用户输入；不要为该交互写确认文件、状态 JSON、审批、哈希、回执、attempt、manifest 或 ledger。",
             "在用户选择、修改或补充交流目标后，必须展示完成作者编辑后的章节与页面提纲、页面使命和主论证链，再进入逐页详细内容。",

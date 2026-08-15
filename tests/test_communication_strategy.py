@@ -91,8 +91,16 @@ class LightweightCommunicationStrategyTests(unittest.TestCase):
         evidence_ids = {item["unit_id"] for item in payload["decision_evidence"]}
         self.assertEqual({"SU-002", "SU-004"}, evidence_ids)
         instructions = "\n".join(payload["instructions"])
-        self.assertIn("必须提出 2-3 个", instructions)
-        self.assertIn("明确标出推荐项", instructions)
+        self.assertEqual(
+            "single_source_faithful_direction",
+            payload["recommendation_policy"],
+        )
+        self.assertIn("必须提出一个忠于原稿的交流目标方向", instructions)
+        self.assertIn("不得提供多个交流目标选项", instructions)
+        self.assertIn("source unit_id/source statement", instructions)
+        self.assertIn("不得把用户目标、作者推断或泛化措辞升级为源材料事实", instructions)
+        self.assertIn("合作必要性", instructions)
+        self.assertNotIn("2-3", instructions)
         self.assertIn("不得直接向用户抛出", instructions)
         self.assertIn("完成作者编辑后的章节与页面提纲", instructions)
         self.assertIn("逐页详细内容", instructions)
@@ -103,6 +111,14 @@ class LightweightCommunicationStrategyTests(unittest.TestCase):
 
         with self.assertRaisesRegex(FileNotFoundError, "prepare-source-map"):
             prepare_communication_strategy(self.project)
+
+    def test_new_project_readme_uses_single_source_faithful_direction(self) -> None:
+        readme = (self.project / "README.md").read_text(encoding="utf-8")
+
+        self.assertIn("one source-faithful communication-goal direction", readme)
+        self.assertIn("cannot become a source fact or page conclusion", readme)
+        self.assertNotIn("2-3 communication-goal options", readme)
+        self.assertNotIn("Compare 2-3 routes", readme)
 
 
 if __name__ == "__main__":

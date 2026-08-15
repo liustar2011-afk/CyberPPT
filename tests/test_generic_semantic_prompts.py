@@ -41,7 +41,7 @@ class GenericSemanticPromptTests(unittest.TestCase):
         self.assertIn("preserves the source-native thesis and major section progression", director)
         self.assertIn("first introductions", director)
         self.assertIn("must not replace the source progression", director)
-        self.assertIn("Do not select `source_logic_focused` automatically", director)
+        self.assertIn("Do not create a second route merely to manufacture a choice", director)
 
 
 if __name__ == "__main__":

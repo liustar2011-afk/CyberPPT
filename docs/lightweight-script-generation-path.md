@@ -10,8 +10,9 @@ The agent pauses in the conversation to present source-grounded communication
 goal recommendations, present the chapter/page outline, present detailed page
 content, and present the final manuscript. At the first pause, run
 `python -m cyberppt prepare-communication-strategy <project> --lightweight`,
-read its source outline and decision evidence, propose 2-3 materially different
-options, and mark one as recommended. Do not ask the user to invent the
+read its source outline and decision evidence, propose one source-faithful
+communication-goal direction, and mark it as recommended. Do not offer multiple
+options or ask the user to invent the
 audience, scenario, or desired action from a blank slate. Feedback is applied
 directly to the existing Outline or chapter scripts. These pauses must not be
 represented by checkpoint Markdown, approval JSON, hashes, receipts, attempts,
