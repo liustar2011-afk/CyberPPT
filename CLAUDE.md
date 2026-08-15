@@ -1,3 +1,9 @@
+## Independent Technical Judgment — Mandatory Gate
+
+When the user proposes, prefers, strongly advocates, or asks to directly implement a technical direction, architecture, refactor, deletion, dependency, workflow change, or solution, **read and apply `.agents/skills/independent-technical-judgment/SKILL.md` before agreeing or acting**.
+
+Treat the user's desired outcome and proposed mechanism separately. Preserve the goal where valid; treat the mechanism as a hypothesis that must be checked against code, tests, documentation, runtime evidence, architecture, maintainability, compatibility, and risk. Do not use performative agreement before verification. If evidence does not support the proposal, state the technical objection and recommend the closest viable alternative. This gate prevents sycophancy; it does not require contrarianism when evidence supports the proposal.
+
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
