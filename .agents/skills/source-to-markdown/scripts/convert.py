@@ -15,6 +15,23 @@ def _venv_python() -> Path:
     return ROOT / ".venv" / "bin" / "python"
 
 
+def _venv_python_candidates() -> tuple[Path, ...]:
+    """Return the Skill-local runtime, then the enclosing repository runtime."""
+    relative_python = (
+        Path("Scripts") / "python.exe"
+        if sys.platform.startswith("win")
+        else Path("bin") / "python"
+    )
+    candidates = [_venv_python()]
+
+    for parent in ROOT.parents:
+        if (parent / ".git").exists():
+            candidates.append(parent / ".venv" / relative_python)
+            break
+
+    return tuple(dict.fromkeys(candidates))
+
+
 def _markitdown_available() -> bool:
     try:
         import markitdown  # noqa: F401
@@ -24,22 +41,27 @@ def _markitdown_available() -> bool:
 
 
 def _maybe_delegate_to_local_venv() -> int | None:
-    candidate = _venv_python()
-    if _markitdown_available() or not candidate.is_file():
+    if _markitdown_available():
         return None
 
     current = Path(sys.executable).resolve()
-    try:
-        if current == candidate.resolve():
-            return None
-    except OSError:
-        pass
+    for candidate in _venv_python_candidates():
+        if not candidate.is_file():
+            continue
 
-    completed = subprocess.run(
-        [str(candidate), str(Path(__file__).resolve()), *sys.argv[1:]],
-        check=False,
-    )
-    return completed.returncode
+        try:
+            if current == candidate.resolve():
+                return None
+        except OSError:
+            pass
+
+        completed = subprocess.run(
+            [str(candidate), str(Path(__file__).resolve()), *sys.argv[1:]],
+            check=False,
+        )
+        return completed.returncode
+
+    return None
 
 
 def main() -> int:

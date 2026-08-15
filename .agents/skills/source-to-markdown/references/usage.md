@@ -30,7 +30,7 @@ Optional OCR dependencies:
 ./scripts/install.sh --ocr
 ```
 
-The scripts create `.venv`, install Microsoft MarkItDown, and optionally install `markitdown-ocr` plus `openai`. The conversion wrapper automatically reuses that local environment.
+The scripts create `.venv`, install Microsoft MarkItDown, and optionally install `markitdown-ocr` plus `openai`. The conversion wrapper automatically reuses the Skill-local environment first, then a `.venv` at the enclosing repository root when available.
 
 Alternatively, install the runtime into your existing Python environment:
 

@@ -62,7 +62,9 @@ def _default_converter_factory(options: ConversionOptions) -> Any:
         from markitdown import MarkItDown
     except ImportError as exc:
         raise ConversionError(
-            "Microsoft MarkItDown is not installed. Install this skill with `pip install -e .`."
+            "Microsoft MarkItDown is not available to the active Python runtime. "
+            "Run `./scripts/install.sh` from the source-to-markdown Skill directory, "
+            "or invoke this converter with a Python environment that has `markitdown` installed."
         ) from exc
 
     if not options.ocr:
