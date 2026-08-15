@@ -82,40 +82,81 @@ def build_workpack(
 
     chunks: list[dict[str, Any]] = []
 
-    def append_chunks(section_id: str, facts: list[dict[str, Any]]) -> None:
-        if not facts:
-            return
-        section = section_by_id.get(section_id, {
-            "section_id": "preamble",
+    # Chunks are filled up to chunk_size in document order. A section with fewer
+    # facts than chunk_size does not get a dedicated chunk of its own; instead its
+    # facts are appended to a shared buffer with the neighboring sections that
+    # follow it, so a document with many short sections does not explode into one
+    # near-empty chunk per section. A section is only split across chunks when it
+    # alone has at least chunk_size facts.
+    pending: list[tuple[dict[str, Any], list[dict[str, Any]]]] = []
+    pending_count = 0
+
+    def _default_section(section_id: str) -> dict[str, Any]:
+        return {
+            "section_id": section_id,
             "level": 0,
             "title": "Preamble",
             "line": None,
             "parent_section_id": None,
+        }
+
+    def _flush() -> None:
+        if not pending:
+            return
+        sections_in_chunk = [deepcopy(section) for section, _ in pending]
+        facts_in_chunk: list[dict[str, Any]] = []
+        for _, section_facts in pending:
+            facts_in_chunk.extend(section_facts)
+        chunk_id = f"chunk-{len(chunks) + 1:04d}"
+        block_ids = [fact.get("source_ref", {}).get("block_id") for fact in facts_in_chunk]
+        blocks = [deepcopy(block_by_id[block_id]) for block_id in dict.fromkeys(block_ids) if block_id in block_by_id]
+        chunks.append({
+            "schema_version": "1.0",
+            "artifact_type": "semantic_work_chunk",
+            "chunk_id": chunk_id,
+            "section": sections_in_chunk[0],
+            "sections": sections_in_chunk,
+            "section_ids": [section["section_id"] for section in sections_in_chunk],
+            "document_outline": deepcopy(outline),
+            "facts": deepcopy(facts_in_chunk),
+            "source_blocks": blocks,
+            "semantic_policy": {
+                "truth_status": "source_assertions_unverified",
+                "external_enrichment": "forbidden",
+                "inference_must_be_labeled": True,
+            },
         })
-        for offset in range(0, len(facts), chunk_size):
-            subset = facts[offset : offset + chunk_size]
-            chunk_id = f"chunk-{len(chunks) + 1:04d}"
-            block_ids = [fact.get("source_ref", {}).get("block_id") for fact in subset]
-            blocks = [deepcopy(block_by_id[block_id]) for block_id in dict.fromkeys(block_ids) if block_id in block_by_id]
-            chunks.append({
-                "schema_version": "1.0",
-                "artifact_type": "semantic_work_chunk",
-                "chunk_id": chunk_id,
-                "section": deepcopy(section),
-                "document_outline": deepcopy(outline),
-                "facts": deepcopy(subset),
-                "source_blocks": blocks,
-                "semantic_policy": {
-                    "truth_status": "source_assertions_unverified",
-                    "external_enrichment": "forbidden",
-                    "inference_must_be_labeled": True,
-                },
-            })
+        pending.clear()
+
+    def append_chunks(section_id: str, facts: list[dict[str, Any]]) -> None:
+        nonlocal pending_count
+        if not facts:
+            return
+        section = section_by_id.get(section_id, _default_section(section_id))
+        remaining = list(facts)
+
+        if pending_count and len(remaining) > chunk_size - pending_count:
+            room = chunk_size - pending_count
+            pending.append((section, remaining[:room]))
+            remaining = remaining[room:]
+            _flush()
+            pending_count = 0
+
+        while len(remaining) >= chunk_size:
+            pending.append((section, remaining[:chunk_size]))
+            _flush()
+            pending_count = 0
+            remaining = remaining[chunk_size:]
+
+        if remaining:
+            pending.append((section, remaining))
+            pending_count += len(remaining)
 
     if preamble:
         append_chunks("preamble", preamble)
     for section in outline:
         append_chunks(section["section_id"], facts_by_section.get(section["section_id"], []))
+    _flush()
 
     warnings: list[dict[str, Any]] = []
     source_fact_count = len(fact_base.get("entries", []))
@@ -152,6 +193,7 @@ def build_workpack(
                 "chunk_id": chunk["chunk_id"],
                 "file": f"chunks/{chunk['chunk_id']}.json",
                 "section_id": chunk["section"]["section_id"],
+                "section_ids": chunk["section_ids"],
                 "fact_ids": [fact["fact_id"] for fact in chunk["facts"]],
             }
             for chunk in chunks

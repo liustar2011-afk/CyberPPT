@@ -41,15 +41,35 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("integration/cyberppt-handoff-report.json", agents)
         self.assertIn("不得重新编译覆盖该投影的 Source Truth", root_skill)
 
-    def test_outline_routes_are_mutually_exclusive(self) -> None:
+    def test_legacy_outline_compiler_is_internal_compatibility_only(self) -> None:
         agents = AGENTS.read_text(encoding="utf-8-sig")
         project_rules = PROJECT_AGENTS.read_text(encoding="utf-8-sig")
         root_skill = SKILL.read_text(encoding="utf-8-sig")
+        source_foundation = (
+            ROOT / ".agents" / "skills" / "cyberppt-source-foundation" / "SKILL.md"
+        ).read_text(encoding="utf-8-sig")
 
-        self.assertIn("Foundation-native", project_rules)
-        self.assertIn("legacy compatibility", project_rules)
-        self.assertIn("已验证的 Foundation-native Outline 不得再经过", agents)
-        self.assertIn("`compile-outline-draft` 仅用于兼容投影", root_skill)
+        self.assertIn("唯一正式路线", agents)
+        self.assertIn("internal compatibility", project_rules)
+        self.assertIn("仅作为旧项目迁移的内部兼容实现", root_skill)
+        self.assertIn("internal compatibility implementations", source_foundation)
+
+    def test_source_foundation_is_the_only_formal_outline_route(self) -> None:
+        agents = AGENTS.read_text(encoding="utf-8-sig")
+        project_rules = PROJECT_AGENTS.read_text(encoding="utf-8-sig")
+        root_skill = SKILL.read_text(encoding="utf-8-sig")
+        source_foundation = (
+            ROOT / ".agents" / "skills" / "cyberppt-source-foundation" / "SKILL.md"
+        ).read_text(encoding="utf-8-sig")
+
+        self.assertIn("唯一正式路线", agents)
+        self.assertIn("唯一正式路线", root_skill)
+        self.assertIn("The only formal route", project_rules)
+        self.assertIn("The only formal route", source_foundation)
+        self.assertIn("内部兼容实现", agents)
+        self.assertIn("internal compatibility", project_rules)
+        self.assertNotIn("两条互斥的 Outline 路线", agents)
+        self.assertNotIn("Choose exactly one route", project_rules)
 
     def test_source_foundation_defaults_to_government_style_and_source_titles(self) -> None:
         planning = OUTLINE_SKILL.read_text(encoding="utf-8-sig")
