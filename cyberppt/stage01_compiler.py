@@ -403,14 +403,25 @@ def _content_unit_anchors(record: dict[str, Any], topic: str) -> list[str]:
 
     candidates: list[str] = []
     for unit in _items(record.get("semantic_units")):
-        for fragment in re.split(r"[，、；。]", str(unit.get("text") or "")):
-            fragment = _audience_anchor_fragment(fragment)
-            if (
-                4 <= len(fragment) <= 36
-                and not _is_nonvisible_anchor_fragment(fragment)
-                and fragment not in candidates
-            ):
-                candidates.append(fragment)
+        for clause in re.split(r"[，；。]", str(unit.get("text") or "")):
+            # ``、`` normally separates members of one source-native business
+            # enumeration; keep that clause intact.  A decision condition
+            # introduced by “选择” is the narrow exception: its individual
+            # conditions are useful short anchors, and are not claims created
+            # by the compiler.
+            fragments = (
+                clause.split("、")
+                if "选择" in clause
+                else [clause]
+            )
+            for fragment in fragments:
+                fragment = _audience_anchor_fragment(fragment)
+                if (
+                    4 <= len(fragment) <= 36
+                    and not _is_nonvisible_anchor_fragment(fragment)
+                    and fragment not in candidates
+                ):
+                    candidates.append(fragment)
     for anchor in _strings(record.get("coverage_anchors")):
         if (
             4 <= len(anchor) <= 36

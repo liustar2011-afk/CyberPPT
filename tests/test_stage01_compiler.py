@@ -34,6 +34,49 @@ from cyberppt.stage01_compiler import (
 
 
 class Stage01CompilerTests(unittest.TestCase):
+    def test_content_unit_anchors_keep_enumerated_facts_as_complete_clauses(self) -> None:
+        cases = (
+            (
+                "ST0005",
+                {
+                    "statement": "复杂业务需要跨企业、跨领域、跨能力组织数据资源、模型算法、专家知识、技术实施和持续服务，单一主体难以完整支撑。",
+                    "semantic_units": [
+                        {
+                            "text": "复杂业务需要跨企业、跨领域、跨能力组织数据资源、模型算法、专家知识、技术实施和持续服务，单一主体难以完整支撑。"
+                        }
+                    ],
+                    "coverage_anchors": [
+                        "复杂业务需要跨企业、跨领域、跨能力组织数据资源、模型算法、专家知识、技术实施和持续服务",
+                        "单一主体难以完整支撑",
+                    ],
+                },
+                ["单一主体难以完整支撑"],
+            ),
+            (
+                "ST0006",
+                {
+                    "statement": "行业资源在法人主体、业务系统和安全域之间分布，目录、口径、接口、授权、质量、版本、责任、供需对接、计量和结算尚未统一，导致发现、适配、合规沟通和价值释放成本较高。",
+                    "semantic_units": [
+                        {
+                            "text": "行业资源在法人主体、业务系统和安全域之间分布，目录、口径、接口、授权、质量、版本、责任、供需对接、计量和结算尚未统一，导致发现、适配、合规沟通和价值释放成本较高。"
+                        }
+                    ],
+                    "coverage_anchors": [
+                        "行业资源在法人主体、业务系统和安全域之间分布",
+                        "目录、口径、接口、授权、质量、版本、责任、供需对接、计量和结算尚未统一",
+                    ],
+                },
+                [
+                    "行业资源在法人主体、业务系统和安全域之间分布",
+                    "目录、口径、接口、授权、质量、版本、责任、供需对接、计量和结算尚未统一",
+                ],
+            ),
+        )
+
+        for source_id, record, expected in cases:
+            with self.subTest(source_id=source_id):
+                self.assertEqual(expected, _content_unit_anchors(record, "建设背景"))
+
     def test_content_unit_anchors_skip_section_framing_and_keep_source_conditions(self) -> None:
         record = {
             "statement": "首期方向筛选。",

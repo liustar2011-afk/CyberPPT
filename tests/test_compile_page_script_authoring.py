@@ -163,6 +163,79 @@ class CompilePageScriptAuthoringTests(unittest.TestCase):
                 self.project, output_dir=self.scripts / "drafts/run-03"
             )
 
+    def test_rejects_source_fact_missing_from_full_prose_even_when_notes_retain_it(self) -> None:
+        self.authoring["pages"]["p03"]["prose"] = "本页只保留概括判断。"
+        self.authoring["pages"]["p03"]["notes"] = "讲解时补充：关键事实原句。"
+        (self.stage / "source-truth.json").write_text(
+            json.dumps(
+                {
+                    "records": [{
+                        "id": "ST001",
+                        "statement": "关键事实原句。",
+                        "source_unit_refs": ["SU-001"],
+                    }]
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        self.authoring_path.write_text(
+            json.dumps(self.authoring, ensure_ascii=False), encoding="utf-8"
+        )
+
+        with self.assertRaisesRegex(ValueError, "full prose"):
+            compile_page_script_authoring(
+                self.project, output_dir=self.scripts / "drafts/missing-prose-fact"
+            )
+
+    def test_rejects_default_paragraph_map_when_prose_order_differs_from_source(self) -> None:
+        content = self.outline["pages"][2]
+        content["source_refs"] = ["ST001", "ST002", "ST003", "ST004"]
+        content["content_units"] = [
+            {
+                "unit_id": f"CU-p03-0{index}",
+                "statement": f"来源段落{index}的独立事实。",
+                "source_refs": [f"ST00{index}"],
+                "role": "primary",
+            }
+            for index in range(1, 5)
+        ]
+        self.authoring["pages"]["p03"]["consumes"] = [
+            item["unit_id"] for item in content["content_units"]
+        ]
+        self.authoring["pages"]["p03"]["prose"] = "\n\n".join(
+            f"来源段落{index}的独立事实。" for index in (4, 3, 2, 1)
+        )
+        self.outline_path.write_text(
+            json.dumps(self.outline, ensure_ascii=False), encoding="utf-8"
+        )
+        self.authoring["outline_sha256"] = _sha256(self.outline_path)
+        self.authoring_path.write_text(
+            json.dumps(self.authoring, ensure_ascii=False), encoding="utf-8"
+        )
+        (self.stage / "source-truth.json").write_text(
+            json.dumps(
+                {
+                    "records": [
+                        {
+                            "id": f"ST00{index}",
+                            "statement": f"来源段落{index}的独立事实。",
+                            "source_unit_refs": [f"SU-{index}"],
+                            "source_locator": {"paragraph": index},
+                        }
+                        for index in range(1, 5)
+                    ]
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(ValueError, "paragraph map"):
+            compile_page_script_authoring(
+                self.project, output_dir=self.scripts / "drafts/wrong-paragraph-map"
+            )
+
     def test_emits_optional_onscreen_expression_form(self) -> None:
         self.authoring["pages"]["p03"]["onscreen_expression_form"] = "framework_4"
         self.authoring_path.write_text(
@@ -259,6 +332,9 @@ class CompilePageScriptAuthoringTests(unittest.TestCase):
         self.authoring["pages"]["p03"]["consumes"] = [
             item["unit_id"] for item in content["content_units"]
         ]
+        self.authoring["pages"]["p03"]["prose"] = "\n\n".join(
+            f"来源段落{index}的独立事实。" for index in range(1, 5)
+        )
         self.outline_path.write_text(json.dumps(self.outline, ensure_ascii=False), encoding="utf-8")
         self.authoring["outline_sha256"] = _sha256(self.outline_path)
         self.authoring_path.write_text(json.dumps(self.authoring, ensure_ascii=False), encoding="utf-8")

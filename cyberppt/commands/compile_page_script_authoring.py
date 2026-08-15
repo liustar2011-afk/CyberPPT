@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from pathlib import Path
 from typing import Any
 
 from cyberppt.onscreen_text_rules import strip_terminal_punctuation
 from cyberppt.onscreen_expression import validate_expression_form
+from cyberppt.script_quality.parsing import _parse_prose_paragraph_map
+from cyberppt.script_quality.source_coverage import _source_statement_overlap
 
 
 AUTHORING_SCHEMA = "cyberppt.page_script_authoring.v1"
@@ -296,6 +299,118 @@ def _default_prose_paragraph_map(
     return [f"- {'、'.join(groups[key])}" for key in sorted(groups, key=lambda key: order[key])]
 
 
+def _intentional_omission_refs(page: dict[str, Any]) -> set[str]:
+    """Return only source refs with an explicit, non-trivial omission reason."""
+
+    refs: set[str] = set()
+    for item in page.get("intentional_omissions") or []:
+        if not isinstance(item, dict):
+            continue
+        reason = str(item.get("reason") or item.get("omission_reason") or "").strip()
+        if len(reason) < 8:
+            continue
+        refs.update(str(value) for value in item.get("source_refs") or [] if str(value).strip())
+    return refs
+
+
+def _assigned_source_refs(page: dict[str, Any]) -> tuple[str, ...]:
+    detail_refs = {str(value) for value in page.get("detail_refs") or []}
+    return tuple(
+        dict.fromkeys(
+            str(value)
+            for field in ("source_refs", "boundary_refs")
+            for value in page.get(field) or []
+            if str(value).strip() and str(value) not in detail_refs
+        )
+    )
+
+
+def _authored_paragraphs(prose: str) -> tuple[str, ...]:
+    return tuple(
+        paragraph.strip()
+        for paragraph in re.split(r"\n\s*\n", prose)
+        if paragraph.strip()
+    )
+
+
+def _record_overlap(record: dict[str, Any], authored: str) -> float:
+    anchors = [str(record.get("statement") or "")]
+    anchors.extend(
+        str(unit.get("text") or "")
+        for unit in record.get("semantic_units") or []
+        if isinstance(unit, dict) and str(unit.get("text") or "").strip()
+    )
+    anchors = [anchor for anchor in anchors if anchor.strip()]
+    if not anchors:
+        return 1.0
+    return max(
+        _source_statement_overlap(anchor, authored) for anchor in anchors
+    )
+
+
+def _validate_source_coverage(
+    page: dict[str, Any],
+    authored: dict[str, Any],
+    records_by_id: dict[str, dict[str, Any]],
+) -> None:
+    """Reject authoring input that hides assigned facts in notes or misbinds paragraphs."""
+
+    page_id = str(page.get("page_id") or "")
+    omitted_refs = _intentional_omission_refs(page)
+    assigned_refs = tuple(
+        ref for ref in _assigned_source_refs(page) if ref not in omitted_refs
+    )
+    prose = str(authored.get("prose") or "").strip()
+    for ref in assigned_refs:
+        record = records_by_id.get(ref)
+        overlap = _record_overlap(record, prose) if record else 1.0
+        if record and overlap < 0.08:
+            raise ValueError(
+                f"{page_id} source fact {ref} must appear in full prose; "
+                "notes, selection, or onscreen text do not satisfy source coverage"
+            )
+
+    detail_refs = {str(value) for value in page.get("detail_refs") or []}
+    mapped_refs = tuple(
+        ref for ref in assigned_refs if ref not in detail_refs and ref in records_by_id
+    )
+    if not mapped_refs:
+        return
+    default_map = _default_prose_paragraph_map(page, records_by_id)
+    authored_map = authored.get("prose_paragraph_map")
+    map_lines = (
+        [str(value).strip() for value in authored_map if str(value).strip()]
+        if isinstance(authored_map, list)
+        else default_map
+    )
+    if not map_lines:
+        return
+    mapping = _parse_prose_paragraph_map("\n".join(map_lines))
+    paragraphs = _authored_paragraphs(prose)
+    if len(mapping) != len(paragraphs):
+        raise ValueError(
+            f"{page_id} paragraph map must have one entry per full-prose paragraph "
+            f"(map={len(mapping)}, prose={len(paragraphs)})"
+        )
+    flat_refs = tuple(ref for refs, _ in mapping for ref in refs)
+    if set(flat_refs) != set(mapped_refs) or len(flat_refs) != len(set(flat_refs)):
+        raise ValueError(
+            f"{page_id} paragraph map must cover each assigned source fact once "
+            "and only once"
+        )
+    for index, (refs, _reason) in enumerate(mapping):
+        for ref in refs:
+            # A paragraph map is an explicit placement claim.  The general
+            # audit threshold is intentionally permissive for paraphrase,
+            # but it is too low to distinguish adjacent source paragraphs
+            # that share generic wording.
+            if _record_overlap(records_by_id[ref], paragraphs[index]) < 0.55:
+                raise ValueError(
+                    f"{page_id} paragraph map assigns {ref} to the wrong full-prose paragraph "
+                    f"(paragraph={index + 1})"
+                )
+
+
 def _content_page(
     page: dict[str, Any], authored: dict[str, Any], records_by_id: dict[str, dict[str, Any]],
 ) -> str:
@@ -420,6 +535,8 @@ def compile_page_script_authoring(
         project, outline_path, outline, authoring
     )
     authored_pages = authoring["pages"]
+    for page_id, page in content_contracts.items():
+        _validate_source_coverage(page, authored_pages[page_id], records_by_id)
     all_pages = [
         page for page in outline.get("pages") or [] if isinstance(page, dict)
     ]
