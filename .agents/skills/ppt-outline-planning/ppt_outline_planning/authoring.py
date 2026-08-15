@@ -39,6 +39,17 @@ def _exclusion_refs(item: Any) -> list[str]:
     return [str(value) for value in refs or [] if str(value)] if isinstance(refs, list) else []
 
 
+def _title_without_number(value: Any) -> str:
+    text = re.sub(r"[\s　]+", "", _text(value))
+    for pattern in (
+        r"^[一二三四五六七八九十百]+、",
+        r"^[（(][一二三四五六七八九十百\d]+[）)]",
+        r"^\d+(?:\.\d+)*[.、]",
+    ):
+        text = re.sub(pattern, "", text, count=1)
+    return text
+
+
 def _source_heading_titles(workpack: dict[str, Any] | None) -> set[str]:
     titles: set[str] = set()
     for item in (workpack or {}).get("source_heading_outline") or []:
@@ -79,7 +90,11 @@ def authoring_issues(
             continue
         page_id = _text(page.get("page_id")) or "?"
 
-        if _text(page.get("page_mission")).startswith("按源材料说明") or _text(page.get("audience_question")).startswith("源材料如何说明"):
+        stripped_title = _title_without_number(page.get("title_intent"))
+        if (
+            _text(page.get("page_mission")) == f"按源材料说明{stripped_title}。"
+            or _text(page.get("audience_question")) == f"源材料如何说明{stripped_title}？"
+        ):
             _issue(
                 issues,
                 "authoring_editorial_placeholder",

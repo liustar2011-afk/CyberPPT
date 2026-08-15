@@ -369,6 +369,28 @@ class FormalOutlineGeneratorTests(unittest.TestCase):
                 {item["code"] for item in report["errors"]},
             )
 
+    def test_author_edited_page_starting_with_the_same_words_is_not_flagged(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            semantic_dir, outline_dir = _write_foundation(Path(tmp))
+            page = _authored_page("建设背景正文。")
+            page["audience_question"] = "建设背景由哪些业务层次和连接关系构成？"
+            page["page_mission"] = "按源材料说明建设背景的构成、接口和业务承接关系。"
+            spec = {
+                "deck": {"audience": "合作方", "purpose": "说明安排"},
+                "pages": {
+                    "sec-0002": page,
+                    "sec-0003": _authored_page("商务安排正文。"),
+                },
+            }
+            generate_outline(semantic_dir, outline_dir, authoring_spec=spec, force=True)
+
+            report = validate_outline_outputs(semantic_dir, outline_dir)
+
+            self.assertNotIn(
+                "authoring_editorial_placeholder",
+                {item["code"] for item in report["errors"]},
+            )
+
     def test_author_edited_page_rejects_judgment_equal_to_source_heading_title(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             semantic_dir, outline_dir = _write_foundation(Path(tmp))
