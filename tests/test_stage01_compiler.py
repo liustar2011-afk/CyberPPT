@@ -826,6 +826,35 @@ class Stage01CompilerTests(unittest.TestCase):
         self.assertTrue(all(page["argument_chain"] == [] for page in contents))
         self.assertTrue(all(page["evidence_roles"] == [] for page in contents))
 
+    def test_real_v16_candidate_core_message_covers_all_p04_source_truth(self) -> None:
+        project = Path(
+            "/Volumes/DOC/CyberPPT/projects/"
+            "power-data-infrastructure-cooperation-v16-20260815"
+        )
+        if not project.is_dir():
+            self.skipTest("real V16 project is not mounted")
+        with tempfile.TemporaryDirectory() as tmp:
+            outline_path = compile_outline_draft(
+                project,
+                communication_goal="忠实说明原稿并核对建设背景。",
+                output=Path(tmp) / "outline.json",
+            )
+            outline = json.loads(outline_path.read_text(encoding="utf-8"))
+        truth = load_source_truth(
+            project / "workbench/stages/01-analysis/source-truth.json"
+        )
+        records = {
+            record["id"]: record
+            for record in truth["records"]
+            if isinstance(record, dict) and record.get("id")
+        }
+        page = next(page for page in outline["pages"] if page.get("page_id") == "p04")
+        expected_statements = [records[ref]["statement"] for ref in page["source_refs"]]
+
+        for statement in expected_statements:
+            with self.subTest(statement=statement):
+                self.assertIn(statement, page["core_message"])
+
     def test_strict_atomic_item_requires_semantic_argument_duty(self) -> None:
         # Evidence role and claim role remain derived from the target node,
         # while argument duty belongs to the source-faithful atomic claim.

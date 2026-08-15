@@ -1139,7 +1139,18 @@ def compile_outline_draft(
                 for record in node_records
                 if str(record.get("argument_duty") or "") != "metadata"
             ]
-            core_message = str(node.get("section_thesis") or node.get("thesis") or "").strip()
+            # A candidate page message is a source projection, not an author
+            # judgment. Project every bound content unit so an incomplete
+            # semantic thesis cannot hide source records already assigned to
+            # this page.
+            source_projected_statements = [
+                str(unit.get("statement") or "").strip()
+                for unit in content_units
+                if str(unit.get("statement") or "").strip()
+            ]
+            core_message = "；".join(source_projected_statements)
+            if not core_message:
+                core_message = str(node.get("section_thesis") or node.get("thesis") or "").strip()
             if not core_message:
                 core_message = str(node_records[0].get("statement") or "").strip()
             semantic_role = str(node.get("argument_role") or "evidence")
