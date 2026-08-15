@@ -152,6 +152,29 @@ def _project_evidence_roles(
             grouped[role_name].append(st_id)
     return [{"role": name, "source_refs": grouped[name]} for name in role_order if grouped[name]]
 
+
+def _normalize_evidence_roles(value: Any) -> dict[str, list[str]]:
+    """Normalize explicit role records without deriving roles from chain order."""
+
+    role_order = ("claim", "reason", "instance", "boundary", "trace_only")
+    if isinstance(value, dict):
+        return {
+            role: [str(item) for item in value.get(role) or [] if str(item)]
+            for role in role_order
+        }
+    normalized = {role: [] for role in role_order}
+    if isinstance(value, list):
+        for item in value:
+            if not isinstance(item, dict):
+                continue
+            role = str(item.get("role") or "")
+            if role not in normalized:
+                continue
+            normalized[role].extend(
+                str(ref) for ref in item.get("source_refs") or [] if str(ref)
+            )
+    return normalized
+
 def _cyber_page_id(page: dict[str, Any]) -> str:
     return f"p{int(page.get('order') or 0):02d}"
 
@@ -196,7 +219,7 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
         direct_fact_ids = [str(value) for value in page_evidence.get("normalized_fact_ids") or []]
         allowed_fact_ids = set(direct_fact_ids)
         source_refs = [nf_to_st[nf_id] for nf_id in direct_fact_ids if nf_id in nf_to_st]
-        roles = page.get("evidence_roles") if isinstance(page.get("evidence_roles"), dict) else {}
+        roles = _normalize_evidence_roles(page.get("evidence_roles"))
         evidence_roles_out = _project_evidence_roles(roles, payloads, nf_to_st, direct_fact_ids)
         evidence_roles_dict = {
             item["role"]: item["source_refs"] for item in evidence_roles_out
@@ -212,7 +235,7 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
             role = str(node.get("role") or "support")
             chain_out.append({"role": role, "statement": str(node.get("statement") or ""), "source_refs": node_refs})
             role_membership = [name for name in ("claim", "reason", "instance", "boundary", "trace_only") if set(node_ids).intersection(set(roles.get(name) or []))]
-            primary_role = role_membership[0] if role_membership else "reason"
+            primary_role = next(iter(role_membership), "reason") if len(role_membership) == 1 else "reason"
             unit_role = "primary" if primary_role == "claim" else "boundary" if primary_role == "boundary" else "supporting"
             onscreen = primary_role in {"claim", "reason", "instance"}
             anchors = []
@@ -242,6 +265,25 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
         reserved_items = page.get("reserved_for_later") if isinstance(page.get("reserved_for_later"), list) else []
         reserved_text = "；".join(f"{item.get('topic')} → {page_map.get(str(item.get('target_page')), str(item.get('target_page')))}" for item in reserved_items if isinstance(item, dict)) or "无"
         allowed_claim_roles = sorted({str(st_by_id.get(ref, {}).get("claim_role") or "fact") for ref in source_refs})
+        receipt = page.get("judgment_derivation") or page.get("core_message_derivation")
+        if not isinstance(receipt, dict):
+            receipt = {
+                "source_refs": source_refs,
+                "supporting_statements": [
+                    str(node.get("statement") or "")
+                    for node in page.get("argument_chain") or []
+                    if isinstance(node, dict)
+                ],
+                "derivation": f"Projection of layer-four judgment_basis={page.get('judgment_basis')}",
+                "introduced_relations": list(page_evidence.get("relation_ids") or []) if page.get("judgment_basis") == "planning_inference" else [],
+                "introduced_modalities": [],
+            }
+        receipt_refs = _expand_evidence_ids(
+            [str(value) for value in receipt.get("source_refs") or []],
+            payloads,
+            nf_to_st,
+            allowed_fact_ids=allowed_fact_ids,
+        )
         item = {
             "page_id": cyber_id, "sequence": int(page.get("order") or 0), "page_type": "content",
             "title": str(page.get("title_intent") or ""), "page_mission": str(page.get("page_mission") or ""), "page_job": str(page.get("page_mission") or ""),
@@ -260,7 +302,7 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
             "source_argument_node_weights": {arg_id: str(semantic_nodes.get(arg_id, {}).get("argument_weight") or "detail") for arg_id in arg_ids},
             "source_argument_node_statuses": {arg_id: str(semantic_nodes.get(arg_id, {}).get("status") or "mixed") for arg_id in arg_ids},
             "source_gap_ids": [], "gap_handling": "Preserve upstream diagnostics and epistemic boundaries; adapter adds no gap inference.",
-            "core_message_derivation": {"source_refs": source_refs, "supporting_statements": [str(node.get("statement") or "") for node in page.get("argument_chain") or [] if isinstance(node, dict)], "derivation": f"Projection of layer-four judgment_basis={page.get('judgment_basis')}", "introduced_relations": list(page_evidence.get("relation_ids") or []) if page.get("judgment_basis") == "planning_inference" else [], "introduced_modalities": [], "argument_node_ids": arg_ids},
+            "core_message_derivation": {"source_refs": receipt_refs, "supporting_statements": [str(value) for value in receipt.get("supporting_statements") or []], "derivation": str(receipt.get("derivation") or ""), "introduced_relations": list(receipt.get("introduced_relations") or []), "introduced_modalities": list(receipt.get("introduced_modalities") or []), "argument_node_ids": arg_ids},
             "source_refs": source_refs, "detail_refs": detail_refs, "boundary_refs": boundary_refs, "content_units": content_units,
             "content_relations": _project_page_relationships(
                 page, payloads, nf_to_st
