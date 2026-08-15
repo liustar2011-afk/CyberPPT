@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 import subprocess
 import sys
@@ -541,6 +542,55 @@ class Stage01CompilerTests(unittest.TestCase):
         self.assertIn("本文由 semantic-argument-model.json 确定性渲染", review)
         self.assertIn("行业数据资源", review)
         self.assertFalse((self.project / "workbench/stages/00-semantic-understanding/semantic-understanding-audit.json").exists())
+
+    def test_projection_model_compiles_strict_source_truth_without_being_treated_as_strict_semantics(self) -> None:
+        model = copy.deepcopy(self.model)
+        model["interpretation_contract_mode"] = "projection"
+        model["authority_mode"] = "projection_only"
+        model["document_semantics"]["scope"] = ""
+        model["section_nodes"][0]["argument_role"] = "mechanism"
+        model["section_nodes"][0]["primary_consumer"] = ""
+        model["subsection_nodes"][0].update(
+            {
+                "argument_role": "condition",
+                "parent_id": "missing-parent",
+                "level": 3,
+                "primary_consumer": "",
+            }
+        )
+        model["argument_relations"] = [
+            {
+                "id": "r-old",
+                "from_node_id": "c01-s01",
+                "to_node_id": "c01",
+                "relation_type": "contains",
+                "weight_effect": "none",
+                "basis": "explicit",
+                "evidence_refs": [next(iter(self.unit_ids))],
+                "projection_only": True,
+            }
+        ]
+        model["mece_rules"]["groups"] = []
+        model["source_gaps"] = [
+            {
+                "diagnostic_id": "diag-001",
+                "type": "logic_gap",
+                "description": "来源没有给出验收口径。",
+                "normalized_fact_ids": [],
+                "section_ids": ["c01"],
+            }
+        ]
+        (self.project / SEMANTIC_ARGUMENT_MODEL).write_text(
+            json.dumps(model, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+
+        truth_path = compile_source_truth(self.project)
+        truth = load_source_truth(truth_path)
+
+        self.assertEqual("strict", truth["argument_contract_mode"])
+        self.assertEqual("semantic_atomic_items", truth["projection_mode"])
+        self.assertEqual("projection_only", truth["authority_mode"])
+        self.assertEqual([], audit_source_truth(truth))
 
     def test_source_truth_compiles_but_outline_requires_professional_authoring(self) -> None:
         truth_path = compile_source_truth(self.project)

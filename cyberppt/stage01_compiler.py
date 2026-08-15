@@ -15,7 +15,12 @@ from pathlib import Path
 from typing import Any
 
 from cyberppt.semantic_understanding import SEMANTIC_ARGUMENT_MODEL
-from cyberppt.source_argument_model import load_model, node_index, validate_model
+from cyberppt.source_argument_model import (
+    load_model,
+    node_index,
+    validate_model,
+    validate_projection_model,
+)
 from cyberppt.source_document_map import SOURCE_HEADING_TREE, SOURCE_REGISTRY, SOURCE_UNITS
 from cyberppt.subtitle_policy import resolve_subtitle_policy
 
@@ -312,18 +317,22 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
     if not model_path.is_file():
         raise FileNotFoundError(f"semantic argument model does not exist: {model_path}")
     model = load_model(model_path)
+    projection_model = str(model.get("interpretation_contract_mode") or "").strip() == "projection"
     units = _source_units(project)
     required_content_unit_ids = {
         unit_id
         for unit_id, unit in units.items()
         if str(unit.get("kind") or "") != "heading"
     }
-    model_issues = validate_model(
-        model,
-        source_unit_ids=set(units),
-        required_content_unit_ids=required_content_unit_ids,
-        require_document_context=True,
-    )
+    if projection_model:
+        model_issues = validate_projection_model(model, source_unit_ids=set(units))
+    else:
+        model_issues = validate_model(
+            model,
+            source_unit_ids=set(units),
+            required_content_unit_ids=required_content_unit_ids,
+            require_document_context=True,
+        )
     if model_issues:
         codes = ", ".join(
             dict.fromkeys(str(item.get("code") or "SEMANTIC_MODEL_INVALID") for item in model_issues)
@@ -359,7 +368,8 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
             node_argument_role = str(primary_node.get("argument_role") or "evidence").strip()
             evidence_role = str(
                 atomic.get("evidence_role")
-                or ARGUMENT_ROLE_TO_EVIDENCE_ROLE.get(node_argument_role, "fact")
+                or atomic.get("claim_role")
+                or ("judgment" if projection_model else ARGUMENT_ROLE_TO_EVIDENCE_ROLE.get(node_argument_role, "fact"))
             ).strip()
             if evidence_role not in EVIDENCE_TYPE:
                 evidence_role = "fact"
@@ -377,7 +387,12 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
             importance = str(
                 atomic.get("importance") or primary_node.get("argument_weight") or "detail"
             ).strip()
-            status = str(atomic.get("status") or "unknown").strip()
+            semantic_status = str(atomic.get("status") or "unknown").strip()
+            status = (
+                "来源陈述"
+                if projection_model and semantic_status in {"mixed", "unknown"}
+                else STATUS.get(semantic_status, semantic_status or "待确认")
+            )
             clauses = [
                 clause.strip()
                 for clause in re.split(r"(?<=[。；;])", statement)
@@ -422,8 +437,8 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
                     "source_unit_refs": refs,
                     "semantic_node_ids": semantic_node_ids,
                     "claim_origin": claim_origin,
-                    "status": STATUS.get(status, status or "待确认"),
-                    "semantic_status": status,
+                    "status": status,
+                    "semantic_status": semantic_status,
                     "claim_role": evidence_role,
                     "semantic_argument_role": str(atomic.get("claim_role") or node_argument_role),
                     "argument_duty": str(atomic.get("argument_duty") or "detail"),
@@ -534,6 +549,11 @@ def compile_source_truth(project: Path, output: Path | None = None) -> Path:
         "pages": [],
         "intentional_source_unit_omissions": _items(coverage.get("intentional_omissions")),
     }
+    if projection_model:
+        # Keep the authority boundary visible in the derived artifact: strict
+        # here describes the Source Truth record contract, not a promotion of
+        # the upstream compatibility projection into Stage 00 authorship.
+        payload["authority_mode"] = "projection_only"
     return _write_json(output.expanduser().resolve() if output else project / SOURCE_TRUTH, payload)
 
 

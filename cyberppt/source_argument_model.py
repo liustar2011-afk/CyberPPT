@@ -1080,6 +1080,88 @@ def node_index(model: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return result
 
 
+def validate_projection_model(
+    model: dict[str, Any] | None,
+    *,
+    source_unit_ids: set[str] | None = None,
+) -> list[dict[str, str]]:
+    """Validate the narrow contract consumed from a Source Foundation projection.
+
+    Source Foundation handoffs deliberately keep a ``projection_only`` semantic
+    model instead of pretending that layer-three/four reconstruction is a
+    Stage 00 authoring decision.  Source Truth can still be compiled from that
+    projection, but only from the fields it actually consumes: source-bound
+    atomic items, node IDs, and the source thesis.  The full ``validate_model``
+    contract remains reserved for ``strict`` semantic authoring models.
+    """
+
+    issues: list[dict[str, str]] = []
+    if not isinstance(model, dict):
+        return [_issue("SEMANTIC_ARGUMENT_MODEL_MISSING", "语义理解必须产出机器可读的源材料论点模型。")]
+    if model.get("schema") != SCHEMA:
+        issues.append(_issue("SEMANTIC_ARGUMENT_MODEL_SCHEMA_INVALID", f"论点模型 schema 必须是 {SCHEMA}。"))
+    if _text(model.get("interpretation_contract_mode")) != "projection":
+        issues.append(_issue("SEMANTIC_PROJECTION_MODE_REQUIRED", "Source Foundation 兼容模型必须声明 interpretation_contract_mode=projection。"))
+    if _text(model.get("authority_mode")) != "projection_only":
+        issues.append(_issue("SEMANTIC_PROJECTION_AUTHORITY_REQUIRED", "Source Foundation 兼容模型必须声明 authority_mode=projection_only。"))
+
+    thesis = model.get("document_thesis")
+    if not isinstance(thesis, dict) or not _text(thesis.get("statement")):
+        issues.append(_issue("SEMANTIC_PROJECTION_THESIS_MISSING", "projection 模型必须保留非空 document_thesis.statement。"))
+    elif not _evidence_refs(thesis.get("evidence_refs"))[1]:
+        issues.append(_issue("SEMANTIC_PROJECTION_THESIS_EVIDENCE_MISSING", "projection 模型的 document_thesis 必须保留 source evidence_refs。"))
+
+    context = model.get("document_semantics")
+    if not isinstance(context, dict):
+        issues.append(_issue("SEMANTIC_PROJECTION_CONTEXT_MISSING", "projection 模型必须保留 document_semantics。"))
+    elif not _text(context.get("document_role")) or not _text(context.get("subject_of_report")):
+        issues.append(_issue("SEMANTIC_PROJECTION_CONTEXT_INCOMPLETE", "projection 模型必须保留 document_role 和 subject_of_report。"))
+
+    nodes = node_index(model)
+    if not nodes:
+        issues.append(_issue("SEMANTIC_PROJECTION_NODES_MISSING", "projection 模型必须保留可供 Source Truth 绑定的语义节点。"))
+    assignments = model.get("source_coverage")
+    assignments = assignments.get("assignments") if isinstance(assignments, dict) else None
+    if not isinstance(assignments, list) or not assignments:
+        issues.append(_issue("SEMANTIC_PROJECTION_ASSIGNMENTS_MISSING", "projection 模型必须保留 source_coverage.assignments。"))
+        return issues
+
+    known_units = source_unit_ids or set()
+    item_ids: set[str] = set()
+    atomic_count = 0
+    for assignment in assignments:
+        if not isinstance(assignment, dict):
+            issues.append(_issue("SEMANTIC_PROJECTION_ASSIGNMENT_INVALID", "projection source_coverage.assignments 的每项必须是对象。"))
+            continue
+        target_ids = [_text(value) for value in _list(assignment.get("semantic_node_ids")) if _text(value)]
+        unknown_nodes = sorted(set(target_ids) - set(nodes))
+        if unknown_nodes:
+            issues.append(_issue("SEMANTIC_PROJECTION_NODE_UNKNOWN", "projection assignment 引用了未知语义节点：" + "、".join(unknown_nodes)))
+        atomics = assignment.get("atomic_items")
+        if not isinstance(atomics, list) or not atomics:
+            issues.append(_issue("SEMANTIC_PROJECTION_ATOMIC_ITEMS_MISSING", "projection assignment 必须保留 atomic_items。"))
+            continue
+        for atomic in atomics:
+            if not isinstance(atomic, dict):
+                issues.append(_issue("SEMANTIC_PROJECTION_ATOMIC_ITEM_INVALID", "projection atomic_items 的每项必须是对象。"))
+                continue
+            atomic_count += 1
+            item_id = _text(atomic.get("item_id"))
+            statement = _text(atomic.get("statement"))
+            refs, refs_ok = _evidence_refs(atomic.get("source_unit_refs"))
+            if not item_id or item_id in item_ids or not statement or not refs_ok:
+                issues.append(_issue("SEMANTIC_PROJECTION_ATOMIC_ITEM_INCOMPLETE", "projection atomic item 必须包含唯一 item_id、statement 和 source_unit_refs。", node_id=item_id))
+            if item_id:
+                item_ids.add(item_id)
+            if known_units:
+                unknown_refs = sorted(set(refs) - known_units)
+                if unknown_refs:
+                    issues.append(_issue("SEMANTIC_SOURCE_UNIT_UNKNOWN", "projection atomic item 引用了不存在的 source_unit_id：" + "、".join(unknown_refs), node_id=item_id))
+    if not atomic_count:
+        issues.append(_issue("SEMANTIC_PROJECTION_ATOMIC_ITEMS_MISSING", "projection 模型没有可编译的 atomic_items。"))
+    return issues
+
+
 def audit_outline_consumption(
     outline: dict[str, Any],
     model: dict[str, Any] | None,
