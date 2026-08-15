@@ -172,7 +172,7 @@ git status --short --branch
 git diff --stat
 ```
 
-- [ ] **Step 4: Commit and merge to local `main`**
+- [x] **Step 4: Commit and merge to local `main`**
 
 ```bash
 git add cyberppt/commands/run_autonomous.py tests/test_run_autonomous.py AGENTS.md projects/AGENTS.md SKILL.md .agents/skills/cyberppt-source-foundation/SKILL.md tests/test_skill_contract.py
@@ -181,4 +181,4 @@ git switch main
 git merge --no-ff <feature-branch> -m "Merge branch '<feature-branch>'"
 ```
 
-- [ ] **Step 5: Re-run the focused suite on merged `main` and report the exact commit and merge hashes.**
+- [x] **Step 5: Re-run the focused suite on merged `main` and report the exact commit and merge hashes.**
