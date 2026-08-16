@@ -628,6 +628,24 @@ def onscreen_effective_char_target(page: ScriptPage) -> int:
         max(ONSCREEN_EFFECTIVE_CHARS_MIN, target),
     )
 
+# A genuinely hierarchical page (real module/child structure, not four
+# unrelated short lines wearing structure as a costume -- see
+# _is_structured_compact_onscreen_layer) can carry the same meaning in fewer
+# characters than flowing prose, so it earns a discount off the raw
+# ONSCREEN_EFFECTIVE_CHARS_MIN/MAX target. It does not earn exemption: a flat
+# 60-character floor made the 220-320 target dead code for every page in a
+# real deck, because virtually every content page in this project's own
+# established convention (①②③ modules with child detail lines) satisfies the
+# "structured" test. The discount keeps the structural credit while still
+# requiring real content.
+STRUCTURED_LAYER_DENSITY_DISCOUNT = 0.7
+
+
+def structured_layer_char_target(page: ScriptPage) -> int:
+    """Return the discounted, still-real density floor for a structured page."""
+
+    return max(60, round(onscreen_effective_char_target(page) * STRUCTURED_LAYER_DENSITY_DISCOUNT))
+
 def _is_structured_compact_onscreen_layer(
     page: ScriptPage,
     *,

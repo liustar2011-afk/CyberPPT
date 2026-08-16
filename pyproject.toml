@@ -20,7 +20,7 @@ classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Topic :: Office/Business :: Office Suites",
 ]
-dependencies = ["pyyaml", "rapidocr-onnxruntime>=1.4,<2", "python-pptx"]
+dependencies = ["pyyaml", "rapidocr-onnxruntime>=1.4,<2", "python-pptx", "jsonschema>=4,<5"]
 
 [project.optional-dependencies]
 test = [

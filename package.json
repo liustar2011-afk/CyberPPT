@@ -7,7 +7,8 @@
     "test": "python3 -m unittest discover -s tests",
     "test:validate-pptx": "python3 scripts/test_validate_pptx.py",
     "validate": "python3 scripts/validate_pptx.py",
-    "body-blueprint-prompts": "python3 scripts/body_blueprint_prompt.py"
+    "body-blueprint-prompts": "python3 scripts/body_blueprint_prompt.py",
+    "playwright:smoke": "node scripts/playwright_default.mjs"
   },
   "dependencies": {
     "pptxgenjs": "4.0.1"

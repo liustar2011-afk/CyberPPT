@@ -10,6 +10,18 @@ from pathlib import Path
 MAX_FAILURE_OUTPUT_CHARS = 8192
 
 
+def officecli_path() -> Path | None:
+    """Return the PATH-resolved Office CLI executable, when installed."""
+    command = shutil.which("officecli")
+    return Path(command) if command else None
+
+
+def obscura_path() -> Path | None:
+    """Return the configured Obscura headless-browser executable, when installed."""
+    configured = Path("/Applications/obscura")
+    return configured if configured.is_file() and configured.stat().st_mode & 0o111 else None
+
+
 def office_candidates() -> list[Path]:
     """Return PATH Office executables followed by Codex's isolated fallback."""
     candidates = [

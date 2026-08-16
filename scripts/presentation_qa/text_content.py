@@ -37,7 +37,54 @@ def pptx_texts(path: Path) -> list[str]:
     return texts
 
 
-def build_text_content_qa(pptx_path: Path, expected_texts: list[str], *, order_sensitive: bool = True) -> dict:
+def _match_fragmented_texts(expected: list[str], actual: list[str]) -> list[dict]:
+    """Match logical script strings against adjacent native visual-line objects."""
+    mismatches: list[dict] = []
+    used: set[int] = set()
+    for expected_text in expected:
+        found: tuple[int, ...] | None = None
+        for start in range(len(actual)):
+            if start in used:
+                continue
+            joined = ""
+            indices: list[int] = []
+            for index in range(start, len(actual)):
+                if index in used:
+                    break
+                joined += actual[index]
+                indices.append(index)
+                if joined == expected_text:
+                    found = tuple(indices)
+                    break
+                if len(joined) >= len(expected_text):
+                    break
+        if found is None:
+            mismatches.append(
+                {
+                    "expected": expected_text,
+                    "code": "expected_text_missing_from_fragmented_pptx",
+                }
+            )
+        else:
+            used.update(found)
+    for index, text in enumerate(actual):
+        if index not in used:
+            mismatches.append(
+                {
+                    "actual": text,
+                    "code": "unexpected_fragmented_text_in_pptx",
+                }
+            )
+    return mismatches
+
+
+def build_text_content_qa(
+    pptx_path: Path,
+    expected_texts: list[str],
+    *,
+    order_sensitive: bool = True,
+    allow_fragmented_actual: bool = False,
+) -> dict:
     """Compare the exported PPTX's actual editable text against expected content.
 
     `order_sensitive=True` (default) preserves the original strict positional
@@ -65,6 +112,8 @@ def build_text_content_qa(pptx_path: Path, expected_texts: list[str], *, order_s
                         "code": "pptx_text_differs_from_expected",
                     }
                 )
+    elif allow_fragmented_actual:
+        mismatches.extend(_match_fragmented_texts(expected, actual))
     else:
         expected_counts: dict[str, int] = {}
         for text in expected:
@@ -96,8 +145,9 @@ def build_text_content_qa(pptx_path: Path, expected_texts: list[str], *, order_s
         "schema": "cyberppt.dual_image.text_content_qa.v1",
         "valid": not mismatches,
         "order_sensitive": order_sensitive,
+        "allow_fragmented_actual": allow_fragmented_actual,
         "checks": {
-            "text_count_matches": len(expected) == len(actual),
+            "text_count_matches": len(expected) == len(actual) or allow_fragmented_actual,
             "pptx_text_matches_expected": not mismatches,
         },
         "expected_texts": expected,

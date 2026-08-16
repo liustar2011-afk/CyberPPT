@@ -937,7 +937,7 @@ def build_parser() -> argparse.ArgumentParser:
     image_to_editable_svg_parser = subparsers.add_parser(
         "image-to-editable-svg",
         add_help=False,
-        help="Run the direct image-to-editable-SVG reconstruction command.",
+        help="Deprecated OCR route; disabled. Use final-script-pages --production-build for Quick.",
     )
     image_to_editable_svg_parser.add_argument("reconstruction_args", nargs=argparse.REMAINDER)
     image_to_editable_svg_parser.set_defaults(func=_image_to_editable_svg_command)

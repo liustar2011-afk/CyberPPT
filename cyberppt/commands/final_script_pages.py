@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import sys
 from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
@@ -25,7 +26,10 @@ from scripts.imagegen_pipeline.imagegen_handoff import (
     select_page_visual_intent_type,
 )
 from scripts.imagegen_pipeline.production_readiness import build_production_readiness
-from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruction
+from scripts.image_to_pptx_runtime.stage02_adapter import (
+    CANONICAL_EDITABLE_PPTX_ROUTE,
+    run_stage02_reconstruction,
+)
 from scripts.imagegen_pipeline.providers.codex_oauth_image import (
     ensure_output_size,
     run_codex_image,
@@ -353,7 +357,7 @@ def _run_image_to_editable_svg_build(
     output_dir: Path,
     pages_raw: str,
 ) -> dict[str, Any]:
-    """Use the internal PPT-Master-equivalent reconstruction runtime."""
+    """Use the sole high-fidelity Quick reconstruction route."""
     return run_stage02_reconstruction(
         project=project,
         manifest_path=manifest_path,
@@ -384,6 +388,7 @@ def _generate_manifest_images(
     variants = output_variants_for_mode(production_mode)
     generated: list[str] = []
     skipped: list[str] = []
+    failed: list[dict[str, Any]] = []
     text_audits: list[dict[str, Any]] = []
     imagegen_attempts: list[dict[str, Any]] = []
     for pair in manifest.get("pairs", []):
@@ -406,6 +411,7 @@ def _generate_manifest_images(
                 not isinstance(text_truth, dict) or has_text_receipt
             ):
                 item["status"] = "Generated"
+                item.pop("last_error", None)
                 skipped.append(str(output_path))
                 continue
             input_images = (
@@ -424,77 +430,97 @@ def _generate_manifest_images(
             max_attempts = 3 if isinstance(text_truth, dict) else 1
             accepted_audit: dict[str, Any] | None = None
             correction_audit: dict[str, Any] | None = None
-            for attempt in range(1, max_attempts + 1):
-                imagegen_attempts.append(
-                    _write_imagegen_attempt_record(
-                        output_path,
-                        page_number=pair.get("page_number"),
-                        variant=variant,
-                        attempt=attempt,
+            try:
+                for attempt in range(1, max_attempts + 1):
+                    imagegen_attempts.append(
+                        _write_imagegen_attempt_record(
+                            output_path,
+                            page_number=pair.get("page_number"),
+                            variant=variant,
+                            attempt=attempt,
+                            prompt=prompt,
+                            base_prompt=base_prompt,
+                            image_paths=attempt_input_images,
+                            model=model,
+                            quality=quality,
+                            size=canvas,
+                            correction_audit=correction_audit,
+                        )
+                    )
+                    run_codex_image(
                         prompt=prompt,
-                        base_prompt=base_prompt,
+                        output_path=output_path,
                         image_paths=attempt_input_images,
                         model=model,
-                        quality=quality,
                         size=canvas,
-                        correction_audit=correction_audit,
-                    )
-                )
-                run_codex_image(
-                    prompt=prompt,
-                    output_path=output_path,
-                    image_paths=attempt_input_images,
-                    model=model,
-                    size=canvas,
-                    quality=quality,
-                    timeout=timeout,
-                    force=True,
-                    dry_run=dry_run,
-                    postprocess=False,
-                )
-                if dry_run:
-                    break
-                if isinstance(text_truth, dict):
-                    from cyberppt.image_text_gate import audit_generated_image_text
-
-                    audit = audit_generated_image_text(
-                        output_path,
-                        script_text=str(text_truth.get("script_text") or ""),
+                        quality=quality,
                         timeout=timeout,
+                        force=True,
+                        dry_run=dry_run,
+                        postprocess=False,
                     )
-                    audit["page_number"] = pair.get("page_number")
-                    audit["attempt"] = attempt
-                    text_audits.append(audit)
-                    if not audit["valid"]:
-                        if attempt < max_attempts:
-                            if not output_path.is_file():
-                                raise FileNotFoundError(
-                                    f"page {pair.get('page_number')} failed text audit image "
-                                    f"not found for correction retry: {output_path}"
-                                )
-                            failed_image = _failed_text_audit_image_path(output_path, attempt)
-                            shutil.copy2(output_path, failed_image)
-                            audit["image"] = str(failed_image)
-                            audit["correction_retry"] = {
-                                "next_attempt": attempt + 1,
-                                "source_image": str(failed_image),
-                                "issues": audit.get("issues", []),
-                            }
-                            attempt_input_images = [failed_image, *input_images]
-                            prompt = _text_correction_prompt(base_prompt, audit)
-                            correction_audit = audit
-                            continue
-                        raise RuntimeError(
-                            f"page {pair.get('page_number')} image text audit failed after "
-                            f"{max_attempts} generation attempts; regenerate before enhancement: "
-                            f"{json.dumps(audit.get('issues', []), ensure_ascii=False)}"
+                    if dry_run:
+                        break
+                    if isinstance(text_truth, dict):
+                        from cyberppt.image_text_gate import audit_generated_image_text
+
+                        audit = audit_generated_image_text(
+                            output_path,
+                            script_text=str(text_truth.get("script_text") or ""),
+                            timeout=timeout,
                         )
-                    accepted_audit = audit
-                ensure_output_size(output_path, canvas)
-                break
+                        audit["page_number"] = pair.get("page_number")
+                        audit["attempt"] = attempt
+                        text_audits.append(audit)
+                        if not audit["valid"]:
+                            if attempt < max_attempts:
+                                if not output_path.is_file():
+                                    raise FileNotFoundError(
+                                        f"page {pair.get('page_number')} failed text audit image "
+                                        f"not found for correction retry: {output_path}"
+                                    )
+                                failed_image = _failed_text_audit_image_path(output_path, attempt)
+                                shutil.copy2(output_path, failed_image)
+                                audit["image"] = str(failed_image)
+                                audit["correction_retry"] = {
+                                    "next_attempt": attempt + 1,
+                                    "source_image": str(failed_image),
+                                    "issues": audit.get("issues", []),
+                                }
+                                attempt_input_images = [failed_image, *input_images]
+                                prompt = _text_correction_prompt(base_prompt, audit)
+                                correction_audit = audit
+                                continue
+                            raise RuntimeError(
+                                f"page {pair.get('page_number')} image text audit failed after "
+                                f"{max_attempts} generation attempts; regenerate before enhancement: "
+                                f"{json.dumps(audit.get('issues', []), ensure_ascii=False)}"
+                            )
+                        accepted_audit = audit
+                    ensure_output_size(output_path, canvas)
+                    break
+            except (OSError, TimeoutError) as exc:
+                # A transient backend/network fault (broken pipe, connection
+                # reset, timeout) on one page must not discard already-queued
+                # work for every other page in the batch -- record it and move
+                # on; the existing "skip if already Generated" logic above
+                # makes a plain re-run pick up only the pages that actually
+                # failed, instead of forcing a full-batch retry from scratch.
+                item["status"] = "Failed"
+                item["last_error"] = f"{type(exc).__name__}: {exc}"
+                failed.append(
+                    {
+                        "page_number": pair.get("page_number"),
+                        "variant": variant,
+                        "path": str(output_path),
+                        "error": item["last_error"],
+                    }
+                )
+                continue
             if not dry_run:
                 item["status"] = "Generated"
                 item["generated_at"] = _utc_now()
+                item.pop("last_error", None)
                 if accepted_audit is not None:
                     item["text_audit"] = accepted_audit
             generated.append(str(output_path))
@@ -503,6 +529,7 @@ def _generate_manifest_images(
         "production_mode": production_mode,
         "generated": generated,
         "skipped": skipped,
+        "failed": failed,
         "dry_run": dry_run,
         "text_audit_skipped": skip_text_audit,
         "full_reference_images": [str(path) for path in (full_reference_images or [])],
@@ -550,6 +577,25 @@ def run_final_script_pages(
     semantic_plan_dir = semantic_plan_dir.expanduser().resolve() if semantic_plan_dir else None
     if not script.is_file():
         raise FileNotFoundError(f"final script not found: {script}")
+    if generate_images and not skip_image_text_audit and not dry_run_images:
+        # A missing OCR dependency used to surface only after Codex had
+        # already spent real time/money generating an image for this page --
+        # first observed when this command was run under the system's global
+        # python3 instead of this repo's own .venv, which has
+        # rapidocr-onnxruntime installed as a declared dependency (see
+        # pyproject.toml) and the global interpreter does not. Fail before
+        # any image generation starts instead of mid-batch.
+        try:
+            import rapidocr_onnxruntime  # noqa: F401
+        except ImportError as exc:
+            raise RuntimeError(
+                "rapidocr-onnxruntime is not importable in the current Python "
+                f"environment ({sys.executable}); image generation requires it "
+                "for the pre-enhancement text audit. If this repo has its own "
+                ".venv, run this command with .venv/bin/python3 instead of the "
+                "system python3, or pass --skip-image-text-audit to explicitly "
+                "opt out of the text audit (not recommended for production)."
+            ) from exc
     autonomous_contract_path = (
         autonomous_contract.expanduser().resolve()
         if autonomous_contract is not None
@@ -579,12 +625,18 @@ def run_final_script_pages(
     project_created = False
     from cyberppt.commands.visual_structure_stage import assert_visual_structure_ready
     from cyberppt.commands.script_audit import run_script_audit
-    from cyberppt.stage02_handoff import load_stage02_handoff
+    from cyberppt.stage02_handoff import (
+        STAGE02_WAIVABLE_ERROR_CODES,
+        audit_authorizes_stage02,
+        load_stage02_handoff,
+    )
 
-    code, audit = run_script_audit(project, script)
-    if code != 0 or audit.get("status") != "passed":
+    _, audit = run_script_audit(project, script)
+    if not audit_authorizes_stage02(audit):
         raise ValueError(
-            "final-script-pages requires a currently passed full-script audit"
+            "final-script-pages requires a currently passed full-script audit "
+            "(or one whose only remaining errors are documented-disposition "
+            f"{sorted(STAGE02_WAIVABLE_ERROR_CODES)})"
         )
     load_stage02_handoff(project, required=True)
     assert_visual_structure_ready(project, script)
@@ -683,6 +735,22 @@ def run_final_script_pages(
             skip_text_audit=skip_image_text_audit,
         )
         _write_json(manifest_path, manifest)
+        failed_pages = image_generation.get("failed") or []
+        if failed_pages:
+            # Every other page in this batch already ran and was written to
+            # manifest_path with status="Generated" above; raising only now
+            # (not from inside the per-page loop) means a plain re-run of the
+            # same command skips those and retries only what actually failed.
+            summary = "; ".join(
+                f"page {item.get('page_number')} {item.get('variant')}: {item.get('error')}"
+                for item in failed_pages
+            )
+            raise RuntimeError(
+                f"{len(failed_pages)} of {len(failed_pages) + len(image_generation.get('generated') or [])} "
+                f"image generation attempts failed (likely transient backend/network faults); "
+                f"already-generated pages were kept, re-run the same command to retry only the "
+                f"failed ones: {summary}"
+            )
     if require_images or (production_build and not dry_run_images):
         require_generated(manifest)
 
@@ -731,6 +799,7 @@ def run_final_script_pages(
         "project_created": project_created,
         "status": status,
         "production_mode": production_mode,
+        "editable_pptx_route": CANONICAL_EDITABLE_PPTX_ROUTE,
         "artifacts": {
             "compiled_deliverable_prompt": str(compiled_script),
             "page_image_pairs": str(manifest_path),
@@ -773,6 +842,7 @@ def run_final_script_pages(
         "style_lock_sha256": _sha256(style_lock),
         "page_set": page_numbers,
         "production_mode": production_mode,
+        "editable_pptx_route": CANONICAL_EDITABLE_PPTX_ROUTE,
         "stage": stage_name,
         "source_mode": source_mode,
         "autonomous_contract": (

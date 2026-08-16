@@ -19,6 +19,8 @@ from cyberppt.visual_structure_contract import (
     audit_visual_design_package,
     audit_visual_deck_rhythm,
     prompt_contract_hashes,
+    read_json as _read_json,
+    sha256 as _sha256,
     skill_bundle_sha256,
 )
 
@@ -36,6 +38,38 @@ VISUAL_FILES = {
     "validation": Path("visual/validation-report.json"),
     "review_summary": Path("visual/visual-review-summary.md"),
 }
+
+
+def _spec_content_sha256(path: Path) -> str:
+    """Hash deck-visual-spec.json excluding the audit's own status stamps.
+
+    `run_visual_structure_audit` writes its pass/fail verdict back onto every
+    page's `qa` block and `quality_contract.status`/`focus_competition.status`
+    (see the `write_json_atomic(spec_json, audited_spec)` call below). Binding
+    the execution receipt to the raw file hash made that self-annotation
+    invalidate the very receipt the same audit run had just verified: a
+    second, unchanged audit run would report EXECUTION_ARTIFACT_STALE purely
+    because the first run stamped the file. Hashing the compiler-owned
+    content only (with the audit-owned status fields normalized out) keeps
+    the binding sensitive to real spec changes without being sensitive to the
+    audit re-stamping its own prior verdict.
+    """
+
+    payload = _read_json(path)
+    payload.pop("qa_summary", None)
+    for page in payload.get("pages") or []:
+        if not isinstance(page, dict):
+            continue
+        page.pop("qa", None)
+        contract = page.get("quality_contract")
+        if isinstance(contract, dict):
+            contract["status"] = None
+            focus = contract.get("focus_competition")
+            if isinstance(focus, dict):
+                focus["status"] = None
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
 
 
 _DIRECTION_MAP = {
@@ -224,23 +258,40 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     if len(reading_keys) != len(set(reading_keys)) or set(reading_keys) != set(evidence_keys):
         _fail(f"{page_id}: selected reading sequence must cover every evidence key once")
     grammar = [str(value) for value in selected.get("spatial_grammar") or []]
-    allowed_grammar = {"anchor", "path", "convergence", "divergence", "layer", "boundary", "interface", "network", "tension", "feedback", "control"}
+    # "peer" (coordinate_peer_set, see visual-intent-router.md) marks items with
+    # no source-supported order, priority, or causal relation between them.
+    # It must not fall through to the "anchor" default below, and it must not
+    # get a "flow" chain of directed, main_chain connectors labeled 业务承接
+    # ("business handoff") -- that label and a main-chain flag are exactly the
+    # sequential/causal relationship the source explicitly does not support.
+    allowed_grammar = {"anchor", "path", "convergence", "divergence", "layer", "boundary", "interface", "network", "tension", "feedback", "control", "peer"}
     grammar = [item for item in grammar if item in allowed_grammar] or ["anchor"]
-    relation = "transform" if "transform" in str(selected.get("visual_intent_type")) else "flow"
-    if "convergence" in grammar:
-        relation = "converge"
-    elif "divergence" in grammar:
-        relation = "diverge"
-    elif "feedback" in grammar:
-        relation = "loop"
-    elif "control" in grammar:
-        relation = "control"
+    if "peer" in grammar:
+        relation = "peer"
+    else:
+        relation = "transform" if "transform" in str(selected.get("visual_intent_type")) else "flow"
+        if "convergence" in grammar:
+            relation = "converge"
+        elif "divergence" in grammar:
+            relation = "diverge"
+        elif "feedback" in grammar:
+            relation = "loop"
+        elif "control" in grammar:
+            relation = "control"
     direction = _DIRECTION_MAP.get(str(selected.get("direction") or ""), "spatial")
     graph_edges = []
     connectors = []
     for left, right in zip(reading_keys, reading_keys[1:]):
-        graph_edges.append({"from": eid[left], "to": eid[right], "relation": relation, "label": "业务承接"})
-        connectors.append({"from": eid[left], "to": eid[right], "type": relation, "direction": direction, "label": "业务承接", "main_chain": True})
+        if relation == "peer":
+            # A directed "业务承接" (business handoff) edge with main_chain=True
+            # is itself a sequential/causal claim -- exactly what "peer" means
+            # the source does not support. Record the pair as siblings under
+            # the same shared judgment instead, with no direction or chain flag.
+            graph_edges.append({"from": eid[left], "to": eid[right], "relation": "peer", "label": "共同支撑同一判断"})
+            connectors.append({"from": eid[left], "to": eid[right], "type": "peer", "direction": "none", "label": "共同支撑同一判断", "main_chain": False})
+        else:
+            graph_edges.append({"from": eid[left], "to": eid[right], "relation": relation, "label": "业务承接"})
+            connectors.append({"from": eid[left], "to": eid[right], "type": relation, "direction": direction, "label": "业务承接", "main_chain": True})
     trace_refs = [str(value).strip() for value in source.get("trace_refs") or [] if str(value).strip()]
     source_ref = "、".join(trace_refs) or page_id
     evidence_units = [
@@ -263,7 +314,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         "schema_version": "1.1", "page_id": page_id, "page_number": int(source["page_number"]),
         "page_title": str(source["page_title"]), "page_role": str(source.get("argument_role") or "content"),
         "page_mission": str(source["page_mission"]), "core_judgment": str(source["core_judgment"]),
-        "content_lock": {"mode": "strict", "locked_items": locked_items, "allowed_transformations": ["line_break", "grouping", "position_change"], "forbidden_transformations": ["change facts, numbers, dates or units", "change actors, responsibilities or status", "add presentation copy not listed in required_text"]},
+        "content_lock": {"mode": "strict", "locked_items": locked_items, "allowed_transformations": ["line_break", "grouping", "position_change"], "forbidden_transformations": ["Do not change facts, numbers, dates or units.", "Do not change actors, responsibilities or status.", "Do not add presentation copy not listed in required_text.", "For a \"label: sentence\" locked text item, render it once as that single label-plus-sentence unit; do not additionally repeat the label alone as a separate heading, card title, or tag.", "Do not invent a heading, label, or tag for a locked text item that has no label in the required text (for example a bare boundary sentence); render it as plain text with no invented label."]},
         "evidence_units": evidence_units,
         "semantic_graph": {"primary_relation": relation, "direction": direction, "nodes": [eid[key] for key in evidence_keys], "edges": graph_edges, "decision_relationship": _render_business_relationships(source.get("business_relationships")), "business_relationships": deepcopy(source.get("business_relationships") or [])},
         "structural_decision": {"semantic_focus": {"kind": str(focus.get("kind") or "relationship"), "ref": focus_id}, "spatial_grammar": grammar, "semantic_tags": [str(selected.get("visual_intent_type") or "relationship")], "primary_refs": [focus_id], "secondary_refs": [eid[key] for key in evidence_keys if key != focus_key], "reading_sequence": [eid[key] for key in reading_keys], "text_bindings": [{"evidence_id": eid[key], "target_ref": eid[key], "binding": "result" if key == focus_key else "embedded", "text_ids": text_ids_by_evidence[key]} for key in evidence_keys], "representation_freedom": {"carrier": "free", "medium": "free", "reason": "上游仅锁定业务关系和正文，Stage02已选定具体业务关系场与文字贴附方式"}},
@@ -434,24 +485,16 @@ def _write_visual_design_input(project: Path, handoff: Path) -> Path:
                 "and must never be copied into decision_relationship"
             ),
             "decision_policy": (
-                "ppt-visual-structure-designer must compare at least three materially different "
-                "candidates per page; deterministic keyword routing is not authoritative"
+                "ppt-visual-structure-designer writes one candidate when the page's business "
+                "relationship type is unambiguous from expression_constraints.reading_requirement "
+                "and content alone; when the relationship type is genuinely contested (for example "
+                "parallel vs. hierarchical), it must compare 2-3 materially different candidates "
+                "and justify the selection; deterministic keyword routing is never authoritative"
             ),
             "pages": pages,
         },
     )
     return output
-
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def _read_json(path: Path) -> dict[str, Any]:
-    value = json.loads(path.read_text(encoding="utf-8-sig"))
-    if not isinstance(value, dict):
-        raise ValueError(f"JSON root must be an object: {path}")
-    return value
 
 
 def visual_structure_required(project: Path) -> bool:
@@ -577,7 +620,7 @@ def prepare_visual_structure_stage(
                 "",
                 "## Required action",
                 "",
-                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Write cyberppt.visual_design_decisions.v3. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. trace_refs are audit-only provenance: use them to justify decisions but never copy them into visual copy or ImageGen prompt material. Treat expression_constraints as the required reading-relation and balance profile: it governs peer hierarchy, progression, correspondence, feedback or causal direction; it must never be converted directly into a fixed card, column, arrow, loop, pyramid or matrix template. Every candidate must provide its own visual_thesis and expression_fit with the received form, satisfied constraints, reading relation, balance strategy, and either an empty default-profile deviation or an adapted-profile changed-constraint list plus business reason that preserves the expression core. Each selected page decision must provide execution_design.business_object, visual_focus, semantic_role, use_scene (boolean), scene_type, text_integration_method, spatial_organization and relationship_encoding; these selected scene/carrier fields are authoritative and must survive unchanged into deck-visual-spec.json. For every page, record stage01_visual_note_disposition with the received form, chosen reading relation and balance strategy, plus inherited, adjusted and rejected upstream visual features and reasons. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Generate and compare at least three materially different candidates per content page; deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write only:",
+                "Invoke the registered skill in the current execution surface. Use visual-design-input.json, derived only from stage02_handoff.json, as the visual-design interface. Write cyberppt.visual_design_decisions.v3. Treat business_relationships as authoritative, use stage01_relationship_features to preserve actors, actions, directions, conditions, branches and feedback, and treat author_visual_notes as advisory only. trace_refs are audit-only provenance: use them to justify decisions but never copy them into visual copy or ImageGen prompt material. Treat expression_constraints as the required reading-relation and balance profile: it governs peer hierarchy, progression, correspondence, feedback or causal direction; it must never be converted directly into a fixed card, column, arrow, loop, pyramid or matrix template. Every candidate must provide its own visual_thesis and expression_fit with the received form, satisfied constraints, reading relation, balance strategy, and either an empty default-profile deviation or an adapted-profile changed-constraint list plus business reason that preserves the expression core. Each selected page decision must provide execution_design.business_object, visual_focus, semantic_role, use_scene (boolean), scene_type, text_integration_method, spatial_organization and relationship_encoding; these selected scene/carrier fields are authoritative and must survive unchanged into deck-visual-spec.json. For every page, record stage01_visual_note_disposition with the received form, chosen reading relation and balance strategy, plus inherited, adjusted and rejected upstream visual features and reasons. Do not read or reuse any existing Stage 02 visual/ or workbench/prompts/imagegen outputs as authority. Write one candidate when the page's business relationship type is unambiguous from expression_constraints.reading_requirement and content alone; when it is genuinely contested (for example parallel vs. hierarchical), generate and compare 2-3 materially different candidates and justify the selection. Deterministic keyword matching must not choose the final visual intent or carrier. Preserve the approved page set, locked text ids and locked text, and write only:",
                 "",
                 "- `visual/visual-design-decisions.json`",
                 "",
@@ -643,7 +686,10 @@ def record_visual_structure_execution(
             "page_ids": page_ids,
             "skill_outputs": ["decisions"],
             "compiler_outputs": ["spec_json", "spec_markdown"],
-            "artifact_sha256": {key: _sha256(path) for key, path in artifact_paths.items()},
+            "artifact_sha256": {
+                key: (_spec_content_sha256(path) if key == "spec_json" else _sha256(path))
+                for key, path in artifact_paths.items()
+            },
             "executed_at": _utc_now(),
             "note": note.strip(),
         },
@@ -702,7 +748,8 @@ def _audit_execution_receipt(
     receipt_artifacts = receipt.get("artifact_sha256") if isinstance(receipt.get("artifact_sha256"), dict) else {}
     for key in ("decisions", "spec_json", "spec_markdown"):
         path = project / VISUAL_FILES[key]
-        if not path.is_file() or receipt_artifacts.get(key) != _sha256(path):
+        current = _spec_content_sha256(path) if key == "spec_json" else _sha256(path)
+        if not path.is_file() or receipt_artifacts.get(key) != current:
             issue("EXECUTION_ARTIFACT_STALE", f"Execution receipt does not match {path}.")
     input_pages = [
         str(item.get("page_id") or "")

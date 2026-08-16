@@ -17,6 +17,11 @@ from .svg_quality.checker import SVGQualityChecker
 from .svg_to_pptx.pptx_package.builder import create_pptx_with_native_svg
 
 
+# The only production route allowed to publish an editable PPTX from a
+# rendered page is the hand-authored SVG Quick reconstruction path below.
+CANONICAL_EDITABLE_PPTX_ROUTE = "stage02-quick-image-to-pptx"
+
+
 def _read_json(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
@@ -65,7 +70,7 @@ def _copy_relative_svg_assets(source: Path, target: Path) -> None:
 
 
 def run_stage02_reconstruction(*, project: Path | str, manifest_path: Path | str, output_dir: Path | str, requested_pages: list[int]) -> dict[str, Any]:
-    """Prepare and release a faithful SVG roster; never synthesize one from OCR boxes."""
+    """Run the sole production route for high-fidelity Quick editable PPTX."""
     manifest_file = Path(manifest_path).expanduser().resolve()
     manifest = _read_json(manifest_file)
     pairs = _require_audited_pairs(manifest, requested_pages)
@@ -93,10 +98,26 @@ def run_stage02_reconstruction(*, project: Path | str, manifest_path: Path | str
     review = write_review(quick, [])
     export = output / "exports" / "editable_svg.pptx"
     export.parent.mkdir(parents=True, exist_ok=True)
-    if not create_pptx_with_native_svg(svgs, export, verbose=False, use_compat_mode=False, use_native_shapes=True, pptx_structure="flat"):
+    if not create_pptx_with_native_svg(
+        svgs,
+        export,
+        verbose=False,
+        use_compat_mode=False,
+        use_native_shapes=True,
+        pptx_structure="flat",
+        # Quick reconstruction treats every authored positional tspan row as
+        # a visible source-image line. Keep those rows as independent native
+        # text boxes, matching the reference deck's editable line objects.
+        text_flow="split",
+    ):
         raise RuntimeError("internal image-to-PPTX SVG export failed")
     expected = [text for number, _ in pages for text in _script_lines(script, number)]
-    text_qa = build_text_content_qa(export, expected, order_sensitive=False)
+    text_qa = build_text_content_qa(
+        export,
+        expected,
+        order_sensitive=False,
+        allow_fragmented_actual=True,
+    )
     if not text_qa["valid"]:
         raise ValueError("exported PPTX native text differs from the approved script")
     analysis = output / "analysis"

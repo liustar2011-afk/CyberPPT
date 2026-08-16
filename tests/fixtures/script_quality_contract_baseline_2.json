@@ -96,6 +96,20 @@
       "suggested_action": "Raise prose to short-article completeness aligned with the source topic body."
     },
     {
+      "code": "ONSCREEN_STORY_DENSITY_LOW",
+      "evidence": [
+        "visible_chars=71",
+        "min=154"
+      ],
+      "message": "On-screen text is too compressed to support independent reading.",
+      "pages": [
+        "p04"
+      ],
+      "severity": "error",
+      "source_ids": [],
+      "suggested_action": "Rewrite 上屏文字 as a high-information reading layer: retain the page subject, source-supported facts, explicit relations, and the page implication needed to understand it without narration; do not add a formulaic conclusion when the source does not provide one."
+    },
+    {
       "code": "CONTENT_SPEAKER_NOTES_TOO_THIN",
       "evidence": [
         "chars=38"

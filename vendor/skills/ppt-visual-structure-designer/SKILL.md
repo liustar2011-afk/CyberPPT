@@ -63,6 +63,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - 政企、央企、中电联和领导汇报默认读取 `references/cec-government-enterprise-profile.md`。
 - 输入来自既有`ppt-script`工作台时读取 `references/ppt-script-integration.md`。
 - 需要参考完整案例时读取 `references/examples.md`。
+- 页面的`expression_constraints.reading_requirement`为`parallel`（`key_points_3`、`framework_4`），或上游 Outline 已把本页匹配到某个论证模型时，读取仓库根目录 `references/semantic-expression-models.md`：该模型的`forbidden_inferences`（例如`pyramid_principle`的"不得把并列事实提升为结论"）同样约束本阶段的视觉关系编码，不得在视觉设计阶段重新引入论证阶段已经排除的因果或先后关系。
 
 机器可用资源：
 
@@ -113,9 +114,13 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 
 ### 4. 生成并比较构图候选
 
-每页内部生成至少三种结构上真正不同的候选。候选必须改变语义焦点、空间语法或阅读路径，不能只更换媒介、载体名称、颜色或模块顺序。
+候选数量按页面关系是否存在争议决定，不强制每页都写三个：
 
-工作台输入给出`expression_constraints`时，每个候选还必须写入`expression_fit`：保留收到的`form`，说明满足的中性结构约束、阅读关系与信息均衡策略。`constraint_status`只能为`default_profile`或`adapted`；默认档案的`changed_constraints`与`deviation_reason`必须为空，适配档案必须列出改动项并说明业务理由及保留的表达核心。表达档案约束关系与阅读，不得推导为卡片、列、箭头、循环、金字塔或矩阵等固定视觉模板。
+- 页面的业务关系类型（并列/主从/顺序/因果/收敛……）从内容本身和 `expression_constraints.reading_requirement` 就能唯一确定、没有第二种合理读法时，写 1 个候选即可，不需要为凑数量而编造结构上并不成立的备选方案。
+- 关系类型本身存在争议或多种合理读法时（例如"这组内容到底是并列还是有主从/因果关系"——这正是本项目实际出现过判断错误的地方），必须生成 2–3 个结构上真正不同的候选，写清每个候选各自成立的理由，再选出最贴合来源的一个。
+- 不管写几个候选，凡是写出来的候选都必须结构上真正不同（改变语义焦点、空间语法或阅读路径），不能只更换媒介、载体名称、颜色或模块顺序；未选候选要给出具体的 `rejection_rationale`，不能用"得分更低"这类空话。**候选数量本身不是质量信号，候选是否解决了真实的关系判断分歧才是。**
+
+工作台输入给出`expression_constraints`时，每个候选还必须写入`expression_fit`：保留收到的`form`，说明满足的中性结构约束、阅读关系与信息均衡策略。`constraint_status`只能为`default_profile`或`adapted`；默认档案的`changed_constraints`与`deviation_reason`必须为空，适配档案必须列出改动项并说明业务理由及保留的表达核心。表达档案约束关系与阅读，不得推导为卡片、列、箭头、循环、金字塔或矩阵等固定视觉模板。`expression_constraints.reading_requirement`是权威边界，不是候选参考：为`parallel`时，任何候选都不得把`semantic_focus.kind`设为`outcome`并指向某一并列证据组（仓库审计器`CANDIDATE_PARALLEL_FORM_FALSE_OUTCOME`会拦截这类候选）——正确做法见`references/visual-intent-router.md`的`coordinate_peer_set`。
 
 每个候选还必须写入候选自身的`visual_thesis`和`selection_rationale`：`visual_thesis`必须说明画面要证明的对象关系，不能复用页面核心结论充当占位；`selection_rationale`包含页面使命适配说明，以及由`single_focus`、`text_capacity`、`relation_clarity`、`composition_stability`、`anti_pattern_risk`五项组成的可生成性评分；每项为0–20整数，总分必须为100，并列出风险。未选候选必须写入相对已选方案的具体`rejection_rationale`，说明焦点、关系、容量或阅读上的实际劣势；不得只写“得分更低”“不够美观”“一般”或“不适合”。
 
@@ -166,7 +171,7 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 - `<原文件名>_视觉结构设计.json`：机器校验和后续自动化。
 - `<原文件名>_视觉结构校验.json`：校验结果。
 
-CyberPPT工作台模式只输出`visual/visual-design-decisions.json`，schema固定为`cyberppt.visual_design_decisions.v3`，保留每页至少三项候选、每项候选自己的`visual_thesis`、完整证据覆盖、候选评分维度、`selection_rationale`、未选候选的`rejection_rationale`、`relationship_coverage`、选中候选、`expression_fit`及输入哈希。每页还必须提供`execution_design`，完整写明`business_object`、`visual_focus`、`semantic_role`、布尔值`use_scene`、`scene_type`、`text_integration_method`、`spatial_organization`和`relationship_encoding`。每页必须包含`stage01_visual_note_disposition`，分别记录`inherited`、`adjusted`、`rejected`的上游视觉特征及专业理由；不得用一句“已参考”代替逐项处置。`trace_refs`仅用于审计追溯，不得进入结构提示或上屏文字。随后由仓库`execute-visual-structure`命令唯一生成`deck-visual-spec.json`与`script-visual-structure.md`，并由仓库命令记录执行器、模型、Skill包和编译产物哈希；仅生成调用说明不视为执行完成。
+CyberPPT工作台模式只输出`visual/visual-design-decisions.json`，schema固定为`cyberppt.visual_design_decisions.v3`，保留每页按"生成并比较构图候选"一节规则确定数量的候选（无争议页 1 个，有争议页 2–3 个）、每项候选自己的`visual_thesis`、完整证据覆盖、候选评分维度、`selection_rationale`、未选候选的`rejection_rationale`、`relationship_coverage`、选中候选、`expression_fit`及输入哈希。每页还必须提供`execution_design`，完整写明`business_object`、`visual_focus`、`semantic_role`、布尔值`use_scene`、`scene_type`、`text_integration_method`、`spatial_organization`和`relationship_encoding`。每页必须包含`stage01_visual_note_disposition`，分别记录`inherited`、`adjusted`、`rejected`的上游视觉特征及专业理由；不得用一句“已参考”代替逐项处置。`trace_refs`仅用于审计追溯，不得进入结构提示或上屏文字。随后由仓库`execute-visual-structure`命令唯一生成`deck-visual-spec.json`与`script-visual-structure.md`，并由仓库命令记录执行器、模型、Skill包和编译产物哈希；仅生成调用说明不视为执行完成。
 
 只处理单页时，可输出单页Markdown和单页JSON。
 

@@ -115,7 +115,10 @@ def _payloads() -> tuple[dict, dict, dict]:
             "id": "C1",
             "visual_thesis": "Input converges on the result so the support relationship is immediately visible.",
             "visual_intent_type": "evidence_to_judgment",
-            "semantic_focus": {"kind": "outcome", "evidence_key": "result"},
+            # framework_4 has reading_requirement "parallel": no peer may be
+            # marked semantic_focus.kind=="outcome" (see
+            # CANDIDATE_PARALLEL_FORM_FALSE_OUTCOME in visual_structure_contract.py).
+            "semantic_focus": {"kind": "entity", "evidence_key": "result"},
             "spatial_grammar": ["convergence"],
             "direction": "outside_to_center",
             "reading_sequence": ["input", "result"],
@@ -381,7 +384,7 @@ def test_audit_rejects_competing_primary_focus() -> None:
 def test_visual_design_package_blocks_each_cross_artifact_failure() -> None:
     cases = []
     design, decisions, spec = _payloads()
-    decisions["pages"][0]["candidates"] = decisions["pages"][0]["candidates"][:2]
+    decisions["pages"][0]["candidates"] = []
     cases.append((design, decisions, spec, "CANDIDATE_COUNT_INSUFFICIENT"))
 
     design, decisions, spec = _payloads()
@@ -494,8 +497,14 @@ def test_every_registered_form_has_a_default_candidate_profile() -> None:
         design["pages"][0]["onscreen_expression"]["form"] = form
         design["pages"][0]["expression_constraints"] = expression_constraints(form)
         decisions["pages"][0]["onscreen_expression_disposition"]["form"] = form
+        # A "parallel" reading requirement (key_points_3, framework_4) means no
+        # peer may be presented as the outcome the others converge into; keep the
+        # fixture's default outcome-focused candidate only for non-parallel forms.
+        parallel_form = expression_constraints(form)["reading_requirement"] == "parallel"
         for candidate in decisions["pages"][0]["candidates"]:
             candidate["expression_fit"] = _expression_fit(form)
+            if parallel_form and candidate["semantic_focus"]["kind"] == "outcome":
+                candidate["semantic_focus"] = {**candidate["semantic_focus"], "kind": "entity"}
         selected = decisions["pages"][0]["candidates"][0]
         spec["pages"][0]["expression_contract"] = {
             "form": form,

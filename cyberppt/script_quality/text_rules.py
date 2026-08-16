@@ -22,6 +22,7 @@ from .onscreen import (
     onscreen_story_roles,
     parse_selection_notes,
     selection_notes_are_structured,
+    structured_layer_char_target,
 )
 from .parsing import _source_refs
 
@@ -517,7 +518,6 @@ def _prose_issues(
         visible_story_chars = meaningful_char_count(
             page.onscreen_judgment + page.onscreen_text
         )
-        min_story_chars = onscreen_effective_char_target(page)
         coverage = onscreen_semantic_coverage(page)
         # Formal slides may be independently readable through an explicit
         # information architecture rather than paragraph-length copy.  Accept
@@ -528,6 +528,11 @@ def _prose_issues(
         structured_compact_layer = _is_structured_compact_onscreen_layer(
             page,
             visible_story_chars=visible_story_chars,
+        )
+        min_story_chars = (
+            structured_layer_char_target(page)
+            if structured_compact_layer
+            else onscreen_effective_char_target(page)
         )
         source_erasure_hits = tuple(
             phrase
@@ -560,9 +565,7 @@ def _prose_issues(
                     ),
                 )
             )
-        if visible_story_chars < min_story_chars and (
-            not structured_compact_layer
-        ):
+        if visible_story_chars < min_story_chars:
             issues.append(
                 _issue(
                     "ONSCREEN_STORY_DENSITY_LOW",

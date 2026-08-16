@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from .orchestrator import run_image_to_editable_svg
@@ -17,7 +18,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--pages", help="comma-separated selected page numbers")
     args = parser.parse_args(argv)
     pages = [int(value) for value in args.pages.split(",") if value.strip()] if args.pages else None
-    result = run_image_to_editable_svg(project=args.project, manifest_path=args.manifest, output_dir=args.output_dir, requested_pages=pages)
+    try:
+        result = run_image_to_editable_svg(project=args.project, manifest_path=args.manifest, output_dir=args.output_dir, requested_pages=pages)
+    except RuntimeError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result["status"] == "production_ready" else 2
 

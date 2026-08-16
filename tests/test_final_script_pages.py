@@ -154,6 +154,55 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertEqual([Path("palette-09.png")], kwargs["image_paths"])
         self.assertFalse(kwargs["postprocess"])
 
+    def test_transient_network_fault_on_one_page_does_not_abort_the_batch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output_4 = Path(tmp) / "page-004.png"
+            output_5 = Path(tmp) / "page-005.png"
+            manifest = {
+                "production_mode": "image-to-editable-svg",
+                "pairs": [
+                    {
+                        "page_number": 4,
+                        "full": {"path": str(output_4), "prompt": "p4", "canvas": "2048x1024"},
+                    },
+                    {
+                        "page_number": 5,
+                        "full": {"path": str(output_5), "prompt": "p5", "canvas": "2048x1024"},
+                    },
+                ],
+            }
+
+            def generate_image(**kwargs: object) -> None:
+                output_path = Path(str(kwargs["output_path"]))
+                if output_path == output_4:
+                    raise BrokenPipeError(32, "Broken pipe")
+                output_path.write_bytes(b"generated")
+
+            with (
+                patch(
+                    "cyberppt.commands.final_script_pages.run_codex_image",
+                    side_effect=generate_image,
+                ),
+                patch("cyberppt.commands.final_script_pages.ensure_output_size"),
+            ):
+                summary = _generate_manifest_images(
+                    manifest,
+                    model="gpt-image-2",
+                    quality="high",
+                    timeout=600,
+                    force=True,
+                    dry_run=False,
+                )
+
+            self.assertEqual([str(output_5)], summary["generated"])
+            self.assertEqual(1, len(summary["failed"]))
+            self.assertEqual(4, summary["failed"][0]["page_number"])
+            self.assertIn("Broken pipe", summary["failed"][0]["error"])
+            self.assertEqual("Failed", manifest["pairs"][0]["full"]["status"])
+            self.assertIn("Broken pipe", manifest["pairs"][0]["full"]["last_error"])
+            self.assertEqual("Generated", manifest["pairs"][1]["full"]["status"])
+            self.assertNotIn("last_error", manifest["pairs"][1]["full"])
+
     def test_typo_audit_regenerates_before_enhancement(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / "page-004.png"

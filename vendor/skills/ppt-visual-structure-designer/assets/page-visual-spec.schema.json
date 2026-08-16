@@ -269,6 +269,7 @@
             "boundary",
             "evidence",
             "responsibility",
+            "peer",
             "none"
           ]
         },
@@ -432,7 +433,8 @@
               "network",
               "tension",
               "feedback",
-              "control"
+              "control",
+              "peer"
             ]
           }
         },

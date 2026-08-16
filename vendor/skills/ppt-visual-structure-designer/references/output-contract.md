@@ -252,7 +252,7 @@ CyberPPT工作台的`visual-design-input.json`使用以下权威边界：
 - `author_visual_notes`：低权重作者备注，固定版式和载体描述不得进入关系真值。
 - `locked_text_items`：带稳定`text_id`的正文唯一来源。
 
-工作台中Skill只要求生成`visual-design-decisions.json`，保存每页至少三个结构候选、候选各自的`visual_thesis`、候选完整证据覆盖、评分维度与总分、选中候选、完整`execution_design`、输入哈希，以及`stage01_visual_note_disposition`。`trace_refs`仅用于审计追溯，执行器可将其写为证据单元的`source_ref`，但提示词构建器不得读取它。仓库`execute-visual-structure`唯一生成规格JSON和Markdown；正式执行回执由仓库命令生成并绑定执行器、模型、Skill包、决策回执和编译产物哈希。编译产物的`qa`与`qa_summary`初始为`draft`且未评分，实际审计结果以`validation-report.json`为准。
+工作台中Skill只要求生成`visual-design-decisions.json`，保存每页按 SKILL.md"生成并比较构图候选"规则确定数量的结构候选（关系判断无争议时 1 个，有争议时 2–3 个）、候选各自的`visual_thesis`、候选完整证据覆盖、评分维度与总分、选中候选、完整`execution_design`、输入哈希，以及`stage01_visual_note_disposition`。`trace_refs`仅用于审计追溯，执行器可将其写为证据单元的`source_ref`，但提示词构建器不得读取它。仓库`execute-visual-structure`唯一生成规格JSON和Markdown；正式执行回执由仓库命令生成并绑定执行器、模型、Skill包、决策回执和编译产物哈希。编译产物的`qa`与`qa_summary`初始为`draft`且未评分，实际审计结果以`validation-report.json`为准。
 
 `generation-prompts.md`是由视觉审计器重建的旧结构预览，只用于人工检查和兼容诊断。CyberPPT正式ImageGen提示词由`artifact-spec-v2`从已审计的Stage 02 handoff、`deck-visual-spec.json`和style lock投影；审批、canonical和manifest必须复用同一份九段式结果。
 

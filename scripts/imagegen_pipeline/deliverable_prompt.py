@@ -758,13 +758,15 @@ def _style09_terminal_execution_lock(style_lock_path: Path | None) -> str:
         return ""
     tail = contract.split(marker, 1)[1]
     lines = [line.strip() for line in tail.splitlines() if line.strip()]
+    # The line immediately after the marker is the "repeated verbatim..."
+    # meta-instruction (see references/visual-system.md's "Final ImageGen
+    # execution lock" sections), not part of the rule content itself; skip it
+    # and keep everything from the first substantive rule line onward.
     start = next(
         (
             index
             for index, line in enumerate(lines)
-            if line.startswith("禁止任何图标、徽章、卡片墙")
-            or line.startswith("保持扁平2D")
-            or line.startswith("保持纯白底")
+            if not line.startswith("This block must be repeated")
         ),
         None,
     )

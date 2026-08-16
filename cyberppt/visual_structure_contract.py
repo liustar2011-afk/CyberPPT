@@ -53,18 +53,23 @@ def prompt_contract_hashes(skill_root: Path) -> dict[str, str]:
     return result
 
 
-def normalize_page_id(value: object) -> str:
+def normalize_page_id(value: object, page_number: int | None = None) -> str:
     match = re.fullmatch(r"[pP]0*(\d+)", str(value or "").strip())
-    if not match:
-        return str(value or "").strip().casefold()
-    return f"p{int(match.group(1)):02d}"
+    number = int(match.group(1)) if match else int(page_number or 0)
+    if number <= 0:
+        raise ValueError(f"invalid page id: {value!r}")
+    return f"p{number:02d}"
 
 
-def _read_json(path: Path) -> dict[str, Any]:
+def read_json(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8-sig"))
     if not isinstance(payload, dict):
         raise ValueError(f"JSON root must be an object: {path}")
     return payload
+
+
+# Retained for existing in-module call sites; identical to read_json.
+_read_json = read_json
 
 
 def _index_pages(pages: object) -> tuple[dict[str, dict[str, Any]], list[str]]:
@@ -174,6 +179,25 @@ def _audit_expression_fit(
         issue("CANDIDATE_EXPRESSION_DEVIATION_INVALID", f"{candidate_id} default profile must not declare a deviation.", page_id)
     if status == "adapted" and (not changed or not deviation_reason):
         issue("CANDIDATE_EXPRESSION_DEVIATION_INVALID", f"{candidate_id} adapted profile requires changed constraints and a business reason.", page_id)
+    # reading_requirement=="parallel" (key_points_3, framework_4, ...) means Stage 01
+    # already locked this page as peer items with no priority or causal order --
+    # onscreen_expression.py's own anti_patterns for these forms list
+    # invented_causality/invented_time_order. A candidate that still marks one peer
+    # evidence group semantic_focus.kind=="outcome" is exactly that: it manufactures
+    # a result node out of a peer and makes the others visually converge into it.
+    # This was observed for real (p05/p07/p12/p13/p31 in the power-data-infrastructure
+    # deck) and must be a hard gate, not a style note reviewers can miss.
+    if str(constraints.get("reading_requirement") or "") == "parallel":
+        focus = candidate.get("semantic_focus")
+        focus_kind = str(focus.get("kind") or "").strip() if isinstance(focus, dict) else ""
+        if focus_kind == "outcome":
+            issue(
+                "CANDIDATE_PARALLEL_FORM_FALSE_OUTCOME",
+                f"{candidate_id} marks a peer evidence group as semantic_focus.kind=\"outcome\", "
+                f"but the page's expression form ({form}) requires parallel, no-priority peers; "
+                "no peer group may be presented as the result the others converge into.",
+                page_id,
+            )
     return fit
 
 
@@ -510,8 +534,14 @@ def audit_visual_design_package(
 
         candidates = decision.get("candidates")
         candidates = candidates if isinstance(candidates, list) else []
-        if len(candidates) < 3:
-            issue("CANDIDATE_COUNT_INSUFFICIENT", "At least three candidate receipts are required.", page_id)
+        # A mechanical check cannot tell "the relationship type is genuinely
+        # unambiguous, one candidate is honest" apart from "the author skipped
+        # comparing alternatives for a page that needed it" -- that judgment
+        # call belongs to SKILL.md's authoring guidance (see "生成并比较构图候选"),
+        # not to a fixed count enforced on every page regardless of content.
+        # The floor here only guards against an empty or malformed list.
+        if len(candidates) < 1:
+            issue("CANDIDATE_COUNT_INSUFFICIENT", "At least one candidate receipt is required.", page_id)
         signatures: set[tuple[Any, ...]] = set()
         candidate_scores: dict[str, int] = {}
         candidate_ids: set[str] = set()

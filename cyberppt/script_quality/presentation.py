@@ -632,27 +632,28 @@ def _presentation_issues(
                 severity="error" if visible_nodes >= 8 else "warning",
             )
         )
-    decision = resolve_onscreen_expression(
-        page,
-        page_mission=str((contract or {}).get("page_mission") or ""),
-        business_relationships=page.content_relations,
-        topic_category=str((contract or {}).get("topic_category") or ""),
-    )
-    for finding in audit_expression_balance(page, decision):
-        issues.append(
-            _issue(
-                finding.code,
-                page,
-                finding.message,
-                finding.action,
-                evidence=finding.evidence,
-                severity=(
-                    finding.severity
-                    if decision.source == "explicit"
-                    else "warning"
-                ),
-            )
+    if page.page_type == "content":
+        decision = resolve_onscreen_expression(
+            page,
+            page_mission=str((contract or {}).get("page_mission") or ""),
+            business_relationships=page.content_relations,
+            topic_category=str((contract or {}).get("topic_category") or ""),
         )
+        for finding in audit_expression_balance(page, decision):
+            issues.append(
+                _issue(
+                    finding.code,
+                    page,
+                    finding.message,
+                    finding.action,
+                    evidence=finding.evidence,
+                    severity=(
+                        finding.severity
+                        if decision.source == "explicit"
+                        else "warning"
+                    ),
+                )
+            )
     contrast_hits = _prohibited_contrast_hits(
         "\n".join((page.onscreen_judgment, page.onscreen_text))
     )

@@ -9,6 +9,7 @@ from scripts.image_to_pptx_runtime import assert_internal_runtime
 from scripts.image_to_pptx_runtime.quick import create_quick_project
 from scripts.image_to_pptx_runtime.review import ReviewIssue, write_review
 from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruction
+from scripts.presentation_qa.text_content import pptx_texts
 
 
 def test_runtime_is_self_contained_and_importable() -> None:
@@ -44,3 +45,32 @@ def test_stage02_adapter_requires_audited_hand_authored_svg(tmp_path: Path) -> N
         assert "hand-authored SVG" in str(exc)
     else:
         raise AssertionError("production adapter must not fall back to OCR coordinate authoring")
+
+
+def test_quick_split_text_flow_keeps_visual_tspan_rows_editable(tmp_path: Path) -> None:
+    from scripts.image_to_pptx_runtime.svg_to_pptx.pptx_package.builder import create_pptx_with_native_svg
+
+    svg = tmp_path / "page_001.svg"
+    svg.write_text(
+        """<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
+  <rect x="0" y="0" width="400" height="200" fill="#FFFFFF"/>
+  <text x="40" y="80" font-family="Arial" font-size="20" fill="#000000">
+    <tspan>第一行</tspan>
+    <tspan x="40" dy="28">第二行</tspan>
+  </text>
+</svg>
+""",
+        encoding="utf-8",
+    )
+    output = tmp_path / "editable.pptx"
+
+    assert create_pptx_with_native_svg(
+        [svg],
+        output,
+        verbose=False,
+        use_compat_mode=False,
+        use_native_shapes=True,
+        pptx_structure="flat",
+        text_flow="split",
+    )
+    assert pptx_texts(output) == ["第一行", "第二行"]

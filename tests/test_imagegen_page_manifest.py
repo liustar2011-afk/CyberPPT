@@ -17,6 +17,7 @@ from scripts.imagegen_pipeline.page_manifest import (
     require_generated,
 )
 from scripts.imagegen_pipeline.deliverable_prompt import (
+    STYLE09_TERMINAL_LOCK_HEADER,
     parse_page_blocks,
     render_prompt,
     style_contract,
@@ -110,7 +111,14 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertNotIn("【视觉组织原则】", prompt)
         self.assertEqual(1, prompt.count("【视觉风格｜不上屏】"))
         self.assertIn("### Style proposition", prompt)
-        self.assertIn("### Final ImageGen execution lock — hard", prompt)
+        # The source contract's own "### Final ImageGen execution lock" section is
+        # removed from its mid-document position and reasserted once, verbatim, at
+        # the true end of the prompt under the Chinese terminal-lock header -- see
+        # enforce_style09_terminal_lock's docstring for why a mid-document copy is
+        # not sufficient on its own.
+        self.assertNotIn("### Final ImageGen execution lock — hard", prompt)
+        self.assertEqual(1, prompt.count(STYLE09_TERMINAL_LOCK_HEADER))
+        self.assertNotIn("### ", prompt.split(STYLE09_TERMINAL_LOCK_HEADER, 1)[1])
         handoff = manifest["pairs"][0]["visual_structure_handoff"]
         self.assertTrue(handoff["consumed"])
 

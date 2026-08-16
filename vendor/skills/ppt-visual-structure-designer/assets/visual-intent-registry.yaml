@@ -1,5 +1,9 @@
-registry_version: "1.1"
+registry_version: "1.2"
 intents:
+  - id: coordinate_peer_set
+    relations: [peer]
+    spatial_grammar: [peer]
+    required_structure: [peer_items, shared_abstract_judgment, no_priority_claim]
   - id: single_judgment_anchor
     relations: [judgment, evidence]
     spatial_grammar: [anchor]

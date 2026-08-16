@@ -4,6 +4,19 @@ description: Quick-only Generate profile for reconstructing one or more source i
 
 # Image to PPTX Profile
 
+## Sole production conversion route
+
+The repository has one production route for publishing an editable PPTX from
+a rendered page: the high-fidelity Stage 02 Quick path in
+`scripts/image_to_pptx_runtime/stage02_adapter.py`. It requires an audited
+full-image manifest and hand-authored `authoring_svg` for every requested page,
+then exports native editable text, shapes, and image layers.
+
+The older OCR/coordinate reconstruction entry point under
+`scripts/image_to_editable_svg/` is retired and fails closed. Do not use it as
+an alternate PPTX generator. The low-level SVG-to-DrawingML builder remains an
+internal implementation detail of the Quick route.
+
 > Quick-only Generate profile, not a top-level route. Normalize one or more
 > supplied images into the represented page roster, then rebuild each page as
 > native text, identity-faithful source graphics, and independently placeable

@@ -12,10 +12,21 @@
 
 视觉意图不是版式或媒介名称，而是“本页判断通过何种关系被看见”。先确定决策关系，再选择语义焦点、空间语法和阅读顺序；具体载体保持开放。
 
+**`expression_constraints.reading_requirement` 是权威输入，不是候选参考。** CyberPPT 工作台模式下，每页在进入本路由前，Stage 01 已经通过 `cyberppt/onscreen_expression.py` 锁定了该页的表达形式（`onscreen_expression.form`）及其 `reading_requirement`（`parallel`/`directed`/`convergent`/`cyclic`/`grouped`/`paired`/`layered`/`two_axis`/`action_oriented`）。这不是本路由要重新判断的对象，而是本路由必须遵守的边界：
+
+- `reading_requirement == "parallel"`（`key_points_3`、`framework_4`）：来源已确认这些项之间**没有**优先级、先后或因果关系。禁止选择任何要求单一收敛节点的意图类型（`single_judgment_anchor`、`convergence_to_capability`、`evidence_to_judgment`），禁止把 `multi_semantic_foundation` 的收敛点设为某一并列项——只能选 `coordinate_peer_set`（见下表），或者把 `multi_semantic_foundation` 的收敛点设为页面抽象判断本身（不是任何一个并列项）。
+- `reading_requirement == "grouped"`（`grouped_2`）：来源已确认这是"一组确立主体，另一组展开其机制或边界"的主从关系，不是纯并列——收敛点应该是**确立主体的那一组本身**（组标题/组的整体判断），不能是该组内部某个子项，也不能是另一组。
+- `reading_requirement` 为 `directed`/`convergent`/`cyclic`（`flow_3_5`、`pyramid_argument`、`causal_chain`、`operation_loop`）：来源已确认存在真实的顺序、因果或收敛关系，此时 `evidence_to_judgment`/`convergence_to_capability`/`transformation_pipeline`/`closed_loop_operation` 等收敛/流程类意图是合适的，不受本节约束。
+
+如果调用方式不是 CyberPPT 工作台（没有 `expression_constraints`），按“选择算法”从内容本身独立判断关系，但仍需先问“这些项之间是否存在来源支持的先后或因果关系”，回答"否"时必须使用 `coordinate_peer_set`，不得为了套用固定模板而编造关系。
+
+若上游 Outline 阶段已把本页内容匹配为 `references/semantic-expression-models.md` 中的语义模型（例如 `pyramid_principle`、`mece_issue_tree`），该模型的 `forbidden_inferences` 同样约束本阶段的视觉关系编码——`pyramid_principle` 明确"不得把并列事实提升为结论"，`mece_issue_tree` 明确"不得把未穷尽的来源事项标为MECE"；这两条模型本来就是为了防止本节描述的这类错误，视觉阶段不能重新引入它们在论证阶段已经排除的问题。
+
 ## 意图类型
 
 | `visual_intent_type` | 适用关系 | 空间语法 | 必须保留的结构事实 | 主要风险 |
 |---|---|---|---|---|
+| `coordinate_peer_set` | 多个语义独立、来源未表明先后或因果关系的并列项，共同支撑同一个不属于其中任一项的抽象判断 | `peer` | 各并列项各自的完整语义、共享的抽象判断、各项之间无优先级声明 | 挑选某一并列项充当结果或收敛节点（凭空发明先后/因果关系） |
 | `single_judgment_anchor` | 一个结论由少量证据支撑 | `anchor` | 判断、证据及支撑方向 | 大标题海报化 |
 | `multi_semantic_foundation` | 多个不同基础共同支撑判断 | `anchor`或`layer` | 基础差异、共同作用对象及判断 | 一基础一卡片 |
 | `evidence_to_judgment` | 多类证据推导一个结论 | `path`或`convergence` | 证据、推导方向及判断 | 把证据排成列表 |
@@ -39,8 +50,9 @@
 
 按顺序判断：
 
+0. 各项之间是否**没有**来源支持的先后、主从或因果关系（多个语义独立、地位相同的并列项，只共同支撑一个不属于其中任一项的抽象判断）？选择`coordinate_peer_set`；不得为了套用后续任何一种模板而给它们编造顺序或结果关系。
 1. 本页是否只有一个需要被记住的结论，证据较少？选择`single_judgment_anchor`。
-2. 是否存在多个性质不同但共同构成基础的要素？选择`multi_semantic_foundation`。
+2. 是否存在多个性质不同但共同构成基础的要素，且其中一个要素（或页面的抽象判断本身）确实是其余要素支撑的对象？选择`multi_semantic_foundation`；若找不到这样一个"确实被支撑"的对象，回到第0步选`coordinate_peer_set`。
 3. 是否强调多类证据最终推导判断？选择`evidence_to_judgment`。
 4. 是否存在明显输入、处理、输出？选择`transformation_pipeline`。
 5. 流程是否必须依托真实行业活动理解？选择`scene_embedded_flow`。
@@ -58,7 +70,7 @@
 17. 是否主要说明职责分工和交付接口？选择`role_responsibility_map`。
 18. 是否从问题追到原因并导出方案？选择`problem_cause_resolution`。
 
-多个类型均适用时，选择最能承载核心结论的一个作为主类型；其他关系只记录为次级语义标签或辅助语法，不得并列形成两个主结构。
+多个类型均适用时，选择最能承载核心结论的一个作为主类型；其他关系只记录为次级语义标签或辅助语法，不得在同一页里并列出现两条互不相关、各自独立的主线。**这条规则约束的是"同一页塞进两个不相关的故事"，不适用于"内容本身就是一组并列项、共同支撑同一判断"的情况**——`coordinate_peer_set` 本身仍然只有一个主结构（"这些项彼此并列"这一关系本身），选它不算违反本条。
 
 ## 冲突处理
 
@@ -78,4 +90,4 @@
 - 连接线是否只起装饰作用。
 - 视觉中心是否由面积最大元素决定，而不是由核心判断决定。
 - 意图类型是否被机械映射为固定模板。
-- 三个候选是否只更换载体、媒介或外观，而没有改变语义焦点、空间语法或阅读顺序。
+- 写了多个候选时，是否只更换载体、媒介或外观，而没有改变语义焦点、空间语法或阅读顺序。

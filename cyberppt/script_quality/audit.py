@@ -23,6 +23,7 @@ from .onscreen import (
     onscreen_effective_char_target,
     onscreen_semantic_coverage,
     onscreen_story_roles,
+    structured_layer_char_target,
 )
 from .presentation import (
     COMPLETED_TERMS,
@@ -224,7 +225,9 @@ def build_communication_review(
             visible_story_chars=effective_chars,
         )
         effective_char_target = (
-            60 if structured_compact_layer else onscreen_effective_char_target(page)
+            structured_layer_char_target(page)
+            if structured_compact_layer
+            else onscreen_effective_char_target(page)
         )
         density_status = (
             "pass" if effective_chars >= effective_char_target else "low"
