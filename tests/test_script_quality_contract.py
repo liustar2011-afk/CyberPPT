@@ -1395,6 +1395,32 @@ class ProductionAuthoringGuardTests(unittest.TestCase):
         self.assertEqual("ONSCREEN_REDUNDANT_RESTATEMENT", issues[0].code)
         self.assertEqual("warning", issues[0].severity)
 
+    def test_headline_that_echoes_the_subtitle_is_flagged_as_redundant(self) -> None:
+        # 副标题 already is the slide's headline; a body-level echo of it
+        # ("行业中枢，三大方向支撑。" next to a subtitle that already says
+        # "...行业中枢和价值释放引擎") is correct-but-empty filler, not new
+        # information -- catch it even though the echo is short relative to
+        # the (much longer) subtitle it restates.
+        page = parse_script_markdown(
+            "## 第1页：总体定位\n"
+            "- 页面类型：内容页\n"
+            "- 完整文字稿：电力领域数据基础设施定位为行业中枢和价值释放引擎。\n"
+            "- 副标题：电力领域数据基础设施定位为电力数据要素流通共享的行业中枢和价值释放引擎\n"
+            "- 上屏文字：\n"
+            "行业中枢，三大方向支撑。\n"
+            "\n"
+            "  ①国家节点方向\n"
+            "    目录衔接：承接全域、区域、行业节点，包括目录衔接和接口协同功能。\n"
+            "    资源协同：促进不同主体、不同区域、不同系统的资源发现与业务协同。\n"
+            "- 视觉结构：三方向共同支撑定位判断。\n"
+        ).pages[0]
+
+        issues = _onscreen_redundant_restatement_issues(page)
+
+        self.assertEqual(1, len(issues))
+        self.assertEqual("ONSCREEN_REDUNDANT_RESTATEMENT", issues[0].code)
+        self.assertIn("副标题", issues[0].evidence[0])
+
     def test_short_headline_and_boundary_lines_are_not_flagged_as_redundant(self) -> None:
         page = parse_script_markdown(
             "## 第1页：六方面基础\n"

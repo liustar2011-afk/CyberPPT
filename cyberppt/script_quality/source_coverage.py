@@ -6,6 +6,7 @@ import re
 
 from cyberppt.semantic_expression_models import load_expression_models
 
+from .common import _source_statement_overlap
 from .models import ScriptPage, ScriptQualityIssue, _issue
 from .parsing import _module_title
 from .text_rules import NEGATION_TERMS, normalized_tokens, text_similarity
@@ -39,23 +40,6 @@ def _truth_records(
         str(record.get("id")): record
         for record in _dict_items(source_truth, "records")
     }
-
-
-def _source_statement_overlap(statement: str, authored: str, size: int = 4) -> float:
-    """Measure factual phrase survival without requiring verbatim prose."""
-
-    def shingles(value: str) -> set[str]:
-        compact = re.sub(r"[^0-9A-Za-z\u4e00-\u9fff]", "", value or "")
-        return {
-            compact[index : index + size]
-            for index in range(max(0, len(compact) - size + 1))
-            if compact[index : index + size]
-        }
-
-    source = shingles(statement)
-    if not source:
-        return 1.0
-    return len(source & shingles(authored)) / len(source)
 
 
 def _polarity_dropped_terms(statement: str, authored: str) -> tuple[str, ...]:

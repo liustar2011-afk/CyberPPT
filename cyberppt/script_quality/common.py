@@ -29,3 +29,29 @@ def text_similarity(left: str, right: str) -> float:
     if not left_set or not right_set:
         return 0.0
     return len(left_set & right_set) / len(left_set | right_set)
+
+
+def _source_statement_overlap(statement: str, authored: str, size: int = 4) -> float:
+    """Measure factual phrase survival without requiring verbatim prose.
+
+    Asymmetric containment, not a symmetric similarity: it answers "how much
+    of `statement`'s own content survives inside `authored`", so it stays
+    meaningful even when `authored` is much longer than `statement` (unlike
+    ``text_similarity``, which dilutes toward zero in that case). Lives here
+    rather than in source_coverage.py so both source_coverage and onscreen
+    can import it without an onscreen -> source_coverage -> text_rules ->
+    onscreen cycle.
+    """
+
+    def shingles(value: str) -> set[str]:
+        compact = re.sub(r"[^0-9A-Za-z一-鿿]", "", value or "")
+        return {
+            compact[index : index + size]
+            for index in range(max(0, len(compact) - size + 1))
+            if compact[index : index + size]
+        }
+
+    source = shingles(statement)
+    if not source:
+        return 1.0
+    return len(source & shingles(authored)) / len(source)

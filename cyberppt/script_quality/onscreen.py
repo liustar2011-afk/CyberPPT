@@ -8,7 +8,7 @@ from cyberppt.onscreen_expression import (
 )
 from cyberppt.paths import repo_path
 
-from .common import _compact_len, normalized_tokens, text_similarity
+from .common import _compact_len, _source_statement_overlap, normalized_tokens, text_similarity
 from .models import ScriptDocument, ScriptPage, ScriptQualityIssue, _issue
 from .parsing import (
     MODULE_RE,
@@ -1102,15 +1102,18 @@ def _onscreen_parallel_structure_issues(page: ScriptPage) -> list[ScriptQualityI
     return issues
 
 def _onscreen_redundant_restatement_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
-    """Flag a free-standing on-screen line that just restates module content.
+    """Flag a free-standing on-screen line that just restates other copy.
 
     A short headline above the modules or a closing line below them is a
     legitimate way to state a page's judgment or a boundary that has no
     natural home inside any single module. It stops being legitimate when
     that line is functionally the same sentence as content already spelled
-    out inside a module's own detail lines -- a slide should not say the
-    same thing twice just because the anchor-coverage check would accept
-    either location for the source clause it is chasing.
+    out elsewhere on the slide -- either inside a module's own detail lines,
+    or in 副标题 (the subtitle already *is* the slide's headline, so a body
+    line that echoes it back is pure filler, "正确的废话": not wrong, just
+    saying nothing new). A slide should not say the same thing twice just
+    because the anchor-coverage check would accept either location for the
+    source clause it is chasing.
     """
 
     if page.page_type != "content":
@@ -1144,26 +1147,37 @@ def _onscreen_redundant_restatement_issues(page: ScriptPage) -> list[ScriptQuali
             detail_lines.append(line)
         elif heading_title(raw) is None:
             free_lines.append(line)
-    if not detail_lines or not free_lines:
+    if not free_lines:
         return []
 
     detail_corpus = "\n".join(detail_lines)
-    hits = tuple(
-        f"{line}（overlap={round(score, 2)}）"
-        for line in free_lines
-        if len(re.sub(r"\s+", "", line)) >= 8
-        for score in (text_similarity(line, detail_corpus),)
-        if score >= 0.35
-    )
+    subtitle = page.subtitle.strip()
+    hits: list[str] = []
+    for line in free_lines:
+        if len(re.sub(r"\s+", "", line)) < 8:
+            continue
+        if detail_corpus:
+            score = text_similarity(line, detail_corpus)
+            if score >= 0.35:
+                hits.append(f"{line}（与模块细项重合 overlap={round(score, 2)}）")
+                continue
+        if subtitle:
+            # Asymmetric containment (how much of the short line's own
+            # content already sits inside 副标题), not symmetric Jaccard --
+            # 副标题 is much longer than a headline fragment, so a symmetric
+            # score dilutes to near zero even on a near-verbatim echo.
+            score = _source_statement_overlap(line, subtitle)
+            if score >= 0.1:
+                hits.append(f"{line}（与副标题重合 overlap={round(score, 2)}）")
     if not hits:
         return []
     return [
         _issue(
             "ONSCREEN_REDUNDANT_RESTATEMENT",
             page,
-            "A free-standing on-screen line restates content already covered by the module details.",
-            "Remove the restated line, or fold its genuinely new part into the module it overlaps with instead of repeating the same content twice.",
-            evidence=hits,
+            "A free-standing on-screen line restates content already covered elsewhere on the slide (a module detail or 副标题).",
+            "Remove the restated line, or fold its genuinely new part into the module or 副标题 it overlaps with instead of repeating the same content twice.",
+            evidence=tuple(hits),
             severity="warning",
         )
     ]
