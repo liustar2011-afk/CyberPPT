@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from .ids import stable_id
-from .mappings import FACT_TYPE_TO_EVIDENCE_TYPE, FACT_TYPE_TO_CLAIM_ROLE, IMPORTANCE_TO_PRIORITY
+from .mappings import FACT_TYPE_TO_EVIDENCE_TYPE, FACT_TYPE_TO_CLAIM_ROLE, IMPORTANCE_TO_PRIORITY, normalize_importance
 
 def _flatten_sections(nodes: list[dict[str, Any]]) -> list[dict[str, Any]]:
     result: list[dict[str, Any]] = []
@@ -111,7 +111,7 @@ def _page_fact_usage(page_plan: dict[str, Any], relation_by_id: dict[str, dict[s
     for page in page_plan.get("pages") or []:
         if not isinstance(page, dict) or page.get("page_type") != "content":
             continue
-        importance = str(page.get("importance") or "low")
+        importance = normalize_importance(page.get("importance"))
         evidence = page.get("evidence") if isinstance(page.get("evidence"), dict) else {}
         for fact_id in evidence.get("normalized_fact_ids") or []:
             fact_id = str(fact_id)

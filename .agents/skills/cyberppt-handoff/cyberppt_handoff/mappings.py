@@ -38,6 +38,21 @@ VISUAL_INTENT = {
 }
 IMPORTANCE_TO_PRIORITY = {"high": "P0", "medium": "P1", "low": "P2"}
 IMPORTANCE_TO_WEIGHT = {"high": "core", "medium": "supporting", "low": "detail"}
+# ``page.importance`` is a free-text authoring field (ppt-outline-planning's
+# CONTENT_FIELDS has no enum for it), so authors write whatever vocabulary
+# reads naturally -- this project's authoring-spec uses "core"/"supporting"
+# rather than "high"/"medium". Every downstream reader normalizes through
+# here so a synonym choice doesn't silently collapse every page to "low"
+# (and every Source Truth priority to P2).
+IMPORTANCE_SYNONYMS = {
+    "high": "high", "core": "high", "primary": "high", "critical": "high",
+    "medium": "medium", "supporting": "medium", "secondary": "medium",
+    "low": "low", "detail": "low", "minor": "low",
+}
+
+
+def normalize_importance(value: object) -> str:
+    return IMPORTANCE_SYNONYMS.get(str(value or "").strip().lower(), "low")
 CHAIN_ROLE_TO_DUTY = {
     "premise": "premise", "background": "premise",
     "driver": "driver", "cause": "driver",

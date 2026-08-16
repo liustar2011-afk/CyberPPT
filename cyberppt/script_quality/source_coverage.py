@@ -436,10 +436,17 @@ def _page_content_unit_coverage_issues(
             and contract.get("source_grounding_mode") != "required"
             and not set(source_refs).issubset(model_covered_refs)
         ):
+            # 副标题 renders on the slide alongside 上屏文字, and this project's
+            # own convention (page-script-contract.md) deliberately puts a
+            # page's core judgment there instead of repeating it in the body
+            # (see ONSCREEN_REDUNDANT_RESTATEMENT). An anchor already visible
+            # via the subtitle is not missing from the screen; search both
+            # surfaces before declaring a gap.
+            onscreen_surface = page.onscreen_text + "\n" + page.subtitle
             missing = tuple(
                 anchor
                 for anchor in onscreen_anchors
-                if anchor not in page.onscreen_text
+                if anchor not in onscreen_surface
                 # A PPT slide is not a Word paragraph: a compressed,
                 # phrase-based rewrite of the anchor (dropped connector,
                 # reordered clause, swapped near-synonym) should not hard-fail
@@ -449,7 +456,7 @@ def _page_content_unit_coverage_issues(
                 # backwards -- a short anchor is exactly the case where a
                 # natural author edit is most likely to touch a couple of
                 # characters. Apply the same overlap bar regardless of length.
-                and _source_statement_overlap(anchor, page.onscreen_text) < 0.85
+                and _source_statement_overlap(anchor, onscreen_surface) < 0.85
             )
             if missing:
                 issues.append(_issue(

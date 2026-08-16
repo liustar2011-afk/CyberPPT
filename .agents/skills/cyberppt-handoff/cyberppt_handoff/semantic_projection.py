@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Any
 
-from .mappings import ARGUMENT_DUTY, IMPORTANCE_TO_WEIGHT
+from .mappings import ARGUMENT_DUTY, IMPORTANCE_TO_WEIGHT, normalize_importance
 from .source_projection import _anchors, _flatten_sections
 
 
@@ -17,8 +17,9 @@ def _node_importance(arg_id: str, page_plan: dict[str, Any]) -> str:
         if not isinstance(page, dict) or page.get("page_type") != "content":
             continue
         ids = (page.get("evidence") or {}).get("argument_node_ids") or []
-        if arg_id in ids and rank.get(str(page.get("importance") or "low"), 0) > rank[current]:
-            current = str(page.get("importance") or "low")
+        page_importance = normalize_importance(page.get("importance"))
+        if arg_id in ids and rank.get(page_importance, 0) > rank[current]:
+            current = page_importance
     return current
 
 def _primary_page_for_arg(arg_id: str, page_plan: dict[str, Any]) -> str:
@@ -97,7 +98,7 @@ def _project_semantic_model(payloads: dict[str, dict[str, Any]], nf_to_st: dict[
                 "thesis": str(page.get("key_judgment") or ""),
                 "argument_role": str(page.get("argument_role") or "source_exposition"),
                 "argument_weight": IMPORTANCE_TO_WEIGHT.get(
-                    str(page.get("importance") or "low"), "detail"
+                    normalize_importance(page.get("importance")), "detail"
                 ),
                 "level": 3,
                 "status": (
