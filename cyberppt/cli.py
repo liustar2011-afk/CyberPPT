@@ -20,6 +20,7 @@ from cyberppt.commands.outline_audit import run_outline_audit
 from cyberppt.commands.outline_review import render_outline_review
 from cyberppt.commands.prepare_imagegen_send import prepare_imagegen_send
 from cyberppt.commands.preview_page_anchors import preview_page_anchors
+from cyberppt.commands.preview_onscreen_markdown import preview_onscreen_markdown
 from cyberppt.commands.prepare_stage01_input import (
     prepare_outline_input,
     prepare_page_script_input,
@@ -378,6 +379,20 @@ def _prepare_page_script_input_command(args: argparse.Namespace) -> int:
     except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
+    return 0
+
+
+def _preview_onscreen_markdown_command(args: argparse.Namespace) -> int:
+    try:
+        output = Path(args.output) if args.output else None
+        result = preview_onscreen_markdown(Path(args.script), output_path=output)
+    except FileNotFoundError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    if isinstance(result, Path):
+        print(f"rendered: {result}")
+    else:
+        print(result)
     return 0
 
 
@@ -851,6 +866,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Outline JSON; defaults to the project Stage 01 artifact.",
     )
     preview_anchors.set_defaults(func=_preview_page_anchors_command)
+
+    preview_onscreen_md = subparsers.add_parser(
+        "preview-onscreen-markdown",
+        help=(
+            "Render a page script's 上屏文字 as real nested Markdown bullets for "
+            "human review. Does not edit the source script; the authoritative "
+            "file stays plain-text-with-indentation for script-audit."
+        ),
+    )
+    preview_onscreen_md.add_argument("script", help="Path to the page script .md file.")
+    preview_onscreen_md.add_argument(
+        "--output",
+        help="Optional path to write the rendered Markdown; prints to stdout if omitted.",
+    )
+    preview_onscreen_md.set_defaults(func=_preview_onscreen_markdown_command)
 
     stage_script_parser = subparsers.add_parser(
         "stage-script",
