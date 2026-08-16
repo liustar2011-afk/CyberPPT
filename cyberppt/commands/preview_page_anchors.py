@@ -51,6 +51,7 @@ def preview_page_anchors(
         content_units.append({
             "unit_id": unit.get("unit_id"),
             "role": unit.get("role"),
+            "priority": unit.get("priority"),
             "onscreen_required": unit.get("onscreen_required"),
             "source_refs": list(unit.get("source_refs") or []),
             "coverage_anchors": list(unit.get("coverage_anchors") or []),
@@ -64,6 +65,9 @@ def preview_page_anchors(
             ],
         })
 
+    p0_units = [unit for unit in content_units if unit.get("priority") == "P0"]
+    p0_count = len(p0_units)
+
     return {
         "schema": "cyberppt.page_anchor_preview.v1",
         "page_id": page.get("page_id"),
@@ -71,5 +75,7 @@ def preview_page_anchors(
         "argument_role": page.get("argument_role"),
         "expression_model_selection": page.get("expression_model_selection"),
         "outline": str(outline_path),
+        "p0_unit_count": p0_count,
+        "p0_unit_ids": [unit.get("unit_id") for unit in p0_units],
         "content_units": content_units,
     }

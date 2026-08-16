@@ -259,9 +259,21 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
             if len(anchors) < 2:
                 anchors.extend(chunk[:20] for chunk in _anchors(str(node.get("statement") or ""), []))
             anchors = list(dict.fromkeys(anchors))[:2]
+            # Source Truth already carries a P0/P1/P2 priority per fact
+            # (IMPORTANCE_TO_PRIORITY, derived from the citing page's
+            # declared importance). Reuse that authority instead of asking
+            # authors to hand-tag a second, unverifiable priority on each
+            # content unit: a unit's priority is the highest priority among
+            # the Source Truth records it cites.
+            priority_rank = {"P0": 0, "P1": 1, "P2": 2}
+            unit_priority = min(
+                (str(st_by_id.get(ref, {}).get("priority") or "P2") for ref in node_refs),
+                key=lambda value: priority_rank.get(value, 2),
+                default="P2",
+            )
             content_units.append({
                 "unit_id": f"{cyber_id}-U{index:02d}", "statement": str(node.get("statement") or ""), "source_refs": node_refs,
-                "role": unit_role, "importance": unit_role, "full_prose_required": primary_role != "trace_only", "coverage_anchors": anchors,
+                "role": unit_role, "importance": unit_role, "priority": unit_priority, "full_prose_required": primary_role != "trace_only", "coverage_anchors": anchors,
                 "argument_duties": [CHAIN_ROLE_TO_DUTY.get(role, "detail")], "onscreen_required": onscreen, "onscreen_anchors": anchors if onscreen else [], "authority_refs": [str(x) for x in node_ids],
             })
         role_map = {item["role"]: item["source_refs"] for item in evidence_roles_out}

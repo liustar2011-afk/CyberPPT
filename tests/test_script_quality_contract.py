@@ -860,6 +860,44 @@ class FullProseSourceCoverageTests(unittest.TestCase):
         )
         self.assertIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
 
+    def test_p0_content_unit_gap_states_no_waiver_is_allowed(self) -> None:
+        page = self._page("新能源大规模接入改变电源结构、负荷特征和运行方式。")
+        issues = _page_content_unit_coverage_issues(
+            page,
+            {"content_units": [{
+                "unit_id": "p03-u01",
+                "priority": "P0",
+                "statement": "新能源大规模接入改变电源结构和运行方式。",
+                "source_refs": ["ST001"],
+                "full_prose_required": True,
+                "coverage_anchors": ["新能源大规模接入", "电源结构", "运行方式"],
+                "onscreen_required": True,
+                "onscreen_anchors": ["新能源大规模接入", "运行方式"],
+            }]},
+        )
+        onscreen_gap = next(item for item in issues if item.code == "ONSCREEN_CONTENT_UNIT_GAP")
+        self.assertIn("不接受锚点覆盖说明豁免", onscreen_gap.message)
+        self.assertIn("priority=P0", onscreen_gap.evidence)
+
+    def test_p1_content_unit_gap_keeps_the_existing_waivable_message(self) -> None:
+        page = self._page("新能源大规模接入改变电源结构、负荷特征和运行方式。")
+        issues = _page_content_unit_coverage_issues(
+            page,
+            {"content_units": [{
+                "unit_id": "p03-u01",
+                "priority": "P1",
+                "statement": "新能源大规模接入改变电源结构和运行方式。",
+                "source_refs": ["ST001"],
+                "full_prose_required": True,
+                "coverage_anchors": ["新能源大规模接入", "电源结构", "运行方式"],
+                "onscreen_required": True,
+                "onscreen_anchors": ["新能源大规模接入", "运行方式"],
+            }]},
+        )
+        onscreen_gap = next(item for item in issues if item.code == "ONSCREEN_CONTENT_UNIT_GAP")
+        self.assertNotIn("不接受锚点覆盖说明豁免", onscreen_gap.message)
+        self.assertIn("priority=P1", onscreen_gap.evidence)
+
     def test_onscreen_content_unit_accepts_a_long_anchor_split_into_short_lines(self) -> None:
         page = replace(
             self._page("中电联数智公司依托平台提供合作服务。"),

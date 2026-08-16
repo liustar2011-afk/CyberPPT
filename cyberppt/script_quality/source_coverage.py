@@ -388,6 +388,7 @@ def _page_content_unit_coverage_issues(
     for unit in units:
         unit_id = str(unit.get("unit_id") or "")
         statement = str(unit.get("statement") or "").strip()
+        priority = str(unit.get("priority") or "P2")
         source_refs = tuple(
             str(item) for item in unit.get("source_refs") or [] if str(item)
         )
@@ -414,11 +415,17 @@ def _page_content_unit_coverage_issues(
                 issues.append(_issue(
                     "FULL_PROSE_CONTENT_UNIT_GAP",
                     page,
-                    "页面原子内容单元没有完整进入完整文字稿，存在对象、动作、条件或业务特征丢失。",
+                    (
+                        "页面原子内容单元来自P0级来源事实，没有完整进入完整文字稿；"
+                        "P0缺口不接受锚点覆盖说明豁免，必须恢复。"
+                        if priority == "P0" else
+                        "页面原子内容单元没有完整进入完整文字稿，存在对象、动作、条件或业务特征丢失。"
+                    ),
                     "恢复该内容单元的来源特征；不要用更抽象的概括句替代。",
                     source_ids=source_refs,
                     evidence=(
                         f"unit_id={unit_id}",
+                        f"priority={priority}",
                         f"statement={statement}",
                         f"anchor_hits={len(hits)}/{len(coverage_anchors)}",
                         f"overlap={statement_overlap:.3f}",
@@ -448,10 +455,15 @@ def _page_content_unit_coverage_issues(
                 issues.append(_issue(
                     "ONSCREEN_CONTENT_UNIT_GAP",
                     page,
-                    "提纲指定的重要内容单元没有进入上屏文字，页面视觉表达丢失关键业务特征。",
+                    (
+                        "提纲指定的内容单元来自P0级来源事实，没有进入上屏文字；"
+                        "P0缺口不接受锚点覆盖说明豁免，必须以短语化方式恢复。"
+                        if priority == "P0" else
+                        "提纲指定的重要内容单元没有进入上屏文字，页面视觉表达丢失关键业务特征。"
+                    ),
                     "以短语化、条目化方式恢复 onscreen_anchors；可以压缩句式，不能删除业务对象或关键动作。",
                     source_ids=source_refs,
-                    evidence=(f"unit_id={unit_id}", *missing),
+                    evidence=(f"unit_id={unit_id}", f"priority={priority}", *missing),
                 ))
     return issues
 
