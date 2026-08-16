@@ -860,7 +860,11 @@ class FullProseSourceCoverageTests(unittest.TestCase):
         )
         self.assertIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
 
-    def test_p0_content_unit_gap_states_no_waiver_is_allowed(self) -> None:
+    def test_p0_content_unit_gap_requires_a_specific_disposition_not_a_ban(self) -> None:
+        # P0 gaps stay waivable via 锚点覆盖说明 like P1/P2 -- an absolute ban
+        # fought the project's own short-phrase-not-Word-paragraph writing
+        # discipline once P0 priority actually populated for real pages.
+        # The distinguishing behavior is a stricter message, not a block.
         page = self._page("新能源大规模接入改变电源结构、负荷特征和运行方式。")
         issues = _page_content_unit_coverage_issues(
             page,
@@ -876,10 +880,11 @@ class FullProseSourceCoverageTests(unittest.TestCase):
             }]},
         )
         onscreen_gap = next(item for item in issues if item.code == "ONSCREEN_CONTENT_UNIT_GAP")
-        self.assertIn("不接受锚点覆盖说明豁免", onscreen_gap.message)
+        self.assertNotIn("不接受锚点覆盖说明豁免", onscreen_gap.message)
+        self.assertIn("必须具体指出该内容实际落在页面的哪个模块或副标题", onscreen_gap.message)
         self.assertIn("priority=P0", onscreen_gap.evidence)
 
-    def test_p1_content_unit_gap_keeps_the_existing_waivable_message(self) -> None:
+    def test_p1_content_unit_gap_keeps_the_existing_generic_message(self) -> None:
         page = self._page("新能源大规模接入改变电源结构、负荷特征和运行方式。")
         issues = _page_content_unit_coverage_issues(
             page,
@@ -895,8 +900,33 @@ class FullProseSourceCoverageTests(unittest.TestCase):
             }]},
         )
         onscreen_gap = next(item for item in issues if item.code == "ONSCREEN_CONTENT_UNIT_GAP")
-        self.assertNotIn("不接受锚点覆盖说明豁免", onscreen_gap.message)
+        self.assertNotIn("必须具体指出该内容实际落在页面的哪个模块或副标题", onscreen_gap.message)
         self.assertIn("priority=P1", onscreen_gap.evidence)
+
+    def test_onscreen_content_unit_credits_the_subtitle_as_visible(self) -> None:
+        # 副标题 renders on the slide too; this project's own convention puts
+        # a page's core judgment there instead of repeating it in 上屏文字
+        # (ONSCREEN_REDUNDANT_RESTATEMENT penalizes the repeat). An anchor
+        # already satisfied by the subtitle is not missing from the screen.
+        page = replace(
+            self._page("电力领域数据基础设施定位为电力数据要素流通共享的行业中枢。"),
+            onscreen_text="①国家节点方向\n  资源协同：促进跨主体资源协同",
+            subtitle="电力领域数据基础设施定位为电力数据要素流通共享的行业中枢",
+        )
+        issues = _page_content_unit_coverage_issues(
+            page,
+            {"content_units": [{
+                "unit_id": "p05-u01",
+                "priority": "P0",
+                "statement": "电力领域数据基础设施定位为电力数据要素流通共享的行业中枢。",
+                "source_refs": ["ST001"],
+                "full_prose_required": False,
+                "coverage_anchors": [],
+                "onscreen_required": True,
+                "onscreen_anchors": ["电力领域数据基础设施定位为电力数据要素流通共享的行业中枢"],
+            }]},
+        )
+        self.assertNotIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
 
     def test_onscreen_content_unit_accepts_a_long_anchor_split_into_short_lines(self) -> None:
         page = replace(
