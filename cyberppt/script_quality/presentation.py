@@ -41,6 +41,7 @@ from .onscreen import (
     _onscreen_heading_candidates,
     _onscreen_layout_meta_hits,
     _onscreen_markdown_hits,
+    _onscreen_module_dimension_consistency_issues,
     _onscreen_parallel_structure_issues,
     _onscreen_redundant_restatement_issues,
     _onscreen_parent_child_role_mismatches,
@@ -339,6 +340,7 @@ def _presentation_issues(
                 )
             )
         issues.extend(_onscreen_parallel_structure_issues(page))
+        issues.extend(_onscreen_module_dimension_consistency_issues(page))
         issues.extend(_onscreen_redundant_restatement_issues(page))
         compound_heading_hits = _compound_module_heading_hits(
             _onscreen_heading_candidates(page)

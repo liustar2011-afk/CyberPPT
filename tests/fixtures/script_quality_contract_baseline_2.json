@@ -109,6 +109,20 @@
       "suggested_action": "Write about 1–2 minutes of natural speech covering the page thesis."
     },
     {
+      "code": "ONSCREEN_MODULE_DIMENSION_INCONSISTENT",
+      "evidence": [
+        "①需求侧变化: 产业地位 / 数字化转型",
+        "②供给侧现状: 资源分布 / 对接机制"
+      ],
+      "message": "Peer modules label their details along different dimensions instead of one shared axis.",
+      "pages": [
+        "p04"
+      ],
+      "severity": "warning",
+      "source_ids": [],
+      "suggested_action": "Use the same label vocabulary in the same position across all peer modules (e.g. 服务内容/主要用途/交付形式 on every module), not a different synonym per module."
+    },
+    {
       "code": "VISUAL_STRUCTURE_TOO_THIN",
       "evidence": [],
       "message": "Visual structure is too thin to hand off the page semantics.",

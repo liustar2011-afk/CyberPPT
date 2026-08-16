@@ -1101,6 +1101,106 @@ def _onscreen_parallel_structure_issues(page: ScriptPage) -> list[ScriptQualityI
             )
     return issues
 
+def _onscreen_module_dimension_consistency_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
+    """Check that peer top-level modules label their details along the same axis.
+
+    Peer modules (e.g. ①②③④ each describing one member of the same
+    category) should walk the same set of dimensions in the same order --
+    e.g. every module says 服务内容 / 主要用途 / 交付形式, not one module
+    switching to 内容形式 or 支撑决策 partway through. Mixed axes make a
+    reader reconstruct a different mental model per module instead of
+    scanning one shared table, and they are exactly what breaks when an
+    author reaches for whatever synonym reads naturally for that one module
+    instead of the vocabulary already established by its siblings.
+
+    Only compares modules that (a) sit at the same top-level indent, (b)
+    have every child line labelled with 标签：, and (c) share the same
+    child count -- a module with a genuinely different number of
+    responsibilities is not a same-shape peer, and this check has nothing
+    to say about it.
+    """
+
+    if page.page_type != "content":
+        return []
+    lines = page.onscreen_text.splitlines()
+
+    def heading_title(line: str) -> str | None:
+        title = _module_title(line)
+        if title is None:
+            return None
+        stripped = line.strip()
+        if re.search(r"[：:]", stripped) and not stripped.startswith("**"):
+            return None
+        return title
+
+    headings: list[tuple[int, int, str]] = []
+    for index, line in enumerate(lines):
+        title = heading_title(line)
+        if title is not None:
+            headings.append((_line_indent(line), index, title))
+    if len(headings) < 2:
+        return []
+    base_indent = min(indent for indent, _, _ in headings)
+    top_level = [item for item in headings if item[0] == base_indent]
+    if len(top_level) < 2:
+        return []
+
+    module_labels: dict[str, tuple[str, ...]] = {}
+    for position, (indent, start, title) in enumerate(headings):
+        if indent != base_indent:
+            continue
+        end = len(lines)
+        for next_indent, next_index, _ in headings[position + 1 :]:
+            if next_indent <= indent:
+                end = next_index
+                break
+        labels: list[str] = []
+        clean = True
+        for line in lines[start + 1 : end]:
+            if not line.strip() or heading_title(line) is not None:
+                continue
+            if _line_indent(line) <= indent:
+                continue
+            stripped = strip_authoring_group_marker(line).strip().lstrip("- ").strip()
+            match = re.match(r"^(.{1,12}?)[：:]", stripped)
+            if not match:
+                clean = False
+                break
+            labels.append(match.group(1))
+        if clean and labels:
+            module_labels[title] = tuple(labels)
+
+    by_shape: dict[int, list[tuple[str, tuple[str, ...]]]] = {}
+    for title, labels in module_labels.items():
+        by_shape.setdefault(len(labels), []).append((title, labels))
+
+    issues: list[ScriptQualityIssue] = []
+    for count, entries in by_shape.items():
+        if count < 2 or len(entries) < 2:
+            continue
+        mismatched_positions = [
+            index
+            for index in range(count)
+            if len({labels[index] for _, labels in entries}) > 1
+        ]
+        if not mismatched_positions:
+            continue
+        evidence = tuple(
+            f"{title}: {' / '.join(labels)}" for title, labels in entries
+        )
+        issues.append(
+            _issue(
+                "ONSCREEN_MODULE_DIMENSION_INCONSISTENT",
+                page,
+                "Peer modules label their details along different dimensions instead of one shared axis.",
+                "Use the same label vocabulary in the same position across all peer modules (e.g. 服务内容/主要用途/交付形式 on every module), not a different synonym per module.",
+                evidence=evidence,
+                severity="warning",
+            )
+        )
+    return issues
+
+
 def _onscreen_redundant_restatement_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
     """Flag a free-standing on-screen line that just restates other copy.
 
