@@ -15,6 +15,10 @@ Authoritative chain:
 
 The projection is a compatibility artifact only. It must never become a second semantic authority.
 
+## Workflow entry
+
+Before acting, read the repository-wide [CyberPPT workflow overview](../../../docs/CYBERPPT_WORKFLOW.md). This Skill is the mandatory Stage 01 entry and owns the source-to-handoff sequence; the overview is the single place to find the complete route, the four human stops, the Stage 01/Stage 02 boundary, and completion criteria.
+
 ## Canonical route
 
 The only formal route is `cyberppt-source-foundation` → `business-semantic-understanding` → `ppt-outline-planning` → `cyberppt-handoff` → `cyberppt-write-single-page`. `compile-outline-draft` and `cyberppt-author-stage01-outline` are internal compatibility implementations for old-project migration only; they are not a second user-facing route and must not run over approved Source Foundation outputs.

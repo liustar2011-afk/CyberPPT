@@ -11,6 +11,12 @@
 - 复杂关系、流程或架构在确有帮助时使用表格、流程图或其他可视化表达。
 - 子 Agent 只用于边界清晰、可独立执行且确有并行收益的任务；避免重复探索和无意义并行。
 
+## 主流程唯一入口（Claude 首先阅读）
+
+- 处理任何 CyberPPT 源材料、Source Truth、语义模型、Outline、page plan、页面脚本或视觉生产任务，先阅读 [docs/CYBERPPT_WORKFLOW.md](docs/CYBERPPT_WORKFLOW.md)。该文件是全流程总览和检索入口。
+- `AGENTS.md` 负责仓库级硬约束；各 `.agents/skills/*/SKILL.md` 负责阶段细则。不要通过拼接多个 Skill 的局部说明自行重建主流程。
+- 涉及源材料或 Stage 01 时，第一入口固定为 `.agents/skills/cyberppt-source-foundation/SKILL.md`；纯 Stage 02 视觉、图片、SVG、PPTX QA 或已锁定最终脚本任务，按总览文件进入对应 Skill。
+
 ## 独立技术判断（硬规则）
 
 - 当用户提出、偏好、强烈主张或要求直接实施某个技术方向、架构、重构、删除、依赖、工作流变化或解决方案时，必须先调用 `.agents/skills/independent-technical-judgment/SKILL.md`，再决定是否赞同或实施。
