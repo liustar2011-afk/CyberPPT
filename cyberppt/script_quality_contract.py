@@ -46,10 +46,10 @@ from cyberppt.script_quality.text_rules import (
 
 from cyberppt.script_quality.source_coverage import (
     _dict_items, _full_prose_paragraph_boundary_issues, _full_prose_source_coverage_issues,
-    _model_slot_coverage_issues, _onscreen_module_provenance_issues, _outline_pages,
-    _page_content_unit_coverage_issues, _polarity_dropped_terms, _source_consumption_issues,
-    _source_statement_overlap, _truth_records, _visible_module_groups, normalized_tokens,
-    text_similarity,
+    _model_slot_coverage_issues, _onscreen_enumeration_loss_issues, _onscreen_module_provenance_issues,
+    _outline_pages, _page_content_unit_coverage_issues, _polarity_dropped_terms,
+    _source_consumption_issues, _source_statement_overlap, _truth_records, _visible_module_groups,
+    normalized_tokens, text_similarity,
 )
 
 from cyberppt.script_quality.onscreen import (
@@ -167,6 +167,7 @@ __all__ = (
     "_necessity_page_closure_issues", "_negative_foreground_issues",
     "_negative_foreground_terms", "_nontable_compact_len", "_onscreen_backend_meta_hits",
     "_onscreen_constraint_module_hits", "_onscreen_detail_phrase_overages",
+    "_onscreen_enumeration_loss_issues",
     "_onscreen_false_parallel_semantics", "_onscreen_flat_long_labelled_detail_hits",
     "_onscreen_flow_language_issues", "_onscreen_heading_candidates",
     "_onscreen_layout_meta_hits", "_onscreen_markdown_hits",

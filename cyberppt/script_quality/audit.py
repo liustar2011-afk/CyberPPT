@@ -870,6 +870,17 @@ def audit_script_quality(
                     records_by_id,
                 )
             )
+            # `_onscreen_enumeration_loss_issues` is deliberately NOT wired
+            # in here. It is a real, tested check (see
+            # OnscreenEnumerationLossTests) kept available for opt-in,
+            # manual use -- but syntactic item-counting cannot distinguish
+            # ordinary compression from a genuine silent business-option
+            # drop, and running it on every page flooded real audits with
+            # noise (dozens of warnings/page) without a workable precision
+            # gain from tuning the threshold or the item-boundary
+            # extraction. The actual fix for this failure mode belongs in
+            # the authoring step itself (see cyberppt-write-single-page's
+            # 压缩为可独立阅读的上屏文字 guidance), not as a blanket audit gate.
             if (
                 outline.get("semantic_argument_model_mode") == "required"
                 or outline.get("page_content_unit_coverage_mode") == "required"

@@ -37,6 +37,7 @@ from cyberppt.script_quality_contract import (
     _polarity_dropped_terms,
     _page_content_unit_coverage_issues,
     _model_slot_coverage_issues,
+    _onscreen_enumeration_loss_issues,
     _onscreen_module_provenance_issues,
     _visual_structure_judgment_issues,
     _page_relationship_continuity_issues,
@@ -951,6 +952,70 @@ class FullProseSourceCoverageTests(unittest.TestCase):
             }]},
         )
         self.assertNotIn("ONSCREEN_CONTENT_UNIT_GAP", {item.code for item in issues})
+
+
+class OnscreenEnumerationLossTests(unittest.TestCase):
+    def _page(self, prose: str, onscreen_text: str, subtitle: str = "") -> ScriptPage:
+        return ScriptPage(
+            page_id="p13",
+            sequence=13,
+            heading="",
+            page_type="content",
+            title="服务交付与服务等级",
+            main_message="服务交付按四个维度组合确定",
+            full_prose=prose,
+            selection_notes="",
+            evidence_map="",
+            evidence_map_refs=("ST001",),
+            source_refs=("ST001",),
+            boundary_source_refs=(),
+            boundary="",
+            visual_structure="",
+            onscreen_text=onscreen_text,
+            subtitle=subtitle,
+            module_titles=("数据处理与周期",),
+        )
+
+    def test_partial_enumeration_without_ellipsis_signal_is_flagged(self) -> None:
+        # Mirrors the real p13 defect: the source names three processing
+        # modes, but the onscreen line only carries two of them with no
+        # "等" marker -- the third (可信执行环境, the platform's actual
+        # technical differentiator) silently disappears.
+        page = self._page(
+            "数据处理方式包括三种：平台受控处理、源端单方处理和可信执行环境处理。",
+            "处理方式：平台受控处理或源端单方处理",
+        )
+        issues = _onscreen_enumeration_loss_issues(page)
+        self.assertIn("ONSCREEN_ENUMERATION_LOSS", {item.code for item in issues})
+        issue = next(item for item in issues if item.code == "ONSCREEN_ENUMERATION_LOSS")
+        self.assertEqual(issue.severity, "warning")
+
+    def test_ellipsis_marker_clears_the_warning(self) -> None:
+        page = self._page(
+            "数据处理方式包括三种：平台受控处理、源端单方处理和可信执行环境处理。",
+            "处理方式：平台受控、源端单方等多种方式",
+        )
+        issues = _onscreen_enumeration_loss_issues(page)
+        self.assertNotIn("ONSCREEN_ENUMERATION_LOSS", {item.code for item in issues})
+
+    def test_fully_covered_enumeration_is_not_flagged(self) -> None:
+        page = self._page(
+            "数据处理方式包括三种：平台受控处理、源端单方处理和可信执行环境处理。",
+            "处理方式：平台受控处理、源端单方处理或可信执行环境处理",
+        )
+        issues = _onscreen_enumeration_loss_issues(page)
+        self.assertNotIn("ONSCREEN_ENUMERATION_LOSS", {item.code for item in issues})
+
+    def test_fully_absent_enumeration_is_not_flagged(self) -> None:
+        # Zero hits reads as "this whole topic stayed prose-only" (a
+        # legitimate 仅讲解 choice), not a partial, silent truncation --
+        # only a partial match is suspicious enough to warrant a warning.
+        page = self._page(
+            "数据处理方式包括三种：平台受控处理、源端单方处理和可信执行环境处理。",
+            "处理方式：按约定规则执行",
+        )
+        issues = _onscreen_enumeration_loss_issues(page)
+        self.assertNotIn("ONSCREEN_ENUMERATION_LOSS", {item.code for item in issues})
 
 
 class PolarityDroppedTermsTests(unittest.TestCase):

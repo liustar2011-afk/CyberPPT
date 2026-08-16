@@ -475,6 +475,123 @@ def _page_content_unit_coverage_issues(
     return issues
 
 
+_ENUM_ITEM_SPLIT_RE = re.compile(r"、|或者|或|和|及")
+_ENUM_CLAUSE_SPLIT_RE = re.compile(r"[。；：\n]")
+_ENUM_SUBCLAUSE_SPLIT_RE = re.compile(r"[，:：]")
+
+# The first enumerated item in a clause is frequently preceded by a verb or
+# preposition that introduces the whole list ("具体参与深度按标准接入" is really
+# just "标准接入" with a governing clause glued on). Stripping up through the
+# last occurrence of one of these connectors keeps the item to its actual
+# noun/verb-phrase core instead of comparing a whole clause fragment against
+# onscreen text, which would never match even when the real term is present.
+_ENUM_LEADING_CONNECTOR_RE = re.compile(
+    "^.*(?:通过|按照|根据|围绕|依托|建立|形成|提供|组织|完成|开展|采取|包括|明确|覆盖|"
+    "针对|并|具体)"
+)
+# The last item can likewise trail off into a summarizing tail ("战略生态四种
+#方式选择" is really just "战略生态" followed by "N种/项/类 ... 方式/情况/条件
+# 选择" restating the enumeration itself). Cut at the first count-word +
+# classifier that starts such a tail.
+_ENUM_TRAILING_COUNT_TAIL_RE = re.compile(
+    "(?:[一二三四五六七八九十两]+[种类项个只条]).*$"
+)
+
+
+def _clean_enum_item(item: str, *, is_first: bool, is_last: bool) -> str:
+    if is_first:
+        stripped = _ENUM_LEADING_CONNECTOR_RE.sub("", item)
+        if stripped:
+            item = stripped
+    if is_last:
+        stripped = _ENUM_TRAILING_COUNT_TAIL_RE.sub("", item)
+        if stripped:
+            item = stripped
+    return item.strip()
+
+
+def _enumerations_in_text(text: str) -> tuple[tuple[str, ...], ...]:
+    """Find small (3-5 item) 顿号-style enumerations in prose (e.g. "A、B、C").
+
+    Used to compare a full-prose enumeration against its onscreen
+    compression -- deliberately conservative (items must be short,
+    2-12 characters) so it does not fire on ordinary long sentences
+    that merely contain a comma. Capped at 5 items on purpose: a
+    6+ item list is almost always a routine "pick 2-3 representative
+    items" summarization (harmless and expected throughout this
+    corpus), whereas dropping one branch out of a genuinely small
+    3-5 item menu of parallel options removes a much larger share of
+    the real content and is far more likely to be a true omission
+    rather than an intentional editorial trim.
+    """
+
+    enumerations: list[tuple[str, ...]] = []
+    for clause in _ENUM_CLAUSE_SPLIT_RE.split(text):
+        for sub in _ENUM_SUBCLAUSE_SPLIT_RE.split(clause):
+            if "、" not in sub:
+                continue
+            raw_items = [item.strip() for item in _ENUM_ITEM_SPLIT_RE.split(sub) if item.strip()]
+            last_index = len(raw_items) - 1
+            items = tuple(
+                _clean_enum_item(item, is_first=index == 0, is_last=index == last_index)
+                for index, item in enumerate(raw_items)
+            )
+            items = tuple(item for item in items if item)
+            if 3 <= len(items) <= 5 and all(2 <= len(item) <= 12 for item in items):
+                enumerations.append(items)
+    return tuple(enumerations)
+
+
+def _onscreen_enumeration_loss_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
+    """Flag a full-prose enumeration that lands onscreen only partially.
+
+    A page can legitimately compress "A、B、C、D、E" down to two or three
+    items -- that is normal summarization, and a large source list
+    losing most of its items onscreen is the common, expected case
+    throughout this corpus (see `_enumerations_in_text`'s size cap).
+    What this catches is the narrower, more dangerous case: a *small*
+    (3-5 item) menu of parallel options keeps only a single item
+    onscreen -- at most a third of the list survives -- with no "等"
+    signal that the rest was intentionally dropped. That combination is
+    what let a real business option (多方留域联合计算 via 可信执行环境)
+    silently disappear from p13 while its siblings stayed onscreen.
+
+    This is a heuristic, not a semantic judge: it cannot tell a genuine
+    business omission from an acceptable paraphrase, so it always
+    reports as a warning for human review, never as a blocking error.
+    """
+
+    issues: list[ScriptQualityIssue] = []
+    onscreen_lines = [line for line in page.onscreen_text.splitlines() if line.strip()]
+    onscreen_surface = page.onscreen_text + "\n" + page.subtitle
+    seen: set[tuple[str, ...]] = set()
+    for items in _enumerations_in_text(page.full_prose):
+        if items in seen:
+            continue
+        seen.add(items)
+        hits = tuple(item for item in items if item in onscreen_surface)
+        if not hits or len(hits) == len(items):
+            continue
+        has_ellipsis_signal = any(
+            "等" in line and any(item in line for item in hits)
+            for line in onscreen_lines
+        ) or ("等" in page.subtitle and any(item in page.subtitle for item in hits))
+        if has_ellipsis_signal:
+            continue
+        issues.append(_issue(
+            "ONSCREEN_ENUMERATION_LOSS",
+            page,
+            "完整文字稿中的枚举项在上屏文字里只保留了部分，且没有用“等”字标注省略，可能存在业务选项静默丢失。",
+            "核对是否遗漏了业务上有意义的枚举项；确认属于合理压缩的，请在对应上屏短语末尾加“等”字标注省略。",
+            evidence=(
+                f"来源枚举：{'、'.join(items)}",
+                f"上屏命中：{'、'.join(hits)}（{len(hits)}/{len(items)}）",
+            ),
+            severity="warning",
+        ))
+    return issues
+
+
 def _visible_module_groups(text: str) -> dict[str, str]:
     """Map each blank-line-delimited visible group to its top-level title."""
 
