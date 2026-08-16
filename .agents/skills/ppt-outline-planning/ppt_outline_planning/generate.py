@@ -38,6 +38,8 @@ CONTENT_FIELDS = {
     "importance",
     "topic_category",
     "attachment_disposition",
+    "judgment_role",
+    "subtitle_policy",
 }
 SOURCE_BOUND_FIELDS = {
     "page_id",

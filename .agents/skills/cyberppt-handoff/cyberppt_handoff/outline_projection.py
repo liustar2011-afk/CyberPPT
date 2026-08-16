@@ -332,6 +332,7 @@ def _project_outline(payloads: dict[str, dict[str, Any]], source_truth: dict[str
             "source_heading_ids",
             "primary_source_heading_id",
             "subtitle_policy",
+            "judgment_role",
         ):
             if field in page:
                 value = page[field]
