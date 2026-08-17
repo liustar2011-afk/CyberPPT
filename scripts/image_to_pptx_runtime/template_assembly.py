@@ -23,6 +23,7 @@ from .svg_to_pptx.pptx_package.builder import create_pptx_with_native_svg
 CANVAS_WIDTH = 1280
 CANVAS_HEIGHT = 720
 TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "assets" / "presentation-templates" / "cec-lightweight"
+TEMPLATE_BACKGROUND = "#FFFFFF"
 TEMPLATE_FONT_FAMILY = "Source Han Sans CN, Hiragino Sans GB, STHeiti, Arial, sans-serif"
 
 
@@ -95,7 +96,7 @@ def _render_chrome(
     header = (rules.get("content_regions") or {}).get("body_header_region") or {}
     title_y = float(header.get("y", 16)) + 31
     lines = [
-        f'<rect x="0" y="0" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" fill="#F7F6F0"/>',
+        f'<rect x="0" y="0" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" fill="{TEMPLATE_BACKGROUND}"/>',
         f'<rect x="0" y="{top.get("y", 84)}" width="{CANVAS_WIDTH}" height="{top.get("height", 3)}" fill={quoteattr(str(top.get("fill", "#8B0000")))}/>',
         f'<image x="{logo.get("x", 1050)}" y="{logo.get("y", 13)}" width="{logo.get("width", 210)}" height="{logo.get("height", 70)}" href={quoteattr(logo_href)} preserveAspectRatio="xMidYMid meet"/>',
         f'<text x="{header.get("x", 58)}" y="{title_y:g}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="25" font-weight="700" fill="#123B66">{xml_escape(title)}</text>',

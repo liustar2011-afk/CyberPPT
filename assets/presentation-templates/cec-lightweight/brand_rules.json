@@ -144,9 +144,9 @@
     "ending_template": "04_ending.svg"
   },
   "body_page_surface": {
-    "background": null,
+    "background": "#FFFFFF",
     "policy": "solid-paper-content-surface",
-    "usage": "Use a clean solid ivory surface behind the body image. Do not place a template atmosphere image, texture, gradient, or edge fade behind the content panel. Body panel keeps a separate 2px gap from chrome."
+    "usage": "Use a clean pure-white surface behind the body image. Do not place a template atmosphere image, texture, gradient, or edge fade behind the content panel. Body panel keeps a separate 2px gap from chrome."
   },
   "runtime_policy": {
     "locks": [

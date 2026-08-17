@@ -91,7 +91,7 @@ These page templates are part of the chrome-only brand boundary for non-content 
 
 ## VIII. Runtime Rule
 
-The PPT template surface is ivory `#F7F6F0`; preserve this as the base color for
+The PPT template surface is pure white `#FFFFFF`; preserve this as the base color for
 the canvas behind body-page content and the injected master chrome.
 
 When this brand is copied into `<project_path>/templates/`, Strategist must treat it as a chrome-only public-element preset:

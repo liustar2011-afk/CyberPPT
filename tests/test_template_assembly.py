@@ -33,6 +33,7 @@ def test_image_mode_places_body_image_in_template_slot(tmp_path: Path) -> None:
     )
 
     text = output.read_text(encoding="utf-8")
+    assert 'width="1280" height="720" fill="#FFFFFF"' in text
     assert 'width="1214" height="607"' in text
     assert 'x="33" y="89"' in text
     assert "总体定位" in text
