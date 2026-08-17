@@ -10,6 +10,7 @@ from typing import Any, Mapping
 
 from PIL import Image
 
+from cyberppt.script_quality.parsing import parse_script_path
 from scripts.presentation_qa.text_content import build_text_content_qa
 from scripts.imagegen_pipeline.production_readiness import build_production_readiness
 
@@ -90,6 +91,24 @@ def _validate_body_image(source: Path, page_number: int) -> tuple[int, int]:
 def _page_title(script: Path, page_number: int) -> str:
     lines = _script_lines(script, page_number)
     return lines[0] if lines else f"第{page_number}页"
+
+
+def _speaker_notes_by_page(script: Path, page_numbers: list[int]) -> dict[str, str]:
+    """Map final-script speaker notes to the SVG stems used by the exporter."""
+
+    document = parse_script_path(script)
+    pages = {page.sequence: page for page in document.pages}
+    missing = [number for number in page_numbers if number not in pages]
+    if missing:
+        raise ValueError(
+            "final script is missing requested speaker-note pages: "
+            + ", ".join(str(number) for number in missing)
+        )
+    return {
+        f"p{number:02d}": pages[number].speaker_notes.strip()
+        for number in page_numbers
+        if pages[number].speaker_notes.strip()
+    }
 
 
 def _run_text_qa(export: Path, expected: list[str], *, include_body_text: bool) -> dict[str, Any]:
@@ -206,6 +225,7 @@ def run_stage02_reconstruction(
         review = {"schema": "cyberppt.image_to_pptx.visual_review.v1", "mode": "image", "issues": [], "requires_rebuild": False, "valid": True, "path": str(review_path)}
         review_path.write_text(json.dumps(review, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     title_by_page = {number: _page_title(script, number) for number, _ in pages}
+    speaker_notes = _speaker_notes_by_page(script, [number for number, _ in pages])
     expected = [text for number, _ in pages for text in _script_lines(script, number)]
     for policy in graphic_text_policy:
         for item in policy.get("items", []):
@@ -235,7 +255,7 @@ def run_stage02_reconstruction(
             )
             image_svgs.append(wrapper)
         image_export = output / "exports" / "template_image.pptx"
-        assemble_template_pptx(image_svgs, image_export)
+        assemble_template_pptx(image_svgs, image_export, notes=speaker_notes)
         exports["image"] = image_export
         text_qa_by_mode["image"] = _run_text_qa(image_export, chrome_expected, include_body_text=False)
 
@@ -255,7 +275,7 @@ def run_stage02_reconstruction(
             )
             editable_svgs.append(wrapper)
         editable_export = output / "exports" / "editable_svg.pptx"
-        assemble_template_pptx(editable_svgs, editable_export)
+        assemble_template_pptx(editable_svgs, editable_export, notes=speaker_notes)
         exports["editable"] = editable_export
         text_qa_by_mode["editable"] = _run_text_qa(editable_export, [*expected, *chrome_expected], include_body_text=True)
 

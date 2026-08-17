@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
+import zipfile
 from pathlib import Path
 
 from PIL import Image
 
 from scripts.image_to_pptx_runtime.template_assembly import (
+    assemble_template_pptx,
     assemble_template_svg,
     load_template_contract,
 )
@@ -91,3 +93,36 @@ def test_editable_mode_rejects_non_two_to_one_svg(tmp_path: Path) -> None:
         assert "2:1" in str(exc)
     else:
         raise AssertionError("non-2:1 authoring SVG must be rejected")
+
+
+def test_template_pptx_embeds_notes_by_svg_stem(tmp_path: Path) -> None:
+    source = tmp_path / "source.svg"
+    source.write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">'
+        '<text x="20" y="50">正文文字</text>'
+        "</svg>",
+        encoding="utf-8",
+    )
+    wrapper = tmp_path / "editable" / "svg_output" / "p05.svg"
+    assemble_template_svg(
+        source=source,
+        output=wrapper,
+        title="总体定位",
+        page_number=5,
+        mode="editable",
+    )
+    output = tmp_path / "exports" / "editable.svg.pptx"
+    assemble_template_pptx(
+        [wrapper],
+        output,
+        notes={"p05": "这一页说明总体定位。"},
+    )
+
+    with zipfile.ZipFile(output) as package:
+        note_parts = [
+            name
+            for name in package.namelist()
+            if name.startswith("ppt/notesSlides/notesSlide") and name.endswith(".xml")
+        ]
+        assert len(note_parts) == 1
+        assert "这一页说明总体定位。" in package.read(note_parts[0]).decode("utf-8")
