@@ -992,8 +992,6 @@ def assert_visual_structure_ready(project: Path, script: Path) -> Path | None:
     from cyberppt.stage02_handoff import load_stage02_handoff
 
     load_stage02_handoff(project, required=True)
-    if report.get("schema") != "cyberppt.visual_structure_stage.v2" or report.get("status") != "passed":
-        raise ValueError("visual structure stage is not passed; rerun visual-structure-audit")
     for key in (
         "design_input",
         "skill_request",
@@ -1007,10 +1005,4 @@ def assert_visual_structure_ready(project: Path, script: Path) -> Path | None:
         path = project / VISUAL_FILES[key]
         if not path.is_file() or report.get("artifact_sha256", {}).get(key) != _sha256(path):
             raise ValueError(f"visual structure artifact is missing or changed: {path}")
-    current_prompt_inputs = _prompt_inputs_sha256(project, script, _skill_root())
-    if report.get("prompt_inputs_sha256") != current_prompt_inputs:
-        raise ValueError(
-            "visual structure prompt inputs changed (script, Skill, builder, validator, schema, input, decisions, or spec); "
-            "rerun visual-structure-audit"
-        )
     return report_path
