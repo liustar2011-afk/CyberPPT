@@ -992,6 +992,33 @@ def _module_heading_colon_hits(text: str) -> tuple[str, ...]:
             hits.append(stripped)
     return tuple(hits)
 
+DETAIL_TERMINAL_PUNCTUATION_CHARS = "。；，、：？！.!?;,:"
+
+
+def _onscreen_detail_terminal_punctuation_hits(text: str) -> tuple[str, ...]:
+    """Find label-prefixed detail lines (``标签：短语``) ending with punctuation.
+
+    On-screen detail lines are bullet-style phrases, not manuscript
+    sentences; a trailing period/comma/dunhao/etc. reads as an accidental
+    carry-over from the full-text draft rather than deliberate slide copy.
+    Bare module headings (``①常态质量保障``, ``【组标题】``) and genuine
+    独立边界句 are intentionally excluded — neither has a colon, and for the
+    latter the trailing 句号 is exactly what keeps ``_module_title`` from
+    mis-parsing it as a module label (see parsing.py), so it must stay.
+    """
+
+    hits = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if not re.match(r"^[^\s：:，,。；;、]{1,28}[：:]", stripped):
+            continue
+        if stripped.endswith(tuple(DETAIL_TERMINAL_PUNCTUATION_CHARS)):
+            hits.append(stripped)
+    return tuple(hits)
+
+
 def _mechanical_evidence_bullets(text: str) -> tuple[str, ...]:
     """Detect source-sentence atomization masquerading as authored slide copy."""
 

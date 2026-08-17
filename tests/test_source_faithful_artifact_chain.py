@@ -193,7 +193,14 @@ class SourceFaithfulArtifactChainTests(unittest.TestCase):
             first = render_artifact_prompt(spec)
             second = render_artifact_prompt(spec)
 
-        self.assertEqual(source_statements, spec.typography.visible_text)
+        # On-screen text drops a trailing 。/；/etc.: the source statement's
+        # terminal punctuation already did its job disambiguating the
+        # authored line from a module title upstream; it is not meant to be
+        # rendered onto the slide (see stage02_handoff._onscreen_items).
+        self.assertEqual(
+            tuple(statement.rstrip("。；，、：？！.!?;,:") for statement in source_statements),
+            spec.typography.visible_text,
+        )
         relationship = spec.relationships[0]
         self.assertEqual("项目", relationship.subject)
         self.assertEqual("has_goal", relationship.relation)

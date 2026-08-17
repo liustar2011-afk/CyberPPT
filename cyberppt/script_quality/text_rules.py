@@ -15,6 +15,7 @@ from .onscreen import (
     _mechanical_evidence_bullets,
     _module_heading_colon_hits,
     _nontable_compact_len,
+    _onscreen_detail_terminal_punctuation_hits,
     _unlabeled_onscreen_bullets,
     meaningful_char_count,
     onscreen_effective_char_target,
@@ -692,6 +693,18 @@ def _prose_issues(
                 "On-screen bullets lack conclusion-first labels.",
                 "Prefix every parallel item with a concise conclusion label followed by a colon, then provide the supporting detail.",
                 evidence=unlabeled_bullets,
+            )
+        )
+    detail_terminal_punctuation = _onscreen_detail_terminal_punctuation_hits(page.onscreen_text)
+    if detail_terminal_punctuation:
+        issues.append(
+            _issue(
+                "ONSCREEN_DETAIL_TERMINAL_PUNCTUATION",
+                page,
+                "On-screen 标签：短语 detail lines must not end with sentence punctuation.",
+                "Remove the final period, comma, dunhao, semicolon, colon, question mark, or exclamation mark; "
+                "leave 独立边界句 and bare module headings untouched — their trailing 句号 (or its absence) is load-bearing for module parsing.",
+                evidence=detail_terminal_punctuation,
             )
         )
     mechanical_evidence = _mechanical_evidence_bullets(page.onscreen_text)

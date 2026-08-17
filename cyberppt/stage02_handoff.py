@@ -123,6 +123,9 @@ def _render_role(page_type: str) -> str:
     return aliases.get(page_type, "content")
 
 
+_ONSCREEN_TRAILING_PUNCTUATION = "。；，、：？！.!?;,:"
+
+
 def _onscreen_items(page: ScriptPage) -> list[str]:
     items: list[str] = []
     seen: set[str] = set()
@@ -133,6 +136,16 @@ def _onscreen_items(page: ScriptPage) -> list[str]:
         line = re.sub(r"^#{1,6}\s*", "", line)
         line = re.sub(r"^[-*+]\s*", "", line)
         line = line.replace("**", "").strip()
+        if not line:
+            continue
+        # Trailing sentence punctuation (including the 句号 that a bare
+        # 独立边界句 needs in the *authored* markdown so parsing.py's
+        # _module_title does not mistake it for a module label) has already
+        # done its structural job by this point — page.onscreen_text and the
+        # ScriptPage's module classification were derived upstream from the
+        # original, untouched string. Strip it here so the locked text that
+        # actually reaches the slide never carries a visible trailing mark.
+        line = line.rstrip(_ONSCREEN_TRAILING_PUNCTUATION)
         if not line:
             continue
         key = _compact(line)
