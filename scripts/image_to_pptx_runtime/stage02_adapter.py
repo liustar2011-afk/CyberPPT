@@ -12,6 +12,7 @@ from scripts.presentation_qa.text_content import build_text_content_qa
 from scripts.imagegen_pipeline.production_readiness import build_production_readiness
 
 from .quick import create_quick_project
+from .graphic_text_policy import validate_graphic_text_policy
 from .review import write_review
 from .svg_quality.checker import SVGQualityChecker
 from .svg_to_pptx.pptx_package.builder import create_pptx_with_native_svg
@@ -82,11 +83,20 @@ def run_stage02_reconstruction(*, project: Path | str, manifest_path: Path | str
     quick = create_quick_project(output / "image_to_pptx_runtime", pages=pages, text_by_page={number: _script_lines(script, number) for number, _ in pages})
     svgs: list[Path] = []
     quality: list[dict[str, Any]] = []
+    graphic_text_policy: list[dict[str, Any]] = []
     checker = SVGQualityChecker(quick_generate=True)
     for pair in pairs:
         authored = Path(str(pair.get("authoring_svg") or "")).expanduser()
         if not authored.is_file():
             raise ValueError(f"page {pair['page_number']} requires a hand-authored SVG from the image-to-PPTX runtime")
+        text_policy = validate_graphic_text_policy(
+            pair.get("graphic_text_policy"),
+            authored_svg=authored,
+            page_number=int(pair["page_number"]),
+        )
+        graphic_text_policy.append(text_policy)
+        if not text_policy["valid"]:
+            raise ValueError(f"page {pair['page_number']} failed graphic text policy: {text_policy['errors']}")
         target = quick.svg_path(int(pair["page_number"]))
         shutil.copy2(authored, target)
         _copy_relative_svg_assets(authored, target)
@@ -112,6 +122,10 @@ def run_stage02_reconstruction(*, project: Path | str, manifest_path: Path | str
     ):
         raise RuntimeError("internal image-to-PPTX SVG export failed")
     expected = [text for number, _ in pages for text in _script_lines(script, number)]
+    for policy in graphic_text_policy:
+        for item in policy.get("items", []):
+            if item.get("treatment") == "native_text" and item.get("text") not in expected:
+                expected.append(str(item["text"]))
     text_qa = build_text_content_qa(
         export,
         expected,
@@ -124,8 +138,10 @@ def run_stage02_reconstruction(*, project: Path | str, manifest_path: Path | str
     analysis.mkdir(parents=True, exist_ok=True)
     text_path = analysis / "text_content_qa.json"
     text_path.write_text(json.dumps(text_qa, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    artifacts = {"reconstruction_inventory": str(quick.root / "analysis" / "reconstruction_inventory.json"), "svg_output": str(quick.root / "svg_output"), "reconstruction_quality": str(analysis), "text_content_qa": str(text_path), "render_compare": str(review["path"]), "exported_pptx": str(export)}
-    reports = {"reconstruction_inventory": {"valid": True}, "reconstruction_quality": {"valid": True, "pages": quality}, "svg_output": {"valid": True}, "text_content_qa": text_qa, "render_compare": {"valid": review["valid"], "review": review}, "exported_pptx": {"valid": True}}
+    graphic_text_path = analysis / "graphic_text_policy_qa.json"
+    graphic_text_path.write_text(json.dumps(graphic_text_policy, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    artifacts = {"reconstruction_inventory": str(quick.root / "analysis" / "reconstruction_inventory.json"), "svg_output": str(quick.root / "svg_output"), "reconstruction_quality": str(analysis), "text_content_qa": str(text_path), "graphic_text_policy_qa": str(graphic_text_path), "render_compare": str(review["path"]), "exported_pptx": str(export)}
+    reports = {"reconstruction_inventory": {"valid": True}, "reconstruction_quality": {"valid": True, "pages": quality}, "svg_output": {"valid": True}, "text_content_qa": text_qa, "graphic_text_policy": {"valid": True, "pages": graphic_text_policy}, "render_compare": {"valid": review["valid"], "review": review}, "exported_pptx": {"valid": True}}
     readiness = build_production_readiness(stage="02-production-build", artifacts=artifacts, reports=reports, required_tools=tuple(artifacts))
     result = {"schema": "cyberppt.image_to_pptx.stage02.v1", "status": readiness["status"], "runtime_project": str(quick.root), "svg_roster": [str(svg) for svg in svgs], "svg_quality": quality, "visual_review": review, "artifacts": artifacts, "reports": reports, "text_content_qa": text_qa, "release_gate": {"valid": True, "manual_adjustments": "local_only"}, "delivery_readiness": readiness}
     result_path = analysis / "image-to-pptx-result.json"

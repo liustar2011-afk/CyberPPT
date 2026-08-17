@@ -17,6 +17,26 @@ The older OCR/coordinate reconstruction entry point under
 an alternate PPTX generator. The low-level SVG-to-DrawingML builder remains an
 internal implementation detail of the Quick route.
 
+### Embedded graphic text is a required per-page contract
+
+Before cleaning any source-image or source-graphic region, inspect every
+legible word, number, label, and short caption inside that region and record it
+in pairs[*].graphic_text_policy:
+
+- native_text: remove the source pixels and restore the exact visible wording
+  as native SVG text at the registered position;
+- preserved_in_image: keep the wording inside a verified local image layer,
+  with that layer declared by asset_ref;
+- no omitted or manual_required item is allowed at export time.
+
+The policy must use schema
+cyberppt.image_to_pptx.graphic_text_policy.v1, set status to complete, and set
+empty_container_check to passed. An empty card, label box, or other container
+left after cleaning is a release blocker. The Stage 02 Quick adapter validates
+the policy before native PPTX export and writes
+analysis/graphic_text_policy_qa.json. OCR can provide candidates, but it cannot
+replace this page-level classification and authoring decision.
+
 > Quick-only Generate profile, not a top-level route. Normalize one or more
 > supplied images into the represented page roster, then rebuild each page as
 > native text, identity-faithful source graphics, and independently placeable

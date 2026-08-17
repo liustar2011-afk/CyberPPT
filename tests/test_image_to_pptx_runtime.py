@@ -6,6 +6,7 @@ from pathlib import Path
 from PIL import Image
 
 from scripts.image_to_pptx_runtime import assert_internal_runtime
+from scripts.image_to_pptx_runtime.graphic_text_policy import validate_graphic_text_policy
 from scripts.image_to_pptx_runtime.quick import create_quick_project
 from scripts.image_to_pptx_runtime.review import ReviewIssue, write_review
 from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruction
@@ -45,6 +46,151 @@ def test_stage02_adapter_requires_audited_hand_authored_svg(tmp_path: Path) -> N
         assert "hand-authored SVG" in str(exc)
     else:
         raise AssertionError("production adapter must not fall back to OCR coordinate authoring")
+
+
+def _graphic_text_policy(*, items: list[dict[str, object]] | None = None, empty_container_check: str = "passed") -> dict[str, object]:
+    return {
+        "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+        "status": "complete",
+        "empty_container_check": empty_container_check,
+        "items": items or [],
+    }
+
+
+def _policy_svg(tmp_path: Path, *, text: str = "登记编目") -> Path:
+    svg = tmp_path / "page_001.svg"
+    svg.write_text(
+        f'''<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
+  <rect x="0" y="0" width="400" height="200" fill="#FFFFFF"/>
+  <text x="40" y="80" font-family="Arial" font-size="20" fill="#0B3B78">{text}</text>
+</svg>
+''',
+        encoding="utf-8",
+    )
+    return svg
+
+
+def test_graphic_text_policy_requires_native_reconstruction_for_cleared_text(tmp_path: Path) -> None:
+    svg = _policy_svg(tmp_path)
+    report = validate_graphic_text_policy(
+        _graphic_text_policy(items=[{"id": "label-1", "text": "登记编目", "treatment": "native_text"}]),
+        authored_svg=svg,
+        page_number=1,
+    )
+    assert report["valid"] is True
+
+
+def test_graphic_text_policy_is_required_even_when_no_embedded_text_is_declared(tmp_path: Path) -> None:
+    report = validate_graphic_text_policy(None, authored_svg=_policy_svg(tmp_path), page_number=1)
+    assert report["valid"] is False
+    assert {error["code"] for error in report["errors"]} >= {
+        "missing_or_invalid_schema",
+        "policy_not_complete",
+        "empty_container_check_failed",
+        "invalid_items",
+    }
+
+
+def test_graphic_text_policy_blocks_missing_native_text_and_empty_containers(tmp_path: Path) -> None:
+    svg = _policy_svg(tmp_path, text="其他文字")
+    report = validate_graphic_text_policy(
+        _graphic_text_policy(
+            items=[{"id": "label-1", "text": "登记编目", "treatment": "native_text"}],
+            empty_container_check="failed",
+        ),
+        authored_svg=svg,
+        page_number=1,
+    )
+    assert report["valid"] is False
+    assert {error["code"] for error in report["errors"]} == {"empty_container_check_failed", "invalid_item"}
+
+
+def test_graphic_text_policy_requires_evidence_for_preserved_image_text(tmp_path: Path) -> None:
+    svg = _policy_svg(tmp_path)
+    report = validate_graphic_text_policy(
+        _graphic_text_policy(items=[{"id": "label-1", "text": "登记编目", "treatment": "preserved_in_image"}]),
+        authored_svg=svg,
+        page_number=1,
+    )
+    assert report["valid"] is False
+    assert report["errors"][0]["code"] == "invalid_item"
+
+
+def test_graphic_text_policy_accepts_preserved_text_with_local_image_evidence(tmp_path: Path) -> None:
+    asset = tmp_path / "wordmark.png"
+    Image.new("RGB", (20, 20), "white").save(asset)
+    svg = _policy_svg(tmp_path)
+    svg.write_text(
+        svg.read_text(encoding="utf-8").replace(
+            "</svg>",
+            '<image href="wordmark.png" x="200" y="20" width="40" height="40"/>\n</svg>',
+        ),
+        encoding="utf-8",
+    )
+    report = validate_graphic_text_policy(
+        _graphic_text_policy(
+            items=[
+                {
+                    "id": "wordmark-1",
+                    "text": "示例",
+                    "treatment": "preserved_in_image",
+                    "asset_ref": "wordmark.png",
+                }
+            ]
+        ),
+        authored_svg=svg,
+        page_number=1,
+    )
+    assert report["valid"] is True
+
+
+def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path: Path) -> None:
+    source = tmp_path / "source.png"
+    Image.new("RGB", (400, 200), "white").save(source)
+    script = tmp_path / "script.md"
+    script.write_text("## 第1页：标题\n结论\n", encoding="utf-8")
+    authored = _policy_svg(tmp_path)
+    authored.write_text(
+        authored.read_text(encoding="utf-8").replace(
+            "</svg>",
+                '<text x="40" y="120" font-family="Arial" font-size="20" fill="#000000">标题</text>\n<text x="40" y="150" font-family="Arial" font-size="20" fill="#000000">结论</text>\n</svg>',
+        ),
+        encoding="utf-8",
+    )
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "production_mode": "image-to-editable-svg",
+                "output_variants": ["full"],
+                "source_script": str(script),
+                "pairs": [
+                    {
+                        "page_number": 1,
+                        "full": {"path": str(source), "status": "Generated", "text_audit": {"valid": True}},
+                        "authoring_svg": str(authored),
+                        "graphic_text_policy": _graphic_text_policy(
+                            items=[{"id": "label-1", "text": "登记编目", "treatment": "native_text"}]
+                        ),
+                    }
+                ],
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_stage02_reconstruction(
+        project=tmp_path,
+        manifest_path=manifest,
+        output_dir=tmp_path / "out",
+        requested_pages=[1],
+    )
+
+    assert result["status"] == "production_ready"
+    assert result["reports"]["graphic_text_policy"]["valid"] is True
+    assert Path(result["artifacts"]["graphic_text_policy_qa"]).is_file()
+    assert "登记编目" in pptx_texts(Path(result["artifacts"]["exported_pptx"]))
 
 
 def test_quick_split_text_flow_keeps_visual_tspan_rows_editable(tmp_path: Path) -> None:

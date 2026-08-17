@@ -284,6 +284,8 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertEqual("Generated", full_status)
         self.assertEqual((4096, 2048), full_size)
         self.assertNotIn("background", pair)
+        self.assertEqual("required", pair["graphic_text_policy"]["status"])
+        self.assertEqual("required", pair["graphic_text_policy"]["empty_container_check"])
 
     def test_manifest_generates_full_images_only(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

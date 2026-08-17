@@ -237,6 +237,21 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("可编辑 SVG", text)
         self.assertIn("manual_required", text)
 
+    def test_stage02_embedded_graphic_text_policy_is_a_release_gate(self) -> None:
+        root_skill = SKILL.read_text(encoding="utf-8-sig")
+        workflow = (ROOT / "docs" / "CYBERPPT_WORKFLOW.md").read_text(encoding="utf-8-sig")
+        image_skill = (
+            ROOT / ".agents" / "skills" / "cyberppt-image-to-editable-svg" / "SKILL.md"
+        ).read_text(encoding="utf-8-sig")
+
+        for text in (root_skill, workflow):
+            self.assertIn("graphic_text_policy", text)
+            self.assertIn("空白容器", text)
+        self.assertIn("graphic_text_policy", image_skill)
+        self.assertIn("empty_container_check", image_skill)
+        self.assertIn("cyberppt.image_to_pptx.graphic_text_policy.v1", image_skill)
+        self.assertIn("graphic_text_policy_qa.json", root_skill)
+
     def test_stage02_docs_do_not_advertise_dual_image_production(self) -> None:
         documentation = "\n".join(
             path.read_text(encoding="utf-8-sig")

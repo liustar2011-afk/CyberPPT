@@ -88,6 +88,32 @@ activates cue synchronization.
 
 ## 2. Source and Resource Preparation
 
+### Embedded text in graphics
+
+For every source-image or source-graphic region that contains readable text,
+classify the text before preparing a clean base. Use the page's
+graphic_text_policy in the image-pairs manifest:
+
+~~~json
+{
+  "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+  "status": "complete",
+  "empty_container_check": "passed",
+  "items": [
+    {"id": "label-1", "text": "登记编目", "treatment": "native_text"},
+    {"id": "wordmark-1", "text": "示例", "treatment": "preserved_in_image", "asset_ref": "assets/wordmark.png"}
+  ]
+}
+~~~
+
+Use native_text for labels or information that should remain editable: clean
+the source pixels and author the exact wording in SVG. Use preserved_in_image
+only when the lettering is inseparable from an identity-faithful graphic and
+the referenced local image layer retains it. Never clean a meaningful
+text-bearing container and leave it empty. A missing, incomplete, or unresolved
+policy fails the Quick export gate; the adapter produces
+analysis/graphic_text_policy_qa.json before PPTX assembly.
+
 Prepare source facts before initialization:
 
 | Input | Action |

@@ -74,6 +74,8 @@ Stage 01 脚本经轻量确认审计通过后，主流程必须自动调用已�
 
 生产模式唯一为 `image-to-editable-svg`：生成并文字审计同一张 full 图，以脚本为文字 truth、OCR 为坐标证据，盘点每个可见区域并准备已注册图层，再生成可编辑 SVG 与原生 PPTX。风格10的 `truth_lock` 锁定事实真值，`visual_freedom` 只释放镜头、场景、对象、材质和视觉隐喻；二者不能替代重建证据。
 
+图片转可编辑 PPTX 时，配图内部的可读文字必须先写入每页 pairs[*].graphic_text_policy：需要编辑或承载信息的文字清底后回写为原生 SVG 文字，可随身份图形保留的字样必须声明经过核验的局部图片层。策略必须完成，空白容器检查必须通过；缺失、未分类、清底后未回写或 manual_required 均在导出前阻断。
+
 含义如下：
 
 1. **脚本锁定**：逐页保存并确认脚本、内容锁定、模板文字层锁定、视觉锁定和必要的 ImageGen prompt。脚本是后续 full 图和模板文字层的 truth，不得把 ImageGen 图中文字或 OCR 当作最终标题层来源。
@@ -275,7 +277,7 @@ Stage 01 的 `source-truth-audit` / `outline-audit` / `script-audit` 运行一�
 
 脚本批准后必须进入 `python -m cyberppt final-script-pages`，不得把生图后端或导出器作为常规入口。唯一生产模式为 `image-to-editable-svg`：只接受通过文字审计的正文区 ImageGen full 图，按页面盘点、注册图层和可编辑 SVG 重建后导出原生 PPTX；标题、副标题、Logo、页脚、页码、蓝线和公共模板元素仍由模板文字层生成。
 
-同一张 full 图既是重建证据也是唯一视觉来源。OCR 只用于定位，脚本锁定的文字是最终 truth。禁止生成或依赖无字底图、纯文字参考图、整页截图背景或其他旧式叠层资产。
+同一张 full 图既是重建证据也是唯一视觉来源。OCR 只用于定位，脚本锁定的文字是最终 truth。禁止生成或依赖无字底图、纯文字参考图、整页截图背景或其他旧式叠层资产。策略门禁报告写入 analysis/graphic_text_policy_qa.json，并与 SVG 质量、PPTX 文本 QA 一并纳入交付判定。
 
 正式命令形态：
 

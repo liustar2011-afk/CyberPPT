@@ -625,6 +625,13 @@ def build_manifest(
                     "script_text": allowed_image_text,
                     "scope": "typo_and_gibberish_only",
                 },
+                "graphic_text_policy": {
+                    "schema": "cyberppt.image_to_pptx.graphic_text_policy.v1",
+                    "status": "required",
+                    "empty_container_check": "required",
+                    "items": [],
+                    "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export.",
+                },
                 "prompt_file": str(prompt_file),
                 **({"reference_images": reference_images} if reference_images else {}),
                 "visual_structure_handoff": visual_handoff_metadata,
