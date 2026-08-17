@@ -262,6 +262,7 @@ def _template_text_lock(
     manifest_path: Path,
     output_dir: Path,
     build_id: str,
+    assembly_mode: str = "editable",
 ) -> Path:
     blocks = parse_page_blocks(script)
     document = parse_script_path(script)
@@ -299,7 +300,7 @@ def _template_text_lock(
                     "python -m cyberppt final-script-pages "
                     f"{project} --script {script} --pages {pages_raw}"
                     + (f" --style-lock {style_lock}" if style_lock else "")
-                    + f" --output-dir {output_dir} --build-id {build_id}"
+                    + f" --assembly-mode {assembly_mode} --output-dir {output_dir} --build-id {build_id}"
                 ),
             }
         if presentation is not None:
@@ -356,13 +357,15 @@ def _run_image_to_editable_svg_build(
     manifest_path: Path,
     output_dir: Path,
     pages_raw: str,
+    assembly_mode: str = "editable",
 ) -> dict[str, Any]:
-    """Use the sole high-fidelity Quick reconstruction route."""
+    """Run the selected 2:1 body-to-template Stage 02 assembly route."""
     return run_stage02_reconstruction(
         project=project,
         manifest_path=manifest_path,
         output_dir=output_dir / "editable_svg",
         requested_pages=[int(value) for value in pages_raw.split(",") if value.strip()],
+        assembly_mode=assembly_mode,
     )
 
 
@@ -553,6 +556,7 @@ def run_final_script_pages(
     rebuild_args: list[str] | None = None,
     production_build: bool = False,
     production_mode: str = FULL_IMAGE_MODE,
+    assembly_mode: str = "editable",
     generate_images: bool = False,
     image_model: str = "gpt-image-2",
     image_quality: str = "high",
@@ -721,6 +725,7 @@ def run_final_script_pages(
         manifest_path=manifest_path,
         output_dir=target_dir,
         build_id=build_id,
+        assembly_mode=assembly_mode,
     )
     image_generation = None
     if generate_images:
@@ -760,7 +765,7 @@ def run_final_script_pages(
         else (
             f"python -m cyberppt final-script-pages {project} --script {script} "
             f"--pages {pages_raw} --style-lock {style_lock} --production-mode {production_mode} "
-            f"--output-dir {target_dir} --build-id {build_id}"
+            f"--assembly-mode {assembly_mode} --output-dir {target_dir} --build-id {build_id}"
         )
     )
     production_readiness = None
@@ -781,6 +786,7 @@ def run_final_script_pages(
             manifest_path=manifest_path,
             output_dir=target_dir,
             pages_raw=pages_raw,
+            assembly_mode=assembly_mode,
         )
         production_readiness = image_to_editable_svg_build["delivery_readiness"]
         tool_consumption = production_readiness["tool_consumption"]
@@ -799,6 +805,7 @@ def run_final_script_pages(
         "project_created": project_created,
         "status": status,
         "production_mode": production_mode,
+        "assembly_mode": assembly_mode,
         "editable_pptx_route": CANONICAL_EDITABLE_PPTX_ROUTE,
         "artifacts": {
             "compiled_deliverable_prompt": str(compiled_script),
@@ -812,11 +819,12 @@ def run_final_script_pages(
             "reconstruction_quality": image_to_editable_svg_build["artifacts"].get("reconstruction_quality") if image_to_editable_svg_build else None,
             "delivery_readiness": image_to_editable_svg_build["artifacts"].get("delivery_readiness") if image_to_editable_svg_build else None,
             "exported_pptx": image_to_editable_svg_build["artifacts"].get("exported_pptx") if image_to_editable_svg_build else None,
+            "exported_pptx_by_mode": image_to_editable_svg_build.get("artifacts_by_mode") if image_to_editable_svg_build else None,
             "semantic_plan_dir": str(semantic_plan_dir) if semantic_plan_dir else None,
         },
         "next_steps": [
             (
-                "Generate the audited full image, then reconstruct it into editable SVG and PPTX."
+                "Generate the audited 2:1 full image, then publish the selected image, editable SVG, or both template-assembled PPTX routes."
             ),
             (
                 "A page with manual_required evidence cannot be exported; complete its verified reconstruction first."

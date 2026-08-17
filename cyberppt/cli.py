@@ -512,6 +512,7 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             require_images=args.require_images,
             production_build=args.production_build,
             production_mode=args.production_mode,
+            assembly_mode=args.assembly_mode,
             generate_images=args.generate_images,
             image_model=args.image_model,
             image_quality=args.image_quality,
@@ -996,6 +997,15 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("image-to-editable-svg",),
         default="image-to-editable-svg",
         help="Generate one audited full image and reconstruct it as editable SVG.",
+    )
+    final_script_pages_parser.add_argument(
+        "--assembly-mode",
+        choices=("image", "editable", "both"),
+        default="editable",
+        help=(
+            "Stage 02 output route: image places the 2:1 body image in the template, "
+            "editable places the 2:1 Quick SVG in the template, both emits both PPTX files."
+        ),
     )
     final_script_pages_parser.add_argument(
         "--generate-images",
