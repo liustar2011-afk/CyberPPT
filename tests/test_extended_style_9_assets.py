@@ -16,14 +16,14 @@ def test_style_nine_sample_and_reference_are_available() -> None:
     with Image.open(sample) as image:
         ratio = image.width / image.height
         assert abs(ratio - 16 / 9) < 0.01 or abs(ratio - 2.0) < 0.01
-    # references/visual-system.md's Style 09 section title and body were
-    # restored to the scene-led spec 2026-08-18 (see the commit that added
-    # back its missing "### Final ImageGen execution lock" section); this
-    # checks the section's actual current title and key scene-led/terminal
-    # properties, not a stale flat-contract draft's exact wording.
-    assert "扩展风格9：象牙白 + 深蓝领导汇报" in reference
+    # references/visual-system.md's Style 09 section was simplified again
+    # 2026-08-18 (background moved from ivory to pure white, and the locked
+    # Chinese text rule loosened into a content-fidelity + verbatim-text
+    # contract); this checks the section's actual current title and key
+    # scene-led/terminal properties, not a stale draft's exact wording.
+    assert "扩展风格9：纯白 + 深蓝领导汇报" in reference
     assert "默认8种风格仍保持1—8不变" in reference
     assert "#FFFFFF" in style09
     assert "#12355B" in style09
     assert "scene-led senior leadership briefing aesthetic" in style09
-    assert "### Final ImageGen execution lock — hard" in style09
+    assert "最终执行锁" in style09

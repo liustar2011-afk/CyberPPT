@@ -92,10 +92,10 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     # Assertions below check real behavioral properties of that contract by
     # their actual current wording, not brittle exact headings from the
     # long-gone draft this test was originally written against.
-    assert "Build one coherent business relationship field and one clear reading path" in style_nine["prompt_contract"]
+    assert "reconstruction-friendly visual blueprint" in style_nine["prompt_contract"]
     assert "Do not distribute content according to item count" in style_nine["prompt_contract"]
     assert "senior leadership briefing" in style_nine["prompt_contract"]
-    assert "#F7F6F0" in style_nine["prompt_contract"]
+    assert "#FFFFFF" in style_nine["prompt_contract"]
     assert "#12355B" in style_nine["prompt_contract"]
     assert "Industry scene anchor" not in style_nine["prompt_contract"]
     assert "逐项配图" not in style_nine["prompt_contract"]
@@ -129,10 +129,9 @@ def test_style_nine_lock_records_extension_selection() -> None:
     assert payload["policy"]["selected_from_extension"] is True
     assert "scene-led editorial business-infographic style" in payload["style"]["prompt_contract"]
     assert "Icon count is zero by default" in payload["style"]["prompt_contract"]
-    assert "Prefer reconstructable connectors such as straight lines" in payload["style"]["prompt_contract"]
-    assert "Build one coherent business relationship field and one clear reading path" in payload["style"]["prompt_contract"]
+    assert "Prefer reconstructable connectors: straight lines" in payload["style"]["prompt_contract"]
     assert "reconstruction-friendly visual blueprint" in payload["style"]["prompt_contract"]
-    assert "Final ImageGen execution lock" in payload["style"]["prompt_contract"]
+    assert "最终执行锁" in payload["style"]["prompt_contract"]
     assert payload["reference_image"]["required_for_every_page"] is True
     assert payload["reference_image"]["path"].endswith("palette-09.png")
 
@@ -173,13 +172,13 @@ def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
         contract = render_content_first_style_contract(lock)
 
     assert "scene-led editorial business-infographic style" in contract
-    assert "Build one coherent business relationship field and one clear reading path" in contract
-    assert "### Depth and material finish — hard" in contract
+    assert "reconstruction-friendly visual blueprint" in contract
+    assert "### 6. Depth, material and icon discipline — hard" in contract
     assert "Icons are not a default visual language for Style 09" in contract
     assert "Icon count is zero by default" in contract
     assert "semantic_tags:" not in contract
     assert "style09:scope" not in contract
-    assert "### Final ImageGen execution lock — hard" in contract
+    assert "最终执行锁" in contract
 
 
 def test_style_nine_is_a_full_universal_contract_not_a_page_clause_selector() -> None:
@@ -190,8 +189,8 @@ def test_style_nine_is_a_full_universal_contract_not_a_page_clause_selector() ->
             semantic_tags=frozenset({"flow", "feedback"}),
         )
 
-    assert "### Positive construction grammar — hard" in contract
-    assert "### Semantic economy" in contract
+    assert "### 2. Semantic anchor and composition — hard" in contract
+    assert "### 7. Semantic economy and final priority — hard" in contract
     assert "Identify the page’s core judgment and primary business relationship" in contract
     assert "semantic_tags:" not in contract
 
@@ -284,9 +283,9 @@ def test_style_nine_contract_suppresses_duplicate_response_structures() -> None:
         payload = json.loads(lock.read_text(encoding="utf-8"))
 
     contract = payload["style"]["prompt_contract"]
-    assert "### Semantic economy" in contract
-    assert "should not repeat the same label" in contract
-    assert "duplicated semantic summaries" in contract
+    assert "### 7. Semantic economy and final priority — hard" in contract
+    assert "must not restate the same label, sequence, hierarchy or conclusion" in contract
+    assert "extra summary band" in contract
     assert "建设响应" not in contract
     assert "input, processing, review, control or output" in contract
 
@@ -297,9 +296,9 @@ def test_style_nine_contract_preserves_industry_scene_and_rejects_large_document
         payload = json.loads(lock.read_text(encoding="utf-8"))
 
     contract = payload["style"]["prompt_contract"]
-    assert "prefer recognizable business scenes, concrete objects, visible actions and outcomes" in contract
-    assert "Richness should come from semantic scene composition, not from adding icons, decorative objects" in contract
-    assert "information flows, and outcomes when they directly explain the locked content" in contract
+    assert "Build the page from recognizable business scenes, concrete objects, visible actions, evidence and outcomes" in contract
+    assert "Richness should come from meaningful business expression, not from adding decorative objects" in contract
+    assert "actions, boundaries and outcomes when they directly explain the locked content" in contract
     assert "use a clean flat relationship field when a realistic scene would not improve understanding" in contract
-    assert "secondary scene or evidence fragments" in contract
+    assert "supporting scene or evidence fragments" in contract
     assert "Icons are not a default visual language for Style 09. Start from zero icons." in contract
