@@ -344,7 +344,7 @@ Use pure white `#FFFFFF` as the page-level background. Do not shift the overall 
 5. Organize two to five open semantic regions around, within or along the dominant anchor. These regions share one visual field and do not require independent cards or icon containers.
 6. Use one or two large semantic actions to show comparison, convergence, transformation, separation, support, control, approval or result.
 7. Complete the reading path with one clearly emphasized judgment or outcome region.
-8. Use no more than four to six essential connectors across the page.
+8. Default to zero connectors; when genuinely needed, use as few as possible and never one per adjacent or enumerated item.
 
 Create hierarchy through crop, overlap, scale contrast, tonal separation, alignment, deep-blue emphasis and shallow foreground–background relationships.
 
@@ -494,7 +494,7 @@ Preserve the approved source actors, relationships, conditions, status, and fact
 【风格09最终执行锁｜最高优先级】
 Treat the generated image as a reconstruction-friendly, editorial visual blueprint for editable PowerPoint conversion — keep the overall composition disciplined and magazine-orderly. Keep all locked Chinese text complete, unchanged and readable in clean high-contrast text-safe zones with stable geometry; place labels adjacent to the related object rather than baking them into screens, devices, icons or perspective surfaces. Icon count is zero by default.
 
-Every drawn line or connector must stand for one specific declared relationship; if it would read the same regardless of which two elements it joins, remove it and use proximity or grouping instead. Every line and arrow must start and end at a real, visible element on this page.
+Every drawn line or connector must stand for one relationship named in the reading path; adjacency or enumeration alone is not a declared relationship. Every line and arrow must start and end at a real, visible element on this page.
 
 Every scene, object or fragment must be traceable to a named actor, service, asset or outcome that actually appears on this page; if it cannot be tied to specific content here, remove it rather than keep it as ambience — do not substitute a generic senior-office tableau for content-specific imagery.
 
