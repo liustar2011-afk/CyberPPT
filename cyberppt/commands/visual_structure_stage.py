@@ -343,6 +343,16 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             else:
                 graph_edges.append({"from": eid[left], "to": eid[right], "relation": relation, "label": "业务承接", "direction": "forward"})
                 connectors.append({"from": eid[left], "to": eid[right], "type": relation, "direction": direction, "label": "业务承接", "main_chain": True})
+        if relation == "loop" and len(reading_keys) > 1:
+            # A forward chain alone is not a loop: without a real edge
+            # returning to the start, "loop" was only ever a label, not an
+            # actual cycle, and MISSING_FEEDBACK_EDGE (which requires a
+            # backward-direction edge) could never pass for a real
+            # lifecycle_loop page. The feedback closes from the last node
+            # (the cycle's outcome) back to the first (where it re-enters).
+            last_key, first_key = reading_keys[-1], reading_keys[0]
+            graph_edges.append({"from": eid[last_key], "to": eid[first_key], "relation": "loop", "label": "反馈回流", "direction": "backward"})
+            connectors.append({"from": eid[last_key], "to": eid[first_key], "type": "loop", "direction": "spatial", "label": "反馈回流", "main_chain": False})
     trace_refs = [str(value).strip() for value in source.get("trace_refs") or [] if str(value).strip()]
     source_ref = "、".join(trace_refs) or page_id
     evidence_units = [

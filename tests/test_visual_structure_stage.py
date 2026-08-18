@@ -265,6 +265,58 @@ class VisualStructureStageTests(unittest.TestCase):
         self.assertEqual({"E1", "E2"}, {edge["from"] for edge in edges_into_focus})
         self.assertTrue(all(edge["relation"] == "converge" for edge in edges_into_focus))
 
+    def test_feedback_grammar_closes_a_real_loop_back_to_the_start(self) -> None:
+        """A lifecycle_loop page's forward chain must also carry a genuine
+        backward edge closing the cycle -- otherwise "loop" was only ever a
+        relation label on a linear chain, and MISSING_FEEDBACK_EDGE (which
+        requires a backward-direction edge) could never pass for a real
+        multi-stage lifecycle page.
+        """
+
+        source = {
+            "page_id": "p01", "page_number": 1, "page_title": "Title",
+            "page_mission": "Explain how operational feedback returns to product formation.",
+            "core_judgment": "Product formation, order execution, and operational feedback close a continuous loop.",
+            "locked_text_items": [
+                {"text_id": "P01-T01", "text": "Form product"},
+                {"text_id": "P01-T02", "text": "Execute order"},
+                {"text_id": "P01-T03", "text": "Operational feedback"},
+            ],
+            "business_relationships": [{"subject": "Operational feedback", "relation": "feeds_back", "objects": ["Form product"]}],
+            "expression_constraints": expression_constraints("flow_3_5"),
+        }
+        decision = {
+            "page_id": "p01",
+            "evidence_units": [
+                {"key": "form", "summary": "Form product.", "text_ids": ["P01-T01"]},
+                {"key": "execute", "summary": "Execute order.", "text_ids": ["P01-T02"]},
+                {"key": "feedback", "summary": "Operational feedback.", "text_ids": ["P01-T03"]},
+            ],
+            "candidates": [
+                {"id": f"c{index}", "semantic_focus": {"kind": "outcome", "evidence_key": "feedback"},
+                 "reading_sequence": ["form", "execute", "feedback"], "spatial_grammar": ["feedback"],
+                 "topology": "lifecycle_loop",
+                 "direction": "left_to_right", "visual_intent_type": "closed_loop_operation",
+                 "expression_fit": {
+                     "form": "flow_3_5", "constraint_status": "default_profile",
+                     "satisfied_constraints": ["ordered_progression"],
+                     "reading_relation": "feedback closes back to product formation",
+                     "balance_strategy": "one continuous cycle",
+                     "changed_constraints": [], "deviation_reason": "",
+                 }}
+                for index in range(1, 4)
+            ],
+            "selected_candidate": "c1",
+        }
+        page = _build_executable_page(source, decision)
+        graph = page["semantic_graph"]
+        self.assertEqual("loop", graph["primary_relation"])
+        backward_edges = [edge for edge in graph["edges"] if edge["direction"] == "backward"]
+        self.assertEqual(1, len(backward_edges))
+        self.assertEqual({"from": "E3", "to": "E1", "relation": "loop", "label": "反馈回流", "direction": "backward"}, backward_edges[0])
+        forward_edges = [edge for edge in graph["edges"] if edge["direction"] == "forward"]
+        self.assertEqual(2, len(forward_edges))
+
     def test_business_relationships_compile_to_plain_relation_sentence(self) -> None:
         source = {
             "page_id": "p01",
