@@ -10,22 +10,25 @@ import re
 
 from scripts.imagegen_pipeline.final_prompt_ir import FinalPromptIR, PromptContractError
 
-# Measured 2026-08-18 against 23 real Style09 `artifact-spec-v2` pages from
-# projects/power-data-infrastructure-cooperation-v16-20260815-foundation
-# (workbench/locks/visual_style_lock.json), rendered through the new
-# seven-section renderer end to end: min 18954, max 19920 characters.
+# Re-measured 2026-08-18 (later same day) against the same 23 real Style09
+# pages from projects/power-data-infrastructure-cooperation-v16-20260815-foundation,
+# after Style09's prompt_contract was restored to the scene-led spec from
+# references/visual-system.md (the earlier flat/minimal contract had lost
+# its "### Final ImageGen execution lock — hard" section and several other
+# sections entirely -- see the commit restoring it): min 21516, max 22047
+# characters, up from the prior measurement's 18954-19920 because the
+# restored contract (~18500 chars) is itself longer than the short one it
+# replaced (~4850 chars).
 #
-# Stripping relationship qualifiers, priority-code prefixes, and connector
-# booleans barely moves this number: per-page IR content (deliverable +
-# judgment + relationship + reading path + semantic groups + visible text +
-# composition) totals under 2500 characters. The style runtime contract
-# text alone (``art_direction.contract``, identical across all pages of one
-# style) is ~19500 characters and dominates the budget. Shrinking it is a
-# style-library authoring concern outside this compiler's scope, not
-# something normalization at this layer can fix without dropping style
-# rules. Budget = measured max * 1.1, rounded up. Revisit per style family
-# and with real ImageGen evaluation data before tightening.
-MAX_PROMPT_CHARACTERS = 22_000
+# Per-page IR content (deliverable + judgment + relationship + reading path
+# + semantic groups + visible text + composition) still totals under 2500
+# characters; the style runtime contract text alone continues to dominate
+# the budget. Shrinking it is a style-library authoring concern outside
+# this compiler's scope. Budget = measured max * 1.1, rounded up to the
+# nearest 100. Revisit per style family and with real ImageGen evaluation
+# data before tightening; re-measure whenever a style's prompt_contract
+# changes materially.
+MAX_PROMPT_CHARACTERS = 24_300
 
 _PLACEHOLDER_RE = re.compile(r"<[^>\n]{1,80}>")
 
