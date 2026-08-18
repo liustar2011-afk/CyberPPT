@@ -344,7 +344,7 @@ Use pure white `#FFFFFF` as the page-level background. Do not shift the overall 
 5. Organize two to five open semantic regions around, within or along the dominant anchor. These regions share one visual field and do not require independent cards or icon containers.
 6. Use one or two large semantic actions to show comparison, convergence, transformation, separation, support, control, approval or result.
 7. Complete the reading path with one clearly emphasized judgment or outcome region.
-8. Default to zero connectors; when genuinely needed, use as few as possible and never one per adjacent or enumerated item.
+8. Do not use arrows anywhere on the page; express relationships through position, proximity, grouping or numbering, using a plain undirected line only if truly necessary.
 
 Create hierarchy through crop, overlap, scale contrast, tonal separation, alignment, deep-blue emphasis and shallow foreground–background relationships.
 
@@ -488,13 +488,13 @@ Do not map each body item to an isolated icon or decorative image.
 Do not create an independent text wall or second result chain.
 Reserve page title and subtitle for the external PowerPoint text layer; do not render them in the body image.
 Do not render the nodes as equal-weight peer cards; the declared relationship is not a flat list.
-Do not invent a center hub or radial mechanism the declared relationship does not describe. Where lines or arrows converge, land them on a flat text or judgment region, not a physical device, orb, turbine, portal, glossy 3D object or glowing mechanism.
+Do not invent a center hub or radial mechanism the declared relationship does not describe.
 Preserve the approved source actors, relationships, conditions, status, and factual strength without reinterpretation.
 
 【风格09最终执行锁｜最高优先级】
 Treat the generated image as a reconstruction-friendly, editorial visual blueprint for editable PowerPoint conversion — keep the overall composition disciplined and magazine-orderly. Keep all locked Chinese text complete, unchanged and readable in clean high-contrast text-safe zones with stable geometry; place labels adjacent to the related object rather than baking them into screens, devices, icons or perspective surfaces. Icon count is zero by default.
 
-Every drawn line or connector must stand for one relationship named in the reading path; adjacency or enumeration alone is not a declared relationship. Every line and arrow must start and end at a real, visible element on this page.
+Do not use arrows or arrowheads anywhere on the page. Express every relationship through position, proximity, grouping, numbering or a plain undirected line, never a pointed or directional connector. A line still must stand for one relationship named in the reading path; adjacency or enumeration alone is not a declared relationship.
 
 Every scene, object or fragment must be traceable to a named actor, service, asset or outcome that actually appears on this page; if it cannot be tied to specific content here, remove it rather than keep it as ambience — do not substitute a generic senior-office tableau for content-specific imagery.
 
