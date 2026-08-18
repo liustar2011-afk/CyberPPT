@@ -92,7 +92,7 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     # Assertions below check real behavioral properties of that contract by
     # their actual current wording, not brittle exact headings from the
     # long-gone draft this test was originally written against.
-    assert "reconstruction-friendly visual blueprint" in style_nine["prompt_contract"]
+    assert "reconstruction-friendly, editorial visual blueprint" in style_nine["prompt_contract"]
     assert "Do not distribute content according to item count" in style_nine["prompt_contract"]
     assert "senior leadership briefing" in style_nine["prompt_contract"]
     assert "#FFFFFF" in style_nine["prompt_contract"]
@@ -129,7 +129,7 @@ def test_style_nine_lock_records_extension_selection() -> None:
     assert payload["policy"]["selected_from_extension"] is True
     assert "scene-led editorial business-infographic style" in payload["style"]["prompt_contract"]
     assert "Icon count is zero by default" in payload["style"]["prompt_contract"]
-    assert "reconstruction-friendly visual blueprint" in payload["style"]["prompt_contract"]
+    assert "reconstruction-friendly, editorial visual blueprint" in payload["style"]["prompt_contract"]
     assert "最终执行锁" in payload["style"]["prompt_contract"]
     assert payload["reference_image"]["required_for_every_page"] is True
     assert payload["reference_image"]["path"].endswith("palette-09.png")
@@ -171,7 +171,7 @@ def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
         contract = render_content_first_style_contract(lock)
 
     assert "scene-led editorial business-infographic style" in contract
-    assert "reconstruction-friendly visual blueprint" in contract
+    assert "reconstruction-friendly, editorial visual blueprint" in contract
     assert "### 6. Depth, material and icon discipline — hard" in contract
     assert "Icons are not a default visual language for Style 09" in contract
     assert "Icon count is zero by default" in contract

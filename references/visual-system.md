@@ -492,7 +492,7 @@ Do not invent a center hub or radial mechanism the declared relationship does no
 Preserve the approved source actors, relationships, conditions, status, and factual strength without reinterpretation.
 
 【风格09最终执行锁｜最高优先级】
-Treat the generated image as a reconstruction-friendly visual blueprint for editable PowerPoint conversion. Keep all locked Chinese text complete, unchanged and readable in clean high-contrast text-safe zones with stable geometry; place labels adjacent to the related object rather than baking them into screens, devices, icons or perspective surfaces. Icon count is zero by default.
+Treat the generated image as a reconstruction-friendly, editorial visual blueprint for editable PowerPoint conversion — keep the overall composition disciplined and magazine-orderly. Keep all locked Chinese text complete, unchanged and readable in clean high-contrast text-safe zones with stable geometry; place labels adjacent to the related object rather than baking them into screens, devices, icons or perspective surfaces. Icon count is zero by default.
 
 Every drawn line or connector must stand for one specific declared relationship; if it would read the same regardless of which two elements it joins, remove it and use proximity or grouping instead. Every line and arrow must start and end at a real, visible element on this page.
 
