@@ -346,7 +346,7 @@ Use pure white `#FFFFFF` as the page-level background. Do not shift the overall 
 7. Complete the reading path with one clearly emphasized judgment or outcome region.
 8. Use no more than four to six essential connectors across the page.
 
-Create hierarchy through crop, overlap, scale contrast, tonal separation, controlled asymmetric whitespace, precise alignment, selective deep-blue emphasis, open edges and shallow foreground–background relationships.
+Create hierarchy through crop, overlap, scale contrast, tonal separation, alignment, deep-blue emphasis and shallow foreground–background relationships.
 
 Do not distribute content according to item count. Three, four or five text items do not automatically require equal columns, equal rows or equally detailed stages. The core judgment carries the greatest visual weight; supporting evidence remains quieter and subordinate.
 
@@ -362,7 +362,7 @@ Unless a passage is explicitly marked as verbatim text, locked text, quoted sour
 
 Allowed presentation restructuring includes: splitting a long sentence into shorter presentation-scale statements; creating a short lead-in or micro-heading from wording already present in the source meaning; reorganizing parallel phrases into clearer visual levels; moving a qualifying phrase closer to the statement it qualifies; emphasizing key terms through weight, scale or deep-blue treatment; and reducing redundant function words when the factual meaning remains fully intact.
 
-When a number or metric is emphasized through scale or color, keep it inside its original sentence; do not duplicate it as a separate large-number tile, badge or callout outside that sentence.
+Every key metric number in the locked text (a count, percentage or threshold) must be visually emphasized through larger scale and deep-blue color directly inside its original sentence — plain body-text weight is not sufficient; never duplicate it as a separate large-number tile, badge or callout outside that sentence.
 
 Presentation restructuring must improve hierarchy, rhythm and readability without changing semantic force. No factual meaning may be added, removed, narrowed, broadened, weakened or strengthened.
 
@@ -394,23 +394,23 @@ Select one primary grammar from the page semantics. Use a second only when the l
 
 #### A. Continuous object transformation
 
-Use one recognizable business object across the page and show it changing through input, processing, review, control or output, expressed through object state and spatial progression — not step cards or icon rows.
+Show one recognizable business object changing through input, processing, review, control or output, expressed through object state and spatial progression — not step cards or icon rows.
 
 #### B. Core scene with attached actions
 
-Place one business object, service field or operating environment in the main visual region. Attach supporting capabilities, conditions, controls or outcomes directly to the scene through spatial relationship and unequal scale — not as separate icon modules.
+Place one business object or operating environment in the main visual region. Attach supporting capabilities, conditions or outcomes directly to the scene through spatial relationship and unequal scale — not as separate icon modules.
 
 #### C. Dual-field comparison
 
-Use two concrete business fields or states in a controlled comparison. Show the difference, mismatch or transition through scale, alignment, crop and one decisive judgment region — prefer concrete fields over symbolic icon comparisons.
+Use two concrete business fields or states in a controlled comparison; show the difference or transition through scale, alignment and one decisive judgment region — prefer concrete fields over symbolic icon comparisons.
 
 #### D. Multi-source convergence
 
-Show several distinct sources, foundations or actors entering one shared service, capability, result or judgment, through visible convergence into one dominant outcome field — concrete inputs or actors, not a row of pictograms.
+Show several distinct sources or actors entering one shared service, capability or result, through visible convergence into one dominant outcome field — concrete inputs, not a row of pictograms.
 
 #### E. Concrete controlled containment
 
-Place one recognizable protected object, data asset or operating scene inside a controlled field. Express access, isolation and approved output through checkpoints, partial boundaries and state changes; keep the object visible and let boundaries stay visually subordinate.
+Place one recognizable protected object or operating scene inside a controlled field. Express access, isolation and approved output through checkpoints and state changes; keep the object visible, boundaries subordinate.
 
 #### F. Parallel-direction shared evidence field
 
@@ -424,15 +424,13 @@ Create richness through semantic scene selection, cropping, scale and viewpoint 
 
 When the page names several distinct top-level items, each item's own visual material must be specific enough that a viewer can tell which item it belongs to at a glance — not just that the page is generally about data or technology. Do not represent distinct named items with one shared undifferentiated panorama; give each its own recognizable fragment. If the items are abstract directions with no distinct concrete referent, drop the scene entirely and use a flat, structured relationship field instead.
 
-Suitable visual material includes: professional operating environments; controlled content objects or data assets; documents in transformation; industry facilities; close-up evidence fragments.
+Suitable visual material includes: professional operating environments; controlled content objects or data assets; documents in transformation; industry facilities; close-up evidence fragments. Any chosen anchor or fragment must depict something actually named in this page's content — never a generic control room, dashboard wall or stock BI screen used as decoration; with no distinct concrete referent among the locked content, prefer the flat structured relationship field over a generic technology scene.
 
 Realistic or restrained semi-realistic materials are acceptable when they strengthen page-specific meaning. A workspace, device or interface must visibly demonstrate the relevant action or state, as supporting evidence inside a broader scene, not an isolated product.
 
 ### 6. Depth, material and icon discipline — hard
 
-Maintain a restrained flat editorial foundation with shallow natural depth.
-
-Create depth primarily through overlap, cropping, scale contrast, tonal separation, foreground–background relationships and subtle variations of pure white, pale blue-grey and deep blue.
+Maintain a restrained flat editorial foundation with shallow natural depth, created through overlap, cropping, scale contrast, tonal separation and subtle variations of pure white, pale blue-grey and deep blue.
 
 Use matte surfaces, precise edges and gentle tonal transitions; keep perspective natural and quiet.
 
@@ -442,19 +440,19 @@ Visible drop shadows are generally discouraged; if needed, use an extremely soft
 
 Icons are not a default visual language for Style 09. Start from zero icons.
 
-Use an icon only when the page would lose immediate semantic clarity without it and the meaning cannot be expressed through a recognizable scene, object, action or outcome. A typical page should contain no icons; when genuinely necessary, use at most one very small, flat, deep-blue icon embedded inside an existing scene or text grouping.
+Use an icon only when the page would lose immediate semantic clarity without it. A typical page should contain no icons; when genuinely necessary, use at most one very small, flat, deep-blue icon embedded inside an existing scene or text grouping.
 
 Never assign one icon to each bullet, module, stage, actor, capability or message. Do not create icon rows, icon grids, icon walls, icon badges, icon cards, pictogram sequences or decorative symbol clusters. When a page presents several parallel metric lines or several parallel named directions or principles (for example four evaluation dimensions), do not place any icon, pictogram or colored glyph immediately beside each individual line; a row of icon-plus-label pairs is itself an icon wall even without visible borders, and remains forbidden.
 
-Icons must never become the main visual carrier, dominant object or repeated page structure. If a business meaning can be expressed through a scene, object, action or outcome region, remove the icon and use the concrete expression instead.
+Icons must never become the main visual carrier or repeated page structure. If a business meaning can be expressed through a scene, object or outcome region, remove the icon and use the concrete expression instead.
 
 If one icon is indispensable, keep it simple, flat, deep blue, small and visually subordinate. Avoid 3D, gradient, glossy or holographic icon treatments.
 
 ### 7. Semantic economy and final priority — hard
 
-Represent each source-supported concept once as the primary textual and visual expression. Supporting elements may add evidence, condition, boundary or outcome, but must not restate the same label, sequence, hierarchy or conclusion.
+Represent each source-supported concept once. Supporting elements may add evidence, condition, boundary or outcome, but must not restate the same label, sequence, hierarchy or conclusion.
 
-When the main composition already expresses a process, hierarchy, dimension or layered relationship, do not add a second icon chain, footer process, repeated layer list or extra summary band unless explicitly required by the source content or verbatim text.
+When the composition already expresses a process, hierarchy or layered relationship, do not add a second icon chain, footer process or extra summary band unless explicitly required by the source content.
 
 Use one primary visual metaphor per page; express remaining relationships through scene state, position, scale, crop, color fields and purposeful connectors, not a left-structure + right-explanation + bottom-summary formula.
 
