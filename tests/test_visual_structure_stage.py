@@ -214,6 +214,57 @@ class VisualStructureStageTests(unittest.TestCase):
         page = _build_executable_page(source, decision)
         self.assertEqual("boundary", page["semantic_graph"]["primary_relation"])
 
+    def test_convergence_grammar_wires_every_evidence_node_directly_into_the_focus(self) -> None:
+        """A causal_convergence page with 3 evidence nodes must produce at
+        least two edges landing on the focus node -- a linear reading-order
+        chain (E1->E2->E3) would only ever put one edge into the focus no
+        matter how many evidence nodes exist, so MISSING_RESULT_NODE could
+        never pass for a real multi-evidence convergence page.
+        """
+
+        source = {
+            "page_id": "p01", "page_number": 1, "page_title": "Title",
+            "page_mission": "Explain why demand and supply both point to the same judgment.",
+            "core_judgment": "Demand-side change and supply-side gaps together justify the response.",
+            "locked_text_items": [
+                {"text_id": "P01-T01", "text": "Demand"},
+                {"text_id": "P01-T02", "text": "Supply"},
+                {"text_id": "P01-T03", "text": "Response"},
+            ],
+            "business_relationships": [{"subject": "Demand", "relation": "supports", "objects": ["Response"]}],
+            "expression_constraints": expression_constraints("pyramid_argument"),
+        }
+        decision = {
+            "page_id": "p01",
+            "evidence_units": [
+                {"key": "demand", "summary": "Demand-side change.", "text_ids": ["P01-T01"]},
+                {"key": "supply", "summary": "Supply-side gap.", "text_ids": ["P01-T02"]},
+                {"key": "response", "summary": "The response direction.", "text_ids": ["P01-T03"]},
+            ],
+            "candidates": [
+                {"id": f"c{index}", "semantic_focus": {"kind": "outcome", "evidence_key": "response"},
+                 "reading_sequence": ["demand", "supply", "response"], "spatial_grammar": ["convergence"],
+                 "topology": "causal_convergence",
+                 "direction": "outside_to_anchor", "visual_intent_type": "evidence_to_judgment",
+                 "expression_fit": {
+                     "form": "pyramid_argument", "constraint_status": "default_profile",
+                     "satisfied_constraints": ["three_supports"],
+                     "reading_relation": "demand and supply converge on the response",
+                     "balance_strategy": "two supports converge on one judgment",
+                     "changed_constraints": [], "deviation_reason": "",
+                 }}
+                for index in range(1, 4)
+            ],
+            "selected_candidate": "c1",
+        }
+        page = _build_executable_page(source, decision)
+        graph = page["semantic_graph"]
+        focus = graph["focus_node"]
+        edges_into_focus = [edge for edge in graph["edges"] if edge["to"] == focus]
+        self.assertEqual(2, len(edges_into_focus))
+        self.assertEqual({"E1", "E2"}, {edge["from"] for edge in edges_into_focus})
+        self.assertTrue(all(edge["relation"] == "converge" for edge in edges_into_focus))
+
     def test_business_relationships_compile_to_plain_relation_sentence(self) -> None:
         source = {
             "page_id": "p01",

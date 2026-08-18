@@ -319,17 +319,30 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     direction = _DIRECTION_MAP.get(str(selected.get("direction") or ""), "spatial")
     graph_edges = []
     connectors = []
-    for left, right in zip(reading_keys, reading_keys[1:]):
-        if relation == "peer":
-            # A directed "业务承接" (business handoff) edge with main_chain=True
-            # is itself a sequential/causal claim -- exactly what "peer" means
-            # the source does not support. Record the pair as siblings under
-            # the same shared judgment instead, with no direction or chain flag.
-            graph_edges.append({"from": eid[left], "to": eid[right], "relation": "peer", "label": "共同支撑同一判断", "direction": "none"})
-            connectors.append({"from": eid[left], "to": eid[right], "type": "peer", "direction": "none", "label": "共同支撑同一判断", "main_chain": False})
-        else:
-            graph_edges.append({"from": eid[left], "to": eid[right], "relation": relation, "label": "业务承接", "direction": "forward"})
-            connectors.append({"from": eid[left], "to": eid[right], "type": relation, "direction": direction, "label": "业务承接", "main_chain": True})
+    if relation == "converge":
+        # A converging relation means every other node feeds the focus node
+        # directly -- not a linear left-to-right chain. A chain would only
+        # ever put one edge into the focus regardless of how many evidence
+        # nodes exist, so MISSING_RESULT_NODE (which requires at least two
+        # edges converging on the focus) could never be satisfied by a real
+        # multi-evidence convergence page.
+        for key in reading_keys:
+            if key == focus_key:
+                continue
+            graph_edges.append({"from": eid[key], "to": eid[focus_key], "relation": "converge", "label": "汇聚支撑", "direction": "forward"})
+            connectors.append({"from": eid[key], "to": eid[focus_key], "type": "converge", "direction": direction, "label": "汇聚支撑", "main_chain": True})
+    else:
+        for left, right in zip(reading_keys, reading_keys[1:]):
+            if relation == "peer":
+                # A directed "业务承接" (business handoff) edge with main_chain=True
+                # is itself a sequential/causal claim -- exactly what "peer" means
+                # the source does not support. Record the pair as siblings under
+                # the same shared judgment instead, with no direction or chain flag.
+                graph_edges.append({"from": eid[left], "to": eid[right], "relation": "peer", "label": "共同支撑同一判断", "direction": "none"})
+                connectors.append({"from": eid[left], "to": eid[right], "type": "peer", "direction": "none", "label": "共同支撑同一判断", "main_chain": False})
+            else:
+                graph_edges.append({"from": eid[left], "to": eid[right], "relation": relation, "label": "业务承接", "direction": "forward"})
+                connectors.append({"from": eid[left], "to": eid[right], "type": relation, "direction": direction, "label": "业务承接", "main_chain": True})
     trace_refs = [str(value).strip() for value in source.get("trace_refs") or [] if str(value).strip()]
     source_ref = "、".join(trace_refs) or page_id
     evidence_units = [
