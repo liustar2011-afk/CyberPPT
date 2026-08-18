@@ -297,6 +297,6 @@ def test_style_nine_contract_preserves_industry_scene_and_rejects_large_document
     contract = payload["style"]["prompt_contract"]
     assert "Build the page from recognizable business scenes, concrete objects, visible actions, evidence and outcomes" in contract
     assert "richness should come from meaningful business expression, not decorative objects" in contract
-    assert "drop the scene and use a flat, structured relationship field instead" in contract
+    assert "drop the scene entirely and use a flat, structured relationship field instead" in contract
     assert "supporting scene or evidence fragments" in contract
     assert "Icons are not a default visual language for Style 09. Start from zero icons." in contract
