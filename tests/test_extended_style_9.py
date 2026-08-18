@@ -283,7 +283,7 @@ def test_style_nine_contract_suppresses_duplicate_response_structures() -> None:
 
     contract = payload["style"]["prompt_contract"]
     assert "### 7. Semantic economy and final priority — hard" in contract
-    assert "must not restate the same label, sequence, hierarchy or conclusion" in contract
+    assert "must not restate the same label, sequence or conclusion" in contract
     assert "extra summary band" in contract
     assert "建设响应" not in contract
     assert "input, processing, review, control or output" in contract

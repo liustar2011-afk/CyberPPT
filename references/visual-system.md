@@ -332,7 +332,7 @@ Create a high-end senior leadership briefing page in a scene-led editorial busin
 
 Build the page from recognizable business scenes, concrete objects, visible actions, evidence and outcomes; it should first communicate one clear business judgment, then reveal its supporting structure. Use abstract geometry, boundaries, color fields and connectors only to organize concrete meaning — do not let icons, decorative symbols or 3D objects become the page-level visual language when a recognizable scene or object can carry the meaning.
 
-Keep the visual character editorial, matte and presentation-scale — a refined executive-report spread, not a technology product advertisement or icon-driven infographic.
+Keep the visual character editorial and matte — a refined executive-report spread, not a technology advertisement or icon-driven infographic.
 Use pure white `#FFFFFF` as the page-level background. Do not shift the overall canvas toward ivory, cream, beige or warm paper tones. Pale blue-grey may be used only for local separation, evidence fields or subtle structural grouping.
 
 ### 2. Semantic anchor and composition — hard
@@ -376,9 +376,9 @@ Do not rewrite, shorten, relabel, reorder or paraphrase explicitly verbatim cont
 
 Allocate sufficient space for content before adding scenes, evidence, icons or decoration.
 
-Use one clear readable text region for each primary semantic unit; regions do not need matching size, shape or position — content weight decides how each is shaped and placed, and a generic scene must not crowd text into a minor corner just to look large.
+Use one clear readable text region for each primary semantic unit; regions do not need matching size or position — content weight decides how each is shaped, and a generic scene must not crowd text into a minor corner.
 
-Keep body text at normal senior-presentation reading scale (roughly 24–30 px at 1280 × 720). If space is limited, simplify the scene or reorganize the wording — never shrink text into microcopy.
+Keep body text at normal senior-presentation reading scale. If space is limited, simplify the scene or reorganize the wording — never shrink text into microcopy.
 
 Render only source-supported Chinese content. Screens, documents and interfaces may contain large text-free structures, highlighted regions, check states or simplified diagrams, but must not contain invented readable microtext.
 
@@ -450,7 +450,7 @@ If one icon is indispensable, keep it simple, flat, deep blue, small and visuall
 
 ### 7. Semantic economy and final priority — hard
 
-Represent each source-supported concept once. Supporting elements may add evidence, condition, boundary or outcome, but must not restate the same label, sequence, hierarchy or conclusion.
+Represent each source-supported concept once; supporting elements may add evidence or outcome, but must not restate the same label, sequence or conclusion.
 
 When the composition already expresses a process, hierarchy or layered relationship, do not add a second icon chain, footer process or extra summary band unless explicitly required by the source content.
 
