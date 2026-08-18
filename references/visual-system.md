@@ -326,7 +326,7 @@
 
 Palette: pure white background #FFFFFF, deep blue #12355B, title #101820, body #303030, secondary #6F7275, divider #C9CDD1.
 
-Create a high-end senior leadership briefing page in a scene-led editorial business-infographic style: authoritative, calm, refined, content-led and ready for formal presentation.
+Create an executive briefing page in a scene-led editorial business-infographic style: authoritative, calm, refined, content-led and ready for formal presentation.
 
 ### 1. Style identity and semantic principle — hard
 
@@ -340,7 +340,7 @@ Use pure white `#FFFFFF` as the page-level background. Do not shift the overall 
 1. Identify the page’s core judgment and primary business relationship.
 2. Select one recognizable, page-specific business anchor: an operating scene, business object, content or data asset, professional work environment or visible outcome.
 3. Give the dominant anchor approximately 35%–50% of the visual field when content permits.
-4. Build one integrated, asymmetric and unequally weighted composition around it.
+4. Build one continuous, asymmetric and unequally weighted composition around it.
 5. Organize two to five open semantic regions around, within or along the dominant anchor. These regions share one visual field and do not require independent cards or icon containers.
 6. Use one or two large semantic actions to show comparison, convergence, transformation, separation, support, control, approval or result.
 7. Complete the reading path with one clearly emphasized judgment or outcome region.
@@ -432,7 +432,7 @@ Realistic or restrained semi-realistic materials are acceptable when they streng
 
 Maintain a restrained flat editorial foundation with shallow natural depth, created through overlap, cropping, scale contrast, tonal separation and subtle variations of pure white, pale blue-grey and deep blue.
 
-Use matte surfaces, precise edges and gentle tonal transitions; keep perspective natural and quiet.
+Use matte surfaces, crisp edges and gentle tonal transitions; keep perspective natural and quiet.
 
 Avoid glossy or decorative 3D rendering, exaggerated isometric perspective, cinematic depth, dramatic spotlighting, floating hero objects, glassmorphism, polished metal, reflective floors, neon glow, luminous edges and product-showcase presentation.
 

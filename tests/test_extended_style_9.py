@@ -94,7 +94,7 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     # long-gone draft this test was originally written against.
     assert "reconstruction-friendly, editorial visual blueprint" in style_nine["prompt_contract"]
     assert "Do not distribute content according to item count" in style_nine["prompt_contract"]
-    assert "senior leadership briefing" in style_nine["prompt_contract"]
+    assert "executive briefing" in style_nine["prompt_contract"]
     assert "#FFFFFF" in style_nine["prompt_contract"]
     assert "#12355B" in style_nine["prompt_contract"]
     assert "Industry scene anchor" not in style_nine["prompt_contract"]
