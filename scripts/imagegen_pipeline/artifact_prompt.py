@@ -275,6 +275,7 @@ def _visual_responsibility(
         f"Visual carrier: {carrier.business_object} ({carrier.semantic_role})",
         f"{scene_policy} Scene type: {carrier.scene_type}.",
         _ANTI_GENERIC_SCENE_CONSTRAINT,
+        f"Dominant relationship shape: {composition.topology}.",
         f"Primary focus carries: {composition.primary_focus}",
     ]
     if composition.secondary_focus:

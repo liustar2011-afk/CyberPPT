@@ -182,6 +182,7 @@ def _artifact_spec(*, evidence_kinds: tuple[str, ...] = ("process", "result")) -
             text_integration_method="Attach each exact phrase to its business object.",
             spatial_grammar=("convergence",),
             connectors=(ConnectorSpec(relationship="contains", direction="subject_to_object", label="", main_chain=True),),
+            topology="multiple evidence lines converging on one judgment",
         ),
         art_direction=ArtDirectionSpec(style_id=10, style_name="Style10", style_slug="style10", contract="Pure white editorial direction."),
         typography=TypographySpec(
@@ -246,6 +247,7 @@ class BuildFinalPromptIRTests(unittest.TestCase):
             "Do not substitute a generic dashboard, icon collection, card wall, or unrelated decorative scene.",
             responsibility,
         )
+        self.assertIn("multiple evidence lines converging on one judgment", responsibility)
 
     def test_does_not_carry_relationship_encoding_with_raw_direction_tokens(self) -> None:
         # Real Stage 02 output embeds raw tokens like "outside_to_anchor"

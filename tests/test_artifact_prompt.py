@@ -78,6 +78,7 @@ def _spec(*, style_id: int = 10, contract: str = "Pure white editorial direction
             text_integration_method="Attach each exact phrase to its related object",
             spatial_grammar=("convergence", "path"),
             connectors=(ConnectorSpec("transform", "left_to_right", "transforms", True),),
+            topology="multiple evidence lines converging on one judgment",
         ),
         art_direction=ArtDirectionSpec(
             style_id=style_id,
@@ -240,6 +241,11 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertEqual("v1", compiled.prompt_ir_version)
         self.assertIsNotNone(compiled.debug_receipt)
         self.assertEqual("P07", compiled.debug_receipt["page"])
+        # The final send prompt must actually consume the Stage 02 visual
+        # structure design's topology, as a human-readable phrase -- never
+        # the raw backend enum token.
+        self.assertIn("multiple evidence lines converging on one judgment", compiled.prompt)
+        self.assertNotIn("causal_convergence", compiled.prompt)
 
     def test_artifact_compiler_requires_projection(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

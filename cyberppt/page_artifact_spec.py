@@ -70,6 +70,7 @@ class CompositionSpec:
     text_integration_method: str
     spatial_grammar: tuple[str, ...]
     connectors: tuple[ConnectorSpec, ...]
+    topology: str
 
 
 @dataclass(frozen=True)
@@ -113,6 +114,62 @@ class PageArtifactSpec:
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+# semantic_graph.topology and forbidden_structures are snake_case backend
+# enum tokens (see cyberppt/commands/visual_structure_stage.py's
+# ALLOWED_TOPOLOGY and _FORBIDDEN_STRUCTURES_BY_TOPOLOGY). final_prompt_contract
+# rejects raw snake_case tokens in the final prompt text, so every value must
+# be mapped to a plain-English phrase here before it can reach the IR --
+# never interpolated as the raw token.
+_TOPOLOGY_PHRASES: dict[str, str] = {
+    "parallel_set": "a set of coordinate peers with no forced order between them",
+    "causal_convergence": "multiple evidence lines converging on one judgment",
+    "layered_architecture": "a layered dependency chain from foundation to outcome",
+    "directed_flow": "a directed business flow from input to result",
+    "lifecycle_loop": "a lifecycle with an explicit feedback path back into the process",
+    "governance_boundary": "a governed boundary that admits or controls what crosses it",
+    "ecosystem_map": "a multi-party ecosystem of related roles",
+    "allocation_flow": "roles or resources allocated to their value destination",
+    "conclusion_anchor": "multiple threads converging on one anchored conclusion",
+}
+
+_FORBIDDEN_STRUCTURE_PHRASES: dict[str, str] = {
+    "equal_peer_cards": "Do not render the nodes as equal-weight peer cards; the declared relationship is not a flat list.",
+    "invented_center_hub": "Do not invent a center hub or radial mechanism the declared relationship does not describe.",
+    "forced_sequential_edge": "Do not impose a forced sequential order between nodes the source declares as peers.",
+    "missing_result_node": "Do not omit the converging result; every contributing line must visibly reach it.",
+    "missing_dependency_edge": "Do not break the layered dependency chain; every layer must visibly connect to the next.",
+    "missing_feedback_edge": "Do not omit the feedback or return path back into the cycle.",
+    "missing_boundary_edge": "Do not omit the boundary or control gate the relationship depends on.",
+    "missing_value_destination": "Do not leave any role or resource without a visible destination.",
+    "multiple_equal_conclusions": "Do not render more than one equally weighted conclusion; there is exactly one anchor.",
+}
+
+
+def _topology_phrase(value: object, field: str) -> str:
+    token = str(value or "").strip()
+    if not token:
+        raise ValueError(f"artifact spec requires {field}")
+    phrase = _TOPOLOGY_PHRASES.get(token)
+    if phrase is None:
+        raise ValueError(f"artifact spec {field} has an unmapped topology token: {token!r}")
+    return phrase
+
+
+def _forbidden_structure_phrases(value: object, field: str) -> tuple[str, ...]:
+    if not isinstance(value, list):
+        return ()
+    phrases: list[str] = []
+    for token in value:
+        key = str(token or "").strip()
+        if not key:
+            continue
+        phrase = _FORBIDDEN_STRUCTURE_PHRASES.get(key)
+        if phrase is None:
+            raise ValueError(f"artifact spec {field} has an unmapped forbidden-structure token: {key!r}")
+        phrases.append(phrase)
+    return tuple(dict.fromkeys(phrases))
 
 
 def _required_text(value: object, field: str) -> str:
@@ -344,10 +401,14 @@ def build_page_artifact_spec(
 
     content_lock = visual_page.get("content_lock")
     content_lock = content_lock if isinstance(content_lock, dict) else {}
+    forbidden_structure_phrases = _forbidden_structure_phrases(
+        semantic_graph.get("forbidden_structures"), "semantic graph forbidden structures"
+    )
     page_constraints = tuple(dict.fromkeys((
         *_strings(content_lock.get("forbidden_transformations")),
         *_strings(visual_page.get("avoid")),
         str(generation_handoff.get("title_exclusion_instruction") or "").strip(),
+        *forbidden_structure_phrases,
     )))
     page_constraints = tuple(value for value in page_constraints if value)
     policy = planning_policy if isinstance(planning_policy, Mapping) else {}
@@ -390,6 +451,7 @@ def build_page_artifact_spec(
             text_integration_method=_required_text(visual_decision.get("text_integration_method"), "text integration method"),
             spatial_grammar=_strings(structural.get("spatial_grammar")),
             connectors=connectors,
+            topology=_topology_phrase(semantic_graph.get("topology"), "semantic graph topology"),
         ),
         art_direction=_style_metadata(style_lock),
         typography=TypographySpec(

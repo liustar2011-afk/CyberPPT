@@ -479,6 +479,7 @@ class FinalScriptPagesTests(unittest.TestCase):
                                 }
                             ],
                             "semantic_graph": {
+                                "topology": "directed_flow",
                                 "decision_relationship": "Fixture evidence supports fixture result"
                             },
                             "visual_decision": {

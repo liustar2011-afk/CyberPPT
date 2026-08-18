@@ -80,6 +80,8 @@ class PageArtifactSpecTests(unittest.TestCase):
             ],
             "semantic_graph": {
                 "primary_relation": "transform",
+                "topology": "directed_flow",
+                "forbidden_structures": ["equal_peer_cards", "invented_center_hub"],
                 "decision_relationship": "Governance hub transforms input into traceable result",
                 "business_relationships": [
                     {
@@ -179,6 +181,16 @@ class PageArtifactSpecTests(unittest.TestCase):
             "Preserve the approved source actors, relationships, conditions, status, and factual strength without reinterpretation.",
             spec.hard_constraints.page_constraints,
         )
+        self.assertEqual("a directed business flow from input to result", spec.composition.topology)
+        self.assertIn(
+            "Do not render the nodes as equal-weight peer cards; the declared relationship is not a flat list.",
+            spec.hard_constraints.page_constraints,
+        )
+        self.assertIn(
+            "Do not invent a center hub or radial mechanism the declared relationship does not describe.",
+            spec.hard_constraints.page_constraints,
+        )
+
         serialized = json.dumps(spec.to_dict(), ensure_ascii=False)
         for backend_id in (
             "E1",
@@ -188,9 +200,57 @@ class PageArtifactSpecTests(unittest.TestCase):
             "P07-TITLE",
             "ST0002",
             "rel-0001",
+            "directed_flow",
+            "equal_peer_cards",
+            "invented_center_hub",
         ):
             self.assertNotIn(backend_id, serialized)
         self.assertNotIn("Do not discuss the next chapter", serialized)
+
+    def test_rejects_missing_topology(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            del visual_page["semantic_graph"]["topology"]
+
+            with self.assertRaisesRegex(ValueError, "topology"):
+                build_page_artifact_spec(
+                    handoff_page=handoff_page,
+                    visual_page=visual_page,
+                    style_lock=style_lock,
+                    handoff_sha256="a" * 64,
+                    visual_source_sha256="b" * 64,
+                )
+
+    def test_rejects_an_unmapped_topology_token(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            visual_page["semantic_graph"]["topology"] = "not_a_real_topology"
+
+            with self.assertRaisesRegex(ValueError, "unmapped topology"):
+                build_page_artifact_spec(
+                    handoff_page=handoff_page,
+                    visual_page=visual_page,
+                    style_lock=style_lock,
+                    handoff_sha256="a" * 64,
+                    visual_source_sha256="b" * 64,
+                )
+
+    def test_rejects_an_unmapped_forbidden_structure_token(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            visual_page["semantic_graph"]["forbidden_structures"] = ["not_a_real_forbidden_structure"]
+
+            with self.assertRaisesRegex(ValueError, "unmapped forbidden-structure"):
+                build_page_artifact_spec(
+                    handoff_page=handoff_page,
+                    visual_page=visual_page,
+                    style_lock=style_lock,
+                    handoff_sha256="a" * 64,
+                    visual_source_sha256="b" * 64,
+                )
 
     def test_rejects_business_relationship_drift_between_handoff_and_visual_spec(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
