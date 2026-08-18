@@ -264,6 +264,11 @@ class VisualStructureStageTests(unittest.TestCase):
         self.assertEqual(2, len(edges_into_focus))
         self.assertEqual({"E1", "E2"}, {edge["from"] for edge in edges_into_focus})
         self.assertTrue(all(edge["relation"] == "converge" for edge in edges_into_focus))
+        # A real P04 generation (two evidence groups converging on a
+        # judgment) came back as a generic center-hub SmartArt diagram --
+        # every topology's forbidden_structures must include this token,
+        # not just the ones judged at risk when the table was first written.
+        self.assertIn("invented_center_hub", page["semantic_graph"]["forbidden_structures"])
 
     def test_feedback_grammar_closes_a_real_loop_back_to_the_start(self) -> None:
         """A lifecycle_loop page's forward chain must also carry a genuine

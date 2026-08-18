@@ -102,18 +102,28 @@ ALLOWED_TOPOLOGY = {
 # Generic anti-patterns every topology forbids, plus topology-specific ones.
 # This is repo policy, not a per-page business decision, so it is a static
 # table rather than something the skill decision has to author per page.
+#
+# "invented_center_hub" belongs on every topology, not just the ones that
+# were originally judged most at risk: a real generation of P04
+# (causal_convergence, two evidence groups converging on a judgment) came
+# back as a generic "center circle with radiating cards" SmartArt diagram
+# -- exactly what this token exists to forbid -- even though convergence
+# was not in the original topology-specific list below. Convergent and
+# cyclic topologies are if anything the *most* tempted toward a literal
+# hub/orbit rendering, so the gap was real, not theoretical.
+_UNIVERSAL_FORBIDDEN_STRUCTURES = ["equal_peer_cards", "invented_center_hub"]
 _FORBIDDEN_STRUCTURES_BY_TOPOLOGY = {
-    "parallel_set": ["invented_center_hub", "forced_sequential_edge"],
-    "causal_convergence": ["equal_peer_cards", "missing_result_node"],
-    "layered_architecture": ["equal_peer_cards", "missing_dependency_edge"],
-    "directed_flow": ["equal_peer_cards", "invented_center_hub"],
-    "lifecycle_loop": ["equal_peer_cards", "missing_feedback_edge"],
-    "governance_boundary": ["equal_peer_cards", "missing_boundary_edge"],
-    "ecosystem_map": ["forced_sequential_edge", "invented_center_hub"],
-    "allocation_flow": ["equal_peer_cards", "missing_value_destination"],
-    "conclusion_anchor": ["multiple_equal_conclusions", "invented_center_hub"],
+    "parallel_set": ["forced_sequential_edge"],
+    "causal_convergence": ["missing_result_node"],
+    "layered_architecture": ["missing_dependency_edge"],
+    "directed_flow": [],
+    "lifecycle_loop": ["missing_feedback_edge"],
+    "governance_boundary": ["missing_boundary_edge"],
+    "ecosystem_map": ["forced_sequential_edge"],
+    "allocation_flow": ["missing_value_destination"],
+    "conclusion_anchor": ["multiple_equal_conclusions"],
 }
-_DEFAULT_FORBIDDEN_STRUCTURES = ["equal_peer_cards", "invented_center_hub"]
+_DEFAULT_FORBIDDEN_STRUCTURES = list(_UNIVERSAL_FORBIDDEN_STRUCTURES)
 
 
 def _fail(message: str) -> None:
@@ -390,7 +400,10 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             "reason": reason,
             "loss_risk": loss_risk,
         })
-    forbidden_structures = _FORBIDDEN_STRUCTURES_BY_TOPOLOGY.get(topology, _DEFAULT_FORBIDDEN_STRUCTURES)
+    forbidden_structures = list(dict.fromkeys((
+        *_UNIVERSAL_FORBIDDEN_STRUCTURES,
+        *_FORBIDDEN_STRUCTURES_BY_TOPOLOGY.get(topology, []),
+    )))
     quality_contract = _quality_contract(decision, selected, focus_id)
     final_text = [
         {"id": item_id, "role": "body", "text": text, "region_id": "R_RELATION"}
