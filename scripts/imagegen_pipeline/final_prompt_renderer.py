@@ -24,6 +24,8 @@ SECTION_HEADINGS = (
     "[7. Runtime lock]",
 )
 
+HARD_CONSTRAINTS_HEADING = "[Hard constraints]"
+
 
 def _group_line(group: Any) -> str:
     return f"- [{group.role} / {group.emphasis}] {group.summary}"
@@ -68,9 +70,18 @@ def render_final_prompt(
                 SECTION_HEADINGS[6],
                 ir.runtime_lock.style_contract,
                 *((ir.runtime_lock.terminal_lock,) if ir.runtime_lock.terminal_lock else ()),
-                *ir.hard_constraints,
             )
         ),
+        # A distinct, findable heading -- not just appended lines -- so
+        # Style09's terminal-lock reassembly (which slices the prompt at
+        # marker positions) can recognize this as content to preserve
+        # rather than trailing prose it should discard. Without this,
+        # every hard constraint (including the baseline "do not invent
+        # facts" ones, not just page-specific ones) was silently dropped
+        # for every Style09 page: enforce_style09_terminal_lock's
+        # continuation_markers only matched the old 9-section prompt
+        # format's headings, which this 7-section renderer never emits.
+        "\n".join((HARD_CONSTRAINTS_HEADING, *ir.hard_constraints)),
     )
     prompt = "\n\n".join(section for section in sections if section.strip()).rstrip()
 
@@ -124,6 +135,7 @@ def render_debug_receipt(
 
 
 __all__ = [
+    "HARD_CONSTRAINTS_HEADING",
     "SECTION_HEADINGS",
     "render_debug_receipt",
     "render_final_prompt",

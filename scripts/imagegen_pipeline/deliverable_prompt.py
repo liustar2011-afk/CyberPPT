@@ -829,6 +829,12 @@ def enforce_style09_terminal_lock(
     continuation_markers = (
         "【视觉结构设计模块｜不上屏】",
         "[8. Typography & exact text / 文字资产合同]",
+        # The current seven-section FinalPromptIR renderer (final_prompt_renderer.py)
+        # never emits either marker above; without this one, every hard
+        # constraint appended after the style contract -- including the
+        # baseline "do not invent facts" ones, not just page-specific ones --
+        # was silently discarded by the body[:marker_index] fallback below.
+        "[Hard constraints]",
     )
     marker_index = body.find(source_marker)
     if marker_index >= 0:

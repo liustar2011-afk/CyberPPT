@@ -81,6 +81,47 @@ class RenderFinalPromptTests(unittest.TestCase):
         self.assertEqual(1, prompt.count("【风格09最终执行锁｜最高优先级】"))
         self.assertEqual(1, prompt.count(terminal))
         self.assertTrue(prompt.rstrip().endswith(terminal))
+        # enforce_style09_terminal_lock slices the prompt at marker
+        # positions to reassert the lock at the true end; without a
+        # findable heading in front of them, every hard constraint
+        # (including this IR's default "Do not invent facts.") landed
+        # after the source marker and was silently discarded by that
+        # slicing, for every Style09 page.
+        self.assertIn("Do not invent facts.", prompt)
+
+    def test_style09_terminal_lock_preserves_hard_constraints(self) -> None:
+        source_marker = "### Final ImageGen execution lock — hard"
+        terminal = "保持纯白底，并保持唯一视觉中心。"
+        style_contract = f"STYLE09 body rules.\n\n{source_marker}\n\n{terminal}"
+        with tempfile.TemporaryDirectory() as directory:
+            lock = Path(directory) / "style09.json"
+            lock.write_text(
+                json.dumps(
+                    {"style": {"id": 9, "name": "Style09", "slug": "style09", "prompt_contract": style_contract}}
+                ),
+                encoding="utf-8",
+            )
+            ir = _sample_ir(
+                runtime_lock=RuntimeLockIR(style_contract=style_contract),
+                hard_constraints=(
+                    "Do not render instructions, field labels, source references, evidence ids, or text ids.",
+                    "Do not invent a center hub or radial mechanism the declared relationship does not describe.",
+                ),
+            )
+            prompt = render_final_prompt(ir, style_id=9, style_lock=lock)
+
+        self.assertIn(
+            "Do not render instructions, field labels, source references, evidence ids, or text ids.",
+            prompt,
+        )
+        self.assertIn(
+            "Do not invent a center hub or radial mechanism the declared relationship does not describe.",
+            prompt,
+        )
+        # The terminal lock must still end up as the true final content,
+        # after the preserved hard constraints -- not the other way round.
+        self.assertTrue(prompt.rstrip().endswith(terminal))
+        self.assertLess(prompt.index("Do not invent a center hub"), prompt.rindex(terminal))
 
     def test_style09_requires_style_lock(self) -> None:
         with self.assertRaisesRegex(ValueError, "style lock"):
