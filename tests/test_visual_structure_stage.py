@@ -170,6 +170,50 @@ class VisualStructureStageTests(unittest.TestCase):
                 f"structural_decision.{leaking_field} should be rejected by the schema",
             )
 
+    def test_boundary_spatial_grammar_compiles_to_boundary_primary_relation(self) -> None:
+        """A governance_boundary page choosing spatial_grammar=["boundary"] (not
+        "control") must still compile to primary_relation "boundary", not fall
+        through to the generic "flow"/"transform" default -- otherwise the
+        MISSING_BOUNDARY_EDGE audit (which requires "boundary" or "control")
+        would always reject a legitimately boundary-grammar page.
+        """
+
+        source = {
+            "page_id": "p01", "page_number": 1, "page_title": "Title",
+            "page_mission": "Explain how the access boundary admits governed input.",
+            "core_judgment": "The governance boundary admits input under explicit control.",
+            "locked_text_items": [
+                {"text_id": "P01-T01", "text": "Input"},
+                {"text_id": "P01-T02", "text": "Admitted result"},
+            ],
+            "business_relationships": [{"subject": "Input", "relation": "bounded_by", "objects": ["Admitted result"]}],
+            "expression_constraints": expression_constraints("flow_3_5"),
+        }
+        decision = {
+            "page_id": "p01",
+            "evidence_units": [
+                {"key": "input", "summary": "Input arrives at the boundary.", "text_ids": ["P01-T01"]},
+                {"key": "result", "summary": "The boundary admits the result.", "text_ids": ["P01-T02"]},
+            ],
+            "candidates": [
+                {"id": f"c{index}", "semantic_focus": {"kind": "outcome", "evidence_key": "result"},
+                 "reading_sequence": ["input", "result"], "spatial_grammar": ["boundary"],
+                 "topology": "governance_boundary",
+                 "direction": "left_to_right", "visual_intent_type": "boundary_admission",
+                 "expression_fit": {
+                     "form": "flow_3_5", "constraint_status": "default_profile",
+                     "satisfied_constraints": ["ordered_progression"],
+                     "reading_relation": "Input crosses the boundary into the admitted result",
+                     "balance_strategy": "one focal progression",
+                     "changed_constraints": [], "deviation_reason": "",
+                 }}
+                for index in range(1, 4)
+            ],
+            "selected_candidate": "c1",
+        }
+        page = _build_executable_page(source, decision)
+        self.assertEqual("boundary", page["semantic_graph"]["primary_relation"])
+
     def test_business_relationships_compile_to_plain_relation_sentence(self) -> None:
         source = {
             "page_id": "p01",

@@ -310,6 +310,8 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             relation = "converge"
         elif "divergence" in grammar:
             relation = "diverge"
+        elif "boundary" in grammar:
+            relation = "boundary"
         elif "feedback" in grammar:
             relation = "loop"
         elif "control" in grammar:
