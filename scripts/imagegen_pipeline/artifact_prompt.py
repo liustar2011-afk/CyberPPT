@@ -5,7 +5,20 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from cyberppt.page_artifact_spec import PageArtifactSpec, RelationshipSpec
+from cyberppt.page_artifact_spec import (
+    CompositionSpec,
+    EvidenceSpec,
+    PageArtifactSpec,
+    RelationshipSpec,
+    VisualCarrierSpec,
+)
+from scripts.imagegen_pipeline.final_prompt_ir import (
+    CompositionIR,
+    FinalPromptIR,
+    PromptContractError,
+    RuntimeLockIR,
+    SemanticGroupIR,
+)
 
 
 SECTION_HEADINGS = (
@@ -217,8 +230,126 @@ def assert_artifact_prompt_contract(
         raise ValueError("non-Style09 artifact prompt contains a Style09 terminal lock")
 
 
+def _semantic_groups(evidence: tuple[EvidenceSpec, ...]) -> tuple[SemanticGroupIR, ...]:
+    """Group evidence deterministically by ``EvidenceSpec.kind``.
+
+    Grouping by an already-audited structural field (rather than any
+    heuristic similarity match) keeps the collapse from ever merging two
+    evidence items that Stage 02 recorded as distinct facts.
+    """
+
+    order: list[str] = []
+    buckets: dict[str, list[str]] = {}
+    for item in evidence:
+        kind = item.kind.strip() or "evidence"
+        if kind not in buckets:
+            buckets[kind] = []
+            order.append(kind)
+        buckets[kind].append(item.summary)
+    groups = tuple(
+        SemanticGroupIR(
+            id=kind,
+            role=kind,
+            summary="; ".join(buckets[kind]),
+            emphasis="primary" if index == 0 else "secondary",
+        )
+        for index, kind in enumerate(order)
+    )
+    return groups
+
+
+_ANTI_GENERIC_SCENE_CONSTRAINT = (
+    "Do not substitute a generic dashboard, icon collection, card wall, or unrelated decorative scene."
+)
+
+
+def _visual_responsibility(
+    composition: CompositionSpec,
+    carrier: VisualCarrierSpec,
+) -> tuple[str, ...]:
+    scene_policy = (
+        "Use the selected integrated scene." if carrier.use_scene
+        else "Use the selected non-scene business relationship field."
+    )
+    lines: list[str] = [
+        f"Visual carrier: {carrier.business_object} ({carrier.semantic_role})",
+        f"{scene_policy} Scene type: {carrier.scene_type}.",
+        _ANTI_GENERIC_SCENE_CONSTRAINT,
+        f"Primary focus carries: {composition.primary_focus}",
+    ]
+    if composition.secondary_focus:
+        lines.append(f"Secondary focus supports: {'; '.join(composition.secondary_focus)}")
+    # composition.relationship_encoding is deliberately not carried into the
+    # final prompt: in current Stage 02 output it embeds raw backend
+    # direction tokens (e.g. "outside_to_anchor", "left_to_right") inline
+    # with authored Chinese prose, which is exactly the class of leak this
+    # compiler exists to stop. Re-add it once Stage 02 authoring stops
+    # emitting those tokens; until then final_prompt_contract's snake_case
+    # check would (correctly) block it.
+    if composition.text_integration_method:
+        lines.append(composition.text_integration_method)
+    if composition.spatial_grammar:
+        lines.append(f"Spatial grammar: {', '.join(composition.spatial_grammar)}")
+    for connector in composition.connectors:
+        if connector.label:
+            lines.append(connector.label)
+    return tuple(dict.fromkeys(lines))
+
+
+def _deliverable_sentence(spec: PageArtifactSpec) -> str:
+    deliverable = spec.deliverable
+    return " ".join(
+        (
+            f"Create one finished {deliverable.asset_type} for a PowerPoint "
+            f"{deliverable.page_role} page.",
+            f"Canvas: {deliverable.canvas[0]}x{deliverable.canvas[1]} ({deliverable.canvas[2]}).",
+            "The asset is the body visual only; PowerPoint supplies all excluded chrome.",
+        )
+    )
+
+
+def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
+    """Project the audited ``PageArtifactSpec`` into the final prompt IR.
+
+    Reads facts only; qualifiers such as ``direction``/``condition``/
+    ``modality``/``basis``/``confidence`` on relationships, the
+    ``EvidenceSpec.priority`` code, and ``ConnectorSpec.main_chain`` never
+    reach the IR text fields. They stay inside the audited spec, which the
+    debug receipt can still reference by hash.
+    """
+
+    try:
+        semantic_groups = _semantic_groups(spec.evidence)
+        composition = CompositionIR(
+            spatial_organization=spec.composition.spatial_organization,
+            primary_focus=spec.composition.primary_focus,
+            visual_responsibility=_visual_responsibility(spec.composition, spec.visual_carrier),
+        )
+        return FinalPromptIR(
+            deliverable=_deliverable_sentence(spec),
+            page_judgment=spec.communication_goal.core_judgment.strip(),
+            dominant_relationship=spec.visual_thesis.strip(),
+            reading_path=spec.composition.reading_path,
+            semantic_groups=semantic_groups,
+            composition=composition,
+            visible_text=spec.typography.visible_text,
+            hard_constraints=tuple(
+                dict.fromkeys(
+                    (
+                        *spec.hard_constraints.global_constraints,
+                        *spec.hard_constraints.page_constraints,
+                    )
+                )
+            ),
+            runtime_lock=RuntimeLockIR(style_contract=spec.art_direction.contract),
+        )
+    except PromptContractError as exc:
+        raise PromptContractError(f"{spec.page_id}: {exc}") from exc
+
+
 __all__ = [
     "SECTION_HEADINGS",
     "assert_artifact_prompt_contract",
+    "build_final_prompt_ir",
     "render_artifact_prompt",
 ]

@@ -65,6 +65,8 @@ class CompiledPagePrompt:
     semantic_structure: dict[str, Any] | None = None
     text_render_mode: str = DEFAULT_TEXT_RENDER_MODE
     artifact_spec: "PageArtifactSpec | None" = None
+    prompt_ir_version: str = ""
+    debug_receipt: dict[str, Any] | None = None
 
     def build_metadata(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -88,6 +90,8 @@ class CompiledPagePrompt:
             payload["semantic_structure"] = dict(self.semantic_structure)
         if self.artifact_spec is not None:
             payload["artifact_spec"] = self.artifact_spec.to_dict()
+        if self.prompt_ir_version:
+            payload["prompt_ir_version"] = self.prompt_ir_version
         return payload
 
 

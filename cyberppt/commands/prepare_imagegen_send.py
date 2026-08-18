@@ -8,7 +8,7 @@ from typing import Any
 
 from cyberppt.commands.script_gate import assert_approved_final_script, stage_script
 from scripts.imagegen_pipeline.prompt_send_enrich import (
-    build_deterministic_enrich_block,
+    apply_deterministic_enrich,
     llm_enrich_brief,
 )
 
@@ -51,11 +51,15 @@ def prepare_imagegen_send(
     for page in pages:
         approved = assert_approved_final_script(project, page, "imagegen")
         source = approved.read_text(encoding="utf-8-sig")
-        # The send reviewer edits an enrichment block only.  The final prompt
-        # compiler owns the page semantics, STYLE09 contract and terminal lock;
-        # this command must never append a second visual module to an approved
-        # prompt and then pass that altered body downstream.
-        enriched = build_deterministic_enrich_block(source)
+        # The draft is the complete standalone prompt (base + enrich block),
+        # not just the enrich block: this file is what a reviewer approves
+        # and what any external tool (including an image-generation agent)
+        # reads directly, so it must be usable on its own. The reviewer is
+        # still expected to edit only the enrich block; the final prompt
+        # compiler owns the page semantics, STYLE09 contract and terminal
+        # lock, and resolve_send_prompt() re-validates that the locked
+        # on-screen text here still matches the approved base before use.
+        enriched = apply_deterministic_enrich(source)
         draft_path = send_dir / f"slide-{page:02d}-imagegen-send-draft.md"
         draft_path.write_text(enriched, encoding="utf-8")
         brief_path: Path | None = None

@@ -23,14 +23,15 @@ from scripts.imagegen_pipeline.deliverable_prompt import (
     style_contract,
 )
 from scripts.imagegen_pipeline.imagegen_handoff import build_page_prompt
-from scripts.imagegen_pipeline.artifact_prompt import SECTION_HEADINGS, render_artifact_prompt
+from scripts.imagegen_pipeline.artifact_prompt import build_final_prompt_ir
+from scripts.imagegen_pipeline.final_prompt_renderer import SECTION_HEADINGS, render_final_prompt
 from cyberppt.script_quality_contract import parse_script_markdown
 from scripts.imagegen_pipeline.style_library import write_project_style_lock
 from tests.test_artifact_prompt import _spec
 
 
 class CyberpptPairManifestTests(unittest.TestCase):
-    def test_artifact_manifest_consumes_the_approved_nine_section_prompt_verbatim(self) -> None:
+    def test_artifact_manifest_consumes_the_approved_seven_section_prompt_verbatim(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "project"
@@ -42,8 +43,11 @@ class CyberpptPairManifestTests(unittest.TestCase):
             )
             style_lock = write_project_style_lock(project=project, style_id=10, source_script=script)
             spec = replace(_spec(), page_id="P02", page_number=2)
+            expected_prompt = render_final_prompt(
+                build_final_prompt_ir(spec), style_id=spec.art_direction.style_id, style_lock=style_lock
+            )
             approved = root / "approved.md"
-            approved.write_text(render_artifact_prompt(spec), encoding="utf-8")
+            approved.write_text(expected_prompt, encoding="utf-8")
             stage_script(project, 2, "imagegen", "final", approved)
             approve_script(project, 2, "imagegen")
 
@@ -63,7 +67,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
                 compiled_text = compiled.read_text(encoding="utf-8")
 
         consumed = manifest["pairs"][0]["full"]["prompt"]
-        self.assertEqual(render_artifact_prompt(spec), consumed)
+        self.assertEqual(expected_prompt, consumed)
         self.assertEqual("artifact-spec-v2", manifest["prompt_contract"]["compiler"])
         self.assertFalse(manifest["prompt_contract"]["compact_blueprint"])
         self.assertEqual(SECTION_HEADINGS[0], consumed.splitlines()[0])
@@ -110,7 +114,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertNotIn("E1 -> E2", prompt)
         self.assertNotIn("【视觉组织原则】", prompt)
         self.assertEqual(1, prompt.count("【视觉风格｜不上屏】"))
-        self.assertIn("### Style proposition", prompt)
+        self.assertIn("### A. Core proposition — hard", prompt)
         # The source contract's own "### Final ImageGen execution lock" section is
         # removed from its mid-document position and reasserted once, verbatim, at
         # the true end of the prompt under the Chinese terminal-lock header -- see

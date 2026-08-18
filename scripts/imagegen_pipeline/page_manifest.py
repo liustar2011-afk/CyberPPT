@@ -43,7 +43,10 @@ from scripts.imagegen_pipeline.build_transaction import (
 )
 from cyberppt.commands.script_gate import assert_approved_final_script
 from cyberppt.page_artifact_spec import PageArtifactSpec, load_project_page_artifact_specs
-from scripts.imagegen_pipeline.artifact_prompt import assert_artifact_prompt_contract
+from scripts.imagegen_pipeline.artifact_prompt import build_final_prompt_ir
+from scripts.imagegen_pipeline.final_prompt_contract import validate_final_prompt
+from scripts.imagegen_pipeline.final_prompt_ir import FINAL_PROMPT_IR_VERSION
+from scripts.imagegen_pipeline.final_prompt_renderer import render_debug_receipt
 from scripts.imagegen_pipeline.prompt_compiler import (
     ARTIFACT_PROMPT_COMPILER,
     DEFAULT_PROMPT_COMPILER,
@@ -449,9 +452,9 @@ def build_manifest(
             approved_text = approved_path.read_text(encoding="utf-8-sig")
             if prompt_compiler == ARTIFACT_PROMPT_COMPILER:
                 spec = artifact_specs[page_number]
-                assert_artifact_prompt_contract(
+                validate_final_prompt(
                     approved_text,
-                    expected_visible_text=spec.typography.visible_text,
+                    build_final_prompt_ir(spec),
                     style_id=spec.art_direction.style_id,
                 )
             approved_prompts[page_number] = (
@@ -572,6 +575,24 @@ def build_manifest(
         prompt = prompt.rstrip() + "\n"
         atomic_write_text(prompt_file, prompt)
         full_path = output_dir / f"{stem}_full.png"
+        artifact_ir_fields: dict[str, Any] = {}
+        if prompt_compiler == ARTIFACT_PROMPT_COMPILER:
+            page_spec = artifact_specs[page_number]
+            page_ir = build_final_prompt_ir(page_spec)
+            artifact_ir_fields = {
+                "prompt_ir_version": FINAL_PROMPT_IR_VERSION,
+                # validate_final_prompt already ran inside render_final_prompt
+                # when this prompt was compiled; reaching this line means it
+                # passed, so there is nothing left to report but "ok".
+                "final_prompt_contract": {"status": "ok", "issues": []},
+                "debug_receipt": render_debug_receipt(
+                    page_ir,
+                    page_id=page_spec.page_id,
+                    compiler=prompt_compiler,
+                    prompt_ir_version=FINAL_PROMPT_IR_VERSION,
+                    source_hashes=page_spec.source_hashes,
+                ),
+            }
         full = {
             "filename": full_path.name,
             "path": str(full_path),
@@ -585,6 +606,7 @@ def build_manifest(
             "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
             "prompt_enrich": enrich_result_as_dict(enrich),
             "visual_structure_handoff": visual_handoff_metadata,
+            **artifact_ir_fields,
             "prompt_provenance": {
                 **(approval_meta or {}),
                 **({

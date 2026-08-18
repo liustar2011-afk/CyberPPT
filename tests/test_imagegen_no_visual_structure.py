@@ -284,7 +284,7 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertLess(prompt.index("Page-specific visual intent"), prompt.index("上屏文字"))
         self.assertLess(
             prompt.index("Page-specific visual intent"),
-            prompt.index("### Style proposition"),
+            prompt.index("### A. Core proposition — hard"),
         )
         self.assertNotIn("扩展风格9：", prompt)
         self.assertNotIn("不进入默认候选", prompt)

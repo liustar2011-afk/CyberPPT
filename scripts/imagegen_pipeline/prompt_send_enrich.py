@@ -244,9 +244,21 @@ def resolve_send_prompt(
         send_text = send_final_path.read_text(encoding="utf-8-sig").strip()
         if SEND_ENRICH_HEADER not in send_text:
             raise ValueError(
-                "approved imagegen-send final must be an enrichment block beginning with "
-                f"{SEND_ENRICH_HEADER}"
+                "approved imagegen-send final must contain the enrichment block "
+                f"header {SEND_ENRICH_HEADER}"
             )
+        # The approved send file on disk is a complete, standalone prompt
+        # (base + enrich block), not a delta-only fragment: external tools
+        # (e.g. an image-generation agent) read this file directly and need
+        # something usable on its own, without knowing this pipeline's
+        # internal combination step. Extract only the block portion here —
+        # the caller (page_manifest.build_manifest) re-appends it onto the
+        # base prompt it resolved separately, so returning the embedded base
+        # too would duplicate it. Also verify the on-disk file has not lost
+        # or altered the locked on-screen text, since it may have been
+        # hand-edited between staging and approval.
+        assert_locked_text_preserved(source, send_text)
+        block = send_text[send_text.index(SEND_ENRICH_HEADER):]
         return SendEnrichResult(
             prompt=source,
             mode=mode,
@@ -254,7 +266,7 @@ def resolve_send_prompt(
             structure_cue=extract_structure_cue(source),
             used_send_script=True,
             send_script_path=str(send_final_path),
-            enrich_block=send_text,
+            enrich_block=block,
         )
 
     if mode == "send" and require_send:

@@ -9,7 +9,9 @@ from cyberppt.composition_resolver import resolve_composition
 from cyberppt.page_artifact_spec import PageArtifactSpec
 from cyberppt.script_quality_contract import ScriptPage
 from cyberppt.visual_carrier_resolver import select_visual_carrier
-from scripts.imagegen_pipeline.artifact_prompt import render_artifact_prompt
+from scripts.imagegen_pipeline.artifact_prompt import build_final_prompt_ir, render_artifact_prompt
+from scripts.imagegen_pipeline.final_prompt_ir import FINAL_PROMPT_IR_VERSION
+from scripts.imagegen_pipeline.final_prompt_renderer import render_debug_receipt, render_final_prompt
 from scripts.imagegen_pipeline.creative_brief import CreativeBrief, render_creative_brief
 from scripts.imagegen_pipeline.deliverable_prompt import (
     PageBlock,
@@ -372,7 +374,19 @@ def compile_page_prompt(
             raise ValueError(
                 "artifact-spec-v2 accepts only artifact_spec; visual_design and enrichment are separate prompt authorities"
             )
-        prompt = render_artifact_prompt(artifact_spec, style_lock=style_lock)
+        final_prompt_ir = build_final_prompt_ir(artifact_spec)
+        prompt = render_final_prompt(
+            final_prompt_ir,
+            style_id=artifact_spec.art_direction.style_id,
+            style_lock=style_lock,
+        )
+        debug_receipt = render_debug_receipt(
+            final_prompt_ir,
+            page_id=artifact_spec.page_id,
+            compiler=prompt_compiler,
+            prompt_ir_version=FINAL_PROMPT_IR_VERSION,
+            source_hashes=artifact_spec.source_hashes,
+        )
         relation = artifact_spec.relationships[0] if artifact_spec.relationships else "artifact_spec"
         art_direction = artifact_spec.art_direction
         return CompiledPagePrompt(
@@ -398,6 +412,8 @@ def compile_page_prompt(
             },
             image_locked_text="\n".join(artifact_spec.typography.visible_text),
             text_render_mode="full_image",
+            prompt_ir_version=FINAL_PROMPT_IR_VERSION,
+            debug_receipt=debug_receipt,
             artifact_spec=artifact_spec,
         )
     semantic_context = derive_page_semantics(

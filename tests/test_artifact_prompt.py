@@ -23,8 +23,10 @@ from cyberppt.page_artifact_spec import (
 from scripts.imagegen_pipeline.artifact_prompt import (
     SECTION_HEADINGS,
     assert_artifact_prompt_contract,
+    build_final_prompt_ir,
     render_artifact_prompt,
 )
+from scripts.imagegen_pipeline.final_prompt_renderer import render_final_prompt
 from scripts.imagegen_pipeline.imagegen_handoff import compile_page_prompt
 
 
@@ -228,9 +230,16 @@ class ArtifactPromptTests(unittest.TestCase):
             )
 
         self.assertEqual("artifact-spec-v2", compiled.compiler_version)
-        self.assertEqual(render_artifact_prompt(_spec()), compiled.prompt)
+        # The production prompt now comes from the single final-prompt IR
+        # renderer, not the retired nine-section render_artifact_prompt().
+        expected_ir = build_final_prompt_ir(_spec())
+        expected = render_final_prompt(expected_ir, style_id=_spec().art_direction.style_id, style_lock=style_lock)
+        self.assertEqual(expected, compiled.prompt)
         self.assertNotIn("WRONG LEGACY", compiled.prompt)
         self.assertEqual(_spec().to_dict(), compiled.build_metadata()["artifact_spec"])
+        self.assertEqual("v1", compiled.prompt_ir_version)
+        self.assertIsNotNone(compiled.debug_receipt)
+        self.assertEqual("P07", compiled.debug_receipt["page"])
 
     def test_artifact_compiler_requires_projection(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

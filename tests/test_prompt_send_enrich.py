@@ -60,10 +60,21 @@ def test_resolve_send_modes(tmp_path: Path) -> None:
     assert SEND_ENRICH_HEADER not in off.prompt
     assert off.mode == "off"
 
+    # For "off"/"deterministic", resolve_send_prompt returns the base prompt
+    # in .prompt and the enrich block separately in .enrich_block; the
+    # caller (page_manifest.build_manifest) appends them. Nothing persists
+    # a deterministic-mode file to disk for an external tool to read, so
+    # there is no standalone-document requirement here.
     det = resolve_send_prompt(approved_prompt=SAMPLE, mode="deterministic")
-    assert SEND_ENRICH_HEADER in det.prompt
+    assert SEND_ENRICH_HEADER not in det.prompt
+    assert SEND_ENRICH_HEADER in det.enrich_block
     assert det.mode == "deterministic"
 
+    # "send" mode is different: the approved file on disk is a complete,
+    # standalone prompt that an external tool may read directly (this is
+    # what prepare_imagegen_send() now writes). resolve_send_prompt must
+    # extract only the enrich-block portion so page_manifest's "prompt +
+    # enrich_block" append does not duplicate the embedded base.
     send_path = tmp_path / "send.md"
     send_path.write_text(apply_deterministic_enrich(SAMPLE) + "\nExtra English cue.\n", encoding="utf-8")
     send = resolve_send_prompt(
@@ -72,4 +83,21 @@ def test_resolve_send_modes(tmp_path: Path) -> None:
         send_final_path=send_path,
     )
     assert send.used_send_script is True
-    assert "Extra English cue" in send.prompt
+    assert SEND_ENRICH_HEADER not in send.prompt
+    assert "Extra English cue" in send.enrich_block
+    combined = f"{send.prompt.rstrip()}\n\n{send.enrich_block.strip()}\n"
+    assert combined.count(SEND_ENRICH_HEADER) == 1
+    # The base heading appears twice in SAMPLE itself (locked block + full
+    # on-screen block); combining must not add a third copy.
+    assert combined.count("01｜三类知识来源") == SAMPLE.count("01｜三类知识来源")
+
+
+def test_resolve_send_prompt_rejects_dropped_locked_text(tmp_path: Path) -> None:
+    send_path = tmp_path / "send.md"
+    tampered = apply_deterministic_enrich(SAMPLE).replace("01｜三类知识来源", "changed heading")
+    send_path.write_text(tampered, encoding="utf-8")
+    try:
+        resolve_send_prompt(approved_prompt=SAMPLE, mode="send", send_final_path=send_path)
+        raise AssertionError("expected ValueError")
+    except ValueError as exc:
+        assert "locked section" in str(exc)

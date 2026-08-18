@@ -719,9 +719,10 @@ class FinalScriptPagesTests(unittest.TestCase):
             self.assertIn("#12355B", prompt)
             self.assertNotIn("【完整内容语义｜仅供理解，不要求逐字上屏】", prompt)
             self.assertNotIn("【页面逻辑｜不上屏】", prompt)
-            self.assertIn("[1. Deliverable / 成品规格]", prompt)
-            self.assertIn("[8. Typography & exact text / 文字资产合同]", prompt)
-            self.assertIn("[9. Hard constraints / 硬约束]", prompt)
+            self.assertIn("[1. Deliverable]", prompt)
+            self.assertIn("[6. Exact visible text contract]", prompt)
+            self.assertIn("[7. Runtime lock]", prompt)
+            self.assertIn("Do not render title, subtitle, logo, page number, footer, or template frame.", prompt)
             self.assertEqual("artifact-spec-v2", manifest["prompt_contract"]["compiler"])
             self.assertEqual("态势感知能力要从工具堆叠转向风险闭环", lock["records"][0]["title"])
             self.assertEqual("运营保障机制需要责任、流程和审计同时落地", lock["records"][1]["title"])
@@ -794,7 +795,10 @@ class FinalScriptPagesTests(unittest.TestCase):
             init_project(project)
             script = root / "script-final.md"
             script.write_text("## 第7页：态势感知能力\n组件A：内容\n", encoding="utf-8")
-            self._approve_inputs_and_prompts(project, script)
+            # Approve with the project's configured default style (10) so the
+            # prompt approved here matches what the unqualified build below
+            # actually resolves and validates against.
+            self._approve_inputs_and_prompts(project, script, style_id=10)
 
             run_final_script_pages(
                 project=project,
