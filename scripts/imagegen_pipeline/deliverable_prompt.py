@@ -455,20 +455,18 @@ def _style_contract_from_payload(
     if style_prompt_v2:
         return style_prompt_v2
     prompt_contract = _strip_visual_structure_meta(_collapse_text(style.get("prompt_contract")))
-    # Style 09 is an authored, self-contained source contract.  The final
-    # prompt must carry this entire contract verbatim under its formal style
-    # lock, rather than letting a downstream compiler select clauses or
-    # recreate a terminal fragment.  Page layout belongs to Stage 02.
+    # Style 09 is an authored, self-contained source contract: the people,
+    # factuality, on-screen-text and component/craftsmanship rules that used
+    # to live as separate JSON fields (people_rule/factuality_rule/
+    # semantic_image_text_rule/component_rule) are now authored directly
+    # inside references/visual-system.md's "扩展风格9" section and arrive
+    # here already folded into prompt_contract -- see
+    # docs/superpowers/plans/2026-08-19-style09-consolidate-rule-fields.md.
+    # The final prompt must carry this entire contract verbatim under its
+    # formal style lock, rather than letting a downstream compiler select
+    # clauses or recreate a terminal fragment. Page layout belongs to Stage 02.
     if int(style.get("id") or 0) == 9 and prompt_contract:
-        safety_rules = (
-            _strip_visual_structure_meta(_collapse_text(style.get("people_rule"))),
-            _strip_visual_structure_meta(_collapse_text(style.get("factuality_rule"))),
-            _strip_visual_structure_meta(
-                _collapse_text(style.get("semantic_image_text_rule"))
-            ),
-            _strip_visual_structure_meta(_collapse_text(style.get("component_rule"))),
-        )
-        return "\n\n".join((prompt_contract, *(rule for rule in safety_rules if rule)))
+        return prompt_contract
     scope_rule = _strip_visual_structure_meta(_collapse_text(style.get("scope_rule")))
     semantic_structure_rule = _strip_visual_structure_meta(
         _collapse_text(style.get("semantic_structure_rule"))

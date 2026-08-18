@@ -498,6 +498,15 @@ Every drawn line or connector must stand for one specific declared relationship;
 
 Every scene, object or fragment must be traceable to a named actor, service, asset or outcome that actually appears on this page; if it cannot be tied to specific content here, remove it rather than keep it as ambience — do not substitute a generic senior-office tableau for content-specific imagery.
 
+默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。
+
+Do not depict organization names, logos, seals, signage, recognizable headquarters or landmarks. Keep real organization and person names in the editable text layer only. Generic, non-location-specific facilities, layered workspaces, control consoles, equipment rooms, and industrial scenes may be used as illustrative carriers when they map to the locked content. Schematic screens, charts, maps, and interface labels may organize the composition, but generated values are non-evidentiary; factual numbers and labels must be verified and remain editable.
+
+Render the page's locked on-screen text faithfully in the main composition. Auxiliary semantic imagery may use a small amount of clear Chinese labels, interface text, chart labels, or document wording when it directly clarifies the nearby business object or relationship. Do not add unrelated decorative text, dense pseudo-Chinese, or text that pretends to be factual evidence; keep supporting text subordinate to the page's locked on-screen text.
+
+线条：主关系用细、实、方向一致的深蓝线；反馈或复盘最多一条浅灰短虚线，虚线不作装饰节点链、不沿页面三边绕行，也不同时承担边框、回流和装饰；每条线必须落在对象外边界，圆点只用于真实接口、汇聚或分支，禁止线端悬空、靠近但不接触或跨越文字。边框：整页可见边界最多两级，只用细线直角矩形或开放平面色场表达业务范围与必要子组；组内项目优先用留白、对齐、浅色底或短分隔线，不逐项完整套框；禁止胶囊、厚框、梯形、切角、异形、玻璃舱和立体门框。箭头：先用邻接、对齐、包含、留白和颜色表达关系，只有真实方向无法由空间关系读出时才使用；编号、自然邻接或同一连续基线已经表达顺序时，不重复添加逐项箭头，整条流程优先只保留一条主方向线或一个末端箭头；箭头使用细实线和贴近线端的小型三角箭头头，箭头头宽度不明显超过线宽的2—3倍；不得出现粗大箭头头、宽箭头带；禁止宽箭头带、渐变块箭头、发光箭头、带状箭头、带阴影立体箭头、重复步骤箭头、中心辐射和跨文字连线，闭环用开放路径或短回接线。形状：默认使用平面直角矩形、开放色场和低矮哑光正视微立体，同页异形标题条最多一个；低矮平台只在平台承载、分层支撑或汇聚中枢语义明确时使用，且不得兼作页面外框、标题底座和装饰舞台；禁止徽章、盾牌、圆盘、梯形、六边形、切角容器、厚底座、多层台阶、夸张挤出和复杂光效；锁定内容未明确要求时，不生成对勾、警告三角、循环图标、定位针、盾牌或装饰性连续箭头。颜色：深蓝表达主关系和结论，浅蓝灰承载辅助信息，暖色只标记风险、异常、限制、禁止或待处理状态；不得仅为区分类目自动分配多色或彩虹色。
+补充精细化要求（基于实测产出复核新增，权重高于上文一般性描述）：边框、分隔线、连接线、箭头和几何形状须体现精密矢量级工艺——线条粗细全程一致、直角平直、曲线圆滑连续无棱角抖动、边缘干净无锯齿，同一图形家族的圆角半径保持统一；箭头头必须是紧贴线端的小三角形，宽度不超过线宽的2—3倍，箭头与线端精确对齐，禁止实心色块箭头、粗大三角箭头、渐变箭头带、箭头与线端脱节或重叠；多层堆叠色块须对齐同一网格、间距均匀，若使用分层立体效果须保持对称克制，禁止交错错位投影、锯齿状或不均匀阴影边缘；边框与连接线应呈现如专业矢量工具绘制的精度，禁止手绘感抖动线、粗细不均、转角处衔接错位或断裂。盾牌、立体等距图标等具象元素本身不受限制，可正常按语义使用，只需与整体精致优雅的线条工艺保持一致。若上屏文字本身已带有序号前缀（如①②③或数字编号），不得再额外绘制独立的装饰性数字徽章、圆盘或序号标记来重复表达同一序号；每个步骤/阶段的序号只呈现一次。线条与边框的"精密"只针对笔画本身的干净度（不歪、不抖、边缘清晰），不等于全页处处等大、等距、等圆角；禁止为了显得规整就把所有卡片、图标、连接线做成完全相同的尺寸和间距、套成一个僵硬的网格；应保留非对称留白、按内容重要性调整大小和视觉权重，让版式呈现高级编辑排版的手工节奏感，而不是模板化图表网格。
+
 ## 扩展风格10：象牙白 + 深蓝双层语义汇报2
 
 默认8种风格仍保持1—8不变。风格10是仅供显式选择的扩展风格，可通过 ID `10` 调用，不进入默认候选。

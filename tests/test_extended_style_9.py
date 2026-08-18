@@ -77,14 +77,10 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "使用跨页面展开的图形形态、色带、路径、箭头" not in style_nine["content_visual_rule"]
     assert "实景、近实景和物件型语义图只作少量局部点缀" not in style_nine["content_visual_rule"]
     assert "不得逐项配图、形成照片栏或取代整页图形主线" not in style_nine["content_visual_rule"]
-    assert "locked on-screen text faithfully in the main composition" in style_nine["semantic_image_text_rule"]
-    assert "may use a small amount of clear Chinese labels" in style_nine["semantic_image_text_rule"]
-    assert "dense pseudo-Chinese" in style_nine["semantic_image_text_rule"]
     assert "生成式图形构图负责组织页面主线" not in style_nine["scope_rule"]
     assert "锁定文字嵌入稳定承载面" not in style_nine["scope_rule"]
     assert "文字是页面主体" not in style_nine["scope_rule"]
     assert "少量实景、近实景或物件型语义图仅作点缀" not in style_nine["scope_rule"]
-    assert style_nine["people_rule"] == "默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。"
     # Style09's prompt_contract is the scene-led spec from
     # references/visual-system.md's "扩展风格9" section (restored 2026-08-18
     # after an earlier rewrite had silently dropped it down to a much
@@ -99,9 +95,29 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "#12355B" in style_nine["prompt_contract"]
     assert "Industry scene anchor" not in style_nine["prompt_contract"]
     assert "逐项配图" not in style_nine["prompt_contract"]
-    assert "线条：主关系用细、实、方向一致的深蓝线" in style_nine["component_rule"]
-    assert "禁止宽箭头带" in style_nine["component_rule"]
-    assert "低矮哑光正视微立体" in style_nine["component_rule"]
+    # people_rule/factuality_rule/semantic_image_text_rule/component_rule used
+    # to be separate JSON fields concatenated onto prompt_contract at compile
+    # time (see deliverable_prompt.py::_style_contract_from_payload). They are
+    # now authored directly inside visual-system.md's "扩展风格9" section, so
+    # their content must show up inside prompt_contract itself, with no
+    # separate JSON field left behind.
+    assert "people_rule" not in style_nine
+    assert "factuality_rule" not in style_nine
+    assert "semantic_image_text_rule" not in style_nine
+    assert "component_rule" not in style_nine
+    assert "默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。" in style_nine["prompt_contract"]
+    assert "Do not depict organization names, logos, seals, signage" in style_nine["prompt_contract"]
+    assert "locked on-screen text faithfully in the main composition" in style_nine["prompt_contract"]
+    assert "may use a small amount of clear Chinese labels" in style_nine["prompt_contract"]
+    assert "dense pseudo-Chinese" in style_nine["prompt_contract"]
+    # The overlapping "invented names, logos, seals, signage" clause was
+    # trimmed from the migrated semantic_image_text_rule text because
+    # factuality_rule (now a few paragraphs earlier in the same contract)
+    # already forbids organization names/logos/seals/signage.
+    assert "invented names, logos, seals, signage" not in style_nine["prompt_contract"]
+    assert "线条：主关系用细、实、方向一致的深蓝线" in style_nine["prompt_contract"]
+    assert "低矮哑光正视微立体" in style_nine["prompt_contract"]
+    assert "禁止宽箭头带" in style_nine["prompt_contract"]
     assert "icon_rule" not in style_nine
     assert "政企领导汇报所需的信息密度" in style_nine["density_rule"]
     assert "领导汇报" in style_nine["scenario"]
