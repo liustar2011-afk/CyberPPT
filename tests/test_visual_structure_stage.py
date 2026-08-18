@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -321,6 +322,58 @@ class VisualStructureStageTests(unittest.TestCase):
         self.assertEqual({"from": "E3", "to": "E1", "relation": "loop", "label": "反馈回流", "direction": "backward"}, backward_edges[0])
         forward_edges = [edge for edge in graph["edges"] if edge["direction"] == "forward"]
         self.assertEqual(2, len(forward_edges))
+
+    def test_content_lock_forbidden_transformations_do_not_leak_backend_field_names(self) -> None:
+        """These strings flow verbatim into hard_constraints.page_constraints
+        and from there into the final ImageGen prompt (see
+        page_artifact_spec.py). A backend field name like "required_text"
+        (the JSON key, not English prose) reads as a snake_case backend
+        token and trips final_prompt_contract's leak check -- this was only
+        ever caught by generating a real image, because a separate bug was
+        silently dropping hard_constraints from every Style09 prompt.
+        """
+
+        source = {
+            "page_id": "p01", "page_number": 1, "page_title": "Title",
+            "page_mission": "Explain how the input relationship field supports the result.",
+            "core_judgment": "Input visibly supports the result through one relationship field.",
+            "locked_text_items": [
+                {"text_id": "P01-T01", "text": "Input"},
+                {"text_id": "P01-T02", "text": "Result"},
+            ],
+            "business_relationships": [{"subject": "Input", "relation": "supports", "objects": ["Result"]}],
+            "expression_constraints": expression_constraints("flow_3_5"),
+        }
+        decision = {
+            "page_id": "p01",
+            "evidence_units": [
+                {"key": "input", "summary": "Input supports the result.", "text_ids": ["P01-T01"]},
+                {"key": "result", "summary": "The result the input supports.", "text_ids": ["P01-T02"]},
+            ],
+            "candidates": [
+                {"id": f"c{index}", "semantic_focus": {"kind": "outcome", "evidence_key": "result"},
+                 "reading_sequence": ["input", "result"], "spatial_grammar": ["path"],
+                 "topology": "directed_flow",
+                 "direction": "left_to_right", "visual_intent_type": "relationship_field",
+                 "expression_fit": {
+                     "form": "flow_3_5", "constraint_status": "default_profile",
+                     "satisfied_constraints": ["ordered_progression"],
+                     "reading_relation": "Input progresses to Result",
+                     "balance_strategy": "one focal progression",
+                     "changed_constraints": [], "deviation_reason": "",
+                 }}
+                for index in range(1, 4)
+            ],
+            "selected_candidate": "c1",
+        }
+        page = _build_executable_page(source, decision)
+        forbidden = " ".join(page["content_lock"]["forbidden_transformations"])
+        snake_case_token_re = re.compile(r"(?<![A-Za-z0-9_-])[a-z]+(?:_[a-z0-9]+){1,}(?![A-Za-z0-9_-])")
+        leaked = [
+            token for token in snake_case_token_re.findall(forbidden)
+            if token != "powerpoint_body_visual_asset"
+        ]
+        self.assertEqual([], leaked, f"backend-looking tokens in forbidden_transformations: {leaked}")
 
     def test_business_relationships_compile_to_plain_relation_sentence(self) -> None:
         source = {
