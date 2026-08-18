@@ -356,9 +356,9 @@ Suitable anchors include: source materials parsed into one structured object; tw
 
 ### 3. Content fidelity and presentation expression — hard
 
-Preserve the full factual meaning, core judgments, named entities, numbers, units, causal relationships, comparison relationships, scope boundaries and business logic of the provided Chinese content.
+Preserve the full factual meaning, core judgments, named entities, numbers, dates, units, causal relationships, conditional relationships, comparison relationships, scope boundaries and business logic of the provided Chinese content.
 
-Do not add new facts, invent numbers, strengthen or weaken conclusions, change responsibility boundaries, alter policy meaning, omit required content or introduce unsupported labels.
+Do not add new facts, invent numbers, strengthen or weaken conclusions, change responsibility boundaries, alter policy meaning, omit required content or introduce unsupported labels. Do not shift modal strength while treating the wording as equivalent: do not turn a possibility into a certainty, a suggestion into a requirement, an exploratory or pilot description into a completed achievement, or a conditional statement into an unconditional conclusion.
 
 Unless a passage is explicitly marked as verbatim text, locked text, quoted source text, formal name, number, metric, policy wording or other exact wording, the visible Chinese wording may be restructured for presentation readability.
 
@@ -394,7 +394,7 @@ Render only source-supported Chinese content. Screens, documents and interfaces 
 
 Each primary semantic region should read as one integrated unit of text and visual material. When a small supporting fragment genuinely clarifies one region, draw it from real business material relevant to that specific region — expressed in whatever concrete, recognizable form actually suits the content — rather than a symbolic icon or pictogram, and never repeat the same kind of fragment as a matching pair across every parallel region (see the icon discipline rules below). Regions do not have to be forced into perfectly equal treatment: some may carry a fuller scene-plus-text-plus-action unit, others may lean more on text with a lighter visual touch, depending on what each region's content actually needs.
 
-Place text inside a quiet field within the scene, attach it to an object edge, align it with the corresponding action, or embed it in the outcome region. Text and visual material should read as one semantic unit.
+Place text inside a quiet field within the scene, attach it to an object edge, align it with the corresponding action, or embed it in the outcome region. Text and visual material should read as one semantic unit. Visual splitting, line breaks and grouping must not alter the original sentence's logical relationship (for example turning a causal or conditional link into a flat parallel list). Font size, weight, color and position must not create a visual conclusion strength that misrepresents the source: a minor qualifier must not be made visually more prominent than the primary judgment it qualifies.
 
 The governing principle is: factual fidelity is fixed; presentation wording and hierarchy may adapt to improve executive readability.
 
