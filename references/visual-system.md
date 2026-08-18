@@ -424,7 +424,7 @@ Create richness through semantic scene selection, cropping, scale and viewpoint 
 
 When the page names several distinct top-level items, each item's own visual material must be specific enough that a viewer can tell which item it belongs to at a glance — not just that the page is generally about data or technology. Do not represent distinct named items with one shared undifferentiated panorama; give each its own recognizable fragment. If the items are abstract directions with no distinct concrete referent, drop the scene entirely and use a flat, structured relationship field instead.
 
-Suitable visual material includes: professional operating environments; controlled content objects or data assets; documents in transformation; industry facilities; close-up evidence fragments. Any chosen anchor or fragment must depict something actually named in this page's content — never a generic control room, dashboard wall or stock BI screen used as decoration; with no distinct concrete referent among the locked content, prefer the flat structured relationship field over a generic technology scene.
+Suitable visual material includes: professional operating environments; controlled content objects or data assets; documents in transformation; industry facilities; close-up evidence fragments. When this page names several distinct items (for example subject onboarding, industry coverage, product releases, demonstration scenes), each anchor or fragment must let a viewer identify which specific item it illustrates — an onboarding or access interface, a named industry's facility, an actual data-product package, a real demonstration site — never one shared skyline-and-server-room shot standing in for the whole page, and never a generic control room, dashboard wall or stock BI screen used as decoration. With no distinct concrete referent, prefer the flat structured relationship field over a generic technology scene.
 
 Realistic or restrained semi-realistic materials are acceptable when they strengthen page-specific meaning. A workspace, device or interface must visibly demonstrate the relevant action or state, as supporting evidence inside a broader scene, not an isolated product.
 
@@ -456,7 +456,7 @@ When the composition already expresses a process, hierarchy or layered relations
 
 Use one primary visual metaphor per page; express remaining relationships through scene state, position, scale, crop, color fields and purposeful connectors, not a left-structure + right-explanation + bottom-summary formula.
 
-Keep the result free from icon-led modular layouts, repeated device mockups, dense microtext and duplicated semantic summaries, and from any SaaS-marketing, app-store-style or futuristic 3D concept-art visual language (see the material and icon discipline rules above for the full decoration exclusion list). These exclusions are secondary: always prioritize content fidelity, recognizable business anchoring, open scene-led composition, semantic clarity, restrained editorial flatness and executive-level visual hierarchy.
+Keep the result free from icon-led modular layouts, repeated device mockups, dense microtext, duplicated semantic summaries and SaaS-marketing visual language (see the icon discipline rules above for the full decoration exclusion list). These exclusions are secondary to content fidelity, business anchoring, semantic clarity and executive-level hierarchy.
 
 Priority:
 content fidelity, verbatim requirements and core judgment
@@ -471,9 +471,9 @@ Final result: one calm, highly readable and visually refined executive-report co
 
 ### 8. Authority lock — hard
 
-This Style 09 definition is the controlling visual authority for every page that selects it. Reference images may influence palette, crop and polish only, never the semantic structure, content fidelity, composition grammar or icon discipline defined above. When a conflict arises, remove the lower-priority decorative element and keep the higher-priority rule, in the order already stated in Section 7's priority list.
+This Style 09 definition is the controlling visual authority for every page that selects it. Reference images may influence palette, crop and polish only. When a conflict arises, remove the lower-priority decorative element and keep the higher-priority rule, per Section 7's priority list.
 
-Do not reinterpret Style 09 into a card dashboard, icon infographic, SaaS marketing page or glossy 3D composition, even when such forms appear attractive in reference material. The final page must remain recognizably Style 09: concrete business meaning first, editorial hierarchy second, decoration last.
+Do not reinterpret Style 09 into a card dashboard, icon infographic, SaaS marketing page or glossy 3D composition. The final page must remain recognizably Style 09: business meaning first, editorial hierarchy second, decoration last.
 
 [Hard constraints]
 Render only the PowerPoint body visual on a 2048x1024 canvas.
@@ -496,7 +496,7 @@ Treat the generated image as a reconstruction-friendly visual blueprint for edit
 
 Every drawn line or connector must stand for one specific declared relationship; if it would read the same regardless of which two elements it joins, remove it and use proximity or grouping instead. Every line and arrow must start and end at a real, visible element on this page.
 
-Every scene, object or fragment must be traceable to a named actor, service, asset or outcome that actually appears on this page; if it cannot be tied to specific content here, remove it rather than keep it as ambience — do not substitute a generic senior-office tableau for content-specific imagery.
+Every scene, object or fragment must be traceable to a named actor, service, asset or outcome on this page; if it cannot be tied to specific content here, remove it rather than keep it as ambience.
 
 ## 扩展风格10：象牙白 + 深蓝双层语义汇报2
 
