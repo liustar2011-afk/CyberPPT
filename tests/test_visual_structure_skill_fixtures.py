@@ -24,5 +24,5 @@ def test_domain_neutral_visual_structure_fixtures() -> None:
     )
 
     assert "6 valid" in result.stdout
-    assert "60 invalid" in result.stdout
+    assert "78 invalid" in result.stdout
     assert "18 style variants" in result.stdout

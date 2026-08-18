@@ -383,6 +383,134 @@ def _audit_focus_competition(page_spec: dict[str, Any], issue: Any, page_id: str
     return {"status": "passed", "primary_ref": focus_ref}
 
 
+# Per-topology structural anti-patterns. Each check only inspects data the
+# schema already guarantees is present (semantic_graph.nodes/edges/
+# primary_relation), so it stays a structural check, not a new business
+# classification invented at audit time.
+def _audit_topology_consistency(page_spec: dict[str, Any], issue: Any, page_id: str) -> None:
+    graph = page_spec.get("semantic_graph") if isinstance(page_spec.get("semantic_graph"), dict) else {}
+    structural = page_spec.get("structural_decision") if isinstance(page_spec.get("structural_decision"), dict) else {}
+    focus = structural.get("semantic_focus") if isinstance(structural.get("semantic_focus"), dict) else {}
+    structural_focus_ref = str(focus.get("ref") or "")
+    graph_focus_node = str(graph.get("focus_node") or "")
+    topology = str(graph.get("topology") or "")
+
+    if graph_focus_node and structural_focus_ref and graph_focus_node != structural_focus_ref:
+        issue(
+            "FOCUS_LAYER_MISMATCH",
+            f"semantic_graph.focus_node ({graph_focus_node!r}) and structural_decision.semantic_focus.ref "
+            f"({structural_focus_ref!r}) must name the same business object.",
+            page_id,
+        )
+
+    nodes = [item for item in graph.get("nodes") or [] if isinstance(item, dict)]
+    node_role_by_id = {str(item.get("id") or ""): str(item.get("role") or "") for item in nodes}
+    focus_role = node_role_by_id.get(graph_focus_node, "")
+    if graph_focus_node and focus_role and focus_role != "judgment":
+        override_reason = str(page_spec.get("quality_contract", {}).get("focus_override_reason") or "").strip()
+        if not override_reason:
+            issue(
+                "FOCUS_NOT_JUDGMENT",
+                f"focus_node {graph_focus_node!r} has role {focus_role!r}; a non-judgment focus needs "
+                "quality_contract.focus_override_reason and human review sign-off.",
+                page_id,
+            )
+
+    if not topology or not nodes:
+        return
+
+    edges = [item for item in graph.get("edges") or [] if isinstance(item, dict)]
+    non_focus_ids = {node_id for node_id in node_role_by_id if node_id != graph_focus_node}
+    edges_into_focus = [edge for edge in edges if str(edge.get("to") or "") == graph_focus_node]
+    edges_from_focus = [edge for edge in edges if str(edge.get("from") or "") == graph_focus_node]
+    backward_edges = [edge for edge in edges if str(edge.get("direction") or "") == "backward"]
+    reached_by_edge = {str(edge.get("from") or "") for edge in edges} | {str(edge.get("to") or "") for edge in edges}
+    isolated_non_focus = sorted(non_focus_ids - reached_by_edge)
+
+    if topology == "causal_convergence" and len(edges_into_focus) < 2:
+        issue("MISSING_RESULT_NODE", "causal_convergence requires at least two edges converging on the focus node.", page_id)
+    if topology == "layered_architecture" and len(edges) < max(len(nodes) - 1, 0):
+        issue("MISSING_DEPENDENCY_EDGE", "layered_architecture requires an unbroken dependency chain across every layer.", page_id)
+    if topology == "lifecycle_loop" and not backward_edges:
+        issue("MISSING_FEEDBACK_EDGE", "lifecycle_loop requires at least one backward feedback/returns_to/iterates edge.", page_id)
+    if topology == "governance_boundary" and str(graph.get("primary_relation") or "") not in {"boundary", "control"}:
+        issue("MISSING_BOUNDARY_EDGE", "governance_boundary requires a boundary or control primary_relation.", page_id)
+    if topology == "allocation_flow" and isolated_non_focus:
+        issue("MISSING_VALUE_DESTINATION", f"allocation_flow nodes with no role or value destination: {isolated_non_focus}", page_id)
+    if topology == "conclusion_anchor" and isolated_non_focus:
+        issue("MULTIPLE_EQUAL_CONCLUSIONS", f"conclusion_anchor has nodes disconnected from the single conclusion: {isolated_non_focus}", page_id)
+    if topology == "parallel_set":
+        forced_sequential = [
+            edge for edge in edges
+            if str(edge.get("direction") or "") in {"forward", "backward"}
+            and str(edge.get("from") or "") in non_focus_ids
+            and str(edge.get("to") or "") in non_focus_ids
+        ]
+        if forced_sequential:
+            issue("FORCED_SEQUENTIAL_EDGE", "parallel_set peers must not carry a forced sequential edge between them.", page_id)
+    if not edges_into_focus and not edges_from_focus and len(nodes) > 1:
+        issue("MISSING_FOCUS_EDGE", f"focus_node {graph_focus_node!r} has no edge connecting it to the rest of the graph.", page_id)
+
+
+_GENERIC_GROUPING_REASON_RE = re.compile(
+    r"^(?:合并|combine|merge|grouped)[。.!！ ]*$", flags=re.IGNORECASE
+)
+
+
+def _audit_grouping_decisions(page_spec: dict[str, Any], issue: Any, page_id: str) -> None:
+    """Every locked text id must have exactly one disposition: its own node,
+    or a declared, reasoned merge into another node. Silent multi-node reuse
+    or an unreasoned/ungraded merge is blocked here, not just at compile
+    time, so a hand-edited or legacy spec cannot bypass the same guarantee.
+    """
+
+    graph = page_spec.get("semantic_graph") if isinstance(page_spec.get("semantic_graph"), dict) else {}
+    nodes = [item for item in graph.get("nodes") or [] if isinstance(item, dict)]
+    if not nodes:
+        return
+    handoff = page_spec.get("generation_handoff") if isinstance(page_spec.get("generation_handoff"), dict) else {}
+    required_text_ids = [str(value) for value in handoff.get("required_text_ids") or []]
+
+    refs_by_text_id: dict[str, list[str]] = {}
+    for node in nodes:
+        node_id = str(node.get("id") or "")
+        for text_id in node.get("source_refs") or []:
+            refs_by_text_id.setdefault(str(text_id), []).append(node_id)
+
+    if required_text_ids:
+        unmapped = sorted(set(required_text_ids) - set(refs_by_text_id))
+        if unmapped:
+            issue("GROUPING_SOURCE_UNMAPPED", f"Locked text ids have no node disposition: {unmapped}", page_id)
+
+    colliding = sorted(text_id for text_id, owners in refs_by_text_id.items() if len(set(owners)) > 1)
+    if colliding:
+        issue("GROUPING_ROLE_COLLISION", f"Locked text ids are claimed by more than one graph node: {colliding}", page_id)
+
+    grouping_decisions = [item for item in graph.get("grouping_decisions") or [] if isinstance(item, dict)]
+    merged_node_ids = {str(node.get("id") or "") for node in nodes if len(node.get("source_refs") or []) > 1}
+    declared_targets = {str(item.get("target_node") or "") for item in grouping_decisions}
+    for node in nodes:
+        node_id = str(node.get("id") or "")
+        if node_id in merged_node_ids and node_id not in declared_targets:
+            issue("GROUPING_REASON_MISSING", f"Node {node_id!r} merges multiple locked text ids but has no grouping_decisions entry.", page_id)
+
+    for item in grouping_decisions:
+        target_node = str(item.get("target_node") or "")
+        reason = str(item.get("reason") or "").strip()
+        loss_risk = str(item.get("loss_risk") or "")
+        if not reason or _GENERIC_GROUPING_REASON_RE.match(reason):
+            issue("GROUPING_REASON_MISSING", f"Grouping into {target_node!r} needs a specific business reason, not a generic label.", page_id)
+        if loss_risk == "high":
+            review_reason = str(page_spec.get("quality_contract", {}).get("grouping_review_reason") or "").strip()
+            if not review_reason:
+                issue(
+                    "GROUPING_LOSS_RISK_HIGH",
+                    f"Grouping into {target_node!r} is high loss-risk and needs human review "
+                    "recorded in quality_contract.grouping_review_reason.",
+                    page_id,
+                )
+
+
 def audit_visual_deck_rhythm(spec: dict[str, Any], decisions: dict[str, Any]) -> dict[str, Any]:
     """Audit repetition among adjacent content-page visual structures."""
 
@@ -760,6 +888,8 @@ def audit_visual_design_package(
             issue("P0_TEXT_BINDING_MISSING", f"P0 evidence has no exact text binding: {sorted(p0_evidence_ids - bound_evidence_ids)}", page_id)
 
         _audit_focus_competition(page_spec, issue, page_id)
+        _audit_topology_consistency(page_spec, issue, page_id)
+        _audit_grouping_decisions(page_spec, issue, page_id)
 
         _audit_relationship_coverage(
             source,

@@ -443,5 +443,157 @@ class ImageGenNoVisualStructureTests(unittest.TestCase):
         self.assertIn("要点", prompt)
 
 
+class StructureStyleDecouplingTests(unittest.TestCase):
+    """Style09/Style10 must only vary art_direction, never business structure.
+
+    This pins the visual-structure-fidelity plan's decoupling requirement:
+    the same audited semantic_graph/structural_decision projects to the same
+    PageArtifactSpec fields regardless of which style lock is selected.
+    """
+
+    def _visual_page(self) -> dict:
+        return {
+            "page_id": "P09",
+            "page_number": 9,
+            "page_role": "content",
+            "page_mission": "Explain how the input relationship field supports the result.",
+            "core_judgment": "Input visibly supports the result through one relationship field.",
+            "content_lock": {
+                "mode": "strict",
+                "locked_items": [
+                    {"id": "P09-TITLE", "type": "title", "text": "Title"},
+                    {"id": "P09-T01", "type": "body", "text": "Input"},
+                    {"id": "P09-T02", "type": "body", "text": "Result"},
+                ],
+            },
+            "evidence_units": [
+                {"id": "E1", "text": "Input", "kind": "process", "priority": "P0"},
+                {"id": "E2", "text": "Result", "kind": "result", "priority": "P0"},
+            ],
+            "semantic_graph": {
+                "primary_relation": "flow",
+                "direction": "left_to_right",
+                "topology": "directed_flow",
+                "focus_node": "E2",
+                "nodes": [
+                    {"id": "E1", "role": "evidence", "source_refs": ["P09-T01"]},
+                    {"id": "E2", "role": "judgment", "source_refs": ["P09-T02"]},
+                ],
+                "edges": [
+                    {"from": "E1", "to": "E2", "relation": "supports", "label": "supports", "direction": "forward"},
+                ],
+                "decision_relationship": "Input supports Result",
+                "business_relationships": [
+                    {"subject": "Input", "relation": "supports", "objects": ["Result"]}
+                ],
+                "grouping_decisions": [],
+                "forbidden_structures": ["equal_peer_cards", "invented_center_hub"],
+            },
+            "structural_decision": {
+                "semantic_focus": {"kind": "outcome", "ref": "E2"},
+                "spatial_grammar": ["path"],
+                "reading_sequence": ["E1", "E2"],
+            },
+            "visual_decision": {
+                "visual_thesis": "Input visibly supports the result through one relationship field.",
+                "spatial_organization": "Input leads to Result",
+                "reading_path": ["Input", "Result"],
+                "text_integration_method": "Attach text to its related object",
+                "relationship_encoding": "Directed support relationship",
+                "visual_hierarchy": {"primary": "Result", "secondary": ["Input"], "tertiary": []},
+            },
+            "text_integration": {
+                "title_render_mode": "external_text_layer",
+                "subtitle_render_mode": "external_text_layer",
+                "body_render_mode": "in_image",
+                "placement_strategy": "Attach text to its related object",
+            },
+            "geometry": {"canvas": {"width": 2048, "height": 1024, "ratio": "2:1"}},
+            "image_plan": {
+                "use_scene": False,
+                "scene_type": "Flat business relationship field",
+                "business_object": "Input-to-result relationship field",
+                "semantic_role": "The relationship field proves that input supports the result",
+                "placement": "Input leads to Result",
+            },
+            "connectors": [
+                {"from": "E1", "to": "E2", "type": "flow", "direction": "left_to_right", "label": "supports", "main_chain": True}
+            ],
+            "final_text": [
+                {"id": "P09-T01", "text": "Input"},
+                {"id": "P09-T02", "text": "Result"},
+            ],
+            "generation_handoff": {
+                "required_text_ids": ["P09-T01", "P09-T02"],
+                "required_text": ["Input", "Result"],
+                "title_exclusion_instruction": "Do not render title or subtitle.",
+            },
+            "avoid": ["Do not create an independent text wall."],
+        }
+
+    def _handoff_page(self) -> dict:
+        return {
+            "page_id": "p09",
+            "page_number": 9,
+            "render_role": "content",
+            "argument_role": "content",
+            "title": "Title",
+            "page_mission": "Explain how the input relationship field supports the result.",
+            "core_message": "Input visibly supports the result through one relationship field.",
+            "must_not_include": [],
+            "stage02_visual_input": {
+                "body_image_canvas": {"width": 2048, "height": 1024, "ratio": "2:1"},
+                "title_render_mode": "external_text_layer",
+                "subtitle_render_mode": "external_text_layer",
+                "business_relationships": [
+                    {"subject": "Input", "relation": "supports", "objects": ["Result"]}
+                ],
+            },
+        }
+
+    def test_style09_and_style10_project_identical_structure(self) -> None:
+        from cyberppt.page_artifact_spec import build_page_artifact_spec
+
+        handoff_page = self._handoff_page()
+        with TemporaryDirectory() as directory9, TemporaryDirectory() as directory10:
+            lock9 = write_project_style_lock(project=Path(directory9), style_id=9)
+            lock10 = write_project_style_lock(project=Path(directory10), style_id=10)
+            spec9 = build_page_artifact_spec(
+                handoff_page=handoff_page,
+                visual_page=self._visual_page(),
+                style_lock=lock9,
+                handoff_sha256="a" * 64,
+                visual_source_sha256="b" * 64,
+            )
+            spec10 = build_page_artifact_spec(
+                handoff_page=handoff_page,
+                visual_page=self._visual_page(),
+                style_lock=lock10,
+                handoff_sha256="a" * 64,
+                visual_source_sha256="b" * 64,
+            )
+
+        self.assertNotEqual(spec9.art_direction, spec10.art_direction)
+        self.assertEqual(9, spec9.art_direction.style_id)
+        self.assertEqual(10, spec10.art_direction.style_id)
+
+        # Every field the plan calls out as structural authority -- topology,
+        # primary relation, focus node, nodes, edges, reading path, text
+        # bindings -- must be untouched by the style choice.
+        self.assertEqual(spec9.deliverable, spec10.deliverable)
+        self.assertEqual(spec9.communication_goal, spec10.communication_goal)
+        self.assertEqual(spec9.visual_thesis, spec10.visual_thesis)
+        self.assertEqual(spec9.evidence, spec10.evidence)
+        self.assertEqual(spec9.relationships, spec10.relationships)
+        self.assertEqual(spec9.visual_carrier, spec10.visual_carrier)
+        self.assertEqual(spec9.composition, spec10.composition)
+        self.assertEqual(spec9.typography, spec10.typography)
+        self.assertEqual(spec9.hard_constraints, spec10.hard_constraints)
+
+        hashes9 = {key: value for key, value in spec9.source_hashes if key != "style_lock"}
+        hashes10 = {key: value for key, value in spec10.source_hashes if key != "style_lock"}
+        self.assertEqual(hashes9, hashes10)
+
+
 if __name__ == "__main__":
     unittest.main()

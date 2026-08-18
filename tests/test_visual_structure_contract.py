@@ -381,6 +381,251 @@ def test_audit_rejects_competing_primary_focus() -> None:
     }
 
 
+def _with_topology_graph(spec: dict, topology: str, **overrides) -> dict:
+    """Attach a minimal but complete semantic_graph for topology-audit tests."""
+
+    graph = {
+        "topology": topology,
+        "primary_relation": "flow",
+        "focus_node": "E2",
+        "nodes": [
+            {"id": "E1", "role": "evidence", "source_refs": ["P01-T01"]},
+            {"id": "E2", "role": "judgment", "source_refs": ["P01-T02"]},
+        ],
+        "edges": [
+            {"from": "E1", "to": "E2", "relation": "supports", "label": "supports", "direction": "forward"},
+        ],
+        "decision_relationship": "Input supports Result",
+        "business_relationships": [{"subject": "Input", "objects": ["Result"], "relation": "supports"}],
+        "grouping_decisions": [],
+        "forbidden_structures": [],
+    }
+    graph.update(overrides)
+    spec["pages"][0]["semantic_graph"] = graph
+    return spec
+
+
+def test_audit_passes_a_well_formed_topology_graph() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(spec, "directed_flow")
+    codes = {item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]}
+    assert not codes & {
+        "FOCUS_LAYER_MISMATCH", "FOCUS_NOT_JUDGMENT", "MISSING_RESULT_NODE",
+        "MISSING_DEPENDENCY_EDGE", "MISSING_FEEDBACK_EDGE", "MISSING_BOUNDARY_EDGE",
+        "MISSING_VALUE_DESTINATION", "MULTIPLE_EQUAL_CONCLUSIONS", "FORCED_SEQUENTIAL_EDGE",
+        "MISSING_FOCUS_EDGE",
+    }
+
+
+def test_audit_rejects_focus_node_layer_mismatch() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(spec, "directed_flow", focus_node="E1")
+    assert "FOCUS_LAYER_MISMATCH" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_focus_node_that_is_not_the_judgment_role() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(spec, "directed_flow")
+    spec["pages"][0]["structural_decision"]["semantic_focus"]["ref"] = "E1"
+    spec["pages"][0]["semantic_graph"]["focus_node"] = "E1"
+    assert "FOCUS_NOT_JUDGMENT" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_allows_evidence_focus_with_explicit_override_reason() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(spec, "directed_flow")
+    spec["pages"][0]["structural_decision"]["semantic_focus"]["ref"] = "E1"
+    spec["pages"][0]["semantic_graph"]["focus_node"] = "E1"
+    spec["pages"][0]["quality_contract"] = {"focus_override_reason": "human review approved an evidence-led focus."}
+    assert "FOCUS_NOT_JUDGMENT" not in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_causal_convergence_without_a_result_node() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(spec, "causal_convergence")
+    assert "MISSING_RESULT_NODE" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_lifecycle_loop_without_a_feedback_edge() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(spec, "lifecycle_loop")
+    assert "MISSING_FEEDBACK_EDGE" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_passes_lifecycle_loop_with_a_backward_feedback_edge() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(
+        spec,
+        "lifecycle_loop",
+        edges=[
+            {"from": "E1", "to": "E2", "relation": "supports", "label": "supports", "direction": "forward"},
+            {"from": "E2", "to": "E1", "relation": "feeds_back", "label": "feedback", "direction": "backward"},
+        ],
+    )
+    assert "MISSING_FEEDBACK_EDGE" not in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_governance_boundary_without_a_boundary_relation() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(spec, "governance_boundary")
+    assert "MISSING_BOUNDARY_EDGE" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_allocation_flow_with_an_unconnected_role_node() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(
+        spec,
+        "allocation_flow",
+        nodes=[
+            {"id": "E1", "role": "evidence", "source_refs": ["P01-T01"]},
+            {"id": "E2", "role": "judgment", "source_refs": ["P01-T02"]},
+            {"id": "E3", "role": "evidence", "source_refs": []},
+        ],
+    )
+    assert "MISSING_VALUE_DESTINATION" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_parallel_set_with_a_forced_sequential_edge_between_peers() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(
+        spec,
+        "parallel_set",
+        focus_node="E3",
+        nodes=[
+            {"id": "E1", "role": "evidence", "source_refs": ["P01-T01"]},
+            {"id": "E2", "role": "evidence", "source_refs": []},
+            {"id": "E3", "role": "judgment", "source_refs": ["P01-T02"]},
+        ],
+        edges=[
+            {"from": "E1", "to": "E2", "relation": "precedes", "label": "precedes", "direction": "forward"},
+            {"from": "E1", "to": "E3", "relation": "peer", "label": "peer", "direction": "none"},
+            {"from": "E2", "to": "E3", "relation": "peer", "label": "peer", "direction": "none"},
+        ],
+    )
+    assert "FORCED_SEQUENTIAL_EDGE" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_a_locked_text_id_with_no_node_disposition() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(
+        spec,
+        "directed_flow",
+        nodes=[
+            {"id": "E1", "role": "evidence", "source_refs": []},
+            {"id": "E2", "role": "judgment", "source_refs": ["P01-T02"]},
+        ],
+    )
+    assert "GROUPING_SOURCE_UNMAPPED" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_the_same_locked_text_id_claimed_by_two_nodes() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(
+        spec,
+        "directed_flow",
+        nodes=[
+            {"id": "E1", "role": "evidence", "source_refs": ["P01-T01"]},
+            {"id": "E2", "role": "judgment", "source_refs": ["P01-T01", "P01-T02"]},
+        ],
+        grouping_decisions=[
+            {"source_nodes": ["P01-T01", "P01-T02"], "target_node": "E2", "reason": "both establish the same delivered result", "loss_risk": "low"},
+        ],
+    )
+    assert "GROUPING_ROLE_COLLISION" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_a_merged_node_without_a_grouping_decision() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(
+        spec,
+        "directed_flow",
+        nodes=[
+            {"id": "E1", "role": "evidence", "source_refs": []},
+            {"id": "E2", "role": "judgment", "source_refs": ["P01-T01", "P01-T02"]},
+        ],
+    )
+    assert "GROUPING_REASON_MISSING" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_a_generic_grouping_reason() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(
+        spec,
+        "directed_flow",
+        nodes=[
+            {"id": "E1", "role": "evidence", "source_refs": []},
+            {"id": "E2", "role": "judgment", "source_refs": ["P01-T01", "P01-T02"]},
+        ],
+        grouping_decisions=[
+            {"source_nodes": ["P01-T01", "P01-T02"], "target_node": "E2", "reason": "merge", "loss_risk": "low"},
+        ],
+    )
+    assert "GROUPING_REASON_MISSING" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_rejects_high_loss_risk_grouping_without_human_review() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(
+        spec,
+        "directed_flow",
+        nodes=[
+            {"id": "E1", "role": "evidence", "source_refs": []},
+            {"id": "E2", "role": "judgment", "source_refs": ["P01-T01", "P01-T02"]},
+        ],
+        grouping_decisions=[
+            {"source_nodes": ["P01-T01", "P01-T02"], "target_node": "E2", "reason": "different subjects share one summary box", "loss_risk": "high"},
+        ],
+    )
+    assert "GROUPING_LOSS_RISK_HIGH" in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
+def test_audit_allows_high_loss_risk_grouping_with_recorded_human_review() -> None:
+    design, decisions, spec = _payloads()
+    spec = _with_topology_graph(
+        spec,
+        "directed_flow",
+        nodes=[
+            {"id": "E1", "role": "evidence", "source_refs": []},
+            {"id": "E2", "role": "judgment", "source_refs": ["P01-T01", "P01-T02"]},
+        ],
+        grouping_decisions=[
+            {"source_nodes": ["P01-T01", "P01-T02"], "target_node": "E2", "reason": "different subjects share one summary box", "loss_risk": "high"},
+        ],
+    )
+    spec["pages"][0]["quality_contract"] = {"grouping_review_reason": "Reviewer confirmed no subject or boundary is lost by this merge."}
+    assert "GROUPING_LOSS_RISK_HIGH" not in {
+        item["code"] for item in _audit(design, decisions, spec)["blocking_issues"]
+    }
+
+
 def test_visual_design_package_blocks_each_cross_artifact_failure() -> None:
     cases = []
     design, decisions, spec = _payloads()

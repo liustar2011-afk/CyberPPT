@@ -204,6 +204,17 @@ CyberPPT工作台候选还必须包含：
 
 `deck-visual-spec.json`的`expression_contract`只保留选择追溯：`form`、`constraints_sha256`、`selected_candidate_id`、`fit_status`、`reading_relation`、`balance_strategy`与`deviation_reason`。它不得包含候选的内部证据解释、提示词或任何固定布局指令。
 
+`semantic_graph`是本页业务拓扑与关系的唯一权威字段；`structural_decision`只负责空间语法、阅读顺序、文字绑定和表达自由度，不得重复声明`topology`、`primary_relation`、`nodes`或`edges`（schema通过`structural_decision.additionalProperties: false`强制拒绝这些键）。候选必须在自己的字段中直接声明`topology`，取值必须是以下九种之一：`parallel_set`、`causal_convergence`、`layered_architecture`、`directed_flow`、`lifecycle_loop`、`governance_boundary`、`ecosystem_map`、`allocation_flow`、`conclusion_anchor`。编译器不会从`spatial_grammar`或`primary_relation`反推`topology`——这是视觉结构设计者（Skill本身）的业务判断，不是编译器的推断责任。
+
+编译后的`semantic_graph`包含：
+
+- `topology`：候选声明并原样投影的页面拓扑分类。
+- `focus_node`：与`structural_decision.semantic_focus.ref`绑定到同一业务对象的语义图节点ID。
+- `nodes`：对象数组，每项为`{"id", "role", "source_refs"}`；`role`只能是`judgment`（唯一焦点节点）或`evidence`（其余节点）；`source_refs`是该节点合并的原始锁定正文ID列表。
+- `edges`：在原有`from`/`to`/`relation`/`label`基础上新增`direction`（`forward`/`backward`/`bidirectional`/`none`），标注该关系边的方向性；并列关系（`peer`）用`none`。
+- `grouping_decisions`：数组，记录哪些锁定正文ID被合并进同一节点。任一节点的`source_refs`长度大于1时，必须在候选对应的证据单元中提供`grouping_reason`（合并理由）和`loss_risk`（`low`/`medium`/`high`），编译器据此生成对应条目；缺失会被编译器拒绝，不允许静默合并。
+- `forbidden_structures`：由`topology`决定的反模式清单，编译器按固定策略表投影，不是逐页作者字段。
+
 `schema_version: 1.1`必须包含`structural_decision`：
 
 - `semantic_focus`：引用语义图中的实体、动作、状态、关系或结果。

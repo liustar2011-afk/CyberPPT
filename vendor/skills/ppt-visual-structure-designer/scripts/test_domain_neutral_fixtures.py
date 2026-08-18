@@ -23,6 +23,18 @@ EXPECTED_CATEGORIES = {
     "boundary_and_feedback",
 }
 
+# One topology per domain-neutral fixture case, chosen from the business shape
+# each case already encodes (see the case's primary_relation/edges), not
+# inferred by any new heuristic here.
+TOPOLOGY_BY_CASE_ID = {
+    "single-judgment-and-evidence": "causal_convergence",
+    "input-transform-output": "directed_flow",
+    "multi-party-responsibility": "allocation_flow",
+    "layered-dependency": "layered_architecture",
+    "comparison-decision": "conclusion_anchor",
+    "boundary-and-feedback": "governance_boundary",
+}
+
 
 def _binding_for(kind: str) -> str:
     if kind in {"judgment", "result"}:
@@ -106,12 +118,24 @@ def _page_from_case(
             "change relationships",
         ],
     }
+    graph_edges = [
+        {**deepcopy(edge), "direction": "backward" if edge["relation"] == "feeds_back" else "forward"}
+        for edge in case["edges"]
+    ]
     page["semantic_graph"] = {
         "primary_relation": case["primary_relation"],
         "direction": case["direction"],
-        "nodes": evidence_ids,
-        "edges": deepcopy(case["edges"]),
+        "topology": TOPOLOGY_BY_CASE_ID[case["id"]],
+        "focus_node": focus_ref,
+        "nodes": [
+            {"id": item_id, "role": "judgment" if item_id == focus_ref else "evidence", "source_refs": [f"B{index}"]}
+            for index, item_id in enumerate(evidence_ids, start=1)
+        ],
+        "edges": graph_edges,
         "decision_relationship": case["core_judgment"],
+        "business_relationships": [],
+        "grouping_decisions": [],
+        "forbidden_structures": [],
     }
     page["structural_decision"] = {
         "semantic_focus": {
@@ -238,6 +262,13 @@ def _page_from_case(
         "blocking_issues": [],
         "warnings": [],
     }
+    page["quality_contract"] = {
+        "status": "passed",
+        "generation_feasibility": {"score": 96, "risks": []},
+        "relationship_coverage": {"primary": 1, "secondary": 0, "not_rendered": 0, "total": 1},
+        "text_capacity": {"risk_level": "low", "locked_text_count": len(evidence), "risks": []},
+        "focus_competition": {"status": "passed", "primary_ref": focus_ref},
+    }
     return page
 
 
@@ -272,9 +303,9 @@ def _mutate(page: dict[str, Any], mutation: str) -> dict[str, Any]:
         focus_ref = invalid["structural_decision"]["semantic_focus"]["ref"]
         if original_target == focus_ref:
             focus_ref = next(
-                item
+                item["id"]
                 for item in invalid["semantic_graph"]["nodes"]
-                if item != original_target
+                if item["id"] != original_target
             )
         primary_refs = invalid["structural_decision"]["primary_refs"]
         for target in (original_target, focus_ref):

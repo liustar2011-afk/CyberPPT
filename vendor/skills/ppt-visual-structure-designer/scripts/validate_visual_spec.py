@@ -153,7 +153,10 @@ def semantic_checks_page(page: dict, issues: list[dict[str, Any]]) -> None:
     structural = page.get("structural_decision")
     if isinstance(structural, dict):
         graph = page.get("semantic_graph", {})
-        nodes = {str(value) for value in graph.get("nodes", [])}
+        nodes = {
+            str(item.get("id")) if isinstance(item, dict) else str(item)
+            for item in graph.get("nodes", [])
+        }
         evidence = {
             str(item.get("id")): item
             for item in page.get("evidence_units", [])

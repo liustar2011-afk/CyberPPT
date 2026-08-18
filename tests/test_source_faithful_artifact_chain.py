@@ -112,6 +112,7 @@ class SourceFaithfulArtifactChainTests(unittest.TestCase):
                 "semantic_focus": {"kind": "goal", "evidence_key": "goal"},
                 "reading_sequence": ["stage", "goal"],
                 "spatial_grammar": ["path"],
+                "topology": "directed_flow",
                 "direction": "left_to_right",
                 "visual_intent_type": "goal_relationship",
                 "expression_fit": {

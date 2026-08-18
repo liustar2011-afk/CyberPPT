@@ -117,33 +117,41 @@
       "semantic_graph": {
         "primary_relation": "transform",
         "direction": "left_to_right",
+        "topology": "directed_flow",
+        "focus_node": "E2",
         "nodes": [
-          "E1",
-          "E2",
-          "E3",
-          "E4"
+          {"id": "E1", "role": "evidence", "source_refs": ["B1"]},
+          {"id": "E2", "role": "judgment", "source_refs": ["B2"]},
+          {"id": "E3", "role": "evidence", "source_refs": ["B3"]},
+          {"id": "E4", "role": "evidence", "source_refs": ["B4"]}
         ],
         "edges": [
           {
             "from": "E1",
             "to": "E2",
             "relation": "enters",
-            "label": "受理"
+            "label": "受理",
+            "direction": "forward"
           },
           {
             "from": "E2",
             "to": "E3",
             "relation": "routes",
-            "label": "分流"
+            "label": "分流",
+            "direction": "forward"
           },
           {
             "from": "E3",
             "to": "E4",
             "relation": "produces",
-            "label": "反馈"
+            "label": "反馈",
+            "direction": "forward"
           }
         ],
-        "decision_relationship": "统一分流与责任办理把服务诉求转化为可追踪的反馈结果。"
+        "decision_relationship": "统一分流与责任办理把服务诉求转化为可追踪的反馈结果。",
+        "business_relationships": [],
+        "grouping_decisions": [],
+        "forbidden_structures": ["equal_peer_cards", "invented_center_hub"]
       },
       "structural_decision": {
         "semantic_focus": {
@@ -352,6 +360,13 @@
         "score": 96,
         "blocking_issues": [],
         "warnings": []
+      },
+      "quality_contract": {
+        "status": "passed",
+        "generation_feasibility": {"score": 96, "risks": []},
+        "relationship_coverage": {"primary": 1, "secondary": 0, "not_rendered": 0, "total": 1},
+        "text_capacity": {"risk_level": "low", "locked_text_count": 4, "risks": []},
+        "focus_competition": {"status": "passed", "primary_ref": "E2"}
       }
     }
   ],

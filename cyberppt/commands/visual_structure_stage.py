@@ -82,6 +82,39 @@ _DIRECTION_MAP = {
     "validation_to_decision_branches": "left_to_right",
 }
 
+# The skill decision (the actual visual-structure designer) must name the
+# page's business topology explicitly -- this compiler does not infer it
+# from spatial_grammar/relation, because that inference is exactly the kind
+# of business classification the designer, not the compiler, is responsible
+# for (see _build_executable_page's "no intent routing" contract).
+ALLOWED_TOPOLOGY = {
+    "parallel_set",
+    "causal_convergence",
+    "layered_architecture",
+    "directed_flow",
+    "lifecycle_loop",
+    "governance_boundary",
+    "ecosystem_map",
+    "allocation_flow",
+    "conclusion_anchor",
+}
+
+# Generic anti-patterns every topology forbids, plus topology-specific ones.
+# This is repo policy, not a per-page business decision, so it is a static
+# table rather than something the skill decision has to author per page.
+_FORBIDDEN_STRUCTURES_BY_TOPOLOGY = {
+    "parallel_set": ["invented_center_hub", "forced_sequential_edge"],
+    "causal_convergence": ["equal_peer_cards", "missing_result_node"],
+    "layered_architecture": ["equal_peer_cards", "missing_dependency_edge"],
+    "directed_flow": ["equal_peer_cards", "invented_center_hub"],
+    "lifecycle_loop": ["equal_peer_cards", "missing_feedback_edge"],
+    "governance_boundary": ["equal_peer_cards", "missing_boundary_edge"],
+    "ecosystem_map": ["forced_sequential_edge", "invented_center_hub"],
+    "allocation_flow": ["equal_peer_cards", "missing_value_destination"],
+    "conclusion_anchor": ["multiple_equal_conclusions", "invented_center_hub"],
+}
+_DEFAULT_FORBIDDEN_STRUCTURES = ["equal_peer_cards", "invented_center_hub"]
+
 
 def _fail(message: str) -> None:
     raise ValueError(message)
@@ -238,6 +271,9 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
     focus_key = str(focus.get("evidence_key") or "")
     if focus_key not in evidence_keys:
         _fail(f"{page_id}: selected candidate has an unknown semantic focus")
+    topology = str(selected.get("topology") or "")
+    if topology not in ALLOWED_TOPOLOGY:
+        _fail(f"{page_id}: selected candidate must declare a topology from {sorted(ALLOWED_TOPOLOGY)}")
     locked = source.get("locked_text_items")
     if not isinstance(locked, list) or not locked:
         _fail(f"{page_id}: visual input has no locked body text")
@@ -287,10 +323,10 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
             # is itself a sequential/causal claim -- exactly what "peer" means
             # the source does not support. Record the pair as siblings under
             # the same shared judgment instead, with no direction or chain flag.
-            graph_edges.append({"from": eid[left], "to": eid[right], "relation": "peer", "label": "共同支撑同一判断"})
+            graph_edges.append({"from": eid[left], "to": eid[right], "relation": "peer", "label": "共同支撑同一判断", "direction": "none"})
             connectors.append({"from": eid[left], "to": eid[right], "type": "peer", "direction": "none", "label": "共同支撑同一判断", "main_chain": False})
         else:
-            graph_edges.append({"from": eid[left], "to": eid[right], "relation": relation, "label": "业务承接"})
+            graph_edges.append({"from": eid[left], "to": eid[right], "relation": relation, "label": "业务承接", "direction": "forward"})
             connectors.append({"from": eid[left], "to": eid[right], "type": relation, "direction": direction, "label": "业务承接", "main_chain": True})
     trace_refs = [str(value).strip() for value in source.get("trace_refs") or [] if str(value).strip()]
     source_ref = "、".join(trace_refs) or page_id
@@ -303,6 +339,33 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         for key in evidence_keys
     ]
     focus_id = eid[focus_key]
+    graph_nodes = [
+        {
+            "id": eid[key],
+            "role": "judgment" if key == focus_key else "evidence",
+            "source_refs": text_ids_by_evidence[key],
+        }
+        for key in evidence_keys
+    ]
+    grouping_decisions = []
+    for key in evidence_keys:
+        source_refs = text_ids_by_evidence[key]
+        if len(source_refs) < 2:
+            continue
+        reason = str(evidence_by_key[key].get("grouping_reason") or "").strip()
+        loss_risk = str(evidence_by_key[key].get("loss_risk") or "").strip()
+        if not reason or loss_risk not in {"low", "medium", "high"}:
+            _fail(
+                f"{page_id}: evidence unit {key!r} merges {len(source_refs)} locked text ids "
+                "and must declare grouping_reason and loss_risk (low/medium/high)"
+            )
+        grouping_decisions.append({
+            "source_nodes": source_refs,
+            "target_node": eid[key],
+            "reason": reason,
+            "loss_risk": loss_risk,
+        })
+    forbidden_structures = _FORBIDDEN_STRUCTURES_BY_TOPOLOGY.get(topology, _DEFAULT_FORBIDDEN_STRUCTURES)
     quality_contract = _quality_contract(decision, selected, focus_id)
     final_text = [
         {"id": item_id, "role": "body", "text": text, "region_id": "R_RELATION"}
@@ -316,7 +379,7 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         "page_mission": str(source["page_mission"]), "core_judgment": str(source["core_judgment"]),
         "content_lock": {"mode": "strict", "locked_items": locked_items, "allowed_transformations": ["line_break", "grouping", "position_change"], "forbidden_transformations": ["Do not change facts, numbers, dates or units.", "Do not change actors, responsibilities or status.", "Do not add presentation copy not listed in required_text.", "For a \"label: sentence\" locked text item, render it once as that single label-plus-sentence unit; do not additionally repeat the label alone as a separate heading, card title, or tag.", "Do not invent a heading, label, or tag for a locked text item that has no label in the required text (for example a bare boundary sentence); render it as plain text with no invented label."]},
         "evidence_units": evidence_units,
-        "semantic_graph": {"primary_relation": relation, "direction": direction, "nodes": [eid[key] for key in evidence_keys], "edges": graph_edges, "decision_relationship": _render_business_relationships(source.get("business_relationships")), "business_relationships": deepcopy(source.get("business_relationships") or [])},
+        "semantic_graph": {"primary_relation": relation, "direction": direction, "topology": topology, "focus_node": focus_id, "nodes": graph_nodes, "edges": graph_edges, "decision_relationship": _render_business_relationships(source.get("business_relationships")), "business_relationships": deepcopy(source.get("business_relationships") or []), "grouping_decisions": grouping_decisions, "forbidden_structures": forbidden_structures},
         "structural_decision": {"semantic_focus": {"kind": str(focus.get("kind") or "relationship"), "ref": focus_id}, "spatial_grammar": grammar, "semantic_tags": [str(selected.get("visual_intent_type") or "relationship")], "primary_refs": [focus_id], "secondary_refs": [eid[key] for key in evidence_keys if key != focus_key], "reading_sequence": [eid[key] for key in reading_keys], "text_bindings": [{"evidence_id": eid[key], "target_ref": eid[key], "binding": "result" if key == focus_key else "embedded", "text_ids": text_ids_by_evidence[key]} for key in evidence_keys], "representation_freedom": {"carrier": "free", "medium": "free", "reason": "上游仅锁定业务关系和正文，Stage02已选定具体业务关系场与文字贴附方式"}},
         "visual_decision": {"visual_intent_type": str(selected.get("visual_intent_type") or "relationship_field"), "visual_thesis": str(selected.get("visual_thesis") or source["core_judgment"]), "spatial_organization": design["spatial_organization"], "reading_path": [str(evidence_by_key[key].get("summary") or "") for key in reading_keys], "text_integration_method": design["text_integration_method"], "relationship_encoding": design["relationship_encoding"], "visual_center_count": 1, "visual_hierarchy": {"primary": design["visual_focus"], "secondary": [str(evidence_by_key[key].get("summary") or "") for key in evidence_keys if key != focus_key], "tertiary": []}},
         "text_integration": {"title_render_mode": str(source.get("title_render_mode") or "external_text_layer"), "subtitle_render_mode": str(source.get("subtitle_render_mode") or "external_text_layer"), "body_render_mode": "in_image", "placement_strategy": design["text_integration_method"]},
@@ -350,7 +413,10 @@ def _render_visual_structure_markdown(spec: dict[str, Any]) -> str:
             ])
             if str(contract.get("deviation_reason") or "").strip():
                 expression_lines.append(f"- 偏离理由：{contract['deviation_reason']}")
-        lines += [f"## 第{page['page_number']}页｜{page['page_title']}", "", "### 页面角色", page["page_role"], "", "### 页面使命", page["page_mission"], "", "### 核心结论", page["core_judgment"], "", "### 内容锁定", "- 严格保留 generation_handoff.required_text 所列正文", "", "### 证据单元与语义关系", f"- 主关系：{sg['decision_relationship']}", "", *expression_lines, "", "### 视觉意图", f"- 视觉意图类型：{vd['visual_intent_type']}", f"- 语义焦点：{structural['semantic_focus']['kind']} / {structural['semantic_focus']['ref']}", f"- 空间语法：{', '.join(structural['spatial_grammar'])}", f"- 主结构：{', '.join(structural['primary_refs'])}", f"- 文字归属：{vd['text_integration_method']}", "", "### 页面草图", f"- 唯一业务关系场：{page['image_plan']['business_object']}", "", "### 页面构图", vd['spatial_organization'], "", "### 实景锚点与图文融合", vd['relationship_encoding'], "", "### 元素与空间关系", page['image_plan']['placement'], "", "### 箭头与连接关系", *[f"- {item['from']} -> {item['to']}：{item['label']}" for item in page['connectors']], "", "### 标题与文字渲染", "- 标题与副标题由外部PPT文字层渲染；正文贴附在业务对象、动作、接口、边界或结果上", "", "### 终稿文字", *[f"- {item['text']}" for item in page['final_text']], "", "### 生图执行摘要", f"- {vd['text_integration_method']}", "", "### 禁止事项", *[f"- {item}" for item in page['avoid']], ""]
+        node_summary = ", ".join(f"{node['id']}({node['role']})" for node in sg["nodes"])
+        edge_summary = "; ".join(f"{edge['from']} -> {edge['to']}（{edge['relation']}，{edge['direction']}）" for edge in sg["edges"]) or "无"
+        forbidden_summary = ", ".join(sg["forbidden_structures"]) or "无"
+        lines += [f"## 第{page['page_number']}页｜{page['page_title']}", "", "### 页面角色", page["page_role"], "", "### 页面使命", page["page_mission"], "", "### 核心结论", page["core_judgment"], "", "### 内容锁定", "- 严格保留 generation_handoff.required_text 所列正文", "", "### 证据单元与语义关系", f"- 主关系：{sg['decision_relationship']}", f"- 拓扑：{sg['topology']}", f"- 焦点节点：{sg['focus_node']}", f"- 节点：{node_summary}", f"- 关系边：{edge_summary}", f"- 禁止结构：{forbidden_summary}", "", *expression_lines, "", "### 视觉意图", f"- 视觉意图类型：{vd['visual_intent_type']}", f"- 语义焦点：{structural['semantic_focus']['kind']} / {structural['semantic_focus']['ref']}", f"- 空间语法：{', '.join(structural['spatial_grammar'])}", f"- 主结构：{', '.join(structural['primary_refs'])}", f"- 文字归属：{vd['text_integration_method']}", "", "### 页面草图", f"- 唯一业务关系场：{page['image_plan']['business_object']}", "", "### 页面构图", vd['spatial_organization'], "", "### 实景锚点与图文融合", vd['relationship_encoding'], "", "### 元素与空间关系", page['image_plan']['placement'], "", "### 箭头与连接关系", *[f"- {item['from']} -> {item['to']}：{item['label']}" for item in page['connectors']], "", "### 标题与文字渲染", "- 标题与副标题由外部PPT文字层渲染；正文贴附在业务对象、动作、接口、边界或结果上", "", "### 终稿文字", *[f"- {item['text']}" for item in page['final_text']], "", "### 生图执行摘要", f"- {vd['text_integration_method']}", "", "### 禁止事项", *[f"- {item}" for item in page['avoid']], ""]
     return "\n".join(lines)
 
 
@@ -724,6 +790,18 @@ def _audit_execution_receipt(
         "approved_script_semantic_sha256": script_semantic_digest(script),
         "visual_design_input_sha256": _sha256(design_input),
     }
+    # Where each expected hash comes from, so a stale-receipt error can point
+    # at the exact file that changed instead of just naming the field.
+    expected_hash_source = {
+        "skill_request_sha256": str(request_path),
+        "skill_bundle_sha256": f"{skill_root} (vendor Skill bundle)",
+        "approved_script_semantic_sha256": str(script),
+        "visual_design_input_sha256": str(design_input),
+    }
+    rerun_command = (
+        f"python -m cyberppt record-visual-structure-execution {project} --script {script} "
+        "--executor <executor> --model <model>"
+    )
     if receipt.get("schema") != "cyberppt.visual_structure_execution_receipt.v1":
         issue("EXECUTION_RECEIPT_SCHEMA_INVALID", "Visual structure execution receipt schema is invalid.")
     for field in ("executor", "model", "executed_at"):
@@ -731,7 +809,11 @@ def _audit_execution_receipt(
             issue("EXECUTION_RECEIPT_FIELD_MISSING", f"Execution receipt is missing {field}.")
     for field, value in expected.items():
         if receipt.get(field) != value:
-            issue("EXECUTION_RECEIPT_STALE", f"Execution receipt {field} is stale.")
+            issue(
+                "EXECUTION_RECEIPT_STALE",
+                f"Execution receipt field {field!r} is stale; current expected hash comes from "
+                f"{expected_hash_source[field]!r}. Re-run: {rerun_command}",
+            )
     if receipt.get("skill_outputs") != ["decisions"]:
         issue(
             "EXECUTION_RECEIPT_OUTPUT_OWNERSHIP_INVALID",
@@ -744,13 +826,25 @@ def _audit_execution_receipt(
         )
     receipt_contracts = receipt.get("skill_contract_sha256")
     if receipt_contracts != contracts:
-        issue("EXECUTION_RECEIPT_CONTRACT_STALE", "Execution receipt is not bound to the current Skill contract files.")
+        stale_contract_fields = sorted(
+            key for key, value in contracts.items() if receipt_contracts is None or receipt_contracts.get(key) != value
+        )
+        issue(
+            "EXECUTION_RECEIPT_CONTRACT_STALE",
+            f"Execution receipt is not bound to the current Skill contract files: {stale_contract_fields}; "
+            f"current expected hashes come from {skill_root} (SKILL.md, prompt builder, validator, schemas). "
+            f"Re-run: {rerun_command}",
+        )
     receipt_artifacts = receipt.get("artifact_sha256") if isinstance(receipt.get("artifact_sha256"), dict) else {}
     for key in ("decisions", "spec_json", "spec_markdown"):
         path = project / VISUAL_FILES[key]
         current = _spec_content_sha256(path) if key == "spec_json" else _sha256(path)
         if not path.is_file() or receipt_artifacts.get(key) != current:
-            issue("EXECUTION_ARTIFACT_STALE", f"Execution receipt does not match {path}.")
+            issue(
+                "EXECUTION_ARTIFACT_STALE",
+                f"Execution receipt does not match {path}; current expected hash comes from that file's "
+                f"present content. Re-run: {rerun_command}",
+            )
     input_pages = [
         str(item.get("page_id") or "")
         for item in _read_json(design_input).get("pages") or []

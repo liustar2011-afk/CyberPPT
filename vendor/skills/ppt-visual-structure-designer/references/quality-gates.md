@@ -47,6 +47,12 @@
 - 原项目符号数量直接转为模块数量。
 - `decision_relationship`包含行列、泳道、矩阵、卡片数量、上下左右方位、中心框、结果区或收束条等页面几何配方。
 - `stage01_relationship_features`中的主体、动作、方向、条件、分支或反馈未进入选中结构，且没有在`stage01_visual_note_disposition`中记录调整或舍弃理由。
+- `semantic_graph.focus_node`与`structural_decision.semantic_focus.ref`指向不同业务对象（`FOCUS_LAYER_MISMATCH`）。
+- 焦点节点角色不是`judgment`且没有`quality_contract.focus_override_reason`人工复核理由（`FOCUS_NOT_JUDGMENT`）。
+- 拓扑与关系边不匹配所声明的`topology`：`causal_convergence`缺少至少两条汇入焦点的边、`layered_architecture`依赖链不连续、`lifecycle_loop`没有`backward`方向的反馈边、`governance_boundary`的`primary_relation`不是`boundary`或`control`、`allocation_flow`存在未连接到焦点的角色节点、`conclusion_anchor`存在与唯一结论脱节的节点、`parallel_set`的并列节点之间出现强制先后边。
+- 任一锁定正文ID没有归属到某个语义图节点，或被两个以上节点同时认领（`GROUPING_SOURCE_UNMAPPED`、`GROUPING_ROLE_COLLISION`）。
+- 某节点合并了多个锁定正文ID，但`grouping_decisions`中没有对应条目、理由为空或只是“合并”类泛化标签（`GROUPING_REASON_MISSING`）。
+- 合并被标记为`loss_risk: high`，但没有`quality_contract.grouping_review_reason`记录人工复核结论（`GROUPING_LOSS_RISK_HIGH`）。
 
 ## G4 单一视觉中心
 

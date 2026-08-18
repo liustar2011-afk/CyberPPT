@@ -34,7 +34,7 @@ Skill不得自行拼接正式提示词，也不得把候选理由、作者版式
 - `Evidence & relationships`只使用已审计证据摘要和纯业务关系句；不得出现`E1`、`P07-T01`等后台ID。
 - `Visual carrier`必须保留`execution_design`选中的`business_object`、`semantic_role`、`use_scene`与`scene_type`，不得由编译器重新猜测。
 - `Composition`使用已选空间组织、阅读路径、焦点、关系编码、文字融合与连接语义，不导入未选候选。
-- `Art direction`只读取style lock。Style09终端执行锁必须唯一且位于提示词绝对结尾。
+- `Art direction`只读取style lock，不得写入或改写`semantic_graph`的`topology`、`focus_node`、`nodes`、`edges`，也不得改写`structural_decision`的`reading_sequence`、`text_bindings`；同一份`deck-visual-spec.json`换用不同style lock时，这些字段必须逐字保持一致，只有`Art direction`本身和携带的style lock哈希可以不同。Style09终端执行锁必须唯一且位于提示词绝对结尾。
 - `Typography & exact text`是唯一可见文字合同，逐字来自`content_lock`、`final_text`和`generation_handoff.required_text`的一致交集。
 - `Hard constraints`声明画布、模板禁绘、事实禁编、后台字段禁绘和逐页退化禁项。
 

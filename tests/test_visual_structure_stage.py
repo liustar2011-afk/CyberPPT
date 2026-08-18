@@ -58,6 +58,7 @@ class VisualStructureStageTests(unittest.TestCase):
                 "semantic_focus": {"kind": "outcome", "evidence_key": "result"},
                 "reading_sequence": ["input", "result"],
                 "spatial_grammar": ["convergence"],
+                "topology": "causal_convergence",
                 "direction": "outside_to_anchor",
                 "visual_intent_type": "input_to_result",
                 "expression_fit": {
@@ -103,6 +104,72 @@ class VisualStructureStageTests(unittest.TestCase):
             page["image_plan"]["semantic_role"],
         )
 
+    def test_structural_decision_cannot_carry_a_second_topology_authority(self) -> None:
+        """semantic_graph is the only page topology/relation authority.
+
+        structural_decision may not redeclare topology/primary_relation/nodes/
+        edges -- that would recreate the "second page semantics authority"
+        the visual-structure-fidelity plan forbids. additionalProperties:
+        false on structural_decision should already reject these keys; this
+        test pins that guarantee against accidental schema loosening.
+        """
+
+        import jsonschema
+
+        source = {
+            "page_id": "p01", "page_number": 1, "page_title": "Title",
+            "page_mission": "Explain how the input relationship field supports the result.",
+            "core_judgment": "Input visibly supports the result through one relationship field.",
+            "locked_text_items": [
+                {"text_id": "P01-T01", "text": "Input"},
+                {"text_id": "P01-T02", "text": "Result"},
+            ],
+            "business_relationships": [{"subject": "Input", "relation": "supports", "objects": ["Result"]}],
+            "expression_constraints": expression_constraints("flow_3_5"),
+        }
+        decision = {
+            "page_id": "p01",
+            "evidence_units": [
+                {"key": "input", "summary": "Input supports the result.", "text_ids": ["P01-T01"]},
+                {"key": "result", "summary": "The result the input supports.", "text_ids": ["P01-T02"]},
+            ],
+            "candidates": [
+                {"id": f"c{index}", "semantic_focus": {"kind": "outcome", "evidence_key": "result"},
+                 "reading_sequence": ["input", "result"], "spatial_grammar": ["path"],
+                 "topology": "directed_flow",
+                 "direction": "left_to_right", "visual_intent_type": "relationship_field",
+                 "expression_fit": {
+                     "form": "flow_3_5", "constraint_status": "default_profile",
+                     "satisfied_constraints": ["ordered_progression"],
+                     "reading_relation": "Input progresses to Result",
+                     "balance_strategy": "one focal progression",
+                     "changed_constraints": [], "deviation_reason": "",
+                 }}
+                for index in range(1, 4)
+            ],
+            "selected_candidate": "c1",
+        }
+        page = _build_executable_page(source, decision)
+        schema_path = _skill_root() / "assets" / "page-visual-spec.schema.json"
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        validator = jsonschema.Draft202012Validator(schema)
+
+        self.assertEqual([], list(validator.iter_errors(page)))
+
+        for leaking_field, value in (
+            ("topology", "directed_flow"),
+            ("primary_relation", "flow"),
+            ("nodes", page["semantic_graph"]["nodes"]),
+            ("edges", page["semantic_graph"]["edges"]),
+        ):
+            tainted = json.loads(json.dumps(page))
+            tainted["structural_decision"][leaking_field] = value
+            errors = list(validator.iter_errors(tainted))
+            self.assertTrue(
+                errors,
+                f"structural_decision.{leaking_field} should be rejected by the schema",
+            )
+
     def test_business_relationships_compile_to_plain_relation_sentence(self) -> None:
         source = {
             "page_id": "p01",
@@ -126,6 +193,7 @@ class VisualStructureStageTests(unittest.TestCase):
                 "semantic_focus": {"kind": "outcome", "evidence_key": "result"},
                 "reading_sequence": ["input", "result"],
                 "spatial_grammar": ["path"],
+                "topology": "directed_flow",
                 "direction": "left_to_right",
                 "visual_intent_type": "support_relationship",
                 "expression_fit": {
@@ -215,6 +283,7 @@ class VisualStructureStageTests(unittest.TestCase):
             "candidates": [
                 {"id": f"c{index}", "semantic_focus": {"evidence_key": "e1"},
                  "reading_sequence": ["e1"], "spatial_grammar": ["path"],
+                 "topology": "directed_flow",
                  "direction": "left_to_right", "visual_intent_type": "relationship_field",
                  "expression_fit": {
                      "form": "flow_3_5", "constraint_status": "default_profile",
@@ -325,6 +394,7 @@ class VisualStructureStageTests(unittest.TestCase):
             {
                 "id": candidate_id, "semantic_focus": {"kind": "outcome", "evidence_key": "response"},
                 "reading_sequence": ["cause", "response"], "spatial_grammar": [grammar],
+                "topology": "causal_convergence",
                 "direction": "left_to_right", "visual_intent_type": "causal_response",
                 "expression_fit": fit,
             }
@@ -712,6 +782,43 @@ class VisualStructureStageTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(ValueError, "HANDOFF_BINDING_STALE"):
                 assert_visual_structure_ready(project, script)
+
+    def test_prompt_inputs_hash_ignores_style_lock_but_tracks_the_spec(self) -> None:
+        """Replacing only the Style lock must not change the structural-freshness
+        binding; changing the compiled spec (structure) must.
+        """
+
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory) / "project"
+            project.mkdir()
+            script = project / "script.md"
+            script.write_text(
+                "## 第1页：Title\n- 页面类型：内容页\n- 页面标题：Title\n"
+                "- 核心结论：Message\n- 完整文字稿：Prose\n- 上屏文字：\n  - Text\n",
+                encoding="utf-8",
+            )
+            skill_root = _skill_root()
+            artifact_keys = ("design_input", "decisions", "execution_receipt", "spec_json", "spec_markdown")
+            for key in artifact_keys:
+                path = project / VISUAL_FILES[key]
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(key + "\n", encoding="utf-8")
+
+            before = _prompt_inputs_sha256(project, script, skill_root)
+
+            style_lock = project / "workbench" / "locks" / "visual_style_lock.json"
+            style_lock.parent.mkdir(parents=True, exist_ok=True)
+            style_lock.write_text(json.dumps({"style": {"id": 9}}), encoding="utf-8")
+            after_style_change = _prompt_inputs_sha256(project, script, skill_root)
+            self.assertEqual(before, after_style_change)
+
+            style_lock.write_text(json.dumps({"style": {"id": 10}}), encoding="utf-8")
+            after_second_style_change = _prompt_inputs_sha256(project, script, skill_root)
+            self.assertEqual(before, after_second_style_change)
+
+            (project / VISUAL_FILES["spec_json"]).write_text("spec_json changed\n", encoding="utf-8")
+            after_structure_change = _prompt_inputs_sha256(project, script, skill_root)
+            self.assertNotEqual(before, after_structure_change)
 
 
 if __name__ == "__main__":
