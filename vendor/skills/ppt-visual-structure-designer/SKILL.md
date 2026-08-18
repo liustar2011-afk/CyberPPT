@@ -112,6 +112,8 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 
 不得把原文项目符号数量直接等同于视觉模块数量。
 
+一个证据单元合并了多条锁定正文（`text_ids`长度大于1）时，必须在该证据单元中写明`grouping_reason`（这些正文为何共同构成同一个业务节点，不能写"合并"这类空话）和`loss_risk`（`low`/`medium`/`high`）。不同主体、不同阶段、不同责任、不同权利边界或不同结果类型的正文不得在没有明确理由的情况下合并；`loss_risk`为`high`的合并需要在交付前得到人工确认，仓库审计器会拦截缺失理由或未确认的高风险合并。每条锁定正文都必须有明确去向：独立成为一个证据单元、被合并进某个证据单元且登记合并理由，或在`stage01_visual_note_disposition`中说明为何不进入视觉结构。
+
 ### 4. 生成并比较构图候选
 
 候选数量按页面关系是否存在争议决定，不强制每页都写三个：
@@ -125,6 +127,8 @@ description: 将PPT原始内容、逐页脚本或既有页面方案转化为可�
 每个候选还必须写入候选自身的`visual_thesis`和`selection_rationale`：`visual_thesis`必须说明画面要证明的对象关系，不能复用页面核心结论充当占位；`selection_rationale`包含页面使命适配说明，以及由`single_focus`、`text_capacity`、`relation_clarity`、`composition_stability`、`anti_pattern_risk`五项组成的可生成性评分；每项为0–20整数，总分必须为100，并列出风险。未选候选必须写入相对已选方案的具体`rejection_rationale`，说明焦点、关系、容量或阅读上的实际劣势；不得只写“得分更低”“不够美观”“一般”或“不适合”。
 
 每页必须写入`relationship_coverage`，逐项登记`business_relationships`与`stage01_relationship_features.actions`中的关键关系，标记为`primary`、`secondary`或有业务理由的`not_rendered`，并引用当前证据单元和锁定文字ID。页面使命、核心判断或P0证据所必需的关系不得标记为`not_rendered`。
+
+每个候选还必须声明`topology`，取值必须是以下九种之一：`parallel_set`（并列）、`causal_convergence`（多路证据汇聚成一个判断）、`layered_architecture`（分层依赖）、`directed_flow`（有向流程）、`lifecycle_loop`（含回流的生命周期）、`governance_boundary`（边界与管控）、`ecosystem_map`（多方生态关系）、`allocation_flow`（角色到价值去向的分配）、`conclusion_anchor`（收束到单一结论）。`topology`必须与该候选自己的`spatial_grammar`、`reading_sequence`和证据间关系一致——例如声明`lifecycle_loop`就必须存在回流的关系边，声明`causal_convergence`就必须有至少两路证据汇入同一焦点；不得只为了候选比较而随意标注，仓库编译器和审计器会据此校验（缺失或与实际关系边不符会被拒绝，见`references/output-contract.md`）。语义图的`nodes`、`edges`、`focus_node`和`forbidden_structures`由仓库编译器从候选与证据单元推导生成，本Skill不需要、也不应在决策JSON中手写这些字段。
 
 按以下权重比较：
 
