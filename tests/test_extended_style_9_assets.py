@@ -25,5 +25,5 @@ def test_style_nine_sample_and_reference_are_available() -> None:
     assert "默认8种风格仍保持1—8不变" in reference
     assert "#FFFFFF" in style09
     assert "#12355B" in style09
-    assert "scene-led senior leadership briefing aesthetic" in style09
+    assert "scene-led editorial business-infographic style" in style09
     assert "最终执行锁" in style09

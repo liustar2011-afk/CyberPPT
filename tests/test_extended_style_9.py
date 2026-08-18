@@ -129,7 +129,6 @@ def test_style_nine_lock_records_extension_selection() -> None:
     assert payload["policy"]["selected_from_extension"] is True
     assert "scene-led editorial business-infographic style" in payload["style"]["prompt_contract"]
     assert "Icon count is zero by default" in payload["style"]["prompt_contract"]
-    assert "Prefer reconstructable connectors: straight lines" in payload["style"]["prompt_contract"]
     assert "reconstruction-friendly visual blueprint" in payload["style"]["prompt_contract"]
     assert "最终执行锁" in payload["style"]["prompt_contract"]
     assert payload["reference_image"]["required_for_every_page"] is True
@@ -297,8 +296,7 @@ def test_style_nine_contract_preserves_industry_scene_and_rejects_large_document
 
     contract = payload["style"]["prompt_contract"]
     assert "Build the page from recognizable business scenes, concrete objects, visible actions, evidence and outcomes" in contract
-    assert "Richness should come from meaningful business expression, not from adding decorative objects" in contract
-    assert "actions, boundaries and outcomes when they directly explain the locked content" in contract
-    assert "use a clean flat relationship field when a realistic scene would not improve understanding" in contract
+    assert "richness should come from meaningful business expression, not decorative objects" in contract
+    assert "drop the scene entirely and use a flat, structured relationship field instead" in contract
     assert "supporting scene or evidence fragments" in contract
     assert "Icons are not a default visual language for Style 09. Start from zero icons." in contract
