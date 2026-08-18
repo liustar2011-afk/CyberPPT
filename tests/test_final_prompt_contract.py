@@ -18,7 +18,7 @@ from scripts.imagegen_pipeline.final_prompt_renderer import render_final_prompt
 
 def _ir(**overrides: object) -> FinalPromptIR:
     fields: dict[str, object] = dict(
-        deliverable="Create one finished powerpoint_body_visual_asset for a PowerPoint content page.",
+        deliverable="Create one finished presentation content visual for a PowerPoint content page.",
         page_judgment="Unified governance makes the result traceable.",
         dominant_relationship="Inputs converge through one governance hub and emerge as a traceable result.",
         reading_path=("authoritative input", "governance hub", "auditable outcome"),
@@ -94,12 +94,6 @@ class ValidateFinalPromptTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(PromptContractError, "internal/backend field"):
                 validate_final_prompt(corrupted, ir)
-
-    def test_allowlists_the_deliverable_asset_type_token(self) -> None:
-        ir = _ir()
-        prompt = render_final_prompt(ir)
-        self.assertIn("powerpoint_body_visual_asset", prompt)
-        validate_final_prompt(prompt, ir)  # must not raise
 
     def test_rejects_duplicate_visible_text_declaration(self) -> None:
         ir = _ir()

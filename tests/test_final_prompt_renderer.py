@@ -21,7 +21,7 @@ from scripts.imagegen_pipeline.final_prompt_renderer import (
 
 def _sample_ir(**overrides: object) -> FinalPromptIR:
     fields: dict[str, object] = dict(
-        deliverable="Create one finished powerpoint_body_visual_asset for a PowerPoint content page.",
+        deliverable="Create one finished presentation content visual for a PowerPoint content page.",
         page_judgment="Unified governance makes the result traceable.",
         dominant_relationship="Inputs converge through one governance hub and emerge as a traceable result.",
         reading_path=("authoritative input", "governance hub", "auditable outcome"),

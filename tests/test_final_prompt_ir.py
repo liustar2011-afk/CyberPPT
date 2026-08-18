@@ -41,7 +41,7 @@ def _group(id_: str = "process", emphasis: str = "primary") -> SemanticGroupIR:
 
 def _ir(**overrides: object) -> FinalPromptIR:
     fields: dict[str, object] = dict(
-        deliverable="Create one finished powerpoint_body_visual_asset.",
+        deliverable="Create one finished presentation content visual.",
         page_judgment="Unified governance makes the result traceable.",
         dominant_relationship="Inputs converge through one governance hub and emerge as a traceable result.",
         reading_path=("input", "hub", "result"),
@@ -142,7 +142,7 @@ def _artifact_spec(*, evidence_kinds: tuple[str, ...] = ("process", "result")) -
         page_id="P05",
         page_number=5,
         deliverable=DeliverableSpec(
-            asset_type="powerpoint_body_visual_asset",
+            asset_type="presentation content visual",
             page_role="solution",
             canvas=(2048, 1024, "2:1"),
             title_render_mode="external_text_layer",

@@ -162,7 +162,7 @@ class PageArtifactSpecTests(unittest.TestCase):
                 },
             )
 
-        self.assertEqual("powerpoint_body_visual_asset", spec.deliverable.asset_type)
+        self.assertEqual("presentation content visual", spec.deliverable.asset_type)
         self.assertEqual((2048, 1024, "2:1"), spec.deliverable.canvas)
         self.assertEqual(handoff_page["page_mission"], spec.communication_goal.page_mission)
         self.assertEqual(visual_page["visual_decision"]["visual_thesis"], spec.visual_thesis)
@@ -181,7 +181,11 @@ class PageArtifactSpecTests(unittest.TestCase):
             "Preserve the approved source actors, relationships, conditions, status, and factual strength without reinterpretation.",
             spec.hard_constraints.page_constraints,
         )
-        self.assertEqual("a directed business flow from input to result", spec.composition.topology)
+        self.assertEqual(
+            "a directed business flow moving input through processing to "
+            "result, read as one continuous left-to-right flow",
+            spec.composition.topology,
+        )
         self.assertIn(
             "Do not render the nodes as equal-weight peer cards; the declared relationship is not a flat list.",
             spec.hard_constraints.page_constraints,

@@ -35,7 +35,7 @@ def _spec(*, style_id: int = 10, contract: str = "Pure white editorial direction
         page_id="P07",
         page_number=7,
         deliverable=DeliverableSpec(
-            asset_type="powerpoint_body_visual_asset",
+            asset_type="presentation content visual",
             page_role="evidence",
             canvas=(2048, 1024, "2:1"),
             title_render_mode="external_text_layer",

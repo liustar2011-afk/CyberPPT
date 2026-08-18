@@ -51,9 +51,13 @@ _BACKEND_LEAK_PATTERNS: tuple[re.Pattern[str], ...] = (
 )
 
 # Fixed, finite technical monikers that legitimately contain underscores.
-# ``asset_type`` is a hardcoded constant in cyberppt/page_artifact_spec.py,
-# not a leaked Stage 02 enum, so it is exempt from the snake_case leak check.
-_ALLOWED_SNAKE_CASE_TOKENS = frozenset({"powerpoint_body_visual_asset"})
+# Empty for now: ``asset_type`` used to be the hardcoded snake_case constant
+# "powerpoint_body_visual_asset" and needed this exemption; it is now the
+# natural-language phrase "presentation content visual" (see
+# cyberppt/page_artifact_spec.py), so no exemption is needed. Kept as a named
+# set, not deleted, so a future fixed technical moniker has an obvious place
+# to register itself rather than reopening the snake_case check.
+_ALLOWED_SNAKE_CASE_TOKENS: frozenset[str] = frozenset()
 
 _BACKEND_ID_RE = re.compile(
     r"(?<![A-Za-z0-9])(?:E\d+|P\d{2,3}-T(?:ITLE|\d+)|R_[A-Z0-9_]+|(?:NF|ST)-?\d+|rel-\d+)(?![A-Za-z0-9])",
