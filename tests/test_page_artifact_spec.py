@@ -182,8 +182,7 @@ class PageArtifactSpecTests(unittest.TestCase):
             spec.hard_constraints.page_constraints,
         )
         self.assertEqual(
-            "a directed business flow moving input through processing to "
-            "result, read as one continuous left-to-right flow",
+            "a directed business flow moving input through processing to result",
             spec.composition.topology,
         )
         self.assertIn(

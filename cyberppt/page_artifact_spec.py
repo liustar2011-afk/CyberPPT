@@ -132,40 +132,30 @@ class PageArtifactSpec:
 # only strengthens the verb/construction driving the composition.
 _TOPOLOGY_PHRASES: dict[str, str] = {
     "parallel_set": (
-        "several parallel items of genuinely equal standing that share one "
-        "unifying judgment; when the content calls for equal-weight peers, "
-        "a structured editorial grid with clear alignment is acceptable, "
-        "but avoid literal card borders, icon-per-item pairing, or "
-        "dashboard modules"
+        "several equal-weight parallel items sharing one judgment; a "
+        "structured editorial grid is acceptable"
     ),
     "causal_convergence": (
-        "multiple evidence lines converging into one judgment, read as one "
-        "continuous convergent flow rather than a list of separate points"
+        "multiple evidence lines converging into one judgment rather than "
+        "a list of separate points"
     ),
     "layered_architecture": (
         "a layered architecture where a foundation layer supports the "
         "layers above it, forming one continuous dependency chain from "
         "foundation to outcome"
     ),
-    "directed_flow": (
-        "a directed business flow moving input through processing to "
-        "result, read as one continuous left-to-right flow"
-    ),
+    "directed_flow": "a directed business flow moving input through processing to result",
     "lifecycle_loop": (
         "a closed-loop cycle whose result feeds back explicitly into an "
         "earlier stage of the same process"
     ),
     "governance_boundary": (
         "a governed boundary that admits, inspects or controls what "
-        "crosses it, read as one continuous boundary rather than a "
-        "decorative frame"
+        "crosses it, not a decorative frame"
     ),
     "ecosystem_map": "a hub-and-spoke ecosystem of related roles exchanging around one shared center",
     "allocation_flow": "roles or resources branching out from one source into their respective value destinations",
-    "conclusion_anchor": (
-        "multiple threads converging into one anchored conclusion, read as "
-        "one continuous convergent flow toward a single anchor"
-    ),
+    "conclusion_anchor": "multiple threads converging into one anchored conclusion",
 }
 
 _FORBIDDEN_STRUCTURE_PHRASES: dict[str, str] = {
