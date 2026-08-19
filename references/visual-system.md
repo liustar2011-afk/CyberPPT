@@ -1,4 +1,4 @@
-# 视觉系统与 ImageGen 探索
+﻿# 视觉系统与 ImageGen 探索
 
 ## 默认视觉风格探索
 
@@ -491,7 +491,7 @@ Do not render the nodes as equal-weight peer cards; the declared relationship is
 Do not invent a center hub or radial mechanism the declared relationship does not describe.
 Preserve the approved source actors, relationships, conditions, status, and factual strength without reinterpretation.
 
-【最终执行锁｜最高优先级】
+【风格09最终执行锁｜最高优先级】
 Treat the generated image as a reconstruction-friendly, editorial visual blueprint for editable PowerPoint conversion — keep the overall composition disciplined and magazine-orderly. Keep all locked Chinese text complete, unchanged and readable in clean high-contrast text-safe zones with stable geometry; place labels adjacent to the related object rather than baking them into screens, devices, icons or perspective surfaces. Icon count is zero by default.
 
 Do not use arrows or arrowheads anywhere on the page. Express every relationship through position, proximity, grouping, numbering or a plain undirected line, never a pointed or directional connector. A line still must stand for one relationship named in the reading path; adjacency or enumeration alone is not a declared relationship.
