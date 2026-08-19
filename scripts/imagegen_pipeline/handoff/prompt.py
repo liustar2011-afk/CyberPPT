@@ -199,9 +199,12 @@ def render_content_first_prompt(
     # semantic_only page.
     include_logic_context = bool(
         # Style 09 receives the compact relation label even when the page's
-        # authoring metadata does not provide a high-confidence legacy source.
-        # The label is semantic context only; the layout recipe is suppressed
-        # above, so this cannot recreate a matrix/swim-lane blueprint.
+        # authoring metadata does not provide a high-confidence legacy source,
+        # but only when that source is a real signal (explicit/hint/contract
+        # relation, or scored with actual semantic relations to point at).
+        # The bare "scored + semantic_only" fallback is too weak a signal for
+        # style09 — it fires on nearly every ordinary page — so it must not
+        # leak the block there even though it still applies to other styles.
         style09_relation_context
         or (
             relation != "judgment_evidence"
@@ -211,7 +214,7 @@ def render_content_first_prompt(
                     intent_source == "scored"
                     and (
                         bool(semantic_relations)
-                        or judgment_mode == "semantic_only"
+                        or (not style09_surface and judgment_mode == "semantic_only")
                     )
                 )
             )

@@ -845,7 +845,10 @@ if __name__ == "__main__":
             )
             self.assertEqual(
                 BASELINE_HANDOFF_RESULT,
-                {key: path.relative_to(project).as_posix() for key, path in result.items()},
+                {
+                    key: path.relative_to(project.resolve()).as_posix()
+                    for key, path in result.items()
+                },
             )
 
             draft = (project / "workbench/prompts/imagegen/slide-01-imagegen-draft.md").read_text(

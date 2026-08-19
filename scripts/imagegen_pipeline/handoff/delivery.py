@@ -59,6 +59,14 @@ def write_chapter_handoff(
     visual_structure_mode: str = "off",
     text_render_mode: str | None = None,
 ) -> dict[str, Path]:
+    # stage_script() resolves the project root internally, so page outputs in
+    # `outputs` below come back as fully-resolved paths. Resolve project here
+    # too so every path this function returns (batch/diagnostics/comparison/
+    # gate included) is anchored the same way -- otherwise a symlinked path
+    # component (e.g. macOS /var -> /private/var) makes some returned paths
+    # resolved and others not, breaking any relative_to()/equality comparison
+    # against them.
+    project = project.expanduser().resolve()
     prompt_compiler = validate_prompt_compiler(prompt_compiler)
     if compare_with is not None and compare_with not in PROMPT_COMPILERS:
         raise ValueError(f"unsupported comparison compiler: {compare_with}")

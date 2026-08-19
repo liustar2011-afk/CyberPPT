@@ -104,6 +104,7 @@ def test_preflight_reviews_long_locked_relationship_judgment() -> None:
 - 文字稿取舍说明：保留关系判断。
 - 证据映射：定位→S001。
 - 上屏结论：建设方向面向行业公共能力并与多个专业运行系统保持清晰边界和职责分工协同
+- 上屏结论模式：locked
 - 上屏文字：
   **公共能力**
   - 服务行业共性需求

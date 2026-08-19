@@ -128,7 +128,7 @@ def test_dense_editorial_page_does_not_inject_must_onscreen_fact_layer() -> None
 
 
 def test_default_compiler_is_content_first_and_legacy_requires_opt_in() -> None:
-    page = _page()
+    page = replace(_page(), onscreen_judgment_mode="locked")
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         implicit = build_page_prompt(page, lock, page_mission="平台如何稳定支撑业务")
@@ -462,7 +462,7 @@ def test_content_first_accepts_content_page_without_visible_judgment() -> None:
 
 
 def test_content_first_treats_visible_judgment_as_body_conclusion_with_style_font_floor() -> None:
-    page = _page()
+    page = replace(_page(), onscreen_judgment_mode="locked")
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)
@@ -512,7 +512,7 @@ def test_content_first_text_rule_keeps_locked_names_and_numbers_authoritative() 
 
 
 def test_content_first_locks_only_conclusion_and_numeric_fact_lines() -> None:
-    page = _page()
+    page = replace(_page(), onscreen_judgment_mode="locked")
     locked = locked_onscreen_text(page)
     assert page.onscreen_judgment in locked
     assert all(title in locked for title in page.module_titles)
@@ -1069,7 +1069,7 @@ def test_judgment_evidence_layout_is_content_driven() -> None:
 
 
 def test_locked_judgment_is_not_repeated_in_complete_page_semantics() -> None:
-    page = _page()
+    page = replace(_page(), onscreen_judgment_mode="locked")
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
         prompt = build_page_prompt(page, lock)

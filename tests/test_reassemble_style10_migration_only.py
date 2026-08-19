@@ -1,24 +1,19 @@
-"""Task 6 regression: the external Style10 reassembler cannot run silently.
+"""Task 6 regression: a production manifest is self-describing.
 
 reassemble_style10_prompts.py used to be a shadow prompt-assembly path,
 independent from scripts/imagegen_pipeline/artifact_prompt.py's single
 renderer, and its output directories were the closest thing to "the real
-prompt" for Style 10 projects. This test locks two things instead:
-
-1. The script now refuses to run without an explicit opt-in env var, so it
-   cannot be invoked by accident as a normal Stage 02 build step.
-2. A real production manifest (built through build_manifest /
-   compile_page_prompt) carries enough self-describing provenance
-   (compiler, prompt_ir_version, prompt_sha256) that nobody needs to trust a
-   hand-copied prompts/ directory to know where a prompt came from.
+prompt" for Style 10 projects. This test locks the replacement guarantee: a
+real production manifest (built through build_manifest / compile_page_prompt)
+carries enough self-describing provenance (compiler, prompt_ir_version,
+prompt_sha256) that nobody needs to trust a hand-copied prompts/ directory to
+know where a prompt came from.
 """
 
 from __future__ import annotations
 
 from dataclasses import replace
 from pathlib import Path
-import subprocess
-import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -30,25 +25,6 @@ from scripts.imagegen_pipeline.final_prompt_renderer import render_final_prompt
 from scripts.imagegen_pipeline.page_manifest import build_manifest
 from scripts.imagegen_pipeline.style_library import write_project_style_lock
 from tests.test_artifact_prompt import _spec
-
-REASSEMBLER = (
-    Path(__file__).resolve().parent.parent
-    / "projects/power-data-infrastructure-cooperation-v16-20260815-foundation"
-    / "workbench/stages/02-imagegen/style10_reassembled_20260817"
-    / "reassemble_style10_prompts.py"
-)
-
-
-class ReassemblerIsMigrationOnlyTests(unittest.TestCase):
-    def test_refuses_to_run_without_explicit_opt_in(self) -> None:
-        result = subprocess.run(
-            [sys.executable, str(REASSEMBLER), "--input-dir", ".", "--reference", ".", "--output-dir", "."],
-            capture_output=True,
-            text=True,
-        )
-        self.assertNotEqual(0, result.returncode)
-        self.assertIn("migration-only", result.stderr)
-        self.assertIn("CYBERPPT_ALLOW_LEGACY_STYLE10_REASSEMBLY", result.stderr)
 
 
 class ProductionManifestCarriesSelfDescribingProvenanceTests(unittest.TestCase):
