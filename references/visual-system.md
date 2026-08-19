@@ -426,7 +426,7 @@ When the page names several distinct top-level items, each item's own visual mat
 
 Suitable visual material includes: professional operating environments; controlled content objects or data assets; documents in transformation; industry facilities; close-up evidence fragments. Any chosen anchor or fragment must depict something actually named in this page's content — never a generic control room, dashboard wall or stock BI screen used as decoration; with no distinct concrete referent among the locked content, prefer the flat structured relationship field over a generic technology scene.
 
-Realistic or restrained semi-realistic materials are acceptable when they strengthen page-specific meaning. A workspace, device or interface must visibly demonstrate the relevant action or state, as supporting evidence inside a broader scene, not an isolated product.
+Any realistic material must stay restrained, interpretive and page-specific — supporting evidence inside a broader scene, never an isolated product photo.
 
 ### 6. Depth, material and icon discipline — hard
 
@@ -497,6 +497,8 @@ Treat the generated image as a reconstruction-friendly, editorial visual bluepri
 Do not use arrows or arrowheads anywhere on the page. Express every relationship through position, proximity, grouping, numbering or a plain undirected line, never a pointed or directional connector. A line still must stand for one relationship named in the reading path; adjacency or enumeration alone is not a declared relationship.
 
 Every scene, object or fragment must be traceable to a named actor, service, asset or outcome that actually appears on this page; if it cannot be tied to specific content here, remove it rather than keep it as ambience — do not substitute a generic senior-office tableau for content-specific imagery.
+
+Prefer scene-based semantic visuals over literal real-world photos. The illustration should convey the page's meaning through interpretable business scenarios, key objects, and clear relationship-driven composition, increasing semantic density and communication efficiency.
 
 默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。
 
@@ -613,7 +615,7 @@ When the page names several distinct top-level items, each item's own visual mat
 
 Suitable visual material includes: professional operating environments; controlled content objects or data assets; documents in transformation; industry facilities; close-up evidence fragments. Any chosen anchor or fragment must depict something actually named in this page's content — never a generic control room, dashboard wall or stock BI screen used as decoration; with no distinct concrete referent among the locked content, prefer the flat structured relationship field over a generic technology scene.
 
-Realistic or restrained semi-realistic materials are acceptable when they strengthen page-specific meaning. A workspace, device or interface must visibly demonstrate the relevant action or state, as supporting evidence inside a broader scene, not an isolated product.
+Any realistic material must stay restrained, interpretive and page-specific — supporting evidence inside a broader scene, never an isolated product photo.
 
 ### 6. Depth, material and icon discipline — hard
 
@@ -684,6 +686,8 @@ Treat the generated image as a reconstruction-friendly, editorial visual bluepri
 Do not use arrows or arrowheads anywhere on the page. Express every relationship through position, proximity, grouping, numbering or a plain undirected line, never a pointed or directional connector. A line still must stand for one relationship named in the reading path; adjacency or enumeration alone is not a declared relationship.
 
 Every scene, object or fragment must be traceable to a named actor, service, asset or outcome that actually appears on this page; if it cannot be tied to specific content here, remove it rather than keep it as ambience — do not substitute a generic senior-office tableau for content-specific imagery.
+
+Prefer scene-based semantic visuals over literal real-world photos. The illustration should convey the page's meaning through interpretable business scenarios, key objects, and clear relationship-driven composition, increasing semantic density and communication efficiency.
 
 默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。
 
