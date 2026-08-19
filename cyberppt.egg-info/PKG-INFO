@@ -18,6 +18,10 @@ License-File: LICENSE
 Requires-Dist: pyyaml
 Requires-Dist: rapidocr-onnxruntime<2,>=1.4
 Requires-Dist: python-pptx
+Requires-Dist: jsonschema<5,>=4
+Provides-Extra: test
+Requires-Dist: pytest<10,>=8; extra == "test"
+Requires-Dist: pytest-cov<7,>=5; extra == "test"
 Dynamic: license-file
 
 # CyberPPT
@@ -40,12 +44,19 @@ CyberPPT 的核心不是“套模板”，而是把源材料先转成可审计�
 - 第三阶段只使用已审计 full 图 → 可编辑 SVG → 原生 PPTX 的重建链。每页先盘点可还原区域和注册图层；未验证的数据图、标识或文字必须标记 `manual_required` 并阻断交付，禁止以整页截图蒙版回退。
 - 执行结构 QA、视觉 QA、可编辑性 QA、容器溢出 QA、空间锚点 QA 和曲线追踪 QA。
 
-## 强制流程
+## 当前正式主流程
 
-1. 分析：建立 MBB 证据表，记录冲突、缺口和 caveat；脑暴 2-3 条故事线，收敛为 SCR、逐页大纲、图表计划、信息密度和组件清单。
-2. 蓝图：展示 8 种固定视觉风格；用户选择后锁定风格编号、色板、正文区网格、图表语言和页面密度，并生成逐页正文内容区 ImageGen 蓝图。
-3. 还原：把已批准正文区蓝图晋升为经文字审计的 full 候选，盘点并重建为注册的可编辑 SVG 图层，再导出原生 PPTX；不得派生无字 background 或使用整页截图作为交付图层。
-4. 交付：提供重建盘点、SVG 质量报告、PPTX、文字回读、全页渲染对照和 delivery readiness。任一关键门禁失败，不得交付确认。
+完整流程、人工停点、产物权威关系和 Stage 01 / Stage 02 边界统一见 [CyberPPT 主流程总览](docs/CYBERPPT_WORKFLOW.md)。
+
+当前唯一正式路线为：
+
+源材料 → Source Foundation → 业务语义理解 → 交流目标 → Outline 与页面计划 → Handoff → 逐页脚本 → 最终全稿 → Stage 02 视觉生产 → PPTX QA 与交付
+
+Stage 01 的正式 Skill 顺序为：
+
+`cyberppt-source-foundation` → `business-semantic-understanding` → `ppt-outline-planning` → `cyberppt-handoff` → `cyberppt-write-single-page`
+
+旧版 MBB 证据表、故事线脑暴和固定视觉风格说明属于历史或具体生产细则，不替代上述当前主流程。
 
 ## 8 种视觉风格
 
@@ -162,10 +173,19 @@ Stage 01 脚本经轻量确认审计通过后，主流程自动调用仓库注�
 常用开发检查：
 
 ```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install -e '.[test]'
+make env-check
 make doctor
 make test
+make test-unittest
 make test-validate-pptx
 ```
+
+仓库内的 Make 目标会优先使用 `.venv/bin/python`，不依赖系统全局的
+`python3` 或 `pytest`。测试依赖通过 `pyproject.toml` 的 `test` extra
+安装；`make test` 是 pytest 全量入口，`make test-unittest` 保留用于
+兼容性回归。
 
 ## 许可
 
