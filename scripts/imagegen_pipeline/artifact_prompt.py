@@ -175,9 +175,9 @@ def render_artifact_prompt(spec: PageArtifactSpec, *, style_lock: Path | None = 
         ),
     )
     prompt = "\n\n".join(section for section in sections if section.strip()).rstrip()
-    if spec.art_direction.style_id == 9:
+    if spec.art_direction.style_id in (9, 10):
         if style_lock is None:
-            raise ValueError("Style09 artifact prompt requires its style lock for terminal enforcement")
+            raise ValueError("Style09/10 artifact prompt requires its style lock for terminal enforcement")
         from scripts.imagegen_pipeline.deliverable_prompt import enforce_style09_terminal_lock
 
         prompt = enforce_style09_terminal_lock(prompt, style_lock).rstrip()
@@ -220,14 +220,14 @@ def assert_artifact_prompt_contract(
                 "artifact prompt visible text declarations must exactly match the audited text contract"
             )
     terminal_header = "【风格09最终执行锁｜最高优先级】"
-    if style_id == 9:
+    if style_id in (9, 10):
         if prompt.count(terminal_header) != 1:
-            raise ValueError("Style09 artifact prompt requires one terminal execution lock")
+            raise ValueError("Style09/10 artifact prompt requires one terminal execution lock")
         terminal = prompt.split(terminal_header, 1)[1].strip()
         if not terminal or not prompt.rstrip().endswith(terminal):
-            raise ValueError("Style09 terminal execution lock must be at the absolute end")
+            raise ValueError("Style09/10 terminal execution lock must be at the absolute end")
     elif terminal_header in prompt:
-        raise ValueError("non-Style09 artifact prompt contains a Style09 terminal lock")
+        raise ValueError("non-Style09/10 artifact prompt contains a Style09/10 terminal lock")
 
 
 def _semantic_groups(evidence: tuple[EvidenceSpec, ...]) -> tuple[SemanticGroupIR, ...]:

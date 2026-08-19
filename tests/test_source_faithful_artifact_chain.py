@@ -168,12 +168,12 @@ class SourceFaithfulArtifactChainTests(unittest.TestCase):
         )
 
         with tempfile.TemporaryDirectory() as directory:
-            style_lock = Path(directory) / "style10.json"
+            style_lock = Path(directory) / "style-government.json"
             style_lock.write_text(
                 json.dumps(
                     {
                         "style": {
-                            "id": 10,
+                            "id": 7,
                             "name": "政企白底编辑风",
                             "slug": "government_white_editorial",
                             "style_prompt_v2": "纯白底、克制、正式的政企汇报视觉语言。",

@@ -134,7 +134,7 @@ class ValidateFinalPromptTests(unittest.TestCase):
     def test_style09_requires_exactly_one_terminal_lock(self) -> None:
         ir = _ir()
         prompt = render_final_prompt(ir)
-        with self.assertRaisesRegex(PromptContractError, "Style09 final prompt requires one terminal"):
+        with self.assertRaisesRegex(PromptContractError, "Style09/10 final prompt requires one terminal"):
             validate_final_prompt(prompt, ir, style_id=9)
 
     def test_non_style09_rejects_style09_terminal_marker(self) -> None:

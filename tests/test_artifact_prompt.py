@@ -30,7 +30,7 @@ from scripts.imagegen_pipeline.final_prompt_renderer import render_final_prompt
 from scripts.imagegen_pipeline.imagegen_handoff import compile_page_prompt
 
 
-def _spec(*, style_id: int = 10, contract: str = "Pure white editorial direction.") -> PageArtifactSpec:
+def _spec(*, style_id: int = 4, contract: str = "Pure white editorial direction.") -> PageArtifactSpec:
     return PageArtifactSpec(
         page_id="P07",
         page_number=7,

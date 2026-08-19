@@ -138,7 +138,7 @@ class DualImageOverlayDeliverablePromptTests(unittest.TestCase):
         self.assertIn("locked on-screen text faithfully in the main composition", prompt)
         self.assertIn("may use a small amount of clear Chinese labels", prompt)
         self.assertIn("dense pseudo-Chinese", prompt)
-        self.assertIn("不得出现粗大箭头头、宽箭头带", prompt)
+        self.assertIn("箭头：禁止使用", prompt)
         self.assertIn("共享谓词、共享限定语和父级说明不得复制或改写到每个并列子项", prompt)
         self.assertIn("页面任务、核心意思、页面逻辑、视觉结构、语义关系和所有不上屏区块只决定构图", prompt)
 

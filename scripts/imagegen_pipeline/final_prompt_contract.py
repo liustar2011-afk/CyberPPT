@@ -130,22 +130,22 @@ def validate_final_prompt(
     if prompt.count(ir.page_judgment) != 1:
         raise PromptContractError("final prompt must state the page judgment exactly once")
 
-    if style_id != 9 and prompt.count(ir.runtime_lock.style_contract) != 1:
-        # Style09 rewrites its contract text in place to relocate the
+    if style_id not in (9, 10) and prompt.count(ir.runtime_lock.style_contract) != 1:
+        # Style09/10 rewrite their contract text in place to relocate the
         # terminal execution lock (see enforce_style09_terminal_lock), so an
         # exact-count check against the pre-rewrite text does not apply
         # there; the terminal-lock checks below cover that case instead.
         raise PromptContractError("final prompt must state the runtime style contract exactly once")
 
     terminal_header = "【风格09最终执行锁｜最高优先级】"
-    if style_id == 9:
+    if style_id in (9, 10):
         if prompt.count(terminal_header) != 1:
-            raise PromptContractError("Style09 final prompt requires one terminal execution lock")
+            raise PromptContractError("Style09/10 final prompt requires one terminal execution lock")
         terminal = prompt.split(terminal_header, 1)[1].strip()
         if not terminal or not prompt.rstrip().endswith(terminal):
-            raise PromptContractError("Style09 terminal execution lock must be at the absolute end")
+            raise PromptContractError("Style09/10 terminal execution lock must be at the absolute end")
     elif terminal_header in prompt:
-        raise PromptContractError("non-Style09 final prompt contains a Style09 terminal lock")
+        raise PromptContractError("non-Style09/10 final prompt contains a Style09/10 terminal lock")
 
 
 __all__ = [

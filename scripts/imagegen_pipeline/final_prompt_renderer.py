@@ -85,9 +85,9 @@ def render_final_prompt(
     )
     prompt = "\n\n".join(section for section in sections if section.strip()).rstrip()
 
-    if style_id == 9:
+    if style_id in (9, 10):
         if style_lock is None:
-            raise ValueError("Style09 final prompt requires its style lock for terminal enforcement")
+            raise ValueError("Style09/10 final prompt requires its style lock for terminal enforcement")
         from scripts.imagegen_pipeline.deliverable_prompt import enforce_style09_terminal_lock
 
         prompt = enforce_style09_terminal_lock(prompt, style_lock).rstrip()

@@ -117,7 +117,7 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "invented names, logos, seals, signage" not in style_nine["prompt_contract"]
     assert "线条：主关系用细、实、方向一致的深蓝线" in style_nine["prompt_contract"]
     assert "低矮哑光正视微立体" in style_nine["prompt_contract"]
-    assert "禁止宽箭头带" in style_nine["prompt_contract"]
+    assert "箭头：禁止使用" in style_nine["prompt_contract"]
     assert "icon_rule" not in style_nine
     assert "政企领导汇报所需的信息密度" in style_nine["density_rule"]
     assert "领导汇报" in style_nine["scenario"]

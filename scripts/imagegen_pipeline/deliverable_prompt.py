@@ -455,17 +455,18 @@ def _style_contract_from_payload(
     if style_prompt_v2:
         return style_prompt_v2
     prompt_contract = _strip_visual_structure_meta(_collapse_text(style.get("prompt_contract")))
-    # Style 09 is an authored, self-contained source contract: the people,
+    # Style 09/10 are authored, self-contained source contracts: the people,
     # factuality, on-screen-text and component/craftsmanship rules that used
     # to live as separate JSON fields (people_rule/factuality_rule/
     # semantic_image_text_rule/component_rule) are now authored directly
-    # inside references/visual-system.md's "扩展风格9" section and arrive
-    # here already folded into prompt_contract -- see
-    # docs/superpowers/plans/2026-08-19-style09-consolidate-rule-fields.md.
+    # inside references/visual-system.md's "扩展风格9"/"扩展风格10" sections
+    # and arrive here already folded into prompt_contract. Style 10 is
+    # currently a byte-identical copy of Style 09's rules under its own
+    # numbered section, kept separate for independent future tuning.
     # The final prompt must carry this entire contract verbatim under its
     # formal style lock, rather than letting a downstream compiler select
     # clauses or recreate a terminal fragment. Page layout belongs to Stage 02.
-    if int(style.get("id") or 0) == 9 and prompt_contract:
+    if int(style.get("id") or 0) in (9, 10) and prompt_contract:
         return prompt_contract
     scope_rule = _strip_visual_structure_meta(_collapse_text(style.get("scope_rule")))
     semantic_structure_rule = _strip_visual_structure_meta(
@@ -489,7 +490,7 @@ def _style_contract_from_payload(
     carrier_router = _collapse_text(style.get("carrier_router"))
     component_rule = (
         ""
-        if int(style.get("id") or 0) == 9 and prompt_contract
+        if int(style.get("id") or 0) in (9, 10) and prompt_contract
         else _collapse_text(style.get("component_rule"))
     )
     deck_consistency_rule = _collapse_text(style.get("deck_consistency_rule"))
@@ -688,7 +689,7 @@ def _style_contract_owns_visual_grammar(style_lock_path: Path | None) -> bool:
     style = payload.get("style")
     return (
         isinstance(style, dict)
-        and int(style.get("id") or 0) == 9
+        and int(style.get("id") or 0) in (9, 10)
         and bool(_collapse_text(style.get("prompt_contract")))
     )
 
@@ -748,7 +749,7 @@ def _style09_terminal_execution_lock(style_lock_path: Path | None) -> str:
     except (OSError, ValueError, TypeError):
         return ""
     style = payload.get("style") if isinstance(payload.get("style"), dict) else payload
-    if int(style.get("id") or 0) != 9:
+    if int(style.get("id") or 0) not in (9, 10):
         return ""
     contract = str(style.get("prompt_contract") or "")
     marker = "### Final ImageGen execution lock — hard"
@@ -791,7 +792,7 @@ def _style09_people_rule(style_lock_path: Path | None) -> str:
     except (OSError, ValueError, TypeError):
         return ""
     style = payload.get("style") if isinstance(payload.get("style"), dict) else payload
-    if int(style.get("id") or 0) != 9:
+    if int(style.get("id") or 0) not in (9, 10):
         return ""
     return _strip_visual_structure_meta(_collapse_text(style.get("people_rule")))
 

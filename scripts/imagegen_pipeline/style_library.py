@@ -99,7 +99,7 @@ def write_project_style_lock(
             "samples_are_required_for_user_confirmation": True,
         },
     }
-    if int(style.get("id", -1)) == 9 and style.get("sample"):
+    if int(style.get("id", -1)) in (9, 10) and style.get("sample"):
         repository_root = path.resolve().parents[3]
         reference_path = (repository_root / str(style["sample"])).resolve()
         if reference_path.is_file():
@@ -110,17 +110,20 @@ def write_project_style_lock(
                 "role": "style_reference_only",
             }
     lock_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    if int(style.get("id", -1)) == 9:
-        # Style 09 is authored in references/visual-system.md. Persist the
-        # refreshed source section into the lock itself so every downstream
-        # consumer and hash sees the current source-of-truth immediately.
+    if int(style.get("id", -1)) in (9, 10):
+        # Style 09/10 are authored in references/visual-system.md (style 10
+        # is currently a byte-identical copy of style 9's rules under its
+        # own "## 扩展风格10：" section, kept as a separate numbered slot for
+        # independent future tuning). Persist the refreshed source section
+        # into the lock itself so every downstream consumer and hash sees
+        # the current source-of-truth immediately.
         payload = load_style_lock(lock_path)
         lock_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return lock_path
 
 
 def _strip_style09_registry_meta(section: str) -> str:
-    """Keep Style 09 visual rules; drop heading and registry/routing meta."""
+    """Keep Style 09/10 visual rules; drop heading and registry/routing meta."""
 
     kept: list[str] = []
     for raw in section.splitlines():
@@ -129,7 +132,7 @@ def _strip_style09_registry_meta(section: str) -> str:
             if kept and kept[-1] != "":
                 kept.append("")
             continue
-        if line.startswith("## 扩展风格9"):
+        if line.startswith("## 扩展风格"):
             continue
         if (
             "不进入默认候选" in line
@@ -156,12 +159,13 @@ def _strip_style09_registry_meta(section: str) -> str:
 def load_style_lock(path: Path) -> dict[str, Any]:
     payload = _read_json(path)
     style = payload.get("style")
-    if not isinstance(style, dict) or int(style.get("id", -1)) != 9:
+    style_id = int(style.get("id", -1)) if isinstance(style, dict) else -1
+    if not isinstance(style, dict) or style_id not in (9, 10):
         return payload
 
-    # STYLE09 is maintained by the human-readable visual-system reference.
-    # Refresh the lock snapshot at read time so edits to that document are not
-    # silently ignored by ImageGen handoff compilation.
+    # STYLE09/STYLE10 are maintained by the human-readable visual-system
+    # reference. Refresh the lock snapshot at read time so edits to that
+    # document are not silently ignored by ImageGen handoff compilation.
     style_source = payload.get("style_source")
     source_reference = payload.get("source_reference")
     candidates: list[Path] = []
@@ -180,7 +184,7 @@ def load_style_lock(path: Path) -> dict[str, Any]:
         if not reference.is_file():
             continue
         text = reference.read_text(encoding="utf-8")
-        marker = "## 扩展风格9："
+        marker = f"## 扩展风格{style_id}："
         start = text.find(marker)
         if start < 0:
             break
