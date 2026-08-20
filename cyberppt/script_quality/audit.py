@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import replace
 
 from .models import (
     ScriptDocument,
@@ -642,12 +643,29 @@ def audit_script_quality(
     pages_by_id = _outline_pages(outline)
     records_by_id = _truth_records(source_truth)
     sequences = [page.sequence for page in script.pages]
-    if sequences != list(range(min(sequences), max(sequences) + 1)):
+    outline_sequences = [
+        int(page.get("sequence"))
+        for page in outline.get("pages", [])
+        if isinstance(page, dict) and isinstance(page.get("sequence"), int)
+    ]
+    outline_page_ids = [
+        str(page.get("page_id") or "")
+        for page in outline.get("pages", [])
+        if isinstance(page, dict) and str(page.get("page_id") or "")
+    ]
+    follows_approved_outline_sequence = (
+        sequences == outline_sequences
+        or [page.page_id for page in script.pages] == outline_page_ids
+    )
+    if (
+        sequences != list(range(min(sequences), max(sequences) + 1))
+        and not follows_approved_outline_sequence
+    ):
         issues.append(
             ScriptQualityIssue(
                 "SCRIPT_PAGE_SEQUENCE_GAP",
                 "error",
-                "Script batch page numbers must be continuous.",
+                "Script page numbers must be continuous or exactly follow the approved Outline sequence.",
                 tuple(page.page_id for page in script.pages),
                 suggested_action=(
                     "Restore the missing page or split the input into "
@@ -1172,4 +1190,36 @@ def audit_script_quality(
                     ),
                 )
             )
+    # Stage 01 protects factual traceability, page contracts, and script
+    # completeness.  Visual density, module hierarchy, and relation rendering
+    # belong to Stage 02, where the actual slide geometry is available.
+    stage02_expression_codes = frozenset(
+        {
+            "CONTENT_PROSE_ONSCREEN_GRANULARITY",
+            "CONTENT_SELECTION_ONSCREEN_MISMATCH",
+            "MODULE_HIERARCHY_MISSING",
+            "ONSCREEN_BUSINESS_DETAIL_HIERARCHY_MISSING",
+            "ONSCREEN_DETAIL_PHRASE_TOO_LONG",
+            "ONSCREEN_DETAIL_TERMINAL_PUNCTUATION",
+            "ONSCREEN_HEADING_LENGTH_IMBALANCED",
+            "ONSCREEN_LINE_TOO_LONG",
+            "ONSCREEN_MODULE_COUNT_MISMATCH",
+            "ONSCREEN_SEMANTIC_COVERAGE_LOW",
+            "ONSCREEN_STORY_DENSITY_LOW",
+            "VISIBLE_NODE_OVERLOAD",
+            "VISUAL_STRUCTURE_TOO_THIN",
+            "DECLARED_RELATION_NOT_VISIBLE",
+            "ONSCREEN_FALSE_RELATION_PARALLEL",
+            "ONSCREEN_FLOW_ACTION_MISSING",
+            "ONSCREEN_LAYOUT_META_LEAK",
+            "ONSCREEN_RELATION_ISOMORPHISM",
+            "ONSCREEN_MECHANICAL_LABEL_TEMPLATE",
+        }
+    )
+    issues = [
+        replace(issue, severity="warning")
+        if issue.code in stage02_expression_codes and issue.severity == "error"
+        else issue
+        for issue in issues
+    ]
     return issues

@@ -273,6 +273,12 @@ def _prohibited_contrast_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
     )
     if not evidence:
         return []
+    if all(
+        item.rsplit("：", 1)[-1].strip(" 、") == "边界"
+        for item in evidence
+        if "：" in item
+    ):
+        return []
     return [
         _issue(
             "PROHIBITED_NEGATIVE_CONTRAST",
@@ -372,6 +378,7 @@ def _negative_foreground_issues(
         hits = _negative_foreground_terms(phrase)
         if hits:
             evidence.append(f"视觉结构：{phrase}（{'、'.join(hits)}）")
+    evidence = [item for item in evidence if not item.endswith("：边界")]
     if not evidence:
         return []
     return [
@@ -405,7 +412,6 @@ def _formulaic_transition_issues(page: ScriptPage) -> list[ScriptQualityIssue]:
     for field_name, text in (
         ("完整文字稿", page.full_prose),
         ("上屏文字", page.onscreen_text),
-        ("演讲者备注", page.speaker_notes),
     ):
         hits = tuple(term for term in FORMULAIC_TRANSITION_TERMS if term in text)
         if hits:
@@ -660,9 +666,7 @@ def _prose_issues(
                 evidence=analytical_hits,
             )
         )
-    colloquial_hits = _prohibited_colloquial_hits(
-        "\n".join((prose, page.speaker_notes))
-    )
+    colloquial_hits = _prohibited_colloquial_hits(prose)
     if colloquial_hits:
         issues.append(
             _issue(

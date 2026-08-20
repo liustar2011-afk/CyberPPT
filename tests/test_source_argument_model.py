@@ -376,6 +376,32 @@ class SourceArgumentModelTests(unittest.TestCase):
         self.assertIn("SOURCE_SECTION_TITLE_DRIFTED", codes)
         self.assertIn("SOURCE_SECTION_ORDER_DRIFTED", codes)
 
+    def test_single_editorial_chapter_without_chapter_page_allows_content_consumption(self) -> None:
+        outline = {
+            "semantic_argument_model_mode": "required",
+            "editorial_authoring_mode": "author_driven",
+            "editorial_authoring_status": "author_edited",
+            "pages": [
+                {
+                    "page_id": "p01",
+                    "page_type": "content",
+                    "chapter_id": "ch01",
+                    "primary_argument_node_id": "c01",
+                    "source_argument_node_ids": ["c01"],
+                    "source_argument_node_roles": {"c01": "foundation"},
+                    "source_argument_node_statuses": {"c01": "mixed"},
+                    "source_argument_node_weights": {"c01": "core"},
+                    "core_message_derivation": {"argument_node_ids": ["c01"]},
+                }
+            ],
+        }
+
+        codes = {item["code"] for item in audit_outline_consumption(outline, model())}
+
+        self.assertNotIn("SOURCE_SECTION_ORDER_DRIFTED", codes)
+        self.assertNotIn("SOURCE_SECTION_MAPPING_MISSING", codes)
+        self.assertNotIn("ARGUMENT_NODE_WITHOUT_PRIMARY_CONSUMER", codes)
+
     def test_author_edited_omission_must_name_where_the_detail_is_retained(self) -> None:
         outline = {
             "semantic_argument_model_mode": "required",

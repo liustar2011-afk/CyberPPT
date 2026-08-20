@@ -100,6 +100,16 @@ def _template_issues(pages: list[dict[str, object]]) -> list[AuditIssue]:
                 "continuous_page_sequence",
             )
         )
+    chapter_pages_present = any(page.get("page_type") == "chapter" for page in pages)
+    editorial_chapter_ids = {
+        _text(page.get("chapter_id"))
+        for page in pages
+        if page.get("page_type") == "content" and _text(page.get("chapter_id"))
+    }
+    single_editorial_chapter_without_page = (
+        not chapter_pages_present
+        and len(editorial_chapter_ids) == 1
+    )
     chapter_seen: set[str] = set()
     for page in pages:
         page_type = page.get("page_type")
@@ -121,7 +131,12 @@ def _template_issues(pages: list[dict[str, object]]) -> list[AuditIssue]:
                         "chapter_page_purity",
                     )
                 )
-        elif page_type == "content" and chapter_id and chapter_id not in chapter_seen:
+        elif (
+            page_type == "content"
+            and chapter_id
+            and chapter_id not in chapter_seen
+            and not single_editorial_chapter_without_page
+        ):
             issues.append(
                 AuditIssue(
                     "TEMPLATE_PAGES_DETACHED",

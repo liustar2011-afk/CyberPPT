@@ -1338,6 +1338,15 @@ def audit_outline_consumption(
         ]
         expected_section_ids = [_text(item.get("id")) for item in core_sections]
         chapter_pages = [item for item in all_pages if item.get("page_type") == "chapter"]
+        editorial_chapter_ids = {
+            _text(page.get("chapter_id"))
+            for page in pages
+            if _text(page.get("chapter_id"))
+        }
+        single_editorial_chapter_without_page = (
+            not chapter_pages
+            and len(editorial_chapter_ids) == 1
+        )
         actual_section_ids: list[str] = []
         for chapter in chapter_pages:
             page_id = _text(chapter.get("page_id"))
@@ -1359,11 +1368,25 @@ def audit_outline_consumption(
                     "章节页 title 和 source_section_title 必须等于映射的原文一级章节标题；编辑标签应放在 editorial_chapter_label。",
                     node_id=page_id,
                 ))
-        if actual_section_ids != expected_section_ids:
+        if chapter_pages and actual_section_ids != expected_section_ids:
             issues.append(_issue(
                 "SOURCE_SECTION_ORDER_DRIFTED",
                 "章节页必须按语义模型中的一级核心章节顺序逐一呈现，不得重排、漏映射或替换为编辑标题。",
             ))
+        if single_editorial_chapter_without_page:
+            consumed_section_ids = {
+                _text(node_id)
+                for page in pages
+                for node_id in _list(page.get("source_argument_node_ids"))
+                if _text(node_id) in set(expected_section_ids)
+            }
+            for section_id in expected_section_ids:
+                if section_id not in consumed_section_ids:
+                    issues.append(_issue(
+                        "SOURCE_SECTION_MAPPING_MISSING",
+                        "单章节结构未设置章节页时，每个一级核心章节节点仍须由内容页明确承载。",
+                        node_id=section_id,
+                    ))
     required_nodes = list(_list(model.get("section_nodes"))) + list(_list(model.get("subsection_nodes")))
     for node in required_nodes:
         if not isinstance(node, dict):
@@ -1375,6 +1398,8 @@ def audit_outline_consumption(
             for page in all_pages
             if page.get("page_type") == "chapter"
         )
+        if single_editorial_chapter_without_page and node_id in assigned_consumers:
+            chapter_mapped = True
         required_for_primary = primary_requirement is True or (
             node_id in section_node_ids
             and primary_requirement is not False

@@ -388,6 +388,15 @@ class OutlineContractTests(unittest.TestCase):
         )
         self.assertIn("TEMPLATE_PAGES_DETACHED", [item.code for item in audit_outline(payload)])
 
+    def test_single_chapter_content_can_start_without_chapter_page(self) -> None:
+        payload = outline(
+            page(1, "cover", "封面", chapter_id=""),
+            page(2, "content", "现状基础", message="基础较好", question="基础如何", visual="对照矩阵"),
+            page(3, "closing", "请审议", chapter_id=""),
+        )
+        codes = {item.code for item in audit_outline(payload)}
+        self.assertNotIn("TEMPLATE_PAGES_DETACHED", codes)
+
     def test_title_and_main_message_must_be_distinct(self) -> None:
         payload = outline(page(1, "content", "现有能力存在四类问题", message="现有能力存在四类问题"))
         self.assertIn("TITLE_CLAIM_COLLAPSED", [item.code for item in audit_outline(payload)])

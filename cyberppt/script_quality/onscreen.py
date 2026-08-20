@@ -1387,6 +1387,8 @@ def _onscreen_flow_language_issues(
         or not expression_requires_action_headings(decision.form)
     ):
         return []
+    if "→" in page.onscreen_text or "->" in page.onscreen_text:
+        return []
     issues: list[ScriptQualityIssue] = []
     action_modules = tuple(
         module

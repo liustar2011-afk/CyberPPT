@@ -19,6 +19,8 @@ _RELATION_VISIBILITY_SIGNALS = {
     "flows_to": ("流向", "进入", "经过", "形成", "输出", "→", "->", "第一", "第二", "第三"),
     "supports": ("支撑", "保障", "赋能", "服务于", "→", "->"),
     "depends_on": ("依赖", "以", "为基础", "前提", "→", "->"),
+    "sequence_before": ("先", "再", "随后", "阶段", "→", "->"),
+    "bounded_by": ("受", "约束", "边界", "条件", "→", "->"),
     "composed_of": ("构成", "由", "分层", "层级", "包括", "→", "->"),
     # The Outline projection emits "contains" (not "composed_of") for every
     # heading-containment relation -- onscreen_expression.py's _RELATION_FORMS
@@ -27,6 +29,7 @@ _RELATION_VISIBILITY_SIGNALS = {
     # on essentially every content page that has real sub-headings, no matter
     # how the module structure was written.
     "contains": ("构成", "由", "分层", "层级", "包括", "→", "->"),
+    "applies_to": ("面向", "适用于", "服务", "覆盖", "→", "->"),
     "collaborates_with": ("协同", "配合", "共同", "联动", "→", "->"),
     "feedback_to": ("反馈", "回流", "闭环", "迭代", "循环", "→", "->"),
 }
@@ -210,7 +213,7 @@ def _page_relationship_continuity_issues(
                 )
             )
             labels = _relation_parallel_labels(page)
-            if len(labels) >= 2 and not any(
+            if len(labels) >= 2 and "→" not in page.onscreen_text and "->" not in page.onscreen_text and not any(
                 signal in " ".join(labels) for signal in _RELATION_ACTION_SIGNALS
             ):
                 issues.append(

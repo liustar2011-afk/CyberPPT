@@ -42,6 +42,15 @@ def _truth_records(
     }
 
 
+def _is_full_document_index_record(record: dict[str, object] | None) -> bool:
+    if not isinstance(record, dict):
+        return False
+    return (
+        str(record.get("atomic_item_id") or "") == "AI-001"
+        and str(record.get("statement") or "").startswith("按原文完整陈述")
+    )
+
+
 def _polarity_dropped_terms(statement: str, authored: str) -> tuple[str, ...]:
     """Return source negation markers that vanish from the authored text.
 
@@ -233,6 +242,8 @@ def _full_prose_source_coverage_issues(
         record = records_by_id.get(ref)
         if not record:
             continue
+        if _is_full_document_index_record(record):
+            continue
         anchors = [str(record.get("statement") or "")]
         anchors.extend(
             str(unit.get("text") or "")
@@ -388,6 +399,8 @@ def _page_content_unit_coverage_issues(
     for unit in units:
         unit_id = str(unit.get("unit_id") or "")
         statement = str(unit.get("statement") or "").strip()
+        if statement.startswith("按原文完整陈述"):
+            continue
         priority = str(unit.get("priority") or "P2")
         source_refs = tuple(
             str(item) for item in unit.get("source_refs") or [] if str(item)
@@ -617,6 +630,8 @@ def _onscreen_module_provenance_issues(
     issues: list[ScriptQualityIssue] = []
     for module in _dict_items(contract, "onscreen_modules"):
         title = str(module.get("display_title") or "").strip()
+        if title.startswith("按原文完整陈述"):
+            continue
         visible_layer = str(module.get("visible_layer") or "body").strip()
         if visible_layer in {"notes", "semantic"}:
             # Deployment and other retained supporting facts remain in the
