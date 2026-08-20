@@ -28,7 +28,10 @@ from scripts.imagegen_pipeline.final_prompt_ir import FinalPromptIR, PromptContr
 # nearest 100. Revisit per style family and with real ImageGen evaluation
 # data before tightening; re-measure whenever a style's prompt_contract
 # changes materially.
-MAX_PROMPT_CHARACTERS = 24_300
+# Rich, source-faithful on-screen copy can add a few hundred characters to
+# the measured style contract. Keep the safety ceiling above that variance
+# while retaining the hard upper bound for malformed or runaway prompts.
+MAX_PROMPT_CHARACTERS = 25_000
 
 _PLACEHOLDER_RE = re.compile(r"<[^>\n]{1,80}>")
 

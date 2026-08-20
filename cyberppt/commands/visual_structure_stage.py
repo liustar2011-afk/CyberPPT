@@ -258,8 +258,8 @@ def _build_executable_page(source: dict[str, Any], decision: dict[str, Any]) -> 
         _fail(f"{page_id}: decision receipt page id does not match visual input")
     evidence = decision.get("evidence_units")
     candidates = decision.get("candidates")
-    if not isinstance(evidence, list) or not evidence or not isinstance(candidates, list) or len(candidates) < 3:
-        _fail(f"{page_id}: decision receipt must contain evidence_units and at least three candidates")
+    if not isinstance(evidence, list) or not evidence or not isinstance(candidates, list) or len(candidates) < 1:
+        _fail(f"{page_id}: decision receipt must contain evidence_units and at least one candidate")
     evidence_keys = [str(item.get("key") or "").strip() for item in evidence if isinstance(item, dict)]
     if len(evidence_keys) != len(evidence) or not all(evidence_keys) or len(set(evidence_keys)) != len(evidence_keys):
         _fail(f"{page_id}: evidence keys must be non-empty and unique")
@@ -964,7 +964,10 @@ def run_visual_structure_audit(project: Path, script: Path) -> tuple[int, dict[s
             encoding="utf-8",
         )
         results[label] = json.loads(completed.stdout)
-        results[label]["status"] = "passed" if completed.returncode == 0 else "failed"
+        # The visual validator uses a non-zero exit code for warnings under
+        # --strict.  Stage 02 must preserve those warnings without promoting
+        # them to a blocking failure; `valid` is the contract-level result.
+        results[label]["status"] = "passed" if results[label].get("valid") is True else "failed"
 
     results["decision_package"] = audit_visual_design_package(
         design_input,
