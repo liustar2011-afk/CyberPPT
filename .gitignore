@@ -54,3 +54,6 @@ Thumbs.db
 
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 graft/
+
+# CodeGraph's local index — regenerable, not committed.
+.codegraph/

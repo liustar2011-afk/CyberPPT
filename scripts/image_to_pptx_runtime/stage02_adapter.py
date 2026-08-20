@@ -19,6 +19,7 @@ from .graphic_text_policy import validate_graphic_text_policy
 from .review import write_review
 from .svg_quality.checker import SVGQualityChecker
 from .template_assembly import (
+    assemble_brand_page_svg,
     assemble_template_pptx,
     assemble_template_svg,
     load_template_contract,
@@ -89,8 +90,9 @@ def _validate_body_image(source: Path, page_number: int) -> tuple[int, int]:
 
 
 def _page_title(script: Path, page_number: int) -> str:
-    lines = _script_lines(script, page_number)
-    return lines[0] if lines else f"第{page_number}页"
+    document = parse_script_path(script)
+    page = next((item for item in document.pages if item.sequence == page_number), None)
+    return page.title.strip() if page is not None and page.title.strip() else f"第{page_number}页"
 
 
 def _speaker_notes_by_page(script: Path, page_numbers: list[int]) -> dict[str, str]:
@@ -145,7 +147,13 @@ def run_stage02_reconstruction(
         raise ValueError("assembly_mode must be image, editable, or both")
     manifest_file = Path(manifest_path).expanduser().resolve()
     manifest = _read_json(manifest_file)
-    pairs = _require_audited_pairs(manifest, requested_pages)
+    content_pages = {
+        int(value)
+        for value in manifest.get("content_page_numbers", [])
+        if isinstance(value, int) or str(value).isdigit()
+    }
+    requested_content_pages = [number for number in requested_pages if number in content_pages]
+    pairs = _require_audited_pairs(manifest, requested_content_pages)
     script = Path(str(manifest.get("source_script") or "")).expanduser().resolve()
     if not script.is_file():
         raise FileNotFoundError(f"approved source script is missing: {script}")
@@ -224,60 +232,77 @@ def run_stage02_reconstruction(
         review_path.parent.mkdir(parents=True, exist_ok=True)
         review = {"schema": "cyberppt.image_to_pptx.visual_review.v1", "mode": "image", "issues": [], "requires_rebuild": False, "valid": True, "path": str(review_path)}
         review_path.write_text(json.dumps(review, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    title_by_page = {number: _page_title(script, number) for number, _ in pages}
-    speaker_notes = _speaker_notes_by_page(script, [number for number, _ in pages])
-    expected = [text for number, _ in pages for text in _script_lines(script, number)]
+    title_by_page = {number: _page_title(script, number) for number in requested_pages}
+    speaker_notes = _speaker_notes_by_page(script, requested_pages)
+    script_document = parse_script_path(script)
+    script_pages = {page.sequence: page for page in script_document.pages}
+    structural_lines = {
+        number: [line.strip() for line in script_pages[number].onscreen_text.splitlines() if line.strip()]
+        for number in requested_pages
+        if number not in content_pages
+    }
+    expected = [
+        str(text)
+        for pair in pairs
+        for text in ((pair.get("full") or {}).get("debug_receipt") or {}).get("visible_text", [])
+        if str(text).strip()
+    ]
     for policy in graphic_text_policy:
         for item in policy.get("items", []):
             if item.get("treatment") == "native_text" and item.get("text") not in expected:
                 expected.append(str(item["text"]))
     chrome_expected = [
         *(title_by_page[number] for number, _ in pages),
-        "中国电力企业联合会",
+        *("中国电力企业联合会" for _ in pages),
         *(str(number) for number, _ in pages),
     ]
+    structural_expected = [
+        *[line for number in requested_pages for line in structural_lines.get(number, [])],
+        *("中国电力企业联合会" for number in requested_pages if number not in content_pages),
+    ]
+
+    def structural_svg(number: int, mode: str) -> Path:
+        page = script_pages[number]
+        role = "cover" if page.page_type == "cover" else "ending"
+        target = output_root / mode / "svg_output" / f"p{number:02d}.svg"
+        return assemble_brand_page_svg(
+            output=target,
+            role=role,
+            onscreen_lines=structural_lines[number],
+            contract=contract,
+        )
 
     exports: dict[str, Path] = {}
     text_qa_by_mode: dict[str, dict[str, Any]] = {}
     if needs_image:
         image_svgs: list[Path] = []
-        for pair in pairs:
-            number = int(pair["page_number"])
+        pair_by_page = {int(pair["page_number"]): pair for pair in pairs}
+        for number in requested_pages:
+            if number not in pair_by_page:
+                image_svgs.append(structural_svg(number, "image"))
+                continue
+            pair = pair_by_page[number]
             wrapper = output_root / "image" / "svg_output" / f"p{number:02d}.svg"
-            assemble_template_svg(
-                source=Path(str(pair["full"]["path"])),
-                output=wrapper,
-                title=title_by_page[number],
-                page_number=number,
-                mode="image",
-                contract=contract,
-                body_image=Path(str(pair["full"]["path"])),
-            )
-            image_svgs.append(wrapper)
+            image_svgs.append(assemble_template_svg(source=Path(str(pair["full"]["path"])), output=wrapper, title=title_by_page[number], page_number=number, mode="image", contract=contract, body_image=Path(str(pair["full"]["path"]))))
         image_export = output / "exports" / "template_image.pptx"
         assemble_template_pptx(image_svgs, image_export, notes=speaker_notes)
         exports["image"] = image_export
-        text_qa_by_mode["image"] = _run_text_qa(image_export, chrome_expected, include_body_text=False)
+        text_qa_by_mode["image"] = _run_text_qa(image_export, [*chrome_expected, *structural_expected], include_body_text=False)
 
     if needs_editable:
         editable_svgs: list[Path] = []
         assert quick is not None
-        for pair in pairs:
-            number = int(pair["page_number"])
+        pair_by_page = {int(pair["page_number"]): pair for pair in pairs}
+        for number in requested_pages:
+            if number not in pair_by_page:
+                editable_svgs.append(structural_svg(number, "editable"))
+                continue
             wrapper = output_root / "editable" / "svg_output" / f"p{number:02d}.svg"
-            assemble_template_svg(
-                source=quick.svg_path(number),
-                output=wrapper,
-                title=title_by_page[number],
-                page_number=number,
-                mode="editable",
-                contract=contract,
-            )
-            editable_svgs.append(wrapper)
+            editable_svgs.append(assemble_template_svg(source=quick.svg_path(number), output=wrapper, title=title_by_page[number], page_number=number, mode="editable", contract=contract))
         editable_export = output / "exports" / "editable_svg.pptx"
         assemble_template_pptx(editable_svgs, editable_export, notes=speaker_notes)
         exports["editable"] = editable_export
-        text_qa_by_mode["editable"] = _run_text_qa(editable_export, [*expected, *chrome_expected], include_body_text=True)
+        text_qa_by_mode["editable"] = _run_text_qa(editable_export, [*expected, *chrome_expected, *structural_expected], include_body_text=True)
 
     primary_mode = "editable" if "editable" in exports else "image"
     export = exports[primary_mode]

@@ -292,6 +292,62 @@ def assemble_template_svg(
     return output
 
 
+def assemble_brand_page_svg(
+    *,
+    output: Path,
+    role: str,
+    onscreen_lines: list[str],
+    contract: dict | None = None,
+) -> Path:
+    """Materialize a native cover or ending page from the CEC template assets."""
+
+    if role not in {"cover", "ending"}:
+        raise ValueError(f"unsupported brand page role: {role}")
+    loaded = contract or load_template_contract()
+    template_root = loaded["root"]
+    output.parent.mkdir(parents=True, exist_ok=True)
+    background = template_root / "cover_bg.jpg"
+    target = output.parent / background.name
+    shutil.copy2(background, target)
+    href = target.name
+    lines = [line.strip() for line in onscreen_lines if line.strip()]
+    elements = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" viewBox="0 0 {CANVAS_WIDTH} {CANVAS_HEIGHT}" data-brand-template={quoteattr(role)}>',
+        f'<image x="0" y="0" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" href={quoteattr(href)} preserveAspectRatio="xMidYMid slice"/>',
+    ]
+    if role == "cover":
+        title = lines[0] if lines else ""
+        subtitle = lines[1] if len(lines) > 1 else ""
+        date = lines[2] if len(lines) > 2 else ""
+        elements.extend(
+            [
+                f'<text x="640" y="238" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="46" font-weight="700" fill="#1F2933">{xml_escape(title)}</text>',
+                f'<text x="640" y="302" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="25" fill="#60758A">{xml_escape(subtitle)}</text>',
+                f'<text x="640" y="555" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="28" font-weight="600" fill="#FFFFFF">中国电力企业联合会</text>',
+                f'<text x="640" y="628" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="22" fill="#EAF3FF">{xml_escape(date)}</text>',
+            ]
+        )
+    else:
+        title = lines[0] if lines else "请审议"
+        elements.append(
+            f'<text x="640" y="175" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="58" font-weight="700" fill="#C00000">{xml_escape(title)}</text>'
+        )
+        for index, line in enumerate(lines[1:5]):
+            y = 282 + index * 72
+            elements.extend(
+                [
+                    f'<circle cx="350" cy="{y - 9}" r="5" fill="#C00000"/>',
+                    f'<text x="380" y="{y}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="27" font-weight="600" fill="#FFFFFF">{xml_escape(line)}</text>',
+                ]
+            )
+        elements.append(
+            f'<text x="640" y="620" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="24" fill="#FFFFFF" fill-opacity="0.85">中国电力企业联合会</text>'
+        )
+    elements.append("</svg>\n")
+    output.write_text("\n".join(elements), encoding="utf-8")
+    return output
+
+
 def assemble_template_pptx(svg_files: list[Path], output: Path, *, notes: dict[str, str] | None = None) -> Path:
     """Export wrapped template SVGs through the existing native builder."""
 

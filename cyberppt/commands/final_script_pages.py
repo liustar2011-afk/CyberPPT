@@ -361,11 +361,23 @@ def _run_image_to_editable_svg_build(
     assembly_mode: str = "editable",
 ) -> dict[str, Any]:
     """Run the selected 2:1 body-to-template Stage 02 assembly route."""
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    available_pages = {
+        int(value)
+        for value in manifest.get("requested_pages", [])
+        if isinstance(value, int) or str(value).isdigit()
+    }
+    requested_pages = parse_pages(pages_raw, available_pages)
+    content_pages = {
+        int(value)
+        for value in manifest.get("content_page_numbers", [])
+        if isinstance(value, int) or str(value).isdigit()
+    }
     return run_stage02_reconstruction(
         project=project,
         manifest_path=manifest_path,
         output_dir=output_dir / "editable_svg",
-        requested_pages=[int(value) for value in pages_raw.split(",") if value.strip()],
+        requested_pages=requested_pages,
         assembly_mode=assembly_mode,
     )
 
@@ -738,6 +750,16 @@ def run_final_script_pages(
                 prior_pair = prior_pairs.get(int(pair.get("page_number")))
                 if not isinstance(prior_pair, dict):
                     continue
+                prior_authoring_svg = Path(str(prior_pair.get("authoring_svg") or ""))
+                prior_graphic_text_policy = prior_pair.get("graphic_text_policy")
+                if prior_authoring_svg.is_file():
+                    pair["authoring_svg"] = str(prior_authoring_svg)
+                if (
+                    isinstance(prior_graphic_text_policy, dict)
+                    and prior_graphic_text_policy.get("status") == "complete"
+                    and prior_graphic_text_policy.get("empty_container_check") == "passed"
+                ):
+                    pair["graphic_text_policy"] = prior_graphic_text_policy
                 for variant in output_variants_for_mode(production_mode):
                     current_item = pair.get(variant) or {}
                     prior_item = prior_pair.get(variant) or {}

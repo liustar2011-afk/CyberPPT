@@ -139,10 +139,26 @@ def append_artifacts(
                 for key in ("path", "sha256", "status", "build_id", "stage", "page")
             }
             if comparable_existing != comparable_new:
-                raise ValueError(
-                    f"artifact id already exists with different content: {record['artifact_id']}"
+                same_resume_target = (
+                    existing.get("build_id") == record.get("build_id")
+                    and existing.get("path") == record.get("path")
+                    and existing.get("stage") == record.get("stage")
+                    and existing.get("page") == record.get("page")
                 )
-            continue
+                if not same_resume_target:
+                    raise ValueError(
+                        f"artifact id already exists with different content: {record['artifact_id']}"
+                    )
+                prior_id = str(record["artifact_id"])
+                revision_source = f"{prior_id}|{record.get('sha256', '')}|{record.get('status', '')}"
+                record["artifact_id"] = (
+                    f"artifact-{hashlib.sha256(revision_source.encode('utf-8')).hexdigest()[:20]}"
+                )
+                record["supersedes"] = [prior_id]
+                if record["artifact_id"] in existing_by_id:
+                    continue
+            else:
+                continue
         artifacts.append(record)
         prior_by_key[logical] = record
         existing_by_id[record["artifact_id"]] = record
