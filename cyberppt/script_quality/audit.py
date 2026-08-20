@@ -1195,11 +1195,8 @@ def audit_script_quality(
     # belong to Stage 02, where the actual slide geometry is available.
     stage02_expression_codes = frozenset(
         {
-            "MODULE_HIERARCHY_MISSING",
-            "ONSCREEN_BUSINESS_DETAIL_HIERARCHY_MISSING",
             "ONSCREEN_HEADING_LENGTH_IMBALANCED",
             "ONSCREEN_LINE_TOO_LONG",
-            "ONSCREEN_MODULE_COUNT_MISMATCH",
             "VISIBLE_NODE_OVERLOAD",
             "VISUAL_STRUCTURE_TOO_THIN",
             "DECLARED_RELATION_NOT_VISIBLE",

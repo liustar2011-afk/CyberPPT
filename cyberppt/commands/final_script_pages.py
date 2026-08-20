@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import http.client
 import json
 import shutil
 import sys
@@ -372,6 +373,7 @@ def _run_image_to_editable_svg_build(
 def _generate_manifest_images(
     manifest: dict[str, Any],
     *,
+    checkpoint_path: Path | None = None,
     full_reference_images: list[Path] | None = None,
     model: str,
     quality: str,
@@ -416,6 +418,8 @@ def _generate_manifest_images(
                 item["status"] = "Generated"
                 item.pop("last_error", None)
                 skipped.append(str(output_path))
+                if checkpoint_path is not None:
+                    _write_json(checkpoint_path, manifest)
                 continue
             input_images = (
                 list(page_reference_images or full_reference_images or [])
@@ -502,7 +506,7 @@ def _generate_manifest_images(
                         accepted_audit = audit
                     ensure_output_size(output_path, canvas)
                     break
-            except (OSError, TimeoutError) as exc:
+            except (OSError, TimeoutError, http.client.HTTPException, RuntimeError) as exc:
                 # A transient backend/network fault (broken pipe, connection
                 # reset, timeout) on one page must not discard already-queued
                 # work for every other page in the batch -- record it and move
@@ -519,6 +523,8 @@ def _generate_manifest_images(
                         "error": item["last_error"],
                     }
                 )
+                if checkpoint_path is not None:
+                    _write_json(checkpoint_path, manifest)
                 continue
             if not dry_run:
                 item["status"] = "Generated"
@@ -527,6 +533,8 @@ def _generate_manifest_images(
                 if accepted_audit is not None:
                     item["text_audit"] = accepted_audit
             generated.append(str(output_path))
+            if checkpoint_path is not None:
+                _write_json(checkpoint_path, manifest)
     return {
         "backend": "codex_oauth_image",
         "production_mode": production_mode,
@@ -695,6 +703,8 @@ def run_final_script_pages(
         else _versioned_output_dir(project, slug, build_id)
     )
 
+    prior_manifest_path = target_dir / "page_image_pairs.json"
+    prior_manifest = _read_json(prior_manifest_path) if prior_manifest_path.is_file() else None
     manifest, manifest_path, compiled_script, page_numbers = build_manifest(
         script=script,
         pages_raw=pages_raw,
@@ -715,6 +725,31 @@ def run_final_script_pages(
     manifest["source_mode"] = source_mode
     manifest["source_script"] = str(script)
     manifest["source_script_sha256"] = _sha256(script)
+    if isinstance(prior_manifest, dict):
+        same_source = prior_manifest.get("source_script_sha256") == manifest["source_script_sha256"]
+        same_mode = prior_manifest.get("production_mode") == manifest.get("production_mode")
+        if same_source and same_mode:
+            prior_pairs = {
+                int(pair.get("page_number")): pair
+                for pair in prior_manifest.get("pairs", [])
+                if isinstance(pair, dict) and pair.get("page_number") is not None
+            }
+            for pair in manifest.get("pairs", []):
+                prior_pair = prior_pairs.get(int(pair.get("page_number")))
+                if not isinstance(prior_pair, dict):
+                    continue
+                for variant in output_variants_for_mode(production_mode):
+                    current_item = pair.get(variant) or {}
+                    prior_item = prior_pair.get(variant) or {}
+                    prior_path = Path(str(prior_item.get("path") or ""))
+                    if (
+                        prior_path == Path(str(current_item.get("path") or ""))
+                        and prior_path.is_file()
+                        and (prior_item.get("text_audit") or {}).get("valid") is True
+                    ):
+                        current_item["status"] = "Generated"
+                        current_item["generated_at"] = prior_item.get("generated_at")
+                        current_item["text_audit"] = prior_item["text_audit"]
     _write_json(manifest_path, manifest)
     lock_path = _template_text_lock(
         project=project,
@@ -727,10 +762,31 @@ def run_final_script_pages(
         build_id=build_id,
         assembly_mode=assembly_mode,
     )
+    build_context_path = target_dir / "build_context.json"
+    _write_json(
+        build_context_path,
+        {
+            "schema": "cyberppt.build_context.v1",
+            "build_id": build_id,
+            "created_at": _utc_now(),
+            "project": str(project),
+            "source_script": str(script),
+            "source_script_sha256": _sha256(script),
+            "style_lock": str(style_lock),
+            "style_lock_sha256": _sha256(style_lock),
+            "page_set": page_numbers,
+            "production_mode": production_mode,
+            "assembly_mode": assembly_mode,
+            "stage": "02-production-build" if production_build else "02-blueprint-image-to-editable-svg",
+            "status": "in_progress",
+            "artifacts": {"page_image_pairs": {"path": str(manifest_path), "sha256": _sha256(manifest_path)}},
+        },
+    )
     image_generation = None
     if generate_images:
         image_generation = _generate_manifest_images(
             manifest,
+            checkpoint_path=manifest_path,
             full_reference_images=full_reference_images,
             model=image_model,
             quality=image_quality,
@@ -766,6 +822,8 @@ def run_final_script_pages(
             f"python -m cyberppt final-script-pages {project} --script {script} "
             f"--pages {pages_raw} --style-lock {style_lock} --production-mode {production_mode} "
             f"--assembly-mode {assembly_mode} --output-dir {target_dir} --build-id {build_id}"
+            + (" --generate-images" if generate_images else "")
+            + (" --production-build" if production_build else "")
         )
     )
     production_readiness = None
@@ -838,7 +896,6 @@ def run_final_script_pages(
         "tool_consumption": tool_consumption,
         "production_readiness": production_readiness,
     }
-    build_context_path = target_dir / "build_context.json"
     build_context = {
         "schema": "cyberppt.build_context.v1",
         "build_id": build_id,

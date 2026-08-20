@@ -31,7 +31,7 @@ from scripts.imagegen_pipeline.final_prompt_ir import FinalPromptIR, PromptContr
 # Rich, source-faithful on-screen copy can add a few hundred characters to
 # the measured style contract. Keep the safety ceiling above that variance
 # while retaining the hard upper bound for malformed or runaway prompts.
-MAX_PROMPT_CHARACTERS = 25_000
+MAX_PROMPT_CHARACTERS = 25_500
 
 _PLACEHOLDER_RE = re.compile(r"<[^>\n]{1,80}>")
 

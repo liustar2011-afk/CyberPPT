@@ -6,6 +6,22 @@ description: Quick-only Generate profile for reconstructing one or more source i
 
 ## Sole production conversion route
 
+### Stage 02 checkpoint and resume contract
+
+`final-script-pages` owns the complete production chain: page image generation,
+image-text audit, and the selected PPTX assembly branch. Persist each page's
+image status and passed text-audit receipt to the current manifest immediately;
+do not wait for the whole batch to finish.
+
+When one page fails, rerun the same build id, output directory, source script,
+style lock, production mode, and assembly mode. Reuse only pages whose image
+exists and whose text-audit receipt is valid, then process the failed or missing
+pages. Do not use `--force-images` for ordinary recovery. The recorded resume
+command must retain image generation, production build, and assembly mode.
+
+The `image`, `editable`, and `both` branches consume the same audited manifest.
+Assembly starts only after every requested page has a passed image-text audit.
+
 The repository has one production route for publishing an editable PPTX from
 a rendered page: the high-fidelity Stage 02 Quick path in
 `scripts/image_to_pptx_runtime/stage02_adapter.py`. It requires an audited

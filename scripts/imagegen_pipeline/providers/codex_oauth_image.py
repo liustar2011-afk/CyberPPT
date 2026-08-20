@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import http.client
 import json
 import mimetypes
 import os
@@ -28,6 +29,8 @@ ENHANCED_OUTPUT_SCALE = 2
 DEFAULT_QUALITY = "high"
 DEFAULT_OUTPUT_FORMAT = "png"
 DEFAULT_TIMEOUT = 600
+VISION_REQUEST_ATTEMPTS = 3
+VISION_RETRY_DELAY_SECONDS = 2
 DEFAULT_CODEX_AUTH_FILE = "~/.codex/auth.json"
 DEFAULT_CODEX_IMAGES_BASE_URL = "https://chatgpt.com/backend-api/codex"
 DEFAULT_CODEX_RESPONSES_BASE_URL = "https://chatgpt.com/backend-api/codex"
@@ -732,7 +735,19 @@ def run_codex_vision_text(
         file=sys.stderr,
     )
     started = time.time()
-    response_text = _post_codex_sse(body, timeout)
+    response_text = ""
+    for attempt in range(1, VISION_REQUEST_ATTEMPTS + 1):
+        try:
+            response_text = _post_codex_sse(body, timeout)
+            break
+        except (RuntimeError, OSError, http.client.HTTPException) as exc:
+            if attempt == VISION_REQUEST_ATTEMPTS:
+                raise
+            print(
+                f"Codex OAuth vision request failed; retrying ({attempt}/{VISION_REQUEST_ATTEMPTS - 1}): {exc}",
+                file=sys.stderr,
+            )
+            time.sleep(VISION_RETRY_DELAY_SECONDS)
     output_text = _extract_responses_text(response_text)
     elapsed = time.time() - started
     print(f"Codex OAuth vision analysis completed in {elapsed:.1f}s.", file=sys.stderr)
