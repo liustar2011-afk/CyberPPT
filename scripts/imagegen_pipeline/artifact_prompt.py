@@ -309,6 +309,33 @@ def _deliverable_sentence(spec: PageArtifactSpec) -> str:
     )
 
 
+def _bracketed_header_constraints(visible_text: tuple[str, ...]) -> tuple[str, ...]:
+    """Keep explicit ``【…】`` group headings as integrated hierarchy anchors."""
+
+    headers = tuple(
+        text.strip()
+        for text in visible_text
+        if text.strip().startswith("【") and text.strip().endswith("】")
+    )
+    headers = tuple(dict.fromkeys(headers))
+    if not headers:
+        return ()
+    return (
+        "All bracketed headings are one level-1 family: use the same compact flat rectangular "
+        "title band, left alignment, height, padding, type weight and container-edge placement; "
+        "no diagonal cuts, badges, capsules, raised plaques or 3D title treatment.",
+        "Named child groups use one quieter level-2 style: aligned semibold text or a thin "
+        "divider, with no decorative title plaques.",
+        *(
+            (
+                f'Render "{header}" exactly once in its group container, readable and above its '
+                "group detail; do not omit it or reduce it to decorative microtext."
+            )
+            for header in headers
+        ),
+    )
+
+
 def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
     """Project the audited ``PageArtifactSpec`` into the final prompt IR.
 
@@ -339,6 +366,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
                     (
                         *spec.hard_constraints.global_constraints,
                         *spec.hard_constraints.page_constraints,
+                        *_bracketed_header_constraints(spec.typography.visible_text),
                     )
                 )
             ),

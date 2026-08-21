@@ -206,6 +206,22 @@ class ArtifactPromptTests(unittest.TestCase):
         self.assertGreater(prompt.count("Governed input"), 1)
         self.assertEqual(1, prompt.count('- Exact visible text: "Governed input"'))
 
+    def test_bracketed_visible_text_uses_one_shared_hierarchy_grammar(self) -> None:
+        spec = replace(
+            _spec(),
+            typography=replace(
+                _spec().typography,
+                visible_text=("【建设方向】", "Governed input", "Traceable result"),
+            ),
+        )
+
+        prompt = render_final_prompt(build_final_prompt_ir(spec))
+
+        self.assertIn('Render "【建设方向】" exactly once in its group container', prompt)
+        self.assertIn("one level-1 family", prompt)
+        self.assertIn("same compact flat rectangular title band", prompt)
+        self.assertIn("one quieter level-2 style", prompt)
+
     def test_artifact_compiler_uses_projection_as_sole_prompt_authority(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             style_lock = Path(directory) / "style.json"
