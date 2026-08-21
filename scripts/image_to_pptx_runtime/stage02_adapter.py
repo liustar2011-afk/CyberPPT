@@ -22,6 +22,10 @@ from .native_text_style import (
     apply_default_native_text_style,
     write_native_text_style_receipt,
 )
+from .native_text_geometry import (
+    analyze_native_text_geometry,
+    write_native_text_geometry_receipt,
+)
 from .review import write_review
 from .svg_quality.checker import SVGQualityChecker
 from .template_assembly import (
@@ -212,6 +216,7 @@ def run_stage02_reconstruction(
     svgs: list[Path] = []
     quality: list[dict[str, Any]] = []
     native_text_style: list[dict[str, Any]] = []
+    native_text_geometry: list[dict[str, Any]] = []
     graphic_text_policy: list[dict[str, Any]] = []
     clean_base_policy: list[dict[str, Any]] = []
     checker = SVGQualityChecker(quick_generate=True)
@@ -242,6 +247,13 @@ def run_stage02_reconstruction(
             target = quick.svg_path(int(pair["page_number"]))
             shutil.copy2(authored, target)
             _copy_relative_svg_assets(authored, target)
+            native_text_geometry.append(
+                analyze_native_text_geometry(
+                    pair.get("graphic_text_policy"),
+                    authored_svg=target,
+                    page_number=int(pair["page_number"]),
+                )
+            )
             native_text_style.append(apply_default_native_text_style(target))
             report = checker.check_file(str(target))
             quality.append(report)
@@ -367,11 +379,15 @@ def run_stage02_reconstruction(
         native_text_style,
         analysis / "native_text_style_qa.json",
     )
+    native_text_geometry_path = write_native_text_geometry_receipt(
+        native_text_geometry,
+        analysis / "native_text_geometry_qa.json",
+    )
     clean_base_path = analysis / "clean_base_policy_qa.json"
     clean_base_path.write_text(json.dumps(clean_base_policy, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     runtime_root = quick.root if quick is not None else output_root / "image"
-    artifacts = {"reconstruction_inventory": str(runtime_root / "analysis" / "reconstruction_inventory.json"), "svg_output": str(runtime_root / "svg_output"), "reconstruction_quality": str(analysis), "native_text_style_qa": str(native_text_style_path), "text_content_qa": str(text_path), "clean_base_policy_qa": str(clean_base_path), "graphic_text_policy_qa": str(graphic_text_path), "render_compare": str(review["path"]), "exported_pptx": str(export)}
-    reports = {"reconstruction_inventory": {"valid": True}, "reconstruction_quality": {"valid": True, "pages": quality}, "svg_output": {"valid": True}, "native_text_style": {"valid": True, "pages": native_text_style}, "text_content_qa": text_qa_by_mode, "clean_base_policy": {"valid": True, "pages": clean_base_policy}, "graphic_text_policy": {"valid": True, "pages": graphic_text_policy}, "render_compare": {"valid": review["valid"], "review": review}, "exported_pptx": {"valid": True}, "exported_pptx_by_mode": {mode: {"valid": True, "path": str(path)} for mode, path in exports.items()}}
+    artifacts = {"reconstruction_inventory": str(runtime_root / "analysis" / "reconstruction_inventory.json"), "svg_output": str(runtime_root / "svg_output"), "reconstruction_quality": str(analysis), "native_text_style_qa": str(native_text_style_path), "native_text_geometry_qa": str(native_text_geometry_path), "text_content_qa": str(text_path), "clean_base_policy_qa": str(clean_base_path), "graphic_text_policy_qa": str(graphic_text_path), "render_compare": str(review["path"]), "exported_pptx": str(export)}
+    reports = {"reconstruction_inventory": {"valid": True}, "reconstruction_quality": {"valid": True, "pages": quality}, "svg_output": {"valid": True}, "native_text_style": {"valid": True, "pages": native_text_style}, "native_text_geometry": {"valid": True, "qa_only": True, "pages": native_text_geometry, "review_required": any(report.get("review_required") for report in native_text_geometry)}, "text_content_qa": text_qa_by_mode, "clean_base_policy": {"valid": True, "pages": clean_base_policy}, "graphic_text_policy": {"valid": True, "pages": graphic_text_policy}, "render_compare": {"valid": review["valid"], "review": review}, "exported_pptx": {"valid": True}, "exported_pptx_by_mode": {mode: {"valid": True, "path": str(path)} for mode, path in exports.items()}}
     readiness = build_production_readiness(stage="02-production-build", artifacts=artifacts, reports=reports, required_tools=tuple(artifacts))
     result = {"schema": "cyberppt.image_to_pptx.stage02.v1", "status": readiness["status"], "assembly_mode": assembly_mode, "runtime_project": str(runtime_root), "svg_roster": [str(svg) for svg in svgs], "svg_quality": quality, "visual_review": review, "artifacts": artifacts, "artifacts_by_mode": {mode: str(path) for mode, path in exports.items()}, "reports": reports, "text_content_qa": text_qa_by_mode, "release_gate": {"valid": True, "manual_adjustments": "local_only"}, "delivery_readiness": readiness}
     result_path = analysis / "image-to-pptx-result.json"

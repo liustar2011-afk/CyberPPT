@@ -14,6 +14,14 @@ by hand and do not call `run_stage02_reconstruction` directly.
 Default chain: audited full image → text-free base → native SVG text rebuild →
 editable PPTX assembly → render and text QA.
 
+The default editable branch also runs read-only native-text geometry QA after
+the authored SVG is copied into the runtime project and before native styling.
+It writes `analysis/native_text_geometry_qa.json` and includes the report in
+the Stage 02 result. The report compares policy OCR regions with SVG text
+baselines, line metrics and authored font sizes; it does not rewrite SVG
+coordinates or infer a PowerPoint font size from OCR bbox height. Ambiguous
+matches, missing bboxes and locked SVGs remain explicit review outcomes.
+
 Before export, every page needs a complete `clean_base` contract and
 `graphic_text_policy`. Ordinary readable text uses `native_text`. Use
 `preserved_in_image` only for text integral to an identity graphic, with
