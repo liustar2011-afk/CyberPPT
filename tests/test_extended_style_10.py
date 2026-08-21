@@ -43,6 +43,8 @@ def test_style_ten_is_style_nine_rule_replacement_explicit_extension() -> None:
     assert style_ten["colors"]["accent"] == "#12355B"
     assert "高级编辑式气质" in style_ten["scope_rule"]
     assert "executive briefing" in style_ten["prompt_contract"]
+    assert "Keep connection lines absent by default" in style_ten["prompt_contract"]
+    assert "连线：默认不使用连接线" in style_ten["prompt_contract"]
     assert "Positive construction grammar" not in style_ten["prompt_contract"]
     assert "style_prompt_v2" not in style_ten
 
@@ -73,6 +75,10 @@ def test_style_ten_keeps_page_composition_guidance_and_full_contract() -> None:
     assert "主关系：多路能力汇聚为一个服务中枢。" in prompt
     assert "Keep all locked Chinese text complete, unchanged and readable" in prompt
     assert "one continuous" in prompt
+    assert prompt.count("【风格09最终执行锁｜最高优先级】") == 1
+    terminal_lock = prompt.split("【风格09最终执行锁｜最高优先级】", 1)[1]
+    assert terminal_lock.count("Keep connection lines absent by default") == 1
+    assert "purposeful connectors" not in prompt
 
 
 def test_style_ten_is_not_added_to_default_eight() -> None:

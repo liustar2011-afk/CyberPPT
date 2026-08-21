@@ -344,7 +344,7 @@ Use pure white `#FFFFFF` as the page-level background. Do not shift the overall 
 5. Organize two to five open semantic regions around, within or along the dominant anchor. These regions share one visual field and do not require independent cards or icon containers.
 6. Use one or two large semantic actions to show comparison, convergence, transformation, separation, support, control, approval or result.
 7. Complete the reading path with one clearly emphasized judgment or outcome region.
-8. Do not use arrows anywhere on the page; express relationships through position, proximity, grouping or numbering, using a plain undirected line only if truly necessary.
+8. Keep connection lines absent by default. Express relationships through position, proximity, grouping, containment, alignment or numbering; use one plain undirected line only when an explicit cross-object relationship cannot be expressed otherwise.
 
 Create hierarchy through crop, overlap, scale contrast, tonal separation, alignment, deep-blue emphasis and shallow foreground–background relationships.
 
@@ -454,7 +454,7 @@ Represent each source-supported concept once; supporting elements may add eviden
 
 When the composition already expresses a process, hierarchy or layered relationship, do not add a second icon chain, footer process or extra summary band unless explicitly required by the source content.
 
-Use one primary visual metaphor per page; express remaining relationships through scene state, position, scale, crop, color fields and purposeful connectors, not a left-structure + right-explanation + bottom-summary formula.
+Use one primary visual metaphor per page; express remaining relationships through scene state, position, scale, crop and color fields. Keep connectors absent by default; one plain undirected line is allowed only for an explicit cross-object relationship that spatial composition cannot otherwise express.
 
 Keep the result free from icon-led modular layouts, repeated device mockups, dense microtext and duplicated semantic summaries, and from any SaaS-marketing, app-store-style or futuristic 3D concept-art visual language (see the material and icon discipline rules above for the full decoration exclusion list). These exclusions are secondary: always prioritize content fidelity, recognizable business anchoring, open scene-led composition, semantic clarity, restrained editorial flatness and executive-level visual hierarchy.
 
@@ -494,7 +494,7 @@ Preserve the approved source actors, relationships, conditions, status, and fact
 【风格09最终执行锁｜最高优先级】
 Treat the generated image as a reconstruction-friendly, editorial visual blueprint for editable PowerPoint conversion — keep the overall composition disciplined and magazine-orderly. Keep all locked Chinese text complete, unchanged and readable in clean high-contrast text-safe zones with stable geometry; place labels adjacent to the related object rather than baking them into screens, devices, icons or perspective surfaces. Icon count is zero by default.
 
-Do not use arrows or arrowheads anywhere on the page. Express every relationship through position, proximity, grouping, numbering or a plain undirected line, never a pointed or directional connector. A line still must stand for one relationship named in the reading path; adjacency or enumeration alone is not a declared relationship.
+Do not use arrows or arrowheads anywhere on the page. Keep connection lines absent by default. Only one plain, solid, undirected connector is allowed when a relationship explicitly named in the reading path cannot be expressed through position, proximity, grouping, containment, alignment, numbering or color. Never use a pointed or directional connector.
 
 Every scene, object or fragment must be traceable to a named actor, service, asset or outcome that actually appears on this page; if it cannot be tied to specific content here, remove it rather than keep it as ambience — do not substitute a generic senior-office tableau for content-specific imagery.
 
@@ -506,8 +506,8 @@ Do not depict organization names, logos, seals, signage, recognizable headquarte
 
 Render the page's locked on-screen text faithfully in the main composition. Auxiliary semantic imagery may use a small amount of clear Chinese labels, interface text, chart labels, or document wording when it directly clarifies the nearby business object or relationship. Do not add unrelated decorative text, dense pseudo-Chinese, or text that pretends to be factual evidence; keep supporting text subordinate to the page's locked on-screen text.
 
-线条：主关系用细、实、方向一致的深蓝线；反馈或复盘最多一条浅灰短虚线，虚线不作装饰节点链、不沿页面三边绕行，也不同时承担边框、回流和装饰；每条线必须落在对象外边界，圆点只用于真实接口、汇聚或分支，禁止线端悬空、靠近但不接触或跨越文字。边框：整页可见边界最多两级，只用细线直角矩形或开放平面色场表达业务范围与必要子组；组内项目优先用留白、对齐、浅色底或短分隔线，不逐项完整套框；禁止胶囊、厚框、梯形、切角、异形、玻璃舱和立体门框。箭头：禁止使用，关系优先通过邻接、对齐、包含、留白和颜色表达；确需连线时只用细实线，不加箭头头，闭环用开放路径或短回接线。形状：默认使用平面直角矩形、开放色场和低矮哑光正视微立体，同页异形标题条最多一个；低矮平台只在平台承载、分层支撑或汇聚中枢语义明确时使用，且不得兼作页面外框、标题底座和装饰舞台；禁止徽章、盾牌、圆盘、梯形、六边形、切角容器、厚底座、多层台阶、夸张挤出和复杂光效；锁定内容未明确要求时，不生成对勾、警告三角、循环图标、定位针、盾牌或装饰性连续箭头。颜色：深蓝表达主关系和结论，浅蓝灰承载辅助信息，暖色只标记风险、异常、限制、禁止或待处理状态；不得仅为区分类目自动分配多色或彩虹色。
-边框、分隔线、连接线、箭头和几何形状须体现精密矢量级工艺——线条粗细全程一致、直角平直、曲线圆滑连续无棱角抖动、边缘干净无锯齿，同一图形家族的圆角半径保持统一；多层堆叠色块须对齐同一网格、间距均匀，若使用分层立体效果须保持对称克制，禁止交错错位投影、锯齿状或不均匀阴影边缘；边框与连接线应呈现如专业矢量工具绘制的精度，禁止手绘感抖动线、粗细不均、转角处衔接错位或断裂。盾牌、立体等距图标等具象元素本身不受限制，可正常按语义使用，只需与整体精致优雅的线条工艺保持一致。若上屏文字本身已带有序号前缀（如①②③或数字编号），不得再额外绘制独立的装饰性数字徽章、圆盘或序号标记来重复表达同一序号；每个步骤/阶段的序号只呈现一次。线条与边框的"精密"只针对笔画本身的干净度（不歪、不抖、边缘清晰），不等于全页处处等大、等距、等圆角；禁止为了显得规整就把所有卡片、图标、连接线做成完全相同的尺寸和间距、套成一个僵硬的网格；应保留非对称留白、按内容重要性调整大小和视觉权重，让版式呈现高级编辑排版的手工节奏感，而不是模板化图表网格。
+连线：默认不使用连接线。仅当锁定内容明确声明跨对象关系，且邻接、对齐、包含、分区、留白、编号和颜色无法表达时，可使用一条细、实、无方向的深蓝连接线；不得形成流程串联、节点链、回路或装饰，不得跨越文字。获准连线必须连接两个对象外边界，不得悬空，圆点只用于真实接口、汇聚或分支。边框：整页可见边界最多两级，只用细线直角矩形或开放平面色场表达业务范围与必要子组；组内项目优先用留白、对齐、浅色底或短分隔线，不逐项完整套框；禁止胶囊、厚框、梯形、切角、异形、玻璃舱和立体门框。箭头：禁止使用。形状：默认使用平面直角矩形、开放色场和低矮哑光正视微立体，同页异形标题条最多一个；低矮平台只在平台承载、分层支撑或汇聚中枢语义明确时使用，且不得兼作页面外框、标题底座和装饰舞台；禁止徽章、盾牌、圆盘、梯形、六边形、切角容器、厚底座、多层台阶、夸张挤出和复杂光效；锁定内容未明确要求时，不生成对勾、警告三角、循环图标、定位针、盾牌或装饰性连续箭头。颜色：深蓝表达主关系和结论，浅蓝灰承载辅助信息，暖色只标记风险、异常、限制、禁止或待处理状态；不得仅为区分类目自动分配多色或彩虹色。
+边框、分隔线、获准的单条连接线、箭头和几何形状须体现精密矢量级工艺——线条粗细全程一致、直角平直、曲线圆滑连续无棱角抖动、边缘干净无锯齿，同一图形家族的圆角半径保持统一；多层堆叠色块须对齐同一网格、间距均匀，若使用分层立体效果须保持对称克制，禁止交错错位投影、锯齿状或不均匀阴影边缘；边框与获准连接线应呈现如专业矢量工具绘制的精度，禁止手绘感抖动线、粗细不均、转角处衔接错位或断裂。盾牌、立体等距图标等具象元素本身不受限制，可正常按语义使用，只需与整体精致优雅的线条工艺保持一致。若上屏文字本身已带有序号前缀（如①②③或数字编号），不得再额外绘制独立的装饰性数字徽章、圆盘或序号标记来重复表达同一序号；每个步骤/阶段的序号只呈现一次。线条与边框的"精密"只针对笔画本身的干净度（不歪、不抖、边缘清晰），不等于全页处处等大、等距、等圆角；禁止为了显得规整就把所有卡片、图标或获准连接线做成完全相同的尺寸和间距、套成一个僵硬的网格；应保留非对称留白、按内容重要性调整大小和视觉权重，让版式呈现高级编辑排版的手工节奏感，而不是模板化图表网格。
 
 ## 扩展风格10：纯白 + 深蓝领导汇报（与风格9相同，仅编号不同）
 
@@ -533,7 +533,7 @@ Use pure white `#FFFFFF` as the page-level background. Do not shift the overall 
 5. Organize two to five open semantic regions around, within or along the dominant anchor. These regions share one visual field and do not require independent cards or icon containers.
 6. Use one or two large semantic actions to show comparison, convergence, transformation, separation, support, control, approval or result.
 7. Complete the reading path with one clearly emphasized judgment or outcome region.
-8. Do not use arrows anywhere on the page; express relationships through position, proximity, grouping or numbering, using a plain undirected line only if truly necessary.
+8. Keep connection lines absent by default. Express relationships through position, proximity, grouping, containment, alignment or numbering; use one plain undirected line only when an explicit cross-object relationship cannot be expressed otherwise.
 
 Create hierarchy through crop, overlap, scale contrast, tonal separation, alignment, deep-blue emphasis and shallow foreground–background relationships.
 
@@ -643,7 +643,7 @@ Represent each source-supported concept once; supporting elements may add eviden
 
 When the composition already expresses a process, hierarchy or layered relationship, do not add a second icon chain, footer process or extra summary band unless explicitly required by the source content.
 
-Use one primary visual metaphor per page; express remaining relationships through scene state, position, scale, crop, color fields and purposeful connectors, not a left-structure + right-explanation + bottom-summary formula.
+Use one primary visual metaphor per page; express remaining relationships through scene state, position, scale, crop and color fields. Keep connectors absent by default; one plain undirected line is allowed only for an explicit cross-object relationship that spatial composition cannot otherwise express.
 
 Keep the result free from icon-led modular layouts, repeated device mockups, dense microtext and duplicated semantic summaries, and from any SaaS-marketing, app-store-style or futuristic 3D concept-art visual language (see the material and icon discipline rules above for the full decoration exclusion list). These exclusions are secondary: always prioritize content fidelity, recognizable business anchoring, open scene-led composition, semantic clarity, restrained editorial flatness and executive-level visual hierarchy.
 
@@ -683,7 +683,7 @@ Preserve the approved source actors, relationships, conditions, status, and fact
 【风格09最终执行锁｜最高优先级】
 Treat the generated image as a reconstruction-friendly, editorial visual blueprint for editable PowerPoint conversion — keep the overall composition disciplined and magazine-orderly. Keep all locked Chinese text complete, unchanged and readable in clean high-contrast text-safe zones with stable geometry; place labels adjacent to the related object rather than baking them into screens, devices, icons or perspective surfaces. Icon count is zero by default.
 
-Do not use arrows or arrowheads anywhere on the page. Express every relationship through position, proximity, grouping, numbering or a plain undirected line, never a pointed or directional connector. A line still must stand for one relationship named in the reading path; adjacency or enumeration alone is not a declared relationship.
+Do not use arrows or arrowheads anywhere on the page. Keep connection lines absent by default. Only one plain, solid, undirected connector is allowed when a relationship explicitly named in the reading path cannot be expressed through position, proximity, grouping, containment, alignment, numbering or color. Never use a pointed or directional connector.
 
 Every scene, object or fragment must be traceable to a named actor, service, asset or outcome that actually appears on this page; if it cannot be tied to specific content here, remove it rather than keep it as ambience — do not substitute a generic senior-office tableau for content-specific imagery.
 
@@ -695,6 +695,6 @@ Do not depict organization names, logos, seals, signage, recognizable headquarte
 
 Render the page's locked on-screen text faithfully in the main composition. Auxiliary semantic imagery may use a small amount of clear Chinese labels, interface text, chart labels, or document wording when it directly clarifies the nearby business object or relationship. Do not add unrelated decorative text, dense pseudo-Chinese, or text that pretends to be factual evidence; keep supporting text subordinate to the page's locked on-screen text.
 
-线条：主关系用细、实、方向一致的深蓝线；反馈或复盘最多一条浅灰短虚线，虚线不作装饰节点链、不沿页面三边绕行，也不同时承担边框、回流和装饰；每条线必须落在对象外边界，圆点只用于真实接口、汇聚或分支，禁止线端悬空、靠近但不接触或跨越文字。边框：整页可见边界最多两级，只用细线直角矩形或开放平面色场表达业务范围与必要子组；组内项目优先用留白、对齐、浅色底或短分隔线，不逐项完整套框；禁止胶囊、厚框、梯形、切角、异形、玻璃舱和立体门框。箭头：禁止使用，关系优先通过邻接、对齐、包含、留白和颜色表达；确需连线时只用细实线，不加箭头头，闭环用开放路径或短回接线。形状：默认使用平面直角矩形、开放色场和低矮哑光正视微立体，同页异形标题条最多一个；低矮平台只在平台承载、分层支撑或汇聚中枢语义明确时使用，且不得兼作页面外框、标题底座和装饰舞台；禁止徽章、盾牌、圆盘、梯形、六边形、切角容器、厚底座、多层台阶、夸张挤出和复杂光效；锁定内容未明确要求时，不生成对勾、警告三角、循环图标、定位针、盾牌或装饰性连续箭头。颜色：深蓝表达主关系和结论，浅蓝灰承载辅助信息，暖色只标记风险、异常、限制、禁止或待处理状态；不得仅为区分类目自动分配多色或彩虹色。
-边框、分隔线、连接线、箭头和几何形状须体现精密矢量级工艺——线条粗细全程一致、直角平直、曲线圆滑连续无棱角抖动、边缘干净无锯齿，同一图形家族的圆角半径保持统一；多层堆叠色块须对齐同一网格、间距均匀，若使用分层立体效果须保持对称克制，禁止交错错位投影、锯齿状或不均匀阴影边缘；边框与连接线应呈现如专业矢量工具绘制的精度，禁止手绘感抖动线、粗细不均、转角处衔接错位或断裂。盾牌、立体等距图标等具象元素本身不受限制，可正常按语义使用，只需与整体精致优雅的线条工艺保持一致。若上屏文字本身已带有序号前缀（如①②③或数字编号），不得再额外绘制独立的装饰性数字徽章、圆盘或序号标记来重复表达同一序号；每个步骤/阶段的序号只呈现一次。线条与边框的"精密"只针对笔画本身的干净度（不歪、不抖、边缘清晰），不等于全页处处等大、等距、等圆角；禁止为了显得规整就把所有卡片、图标、连接线做成完全相同的尺寸和间距、套成一个僵硬的网格；应保留非对称留白、按内容重要性调整大小和视觉权重，让版式呈现高级编辑排版的手工节奏感，而不是模板化图表网格。
+连线：默认不使用连接线。仅当锁定内容明确声明跨对象关系，且邻接、对齐、包含、分区、留白、编号和颜色无法表达时，可使用一条细、实、无方向的深蓝连接线；不得形成流程串联、节点链、回路或装饰，不得跨越文字。获准连线必须连接两个对象外边界，不得悬空，圆点只用于真实接口、汇聚或分支。边框：整页可见边界最多两级，只用细线直角矩形或开放平面色场表达业务范围与必要子组；组内项目优先用留白、对齐、浅色底或短分隔线，不逐项完整套框；禁止胶囊、厚框、梯形、切角、异形、玻璃舱和立体门框。箭头：禁止使用。形状：默认使用平面直角矩形、开放色场和低矮哑光正视微立体，同页异形标题条最多一个；低矮平台只在平台承载、分层支撑或汇聚中枢语义明确时使用，且不得兼作页面外框、标题底座和装饰舞台；禁止徽章、盾牌、圆盘、梯形、六边形、切角容器、厚底座、多层台阶、夸张挤出和复杂光效；锁定内容未明确要求时，不生成对勾、警告三角、循环图标、定位针、盾牌或装饰性连续箭头。颜色：深蓝表达主关系和结论，浅蓝灰承载辅助信息，暖色只标记风险、异常、限制、禁止或待处理状态；不得仅为区分类目自动分配多色或彩虹色。
+边框、分隔线、获准的单条连接线、箭头和几何形状须体现精密矢量级工艺——线条粗细全程一致、直角平直、曲线圆滑连续无棱角抖动、边缘干净无锯齿，同一图形家族的圆角半径保持统一；多层堆叠色块须对齐同一网格、间距均匀，若使用分层立体效果须保持对称克制，禁止交错错位投影、锯齿状或不均匀阴影边缘；边框与获准连接线应呈现如专业矢量工具绘制的精度，禁止手绘感抖动线、粗细不均、转角处衔接错位或断裂。盾牌、立体等距图标等具象元素本身不受限制，可正常按语义使用，只需与整体精致优雅的线条工艺保持一致。若上屏文字本身已带有序号前缀（如①②③或数字编号），不得再额外绘制独立的装饰性数字徽章、圆盘或序号标记来重复表达同一序号；每个步骤/阶段的序号只呈现一次。线条与边框的"精密"只针对笔画本身的干净度（不歪、不抖、边缘清晰），不等于全页处处等大、等距、等圆角；禁止为了显得规整就把所有卡片、图标或获准连接线做成完全相同的尺寸和间距、套成一个僵硬的网格；应保留非对称留白、按内容重要性调整大小和视觉权重，让版式呈现高级编辑排版的手工节奏感，而不是模板化图表网格。
 

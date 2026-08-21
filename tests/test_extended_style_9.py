@@ -115,7 +115,9 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     # factuality_rule (now a few paragraphs earlier in the same contract)
     # already forbids organization names/logos/seals/signage.
     assert "invented names, logos, seals, signage" not in style_nine["prompt_contract"]
-    assert "线条：主关系用细、实、方向一致的深蓝线" in style_nine["prompt_contract"]
+    assert "Keep connection lines absent by default" in style_nine["prompt_contract"]
+    assert "连线：默认不使用连接线" in style_nine["prompt_contract"]
+    assert "purposeful connectors" not in style_nine["prompt_contract"]
     assert "低矮哑光正视微立体" in style_nine["prompt_contract"]
     assert "箭头：禁止使用" in style_nine["prompt_contract"]
     assert "icon_rule" not in style_nine
@@ -248,6 +250,9 @@ def test_style_nine_terminal_lock_helper_is_not_the_formal_style_consumer() -> N
 
     assert prompt.count("### Final ImageGen execution lock — hard") == 0
     assert prompt.count("【风格09最终执行锁｜最高优先级】") == 1
+    terminal_lock = prompt.split("【风格09最终执行锁｜最高优先级】", 1)[1]
+    assert terminal_lock.count("Keep connection lines absent by default") == 1
+    assert "purposeful connectors" not in prompt
 
 
 def test_final_script_pages_cli_accepts_explicit_style_nine() -> None:
