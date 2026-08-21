@@ -8,7 +8,7 @@ import statistics
 from pathlib import Path
 from typing import Any, Mapping
 
-from PIL import Image, ImageDraw
+from PIL import Image
 
 from .clean_base_policy import SCHEMA
 
@@ -101,6 +101,38 @@ def _dominant_light_surface_color(image: Image.Image, box: tuple[int, int, int, 
         return None
     channels = list(zip(*dominant))
     return tuple(int(statistics.median(channel)) for channel in channels)
+
+
+def _erase_glyph_pixels(
+    *,
+    source: Image.Image,
+    destination: Image.Image,
+    box: tuple[int, int, int, int],
+    surface: tuple[int, int, int],
+) -> int:
+    """Clear only foreground glyph pixels inside a text clearance region.
+
+    OCR boxes are a safe *scope*, not a permission to paint a solid rectangle.
+    On a verified flat local surface, a pixel sufficiently different from that
+    surface is a conservative text-glyph candidate.  This keeps the original
+    card fill, border, and neighbouring visual treatment intact.
+    """
+
+    left, top, right, bottom = box
+    source_pixels = source.load()
+    destination_pixels = destination.load()
+    changed = 0
+    # Antialiased text needs a modest threshold, while the flat-surface gate
+    # above prevents normal background texture from being treated as glyphs.
+    threshold = 20
+    for y in range(top, bottom):
+        for x in range(left, right):
+            pixel = source_pixels[x, y]
+            if max(abs(pixel[index] - surface[index]) for index in range(3)) < threshold:
+                continue
+            destination_pixels[x, y] = surface
+            changed += 1
+    return changed
 
 
 def _ocr_box(value: object) -> tuple[int, int, int, int] | None:
@@ -258,24 +290,34 @@ def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> 
         if isinstance(existing, Mapping) and existing.get("schema") == SCHEMA and existing.get("status") == "complete":
             results.append({"page_number": page_number, "status": "reused", "path": existing.get("path")})
             continue
-        fills: list[tuple[dict[str, Any], tuple[int, int, int], str]] = []
+        fills: list[tuple[dict[str, Any], tuple[int, int, int]]] = []
         for region in regions:
             color = _flat_surface_color(image, region["bbox"])
-            method = "flat-surface-rebuild"
             if color is None:
                 color = _dominant_light_surface_color(image, region["bbox"])
-                method = "local-background-reconstruction"
             if color is None:
                 errors.append(f"{region['policy_id']}: local background is unsuitable for automatic reconstruction")
             else:
-                fills.append((region, color, method))
+                fills.append((region, color))
         if errors:
             results.append({"page_number": page_number, "status": "auto_failed", "errors": errors})
             continue
         base = image.copy()
-        draw = ImageDraw.Draw(base)
-        for region, color, _ in fills:
-            draw.rectangle(region["bbox"], fill=color)
+        cleaned_pixel_counts: dict[str, int] = {}
+        for region, color in fills:
+            changed = _erase_glyph_pixels(
+                source=image,
+                destination=base,
+                box=region["bbox"],
+                surface=color,
+            )
+            if changed == 0:
+                errors.append(f"{region['policy_id']}: no glyph pixels differ from the verified local surface")
+            else:
+                cleaned_pixel_counts[str(region["policy_id"])] = changed
+        if errors:
+            results.append({"page_number": page_number, "status": "auto_failed", "errors": errors})
+            continue
         destination = assets / f"page_{page_number:03d}_clean_base.png"
         base.save(destination)
         ocr_passed, ocr_residual = _post_clean_ocr(destination, regions)
@@ -295,9 +337,10 @@ def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> 
                 "policy_id": region["policy_id"],
                 "text": region["text"],
                 "bbox": list(region["bbox"]),
-                "method": method,
+                "method": "masked-inpainting",
+                "cleared_pixel_count": cleaned_pixel_counts[str(region["policy_id"])],
             }
-            for region, _, method in fills
+            for region, _ in fills
         ]
         pair["clean_base"] = {
             "schema": SCHEMA,
@@ -311,7 +354,7 @@ def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> 
             "cleaned_text_regions": clean_regions,
             "visual_diff_report": {
                 "status": "passed",
-                "method": "flat-surface-local-rebuild",
+                "method": "glyph-masked-local-rebuild",
                 "checks": {
                     "text_removal": "passed",
                     "background_continuity": "passed",

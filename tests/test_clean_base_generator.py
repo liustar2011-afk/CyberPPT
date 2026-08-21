@@ -19,15 +19,17 @@ def _policy(*, bbox: list[int]) -> dict[str, object]:
 
 def test_generator_creates_flat_surface_clean_base_and_manifest_contract(tmp_path: Path) -> None:
     full = tmp_path / "full.png"
-    image = Image.new("RGB", (400, 200), "white")
-    ImageDraw.Draw(image).rectangle((80, 60, 179, 99), fill="#0B3B78")
+    image = Image.new("RGB", (400, 200), "#0B3B78")
+    draw = ImageDraw.Draw(image)
+    draw.rounded_rectangle((90, 55, 170, 105), radius=8, fill="#FFFFFF")
+    draw.rectangle((110, 72, 149, 86), fill="#12355B")
     image.save(full)
     manifest: dict[str, object] = {
         "pairs": [
             {
                 "page_number": 1,
                 "full": {"path": str(full)},
-                "graphic_text_policy": _policy(bbox=[80, 60, 180, 100]),
+                "graphic_text_policy": _policy(bbox=[100, 65, 160, 95]),
             }
         ]
     }
@@ -43,7 +45,11 @@ def test_generator_creates_flat_surface_clean_base_and_manifest_contract(tmp_pat
     clean = pair["clean_base"]  # type: ignore[index]
     assert clean["status"] == "complete"
     assert Path(clean["path"]).is_file()
-    assert clean["cleaned_text_regions"][0]["method"] == "flat-surface-rebuild"
+    assert clean["cleaned_text_regions"][0]["method"] == "masked-inpainting"
+    with Image.open(clean["path"]) as result:
+        assert result.getpixel((110, 72)) == (255, 255, 255)
+        assert result.getpixel((95, 65)) == (255, 255, 255)
+        assert result.getpixel((75, 55)) == (11, 59, 120)
 
 
 def test_generator_auto_fails_non_uniform_background(tmp_path: Path) -> None:
@@ -105,7 +111,9 @@ def test_generator_reuses_seeded_baseline_after_current_policy_is_located(tmp_pa
 def test_generator_auto_fails_when_post_clean_ocr_finds_residual_text(tmp_path: Path) -> None:
     full = tmp_path / "full.png"
     image = Image.new("RGB", (400, 200), "white")
-    ImageDraw.Draw(image).rectangle((80, 60, 179, 99), fill="#0B3B78")
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((80, 60, 179, 99), fill="#0B3B78")
+    draw.rectangle((105, 72, 145, 86), fill="#FFFFFF")
     image.save(full)
     manifest: dict[str, object] = {
         "pairs": [
@@ -131,7 +139,9 @@ def test_generator_auto_fails_when_post_clean_ocr_finds_residual_text(tmp_path: 
 def test_generator_reconstructs_near_white_surface_interrupted_by_divider(tmp_path: Path) -> None:
     full = tmp_path / "full.png"
     image = Image.new("RGB", (400, 200), "#F8F8F3")
-    ImageDraw.Draw(image).rectangle((72, 40, 79, 120), fill="#174D7A")
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((72, 40, 79, 120), fill="#174D7A")
+    draw.rectangle((105, 72, 145, 86), fill="#174D7A")
     image.save(full)
     manifest: dict[str, object] = {
         "pairs": [
@@ -151,7 +161,7 @@ def test_generator_reconstructs_near_white_surface_interrupted_by_divider(tmp_pa
 
     assert report["status"] == "complete"
     clean = manifest["pairs"][0]["clean_base"]  # type: ignore[index]
-    assert clean["cleaned_text_regions"][0]["method"] == "local-background-reconstruction"
+    assert clean["cleaned_text_regions"][0]["method"] == "masked-inpainting"
 
 
 def test_generator_rejects_a_small_bright_patch_on_dark_surface(tmp_path: Path) -> None:
