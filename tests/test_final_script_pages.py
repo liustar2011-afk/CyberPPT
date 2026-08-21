@@ -11,6 +11,7 @@ from cyberppt.commands.final_script_pages import (
     BODY_IMAGE_CANVAS_CONTRACT,
     _generate_manifest_images,
     _page_range_slug,
+    _seed_verified_stage02_assets,
     run_final_script_pages,
 )
 from cyberppt.commands.init_project import init_project
@@ -30,6 +31,49 @@ from scripts.imagegen_pipeline.style_library import write_project_style_lock
 
 
 class FinalScriptPagesTests(unittest.TestCase):
+    def test_seeded_stage02_assets_copy_without_resizing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source_image = root / "source.png"
+            source_clean = root / "source-clean.png"
+            source_image.write_bytes(b"source-image")
+            source_clean.write_bytes(b"clean-base")
+            seed_path = root / "seed.json"
+            seed_path.write_text(
+                json.dumps(
+                    {
+                        "source_script_sha256": "script-hash",
+                        "pairs": [
+                            {
+                                "page_number": 1,
+                                "full": {"path": str(source_image), "text_audit": {"valid": True}},
+                                "clean_base": {"status": "complete", "path": str(source_clean)},
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            target = root / "new-build"
+            manifest = {
+                "source_script_sha256": "script-hash",
+                "pairs": [{"page_number": 1, "full": {"path": str(target / "page_001_full.png")}}],
+            }
+
+            report = _seed_verified_stage02_assets(
+                manifest,
+                seed_manifest_path=seed_path,
+                output_dir=target,
+            )
+
+            pair = manifest["pairs"][0]
+            self.assertEqual(b"source-image", Path(pair["full"]["path"]).read_bytes())
+            self.assertEqual(b"clean-base", Path(pair["clean_base"]["path"]).read_bytes())
+            self.assertTrue(pair["clean_base"]["baseline_seed"])
+            self.assertEqual("seed.json", Path(pair["clean_base"]["baseline_provenance"]["seed_manifest"]).name)
+            self.assertNotIn("graphic_text_policy", pair)
+            self.assertEqual([1], [item["page_number"] for item in report["pages"]])
+
     def test_long_discontinuous_page_set_uses_windows_safe_slug(self) -> None:
         pages = [4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 25, 26, 27]
         slug = _page_range_slug(pages)
@@ -855,9 +899,17 @@ class FinalScriptPagesTests(unittest.TestCase):
             with (
                 patch("cyberppt.commands.final_script_pages.require_generated"),
                 patch(
+                    "cyberppt.commands.final_script_pages.prepare_ai_graphic_text_policy",
+                    return_value={"status": "complete", "path": "ai-native-text-policy.json"},
+                ) as ai_policy,
+                patch(
                     "cyberppt.commands.final_script_pages.prepare_clean_bases",
                     return_value={"status": "complete", "path": "clean-base-generation.json", "pages": []},
                 ) as clean_bases,
+                patch(
+                    "cyberppt.commands.final_script_pages.prepare_ai_authored_svgs",
+                    return_value={"status": "complete", "path": "ai-authored-svg.json"},
+                ) as ai_svg,
                 patch("cyberppt.commands.final_script_pages._run_image_to_editable_svg_build", return_value=expected) as build,
             ):
                 summary = run_final_script_pages(
@@ -873,13 +925,15 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertEqual("production_ready", summary["status"])
         self.assertEqual("production_ready", summary["image_to_editable_svg_build"]["status"])
         build.assert_called_once()
+        ai_policy.assert_called_once()
         clean_bases.assert_called_once()
+        ai_svg.assert_called_once()
         self.assertEqual("complete", summary["clean_base_generation"]["status"])
         self.assertIsNone(summary["rebuild"])
         self.assertEqual({}, summary["tool_consumption"])
         self.assertEqual(expected["delivery_readiness"], summary["production_readiness"])
 
-    def test_production_build_blocks_when_clean_base_requires_review(self) -> None:
+    def test_production_build_blocks_when_clean_base_auto_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             project = root / "client-report"
@@ -889,12 +943,16 @@ class FinalScriptPagesTests(unittest.TestCase):
             self._approve_inputs_and_prompts(project, script)
 
             clean_report = {
-                "status": "manual_required",
+                "status": "auto_failed",
                 "path": "analysis/clean_base_generation.json",
-                "pages": [{"page_number": 1, "status": "manual_required"}],
+                "pages": [{"page_number": 1, "status": "auto_failed"}],
             }
             with (
                 patch("cyberppt.commands.final_script_pages.require_generated"),
+                patch(
+                    "cyberppt.commands.final_script_pages.prepare_ai_graphic_text_policy",
+                    return_value={"status": "complete", "path": "ai-native-text-policy.json"},
+                ),
                 patch("cyberppt.commands.final_script_pages.prepare_clean_bases", return_value=clean_report),
                 patch("cyberppt.commands.final_script_pages._run_image_to_editable_svg_build") as build,
                 self.assertRaisesRegex(RuntimeError, "analysis/clean_base_generation.json"),

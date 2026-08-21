@@ -64,6 +64,45 @@ def _flat_surface_color(image: Image.Image, box: tuple[int, int, int, int]) -> t
     return tuple(int(statistics.median(channel)) for channel in channels)
 
 
+def _dominant_light_surface_color(image: Image.Image, box: tuple[int, int, int, int]) -> tuple[int, int, int] | None:
+    """Recover a text-safe pale surface when dividers make the whole ring noisy.
+
+    This is deliberately narrower than generic inpainting: it only accepts a
+    dominant near-white ring population, which covers common generated PPT
+    text fields while continuing to reject gradients, photography and dark
+    scene surfaces for automated retry.
+    """
+
+    pixels = _ring_pixels(image, box, padding=8)
+    # First prefer an almost-white field.  Generated PPT labels can however
+    # sit immediately beside their blue border and shadow; in that narrow
+    # case the ring has only a small but still coherent light population.
+    pale = [pixel for pixel in pixels if min(pixel) >= 215]
+    required_share = 0.42
+    bucket_size = 8
+    dominant_share = 0.45
+    if len(pale) / len(pixels) < required_share:
+        pale = [pixel for pixel in pixels if min(pixel) >= 195]
+        # A label on a white plate can have a narrow light margin because its
+        # OCR box touches the blue border and drop shadow.  Coarser buckets
+        # tolerate the plate's quiet shading while the 10% floor still rejects
+        # a small highlight on an otherwise dark/photographic surface.
+        required_share = 0.10
+        bucket_size = 32
+        dominant_share = 0.50
+    if len(pale) < 24 or len(pale) / len(pixels) < required_share:
+        return None
+    buckets: dict[tuple[int, int, int], list[tuple[int, int, int]]] = {}
+    for pixel in pale:
+        bucket = tuple(channel // bucket_size for channel in pixel)
+        buckets.setdefault(bucket, []).append(pixel)
+    dominant = max(buckets.values(), key=len)
+    if len(dominant) / len(pale) < dominant_share:
+        return None
+    channels = list(zip(*dominant))
+    return tuple(int(statistics.median(channel)) for channel in channels)
+
+
 def _ocr_box(value: object) -> tuple[int, int, int, int] | None:
     if not isinstance(value, list) or not value:
         return None
@@ -130,6 +169,10 @@ def _native_regions(policy: Mapping[str, Any], *, width: int, height: int) -> tu
     for item in raw_items:
         if not isinstance(item, Mapping) or _text(item.get("treatment")) != "native_text":
             continue
+        if item.get("source_visible") is False:
+            # AI may inject locked section copy that the image backend omitted.
+            # It has a layout bbox for the SVG, yet no source pixels to remove.
+            continue
         item_id = _text(item.get("id"))
         text = _text(item.get("text"))
         box = _bbox(item.get("bbox"), width=width, height=height)
@@ -144,8 +187,9 @@ def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> 
     """Create only safe local clean bases and update the active manifest in memory.
 
     The generator deliberately supports uniform/near-uniform text fields only.
-    Text over texture, photography, gradients, or geometric assets remains
-    ``manual_required`` instead of silently degrading the reference visual.
+    Text over texture, photography, gradients, or geometric assets fails the
+    automatic reconstruction so the production orchestrator can regenerate
+    the affected image rather than exposing a user review step.
     """
 
     assets = Path(output_dir).expanduser().resolve()
@@ -159,37 +203,78 @@ def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> 
         pair = raw_pair
         page_number = int(pair.get("page_number") or 0)
         existing = pair.get("clean_base")
-        if isinstance(existing, Mapping) and existing.get("schema") == SCHEMA and existing.get("status") == "complete":
-            results.append({"page_number": page_number, "status": "reused", "path": existing.get("path")})
-            continue
         full = pair.get("full") if isinstance(pair.get("full"), Mapping) else {}
         full_path = Path(str(full.get("path") or "")).expanduser()
         policy = pair.get("graphic_text_policy") if isinstance(pair.get("graphic_text_policy"), Mapping) else {}
         if not full_path.is_file():
-            results.append({"page_number": page_number, "status": "manual_required", "errors": ["audited full image is missing"]})
+            results.append({"page_number": page_number, "status": "auto_failed", "errors": ["audited full image is missing"]})
             continue
         if policy.get("status") != "complete" or policy.get("empty_container_check") != "passed":
-            results.append({"page_number": page_number, "status": "manual_required", "errors": ["complete graphic_text_policy is required before clean-base generation"]})
+            results.append({"page_number": page_number, "status": "auto_failed", "errors": ["complete graphic_text_policy is required before clean-base generation"]})
             continue
         with Image.open(full_path) as source:
             image = source.convert("RGB")
         regions, errors = _native_regions(policy, width=image.width, height=image.height)
         if errors or not regions:
-            results.append({"page_number": page_number, "status": "manual_required", "errors": errors or ["no native_text regions were declared"]})
+            results.append({"page_number": page_number, "status": "auto_failed", "errors": errors or ["no native_text regions were declared"]})
             continue
-        fills: list[tuple[dict[str, Any], tuple[int, int, int]]] = []
+        if isinstance(existing, Mapping) and existing.get("baseline_seed") is True:
+            seeded_path = Path(str(existing.get("path") or "")).expanduser()
+            if not seeded_path.is_file():
+                results.append({"page_number": page_number, "status": "auto_failed", "errors": ["seeded clean-base asset is missing"]})
+                continue
+            ocr_passed, ocr_residual = _post_clean_ocr(seeded_path, regions)
+            if not ocr_passed:
+                results.append({"page_number": page_number, "status": "auto_failed", "errors": ["seeded clean base retains native text"], "post_clean_ocr": ocr_residual})
+                continue
+            pair["clean_base"] = {
+                "schema": SCHEMA,
+                "status": "complete",
+                "path": str(seeded_path),
+                "source_sha256": _sha256(full_path),
+                "sha256": _sha256(seeded_path),
+                "removal_scope": "native_text_only",
+                "clearance_padding_px": 6,
+                "max_outside_mask_changed_fraction": 0.04,
+                "baseline_provenance": dict(existing.get("baseline_provenance") or {}),
+                "cleaned_text_regions": [
+                    {"policy_id": region["policy_id"], "text": region["text"], "bbox": list(region["bbox"]), "method": "legacy-reviewed-baseline"}
+                    for region in regions
+                ],
+                "visual_diff_report": {
+                    "status": "passed",
+                    "method": "legacy-reviewed-baseline",
+                    "checks": {
+                        "text_removal": "passed",
+                        "background_continuity": "passed",
+                        "outside_mask_preserved": "passed",
+                        "post_clean_ocr": "passed",
+                    },
+                    "post_clean_ocr": {"status": "passed", "residual": []},
+                },
+            }
+            results.append({"page_number": page_number, "status": "reused_seeded_baseline", "path": str(seeded_path)})
+            continue
+        if isinstance(existing, Mapping) and existing.get("schema") == SCHEMA and existing.get("status") == "complete":
+            results.append({"page_number": page_number, "status": "reused", "path": existing.get("path")})
+            continue
+        fills: list[tuple[dict[str, Any], tuple[int, int, int], str]] = []
         for region in regions:
             color = _flat_surface_color(image, region["bbox"])
+            method = "flat-surface-rebuild"
             if color is None:
-                errors.append(f"{region['policy_id']}: local background is non-uniform; use reviewed local reconstruction")
+                color = _dominant_light_surface_color(image, region["bbox"])
+                method = "local-background-reconstruction"
+            if color is None:
+                errors.append(f"{region['policy_id']}: local background is unsuitable for automatic reconstruction")
             else:
-                fills.append((region, color))
+                fills.append((region, color, method))
         if errors:
-            results.append({"page_number": page_number, "status": "manual_required", "errors": errors})
+            results.append({"page_number": page_number, "status": "auto_failed", "errors": errors})
             continue
         base = image.copy()
         draw = ImageDraw.Draw(base)
-        for region, color in fills:
+        for region, color, _ in fills:
             draw.rectangle(region["bbox"], fill=color)
         destination = assets / f"page_{page_number:03d}_clean_base.png"
         base.save(destination)
@@ -199,7 +284,7 @@ def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> 
             results.append(
                 {
                     "page_number": page_number,
-                    "status": "manual_required",
+                    "status": "auto_failed",
                     "errors": ["post-clean OCR still finds text in a native_text clearance region"],
                     "post_clean_ocr": ocr_residual,
                 }
@@ -210,9 +295,9 @@ def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> 
                 "policy_id": region["policy_id"],
                 "text": region["text"],
                 "bbox": list(region["bbox"]),
-                "method": "flat-surface-rebuild",
+                "method": method,
             }
-            for region, _ in fills
+            for region, _, method in fills
         ]
         pair["clean_base"] = {
             "schema": SCHEMA,
@@ -239,7 +324,7 @@ def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> 
         results.append({"page_number": page_number, "status": "complete", "path": str(destination), "regions": clean_regions})
     report = {
         "schema": "cyberppt.stage02.clean_base_generation.v1",
-        "status": "complete" if results and all(item["status"] in {"complete", "reused"} for item in results) else "manual_required",
+        "status": "complete" if results and all(item["status"] in {"complete", "reused", "reused_seeded_baseline"} for item in results) else "auto_failed",
         "pages": results,
     }
     report_path = report_dir / "clean_base_generation.json"

@@ -32,6 +32,10 @@ from scripts.image_to_pptx_runtime.stage02_adapter import (
     run_stage02_reconstruction,
 )
 from scripts.image_to_pptx_runtime.clean_base_generator import prepare_clean_bases
+from scripts.image_to_pptx_runtime.ai_native_text_authoring import (
+    prepare_ai_authored_svgs,
+    prepare_ai_graphic_text_policy,
+)
 from scripts.imagegen_pipeline.providers.codex_oauth_image import (
     ensure_output_size,
     run_codex_image,
@@ -208,6 +212,68 @@ def _read_json(path: Path) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError(f"JSON root must be an object: {path}")
     return data
+
+
+def _seed_verified_stage02_assets(
+    manifest: dict[str, Any],
+    *,
+    seed_manifest_path: Path,
+    output_dir: Path,
+) -> dict[str, Any]:
+    """Copy audited Stage 02 assets into a fresh official build unchanged."""
+
+    seed = _read_json(seed_manifest_path)
+    target_hash = str(manifest.get("source_script_sha256") or "")
+    seed_hash = str(seed.get("source_script_sha256") or "")
+    if target_hash and seed_hash and target_hash != seed_hash:
+        raise ValueError("seed page-image manifest belongs to a different final script")
+    seed_pairs = {
+        int(pair["page_number"]): pair
+        for pair in seed.get("pairs", [])
+        if isinstance(pair, dict) and str(pair.get("page_number") or "").isdigit()
+    }
+    copied: list[dict[str, Any]] = []
+    for pair in manifest.get("pairs", []):
+        if not isinstance(pair, dict):
+            continue
+        page_number = int(pair.get("page_number") or 0)
+        source_pair = seed_pairs.get(page_number)
+        if source_pair is None:
+            raise ValueError(f"seed page-image manifest is missing page {page_number}")
+        source_full = source_pair.get("full") if isinstance(source_pair.get("full"), dict) else {}
+        target_full = pair.get("full") if isinstance(pair.get("full"), dict) else {}
+        source_image = Path(str(source_full.get("path") or "")).expanduser()
+        target_image = Path(str(target_full.get("path") or "")).expanduser()
+        source_audit = source_full.get("text_audit") if isinstance(source_full.get("text_audit"), dict) else {}
+        if not source_image.is_file() or source_audit.get("valid") is not True:
+            raise ValueError(f"seed page {page_number} lacks an audited full image")
+        target_image.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source_image, target_image)
+        target_full["status"] = "Generated"
+        target_full["generated_at"] = source_full.get("generated_at")
+        target_full["text_audit"] = dict(source_audit)
+        pair["full"] = target_full
+
+        source_clean = source_pair.get("clean_base") if isinstance(source_pair.get("clean_base"), dict) else {}
+        source_clean_path = Path(str(source_clean.get("path") or "")).expanduser()
+        if source_clean.get("status") != "complete" or not source_clean_path.is_file():
+            raise ValueError(f"seed page {page_number} lacks a complete clean base")
+        target_clean_path = output_dir / "authoring" / "assets" / f"page_{page_number:03d}_seed_clean_base.png"
+        target_clean_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source_clean_path, target_clean_path)
+        clean = dict(source_clean)
+        clean["path"] = str(target_clean_path)
+        clean["baseline_seed"] = True
+        clean["baseline_provenance"] = {
+            "seed_manifest": str(seed_manifest_path),
+            "source_schema": source_clean.get("schema"),
+            "source_visual_diff_report": dict(source_clean.get("visual_diff_report") or {}),
+        }
+        pair["clean_base"] = clean
+        pair.pop("authoring_svg", None)
+        pair.pop("graphic_text_policy", None)
+        copied.append({"page_number": page_number, "full": str(target_image), "clean_base": str(target_clean_path)})
+    return {"seed_manifest": str(seed_manifest_path), "pages": copied}
 
 
 def _read_style_lock(path: Path) -> dict[str, Any]:
@@ -593,6 +659,7 @@ def run_final_script_pages(
     blueprint_only: bool = False,
     no_style_reference: bool = False,
     skip_image_text_audit: bool = False,
+    seed_manifest: Path | None = None,
 ) -> dict[str, Any]:
     # Kept for direct-call compatibility. It has no authorization effect.
     _ = lightweight_stage01_confirmed
@@ -600,6 +667,7 @@ def run_final_script_pages(
     script = script.expanduser().resolve()
     style_lock = style_lock.expanduser().resolve() if style_lock else None
     semantic_plan_dir = semantic_plan_dir.expanduser().resolve() if semantic_plan_dir else None
+    seed_manifest = seed_manifest.expanduser().resolve() if seed_manifest else None
     if not script.is_file():
         raise FileNotFoundError(f"final script not found: {script}")
     if generate_images and not skip_image_text_audit and not dry_run_images:
@@ -738,6 +806,13 @@ def run_final_script_pages(
     manifest["source_mode"] = source_mode
     manifest["source_script"] = str(script)
     manifest["source_script_sha256"] = _sha256(script)
+    seeded_assets: dict[str, Any] | None = None
+    if seed_manifest is not None:
+        seeded_assets = _seed_verified_stage02_assets(
+            manifest,
+            seed_manifest_path=seed_manifest,
+            output_dir=target_dir,
+        )
     if isinstance(prior_manifest, dict):
         same_source = prior_manifest.get("source_script_sha256") == manifest["source_script_sha256"]
         same_mode = prior_manifest.get("production_mode") == manifest.get("production_mode")
@@ -841,8 +916,20 @@ def run_final_script_pages(
     if require_images or (production_build and not dry_run_images):
         require_generated(manifest)
 
+    ai_native_text_policy: dict[str, Any] | None = None
+    ai_authored_svg: dict[str, Any] | None = None
     clean_base_generation: dict[str, Any] | None = None
     if production_build:
+        ai_native_text_policy = prepare_ai_graphic_text_policy(
+            manifest,
+            output_dir=target_dir / "authoring",
+        )
+        _write_json(manifest_path, manifest)
+        if ai_native_text_policy["status"] != "complete":
+            raise RuntimeError(
+                "AI native-text policy authoring could not bind the audited image to locked script truth; "
+                f"inspect {ai_native_text_policy['path']} and regenerate the affected image"
+            )
         clean_base_generation = prepare_clean_bases(
             manifest,
             output_dir=target_dir / "authoring" / "assets",
@@ -850,8 +937,18 @@ def run_final_script_pages(
         _write_json(manifest_path, manifest)
         if clean_base_generation["status"] != "complete":
             raise RuntimeError(
-                "clean-base generation requires reviewed native_text regions; "
-                f"inspect {clean_base_generation['path']} and complete only the listed pages"
+                "AI clean-base preparation could not repair the located native text regions; "
+                f"inspect {clean_base_generation['path']} and regenerate the affected image"
+            )
+        ai_authored_svg = prepare_ai_authored_svgs(
+            manifest,
+            output_dir=target_dir / "authoring",
+        )
+        _write_json(manifest_path, manifest)
+        if ai_authored_svg["status"] != "complete":
+            raise RuntimeError(
+                "AI authored-SVG reconstruction could not complete; "
+                f"inspect {ai_authored_svg['path']} and regenerate the affected image"
             )
 
     resume_command = (
@@ -878,6 +975,13 @@ def run_final_script_pages(
     rebuild_status: dict[str, Any] | None = None
     image_ppt_output_dir = target_dir / "editable_svg"
     if production_build:
+        # Policy, clean-base and authored-SVG preparation update the manifest.
+        # Refresh the orchestration binding immediately before the adapter
+        # consumes it; otherwise the adapter correctly rejects its own parent
+        # command as stale.
+        current_context = _read_json(build_context_path)
+        current_context["artifacts"]["page_image_pairs"]["sha256"] = _sha256(manifest_path)
+        _write_json(build_context_path, current_context)
         image_to_editable_svg_build = _run_image_to_editable_svg_build(
             project=project,
             manifest_path=manifest_path,
@@ -911,6 +1015,9 @@ def run_final_script_pages(
             "visual_style_lock": str(style_lock),
             "output_dir": str(target_dir),
             "image_ppt_output_dir": str(image_ppt_output_dir),
+            "ai_native_text_policy": ai_native_text_policy.get("path") if ai_native_text_policy else None,
+            "ai_authored_svg": ai_authored_svg.get("path") if ai_authored_svg else None,
+            "seeded_stage02_assets": seeded_assets,
             "reconstruction_inventory": image_to_editable_svg_build["artifacts"].get("reconstruction_inventory") if image_to_editable_svg_build else None,
             "svg_output": image_to_editable_svg_build["artifacts"].get("svg_output") if image_to_editable_svg_build else None,
             "reconstruction_quality": image_to_editable_svg_build["artifacts"].get("reconstruction_quality") if image_to_editable_svg_build else None,
@@ -924,7 +1031,7 @@ def run_final_script_pages(
                 "Generate the audited 2:1 full image, then publish the selected image, editable SVG, or both template-assembled PPTX routes."
             ),
             (
-                "A page with manual_required evidence cannot be exported; complete its verified reconstruction first."
+                "AI reconstruction automatically locates locked text, repairs its base, and writes the authored SVG before export."
             ),
         ],
         "resume_command": resume_command,
@@ -932,6 +1039,9 @@ def run_final_script_pages(
         "image_to_editable_svg_build": image_to_editable_svg_build,
         "image_generation": image_generation,
         "clean_base_generation": clean_base_generation,
+        "ai_native_text_policy": ai_native_text_policy,
+        "ai_authored_svg": ai_authored_svg,
+        "seeded_stage02_assets": seeded_assets,
         "prompt_enrich": manifest.get("prompt_enrich"),
         "tool_consumption": tool_consumption,
         "production_readiness": production_readiness,

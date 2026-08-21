@@ -105,6 +105,22 @@ def test_multiline_text_reports_line_metrics(tmp_path: Path) -> None:
     assert item["line_step"] == 28.0
 
 
+def test_multiline_text_reports_absolute_tspan_baselines(tmp_path: Path) -> None:
+    svg = _svg(
+        tmp_path,
+        '<text x="20" y="60" font-size="20"><tspan x="20" y="60">第一行</tspan><tspan x="30" y="88">第二行</tspan></text>',
+    )
+    report = analyze_native_text_geometry(
+        _policy([{"id": "body", "text": "第一行 第二行", "treatment": "native_text", "bbox": [20, 40, 180, 100]}]),
+        authored_svg=svg,
+        page_number=1,
+    )
+    item = report["items"][0]
+
+    assert item["line_count"] == 2
+    assert item["line_step"] == 28.0
+
+
 def test_locked_svg_is_skipped(tmp_path: Path) -> None:
     svg = _svg(tmp_path, '<text x="10" y="30">锁定</text>', locked=True)
     report = analyze_native_text_geometry(

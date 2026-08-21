@@ -16,6 +16,7 @@ _REMOVAL_METHODS = {
     "flat-surface-rebuild",
     "local-background-reconstruction",
     "masked-inpainting",
+    "legacy-reviewed-baseline",
 }
 _REQUIRED_VISUAL_CHECKS = {
     "text_removal",
@@ -166,11 +167,20 @@ def validate_clean_base(
     cleaned = {_text(item.get("text")) for item in cleaned_items if _text(item.get("text"))}
     policy = dict(graphic_text_policy) if isinstance(graphic_text_policy, Mapping) else {}
     items = [dict(item) for item in policy.get("items", []) if isinstance(item, Mapping)]
-    native = {_text(item.get("text")) for item in items if _text(item.get("treatment")) == "native_text" and _text(item.get("text"))}
+    native = {
+        _text(item.get("text"))
+        for item in items
+        if _text(item.get("treatment")) == "native_text"
+        and item.get("source_visible") is not False
+        and _text(item.get("text"))
+    }
     native_by_id = {
         _text(item.get("id")): _text(item.get("text"))
         for item in items
-        if _text(item.get("treatment")) == "native_text" and _text(item.get("id")) and _text(item.get("text"))
+        if _text(item.get("treatment")) == "native_text"
+        and item.get("source_visible") is not False
+        and _text(item.get("id"))
+        and _text(item.get("text"))
     }
     policy_treatment_by_id = {
         _text(item.get("id")): _text(item.get("treatment"))
@@ -190,6 +200,8 @@ def validate_clean_base(
             errors.append({"code": "non_native_text_removed", "message": f"{policy_id or _text(region.get('text'))}: only native_text may be removed from the clean base"})
         if method not in _REMOVAL_METHODS:
             errors.append({"code": "unsupported_text_removal_method", "message": f"{policy_id or _text(region.get('text'))}: use a local background repair method, not whiteout"})
+        if method == "legacy-reviewed-baseline" and not isinstance(value.get("baseline_provenance"), Mapping):
+            errors.append({"code": "missing_baseline_provenance", "message": f"{policy_id or _text(region.get('text'))}: legacy baseline reuse requires preserved provenance"})
         bbox = _region_bbox(region, width=full_size[0], height=full_size[1]) if full_size else None
         if bbox is None:
             errors.append({"code": "invalid_cleaned_text_bbox", "message": f"{policy_id or _text(region.get('text'))}: a bounded text-removal region is required"})

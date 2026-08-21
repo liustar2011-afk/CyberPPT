@@ -113,13 +113,22 @@ def _font_size(node: ET.Element) -> float | None:
 def _line_metrics(node: ET.Element) -> tuple[int, float | None]:
     """Return visual baseline rows and a representative baseline step."""
 
+    explicit_baselines: list[float] = []
     baseline_steps: list[float] = []
     for child in node.iter():
         if child is node or _local_name(child) != "tspan":
             continue
+        y = _number(child.get("y"))
+        if y is not None and not any(math.isclose(y, value, abs_tol=1e-9) for value in explicit_baselines):
+            explicit_baselines.append(y)
         dy = _number(child.get("dy"))
         if dy is not None and not math.isclose(dy, 0.0, abs_tol=1e-9):
             baseline_steps.append(abs(dy))
+    if len(explicit_baselines) >= 2:
+        ordered = sorted(explicit_baselines)
+        return len(ordered), median(right - left for left, right in zip(ordered, ordered[1:]))
+    if explicit_baselines:
+        return 1, None
     return 1 + len(baseline_steps), (median(baseline_steps) if baseline_steps else None)
 
 
@@ -265,7 +274,7 @@ def analyze_native_text_geometry(
         line_count, line_step = _line_metrics(node)
         mapped = _map_bbox(source_box, viewbox=(view_x, view_y, view_width, view_height), pixel_width=pixel_width, pixel_height=pixel_height)
         mapped_left, mapped_top, _, mapped_bottom = mapped
-        expected_baseline = mapped_top + (font_size * 0.8 if font_size is not None else 0.0)
+        expected_baseline = mapped_top + (font_size * 0.78 if font_size is not None else 0.0)
         delta_x = svg_x - mapped_left if svg_x is not None else None
         delta_y = svg_y - expected_baseline if svg_y is not None else None
         bbox_height = mapped_bottom - mapped_top
