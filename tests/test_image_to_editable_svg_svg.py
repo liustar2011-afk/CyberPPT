@@ -20,7 +20,8 @@ def test_svg_uses_native_text_and_excludes_full_source_image(tmp_path):
     content = svg.read_text(encoding="utf-8")
     assert "核心结论" in content
     assert str(frame.normalized_path) not in content
-    assert 'fill="#0B1F3D"' in content
+    assert 'fill="#12355B"' in content
+    assert 'font-weight="700"' in content
     assert check_page_svg(svg, result)["valid"] is True
 
 

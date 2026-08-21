@@ -9,6 +9,8 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
+from scripts.image_to_pptx_runtime.native_text_style import apply_default_native_text_style
+
 from .contracts import NormalizedFrame, build_inventory, layer_record, page_gate
 
 
@@ -229,6 +231,7 @@ def author_page_svg(result: Mapping[str, Any], out_dir: Path | str) -> Path:
     pieces.append("</svg>")
     path = out / f"p{frame.page_number:02d}.svg"
     path.write_text("\n".join(pieces) + "\n", encoding="utf-8")
+    apply_default_native_text_style(path)
     return path
 
 

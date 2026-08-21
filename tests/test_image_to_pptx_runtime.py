@@ -255,6 +255,11 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
 
     assert result["status"] == "production_ready"
     assert result["reports"]["graphic_text_policy"]["valid"] is True
+    assert result["reports"]["native_text_style"]["valid"] is True
+    style_qa = Path(result["artifacts"]["native_text_style_qa"])
+    assert style_qa.is_file()
+    styled_svg = Path(result["artifacts"]["svg_output"]) / "01.svg"
+    assert 'data-cyberppt-native-text-style="editorial-source-text-v1"' in styled_svg.read_text(encoding="utf-8")
     assert Path(result["artifacts"]["graphic_text_policy_qa"]).is_file()
     assert "登记编目" in pptx_texts(Path(result["artifacts"]["exported_pptx"]))
 
