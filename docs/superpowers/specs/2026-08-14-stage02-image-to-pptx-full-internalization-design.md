@@ -1,5 +1,7 @@
 # Stage 02 Image-to-PPTX Full Internalization
 
+> **Status (2026-08-21): Historical and superseded.** Commit `d75f5635` removed the retired standalone editable-SVG Skill package. Do not recreate or look for that directory. The current authority is the repository root `SKILL.md`, `docs/CYBERPPT_WORKFLOW.md`, and the package-local runtime under `scripts/image_to_pptx_runtime/`, entered through `stage02_adapter.py`. The design below records the earlier internalization decision only.
+
 ## Decision
 
 CyberPPT will own the complete PPT-Master `image-to-pptx` Quick reconstruction
@@ -61,12 +63,11 @@ dependency.
 
 ### 2. Internal Skill and workflow
 
-Expand `.agents/skills/cyberppt-image-to-editable-svg/` to be a faithful,
-path-correct CyberPPT adaptation of the entire PPT-Master image-to-pptx Quick
-workflow. All referenced Quick, image-base, image-generator, SVG quality,
-visual-review and local-editor instructions must resolve inside this repository.
-The Stage 02 command calls the runtime with the same reconstruction semantics,
-not the former OCR/rectangle fallback.
+The earlier design proposed a standalone editable-SVG Skill adaptation of the
+PPT-Master image-to-pptx Quick workflow. That package was removed by
+`d75f5635`. The current repository keeps the package-local runtime and routes
+Stage 02 through the root workflow contract and `stage02_adapter.py`; the
+standalone Skill and its reference bundle are not required or expected.
 
 ### 3. Stage 02 adapter boundary
 

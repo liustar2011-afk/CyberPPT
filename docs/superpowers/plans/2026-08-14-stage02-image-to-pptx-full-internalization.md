@@ -1,5 +1,7 @@
 # Stage 02 Image-to-PPTX Full Internalization Implementation Plan
 
+> **Status (2026-08-21): Historical and superseded.** Commit `d75f5635` removed the retired standalone editable-SVG Skill package. Do not recreate or look for that directory. The current authority is the repository root `SKILL.md`, `docs/CYBERPPT_WORKFLOW.md`, and the package-local runtime under `scripts/image_to_pptx_runtime/`, entered through `stage02_adapter.py`. The file lists and commands below record the earlier internalization plan only.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Make CyberPPT own PPT-Master’s complete image-to-PPTX Quick reconstruction runtime, with CyberPPT Stage 02 used only before and after reconstruction.
@@ -31,7 +33,7 @@
 | `scripts/image_to_pptx_runtime/svg_editor/` | Local editor copied from PPT-Master, namespaced and project-root confined. |
 | `scripts/image_to_pptx_runtime/svg_quality/` | Complete PPT-Master SVG contract checker, namespaced. |
 | `scripts/image_to_pptx_runtime/svg_to_pptx/` | Complete native SVG-to-PPTX converter and DrawingML dependencies, namespaced. |
-| `.agents/skills/cyberppt-image-to-editable-svg/` | Path-correct full CyberPPT image-to-PPTX Quick workflow. |
+| Retired standalone editable-SVG Skill package | Historical target; removed by `d75f5635` and no longer part of the repository workflow. |
 | `cyberppt/commands/final_script_pages.py` | Call the local adapter after full-image typo audit and before CyberPPT delivery assembly. |
 | `tests/test_image_to_pptx_runtime_*.py` | Unit/integration/regression coverage for the imported runtime and Stage 02 boundary. |
 
@@ -294,11 +296,10 @@ git add scripts/image_to_pptx_runtime/stage02_adapter.py scripts/image_to_editab
 git commit -m "feat(stage02): route audited images through internal image-to-pptx"
 ```
 
-## Task 5: Complete the internal Skill, command interface and migration regression fixture
+## Task 5: Complete the historical local workflow and migration regression fixture
 
 **Files:**
-- Modify: `.agents/skills/cyberppt-image-to-editable-svg/SKILL.md`
-- Create: `.agents/skills/cyberppt-image-to-editable-svg/references/{visual-review,svg-quality,svg-editor}.md`
+- Historical-only: the standalone editable-SVG Skill and its references were later removed; do not recreate them.
 - Modify: `scripts/image_to_pptx_runtime/__main__.py`
 - Create: `tests/test_image_to_pptx_runtime_palette09.py`
 - Modify: `tests/test_skill_contract.py`
@@ -343,7 +344,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit complete local workflow**
 
 ```bash
-git add .agents/skills/cyberppt-image-to-editable-svg scripts/image_to_pptx_runtime/__main__.py tests/test_image_to_pptx_runtime_palette09.py tests/test_skill_contract.py
+git add scripts/image_to_pptx_runtime/__main__.py tests/test_image_to_pptx_runtime_palette09.py tests/test_skill_contract.py
 git commit -m "feat(stage02): complete internal image-to-pptx workflow"
 ```
 
