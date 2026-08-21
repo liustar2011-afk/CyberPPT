@@ -277,6 +277,8 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(0, code)
         self.assertTrue(runner.call_args.kwargs["external_script"])
+        self.assertEqual("image-to-editable-svg", runner.call_args.kwargs["production_mode"])
+        self.assertEqual("editable", runner.call_args.kwargs["assembly_mode"])
 
     def test_final_script_pages_accepts_deprecated_confirmation_flag_without_forwarding(self) -> None:
         with patch("cyberppt.cli.run_final_script_pages", return_value={}) as runner:

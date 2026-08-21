@@ -685,7 +685,7 @@ def build_manifest(
             atomic_write_text(compiled_script, compiled.rstrip() + "\n")
 
     manifest = {
-        "mode": "cyberppt-image-to-editable-svg",
+        "mode": "cyberppt.stage02.editable_pptx.v1",
         "production_mode": production_mode,
         "requested_pages": page_numbers,
         "content_page_numbers": content_page_numbers,

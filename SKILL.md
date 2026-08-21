@@ -72,15 +72,15 @@ Stage 01 脚本经轻量确认审计通过后，主流程必须自动调用已�
 
 正式项目的最终全稿在当前 `script-audit` 通过后可进入 Stage 02，不依赖 Stage 01 交互确认。无论脚本来自何处，`final-script-pages` 都必须通过当前 `script-audit`、Stage 02 handoff 与视觉结构审计；外部脚本不能绕过这些门。`--external-script` 与 `--lightweight-stage01-confirmed` 仅为兼容参数：前者只记录 `source_mode=external_script`，后者不再影响授权；两者都不能创建项目或跳过正式门。
 
-生产模式唯一为 `image-to-editable-svg`：生成并文字审计同一张 full 图，以脚本为文字 truth、OCR 为坐标证据，盘点每个可见区域并准备已注册图层，再生成可编辑 SVG 与原生 PPTX。风格10的 `truth_lock` 锁定事实真值，`visual_freedom` 只释放镜头、场景、对象、材质和视觉隐喻；二者不能替代重建证据。
+生产模式唯一且默认使用 `image-to-editable-svg`，默认组装分支为 `editable`：生成并文字审计同一张 full 图，以脚本为文字 truth、OCR 为坐标证据，先准备移除了计划回写文字的无文字底图，再盘点每个可见区域、准备已注册图层、生成可编辑 SVG 与原生 PPTX。风格10的 `truth_lock` 锁定事实真值，`visual_freedom` 只释放镜头、场景、对象、材质和视觉隐喻；二者不能替代重建证据。
 
-图片转可编辑 PPTX 时，配图内部的可读文字必须先写入每页 pairs[*].graphic_text_policy：需要编辑或承载信息的文字清底后回写为原生 SVG 文字，可随身份图形保留的字样必须声明经过核验的局部图片层。策略必须完成，空白容器检查必须通过；缺失、未分类、清底后未回写或 manual_required 均在导出前阻断。
+图片转可编辑 PPTX 时，配图内部的可读文字必须先写入每页 `pairs[*].graphic_text_policy`。策略使用 `cyberppt.image_to_pptx.graphic_text_policy.v1`，状态必须为 `complete`，`empty_container_check` 必须为 `passed`；空白容器、缺失、未分类、清底后未回写或 `manual_required` 均在导出前阻断。需要编辑或承载信息的文字清底后回写为原生 SVG 文字，可随身份图形保留的字样必须声明经过核验的局部图片层。策略 QA 写入 `analysis/graphic_text_policy_qa.json`。
 
 含义如下：
 
 1. **脚本锁定**：逐页保存并确认脚本、内容锁定、模板文字层锁定、视觉锁定和必要的 ImageGen prompt。脚本是后续 full 图和模板文字层的 truth，不得把 ImageGen 图中文字或 OCR 当作最终标题层来源。
 2. **统一生图后端**：通过 `final-script-pages --generate-images` 调用 Codex OAuth 生图后端。不得由导出器临时发起正式生图，也不得在主链外逐页调用后端后冒充主链产物。
-3. **重建组装**：从同页 audited full 图建立 inventory、图层注册、SVG quality 和 native SVG-to-PPTX 组装。不得生成无字底图、文字参考图或任何截图式保底层。
+3. **重建组装**：从同页 audited full 图建立 inventory；生成无文字底图，清除计划以原生 SVG 回写的文字；注册底图及其他图层；以原生 SVG 文字重建信息文字；通过 SVG quality 后组装 native SVG-to-PPTX。full 图只作审计和对照，不能进入交付 PPTX；文字参考图和截图式保底层仍被禁止。
 4. **渲染 QA 与交付**：最终验收对象是 PPTX 渲染、文字回读和图层证据，不是单独图片。任何 `manual_required` 均阻断交付。
 
 允许用户手工指定走到哪一步，例如只到脚本、只到 ImageGen full、只到图片型 PPT 组装或只做 QA。手工停点必须记录当前停点、已完成工件、未执行后续步骤和恢复命令；不得把停点产物冒充最终交付物。
@@ -275,9 +275,9 @@ Stage 01 的 `source-truth-audit` / `outline-audit` / `script-audit` 运行一�
 
 ### 统一入口与生产模式
 
-脚本批准后必须进入 `python -m cyberppt final-script-pages`，不得把生图后端或导出器作为常规入口。唯一生产模式为 `image-to-editable-svg`：只接受通过文字审计的正文区 ImageGen full 图，按页面盘点、注册图层和可编辑 SVG 重建后导出原生 PPTX；标题、副标题、Logo、页脚、页码、蓝线和公共模板元素仍由模板文字层生成。
+脚本批准后必须进入 `python -m cyberppt final-script-pages`，不得把生图后端或导出器作为常规入口。唯一生产模式为 `image-to-editable-svg`，默认 PPT 分支为 `editable`：只接受通过文字审计的正文区 ImageGen full 图，按“无文字底图 → 原生 SVG 文字重建 → 原生 PPTX 组装”执行；标题、副标题、Logo、页脚、页码、蓝线和公共模板元素仍由模板文字层生成。`image` 和 `both` 仅在用户明确要求图片型或双份交付时使用。
 
-同一张 full 图既是重建证据也是唯一视觉来源。OCR 只用于定位，脚本锁定的文字是最终 truth。禁止生成或依赖无字底图、纯文字参考图、整页截图背景或其他旧式叠层资产。策略门禁报告写入 analysis/graphic_text_policy_qa.json，并与 SVG 质量、PPTX 文本 QA 一并纳入交付判定。
+同一张 full 图是重建证据和视觉对照来源。OCR 只用于定位，脚本锁定的文字是最终 truth。无文字底图必须来自该 full 图的受控清理，清除全部计划以原生 SVG 回写的文字；SVG 必须引用底图并恢复这些文字。full 图、纯文字参考图、整页截图背景或其他旧式叠层资产不得进入交付 PPTX。策略门禁报告写入 analysis/graphic_text_policy_qa.json，并与 SVG 质量、PPTX 文本 QA 一并纳入交付判定。
 
 正式命令形态：
 

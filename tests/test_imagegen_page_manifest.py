@@ -282,7 +282,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
                 full_size = image.size
 
         self.assertEqual(code, 0)
-        self.assertEqual("cyberppt-image-to-editable-svg", manifest["mode"])
+        self.assertEqual("cyberppt.stage02.editable_pptx.v1", manifest["mode"])
         self.assertEqual("image-to-editable-svg", manifest["production_mode"])
         self.assertEqual(["full"], manifest["output_variants"])
         self.assertEqual("Generated", full_status)
@@ -323,7 +323,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
 
         self.assertEqual(code, 0)
         self.assertTrue(style_lock_exists)
-        self.assertEqual("cyberppt-image-to-editable-svg", manifest["mode"])
+        self.assertEqual("cyberppt.stage02.editable_pptx.v1", manifest["mode"])
         self.assertEqual("image-to-editable-svg", manifest["production_mode"])
         self.assertEqual(["full"], manifest["output_variants"])
         self.assertEqual("text_to_image_generate_full", pair["full"]["generation_method"])

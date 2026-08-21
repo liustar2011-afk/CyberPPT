@@ -5283,7 +5283,7 @@ class SVGQualityChecker:
                 'pptx_structure.mode: flat (free design / brand-only) or '
                 f'structured (deck/layout template); found {label}. New '
                 'free-design projects use mode: flat; create a new template '
-                'workspace through .agents/skills/cyberppt-image-to-editable-svg/workflows/create-template.md, '
+                'workspace through the repository Create Template workflow, '
                 'then generate new structured SVG pages before export. Existing '
                 'PPTX/SVG files are not upgraded in place.',
             ))
@@ -6640,7 +6640,7 @@ class SVGQualityChecker:
                     'legacy_native_structure_pair',
                     "legacy native_structure.json/source_template.pptx template "
                     "contracts must be replaced through "
-                    ".agents/skills/cyberppt-image-to-editable-svg/workflows/create-template.md",
+                    "the repository Create Template workflow",
                 ))
 
             if declared_structure_mode != 'structured':
@@ -6657,8 +6657,7 @@ class SVGQualityChecker:
                     'error',
                     'legacy_structure_contract',
                     "legacy template structure detected; create a new current "
-                    "workspace through .agents/skills/cyberppt-image-to-editable-svg/workflows/"
-                    "create-template.md before Step 3 consumption",
+                    "workspace through the repository Create Template workflow before Step 3 consumption",
                 ))
         spec_pages = self._extract_spec_roster(spec_text) if spec_text else []
         custom_contract = self._extract_frontmatter_placeholders(spec_text) if spec_text else {}

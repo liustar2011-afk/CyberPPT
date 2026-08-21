@@ -240,16 +240,11 @@ class SkillContractTests(unittest.TestCase):
     def test_stage02_embedded_graphic_text_policy_is_a_release_gate(self) -> None:
         root_skill = SKILL.read_text(encoding="utf-8-sig")
         workflow = (ROOT / "docs" / "CYBERPPT_WORKFLOW.md").read_text(encoding="utf-8-sig")
-        image_skill = (
-            ROOT / ".agents" / "skills" / "cyberppt-image-to-editable-svg" / "SKILL.md"
-        ).read_text(encoding="utf-8-sig")
-
         for text in (root_skill, workflow):
             self.assertIn("graphic_text_policy", text)
             self.assertIn("空白容器", text)
-        self.assertIn("graphic_text_policy", image_skill)
-        self.assertIn("empty_container_check", image_skill)
-        self.assertIn("cyberppt.image_to_pptx.graphic_text_policy.v1", image_skill)
+        self.assertIn("empty_container_check", root_skill)
+        self.assertIn("cyberppt.image_to_pptx.graphic_text_policy.v1", root_skill)
         self.assertIn("graphic_text_policy_qa.json", root_skill)
 
     def test_stage02_docs_do_not_advertise_dual_image_production(self) -> None:
@@ -279,8 +274,9 @@ class SkillContractTests(unittest.TestCase):
         text = SKILL.read_text(encoding="utf-8-sig")
 
         self.assertIn("唯一生产模式为 `image-to-editable-svg`", text)
-        self.assertIn("页面盘点、注册图层和可编辑 SVG 重建", text)
-        self.assertIn("禁止生成或依赖无字底图", text)
+        self.assertIn("无文字底图，再盘点每个可见区域", text)
+        self.assertIn("无文字底图必须来自该 full 图的受控清理", text)
+        self.assertIn("默认 PPT 分支为 `editable`", text)
 
     def test_manual_stop_points_are_allowed_but_must_record_state(self) -> None:
         text = SKILL.read_text(encoding="utf-8-sig")

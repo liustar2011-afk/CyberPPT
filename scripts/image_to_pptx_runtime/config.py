@@ -494,14 +494,14 @@ LAYOUT_MARGINS = {
 # Keep the exported authority key as the compatibility router for existing
 # config consumers.
 SVG_CONSTRAINTS = {
-    'authority': '.agents/skills/cyberppt-image-to-editable-svg/references/shared-standards.md',
-    'core_authority': '.agents/skills/cyberppt-image-to-editable-svg/references/shared-standards-core.md',
+    'authority': 'SKILL.md',
+    'core_authority': 'docs/CYBERPPT_WORKFLOW.md',
     'conditional_authorities': {
-        'effects': '.agents/skills/cyberppt-image-to-editable-svg/references/svg-effects.md',
-        'native_data': '.agents/skills/cyberppt-image-to-editable-svg/references/native-data-interface.md',
-        'pptx_structure': '.agents/skills/cyberppt-image-to-editable-svg/references/pptx-structure-interface.md',
+        'effects': 'scripts/image_to_pptx_runtime/svg_quality/checker.py',
+        'native_data': 'scripts/image_to_pptx_runtime/svg_to_pptx/pptx_package/builder.py',
+        'pptx_structure': 'scripts/image_to_pptx_runtime/svg_to_pptx/pptx_package/builder.py',
     },
-    'validator': '.agents/skills/cyberppt-image-to-editable-svg/scripts/svg_quality_checker.py',
+    'validator': 'scripts/image_to_pptx_runtime/svg_quality_checker.py',
 }
 
 

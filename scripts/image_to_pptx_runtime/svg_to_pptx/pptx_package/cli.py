@@ -633,7 +633,7 @@ def _print_structure_contract_error(
         print(
             "  A legacy lock without pptx_structure.mode defaults only to flat. "
             "Mirror/layout reuse must first create a current template workspace "
-            "through .agents/skills/cyberppt-image-to-editable-svg/workflows/create-template.md, then generate "
+            "through the repository Create Template workflow, then generate "
             "new structured SVG pages.",
             file=sys.stderr,
         )
@@ -648,7 +648,7 @@ def _print_structure_contract_error(
         "  A legacy lock with no pptx_structure.mode defaults to flat. "
         "Explicit legacy or unknown values are not inferred. Mirror/layout reuse "
         "must first create a current template workspace "
-        "through .agents/skills/cyberppt-image-to-editable-svg/workflows/create-template.md, then generate "
+        "through the repository Create Template workflow, then generate "
         "new structured SVG pages.",
         file=sys.stderr,
     )
@@ -1346,7 +1346,7 @@ Recorded narration:
             )
             quick_flag = ' --quick-generate' if args.quick_generate else ''
             print(
-                "Run: python3 .agents/skills/cyberppt-image-to-editable-svg/scripts/svg_quality_checker.py "
+                "Run: python scripts/image_to_pptx_runtime/svg_quality_checker.py "
                 f'"{project_path}"{quick_flag} --stage final --json',
                 file=sys.stderr,
             )

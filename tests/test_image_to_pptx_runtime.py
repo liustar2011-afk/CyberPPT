@@ -39,7 +39,7 @@ def test_stage02_adapter_requires_audited_hand_authored_svg(tmp_path: Path) -> N
     script = tmp_path / "script.md"
     script.write_text("## 第1页：结论\n结论\n", encoding="utf-8")
     manifest = tmp_path / "manifest.json"
-    manifest.write_text(json.dumps({"production_mode": "image-to-editable-svg", "output_variants": ["full"], "source_script": str(script), "pairs": [{"page_number": 1, "full": {"path": str(source), "status": "Generated", "text_audit": {"valid": True}}}]}, ensure_ascii=False), encoding="utf-8")
+    manifest.write_text(json.dumps({"production_mode": "image-to-editable-svg", "output_variants": ["full"], "content_page_numbers": [1], "source_script": str(script), "pairs": [{"page_number": 1, "full": {"path": str(source), "status": "Generated", "text_audit": {"valid": True}}}]}, ensure_ascii=False), encoding="utf-8")
     try:
         run_stage02_reconstruction(project=tmp_path, manifest_path=manifest, output_dir=tmp_path / "out", requested_pages=[1])
     except ValueError as exc:
@@ -164,10 +164,11 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
                 "production_mode": "image-to-editable-svg",
                 "output_variants": ["full"],
                 "source_script": str(script),
+                "content_page_numbers": [1],
                 "pairs": [
                     {
                         "page_number": 1,
-                        "full": {"path": str(source), "status": "Generated", "text_audit": {"valid": True}},
+                        "full": {"path": str(source), "status": "Generated", "text_audit": {"valid": True}, "debug_receipt": {"visible_text": ["标题", "结论", "登记编目"]}},
                         "authoring_svg": str(authored),
                         "graphic_text_policy": _graphic_text_policy(
                             items=[{"id": "label-1", "text": "登记编目", "treatment": "native_text"}]
