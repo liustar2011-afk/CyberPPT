@@ -854,6 +854,10 @@ class FinalScriptPagesTests(unittest.TestCase):
             }
             with (
                 patch("cyberppt.commands.final_script_pages.require_generated"),
+                patch(
+                    "cyberppt.commands.final_script_pages.prepare_clean_bases",
+                    return_value={"status": "complete", "path": "clean-base-generation.json", "pages": []},
+                ) as clean_bases,
                 patch("cyberppt.commands.final_script_pages._run_image_to_editable_svg_build", return_value=expected) as build,
             ):
                 summary = run_final_script_pages(
@@ -869,9 +873,42 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertEqual("production_ready", summary["status"])
         self.assertEqual("production_ready", summary["image_to_editable_svg_build"]["status"])
         build.assert_called_once()
+        clean_bases.assert_called_once()
+        self.assertEqual("complete", summary["clean_base_generation"]["status"])
         self.assertIsNone(summary["rebuild"])
         self.assertEqual({}, summary["tool_consumption"])
         self.assertEqual(expected["delivery_readiness"], summary["production_readiness"])
+
+    def test_production_build_blocks_when_clean_base_requires_review(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "client-report"
+            init_project(project)
+            script = root / "script-final.md"
+            script.write_text("## 第1页：测试\n正文\n", encoding="utf-8")
+            self._approve_inputs_and_prompts(project, script)
+
+            clean_report = {
+                "status": "manual_required",
+                "path": "analysis/clean_base_generation.json",
+                "pages": [{"page_number": 1, "status": "manual_required"}],
+            }
+            with (
+                patch("cyberppt.commands.final_script_pages.require_generated"),
+                patch("cyberppt.commands.final_script_pages.prepare_clean_bases", return_value=clean_report),
+                patch("cyberppt.commands.final_script_pages._run_image_to_editable_svg_build") as build,
+                self.assertRaisesRegex(RuntimeError, "analysis/clean_base_generation.json"),
+            ):
+                run_final_script_pages(
+                    project=project,
+                    script=script,
+                    pages_raw="1",
+                    style_id=4,
+                    production_build=True,
+                    lightweight_stage01_confirmed=True,
+                )
+
+        build.assert_not_called()
 
     def test_run_rebuild_requires_editable_overlay_mode(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

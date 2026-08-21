@@ -86,8 +86,26 @@ def _clean_base_contract(full: Path, clean: Path, *, text: str = "登记编目")
         "path": str(clean),
         "source_sha256": _hash(full),
         "sha256": _hash(clean),
-        "cleaned_text_regions": [{"id": "label-1", "text": text}],
-        "visual_diff_report": {"status": "passed"},
+        "removal_scope": "native_text_only",
+        "clearance_padding_px": 6,
+        "max_outside_mask_changed_fraction": 0.01,
+        "cleaned_text_regions": [
+            {
+                "policy_id": "label-1",
+                "text": text,
+                "bbox": [30, 50, 180, 100],
+                "method": "flat-surface-rebuild",
+            }
+        ],
+        "visual_diff_report": {
+            "status": "passed",
+            "checks": {
+                "text_removal": "passed",
+                "background_continuity": "passed",
+                "outside_mask_preserved": "passed",
+                "post_clean_ocr": "passed",
+            },
+        },
     }
 
 
@@ -184,6 +202,45 @@ def test_graphic_text_policy_accepts_preserved_text_with_local_image_evidence(tm
     assert report["valid"] is True
 
 
+def test_graphic_text_policy_accepts_reviewed_decorative_glyph_without_svg_text(tmp_path: Path) -> None:
+    report = validate_graphic_text_policy(
+        _graphic_text_policy(
+            items=[
+                {
+                    "id": "icon-glyph-1",
+                    "treatment": "decorative_glyph",
+                    "observed_text": "E",
+                    "bbox": [200, 20, 240, 60],
+                    "visual_review": {"status": "passed", "classification": "non_semantic_glyph"},
+                }
+            ]
+        ),
+        authored_svg=_policy_svg(tmp_path),
+        page_number=1,
+    )
+    assert report["valid"] is True
+
+
+def test_graphic_text_policy_rejects_unreviewed_or_rebuilt_decorative_glyph(tmp_path: Path) -> None:
+    report = validate_graphic_text_policy(
+        _graphic_text_policy(
+            items=[
+                {
+                    "id": "icon-glyph-1",
+                    "treatment": "decorative_glyph",
+                    "observed_text": "登记编目",
+                    "bbox": [200, 20, 240, 60],
+                    "visual_review": {"status": "pending", "classification": "non_semantic_glyph"},
+                }
+            ]
+        ),
+        authored_svg=_policy_svg(tmp_path),
+        page_number=1,
+    )
+    assert report["valid"] is False
+    assert report["errors"][0]["code"] == "invalid_item"
+
+
 def test_clean_base_policy_rejects_full_page_as_preserved_text_asset(tmp_path: Path) -> None:
     full = tmp_path / "full.png"
     Image.new("RGB", (400, 200), "white").save(full)
@@ -205,11 +262,70 @@ def test_clean_base_policy_rejects_full_page_as_preserved_text_asset(tmp_path: P
     assert {error["code"] for error in report["errors"]} >= {"full_image_as_clean_base", "preserved_text_uses_page_layer"}
 
 
+def test_clean_base_policy_rejects_unbounded_whiteout_and_unlinked_native_text(tmp_path: Path) -> None:
+    full = tmp_path / "full.png"
+    Image.new("RGB", (400, 200), "white").save(full)
+    clean = tmp_path / "clean.png"
+    Image.new("RGB", (400, 200), "#FEFEFE").save(clean)
+    contract = _clean_base_contract(full, clean)
+    contract["cleaned_text_regions"] = [{"text": "登记编目", "method": "ocr-located-whiteout", "bbox": []}]
+    report = validate_clean_base(
+        contract,
+        full_image=full,
+        authored_svg=_policy_svg(tmp_path),
+        graphic_text_policy=_graphic_text_policy(items=[{"id": "label-1", "text": "登记编目", "treatment": "native_text"}]),
+        page_number=1,
+    )
+    assert report["valid"] is False
+    assert {error["code"] for error in report["errors"]} >= {
+        "unsupported_text_removal_method",
+        "invalid_cleaned_text_bbox",
+        "native_text_has_no_exact_clearance_region",
+    }
+
+
+def test_clean_base_policy_rejects_removing_a_decorative_glyph(tmp_path: Path) -> None:
+    full = tmp_path / "full.png"
+    Image.new("RGB", (400, 200), "white").save(full)
+    clean = tmp_path / "clean.png"
+    clean_image = Image.new("RGB", (400, 200), "white")
+    for x in range(30, 180):
+        for y in range(50, 100):
+            clean_image.putpixel((x, y), (250, 250, 250))
+    clean_image.save(clean)
+    contract = _clean_base_contract(full, clean)
+    contract["cleaned_text_regions"][0]["policy_id"] = "icon-glyph-1"
+    contract["cleaned_text_regions"][0]["text"] = "E"
+    report = validate_clean_base(
+        contract,
+        full_image=full,
+        authored_svg=_policy_svg(tmp_path),
+        graphic_text_policy=_graphic_text_policy(
+            items=[
+                {
+                    "id": "icon-glyph-1",
+                    "treatment": "decorative_glyph",
+                    "observed_text": "E",
+                    "bbox": [200, 20, 240, 60],
+                    "visual_review": {"status": "passed", "classification": "non_semantic_glyph"},
+                }
+            ]
+        ),
+        page_number=1,
+    )
+    assert report["valid"] is False
+    assert "non_native_text_removed" in {error["code"] for error in report["errors"]}
+
+
 def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path: Path) -> None:
     source = tmp_path / "source.png"
     Image.new("RGB", (400, 200), "white").save(source)
     clean = tmp_path / "clean-base.png"
-    Image.new("RGB", (400, 200), "#E8F0F8").save(clean)
+    clean_image = Image.new("RGB", (400, 200), "white")
+    for x in range(30, 180):
+        for y in range(50, 100):
+            clean_image.putpixel((x, y), (250, 250, 250))
+    clean_image.save(clean)
     script = tmp_path / "script.md"
     script.write_text("## 第1页：标题\n结论\n", encoding="utf-8")
     authored = _policy_svg(tmp_path)

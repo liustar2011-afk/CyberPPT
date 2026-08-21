@@ -74,7 +74,7 @@ Stage 01 脚本经轻量确认审计通过后，主流程必须自动调用已�
 
 生产模式唯一且默认使用 `image-to-editable-svg`，默认组装分支为 `editable`：生成并文字审计同一张 full 图，以脚本为文字 truth、OCR 为坐标证据，先准备移除了计划回写文字的无文字底图，再盘点每个可见区域、准备已注册图层、生成可编辑 SVG 与原生 PPTX。风格10的 `truth_lock` 锁定事实真值，`visual_freedom` 只释放镜头、场景、对象、材质和视觉隐喻；二者不能替代重建证据。
 
-图片转可编辑 PPTX 时，配图内部的可读文字必须先写入每页 `pairs[*].graphic_text_policy`。策略使用 `cyberppt.image_to_pptx.graphic_text_policy.v1`，状态必须为 `complete`，`empty_container_check` 必须为 `passed`；空白容器、缺失、未分类、清底后未回写或 `manual_required` 均在导出前阻断。需要编辑或承载信息的文字清底后回写为原生 SVG 文字，可随身份图形保留的字样必须声明经过核验的局部图片层。策略 QA 写入 `analysis/graphic_text_policy_qa.json`。
+图片转可编辑 PPTX 时，配图内部的可读文字必须先写入每页 `pairs[*].graphic_text_policy`。策略使用 `cyberppt.image_to_pptx.graphic_text_policy.v1`，状态必须为 `complete`，`empty_container_check` 必须为 `passed`；空白容器、缺失、未分类、清底后未回写或 `manual_required` 均在导出前阻断。需要编辑或承载信息的文字清底后回写为原生 SVG 文字，可随身份图形保留的字样必须声明经过核验的局部图片层。OCR 误识别出的图标笔画或无业务语义伪文字可登记为 `decorative_glyph`，但必须提供局部坐标和通过的 `non_semantic_glyph` 视觉审阅，且不得重建为 SVG 文字或借此保留普通可读文字。策略 QA 写入 `analysis/graphic_text_policy_qa.json`。
 
 含义如下：
 

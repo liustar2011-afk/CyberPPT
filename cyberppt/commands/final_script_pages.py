@@ -31,6 +31,7 @@ from scripts.image_to_pptx_runtime.stage02_adapter import (
     CANONICAL_EDITABLE_PPTX_ROUTE,
     run_stage02_reconstruction,
 )
+from scripts.image_to_pptx_runtime.clean_base_generator import prepare_clean_bases
 from scripts.imagegen_pipeline.providers.codex_oauth_image import (
     ensure_output_size,
     run_codex_image,
@@ -840,6 +841,19 @@ def run_final_script_pages(
     if require_images or (production_build and not dry_run_images):
         require_generated(manifest)
 
+    clean_base_generation: dict[str, Any] | None = None
+    if production_build:
+        clean_base_generation = prepare_clean_bases(
+            manifest,
+            output_dir=target_dir / "authoring" / "assets",
+        )
+        _write_json(manifest_path, manifest)
+        if clean_base_generation["status"] != "complete":
+            raise RuntimeError(
+                "clean-base generation requires reviewed native_text regions; "
+                f"inspect {clean_base_generation['path']} and complete only the listed pages"
+            )
+
     resume_command = (
         f"python -m cyberppt run-autonomous {autonomous_contract_path} --resume"
         if autonomous_contract_path is not None
@@ -917,6 +931,7 @@ def run_final_script_pages(
         "rebuild": rebuild_status,
         "image_to_editable_svg_build": image_to_editable_svg_build,
         "image_generation": image_generation,
+        "clean_base_generation": clean_base_generation,
         "prompt_enrich": manifest.get("prompt_enrich"),
         "tool_consumption": tool_consumption,
         "production_readiness": production_readiness,

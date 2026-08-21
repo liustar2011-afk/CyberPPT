@@ -9,7 +9,7 @@ from typing import Any, Mapping
 
 
 SCHEMA = "cyberppt.image_to_pptx.graphic_text_policy.v1"
-_TREATMENTS = {"native_text", "preserved_in_image"}
+_TREATMENTS = {"native_text", "preserved_in_image", "decorative_glyph"}
 
 
 def _normalize_text(value: object) -> str:
@@ -56,6 +56,16 @@ def _has_image_evidence(authored_svg: Path, hrefs: list[str], asset_ref: object)
     )
 
 
+def _valid_glyph_bbox(value: object) -> bool:
+    if not isinstance(value, list) or len(value) != 4:
+        return False
+    try:
+        left, top, right, bottom = (float(item) for item in value)
+    except (TypeError, ValueError):
+        return False
+    return 0 <= left < right and 0 <= top < bottom
+
+
 def validate_graphic_text_policy(
     policy: Mapping[str, Any] | None,
     *,
@@ -98,14 +108,25 @@ def validate_graphic_text_policy(
         if item_id in seen_ids:
             item_errors.append("duplicate item id")
         seen_ids.add(item_id)
-        if not text:
+        if not text and treatment != "decorative_glyph":
             item_errors.append("text is required")
         if treatment not in _TREATMENTS:
-            item_errors.append("treatment must be native_text or preserved_in_image")
+            item_errors.append("treatment must be native_text, preserved_in_image, or decorative_glyph")
         if treatment == "native_text" and text and not any(text in value for value in svg_texts):
             item_errors.append("exact text is missing from authored SVG")
         if treatment == "preserved_in_image" and not _has_image_evidence(svg_path, image_hrefs, item.get("asset_ref")):
             item_errors.append("preserved image text has no referenced local image layer")
+        if treatment == "decorative_glyph":
+            observed = _normalize_text(item.get("observed_text") or item.get("text"))
+            review = item.get("visual_review")
+            if not observed:
+                item_errors.append("decorative glyph requires the OCR or visual observation")
+            if not _valid_glyph_bbox(item.get("bbox")):
+                item_errors.append("decorative glyph requires a bounded local region")
+            if not isinstance(review, Mapping) or review.get("status") != "passed" or review.get("classification") != "non_semantic_glyph":
+                item_errors.append("decorative glyph requires passed non_semantic_glyph visual review")
+            if observed and any(observed in value for value in svg_texts):
+                item_errors.append("decorative glyph must not be rebuilt as editable text")
         if item_errors:
             errors.append({"code": "invalid_item", "message": f"{item_id}: {'; '.join(item_errors)}"})
         checked.append({"id": item_id, "text": text, "treatment": treatment, "valid": not item_errors})
