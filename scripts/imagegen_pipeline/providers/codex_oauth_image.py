@@ -25,7 +25,6 @@ from urllib import error, request
 
 DEFAULT_MODEL = "gpt-image-2"
 DEFAULT_SIZE = "2048x1024"
-ENHANCED_OUTPUT_SCALE = 2
 DEFAULT_QUALITY = "high"
 DEFAULT_OUTPUT_FORMAT = "png"
 DEFAULT_TIMEOUT = 600
@@ -494,7 +493,7 @@ def _extract_responses_text(body: str) -> str:
 
 
 def ensure_output_size(output_path: Path, size: str) -> tuple[int, int]:
-    """Enhance and normalize an ingested image through the registered vendor skill."""
+    """Enhance an ingested image while preserving the requested delivery canvas."""
 
     if size == "auto":
         return (-1, -1)
@@ -504,23 +503,20 @@ def ensure_output_size(output_path: Path, size: str) -> tuple[int, int]:
     target_width, target_height = parsed
     from cyberppt.image_enhancer import enhance_image
 
-    enhanced_width = target_width * ENHANCED_OUTPUT_SCALE
-    enhanced_height = target_height * ENHANCED_OUTPUT_SCALE
     enhance_image(
         output_path,
         output=output_path,
         backend="builtin",
-        scale=float(ENHANCED_OUTPUT_SCALE),
-        target_size=(enhanced_width, enhanced_height),
+        scale=1.0,
+        target_size=(target_width, target_height),
         mode="chart_heavy",
     )
     print(
-        f"Enhanced image at {ENHANCED_OUTPUT_SCALE}x pixel density "
-        f"({enhanced_width}x{enhanced_height}) for logical canvas "
+        f"Enhanced and normalized image to requested canvas "
         f"{target_width}x{target_height}: {output_path}",
         file=sys.stderr,
     )
-    return (enhanced_width, enhanced_height)
+    return (target_width, target_height)
 
 
 def raw_output_path(output_path: Path) -> Path:

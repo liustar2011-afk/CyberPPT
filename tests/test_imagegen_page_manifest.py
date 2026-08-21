@@ -286,7 +286,7 @@ class CyberpptPairManifestTests(unittest.TestCase):
         self.assertEqual("image-to-editable-svg", manifest["production_mode"])
         self.assertEqual(["full"], manifest["output_variants"])
         self.assertEqual("Generated", full_status)
-        self.assertEqual((4096, 2048), full_size)
+        self.assertEqual((2048, 1024), full_size)
         self.assertNotIn("background", pair)
         self.assertEqual("required", pair["graphic_text_policy"]["status"])
         self.assertEqual("required", pair["graphic_text_policy"]["empty_container_check"])
