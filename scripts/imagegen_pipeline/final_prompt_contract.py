@@ -10,7 +10,11 @@ import re
 
 from scripts.imagegen_pipeline.final_prompt_ir import FinalPromptIR, PromptContractError
 
-# Re-measured 2026-08-18 (later same day) against the same 23 real Style09
+# Re-measured 2026-08-21 against the current Style09 source contract and the
+# project's 16 content pages: 25741-26002 characters. The source contract
+# was expanded after the previous 25500-character ceiling was set.
+#
+# Earlier baseline, retained for context: against the same 23 real Style09
 # pages from projects/power-data-infrastructure-cooperation-v16-20260815-foundation,
 # after Style09's prompt_contract was restored to the scene-led spec from
 # references/visual-system.md (the earlier flat/minimal contract had lost
@@ -31,7 +35,7 @@ from scripts.imagegen_pipeline.final_prompt_ir import FinalPromptIR, PromptContr
 # Rich, source-faithful on-screen copy can add a few hundred characters to
 # the measured style contract. Keep the safety ceiling above that variance
 # while retaining the hard upper bound for malformed or runaway prompts.
-MAX_PROMPT_CHARACTERS = 25_500
+MAX_PROMPT_CHARACTERS = 30_000
 
 _PLACEHOLDER_RE = re.compile(r"<[^>\n]{1,80}>")
 
