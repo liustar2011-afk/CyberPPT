@@ -654,6 +654,11 @@ def build_manifest(
                     "items": [],
                     "note": "Classify embedded graphic text before clean-base preparation; complete this policy before Quick SVG export.",
                 },
+                "clean_base": {
+                    "schema": "cyberppt.stage02.clean_base.v1",
+                    "status": "required",
+                    "note": "Prepare a text-free base and complete this contract before editable PPTX assembly.",
+                },
                 "prompt_file": str(prompt_file),
                 **({"reference_images": reference_images} if reference_images else {}),
                 "visual_structure_handoff": visual_handoff_metadata,

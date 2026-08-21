@@ -16,6 +16,7 @@
 - 处理任何 CyberPPT 源材料、Source Truth、语义模型、Outline、page plan、页面脚本或视觉生产任务，先阅读 [docs/CYBERPPT_WORKFLOW.md](docs/CYBERPPT_WORKFLOW.md)。该文件是全流程总览和检索入口。
 - `AGENTS.md` 负责仓库级硬约束；各 `.agents/skills/*/SKILL.md` 负责阶段细则。不要通过拼接多个 Skill 的局部说明自行重建主流程。
 - 涉及源材料或 Stage 01 时，第一入口固定为 `.agents/skills/cyberppt-source-foundation/SKILL.md`；纯 Stage 02 视觉、图片、SVG、PPTX QA 或已锁定最终脚本任务，按总览文件进入对应 Skill。
+- 对任何“图转可编辑 PPT”“按图复刻 PPT”“图片/截图转 PPTX”请求，必须调用 `.agents/skills/cyberppt-stage02-editable-pptx/SKILL.md`，并通过 `python -m cyberppt final-script-pages --production-build` 进入生产。禁止手写最终脚本或 `page_image_pairs.json` 后直调 `scripts.image_to_pptx_runtime.stage02_adapter.run_stage02_reconstruction`；该 adapter 只消费正式编排产生且仍有效的 build context。
 
 ## 独立技术判断（硬规则）
 

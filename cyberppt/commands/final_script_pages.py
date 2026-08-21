@@ -754,6 +754,9 @@ def run_final_script_pages(
                 prior_graphic_text_policy = prior_pair.get("graphic_text_policy")
                 if prior_authoring_svg.is_file():
                     pair["authoring_svg"] = str(prior_authoring_svg)
+                prior_clean_base = prior_pair.get("clean_base")
+                if isinstance(prior_clean_base, dict) and prior_clean_base.get("status") == "complete":
+                    pair["clean_base"] = prior_clean_base
                 if (
                     isinstance(prior_graphic_text_policy, dict)
                     and prior_graphic_text_policy.get("status") == "complete"
@@ -929,6 +932,7 @@ def run_final_script_pages(
         "style_lock_sha256": _sha256(style_lock),
         "page_set": page_numbers,
         "production_mode": production_mode,
+        "assembly_mode": assembly_mode,
         "editable_pptx_route": CANONICAL_EDITABLE_PPTX_ROUTE,
         "stage": stage_name,
         "source_mode": source_mode,

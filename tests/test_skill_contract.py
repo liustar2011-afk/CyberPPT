@@ -21,6 +21,7 @@ PAGE_AUTHORING = (
     / "professional-page-authoring.md"
 )
 PROJECT_AGENTS = ROOT / "projects" / "AGENTS.md"
+EDITABLE_PPTX_SKILL = ROOT / ".agents" / "skills" / "cyberppt-stage02-editable-pptx" / "SKILL.md"
 
 
 class SkillContractTests(unittest.TestCase):
@@ -236,6 +237,20 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("文字审计", text)
         self.assertIn("可编辑 SVG", text)
         self.assertIn("manual_required", text)
+
+    def test_image_to_editable_pptx_has_a_dedicated_stage02_router(self) -> None:
+        text = EDITABLE_PPTX_SKILL.read_text(encoding="utf-8-sig")
+
+        self.assertIn("final-script-pages", text)
+        self.assertIn("run_stage02_reconstruction", text)
+        self.assertIn("text-free base", text)
+
+    def test_repo_rules_forbid_direct_adapter_image_to_pptx_exports(self) -> None:
+        text = AGENTS.read_text(encoding="utf-8-sig")
+
+        self.assertIn("cyberppt-stage02-editable-pptx", text)
+        self.assertIn("run_stage02_reconstruction", text)
+        self.assertIn("--production-build", text)
 
     def test_stage02_embedded_graphic_text_policy_is_a_release_gate(self) -> None:
         root_skill = SKILL.read_text(encoding="utf-8-sig")

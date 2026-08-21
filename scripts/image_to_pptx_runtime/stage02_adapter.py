@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import shutil
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -16,6 +17,7 @@ from scripts.imagegen_pipeline.production_readiness import build_production_read
 
 from .quick import create_quick_project
 from .graphic_text_policy import validate_graphic_text_policy
+from .clean_base_policy import validate_clean_base
 from .review import write_review
 from .svg_quality.checker import SVGQualityChecker
 from .template_assembly import (
@@ -38,13 +40,44 @@ def _read_json(path: Path) -> dict[str, Any]:
     return value
 
 
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _require_official_orchestration(manifest_path: Path, manifest: Mapping[str, Any], *, assembly_mode: str) -> None:
+    """Reject direct adapter calls that bypass final-script-pages."""
+
+    context_path = manifest_path.parent / "build_context.json"
+    if not context_path.is_file():
+        raise ValueError("Stage 02 adapter requires final-script-pages orchestration evidence (build_context.json)")
+    context = _read_json(context_path)
+    artifact = context.get("artifacts", {}).get("page_image_pairs", {}) if isinstance(context.get("artifacts"), Mapping) else {}
+    bound_path = Path(str(artifact.get("path") or "")).expanduser().resolve()
+    if (
+        context.get("schema") != "cyberppt.build_context.v1"
+        or context.get("production_mode") != "image-to-editable-svg"
+        or context.get("assembly_mode") != assembly_mode
+        or bound_path != manifest_path
+        or artifact.get("sha256") != _sha256(manifest_path)
+        or manifest.get("source_script_sha256") != context.get("source_script_sha256")
+    ):
+        raise ValueError("Stage 02 adapter requires a current final-script-pages build context")
+
+
 def _script_lines(script: Path, page_number: int) -> list[str]:
     from scripts.imagegen_pipeline.deliverable_prompt import parse_page_blocks
 
     page = parse_page_blocks(script).get(page_number)
     if page is None:
         raise ValueError(f"final script has no page {page_number}")
-    return [item for item in [page.title, *page.text.splitlines()] if item.strip()]
+    # The template wrapper owns the page title. Keep the Quick body inventory
+    # and editable-text QA scoped to body copy so a valid page does not need a
+    # duplicate title inside the reconstructed 2:1 body SVG.
+    return [item for item in page.text.splitlines() if item.strip()]
 
 
 def _require_audited_pairs(manifest: Mapping[str, Any], requested_pages: list[int]) -> list[dict[str, Any]]:
@@ -147,6 +180,7 @@ def run_stage02_reconstruction(
         raise ValueError("assembly_mode must be image, editable, or both")
     manifest_file = Path(manifest_path).expanduser().resolve()
     manifest = _read_json(manifest_file)
+    _require_official_orchestration(manifest_file, manifest, assembly_mode=assembly_mode)
     content_pages = {
         int(value)
         for value in manifest.get("content_page_numbers", [])
@@ -174,6 +208,7 @@ def run_stage02_reconstruction(
     svgs: list[Path] = []
     quality: list[dict[str, Any]] = []
     graphic_text_policy: list[dict[str, Any]] = []
+    clean_base_policy: list[dict[str, Any]] = []
     checker = SVGQualityChecker(quick_generate=True)
     if needs_editable:
         assert quick is not None
@@ -181,6 +216,16 @@ def run_stage02_reconstruction(
             authored = Path(str(pair.get("authoring_svg") or "")).expanduser()
             if not authored.is_file():
                 raise ValueError(f"page {pair['page_number']} requires a hand-authored SVG from the image-to-PPTX runtime")
+            clean_base = validate_clean_base(
+                pair.get("clean_base"),
+                full_image=Path(str(pair["full"]["path"])),
+                authored_svg=authored,
+                graphic_text_policy=pair.get("graphic_text_policy"),
+                page_number=int(pair["page_number"]),
+            )
+            clean_base_policy.append(clean_base)
+            if not clean_base["valid"]:
+                raise ValueError(f"page {pair['page_number']} failed clean-base policy: {clean_base['errors']}")
             text_policy = validate_graphic_text_policy(
                 pair.get("graphic_text_policy"),
                 authored_svg=authored,
@@ -312,9 +357,11 @@ def run_stage02_reconstruction(
     text_path.write_text(json.dumps(text_qa_by_mode, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     graphic_text_path = analysis / "graphic_text_policy_qa.json"
     graphic_text_path.write_text(json.dumps(graphic_text_policy, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    clean_base_path = analysis / "clean_base_policy_qa.json"
+    clean_base_path.write_text(json.dumps(clean_base_policy, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     runtime_root = quick.root if quick is not None else output_root / "image"
-    artifacts = {"reconstruction_inventory": str(runtime_root / "analysis" / "reconstruction_inventory.json"), "svg_output": str(runtime_root / "svg_output"), "reconstruction_quality": str(analysis), "text_content_qa": str(text_path), "graphic_text_policy_qa": str(graphic_text_path), "render_compare": str(review["path"]), "exported_pptx": str(export)}
-    reports = {"reconstruction_inventory": {"valid": True}, "reconstruction_quality": {"valid": True, "pages": quality}, "svg_output": {"valid": True}, "text_content_qa": text_qa_by_mode, "graphic_text_policy": {"valid": True, "pages": graphic_text_policy}, "render_compare": {"valid": review["valid"], "review": review}, "exported_pptx": {"valid": True}, "exported_pptx_by_mode": {mode: {"valid": True, "path": str(path)} for mode, path in exports.items()}}
+    artifacts = {"reconstruction_inventory": str(runtime_root / "analysis" / "reconstruction_inventory.json"), "svg_output": str(runtime_root / "svg_output"), "reconstruction_quality": str(analysis), "text_content_qa": str(text_path), "clean_base_policy_qa": str(clean_base_path), "graphic_text_policy_qa": str(graphic_text_path), "render_compare": str(review["path"]), "exported_pptx": str(export)}
+    reports = {"reconstruction_inventory": {"valid": True}, "reconstruction_quality": {"valid": True, "pages": quality}, "svg_output": {"valid": True}, "text_content_qa": text_qa_by_mode, "clean_base_policy": {"valid": True, "pages": clean_base_policy}, "graphic_text_policy": {"valid": True, "pages": graphic_text_policy}, "render_compare": {"valid": review["valid"], "review": review}, "exported_pptx": {"valid": True}, "exported_pptx_by_mode": {mode: {"valid": True, "path": str(path)} for mode, path in exports.items()}}
     readiness = build_production_readiness(stage="02-production-build", artifacts=artifacts, reports=reports, required_tools=tuple(artifacts))
     result = {"schema": "cyberppt.image_to_pptx.stage02.v1", "status": readiness["status"], "assembly_mode": assembly_mode, "runtime_project": str(runtime_root), "svg_roster": [str(svg) for svg in svgs], "svg_quality": quality, "visual_review": review, "artifacts": artifacts, "artifacts_by_mode": {mode: str(path) for mode, path in exports.items()}, "reports": reports, "text_content_qa": text_qa_by_mode, "release_gate": {"valid": True, "manual_adjustments": "local_only"}, "delivery_readiness": readiness}
     result_path = analysis / "image-to-pptx-result.json"

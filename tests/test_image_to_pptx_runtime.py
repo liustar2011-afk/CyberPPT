@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 import json
+from hashlib import sha256
 from pathlib import Path
 
 from PIL import Image
 
 from scripts.image_to_pptx_runtime import assert_internal_runtime
 from scripts.image_to_pptx_runtime.graphic_text_policy import validate_graphic_text_policy
+from scripts.image_to_pptx_runtime.clean_base_policy import (
+    SCHEMA as CLEAN_BASE_SCHEMA,
+    validate_clean_base,
+)
 from scripts.image_to_pptx_runtime.quick import create_quick_project
 from scripts.image_to_pptx_runtime.review import ReviewIssue, write_review
 from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruction
@@ -43,9 +48,9 @@ def test_stage02_adapter_requires_audited_hand_authored_svg(tmp_path: Path) -> N
     try:
         run_stage02_reconstruction(project=tmp_path, manifest_path=manifest, output_dir=tmp_path / "out", requested_pages=[1])
     except ValueError as exc:
-        assert "hand-authored SVG" in str(exc)
+        assert "final-script-pages orchestration evidence" in str(exc)
     else:
-        raise AssertionError("production adapter must not fall back to OCR coordinate authoring")
+        raise AssertionError("production adapter must reject direct invocation")
 
 
 def _graphic_text_policy(*, items: list[dict[str, object]] | None = None, empty_container_check: str = "passed") -> dict[str, object]:
@@ -68,6 +73,41 @@ def _policy_svg(tmp_path: Path, *, text: str = "登记编目") -> Path:
         encoding="utf-8",
     )
     return svg
+
+
+def _hash(path: Path) -> str:
+    return sha256(path.read_bytes()).hexdigest()
+
+
+def _clean_base_contract(full: Path, clean: Path, *, text: str = "登记编目") -> dict[str, object]:
+    return {
+        "schema": CLEAN_BASE_SCHEMA,
+        "status": "complete",
+        "path": str(clean),
+        "source_sha256": _hash(full),
+        "sha256": _hash(clean),
+        "cleaned_text_regions": [{"id": "label-1", "text": text}],
+        "visual_diff_report": {"status": "passed"},
+    }
+
+
+def _official_context(manifest: Path, script: Path, *, assembly_mode: str = "editable") -> None:
+    manifest_data = json.loads(manifest.read_text(encoding="utf-8"))
+    manifest_data["source_script_sha256"] = _hash(script)
+    manifest.write_text(json.dumps(manifest_data, ensure_ascii=False), encoding="utf-8")
+    (manifest.parent / "build_context.json").write_text(
+        json.dumps(
+            {
+                "schema": "cyberppt.build_context.v1",
+                "production_mode": "image-to-editable-svg",
+                "assembly_mode": assembly_mode,
+                "source_script_sha256": _hash(script),
+                "artifacts": {"page_image_pairs": {"path": str(manifest), "sha256": _hash(manifest)}},
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
 
 
 def test_graphic_text_policy_requires_native_reconstruction_for_cleared_text(tmp_path: Path) -> None:
@@ -144,16 +184,39 @@ def test_graphic_text_policy_accepts_preserved_text_with_local_image_evidence(tm
     assert report["valid"] is True
 
 
+def test_clean_base_policy_rejects_full_page_as_preserved_text_asset(tmp_path: Path) -> None:
+    full = tmp_path / "full.png"
+    Image.new("RGB", (400, 200), "white").save(full)
+    authored = _policy_svg(tmp_path)
+    authored.write_text(
+        authored.read_text(encoding="utf-8").replace("</svg>", '<image href="full.png" x="0" y="0" width="400" height="200"/>\n</svg>'),
+        encoding="utf-8",
+    )
+    report = validate_clean_base(
+        _clean_base_contract(full, full),
+        full_image=full,
+        authored_svg=authored,
+        graphic_text_policy=_graphic_text_policy(
+            items=[{"id": "wordmark", "text": "登记编目", "treatment": "preserved_in_image", "asset_ref": "full.png", "identity_integral": True}]
+        ),
+        page_number=1,
+    )
+    assert report["valid"] is False
+    assert {error["code"] for error in report["errors"]} >= {"full_image_as_clean_base", "preserved_text_uses_page_layer"}
+
+
 def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path: Path) -> None:
     source = tmp_path / "source.png"
     Image.new("RGB", (400, 200), "white").save(source)
+    clean = tmp_path / "clean-base.png"
+    Image.new("RGB", (400, 200), "#E8F0F8").save(clean)
     script = tmp_path / "script.md"
     script.write_text("## 第1页：标题\n结论\n", encoding="utf-8")
     authored = _policy_svg(tmp_path)
     authored.write_text(
         authored.read_text(encoding="utf-8").replace(
             "</svg>",
-                '<text x="40" y="120" font-family="Arial" font-size="20" fill="#000000">标题</text>\n<text x="40" y="150" font-family="Arial" font-size="20" fill="#000000">结论</text>\n</svg>',
+                '<image href="clean-base.png" x="0" y="0" width="400" height="200"/>\n<text x="40" y="150" font-family="Arial" font-size="20" fill="#000000">结论</text>\n</svg>',
         ),
         encoding="utf-8",
     )
@@ -168,8 +231,9 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
                 "pairs": [
                     {
                         "page_number": 1,
-                        "full": {"path": str(source), "status": "Generated", "text_audit": {"valid": True}, "debug_receipt": {"visible_text": ["标题", "结论", "登记编目"]}},
+                        "full": {"path": str(source), "status": "Generated", "text_audit": {"valid": True}, "debug_receipt": {"visible_text": ["结论", "登记编目"]}},
                         "authoring_svg": str(authored),
+                        "clean_base": _clean_base_contract(source, clean),
                         "graphic_text_policy": _graphic_text_policy(
                             items=[{"id": "label-1", "text": "登记编目", "treatment": "native_text"}]
                         ),
@@ -180,6 +244,7 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
         ),
         encoding="utf-8",
     )
+    _official_context(manifest, script)
 
     result = run_stage02_reconstruction(
         project=tmp_path,

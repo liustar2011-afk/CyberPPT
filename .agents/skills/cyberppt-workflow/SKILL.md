@@ -12,7 +12,7 @@ This is a navigation-only Skill. It prevents agents from reconstructing the proc
 1. Read [docs/CYBERPPT_WORKFLOW.md](../../../docs/CYBERPPT_WORKFLOW.md) completely enough to identify the task stage, required human stop, authoritative inputs and completion gate.
 2. Read the repository root [AGENTS.md](../../../AGENTS.md) before acting.
 3. For any task involving source materials, Source Truth, semantic models, Outline, page plans or their audits, invoke `cyberppt-source-foundation` as the mandatory first Stage 01 Skill.
-4. For an already approved final script or a pure visual, image, SVG or PPTX QA task, route directly to the corresponding Stage 02 or page Skill identified by the overview.
+4. For a request to convert an image, screenshot, or rendered visual into an editable PPTX, invoke `cyberppt-stage02-editable-pptx`. It owns the Stage 02 route and forbids direct adapter invocation. For other pure visual, image, SVG or PPTX QA tasks, route to the corresponding Stage 02 or page Skill identified by the overview.
 5. Keep this Skill as a router. Do not create a second workflow, approval chain, status file or parallel authority.
 
 ## Route at a glance
