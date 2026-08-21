@@ -12,6 +12,8 @@ from scripts.image_to_pptx_runtime.clean_base_policy import (
     SCHEMA as CLEAN_BASE_SCHEMA,
     validate_clean_base,
 )
+from scripts.image_to_pptx_runtime import editable_page_validation
+from scripts.image_to_pptx_runtime.editable_page_validation import validate_editable_page
 from scripts.image_to_pptx_runtime.quick import create_quick_project
 from scripts.image_to_pptx_runtime.review import ReviewIssue, write_review
 from scripts.image_to_pptx_runtime.stage02_adapter import run_stage02_reconstruction
@@ -95,6 +97,7 @@ def _clean_base_contract(full: Path, clean: Path, *, text: str = "登记编目")
                 "text": text,
                 "bbox": [30, 50, 180, 100],
                 "method": "flat-surface-rebuild",
+                "clearability": {"status": "clearable"},
             }
         ],
         "visual_diff_report": {
@@ -327,12 +330,15 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
             clean_image.putpixel((x, y), (250, 250, 250))
     clean_image.save(clean)
     script = tmp_path / "script.md"
-    script.write_text("## 第1页：标题\n结论\n", encoding="utf-8")
+    script.write_text("## 第1页：标题\n登记编目\n", encoding="utf-8")
     authored = _policy_svg(tmp_path)
     authored.write_text(
         authored.read_text(encoding="utf-8").replace(
+            '<svg xmlns="http://www.w3.org/2000/svg"',
+            '<svg xmlns="http://www.w3.org/2000/svg" data-cyberppt-native-text-style="editorial-source-text-v1"',
+        ).replace(
             "</svg>",
-                '<image href="clean-base.png" x="0" y="0" width="400" height="200"/>\n<text x="40" y="150" font-family="Arial" font-size="20" fill="#000000">结论</text>\n</svg>',
+            '<image href="clean-base.png" x="0" y="0" width="400" height="200"/></svg>',
         ),
         encoding="utf-8",
     )
@@ -347,11 +353,22 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
                 "pairs": [
                     {
                         "page_number": 1,
-                        "full": {"path": str(source), "status": "Generated", "text_audit": {"valid": True}, "debug_receipt": {"visible_text": ["结论", "登记编目"]}},
+                        "full": {"path": str(source), "status": "Generated", "text_audit": {"valid": True}, "debug_receipt": {"visible_text": ["登记编目"]}},
                         "authoring_svg": str(authored),
+                        "authoring_svg_author": "ai",
+                        "native_text_style_profile": "editorial-source-text-v1",
                         "clean_base": _clean_base_contract(source, clean),
                         "graphic_text_policy": _graphic_text_policy(
-                            items=[{"id": "label-1", "text": "登记编目", "treatment": "native_text"}]
+                            items=[
+                                {
+                                    "id": "label-1",
+                                    "text": "登记编目",
+                                    "treatment": "native_text",
+                                    "bbox": [30, 50, 180, 100],
+                                    "layout_lines": [{"text": "登记编目", "bbox": [30, 50, 180, 100]}],
+                                    "locator": {"coverage": 1.0, "similarity": 1.0},
+                                }
+                            ]
                         ),
                     }
                 ],
@@ -371,13 +388,58 @@ def test_stage02_adapter_records_graphic_text_policy_qa_before_delivery(tmp_path
 
     assert result["status"] == "production_ready"
     assert result["reports"]["graphic_text_policy"]["valid"] is True
+    assert result["reports"]["editable_page"]["valid"] is True
     assert result["reports"]["native_text_style"]["valid"] is True
+    assert result["reports"]["native_text_geometry"]["pages"][0]["detail_level"] == "summary"
+    assert result["reports"]["native_text_style"]["pages"][0]["source"] == "ai_authoring"
     style_qa = Path(result["artifacts"]["native_text_style_qa"])
     assert style_qa.is_file()
     styled_svg = Path(result["artifacts"]["svg_output"]) / "01.svg"
     assert 'data-cyberppt-native-text-style="editorial-source-text-v1"' in styled_svg.read_text(encoding="utf-8")
-    assert Path(result["artifacts"]["graphic_text_policy_qa"]).is_file()
+    editable_qa = Path(result["artifacts"]["editable_page_qa"])
+    assert editable_qa.is_file()
+    assert result["artifacts"]["graphic_text_policy_qa"] == str(editable_qa)
+    assert result["artifacts"]["clean_base_policy_qa"] == str(editable_qa)
     assert "登记编目" in pptx_texts(Path(result["artifacts"]["exported_pptx"]))
+
+
+def test_editable_page_validation_parses_svg_once_and_surfaces_policy_errors(tmp_path: Path, monkeypatch) -> None:
+    full = tmp_path / "full.png"
+    Image.new("RGB", (400, 200), "white").save(full)
+    clean = tmp_path / "clean-base.png"
+    clean_image = Image.new("RGB", (400, 200), "white")
+    for x in range(30, 180):
+        for y in range(50, 100):
+            clean_image.putpixel((x, y), (250, 250, 250))
+    clean_image.save(clean)
+    authored = _policy_svg(tmp_path)
+    authored.write_text(
+        authored.read_text(encoding="utf-8").replace(
+            "</svg>",
+            '<image href="clean-base.png" x="0" y="0" width="400" height="200"/></svg>',
+        ),
+        encoding="utf-8",
+    )
+    calls = 0
+    original = editable_page_validation._svg_evidence
+
+    def counted_evidence(path: Path) -> tuple[list[str], list[str]]:
+        nonlocal calls
+        calls += 1
+        return original(path)
+
+    monkeypatch.setattr(editable_page_validation, "_svg_evidence", counted_evidence)
+    report = validate_editable_page(
+        clean_base=_clean_base_contract(full, clean),
+        full_image=full,
+        authored_svg=authored,
+        graphic_text_policy=_graphic_text_policy(empty_container_check="failed"),
+        page_number=1,
+    )
+
+    assert calls == 1
+    assert report["valid"] is False
+    assert {item["code"] for item in report["errors"]} >= {"empty_container_check_failed"}
 
 
 def test_quick_split_text_flow_keeps_visual_tspan_rows_editable(tmp_path: Path) -> None:

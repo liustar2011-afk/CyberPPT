@@ -318,7 +318,12 @@ def _native_regions(policy: Mapping[str, Any], *, width: int, height: int) -> tu
     return regions, errors
 
 
-def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> dict[str, Any]:
+def prepare_clean_bases(
+    manifest: dict[str, Any],
+    *,
+    output_dir: Path | str,
+    write_report: bool = True,
+) -> dict[str, Any]:
     """Create only safe local clean bases and update the active manifest in memory.
 
     The generator deliberately supports uniform/near-uniform text fields only.
@@ -475,7 +480,8 @@ def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> 
         "status": "complete" if results and all(item["status"] in {"complete", "reused", "reused_seeded_baseline"} for item in results) else "auto_failed",
         "pages": results,
     }
-    report_path = report_dir / "clean_base_generation.json"
-    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    report["path"] = str(report_path)
+    if write_report:
+        report_path = report_dir / "clean_base_generation.json"
+        report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        report["path"] = str(report_path)
     return report

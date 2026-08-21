@@ -3,6 +3,8 @@ from pathlib import Path
 
 from scripts.image_to_pptx_runtime.native_text_geometry import (
     analyze_native_text_geometry,
+    geometry_qa_mode,
+    summarize_native_text_geometry,
     write_native_text_geometry_receipt,
 )
 
@@ -130,6 +132,48 @@ def test_locked_svg_is_skipped(tmp_path: Path) -> None:
     )
     assert report["status"] == "skipped"
     assert report["items"] == []
+
+
+def test_geometry_uses_summary_only_for_simple_high_confidence_ai_text(tmp_path: Path) -> None:
+    policy = _policy(
+        [
+            {
+                "id": "label-1",
+                "text": "登记编目",
+                "treatment": "native_text",
+                "bbox": [20, 30, 100, 55],
+                "layout_lines": [{"text": "登记编目", "bbox": [20, 30, 100, 55]}],
+                "locator": {"coverage": 1.0, "similarity": 1.0},
+            }
+        ]
+    )
+    clean_base = {
+        "cleaned_text_regions": [
+            {"policy_id": "label-1", "clearability": {"status": "clearable"}}
+        ]
+    }
+    mode, reasons = geometry_qa_mode(policy, clean_base, authored_by_ai=True)
+
+    assert mode == "summary"
+    report = summarize_native_text_geometry(
+        policy,
+        authored_svg=tmp_path / "page.svg",
+        page_number=1,
+        reason=reasons[0],
+    )
+    assert report["detail_level"] == "summary"
+    assert report["review_required"] is False
+    assert geometry_qa_mode(policy, clean_base, authored_by_ai=False)[0] == "full"
+
+
+def test_geometry_uses_full_qa_when_simple_page_evidence_is_incomplete() -> None:
+    policy = _policy(
+        [{"id": "body", "text": "第一行第二行", "treatment": "native_text", "bbox": [20, 30, 100, 80]}]
+    )
+    mode, reasons = geometry_qa_mode(policy, {}, authored_by_ai=True)
+
+    assert mode == "full"
+    assert any("line-level OCR" in reason for reason in reasons)
 
 
 def test_geometry_receipt_is_machine_readable(tmp_path: Path) -> None:

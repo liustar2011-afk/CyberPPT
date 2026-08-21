@@ -115,6 +115,7 @@ def validate_clean_base(
     authored_svg: Path | str,
     graphic_text_policy: Mapping[str, Any] | None,
     page_number: int,
+    image_hrefs: list[str] | None = None,
 ) -> dict[str, Any]:
     """Require a distinct text-free base and native reconstruction of its text."""
 
@@ -242,11 +243,14 @@ def validate_clean_base(
         if asset is not None and (asset == full_path or asset == base_path):
             errors.append({"code": "preserved_text_uses_page_layer", "message": "preserved image text cannot use the full image or clean base"})
 
-    try:
-        hrefs = _image_hrefs(svg_path)
-    except (OSError, ET.ParseError) as exc:
-        errors.append({"code": "invalid_authored_svg", "message": str(exc)})
-        hrefs = []
+    if image_hrefs is None:
+        try:
+            hrefs = _image_hrefs(svg_path)
+        except (OSError, ET.ParseError) as exc:
+            errors.append({"code": "invalid_authored_svg", "message": str(exc)})
+            hrefs = []
+    else:
+        hrefs = list(image_hrefs)
     if base_path is not None and base_path.is_file() and not any(
         not href.startswith(("data:", "http:", "https:")) and _path(href, parent=svg_path.parent) == base_path
         for href in hrefs

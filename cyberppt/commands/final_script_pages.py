@@ -31,10 +31,8 @@ from scripts.image_to_pptx_runtime.stage02_adapter import (
     CANONICAL_EDITABLE_PPTX_ROUTE,
     run_stage02_reconstruction,
 )
-from scripts.image_to_pptx_runtime.clean_base_generator import prepare_clean_bases
 from scripts.image_to_pptx_runtime.ai_native_text_authoring import (
-    prepare_ai_authored_svgs,
-    prepare_ai_graphic_text_policy,
+    compile_ai_editable_pages,
 )
 from scripts.imagegen_pipeline.providers.codex_oauth_image import (
     ensure_output_size,
@@ -920,35 +918,19 @@ def run_final_script_pages(
     ai_authored_svg: dict[str, Any] | None = None
     clean_base_generation: dict[str, Any] | None = None
     if production_build:
-        ai_native_text_policy = prepare_ai_graphic_text_policy(
+        editable_compilation = compile_ai_editable_pages(
             manifest,
             output_dir=target_dir / "authoring",
+            checkpoint=lambda: _write_json(manifest_path, manifest),
         )
         _write_json(manifest_path, manifest)
-        if ai_native_text_policy["status"] != "complete":
+        ai_native_text_policy = editable_compilation["policy"]
+        clean_base_generation = editable_compilation["clean_base"]
+        ai_authored_svg = editable_compilation["authored_svg"]
+        if editable_compilation["status"] != "complete":
             raise RuntimeError(
-                "AI native-text policy authoring could not bind the audited image to locked script truth; "
-                f"inspect {ai_native_text_policy['path']} and regenerate the affected image"
-            )
-        clean_base_generation = prepare_clean_bases(
-            manifest,
-            output_dir=target_dir / "authoring" / "assets",
-        )
-        _write_json(manifest_path, manifest)
-        if clean_base_generation["status"] != "complete":
-            raise RuntimeError(
-                "AI clean-base preparation could not repair the located native text regions; "
-                f"inspect {clean_base_generation['path']} and regenerate the affected image"
-            )
-        ai_authored_svg = prepare_ai_authored_svgs(
-            manifest,
-            output_dir=target_dir / "authoring",
-        )
-        _write_json(manifest_path, manifest)
-        if ai_authored_svg["status"] != "complete":
-            raise RuntimeError(
-                "AI authored-SVG reconstruction could not complete; "
-                f"inspect {ai_authored_svg['path']} and regenerate the affected image"
+                "AI editable-page compilation could not complete; "
+                f"inspect {editable_compilation['path']} and regenerate only the affected image"
             )
 
     resume_command = (

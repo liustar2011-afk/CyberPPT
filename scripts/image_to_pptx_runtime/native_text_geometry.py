@@ -26,6 +26,7 @@ _NUMBER_RE = re.compile(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?")
 _COORDINATE_TOLERANCE = 12.0
 _FONT_RATIO_MIN = 0.45
 _FONT_RATIO_MAX = 1.50
+_SIMPLE_LOCATOR_CONFIDENCE = 0.98
 
 
 def _local_name(element: ET.Element) -> str:
@@ -135,6 +136,70 @@ def _line_metrics(node: ET.Element) -> tuple[int, float | None]:
 def _policy_items(policy: Mapping[str, Any] | None) -> list[dict[str, Any]]:
     raw = policy.get("items") if isinstance(policy, Mapping) else None
     return [dict(item) for item in raw if isinstance(item, Mapping) and _text(item.get("treatment")) == "native_text"] if isinstance(raw, list) else []
+
+
+def geometry_qa_mode(
+    policy: Mapping[str, Any] | None,
+    clean_base: Mapping[str, Any] | None,
+    *,
+    authored_by_ai: bool,
+) -> tuple[str, list[str]]:
+    """Select detailed geometry QA only when the page needs it."""
+
+    if not authored_by_ai:
+        return "full", ["authored SVG is external or its author is unknown"]
+    items = [item for item in _policy_items(policy) if item.get("source_visible") is not False]
+    if not items:
+        return "summary", ["no source-visible native text requires geometry comparison"]
+    clean_value = dict(clean_base) if isinstance(clean_base, Mapping) else {}
+    regions = clean_value.get("cleaned_text_regions")
+    clearability_by_id = {
+        _text(region.get("policy_id")): region.get("clearability")
+        for region in (regions if isinstance(regions, list) else [])
+        if isinstance(region, Mapping)
+    }
+    reasons: list[str] = []
+    for item in items:
+        item_id = _text(item.get("id")) or "unnamed native text"
+        if _bbox(item.get("bbox")) is None:
+            reasons.append(f"{item_id}: missing native-text bbox")
+        lines = item.get("layout_lines")
+        if not isinstance(lines, list) or len(lines) != 1:
+            reasons.append(f"{item_id}: multiline or missing line-level OCR geometry")
+        locator = item.get("locator")
+        coverage = _number(locator.get("coverage")) if isinstance(locator, Mapping) else None
+        similarity = _number(locator.get("similarity")) if isinstance(locator, Mapping) else None
+        if coverage is None or similarity is None or min(coverage, similarity) < _SIMPLE_LOCATOR_CONFIDENCE:
+            reasons.append(f"{item_id}: OCR-to-truth match is below the simple-page threshold")
+        clearability = clearability_by_id.get(item_id)
+        if not isinstance(clearability, Mapping) or clearability.get("status") != "clearable":
+            reasons.append(f"{item_id}: text clearance is not proven clearable")
+    return ("full", reasons) if reasons else ("summary", ["single-line, high-confidence AI-authored text is already geometry-aligned"])
+
+
+def summarize_native_text_geometry(
+    policy: Mapping[str, Any] | None,
+    *,
+    authored_svg: Path | str,
+    page_number: int,
+    reason: str,
+) -> dict[str, Any]:
+    """Record the compact geometry pass for a deterministic AI-authored page."""
+
+    return {
+        "schema": SCHEMA,
+        "page_number": page_number,
+        "path": str(Path(authored_svg).expanduser().resolve()),
+        "status": "summary",
+        "valid": True,
+        "review_required": False,
+        "qa_only": True,
+        "detail_level": "summary",
+        "reason": reason,
+        "native_text_count": len(_policy_items(policy)),
+        "items": [],
+        "warnings": [],
+    }
 
 
 def _text_nodes(root: ET.Element) -> list[ET.Element]:
@@ -319,6 +384,7 @@ def analyze_native_text_geometry(
         "valid": True,
         "review_required": bool(warnings),
         "qa_only": True,
+        "detail_level": "full",
         "canvas": {
             "pixel_width": pixel_width,
             "pixel_height": pixel_height,

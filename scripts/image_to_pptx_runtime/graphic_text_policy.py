@@ -71,6 +71,8 @@ def validate_graphic_text_policy(
     *,
     authored_svg: Path | str,
     page_number: int,
+    svg_text_values: list[str] | None = None,
+    image_href_values: list[str] | None = None,
 ) -> dict[str, Any]:
     """Validate the page-level embedded-graphic text treatment contract."""
     svg_path = Path(authored_svg).expanduser().resolve()
@@ -91,12 +93,15 @@ def validate_graphic_text_policy(
     if not isinstance(raw_items, list):
         errors.append({"code": "invalid_items", "message": "items must be a list"})
     seen_ids: set[str] = set()
-    try:
-        svg_texts = _svg_texts(svg_path)
-        image_hrefs = _svg_image_hrefs(svg_path)
-    except (OSError, ET.ParseError) as exc:
-        errors.append({"code": "invalid_authored_svg", "message": str(exc)})
-        svg_texts, image_hrefs = [], []
+    if svg_text_values is None or image_href_values is None:
+        try:
+            svg_texts = _svg_texts(svg_path)
+            image_hrefs = _svg_image_hrefs(svg_path)
+        except (OSError, ET.ParseError) as exc:
+            errors.append({"code": "invalid_authored_svg", "message": str(exc)})
+            svg_texts, image_hrefs = [], []
+    else:
+        svg_texts, image_hrefs = list(svg_text_values), list(image_href_values)
 
     checked: list[dict[str, Any]] = []
     for index, raw_item in enumerate(items):

@@ -896,20 +896,19 @@ class FinalScriptPagesTests(unittest.TestCase):
                 "artifacts": {"reconstruction_inventory": "inventory", "svg_output": "svg", "reconstruction_quality": "quality", "delivery_readiness": "readiness", "exported_pptx": "deck.pptx"},
                 "delivery_readiness": {"tool_consumption": {}},
             }
+            compilation = {
+                "status": "complete",
+                "path": "editable-page-compilation.json",
+                "policy": {"status": "complete", "path": "editable-page-compilation.json"},
+                "clean_base": {"status": "complete", "path": "editable-page-compilation.json", "pages": []},
+                "authored_svg": {"status": "complete", "path": "editable-page-compilation.json"},
+            }
             with (
                 patch("cyberppt.commands.final_script_pages.require_generated"),
                 patch(
-                    "cyberppt.commands.final_script_pages.prepare_ai_graphic_text_policy",
-                    return_value={"status": "complete", "path": "ai-native-text-policy.json"},
-                ) as ai_policy,
-                patch(
-                    "cyberppt.commands.final_script_pages.prepare_clean_bases",
-                    return_value={"status": "complete", "path": "clean-base-generation.json", "pages": []},
-                ) as clean_bases,
-                patch(
-                    "cyberppt.commands.final_script_pages.prepare_ai_authored_svgs",
-                    return_value={"status": "complete", "path": "ai-authored-svg.json"},
-                ) as ai_svg,
+                    "cyberppt.commands.final_script_pages.compile_ai_editable_pages",
+                    return_value=compilation,
+                ) as compiler,
                 patch("cyberppt.commands.final_script_pages._run_image_to_editable_svg_build", return_value=expected) as build,
             ):
                 summary = run_final_script_pages(
@@ -925,9 +924,7 @@ class FinalScriptPagesTests(unittest.TestCase):
         self.assertEqual("production_ready", summary["status"])
         self.assertEqual("production_ready", summary["image_to_editable_svg_build"]["status"])
         build.assert_called_once()
-        ai_policy.assert_called_once()
-        clean_bases.assert_called_once()
-        ai_svg.assert_called_once()
+        compiler.assert_called_once()
         self.assertEqual("complete", summary["clean_base_generation"]["status"])
         self.assertIsNone(summary["rebuild"])
         self.assertEqual({}, summary["tool_consumption"])
@@ -944,18 +941,20 @@ class FinalScriptPagesTests(unittest.TestCase):
 
             clean_report = {
                 "status": "auto_failed",
-                "path": "analysis/clean_base_generation.json",
+                "path": "analysis/editable_page_compilation.json",
                 "pages": [{"page_number": 1, "status": "auto_failed"}],
+                "policy": {"status": "complete", "path": "analysis/editable_page_compilation.json"},
+                "clean_base": {"status": "auto_failed", "path": "analysis/editable_page_compilation.json"},
+                "authored_svg": {"status": "auto_failed", "path": "analysis/editable_page_compilation.json"},
             }
             with (
                 patch("cyberppt.commands.final_script_pages.require_generated"),
                 patch(
-                    "cyberppt.commands.final_script_pages.prepare_ai_graphic_text_policy",
-                    return_value={"status": "complete", "path": "ai-native-text-policy.json"},
+                    "cyberppt.commands.final_script_pages.compile_ai_editable_pages",
+                    return_value=clean_report,
                 ),
-                patch("cyberppt.commands.final_script_pages.prepare_clean_bases", return_value=clean_report),
                 patch("cyberppt.commands.final_script_pages._run_image_to_editable_svg_build") as build,
-                self.assertRaisesRegex(RuntimeError, "analysis/clean_base_generation.json"),
+                self.assertRaisesRegex(RuntimeError, "analysis/editable_page_compilation.json"),
             ):
                 run_final_script_pages(
                     project=project,

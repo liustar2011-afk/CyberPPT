@@ -17,11 +17,12 @@ import json
 import math
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from PIL import Image
 
 from .graphic_text_policy import SCHEMA as POLICY_SCHEMA
+from .native_text_style import DEFAULT_PROFILE, FONT_STACK
 
 
 POLICY_REPORT_SCHEMA = "cyberppt.stage02.ai_native_text_policy.v1"
@@ -238,7 +239,12 @@ def _injected_locator(text: str, observations: list[dict[str, Any]], *, width: i
     }
 
 
-def prepare_ai_graphic_text_policy(manifest: dict[str, Any], *, output_dir: Path | str) -> dict[str, Any]:
+def prepare_ai_graphic_text_policy(
+    manifest: dict[str, Any],
+    *,
+    output_dir: Path | str,
+    write_report: bool = True,
+) -> dict[str, Any]:
     """Complete missing policies from locked text truth plus audited OCR boxes."""
 
     report_dir = Path(output_dir).expanduser().resolve() / "analysis"
@@ -329,9 +335,10 @@ def prepare_ai_graphic_text_policy(manifest: dict[str, Any], *, output_dir: Path
         pages.append({"page_number": page_number, "status": "complete", "item_count": len(items), "native_text_count": len(located)})
     status = "complete" if all(page.get("status") in {"complete", "reused"} for page in pages) else "auto_failed"
     report = {"schema": POLICY_REPORT_SCHEMA, "status": status, "pages": pages}
-    path = report_dir / "ai_native_text_policy.json"
-    path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    report["path"] = str(path)
+    if write_report:
+        path = report_dir / "ai_native_text_policy.json"
+        path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        report["path"] = str(path)
     return report
 
 
@@ -422,7 +429,12 @@ def _line_tspan(*, content: str, x: float, baseline: float, first: bool) -> str:
     return f'<tspan {position}>{escape(content)}</tspan>'
 
 
-def prepare_ai_authored_svgs(manifest: dict[str, Any], *, output_dir: Path | str) -> dict[str, Any]:
+def prepare_ai_authored_svgs(
+    manifest: dict[str, Any],
+    *,
+    output_dir: Path | str,
+    write_report: bool = True,
+) -> dict[str, Any]:
     """Write the AI-authored SVGs after clean-base preparation succeeds."""
 
     authoring = Path(output_dir).expanduser().resolve()
@@ -451,7 +463,7 @@ def prepare_ai_authored_svgs(manifest: dict[str, Any], *, output_dir: Path | str
         except ValueError:
             href = clean_path.resolve().as_uri()
         pieces = [
-            f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" data-reconstruction-schema="v1" data-cyberppt-author="ai">',
+            f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" data-reconstruction-schema="v1" data-cyberppt-author="ai" data-cyberppt-native-text-style="{DEFAULT_PROFILE}">',
             f'<image id="clean-base" href="{escape(href, quote=True)}" x="0" y="0" width="{width}" height="{height}" preserveAspectRatio="none"/>',
         ]
         for item in items:
@@ -469,7 +481,7 @@ def prepare_ai_authored_svgs(manifest: dict[str, Any], *, output_dir: Path | str
             baseline = first_top + size * 0.78
             heading = len(_compact(text)) <= 12 or text.startswith("【")
             text_parts = [
-                f'<text id="native-{escape(str(item.get("id")), quote=True)}" data-cyberppt-text-id="{escape(str(item.get("id")), quote=True)}" data-truth-source="script" x="{x:.2f}" y="{baseline:.2f}" font-family="Microsoft YaHei, SimHei, Arial, sans-serif" font-size="{size:.2f}" font-weight="{"700" if heading else "400"}" fill="{"#12355B" if heading else "#202020"}">'
+                f'<text id="native-{escape(str(item.get("id")), quote=True)}" data-cyberppt-text-id="{escape(str(item.get("id")), quote=True)}" data-truth-source="script" x="{x:.2f}" y="{baseline:.2f}" font-family="{FONT_STACK}" font-size="{size:.2f}" font-weight="{"700" if heading else "400"}" fill="{"#12355B" if heading else "#202020"}">'
             ]
             for index, (line, content) in enumerate(zip(lines, line_texts)):
                 line_left, line_top, _, _ = _line_bbox(line, box)
@@ -486,10 +498,88 @@ def prepare_ai_authored_svgs(manifest: dict[str, Any], *, output_dir: Path | str
         pieces.append("</svg>")
         svg_path.write_text("\n".join(pieces) + "\n", encoding="utf-8")
         pair["authoring_svg"] = str(svg_path)
+        pair["authoring_svg_author"] = "ai"
+        pair["native_text_style_profile"] = DEFAULT_PROFILE
         pages.append({"page_number": page_number, "status": "complete", "path": str(svg_path), "native_text_count": len(items)})
     status = "complete" if all(page.get("status") == "complete" for page in pages) else "auto_failed"
     report = {"schema": SVG_REPORT_SCHEMA, "status": status, "pages": pages}
-    path = report_dir / "ai_authored_svg.json"
+    if write_report:
+        path = report_dir / "ai_authored_svg.json"
+        path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        report["path"] = str(path)
+    return report
+
+
+def compile_ai_editable_pages(
+    manifest: dict[str, Any],
+    *,
+    output_dir: Path | str,
+    checkpoint: Callable[[], None] | None = None,
+) -> dict[str, Any]:
+    """Compile each page's policy, clean base, and SVG in one resumable pass.
+
+    The public wrappers remain available for focused work and compatibility.
+    Production uses this compiler so a page reaches its authored-SVG checkpoint
+    before the next page is inspected, rather than making three batch-wide
+    passes and emitting three overlapping diagnostic files.
+    """
+
+    from .clean_base_generator import prepare_clean_bases
+
+    authoring = Path(output_dir).expanduser().resolve()
+    authoring.mkdir(parents=True, exist_ok=True)
+    pages: list[dict[str, Any]] = []
+    policy_pages: list[dict[str, Any]] = []
+    clean_pages: list[dict[str, Any]] = []
+    svg_pages: list[dict[str, Any]] = []
+    for raw_pair in manifest.get("pairs", []):
+        if not isinstance(raw_pair, dict):
+            continue
+        pair = raw_pair
+        page_number = int(pair.get("page_number") or 0)
+        page_manifest = {"pairs": [pair]}
+        policy = prepare_ai_graphic_text_policy(page_manifest, output_dir=authoring, write_report=False)
+        policy_page = dict(policy.get("pages", [{}])[0])
+        policy_pages.append(policy_page)
+        page_report: dict[str, Any] = {"page_number": page_number, "policy": policy_page}
+        if policy_page.get("status") not in {"complete", "reused"}:
+            page_report["status"] = "auto_failed"
+            pages.append(page_report)
+            if checkpoint:
+                checkpoint()
+            continue
+        clean = prepare_clean_bases(page_manifest, output_dir=authoring / "assets", write_report=False)
+        clean_page = dict(clean.get("pages", [{}])[0])
+        clean_pages.append(clean_page)
+        page_report["clean_base"] = clean_page
+        if clean_page.get("status") not in {"complete", "reused", "reused_seeded_baseline"}:
+            page_report["status"] = "auto_failed"
+            pages.append(page_report)
+            if checkpoint:
+                checkpoint()
+            continue
+        authored = prepare_ai_authored_svgs(page_manifest, output_dir=authoring, write_report=False)
+        svg_page = dict(authored.get("pages", [{}])[0])
+        svg_pages.append(svg_page)
+        page_report["authored_svg"] = svg_page
+        page_report["status"] = "complete" if svg_page.get("status") == "complete" else "auto_failed"
+        pages.append(page_report)
+        if checkpoint:
+            checkpoint()
+    status = "complete" if pages and all(page.get("status") == "complete" for page in pages) else "auto_failed"
+    report = {
+        "schema": "cyberppt.stage02.editable_page_compilation.v1",
+        "status": status,
+        "pages": pages,
+        "policy": {"schema": POLICY_REPORT_SCHEMA, "status": status, "pages": policy_pages},
+        "clean_base": {"schema": "cyberppt.stage02.clean_base_generation.v1", "status": status, "pages": clean_pages},
+        "authored_svg": {"schema": SVG_REPORT_SCHEMA, "status": status, "pages": svg_pages},
+    }
+    report_dir = authoring.parent / "analysis"
+    report_dir.mkdir(parents=True, exist_ok=True)
+    path = report_dir / "editable_page_compilation.json"
     path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     report["path"] = str(path)
+    for key in ("policy", "clean_base", "authored_svg"):
+        report[key]["path"] = str(path)
     return report

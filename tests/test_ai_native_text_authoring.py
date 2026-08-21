@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from PIL import Image
 
 from scripts.image_to_pptx_runtime.ai_native_text_authoring import (
+    compile_ai_editable_pages,
     prepare_ai_authored_svgs,
     prepare_ai_graphic_text_policy,
 )
@@ -151,6 +152,9 @@ def test_ai_authored_svg_references_clean_base_and_policy_text(tmp_path: Path) -
     assert validate_graphic_text_policy(policy, authored_svg=svg, page_number=1)["valid"] is True
     root = ET.parse(svg).getroot()
     assert any(node.get("data-cyberppt-text-id") == "text-001" for node in root.iter())
+    assert root.get("data-cyberppt-native-text-style") == "editorial-source-text-v1"
+    assert pair["authoring_svg_author"] == "ai"
+    assert pair["native_text_style_profile"] == "editorial-source-text-v1"
 
 
 def test_ai_authored_svg_fits_font_and_anchors_each_ocr_line(tmp_path: Path) -> None:
@@ -182,3 +186,45 @@ def test_ai_authored_svg_fits_font_and_anchors_each_ocr_line(tmp_path: Path) -> 
     assert tspans[-1].get("x") == "50.00"
     assert tspans[-1].get("y") == "113.23"
     assert tspans[0].get("fill") == "#12355B"
+
+
+def test_editable_page_compiler_checkpoints_one_complete_page_and_writes_one_report(tmp_path: Path) -> None:
+    from unittest.mock import patch
+    from PIL import ImageDraw
+
+    image = tmp_path / "full.png"
+    full = Image.new("RGB", (400, 200), "#0B3B78")
+    draw = ImageDraw.Draw(full)
+    draw.rounded_rectangle((90, 55, 170, 105), radius=8, fill="#FFFFFF")
+    for offset in (0, 11, 22, 33):
+        draw.rectangle((110 + offset, 72, 115 + offset, 87), fill="#12355B")
+    full.save(image)
+    manifest = _manifest(
+        image,
+        observations=[
+            {"text": "第一行", "confidence": 0.99, "bbox": _box(100, 65, 130, 95)},
+            {"text": "第二行", "confidence": 0.99, "bbox": _box(140, 65, 160, 95)},
+        ],
+    )
+    manifest["pairs"][0]["full"]["debug_receipt"]["visible_text"] = ["第一行第二行"]  # type: ignore[index]
+    checkpoints: list[str] = []
+
+    with patch(
+        "scripts.image_to_pptx_runtime.clean_base_generator._post_clean_ocr",
+        return_value=(True, []),
+    ):
+        report = compile_ai_editable_pages(
+            manifest,
+            output_dir=tmp_path / "authoring",
+            checkpoint=lambda: checkpoints.append("written"),
+        )
+
+    report_path = tmp_path / "analysis" / "editable_page_compilation.json"
+    assert report["status"] == "complete"
+    assert report["path"] == str(report_path)
+    assert report_path.is_file()
+    assert checkpoints == ["written"]
+    assert manifest["pairs"][0]["authoring_svg"]  # type: ignore[index]
+    assert not (tmp_path / "authoring" / "analysis" / "ai_native_text_policy.json").exists()
+    assert not (tmp_path / "authoring" / "analysis" / "ai_authored_svg.json").exists()
+    assert not (tmp_path / "authoring" / "assets" / "analysis" / "clean_base_generation.json").exists()

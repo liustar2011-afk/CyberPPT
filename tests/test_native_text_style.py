@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from scripts.image_to_pptx_runtime.native_text_style import (
     STYLE_ATTR,
     apply_default_native_text_style,
+    authored_native_text_style_receipt,
 )
 
 
@@ -48,4 +49,17 @@ def test_locked_native_text_style_is_left_unchanged(tmp_path: Path) -> None:
 
     report = apply_default_native_text_style(svg)
     assert report["preserved_locked"] is True
+    assert svg.read_text(encoding="utf-8") == original
+
+
+def test_ai_authored_style_receipt_does_not_reparse_or_rewrite_svg(tmp_path: Path) -> None:
+    svg = tmp_path / "ai.svg"
+    original = '<svg xmlns="http://www.w3.org/2000/svg"><text>标题</text></svg>'
+    svg.write_text(original, encoding="utf-8")
+
+    report = authored_native_text_style_receipt(svg, text_count=1)
+
+    assert report["profile"] == "editorial-source-text-v1"
+    assert report["source"] == "ai_authoring"
+    assert report["changed"] is False
     assert svg.read_text(encoding="utf-8") == original
