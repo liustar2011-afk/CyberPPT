@@ -17,12 +17,17 @@ def _policy(*, bbox: list[int]) -> dict[str, object]:
     }
 
 
+def _draw_glyphs(draw: ImageDraw.ImageDraw, *, left: int, top: int, color: str) -> None:
+    for offset in (0, 11, 22, 33):
+        draw.rectangle((left + offset, top, left + offset + 5, top + 15), fill=color)
+
+
 def test_generator_creates_flat_surface_clean_base_and_manifest_contract(tmp_path: Path) -> None:
     full = tmp_path / "full.png"
     image = Image.new("RGB", (400, 200), "#0B3B78")
     draw = ImageDraw.Draw(image)
     draw.rounded_rectangle((90, 55, 170, 105), radius=8, fill="#FFFFFF")
-    draw.rectangle((110, 72, 149, 86), fill="#12355B")
+    _draw_glyphs(draw, left=110, top=72, color="#12355B")
     image.save(full)
     manifest: dict[str, object] = {
         "pairs": [
@@ -46,6 +51,7 @@ def test_generator_creates_flat_surface_clean_base_and_manifest_contract(tmp_pat
     assert clean["status"] == "complete"
     assert Path(clean["path"]).is_file()
     assert clean["cleaned_text_regions"][0]["method"] == "masked-inpainting"
+    assert clean["cleaned_text_regions"][0]["clearability"]["status"] == "clearable"
     with Image.open(clean["path"]) as result:
         assert result.getpixel((110, 72)) == (255, 255, 255)
         assert result.getpixel((95, 65)) == (255, 255, 255)
@@ -110,17 +116,17 @@ def test_generator_reuses_seeded_baseline_after_current_policy_is_located(tmp_pa
 
 def test_generator_auto_fails_when_post_clean_ocr_finds_residual_text(tmp_path: Path) -> None:
     full = tmp_path / "full.png"
-    image = Image.new("RGB", (400, 200), "white")
+    image = Image.new("RGB", (400, 200), "#0B3B78")
     draw = ImageDraw.Draw(image)
-    draw.rectangle((80, 60, 179, 99), fill="#0B3B78")
-    draw.rectangle((105, 72, 145, 86), fill="#FFFFFF")
+    draw.rounded_rectangle((90, 55, 170, 105), radius=8, fill="#FFFFFF")
+    _draw_glyphs(draw, left=110, top=72, color="#12355B")
     image.save(full)
     manifest: dict[str, object] = {
         "pairs": [
             {
                 "page_number": 1,
                 "full": {"path": str(full)},
-                "graphic_text_policy": _policy(bbox=[80, 60, 180, 100]),
+                "graphic_text_policy": _policy(bbox=[100, 65, 160, 95]),
             }
         ]
     }
@@ -141,7 +147,7 @@ def test_generator_reconstructs_near_white_surface_interrupted_by_divider(tmp_pa
     image = Image.new("RGB", (400, 200), "#F8F8F3")
     draw = ImageDraw.Draw(image)
     draw.rectangle((72, 40, 79, 120), fill="#174D7A")
-    draw.rectangle((105, 72, 145, 86), fill="#174D7A")
+    _draw_glyphs(draw, left=105, top=72, color="#174D7A")
     image.save(full)
     manifest: dict[str, object] = {
         "pairs": [
@@ -162,6 +168,29 @@ def test_generator_reconstructs_near_white_surface_interrupted_by_divider(tmp_pa
     assert report["status"] == "complete"
     clean = manifest["pairs"][0]["clean_base"]  # type: ignore[index]
     assert clean["cleaned_text_regions"][0]["method"] == "masked-inpainting"
+
+
+def test_generator_refuses_a_structural_frame_inside_an_ocr_text_box(tmp_path: Path) -> None:
+    full = tmp_path / "full.png"
+    image = Image.new("RGB", (400, 200), "#0B3B78")
+    draw = ImageDraw.Draw(image)
+    draw.rounded_rectangle((80, 60, 179, 99), radius=6, outline="#F4F7FB", width=2)
+    image.save(full)
+    manifest: dict[str, object] = {
+        "pairs": [
+            {
+                "page_number": 1,
+                "full": {"path": str(full)},
+                "graphic_text_policy": _policy(bbox=[80, 60, 180, 100]),
+            }
+        ]
+    }
+
+    report = prepare_clean_bases(manifest, output_dir=tmp_path / "authoring" / "assets")
+
+    assert report["status"] == "auto_failed"
+    assert "structural frame" in report["pages"][0]["errors"][0]  # type: ignore[index]
+    assert "clean_base" not in manifest["pairs"][0]  # type: ignore[index]
 
 
 def test_generator_rejects_a_small_bright_patch_on_dark_surface(tmp_path: Path) -> None:

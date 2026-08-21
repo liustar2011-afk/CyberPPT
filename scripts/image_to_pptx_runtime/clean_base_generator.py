@@ -13,6 +13,9 @@ from PIL import Image
 from .clean_base_policy import SCHEMA
 
 
+_GLYPH_DISTANCE_THRESHOLD = 20
+
+
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -124,15 +127,115 @@ def _erase_glyph_pixels(
     changed = 0
     # Antialiased text needs a modest threshold, while the flat-surface gate
     # above prevents normal background texture from being treated as glyphs.
-    threshold = 20
     for y in range(top, bottom):
         for x in range(left, right):
             pixel = source_pixels[x, y]
-            if max(abs(pixel[index] - surface[index]) for index in range(3)) < threshold:
+            if max(abs(pixel[index] - surface[index]) for index in range(3)) < _GLYPH_DISTANCE_THRESHOLD:
                 continue
             destination_pixels[x, y] = surface
             changed += 1
     return changed
+
+
+def _semantic_units(text: object) -> str:
+    """Keep ordinary characters that can be reconstructed as native text."""
+
+    return "".join(character for character in _text(text) if character.isalnum() or "\u3400" <= character <= "\u9fff")
+
+
+def _foreground_components(
+    image: Image.Image,
+    box: tuple[int, int, int, int],
+    surface: tuple[int, int, int],
+) -> tuple[int, list[tuple[int, int, int, int, int]]]:
+    """Return foreground count and 4-connected component bounds in one OCR box."""
+
+    left, top, right, bottom = box
+    width, height = right - left, bottom - top
+    area = width * height
+    if area > 120_000:
+        return 0, []
+    source = image.load()
+    foreground = bytearray(area)
+    foreground_count = 0
+    for y in range(height):
+        for x in range(width):
+            pixel = source[left + x, top + y]
+            if max(abs(pixel[index] - surface[index]) for index in range(3)) >= _GLYPH_DISTANCE_THRESHOLD:
+                foreground[y * width + x] = 1
+                foreground_count += 1
+
+    components: list[tuple[int, int, int, int, int]] = []
+    seen = bytearray(area)
+    for start in range(area):
+        if not foreground[start] or seen[start]:
+            continue
+        seen[start] = 1
+        queue = [start]
+        count = 0
+        min_x = max_x = start % width
+        min_y = max_y = start // width
+        while queue:
+            current = queue.pop()
+            x, y = current % width, current // width
+            count += 1
+            min_x, max_x = min(min_x, x), max(max_x, x)
+            min_y, max_y = min(min_y, y), max(max_y, y)
+            neighbours = (
+                current - 1 if x else -1,
+                current + 1 if x + 1 < width else -1,
+                current - width if y else -1,
+                current + width if y + 1 < height else -1,
+            )
+            for neighbour in neighbours:
+                if neighbour >= 0 and foreground[neighbour] and not seen[neighbour]:
+                    seen[neighbour] = 1
+                    queue.append(neighbour)
+        components.append((min_x, min_y, max_x, max_y, count))
+    return foreground_count, components
+
+
+def _assess_text_clearability(
+    image: Image.Image,
+    *,
+    text: object,
+    box: tuple[int, int, int, int],
+) -> dict[str, Any]:
+    """Prove a native-text region is safe before its pixels may be cleared.
+
+    Script matching proves the wording.  This second gate rejects visual
+    structure that OCR may localize as text, including arrows, card outlines,
+    connector lines, and single decorative strokes.
+    """
+
+    units = _semantic_units(text)
+    if len(units) < 2:
+        return {"status": "rejected", "reason": "text is too short to distinguish from a decorative glyph"}
+    width, height = box[2] - box[0], box[3] - box[1]
+    if width * height > 120_000:
+        return {"status": "rejected", "reason": "text clearance region is too large for safe glyph reconstruction"}
+    surface = _flat_surface_color(image, box) or _dominant_light_surface_color(image, box)
+    if surface is None:
+        return {"status": "rejected", "reason": "local surface is not planar enough for safe text reconstruction"}
+    foreground_count, components = _foreground_components(image, box, surface)
+    area = width * height
+    foreground_share = foreground_count / area if area else 0.0
+    if foreground_share < 0.006:
+        return {"status": "rejected", "reason": "no distinct text-like foreground pixels", "foreground_share": round(foreground_share, 4)}
+    if foreground_share > 0.55:
+        return {"status": "rejected", "reason": "foreground occupies too much of the clearance region", "foreground_share": round(foreground_share, 4)}
+    for min_x, min_y, max_x, max_y, _ in components:
+        touches = sum((min_x == 0, min_y == 0, max_x == width - 1, max_y == height - 1))
+        if touches >= 3:
+            return {"status": "rejected", "reason": "foreground touches the clearance boundary like a structural frame", "foreground_share": round(foreground_share, 4)}
+    if len(components) < 2:
+        return {"status": "rejected", "reason": "foreground does not form multiple character-like components", "foreground_share": round(foreground_share, 4)}
+    return {
+        "status": "clearable",
+        "surface_color": list(surface),
+        "foreground_share": round(foreground_share, 4),
+        "component_count": len(components),
+    }
 
 
 def _ocr_box(value: object) -> tuple[int, int, int, int] | None:
@@ -290,21 +393,22 @@ def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> 
         if isinstance(existing, Mapping) and existing.get("schema") == SCHEMA and existing.get("status") == "complete":
             results.append({"page_number": page_number, "status": "reused", "path": existing.get("path")})
             continue
-        fills: list[tuple[dict[str, Any], tuple[int, int, int]]] = []
+        fills: list[tuple[dict[str, Any], tuple[int, int, int], dict[str, Any]]] = []
+        clearability: list[dict[str, Any]] = []
         for region in regions:
-            color = _flat_surface_color(image, region["bbox"])
-            if color is None:
-                color = _dominant_light_surface_color(image, region["bbox"])
-            if color is None:
-                errors.append(f"{region['policy_id']}: local background is unsuitable for automatic reconstruction")
+            assessment = _assess_text_clearability(image, text=region["text"], box=region["bbox"])
+            clearability.append({"policy_id": region["policy_id"], **assessment})
+            if assessment.get("status") != "clearable":
+                errors.append(f"{region['policy_id']}: not safe to clear ({assessment.get('reason')})")
             else:
-                fills.append((region, color))
+                color = tuple(int(value) for value in assessment["surface_color"])
+                fills.append((region, color, assessment))
         if errors:
-            results.append({"page_number": page_number, "status": "auto_failed", "errors": errors})
+            results.append({"page_number": page_number, "status": "auto_failed", "errors": errors, "clearability": clearability})
             continue
         base = image.copy()
         cleaned_pixel_counts: dict[str, int] = {}
-        for region, color in fills:
+        for region, color, _ in fills:
             changed = _erase_glyph_pixels(
                 source=image,
                 destination=base,
@@ -316,7 +420,7 @@ def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> 
             else:
                 cleaned_pixel_counts[str(region["policy_id"])] = changed
         if errors:
-            results.append({"page_number": page_number, "status": "auto_failed", "errors": errors})
+            results.append({"page_number": page_number, "status": "auto_failed", "errors": errors, "clearability": clearability})
             continue
         destination = assets / f"page_{page_number:03d}_clean_base.png"
         base.save(destination)
@@ -339,8 +443,9 @@ def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> 
                 "bbox": list(region["bbox"]),
                 "method": "masked-inpainting",
                 "cleared_pixel_count": cleaned_pixel_counts[str(region["policy_id"])],
+                "clearability": assessment,
             }
-            for region, _ in fills
+            for region, _, assessment in fills
         ]
         pair["clean_base"] = {
             "schema": SCHEMA,
@@ -364,7 +469,7 @@ def prepare_clean_bases(manifest: dict[str, Any], *, output_dir: Path | str) -> 
                 "post_clean_ocr": {"status": "passed", "residual": []},
             },
         }
-        results.append({"page_number": page_number, "status": "complete", "path": str(destination), "regions": clean_regions})
+        results.append({"page_number": page_number, "status": "complete", "path": str(destination), "regions": clean_regions, "clearability": clearability})
     report = {
         "schema": "cyberppt.stage02.clean_base_generation.v1",
         "status": "complete" if results and all(item["status"] in {"complete", "reused", "reused_seeded_baseline"} for item in results) else "auto_failed",
