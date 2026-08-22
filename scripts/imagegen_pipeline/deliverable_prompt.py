@@ -467,12 +467,7 @@ def _style_contract_from_payload(
     # formal style lock, rather than letting a downstream compiler select
     # clauses or recreate a terminal fragment. Page layout belongs to Stage 02.
     if int(style.get("id") or 0) in (9, 10) and prompt_contract:
-        dense_text_composition_rule = _strip_visual_structure_meta(
-            _collapse_text(style.get("dense_text_composition_rule"))
-        )
-        return "\n\n".join(
-            part for part in (prompt_contract, dense_text_composition_rule) if part
-        )
+        return prompt_contract
     scope_rule = _strip_visual_structure_meta(_collapse_text(style.get("scope_rule")))
     semantic_structure_rule = _strip_visual_structure_meta(
         _collapse_text(style.get("semantic_structure_rule"))
@@ -490,9 +485,6 @@ def _style_contract_from_payload(
     truth_lock = _collapse_text(style.get("truth_lock"))
     visual_freedom = _collapse_text(style.get("visual_freedom"))
     content_visual_rule = _strip_visual_structure_meta(_collapse_text(style.get("content_visual_rule")))
-    dense_text_composition_rule = _strip_visual_structure_meta(
-        _collapse_text(style.get("dense_text_composition_rule"))
-    )
     icon_rule = _strip_visual_structure_meta(_collapse_text(style.get("icon_rule")))
     density_rule = _collapse_text(style.get("density_rule"))
     carrier_router = _collapse_text(style.get("carrier_router"))
@@ -524,8 +516,6 @@ def _style_contract_from_payload(
         parts.append(visual_freedom)
     if content_visual_rule:
         parts.append(content_visual_rule)
-    if dense_text_composition_rule:
-        parts.append(dense_text_composition_rule)
     if icon_rule:
         parts.append(icon_rule)
     if density_rule:
