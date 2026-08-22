@@ -350,8 +350,16 @@ def assemble_brand_page_svg(
         template = (template_root / template_name).read_text(encoding="utf-8")
         if role == "contents":
             agenda_items = "\n".join(
-                f'<circle cx="92" cy="{220 + index * 52 - 8}" r="4" fill="#8B0000"/>'
-                f'<text x="116" y="{220 + index * 52}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="24" font-weight="600" fill="#123B66">{xml_escape(line)}</text>'
+                "\n".join(
+                    [
+                        f'<g class="agenda-item-card" data-index="{index + 1}">',
+                        f'<rect x="{74 + (index % 2) * 566}" y="{210 + (index // 2) * 118}" width="536" height="94" fill="#FFFFFF" fill-opacity="0.84" stroke="#C8D5E5" stroke-width="1"/>',
+                        f'<rect x="{74 + (index % 2) * 566}" y="{210 + (index // 2) * 118}" width="58" height="94" fill="#123B66"/>',
+                        f'<text x="{103 + (index % 2) * 566}" y="{266 + (index // 2) * 118}" text-anchor="middle" font-family="Consolas, Arial, sans-serif" font-size="20" font-weight="700" fill="#FFFFFF">{index + 1:02d}</text>',
+                        f'<text x="{156 + (index % 2) * 566}" y="{266 + (index // 2) * 118}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="21" font-weight="700" fill="#123B66">{xml_escape(line)}</text>',
+                        "</g>",
+                    ]
+                )
                 for index, line in enumerate(lines[1:7])
             )
             template = template.replace("{{AGENDA_ITEMS}}", agenda_items)

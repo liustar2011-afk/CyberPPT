@@ -37,14 +37,14 @@
     },
     "footer_company_text": {
       "x": 58,
-      "y": 709,
+      "y": 712,
       "font_size": 9,
       "fill": "#FFFFFF",
       "text": "中国电力企业联合会"
     },
     "footer_page_num": {
       "x": 1240,
-      "y": 709,
+      "y": 712,
       "font_size": 9,
       "fill": "#FFFFFF"
     }

@@ -335,6 +335,13 @@ def run_stage02_reconstruction(
         for number in requested_pages
         if number not in content_pages
     }
+
+    def structural_display_lines(number: int) -> list[str]:
+        lines = structural_lines[number]
+        if title_by_page[number] in lines:
+            return lines
+        return [title_by_page[number], *lines]
+
     expected = [
         str(text)
         for pair in pairs
@@ -355,10 +362,7 @@ def run_stage02_reconstruction(
             text
             for number in requested_pages
             if number not in content_pages
-            for text in [
-                *([] if title_by_page[number] in structural_lines.get(number, []) else [title_by_page[number]]),
-                *structural_lines.get(number, []),
-            ]
+            for text in structural_display_lines(number)
         ],
         *("中国电力企业联合会" for number in requested_pages if number not in content_pages),
         *(
@@ -371,19 +375,22 @@ def run_stage02_reconstruction(
             for number in requested_pages
             if number not in content_pages and script_pages[number].page_type == "chapter"
         ),
+        *(
+            f"{index:02d}"
+            for number in requested_pages
+            if number not in content_pages and script_pages[number].page_type == "contents"
+            for index, _ in enumerate(structural_display_lines(number)[1:7], start=1)
+        ),
     ]
 
     def structural_svg(number: int, mode: str) -> Path:
         page = script_pages[number]
         role = page.page_type if page.page_type in {"cover", "contents", "chapter", "closing"} else "chapter"
         target = output_root / mode / "svg_output" / f"p{number:02d}.svg"
-        lines = structural_lines[number]
-        if title_by_page[number] not in lines:
-            lines = [title_by_page[number], *lines]
         return assemble_brand_page_svg(
             output=target,
             role=role,
-            onscreen_lines=lines,
+            onscreen_lines=structural_display_lines(number),
             contract=contract,
             page_number=number,
         )

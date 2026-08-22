@@ -43,7 +43,7 @@ def test_project_image_rejects_conflicting_href_and_xlink_href() -> None:
 def test_structural_page_roles_render_native_copy_without_ending_page_overflow(tmp_path: Path) -> None:
     for role, lines in (
         ("cover", ["封面标题", "封面副标题", "2026年8月"]),
-        ("contents", ["目录", "第一章", "第二章", "第三章"]),
+        ("contents", ["目录", "第一章", "第二章", "第三章", "第四章", "第五章", "第六章"]),
         ("chapter", ["第一章", "章节导语"]),
         ("closing", ["建议提请研究确定", "明确首期产品边界和分阶段投入依据"]),
     ):
@@ -63,7 +63,11 @@ def test_structural_page_roles_render_native_copy_without_ending_page_overflow(t
     cover = (tmp_path / "cover.svg").read_text(encoding="utf-8")
     assert 'data-brand-template="01_cover"' in cover
     assert 'cx="1180"' not in cover
-    assert 'id="agenda-items"' in (tmp_path / "contents.svg").read_text(encoding="utf-8")
+    contents = (tmp_path / "contents.svg").read_text(encoding="utf-8")
+    assert 'id="agenda-items"' in contents
+    assert contents.count('class="agenda-item-card"') == 6
+    assert ">01</text>" in contents
+    assert ">06</text>" in contents
     assert 'id="sectionLeftWash"' in (tmp_path / "chapter.svg").read_text(encoding="utf-8")
 
 
@@ -72,6 +76,9 @@ def test_template_contract_uses_exact_two_to_one_body_slot() -> None:
     body = contract["rules"]["content_regions"]["body_pages"]
     assert (body["x"], body["y"], body["width"], body["height"]) == (33, 89, 1214, 607)
     assert body["width"] / body["height"] == 2
+    master = contract["rules"]["master_elements"]
+    assert master["footer_company_text"]["y"] == 712
+    assert master["footer_page_num"]["y"] == 712
 
 
 def test_image_mode_places_body_image_in_template_slot(tmp_path: Path) -> None:
@@ -95,6 +102,7 @@ def test_image_mode_places_body_image_in_template_slot(tmp_path: Path) -> None:
     assert "总体定位" in text
     assert "中国电力企业联合会" in text
     assert "5</text>" in text
+    assert text.count('y="712"') >= 2
     assert (tmp_path / "image" / "images" / "logo.png").is_file()
 
 
