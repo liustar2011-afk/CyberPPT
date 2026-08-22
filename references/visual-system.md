@@ -494,7 +494,7 @@ Preserve the approved source actors, relationships, conditions, status, and fact
 【风格09最终执行锁｜最高优先级】
 Treat the generated image as a reconstruction-friendly, editorial visual blueprint for editable PowerPoint conversion — keep the overall composition disciplined and magazine-orderly. Keep all locked Chinese text complete, unchanged and readable in clean high-contrast text-safe zones with stable geometry; keep auxiliary imagery text-free by default and place required labels adjacent to the related object rather than baking them into screens, devices, documents, illustrations, icons or perspective surfaces. Icon count is zero by default.
 
-中文小字采用 Microsoft YaHei UI / Source Han Sans SC 风格；常规正文至少 16pt 等效，14pt 仅限短标签；避免两行以上小字、避免紧字距、避免把小字叠在复杂图片上。文字容器保留四周内边距，文字与边框、分隔线和相邻图像清晰分离；空间不足时减少或裁切场景材料。
+**Typography:** MiSans-like Chinese sans-serif; crisp, geometric and restrained; clean squared stroke endings; compact glyph structure; slightly vertically compressed Chinese characters; minimal softness or rounding; sharp high-resolution text edges; formal enterprise-report typography.
 
 Do not use arrows or arrowheads anywhere on the page. Keep connection lines absent by default. Only one plain, solid, undirected connector is allowed when a relationship explicitly named in the reading path cannot be expressed through position, proximity, grouping, containment, alignment, numbering or color. Never use a pointed or directional connector.
 

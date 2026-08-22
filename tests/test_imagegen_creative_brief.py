@@ -461,7 +461,7 @@ def test_content_first_accepts_content_page_without_visible_judgment() -> None:
     assert "权限、日志和发布审核共同保障运行" in prompt
 
 
-def test_content_first_treats_visible_judgment_as_body_conclusion_with_style_font_floor() -> None:
+def test_content_first_treats_visible_judgment_as_body_conclusion_with_style_typography_lock() -> None:
     page = replace(_page(), onscreen_judgment_mode="locked")
     with TemporaryDirectory() as directory:
         lock = write_project_style_lock(project=Path(directory), style_id=9)
@@ -473,7 +473,7 @@ def test_content_first_treats_visible_judgment_as_body_conclusion_with_style_fon
     assert "如【锁定关键文字】含正文结论句" in prompt
     assert "不得通栏放大" in prompt
     assert "标题竖线、横线等装饰" in prompt
-    typography_lock = "中文小字采用 Microsoft YaHei UI / Source Han Sans SC 风格；常规正文至少 16pt 等效，14pt 仅限短标签；避免两行以上小字、避免紧字距、避免把小字叠在复杂图片上。"
+    typography_lock = "**Typography:** MiSans-like Chinese sans-serif; crisp, geometric and restrained; clean squared stroke endings; compact glyph structure; slightly vertically compressed Chinese characters; minimal softness or rounding; sharp high-resolution text edges; formal enterprise-report typography."
     assert style_contract.count(typography_lock) == 1
     assert prompt.count(typography_lock) == 1
     assert "1.6—1.8倍" not in prompt
