@@ -104,6 +104,8 @@ class VisualStructureStageTests(unittest.TestCase):
             "the operating hub proves that governance creates the result",
             page["image_plan"]["semantic_role"],
         )
+        self.assertEqual("integrated_scene", page["visual_budget"]["mode"])
+        self.assertEqual(4, page["visual_budget"]["max_auxiliary_fragments"])
 
     def test_structural_decision_cannot_carry_a_second_topology_authority(self) -> None:
         """semantic_graph is the only page topology/relation authority.

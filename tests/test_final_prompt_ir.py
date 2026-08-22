@@ -15,6 +15,7 @@ from cyberppt.page_artifact_spec import (
     RelationshipSpec,
     TypographySpec,
     VisualCarrierSpec,
+    VisualBudgetSpec,
 )
 from scripts.imagegen_pipeline.artifact_prompt import build_final_prompt_ir
 from scripts.imagegen_pipeline.final_prompt_ir import (
@@ -248,6 +249,21 @@ class BuildFinalPromptIRTests(unittest.TestCase):
             responsibility,
         )
         self.assertIn("multiple evidence lines converging on one judgment", responsibility)
+
+    def test_shared_field_budget_forbids_region_local_imagery(self) -> None:
+        spec = replace(
+            _artifact_spec(),
+            visual_budget=VisualBudgetSpec(
+                mode="shared_field",
+                max_auxiliary_fragments=1,
+                scope="page",
+                region_local_visuals=False,
+            ),
+        )
+        responsibility = " ".join(build_final_prompt_ir(spec).composition.visual_responsibility)
+        self.assertIn("zero auxiliary images by default", responsibility)
+        self.assertIn("at most one shared page-level anchor", responsibility)
+        self.assertIn("do not create one image", responsibility)
 
     def test_does_not_carry_relationship_encoding_with_raw_direction_tokens(self) -> None:
         # Real Stage 02 output embeds raw tokens like "outside_to_anchor"

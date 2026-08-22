@@ -53,6 +53,48 @@ class VisualCarrierSpec:
 
 
 @dataclass(frozen=True)
+class VisualBudgetSpec:
+    """Executable ceiling for auxiliary imagery on one page."""
+
+    mode: str = "integrated_scene"
+    max_auxiliary_fragments: int = 4
+    scope: str = "region"
+    region_local_visuals: bool = True
+
+    def __post_init__(self) -> None:
+        if self.mode not in {"relationship_field_only", "shared_field", "integrated_scene"}:
+            raise ValueError(f"unsupported visual budget mode: {self.mode!r}")
+        if self.max_auxiliary_fragments < 0:
+            raise ValueError("visual budget cannot be negative")
+        if self.scope not in {"page", "region"}:
+            raise ValueError(f"unsupported visual budget scope: {self.scope!r}")
+        if self.mode == "relationship_field_only" and self.max_auxiliary_fragments != 0:
+            raise ValueError("relationship_field_only requires zero auxiliary fragments")
+        if self.mode == "shared_field" and (
+            self.max_auxiliary_fragments > 1
+            or self.scope != "page"
+            or self.region_local_visuals
+        ):
+            raise ValueError("shared_field allows at most one page-level fragment")
+
+    def prompt_lines(self) -> tuple[str, ...]:
+        if self.mode == "relationship_field_only":
+            return (
+                "Visual budget: zero auxiliary images or scene fragments.",
+                "Use text hierarchy, spacing, alignment and one shared relationship field; do not create region-local visuals.",
+            )
+        if self.mode == "shared_field":
+            return (
+                "Visual budget: zero auxiliary images by default; at most one shared page-level anchor if indispensable.",
+                "The shared anchor must serve the whole page; do not create one image, object, scene fragment or icon for any heading, bullet, evidence unit or semantic region.",
+            )
+        return (
+            f"Visual budget: at most {self.max_auxiliary_fragments} auxiliary fragments when they materially clarify the selected integrated scene.",
+            "Keep supporting imagery subordinate to the page-level scene and do not map each text item to an isolated visual.",
+        )
+
+
+@dataclass(frozen=True)
 class ConnectorSpec:
     relationship: str
     direction: str
@@ -111,6 +153,7 @@ class PageArtifactSpec:
     typography: TypographySpec
     hard_constraints: HardConstraintSpec
     source_hashes: tuple[tuple[str, str], ...]
+    visual_budget: VisualBudgetSpec = VisualBudgetSpec()
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -153,7 +196,10 @@ _TOPOLOGY_PHRASES: dict[str, str] = {
         "a governed boundary that admits, inspects or controls what "
         "crosses it, not a decorative frame"
     ),
-    "ecosystem_map": "a hub-and-spoke ecosystem of related roles exchanging around one shared center",
+    "ecosystem_map": (
+        "a bounded relationship field where named roles exchange through one explicit "
+        "service or outcome; use a central object only when the source names it"
+    ),
     "allocation_flow": "roles or resources branching out from one source into their respective value destinations",
     "conclusion_anchor": "multiple threads converging into one anchored conclusion",
 }
@@ -207,6 +253,34 @@ def _strings(value: object) -> tuple[str, ...]:
     if not isinstance(value, list):
         return ()
     return tuple(str(item).strip() for item in value if str(item).strip())
+
+
+def _visual_budget(
+    visual_page: Mapping[str, object],
+    *,
+    topology: str,
+    use_scene: bool,
+) -> VisualBudgetSpec:
+    raw = visual_page.get("visual_budget")
+    raw = raw if isinstance(raw, dict) else {}
+    if raw:
+        budget = VisualBudgetSpec(
+            mode=str(raw.get("mode") or "").strip(),
+            max_auxiliary_fragments=int(raw.get("max_auxiliary_fragments")),
+            scope=str(raw.get("scope") or "").strip(),
+            region_local_visuals=bool(raw.get("region_local_visuals")),
+        )
+        if topology == "parallel_set" and budget.mode == "integrated_scene":
+            raise ValueError("parallel_set cannot use an integrated-scene visual budget")
+        return budget
+    if topology == "parallel_set" or not use_scene:
+        return VisualBudgetSpec(
+            mode="shared_field",
+            max_auxiliary_fragments=1,
+            scope="page",
+            region_local_visuals=False,
+        )
+    return VisualBudgetSpec()
 
 
 def _style_metadata(style_lock: Path) -> ArtDirectionSpec:
@@ -499,6 +573,11 @@ def build_page_artifact_spec(
             "visual_spec": str(visual_source_sha256),
             "style_lock": hashlib.sha256(style_lock.read_bytes()).hexdigest(),
         }.items())),
+        visual_budget=_visual_budget(
+            visual_page,
+            topology=str(semantic_graph.get("topology") or ""),
+            use_scene=use_scene,
+        ),
     )
 
 
@@ -571,6 +650,7 @@ __all__ = [
     "PageArtifactSpec",
     "TypographySpec",
     "VisualCarrierSpec",
+    "VisualBudgetSpec",
     "build_page_artifact_spec",
     "load_project_page_artifact_specs",
 ]

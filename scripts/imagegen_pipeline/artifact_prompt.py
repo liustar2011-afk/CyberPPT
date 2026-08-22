@@ -11,6 +11,7 @@ from cyberppt.page_artifact_spec import (
     PageArtifactSpec,
     RelationshipSpec,
     VisualCarrierSpec,
+    VisualBudgetSpec,
 )
 from scripts.imagegen_pipeline.final_prompt_ir import (
     CompositionIR,
@@ -266,6 +267,7 @@ _ANTI_GENERIC_SCENE_CONSTRAINT = (
 def _visual_responsibility(
     composition: CompositionSpec,
     carrier: VisualCarrierSpec,
+    visual_budget: VisualBudgetSpec,
 ) -> tuple[str, ...]:
     scene_policy = (
         "Use the selected integrated scene." if carrier.use_scene
@@ -277,6 +279,7 @@ def _visual_responsibility(
         _ANTI_GENERIC_SCENE_CONSTRAINT,
         f"Dominant relationship shape: {composition.topology}.",
         f"Primary focus carries: {composition.primary_focus}",
+        *visual_budget.prompt_lines(),
     ]
     if composition.secondary_focus:
         lines.append(f"Secondary focus supports: {'; '.join(composition.secondary_focus)}")
@@ -351,7 +354,11 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
         composition = CompositionIR(
             spatial_organization=spec.composition.spatial_organization,
             primary_focus=spec.composition.primary_focus,
-            visual_responsibility=_visual_responsibility(spec.composition, spec.visual_carrier),
+            visual_responsibility=_visual_responsibility(
+                spec.composition,
+                spec.visual_carrier,
+                spec.visual_budget,
+            ),
         )
         return FinalPromptIR(
             deliverable=_deliverable_sentence(spec),
@@ -366,6 +373,7 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
                     (
                         *spec.hard_constraints.global_constraints,
                         *spec.hard_constraints.page_constraints,
+                        *spec.visual_budget.prompt_lines(),
                         *_bracketed_header_constraints(spec.typography.visible_text),
                     )
                 )

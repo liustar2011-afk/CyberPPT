@@ -210,6 +210,47 @@ class PageArtifactSpecTests(unittest.TestCase):
             self.assertNotIn(backend_id, serialized)
         self.assertNotIn("Do not discuss the next chapter", serialized)
 
+    def test_parallel_set_defaults_to_shared_page_level_visual_budget(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            visual_page["semantic_graph"]["topology"] = "parallel_set"
+            visual_page["image_plan"]["use_scene"] = False
+
+            spec = build_page_artifact_spec(
+                handoff_page=handoff_page,
+                visual_page=visual_page,
+                style_lock=style_lock,
+                handoff_sha256="a" * 64,
+                visual_source_sha256="b" * 64,
+            )
+
+        self.assertEqual("shared_field", spec.visual_budget.mode)
+        self.assertEqual(1, spec.visual_budget.max_auxiliary_fragments)
+        self.assertEqual("page", spec.visual_budget.scope)
+        self.assertFalse(spec.visual_budget.region_local_visuals)
+
+    def test_parallel_set_rejects_integrated_scene_budget(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            handoff_page, visual_page, style_lock = self._inputs(root)
+            visual_page["semantic_graph"]["topology"] = "parallel_set"
+            visual_page["visual_budget"] = {
+                "mode": "integrated_scene",
+                "max_auxiliary_fragments": 4,
+                "scope": "region",
+                "region_local_visuals": True,
+            }
+
+            with self.assertRaisesRegex(ValueError, "parallel_set"):
+                build_page_artifact_spec(
+                    handoff_page=handoff_page,
+                    visual_page=visual_page,
+                    style_lock=style_lock,
+                    handoff_sha256="a" * 64,
+                    visual_source_sha256="b" * 64,
+                )
+
     def test_rejects_missing_topology(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

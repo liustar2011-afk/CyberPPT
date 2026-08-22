@@ -917,6 +917,35 @@
         }
       }
     },
+    "visual_budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "max_auxiliary_fragments",
+        "scope",
+        "region_local_visuals"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "relationship_field_only",
+            "shared_field",
+            "integrated_scene"
+          ]
+        },
+        "max_auxiliary_fragments": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scope": {
+          "enum": ["page", "region"]
+        },
+        "region_local_visuals": {
+          "type": "boolean"
+        }
+      }
+    },
     "expression_contract": {
       "type": "object",
       "additionalProperties": false,
