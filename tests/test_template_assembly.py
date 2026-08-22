@@ -7,10 +7,64 @@ from pathlib import Path
 from PIL import Image
 
 from scripts.image_to_pptx_runtime.template_assembly import (
+    assemble_brand_page_svg,
     assemble_template_pptx,
     assemble_template_svg,
     load_template_contract,
 )
+from scripts.image_to_pptx_runtime.svg_to_pptx.drawingml.elements import _project_image_href
+
+
+def test_project_image_accepts_equivalent_href_and_xlink_href() -> None:
+    image = ET.fromstring(
+        '<image xmlns="http://www.w3.org/2000/svg" '
+        'xmlns:xlink="http://www.w3.org/1999/xlink" '
+        'href="template.png" xlink:href="template.png"/>'
+    )
+
+    assert _project_image_href(image) == "template.png"
+
+
+def test_project_image_rejects_conflicting_href_and_xlink_href() -> None:
+    image = ET.fromstring(
+        '<image xmlns="http://www.w3.org/2000/svg" '
+        'xmlns:xlink="http://www.w3.org/1999/xlink" '
+        'href="template.png" xlink:href="other.png"/>'
+    )
+
+    try:
+        _project_image_href(image)
+    except ValueError as exc:
+        assert str(exc) == "conflicting href and xlink:href values"
+    else:
+        raise AssertionError("conflicting image references must fail")
+
+
+def test_structural_page_roles_render_native_copy_without_ending_page_overflow(tmp_path: Path) -> None:
+    for role, lines in (
+        ("cover", ["封面标题", "封面副标题", "2026年8月"]),
+        ("contents", ["目录", "第一章", "第二章", "第三章"]),
+        ("chapter", ["第一章", "章节导语"]),
+        ("closing", ["建议提请研究确定", "明确首期产品边界和分阶段投入依据"]),
+    ):
+        output = tmp_path / f"{role}.svg"
+        assemble_brand_page_svg(output=output, role=role, onscreen_lines=lines)
+        text = output.read_text(encoding="utf-8")
+        for line in lines:
+            assert line in text
+        assert 'font-size="58"' not in text
+        expected_background = {
+            "cover": "cover_bg.jpg",
+            "contents": "agenda_bg.png",
+            "chapter": "section_bg.png",
+            "closing": "cover_bg.jpg",
+        }[role]
+        assert expected_background in text
+    cover = (tmp_path / "cover.svg").read_text(encoding="utf-8")
+    assert 'data-brand-template="01_cover"' in cover
+    assert 'cx="1180"' not in cover
+    assert 'id="agenda-items"' in (tmp_path / "contents.svg").read_text(encoding="utf-8")
+    assert 'id="sectionLeftWash"' in (tmp_path / "chapter.svg").read_text(encoding="utf-8")
 
 
 def test_template_contract_uses_exact_two_to_one_body_slot() -> None:

@@ -351,19 +351,41 @@ def run_stage02_reconstruction(
         *(str(number) for number, _ in pages),
     ]
     structural_expected = [
-        *[line for number in requested_pages for line in structural_lines.get(number, [])],
+        *[
+            text
+            for number in requested_pages
+            if number not in content_pages
+            for text in [
+                *([] if title_by_page[number] in structural_lines.get(number, []) else [title_by_page[number]]),
+                *structural_lines.get(number, []),
+            ]
+        ],
         *("中国电力企业联合会" for number in requested_pages if number not in content_pages),
+        *(
+            str(number)
+            for number in requested_pages
+            if number not in content_pages and script_pages[number].page_type in {"contents", "chapter"}
+        ),
+        *(
+            "章节导览"
+            for number in requested_pages
+            if number not in content_pages and script_pages[number].page_type == "chapter"
+        ),
     ]
 
     def structural_svg(number: int, mode: str) -> Path:
         page = script_pages[number]
-        role = "cover" if page.page_type == "cover" else "ending"
+        role = page.page_type if page.page_type in {"cover", "contents", "chapter", "closing"} else "chapter"
         target = output_root / mode / "svg_output" / f"p{number:02d}.svg"
+        lines = structural_lines[number]
+        if title_by_page[number] not in lines:
+            lines = [title_by_page[number], *lines]
         return assemble_brand_page_svg(
             output=target,
             role=role,
-            onscreen_lines=structural_lines[number],
+            onscreen_lines=lines,
             contract=contract,
+            page_number=number,
         )
 
     exports: dict[str, Path] = {}

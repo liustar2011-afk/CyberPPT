@@ -340,16 +340,25 @@ class ProjectImageSource:
 
 
 def _project_image_href(elem: ET.Element) -> str:
-    href_keys = tuple(
-        key for key in ('href', f'{{{XLINK_NS}}}href')
-        if key in elem.attrib
+    """Return the local image reference, accepting equivalent SVG 1.1/2.0 forms.
+
+    Authoring tools commonly emit both ``href`` and the legacy
+    ``xlink:href`` for one image.  They describe one source when their values
+    agree, so rejecting that form prevents otherwise valid native templates
+    from reaching the PPTX renderer.  Conflicting or empty references remain a
+    contract error because the source would be ambiguous.
+    """
+
+    href_values = tuple(
+        value.strip()
+        for key in ('href', f'{{{XLINK_NS}}}href')
+        if (value := elem.get(key)) is not None
     )
-    if len(href_keys) != 1:
-        raise ValueError('requires exactly one href or xlink:href')
-    href = elem.get(href_keys[0])
-    if href is None or not href.strip():
+    if not href_values or any(not value for value in href_values):
         raise ValueError('href cannot be empty')
-    return href
+    if len(set(href_values)) != 1:
+        raise ValueError('conflicting href and xlink:href values')
+    return href_values[0]
 
 
 def load_project_image_source(

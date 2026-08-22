@@ -298,51 +298,89 @@ def assemble_brand_page_svg(
     role: str,
     onscreen_lines: list[str],
     contract: dict | None = None,
+    page_number: int | None = None,
 ) -> Path:
-    """Materialize a native cover or ending page from the CEC template assets."""
+    """Materialize a native structural page from the CEC template assets."""
 
-    if role not in {"cover", "ending"}:
+    if role not in {"cover", "contents", "chapter", "closing"}:
         raise ValueError(f"unsupported brand page role: {role}")
     loaded = contract or load_template_contract()
     template_root = loaded["root"]
     output.parent.mkdir(parents=True, exist_ok=True)
-    background = template_root / "cover_bg.jpg"
-    target = output.parent / background.name
-    shutil.copy2(background, target)
-    href = target.name
     lines = [line.strip() for line in onscreen_lines if line.strip()]
+
+    def copy_asset(name: str) -> str:
+        source = template_root / name
+        target = output.parent / name
+        shutil.copy2(source, target)
+        return target.name
+
+    def template_chrome() -> str:
+        rules = loaded["rules"]
+        master = rules.get("master_elements") or {}
+        top = master.get("top_divider") or {}
+        footer = master.get("footer_bar") or {}
+        logo = master.get("logo") or {}
+        org = master.get("footer_company_text") or {}
+        number = master.get("footer_page_num") or {}
+        logo_href = copy_asset("logo.png")
+        return "\n".join(
+            [
+                f'<rect x="0" y="{top.get("y", 84)}" width="{CANVAS_WIDTH}" height="{top.get("height", 3)}" fill={quoteattr(str(top.get("fill", "#8B0000")))}/>',
+                f'<image x="{logo.get("x", 1050)}" y="{logo.get("y", 13)}" width="{logo.get("width", 210)}" height="{logo.get("height", 70)}" href={quoteattr(logo_href)} preserveAspectRatio="xMidYMid meet"/>',
+                f'<rect x="0" y="{footer.get("y", 698)}" width="{CANVAS_WIDTH}" height="{footer.get("height", 22)}" fill={quoteattr(str(footer.get("fill", "#123B66")))}/>',
+                f'<text x="{org.get("x", 58)}" y="{org.get("y", 709)}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="{org.get("font_size", 9)}" fill={quoteattr(str(org.get("fill", "#FFFFFF")))}>{xml_escape(str(org.get("text", "中国电力企业联合会")))}</text>',
+                f'<text x="{number.get("x", 1240)}" y="{number.get("y", 709)}" text-anchor="end" font-family="Consolas, Arial, sans-serif" font-size="{number.get("font_size", 9)}" fill={quoteattr(str(number.get("fill", "#FFFFFF")))}>{int(page_number or 0)}</text>',
+            ]
+        )
+
+    if role == "cover":
+        copy_asset("cover_bg.jpg")
+        template = (template_root / "01_cover.svg").read_text(encoding="utf-8")
+        template = template.replace("{{TITLE}}", xml_escape(lines[0] if lines else ""))
+        template = template.replace("{{AUTHOR}}", xml_escape(lines[1] if len(lines) > 1 else ""))
+        template = template.replace("{{DATE}}", xml_escape(lines[2] if len(lines) > 2 else ""))
+        output.write_text(template, encoding="utf-8")
+        return output
+
+    if role in {"contents", "chapter"}:
+        template_name = "02_agenda.svg" if role == "contents" else "03_section.svg"
+        background_name = "agenda_bg.png" if role == "contents" else "section_bg.png"
+        copy_asset(background_name)
+        template = (template_root / template_name).read_text(encoding="utf-8")
+        if role == "contents":
+            agenda_items = "\n".join(
+                f'<circle cx="92" cy="{220 + index * 52 - 8}" r="4" fill="#8B0000"/>'
+                f'<text x="116" y="{220 + index * 52}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="24" font-weight="600" fill="#123B66">{xml_escape(line)}</text>'
+                for index, line in enumerate(lines[1:7])
+            )
+            template = template.replace("{{AGENDA_ITEMS}}", agenda_items)
+        else:
+            template = template.replace("{{SECTION_NO}}", "章节导览")
+            template = template.replace("{{SECTION_TITLE}}", xml_escape(lines[0] if lines else "章节"))
+            template = template.replace("{{SECTION_SUBTITLE}}", xml_escape(lines[1] if len(lines) > 1 else ""))
+        template = template.replace("</svg>", f"{template_chrome()}\n</svg>")
+        output.write_text(template, encoding="utf-8")
+        return output
+
+    # The ending page can carry a project-specific decision request, so its
+    # title and supporting line remain authored here while sharing the CEC
+    # closing background.  The generic ``04_ending.svg`` remains available for
+    # decks that intentionally use its fixed “感谢聆听 / THANK YOU” copy.
+    href = copy_asset("cover_bg.jpg")
+    title = lines[0] if lines else "请审议"
+    subtitle = lines[1] if len(lines) > 1 else ""
     elements = [
         f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" viewBox="0 0 {CANVAS_WIDTH} {CANVAS_HEIGHT}" data-brand-template={quoteattr(role)}>',
         f'<image x="0" y="0" width="{CANVAS_WIDTH}" height="{CANVAS_HEIGHT}" href={quoteattr(href)} preserveAspectRatio="xMidYMid slice"/>',
     ]
-    if role == "cover":
-        title = lines[0] if lines else ""
-        subtitle = lines[1] if len(lines) > 1 else ""
-        date = lines[2] if len(lines) > 2 else ""
-        elements.extend(
-            [
-                f'<text x="640" y="238" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="46" font-weight="700" fill="#1F2933">{xml_escape(title)}</text>',
-                f'<text x="640" y="302" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="25" fill="#60758A">{xml_escape(subtitle)}</text>',
-                f'<text x="640" y="555" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="28" font-weight="600" fill="#FFFFFF">中国电力企业联合会</text>',
-                f'<text x="640" y="628" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="22" fill="#EAF3FF">{xml_escape(date)}</text>',
-            ]
-        )
-    else:
-        title = lines[0] if lines else "请审议"
-        elements.append(
-            f'<text x="640" y="175" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="58" font-weight="700" fill="#C00000">{xml_escape(title)}</text>'
-        )
-        for index, line in enumerate(lines[1:5]):
-            y = 282 + index * 72
-            elements.extend(
-                [
-                    f'<circle cx="350" cy="{y - 9}" r="5" fill="#C00000"/>',
-                    f'<text x="380" y="{y}" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="27" font-weight="600" fill="#FFFFFF">{xml_escape(line)}</text>',
-                ]
-            )
-        elements.append(
-            f'<text x="640" y="620" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="24" fill="#FFFFFF" fill-opacity="0.85">中国电力企业联合会</text>'
-        )
+    elements.extend(
+        [
+            f'<text x="640" y="240" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="44" font-weight="700" fill="#1F2933">{xml_escape(title)}</text>',
+            f'<text x="640" y="320" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="27" fill="#60758A">{xml_escape(subtitle)}</text>',
+            f'<text x="640" y="620" text-anchor="middle" font-family={quoteattr(TEMPLATE_FONT_FAMILY)} font-size="24" fill="#FFFFFF" fill-opacity="0.85">中国电力企业联合会</text>',
+        ]
+    )
     elements.append("</svg>\n")
     output.write_text("\n".join(elements), encoding="utf-8")
     return output
