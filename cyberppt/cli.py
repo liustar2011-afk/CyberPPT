@@ -19,8 +19,9 @@ from cyberppt.image_enhancer import enhance_image
 from cyberppt.commands.outline_audit import run_outline_audit
 from cyberppt.commands.outline_review import render_outline_review
 from cyberppt.commands.prepare_imagegen_send import prepare_imagegen_send
-from cyberppt.commands.preview_page_anchors import preview_page_anchors
+from cyberppt.commands.preview_page_anchors import build_page_preflight, preview_page_anchors
 from cyberppt.commands.preview_onscreen_markdown import preview_onscreen_markdown
+from cyberppt.commands.page_lint import run_page_lint
 from cyberppt.commands.prepare_stage01_input import (
     prepare_outline_input,
     prepare_page_script_input,
@@ -408,6 +409,36 @@ def _preview_page_anchors_command(args: argparse.Namespace) -> int:
         return 2
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
+
+
+def _page_preflight_command(args: argparse.Namespace) -> int:
+    try:
+        report = build_page_preflight(
+            Path(args.project),
+            args.page or "",
+            outline_path=Path(args.outline) if args.outline else None,
+        )
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return 0
+
+
+def _page_lint_command(args: argparse.Namespace) -> int:
+    try:
+        code, report = run_page_lint(
+            Path(args.project),
+            Path(args.input),
+            args.page or "",
+            outline_path=Path(args.outline) if args.outline else None,
+            source_truth_path=Path(args.source_truth) if args.source_truth else None,
+        )
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(report, ensure_ascii=False, indent=2))
+    return code
 
 
 def _stage_script_command(args: argparse.Namespace) -> int:
@@ -868,6 +899,29 @@ def build_parser() -> argparse.ArgumentParser:
         help="Outline JSON; defaults to the project Stage 01 artifact.",
     )
     preview_anchors.set_defaults(func=_preview_page_anchors_command)
+
+    page_preflight = subparsers.add_parser(
+        "page-preflight",
+        help="Build the page-specific writing constraints before authoring.",
+    )
+    page_preflight.add_argument("project", help="CyberPPT project directory.")
+    page_preflight.add_argument("--page", required=True, help="Outline page_id, e.g. p04.")
+    page_preflight.add_argument(
+        "--outline",
+        help="Outline JSON; defaults to the project Stage 01 artifact.",
+    )
+    page_preflight.set_defaults(func=_page_preflight_command)
+
+    page_lint = subparsers.add_parser(
+        "page-lint",
+        help="Run page-scoped script checks before full-script assembly.",
+    )
+    page_lint.add_argument("project", help="CyberPPT project directory.")
+    page_lint.add_argument("--input", required=True, help="Markdown script containing the target page.")
+    page_lint.add_argument("--page", required=True, help="Script and Outline page_id, e.g. p04.")
+    page_lint.add_argument("--outline", help="Outline JSON; defaults to the project Stage 01 artifact.")
+    page_lint.add_argument("--source-truth", help="Source Truth JSON; defaults to the project Stage 01 artifact.")
+    page_lint.set_defaults(func=_page_lint_command)
 
     preview_onscreen_md = subparsers.add_parser(
         "preview-onscreen-markdown",

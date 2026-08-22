@@ -129,10 +129,10 @@ class PrepareStage01InputTests(unittest.TestCase):
     def test_prepare_page_script_input_matches_pre_resource_output_baseline(self) -> None:
         text = prepare_page_script_input(self.project, "p04")
 
-        self.assertEqual(len(text), 13826)
+        self.assertEqual(len(text), 14273)
         self.assertEqual(
             hashlib.sha256(text.encode("utf-8")).hexdigest(),
-            "9fcd8334762bc4b9788199384902fc428590b56a743805a349818d721deef5fd",
+            "423481c2950615c33ec0110f7c919af5e2f6f837496e6aadad2e7c00065d9a24",
         )
 
     def test_prepare_page_script_input_cli_emits_resource_backed_output(self) -> None:

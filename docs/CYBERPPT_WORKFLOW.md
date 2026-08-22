@@ -115,6 +115,8 @@ Outline 审阅通过后，执行 Source Foundation 到 CyberPPT 的兼容投影�
 6. 视觉语法
 7. 演讲者备注
 
+写作前运行 `page-preflight --page <page_id>`，读取本页的锚点策略、短语上限、表达结构和关系信号；每页完成后运行 `page-lint --page <page_id>` 修复本页硬错误。`page-lint` 复用 `script-audit` 的页面规则，跨页关系和最终全稿格式继续在第 8 步统一确认。
+
 上屏文字的分组与短语化由 Stage 01 完成。数字编号只表达来源支持的流程、阶段、时间、优先级、门控或其他真实顺序；普通并列分类使用无编号业务标题。共享标题、谓词、对象、限定语或结果只在父级表达一次，子项分别承载差异信息，避免为追求短语形式制造同义重复。
 
 主责 Skill：`cyberppt-write-single-page`。

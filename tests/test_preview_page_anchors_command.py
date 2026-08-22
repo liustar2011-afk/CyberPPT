@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from cyberppt.commands.preview_page_anchors import preview_page_anchors
+from cyberppt.commands.preview_page_anchors import build_page_preflight, preview_page_anchors
 
 
 def _write_json(path: Path, payload: object) -> None:
@@ -49,6 +49,23 @@ def _build_project(root: Path) -> Path:
                                 "这是一个刻意超过三十个字符长度上限的极长锚点示例文本用于测试内容",
                             ],
                         },
+                        {
+                            "unit_id": "p04-U02",
+                            "role": "supporting",
+                            "onscreen_required": True,
+                            "source_refs": ["ST0044"],
+                            "statement": "| 市场模块 | 长期空间判断 |",
+                            "coverage_anchors": ["市场模块", "长期空间判断"],
+                            "onscreen_anchors": ["市场模块", "长期空间判断"],
+                        },
+                        {
+                            "unit_id": "p04-U03",
+                            "role": "detail",
+                            "onscreen_required": False,
+                            "source_refs": ["ST0045"],
+                            "coverage_anchors": ["补充参数"],
+                            "onscreen_anchors": [],
+                        },
                     ],
                 },
             ],
@@ -68,12 +85,25 @@ class PreviewPageAnchorsCommandTests(unittest.TestCase):
             self.assertEqual("p04", report["page_id"])
             self.assertEqual("foundation", report["argument_role"])
             units = report["content_units"]
-            self.assertEqual(1, len(units))
-            self.assertEqual(["ST0042", "ST0043"], units[0]["source_refs"])
-            anchors = units[0]["onscreen_anchors"]
+            self.assertEqual(3, len(units))
+            primary = next(unit for unit in units if unit["unit_id"] == "p04-U01")
+            self.assertEqual(["ST0042", "ST0043"], primary["source_refs"])
+            anchors = primary["onscreen_anchors"]
             self.assertEqual(2, len(anchors))
             self.assertFalse(anchors[0]["over_detail_phrase_limit"])
             self.assertTrue(anchors[1]["over_detail_phrase_limit"])
+
+    def test_preflight_classifies_visible_and_prose_only_units(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            project = _build_project(Path(temp_dir))
+
+            report = build_page_preflight(project, "p04")
+
+            self.assertEqual("cyberppt.page_preflight.v1", report["schema"])
+            policies = {unit["unit_id"]: unit["onscreen_policy"] for unit in report["content_units"]}
+            self.assertEqual("semantic", policies["p04-U01"])
+            self.assertEqual("structural", policies["p04-U02"])
+            self.assertEqual("prose_only", policies["p04-U03"])
 
     def test_unknown_page_id_reports_the_known_page_list(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

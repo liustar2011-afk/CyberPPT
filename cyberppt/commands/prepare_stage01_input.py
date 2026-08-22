@@ -10,6 +10,7 @@ from cyberppt.semantic_understanding import (
 )
 from cyberppt.source_argument_model import load_model
 from cyberppt.outline_authoring_projection import build_outline_authoring_projection
+from cyberppt.commands.preview_page_anchors import build_page_preflight_from_contract
 
 
 PAGE_SCRIPT_AUTHORING_RULES_PATH = (
@@ -279,6 +280,13 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> str:
         )
     lines = PAGE_SCRIPT_AUTHORING_RULES_PATH.read_text(encoding="utf-8").split("\n")
     for page in pages:
+        preflight = build_page_preflight_from_contract(
+            page,
+            project / "workbench/stages/01-analysis/outline.json",
+        )
+        # Authoring input is a reproducible workset; avoid embedding the
+        # machine-specific project prefix from the resolved Outline path.
+        preflight["outline"] = "workbench/stages/01-analysis/outline.json"
         lines += [
             f"## {page.get('page_id')} {page.get('title')}",
             f"- page_mission: {page.get('page_mission') or page.get('page_job', '')}",
@@ -305,6 +313,7 @@ def prepare_page_script_input(project: Path, page_id: str = "") -> str:
             f"- detail_refs: {', '.join(str(item) for item in page.get('detail_refs', [])) or '[]'}",
             f"- visual_intent_type: {page.get('visual_intent_type') or 'auto'}",
             f"- visual_proof: {page.get('visual_proof') or 'auto'}",
+            f"- page_preflight: {json.dumps(preflight, ensure_ascii=False)}",
             "- content_units:",
         ]
         content_units = page.get("content_units") or [
