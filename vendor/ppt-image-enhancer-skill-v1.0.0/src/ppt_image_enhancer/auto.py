@@ -65,9 +65,14 @@ def choose_mode(image_path: str | Path) -> Tuple[str, Dict[str, Any]]:
 
 def choose_backend(mode: str) -> str:
     status = backend_status()
-    # Text/diagram dense pages default to conservative processing even when AI is available.
-    if mode == "chart_heavy":
-        return "builtin"
+    # chart_heavy pages used to force "builtin" here on the theory that AI SR
+    # is unsafe for text/diagram-dense content. That theory does not hold once
+    # the ncnn adapter requests the model's native scale (see the scale=4 note
+    # above): a 4-page spot check across the edge-density range, run through
+    # this same enhance() pipeline with its structural_fidelity gate, upscaled
+    # cleanly with no text/geometry corruption and a measurable sharpness gain
+    # on every page. The gate plus the CLI auto-fallback in enhance.py still
+    # catch a bad result per page, so no special-casing is needed here.
     if status["ncnn"]:
         return "realesrgan_ncnn"
     if status["realesrgan_python"]:
@@ -100,7 +105,14 @@ def build_auto_config(image_path: str | Path, mode: str | None = None, backend: 
                     "realesrgan_ncnn": {
                         "executable": str(exe),
                         "model_name": "realesrgan-x4plus",
-                        "scale": 2 if scale <= 2 else 4,
+                        # realesrgan-x4plus is only trained/shipped at x4 in this
+                        # portable package; requesting any other scale from the
+                        # ncnn CLI produces corrupted/misaligned output (verified:
+                        # -s 2 against this model garbles text and tiles). Always
+                        # ask the model for its native scale and let the pipeline's
+                        # own resize step (which already runs regardless) bring the
+                        # result down to the requested output size.
+                        "scale": 4,
                         "tile": 0,
                         "model_dir": str(model_dir) if model_dir.exists() else "",
                     },

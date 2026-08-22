@@ -503,10 +503,17 @@ def ensure_output_size(output_path: Path, size: str) -> tuple[int, int]:
     target_width, target_height = parsed
     from cyberppt.image_enhancer import enhance_image
 
+    # "auto" lets an installed AI super-resolution backend (currently
+    # realesrgan_ncnn) enhance every page before the canvas resize; it
+    # degrades to the conservative builtin path (Lanczos resize + guarded
+    # sharpen) when no backend is installed, when the AI result fails the
+    # pipeline's structural-fidelity gate, or when the backend call itself
+    # errors. See vendor/ppt-image-enhancer-skill-v1.0.0/src/ppt_image_enhancer
+    # /pipeline.py for the gate and enhance.py for the fallback.
     enhance_image(
         output_path,
         output=output_path,
-        backend="builtin",
+        backend="auto",
         scale=1.0,
         target_size=(target_width, target_height),
         mode="chart_heavy",
