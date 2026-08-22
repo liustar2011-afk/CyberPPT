@@ -108,8 +108,8 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "默认不出现人物；禁止正脸、围桌会议、多人讨论及摆拍办公场景。" in style_nine["prompt_contract"]
     assert "Do not depict organization names, logos, seals, signage" in style_nine["prompt_contract"]
     assert "locked on-screen text faithfully in the main composition" in style_nine["prompt_contract"]
-    assert "may use a small amount of clear Chinese labels" in style_nine["prompt_contract"]
-    assert "dense pseudo-Chinese" in style_nine["prompt_contract"]
+    assert "Auxiliary semantic imagery is text-free by default" in style_nine["prompt_contract"]
+    assert "pseudo-Chinese" in style_nine["prompt_contract"]
     # The overlapping "invented names, logos, seals, signage" clause was
     # trimmed from the migrated semantic_image_text_rule text because
     # factuality_rule (now a few paragraphs earlier in the same contract)
@@ -118,7 +118,7 @@ def test_style_nine_is_explicit_extension_and_style_four_is_unchanged() -> None:
     assert "Keep connection lines absent by default" in style_nine["prompt_contract"]
     assert "连线：默认不使用连接线" in style_nine["prompt_contract"]
     assert "purposeful connectors" not in style_nine["prompt_contract"]
-    assert "低矮哑光正视微立体" in style_nine["prompt_contract"]
+    assert "禁止任何立体图标、微缩模型、立方体" in style_nine["prompt_contract"]
     assert "箭头：禁止使用" in style_nine["prompt_contract"]
     assert "icon_rule" not in style_nine
     assert "政企领导汇报所需的信息密度" in style_nine["density_rule"]
@@ -153,7 +153,7 @@ def test_style_nine_lock_records_extension_selection() -> None:
     assert payload["reference_image"]["path"].endswith("palette-09.png")
 
 
-def test_style_nine_reference_stops_at_indented_following_h2() -> None:
+def test_style_nine_ignores_lock_snapshot_and_caller_controlled_source_path() -> None:
     with TemporaryDirectory() as directory:
         root = Path(directory)
         reference = root / "visual-system.md"
@@ -178,9 +178,10 @@ def test_style_nine_reference_stops_at_indented_following_h2() -> None:
         payload = load_style_lock(lock)
 
     contract = payload["style"]["prompt_contract"]
-    assert "Style 09 only." in contract
-    assert "扩展风格10" not in contract
+    assert "Style 09 only." not in contract
     assert "Style 10 must not leak." not in contract
+    assert "scene-led editorial business-infographic style" in contract
+    assert payload["style"]["prompt_contract_source"].endswith("references/visual-system.md")
 
 
 def test_style_nine_component_contract_reaches_prompt_compiler() -> None:
@@ -318,6 +319,6 @@ def test_style_nine_contract_preserves_industry_scene_and_rejects_large_document
     contract = payload["style"]["prompt_contract"]
     assert "Build the page from recognizable business scenes, concrete objects, visible actions, evidence and outcomes" in contract
     assert "richness should come from meaningful business expression, not decorative objects" in contract
-    assert "Abstract items may remain text-led and rely on hierarchy, spacing and grouping alone" in contract
+    assert "If the items are abstract directions with no distinct concrete referent, drop the scene entirely" in contract
     assert "supporting scene or evidence fragments" in contract
     assert "Icons are not a default visual language for Style 09. Start from zero icons; icon count is zero by default." in contract
