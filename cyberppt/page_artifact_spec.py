@@ -85,8 +85,7 @@ class VisualBudgetSpec:
             )
         if self.mode == "shared_field":
             return (
-                "Visual budget: zero auxiliary images by default; at most one shared page-level anchor if indispensable.",
-                "The shared anchor must serve the whole page; do not create one image, object, scene fragment or icon for any heading, bullet, evidence unit or semantic region.",
+                "zero auxiliary images by default; at most one shared page-level anchor; do not create one image/item.",
             )
         return (
             f"Visual budget: at most {self.max_auxiliary_fragments} auxiliary fragments when they materially clarify the selected integrated scene.",

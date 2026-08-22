@@ -373,7 +373,6 @@ def build_final_prompt_ir(spec: PageArtifactSpec) -> FinalPromptIR:
                     (
                         *spec.hard_constraints.global_constraints,
                         *spec.hard_constraints.page_constraints,
-                        *spec.visual_budget.prompt_lines(),
                         *_bracketed_header_constraints(spec.typography.visible_text),
                     )
                 )
