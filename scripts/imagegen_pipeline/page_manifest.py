@@ -323,6 +323,9 @@ def build_manifest(
     compact_blueprint: bool = False,
     visual_source: str = "auto",
     prompt_compiler: str = DEFAULT_PROMPT_COMPILER,
+    allow_script_edit: bool = False,
+    allow_prompt_edit: bool = False,
+    prompt_overrides_dir: Path | None = None,
 ) -> tuple[dict[str, Any], Path, Path, list[int]]:
     prompt_compiler = validate_prompt_compiler(prompt_compiler)
     if prompt_compiler == ARTIFACT_PROMPT_COMPILER and (
@@ -331,6 +334,10 @@ def build_manifest(
         raise ValueError("artifact-spec-v2 requires project_path and style_lock")
     if visual_source not in {"auto", "governed-json", "legacy-markdown"}:
         raise ValueError("visual_source must be auto, governed-json, or legacy-markdown")
+    if allow_prompt_edit and prompt_overrides_dir is None:
+        raise ValueError("allow_prompt_edit requires prompt_overrides_dir")
+    if (allow_script_edit or allow_prompt_edit) and prompt_enrich != "off":
+        raise ValueError("direct script/prompt edit mode requires --prompt-enrich off")
     output_variants = output_variants_for_mode(production_mode)
     source_pages = parse_page_blocks(script)
     page_numbers = parse_pages(pages_raw, set(source_pages))
@@ -407,6 +414,24 @@ def build_manifest(
     output_dir.mkdir(parents=True, exist_ok=True)
     compiled_script = _compiled_script_path(output_dir, script, page_numbers)
     approved_prompts: dict[int, tuple[str, Path]] = {}
+    prompt_overrides: dict[int, tuple[str, Path]] = {}
+    if allow_prompt_edit:
+        assert prompt_overrides_dir is not None
+        for page_number in content_page_numbers:
+            candidates = (
+                prompt_overrides_dir / f"p{page_number:02d}.txt",
+                prompt_overrides_dir / f"p{page_number:02d}.md",
+            )
+            override_path = next((path for path in candidates if path.is_file()), None)
+            if override_path is None:
+                raise FileNotFoundError(
+                    f"direct prompt edit mode is missing override for page {page_number}: "
+                    f"{candidates[0]}"
+                )
+            override_text = override_path.read_text(encoding="utf-8-sig").strip()
+            if not override_text:
+                raise ValueError(f"direct prompt override is empty: {override_path}")
+            prompt_overrides[page_number] = (override_text, override_path.resolve())
     relationship_aware_prompts: dict[int, str] = {}
     artifact_specs = (
         load_project_page_artifact_specs(project_path, style_lock=style_lock)
@@ -483,6 +508,13 @@ def build_manifest(
         prompt = relationship_aware_prompts.get(page_number) or render_prompt(
             page, style_lock_path=style_lock
         )
+        prompt_source = "script_compiler"
+        prompt_override_path: Path | None = None
+        if page_number in prompt_overrides:
+            prompt, prompt_override_path = prompt_overrides[page_number]
+            prompt_source = "direct_prompt_override"
+        elif allow_script_edit:
+            prompt_source = "direct_script_edit"
         visual_module = (
             load_visual_prompt_module(
                 project_path,
@@ -576,7 +608,7 @@ def build_manifest(
         atomic_write_text(prompt_file, prompt)
         full_path = output_dir / f"{stem}_full.png"
         artifact_ir_fields: dict[str, Any] = {}
-        if prompt_compiler == ARTIFACT_PROMPT_COMPILER:
+        if prompt_compiler == ARTIFACT_PROMPT_COMPILER and prompt_source != "direct_prompt_override":
             page_spec = artifact_specs[page_number]
             page_ir = build_final_prompt_ir(page_spec)
             artifact_ir_fields = {
@@ -606,6 +638,9 @@ def build_manifest(
             "canvas": f"{GENERATION_SIZE['width']}x{GENERATION_SIZE['height']}",
             "prompt_enrich": enrich_result_as_dict(enrich),
             "visual_structure_handoff": visual_handoff_metadata,
+            "prompt_source": prompt_source,
+            **({"prompt_override_path": str(prompt_override_path)} if prompt_override_path else {}),
+            **({"prompt_override_sha256": _sha256_file(prompt_override_path)} if prompt_override_path else {}),
             **artifact_ir_fields,
             "prompt_provenance": {
                 **(approval_meta or {}),
@@ -736,6 +771,7 @@ def build_manifest(
         "created_at": datetime.now(timezone.utc).isoformat(),
         "prompt_contract": {
             "approved_prompt_is_source": bool(require_approved_prompts),
+            "direct_edit_mode": "prompt_override" if allow_prompt_edit else "script" if allow_script_edit else None,
             "freshness_enforced": bool(require_approved_prompts and enforce_prompt_freshness),
             "canonical_prompt_is_diagnostic_only": bool(require_approved_prompts),
             "compact_blueprint": effective_compact_blueprint,

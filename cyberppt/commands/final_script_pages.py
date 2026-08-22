@@ -491,7 +491,12 @@ def _generate_manifest_images(
                 else None
             )
             has_text_receipt = (item.get("text_audit") or {}).get("valid") is True
-            if output_path.is_file() and not force and (
+            prompt_matches_existing_image = (
+                item.get("generated_prompt_sha256")
+                == item.get("prompt_sha256")
+                and bool(item.get("generated_prompt_sha256"))
+            )
+            if output_path.is_file() and not force and prompt_matches_existing_image and (
                 not isinstance(text_truth, dict) or has_text_receipt
             ):
                 item["status"] = "Generated"
@@ -608,6 +613,7 @@ def _generate_manifest_images(
             if not dry_run:
                 item["status"] = "Generated"
                 item["generated_at"] = _utc_now()
+                item["generated_prompt_sha256"] = item.get("prompt_sha256")
                 item.pop("last_error", None)
                 if accepted_audit is not None:
                     item["text_audit"] = accepted_audit
@@ -661,6 +667,8 @@ def run_final_script_pages(
     no_style_reference: bool = False,
     skip_image_text_audit: bool = False,
     seed_manifest: Path | None = None,
+    allow_prompt_edit: bool = False,
+    prompt_overrides_dir: Path | None = None,
 ) -> dict[str, Any]:
     # Kept for direct-call compatibility. It has no authorization effect.
     _ = lightweight_stage01_confirmed
@@ -669,6 +677,11 @@ def run_final_script_pages(
     style_lock = style_lock.expanduser().resolve() if style_lock else None
     semantic_plan_dir = semantic_plan_dir.expanduser().resolve() if semantic_plan_dir else None
     seed_manifest = seed_manifest.expanduser().resolve() if seed_manifest else None
+    prompt_overrides_dir = (
+        prompt_overrides_dir.expanduser().resolve()
+        if prompt_overrides_dir
+        else None
+    )
     if not script.is_file():
         raise FileNotFoundError(f"final script not found: {script}")
     if generate_images and not skip_image_text_audit and not dry_run_images:
@@ -804,6 +817,8 @@ def run_final_script_pages(
         require_approved_prompts=(
             not blueprint_only
             and autonomous_authority is None
+            and not allow_script_edit
+            and not allow_prompt_edit
         ),
         production_mode=production_mode,
         prompt_enrich=prompt_enrich,
@@ -811,6 +826,9 @@ def run_final_script_pages(
         enforce_prompt_freshness=False,
         compact_blueprint=False,
         prompt_compiler="artifact-spec-v2",
+        allow_script_edit=allow_script_edit,
+        allow_prompt_edit=allow_prompt_edit,
+        prompt_overrides_dir=prompt_overrides_dir,
     )
     manifest["source_mode"] = source_mode
     manifest["source_script"] = str(script)
@@ -888,6 +906,9 @@ def run_final_script_pages(
             "page_set": page_numbers,
             "production_mode": production_mode,
             "assembly_mode": assembly_mode,
+            "allow_script_edit": allow_script_edit,
+            "allow_prompt_edit": allow_prompt_edit,
+            "prompt_overrides_dir": str(prompt_overrides_dir) if prompt_overrides_dir else None,
             "stage": "02-production-build" if production_build else "02-blueprint-image-to-editable-svg",
             "status": "in_progress",
             "artifacts": {"page_image_pairs": {"path": str(manifest_path), "sha256": _sha256(manifest_path)}},
@@ -960,6 +981,12 @@ def run_final_script_pages(
             + (" --generate-images" if generate_images else "")
             + (" --production-build" if production_build else "")
             + (" --allow-script-edit" if allow_script_edit else "")
+            + (" --allow-prompt-edit" if allow_prompt_edit else "")
+            + (
+                f" --prompt-overrides-dir {prompt_overrides_dir}"
+                if prompt_overrides_dir
+                else ""
+            )
         )
     )
     production_readiness = None
@@ -1003,6 +1030,8 @@ def run_final_script_pages(
         "stage": stage_name,
         "source_mode": source_mode,
         "allow_script_edit": allow_script_edit,
+        "allow_prompt_edit": allow_prompt_edit,
+        "prompt_overrides_dir": str(prompt_overrides_dir) if prompt_overrides_dir else None,
         "autonomous_contract": str(autonomous_contract_path) if autonomous_contract_path else None,
         "project_created": project_created,
         "status": status,

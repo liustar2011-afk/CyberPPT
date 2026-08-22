@@ -555,6 +555,8 @@ def _final_script_pages_command(args: argparse.Namespace) -> int:
             build_id=args.build_id,
             external_script=args.external_script,
             allow_script_edit=args.allow_script_edit,
+            allow_prompt_edit=args.allow_prompt_edit,
+            prompt_overrides_dir=Path(args.prompt_overrides_dir) if args.prompt_overrides_dir else None,
             blueprint_only=args.blueprint_only,
             no_style_reference=args.no_style_reference,
             skip_image_text_audit=args.skip_image_text_audit,
@@ -1021,6 +1023,18 @@ def build_parser() -> argparse.ArgumentParser:
             "Skips editorial script-audit gates and refreshes the Stage 02 handoff; "
             "image text, structural, and production QA remain enabled."
         ),
+    )
+    final_script_pages_parser.add_argument(
+        "--allow-prompt-edit",
+        action="store_true",
+        help=(
+            "Use direct Stage 02 prompt override files as the image-generation source; "
+            "requires --prompt-overrides-dir and preserves image-text and production QA."
+        ),
+    )
+    final_script_pages_parser.add_argument(
+        "--prompt-overrides-dir",
+        help="Directory containing direct prompt overrides named pXX.txt or pXX.md.",
     )
     final_script_pages_parser.add_argument(
         "--lightweight-stage01-confirmed",

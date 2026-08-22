@@ -31,6 +31,48 @@ from tests.test_artifact_prompt import _spec
 
 
 class CyberpptPairManifestTests(unittest.TestCase):
+    def test_direct_prompt_override_is_consumed_without_approval(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project = root / "project"
+            project.mkdir()
+            script = root / "script.md"
+            script.write_text(
+                "## 第2页：治理结果\n正文：当前脚本内容。\n",
+                encoding="utf-8",
+            )
+            style_lock = write_project_style_lock(project=project, style_id=4, source_script=script)
+            spec = replace(_spec(), page_id="P02", page_number=2)
+            overrides = root / "prompt-overrides"
+            overrides.mkdir()
+            override = overrides / "p02.txt"
+            override.write_text(
+                "用户直接修改后的 Stage 2 生图脚本。\n",
+                encoding="utf-8",
+            )
+
+            with patch(
+                "scripts.imagegen_pipeline.page_manifest.load_project_page_artifact_specs",
+                return_value={2: spec},
+            ):
+                manifest, _, _, _ = build_manifest(
+                    script=script,
+                    pages_raw="2",
+                    output_dir=root / "images",
+                    project_path=project,
+                    style_lock=style_lock,
+                    allow_prompt_edit=True,
+                    prompt_overrides_dir=overrides,
+                    prompt_compiler="artifact-spec-v2",
+                )
+
+        full = manifest["pairs"][0]["full"]
+        self.assertEqual("用户直接修改后的 Stage 2 生图脚本。", full["prompt"].strip())
+        self.assertEqual("direct_prompt_override", full["prompt_source"])
+        self.assertEqual(str(override.resolve()), full["prompt_override_path"])
+        self.assertFalse(manifest["prompt_contract"]["approved_prompt_is_source"])
+        self.assertEqual("prompt_override", manifest["prompt_contract"]["direct_edit_mode"])
+
     def test_artifact_manifest_consumes_the_approved_seven_section_prompt_verbatim(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
